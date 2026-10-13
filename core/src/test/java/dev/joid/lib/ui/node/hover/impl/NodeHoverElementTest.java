@@ -85,7 +85,7 @@ public class NodeHoverElementTest {
 	@Test
 	public void loadsTheNodeIntoTheHoveredUiOnce() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode tooltip = RectNode.create(10D, -5D, 40D, 20D).onInit(received::add);
+		final RectNode tooltip = RectNode.create(10D, -5D, 40D, 20D).onInit(event -> received.add(event.getNode()));
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).hover(NodeHoverElement.follow(tooltip));
 		final NodeUI ui = new NodeUI(rect);
 		this.bridges.open(ui).frames(30);

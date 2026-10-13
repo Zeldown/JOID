@@ -12,14 +12,9 @@ import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.structure.checkbox.callback.NodeCheckboxChangeCallback;
-import dev.joid.lib.ui.node.impl.structure.sw.callback.NodeSwitchChangeCallback;
-import dev.joid.lib.ui.node.impl.structure.toggle.callback.NodeToggleChangeCallback;
 import dev.joid.lib.utils.align.Align;
-import lombok.NonNull;
 
 @UIData(background = true)
 public class UIDemoControl extends UIDemo {
@@ -46,8 +41,8 @@ public class UIDemoControl extends UIDemo {
 		.body(rect -> {
 			DemoCheckboxNode
 			.create(40, 40, 60, 60)
-			.onChange((node, checked) -> {
-				System.out.println("[UIDemoControl] checkbox checked: " + checked);
+			.onChange(event -> {
+				System.out.println("[UIDemoControl] checkbox checked: " + event.getValue());
 				checkboxChanges.increment();
 			})
 			.attach(rect);
@@ -82,17 +77,9 @@ public class UIDemoControl extends UIDemo {
 		.body(rect -> {
 			DemoCheckboxNode
 			.create(40, 40, 60, 60)
-			.onChange(new NodeCheckboxChangeCallback<DemoCheckboxNode>() {
-
-				@Override
-				public void apply(final @NonNull DemoCheckboxNode node, final boolean checked) {}
-
-				@Override
-				public void pre(final @NonNull DemoCheckboxNode node, final @NonNull DispatchContext context, final boolean checked) {
-					refusedChecks.increment();
-					context.cancel();
-				}
-
+			.beforeChange(event -> {
+				refusedChecks.increment();
+				event.cancel();
 			})
 			.attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refusedChecks.get(), info)).attach(rect);
@@ -116,9 +103,9 @@ public class UIDemoControl extends UIDemo {
 			DemoToggleNode
 			.create(40, 40, 120, 60)
 			.state("On", "Off")
-			.onChange((node, toggle) -> {
-				System.out.println("[UIDemoControl] toggle value: " + node.getValue());
-				toggleValue.set(node.getValue());
+			.onChange(event -> {
+				System.out.println("[UIDemoControl] toggle value: " + event.getNode().getValue());
+				toggleValue.set(event.getNode().getValue());
 			})
 			.attach(rect);
 			TextNode.create(40, 140).text(Text.create("Value: " + toggleValue.get(), info)).attach(rect);
@@ -152,17 +139,9 @@ public class UIDemoControl extends UIDemo {
 		.body(rect -> {
 			DemoToggleNode
 			.create(40, 40, 120, 60)
-			.onChange(new NodeToggleChangeCallback<DemoToggleNode, String, String>() {
-
-				@Override
-				public void apply(final @NonNull DemoToggleNode node, final boolean toggle) {}
-
-				@Override
-				public void pre(final @NonNull DemoToggleNode node, final @NonNull DispatchContext context, final boolean toggle) {
-					refusedToggles.increment();
-					context.cancel();
-				}
-
+			.beforeChange(event -> {
+				refusedToggles.increment();
+				event.cancel();
 			})
 			.attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refusedToggles.get(), info)).attach(rect);
@@ -186,9 +165,9 @@ public class UIDemoControl extends UIDemo {
 			DemoSwitchNode
 			.create(40, 40, 240, 50)
 			.states("One", "Two", "Three")
-			.onChange((node, value) -> {
-				System.out.println("[UIDemoControl] switch state: " + value);
-				switchState.set(value);
+			.onChange(event -> {
+				System.out.println("[UIDemoControl] switch state: " + event.getValue());
+				switchState.set(event.getValue());
 			})
 			.attach(rect);
 			TextNode.create(40, 140).text(Text.create("State: " + switchState.get(), info)).attach(rect);
@@ -223,19 +202,11 @@ public class UIDemoControl extends UIDemo {
 			DemoSwitchNode
 			.create(40, 40, 240, 50)
 			.states("One", "Two", "Three")
-			.onChange(new NodeSwitchChangeCallback<DemoSwitchNode>() {
-
-				@Override
-				public void apply(final @NonNull DemoSwitchNode node, final @NonNull String value) {}
-
-				@Override
-				public void pre(final @NonNull DemoSwitchNode node, final @NonNull DispatchContext context, final @NonNull String value) {
-					if ("Three".equals(value)) {
-						refusedStates.increment();
-						context.cancel();
-					}
+			.beforeChange(event -> {
+				if ("Three".equals(event.getValue())) {
+					refusedStates.increment();
+					event.cancel();
 				}
-
 			})
 			.attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refusedStates.get(), info)).attach(rect);

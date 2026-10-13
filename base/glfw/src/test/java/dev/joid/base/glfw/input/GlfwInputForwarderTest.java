@@ -16,9 +16,8 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
-import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.ui.event.ConsumableEvent;
 import lombok.NonNull;
 
 public class GlfwInputForwarderTest {
@@ -109,42 +108,18 @@ public class GlfwInputForwarderTest {
 
 		public TraceUI(final List<String> trace) {
 			this.trace = trace;
+			super.handleMousePressed(event -> this.record("pressed " + event.getButton(), event));
+			super.handleMouseDragged(event -> this.record("dragged " + event.getButton(), event));
+			super.handleMouseReleased(event -> this.record("released " + event.getButton(), event));
+			super.handleMouseScroll(event -> this.record("scrolled " + event.getNotchesY(), event));
+			super.handleKeyPressed(event -> this.record("key " + event.getKey(), event));
+			super.handleCharTyped(event -> this.record("char " + new String(Character.toChars(event.getCodepoint())), event));
 		}
 
-		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.record("pressed " + button, context);
-		}
-
-		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
-			this.record("dragged " + button, context);
-		}
-
-		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.record("released " + button, context);
-		}
-
-		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notches, final @NonNull DispatchContext context) {
-			this.record("scrolled " + notches, context);
-		}
-
-		@Override
-		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
-			this.record("key " + key, context);
-		}
-
-		@Override
-		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
-			this.record("char " + new String(Character.toChars(codepoint)), context);
-		}
-
-		private void record(final String event, final DispatchContext context) {
+		private void record(final String event, final ConsumableEvent input) {
 			this.trace.add(event);
 			if (this.cancel) {
-				context.cancel();
+				input.consume();
 			}
 		}
 

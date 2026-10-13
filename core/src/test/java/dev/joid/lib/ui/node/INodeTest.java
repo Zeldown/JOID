@@ -8,7 +8,11 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
+import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.utils.list.IIndexedList;
 import dev.joid.lib.utils.list.IndexedLinkedList;
 import dev.joid.lib.utils.list.RecursiveIndexedElement;
@@ -21,14 +25,15 @@ public class INodeTest {
 	@Test
 	public void handlesNoEventByDefault() {
 		final INode node = new BareNode();
-		final DispatchContext context = DispatchContext.create();
-		node.mousePressed(0D, 0D, MouseButton.LEFT, context);
-		node.mouseDragged(0D, 0D, MouseButton.LEFT, 16L, context);
-		node.mouseReleased(0D, 0D, MouseButton.LEFT, context);
-		node.mouseScroll(0D, 0D, 0D, 1D, context);
-		node.keyPressed(Key.A, context);
-		node.charTyped('a', context);
-		Assert.assertFalse(context.isCancelled());
+		final RectNode owner = RectNode.create(0D, 0D, 0D, 0D);
+		final NodeKeyEvent<RectNode> input = NodeKeyEvent.create(owner, Key.A, null);
+		node.mousePressed(NodeMouseEvent.create(owner, 0D, 0D, MouseButton.LEFT, 0L, input));
+		node.mouseDragged(NodeMouseEvent.create(owner, 0D, 0D, MouseButton.LEFT, 16L, input));
+		node.mouseReleased(NodeMouseEvent.create(owner, 0D, 0D, MouseButton.LEFT, 0L, input));
+		node.mouseScroll(NodeMouseScrollEvent.create(owner, 0D, 0D, 0D, 1D, input));
+		node.keyPressed(NodeKeyEvent.create(owner, Key.A, input));
+		node.charTyped(NodeCharEvent.create(owner, 'a', input));
+		Assert.assertFalse(input.isConsumed());
 	}
 
 	@Test

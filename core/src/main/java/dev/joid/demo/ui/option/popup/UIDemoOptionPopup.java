@@ -32,7 +32,7 @@ public class UIDemoOptionPopup extends UI {
 			RectNode
 			.create(260, 190, 120, 50)
 			.color(UIDemoOptionPopup.INK)
-			.onClick((node, mouseX, mouseY, button) -> JOID.close(this))
+			.onClick(event -> JOID.close(this))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Close", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

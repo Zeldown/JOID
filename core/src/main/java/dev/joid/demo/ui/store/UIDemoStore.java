@@ -66,7 +66,7 @@ public class UIDemoStore extends UIDemo {
 			RectNode
 			.create(40, 75, 120, 50)
 			.color(UIDemoStore.INK)
-			.onClick((node, mouseX, mouseY, button) -> this.clicks++)
+			.onClick(event -> this.clicks++)
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

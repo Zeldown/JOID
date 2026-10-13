@@ -48,38 +48,32 @@ import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.NodeCallback;
-import dev.joid.lib.ui.node.callback.NodeCallbackInvoker;
-import dev.joid.lib.ui.node.callback.impl.animation.NodeAnimationCallback;
-import dev.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
-import dev.joid.lib.ui.node.callback.impl.draggable.NodeSnapCallback;
-import dev.joid.lib.ui.node.callback.impl.hover.NodeHoverCallback;
-import dev.joid.lib.ui.node.callback.impl.hover.NodeHoverEndCallback;
-import dev.joid.lib.ui.node.callback.impl.hover.NodeHoverStartCallback;
-import dev.joid.lib.ui.node.callback.impl.key.NodeCharTypedCallback;
-import dev.joid.lib.ui.node.callback.impl.key.NodeKeyPressedCallback;
-import dev.joid.lib.ui.node.callback.impl.mouse.NodeMouseDraggedCallback;
-import dev.joid.lib.ui.node.callback.impl.mouse.NodeMousePressedCallback;
-import dev.joid.lib.ui.node.callback.impl.mouse.NodeMouseReleasedCallback;
-import dev.joid.lib.ui.node.callback.impl.mouse.NodeMouseScrollCallback;
-import dev.joid.lib.ui.node.callback.impl.scroll.NodeScrollEndCallback;
-import dev.joid.lib.ui.node.callback.impl.scroll.NodeScrollEndingCallback;
-import dev.joid.lib.ui.node.callback.impl.scroll.NodeScrollUpdateCallback;
-import dev.joid.lib.ui.node.callback.impl.signal.NodeMountCallback;
-import dev.joid.lib.ui.node.callback.impl.signal.NodeWatchCallback;
-import dev.joid.lib.ui.node.callback.impl.state.NodeAppendCallback;
-import dev.joid.lib.ui.node.callback.impl.state.NodeDetachCallback;
-import dev.joid.lib.ui.node.callback.impl.state.NodeDrawCallback;
-import dev.joid.lib.ui.node.callback.impl.state.NodeInitCallback;
-import dev.joid.lib.ui.node.callback.impl.state.NodeRenderCallback;
-import dev.joid.lib.ui.node.callback.impl.state.NodeUpdateCallback;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
+import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.Event;
+import dev.joid.lib.ui.event.EventBus;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.NodeEvent;
+import dev.joid.lib.ui.event.impl.node.NodeAnimateEvent;
+import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
+import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
+import dev.joid.lib.ui.event.impl.node.NodeChildEvent;
+import dev.joid.lib.ui.event.impl.node.NodeDragEvent;
+import dev.joid.lib.ui.event.impl.node.NodeDrawEvent;
+import dev.joid.lib.ui.event.impl.node.NodeHoverEvent;
+import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
+import dev.joid.lib.ui.event.impl.node.NodeScrollEvent;
+import dev.joid.lib.ui.event.impl.node.NodeScrollEvent.ScrollAxis;
+import dev.joid.lib.ui.event.impl.node.NodeWatchEvent;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.TextHoverElement;
+import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
 import dev.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode;
 import dev.joid.lib.ui.node.layer.INodeLayer;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
@@ -107,43 +101,45 @@ public abstract class Node implements INode {
 	private static final transient Gson GSON        = new GsonBuilder().create();
 	private static final transient Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
 
-	private static final int CALLBACK_CLICK          = NodeCallbackRegistry.next(NodeMousePressedCallback.class);
+	private static final EventType<NodeMouseEvent<Node>> CLICK = EventType.create("onClick");
 
-	private static final int CALLBACK_CHAR_TYPED     = NodeCallbackRegistry.next(NodeCharTypedCallback.class);
-	private static final int CALLBACK_KEY_PRESSED    = NodeCallbackRegistry.next(NodeKeyPressedCallback.class);
-	private static final int CALLBACK_MOUSE_SCROLL   = NodeCallbackRegistry.next(NodeMouseScrollCallback.class);
-	private static final int CALLBACK_MOUSE_PRESSED  = NodeCallbackRegistry.next(NodeMousePressedCallback.class);
-	private static final int CALLBACK_MOUSE_DRAGGED  = NodeCallbackRegistry.next(NodeMouseDraggedCallback.class);
-	private static final int CALLBACK_MOUSE_RELEASED = NodeCallbackRegistry.next(NodeMouseReleasedCallback.class);
+	private static final EventType<NodeKeyEvent<Node>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
+	private static final EventType<NodeCharEvent<Node>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
+	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
+	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
+	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_RELEASED = EventType.create("handleMouseReleased");
+	private static final EventType<NodeMouseScrollEvent<Node>> HANDLE_MOUSE_SCROLL   = EventType.create("handleMouseScroll");
 
-	private static final int CALLBACK_INIT           = NodeCallbackRegistry.next(NodeInitCallback.class);
-	private static final int CALLBACK_DRAW           = NodeCallbackRegistry.next(NodeDrawCallback.class);
-	private static final int CALLBACK_RENDER         = NodeCallbackRegistry.next(NodeRenderCallback.class);
-	private static final int CALLBACK_UPDATE         = NodeCallbackRegistry.next(NodeUpdateCallback.class);
-	private static final int CALLBACK_DETACH         = NodeCallbackRegistry.next(NodeDetachCallback.class);
-	private static final int CALLBACK_APPEND         = NodeCallbackRegistry.next(NodeAppendCallback.class);
+	private static final EventType<NodeEvent<Node>>      INIT         = EventType.create("onInit");
+	private static final EventType<NodeEvent<Node>>      UPDATE       = EventType.create("onUpdate");
+	private static final EventType<NodeEvent<Node>>      DETACH       = EventType.create("onDetach");
+	private static final EventType<NodeDrawEvent<Node>>  DRAW         = EventType.create("onDraw");
+	private static final EventType<NodeDrawEvent<Node>>  RENDER       = EventType.create("onRender");
+	private static final EventType<NodeChildEvent<Node>> CHILD_APPEND = EventType.create("onChildAppend");
 
-	private static final int CALLBACK_MOUNT          = NodeCallbackRegistry.next(NodeMountCallback.class);
-	private static final int CALLBACK_WATCH          = NodeCallbackRegistry.next(NodeWatchCallback.class);
-	private static final int CALLBACK_ANIMATION      = NodeCallbackRegistry.next(NodeAnimationCallback.class);
+	private static final EventType<NodeEvent<Node>>        MOUNT   = EventType.create("onMount");
+	private static final EventType<NodeWatchEvent<Node>>   WATCH   = EventType.create("onWatch");
+	private static final EventType<NodeAnimateEvent<Node>> ANIMATE = EventType.create("onAnimate");
 
-	private static final int CALLBACK_SCROLL_END     = NodeCallbackRegistry.next(NodeScrollEndCallback.class);
-	private static final int CALLBACK_SCROLL_ENDING  = NodeCallbackRegistry.next(NodeScrollEndingCallback.class);
-	private static final int CALLBACK_SCROLL_UPDATE  = NodeCallbackRegistry.next(NodeScrollUpdateCallback.class);
+	private static final EventType<NodeScrollEvent<Node>> SCROLL        = EventType.create("onScroll");
+	private static final EventType<NodeScrollEvent<Node>> SCROLL_AT_END = EventType.create("onScrollAtEnd");
+	private static final EventType<NodeScrollEvent<Node>> SCROLL_TO_END = EventType.create("onScrollToEnd");
 
-	private static final int CALLBACK_DRAG           = NodeCallbackRegistry.next(NodeDragCallback.class);
-	private static final int CALLBACK_SNAP           = NodeCallbackRegistry.next(NodeSnapCallback.class);
-	private static final int CALLBACK_DRAG_END       = NodeCallbackRegistry.next(NodeDragCallback.class);
-	private static final int CALLBACK_DRAG_START     = NodeCallbackRegistry.next(NodeDragCallback.class);
+	private static final EventType<NodeDragEvent.Post<Node>> DRAG              = EventType.create("onDrag");
+	private static final EventType<NodeDragEvent.Post<Node>> DRAG_DROP         = EventType.create("onDragDrop");
+	private static final EventType<NodeDragEvent.Post<Node>> DRAG_SNAP         = EventType.create("onDragSnap");
+	private static final EventType<NodeDragEvent.Post<Node>> DRAG_START        = EventType.create("onDragStart");
+	private static final EventType<NodeDragEvent.Pre<Node>>  BEFORE_DRAG_DROP  = EventType.create("beforeDragDrop");
+	private static final EventType<NodeDragEvent.Pre<Node>>  BEFORE_DRAG_START = EventType.create("beforeDragStart");
 
-	private static final int CALLBACK_HOVER          = NodeCallbackRegistry.next(NodeHoverCallback.class);
-	private static final int CALLBACK_HOVER_END      = NodeCallbackRegistry.next(NodeHoverEndCallback.class);
-	private static final int CALLBACK_HOVER_START    = NodeCallbackRegistry.next(NodeHoverStartCallback.class);
+	private static final EventType<NodeHoverEvent<Node>> HOVER       = EventType.create("onHover");
+	private static final EventType<NodeHoverEvent<Node>> HOVER_END   = EventType.create("onHoverEnd");
+	private static final EventType<NodeHoverEvent<Node>> HOVER_START = EventType.create("onHoverStart");
 
-	private final transient List<Predicate<Node>>                      waitingList;
-	private final transient Map<String, NodeSource<?>>                 sourceMap;
-	private final transient List<ISignalSubscriber<?>>                 subscriptionList;
-	private final transient Map<Integer, List<NodeCallbackInvoker<?>>> callbackMap;
+	private final transient EventBus                   eventBus;
+	private final transient List<Predicate<Node>>      waitingList;
+	private final transient Map<String, NodeSource<?>> sourceMap;
+	private final transient List<ISignalSubscriber<?>> subscriptionList;
 
 	private final transient TweenAnimator             hoverAnimator;
 	private final transient Map<TweenAnimator, Float> animatorMap;
@@ -208,6 +204,7 @@ public abstract class Node implements INode {
 	private Cursor        cursor;
 	private boolean       hovered;
 	private long          hoverDuration;
+	private boolean       hoverShown;
 	private TweenEquation hoverEquation;
 
 	private double scrollX;
@@ -248,7 +245,7 @@ public abstract class Node implements INode {
 		this.waitingList = new ArrayList<>();
 		this.sourceMap = new LinkedHashMap<>();
 		this.subscriptionList = new ArrayList<>();
-		this.callbackMap = new HashMap<>();
+		this.eventBus = EventBus.create(this::describe);
 
 		this.animatorMap   = new HashMap<>();
 		this.hoverAnimator = TweenAnimator.create();
@@ -288,27 +285,26 @@ public abstract class Node implements INode {
 		final SignalContext context = SignalContext.current();
 		final List<Signal<?>> readList = context.takeReads();
 		try {
-			this.executeCallback(Node.CALLBACK_INIT, DispatchContext.create(), () -> {
-				this.ui = ui;
-				this.children.forEach(child -> child.load(this.ui));
+			this.ui = ui;
+			this.children.forEach(child -> child.load(this.ui));
 
-				if (this.scrollbar != null) {
-					this.scrollbar.load(this.ui);
-				}
+			if (this.scrollbar != null) {
+				this.scrollbar.load(this.ui);
+			}
 
-				if (this.skeleton != null) {
-					this.skeleton.load(this.ui);
-				}
+			if (this.skeleton != null) {
+				this.skeleton.load(this.ui);
+			}
 
-				this.getAppliedEffects().forEach(effect -> effect.init(this, this.ui));
-				SignalReplay.enter(this, this.ui);
-				try {
-					this.init(this.ui);
-				} finally {
-					SignalReplay.exit();
-				}
-				this.subscribe();
-			});
+			this.getAppliedEffects().forEach(effect -> effect.init(this, this.ui));
+			SignalReplay.enter(this, this.ui);
+			try {
+				this.init(this.ui);
+			} finally {
+				SignalReplay.exit();
+			}
+			this.subscribe();
+			this.fire(Node.INIT, () -> NodeEvent.create(this));
 		} finally {
 			context.clearReads();
 			context.putBackReads(readList);
@@ -360,21 +356,24 @@ public abstract class Node implements INode {
 					this.lastHeight = this.height;
 				}
 
-				final boolean hovered = this.computeHovered();
-				if (!this.hovered && hovered) {
-					this.hoverAnimator.sequence(this.hoverDuration, 1F, this.hoverEquation).start();
-					this.executeCallback(Node.CALLBACK_HOVER_START, DispatchContext.create(), mouseX, mouseY);
+				final boolean wasHovered = this.hovered;
+				this.hovered = this.computeHovered();
+				final boolean hoverShown = this.hovered && this.isEnabled();
+				if (hoverShown != this.hoverShown) {
+					this.hoverShown = hoverShown;
+					this.hoverAnimator.sequence(this.hoverDuration, hoverShown ? 1F : 0F, this.hoverEquation).start();
 				}
 
-				if (this.hovered && !hovered) {
-					this.hoverAnimator.sequence(this.hoverDuration, 0F, this.hoverEquation).start();
-					this.executeCallback(Node.CALLBACK_HOVER_END, DispatchContext.create(), mouseX, mouseY);
+				if (!wasHovered && this.hovered) {
+					this.fire(Node.HOVER_START, () -> NodeHoverEvent.create(this, mouseX, mouseY));
 				}
 
-				this.hovered = hovered;
+				if (wasHovered && !this.hovered) {
+					this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, mouseX, mouseY));
+				}
 
 				if (this.hovered) {
-					this.executeCallback(Node.CALLBACK_HOVER, DispatchContext.create(), mouseX, mouseY);
+					this.fire(Node.HOVER, () -> NodeHoverEvent.create(this, mouseX, mouseY));
 				}
 
 				boolean scrollsX = false;
@@ -430,12 +429,12 @@ public abstract class Node implements INode {
 
 				if (this.scrollEndX && this.scrollX == this.targetScrollX) {
 					this.scrollEndX = false;
-					this.executeCallback(Node.CALLBACK_SCROLL_END, DispatchContext.create(), this.scrollX, this.scrollY);
+					this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.create(this, ScrollAxis.HORIZONTAL, this.scrollX));
 				}
 
 				if (this.scrollEndY && this.scrollY == this.targetScrollY) {
 					this.scrollEndY = false;
-					this.executeCallback(Node.CALLBACK_SCROLL_END, DispatchContext.create(), this.scrollX, this.scrollY);
+					this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.create(this, ScrollAxis.VERTICAL, this.scrollY));
 				}
 
 				if (scrollsX || scrollsY) {
@@ -542,7 +541,7 @@ public abstract class Node implements INode {
 				this.mounted = this.isMounted();
 
 				if (!wasMounted && this.mounted) {
-					this.executeCallback(Node.CALLBACK_MOUNT, DispatchContext.create());
+					this.fire(Node.MOUNT, () -> NodeEvent.create(this));
 				}
 
 				final List<NodeEffect<Node>> effects = this.getAppliedEffects();
@@ -563,50 +562,47 @@ public abstract class Node implements INode {
 						}
 
 						if (this.skeleton != null && !this.mounted) {
-							this.executeCallback(Node.CALLBACK_RENDER, DispatchContext.create(), () -> {
-								this.skeleton.render(mouseX, mouseY);
-							}, mouseX, mouseY);
+							this.skeleton.render(mouseX, mouseY);
+							this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
 							return;
 						}
 
-						this.executeCallback(Node.CALLBACK_RENDER, DispatchContext.create(), () -> {
-							this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-							this.executeCallback(Node.CALLBACK_DRAW, DispatchContext.create(), () -> {
-								final Runnable selfDraw = () -> {
-									if (this.mounted) {
-										this.draw(mouseX, mouseY);
-									} else {
-										this.drawSkeleton(mouseX, mouseY);
-									}
-								};
-								if (selfShaderEffects.isEmpty()) {
-									selfDraw.run();
-								} else {
-									final List<IShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-									ShaderPipeline.render(this, selfPasses, selfDraw);
-								}
-							}, mouseX, mouseY);
-
-							this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
-							this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
-
-							if (this.draggedNode != null) {
-								render.pushState();
-								render.getModelView().push();
-								try {
-									render.getState().stencil(StencilState.DISABLED);
-
-									if (this.parent != null) {
-										render.getModelView().translate(-this.parent.x, -this.parent.y, 0D);
-									}
-
-									this.draggedNode.render(mouseX, mouseY);
-								} finally {
-									render.getModelView().pop();
-									render.popState();
-								}
+						this.children.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
+						final Runnable selfDraw = () -> {
+							if (this.mounted) {
+								this.draw(mouseX, mouseY);
+							} else {
+								this.drawSkeleton(mouseX, mouseY);
 							}
-						}, mouseX, mouseY);
+						};
+						if (selfShaderEffects.isEmpty()) {
+							selfDraw.run();
+						} else {
+							final List<IShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+							ShaderPipeline.render(this, selfPasses, selfDraw);
+						}
+						this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+
+						this.children.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
+						this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
+
+						if (this.draggedNode != null) {
+							render.pushState();
+							render.getModelView().push();
+							try {
+								render.getState().stencil(StencilState.DISABLED);
+
+								if (this.parent != null) {
+									render.getModelView().translate(-this.parent.x, -this.parent.y, 0D);
+								}
+
+								this.draggedNode.render(mouseX, mouseY);
+							} finally {
+								render.getModelView().pop();
+								render.popState();
+							}
+						}
+						this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
 					}, this.overflow != OverflowProperty.NONE);
 				};
 
@@ -690,92 +686,113 @@ public abstract class Node implements INode {
 
 	public final void fireUpdate() {
 		this.fireAnimate();
-		this.executeCallback(Node.CALLBACK_UPDATE, DispatchContext.create(), () -> {
-			this.children.ordered().stream().forEach(Node::fireUpdate);
-			this.update();
-		});
+		this.children.ordered().stream().forEach(Node::fireUpdate);
+		this.update();
+		this.fire(Node.UPDATE, () -> NodeEvent.create(this));
 	}
 
-	public final <T extends Node> @NonNull T onUpdate(final @NonNull NodeUpdateCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_UPDATE, callback);
+	public final <T extends Node> @NonNull T onUpdate(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onUpdate(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onMouseScroll(final @NonNull NodeMouseScrollCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_MOUSE_SCROLL, callback);
+	public final <T extends Node> @NonNull T onUpdate(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.listen(Node.UPDATE, priority, listener);
 	}
 
-	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
+	public final <T extends Node> @NonNull T handleMouseScroll(final @NonNull EventListener<NodeMouseScrollEvent<T>> listener) {
+		return this.handleMouseScroll(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T handleMouseScroll(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseScrollEvent<T>> listener) {
+		return this.listen(Node.HANDLE_MOUSE_SCROLL, priority, listener);
+	}
+
+	public final boolean fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY) {
+		final NodeMouseScrollEvent<Node> input = NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, null);
+		this.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, input);
+		return input.isConsumed();
+	}
+
+	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull ConsumableEvent source) {
 		if (!this.isVisible() || !this.isInteractive()) {
 			return;
 		}
 
-		final boolean enabled = this.isEnabled();
+		final NodeMouseScrollEvent<Node> event = NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, source);
 		if (this.scrollbar != null) {
-			this.scrollbar.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context);
+			this.scrollbar.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context);
+			this.skeleton.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event);
+			return;
 		}
 
-		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_SCROLL)) {
-			this.executePreCallback(Node.CALLBACK_MOUSE_SCROLL, context, mouseX, mouseY, notchesX, notchesY);
-		}
-
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
-		if (!context.isCancelled() && enabled && this.isHovered()) {
-			final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
-			if (notchesY != 0D && this.hasOverflowY()) {
-				if (this.canScrollY(notchesY)) {
-					this.scrollY(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
-					context.cancel();
+		final boolean enabled = this.isEnabled();
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event));
+		if (enabled) {
+			this.fireListeners(Node.HANDLE_MOUSE_SCROLL, event);
+			if (!event.isConsumed() && this.isHovered()) {
+				final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
+				if (notchesY != 0D && this.hasOverflowY()) {
+					if (this.canScrollY(notchesY)) {
+						this.scrollY(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
+						event.consume();
+					}
+				} else if (notchesY != 0D && this.canScrollX(notchesY)) {
+					this.scrollX(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
+					event.consume();
 				}
-			} else if (notchesY != 0D && this.canScrollX(notchesY)) {
-				this.scrollX(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
-				context.cancel();
+
+				if (notchesX != 0D && this.canScrollX(notchesX)) {
+					this.scrollX(notchesX > 0D ? 30 : -30, mappedScrollSpeed);
+					event.consume();
+				}
 			}
 
-			if (notchesX != 0D && this.canScrollX(notchesX)) {
-				this.scrollX(notchesX > 0D ? 30 : -30, mappedScrollSpeed);
-				context.cancel();
+			this.mouseScroll(event);
+		}
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event));
+
+		if (enabled) {
+			this.fireMonitor(Node.HANDLE_MOUSE_SCROLL, event);
+		}
+	}
+
+	public final <T extends Node> @NonNull T handleMouseDragged(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.handleMouseDragged(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T handleMouseDragged(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.listen(Node.HANDLE_MOUSE_DRAGGED, priority, listener);
+	}
+
+	public final boolean fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime) {
+		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, null);
+		this.fireMouseDragged(mouseX, mouseY, button, deltaTime, input);
+		return input.isConsumed();
+	}
+
+	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull ConsumableEvent source) {
+		final boolean reached = this.isVisible() && this.isInteractive();
+		final boolean waiting = this.skeleton != null && !this.mounted;
+		final boolean enabled = reached && !waiting && this.isEnabled();
+		final NodeMouseEvent<Node> event = NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, source);
+		if (reached) {
+			if (this.scrollbar != null) {
+				this.scrollbar.fireMouseDragged(mouseX, mouseY, button, deltaTime, event);
+			}
+
+			if (waiting) {
+				this.skeleton.fireMouseDragged(mouseX, mouseY, button, deltaTime, event);
+			} else {
+				this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseDragged(mouseX, mouseY, button, deltaTime, event));
 			}
 		}
 
 		if (enabled) {
-			this.mouseScroll(mouseX, mouseY, notchesX, notchesY, context);
-		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, context));
-
-		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_SCROLL)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_SCROLL, context, mouseX, mouseY, notchesX, notchesY);
-		}
-	}
-
-	public final <T extends Node> @NonNull T onMouseDragged(final @NonNull NodeMouseDraggedCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_MOUSE_DRAGGED, callback);
-	}
-
-	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
-		final boolean reached = this.isVisible() && this.isInteractive();
-		final boolean enabled = reached && this.isEnabled();
-		if (reached) {
-			if (this.scrollbar != null) {
-				this.scrollbar.fireMouseDragged(mouseX, mouseY, button, deltaTime, context);
-			}
-
-			if (this.skeleton != null && !this.mounted) {
-				this.skeleton.fireMouseDragged(mouseX, mouseY, button, deltaTime, context);
-			}
-
-			if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_DRAGGED)) {
-				this.executePreCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, button, deltaTime);
-			}
-
-			this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseDragged(mouseX, mouseY, button, deltaTime, context));
-			if (enabled) {
-				this.mouseDragged(mouseX, mouseY, button, deltaTime, context);
-			}
-			this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseDragged(mouseX, mouseY, button, deltaTime, context));
+			this.fireListeners(Node.HANDLE_MOUSE_DRAGGED, event);
+			this.mouseDragged(event);
 		}
 
 		if (this.dragging) {
@@ -785,209 +802,249 @@ public abstract class Node implements INode {
 			});
 		}
 
-		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_DRAGGED)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_DRAGGED, context, mouseX, mouseY, button, deltaTime);
+		if (reached && !waiting) {
+			this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseDragged(mouseX, mouseY, button, deltaTime, event));
+		}
+
+		if (enabled) {
+			this.fireMonitor(Node.HANDLE_MOUSE_DRAGGED, event);
 		}
 	}
 
-	public final <T extends Node> @NonNull T onMousePressed(final @NonNull NodeMousePressedCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_MOUSE_PRESSED, callback);
+	public final <T extends Node> @NonNull T handleMousePressed(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.handleMousePressed(EventPriority.NORMAL, listener);
 	}
 
-	public final void fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+	public final <T extends Node> @NonNull T handleMousePressed(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.listen(Node.HANDLE_MOUSE_PRESSED, priority, listener);
+	}
+
+	public final boolean fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button) {
+		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, null);
+		this.fireMousePressed(mouseX, mouseY, button, input);
+		return input.isConsumed();
+	}
+
+	public final void fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull ConsumableEvent source) {
 		if (!this.isVisible() || !this.isInteractive()) {
 			return;
 		}
 
-		final boolean enabled = this.isEnabled();
 		this.lastClickButton = button;
 		this.lastClickTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 
+		final NodeMouseEvent<Node> event = NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source);
 		if (this.scrollbar != null) {
-			this.scrollbar.fireMousePressed(mouseX, mouseY, button, context);
+			this.scrollbar.fireMousePressed(mouseX, mouseY, button, event);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.fireMousePressed(mouseX, mouseY, button, context);
+			this.skeleton.fireMousePressed(mouseX, mouseY, button, event);
+			return;
 		}
 
-		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_PRESSED)) {
-			this.executePreCallback(Node.CALLBACK_MOUSE_PRESSED, context, mouseX, mouseY, button);
-		}
-
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, context));
-		final boolean pressed = context.isCancelled();
-		if (!pressed && enabled && this.isHovered() && this.hasCallback(Node.CALLBACK_CLICK)) {
-			this.executeCallback(Node.CALLBACK_CLICK, context, mouseX, mouseY, button);
-			context.cancel();
-		}
-
+		final boolean enabled = this.isEnabled();
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, event));
 		if (enabled) {
-			this.mousePressed(mouseX, mouseY, button, context);
-		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, context));
+			this.fireListeners(Node.HANDLE_MOUSE_PRESSED, event);
+			if (!event.isConsumed() && this.isHovered() && this.hasListener(Node.CLICK)) {
+				this.fire(Node.CLICK, () -> event);
+				event.consume();
+			}
 
-		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_PRESSED)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_PRESSED, context, mouseX, mouseY, button);
-		}
-
-		if (!context.isCancelled() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && enabled && this.isHovered()) {
-			this.startDragging(mouseX, mouseY);
-			if (this.dragging) {
-				context.cancel();
+			this.mousePressed(event);
+			if (!event.isConsumed() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && this.isHovered()) {
+				this.startDragging(mouseX, mouseY);
+				if (this.dragging) {
+					event.consume();
+				}
 			}
 		}
-	}
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMousePressed(mouseX, mouseY, button, event));
 
-	public final <T extends Node> @NonNull T onMouseReleased(final @NonNull NodeMouseReleasedCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_MOUSE_RELEASED, callback);
-	}
-
-	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (this.scrollbar != null) {
-			this.scrollbar.fireMouseReleased(mouseX, mouseY, button, context);
+		if (enabled) {
+			this.fireMonitor(Node.HANDLE_MOUSE_PRESSED, event);
 		}
+	}
 
-		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.fireMouseReleased(mouseX, mouseY, button, context);
+	public final <T extends Node> @NonNull T handleMouseReleased(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.handleMouseReleased(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T handleMouseReleased(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.listen(Node.HANDLE_MOUSE_RELEASED, priority, listener);
+	}
+
+	public final boolean fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button) {
+		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, null);
+		this.fireMouseReleased(mouseX, mouseY, button, input);
+		return input.isConsumed();
+	}
+
+	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull ConsumableEvent source) {
+		final NodeMouseEvent<Node> event = NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source);
+		if (this.scrollbar != null) {
+			this.scrollbar.fireMouseReleased(mouseX, mouseY, button, event);
 		}
 
 		if (this.dragging) {
 			this.stopDragging();
 		}
 
+		if (this.skeleton != null && !this.mounted) {
+			this.skeleton.fireMouseReleased(mouseX, mouseY, button, event);
+			return;
+		}
+
 		if (!this.isVisible() || !this.isInteractive()) {
 			return;
 		}
 
 		final boolean enabled = this.isEnabled();
-		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_RELEASED)) {
-			this.executePreCallback(Node.CALLBACK_MOUSE_RELEASED, context, mouseX, mouseY, button);
-		}
-
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseReleased(mouseX, mouseY, button, context));
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireMouseReleased(mouseX, mouseY, button, event));
 		if (enabled) {
-			this.mouseReleased(mouseX, mouseY, button, context);
+			this.fireListeners(Node.HANDLE_MOUSE_RELEASED, event);
+			this.mouseReleased(event);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseReleased(mouseX, mouseY, button, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireMouseReleased(mouseX, mouseY, button, event));
 
-		if (enabled && this.hasCallback(Node.CALLBACK_MOUSE_RELEASED)) {
-			this.executePostCallback(Node.CALLBACK_MOUSE_RELEASED, context, mouseX, mouseY, button);
+		if (enabled) {
+			this.fireMonitor(Node.HANDLE_MOUSE_RELEASED, event);
 		}
 	}
 
-	public final <T extends Node> @NonNull T onCharTyped(final @NonNull NodeCharTypedCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_CHAR_TYPED, callback);
+	public final <T extends Node> @NonNull T handleCharTyped(final @NonNull EventListener<NodeCharEvent<T>> listener) {
+		return this.handleCharTyped(EventPriority.NORMAL, listener);
 	}
 
-	public final void fireCharTyped(final int codepoint, final @NonNull DispatchContext context) {
+	public final <T extends Node> @NonNull T handleCharTyped(final @NonNull EventPriority priority, final @NonNull EventListener<NodeCharEvent<T>> listener) {
+		return this.listen(Node.HANDLE_CHAR_TYPED, priority, listener);
+	}
+
+	public final boolean fireCharTyped(final int codepoint) {
+		final NodeCharEvent<Node> input = NodeCharEvent.create(this, codepoint, null);
+		this.fireCharTyped(codepoint, input);
+		return input.isConsumed();
+	}
+
+	public final void fireCharTyped(final int codepoint, final @NonNull ConsumableEvent source) {
 		if (!this.isVisible()) {
 			return;
 		}
 
-		final boolean enabled = this.isEnabled();
 		this.lastCodepoint = codepoint;
 
+		final NodeCharEvent<Node> event = NodeCharEvent.create(this, codepoint, source);
 		if (this.scrollbar != null) {
-			this.scrollbar.fireCharTyped(codepoint, context);
+			this.scrollbar.fireCharTyped(codepoint, event);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.fireCharTyped(codepoint, context);
-		}
-
-		if (enabled && this.hasCallback(Node.CALLBACK_CHAR_TYPED)) {
-			this.executePreCallback(Node.CALLBACK_CHAR_TYPED, context, codepoint);
-		}
-
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireCharTyped(codepoint, context));
-		if (enabled) {
-			this.charTyped(codepoint, context);
-		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireCharTyped(codepoint, context));
-
-		if (enabled && this.hasCallback(Node.CALLBACK_CHAR_TYPED)) {
-			this.executePostCallback(Node.CALLBACK_CHAR_TYPED, context, codepoint);
-		}
-	}
-
-	public final <T extends Node> @NonNull T onKeyPressed(final @NonNull NodeKeyPressedCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_KEY_PRESSED, callback);
-	}
-
-	public final void fireKeyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
-		if (!this.isVisible()) {
+			this.skeleton.fireCharTyped(codepoint, event);
 			return;
 		}
 
 		final boolean enabled = this.isEnabled();
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireCharTyped(codepoint, event));
+		if (enabled) {
+			this.fireListeners(Node.HANDLE_CHAR_TYPED, event);
+			this.charTyped(event);
+		}
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireCharTyped(codepoint, event));
+
+		if (enabled) {
+			this.fireMonitor(Node.HANDLE_CHAR_TYPED, event);
+		}
+	}
+
+	public final <T extends Node> @NonNull T handleKeyPressed(final @NonNull EventListener<NodeKeyEvent<T>> listener) {
+		return this.handleKeyPressed(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T handleKeyPressed(final @NonNull EventPriority priority, final @NonNull EventListener<NodeKeyEvent<T>> listener) {
+		return this.listen(Node.HANDLE_KEY_PRESSED, priority, listener);
+	}
+
+	public final boolean fireKeyPressed(final @NonNull Key key) {
+		final NodeKeyEvent<Node> input = NodeKeyEvent.create(this, key, null);
+		this.fireKeyPressed(key, input);
+		return input.isConsumed();
+	}
+
+	public final void fireKeyPressed(final @NonNull Key key, final @NonNull ConsumableEvent source) {
+		if (!this.isVisible()) {
+			return;
+		}
+
 		this.lastKey = key;
 		this.lastKeyTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 
+		final NodeKeyEvent<Node> event = NodeKeyEvent.create(this, key, source);
 		if (this.scrollbar != null) {
-			this.scrollbar.fireKeyPressed(key, context);
+			this.scrollbar.fireKeyPressed(key, event);
 		}
 
 		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.fireKeyPressed(key, context);
+			this.skeleton.fireKeyPressed(key, event);
+			return;
 		}
 
-		if (enabled && this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
-			this.executePreCallback(Node.CALLBACK_KEY_PRESSED, context, key);
-		}
-
-		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireKeyPressed(key, context));
+		final boolean enabled = this.isEnabled();
+		this.children.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> child.fireKeyPressed(key, event));
 		if (enabled) {
-			this.keyPressed(key, context);
+			this.fireListeners(Node.HANDLE_KEY_PRESSED, event);
+			this.keyPressed(event);
 		}
-		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireKeyPressed(key, context));
+		this.children.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> child.fireKeyPressed(key, event));
 
-		if (enabled && this.hasCallback(Node.CALLBACK_KEY_PRESSED)) {
-			this.executePostCallback(Node.CALLBACK_KEY_PRESSED, context, key);
+		if (enabled) {
+			this.fireMonitor(Node.HANDLE_KEY_PRESSED, event);
 		}
 	}
 
 	public final void fireDetach() {
-		this.executeCallback(Node.CALLBACK_DETACH, DispatchContext.create(), () -> {
-			this.children.forEach(Node::fireDetach);
+		this.children.forEach(Node::fireDetach);
 
-			if (this.scrollbar != null) {
-				this.scrollbar.fireDetach();
-			}
+		if (this.scrollbar != null) {
+			this.scrollbar.fireDetach();
+		}
 
-			if (this.skeleton != null) {
-				this.skeleton.fireDetach();
-			}
+		if (this.skeleton != null) {
+			this.skeleton.fireDetach();
+		}
 
-			this.unsubscribe();
-			this.taskList.forEach(Task::detach);
-			this.endInteraction();
-			this.effectMap.values().forEach(effect -> effect.detach(this));
-			this.detach();
-		});
+		this.unsubscribe();
+		this.taskList.forEach(Task::detach);
+		this.endInteraction();
+		this.effectMap.values().forEach(effect -> effect.detach(this));
+		this.detach();
+		this.fire(Node.DETACH, () -> NodeEvent.create(this));
 	}
 
-	public final <T extends Node> @NonNull T onDetach(final @NonNull NodeDetachCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_DETACH, callback);
+	public final <T extends Node> @NonNull T onDetach(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onDetach(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDetach(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.listen(Node.DETACH, priority, listener);
 	}
 
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
-			this.executeCallback(Node.CALLBACK_APPEND, DispatchContext.create(), () -> {
-				if (node.parent != null && node.parent != this) {
-					node.parent.remove(node);
-				} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
-					node.fireDetach();
-					node.ui.getNodeList().remove(node);
-					node.clearOverflowArea(node.overflowArea);
-				}
+			if (node.parent != null && node.parent != this) {
+				node.parent.remove(node);
+			} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
+				node.fireDetach();
+				node.ui.getNodeList().remove(node);
+				node.clearOverflowArea(node.overflowArea);
+			}
 
-				node.parent(this);
-				if (this.ui != null) {
-					node.load(this.ui);
-				}
-				this.children.add(node);
-			}, node);
+			node.parent(this);
+			if (this.ui != null) {
+				node.load(this.ui);
+			}
+			this.children.add(node);
+			this.fire(Node.CHILD_APPEND, () -> NodeChildEvent.create(this, node));
 		}
 		return (T) this;
 	}
@@ -1055,19 +1112,22 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T scrollOffsetX(final double value) {
-		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, DispatchContext.create(), () -> {
-			final double oldValue = this.targetScrollX;
-			this.targetScrollX = Math.min(value, 0);
-			if (this.targetScrollX <= -this.maxScrollX) {
-				this.targetScrollX = -this.maxScrollX;
-				if (oldValue != this.targetScrollX) {
-					this.scrollEndX = true;
-					this.executeCallback(Node.CALLBACK_SCROLL_ENDING, DispatchContext.create(), this.targetScrollX, this.targetScrollY);
-				}
-			} else {
-				this.scrollEndX = false;
-			}
-		}, value);
+		final double oldValue = this.targetScrollX;
+		this.targetScrollX = Math.min(value, 0);
+		final boolean end = this.targetScrollX <= -this.maxScrollX;
+		if (end) {
+			this.targetScrollX = -this.maxScrollX;
+		}
+
+		this.scrollEndX = end && (oldValue != this.targetScrollX || this.scrollEndX);
+		if (oldValue == this.targetScrollX) {
+			return (T) this;
+		}
+
+		this.fire(Node.SCROLL, () -> NodeScrollEvent.create(this, ScrollAxis.HORIZONTAL, this.targetScrollX));
+		if (end) {
+			this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.create(this, ScrollAxis.HORIZONTAL, this.targetScrollX));
+		}
 		return (T) this;
 	}
 
@@ -1077,19 +1137,22 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T scrollOffsetY(final double value) {
-		this.executeCallback(Node.CALLBACK_SCROLL_UPDATE, DispatchContext.create(), () -> {
-			final double oldValue = this.targetScrollY;
-			this.targetScrollY = Math.min(value, 0);
-			if (this.targetScrollY <= -this.maxScrollY) {
-				this.targetScrollY = -this.maxScrollY;
-				if (oldValue != this.targetScrollY) {
-					this.scrollEndY = true;
-					this.executeCallback(Node.CALLBACK_SCROLL_ENDING, DispatchContext.create(), this.targetScrollX, this.targetScrollY);
-				}
-			} else {
-				this.scrollEndY = false;
-			}
-		}, value);
+		final double oldValue = this.targetScrollY;
+		this.targetScrollY = Math.min(value, 0);
+		final boolean end = this.targetScrollY <= -this.maxScrollY;
+		if (end) {
+			this.targetScrollY = -this.maxScrollY;
+		}
+
+		this.scrollEndY = end && (oldValue != this.targetScrollY || this.scrollEndY);
+		if (oldValue == this.targetScrollY) {
+			return (T) this;
+		}
+
+		this.fire(Node.SCROLL, () -> NodeScrollEvent.create(this, ScrollAxis.VERTICAL, this.targetScrollY));
+		if (end) {
+			this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.create(this, ScrollAxis.VERTICAL, this.targetScrollY));
+		}
 		return (T) this;
 	}
 
@@ -1110,28 +1173,26 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T stopDragging() {
-		this.fireDragEnd(() -> {
-			if (this.draggable != null && this.draggable.isEnabled(this)) {
-				if (this.draggable.hasSnapping()) {
-					final Node snapNode = this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this);
-					if (snapNode != null) {
-						this.executeCallback(Node.CALLBACK_SNAP, DispatchContext.create(), () -> {
-							this.targetDragX = snapNode.getAbsoluteX();
-							this.targetDragY = snapNode.getAbsoluteY();
-						}, snapNode);
-					} else {
-						this.targetDragX = this.startDragX;
-						this.targetDragY = this.startDragY;
-					}
-				}
-			}
-			this.dragging = false;
-		});
-
 		if (this.dragging) {
-			this.dragging = false;
-			this.targetDragX = this.startDragX;
-			this.targetDragY = this.startDragY;
+			final boolean snapping = this.draggable != null && this.draggable.isEnabled(this) && this.draggable.hasSnapping();
+			final Node target = snapping ? this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this) : null;
+			final boolean dropped = this.fireDragDrop(target, () -> {
+				if (target != null) {
+					this.targetDragX = target.getAbsoluteX();
+					this.targetDragY = target.getAbsoluteY();
+					this.fire(Node.DRAG_SNAP, () -> NodeDragEvent.Post.create(this, target));
+				} else if (snapping) {
+					this.targetDragX = this.startDragX;
+					this.targetDragY = this.startDragY;
+				}
+				this.dragging = false;
+			});
+
+			if (!dropped) {
+				this.dragging = false;
+				this.targetDragX = this.startDragX;
+				this.targetDragY = this.startDragY;
+			}
 		}
 
 		if (this.draggedNode != null) {
@@ -1164,88 +1225,59 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final void fireDrag(final Runnable runnable) {
-		this.executeCallback(Node.CALLBACK_DRAG, DispatchContext.create(), runnable);
+	public final void fireDrag(final @NonNull Runnable drag) {
+		drag.run();
+		this.fire(Node.DRAG, () -> NodeDragEvent.Post.create(this, null));
 	}
 
-	public final void fireDragEnd(final Runnable runnable) {
-		this.executeCallback(Node.CALLBACK_DRAG_END, DispatchContext.create(), runnable);
+	public final boolean fireDragDrop(final Node target, final @NonNull Runnable drop) {
+		final NodeDragEvent.Pre<Node> event = this.fire(Node.BEFORE_DRAG_DROP, () -> NodeDragEvent.Pre.create(this, target));
+		if (event != null && event.isCancelled()) {
+			return false;
+		}
+
+		drop.run();
+		this.fire(Node.DRAG_DROP, () -> NodeDragEvent.Post.create(this, target));
+		return true;
 	}
 
-	public final void fireDragStart(final Runnable runnable) {
-		this.executeCallback(Node.CALLBACK_DRAG_START, DispatchContext.create(), runnable);
+	public final boolean fireDragStart(final @NonNull Runnable start) {
+		final NodeDragEvent.Pre<Node> event = this.fire(Node.BEFORE_DRAG_START, () -> NodeDragEvent.Pre.create(this, null));
+		if (event != null && event.isCancelled()) {
+			return false;
+		}
+
+		start.run();
+		this.fire(Node.DRAG_START, () -> NodeDragEvent.Post.create(this, null));
+		return true;
 	}
 
-	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull DispatchContext context, final Object... args) {
-		this.executeCallback(type, context, null, args);
-	}
-
-	public final <T extends NodeCallback> void executeCallback(final int type, final @NonNull DispatchContext context, final Runnable runnable, final Object... args) {
-		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
-		if (callbackList.isEmpty()) {
-			if (runnable != null) {
-				runnable.run();
-			}
-			return;
-		}
-
-		for (final NodeCallbackInvoker<T> callback : callbackList) {
-			callback.pre(this, context, args);
-		}
-
-		if (context.isCancelled()) {
-			return;
-		}
-
-		if (runnable != null) {
-			runnable.run();
-		}
-
-		this.post(callbackList, context, args);
-	}
-
-	public final <T extends NodeCallback> void executePreCallback(final int type, final @NonNull DispatchContext context, final Object... args) {
-		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
-		if (callbackList.isEmpty()) {
-			return;
-		}
-
-		for (final NodeCallbackInvoker<T> callback : callbackList) {
-			callback.pre(this, context, args);
-		}
-	}
-
-	public final <T extends NodeCallback> void executePostCallback(final int type, final @NonNull DispatchContext context, final Object... args) {
-		final List<NodeCallbackInvoker<T>> callbackList = this.getCallbackList(type);
-		if (callbackList.isEmpty()) {
-			return;
-		}
-
-		this.post(callbackList, context, args);
-	}
-
-	private <T extends NodeCallback> void post(final List<NodeCallbackInvoker<T>> callbackList, final DispatchContext context, final Object... args) {
-		final boolean cancelled = context.isCancelled();
-		boolean handled = cancelled;
-		for (final NodeCallbackInvoker<T> callback : callbackList) {
-			if (!cancelled) {
-				context.reset();
-			}
-
-			callback.post(this, context, args);
-			handled |= context.isCancelled();
-		}
-
-		if (handled) {
-			context.cancel();
-		}
-	}
-
-	protected final <T extends Node> @NonNull T registerCallback(final int type, final @NonNull NodeCallback callback) {
-		final List<NodeCallbackInvoker<?>> callbackList = this.callbackMap.getOrDefault(type, new ArrayList<>());
-		callbackList.add(new NodeCallbackInvoker<>(callback));
-		this.callbackMap.put(type, callbackList);
+	protected final <T extends Node> @NonNull T listen(final @NonNull EventType<?> type, final @NonNull EventPriority priority, final @NonNull EventListener<?> listener) {
+		this.eventBus.listen(type, priority, listener);
 		return (T) this;
+	}
+
+	protected final <E extends Event> E fire(final @NonNull EventType<? super E> type, final @NonNull Supplier<@NonNull E> event) {
+		if (!this.eventBus.has(type)) {
+			return null;
+		}
+
+		final E fired = event.get();
+		this.replay(() -> this.eventBus.fire(type, fired));
+		return fired;
+	}
+
+	protected final <N extends Node, V> boolean change(final @NonNull EventType<? super NodeChangeEvent.Pre<N, V>> before, final @NonNull EventType<? super NodeChangeEvent.Post<N, V>> after, final V previous, final V value, final boolean user, final @NonNull Runnable apply) {
+		if (user) {
+			final NodeChangeEvent.Pre<N, V> event = this.fire(before, () -> NodeChangeEvent.Pre.create((N) this, previous, value));
+			if (event != null && event.isCancelled()) {
+				return false;
+			}
+		}
+
+		apply.run();
+		this.fire(after, () -> NodeChangeEvent.Post.create((N) this, previous, value));
+		return true;
 	}
 
 	public final boolean hasUi() {
@@ -1260,8 +1292,8 @@ public abstract class Node implements INode {
 		return this.maxScrollY > 0;
 	}
 
-	public final boolean hasCallback(final int type) {
-		return this.callbackMap.containsKey(type);
+	public final boolean hasListener(final @NonNull EventType<?> type) {
+		return this.eventBus.has(type);
 	}
 
 	public final boolean hasEffect(final @NonNull Class<?> clazz) {
@@ -1364,27 +1396,6 @@ public abstract class Node implements INode {
 		return new IndexedLinkedList<>(this.children.ordered().stream().filter(child -> clazz.isAssignableFrom(child.getClass())).map(child -> (T) child).collect(Collectors.toList()));
 	}
 
-	public final <T extends NodeCallback> @NonNull List<@NonNull NodeCallbackInvoker<T>> getCallbackList(final int type) {
-		if (this.callbackMap.isEmpty() || !this.callbackMap.containsKey(type)) {
-			return Collections.emptyList();
-		}
-
-		final List<NodeCallbackInvoker<?>> callbackList = this.callbackMap.get(type);
-		if (callbackList.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		final List<NodeCallbackInvoker<T>> mappedCallbackList = new ArrayList<>();
-		for (final NodeCallbackInvoker<?> callback : callbackList) {
-			if (callback == null) {
-				continue;
-			}
-			mappedCallbackList.add((NodeCallbackInvoker<T>) callback);
-		}
-
-		return mappedCallbackList;
-	}
-
 	public final <T extends Node> @NonNull T clearChildren() {
 		this.children.forEach(child -> {
 			child.fireDetach();
@@ -1425,6 +1436,10 @@ public abstract class Node implements INode {
 		return this.isVisibleProperty();
 	}
 
+	public boolean isDragging() {
+		return this.dragging || this.parent instanceof ReorderableFlexNode && ((ReorderableFlexNode) this.parent).isDragging(this);
+	}
+
 	public final boolean isMounted() {
 		if (this.parent != null && !this.parent.isMounted() && !this.equals(this.parent.skeleton)) {
 			return false;
@@ -1449,7 +1464,7 @@ public abstract class Node implements INode {
 	}
 
 	protected boolean computeHovered() {
-		return this.ui != null && this.ui.isOnTop() && this.isEnabled() && this.ui.getHoveredPath().contains(this);
+		return this.ui != null && this.ui.isOnTop() && this.ui.getHoveredPath().contains(this);
 	}
 
 	public final @NonNull Cursor getResolvedCursor() {
@@ -1561,10 +1576,7 @@ public abstract class Node implements INode {
 		copy.parent = this.parent;
 		copy.skeleton = this.skeleton;
 
-		copy.getCallbackMap().clear();
-		for (final Entry<Integer, List<NodeCallbackInvoker<?>>> entry : this.callbackMap.entrySet()) {
-			copy.getCallbackMap().put(entry.getKey(), new ArrayList<>(entry.getValue()));
-		}
+		copy.eventBus.clear().addAll(this.eventBus);
 
 		copy.effectMap.putAll(this.effectMap);
 		copy.layerList.addAll(this.layerList);
@@ -1839,6 +1851,32 @@ public abstract class Node implements INode {
 		}
 	}
 
+	private void fireListeners(final EventType<?> type, final Event event) {
+		if (this.eventBus.has(type)) {
+			this.replay(() -> this.eventBus.fireListeners(type, event));
+		}
+	}
+
+	private void fireMonitor(final EventType<?> type, final Event event) {
+		if (this.eventBus.has(type)) {
+			this.replay(() -> this.eventBus.fireMonitor(type, event));
+		}
+	}
+
+	private void replay(final Runnable runnable) {
+		SignalReplay.enter(this, this.getUi());
+		try {
+			runnable.run();
+		} finally {
+			SignalReplay.exit();
+		}
+	}
+
+	private String describe() {
+		final UI ui = this.getUi();
+		return ui == null ? Node.nameOf(this.getClass()) : Node.nameOf(this.getClass()) + " in " + Node.nameOf(ui.getClass());
+	}
+
 	private void fireAnimate() {
 		for (final TweenAnimator animator : new ArrayList<>(this.animatorMap.keySet())) {
 			final Float previous = this.animatorMap.get(animator);
@@ -1849,7 +1887,7 @@ public abstract class Node implements INode {
 			final float value = animator.peek();
 			if (value != previous) {
 				this.animatorMap.put(animator, value);
-				this.executeCallback(Node.CALLBACK_ANIMATION, DispatchContext.create(), animator, value);
+				this.fire(Node.ANIMATE, () -> NodeAnimateEvent.create(this, animator, value));
 			}
 		}
 	}
@@ -1869,10 +1907,11 @@ public abstract class Node implements INode {
 		final boolean wasHovered = this.hovered;
 		this.hovered = false;
 		if (wasHovered && this.ui != null) {
-			this.executeCallback(Node.CALLBACK_HOVER_END, DispatchContext.create(), this.ui.getMouseX(), this.ui.getMouseY());
+			this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, this.ui.getMouseX(), this.ui.getMouseY()));
 		}
 
 		this.hoverAnimator.clear();
+		this.hoverShown = false;
 		this.mounted = false;
 	}
 
@@ -1937,20 +1976,19 @@ public abstract class Node implements INode {
 				return;
 			}
 
-			this.executeCallback(Node.CALLBACK_WATCH, DispatchContext.create(), () -> {
-				SignalReplay.enter(this, this.ui);
-				try {
-					for (final WatchProperty property : properties) {
-						try {
-							property.apply(this, signal);
-						} catch (final Exception e) {
-							e.printStackTrace();
-						}
+			SignalReplay.enter(this, this.ui);
+			try {
+				for (final WatchProperty property : properties) {
+					try {
+						property.apply(this, signal);
+					} catch (final Exception e) {
+						e.printStackTrace();
 					}
-				} finally {
-					SignalReplay.exit();
 				}
-			}, signal, properties);
+			} finally {
+				SignalReplay.exit();
+			}
+			this.fire(Node.WATCH, () -> NodeWatchEvent.create(this, signal, properties));
 		});
 		return (T) this;
 	}
@@ -2219,76 +2257,164 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T onClick(final @NonNull NodeMousePressedCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_CLICK, callback);
+	public final <T extends Node> @NonNull T onClick(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.onClick(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onInit(final @NonNull NodeInitCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_INIT, callback);
+	public final <T extends Node> @NonNull T onClick(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.listen(Node.CLICK, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onRender(final @NonNull NodeRenderCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_RENDER, callback);
+	public final <T extends Node> @NonNull T onInit(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onInit(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onDraw(final @NonNull NodeDrawCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_DRAW, callback);
+	public final <T extends Node> @NonNull T onInit(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.listen(Node.INIT, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onAppend(final @NonNull NodeAppendCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_APPEND, callback);
+	public final <T extends Node> @NonNull T onRender(final @NonNull EventListener<NodeDrawEvent<T>> listener) {
+		return this.onRender(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onMount(final @NonNull NodeMountCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_MOUNT, callback);
+	public final <T extends Node> @NonNull T onRender(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDrawEvent<T>> listener) {
+		return this.listen(Node.RENDER, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onWatch(final @NonNull NodeWatchCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_WATCH, callback);
+	public final <T extends Node> @NonNull T onDraw(final @NonNull EventListener<NodeDrawEvent<T>> listener) {
+		return this.onDraw(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onAnimate(final @NonNull NodeAnimationCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_ANIMATION, callback);
+	public final <T extends Node> @NonNull T onDraw(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDrawEvent<T>> listener) {
+		return this.listen(Node.DRAW, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScrollEnd(final @NonNull NodeScrollEndCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_SCROLL_END, callback);
+	public final <T extends Node> @NonNull T onChildAppend(final @NonNull EventListener<NodeChildEvent<T>> listener) {
+		return this.onChildAppend(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScrollEnding(final @NonNull NodeScrollEndingCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_SCROLL_ENDING, callback);
+	public final <T extends Node> @NonNull T onChildAppend(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChildEvent<T>> listener) {
+		return this.listen(Node.CHILD_APPEND, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScrollUpdate(final @NonNull NodeScrollUpdateCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_SCROLL_UPDATE, callback);
+	public final <T extends Node> @NonNull T onMount(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onMount(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onDrag(final @NonNull NodeDragCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_DRAG, callback);
+	public final <T extends Node> @NonNull T onMount(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.listen(Node.MOUNT, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onDragEnd(final @NonNull NodeDragCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_DRAG_END, callback);
+	public final <T extends Node> @NonNull T onWatch(final @NonNull EventListener<NodeWatchEvent<T>> listener) {
+		return this.onWatch(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onDragStart(final @NonNull NodeDragCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_DRAG_START, callback);
+	public final <T extends Node> @NonNull T onWatch(final @NonNull EventPriority priority, final @NonNull EventListener<NodeWatchEvent<T>> listener) {
+		return this.listen(Node.WATCH, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onSnap(final @NonNull NodeSnapCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_SNAP, callback);
+	public final <T extends Node> @NonNull T onAnimate(final @NonNull EventListener<NodeAnimateEvent<T>> listener) {
+		return this.onAnimate(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onHover(final @NonNull NodeHoverCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_HOVER, callback);
+	public final <T extends Node> @NonNull T onAnimate(final @NonNull EventPriority priority, final @NonNull EventListener<NodeAnimateEvent<T>> listener) {
+		return this.listen(Node.ANIMATE, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onHoverEnd(final @NonNull NodeHoverEndCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_HOVER_END, callback);
+	public final <T extends Node> @NonNull T onScroll(final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+		return this.onScroll(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onHoverStart(final @NonNull NodeHoverStartCallback<T> callback) {
-		return this.registerCallback(Node.CALLBACK_HOVER_START, callback);
+	public final <T extends Node> @NonNull T onScroll(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+		return this.listen(Node.SCROLL, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onScrollToEnd(final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+		return this.onScrollToEnd(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onScrollToEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+		return this.listen(Node.SCROLL_TO_END, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onScrollAtEnd(final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+		return this.onScrollAtEnd(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onScrollAtEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+		return this.listen(Node.SCROLL_AT_END, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T beforeDragStart(final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
+		return this.beforeDragStart(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T beforeDragStart(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
+		return this.listen(Node.BEFORE_DRAG_START, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDragStart(final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
+		return this.onDragStart(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDragStart(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
+		return this.listen(Node.DRAG_START, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDrag(final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
+		return this.onDrag(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDrag(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
+		return this.listen(Node.DRAG, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T beforeDragDrop(final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
+		return this.beforeDragDrop(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T beforeDragDrop(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
+		return this.listen(Node.BEFORE_DRAG_DROP, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDragDrop(final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
+		return this.onDragDrop(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDragDrop(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
+		return this.listen(Node.DRAG_DROP, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDragSnap(final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
+		return this.onDragSnap(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onDragSnap(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
+		return this.listen(Node.DRAG_SNAP, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onHover(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
+		return this.onHover(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onHover(final @NonNull EventPriority priority, final @NonNull EventListener<NodeHoverEvent<T>> listener) {
+		return this.listen(Node.HOVER, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onHoverStart(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
+		return this.onHoverStart(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onHoverStart(final @NonNull EventPriority priority, final @NonNull EventListener<NodeHoverEvent<T>> listener) {
+		return this.listen(Node.HOVER_START, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onHoverEnd(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
+		return this.onHoverEnd(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onHoverEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeHoverEvent<T>> listener) {
+		return this.listen(Node.HOVER_END, priority, listener);
 	}
 
 	public @NonNull String toJson() {
@@ -2358,6 +2484,10 @@ public abstract class Node implements INode {
 			Collections.addAll(fields, c.getDeclaredFields());
 		}
 		return fields;
+	}
+
+	private static @NonNull String nameOf(final @NonNull Class<?> type) {
+		return type.getSimpleName().isEmpty() ? type.getName() : type.getSimpleName();
 	}
 
 	@Override

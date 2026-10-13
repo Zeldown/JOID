@@ -12,12 +12,9 @@ import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.structure.slider.callback.NodeSliderChangeCallback;
 import dev.joid.lib.utils.align.Align;
-import lombok.NonNull;
 
 @UIData(background = true)
 public class UIDemoSlider extends UIDemo {
@@ -47,9 +44,9 @@ public class UIDemoSlider extends UIDemo {
 			.create(40, 40, 240, 40)
 			.range(0, 10)
 			.value(5)
-			.onChange((node, value) -> {
-				System.out.println("[UIDemoSlider] slider value: " + value);
-				integer.set(value);
+			.onChange(event -> {
+				System.out.println("[UIDemoSlider] slider value: " + event.getValue());
+				integer.set(event.getValue());
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + integer.get(), info)).attach(rect);
@@ -106,7 +103,7 @@ public class UIDemoSlider extends UIDemo {
 			RectNode
 			.create(40, 170, 80, 50)
 			.color(UIDemoSlider.INK)
-			.onClick((node, mouseX, mouseY, button) -> volume.set(Math.max(0, volume.get() - 1)))
+			.onClick(event -> volume.set(Math.max(0, volume.get() - 1)))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -114,7 +111,7 @@ public class UIDemoSlider extends UIDemo {
 			RectNode
 			.create(140, 170, 80, 50)
 			.color(UIDemoSlider.INK)
-			.onClick((node, mouseX, mouseY, button) -> volume.set(Math.min(10, volume.get() + 1)))
+			.onClick(event -> volume.set(Math.min(10, volume.get() + 1)))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -142,7 +139,7 @@ public class UIDemoSlider extends UIDemo {
 			RectNode
 			.create(40, 120, 120, 50)
 			.color(UIDemoSlider.INK)
-			.onClick((node, mouseX, mouseY, button) -> target.set((target.get() + 5) % 15))
+			.onClick(event -> target.set((target.get() + 5) % 15))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Next", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -159,19 +156,11 @@ public class UIDemoSlider extends UIDemo {
 			.create(40, 40, 240, 40)
 			.range(0, 10)
 			.value(2)
-			.onChange(new NodeSliderChangeCallback<DemoIntegerSliderNode, Integer>() {
-
-				@Override
-				public void apply(final @NonNull DemoIntegerSliderNode node, final @NonNull Integer value) {}
-
-				@Override
-				public void pre(final @NonNull DemoIntegerSliderNode node, final @NonNull DispatchContext context, final @NonNull Integer value) {
-					if (value > 5) {
-						refused.increment();
-						context.cancel();
-					}
+			.beforeChange(event -> {
+				if (event.getValue() > 5) {
+					refused.increment();
+					event.cancel();
 				}
-
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Refused: " + refused.get(), info)).attach(rect);

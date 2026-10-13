@@ -86,7 +86,7 @@ public class ShowMenu extends ShowUI {
 			})
 			.attach(card);
 		})
-		.onClick((node, mouseX, mouseY, clickType) -> ShowUI.open(scene.create()))
+		.onClick(event -> ShowUI.open(scene.create()))
 		.hoverDuration(220L)
 		.attach(this);
 	}
@@ -111,7 +111,7 @@ public class ShowMenu extends ShowUI {
 			TextNode.create(96, 50).text(Text.create(scene.getTitle(), ShowUI.font(FontWeight.BOLD, 26F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(card);
 			TextNode.create(24, 110).text(Text.create(scene.getCaption(), ShowUI.font(FontWeight.MEDIUM, 18F, ShowUI.MUTED))).anchorY(Align.CENTER).attach(card);
 		})
-		.onClick((node, mouseX, mouseY, clickType) -> ShowUI.open(scene.create()))
+		.onClick(event -> ShowUI.open(scene.create()))
 		.hoverDuration(180L)
 		.attach(this);
 	}

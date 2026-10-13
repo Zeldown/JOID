@@ -12,6 +12,7 @@ import dev.joid.demo.ui.core.transition.impl.DemoPushTransition;
 import dev.joid.demo.ui.cursor.UIDemoCursor;
 import dev.joid.demo.ui.draggable.UIDemoDraggable;
 import dev.joid.demo.ui.event.UIDemoEvent;
+import dev.joid.demo.ui.event.UIDemoEventFlow;
 import dev.joid.demo.ui.font.UIDemoFont;
 import dev.joid.demo.ui.font.UIDemoMarkup;
 import dev.joid.demo.ui.font.UIDemoText;
@@ -96,6 +97,7 @@ public class UIDemoChoice extends UI {
 			}
 		}).state(() -> JOID.isOpen(UIDemoOverlay.class)));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEvent.class));
+		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEventFlow.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoTween.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoRender.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoAudio.class));
@@ -120,7 +122,7 @@ public class UIDemoChoice extends UI {
 				.body(container -> {
 					TextNode.create(container.dw(2), container.dh(2)).text(Text.create(entry::getText, label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 				})
-				.onClick((node, mouseX, mouseY, button) -> entry.getAction().run())
+				.onClick(event -> entry.getAction().run())
 				.hover(entry::getHover)
 				.attach(grid);
 			}

@@ -228,7 +228,7 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void restartsItsPlaybackFromTheBeginning() {
 		final List<Object> received = new ArrayList<>();
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onPlay(received::add);
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onPlay(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(player)).frames(20);
 		Assert.assertSame(player, player.restart());
 		Assert.assertTrue(player.isPlaying());
@@ -240,7 +240,7 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void firesOnPlayOnARestartWhilePlaying() {
 		final List<Object> received = new ArrayList<>();
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onPlay(received::add);
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onPlay(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(player)).frames(3);
 		Assert.assertEquals(1, received.size());
 		player.restart();
@@ -264,7 +264,7 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void startsANewResourceAgain() {
 		final List<Object> received = new ArrayList<>();
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onPlay(received::add);
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onPlay(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(player)).frames(20);
 		final Resource next = ResourcePlayerNodeTest.blink();
 		Assert.assertSame(player, player.resource(next));

@@ -12,8 +12,6 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import lombok.NonNull;
 
 @UIData(background = true)
 @UIDataPopup(active = true)
@@ -30,15 +28,15 @@ public class UIDemoPopup extends UI {
 		.info(TextInfo.create(DemoFont.MONTSERRAT, 30, UIDemoPopup.INK))
 		.marginHorizontal(12D)
 		.placeholder("Placeholder")
-		.onChange((field, text, value, valid) -> System.out.println("[UIDemoPopup] popup field text: " + text))
+		.onChange(event -> System.out.println("[UIDemoPopup] popup field text: " + event.getText()))
 		.attach(this);
-	}
 
-	@Override
-	public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
-		if (!context.isCancelled() && key == Key.K && Key.LEFT_CONTROL.isDown()) {
-			context.cancel(() -> JOID.open(new UIDemoPopup()));
-		}
+		super.handleKeyPressed(event -> {
+			if (event.getKey() == Key.K && Key.LEFT_CONTROL.isDown()) {
+				JOID.open(new UIDemoPopup());
+				event.consume();
+			}
+		});
 	}
 
 }

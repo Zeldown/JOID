@@ -8,15 +8,13 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.NodeEvent;
+import dev.joid.lib.ui.event.impl.node.NodeProgressEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
-import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerEndCallback;
-import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPauseCallback;
-import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPlayCallback;
-import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerProgressCallback;
-import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerStopCallback;
 import dev.joid.lib.utils.point.Point;
 import lombok.Getter;
 import lombok.NonNull;
@@ -25,11 +23,11 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public class ResourcePlayerNode extends Node {
 
-	public static final int CALLBACK_END      = NodeCallbackRegistry.next(NodeResourcePlayerEndCallback.class);
-	public static final int CALLBACK_PLAY     = NodeCallbackRegistry.next(NodeResourcePlayerPlayCallback.class);
-	public static final int CALLBACK_STOP     = NodeCallbackRegistry.next(NodeResourcePlayerStopCallback.class);
-	public static final int CALLBACK_PAUSE    = NodeCallbackRegistry.next(NodeResourcePlayerPauseCallback.class);
-	public static final int CALLBACK_PROGRESS = NodeCallbackRegistry.next(NodeResourcePlayerProgressCallback.class);
+	private static final EventType<NodeEvent<?>>         END      = EventType.create("onEnd");
+	private static final EventType<NodeEvent<?>>         PLAY     = EventType.create("onPlay");
+	private static final EventType<NodeEvent<?>>         STOP     = EventType.create("onStop");
+	private static final EventType<NodeEvent<?>>         PAUSE    = EventType.create("onPause");
+	private static final EventType<NodeProgressEvent<?>> PROGRESS = EventType.create("onProgress");
 
 	private Resource resource;
 	private boolean wasPlaying;
@@ -64,7 +62,7 @@ public class ResourcePlayerNode extends Node {
 		if (playback != null) {
 			playback.stop();
 			this.wasPlaying = false;
-			super.executeCallback(ResourcePlayerNode.CALLBACK_STOP, DispatchContext.create());
+			super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
 		}
 		return this;
 	}
@@ -140,17 +138,17 @@ public class ResourcePlayerNode extends Node {
 		if (playback != null) {
 			final boolean playing = playback.isPlaying();
 			if (playing && !this.wasPlaying) {
-				super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, DispatchContext.create());
+				super.fire(ResourcePlayerNode.PLAY, () -> NodeEvent.create(this));
 			} else if (!playing && this.wasPlaying && !playback.isPaused() && !this.loop) {
-				super.executeCallback(ResourcePlayerNode.CALLBACK_END, DispatchContext.create());
-				super.executeCallback(ResourcePlayerNode.CALLBACK_STOP, DispatchContext.create());
+				super.fire(ResourcePlayerNode.END, () -> NodeEvent.create(this));
+				super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
 			}
 
 			this.wasPlaying = playing;
 			final double progress = playback.getProgress();
 			if (progress != this.lastProgress) {
 				this.lastProgress = progress;
-				super.executeCallback(ResourcePlayerNode.CALLBACK_PROGRESS, DispatchContext.create(), progress, playback.getCurrentTime());
+				super.fire(ResourcePlayerNode.PROGRESS, () -> NodeProgressEvent.create(this, progress, playback.getCurrentTime()));
 			}
 		}
 
@@ -170,7 +168,7 @@ public class ResourcePlayerNode extends Node {
 		final IResourcePlayback playback = this.getPlayback();
 		if (playback != null && playback.isPlaying()) {
 			playback.pause();
-			super.executeCallback(ResourcePlayerNode.CALLBACK_PAUSE, DispatchContext.create());
+			super.fire(ResourcePlayerNode.PAUSE, () -> NodeEvent.create(this));
 		}
 		return this;
 	}
@@ -195,34 +193,49 @@ public class ResourcePlayerNode extends Node {
 		final IResourcePlayback playback = this.getPlayback();
 		if (playback != null && playback.restart().isPlaying()) {
 			this.wasPlaying = true;
-			super.executeCallback(ResourcePlayerNode.CALLBACK_PLAY, DispatchContext.create());
+			super.fire(ResourcePlayerNode.PLAY, () -> NodeEvent.create(this));
 		}
 		return this;
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T onPlay(final @NonNull NodeResourcePlayerPlayCallback<T> callback) {
-		super.registerCallback(ResourcePlayerNode.CALLBACK_PLAY, callback);
-		return (T) this;
+	public final <T extends ResourcePlayerNode> @NonNull T onPlay(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onPlay(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull NodeResourcePlayerPauseCallback<T> callback) {
-		super.registerCallback(ResourcePlayerNode.CALLBACK_PAUSE, callback);
-		return (T) this;
+	public final <T extends ResourcePlayerNode> @NonNull T onPlay(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.PLAY, priority, listener);
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T onStop(final @NonNull NodeResourcePlayerStopCallback<T> callback) {
-		super.registerCallback(ResourcePlayerNode.CALLBACK_STOP, callback);
-		return (T) this;
+	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onPause(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T onEnd(final @NonNull NodeResourcePlayerEndCallback<T> callback) {
-		super.registerCallback(ResourcePlayerNode.CALLBACK_END, callback);
-		return (T) this;
+	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.PAUSE, priority, listener);
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T onProgress(final @NonNull NodeResourcePlayerProgressCallback<T> callback) {
-		super.registerCallback(ResourcePlayerNode.CALLBACK_PROGRESS, callback);
-		return (T) this;
+	public final <T extends ResourcePlayerNode> @NonNull T onStop(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onStop(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onStop(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.STOP, priority, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onEnd(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onEnd(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.END, priority, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onProgress(final @NonNull EventListener<NodeProgressEvent<T>> listener) {
+		return this.onProgress(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onProgress(final @NonNull EventPriority priority, final @NonNull EventListener<NodeProgressEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.PROGRESS, priority, listener);
 	}
 
 	@Override

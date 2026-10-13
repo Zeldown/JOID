@@ -1,8 +1,8 @@
 package dev.joid.lib.ui.node.impl.structure.scrollbar;
 
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.utils.box.BoundingBox;
 import lombok.Getter;
 import lombok.NonNull;
@@ -54,20 +54,19 @@ public abstract class ScrollbarNode extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 		if (this.dragging || !super.isHovered()) {
 			return;
 		}
 
-		context.cancel(() -> {
-			this.dragging   = true;
-			this.dragButton = button;
-		});
+		this.dragging   = true;
+		this.dragButton = event.getButton();
+		event.consume();
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (button == this.dragButton) {
+	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
+		if (event.getButton() == this.dragButton) {
 			this.dragging   = false;
 			this.dragButton = null;
 		}

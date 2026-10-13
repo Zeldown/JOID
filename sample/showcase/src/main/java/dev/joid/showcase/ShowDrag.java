@@ -84,7 +84,7 @@ public class ShowDrag extends ShowUI {
 		.create(150 + index * 330, 668, 230, 300)
 		.color(Color.TRANSPARENT)
 		.draggable(DraggableProperty.ui().snap(DraggableSnapType.OVERLAP, slot))
-		.onSnap((node, target) -> {
+		.onDragSnap(event -> {
 			Signal.batch(() -> {
 				this.title.set(name);
 				this.artist.set(by);

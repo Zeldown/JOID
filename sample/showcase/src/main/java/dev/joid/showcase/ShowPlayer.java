@@ -52,9 +52,9 @@ public class ShowPlayer extends ShowUI {
 			.stretch(StretchType.COVER)
 			.loop(true)
 			.volume(0F)
-			.onPlay(player -> this.playing.set(true))
-			.onPause(player -> this.playing.set(false))
-			.onProgress((player, value, seconds) -> this.progress.set(value))
+			.onPlay(event -> this.playing.set(true))
+			.onPause(event -> this.playing.set(false))
+			.onProgress(event -> this.progress.set(event.getProgress()))
 			.attach(card);
 			RectNode.create(0, 0, 1440, 220).color(() -> ShowUI.vertical(Color.BLACK.copyAlpha(0.55F * card.hoverValue(1F)), Color.BLACK.copyAlpha(0F))).attach(card);
 			RectNode.create(0, 500, 1440, 310).color(() -> ShowUI.vertical(Color.BLACK.copyAlpha(0F), Color.BLACK.copyAlpha(0.35F + 0.5F * card.hoverValue(1F)))).attach(card);
@@ -73,7 +73,7 @@ public class ShowPlayer extends ShowUI {
 		.create(56, 690, 84)
 		.color(() -> Color.WHITE.copyAlpha(0.92F * card.hoverValue(1F) + 0.08F))
 		.effect(ShadowNodeEffect.create(ShowUI.AMBER, 26F).color(() -> ShowUI.AMBER.copyAlpha(0.8F * card.hoverValue(1F))))
-		.onClick((node, mouseX, mouseY, button) -> {
+		.onClick(event -> {
 			if (this.player.isPlaying()) {
 				this.player.pause();
 			} else {
@@ -85,13 +85,13 @@ public class ShowPlayer extends ShowUI {
 		RectNode
 		.create(176, 712, 1060, 40)
 		.color(Color.TRANSPARENT)
-		.onClick((node, mouseX, mouseY, button) -> this.scrub.set(this.ratio(mouseX)))
-		.onMouseDragged((node, mouseX, mouseY, button, delta) -> {
+		.onClick(event -> this.scrub.set(this.ratio(event.getMouseX())))
+		.handleMouseDragged(event -> {
 			if (this.scrub.get() >= 0D) {
-				this.scrub.set(this.ratio(mouseX));
+				this.scrub.set(this.ratio(event.getMouseX()));
 			}
 		})
-		.onMouseReleased((node, mouseX, mouseY, button) -> {
+		.handleMouseReleased(event -> {
 			if (this.scrub.get() >= 0D) {
 				this.player.seek(this.scrub.get() * this.player.getDuration());
 				this.scrub.set(-1D);

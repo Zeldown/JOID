@@ -26,7 +26,7 @@ public class ShowTheme extends ShowUI {
 
 	@Override
 	protected void scene() {
-		RectNode.create(0, 0, 1920, 1080).color(() -> this.tone("#F3F2F8", "#0B0A18")).onUpdate(node -> this.step()).attach(this);
+		RectNode.create(0, 0, 1920, 1080).color(() -> this.tone("#F3F2F8", "#0B0A18")).onUpdate(event -> this.step()).attach(this);
 		RectNode.create(0, 0, 300, 1080).color(() -> this.tone("#FFFFFF", "#131226")).attach(this);
 		RectNode.create(299, 0, 1, 1080).color(() -> this.line()).attach(this);
 

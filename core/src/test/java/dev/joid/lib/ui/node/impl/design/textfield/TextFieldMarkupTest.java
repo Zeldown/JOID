@@ -15,8 +15,9 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
+import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.textfield.MultilineTextFieldMarkupTest.MarkupFont;
 
 public class TextFieldMarkupTest {
@@ -352,7 +353,7 @@ public class TextFieldMarkupTest {
 	}
 
 	private void press(final TextFieldNode field, final Key key) {
-		field.keyPressed(key, DispatchContext.create());
+		field.keyPressed(NodeKeyEvent.create(field, key, null));
 	}
 
 	private void control(final TextFieldNode field, final Key key) {
@@ -363,7 +364,7 @@ public class TextFieldMarkupTest {
 
 	private void type(final TextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.charTyped(c, DispatchContext.create());
+			field.charTyped(NodeCharEvent.create(field, c, null));
 		}
 	}
 

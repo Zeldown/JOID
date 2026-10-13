@@ -187,17 +187,17 @@ public class StackUIBridgeTest {
 		public ScreenUI(final String name, final List<String> trace) {
 			this.name  = name;
 			this.trace = trace;
+			super.beforeClose(event -> {
+				this.trace.add("close " + this.name);
+				if (!this.closeable) {
+					event.cancel();
+				}
+			});
 		}
 
 		@Override
 		public void init() {
 			this.trace.add("init " + this.name);
-		}
-
-		@Override
-		public boolean close() {
-			this.trace.add("close " + this.name);
-			return this.closeable;
 		}
 
 	}

@@ -20,6 +20,7 @@ import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Supplier;
 
 import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -54,8 +55,17 @@ import dev.joid.lib.ui.core.hook.store.UIStoreHook;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.core.view.UIView;
+import dev.joid.lib.ui.event.Event;
+import dev.joid.lib.ui.event.EventBus;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.impl.ui.UICharEvent;
+import dev.joid.lib.ui.event.impl.ui.UICloseEvent;
+import dev.joid.lib.ui.event.impl.ui.UIKeyEvent;
+import dev.joid.lib.ui.event.impl.ui.UIMouseEvent;
+import dev.joid.lib.ui.event.impl.ui.UIMouseScrollEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
@@ -77,11 +87,22 @@ public abstract class UI implements IUI, IndexedElement {
 	private static final Set<FileAlterationMonitor>       RUNNING_SET      = new HashSet<>();
 	private static final ExecutorService                  MONITOR_EXECUTOR = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("UI/monitor"));
 
+	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
+	private static final EventType<UICharEvent<UI>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
+	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
+	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
+	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_RELEASED = EventType.create("handleMouseReleased");
+	private static final EventType<UIMouseScrollEvent<UI>> HANDLE_MOUSE_SCROLL   = EventType.create("handleMouseScroll");
+
+	private static final EventType<UICloseEvent.Post<UI>> CLOSE        = EventType.create("onClose");
+	private static final EventType<UICloseEvent.Pre<UI>>  BEFORE_CLOSE = EventType.create("beforeClose");
+
 	@Getter
 	private static UI current;
 
 	private static boolean monitorWarned;
 
+	@NonNull private final EventBus                             eventBus;
 	@NonNull private final List<@NonNull Task>                  taskList;
 	@NonNull private final Stack<MaskRegion>                    stencilStack;
 	@NonNull private final List<@NonNull Shortcut>              shortcutList;
@@ -110,6 +131,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
 
 	private boolean closed;
+	private boolean loaded;
 	private boolean monitored;
 	private boolean initialized;
 	private volatile boolean reloadPending;
@@ -152,6 +174,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		this.stencilStack = new Stack<>();
+		this.eventBus = EventBus.create(() -> UI.nameOf(this.getClass()));
 		this.taskList = new CopyOnWriteArrayList<>();
 		this.shortcutList = new CopyOnWriteArrayList<>();
 		this.nodeList = new IndexedConcurrentList<>();
@@ -188,6 +211,11 @@ public abstract class UI implements IUI, IndexedElement {
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
 			this.shortcutList.forEach(Shortcut::detach);
+			if (!this.loaded) {
+				this.eventBus.keep();
+				this.loaded = true;
+			}
+			this.eventBus.reset();
 			this.scoped(() -> {
 				for (final Node node : this.nodeList) {
 					if (node != this.devNode) {
@@ -239,6 +267,14 @@ public abstract class UI implements IUI, IndexedElement {
 		this.refreshMonitor();
 	}
 
+	public final <T extends UI> @NonNull T handleMouseScroll(final @NonNull EventListener<UIMouseScrollEvent<T>> listener) {
+		return this.handleMouseScroll(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T handleMouseScroll(final @NonNull EventPriority priority, final @NonNull EventListener<UIMouseScrollEvent<T>> listener) {
+		return this.listen(UI.HANDLE_MOUSE_SCROLL, priority, listener);
+	}
+
 	public final boolean fireMouseScroll(final double notchesX, final double notchesY) {
 		if (!this.initialized) {
 			return false;
@@ -247,16 +283,25 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		if (JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
+		final UIMouseScrollEvent<UI> event = UIMouseScrollEvent.create(this, mx, my, notchesX, notchesY);
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event)));
+		this.fireListeners(UI.HANDLE_MOUSE_SCROLL, event);
+
+		if (!event.isConsumed() && JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
 			this.zoom(this.view.getZoom() + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
-			return true;
+			event.consume();
 		}
 
-		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseScroll(mx, my, notchesX, notchesY, context)));
+		this.fireMonitor(UI.HANDLE_MOUSE_SCROLL, event);
+		return event.isConsumed();
+	}
 
-		this.traced(() -> this.mouseScroll(mx, my, notchesX, notchesY, context));
-		return context.isCancelled();
+	public final <T extends UI> @NonNull T handleMousePressed(final @NonNull EventListener<UIMouseEvent<T>> listener) {
+		return this.handleMousePressed(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T handleMousePressed(final @NonNull EventPriority priority, final @NonNull EventListener<UIMouseEvent<T>> listener) {
+		return this.listen(UI.HANDLE_MOUSE_PRESSED, priority, listener);
 	}
 
 	public final boolean fireMousePressed(final @NonNull MouseButton button) {
@@ -267,11 +312,19 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMousePressed(mx, my, button, context)));
+		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMousePressed(mx, my, button, event)));
+		this.fireListeners(UI.HANDLE_MOUSE_PRESSED, event);
+		this.fireMonitor(UI.HANDLE_MOUSE_PRESSED, event);
+		return event.isConsumed();
+	}
 
-		this.traced(() -> this.mousePressed(mx, my, button, context));
-		return context.isCancelled();
+	public final <T extends UI> @NonNull T handleMouseReleased(final @NonNull EventListener<UIMouseEvent<T>> listener) {
+		return this.handleMouseReleased(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T handleMouseReleased(final @NonNull EventPriority priority, final @NonNull EventListener<UIMouseEvent<T>> listener) {
+		return this.listen(UI.HANDLE_MOUSE_RELEASED, priority, listener);
 	}
 
 	public final boolean fireMouseReleased(final @NonNull MouseButton button) {
@@ -282,11 +335,19 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseReleased(mx, my, button, context)));
+		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseReleased(mx, my, button, event)));
+		this.fireListeners(UI.HANDLE_MOUSE_RELEASED, event);
+		this.fireMonitor(UI.HANDLE_MOUSE_RELEASED, event);
+		return event.isConsumed();
+	}
 
-		this.traced(() -> this.mouseReleased(mx, my, button, context));
-		return context.isCancelled();
+	public final <T extends UI> @NonNull T handleMouseDragged(final @NonNull EventListener<UIMouseEvent<T>> listener) {
+		return this.handleMouseDragged(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T handleMouseDragged(final @NonNull EventPriority priority, final @NonNull EventListener<UIMouseEvent<T>> listener) {
+		return this.listen(UI.HANDLE_MOUSE_DRAGGED, priority, listener);
 	}
 
 	public final boolean fireMouseDragged(final @NonNull MouseButton button, final long deltaTime) {
@@ -297,11 +358,19 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseDragged(mx, my, button, deltaTime, context)));
+		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, deltaTime);
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseDragged(mx, my, button, deltaTime, event)));
+		this.fireListeners(UI.HANDLE_MOUSE_DRAGGED, event);
+		this.fireMonitor(UI.HANDLE_MOUSE_DRAGGED, event);
+		return event.isConsumed();
+	}
 
-		this.traced(() -> this.mouseDragged(mx, my, button, deltaTime, context));
-		return context.isCancelled();
+	public final <T extends UI> @NonNull T handleCharTyped(final @NonNull EventListener<UICharEvent<T>> listener) {
+		return this.handleCharTyped(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T handleCharTyped(final @NonNull EventPriority priority, final @NonNull EventListener<UICharEvent<T>> listener) {
+		return this.listen(UI.HANDLE_CHAR_TYPED, priority, listener);
 	}
 
 	public final boolean fireCharTyped(final int codepoint) {
@@ -309,11 +378,19 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireCharTyped(codepoint, context)));
+		final UICharEvent<UI> event = UICharEvent.create(this, codepoint);
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireCharTyped(codepoint, event)));
+		this.fireListeners(UI.HANDLE_CHAR_TYPED, event);
+		this.fireMonitor(UI.HANDLE_CHAR_TYPED, event);
+		return event.isConsumed();
+	}
 
-		this.traced(() -> this.charTyped(codepoint, context));
-		return context.isCancelled();
+	public final <T extends UI> @NonNull T handleKeyPressed(final @NonNull EventListener<UIKeyEvent<T>> listener) {
+		return this.handleKeyPressed(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T handleKeyPressed(final @NonNull EventPriority priority, final @NonNull EventListener<UIKeyEvent<T>> listener) {
+		return this.listen(UI.HANDLE_KEY_PRESSED, priority, listener);
 	}
 
 	public final boolean fireKeyPressed(final @NonNull Key key) {
@@ -321,19 +398,20 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		final DispatchContext context = DispatchContext.create();
-		this.fireShortcuts(key, true, context);
-		if (!context.isCancelled()) {
-			this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(key, context)));
+		final UIKeyEvent<UI> event = UIKeyEvent.create(this, key);
+		this.fireShortcuts(key, true, event);
+		if (!event.isConsumed()) {
+			this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(key, event)));
 		}
-		this.fireShortcuts(key, false, context);
+		this.fireListeners(UI.HANDLE_KEY_PRESSED, event);
+		this.fireShortcuts(key, false, event);
 
-		if (this.data.zoomable() && !context.isCancelled()) {
+		if (this.data.zoomable() && !event.isConsumed()) {
 			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
 				final double previous = this.view.getZoom();
 				this.zoom(previous + 0.1D);
 				if (this.view.getZoom() != previous) {
-					context.cancel();
+					event.consume();
 				}
 			}
 
@@ -341,12 +419,12 @@ public abstract class UI implements IUI, IndexedElement {
 				final double previous = this.view.getZoom();
 				this.zoom(previous - 0.1D);
 				if (this.view.getZoom() != previous) {
-					context.cancel();
+					event.consume();
 				}
 			}
 		}
 
-		if (JOIDEnv.isDevMode() && !context.isCancelled()) {
+		if (JOIDEnv.isDevMode() && !event.isConsumed()) {
 			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
 				if (!Key.LEFT_SHIFT.isDown()) {
 					this.reload();
@@ -357,7 +435,7 @@ public abstract class UI implements IUI, IndexedElement {
 						System.err.println("[JOID] " + exception.getMessage());
 					}
 				}
-				context.cancel();
+				event.consume();
 			} else if (key == Key.F3 && this.devNode != null) {
 				final boolean enabled = this.nodeList.contains(this.devNode);
 				if (enabled) {
@@ -365,12 +443,12 @@ public abstract class UI implements IUI, IndexedElement {
 				} else {
 					this.scoped(() -> this.devNode.attach(this));
 				}
-				context.cancel();
+				event.consume();
 			}
 		}
 
-		this.traced(() -> this.keyPressed(key, context));
-		return context.isCancelled();
+		this.fireMonitor(UI.HANDLE_KEY_PRESSED, event);
+		return event.isConsumed();
 	}
 
 	public final void fireUpdate() {
@@ -380,14 +458,30 @@ public abstract class UI implements IUI, IndexedElement {
 		});
 	}
 
+	public final <T extends UI> @NonNull T beforeClose(final @NonNull EventListener<UICloseEvent.Pre<T>> listener) {
+		return this.beforeClose(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T beforeClose(final @NonNull EventPriority priority, final @NonNull EventListener<UICloseEvent.Pre<T>> listener) {
+		return this.listen(UI.BEFORE_CLOSE, priority, listener);
+	}
+
+	public final <T extends UI> @NonNull T onClose(final @NonNull EventListener<UICloseEvent.Post<T>> listener) {
+		return this.onClose(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T onClose(final @NonNull EventPriority priority, final @NonNull EventListener<UICloseEvent.Post<T>> listener) {
+		return this.listen(UI.CLOSE, priority, listener);
+	}
+
 	public final boolean fireClose() {
 		if (this.transition != null && this.transition.getOut() != null && this.transition.getOut().isRunning()) {
 			return false;
 		}
 
-		final boolean result = this.close();
-		if (!result) {
-			return result;
+		final UICloseEvent.Pre<UI> event = this.fire(UI.BEFORE_CLOSE, () -> UICloseEvent.Pre.create(this));
+		if (event != null && event.isCancelled()) {
+			return false;
 		}
 
 		if (this.transition != null && this.transition.getOut() != null && this.transition.getOut().isEnabled()) {
@@ -497,6 +591,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.storeMap.clear();
 
 		UIPropertyHook.save(this);
+		this.fire(UI.CLOSE, () -> UICloseEvent.Post.create(this));
 	}
 
 	public final void draw(final double mouseX, final double mouseY) {
@@ -925,8 +1020,8 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	private void fireShortcuts(final Key key, final boolean overrideFocus, final DispatchContext context) {
-		if (context.isCancelled()) {
+	private void fireShortcuts(final Key key, final boolean overrideFocus, final UIKeyEvent<UI> event) {
+		if (event.isConsumed()) {
 			return;
 		}
 
@@ -936,9 +1031,37 @@ public abstract class UI implements IUI, IndexedElement {
 		for (final Shortcut shortcut : shortcutList) {
 			if (shortcut.isOverrideFocus() == overrideFocus && shortcut.isTriggeredBy(key)) {
 				this.traced(() -> shortcut.fireTrigger(key));
-				context.cancel();
+				event.consume();
 				return;
 			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends UI> T listen(final EventType<?> type, final EventPriority priority, final EventListener<?> listener) {
+		this.eventBus.listen(type, priority, listener);
+		return (T) this;
+	}
+
+	private <E extends Event> E fire(final EventType<? super E> type, final Supplier<E> event) {
+		if (!this.eventBus.has(type)) {
+			return null;
+		}
+
+		final E fired = event.get();
+		this.traced(() -> this.eventBus.fire(type, fired));
+		return fired;
+	}
+
+	private void fireListeners(final EventType<?> type, final Event event) {
+		if (this.eventBus.has(type)) {
+			this.traced(() -> this.eventBus.fireListeners(type, event));
+		}
+	}
+
+	private void fireMonitor(final EventType<?> type, final Event event) {
+		if (this.eventBus.has(type)) {
+			this.traced(() -> this.eventBus.fireMonitor(type, event));
 		}
 	}
 
@@ -958,6 +1081,10 @@ public abstract class UI implements IUI, IndexedElement {
 		} finally {
 			SignalContext.current().tracing(tracing);
 		}
+	}
+
+	private static String nameOf(final Class<?> type) {
+		return type.getSimpleName().isEmpty() ? type.getName() : type.getSimpleName();
 	}
 
 	private static void collectTasks(final Node node, final List<Task> taskList) {

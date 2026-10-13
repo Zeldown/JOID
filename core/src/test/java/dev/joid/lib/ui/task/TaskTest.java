@@ -1,5 +1,8 @@
 package dev.joid.lib.ui.task;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +19,7 @@ import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
@@ -43,6 +47,26 @@ public class TaskTest {
 		Assert.assertEquals(1, this.runs.get());
 		Assert.assertFalse(task.isAttached());
 		Assert.assertTrue(ui.getTaskList().isEmpty());
+	}
+
+	@Test
+	public void runsItsListenersByPriorityAndPastAFailure() {
+		final List<String> trace = new ArrayList<>();
+		final TaskUI ui = this.open();
+		Task.create(0L).onRun(event -> trace.add("normal")).onRun(EventPriority.HIGH, event -> {
+			trace.add("high");
+			throw new IllegalStateException("broken");
+		}).onRun(EventPriority.MONITOR, event -> trace.add("monitor " + event.getTask().isAttached())).attach(ui);
+		final PrintStream error = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setErr(new PrintStream(output, true));
+			this.bridges.frame();
+		} finally {
+			System.setErr(error);
+		}
+		Assert.assertEquals(Arrays.asList("high", "normal", "monitor false"), trace);
+		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The onRun listener of Task failed: java.lang.IllegalStateException: broken"));
 	}
 
 	@Test

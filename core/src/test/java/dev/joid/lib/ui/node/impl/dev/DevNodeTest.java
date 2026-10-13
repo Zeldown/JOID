@@ -24,8 +24,9 @@ import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
@@ -223,19 +224,19 @@ public class DevNodeTest {
 		for (final String text : Arrays.asList("RectNode", "Bounds", "position: RELATIVE", "x: 200.0 / 200.0 (200.0)", "y: 200.0 / 200.0 (200.0)", "width: 300.0 (300.0)", "height: 150.0 (150.0)", "Hierarchy", "hierarchy: RectNode", "children: 0", "Properties", "hoveredColor: null")) {
 			Assert.assertTrue(text + " in " + texts, texts.contains(text));
 		}
-		Assert.assertFalse(texts.contains("Callbacks"));
+		Assert.assertFalse(texts.contains("Listeners"));
 		Assert.assertFalse(texts.contains("1 update"));
 	}
 
 	@Test
-	public void countsTheCallbacksOfTheLockedNode() {
-		final DevUI ui = new DevUI(RectNode.create(200D, 200D, 300D, 150D).onClick((node, mouseX, mouseY, clickType) -> {}));
+	public void countsTheListenersOfTheLockedNode() {
+		final DevUI ui = new DevUI(RectNode.create(200D, 200D, 300D, 150D).onClick(event -> {}));
 		final DevNode panel = DevNodeTest.open(this.bridges, ui);
 		ui.reload();
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		final List<String> texts = DevNodeTest.texts(panel);
-		Assert.assertTrue(texts.toString(), texts.contains("Callbacks"));
-		Assert.assertTrue(texts.toString(), texts.contains("NodeMousePressedCallback: 1"));
+		Assert.assertTrue(texts.toString(), texts.contains("Listeners"));
+		Assert.assertTrue(texts.toString(), texts.contains("onClick: 1"));
 	}
 
 	@Test
@@ -492,7 +493,7 @@ public class DevNodeTest {
 	public void ignoresTheKeysBelowAnotherUi() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.open(new DevUI());
-		panel.fireKeyPressed(Key.G, DispatchContext.create());
+		panel.fireKeyPressed(Key.G);
 		Assert.assertFalse(panel.getGridSignal().get());
 	}
 
@@ -500,8 +501,12 @@ public class DevNodeTest {
 	public void ignoresACancelledInput() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
-		panel.fireKeyPressed(Key.G, DispatchContext.create(true));
-		panel.fireMousePressed(250D, 250D, MouseButton.LEFT, DispatchContext.create(true));
+		final NodeKeyEvent<?> consumedInput = NodeKeyEvent.create(panel, Key.G, null);
+		consumedInput.consume();
+		panel.fireKeyPressed(Key.G, consumedInput);
+		final NodeMouseEvent<?> consumedPress = NodeMouseEvent.create(panel, 250D, 250D, MouseButton.LEFT, 0L, null);
+		consumedPress.consume();
+		panel.fireMousePressed(250D, 250D, MouseButton.LEFT, consumedPress);
 		Assert.assertFalse(panel.getGridSignal().get());
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 	}
@@ -511,13 +516,13 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
 		this.bridges.open(new DevUI());
-		panel.fireMousePressed(250D, 250D, MouseButton.LEFT, DispatchContext.create());
+		panel.fireMousePressed(250D, 250D, MouseButton.LEFT);
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAClickWithoutButton() {
-		DevNode.create(0D, 0D).mousePressed(0D, 0D, null, DispatchContext.create());
+		DevNode.create(0D, 0D).mousePressed(null);
 	}
 
 	private static DevNode open(final HeadlessBridges bridges, final DevUI ui) {

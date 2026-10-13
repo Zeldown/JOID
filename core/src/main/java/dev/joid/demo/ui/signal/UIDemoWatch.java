@@ -79,7 +79,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> ticks.increment())
+			.onClick(event -> ticks.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -88,7 +88,7 @@ public class UIDemoWatch extends UIDemo {
 			.create(40, 120, 320, 40)
 			.color(Color.WHITE)
 			.watch(ticks)
-			.onWatch((node, signal, properties) -> watched.increment())
+			.onWatch(event -> watched.increment())
 			.attach(rect);
 			TextNode.create(40, 185).text(Text.create("Watched: " + watched.get(), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("onWatch", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -104,7 +104,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(240, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> squares.set(squares.get() % 6 + 1))
+			.onClick(event -> squares.set(squares.get() % 6 + 1))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -131,7 +131,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> grown.set((grown.get() + 1) % 5))
+			.onClick(event -> grown.set((grown.get() + 1) % 5))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Grow", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -154,7 +154,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(Color.WHITE)
 			.wait(2L, TimeUnit.SECONDS)
 			.skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.LOADING))
-			.onMount(container -> mounts.increment())
+			.onMount(event -> mounts.increment())
 			.body(container -> {
 				TextNode.create(20, 35).text(Text.create("Shown after 2 s", info)).attach(container);
 			})
@@ -171,7 +171,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> ready.set(true))
+			.onClick(event -> ready.set(true))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Ready", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -213,7 +213,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 140, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				left.increment();
 				right.increment();
 			})
@@ -224,7 +224,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(200, 40, 140, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> Signal.batch(() -> {
+			.onClick(event -> Signal.batch(() -> {
 				left.increment();
 				right.increment();
 			}))
@@ -245,7 +245,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 140, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> quiet.increment())
+			.onClick(event -> quiet.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -253,7 +253,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(200, 40, 140, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				quiet.silent();
 				quiet.increment();
 			})
@@ -274,7 +274,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> read.increment())
+			.onClick(event -> read.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -292,7 +292,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> reset.increment())
+			.onClick(event -> reset.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -300,7 +300,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(180, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> reset.reset())
+			.onClick(event -> reset.reset())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -317,7 +317,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				final String key = "Key " + counts.size() % 3;
 				counts.put(key, counts.containsKey(key) ? counts.get(key) + 1 : 1);
 				keys.add(key);
@@ -339,7 +339,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> sent.increment())
+			.onClick(event -> sent.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -347,7 +347,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(180, 40, 180, 50)
 			.color(UIDemoWatch.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				if (listening.get()) {
 					sent.unsubscribe(listener);
 				} else {

@@ -12,15 +12,19 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
-import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.NodeEvent;
+import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
+import dev.joid.lib.ui.event.impl.node.NodeFieldChangeEvent;
+import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
-import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldChangeCallback;
-import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldFocusCallback;
 import dev.joid.lib.utils.platform.Platform;
 import lombok.Getter;
 import lombok.NonNull;
@@ -29,8 +33,9 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public abstract class FieldNode<V> extends Node {
 
-	private static final int CALLBACK_FOCUS  = NodeCallbackRegistry.next(NodeTextFieldFocusCallback.class);
-	private static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeTextFieldChangeCallback.class);
+	private static final EventType<NodeEvent<?>>                    FOCUS         = EventType.create("onFocus");
+	private static final EventType<NodeFieldChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
+	private static final EventType<NodeFieldChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
 	private String   text;
 	private TextInfo info;
@@ -159,163 +164,60 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || !this.focused) {
+	public void charTyped(final @NonNull NodeCharEvent<?> event) {
+		if (event.isConsumed() || !this.focused) {
 			return;
 		}
 
-		context.cancel(() -> {
-			if (!this.isShortcutKeyDown() || UI.isAltKeyDown()) {
-				this.insert(new String(Character.toChars(codepoint)));
-			}
-		});
+		if (!this.isShortcutKeyDown() || UI.isAltKeyDown()) {
+			this.insert(new String(Character.toChars(event.getCodepoint())));
+		}
+		event.consume();
 	}
 
 	@Override
-	public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || !this.focused) {
+	public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
+		if (event.isConsumed() || !this.focused) {
 			return;
 		}
 
-		context.cancel(() -> {
-			if (this.handleKey(key)) {
-				return;
-			}
-
-			if (key == Key.UP || key == Key.DOWN) {
-				this.stepValue(key == Key.UP ? 1 : -1);
-				return;
-			}
-
-			if (key == Key.LEFT) {
-				this.updateSelection();
-				this.holdInput(key);
-				this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
-				return;
-			}
-
-			if (key == Key.RIGHT) {
-				this.updateSelection();
-				this.holdInput(key);
-				this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
-				return;
-			}
-
-			if (key == Key.BACKSPACE) {
-				if (this.deleteSelection() || this.cursorPos <= 0) {
-					return;
-				}
-
-				this.holdInput(key);
-				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
-				if (this.edit(this.text.substring(0, backStart) + this.text.substring(this.cursorPos))) {
-					this.decreaseCursor(this.cursorPos - backStart);
-				}
-				return;
-			}
-
-			if (key == Key.DELETE) {
-				if (this.deleteSelection() || this.cursorPos >= this.text.length()) {
-					return;
-				}
-
-				this.holdInput(key);
-				final int deleteEnd = this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
-				this.edit(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
-				return;
-			}
-
-			if (key == Key.HOME) {
-				this.updateSelection();
-				this.cursorPos = 0;
-				this.decreaseCursor(0);
-				return;
-			}
-
-			if (key == Key.END) {
-				this.updateSelection();
-				this.cursorPos = this.text.length();
-				this.increaseCursor(0);
-				return;
-			}
-
-			if (key == Key.A && this.isShortcutKeyDown()) {
-				this.selectionStart = 0;
-				this.cursorPos = this.text.length();
-				return;
-			}
-
-			if (key == Key.C && this.isShortcutKeyDown()) {
-				if (this.selectionStart == -1) {
-					return;
-				}
-
-				if (this.selectionStart < this.cursorPos) {
-					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
-				} else {
-					BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
-				}
-
-				return;
-			}
-
-			if (key == Key.X && this.isShortcutKeyDown()) {
-				if (this.selectionStart == -1) {
-					return;
-				}
-
-				final int start = Math.min(this.selectionStart, this.cursorPos);
-				final int end = Math.max(this.selectionStart, this.cursorPos);
-				final String cut = this.text.substring(start, end);
-				if (this.edit(this.text.substring(0, start) + this.text.substring(end))) {
-					BridgeHandler.WINDOW.get().setClipboard(cut);
-					this.cursorPos = start;
-					this.selectionStart = -1;
-				}
-				return;
-			}
-
-			if (key == Key.V && this.isShortcutKeyDown()) {
-				if (this.insert(BridgeHandler.WINDOW.get().getClipboard())) {
-					this.commit();
-				}
-			}
-		});
+		event.consume();
+		this.pressKey(event.getKey());
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || !super.isHovered()) {
+	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
+		if (event.isConsumed() || !super.isHovered()) {
 			this.focus(false);
 			this.selectionStart = -1;
 			this.pressCount = 0;
 			return;
 		}
 
-		context.cancel(() -> {
-			this.press(mouseX, mouseY, button.isLeft());
-			this.focus(true);
-		});
+		this.press(event.getMouseX(), event.getMouseY(), event.getButton().isLeft());
+		this.focus(true);
+		event.consume();
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
 		this.selecting = false;
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || notchesY == 0D || !super.isHovered() || !this.canStep()) {
+	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
+		if (event.isConsumed() || event.getNotchesY() == 0D || !super.isHovered() || !this.canStep()) {
 			return;
 		}
 
-		context.cancel(() -> this.stepValue(notchesY > 0D ? 1 : -1));
+		this.stepValue(event.getNotchesY() > 0D ? 1 : -1);
+		event.consume();
 	}
 
 	@Override
-	public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
+	public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
 		if (this.selecting) {
-			this.select(this.getPositionAt(mouseX, mouseY));
+			this.select(this.getPositionAt(event.getMouseX(), event.getMouseY()));
 		}
 	}
 
@@ -498,14 +400,28 @@ public abstract class FieldNode<V> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull NodeTextFieldFocusCallback<T> callback) {
-		super.registerCallback(FieldNode.CALLBACK_FOCUS, callback);
-		return (T) this;
+	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onFocus(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull NodeTextFieldChangeCallback<T, V> callback) {
-		super.registerCallback(FieldNode.CALLBACK_CHANGE, callback);
-		return (T) this;
+	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(FieldNode.FOCUS, priority, listener);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeFieldChangeEvent.Pre<T, V>> listener) {
+		return this.beforeChange(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeFieldChangeEvent.Pre<T, V>> listener) {
+		return super.listen(FieldNode.BEFORE_CHANGE, priority, listener);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull EventListener<NodeFieldChangeEvent.Post<T, V>> listener) {
+		return this.onChange(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeFieldChangeEvent.Post<T, V>> listener) {
+		return super.listen(FieldNode.CHANGE, priority, listener);
 	}
 
 	protected final void fallback(final V fallback) {
@@ -513,12 +429,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final void write(final @NonNull V value) {
-		final String text = this.limit(this.format(this.correct(value)));
-		if (!text.equals(this.text)) {
-			this.rewrite(text);
-		}
-
-		this.commit();
+		this.write(value, false);
 	}
 
 	protected final void revalidate() {
@@ -558,7 +469,7 @@ public abstract class FieldNode<V> extends Node {
 
 	protected final void restore() {
 		if (this.focusedText != null && !this.focusedText.equals(this.text)) {
-			this.change(this.focusedText);
+			this.change(this.focusedText, true);
 		}
 	}
 
@@ -597,23 +508,127 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		super.executeCallback(FieldNode.CALLBACK_FOCUS, DispatchContext.create(), () -> {
-			if (!focused) {
-				this.commit();
+		if (!focused) {
+			this.commit();
+		}
+
+		this.focused = focused;
+		this.focusedText = focused ? this.text : null;
+		if (!focused) {
+			this.selectionStart = -1;
+		}
+		super.fire(FieldNode.FOCUS, () -> NodeEvent.create(this));
+	}
+
+	private final void pressKey(final @NonNull Key key) {
+		if (this.handleKey(key)) {
+			return;
+		}
+
+		if (key == Key.UP || key == Key.DOWN) {
+			this.stepValue(key == Key.UP ? 1 : -1);
+			return;
+		}
+
+		if (key == Key.LEFT) {
+			this.updateSelection();
+			this.holdInput(key);
+			this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
+			return;
+		}
+
+		if (key == Key.RIGHT) {
+			this.updateSelection();
+			this.holdInput(key);
+			this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
+			return;
+		}
+
+		if (key == Key.BACKSPACE) {
+			if (this.deleteSelection() || this.cursorPos <= 0) {
+				return;
 			}
 
-			this.focused = focused;
-			this.focusedText = focused ? this.text : null;
-			if (!focused) {
+			this.holdInput(key);
+			final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
+			if (this.edit(this.text.substring(0, backStart) + this.text.substring(this.cursorPos))) {
+				this.decreaseCursor(this.cursorPos - backStart);
+			}
+			return;
+		}
+
+		if (key == Key.DELETE) {
+			if (this.deleteSelection() || this.cursorPos >= this.text.length()) {
+				return;
+			}
+
+			this.holdInput(key);
+			final int deleteEnd = this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
+			this.edit(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
+			return;
+		}
+
+		if (key == Key.HOME) {
+			this.updateSelection();
+			this.cursorPos = 0;
+			this.decreaseCursor(0);
+			return;
+		}
+
+		if (key == Key.END) {
+			this.updateSelection();
+			this.cursorPos = this.text.length();
+			this.increaseCursor(0);
+			return;
+		}
+
+		if (key == Key.A && this.isShortcutKeyDown()) {
+			this.selectionStart = 0;
+			this.cursorPos = this.text.length();
+			return;
+		}
+
+		if (key == Key.C && this.isShortcutKeyDown()) {
+			if (this.selectionStart == -1) {
+				return;
+			}
+
+			if (this.selectionStart < this.cursorPos) {
+				BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
+			} else {
+				BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
+			}
+
+			return;
+		}
+
+		if (key == Key.X && this.isShortcutKeyDown()) {
+			if (this.selectionStart == -1) {
+				return;
+			}
+
+			final int start = Math.min(this.selectionStart, this.cursorPos);
+			final int end = Math.max(this.selectionStart, this.cursorPos);
+			final String cut = this.text.substring(start, end);
+			if (this.edit(this.text.substring(0, start) + this.text.substring(end))) {
+				BridgeHandler.WINDOW.get().setClipboard(cut);
+				this.cursorPos = start;
 				this.selectionStart = -1;
 			}
-		});
+			return;
+		}
+
+		if (key == Key.V && this.isShortcutKeyDown()) {
+			if (this.insert(BridgeHandler.WINDOW.get().getClipboard())) {
+				this.commit();
+			}
+		}
 	}
 
 	private final void replace(final String newText) {
 		final String text = this.limit(newText == null ? "" : newText);
 		if (!text.equals(this.text)) {
-			this.rewrite(text);
+			this.rewrite(text, false);
 		}
 
 		if (!this.focused) {
@@ -626,21 +641,36 @@ public abstract class FieldNode<V> extends Node {
 			return false;
 		}
 
-		return this.change(newText);
+		return this.change(newText, true);
 	}
 
-	private final boolean change(final @NonNull String newText) {
+	private final void write(final @NonNull V value, final boolean user) {
+		final String text = this.limit(this.format(this.correct(value)));
+		if (!text.equals(this.text)) {
+			this.rewrite(text, user);
+		}
+
+		this.commit();
+	}
+
+	private final boolean change(final @NonNull String newText, final boolean user) {
 		final String previous = this.text;
 		this.text = newText;
 		final V value = this.getValue();
 		final boolean valid = this.isValid();
 		this.text = previous;
 
-		super.executeCallback(FieldNode.CALLBACK_CHANGE, DispatchContext.create(), () -> {
-			this.text = newText;
-			this.sync();
-		}, newText, value, valid);
-		return !previous.equals(this.text);
+		if (user) {
+			final NodeFieldChangeEvent.Pre<FieldNode<V>, V> event = super.fire(FieldNode.BEFORE_CHANGE, () -> NodeFieldChangeEvent.Pre.create(this, previous, newText, value, valid));
+			if (event != null && event.isCancelled()) {
+				return false;
+			}
+		}
+
+		this.text = newText;
+		this.sync();
+		super.fire(FieldNode.CHANGE, () -> NodeFieldChangeEvent.Post.create(this, previous, newText, value, valid));
+		return true;
 	}
 
 	private final void commit() {
@@ -648,16 +678,16 @@ public abstract class FieldNode<V> extends Node {
 		this.fallback = value;
 		final String text = value == null ? "" : this.limit(this.format(value));
 		if (!text.equals(this.text)) {
-			this.rewrite(text);
+			this.rewrite(text, false);
 		}
 
 		this.sync();
 	}
 
-	private final void rewrite(final @NonNull String newText) {
+	private final void rewrite(final @NonNull String newText, final boolean user) {
 		final int cursorFromEnd = this.text.length() - this.cursorPos;
 		final int selectionFromEnd = this.text.length() - this.selectionStart;
-		if (!this.change(newText) || !this.focused) {
+		if (!this.change(newText, user) || !this.focused) {
 			return;
 		}
 
@@ -689,7 +719,7 @@ public abstract class FieldNode<V> extends Node {
 
 		final V next = this.increment(from, count);
 		if (next != null) {
-			this.write(next);
+			this.write(next, true);
 		}
 	}
 

@@ -1,12 +1,16 @@
 package dev.joid.lib.ui.shortcut;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.key.resolver.KeyResolver;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventBus;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
@@ -14,8 +18,11 @@ import lombok.NonNull;
 @Getter
 public final class Shortcut {
 
-	private final Object                        binding;
-	private final List<Consumer<ShortcutEvent>> triggerList;
+	private static final Set<Object>              WARNED  = ConcurrentHashMap.newKeySet();
+	private static final EventType<ShortcutEvent> TRIGGER = EventType.create("onTrigger");
+
+	private final Object   binding;
+	private final EventBus eventBus;
 
 	private boolean alt;
 	private boolean ctrl;
@@ -26,16 +33,12 @@ public final class Shortcut {
 	private Node node;
 
 	private Shortcut(final Object binding) {
-		if (!KeyResolver.supports(binding)) {
-			throw new IllegalArgumentException("No key resolver found for a binding of type " + binding.getClass().getName());
+		if (JOIDEnv.isDevMode() && !KeyResolver.supports(binding) && Shortcut.WARNED.add(binding)) {
+			System.err.println("[JOID] No key resolver knows the shortcut binding " + binding + " of type " + binding.getClass().getName() + ", the shortcut never fires: pass a Key or register an IKeyResolver first");
 		}
 
 		this.binding = binding;
-		this.triggerList = new CopyOnWriteArrayList<>();
-	}
-
-	public static @NonNull Shortcut create(final @NonNull Key key) {
-		return new Shortcut(key);
+		this.eventBus = EventBus.create(() -> "Shortcut");
 	}
 
 	public static @NonNull Shortcut create(final @NonNull Object binding) {
@@ -62,14 +65,19 @@ public final class Shortcut {
 		return this;
 	}
 
-	public @NonNull Shortcut onTrigger(final @NonNull Consumer<@NonNull ShortcutEvent> listener) {
-		this.triggerList.add(listener);
+	public @NonNull Shortcut onTrigger(final @NonNull EventListener<ShortcutEvent> listener) {
+		return this.onTrigger(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull Shortcut onTrigger(final @NonNull EventPriority priority, final @NonNull EventListener<ShortcutEvent> listener) {
+		this.eventBus.listen(Shortcut.TRIGGER, priority, listener);
 		return this;
 	}
 
 	public void fireTrigger(final @NonNull Key key) {
-		final ShortcutEvent event = new ShortcutEvent(key, this);
-		this.triggerList.forEach(listener -> listener.accept(event));
+		if (this.eventBus.has(Shortcut.TRIGGER)) {
+			this.eventBus.fire(Shortcut.TRIGGER, ShortcutEvent.create(key, this));
+		}
 	}
 
 	public @NonNull Shortcut attach(final @NonNull UI ui) {
@@ -104,7 +112,7 @@ public final class Shortcut {
 	}
 
 	public boolean isTriggeredBy(final @NonNull Key key) {
-		return this.isAttached() && KeyResolver.resolve(this.binding) == key && this.alt == UI.isAltKeyDown() && this.ctrl == UI.isCtrlKeyDown() && this.shift == UI.isShiftKeyDown();
+		return this.isAttached() && KeyResolver.supports(this.binding) && KeyResolver.resolve(this.binding) == key && this.alt == UI.isAltKeyDown() && this.ctrl == UI.isCtrlKeyDown() && this.shift == UI.isShiftKeyDown();
 	}
 
 }

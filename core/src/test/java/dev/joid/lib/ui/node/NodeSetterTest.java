@@ -138,7 +138,7 @@ public class NodeSetterTest {
 		final List<Boolean> changes = new ArrayList<>();
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).color(() -> color[0]).width(() -> width[0]);
 		final ProgressNode bar = ProgressNode.create(0D, 0D, 100D, 10D).progress(() -> progress[0]);
-		final Checkbox checkbox = new Checkbox().checked(() -> checked[0]).onChange((node, value) -> changes.add(value));
+		final Checkbox checkbox = new Checkbox().checked(() -> checked[0]).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(rect, bar, checkbox));
 		width[0] = 30D;
 		color[0] = Color.GREEN;

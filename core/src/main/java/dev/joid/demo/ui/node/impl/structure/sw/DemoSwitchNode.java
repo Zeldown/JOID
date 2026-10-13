@@ -46,8 +46,8 @@ public class DemoSwitchNode extends SwitchNode {
 					.text(Signal.from(() -> Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, super.getState().equals(state) ? Color.WHITE : DemoSwitchNode.INK), Align.CENTER, Align.CENTER)))
 					.attach(rect);
 				})
-				.onClick((node, mouseX, mouseY, button) -> {
-					super.state(state);
+				.onClick(event -> {
+					super.chooseState(state);
 				})
 				.attach(flex);
 			}

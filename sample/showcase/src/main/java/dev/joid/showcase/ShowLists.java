@@ -60,8 +60,8 @@ public class ShowLists extends ShowUI {
 			final ReorderableFlexNode list = ReorderableFlexNode
 			.vertical(20, 0, 920)
 			.margin(12D)
-			.onReorderEnd((flex, child, oldIndex, newIndex) -> {
-				this.order.add(newIndex, this.order.remove(oldIndex));
+			.onReorderEnd(event -> {
+				this.order.add(event.getNewIndex(), this.order.remove(event.getOldIndex()));
 				this.next.set(this.order.get(0));
 			});
 			list.body(flex -> {

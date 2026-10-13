@@ -5,14 +5,15 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
-import dev.joid.lib.ui.node.impl.structure.slider.callback.NodeSliderChangeCallback;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -20,7 +21,8 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public abstract class SliderNode<O> extends Node {
 
-	public static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeSliderChangeCallback.class);
+	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
+	private static final EventType<NodeChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
 	private O      value;
 	private Set<O> valueSet;
@@ -53,15 +55,14 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || !super.isHovered()) {
+	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
+		if (event.isConsumed() || !super.isHovered()) {
 			return;
 		}
 
-		context.cancel(() -> {
-			this.thumb.x(mouseX - super.getAbsoluteX() - this.thumb.getWidth() / 2);
-			this.thumb.dragging(true);
-		});
+		this.thumb.x(event.getMouseX() - super.getAbsoluteX() - this.thumb.getWidth() / 2);
+		this.thumb.dragging(true);
+		event.consume();
 	}
 
 	public abstract void drawSlider(final double mouseX, final double mouseY);
@@ -122,9 +123,20 @@ public abstract class SliderNode<O> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull NodeSliderChangeCallback<T, O> callback) {
-		super.registerCallback(SliderNode.CALLBACK_CHANGE, callback);
-		return (T) this;
+	public final <T extends SliderNode<O>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, O>> listener) {
+		return this.beforeChange(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends SliderNode<O>> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, O>> listener) {
+		return super.listen(SliderNode.BEFORE_CHANGE, priority, listener);
+	}
+
+	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, O>> listener) {
+		return this.onChange(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, O>> listener) {
+		return super.listen(SliderNode.CHANGE, priority, listener);
 	}
 
 	protected final void release() {
@@ -141,13 +153,13 @@ public abstract class SliderNode<O> extends Node {
 			return;
 		}
 
-		super.executeCallback(SliderNode.CALLBACK_CHANGE, DispatchContext.create(), () -> {
+		super.change(SliderNode.BEFORE_CHANGE, SliderNode.CHANGE, this.value, value, false, () -> {
 			this.value = value;
 			super.sync(this.signal, value);
 			if (super.getUi() != null) {
 				this.place();
 			}
-		}, value);
+		});
 	}
 
 	private void pick() {
@@ -156,12 +168,12 @@ public abstract class SliderNode<O> extends Node {
 			return;
 		}
 
-		super.executeCallback(SliderNode.CALLBACK_CHANGE, DispatchContext.create(), () -> {
+		final boolean changed = super.change(SliderNode.BEFORE_CHANGE, SliderNode.CHANGE, this.value, newValue, true, () -> {
 			this.value = newValue;
 			super.sync(this.signal, newValue);
-		}, newValue);
+		});
 
-		if (!this.value.equals(newValue)) {
+		if (!changed) {
 			this.thumb.dragging(false);
 			this.place();
 		}

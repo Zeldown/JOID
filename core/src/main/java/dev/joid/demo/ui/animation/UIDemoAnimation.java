@@ -72,7 +72,7 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(linear).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(linear).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Linear", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -87,7 +87,7 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(quad).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(quad).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Quad in out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -102,7 +102,7 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(bounce).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(bounce).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Bounce out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -117,7 +117,7 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(elastic).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(elastic).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Elastic out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -132,7 +132,7 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(repeat).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(repeat).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Repeat", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -147,7 +147,7 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(delay).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(delay).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Yoyo with delay", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -162,7 +162,7 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(sequence).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(sequence).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Sequence", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -177,7 +177,7 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(slow).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(slow).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Half speed", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -223,13 +223,13 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 60, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate((node, animator, value) -> node.x(260D * value)).animate(once).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(once).attach(line);
 			})
 			.attach(rect);
 			RectNode
 			.create(40, 150, 100, 50)
 			.color(UIDemoAnimation.INK)
-			.onClick((node, mouseX, mouseY, button) -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).setCallback(tween -> plays.increment()).start())
+			.onClick(event -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).setCallback(tween -> plays.increment()).start())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Play", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -237,7 +237,7 @@ public class UIDemoAnimation extends UIDemo {
 			RectNode
 			.create(160, 150, 100, 50)
 			.color(UIDemoAnimation.INK)
-			.onClick((node, mouseX, mouseY, button) -> once.setValue(0F))
+			.onClick(event -> once.setValue(0F))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Stop", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

@@ -93,7 +93,7 @@ public class UIDemoCursor extends UIDemo {
 			.create(100, 40, 120, 120)
 			.color(() -> locked.get() ? UIDemoCursor.INK.copyAlpha(0.4F) : UIDemoCursor.INK)
 			.cursor(() -> locked.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER)
-			.onClick((node, mouseX, mouseY, button) -> locked.set(!locked.get()))
+			.onClick(event -> locked.set(!locked.get()))
 			.attach(rect);
 			TextNode.create(160, 215).text(Text.create("Reactive", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -118,7 +118,7 @@ public class UIDemoCursor extends UIDemo {
 			.hoveredColor(Color.WHITE)
 			.cursor(Cursor.POINTER)
 			.hover(() -> "Button")
-			.onClick((node, mouseX, mouseY, button) -> through.increment())
+			.onClick(event -> through.increment())
 			.attach(rect);
 			RectNode.create(130, 60, 60, 60).color(UIDemoCursor.PLACEHOLDER).interactive(false).attach(rect);
 			TextNode.create(160, 160).text(Text.create("Clicks: " + through.get(), small, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -136,7 +136,7 @@ public class UIDemoCursor extends UIDemo {
 			.hoveredColor(Color.WHITE)
 			.cursor(Cursor.POINTER)
 			.hover(() -> "Button")
-			.onClick((node, mouseX, mouseY, button) -> blocked.increment())
+			.onClick(event -> blocked.increment())
 			.attach(rect);
 			RectNode.create(130, 60, 60, 60).color(UIDemoCursor.PLACEHOLDER).attach(rect);
 			TextNode.create(160, 160).text(Text.create("Clicks: " + blocked.get(), small, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -153,7 +153,7 @@ public class UIDemoCursor extends UIDemo {
 			.color(UIDemoCursor.INK)
 			.hoveredColor(Color.WHITE)
 			.cursor(Cursor.POINTER)
-			.onClick((node, mouseX, mouseY, button) -> bubbled.increment())
+			.onClick(event -> bubbled.increment())
 			.body(parent -> {
 				RectNode.create(60, 30, 80, 60).color(UIDemoCursor.PLACEHOLDER).attach(parent);
 			})

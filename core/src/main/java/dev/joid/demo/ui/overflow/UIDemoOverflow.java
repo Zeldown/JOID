@@ -227,7 +227,7 @@ public class UIDemoOverflow extends UIDemo {
 			RectNode
 			.create(260, 20, 120, 50)
 			.color(UIDemoOverflow.INK)
-			.onClick((node, mouseX, mouseY, button) -> area.scrollRatioY(0F))
+			.onClick(event -> area.scrollRatioY(0F))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Top", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -235,7 +235,7 @@ public class UIDemoOverflow extends UIDemo {
 			RectNode
 			.create(260, 90, 120, 50)
 			.color(UIDemoOverflow.INK)
-			.onClick((node, mouseX, mouseY, button) -> area.scrollRatioY(1F))
+			.onClick(event -> area.scrollRatioY(1F))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Bottom", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -252,10 +252,10 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 360, 160)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
-			.onScrollEnding((node, scrollX, scrollY) -> {
+			.onScrollToEnd(event -> {
 				if (items.get() < 24) {
 					for (int i = 0; i < 4; i++) {
-						RectNode.create(0, 0, 340, 40).color(UIDemoOverflow.INK).attach(node.getChild(0, FlexNode.class));
+						RectNode.create(0, 0, 340, 40).color(UIDemoOverflow.INK).attach(event.getNode().getChild(0, FlexNode.class));
 					}
 					items.add(4);
 				}
@@ -285,9 +285,9 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 360, 140)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
-			.onScrollUpdate((node, value) -> offset.set((int) value))
-			.onScrollEnd((node, scrollX, scrollY) -> {
-				System.out.println("[UIDemoOverflow] scroll end: " + scrollX + ", " + scrollY);
+			.onScroll(event -> offset.set((int) event.getOffset()))
+			.onScrollAtEnd(event -> {
+				System.out.println("[UIDemoOverflow] scroll end: " + event.getNode().getScrollX() + ", " + event.getNode().getScrollY());
 				ends.increment();
 			})
 			.body(area -> {

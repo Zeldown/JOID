@@ -2,9 +2,9 @@ package dev.joid.lib.ui.node.impl.design.model;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -90,30 +90,30 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
-		if (notchesY == 0D || !super.isHovered()) {
+	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
+		if (event.isConsumed() || event.getNotchesY() == 0D || !super.isHovered()) {
 			return;
 		}
 
-		context.cancel(() -> this.zoom(this.getTargetSize() + notchesY / 25D));
+		this.zoom(this.getTargetSize() + event.getNotchesY() / 25D);
+		event.consume();
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (!button.isLeft() || !super.isHovered()) {
+	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
+		if (event.isConsumed() || !event.getButton().isLeft() || !super.isHovered()) {
 			return;
 		}
 
-		context.cancel(() -> {
-			this.dragged = true;
-			this.draggedMouseX = mouseX;
-			this.draggedMouseY = mouseY;
-		});
+		this.dragged = true;
+		this.draggedMouseX = event.getMouseX();
+		this.draggedMouseY = event.getMouseY();
+		event.consume();
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (button.isLeft()) {
+	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
+		if (event.getButton().isLeft()) {
 			this.dragged = false;
 		}
 	}

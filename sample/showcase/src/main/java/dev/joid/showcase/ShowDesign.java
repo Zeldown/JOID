@@ -29,7 +29,7 @@ public class ShowDesign extends ShowUI {
 
 	@Override
 	protected void scene() {
-		RectNode.create(0, 0, 1, 1).color(Color.TRANSPARENT).onUpdate(node -> this.step()).attach(this);
+		RectNode.create(0, 0, 1, 1).color(Color.TRANSPARENT).onUpdate(event -> this.step()).attach(this);
 		final RectNode neon = RectNode.create(0, 0, 1920, 1080).color(Color.TRANSPARENT).visible(() -> this.right() - this.left() < 1920D);
 		neon.body(layer -> this.screen(new ShowNeonKit(), layer)).attach(this);
 
@@ -62,8 +62,8 @@ public class ShowDesign extends ShowUI {
 		TextNode.create(150, 386).text(Text.create("Two kits.", kit.accent())).attach(layer);
 		TextNode.create(156, 590).text(Text.create("One screen class, one set of signals.", kit.hint())).attach(layer);
 		TextNode.create(156, 632).text(Text.create("The kit decides every pixel.", kit.hint())).attach(layer);
-		kit.choice(156, 720, "Neon", () -> !this.paper.get()).onClick((node, mouseX, mouseY, clickType) -> this.paper.set(false)).attach(layer);
-		kit.choice(366, 720, "Paper", () -> this.paper.get()).onClick((node, mouseX, mouseY, clickType) -> this.paper.set(true)).attach(layer);
+		kit.choice(156, 720, "Neon", () -> !this.paper.get()).onClick(event -> this.paper.set(false)).attach(layer);
+		kit.choice(366, 720, "Paper", () -> this.paper.get()).onClick(event -> this.paper.set(true)).attach(layer);
 
 		kit.panel(980, 140, 800, 800).attach(layer);
 		TextNode.create(1040, 186).text(Text.create("Settings", kit.title())).attach(layer);
@@ -83,8 +83,8 @@ public class ShowDesign extends ShowUI {
 		TextNode.create(1040, 674).text(Text.create("Display name", kit.label())).anchorY(Align.CENTER).attach(layer);
 		kit.field(1040, 704, 680).signal(this.name).attach(layer);
 
-		kit.button(1040, 826, 320, () -> "Reset", false).onClick((node, mouseX, mouseY, clickType) -> this.reset()).attach(layer);
-		kit.button(1400, 826, 320, () -> this.isSaved() ? "Saved" : "Save changes", true).onClick((node, mouseX, mouseY, clickType) -> this.saved = BridgeHandler.CLOCK.get().currentTimeMillis()).attach(layer);
+		kit.button(1040, 826, 320, () -> "Reset", false).onClick(event -> this.reset()).attach(layer);
+		kit.button(1400, 826, 320, () -> this.isSaved() ? "Saved" : "Save changes", true).onClick(event -> this.saved = BridgeHandler.CLOCK.get().currentTimeMillis()).attach(layer);
 	}
 
 	private void reset() {

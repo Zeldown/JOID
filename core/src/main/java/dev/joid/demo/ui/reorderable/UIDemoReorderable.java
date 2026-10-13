@@ -8,15 +8,11 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
-import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderCallback;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import lombok.NonNull;
 
 @UIData(background = true)
 public class UIDemoReorderable extends UIDemo {
@@ -46,7 +42,7 @@ public class UIDemoReorderable extends UIDemo {
 				ReorderableFlexNode
 				.vertical(0, 0, 360)
 				.margin(6D)
-				.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] vertical auto list: reorder end " + oldIndex + " -> " + newIndex))
+				.onReorderEnd(event -> System.out.println("[UIDemoReorderable] vertical auto list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()))
 				.body(flex -> {
 					for (int i = 0; i < 8; i++) {
 						final int index = i;
@@ -77,7 +73,7 @@ public class UIDemoReorderable extends UIDemo {
 					.vertical(20, 20, 360)
 					.margin(6D)
 					.autoDrag(false)
-					.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] vertical handle list: reorder end " + oldIndex + " -> " + newIndex));
+					.onReorderEnd(event -> System.out.println("[UIDemoReorderable] vertical handle list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()));
 			manual.body(flex -> {
 			for (int i = 0; i < 5; i++) {
 				final int index = i;
@@ -88,7 +84,7 @@ public class UIDemoReorderable extends UIDemo {
 					RectNode
 					.create(0, 0, 40, 34)
 					.color(UIDemoReorderable.HANDLE)
-					.onClick((node, mouseX, mouseY, button) -> manual.startDrag(item))
+					.onClick(event -> manual.startDrag(item))
 					.body(handle -> {
 						RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
 						RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
@@ -112,9 +108,9 @@ public class UIDemoReorderable extends UIDemo {
 			ReorderableFlexNode
 			.vertical(20, 20, 200)
 			.margin(6D)
-			.onReorderStart((flex, child) -> starts.increment())
-			.onReorder((flex, child) -> moves.increment())
-			.onReorderEnd((flex, child, oldIndex, newIndex) -> last.set(oldIndex + " -> " + newIndex))
+			.onReorderStart(event -> starts.increment())
+			.onReorder(event -> moves.increment())
+			.onReorderEnd(event -> last.set(event.getOldIndex() + " -> " + event.getNewIndex()))
 			.body(flex -> {
 				for (int i = 0; i < 5; i++) {
 					final int index = i;
@@ -183,7 +179,7 @@ public class UIDemoReorderable extends UIDemo {
 				ReorderableFlexNode
 				.horizontal(10, 10, 200)
 				.margin(10D)
-				.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] horizontal auto list: reorder end " + oldIndex + " -> " + newIndex))
+				.onReorderEnd(event -> System.out.println("[UIDemoReorderable] horizontal auto list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()))
 				.body(flex -> {
 					for (int i = 0; i < 8; i++) {
 						final int index = i;
@@ -219,7 +215,7 @@ public class UIDemoReorderable extends UIDemo {
 						.horizontal(10, 10, 200)
 						.margin(10D)
 						.autoDrag(false)
-						.onReorderEnd((flex, child, oldIndex, newIndex) -> System.out.println("[UIDemoReorderable] horizontal handle list: reorder end " + oldIndex + " -> " + newIndex));
+						.onReorderEnd(event -> System.out.println("[UIDemoReorderable] horizontal handle list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()));
 				manual.body(flex -> {
 					for (int i = 0; i < 8; i++) {
 						final int index = i;
@@ -230,7 +226,7 @@ public class UIDemoReorderable extends UIDemo {
 							RectNode
 							.create(0, 0, 150, 40)
 							.color(UIDemoReorderable.HANDLE)
-							.onClick((node, mouseX, mouseY, button) -> manual.startDrag(item))
+							.onClick(event -> manual.startDrag(item))
 							.body(handle -> {
 								RectNode.create(65, 13, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
 								RectNode.create(65, 19, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
@@ -310,17 +306,9 @@ public class UIDemoReorderable extends UIDemo {
 			ReorderableFlexNode
 			.vertical(20, 20, 360)
 			.margin(6D)
-			.onReorder(new NodeReorderCallback<ReorderableFlexNode>() {
-
-				@Override
-				public void apply(final @NonNull ReorderableFlexNode node, final @NonNull Node child) {}
-
-				@Override
-				public void pre(final @NonNull ReorderableFlexNode node, final @NonNull DispatchContext context, final @NonNull Node child) {
-					refused.increment();
-					context.cancel();
-				}
-
+			.beforeReorder(event -> {
+				refused.increment();
+				event.cancel();
 			})
 			.body(flex -> {
 				for (int i = 0; i < 4; i++) {

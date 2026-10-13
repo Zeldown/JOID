@@ -16,10 +16,8 @@ import org.junit.Test;
 import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -194,9 +192,11 @@ public abstract class SnapshotSuite {
 		@Getter private double dragY;
 
 		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
-			this.dragX = mouseX;
-			this.dragY = mouseY;
+		public void init() {
+			super.handleMouseDragged(event -> {
+				this.dragX = event.getMouseX();
+				this.dragY = event.getMouseY();
+			});
 		}
 
 	}

@@ -9,13 +9,10 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode.SelectorDirection;
-import dev.joid.lib.ui.node.impl.structure.selector.callback.NodeSelectorChangeCallback;
 import dev.joid.lib.utils.align.Align;
-import lombok.NonNull;
 
 @UIData(background = true)
 public class UIDemoSelector extends UIDemo {
@@ -37,9 +34,9 @@ public class UIDemoSelector extends UIDemo {
 			DemoSelectorNode
 			.create(40, 30, 320, 50)
 			.values("First", "Second", "Third")
-			.onChange((node, value) -> {
-				System.out.println("[UIDemoSelector] down selector value: " + value);
-				down.set(value);
+			.onChange(event -> {
+				System.out.println("[UIDemoSelector] down selector value: " + event.getValue());
+				down.set(event.getValue());
 			})
 			.attach(rect);
 			TextNode.create(40, 200).text(Text.create("Value: " + down.get(), info)).attach(rect);
@@ -55,7 +52,7 @@ public class UIDemoSelector extends UIDemo {
 			.create(40, 180, 320, 50)
 			.direction(SelectorDirection.UP)
 			.values("First", "Second", "Third")
-			.onChange((node, value) -> System.out.println("[UIDemoSelector] up selector value: " + value))
+			.onChange(event -> System.out.println("[UIDemoSelector] up selector value: " + event.getValue()))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Up", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -88,19 +85,11 @@ public class UIDemoSelector extends UIDemo {
 			DemoSelectorNode
 			.create(40, 30, 320, 50)
 			.values("First", "Second", "Third")
-			.onChange(new NodeSelectorChangeCallback<DemoSelectorNode, String>() {
-
-				@Override
-				public void apply(final @NonNull DemoSelectorNode node, final @NonNull String value) {}
-
-				@Override
-				public void pre(final @NonNull DemoSelectorNode node, final @NonNull DispatchContext context, final @NonNull String value) {
-					if ("Third".equals(value)) {
-						refused.increment();
-						context.cancel();
-					}
+			.beforeChange(event -> {
+				if ("Third".equals(event.getValue())) {
+					refused.increment();
+					event.cancel();
 				}
-
 			})
 			.attach(rect);
 			TextNode.create(40, 200).text(Text.create("Refused: " + refused.get(), info)).attach(rect);

@@ -38,18 +38,18 @@ public class UIDemoAudio extends UIDemo {
 		.loop(true)
 		.autoplay(false)
 		.volume(volume)
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
-			if (player.isPlaying()) {
-				player.pause();
+		.<ResourcePlayerNode>onClick(event -> {
+			if (event.getNode().isPlaying()) {
+				event.getNode().pause();
 			} else {
-				player.play();
+				event.getNode().play();
 			}
 		})
 		.attach(this);
 		RectNode
 		.create(80, 570, 100, 36)
 		.color(UIDemoAudio.INK)
-		.onClick((node, mouseX, mouseY, clickType) -> volume.set(Math.max(0F, volume.get() - 0.25F)))
+		.onClick(event -> volume.set(Math.max(0F, volume.get() - 0.25F)))
 		.body(container -> {
 			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
@@ -57,7 +57,7 @@ public class UIDemoAudio extends UIDemo {
 		RectNode
 		.create(190, 570, 100, 36)
 		.color(UIDemoAudio.INK)
-		.onClick((node, mouseX, mouseY, clickType) -> volume.set(Math.min(1F, volume.get() + 0.25F)))
+		.onClick(event -> volume.set(Math.min(1F, volume.get() + 0.25F)))
 		.body(container -> {
 			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
@@ -71,18 +71,18 @@ public class UIDemoAudio extends UIDemo {
 		.loop(true)
 		.autoplay(false)
 		.location(() -> Point.create(0D, 0D, far.get() ? 30D : 0D))
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
-			if (player.isPlaying()) {
-				player.pause();
+		.<ResourcePlayerNode>onClick(event -> {
+			if (event.getNode().isPlaying()) {
+				event.getNode().pause();
 			} else {
-				player.play();
+				event.getNode().play();
 			}
 		})
 		.attach(this);
 		RectNode
 		.create(440, 570, 100, 36)
 		.color(UIDemoAudio.INK)
-		.onClick((node, mouseX, mouseY, clickType) -> far.set(false))
+		.onClick(event -> far.set(false))
 		.body(container -> {
 			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Near", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
@@ -90,7 +90,7 @@ public class UIDemoAudio extends UIDemo {
 		RectNode
 		.create(550, 570, 100, 36)
 		.color(UIDemoAudio.INK)
-		.onClick((node, mouseX, mouseY, clickType) -> far.set(true))
+		.onClick(event -> far.set(true))
 		.body(container -> {
 			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Far", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
@@ -105,11 +105,11 @@ public class UIDemoAudio extends UIDemo {
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 30D))
 		.referenceDistance(40F)
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
-			if (player.isPlaying()) {
-				player.pause();
+		.<ResourcePlayerNode>onClick(event -> {
+			if (event.getNode().isPlaying()) {
+				event.getNode().pause();
 			} else {
-				player.play();
+				event.getNode().play();
 			}
 		})
 		.attach(this);
@@ -123,11 +123,11 @@ public class UIDemoAudio extends UIDemo {
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 30D))
 		.maxDistance(20F)
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
-			if (player.isPlaying()) {
-				player.pause();
+		.<ResourcePlayerNode>onClick(event -> {
+			if (event.getNode().isPlaying()) {
+				event.getNode().pause();
 			} else {
-				player.play();
+				event.getNode().play();
 			}
 		})
 		.attach(this);
@@ -140,18 +140,18 @@ public class UIDemoAudio extends UIDemo {
 		.loop(true)
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 0D))
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
-			if (player.isPlaying()) {
-				player.pause();
+		.<ResourcePlayerNode>onClick(event -> {
+			if (event.getNode().isPlaying()) {
+				event.getNode().pause();
 			} else {
-				player.play();
+				event.getNode().play();
 			}
 		})
 		.attach(this);
 		RectNode
 		.create(1520, 570, 100, 36)
 		.color(UIDemoAudio.INK)
-		.onClick((node, mouseX, mouseY, clickType) -> away.set(false))
+		.onClick(event -> away.set(false))
 		.body(container -> {
 			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Here", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
@@ -159,7 +159,7 @@ public class UIDemoAudio extends UIDemo {
 		RectNode
 		.create(1630, 570, 100, 36)
 		.color(UIDemoAudio.INK)
-		.onClick((node, mouseX, mouseY, clickType) -> away.set(true))
+		.onClick(event -> away.set(true))
 		.body(container -> {
 			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Away", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})

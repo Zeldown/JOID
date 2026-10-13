@@ -38,7 +38,7 @@ public class SelectorNodeTest {
 
 	@Before
 	public void createAnOptionList() {
-		this.selector = new Selector().onChange((node, value) -> this.changes.add(value)).values("first", "second", "third");
+		this.selector = new Selector().onChange(event -> this.changes.add(event.getValue())).values("first", "second", "third");
 		this.first = (RectNode) this.selector.getChildren().ordered().get(0);
 		this.second = (RectNode) this.selector.getChildren().ordered().get(1);
 		this.third = (RectNode) this.selector.getChildren().ordered().get(2);
@@ -181,7 +181,7 @@ public class SelectorNodeTest {
 	@Test
 	public void reportsItsFirstSelection() {
 		final List<String> selections = new ArrayList<>();
-		new Selector().onChange((node, value) -> selections.add(value)).values("first", "second");
+		new Selector().onChange(event -> selections.add(event.getValue())).values("first", "second");
 		Assert.assertEquals(Arrays.asList("first"), selections);
 	}
 
@@ -195,7 +195,7 @@ public class SelectorNodeTest {
 	@Test
 	public void selectsTheGivenValue() {
 		final List<String> selections = new ArrayList<>();
-		final Selector selector = new Selector().onChange((node, value) -> selections.add(value)).values("easy", "normal", "hard").value("normal");
+		final Selector selector = new Selector().onChange(event -> selections.add(event.getValue())).values("easy", "normal", "hard").value("normal");
 		Assert.assertEquals("normal", selector.getValue());
 		Assert.assertEquals(Arrays.asList("easy", "normal"), selections);
 	}
@@ -338,7 +338,7 @@ public class SelectorNodeTest {
 
 		@Override
 		public void init() {
-			RectNode.create(0D, 0D, 1920D, 1080D).onClick((node, mouseX, mouseY, button) -> this.clicks.add("background")).attach(this);
+			RectNode.create(0D, 0D, 1920D, 1080D).onClick(event -> this.clicks.add("background")).attach(this);
 			super.add(this.node);
 		}
 

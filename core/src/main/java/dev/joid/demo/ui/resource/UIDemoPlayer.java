@@ -55,11 +55,11 @@ public class UIDemoPlayer extends UIDemo {
 		.create(1160, 40, 320, 180)
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.webp")))
 		.loop(true)
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
-			if (player.isPlaying()) {
-				player.pause();
+		.<ResourcePlayerNode>onClick(event -> {
+			if (event.getNode().isPlaying()) {
+				event.getNode().pause();
 			} else {
-				player.resume();
+				event.getNode().resume();
 			}
 		})
 		.attach(this);
@@ -69,15 +69,15 @@ public class UIDemoPlayer extends UIDemo {
 		.create(1520, 40, 320, 180)
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
 		.autoplay(false)
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> player.play())
+		.<ResourcePlayerNode>onClick(event -> event.getNode().play())
 		.attach(this);
 		TextNode.create(1680, 285).text(Text.create("Autoplay off", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(80, 380, 320, 180)
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.png")))
-		.onEnd(player -> ends.increment())
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> player.restart())
+		.onEnd(event -> ends.increment())
+		.<ResourcePlayerNode>onClick(event -> event.getNode().restart())
 		.attach(this);
 		TextNode.create(80, 574).text(Text.create("Ends: " + ends.get(), label)).attach(this);
 		TextNode.create(240, 625).text(Text.create("Play once", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
@@ -86,13 +86,13 @@ public class UIDemoPlayer extends UIDemo {
 		.create(440, 380, 320, 180)
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
 		.loop(true)
-		.onPlay(player -> plays.increment())
-		.onPause(player -> pauses.increment())
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
-			if (player.isPlaying()) {
-				player.pause();
+		.onPlay(event -> plays.increment())
+		.onPause(event -> pauses.increment())
+		.<ResourcePlayerNode>onClick(event -> {
+			if (event.getNode().isPlaying()) {
+				event.getNode().pause();
 			} else {
-				player.resume();
+				event.getNode().resume();
 			}
 		})
 		.attach(this);
@@ -103,7 +103,7 @@ public class UIDemoPlayer extends UIDemo {
 		.create(800, 380, 320, 180)
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
 		.loop(true)
-		.onProgress((player, value, time) -> progress.set((float) value))
+		.onProgress(event -> progress.set((float) event.getProgress()))
 		.attach(this);
 		ProgressNode.create(800, 574, 320, 12).background(Color.WHITE).foreground(UIDemoPlayer.INK).progress(progress).attach(this);
 		TextNode.create(960, 625).text(Text.create("Progress", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
@@ -116,7 +116,7 @@ public class UIDemoPlayer extends UIDemo {
 		RectNode
 		.create(1160, 570, 100, 36)
 		.color(UIDemoPlayer.INK)
-		.onClick((node, mouseX, mouseY, clickType) -> seeked.seek(1D))
+		.onClick(event -> seeked.seek(1D))
 		.body(container -> {
 			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1 s", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
@@ -124,7 +124,7 @@ public class UIDemoPlayer extends UIDemo {
 		RectNode
 		.create(1270, 570, 100, 36)
 		.color(UIDemoPlayer.INK)
-		.onClick((node, mouseX, mouseY, clickType) -> seeked.restart())
+		.onClick(event -> seeked.restart())
 		.body(container -> {
 			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Restart", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
@@ -135,8 +135,8 @@ public class UIDemoPlayer extends UIDemo {
 		.create(1520, 380, 320, 180)
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
 		.loop(true)
-		.onStop(player -> stops.increment())
-		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> player.stop())
+		.onStop(event -> stops.increment())
+		.<ResourcePlayerNode>onClick(event -> event.getNode().stop())
 		.attach(this);
 		TextNode.create(1520, 574).text(Text.create("Stops: " + stops.get(), label)).attach(this);
 		TextNode.create(1680, 625).text(Text.create("Stop", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);

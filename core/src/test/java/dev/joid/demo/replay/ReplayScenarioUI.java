@@ -68,9 +68,9 @@ public class ReplayScenarioUI extends UI {
 				SignalReplayNode.create().<SignalReplayNode>body(node -> node.text("Body " + this.clicks.get())).attach(this);
 				break;
 			case "update":
-				SignalReplayNode.create().<SignalReplayNode>onUpdate(node -> {
+				SignalReplayNode.create().<SignalReplayNode>onUpdate(event -> {
 					if (this.count++ == 0) {
-						node.text("Update " + this.clicks.get());
+						event.getNode().text("Update " + this.clicks.get());
 					}
 				}).attach(this);
 				break;

@@ -62,7 +62,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> clicks.increment())
+			.onClick(event -> clicks.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -80,7 +80,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> mapped.increment())
+			.onClick(event -> mapped.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -97,7 +97,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> left.increment())
+			.onClick(event -> left.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("A +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -105,7 +105,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(180, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> right.increment())
+			.onClick(event -> right.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("B +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -143,7 +143,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 160, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> volume.set(0))
+			.onClick(event -> volume.set(0))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -179,7 +179,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> shown.toggle())
+			.onClick(event -> shown.toggle())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -196,7 +196,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> heat.increment())
+			.onClick(event -> heat.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -214,7 +214,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				if (items.size() < 4) {
 					items.add("Item " + (items.size() + 1));
 				}
@@ -226,7 +226,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(180, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> items.remove(items.size() - 1))
+			.onClick(event -> items.remove(items.size() - 1))
 			.visible(!items.isEmpty())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Remove", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
@@ -278,7 +278,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
-			.onClick((node, mouseX, mouseY, button) -> sent.increment())
+			.onClick(event -> sent.increment())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

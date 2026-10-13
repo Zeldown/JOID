@@ -35,7 +35,7 @@ public class CheckboxNodeTest {
 	@Test
 	public void flipsOnEachClick() {
 		final List<Boolean> changes = new ArrayList<>();
-		final Checkbox checkbox = new Checkbox().onChange((node, value) -> changes.add(value));
+		final Checkbox checkbox = new Checkbox().onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(checkbox)).frame();
 		this.click(110D, 110D);
 		Assert.assertTrue(checkbox.isChecked());
@@ -48,7 +48,7 @@ public class CheckboxNodeTest {
 	public void staysInSyncWithItsSignal() {
 		final List<Boolean> changes = new ArrayList<>();
 		final BooleanSignal subtitles = new BooleanSignal(true);
-		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange((node, value) -> changes.add(value));
+		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange(event -> changes.add(event.getValue()));
 		Assert.assertTrue(checkbox.isChecked());
 		Assert.assertSame(subtitles, checkbox.getSignal());
 		this.bridges.open(new NodeUI(checkbox)).frame();
@@ -118,7 +118,7 @@ public class CheckboxNodeTest {
 	public void writesAChosenStateIntoItsSignal() {
 		final List<Boolean> changes = new ArrayList<>();
 		final BooleanSignal subtitles = new BooleanSignal(false);
-		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange((node, value) -> changes.add(value));
+		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange(event -> changes.add(event.getValue()));
 		checkbox.checked(true);
 		checkbox.checked(true);
 		Assert.assertTrue(subtitles.get());

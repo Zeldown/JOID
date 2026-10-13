@@ -31,8 +31,9 @@ import dev.joid.lib.ui.core.data.overlay.render.UIDataOverlayRender;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
+import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.shortcut.Shortcut;
 
 import lombok.NonNull;
@@ -1037,6 +1038,32 @@ public class UIBridgeTest {
 		public TraceUI(final String name, final List<String> trace) {
 			this.name = name;
 			this.trace = trace;
+			super.beforeClose(event -> {
+				this.trace.add("close " + this.name);
+				if (!this.closeable) {
+					event.cancel();
+				}
+			});
+			super.handleMousePressed(event -> {
+				this.trace.add("pressed " + this.name + " " + event.getButton());
+				this.cancel(event);
+			});
+			super.handleMouseDragged(event -> {
+				this.trace.add("dragged " + this.name + " " + event.getButton() + " " + event.getDeltaTime());
+				this.cancel(event);
+			});
+			super.handleMouseReleased(event -> {
+				this.trace.add("released " + this.name + " " + event.getButton());
+				this.cancel(event);
+			});
+			super.handleMouseScroll(event -> {
+				this.trace.add("scrolled " + this.name + " " + event.getNotchesY());
+				this.cancel(event);
+			});
+			super.handleKeyPressed(event -> this.cancel(event));
+			super.handleKeyPressed(EventPriority.MONITOR, event -> this.trace.add("key " + this.name + " " + event.getKey()));
+			super.handleCharTyped(event -> this.cancel(event));
+			super.handleCharTyped(EventPriority.MONITOR, event -> this.trace.add("char " + this.name + " " + new String(Character.toChars(event.getCodepoint()))));
 		}
 
 		@Override
@@ -1053,55 +1080,13 @@ public class UIBridgeTest {
 		}
 
 		@Override
-		public boolean close() {
-			this.trace.add("close " + this.name);
-			return this.closeable;
-		}
-
-		@Override
 		public void update() {
 			this.trace.add("update " + this.name);
 		}
 
-		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.trace.add("pressed " + this.name + " " + button);
-			this.cancel(context);
-		}
-
-		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
-			this.trace.add("dragged " + this.name + " " + button + " " + deltaTime);
-			this.cancel(context);
-		}
-
-		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.trace.add("released " + this.name + " " + button);
-			this.cancel(context);
-		}
-
-		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull DispatchContext context) {
-			this.trace.add("scrolled " + this.name + " " + value);
-			this.cancel(context);
-		}
-
-		@Override
-		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
-			this.trace.add("key " + this.name + " " + key);
-			this.cancel(context);
-		}
-
-		@Override
-		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
-			this.trace.add("char " + this.name + " " + new String(Character.toChars(codepoint)));
-			this.cancel(context);
-		}
-
-		private void cancel(final DispatchContext context) {
+		private void cancel(final ConsumableEvent event) {
 			if (this.cancel) {
-				context.cancel();
+				event.consume();
 			}
 		}
 
@@ -1155,16 +1140,12 @@ public class UIBridgeTest {
 		public DepthUI(final String name, final List<String> trace) {
 			this.name = name;
 			this.trace = trace;
+			super.handleMousePressed(event -> this.trace.add("pressed " + this.name));
 		}
 
 		@Override
 		public void update() {
 			this.trace.add("update " + this.name);
-		}
-
-		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.trace.add("pressed " + this.name);
 		}
 
 		@Override

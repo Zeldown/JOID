@@ -22,8 +22,9 @@ import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
+import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 
 import lombok.Getter;
 
@@ -381,12 +382,12 @@ public class MultilineTextFieldMarkupTest {
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {
-		field.keyPressed(key, DispatchContext.create());
+		field.keyPressed(NodeKeyEvent.create(field, key, null));
 	}
 
 	private void type(final MultilineTextFieldNode field, final String text) {
 		for (final char c : text.toCharArray()) {
-			field.charTyped(c, DispatchContext.create());
+			field.charTyped(NodeCharEvent.create(field, c, null));
 		}
 	}
 

@@ -9,14 +9,10 @@ import dev.joid.demo.ui.node.impl.design.textfield.impl.DemoIntegerFieldNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.impl.key.NodeCharTypedCallback;
-import dev.joid.lib.ui.node.callback.impl.key.NodeKeyPressedCallback;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
@@ -50,35 +46,19 @@ public class UIDemoTextField extends UIDemo {
 			.info(info)
 			.marginHorizontal(12D)
 			.placeholder("Placeholder")
-			.onChange((field, text, value, accepted) -> {
-				System.out.println("[UIDemoTextField] text field: " + text);
-				typed.set(text);
+			.onChange(event -> {
+				System.out.println("[UIDemoTextField] text field: " + event.getText());
+				typed.set(event.getText());
 			})
-			.onKeyPressed(new NodeKeyPressedCallback<DemoTextFieldNode>() {
-
-				@Override
-				public void apply(final DemoTextFieldNode field, final Key pressed) {}
-
-				@Override
-				public void pre(final DemoTextFieldNode field, final DispatchContext context, final Key pressed) {
-					if (!context.isCancelled() && field.isFocused()) {
-						key.set(pressed.name());
-					}
+			.<DemoTextFieldNode>handleKeyPressed(event -> {
+				if (event.getNode().isFocused()) {
+					key.set(event.getKey().name());
 				}
-
 			})
-			.onCharTyped(new NodeCharTypedCallback<DemoTextFieldNode>() {
-
-				@Override
-				public void apply(final DemoTextFieldNode field, final int codepoint) {}
-
-				@Override
-				public void pre(final DemoTextFieldNode field, final DispatchContext context, final int codepoint) {
-					if (!context.isCancelled() && field.isFocused()) {
-						character.set(String.format("U+%04X", codepoint));
-					}
+			.<DemoTextFieldNode>handleCharTyped(event -> {
+				if (event.getNode().isFocused()) {
+					character.set(String.format("U+%04X", event.getCodepoint()));
 				}
-
 			})
 			.attach(rect);
 			TextNode.create(40, 130).text(Text.create("Typed: " + typed.get(), info)).attach(rect);
@@ -175,7 +155,7 @@ public class UIDemoTextField extends UIDemo {
 			.info(info)
 			.margin(12D)
 			.placeholder("Placeholder")
-			.onChange((field, text, value, accepted) -> System.out.println("[UIDemoTextField] multiline field: " + text))
+			.onChange(event -> System.out.println("[UIDemoTextField] multiline field: " + event.getText()))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Multiline", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -208,7 +188,7 @@ public class UIDemoTextField extends UIDemo {
 			.value(42)
 			.info(info)
 			.marginHorizontal(12D)
-			.onChange((field, text, value, accepted) -> valid.set(accepted))
+			.onChange(event -> valid.set(event.isValid()))
 			.attach(rect);
 			TextNode.create(40, 130).text(Text.create(valid.get() ? "In range" : "Out of range", info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("0 to 100, step 5", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -235,7 +215,7 @@ public class UIDemoTextField extends UIDemo {
 			.marginHorizontal(12D)
 			.placeholder("Empty")
 			.allowEmpty(true)
-			.onChange((field, text, value, accepted) -> empty.set(String.valueOf(value)))
+			.onChange(event -> empty.set(String.valueOf(event.getValue())))
 			.attach(rect);
 			TextNode.create(40, 130).text(Text.create("Value: " + empty.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Empty integer", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -248,13 +228,13 @@ public class UIDemoTextField extends UIDemo {
 		.body(rect -> {
 			DemoTextFieldNode
 			.create(40, 40, 240, 50)
-			.onEnter((field, text) -> enters.increment())
+			.onSubmit(event -> enters.increment())
 			.info(info)
 			.marginHorizontal(12D)
 			.placeholder("Press Enter")
 			.focused(true)
-			.onFocus(field -> {
-				if (field.isFocused()) {
+			.onFocus(event -> {
+				if (event.getNode().isFocused()) {
 					focuses.increment();
 				} else {
 					blurs.increment();

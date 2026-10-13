@@ -65,8 +65,13 @@ import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
+import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
+import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.shortcut.Shortcut;
@@ -750,9 +755,9 @@ public class UITest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
 		this.bridges.scroll(-1D);
 		Assert.assertEquals(0.868D, ui.getView().getZoom(), 0.0001D);
-		Assert.assertTrue(this.trace.isEmpty());
+		Assert.assertEquals(Arrays.asList("scrolled -1.0", "scrolled -1.0"), this.trace);
 		Assert.assertFalse(ui.fireMouseScroll(0D, 0D));
-		Assert.assertEquals(Collections.singletonList("scrolled 0.0"), this.trace);
+		Assert.assertEquals(Arrays.asList("scrolled -1.0", "scrolled -1.0", "scrolled 0.0"), this.trace);
 	}
 
 	@Test
@@ -1825,6 +1830,32 @@ public class UITest {
 		public TraceUI(final List<String> trace, final Node... nodes) {
 			this.trace = trace;
 			this.nodes = nodes;
+			super.beforeClose(event -> {
+				this.trace.add("close");
+				if (!this.closeable) {
+					event.cancel();
+				}
+			});
+			super.handleMousePressed(event -> {
+				this.trace.add("pressed " + event.getButton() + " " + event.getMouseX() + " " + event.getMouseY());
+				this.consume(event);
+			});
+			super.handleMouseDragged(event -> {
+				this.trace.add("dragged " + event.getButton() + " " + event.getDeltaTime());
+				this.consume(event);
+			});
+			super.handleMouseReleased(event -> {
+				this.trace.add("released " + event.getButton());
+				this.consume(event);
+			});
+			super.handleMouseScroll(event -> {
+				this.trace.add("scrolled " + event.getNotchesY());
+				this.consume(event);
+			});
+			super.handleKeyPressed(event -> this.consume(event));
+			super.handleKeyPressed(EventPriority.MONITOR, event -> this.trace.add("key " + event.getKey() + (event.isConsumed() ? " cancelled" : "")));
+			super.handleCharTyped(event -> this.consume(event));
+			super.handleCharTyped(EventPriority.MONITOR, event -> this.trace.add("char " + new String(Character.toChars(event.getCodepoint())) + (event.isConsumed() ? " cancelled" : "")));
 		}
 
 		@Override
@@ -1837,50 +1868,8 @@ public class UITest {
 		}
 
 		@Override
-		public boolean close() {
-			this.trace.add("close");
-			return this.closeable;
-		}
-
-		@Override
 		public void update() {
 			this.trace.add("update");
-		}
-
-		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.trace.add("pressed " + button + " " + mouseX + " " + mouseY);
-			this.cancel(context);
-		}
-
-		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
-			this.trace.add("dragged " + button + " " + deltaTime);
-			this.cancel(context);
-		}
-
-		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.trace.add("released " + button);
-			this.cancel(context);
-		}
-
-		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull DispatchContext context) {
-			this.trace.add("scrolled " + value);
-			this.cancel(context);
-		}
-
-		@Override
-		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
-			this.trace.add("key " + key + (context.isCancelled() ? " cancelled" : ""));
-			this.cancel(context);
-		}
-
-		@Override
-		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
-			this.trace.add("char " + new String(Character.toChars(codepoint)) + (context.isCancelled() ? " cancelled" : ""));
-			this.cancel(context);
 		}
 
 		@Override
@@ -1888,9 +1877,9 @@ public class UITest {
 			this.trace.add("hover " + content + " " + mouseX + " " + mouseY);
 		}
 
-		private void cancel(final DispatchContext context) {
+		private void consume(final ConsumableEvent event) {
 			if (this.cancel) {
-				context.cancel();
+				event.consume();
 			}
 		}
 
@@ -2018,15 +2007,11 @@ public class UITest {
 		@Override
 		public void init() {
 			RectNode.create(0D, 0D, 10D, 10D).layer((mouseX, mouseY) -> this.currentList.add(UI.getCurrent())).attach(this);
+			super.handleKeyPressed(event -> this.currentList.add(UI.getCurrent()));
 		}
 
 		@Override
 		public void update() {
-			this.currentList.add(UI.getCurrent());
-		}
-
-		@Override
-		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
 			this.currentList.add(UI.getCurrent());
 		}
 
@@ -2145,38 +2130,38 @@ public class UITest {
 		}
 
 		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+		public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 			this.trace.add("pressed " + this.name);
 		}
 
 		@Override
-		public void mouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull DispatchContext context) {
+		public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
 			this.trace.add("dragged " + this.name);
 		}
 
 		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+		public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
 			this.trace.add("released " + this.name);
 		}
 
 		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double valueX, final double value, final @NonNull DispatchContext context) {
+		public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
 			this.trace.add("scrolled " + this.name);
 		}
 
 		@Override
-		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
+		public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
 			this.trace.add("key " + this.name);
 			if (this.cancel) {
-				context.cancel();
+				event.consume();
 			}
 		}
 
 		@Override
-		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
+		public void charTyped(final @NonNull NodeCharEvent<?> event) {
 			this.trace.add("char " + this.name);
 			if (this.cancel) {
-				context.cancel();
+				event.consume();
 			}
 		}
 

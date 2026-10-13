@@ -222,7 +222,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(20, 150, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, button) -> shown.toggle())
+			.onClick(event -> shown.toggle())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -239,7 +239,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(20, 150, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				if (list.getChildren().size() < 6) {
 					RectNode.create(0, 0, 40, 50).color(UIDemoLayout.INK).attach(list);
 				}
@@ -251,7 +251,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(160, 150, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, button) -> list.clearChildren())
+			.onClick(event -> list.clearChildren())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Clear", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -278,7 +278,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(180, 150, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, button) -> row.toggle())
+			.onClick(event -> row.toggle())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Switch", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -423,7 +423,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode
 			.create(100, 195, 120, 50)
 			.color(UIDemoLayout.INK)
-			.onClick((node, mouseX, mouseY, button) -> grown.toggle())
+			.onClick(event -> grown.toggle())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Grow", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

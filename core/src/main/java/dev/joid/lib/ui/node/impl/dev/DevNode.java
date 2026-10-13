@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -18,17 +17,16 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
-import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.NodeCallbackInvoker;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -107,7 +105,7 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
 				.color(this.inspectSignal.map(inspect -> inspect ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.inspectSignal.map(inspect -> (inspect ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
-				.onClick((node, mouseX, mouseY, button) -> {
+				.onClick(event -> {
 					this.inspectSignal.set(!this.inspectSignal.peek());
 					this.inspectedNode.set(null);
 					this.inspectedNodeLocked.set(false);
@@ -120,8 +118,8 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
 				.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()))
 				.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()).darker(0.3F))
-				.onClick((node, mouseX, mouseY, button) -> {
-					node.getUi().reload();
+				.onClick(event -> {
+					event.getNode().getUi().reload();
 				})
 				.hover(() -> "[R] Reload")
 				.attach(flex);
@@ -131,7 +129,7 @@ public final class DevNode extends Node {
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
 				.color(this.gridSignal.map(grid -> grid ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.gridSignal.map(grid -> (grid ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
-				.onClick((node, mouseX, mouseY, button) -> {
+				.onClick(event -> {
 					this.gridSignal.set(!this.gridSignal.peek());
 				})
 				.hover(() -> "[G] Grid")
@@ -231,7 +229,7 @@ public final class DevNode extends Node {
 					.text(Text.create("height: ", labelInfo).add(Text.create(inspectedNode.getHeight() + " (" + inspectedNode.getDefaultHeight() + ")", valueInfo)))
 					.attach(scroll);
 
-					if (!inspectedNode.getCallbackMap().isEmpty()) {
+					if (!inspectedNode.getEventBus().isEmpty()) {
 						RectNode
 						.create(0, 0, 0, 5)
 						.color(Color.TRANSPARENT)
@@ -239,16 +237,13 @@ public final class DevNode extends Node {
 
 						TextNode
 						.create(0, 0)
-						.text(Text.create("Callbacks", categoryInfo))
+						.text(Text.create("Listeners", categoryInfo))
 						.attach(scroll);
 
-						for (final Entry<Integer, List<NodeCallbackInvoker<?>>> callback : inspectedNode.getCallbackMap().entrySet()) {
-							final int id = callback.getKey();
-							final List<NodeCallbackInvoker<?>> callbackList = callback.getValue();
-
+						for (final EventType<?> type : inspectedNode.getEventBus().getTypes()) {
 							TextNode
 							.create(10, 0)
-							.text(Text.create(NodeCallbackRegistry.get(id).getSimpleName() + ": ", labelInfo).add(Text.create(callbackList.size(), valueInfo)))
+							.text(Text.create(type.getName() + ": ", labelInfo).add(Text.create(inspectedNode.getEventBus().count(type), valueInfo)))
 							.attach(scroll);
 						}
 					}
@@ -266,7 +261,7 @@ public final class DevNode extends Node {
 					TextNode
 					.create(10, 0)
 					.text(Text.create("hierarchy: ", labelInfo).add(Text.create(inspectedNode.getHierarchy(), valueInfo)))
-					.onClick((clickedNode, mouseX, mouseY, button) -> {
+					.onClick(event -> {
 						if (inspectedNode.getParent() != null) {
 							this.inspectedNode.set(inspectedNode.getParent());
 							this.inspectedNodeLocked.set(true);
@@ -283,7 +278,7 @@ public final class DevNode extends Node {
 						TextNode
 						.create(20, 0)
 						.text(Text.create(child.getClass().getSimpleName(), valueInfo))
-						.onClick((clickedNode, mouseX, mouseY, button) -> {
+						.onClick(event -> {
 							this.inspectedNode.set(child);
 							this.inspectedNodeLocked.set(true);
 						})
@@ -422,31 +417,33 @@ public final class DevNode extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final DispatchContext context) {
-		if (context.isCancelled() || !super.isEnabled()) {
+	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
+		if (event.isConsumed() || !super.isEnabled()) {
 			return;
 		}
 
 		if (this.inspectSignal.peek() && this.inspectedNode.peek() != null) {
-			if (button.isLeft() && !this.inspectedNodeLocked.peek()) {
+			if (event.getButton().isLeft() && !this.inspectedNodeLocked.peek()) {
 				this.inspectedNodeLocked.set(true);
-				context.cancel();
-			} else if (button.isRight() && this.inspectedNodeLocked.peek()) {
+				event.consume();
+			} else if (event.getButton().isRight() && this.inspectedNodeLocked.peek()) {
 				this.inspectedNodeLocked.set(false);
-				context.cancel();
+				event.consume();
 			}
 		}
 
-		if (button.isRight() && this.gridSignal.peek()) {
+		if (event.getButton().isRight() && this.gridSignal.peek()) {
 			this.gridColorIndex = (this.gridColorIndex + 1) % DevNode.GRID_COLORS.length;
 		}
 	}
 
 	@Override
-	public void keyPressed(final Key key, final DispatchContext context) {
-		if (context.isCancelled() || !super.isEnabled()) {
+	public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
+		if (event.isConsumed() || !super.isEnabled()) {
 			return;
 		}
+
+		final Key key = event.getKey();
 
 		if (key == Key.I) {
 			this.inspectSignal.set(!this.inspectSignal.peek());

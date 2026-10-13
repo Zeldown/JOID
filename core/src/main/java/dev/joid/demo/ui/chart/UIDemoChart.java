@@ -140,7 +140,7 @@ public class UIDemoChart extends UIDemo {
 			RectNode
 			.create(290, 20, 90, 50)
 			.color(UIDemoChart.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				week.increment();
 				chart.data("Week", ChartData.create().add("Mon", 1 + week.get() % 3).add("Tue", 3 - week.get() % 3).add("Wed", 2 + week.get() % 2).add("Thu", 4 - week.get() % 4));
 			})

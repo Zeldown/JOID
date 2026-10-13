@@ -5,15 +5,16 @@ import dev.joid.lib.ui.core.UI;
 
 public class UIDemo extends UI {
 
-	@Override
-	public boolean close() {
-		if (!super.getData().active()) {
-			return true;
-		}
+	public UIDemo() {
+		super.beforeClose(event -> {
+			if (!super.getData().active()) {
+				return;
+			}
 
-		super.getData().setActive(false);
-		JOID.open(new UIDemoChoice());
-		return false;
+			super.getData().setActive(false);
+			JOID.open(new UIDemoChoice());
+			event.cancel();
+		});
 	}
 
 }

@@ -1,5 +1,8 @@
 package dev.joid.lib.ui.shortcut;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,12 +14,14 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
@@ -36,7 +41,7 @@ public class ShortcutTest {
 
 	@Test
 	public void runsAShortcutOfItsUiAfterItsNodes() {
-		final RectNode node = RectNode.create(0, 0, 100, 100).onKeyPressed((rect, key) -> this.trace.add("node"));
+		final RectNode node = RectNode.create(0, 0, 100, 100).handleKeyPressed(event -> this.trace.add("node"));
 		final ShortcutUI ui = this.open(node);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S));
@@ -44,8 +49,16 @@ public class ShortcutTest {
 	}
 
 	@Test
+	public void runsItsTriggerListenersByPriority() {
+		final ShortcutUI ui = this.open();
+		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("normal")).onTrigger(EventPriority.HIGHEST, event -> this.trace.add("highest " + event.getKey())).onTrigger(EventPriority.MONITOR, event -> this.trace.add("monitor")).attach(ui);
+		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertEquals(Arrays.asList("highest S", "normal", "monitor"), this.trace);
+	}
+
+	@Test
 	public void runsAShortcutThatOverridesTheFocusBeforeItsNodes() {
-		final RectNode node = RectNode.create(0, 0, 100, 100).onKeyPressed((rect, key) -> this.trace.add("node"));
+		final RectNode node = RectNode.create(0, 0, 100, 100).handleKeyPressed(event -> this.trace.add("node"));
 		final ShortcutUI ui = this.open(node);
 		Shortcut.create(Key.S).overrideFocus(true).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S));
@@ -198,14 +211,31 @@ public class ShortcutTest {
 		Assert.assertNull(UI.getCurrent());
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesABindingWithoutResolver() {
-		Shortcut.create("S");
+	@Test
+	public void warnsOnceInDevModeForABindingWithoutResolver() {
+		final boolean previous = JOIDEnv.isDevMode();
+		final PrintStream error = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		JOIDEnv.devMode(true);
+		try {
+			System.setErr(new PrintStream(output, true));
+			final ShortcutUI ui = this.open();
+			Shortcut.create("unknown binding").onTrigger(event -> this.trace.add("shortcut")).attach(ui);
+			Shortcut.create("unknown binding");
+			Assert.assertFalse(ui.fireKeyPressed(Key.S));
+		} finally {
+			System.setErr(error);
+			JOIDEnv.devMode(previous);
+		}
+		final String printed = new String(output.toByteArray(), StandardCharsets.UTF_8);
+		Assert.assertTrue(printed, printed.startsWith("[JOID] No key resolver knows the shortcut binding unknown binding of type java.lang.String"));
+		Assert.assertEquals(printed, printed.indexOf("[JOID]"), printed.lastIndexOf("[JOID]"));
+		Assert.assertTrue(this.trace.isEmpty());
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void refusesANullKey() {
-		Shortcut.create((Key) null);
+	public void refusesANullBinding() {
+		Shortcut.create(null);
 	}
 
 	@Test(expected = NullPointerException.class)

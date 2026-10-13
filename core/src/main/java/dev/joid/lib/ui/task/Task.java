@@ -1,11 +1,11 @@
 package dev.joid.lib.ui.task;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
-
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventBus;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
@@ -13,8 +13,10 @@ import lombok.NonNull;
 @Getter
 public final class Task {
 
-	private final long                      delay;
-	private final List<Consumer<TaskEvent>> runList;
+	private static final EventType<TaskEvent> RUN = EventType.create("onRun");
+
+	private final long     delay;
+	private final EventBus eventBus;
 
 	private long period;
 	private long nextRun;
@@ -25,7 +27,7 @@ public final class Task {
 	private Task(final long delay) {
 		this.delay = delay;
 		this.period = -1L;
-		this.runList = new CopyOnWriteArrayList<>();
+		this.eventBus = EventBus.create(() -> "Task");
 	}
 
 	public static @NonNull Task create(final long delay) {
@@ -37,8 +39,12 @@ public final class Task {
 		return this;
 	}
 
-	public @NonNull Task onRun(final @NonNull Consumer<@NonNull TaskEvent> listener) {
-		this.runList.add(listener);
+	public @NonNull Task onRun(final @NonNull EventListener<TaskEvent> listener) {
+		return this.onRun(EventPriority.NORMAL, listener);
+	}
+
+	public @NonNull Task onRun(final @NonNull EventPriority priority, final @NonNull EventListener<TaskEvent> listener) {
+		this.eventBus.listen(Task.RUN, priority, listener);
 		return this;
 	}
 
@@ -49,8 +55,9 @@ public final class Task {
 			this.nextRun = BridgeHandler.CLOCK.get().currentTimeMillis() + this.period;
 		}
 
-		final TaskEvent event = new TaskEvent(this);
-		this.runList.forEach(listener -> listener.accept(event));
+		if (this.eventBus.has(Task.RUN)) {
+			this.eventBus.fire(Task.RUN, TaskEvent.create(this));
+		}
 	}
 
 	public @NonNull Task attach(final @NonNull UI ui) {

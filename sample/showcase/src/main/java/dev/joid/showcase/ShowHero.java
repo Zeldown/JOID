@@ -53,7 +53,7 @@ public class ShowHero extends ShowUI {
 		this.model();
 		this.toast();
 
-		RectNode.create(0, 0, 0, 0).onUpdate(node -> this.plays.set(12480 + (int) (this.t() * 9D))).attach(this);
+		RectNode.create(0, 0, 0, 0).onUpdate(event -> this.plays.set(12480 + (int) (this.t() * 9D))).attach(this);
 	}
 
 	private void brand() {
@@ -147,7 +147,7 @@ public class ShowHero extends ShowUI {
 			.stretch(StretchType.COVER)
 			.loop(true)
 			.volume(0F)
-			.onProgress((player, value, time) -> this.progress.set(value))
+			.onProgress(event -> this.progress.set(event.getProgress()))
 			.attach(card);
 			RectNode.create(0, 170, 620, 230).color(ShowUI.vertical(Color.BLACK.copyAlpha(0F), Color.BLACK.copyAlpha(0.82F))).attach(card);
 			RectNode

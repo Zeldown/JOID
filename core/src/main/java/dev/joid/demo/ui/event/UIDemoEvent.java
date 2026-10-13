@@ -57,8 +57,8 @@ public class UIDemoEvent extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(0, 0, 320, 260)
-			.onMousePressed((node, mouseX, mouseY, button) -> pressed.increment())
-			.onMouseReleased((node, mouseX, mouseY, button) -> released.increment())
+			.handleMousePressed(event -> pressed.increment())
+			.handleMouseReleased(event -> released.increment())
 			.attach(rect);
 			TextNode.create(40, 80).text(Text.create("Pressed: " + pressed.get(), info)).attach(rect);
 			TextNode.create(40, 125).text(Text.create("Released: " + released.get(), info)).attach(rect);
@@ -73,9 +73,9 @@ public class UIDemoEvent extends UIDemo {
 			RectNode
 			.create(40, 100, 240, 60)
 			.color(Color.WHITE)
-			.onMouseDragged((node, mouseX, mouseY, button, deltaTime) -> {
-				if (node.isHovered()) {
-					knob.set(Math.max(0D, Math.min(180D, mouseX - node.getAbsoluteX() - 30D)));
+			.handleMouseDragged(event -> {
+				if (event.getNode().isHovered()) {
+					knob.set(Math.max(0D, Math.min(180D, event.getMouseX() - event.getNode().getAbsoluteX() - 30D)));
 				}
 			})
 			.body(bar -> {
@@ -94,9 +94,9 @@ public class UIDemoEvent extends UIDemo {
 			.create(40, 40, 120, 80)
 			.color(UIDemoEvent.INK)
 			.hoveredColor(Color.WHITE)
-			.onMouseScroll((node, mouseX, mouseY, notchesX, notchesY) -> {
-				if (node.isHovered()) {
-					scrolled.set(scrolled.get() + (int) Math.signum(notchesY));
+			.handleMouseScroll(event -> {
+				if (event.getNode().isHovered()) {
+					scrolled.set(scrolled.get() + (int) Math.signum(event.getNotchesY()));
 				}
 			})
 			.attach(rect);
@@ -112,9 +112,9 @@ public class UIDemoEvent extends UIDemo {
 			RectNode
 			.create(40, 30, 240, 180)
 			.color(Color.WHITE)
-			.onHover((node, mouseX, mouseY) -> {
-				hoverX.set(mouseX - node.getAbsoluteX());
-				hoverY.set(mouseY - node.getAbsoluteY());
+			.onHover(event -> {
+				hoverX.set(event.getMouseX() - event.getNode().getAbsoluteX());
+				hoverY.set(event.getMouseY() - event.getNode().getAbsoluteY());
 			})
 			.body(area -> {
 				CircleNode.create(0, 0, 20).color(UIDemoEvent.INK).x(() -> hoverX.get() - 10D).y(() -> hoverY.get() - 10D).interactive(false).attach(area);
@@ -128,7 +128,7 @@ public class UIDemoEvent extends UIDemo {
 		.create(1520, 40, 320, 260)
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(100, 40, 120, 80).color(UIDemoEvent.INK).onInit(node -> inits.increment()).attach(rect);
+			RectNode.create(100, 40, 120, 80).color(UIDemoEvent.INK).onInit(event -> inits.increment()).attach(rect);
 			TextNode.create(100, 145).text(Text.create("Init: " + inits.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Init", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -138,7 +138,7 @@ public class UIDemoEvent extends UIDemo {
 		.create(80, 380, 320, 260)
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 100, 60, 60).color(UIDemoEvent.INK).onUpdate(node -> node.width(60D + 180D * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000L) / 2000D)).attach(rect);
+			RectNode.create(40, 100, 60, 60).color(UIDemoEvent.INK).onUpdate(event -> event.getNode().width(60D + 180D * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000L) / 2000D)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Update", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -147,7 +147,7 @@ public class UIDemoEvent extends UIDemo {
 		.create(440, 380, 320, 260)
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 100, 60, 60).color(UIDemoEvent.INK).onRender((node, mouseX, mouseY) -> node.x(Math.max(40D, Math.min(220D, mouseX - rect.getAbsoluteX() - 30D)))).attach(rect);
+			RectNode.create(40, 100, 60, 60).color(UIDemoEvent.INK).onRender(event -> event.getNode().x(Math.max(40D, Math.min(220D, event.getMouseX() - rect.getAbsoluteX() - 30D)))).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Render", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -156,13 +156,13 @@ public class UIDemoEvent extends UIDemo {
 		.create(800, 380, 320, 260)
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
-			final FlexNode list = FlexNode.horizontal(20, 20, 50).margin(8D).onAppend((node, child) -> appended.increment()).attach(rect);
+			final FlexNode list = FlexNode.horizontal(20, 20, 50).margin(8D).onChildAppend(event -> appended.increment()).attach(rect);
 			RectNode
 			.create(20, 90, 120, 50)
 			.color(UIDemoEvent.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				if (list.getChildren().size() < 6) {
-					RectNode.create(0, 0, 40, 50).color(UIDemoEvent.INK).onDetach(child -> detached.increment()).attach(list);
+					RectNode.create(0, 0, 40, 50).color(UIDemoEvent.INK).onDetach(removed -> detached.increment()).attach(list);
 				}
 			})
 			.body(container -> {
@@ -172,7 +172,7 @@ public class UIDemoEvent extends UIDemo {
 			RectNode
 			.create(160, 90, 120, 50)
 			.color(UIDemoEvent.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				if (!list.getChildren().isEmpty()) {
 					list.remove(list.getChildren().getLast());
 				}
@@ -256,7 +256,7 @@ public class UIDemoEvent extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoEvent.INK)
-			.onClick((node, mouseX, mouseY, button) -> clicks.set(clicks.get() + (UI.isShiftKeyDown() ? 10 : 1)))
+			.onClick(event -> clicks.set(clicks.get() + (UI.isShiftKeyDown() ? 10 : 1)))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Click", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -288,7 +288,7 @@ public class UIDemoEvent extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoEvent.INK)
-			.onClick((node, mouseX, mouseY, button) -> {
+			.onClick(event -> {
 				if (timer.isAttached()) {
 					timer.detach();
 				} else {

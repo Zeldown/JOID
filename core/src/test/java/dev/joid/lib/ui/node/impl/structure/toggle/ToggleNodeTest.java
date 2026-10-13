@@ -39,7 +39,7 @@ public class ToggleNodeTest {
 	@Test
 	public void flipsOnEachClick() {
 		final List<Boolean> changes = new ArrayList<>();
-		final Toggle toggle = new Toggle().state("on", 0).onChange((node, value) -> changes.add(value));
+		final Toggle toggle = new Toggle().state("on", 0).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(toggle)).frame();
 		this.click(150D, 120D);
 		Assert.assertTrue(toggle.isToggle());
@@ -53,7 +53,7 @@ public class ToggleNodeTest {
 	public void staysInSyncWithItsSignal() {
 		final List<Object> changes = new ArrayList<>();
 		final BooleanSignal music = new BooleanSignal(true);
-		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange((node, value) -> changes.add(value));
+		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange(event -> changes.add(event.getValue()));
 		Assert.assertTrue(toggle.isToggle());
 		Assert.assertSame(music, toggle.getSignal());
 		this.bridges.open(new NodeUI(toggle)).frame();
@@ -101,7 +101,7 @@ public class ToggleNodeTest {
 	public void writesAChosenSideIntoItsSignal() {
 		final List<Object> changes = new ArrayList<>();
 		final BooleanSignal music = new BooleanSignal(false);
-		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange((node, value) -> changes.add(value));
+		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange(event -> changes.add(event.getValue()));
 		toggle.toggle(true);
 		toggle.toggle(true);
 		Assert.assertTrue(music.get());

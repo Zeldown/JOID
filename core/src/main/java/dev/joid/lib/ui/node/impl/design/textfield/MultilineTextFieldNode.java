@@ -11,7 +11,7 @@ import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.draw.text.builder.TextOverflow;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
-import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.utils.align.Align;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -203,8 +203,9 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	@Override
-	public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull DispatchContext context) {
-		if (context.isCancelled() || notchesY == 0D || !super.isHovered()) {
+	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
+		final double notchesY = event.getNotchesY();
+		if (event.isConsumed() || notchesY == 0D || !super.isHovered()) {
 			return;
 		}
 
@@ -212,9 +213,8 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		final double maxOffset = Math.max(0D, this.getLayout().getLines().size() * lineHeight - this.getRawHeight());
 		final double offset = notchesY > 0D ? Math.max(0D, this.yOffset - lineHeight) : Math.min(maxOffset, this.yOffset + lineHeight);
 		if (notchesY > 0D ? offset < this.yOffset : offset > this.yOffset) {
-			context.cancel(() -> {
-				this.yOffset = offset;
-			});
+			this.yOffset = offset;
+			event.consume();
 		}
 	}
 

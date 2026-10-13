@@ -11,8 +11,6 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.impl.draggable.NodeDragCallback;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
@@ -21,7 +19,6 @@ import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapTy
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableType;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import lombok.NonNull;
 
 @UIData(background = true)
 public class UIDemoDraggable extends UIDemo {
@@ -143,7 +140,7 @@ public class UIDemoDraggable extends UIDemo {
 			.color(UIDemoDraggable.INK)
 			.body(grip)
 			.draggable(overlap)
-			.onSnap((node, slot) -> RectNode.create(0, 0, 80, 80).color(UIDemoDraggable.INK).attach(slot))
+			.onDragSnap(event -> RectNode.create(0, 0, 80, 80).color(UIDemoDraggable.INK).attach(event.getTarget()))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Copy", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -167,7 +164,7 @@ public class UIDemoDraggable extends UIDemo {
 				.draggable(DraggableProperty.parent())
 				.attach(container);
 			})
-			.onMount(container -> container.scrollOffsetY(-40D))
+			.onMount(event -> event.getNode().scrollOffsetY(-40D))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Scrolled parent", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -202,17 +199,7 @@ public class UIDemoDraggable extends UIDemo {
 			.color(UIDemoDraggable.INK)
 			.body(grip)
 			.draggable(DraggableProperty.free())
-			.onDragStart(new NodeDragCallback<Node>() {
-
-				@Override
-				public void apply(final @NonNull Node node) {}
-
-				@Override
-				public void pre(final @NonNull Node node, final @NonNull DispatchContext context) {
-					context.cancel();
-				}
-
-			})
+			.beforeDragStart(event -> event.cancel())
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Refused start", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -227,17 +214,7 @@ public class UIDemoDraggable extends UIDemo {
 			.color(UIDemoDraggable.INK)
 			.body(grip)
 			.draggable(DraggableProperty.free())
-			.onDragEnd(new NodeDragCallback<Node>() {
-
-				@Override
-				public void apply(final @NonNull Node node) {}
-
-				@Override
-				public void pre(final @NonNull Node node, final @NonNull DispatchContext context) {
-					context.cancel();
-				}
-
-			})
+			.beforeDragDrop(event -> event.cancel())
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Refused end", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -264,10 +241,10 @@ public class UIDemoDraggable extends UIDemo {
 			.color(UIDemoDraggable.INK)
 			.body(grip)
 			.draggable(slots)
-			.onDragStart(node -> this.starts.increment())
-			.onDrag(node -> this.drags.increment())
-			.onSnap((node, slot) -> this.snaps.increment())
-			.onDragEnd(node -> this.ends.increment())
+			.onDragStart(event -> this.starts.increment())
+			.onDrag(event -> this.drags.increment())
+			.onDragSnap(event -> this.snaps.increment())
+			.onDragDrop(event -> this.ends.increment())
 			.attach(rect);
 			TextNode.create(170, 40).text(Text.create("onDragStart " + this.starts.get(), counter)).attach(rect);
 			TextNode.create(170, 90).text(Text.create("onDrag " + this.drags.get(), counter)).attach(rect);

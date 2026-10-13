@@ -143,7 +143,7 @@ public class UIDemoResource extends UIDemo {
 		ResourceNode
 		.create(335, 740, 100, 100)
 		.resource(second.map(value -> value ? square : vector))
-		.onClick((node, mouseX, mouseY, button) -> second.toggle())
+		.onClick(event -> second.toggle())
 		.attach(this);
 		TextNode.create(385, 865).text(Text.create("Switch on click", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 

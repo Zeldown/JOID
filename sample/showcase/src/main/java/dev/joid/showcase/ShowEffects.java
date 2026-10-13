@@ -39,7 +39,7 @@ public class ShowEffects extends ShowUI {
 		this.panel();
 		this.card();
 
-		RectNode.create(0, 0, 0, 0).onUpdate(node -> this.step()).attach(this);
+		RectNode.create(0, 0, 0, 0).onUpdate(event -> this.step()).attach(this);
 	}
 
 	private void panel() {

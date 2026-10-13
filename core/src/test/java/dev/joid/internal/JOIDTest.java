@@ -19,13 +19,12 @@ import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.node.Node;
-
-import dev.joid.lib.bridge.thread.QueueThreadBridge;
 
 public class JOIDTest {
 
@@ -438,16 +437,19 @@ public class JOIDTest {
 		private int     detaches;
 		private boolean closeable = true;
 
+		public MenuUI() {
+			super.beforeClose(event -> {
+				this.closes++;
+				if (!this.closeable) {
+					event.cancel();
+				}
+			});
+		}
+
 		@Override
 		public void init() {
 			this.inits++;
 			new CountingNode(this).attach(this);
-		}
-
-		@Override
-		public boolean close() {
-			this.closes++;
-			return this.closeable;
 		}
 
 	}
@@ -473,9 +475,8 @@ public class JOIDTest {
 
 	public static final class StubbornUI extends UI {
 
-		@Override
-		public boolean close() {
-			return false;
+		public StubbornUI() {
+			super.beforeClose(event -> event.cancel());
 		}
 
 	}

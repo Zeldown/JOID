@@ -8,9 +8,10 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
-import dev.joid.lib.ui.node.impl.design.textfield.callback.NodeTextFieldEnterCallback;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,7 +20,7 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public abstract class LineFieldNode<V> extends FieldNode<V> {
 
-	private static final int CALLBACK_ENTER = NodeCallbackRegistry.next(NodeTextFieldEnterCallback.class);
+	private static final EventType<NodeEvent<?>> SUBMIT = EventType.create("onSubmit");
 
 	private Align verticalAlignment;
 	private Align horizontalAlignment;
@@ -108,7 +109,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		super.focus(false);
-		super.executeCallback(LineFieldNode.CALLBACK_ENTER, DispatchContext.create(), super.getText());
+		super.fire(LineFieldNode.SUBMIT, () -> NodeEvent.create(this));
 		return true;
 	}
 
@@ -183,9 +184,12 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		return super.follow("horizontalAlignment", horizontalAlignment, value -> this.horizontalAlignment = value);
 	}
 
-	public final <T extends LineFieldNode<V>> @NonNull T onEnter(final @NonNull NodeTextFieldEnterCallback<T> callback) {
-		super.registerCallback(LineFieldNode.CALLBACK_ENTER, callback);
-		return (T) this;
+	public final <T extends LineFieldNode<V>> @NonNull T onSubmit(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return this.onSubmit(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends LineFieldNode<V>> @NonNull T onSubmit(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(LineFieldNode.SUBMIT, priority, listener);
 	}
 
 	private final boolean isScrolling(final @NonNull String shown) {

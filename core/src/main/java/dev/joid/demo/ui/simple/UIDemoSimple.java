@@ -143,9 +143,9 @@ public class UIDemoSimple extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSimple.INK)
-			.onClick((node, mouseX, mouseY, clickType) -> {
-				System.out.println("[UIDemoSimple] button clicked: " + clickType);
-				if (clickType.isLeft()) {
+			.onClick(event -> {
+				System.out.println("[UIDemoSimple] button clicked: " + event.getButton());
+				if (event.getButton().isLeft()) {
 					left.increment();
 				} else {
 					right.increment();
@@ -169,8 +169,8 @@ public class UIDemoSimple extends UIDemo {
 			.create(40, 40, 120, 80)
 			.color(UIDemoSimple.INK)
 			.hoveredColor(Color.WHITE)
-			.onHoverStart((node, mouseX, mouseY) -> starts.increment())
-			.onHoverEnd((node, mouseX, mouseY) -> ends.increment())
+			.onHoverStart(event -> starts.increment())
+			.onHoverEnd(event -> ends.increment())
 			.attach(rect);
 			TextNode.create(40, 145).text(Text.create("Start: " + starts.get(), info)).attach(rect);
 			TextNode.create(40, 190).text(Text.create("End: " + ends.get(), info)).attach(rect);
@@ -209,7 +209,7 @@ public class UIDemoSimple extends UIDemo {
 			.color(UIDemoSimple.INK.copyAlpha(0.4F))
 			.hoveredColor(Color.WHITE)
 			.hover(() -> "Disabled: no hover color, no click")
-			.onClick((node, mouseX, mouseY, clickType) -> System.out.println("[UIDemoSimple] never clicked"))
+			.onClick(event -> System.out.println("[UIDemoSimple] never clicked"))
 			.enabled(false)
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Disabled", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -220,7 +220,7 @@ public class UIDemoSimple extends UIDemo {
 		.create(0, 0, 0, 0)
 		.zindex(Integer.MAX_VALUE)
 		.interactive(false)
-		.onDraw((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(mouseX, mouseY, UIDemoSimple.INK, 6D))
+		.onDraw(event -> DrawUtils.SHAPE.drawCircle(event.getMouseX(), event.getMouseY(), UIDemoSimple.INK, 6D))
 		.attach(this);
 	}
 

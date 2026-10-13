@@ -8,16 +8,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
+import dev.joid.lib.ui.event.impl.node.NodeReorderEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
-import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderCallback;
-import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderEndCallback;
-import dev.joid.lib.ui.node.impl.structure.reorderable.callback.NodeReorderStartCallback;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
@@ -27,9 +26,10 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public class ReorderableFlexNode extends Node {
 
-	public static final int CALLBACK_REORDER       = NodeCallbackRegistry.next(NodeReorderCallback.class);
-	public static final int CALLBACK_REORDER_END   = NodeCallbackRegistry.next(NodeReorderEndCallback.class);
-	public static final int CALLBACK_REORDER_START = NodeCallbackRegistry.next(NodeReorderStartCallback.class);
+	private static final EventType<NodeReorderEvent.Post<?>> REORDER        = EventType.create("onReorder");
+	private static final EventType<NodeReorderEvent.Post<?>> REORDER_END    = EventType.create("onReorderEnd");
+	private static final EventType<NodeReorderEvent.Pre<?>>  BEFORE_REORDER = EventType.create("beforeReorder");
+	private static final EventType<NodeReorderEvent.Post<?>> REORDER_START  = EventType.create("onReorderStart");
 
 	private static final double SCROLL_HOT_ZONE  = 60D;
 	private static final double SCROLL_SPEED_MAX = 2D;
@@ -91,8 +91,8 @@ public class ReorderableFlexNode extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-		if (!this.autoDrag || !button.isLeft() || context.isCancelled() || this.reorderedNode != null || !super.isEnabled()) {
+	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
+		if (!this.autoDrag || !event.getButton().isLeft() || event.isConsumed() || this.reorderedNode != null || !super.isEnabled()) {
 			return;
 		}
 
@@ -102,9 +102,9 @@ public class ReorderableFlexNode extends Node {
 					return;
 				}
 
-				this.startDragInternal(child, mouseX, mouseY);
+				this.startDragInternal(child, event.getMouseX(), event.getMouseY());
 				if (this.reorderedNode == child) {
-					context.cancel();
+					event.consume();
 				}
 				return;
 			}
@@ -112,7 +112,7 @@ public class ReorderableFlexNode extends Node {
 	}
 
 	@Override
-	public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
 		if (this.reorderedNode != null && !this.releasing) {
 			this.endDrag();
 		}
@@ -153,7 +153,16 @@ public class ReorderableFlexNode extends Node {
 			return (T) this;
 		}
 
-		this.releasing = true;
+		final Node dragged = this.reorderedNode;
+		if (!dragged.fireDragDrop(null, () -> this.releasing = true)) {
+			final int previous = this.currentIndex;
+			this.move(dragged, this.initialIndex);
+			this.currentIndex = this.initialIndex;
+			this.releasing = true;
+			if (previous != this.initialIndex) {
+				super.fire(ReorderableFlexNode.REORDER, () -> NodeReorderEvent.Post.create(this, dragged, previous, this.initialIndex));
+			}
+		}
 		return (T) this;
 	}
 
@@ -171,19 +180,36 @@ public class ReorderableFlexNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends ReorderableFlexNode> @NonNull T onReorder(final @NonNull NodeReorderCallback<T> callback) {
-		super.registerCallback(ReorderableFlexNode.CALLBACK_REORDER, callback);
-		return (T) this;
+	public final <T extends ReorderableFlexNode> @NonNull T beforeReorder(final @NonNull EventListener<NodeReorderEvent.Pre<T>> listener) {
+		return this.beforeReorder(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends ReorderableFlexNode> @NonNull T onReorderEnd(final @NonNull NodeReorderEndCallback<T> callback) {
-		super.registerCallback(ReorderableFlexNode.CALLBACK_REORDER_END, callback);
-		return (T) this;
+	public final <T extends ReorderableFlexNode> @NonNull T beforeReorder(final @NonNull EventPriority priority, final @NonNull EventListener<NodeReorderEvent.Pre<T>> listener) {
+		return super.listen(ReorderableFlexNode.BEFORE_REORDER, priority, listener);
 	}
 
-	public final <T extends ReorderableFlexNode> @NonNull T onReorderStart(final @NonNull NodeReorderStartCallback<T> callback) {
-		super.registerCallback(ReorderableFlexNode.CALLBACK_REORDER_START, callback);
-		return (T) this;
+	public final <T extends ReorderableFlexNode> @NonNull T onReorder(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
+		return this.onReorder(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends ReorderableFlexNode> @NonNull T onReorder(final @NonNull EventPriority priority, final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
+		return super.listen(ReorderableFlexNode.REORDER, priority, listener);
+	}
+
+	public final <T extends ReorderableFlexNode> @NonNull T onReorderStart(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
+		return this.onReorderStart(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends ReorderableFlexNode> @NonNull T onReorderStart(final @NonNull EventPriority priority, final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
+		return super.listen(ReorderableFlexNode.REORDER_START, priority, listener);
+	}
+
+	public final <T extends ReorderableFlexNode> @NonNull T onReorderEnd(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
+		return this.onReorderEnd(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends ReorderableFlexNode> @NonNull T onReorderEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
+		return super.listen(ReorderableFlexNode.REORDER_END, priority, listener);
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T direction(final @NonNull FlexDirection direction) {
@@ -247,7 +273,7 @@ public class ReorderableFlexNode extends Node {
 
 	private void startDragInternal(final @NonNull Node child, final double mouseX, final double mouseY) {
 		final int index = super.getChildren().ordered().indexOf(child);
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_START, DispatchContext.create(), () -> {
+		final boolean started = child.fireDragStart(() -> {
 			this.reorderedNode = child;
 			this.initialIndex = index;
 			this.currentIndex = index;
@@ -280,9 +306,11 @@ public class ReorderableFlexNode extends Node {
 			child.zindex(Integer.MAX_VALUE);
 			super.getChildren().remove(child);
 			super.getChildren().add(child);
+		});
 
-			child.fireDragStart(null);
-		}, child);
+		if (started) {
+			super.fire(ReorderableFlexNode.REORDER_START, () -> NodeReorderEvent.Post.create(this, child, index, index));
+		}
 	}
 
 	private void tickDrag(final double mouseX, final double mouseY) {
@@ -325,18 +353,21 @@ public class ReorderableFlexNode extends Node {
 			}
 		}
 
-		this.autoScrollParent(mouseX, mouseY);
-
-		dragged.fireDrag(null);
+		dragged.fireDrag(() -> this.autoScrollParent(mouseX, mouseY));
 		final int index = this.freeSlot(newIndex);
 		if (index == this.currentIndex) {
 			return;
 		}
 
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER, DispatchContext.create(), () -> {
-			this.move(dragged, index);
-			this.currentIndex = index;
-		}, dragged);
+		final int previous = this.currentIndex;
+		final NodeReorderEvent.Pre<ReorderableFlexNode> event = super.fire(ReorderableFlexNode.BEFORE_REORDER, () -> NodeReorderEvent.Pre.create(this, dragged, previous, index));
+		if (event != null && event.isCancelled()) {
+			return;
+		}
+
+		this.move(dragged, index);
+		this.currentIndex = index;
+		super.fire(ReorderableFlexNode.REORDER, () -> NodeReorderEvent.Post.create(this, dragged, previous, index));
 	}
 
 	private int freeSlot(final int index) {
@@ -390,14 +421,13 @@ public class ReorderableFlexNode extends Node {
 		final int newIndex = this.currentIndex;
 
 		this.applyReorder();
-		node.fireDragEnd(null);
 
 		this.reorderedNode = null;
 		this.releasing = false;
 		this.logicalOrder.clear();
 		this.childCurrent.clear();
 
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_END, DispatchContext.create(), node, oldIndex, newIndex);
+		super.fire(ReorderableFlexNode.REORDER_END, () -> NodeReorderEvent.Post.create(this, node, oldIndex, newIndex));
 	}
 
 	private void abandonReorder() {
@@ -405,14 +435,17 @@ public class ReorderableFlexNode extends Node {
 		final int oldIndex = this.initialIndex;
 
 		node.zindex(this.draggedZindex);
-		node.fireDragEnd(null);
+		final boolean releasing = this.releasing;
 
 		this.reorderedNode = null;
 		this.releasing = false;
 		this.logicalOrder.clear();
 		this.childCurrent.clear();
 
-		super.executeCallback(ReorderableFlexNode.CALLBACK_REORDER_END, DispatchContext.create(), node, oldIndex, -1);
+		if (!releasing) {
+			node.fireDragDrop(null, () -> {});
+		}
+		super.fire(ReorderableFlexNode.REORDER_END, () -> NodeReorderEvent.Post.create(this, node, oldIndex, -1));
 	}
 
 	private void layout() {

@@ -6,13 +6,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.event.EventListener;
+import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
-import dev.joid.lib.ui.node.callback.registry.NodeCallbackRegistry;
-import dev.joid.lib.ui.node.impl.structure.selector.callback.NodeSelectorChangeCallback;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -20,7 +21,8 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public abstract class SelectorNode<V> extends Node {
 
-	public static final int CALLBACK_CHANGE = NodeCallbackRegistry.next(NodeSelectorChangeCallback.class);
+	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
+	private static final EventType<NodeChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
 	private final Map<Node, V> optionMap;
 
@@ -83,7 +85,7 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	@Override
-	public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
+	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 		if (this.selected == null) {
 			return;
 		}
@@ -97,24 +99,25 @@ public abstract class SelectorNode<V> extends Node {
 				}
 			}
 
-			if (context.isCancelled() || clicked == null && !super.isHovered()) {
+			if (event.isConsumed() || clicked == null && !super.isHovered()) {
 				this.active = false;
 				return;
 			}
 
 			if (clicked == null || clicked == this.selected) {
 				this.active = false;
-				context.cancel();
+				event.consume();
 				return;
 			}
 
-			final Node option = clicked;
-			context.cancel(() -> this.select(option, context));
+			this.select(clicked, true);
+			event.consume();
 			return;
 		}
 
 		if (this.selected.isHovered()) {
-			context.cancel(() -> this.active = true);
+			this.active = true;
+			event.consume();
 		}
 	}
 
@@ -153,7 +156,7 @@ public abstract class SelectorNode<V> extends Node {
 		if (this.optionMap.containsValue(previous)) {
 			this.selected = this.find(previous);
 		} else {
-			this.select(this.find(values[0]), DispatchContext.create());
+			this.select(this.find(values[0]), false);
 		}
 		return (T) this;
 	}
@@ -163,14 +166,14 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Supplier<@NonNull V> value) {
-		return super.follow("value", value, option -> this.select(this.find(option), DispatchContext.create()));
+		return super.follow("value", value, option -> this.select(this.find(option), false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = super.writable(signal);
 		this.subscription = super.rebind(this.subscription, signal, value -> {
 			if (this.optionMap.containsValue(value)) {
-				this.select(this.find(value), DispatchContext.create());
+				this.select(this.find(value), false);
 			}
 		});
 		return (T) this;
@@ -192,9 +195,20 @@ public abstract class SelectorNode<V> extends Node {
 		return super.follow("active", active, value -> this.active = value);
 	}
 
-	public final <T extends SelectorNode<V>> @NonNull T onChange(final @NonNull NodeSelectorChangeCallback<T, V> callback) {
-		super.registerCallback(SelectorNode.CALLBACK_CHANGE, callback);
-		return (T) this;
+	public final <T extends SelectorNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, V>> listener) {
+		return this.beforeChange(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, V>> listener) {
+		return super.listen(SelectorNode.BEFORE_CHANGE, priority, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, V>> listener) {
+		return this.onChange(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, V>> listener) {
+		return super.listen(SelectorNode.CHANGE, priority, listener);
 	}
 
 	private @NonNull Node find(final V value) {
@@ -206,17 +220,17 @@ public abstract class SelectorNode<V> extends Node {
 		throw new IllegalArgumentException("The value " + value + " is not an option of the selector");
 	}
 
-	private void select(final Node option, final DispatchContext context) {
+	private void select(final Node option, final boolean user) {
 		if (option == this.selected) {
 			return;
 		}
 
 		final V value = this.optionMap.get(option);
-		super.executeCallback(SelectorNode.CALLBACK_CHANGE, context, () -> {
+		super.change(SelectorNode.BEFORE_CHANGE, SelectorNode.CHANGE, this.getValue(), value, user, () -> {
 			this.selected = option;
 			this.active   = false;
 			super.sync(this.signal, value);
-		}, value);
+		});
 	}
 
 	public static enum SelectorDirection {

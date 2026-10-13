@@ -15,8 +15,8 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.ConsumableEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.callback.DispatchContext;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -308,6 +308,11 @@ public class UIBridgeRegistryTest {
 		public TraceUI(final String name, final List<String> trace) {
 			this.name = name;
 			this.trace = trace;
+			super.handleMousePressed(event -> this.record("pressed", event));
+			super.handleMouseReleased(event -> this.record("released", event));
+			super.handleMouseScroll(event -> this.record("scroll", event));
+			super.handleKeyPressed(event -> this.record("key", event));
+			super.handleCharTyped(event -> this.record("char", event));
 		}
 
 		@Override
@@ -320,35 +325,10 @@ public class UIBridgeRegistryTest {
 			this.trace.add("update " + this.name);
 		}
 
-		@Override
-		public void mousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.record("pressed", context);
-		}
-
-		@Override
-		public void mouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull DispatchContext context) {
-			this.record("released", context);
-		}
-
-		@Override
-		public void mouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notches, final @NonNull DispatchContext context) {
-			this.record("scroll", context);
-		}
-
-		@Override
-		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
-			this.record("key", context);
-		}
-
-		@Override
-		public void charTyped(final int codepoint, final @NonNull DispatchContext context) {
-			this.record("char", context);
-		}
-
-		private void record(final String event, final DispatchContext context) {
+		private void record(final String event, final ConsumableEvent input) {
 			this.trace.add(event + " " + this.name);
 			if (this.cancel) {
-				context.cancel();
+				input.consume();
 			}
 		}
 

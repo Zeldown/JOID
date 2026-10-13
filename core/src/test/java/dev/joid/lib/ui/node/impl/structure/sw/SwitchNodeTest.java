@@ -212,7 +212,7 @@ public class SwitchNodeTest {
 
 		@Override
 		public void init() {
-			this.node = new Switch().states("low", "medium", "high").onChange((node, value) -> this.changes.add(value));
+			this.node = new Switch().states("low", "medium", "high").onChange(event -> this.changes.add(event.getValue()));
 			super.add(this.node);
 		}
 
