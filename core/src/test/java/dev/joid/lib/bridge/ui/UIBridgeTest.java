@@ -33,6 +33,7 @@ import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
+import dev.joid.lib.ui.shortcut.Shortcut;
 
 import lombok.NonNull;
 
@@ -265,11 +266,11 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.trace.clear();
-		menu.keybind(() -> this.trace.add("keybind"), Key.A);
+		Shortcut.create(Key.A).onTrigger(event -> this.trace.add("shortcut")).attach(menu);
 		this.bridges.getWindow().getKeys().add(Key.A);
 		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A));
 		Assert.assertFalse(this.bridges.getUi().charTyped('a'));
-		Assert.assertEquals(Arrays.asList("keybind", "key menu A", "char menu a"), this.trace);
+		Assert.assertEquals(Arrays.asList("shortcut", "key menu A", "char menu a"), this.trace);
 	}
 
 	@Test

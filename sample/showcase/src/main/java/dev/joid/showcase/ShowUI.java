@@ -19,6 +19,7 @@ import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.shortcut.Shortcut;
 
 public abstract class ShowUI extends UI {
 
@@ -44,9 +45,9 @@ public abstract class ShowUI extends UI {
 		RectNode.create(0, 0, 1920, 1080).color(Color.decode("#18181B")).attach(this);
 		this.scene();
 
-		this.keybind(() -> this.navigate(1), Key.PAGE_DOWN);
-		this.keybind(() -> this.navigate(-1), Key.PAGE_UP);
-		this.keybind(this::menu, Key.ESCAPE);
+		Shortcut.create(Key.ESCAPE).onTrigger(event -> this.menu()).attach(this);
+		Shortcut.create(Key.PAGE_UP).onTrigger(event -> this.navigate(-1)).attach(this);
+		Shortcut.create(Key.PAGE_DOWN).onTrigger(event -> this.navigate(1)).attach(this);
 	}
 
 	protected abstract void scene();

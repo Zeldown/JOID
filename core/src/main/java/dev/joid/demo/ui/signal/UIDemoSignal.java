@@ -22,6 +22,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
+import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)
@@ -287,7 +288,7 @@ public class UIDemoSignal extends UIDemo {
 		})
 		.attach(this);
 
-		super.schedule(() -> cards.set(Arrays.asList("Ada Lovelace", "Analytical Engine", "1843")), 3000L);
+		Task.create(3000L).onRun(event -> cards.set(Arrays.asList("Ada Lovelace", "Analytical Engine", "1843"))).attach(this);
 	}
 
 }

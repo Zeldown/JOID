@@ -66,6 +66,8 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
+import dev.joid.lib.ui.shortcut.Shortcut;
+import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 
 import lombok.AllArgsConstructor;
@@ -222,12 +224,12 @@ public class UITest {
 	@Test
 	public void reloadsItsInitOnAFreshTree() {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
-		ui.keybind = new Object[] {Key.R};
+		ui.shortcut = Shortcut.create(Key.R);
 		this.bridges.open(ui);
 		ui.reload();
 		Assert.assertEquals(2, ui.inits);
 		Assert.assertEquals(1, ui.getNodeList().size());
-		Assert.assertEquals(1, ui.getKeybindMap().size());
+		Assert.assertEquals(1, ui.getShortcutList().size());
 		Assert.assertTrue(ui.isInitialized());
 	}
 
@@ -412,35 +414,35 @@ public class UITest {
 	}
 
 	@Test
-	public void runsAKeybindOnceAllItsKeysAreDown() {
+	public void runsAShortcutOnceItsModifiersAreDown() {
 		final TraceUI ui = new TraceUI(this.trace);
-		ui.keybind = new Object[] {Key.R, Key.LEFT_CONTROL};
+		ui.shortcut = Shortcut.create(Key.R).ctrl(true).onTrigger(event -> this.trace.add("shortcut"));
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.R);
 		this.bridges.getUi().keyPressed(Key.R);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		this.bridges.getUi().keyPressed(Key.R);
-		Assert.assertEquals(Arrays.asList("key R", "keybind", "key R cancelled"), this.trace);
+		Assert.assertEquals(Arrays.asList("key R", "shortcut", "key R cancelled"), this.trace);
 	}
 
 	@Test
-	public void runsAKeybindRegisteredOutsideItsInit() {
+	public void runsAShortcutAttachedOutsideItsInit() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
-		ui.keybind(() -> this.trace.add("save"), Key.S);
+		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("save")).attach(ui);
 		this.bridges.getWindow().getKeys().add(Key.S);
 		this.bridges.getUi().keyPressed(Key.S);
 		Assert.assertEquals(Arrays.asList("save", "key S cancelled"), this.trace);
 	}
 
 	@Test
-	public void skipsTheKeybindsOnceANodeCancelsTheKey() {
+	public void skipsTheShortcutsOnceANodeCancelsTheKey() {
 		final TraceNode node = new TraceNode("node", this.trace, 0);
 		final TraceUI ui = new TraceUI(this.trace, node);
 		node.cancel = true;
-		ui.keybind = new Object[] {Key.R};
+		ui.shortcut = Shortcut.create(Key.R).onTrigger(event -> this.trace.add("shortcut"));
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.R);
@@ -449,36 +451,36 @@ public class UITest {
 	}
 
 	@Test
-	public void keepsOneKeybindAcrossItsReloads() {
+	public void keepsOneShortcutAcrossItsReloads() {
 		final TraceUI ui = new TraceUI(this.trace);
-		ui.keybind = new Object[] {Key.R};
+		ui.shortcut = Shortcut.create(Key.R).onTrigger(event -> this.trace.add("shortcut"));
 		this.bridges.open(ui);
 		ui.reload();
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.R);
 		this.bridges.getUi().keyPressed(Key.R);
-		Assert.assertEquals(Arrays.asList("keybind", "key R cancelled"), this.trace);
+		Assert.assertEquals(Arrays.asList("shortcut", "key R cancelled"), this.trace);
 	}
 
 	@Test
-	public void keepsOneKeybindPerSetOfKeys() {
+	public void runsOnlyTheFirstShortcutOfAKey() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
-		ui.keybind(() -> this.trace.add("first"), Key.LEFT_CONTROL, Key.S);
-		ui.keybind(() -> this.trace.add("second"), Key.S, Key.LEFT_CONTROL);
+		Shortcut.create(Key.S).ctrl(true).onTrigger(event -> this.trace.add("first")).attach(ui);
+		Shortcut.create(Key.S).ctrl(true).onTrigger(event -> this.trace.add("second")).attach(ui);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S));
 		this.bridges.getUi().keyPressed(Key.S);
-		Assert.assertEquals(1, ui.getKeybindMap().size());
-		Assert.assertEquals(Arrays.asList("second", "key S cancelled"), this.trace);
+		Assert.assertEquals(2, ui.getShortcutList().size());
+		Assert.assertEquals(Arrays.asList("first", "key S cancelled"), this.trace);
 	}
 
 	@Test
-	public void runsAKeybindOnlyForTheKeysOfItsShortcut() {
+	public void runsAShortcutOnlyForItsKey() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
-		ui.keybind(() -> this.trace.add("save"), Key.LEFT_CONTROL, Key.S);
+		Shortcut.create(Key.S).ctrl(true).onTrigger(event -> this.trace.add("save")).attach(ui);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S, Key.A));
 		this.bridges.getUi().keyPressed(Key.A);
 		this.bridges.getUi().keyPressed(Key.S);
@@ -1319,11 +1321,11 @@ public class UITest {
 		final AtomicInteger runs = new AtomicInteger();
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		ui.schedule(runs::incrementAndGet);
+		Task.create(0L).onRun(event -> runs.incrementAndGet()).attach(ui);
 		Assert.assertEquals(0, runs.get());
 		this.bridges.frames(3);
 		Assert.assertEquals(1, runs.get());
-		Assert.assertTrue(ui.getScheduledTaskList().isEmpty());
+		Assert.assertTrue(ui.getTaskList().isEmpty());
 	}
 
 	@Test
@@ -1331,7 +1333,7 @@ public class UITest {
 		final AtomicInteger runs = new AtomicInteger();
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		ui.schedule(runs::incrementAndGet, 100L);
+		Task.create(100L).onRun(event -> runs.incrementAndGet()).attach(ui);
 		this.bridges.frames(6);
 		Assert.assertEquals(0, runs.get());
 		this.bridges.frame();
@@ -1345,10 +1347,10 @@ public class UITest {
 		final AtomicInteger runs = new AtomicInteger();
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		ui.schedule(runs::incrementAndGet, 0L, 48L);
+		Task.create(0L).every(48L).onRun(event -> runs.incrementAndGet()).attach(ui);
 		this.bridges.frames(7);
 		Assert.assertEquals(3, runs.get());
-		Assert.assertEquals(1, ui.getScheduledTaskList().size());
+		Assert.assertEquals(1, ui.getTaskList().size());
 	}
 
 	@Test
@@ -1684,7 +1686,7 @@ public class UITest {
 	}
 
 	@Test
-	public void resolvesTheBindingsOfAKeybindAtEachKey() {
+	public void resolvesTheBindingOfAShortcutAtEachKey() {
 		final Binding binding = new Binding(Key.S);
 		final IKeyResolver resolver = new BindingKeyResolver();
 		KeyResolver.register(resolver);
@@ -1692,7 +1694,7 @@ public class UITest {
 			final TraceUI ui = new TraceUI(this.trace);
 			this.bridges.open(ui);
 			this.trace.clear();
-			ui.keybind(() -> this.trace.add("save"), Key.LEFT_CONTROL, binding);
+			Shortcut.create(binding).ctrl(true).onTrigger(event -> this.trace.add("save")).attach(ui);
 			this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S, Key.D));
 			this.bridges.getUi().keyPressed(Key.S);
 			binding.key = Key.D;
@@ -1704,26 +1706,6 @@ public class UITest {
 		} finally {
 			KeyResolver.unregister(resolver);
 		}
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesAKeybindWithoutResolverForItsBinding() {
-		new TraceUI(this.trace).keybind(() -> this.trace.add("save"), Key.LEFT_CONTROL, "S");
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void refusesAKeybindWithANullBinding() {
-		new TraceUI(this.trace).keybind(() -> this.trace.add("save"), Key.LEFT_CONTROL, null);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void refusesAKeybindWithoutAction() {
-		new TraceUI(this.trace).keybind(null, Key.R);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void refusesATaskWithoutAction() {
-		new TraceUI(this.trace).schedule(null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -1827,7 +1809,7 @@ public class UITest {
 
 		private int      inits;
 		private boolean  cancel;
-		private Object[] keybind;
+		private Shortcut shortcut;
 		private boolean  closeable = true;
 
 		public TraceUI(final List<String> trace, final Node... nodes) {
@@ -1839,8 +1821,8 @@ public class UITest {
 		public void init() {
 			this.inits++;
 			super.add(this.nodes);
-			if (this.keybind != null) {
-				super.keybind(() -> this.trace.add("keybind"), this.keybind);
+			if (this.shortcut != null) {
+				this.shortcut.attach(this);
 			}
 		}
 

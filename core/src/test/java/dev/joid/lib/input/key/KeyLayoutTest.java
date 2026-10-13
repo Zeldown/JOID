@@ -25,6 +25,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNodeTest.FieldFont;
+import dev.joid.lib.ui.shortcut.Shortcut;
 
 public class KeyLayoutTest {
 
@@ -147,10 +148,10 @@ public class KeyLayoutTest {
 	}
 
 	@Test
-	public void runsAKeybindWithTheKeyThatTypesItsLetter() {
+	public void runsAShortcutWithTheKeyThatTypesItsLetter() {
 		final ShortcutUI ui = new ShortcutUI();
 		this.bridges.open(ui);
-		ui.keybind(() -> this.trace.add("undo"), Key.LEFT_CONTROL, Key.Z);
+		Shortcut.create(Key.Z).ctrl(true).onTrigger(event -> this.trace.add("undo")).attach(ui);
 		this.control(Key.Z);
 		Assert.assertTrue(this.trace.isEmpty());
 		this.control(Key.W);
@@ -158,10 +159,10 @@ public class KeyLayoutTest {
 	}
 
 	@Test
-	public void runsAKeybindOnADigitWhateverItsLayoutCharacter() {
+	public void runsAShortcutOnADigitWhateverItsLayoutCharacter() {
 		final ShortcutUI ui = new ShortcutUI();
 		this.bridges.open(ui);
-		ui.keybind(() -> this.trace.add("first tab"), Key.LEFT_CONTROL, Key.DIGIT_1);
+		Shortcut.create(Key.DIGIT_1).ctrl(true).onTrigger(event -> this.trace.add("first tab")).attach(ui);
 		this.control(Key.DIGIT_1);
 		Assert.assertEquals(Collections.singletonList("first tab"), this.trace);
 	}

@@ -47,6 +47,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.utils.align.Align;
 import lombok.NoArgsConstructor;
 
@@ -126,9 +127,7 @@ public class UIDemoChoice extends UI {
 		})
 		.attach(this);
 
-		this.keybind(() -> {
-			JOID.open(new UIDemoPopup());
-		}, Key.K, Key.LEFT_CONTROL);
+		Shortcut.create(Key.K).ctrl(true).onTrigger(event -> JOID.open(new UIDemoPopup())).attach(this);
 	}
 
 }

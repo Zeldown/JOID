@@ -22,6 +22,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
+import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)
@@ -363,7 +364,7 @@ public class UIDemoWatch extends UIDemo {
 		})
 		.attach(this);
 
-		super.schedule(() -> future.complete("Done"), 1500L);
+		Task.create(1500L).onRun(event -> future.complete("Done")).attach(this);
 	}
 
 }

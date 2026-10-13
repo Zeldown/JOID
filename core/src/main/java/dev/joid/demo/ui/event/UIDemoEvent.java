@@ -2,11 +2,14 @@ package dev.joid.demo.ui.event;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.node.impl.design.textfield.DemoTextFieldNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
@@ -18,6 +21,8 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
+import dev.joid.lib.ui.shortcut.Shortcut;
+import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)
@@ -40,6 +45,11 @@ public class UIDemoEvent extends UIDemo {
 		final IntegerSignal appended = IntegerSignal.of(0);
 		final IntegerSignal detached = IntegerSignal.of(0);
 		final IntegerSignal clicks = IntegerSignal.of(0);
+		final IntegerSignal shortcuts = IntegerSignal.of(0);
+		final IntegerSignal forced = IntegerSignal.of(0);
+		final IntegerSignal seconds = IntegerSignal.of(0);
+		final BooleanSignal running = BooleanSignal.of(true);
+		final Task timer = Task.create(1000L).every(1000L).onRun(event -> seconds.increment());
 
 		RectNode
 		.create(80, 40, 320, 260)
@@ -254,6 +264,44 @@ public class UIDemoEvent extends UIDemo {
 			TextNode.create(40, 120).text(Text.create("Count: " + clicks.get(), info)).attach(rect);
 			TextNode.create(40, 165).text(Text.create("Shift adds 10", info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Shift click", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1160, 720, 320, 260)
+		.color(UIDemoEvent.PLACEHOLDER)
+		.body(rect -> {
+			Shortcut.create(Key.SPACE).ctrl(true).onTrigger(event -> shortcuts.increment()).attach(rect);
+			Shortcut.create(Key.F2).overrideFocus(true).onTrigger(event -> forced.increment()).attach(rect);
+			DemoTextFieldNode.create(40, 40, 240, 50).info(info).marginHorizontal(12D).placeholder("Focus me").attach(rect);
+			TextNode.create(40, 120).text(Text.create("Ctrl + Space: " + shortcuts.get(), info)).attach(rect);
+			TextNode.create(40, 165).text(Text.create("F2: " + forced.get(), info)).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Shortcut", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1520, 720, 320, 260)
+		.color(UIDemoEvent.PLACEHOLDER)
+		.body(rect -> {
+			timer.attach(rect);
+			RectNode
+			.create(40, 40, 120, 50)
+			.color(UIDemoEvent.INK)
+			.onClick((node, mouseX, mouseY, button) -> {
+				if (timer.isAttached()) {
+					timer.detach();
+				} else {
+					timer.attach(rect);
+				}
+				running.set(timer.isAttached());
+			})
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create(running.get() ? "Stop" : "Start", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(40, 120).text(Text.create("Seconds: " + seconds.get(), info)).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Task", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

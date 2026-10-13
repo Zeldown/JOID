@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -87,6 +88,8 @@ import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableType;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
+import dev.joid.lib.ui.shortcut.Shortcut;
+import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
@@ -144,6 +147,9 @@ public abstract class Node implements INode {
 
 	private final transient TweenAnimator             hoverAnimator;
 	private final transient Map<TweenAnimator, Float> animatorMap;
+
+	private final transient List<Task>     taskList;
+	private final transient List<Shortcut> shortcutList;
 
 	private final LinkedList<INodeLayer>          layerList;
 	private final IndexedConcurrentList<Node>     children;
@@ -246,6 +252,9 @@ public abstract class Node implements INode {
 
 		this.animatorMap   = new HashMap<>();
 		this.hoverAnimator = TweenAnimator.create();
+
+		this.taskList     = new CopyOnWriteArrayList<>();
+		this.shortcutList = new CopyOnWriteArrayList<>();
 
 		this.children  = new IndexedConcurrentList<>();
 		this.layerList = new LinkedList<>();
@@ -951,6 +960,7 @@ public abstract class Node implements INode {
 			}
 
 			this.unsubscribe();
+			this.taskList.forEach(Task::detach);
 			this.endInteraction();
 			this.effectMap.values().forEach(effect -> effect.detach(this));
 			this.detach();

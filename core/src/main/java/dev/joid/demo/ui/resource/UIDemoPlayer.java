@@ -18,6 +18,7 @@ import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.video.VideoNatives;
 
@@ -159,20 +160,27 @@ public class UIDemoPlayer extends UIDemo {
 
 		TextNode.create(960, 1020).text(() -> Text.create(VideoNatives.isInstalled() ? "FFmpeg natives ready" : "FFmpeg natives not ready", label, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		this.keybind(() -> {
+		Shortcut
+		.create(Key.SPACE)
+		.onTrigger(event -> {
 			if (video.isPlaying()) {
 				video.pause();
 			} else {
 				video.resume();
 			}
-		}, Key.SPACE);
-		this.keybind(() -> {
+		})
+		.attach(this);
+
+		Shortcut
+		.create(Key.F)
+		.onTrigger(event -> {
 			if (video.getWidth() < this.getWidth()) {
 				video.x(0).y(0).width(this.getWidth()).height(this.getHeight());
 			} else {
 				video.x(80).y(40).width(320).height(180);
 			}
-		}, Key.F);
+		})
+		.attach(this);
 	}
 
 }

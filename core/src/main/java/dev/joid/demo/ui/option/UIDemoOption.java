@@ -21,6 +21,7 @@ import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)
@@ -34,7 +35,7 @@ public class UIDemoOption extends UIDemo {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOption.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final IntegerSignal ticks = IntegerSignal.of(0);
-		super.schedule(() -> ticks.increment(), 1000L, 1000L);
+		Task.create(1000L).every(1000L).onRun(event -> ticks.increment()).attach(this);
 
 		RectNode
 		.create(80, 40, 320, 260)

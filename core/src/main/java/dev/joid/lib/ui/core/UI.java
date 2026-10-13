@@ -7,7 +7,6 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,7 +35,6 @@ import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.key.Key;
-import dev.joid.lib.input.key.resolver.KeyResolver;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.render.Drawing;
 import dev.joid.lib.resource.Resource;
@@ -51,7 +49,6 @@ import dev.joid.lib.ui.core.data.scale.UIDataScaleObject;
 import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
-import dev.joid.lib.ui.core.task.UIScheduledTask;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.core.view.UIView;
@@ -59,6 +56,8 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
+import dev.joid.lib.ui.shortcut.Shortcut;
+import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
 import dev.joid.lib.utils.list.IndexedElement;
 import dev.joid.lib.utils.thread.ThreadUtils;
@@ -81,8 +80,9 @@ public abstract class UI implements IUI, IndexedElement {
 
 	private static boolean monitorWarned;
 
+	@NonNull private final List<@NonNull Task>                  taskList;
 	@NonNull private final Stack<MaskRegion>                    stencilStack;
-	@NonNull private final Map<Set<Object>, Runnable>           keybindMap;
+	@NonNull private final List<@NonNull Shortcut>              shortcutList;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
 	private final UIView       view;
@@ -105,7 +105,6 @@ public abstract class UI implements IUI, IndexedElement {
 
 	private transient Transition                             transition;
 	private transient FileAlterationMonitor                  fileMonitor;
-	private transient List<UIScheduledTask>                  scheduledTaskList;
 	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
 
 	private boolean closed;
@@ -151,10 +150,10 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		this.stencilStack = new Stack<>();
-		this.keybindMap = new HashMap<>();
+		this.taskList = new CopyOnWriteArrayList<>();
+		this.shortcutList = new CopyOnWriteArrayList<>();
 		this.nodeList = new IndexedConcurrentList<>();
 		this.storeMap = new HashMap<>();
-		this.scheduledTaskList = new CopyOnWriteArrayList<>();
 
 		this.transition = this.createPopupTransition();
 
@@ -186,7 +185,7 @@ public abstract class UI implements IUI, IndexedElement {
 			UIPropertyHook.load(this);
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
-			this.keybindMap.clear();
+			this.shortcutList.forEach(Shortcut::detach);
 			this.scoped(() -> {
 				for (final Node node : this.nodeList) {
 					if (node != this.devNode) {
@@ -194,7 +193,7 @@ public abstract class UI implements IUI, IndexedElement {
 					}
 				}
 				this.nodeList.clear();
-				this.scheduledTaskList.clear();
+				this.taskList.forEach(Task::detach);
 
 				SignalReplay.reset();
 				SignalReplay.enter(this);
@@ -321,16 +320,11 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		final DispatchContext context = DispatchContext.create();
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(key, context)));
-
+		this.fireShortcuts(key, true, context);
 		if (!context.isCancelled()) {
-			for (final Map.Entry<Set<Object>, Runnable> entry : this.keybindMap.entrySet()) {
-				if (UI.isPressed(entry.getKey(), key)) {
-					this.traced(entry.getValue());
-					context.cancel();
-				}
-			}
+			this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(key, context)));
 		}
+		this.fireShortcuts(key, false, context);
 
 		if (this.data.zoomable() && !context.isCancelled()) {
 			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
@@ -489,6 +483,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void dispose() {
 		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
+		this.taskList.forEach(Task::detach);
 		this.closed = true;
 
 		this.stopMonitor();
@@ -606,16 +601,6 @@ public abstract class UI implements IUI, IndexedElement {
 		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
 
-	public final void keybind(final @NonNull Runnable runnable, final @NonNull Object @NonNull... bindings) {
-		for (final Object binding : bindings) {
-			if (!KeyResolver.supports(binding)) {
-				throw new IllegalArgumentException("No key resolver found for a binding of type " + binding.getClass().getName());
-			}
-		}
-
-		this.keybindMap.put(new HashSet<>(Arrays.asList(bindings)), runnable);
-	}
-
 	public final void reload() {
 		this.scoped(() -> {
 			if (this.devNode != null) {
@@ -669,18 +654,6 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		return snap ? target : value;
-	}
-
-	public final void schedule(final @NonNull Runnable runnable) {
-		this.schedule(runnable, 0L, -1L);
-	}
-
-	public final void schedule(final @NonNull Runnable runnable, final long delay) {
-		this.schedule(runnable, delay, -1L);
-	}
-
-	public final void schedule(final @NonNull Runnable runnable, final long delay, final long period) {
-		this.scheduledTaskList.add(new UIScheduledTask(runnable, delay, period));
 	}
 
 	public final void add(final @NonNull Node @NonNull ... nodes) {
@@ -829,22 +802,13 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
 
-		final List<UIScheduledTask> toRemove = new ArrayList<>();
-		for (final UIScheduledTask task : this.scheduledTaskList) {
-			if (!task.shouldRun()) {
-				continue;
-			}
-
-			SignalReplay.enter(this);
-			try {
-				if (!task.execute()) {
-					toRemove.add(task);
-				}
-			} finally {
-				SignalReplay.exit();
+		final List<Task> taskList = new ArrayList<>(this.taskList);
+		this.nodeList.forEach(node -> UI.collectTasks(node, taskList));
+		for (final Task task : taskList) {
+			if (task.isDue()) {
+				this.traced(task::fireRun);
 			}
 		}
-		this.scheduledTaskList.removeAll(toRemove);
 
 		final IUIBridge bridge = this.getBridge();
 		final double interfaceScale = bridge == null || !this.scale.active() ? 1D : this.scale.apply(bridge.getInterfaceScale(this));
@@ -958,6 +922,23 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
+	private void fireShortcuts(final Key key, final boolean overrideFocus, final DispatchContext context) {
+		if (context.isCancelled()) {
+			return;
+		}
+
+		final List<Shortcut> shortcutList = new ArrayList<>();
+		this.untraced(() -> this.nodeList.reversed().forEach(node -> UI.collectShortcuts(node, shortcutList)));
+		shortcutList.addAll(this.shortcutList);
+		for (final Shortcut shortcut : shortcutList) {
+			if (shortcut.isOverrideFocus() == overrideFocus && shortcut.isTriggeredBy(key)) {
+				this.traced(() -> shortcut.fireTrigger(key));
+				context.cancel();
+				return;
+			}
+		}
+	}
+
 	private void traced(final Runnable runnable) {
 		SignalReplay.enter(this);
 		try {
@@ -976,17 +957,18 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	private static boolean isPressed(final Set<Object> bindings, final Key key) {
-		boolean pressed = false;
-		for (final Object binding : bindings) {
-			final Key bound = KeyResolver.resolve(binding);
-			if (bound == null || !bound.isDown()) {
-				return false;
-			}
+	private static void collectTasks(final Node node, final List<Task> taskList) {
+		taskList.addAll(node.getTaskList());
+		node.getChildren().forEach(child -> UI.collectTasks(child, taskList));
+	}
 
-			pressed |= bound == key;
+	private static void collectShortcuts(final Node node, final List<Shortcut> shortcutList) {
+		if (!node.isVisible() || !node.isEnabled()) {
+			return;
 		}
-		return pressed;
+
+		node.getChildren().reversed().forEach(child -> UI.collectShortcuts(child, shortcutList));
+		shortcutList.addAll(node.getShortcutList());
 	}
 
 	private static FileAlterationMonitor watch(final File location, final UI ui) {
