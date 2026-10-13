@@ -53,6 +53,7 @@ ext {
     }
 
     lwjglVersion = "3.3.4"
+    ffmpegNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? "windows-x86_64" : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty("os.arch").startsWith("aarch64") ? "macosx-arm64" : "macosx-x86_64") : "linux-x86_64"
     lwjglNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? "natives-windows" : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty("os.arch").startsWith("aarch64") ? "natives-macos-arm64" : "natives-macos") : "natives-linux"
 }
 
@@ -84,6 +85,7 @@ subprojects {
         compile "org.projectlombok:lombok:1.18.34"
 
         testCompile "junit:junit:4.13.2"
+        testRuntime "org.bytedeco:ffmpeg:6.0-1.5.9:$ffmpegNatives"
     }
 
     tasks.withType(Jar) {

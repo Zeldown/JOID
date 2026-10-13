@@ -30,6 +30,11 @@ The release jars embed the following software:
   Copyright Samuel Audet
   Licensed under the Apache License, Version 2.0
 
+The release jars do not embed the FFmpeg libraries. The first video, or
+VideoNatives.install(), downloads the build of the JavaCPP Presets from
+Maven Central (or the repository given to VideoNatives.repository) into the
+cache folder:
+
   FFmpeg, built by the JavaCPP Presets
   https://ffmpeg.org
   Licensed under the GNU Lesser General Public License, version 2.1 or later

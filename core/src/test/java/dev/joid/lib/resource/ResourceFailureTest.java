@@ -3,6 +3,7 @@ package dev.joid.lib.resource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +23,7 @@ import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
+import dev.joid.lib.video.VideoNativesException;
 
 import lombok.NonNull;
 
@@ -85,6 +87,19 @@ public class ResourceFailureTest {
 		} finally {
 			JOIDEnv.devMode(false);
 		}
+	}
+
+	@Test
+	public void warnsAboutTheVideoNativesWithTheirOwnAdvice() {
+		final ResourceData data = new ResourceData("intro.mp4", null);
+		JOIDEnv.devMode(true);
+		try {
+			final String warning = ResourceFailureTest.capture(() -> data.fail(new VideoNativesException("The FFmpeg natives of linux-x86_64 cannot be downloaded, check the connection", new IOException("offline"))));
+			Assert.assertEquals("[JOID] The resource intro.mp4 cannot be read and is drawn empty: The FFmpeg natives of linux-x86_64 cannot be downloaded, check the connection (java.io.IOException: offline)" + System.lineSeparator(), warning);
+		} finally {
+			JOIDEnv.devMode(false);
+		}
+		Assert.assertTrue(data.isFailed());
 	}
 
 	@Test

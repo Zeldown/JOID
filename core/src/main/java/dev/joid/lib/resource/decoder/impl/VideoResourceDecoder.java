@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,6 +28,7 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
 import dev.joid.lib.video.VideoAudioPlayer;
+import dev.joid.lib.video.VideoNatives;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -116,6 +118,13 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
+		try {
+			VideoNatives.install().join();
+		} catch (final CompletionException exception) {
+			resource.fail(exception.getCause());
+			return;
+		}
+
 		synchronized (this.grabberLock) {
 			if (this.released) {
 				return;
@@ -457,6 +466,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	}
 
 	private FFmpegFrameGrabber open() throws Exception {
+		if (!VideoNatives.isInstalled()) {
+			throw new IllegalStateException("The FFmpeg natives are not installed yet, wait for VideoNatives.install()");
+		}
+
 		avutil.av_log_set_level(avutil.AV_LOG_QUIET);
 		FFmpegLogCallback.set();
 

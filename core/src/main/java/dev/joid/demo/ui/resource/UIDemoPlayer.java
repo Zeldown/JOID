@@ -19,6 +19,7 @@ import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.video.VideoNatives;
 
 @UIData(background = true)
 public class UIDemoPlayer extends UIDemo {
@@ -155,6 +156,8 @@ public class UIDemoPlayer extends UIDemo {
 		RectNode.create(1520, 720, 320, 180).color(Color.WHITE).attach(this);
 		ResourcePlayerNode.create(1522, 722, 316, 176).resource(Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-video")).attach(this);
 		TextNode.create(1680, 965).text(Text.create("Failed", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+
+		TextNode.create(960, 1020).text(() -> Text.create(VideoNatives.isInstalled() ? "FFmpeg natives ready" : "FFmpeg natives not ready", label, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		this.keybind(() -> {
 			if (video.isPlaying()) {

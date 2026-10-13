@@ -28,17 +28,12 @@ dependencies {
     shade("org.bytedeco:javacv:1.5.9") { transitive = false }
     shade "org.bytedeco:javacpp:1.5.9"
     shade("org.bytedeco:ffmpeg:6.0-1.5.9") { transitive = false }
-
-    shade "org.bytedeco:ffmpeg:6.0-1.5.9:windows-x86_64"
-    shade "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-x86_64"
-    shade "org.bytedeco:ffmpeg:6.0-1.5.9:macosx-arm64"
-    shade "org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64"
 }
 
 rootProject.variants.each { variant ->
     task("${variant}Jar", type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
         group = 'build'
-        description = "Builds the ${variant} jar of the core, with the media libraries and the FFmpeg natives embedded."
+        description = "Builds the ${variant} jar of the core, with the media libraries embedded."
         from sourceSets.main.output
         from project(':tool-msdf').sourceSets.main.output
         configurations = [project.configurations.shade]

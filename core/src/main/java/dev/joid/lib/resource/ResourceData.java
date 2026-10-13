@@ -15,6 +15,7 @@ import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.utils.thread.ThreadUtils;
+import dev.joid.lib.video.VideoNativesException;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -353,6 +354,10 @@ public final class ResourceData {
 		}
 
 		final String reason = cause == error ? String.valueOf(error.getMessage()) : error.getMessage() + " (" + cause + ")";
+		if (error instanceof VideoNativesException) {
+			return reason;
+		}
+
 		if (cause instanceof IOException) {
 			return reason + ", check that the file or the URL exists and can be read";
 		}
