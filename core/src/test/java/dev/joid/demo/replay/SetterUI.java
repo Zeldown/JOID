@@ -1,7 +1,5 @@
 package dev.joid.demo.replay;
 
-import javax.vecmath.Vector3f;
-
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.draw.text.builder.Text;
@@ -30,6 +28,7 @@ import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.Thumb;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNodeTest.Toggle;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 import lombok.Getter;
 
 @Getter
@@ -99,7 +98,7 @@ public class SetterUI extends UI {
 		.create(0D, 0D)
 		.volume(1F - this.step.get() / 10F)
 		.loop(this.step.get() > 0)
-		.location(new Vector3f(this.step.get(), 0F, 1F))
+		.location(Point.create(this.step.get(), 0D, 1D))
 		.attach(this);
 		this.model = ModelNode
 		.create(0D, 0D, 10D, 10D)

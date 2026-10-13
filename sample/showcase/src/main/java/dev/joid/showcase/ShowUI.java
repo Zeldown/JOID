@@ -1,7 +1,5 @@
 package dev.joid.showcase;
 
-import javax.vecmath.Vector4f;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.core.transition.impl.DemoPushTransition;
 import dev.joid.internal.JOID;
@@ -20,6 +18,7 @@ import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.shortcut.Shortcut;
+import dev.joid.lib.utils.point.Point;
 
 public abstract class ShowUI extends UI {
 
@@ -116,11 +115,11 @@ public abstract class ShowUI extends UI {
 	}
 
 	protected static Color vertical(final Color top, final Color bottom) {
-		return top.toGradient(bottom, new Vector4f(0F, 0F, 0F, 1F));
+		return top.toGradient(bottom, Point.create(0D, 0D), Point.create(0D, 1D));
 	}
 
 	protected static Color diagonal(final Color from, final Color to) {
-		return from.toGradient(to, new Vector4f(0F, 0F, 1F, 1F));
+		return from.toGradient(to, Point.create(0D, 0D), Point.create(1D, 1D));
 	}
 
 }

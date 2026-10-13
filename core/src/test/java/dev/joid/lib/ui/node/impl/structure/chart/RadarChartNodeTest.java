@@ -3,8 +3,6 @@ package dev.joid.lib.ui.node.impl.structure.chart;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,6 +14,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
+import dev.joid.lib.utils.point.Point;
 
 public class RadarChartNodeTest {
 
@@ -216,11 +215,11 @@ public class RadarChartNodeTest {
 			}
 
 			final int size = super.getDataList().size();
-			final Vector2d[] points = new Vector2d[size];
+			final Point[] points = new Point[size];
 			for (int i = 0; i < size; i++) {
 				final double radius = super.getDataList().get(i).getValue().doubleValue() / super.getMax().doubleValue() * super.dh(2D);
 				final double angle = 2D * Math.PI * i / size - Math.PI / 2D;
-				points[i] = new Vector2d(super.getX() + super.dw(2D) + radius * Math.cos(angle), super.getY() + super.dh(2D) + radius * Math.sin(angle));
+				points[i] = Point.create(super.getX() + super.dw(2D) + radius * Math.cos(angle), super.getY() + super.dh(2D) + radius * Math.sin(angle));
 			}
 			DrawUtils.SHAPE.drawPolygon(new Color(0.2F, 0.4F, 0.6F, 1F), points);
 		}

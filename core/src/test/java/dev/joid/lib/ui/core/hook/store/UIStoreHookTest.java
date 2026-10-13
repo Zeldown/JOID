@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
@@ -334,14 +335,16 @@ public class UIStoreHookTest {
 		}
 
 		@Override
-		public void load(final @NonNull JsonObject json) {
+		public void fromJson(final @NonNull String json) {
 			this.loaded = true;
-			this.value = json.get("value").getAsString();
+			this.value = JsonParser.parseString(json).getAsJsonObject().get("value").getAsString();
 		}
 
 		@Override
-		public void save(final @NonNull JsonObject json) {
+		public @NonNull String toJson() {
+			final JsonObject json = new JsonObject();
 			json.addProperty("value", this.value);
+			return json.toString();
 		}
 
 	}

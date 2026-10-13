@@ -1,7 +1,5 @@
 package dev.joid.demo.ui.resource;
 
-import javax.vecmath.Vector3f;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.internal.JOID;
@@ -16,6 +14,7 @@ import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 import dev.joid.lib.video.VideoAudioPlayer;
 
 @UIData(background = true)
@@ -31,7 +30,7 @@ public class UIDemoAudio extends UIDemo {
 		final FloatSignal volume = FloatSignal.of(1F);
 		final BooleanSignal far = BooleanSignal.of(false);
 		final BooleanSignal away = BooleanSignal.of(false);
-		VideoAudioPlayer.setAudioListenerPosition(() -> new Vector3f(0F, 0F, away.get() ? 30F : 0F));
+		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(0D, 0D, away.get() ? 30D : 0D));
 
 		ResourcePlayerNode
 		.create(80, 380, 320, 180)
@@ -71,7 +70,7 @@ public class UIDemoAudio extends UIDemo {
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
 		.loop(true)
 		.autoplay(false)
-		.location(() -> new Vector3f(0F, 0F, far.get() ? 30F : 0F))
+		.location(() -> Point.create(0D, 0D, far.get() ? 30D : 0D))
 		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
 			if (player.isPlaying()) {
 				player.pause();
@@ -104,7 +103,7 @@ public class UIDemoAudio extends UIDemo {
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
 		.loop(true)
 		.autoplay(false)
-		.location(new Vector3f(0F, 0F, 30F))
+		.location(Point.create(0D, 0D, 30D))
 		.referenceDistance(40F)
 		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
 			if (player.isPlaying()) {
@@ -122,7 +121,7 @@ public class UIDemoAudio extends UIDemo {
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
 		.loop(true)
 		.autoplay(false)
-		.location(new Vector3f(0F, 0F, 30F))
+		.location(Point.create(0D, 0D, 30D))
 		.maxDistance(20F)
 		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
 			if (player.isPlaying()) {
@@ -140,7 +139,7 @@ public class UIDemoAudio extends UIDemo {
 		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
 		.loop(true)
 		.autoplay(false)
-		.location(new Vector3f(0F, 0F, 0F))
+		.location(Point.create(0D, 0D, 0D))
 		.<ResourcePlayerNode>onClick((player, mouseX, mouseY, clickType) -> {
 			if (player.isPlaying()) {
 				player.pause();

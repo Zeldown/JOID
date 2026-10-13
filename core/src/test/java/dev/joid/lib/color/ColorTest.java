@@ -4,14 +4,14 @@ import java.lang.reflect.Modifier;
 import java.nio.FloatBuffer;
 import java.util.function.UnaryOperator;
 
-import javax.vecmath.Vector4f;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.point.Point;
 
 public class ColorTest {
 
@@ -20,18 +20,18 @@ public class ColorTest {
 
 	@Test
 	public void copiesAGradientWithItsEnds() {
-		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), new Vector4f(0F, 0F, 1F, 0F));
+		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color copy = gradient.copy();
 		Assert.assertTrue(copy.isGradient());
 		Assert.assertNotSame(gradient.gradient, copy.gradient);
 		Assert.assertNotSame(gradient.gradient.getStartColor(), copy.gradient.getStartColor());
 		Assert.assertEquals(0.5F, copy.gradient.getEndColor().a, 0F);
-		Assert.assertEquals(1F, copy.gradient.getDirection().z, 0F);
+		Assert.assertEquals(1D, copy.gradient.getEndPoint().getX(), 0D);
 	}
 
 	@Test
 	public void fadesAGradientWithoutLosingIt() {
-		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), new Vector4f(0F, 0F, 1F, 0F));
+		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color faded = gradient.copyAlpha(0.4F);
 		Assert.assertTrue(faded.isGradient());
 		Assert.assertEquals(0.4F, faded.a, 0F);
@@ -44,7 +44,7 @@ public class ColorTest {
 
 	@Test
 	public void fadesAGradientThatStartsTransparent() {
-		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 0F), new Color(0F, 0F, 1F, 1F), new Vector4f(0F, 0F, 1F, 0F));
+		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 0F), new Color(0F, 0F, 1F, 1F), Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color faded = gradient.copyAlpha(0.5F);
 		Assert.assertEquals(0.5F, faded.gradient.getStartColor().a, 0F);
 		Assert.assertEquals(0.5F, faded.gradient.getEndColor().a, 0F);
@@ -109,7 +109,7 @@ public class ColorTest {
 
 	@Test
 	public void takesTheStartOfAGradient() {
-		final ColorGradient gradient = new ColorGradient(Color.RED, Color.BLUE, new Vector4f(0F, 0F, 1F, 0F));
+		final ColorGradient gradient = new ColorGradient(Color.RED, Color.BLUE, Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color color = new Color(gradient);
 		Assert.assertSame(gradient, color.gradient);
 		Assert.assertEquals(Color.RED, color);
@@ -232,12 +232,14 @@ public class ColorTest {
 		Assert.assertTrue(color.isGradient());
 		Assert.assertEquals(Color.RED, color.gradient.getStartColor());
 		Assert.assertEquals(Color.BLUE, color.gradient.getEndColor());
-		Assert.assertEquals(new Vector4f(0F, 0F, 1F, 0F), color.gradient.getDirection());
+		Assert.assertEquals(Point.create(0D, 0D), color.gradient.getStartPoint());
+		Assert.assertEquals(Point.create(1D, 0D), color.gradient.getEndPoint());
 	}
 
 	@Test
 	public void decodesTheDirectionOfAGradient() {
-		Assert.assertEquals(new Vector4f(1F, 0F, 0.5F, 1F), Color.decode("gradient(#FF0000, #0000FF, 1, 0, 0.5, 1)").gradient.getDirection());
+		Assert.assertEquals(Point.create(1D, 0D), Color.decode("gradient(#FF0000, #0000FF, 1, 0, 0.5, 1)").gradient.getStartPoint());
+		Assert.assertEquals(Point.create(0.5D, 1D), Color.decode("gradient(#FF0000, #0000FF, 1, 0, 0.5, 1)").gradient.getEndPoint());
 	}
 
 	@Test
@@ -245,7 +247,8 @@ public class ColorTest {
 		final Color color = Color.decode("gradient(rgb(255, 0, 0), rgba(0, 0, 255, 0.5), 0, 0, 0, 1)");
 		Assert.assertEquals(Color.RED, color.gradient.getStartColor());
 		Assert.assertEquals(new Color(0F, 0F, 1F, 0.5F), color.gradient.getEndColor());
-		Assert.assertEquals(new Vector4f(0F, 0F, 0F, 1F), color.gradient.getDirection());
+		Assert.assertEquals(Point.create(0D, 0D), color.gradient.getStartPoint());
+		Assert.assertEquals(Point.create(0D, 1D), color.gradient.getEndPoint());
 	}
 
 	@Test
@@ -327,49 +330,59 @@ public class ColorTest {
 
 	@Test
 	public void blendsTwoGradients() {
-		final Color from = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 1F, 0F, 1F), new Vector4f(0F, 0F, 1F, 0F));
-		final Color to = Color.gradient(new Color(0F, 0F, 1F, 1F), new Color(1F, 1F, 1F, 0F), new Vector4f(1F, 0F, 0F, 1F));
+		final Color from = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(1D, 0D));
+		final Color to = Color.gradient(new Color(0F, 0F, 1F, 1F), new Color(1F, 1F, 1F, 0F), Point.create(1D, 0D), Point.create(0D, 1D));
 		final Color color = Color.transition(from, to, 0.5F);
 		Assert.assertEquals(new Color(0.5F, 0F, 0.5F, 1F), color.gradient.getStartColor());
 		Assert.assertEquals(new Color(0.5F, 1F, 0.5F, 0.5F), color.gradient.getEndColor());
-		Assert.assertEquals(new Vector4f(0.5F, 0F, 0.5F, 0.5F), color.gradient.getDirection());
+		Assert.assertEquals(Point.create(0.5D, 0D), color.gradient.getStartPoint());
+		Assert.assertEquals(Point.create(0.5D, 0.5D), color.gradient.getEndPoint());
 	}
 
 	@Test
 	public void blendsAGradientIntoAColor() {
-		final Vector4f direction = new Vector4f(0F, 0F, 1F, 0F);
-		final Color color = Color.transition(Color.gradient(Color.RED, Color.BLUE, direction), Color.WHITE, 0.5F);
+		final Point startPoint = Point.create(0D, 0D);
+		final Point endPoint = Point.create(1D, 0D);
+		final Color color = Color.transition(Color.gradient(Color.RED, Color.BLUE, startPoint, endPoint), Color.WHITE, 0.5F);
 		Assert.assertEquals(new Color(1F, 0.5F, 0.5F, 1F), color.gradient.getStartColor());
 		Assert.assertEquals(new Color(0.5F, 0.5F, 1F, 1F), color.gradient.getEndColor());
-		Assert.assertSame(direction, color.gradient.getDirection());
+		Assert.assertSame(startPoint, color.gradient.getStartPoint());
+		Assert.assertSame(endPoint, color.gradient.getEndPoint());
 	}
 
 	@Test
 	public void blendsAColorIntoAGradient() {
-		final Vector4f direction = new Vector4f(0F, 0F, 1F, 0F);
-		final Color color = Color.transition(Color.WHITE, Color.gradient(Color.RED, Color.BLUE, direction), 0.5F);
+		final Point startPoint = Point.create(0D, 0D);
+		final Point endPoint = Point.create(1D, 0D);
+		final Color color = Color.transition(Color.WHITE, Color.gradient(Color.RED, Color.BLUE, startPoint, endPoint), 0.5F);
 		Assert.assertEquals(new Color(1F, 0.5F, 0.5F, 1F), color.gradient.getStartColor());
 		Assert.assertEquals(new Color(0.5F, 0.5F, 1F, 1F), color.gradient.getEndColor());
-		Assert.assertSame(direction, color.gradient.getDirection());
+		Assert.assertSame(startPoint, color.gradient.getStartPoint());
+		Assert.assertSame(endPoint, color.gradient.getEndPoint());
 	}
 
 	@Test
 	public void startsAGradientWithItsFirstColor() {
-		final Vector4f direction = new Vector4f(1F, 0F, 0F, 1F);
-		final Color gradient = Color.gradient(Color.RED, Color.BLUE, direction);
+		final Point startPoint = Point.create(1D, 0D);
+		final Point endPoint = Point.create(0D, 1D);
+		final Color gradient = Color.gradient(Color.RED, Color.BLUE, startPoint, endPoint);
 		Assert.assertTrue(gradient.isGradient());
 		Assert.assertEquals(Color.RED, gradient);
 		Assert.assertSame(Color.RED, gradient.gradient.getStartColor());
 		Assert.assertSame(Color.BLUE, gradient.gradient.getEndColor());
-		Assert.assertSame(direction, gradient.gradient.getDirection());
+		Assert.assertSame(startPoint, gradient.gradient.getStartPoint());
+		Assert.assertSame(endPoint, gradient.gradient.getEndPoint());
 	}
 
 	@Test
 	public void turnsIntoAGradient() {
-		final Vector4f direction = new Vector4f(1F, 0F, 0F, 1F);
+		final Point startPoint = Point.create(1D, 0D);
+		final Point endPoint = Point.create(0D, 1D);
 		Assert.assertSame(Color.BLUE, Color.RED.toGradient(Color.BLUE).gradient.getEndColor());
-		Assert.assertEquals(new Vector4f(0F, 0F, 1F, 0F), Color.RED.toGradient(Color.BLUE).gradient.getDirection());
-		Assert.assertSame(direction, Color.RED.toGradient(Color.BLUE, direction).gradient.getDirection());
+		Assert.assertEquals(Point.create(0D, 0D), Color.RED.toGradient(Color.BLUE).gradient.getStartPoint());
+		Assert.assertEquals(Point.create(1D, 0D), Color.RED.toGradient(Color.BLUE).gradient.getEndPoint());
+		Assert.assertSame(startPoint, Color.RED.toGradient(Color.BLUE, startPoint, endPoint).gradient.getStartPoint());
+		Assert.assertSame(endPoint, Color.RED.toGradient(Color.BLUE, startPoint, endPoint).gradient.getEndPoint());
 	}
 
 	@Test
@@ -597,7 +610,7 @@ public class ColorTest {
 	public void drawsWithAPlainColorThenRestoresThePreviousOne() {
 		final float[] seen = new float[1];
 		final RenderState state = this.bridges.getRender().getState().color(0.1F, 0.3F, 0.5F, 0.7F);
-		new Color(0.2F, 0.4F, 0.6F, 0.8F).bind(() -> seen[0] = state.getBlue(), new Vector4f(0F, 0F, 10F, 10F));
+		new Color(0.2F, 0.4F, 0.6F, 0.8F).bind(() -> seen[0] = state.getBlue(), BoundingBox.create(0D, 0D, 10D, 10D));
 		Assert.assertEquals(0.6F, seen[0], 0F);
 		Assert.assertEquals(0.1F, state.getRed(), 0F);
 		Assert.assertEquals(0.3F, state.getGreen(), 0F);
@@ -607,9 +620,9 @@ public class ColorTest {
 
 	@Test
 	public void drawsAGradientThroughItsShaderAndRestoresThePreviousOne() {
-		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 1F), new Vector4f(0F, 0F, 1F, 0F));
+		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 1F), Point.create(0D, 0D), Point.create(1D, 0D));
 		final boolean[] shaded = new boolean[1];
-		gradient.bind(() -> shaded[0] = this.bridges.getRender().getState().getShader() != null, new Vector4f(0F, 0F, 10F, 10F));
+		gradient.bind(() -> shaded[0] = this.bridges.getRender().getState().getShader() != null, BoundingBox.create(0D, 0D, 10D, 10D));
 		Assert.assertTrue(shaded[0]);
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}

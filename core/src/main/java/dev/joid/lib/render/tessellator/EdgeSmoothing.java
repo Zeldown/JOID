@@ -1,7 +1,6 @@
 package dev.joid.lib.render.tessellator;
 
-import javax.vecmath.Vector2d;
-
+import dev.joid.lib.utils.point.Point;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -9,17 +8,17 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EdgeSmoothing {
 
-	public static boolean isConvex(final @NonNull Vector2d @NonNull... points) {
+	public static boolean isConvex(final @NonNull Point @NonNull... points) {
 		if (points.length < 3) {
 			return false;
 		}
 
 		double sign = 0D;
 		for (int i = 0; i < points.length; i++) {
-			final Vector2d a = points[i];
-			final Vector2d b = points[(i + 1) % points.length];
-			final Vector2d c = points[(i + 2) % points.length];
-			final double cross = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+			final Point a = points[i];
+			final Point b = points[(i + 1) % points.length];
+			final Point c = points[(i + 2) % points.length];
+			final double cross = (b.getX() - a.getX()) * (c.getY() - b.getY()) - (b.getY() - a.getY()) * (c.getX() - b.getX());
 			if (cross == 0D) {
 				continue;
 			}
@@ -32,33 +31,33 @@ public final class EdgeSmoothing {
 		return sign != 0D;
 	}
 
-	public static void polygon(final float red, final float green, final float blue, final float alpha, final @NonNull Vector2d @NonNull... points) {
+	public static void polygon(final float red, final float green, final float blue, final float alpha, final @NonNull Point @NonNull... points) {
 		EdgeSmoothing.draw(red, green, blue, alpha, null, points);
 	}
 
 	public static void rect(final double left, final double top, final double right, final double bottom, final @NonNull double[] uv, final float red, final float green, final float blue, final float alpha) {
 		final double[] mapping = {uv[0], (uv[2] - uv[0]) / (right - left), 0D, uv[1], 0D, (uv[3] - uv[1]) / (bottom - top), left, top};
-		EdgeSmoothing.draw(red, green, blue, alpha, mapping, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
+		EdgeSmoothing.draw(red, green, blue, alpha, mapping, Point.create(left, bottom), Point.create(right, bottom), Point.create(right, top), Point.create(left, top));
 	}
 
-	private static void draw(final float red, final float green, final float blue, final float alpha, final double[] mapping, final @NonNull Vector2d @NonNull... points) {
+	private static void draw(final float red, final float green, final float blue, final float alpha, final double[] mapping, final @NonNull Point @NonNull... points) {
 		final int count = points.length;
 		double centerX = 0D;
 		double centerY = 0D;
-		for (final Vector2d point : points) {
-			centerX += point.x / count;
-			centerY += point.y / count;
+		for (final Point point : points) {
+			centerX += point.getX() / count;
+			centerY += point.getY() / count;
 		}
 
 		final double[] normalX = new double[count];
 		final double[] normalY = new double[count];
 		for (int i = 0; i < count; i++) {
-			final Vector2d start = points[i];
-			final Vector2d end = points[(i + 1) % count];
-			final double length = Math.hypot(end.x - start.x, end.y - start.y);
-			double x = length == 0D ? 0D : (end.y - start.y) / length;
-			double y = length == 0D ? 0D : -(end.x - start.x) / length;
-			if ((centerX - start.x) * x + (centerY - start.y) * y > 0D) {
+			final Point start = points[i];
+			final Point end = points[(i + 1) % count];
+			final double length = Math.hypot(end.getX() - start.getX(), end.getY() - start.getY());
+			double x = length == 0D ? 0D : (end.getY() - start.getY()) / length;
+			double y = length == 0D ? 0D : -(end.getX() - start.getX()) / length;
+			if ((centerX - start.getX()) * x + (centerY - start.getY()) * y > 0D) {
 				x = -x;
 				y = -y;
 			}
@@ -73,8 +72,8 @@ public final class EdgeSmoothing {
 			}
 
 			double depth = 0D;
-			for (final Vector2d point : points) {
-				depth = Math.max(depth, (points[i].x - point.x) * normalX[i] + (points[i].y - point.y) * normalY[i]);
+			for (final Point point : points) {
+				depth = Math.max(depth, (points[i].getX() - point.getX()) * normalX[i] + (points[i].getY() - point.getY()) * normalY[i]);
 			}
 			width = Math.min(width, depth);
 		}
@@ -91,10 +90,10 @@ public final class EdgeSmoothing {
 			final double scale = 1D / Math.max(0.25D, 1D + dot);
 			final double offsetX = (normalX[previous] + normalX[i]) * scale;
 			final double offsetY = (normalY[previous] + normalY[i]) * scale;
-			innerX[i] = points[i].x - offsetX * inset;
-			innerY[i] = points[i].y - offsetY * inset;
-			outerX[i] = points[i].x + offsetX * 0.5D;
-			outerY[i] = points[i].y + offsetY * 0.5D;
+			innerX[i] = points[i].getX() - offsetX * inset;
+			innerY[i] = points[i].getY() - offsetY * inset;
+			outerX[i] = points[i].getX() + offsetX * 0.5D;
+			outerY[i] = points[i].getY() + offsetY * 0.5D;
 		}
 
 		final Tessellator tessellator = Tessellator.inst();

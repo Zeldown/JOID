@@ -36,8 +36,8 @@ public class BorderShader extends ShaderProgram {
 			.uniform("u_HasGradient", 1)
 			.uniform("u_GradientStart", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
 			.uniform("u_GradientEnd", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
-			.uniform("u_GradientStartPos", gradient.getDirection().x, gradient.getDirection().y)
-			.uniform("u_GradientEndPos", gradient.getDirection().z, gradient.getDirection().w)
+			.uniform("u_GradientStartPos", (float) gradient.getStartPoint().getX(), (float) gradient.getStartPoint().getY())
+			.uniform("u_GradientEndPos", (float) gradient.getEndPoint().getX(), (float) gradient.getEndPoint().getY())
 			.uniform("u_GradientCanvas", rectX1, rectY1, rectX2, rectY2);
 		} else {
 			BorderShader.INSTANCE.getShader().uniform("u_HasGradient", 0);

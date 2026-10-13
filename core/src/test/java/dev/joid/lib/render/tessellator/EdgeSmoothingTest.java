@@ -1,13 +1,12 @@
 package dev.joid.lib.render.tessellator;
 
-import javax.vecmath.Vector2d;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
+import dev.joid.lib.utils.point.Point;
 
 public class EdgeSmoothingTest {
 
@@ -16,16 +15,16 @@ public class EdgeSmoothingTest {
 
 	@Test
 	public void tellsAConvexPolygonFromAConcaveOne() {
-		Assert.assertTrue(EdgeSmoothing.isConvex(new Vector2d(0D, 0D), new Vector2d(10D, 0D), new Vector2d(5D, 8D)));
-		Assert.assertTrue(EdgeSmoothing.isConvex(new Vector2d(0D, 0D), new Vector2d(5D, 0D), new Vector2d(10D, 0D), new Vector2d(10D, 10D), new Vector2d(0D, 10D)));
-		Assert.assertFalse(EdgeSmoothing.isConvex(new Vector2d(0D, 0D), new Vector2d(10D, 0D), new Vector2d(5D, 2D), new Vector2d(10D, 10D), new Vector2d(0D, 10D)));
-		Assert.assertFalse(EdgeSmoothing.isConvex(new Vector2d(0D, 0D), new Vector2d(10D, 0D)));
-		Assert.assertFalse(EdgeSmoothing.isConvex(new Vector2d(0D, 0D), new Vector2d(5D, 0D), new Vector2d(10D, 0D)));
+		Assert.assertTrue(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(10D, 0D), Point.create(5D, 8D)));
+		Assert.assertTrue(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(5D, 0D), Point.create(10D, 0D), Point.create(10D, 10D), Point.create(0D, 10D)));
+		Assert.assertFalse(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(10D, 0D), Point.create(5D, 2D), Point.create(10D, 10D), Point.create(0D, 10D)));
+		Assert.assertFalse(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(10D, 0D)));
+		Assert.assertFalse(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(5D, 0D), Point.create(10D, 0D)));
 	}
 
 	@Test
 	public void fadesTheEdgesOverOneUnitCenteredOnThem() {
-		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, new Vector2d(10D, 70D), new Vector2d(110D, 70D), new Vector2d(110D, 20D), new Vector2d(10D, 20D));
+		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, Point.create(10D, 70D), Point.create(110D, 70D), Point.create(110D, 20D), Point.create(10D, 20D));
 		final int[] buffer = Tessellator.inst().getRawBuffer();
 		Assert.assertEquals(10.5F, Float.intBitsToFloat(buffer[0]), 0F);
 		Assert.assertEquals(69.5F, Float.intBitsToFloat(buffer[1]), 0F);
@@ -39,7 +38,7 @@ public class EdgeSmoothingTest {
 
 	@Test
 	public void lowersTheCoreOfAShapeThinnerThanOneUnit() {
-		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, new Vector2d(10D, 20.5D), new Vector2d(110D, 20.5D), new Vector2d(110D, 20D), new Vector2d(10D, 20D));
+		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, Point.create(10D, 20.5D), Point.create(110D, 20.5D), Point.create(110D, 20D), Point.create(10D, 20D));
 		final int[] buffer = Tessellator.inst().getRawBuffer();
 		Assert.assertEquals(20.25F, Float.intBitsToFloat(buffer[1]), 1E-4F);
 		Assert.assertEquals(127, buffer[5] >>> 24);

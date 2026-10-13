@@ -30,6 +30,11 @@ ext {
         task.relocate 'com.github.weisj.jsvg', 'dev.joid.shaded.jsvg'
         task.relocate 'com.twelvemonkeys', 'dev.joid.shaded.twelvemonkeys'
         task.relocate 'org.objectweb.asm', 'dev.joid.shaded.asm'
+        task.relocate 'com.google.gson', 'dev.joid.shaded.gson'
+        task.relocate 'com.google.common', 'dev.joid.shaded.guava'
+        task.relocate 'org.apache.commons.io', 'dev.joid.shaded.commons.io'
+        task.relocate 'org.apache.commons.lang3', 'dev.joid.shaded.commons.lang3'
+        task.relocate 'com.google.thirdparty', 'dev.joid.shaded.guava.thirdparty'
         task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
     }
 
@@ -162,13 +167,34 @@ assemble.dependsOn collectArtifacts
 
 task checkJars {
     group = 'JOID'
-    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, and that the snapshot tools of the dev jars need no demo.'
+    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, and that the embedded libraries are relocated.'
     dependsOn ':tool-testkit:jar'
     dependsOn variants.collectMany { variant -> [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { module -> "$module:${variant}Jar" } }
     doLast {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
         def demo = ['dev/joid/demo/DemoFont.class', 'assets/demo/']
+        def shaded = ['dev/joid/shaded/gson/', 'dev/joid/shaded/guava/', 'dev/joid/shaded/commons/io/', 'dev/joid/shaded/commons/lang3/']
+        def libraries = ['com/google/gson/', 'com/google/common/', 'com/google/thirdparty/', 'org/apache/commons/io/', 'org/apache/commons/lang3/', 'javax/vecmath/']
         def failures = []
+        def constants = { bytes ->
+            def input = new DataInputStream(new ByteArrayInputStream(bytes))
+            input.skipBytes(8)
+            def count = input.readUnsignedShort()
+            def strings = []
+            for (int index = 1; index < count; index++) {
+                def tag = input.readUnsignedByte()
+                if (tag == 1) {
+                    strings << input.readUTF()
+                } else if (tag == 5 || tag == 6) {
+                    input.skipBytes(8)
+                    index++
+                } else {
+                    input.skipBytes(tag == 15 ? 3 : tag in [7, 8, 16, 19, 20] ? 2 : 4)
+                }
+            }
+            strings
+        }
+        def references = { file -> new java.util.zip.ZipFile(file).withCloseable { zip -> zip.entries().findAll { entry -> entry.name.endsWith('.class') }.findAll { entry -> constants(zip.getInputStream(entry).bytes).any { constant -> libraries.any { library -> constant.startsWith(library) || constant.startsWith(library.replace('/', '.')) || constant.contains('L' + library) } } }.collect { entry -> entry.name } } }
         def reads = { file, filter -> new java.util.zip.ZipFile(file).withCloseable { zip -> zip.entries().findAll { entry -> filter(entry.name) }.findAll { entry -> new String(zip.getInputStream(entry).bytes, 'ISO-8859-1').contains('dev/joid/demo/') }.collect { entry -> entry.name } } }
         reads(project(':tool-testkit').jar.archivePath, { name -> name.endsWith('.class') }).each { name ->
             failures << "joid-tool-testkit needs the demo class of $name"
@@ -182,6 +208,15 @@ task checkJars {
                 def snapshots = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*/ }
                 if (!holds('dev/joid/internal/JOID.class')) {
                     failures << "${jar.name} misses JOID"
+                }
+                shaded.findAll { prefix -> !holds(prefix) }.each { prefix ->
+                    failures << "${jar.name} misses $prefix"
+                }
+                libraries.findAll { prefix -> holds(prefix) }.each { prefix ->
+                    failures << "${jar.name} holds $prefix without relocating it"
+                }
+                references(jar).each { name ->
+                    failures << "${jar.name}: $name refers to a library that is not relocated"
                 }
                 dev.each { prefix ->
                     if (holds(prefix) != (variant != 'prod')) {
@@ -209,7 +244,7 @@ task checkJars {
         if (!failures.isEmpty()) {
             throw new GradleException(failures.join('\n'))
         }
-        println "The prod, dev and demo jars hold what they should"
+        println "The prod, dev and demo jars hold what they should, with their libraries relocated"
     }
 }
 

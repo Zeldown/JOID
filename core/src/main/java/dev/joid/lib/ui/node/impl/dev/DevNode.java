@@ -8,8 +8,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import javax.vecmath.Vector2d;
-
 import dev.joid.internal.JOID;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.animator.TweenAnimator;
@@ -40,6 +38,7 @@ import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -403,8 +402,8 @@ public final class DevNode extends Node {
 
 		if (this.gridSignal.peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
-			DrawUtils.SHAPE.drawLine(gridColor, 3F, new Vector2d(1920 / 2 - 1, 0), new Vector2d(1920 / 2 + 1, 1080));
-			DrawUtils.SHAPE.drawLine(gridColor, 3F, new Vector2d(0, 1080 / 2 - 1), new Vector2d(1920, 1080 / 2 + 1));
+			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(1920 / 2 - 1, 0), Point.create(1920 / 2 + 1, 1080));
+			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, 1080 / 2 - 1), Point.create(1920, 1080 / 2 + 1));
 
 			DrawUtils.SHAPE.drawRect(0, mouseY, mouseX, 3, gridColor);
 			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
@@ -476,10 +475,10 @@ public final class DevNode extends Node {
 
 	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {
 		DrawUtils.SHAPE.drawRect(x, y, width, height, color.copyAlpha(0.3F * opacity));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y), new Vector2d(x + width, y));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y), new Vector2d(x, y + height));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x + width, y), new Vector2d(x + width, y + height));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, new Vector2d(x, y + height), new Vector2d(x + width, y + height));
+		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, Point.create(x, y), Point.create(x + width, y));
+		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, Point.create(x, y), Point.create(x, y + height));
+		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, Point.create(x + width, y), Point.create(x + width, y + height));
+		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, Point.create(x, y + height), Point.create(x + width, y + height));
 
 		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE.copyAlpha(opacity)).shadow().shadow(Color.BLACK.copyAlpha(0.7F * opacity));
 		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);

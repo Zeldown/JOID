@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.vecmath.Vector2d;
-import javax.vecmath.Vector4f;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.internal.JOID;
@@ -33,6 +30,7 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 
 public class ShowHero extends ShowUI {
 
@@ -107,7 +105,7 @@ public class ShowHero extends ShowUI {
 
 	private Color shimmer() {
 		final float shift = (float) (this.wave(6D, 0D) * 0.35D);
-		return ShowUI.FUCHSIA.toGradient(ShowUI.CYAN, new Vector4f(-0.1F + shift, 0F, 0.9F + shift, 0F));
+		return ShowUI.FUCHSIA.toGradient(ShowUI.CYAN, Point.create(-0.1D + shift, 0D), Point.create(0.9D + shift, 0D));
 	}
 
 	private void queue() {
@@ -172,7 +170,7 @@ public class ShowHero extends ShowUI {
 			.layer((mouseX, mouseY) -> {
 				final double cx = 571D;
 				final double cy = 332D;
-				DrawUtils.SHAPE.drawPolygon(ShowUI.NIGHT, new Vector2d(cx - 7D, cy - 12D), new Vector2d(cx - 7D, cy + 12D), new Vector2d(cx + 13D, cy));
+				DrawUtils.SHAPE.drawPolygon(ShowUI.NIGHT, Point.create(cx - 7D, cy - 12D), Point.create(cx - 7D, cy + 12D), Point.create(cx + 13D, cy));
 			})
 			.attach(card);
 		})
@@ -207,23 +205,23 @@ public class ShowHero extends ShowUI {
 
 	private void chart(final double x, final double y, final double width, final double height) {
 		final int count = 64;
-		final List<Vector2d> line = new ArrayList<>();
-		final List<Vector2d> area = new ArrayList<>();
+		final List<Point> line = new ArrayList<>();
+		final List<Point> area = new ArrayList<>();
 		for (int i = 0; i <= count; i++) {
 			final double u = i / (double) count;
 			final double value = 0.45D + 0.22D * Math.sin(u * 7D + this.t() * Math.PI / 3D) + 0.14D * Math.sin(u * 13D - this.t() * Math.PI * 2D / 3D) + 0.18D * u;
-			line.add(new Vector2d(x + u * width, y + height - value * height));
+			line.add(Point.create(x + u * width, y + height - value * height));
 		}
 		for (int i = 0; i < count; i++) {
 			area.add(line.get(i));
 			area.add(line.get(i + 1));
-			area.add(new Vector2d(line.get(i + 1).x, y + height));
-			area.add(new Vector2d(line.get(i).x, y + height));
+			area.add(Point.create(line.get(i + 1).getX(), y + height));
+			area.add(Point.create(line.get(i).getX(), y + height));
 		}
-		DrawUtils.SHAPE.drawShape(DrawMode.QUADS, ShowUI.vertical(ShowUI.FUCHSIA.copyAlpha(0.45F), ShowUI.FUCHSIA.copyAlpha(0F)), area.toArray(new Vector2d[0]));
-		DrawUtils.SHAPE.drawLine(ShowUI.FUCHSIA.toGradient(ShowUI.CYAN), 4F, line.toArray(new Vector2d[0]));
-		final Vector2d last = line.get(count);
-		DrawUtils.SHAPE.drawCircle(last.x, last.y, ShowUI.CYAN, 8D);
+		DrawUtils.SHAPE.drawShape(DrawMode.QUADS, ShowUI.vertical(ShowUI.FUCHSIA.copyAlpha(0.45F), ShowUI.FUCHSIA.copyAlpha(0F)), area.toArray(new Point[0]));
+		DrawUtils.SHAPE.drawLine(ShowUI.FUCHSIA.toGradient(ShowUI.CYAN), 4F, line.toArray(new Point[0]));
+		final Point last = line.get(count);
+		DrawUtils.SHAPE.drawCircle(last.getX(), last.getY(), ShowUI.CYAN, 8D);
 	}
 
 	private void model() {

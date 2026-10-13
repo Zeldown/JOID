@@ -1,7 +1,5 @@
 package dev.joid.demo.ui.shader;
 
-import javax.vecmath.Vector2d;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.shader.impl.DemoInvertShader;
 import dev.joid.demo.shader.pipeline.pass.DemoInvertShaderPass;
@@ -31,6 +29,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 
 @UIData(background = true)
 public class UIDemoRender extends UIDemo {
@@ -167,7 +166,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawDashedLine(UIDemoRender.INK, 12, 4F, new Vector2d(node.getX(), node.getY() + 160D), new Vector2d(node.getX() + 100D, node.getY() + 40D), new Vector2d(node.getX() + 200D, node.getY() + 160D))))
+			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawDashedLine(UIDemoRender.INK, 12, 4F, Point.create(node.getX(), node.getY() + 160D), Point.create(node.getX() + 100D, node.getY() + 40D), Point.create(node.getX() + 200D, node.getY() + 160D))))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Dashed line", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

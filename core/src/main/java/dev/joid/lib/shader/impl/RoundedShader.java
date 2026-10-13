@@ -2,12 +2,12 @@ package dev.joid.lib.shader.impl;
 
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
-import javax.vecmath.Vector4f;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.ColorGradient;
+import dev.joid.lib.utils.box.BoundingBox;
 import lombok.NonNull;
 
 public class RoundedShader extends ShaderProgram {
@@ -61,14 +61,14 @@ public class RoundedShader extends ShaderProgram {
 		RoundedShader.INSTANCE.getShader().uniform("u_Stroke", stroke);
 	}
 
-	public void gradient(final @NonNull ColorGradient gradient, final @NonNull Vector4f canvas) {
+	public void gradient(final @NonNull ColorGradient gradient, final @NonNull BoundingBox canvas) {
 		RoundedShader.INSTANCE.getShader()
 		.uniform("u_Gradient", 1)
-		.uniform("u_StartPos", gradient.getDirection().x, gradient.getDirection().y)
-		.uniform("u_EndPos", gradient.getDirection().z, gradient.getDirection().w)
+		.uniform("u_StartPos", (float) gradient.getStartPoint().getX(), (float) gradient.getStartPoint().getY())
+		.uniform("u_EndPos", (float) gradient.getEndPoint().getX(), (float) gradient.getEndPoint().getY())
 		.uniform("u_StartColor", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
 		.uniform("u_EndColor", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
-		.uniform("u_Canvas", canvas.x, canvas.y, canvas.z, canvas.w);
+		.uniform("u_Canvas", (float) canvas.getMinX(), (float) canvas.getMinY(), (float) canvas.getMaxX(), (float) canvas.getMaxY());
 	}
 
 }

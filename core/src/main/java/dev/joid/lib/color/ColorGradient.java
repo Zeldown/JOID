@@ -1,9 +1,8 @@
 package dev.joid.lib.color;
 
-import javax.vecmath.Vector2f;
-import javax.vecmath.Vector4f;
-
 import dev.joid.lib.shader.impl.GradientShader;
+import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.point.Point;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
@@ -12,16 +11,17 @@ import lombok.NonNull;
 @AllArgsConstructor
 public class ColorGradient {
 
-	private final Color    startColor;
-	private final Color    endColor;
-	private final Vector4f direction;
+	private final Color startColor;
+	private final Color endColor;
+	private final Point startPoint;
+	private final Point endPoint;
 
-	public void use(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
+	public void use(final @NonNull Runnable runnable, final @NonNull BoundingBox canvas) {
 		this.use(false, runnable, canvas);
 	}
 
-	public void use(final boolean hasTexture, final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
-		GradientShader.use(new Vector2f(this.direction.x, this.direction.y), new Vector2f(this.direction.z, this.direction.w), this.startColor, this.endColor, hasTexture, runnable, canvas);
+	public void use(final boolean hasTexture, final @NonNull Runnable runnable, final @NonNull BoundingBox canvas) {
+		GradientShader.use(this.startPoint, this.endPoint, this.startColor, this.endColor, hasTexture, runnable, canvas);
 	}
 
 }

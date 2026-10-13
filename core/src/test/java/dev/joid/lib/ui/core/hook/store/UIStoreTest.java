@@ -12,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
@@ -67,14 +66,12 @@ public class UIStoreTest {
 	}
 
 	@Test
-	public void leavesItsJsonUntouchedByDefault() {
-		final JsonObject json = new JsonObject();
+	public void writesAnEmptyJsonByDefault() {
 		final SharedStore store = new SharedStore();
 		store.init();
-		store.load(json);
-		store.save(json);
+		store.fromJson("{\"ignored\":true}");
 		store.destroy();
-		Assert.assertTrue(json.entrySet().isEmpty());
+		Assert.assertEquals("{}", store.toJson());
 	}
 
 	@Test
@@ -97,8 +94,8 @@ public class UIStoreTest {
 	public static class SavedStore extends UIStore {
 
 		@Override
-		public void save(final @NonNull JsonObject json) {
-			json.addProperty("saved", true);
+		public @NonNull String toJson() {
+			return "{\"saved\":true}";
 		}
 
 	}

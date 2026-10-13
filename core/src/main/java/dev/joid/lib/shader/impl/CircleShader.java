@@ -2,12 +2,12 @@ package dev.joid.lib.shader.impl;
 
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
-import javax.vecmath.Vector4f;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.ColorGradient;
+import dev.joid.lib.utils.box.BoundingBox;
 import lombok.NonNull;
 
 public class CircleShader extends ShaderProgram {
@@ -53,14 +53,14 @@ public class CircleShader extends ShaderProgram {
 		.uniform("gradient", 0);
 	}
 
-	public void gradient(final @NonNull ColorGradient gradient, final @NonNull Vector4f canvas) {
+	public void gradient(final @NonNull ColorGradient gradient, final @NonNull BoundingBox canvas) {
 		CircleShader.INSTANCE.getShader()
 		.uniform("gradient", 1)
-		.uniform("startPos", gradient.getDirection().x, gradient.getDirection().y)
-		.uniform("endPos", gradient.getDirection().z, gradient.getDirection().w)
+		.uniform("startPos", (float) gradient.getStartPoint().getX(), (float) gradient.getStartPoint().getY())
+		.uniform("endPos", (float) gradient.getEndPoint().getX(), (float) gradient.getEndPoint().getY())
 		.uniform("startColor", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
 		.uniform("endColor", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
-		.uniform("canvas", canvas.x, canvas.y, canvas.z, canvas.w);
+		.uniform("canvas", (float) canvas.getMinX(), (float) canvas.getMinY(), (float) canvas.getMaxX(), (float) canvas.getMaxY());
 	}
 
 }

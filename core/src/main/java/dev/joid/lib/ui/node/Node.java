@@ -2291,7 +2291,11 @@ public abstract class Node implements INode {
 		return this.registerCallback(Node.CALLBACK_HOVER_START, callback);
 	}
 
-	public @NonNull JsonObject toJson() {
+	public @NonNull String toJson() {
+		return Node.GSON.toJson(this.json());
+	}
+
+	private @NonNull JsonObject json() {
 		final JsonObject json = new JsonObject();
 		json.addProperty("index", this.getIndex());
 		json.addProperty("mappedIndex", this.getMappedIndex());
@@ -2358,12 +2362,11 @@ public abstract class Node implements INode {
 
 	@Override
 	public @NonNull String toString() {
-		final JsonObject json = this.toJson();
 		if (JOIDEnv.isDevMode()) {
-			return Node.PRETTY_GSON.toJson(json);
+			return Node.PRETTY_GSON.toJson(this.json());
 		}
 
-		return Node.GSON.toJson(json);
+		return this.toJson();
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)

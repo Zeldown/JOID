@@ -11,8 +11,10 @@ import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
@@ -282,7 +284,7 @@ public final class SnapshotRunner {
 
 	private void awaitResources() {
 		for (int attempt = 0; attempt < 3000; attempt++) {
-			if (ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().allMatch(data -> data.getTasks().stream().noneMatch(Thread::isAlive) && (!data.isGenerated() || data.isLoaded() || data.isFailed()))) {
+			if (SnapshotRunner.getCachedData().allMatch(data -> data.getTasks().stream().noneMatch(Thread::isAlive) && (!data.isGenerated() || data.isLoaded() || data.isFailed()))) {
 				return;
 			}
 			SnapshotRunner.sleep(10L);
@@ -346,7 +348,11 @@ public final class SnapshotRunner {
 	}
 
 	private static boolean isSettled() {
-		return ResourceBuilder.DEFAULT_CACHE.asMap().values().stream().map(ResourceData::getDecoder).allMatch(decoder -> decoder == null || decoder.isSettled());
+		return SnapshotRunner.getCachedData().map(ResourceData::getDecoder).allMatch(decoder -> decoder == null || decoder.isSettled());
+	}
+
+	private static Stream<ResourceData> getCachedData() {
+		return ResourceBuilder.getBuilders().stream().map(ResourceBuilder::getCache).filter(Objects::nonNull).distinct().flatMap(cache -> cache.getDataList().stream()).distinct();
 	}
 
 	private static boolean isShifted(final char character) {

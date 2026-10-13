@@ -1,6 +1,8 @@
 package dev.joid.lib.ui.core;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -103,8 +105,8 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private UIDataPopupObject   transitionPopup;
 	@NonNull private UIDataOverlayObject annotatedOverlay;
 
+	private transient File                                   watchedLocation;
 	private transient Transition                             transition;
-	private transient FileAlterationMonitor                  fileMonitor;
 	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
 
 	private boolean closed;
@@ -742,7 +744,7 @@ public abstract class UI implements IUI, IndexedElement {
 			this.stopMonitor();
 		}
 
-		if (JOIDEnv.isDevMode() && this.debug.hotreload() && this.fileMonitor == null) {
+		if (JOIDEnv.isDevMode() && this.debug.hotreload() && this.watchedLocation == null) {
 			final File location = UI.locate(this.getClass());
 			if (location == null) {
 				if (!UI.monitorWarned) {
@@ -752,7 +754,8 @@ public abstract class UI implements IUI, IndexedElement {
 				return;
 			}
 
-			this.fileMonitor = UI.watch(location, this);
+			this.watchedLocation = location;
+			UI.watch(location, this);
 			System.out.println("##########################");
 			System.out.println("Hot-reload enabled on " + this.getClass().getSimpleName());
 			System.out.println("##########################");
@@ -760,11 +763,11 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	private void stopMonitor() {
-		if (this.fileMonitor == null) {
+		if (this.watchedLocation == null) {
 			return;
 		}
 
-		this.fileMonitor = null;
+		this.watchedLocation = null;
 		UI.unwatch(UI.locate(this.getClass()), this);
 	}
 
@@ -971,18 +974,16 @@ public abstract class UI implements IUI, IndexedElement {
 		shortcutList.addAll(node.getShortcutList());
 	}
 
-	private static FileAlterationMonitor watch(final File location, final UI ui) {
+	private static void watch(final File location, final UI ui) {
 		synchronized (UI.WATCHER_MAP) {
 			UI.WATCHER_MAP.computeIfAbsent(location, key -> new HashSet<>()).add(ui);
-			final FileAlterationMonitor watched = UI.MONITOR_MAP.get(location);
-			if (watched != null) {
-				return watched;
+			if (UI.MONITOR_MAP.containsKey(location)) {
+				return;
 			}
 
 			final FileAlterationMonitor monitor = UI.createMonitor(location);
 			UI.MONITOR_MAP.put(location, monitor);
 			UI.MONITOR_EXECUTOR.execute(() -> UI.openMonitor(location, monitor));
-			return monitor;
 		}
 	}
 
@@ -1027,7 +1028,13 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	private static FileAlterationMonitor createMonitor(final File location) {
-		final FileAlterationObserver observer = new FileAlterationObserver(location.isDirectory() ? location : location.getParentFile());
+		final FileAlterationObserver observer;
+		try {
+			observer = FileAlterationObserver.builder().setFile(location.isDirectory() ? location : location.getParentFile()).get();
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
+
 		observer.addListener(new FileAlterationListener() {
 
 			private File change;

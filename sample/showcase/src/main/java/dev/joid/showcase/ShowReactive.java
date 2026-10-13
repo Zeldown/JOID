@@ -3,8 +3,6 @@ package dev.joid.showcase;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
-
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
@@ -19,6 +17,7 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 
 public class ShowReactive extends ShowUI {
 
@@ -124,12 +123,12 @@ public class ShowReactive extends ShowUI {
 		final double radius = 100D + 110D * this.space.get();
 		for (int ring = 1; ring <= 3; ring++) {
 			final double r = radius + ring * (26D + 40D * this.space.get());
-			final List<Vector2d> points = new ArrayList<>();
+			final List<Point> points = new ArrayList<>();
 			for (int i = 0; i <= 120; i++) {
 				final double angle = i / 120D * Math.PI * 2D + this.t() * 0.3D * ring;
-				points.add(new Vector2d(1335D + Math.cos(angle) * r, 500D + Math.sin(angle) * r));
+				points.add(Point.create(1335D + Math.cos(angle) * r, 500D + Math.sin(angle) * r));
 			}
-			DrawUtils.SHAPE.drawLine(Color.WHITE.copyAlpha(0.16F / ring + 0.04F), 2F, points.toArray(new Vector2d[0]));
+			DrawUtils.SHAPE.drawLine(Color.WHITE.copyAlpha(0.16F / ring + 0.04F), 2F, points.toArray(new Point[0]));
 		}
 	}
 

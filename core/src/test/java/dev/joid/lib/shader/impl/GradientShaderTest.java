@@ -2,9 +2,6 @@ package dev.joid.lib.shader.impl;
 
 import java.util.Map;
 
-import javax.vecmath.Vector2f;
-import javax.vecmath.Vector4f;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -14,6 +11,8 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.point.Point;
 
 public class GradientShaderTest {
 
@@ -37,7 +36,7 @@ public class GradientShaderTest {
 	@Test
 	public void paintsADrawWithTheGradient() {
 		final IShader[] bound = new IShader[1];
-		GradientShader.use(new Vector2f(0F, 0.25F), new Vector2f(1F, 0.75F), new Color(0.2F, 0.4F, 0.6F, 1F), new Color(0.8F, 0.6F, 0.4F, 0.5F), () -> bound[0] = this.bridges.getRender().getState().getShader(), new Vector4f(10F, 20F, 110F, 70F));
+		GradientShader.use(Point.create(0D, 0.25D), Point.create(1D, 0.75D), new Color(0.2F, 0.4F, 0.6F, 1F), new Color(0.8F, 0.6F, 0.4F, 0.5F), () -> bound[0] = this.bridges.getRender().getState().getShader(), BoundingBox.create(10D, 20D, 100D, 50D));
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertSame(this.shader, bound[0]);
 		Assert.assertArrayEquals(new float[] {0F, 0.25F}, (float[]) values.get("startPos"), 0F);
@@ -52,7 +51,7 @@ public class GradientShaderTest {
 
 	@Test
 	public void tintsATexture() {
-		GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.BLUE, true, null, new Vector4f(0F, 0F, 1F, 1F));
+		GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.BLUE, true, null, BoundingBox.create(0D, 0D, 1D, 1D));
 		Assert.assertEquals(1, this.shader.getValues().get("hasTexture"));
 		Assert.assertFalse(this.shader.isBound());
 	}
@@ -60,9 +59,9 @@ public class GradientShaderTest {
 	@Test
 	public void releasesTheShaderWhenTheDrawFails() {
 		try {
-			GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.BLUE, () -> {
+			GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.BLUE, () -> {
 				throw new IllegalStateException("draw");
-			}, new Vector4f(0F, 0F, 1F, 1F));
+			}, BoundingBox.create(0D, 0D, 1D, 1D));
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
 			Assert.assertEquals("draw", exception.getMessage());
@@ -74,7 +73,7 @@ public class GradientShaderTest {
 	public void restoresThePreviousShader() {
 		final RecordingShader previous = new RecordingShader();
 		previous.bind();
-		GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.BLUE, null, new Vector4f(0F, 0F, 1F, 1F));
+		GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.BLUE, null, BoundingBox.create(0D, 0D, 1D, 1D));
 		Assert.assertSame(previous, this.bridges.getRender().getState().getShader());
 	}
 
@@ -83,7 +82,7 @@ public class GradientShaderTest {
 		final boolean[] ran = {false};
 		this.shader.setActive(false);
 		try {
-			GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.BLUE, () -> ran[0] = true, new Vector4f(0F, 0F, 1F, 1F));
+			GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.BLUE, () -> ran[0] = true, BoundingBox.create(0D, 0D, 1D, 1D));
 		} finally {
 			this.shader.setActive(true);
 		}
@@ -93,7 +92,7 @@ public class GradientShaderTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingCanvas() {
-		GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.BLUE, null, null);
+		GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.BLUE, null, null);
 	}
 
 }

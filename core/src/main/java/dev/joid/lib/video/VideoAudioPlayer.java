@@ -5,10 +5,9 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
 
-import javax.vecmath.Vector3f;
-
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioSource;
+import dev.joid.lib.utils.point.Point;
 import lombok.NonNull;
 
 public final class VideoAudioPlayer {
@@ -229,10 +228,10 @@ public final class VideoAudioPlayer {
 	}
 
 	private float computeDistanceVolume() {
-		final Vector3f listenerPos = VideoAudioPlayer.audioListenerPosition == null ? new Vector3f() : VideoAudioPlayer.audioListenerPosition.getListenerPosition();
-		final double dx = listenerPos.x - this.posX;
-		final double dy = listenerPos.y - this.posY;
-		final double dz = listenerPos.z - this.posZ;
+		final Point listenerPos = VideoAudioPlayer.audioListenerPosition == null ? Point.create(0D, 0D) : VideoAudioPlayer.audioListenerPosition.getListenerPosition();
+		final double dx = listenerPos.getX() - this.posX;
+		final double dy = listenerPos.getY() - this.posY;
+		final double dz = listenerPos.getZ() - this.posZ;
 		final double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
 		if (distance <= this.referenceDistance) {

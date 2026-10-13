@@ -25,6 +25,30 @@ The release jars embed the following software:
   Licensed under the BSD 3-Clause License
   Relocated under dev.joid.shaded.twelvemonkeys.
 
+  Gson
+  https://github.com/google/gson
+  Copyright Google Inc.
+  Licensed under the Apache License, Version 2.0
+  Relocated under dev.joid.shaded.gson.
+
+  Guava
+  https://github.com/google/guava
+  Copyright The Guava Authors
+  Licensed under the Apache License, Version 2.0
+  Relocated under dev.joid.shaded.guava.
+
+  Apache Commons IO
+  https://commons.apache.org/proper/commons-io
+  Copyright The Apache Software Foundation
+  Licensed under the Apache License, Version 2.0
+  Relocated under dev.joid.shaded.commons.io.
+
+  Apache Commons Lang
+  https://commons.apache.org/proper/commons-lang
+  Copyright The Apache Software Foundation
+  Licensed under the Apache License, Version 2.0
+  Relocated under dev.joid.shaded.commons.lang3.
+
   JavaCV and JavaCPP
   https://github.com/bytedeco
   Copyright Samuel Audet

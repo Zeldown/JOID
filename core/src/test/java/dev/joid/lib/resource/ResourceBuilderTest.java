@@ -8,8 +8,11 @@ import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,13 +22,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.resource.cache.IResourceCache;
+import dev.joid.lib.resource.cache.impl.MemoryResourceCache;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VectorResourceDecoder;
@@ -46,7 +48,8 @@ public class ResourceBuilderTest {
 	@Test
 	public void startsBlockingAndNearestOnTheDefaultCache() {
 		final ResourceBuilder builder = ResourceBuilder.create();
-		Assert.assertSame(ResourceBuilder.DEFAULT_CACHE, builder.getCache());
+		Assert.assertTrue(builder.getCache() instanceof MemoryResourceCache);
+		Assert.assertSame(ResourceBuilder.create().getCache(), builder.getCache());
 		Assert.assertFalse(builder.getProperties().isAsync());
 		Assert.assertSame(TextureFilter.NEAREST, builder.getProperties().getInterpolation());
 		Assert.assertNull(builder.getProperties().getMipmap());
@@ -74,7 +77,7 @@ public class ResourceBuilderTest {
 
 	@Test
 	public void changesEveryProperty() {
-		final Cache<String, ResourceData> cache = CacheBuilder.newBuilder().build();
+		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create();
 		Assert.assertSame(builder, builder.async().linear().mipmap(true).textureCoords(1D, 2D, 3D, 4D).cache(cache));
 		Assert.assertTrue(builder.getProperties().isAsync());
@@ -95,7 +98,7 @@ public class ResourceBuilderTest {
 
 	@Test
 	public void copiesItsPropertiesAndSharesItsCache() {
-		final Cache<String, ResourceData> cache = CacheBuilder.newBuilder().build();
+		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder base = ResourceBuilder.create().async().linear().cache(cache);
 		final ResourceBuilder copy = base.copy().nearest();
 		Assert.assertNotSame(base, copy);
@@ -161,7 +164,7 @@ public class ResourceBuilderTest {
 	public void sharesTheDataOfTheSameFile() throws IOException {
 		final File file = this.folder.newFile("still.png");
 		Files.write(file.toPath(), Asset.of(ResourceBuilderTest.stream("/animation/still.png")).read());
-		final ResourceBuilder builder = ResourceBuilder.create().cache(CacheBuilder.newBuilder().build());
+		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create());
 		final Resource first = builder.of(file);
 		final Resource second = builder.of(file);
 		Assert.assertEquals(file.getAbsolutePath(), first.getUniqueId());
@@ -207,7 +210,7 @@ public class ResourceBuilderTest {
 	public void downloadsAHeldAssetOnlyOnce() {
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
 		asset.release.countDown();
-		final ResourceBuilder builder = ResourceBuilder.create().cache(CacheBuilder.newBuilder().build());
+		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create());
 		final Resource first = builder.of(asset);
 		final Resource second = builder.of(asset);
 		Assert.assertSame(first.getResourceData(), second.getResourceData());
@@ -232,12 +235,12 @@ public class ResourceBuilderTest {
 	public void computesOnceInItsCache() {
 		final AtomicInteger supplied = new AtomicInteger();
 		final List<Resource> created = new ArrayList<>();
-		final Cache<String, ResourceData> cache = CacheBuilder.newBuilder().build();
+		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
 		final Resource first = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null), created::add);
 		final Resource second = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null), created::add);
 		Assert.assertSame(first.getResourceData(), second.getResourceData());
-		Assert.assertSame(first.getResourceData(), cache.getIfPresent("image"));
+		Assert.assertSame(first.getResourceData(), cache.get("image"));
 		Assert.assertSame(builder, second.getBuilder());
 		Assert.assertEquals(1, supplied.get());
 		Assert.assertEquals(Collections.singletonList(first), created);
@@ -245,24 +248,24 @@ public class ResourceBuilderTest {
 
 	@Test
 	public void computesWithoutCreationCallback() {
-		final Resource resource = ResourceBuilder.create().cache(CacheBuilder.newBuilder().build()).compute("image", () -> new ResourceData("image", null));
+		final Resource resource = ResourceBuilder.create().cache(MemoryResourceCache.create()).compute("image", () -> new ResourceData("image", null));
 		Assert.assertEquals("image", resource.getUniqueId());
 	}
 
 	@Test
 	public void reloadsByEmptyingItsCache() {
 		final AtomicInteger supplied = new AtomicInteger();
-		final Cache<String, ResourceData> cache = CacheBuilder.newBuilder().build();
+		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
 		builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
 		builder.reload();
-		Assert.assertEquals(0L, cache.size());
+		Assert.assertTrue(cache.getDataList().isEmpty());
 		Assert.assertEquals("image2", builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null)).getUniqueId());
 	}
 
 	@Test
 	public void reloadsOnlyWhatItLoaded() {
-		final Cache<String, ResourceData> cache = CacheBuilder.newBuilder().build();
+		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder first = ResourceBuilder.create().cache(cache);
 		final ResourceBuilder second = ResourceBuilder.create().cache(cache);
 		first.compute("first", () -> new ResourceData("first", null));
@@ -270,11 +273,11 @@ public class ResourceBuilderTest {
 		second.compute("second", () -> new ResourceData("second", null));
 		second.compute("shared", () -> new ResourceData("shared", null));
 		first.reload();
-		Assert.assertNull(cache.getIfPresent("first"));
-		Assert.assertNull(cache.getIfPresent("shared"));
-		Assert.assertNotNull(cache.getIfPresent("second"));
+		Assert.assertNull(cache.get("first"));
+		Assert.assertNull(cache.get("shared"));
+		Assert.assertNotNull(cache.get("second"));
 		second.reload();
-		Assert.assertEquals(0L, cache.size());
+		Assert.assertTrue(cache.getDataList().isEmpty());
 	}
 
 	@Test
@@ -282,7 +285,7 @@ public class ResourceBuilderTest {
 		final List<Resource> first = new ArrayList<>();
 		final List<Resource> second = new ArrayList<>();
 		final RemoteAsset asset = new RemoteAsset(Asset.of(ResourceBuilderTest.class.getResourceAsStream("/animation/still.png")).read());
-		final ResourceBuilder builder = ResourceBuilder.create().cache(CacheBuilder.newBuilder().build());
+		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create());
 		final Resource loaded = builder.of(asset).onLoad(first::add);
 		loaded.generate();
 		final Resource cached = builder.of(asset).onLoad(second::add);
@@ -290,8 +293,54 @@ public class ResourceBuilderTest {
 		Assert.assertEquals(Collections.singletonList(cached), second);
 	}
 
+	@Test
+	public void storesItsDataInACustomCache() {
+		final MapResourceCache cache = new MapResourceCache();
+		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
+		final Resource first = builder.compute("image", () -> new ResourceData("image", null));
+		final Resource second = builder.compute("image", () -> new ResourceData("other", null));
+		Assert.assertSame(cache, builder.getCache());
+		Assert.assertSame(first.getResourceData(), second.getResourceData());
+		Assert.assertSame(first.getResourceData(), cache.dataMap.get("image"));
+		builder.reload();
+		Assert.assertTrue(cache.dataMap.isEmpty());
+		builder.compute("image", () -> new ResourceData("image", null)).clear();
+		Assert.assertTrue(cache.dataMap.isEmpty());
+	}
+
 	private static InputStream stream(final String path) {
 		return ResourceBuilderTest.class.getResourceAsStream(path);
+	}
+
+	private static final class MapResourceCache implements IResourceCache {
+
+		private final Map<String, ResourceData> dataMap = new HashMap<>();
+
+		@Override
+		public void put(final @NonNull String uniqueId, final @NonNull ResourceData data) {
+			this.dataMap.put(uniqueId, data);
+		}
+
+		@Override
+		public void remove(final @NonNull String uniqueId) {
+			this.dataMap.remove(uniqueId);
+		}
+
+		@Override
+		public void clear() {
+			this.dataMap.clear();
+		}
+
+		@Override
+		public ResourceData get(final @NonNull String uniqueId) {
+			return this.dataMap.get(uniqueId);
+		}
+
+		@Override
+		public @NonNull Collection<@NonNull ResourceData> getDataList() {
+			return this.dataMap.values();
+		}
+
 	}
 
 	private static final class HeldAsset extends Asset {

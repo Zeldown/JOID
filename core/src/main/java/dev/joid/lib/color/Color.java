@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
 
-import javax.vecmath.Vector4f;
-
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.point.Point;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
@@ -117,8 +117,9 @@ public final class Color {
 
 		if (lower.startsWith("gradient(")) {
 			final List<String> parts = Color.arguments(text, 9, 2, 6);
-			final Vector4f direction = parts.size() == 2 ? new Vector4f(0F, 0F, 1F, 0F) : new Vector4f(Float.parseFloat(parts.get(2)), Float.parseFloat(parts.get(3)), Float.parseFloat(parts.get(4)), Float.parseFloat(parts.get(5)));
-			return new Color(new ColorGradient(Color.decode(parts.get(0)), Color.decode(parts.get(1)), direction));
+			final Point startPoint = parts.size() == 2 ? Point.create(0D, 0D) : Point.create(Double.parseDouble(parts.get(2)), Double.parseDouble(parts.get(3)));
+			final Point endPoint = parts.size() == 2 ? Point.create(1D, 0D) : Point.create(Double.parseDouble(parts.get(4)), Double.parseDouble(parts.get(5)));
+			return new Color(new ColorGradient(Color.decode(parts.get(0)), Color.decode(parts.get(1)), startPoint, endPoint));
 		}
 
 		final String hex = text.startsWith("#") ? text : "#" + text;
@@ -171,27 +172,23 @@ public final class Color {
 					g1.getEndColor().b * inv + g2.getEndColor().b * progress,
 					g1.getEndColor().a * inv + g2.getEndColor().a * progress
 					);
-			final Vector4f direction = new Vector4f(
-					g1.getDirection().x * inv + g2.getDirection().x * progress,
-					g1.getDirection().y * inv + g2.getDirection().y * progress,
-					g1.getDirection().z * inv + g2.getDirection().z * progress,
-					g1.getDirection().w * inv + g2.getDirection().w * progress
-					);
-			return new Color(new ColorGradient(start, end, direction));
+			final Point startPoint = Point.create(g1.getStartPoint().getX() * inv + g2.getStartPoint().getX() * progress, g1.getStartPoint().getY() * inv + g2.getStartPoint().getY() * progress);
+			final Point endPoint = Point.create(g1.getEndPoint().getX() * inv + g2.getEndPoint().getX() * progress, g1.getEndPoint().getY() * inv + g2.getEndPoint().getY() * progress);
+			return new Color(new ColorGradient(start, end, startPoint, endPoint));
 		}
 
 		if (color1.isGradient()) {
 			final ColorGradient g = color1.gradient;
 			final Color start = new Color(g.getStartColor().r * inv + color2.r * progress, g.getStartColor().g * inv + color2.g * progress, g.getStartColor().b * inv + color2.b * progress, g.getStartColor().a * inv + color2.a * progress);
 			final Color end = new Color(g.getEndColor().r * inv + color2.r * progress, g.getEndColor().g * inv + color2.g * progress, g.getEndColor().b * inv + color2.b * progress, g.getEndColor().a * inv + color2.a * progress);
-			return new Color(new ColorGradient(start, end, g.getDirection()));
+			return new Color(new ColorGradient(start, end, g.getStartPoint(), g.getEndPoint()));
 		}
 
 		if (color2.isGradient()) {
 			final ColorGradient g = color2.gradient;
 			final Color start = new Color(color1.r * inv + g.getStartColor().r * progress, color1.g * inv + g.getStartColor().g * progress, color1.b * inv + g.getStartColor().b * progress, color1.a * inv + g.getStartColor().a * progress);
 			final Color end = new Color(color1.r * inv + g.getEndColor().r * progress, color1.g * inv + g.getEndColor().g * progress, color1.b * inv + g.getEndColor().b * progress, color1.a * inv + g.getEndColor().a * progress);
-			return new Color(new ColorGradient(start, end, g.getDirection()));
+			return new Color(new ColorGradient(start, end, g.getStartPoint(), g.getEndPoint()));
 		}
 
 		return new Color(
@@ -203,8 +200,8 @@ public final class Color {
 				);
 	}
 
-	public static @NonNull Color gradient(final @NonNull Color color1, final @NonNull Color color2, final @NonNull Vector4f direction) {
-		return new Color(new ColorGradient(color1, color2, direction));
+	public static @NonNull Color gradient(final @NonNull Color color1, final @NonNull Color color2, final @NonNull Point startPoint, final @NonNull Point endPoint) {
+		return new Color(new ColorGradient(color1, color2, startPoint, endPoint));
 	}
 
 	public static @NonNull Color RAINBOW() {
@@ -241,11 +238,11 @@ public final class Color {
 		BridgeHandler.RENDER.get().getState().color(color.r, color.g, color.b, color.a);
 	}
 
-	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas) {
+	public void bind(final @NonNull Runnable runnable, final @NonNull BoundingBox canvas) {
 		this.bind(runnable, canvas, false);
 	}
 
-	public void bind(final @NonNull Runnable runnable, final @NonNull Vector4f canvas, final boolean hasTexture) {
+	public void bind(final @NonNull Runnable runnable, final @NonNull BoundingBox canvas, final boolean hasTexture) {
 		final RenderState state = BridgeHandler.RENDER.get().getState();
 		if (this.isGradient()) {
 			final IShader previousShader = state.getShader();
@@ -323,11 +320,11 @@ public final class Color {
 	}
 
 	public @NonNull Color toGradient(final @NonNull Color target) {
-		return this.toGradient(target, new Vector4f(0F, 0F, 1F, 0F));
+		return this.toGradient(target, Point.create(0D, 0D), Point.create(1D, 0D));
 	}
 
-	public @NonNull Color toGradient(final @NonNull Color target, final @NonNull Vector4f direction) {
-		return Color.gradient(this, target, direction);
+	public @NonNull Color toGradient(final @NonNull Color target, final @NonNull Point startPoint, final @NonNull Point endPoint) {
+		return Color.gradient(this, target, startPoint, endPoint);
 	}
 
 	public @NonNull float[] RGBtoHSB(final float[] hsbvals) {
@@ -424,7 +421,7 @@ public final class Color {
 
 	public @NonNull Color copy() {
 		if (this.isGradient()) {
-			return new Color(this.r, this.g, this.b, this.a, this.update, new ColorGradient(this.gradient.getStartColor().copy(), this.gradient.getEndColor().copy(), new Vector4f(this.gradient.getDirection())));
+			return new Color(this.r, this.g, this.b, this.a, this.update, new ColorGradient(this.gradient.getStartColor().copy(), this.gradient.getEndColor().copy(), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
 		}
 		return new Color(this.r, this.g, this.b, this.a, this.update);
 	}
@@ -434,7 +431,7 @@ public final class Color {
 			final Color start = this.gradient.getStartColor();
 			final Color end = this.gradient.getEndColor();
 			final float scale = this.a > 0F ? alpha / this.a : 0F;
-			return new Color(this.r, this.g, this.b, alpha, this.update, new ColorGradient(start.copyAlpha(this.a > 0F ? start.a * scale : alpha), end.copyAlpha(this.a > 0F ? end.a * scale : alpha), new Vector4f(this.gradient.getDirection())));
+			return new Color(this.r, this.g, this.b, alpha, this.update, new ColorGradient(start.copyAlpha(this.a > 0F ? start.a * scale : alpha), end.copyAlpha(this.a > 0F ? end.a * scale : alpha), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
 		}
 		return new Color(this.r, this.g, this.b, alpha, this.update);
 	}

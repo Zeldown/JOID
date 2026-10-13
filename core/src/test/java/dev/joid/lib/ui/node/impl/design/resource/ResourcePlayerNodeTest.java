@@ -3,8 +3,6 @@ package dev.joid.lib.ui.node.impl.design.resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector3f;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,6 +19,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
+import dev.joid.lib.utils.point.Point;
 
 public class ResourcePlayerNodeTest {
 
@@ -46,7 +45,7 @@ public class ResourcePlayerNodeTest {
 	public void controlsNothingWithoutResource() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(10D, 20D, 30D, 40D);
 		Assert.assertSame(player, player.play().pause().resume().seek(1D).restart().stop());
-		Assert.assertSame(player, player.location(new Vector3f(1F, 2F, 3F)).referenceDistance(2F).maxDistance(9F));
+		Assert.assertSame(player, player.location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
 		Assert.assertFalse(player.isPlaying());
 		Assert.assertFalse(player.isPaused());
 	}
@@ -308,7 +307,7 @@ public class ResourcePlayerNodeTest {
 	public void placesTheAudioOfItsVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		final VideoResourceDecoder video = player.getVideo();
-		Assert.assertSame(player, player.location(new Vector3f(1F, 2F, 3F)).referenceDistance(2F).maxDistance(9F));
+		Assert.assertSame(player, player.location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
 		Assert.assertEquals(1F, video.getLocationX(), 0F);
 		Assert.assertEquals(2F, video.getLocationY(), 0F);
 		Assert.assertEquals(3F, video.getLocationZ(), 0F);
@@ -376,7 +375,7 @@ public class ResourcePlayerNodeTest {
 
 	@Test
 	public void placesTheAudioOfAVideoGivenAfterwards() {
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(new Vector3f(1F, 2F, 3F)).referenceDistance(2F).maxDistance(9F).resource(ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv")));
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F).resource(ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv")));
 		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertTrue(video.isHasLocation());

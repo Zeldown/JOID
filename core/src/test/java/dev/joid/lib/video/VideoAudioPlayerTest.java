@@ -12,8 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.vecmath.Vector3f;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,6 +20,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioSource;
+import dev.joid.lib.utils.point.Point;
 import lombok.NonNull;
 
 public class VideoAudioPlayerTest {
@@ -275,7 +274,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void sharesOneListener() {
-		final AudioListenerPosition listener = () -> new Vector3f(1F, 2F, 3F);
+		final AudioListenerPosition listener = () -> Point.create(1D, 2D, 3D);
 		VideoAudioPlayer.setAudioListenerPosition(listener);
 		Assert.assertSame(listener, VideoAudioPlayer.getAudioListenerPosition());
 	}
@@ -302,7 +301,7 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void playsAtFullVolumeNearTheListener() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		VideoAudioPlayer.setAudioListenerPosition(() -> new Vector3f(3F, 4F, 0F));
+		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(3D, 4D, 0D));
 		player.setLocation(0F, 0F, 0F);
 		player.update();
 		Assert.assertEquals(0.3F, this.audio.source().lastGain(), 1E-6F);
@@ -311,7 +310,7 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void fadesWithTheDistanceToTheListener() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		VideoAudioPlayer.setAudioListenerPosition(() -> new Vector3f(0F, 0F, 27.5F));
+		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(0D, 0D, 27.5D));
 		player.setLocation(0F, 0F, 0F);
 		player.update();
 		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
@@ -320,7 +319,7 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void fadesBetweenItsOwnDistances() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		VideoAudioPlayer.setAudioListenerPosition(() -> new Vector3f(1F, 2F, 9F));
+		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(1D, 2D, 9D));
 		player.setLocation(1F, 2F, 3F);
 		player.setReferenceDistance(2F);
 		player.setMaxDistance(10F);
@@ -332,7 +331,7 @@ public class VideoAudioPlayerTest {
 	public void pausesBeyondItsMaximumDistance() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
 		final RecordingAudioSource source = this.audio.source();
-		VideoAudioPlayer.setAudioListenerPosition(() -> new Vector3f(0F, 60F, 0F));
+		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(0D, 60D, 0D));
 		player.setLocation(0F, 0F, 0F);
 		VideoAudioPlayerTest.push(player, 3, 10);
 		source.calls.clear();

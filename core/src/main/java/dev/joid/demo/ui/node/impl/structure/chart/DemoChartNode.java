@@ -2,8 +2,6 @@ package dev.joid.demo.ui.node.impl.structure.chart;
 
 import java.util.Map.Entry;
 
-import javax.vecmath.Vector2d;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
@@ -11,6 +9,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.impl.structure.chart.ChartNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 import lombok.NonNull;
 
 public class DemoChartNode extends ChartNode {
@@ -58,14 +57,14 @@ public class DemoChartNode extends ChartNode {
 		int seriesIndex = 0;
 		for (final Entry<String, ChartData> entry : super.getDataMap().entrySet()) {
 			final Color color = DemoChartNode.SERIES[seriesIndex % DemoChartNode.SERIES.length];
-			Vector2d last = null;
+			Point last = null;
 			double ox = left;
 			for (final String label : super.getLabels()) {
 				final double oy = top + height - height * (entry.getValue().get(label).doubleValue() - min) / (max - min);
-				final Vector2d point = new Vector2d(ox, oy);
+				final Point point = Point.create(ox, oy);
 				if (last != null) {
 					if (this.smooth) {
-						DrawUtils.SHAPE.drawCurvedLine(color, 2F, last, new Vector2d(last.x + offset / 3D, last.y), point, new Vector2d(ox - offset / 3D, oy));
+						DrawUtils.SHAPE.drawCurvedLine(color, 2F, last, Point.create(last.getX() + offset / 3D, last.getY()), point, Point.create(ox - offset / 3D, oy));
 					} else {
 						DrawUtils.SHAPE.drawLine(color, 2F, last, point);
 					}

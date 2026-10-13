@@ -6,15 +6,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.resource.cache.IResourceCache;
+import dev.joid.lib.resource.cache.impl.MemoryResourceCache;
 import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.Getter;
@@ -22,14 +20,13 @@ import lombok.NonNull;
 
 public final class ResourceBuilder {
 
-	private static final Set<ResourceBuilder> BUILDER_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
-
-	public static final Cache<String, ResourceData> DEFAULT_CACHE = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build();
+	private static final IResourceCache       DEFAULT_CACHE = MemoryResourceCache.create();
+	private static final Set<ResourceBuilder> BUILDER_SET   = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	private final Set<String> uniqueIdSet;
 
+	@Getter private IResourceCache cache;
 	@Getter private ResourceProperties properties;
-	@Getter private Cache<String, ResourceData> cache;
 
 	private ResourceBuilder() {
 		this.cache = ResourceBuilder.DEFAULT_CACHE;
@@ -43,7 +40,7 @@ public final class ResourceBuilder {
 		return new ResourceBuilder();
 	}
 
-	public final @NonNull ResourceBuilder cache(final Cache<String, ResourceData> cache) {
+	public final @NonNull ResourceBuilder cache(final IResourceCache cache) {
 		this.cache = cache;
 		return this;
 	}
@@ -123,7 +120,7 @@ public final class ResourceBuilder {
 		}
 
 		this.uniqueIdSet.add(uniqueId);
-		final ResourceData cached = this.cache.getIfPresent(uniqueId);
+		final ResourceData cached = this.cache.get(uniqueId);
 		if (cached != null) {
 			return new Resource(this, cached);
 		}
@@ -141,7 +138,9 @@ public final class ResourceBuilder {
 		if (this.cache == null) {
 			return;
 		}
-		this.cache.invalidateAll(this.uniqueIdSet);
+		for (final String uniqueId : this.uniqueIdSet) {
+			this.cache.remove(uniqueId);
+		}
 		this.uniqueIdSet.clear();
 	}
 

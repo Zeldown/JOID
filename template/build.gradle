@@ -31,8 +31,7 @@ configurations {
     joidProd
     embed
     baseline
-    libraries
-    compile.extendsFrom joidDemo, embed, libraries
+    compile.extendsFrom joidDemo, embed
     demoCompile.extendsFrom compile
     demoRuntime.extendsFrom runtime
 }
@@ -41,14 +40,6 @@ dependencies {
     joidDemo files("libs/joid-core-${joidVersion}-demo.jar")
     joidDev files("libs/joid-core-${joidVersion}-dev.jar")
     joidProd files("libs/joid-core-${joidVersion}-prod.jar")
-
-    libraries "com.google.guava:guava:15.0"
-    libraries "com.google.code.gson:gson:2.2.4"
-
-    libraries "org.apache.commons:commons-lang3:3.1"
-    libraries "commons-io:commons-io:2.4"
-
-    libraries "java3d:vecmath:1.3.1"
 
     testCompile files("libs/joid-tool-testkit-${joidVersion}.jar")
     testCompile "junit:junit:4.13.2"
@@ -152,7 +143,7 @@ task renderBaseline(type: JavaExec) {
     group = 'JOID'
     description = 'Renders the snapshot scenarios with the official LWJGL 3 backend.'
     main = 'dev.joid.test.snapshot.SnapshotBaseline'
-    classpath = configurations.baseline + files("libs/joid-tool-testkit-${joidVersion}.jar") + configurations.libraries
+    classpath = configurations.baseline + files("libs/joid-tool-testkit-${joidVersion}.jar")
     workingDir = file("$buildDir/snapshot/lwjgl3")
     systemProperty 'joid.snapshot.cache', file('.snapshots/cache').absolutePath
     args 'dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
@@ -170,7 +161,7 @@ task crossBackendTest(type: JavaExec) {
     description = 'Compares the snapshots of this backend to the official LWJGL 3 rendering.'
     dependsOn test, renderBaseline
     main = 'dev.joid.test.snapshot.SnapshotComparison'
-    classpath = files("libs/joid-tool-testkit-${joidVersion}.jar") + configurations.joidDemo + configurations.libraries
+    classpath = files("libs/joid-tool-testkit-${joidVersion}.jar") + configurations.joidDemo
     args file("$buildDir/snapshots/cross").absolutePath, file("$buildDir/snapshots/lwjgl3").absolutePath, file("$buildDir/snapshots/$archivesBaseName").absolutePath
 }
 

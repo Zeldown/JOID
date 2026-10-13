@@ -3,8 +3,6 @@ package dev.joid.lib.ui.node.impl.design.shape;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Vector4f;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,6 +20,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.utils.point.Point;
 
 public class RectNodeTest {
 
@@ -183,7 +182,7 @@ public class RectNodeTest {
 	@Test
 	public void drawsAGradientInItsDirection() {
 		final RecordingShader shader = (RecordingShader) GradientShader.inst().getShader();
-		this.bridges.open(new NodeUI(RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.6F, 0.4F, 0.2F, 1F), new Vector4f(0F, 0F, 0F, 1F))))).frame();
+		this.bridges.open(new NodeUI(RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.6F, 0.4F, 0.2F, 1F), Point.create(0D, 0D), Point.create(0D, 1D))))).frame();
 		Assert.assertArrayEquals(new float[] {0F, 0F}, (float[]) shader.getValues().get("startPos"), 0F);
 		Assert.assertArrayEquals(new float[] {0F, 1F}, (float[]) shader.getValues().get("endPos"), 0F);
 	}

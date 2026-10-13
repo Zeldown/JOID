@@ -16,7 +16,7 @@ dependencies {
 }
 ```
 
-The libraries of the JOID core are declared in the `libraries` configuration. No jar embeds them: the application that uses your backend declares them too. JavaCV, JavaCPP and FFmpeg, used by video playback, need no declaration: the JOID core jars embed them, with the FFmpeg natives.
+The JOID core needs no declaration: its jars embed its libraries (Gson, Guava, Commons IO and Commons Lang relocated under `dev.joid.shaded`, JavaCV, JavaCPP and FFmpeg with its natives).
 
 ## Implementing the backend
 
@@ -39,7 +39,7 @@ The render bridge contract — vertex layout, projection conventions, textures, 
 | `./gradlew updateSnapshots` | Replaces the references after an intended visual change. |
 | `./gradlew renderBaseline` | Renders the same scenarios with the official LWJGL 3 backend into `build/snapshots/lwjgl3`. |
 | `./gradlew crossBackendTest` | Runs the tests and the baseline, then compares your shots to the LWJGL 3 ones within one level per channel. |
-| `./gradlew build` | Builds three jars that embed the JOID core of the same variant, with the libraries its jars contain (JavaCV, JavaCPP, FFmpeg, JSVG, TwelveMonkeys, ASM), and the `embed` jars, but none of the `libraries`: `joid-backend-example-1.0.0-prod.jar` to ship, `joid-backend-example-1.0.0-dev.jar` with the JOID dev tools (inspector, hot reload, warnings) for the developers who use your backend, and `joid-backend-example-1.0.0-demo.jar` with the dev tools, the JOID demos and `DemoWindow`, for you only. JOID turns its dev and demo modes on by itself when their classes are in the jar. |
+| `./gradlew build` | Builds three jars that embed the JOID core of the same variant, with the libraries its jars contain (Gson, Guava, Commons IO, Commons Lang, JavaCV, JavaCPP, FFmpeg, JSVG, TwelveMonkeys, ASM), and the `embed` jars: `joid-backend-example-1.0.0-prod.jar` to ship, `joid-backend-example-1.0.0-dev.jar` with the JOID dev tools (inspector, hot reload, warnings) for the developers who use your backend, and `joid-backend-example-1.0.0-demo.jar` with the dev tools, the JOID demos and `DemoWindow`, for you only. JOID turns its dev and demo modes on by itself when their classes are in the jar. |
 | `./gradlew testDemoJar testProdJar` | Runs the tests against the packaged jars instead of the classes: every test for the demo jar, the contract and unit tests for the prod jar. |
 | `./gradlew runDemo` | Launches `DemoWindow`. |
 

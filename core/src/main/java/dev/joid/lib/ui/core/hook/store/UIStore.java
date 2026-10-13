@@ -1,7 +1,5 @@
 package dev.joid.lib.ui.core.hook.store;
 
-import com.google.gson.JsonObject;
-
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import lombok.NonNull;
 
@@ -13,13 +11,15 @@ public abstract class UIStore {
 
 	public void destroy() {}
 
-	public void load(final @NonNull JsonObject json) {}
-
 	public void save() {
 		UIStoreHook.saveStore(this);
 	}
 
-	public void save(final @NonNull JsonObject json) {}
+	public void fromJson(final @NonNull String json) {}
+
+	public @NonNull String toJson() {
+		return "{}";
+	}
 
 	public UIStoreData getData() {
 		if (this.data == null) {

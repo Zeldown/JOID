@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.vecmath.Vector4f;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -29,6 +27,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.effect.ITextGlyph;
 import dev.joid.lib.font.markup.ITextMarkup;
+import dev.joid.lib.utils.point.Point;
 
 public class MsdfTextRendererTest {
 
@@ -303,7 +302,7 @@ public class MsdfTextRendererTest {
 
 	@Test
 	public void paintsAGradientOverTheRun() {
-		final Color gradient = new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.8F, 0.6F, 0.4F, 1F), new Vector4f(0F, 0F, 1F, 1F));
+		final Color gradient = new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.8F, 0.6F, 0.4F, 1F), Point.create(0D, 0D), Point.create(1D, 1D));
 		MsdfTextRenderer.inst().drawText(100D, 100D, "Ax", MsdfTextRendererTest.sampleInfo().color(gradient));
 		final Map<String, Object> uniforms = this.render.getLast().getUniforms();
 		Assert.assertEquals(1, uniforms.get("u_HasGradient"));

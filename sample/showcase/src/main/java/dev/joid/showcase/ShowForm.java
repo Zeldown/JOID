@@ -1,7 +1,5 @@
 package dev.joid.showcase;
 
-import javax.vecmath.Vector2d;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.lib.color.Color;
@@ -18,6 +16,7 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 
 public class ShowForm extends ShowUI {
 
@@ -53,7 +52,7 @@ public class ShowForm extends ShowUI {
 		.visible(() -> this.isValid())
 		.interactive(false)
 		.effect(ShadowNodeEffect.create(ShowUI.EMERALD, 14F))
-		.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(ShowUI.NIGHT, 3.5F, new Vector2d(762D, 506D), new Vector2d(768D, 512D), new Vector2d(779D, 499D)))
+		.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(ShowUI.NIGHT, 3.5F, Point.create(762D, 506D), Point.create(768D, 512D), Point.create(779D, 499D)))
 		.attach(this);
 
 		TextNode.create(160, 580).text(Text.create("Bio, with markup", ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.MUTED))).attach(this);

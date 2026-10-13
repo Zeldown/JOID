@@ -2,14 +2,13 @@ package dev.joid.lib.ui.node.impl.design.resource;
 
 import java.util.function.Supplier;
 
-import javax.vecmath.Vector4f;
-
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.box.BoundingBox;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -87,7 +86,7 @@ public class ResourceNode extends Node {
 			return;
 		}
 
-		final Vector4f canvas = new Vector4f((float) super.getX(), (float) super.getY(), (float) (super.getX() + super.getWidth()), (float) (super.getY() + super.getHeight()));
+		final BoundingBox canvas = BoundingBox.create(super.getX(), super.getY(), super.getWidth(), super.getHeight());
 		final Color primary = this.hoveredColor != null && this.hoveredResource == null ? this.color.to(this.hoveredColor, super.hoverValue(1F)) : this.color;
 		primary.bind(() -> this.drawResource(this.resource), canvas, true);
 

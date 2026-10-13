@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.EmptyStackException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.junit.After;
 import org.junit.Assert;
@@ -291,13 +294,13 @@ public class UITest {
 		ui.getDebug().setHotreload(false);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		try {
-			Assert.assertNull(ui.getFileMonitor());
+			Assert.assertNull(ui.getWatchedLocation());
 			ui.getDebug().setHotreload(true);
 			UITest.out(() -> ui.draw(0D, 0D));
-			Assert.assertNotNull(ui.getFileMonitor());
+			Assert.assertNotNull(ui.getWatchedLocation());
 			ui.getDebug().setHotreload(false);
 			UITest.out(() -> ui.draw(0D, 0D));
-			Assert.assertNull(ui.getFileMonitor());
+			Assert.assertNull(ui.getWatchedLocation());
 		} finally {
 			ui.dispose();
 		}
@@ -1490,8 +1493,8 @@ public class UITest {
 			second.load(1920D, 1080D);
 		});
 		try {
-			Assert.assertNotNull(first.getFileMonitor());
-			Assert.assertSame(first.getFileMonitor(), second.getFileMonitor());
+			Assert.assertNotNull(UITest.monitor(first));
+			Assert.assertEquals(first.getWatchedLocation(), second.getWatchedLocation());
 			final BlockingQueue<String> changes = UITest.listen(first);
 			Files.write(new File(location, "ShopNode.class").toPath(), new byte[] {1});
 			UITest.await(changes, "file create ShopNode.class");
@@ -1511,12 +1514,12 @@ public class UITest {
 		final UI second = UITest.hotReloaded(location, new AtomicInteger());
 		JOIDEnv.devMode(true);
 		UITest.out(() -> first.load(1920D, 1080D));
-		final Object monitor = first.getFileMonitor();
+		final FileAlterationMonitor monitor = UITest.monitor(first);
 		first.dispose();
 		UITest.out(() -> second.load(1920D, 1080D));
 		try {
-			Assert.assertNotNull(second.getFileMonitor());
-			Assert.assertNotSame(monitor, second.getFileMonitor());
+			Assert.assertNotNull(UITest.monitor(second));
+			Assert.assertNotSame(monitor, UITest.monitor(second));
 		} finally {
 			second.dispose();
 		}
@@ -1527,7 +1530,7 @@ public class UITest {
 		JOIDEnv.devMode(false);
 		final HotReloadUI ui = new HotReloadUI(new AtomicInteger());
 		ui.load(1920D, 1080D);
-		Assert.assertNull(ui.getFileMonitor());
+		Assert.assertNull(ui.getWatchedLocation());
 	}
 
 	@Test
@@ -1539,8 +1542,8 @@ public class UITest {
 			first.load(1920D, 1080D);
 			second.load(1920D, 1080D);
 		});
-		Assert.assertNull(first.getFileMonitor());
-		Assert.assertNull(second.getFileMonitor());
+		Assert.assertNull(first.getWatchedLocation());
+		Assert.assertNull(second.getWatchedLocation());
 		Assert.assertTrue(errors, errors.contains("[JOID] Hot reload is off for HotReloadUI"));
 		Assert.assertEquals(errors, errors.indexOf("Hot reload is off"), errors.lastIndexOf("Hot reload is off"));
 	}
@@ -1550,7 +1553,7 @@ public class UITest {
 		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.load(1920D, 1080D);
-		Assert.assertNull(ui.getFileMonitor());
+		Assert.assertNull(ui.getWatchedLocation());
 	}
 
 	@Test
@@ -1666,13 +1669,13 @@ public class UITest {
 		final UI ui = UITest.hotReloaded(location, new AtomicInteger());
 		JOIDEnv.devMode(true);
 		UITest.out(() -> ui.load(1920D, 1080D));
-		Assert.assertNotNull(ui.getFileMonitor());
+		Assert.assertNotNull(ui.getWatchedLocation());
 		ui.dispose();
 		final long deadline = System.currentTimeMillis() + 5000L;
-		while (ui.getFileMonitor() != null && System.currentTimeMillis() < deadline) {
+		while (ui.getWatchedLocation() != null && System.currentTimeMillis() < deadline) {
 			Thread.sleep(10L);
 		}
-		Assert.assertNull(ui.getFileMonitor());
+		Assert.assertNull(ui.getWatchedLocation());
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -1783,13 +1786,20 @@ public class UITest {
 		return (UI) clazz.getConstructor(AtomicInteger.class).newInstance(inits);
 	}
 
-	private static BlockingQueue<String> listen(final UI ui) throws InterruptedException {
+	private static BlockingQueue<String> listen(final UI ui) throws InterruptedException, ReflectiveOperationException {
 		final ChangeListener listener = new ChangeListener();
-		for (final FileAlterationObserver observer : ui.getFileMonitor().getObservers()) {
+		for (final FileAlterationObserver observer : UITest.monitor(ui).getObservers()) {
 			observer.addListener(listener);
 		}
 		UITest.await(listener.changes, "stop");
 		return listener.changes;
+	}
+
+	@SuppressWarnings("unchecked")
+	private static FileAlterationMonitor monitor(final UI ui) throws ReflectiveOperationException {
+		final Field field = UI.class.getDeclaredField("MONITOR_MAP");
+		field.setAccessible(true);
+		return ((Map<File, FileAlterationMonitor>) field.get(null)).get(ui.getWatchedLocation());
 	}
 
 	private static void await(final BlockingQueue<String> changes, final String... expected) throws InterruptedException {

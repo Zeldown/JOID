@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.vecmath.Vector3f;
-
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,6 +30,7 @@ import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 
 public class NodeSetterTest {
 
@@ -66,7 +65,7 @@ public class NodeSetterTest {
 		Assert.assertSame(Color.GREEN, ui.getProgress().getForeground());
 		Assert.assertEquals(0.9F, ui.getPlayer().getVolume(), 1E-6F);
 		Assert.assertTrue(ui.getPlayer().isLoop());
-		Assert.assertEquals(new Vector3f(1F, 0F, 1F), ui.getPlayer().getLocation());
+		Assert.assertEquals(Point.create(1D, 0D, 1D), ui.getPlayer().getLocation());
 		Assert.assertEquals(2D, ui.getModel().getSize(), 0D);
 		Assert.assertEquals(90D, ui.getModel().getRotationYaw(), 0D);
 		Assert.assertEquals("Name 1", ui.getField().getText());

@@ -16,7 +16,7 @@ import lombok.NonNull;
 @Getter
 public final class Resource {
 
-	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().async().linear().cache(ResourceBuilder.DEFAULT_CACHE);
+	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().async().linear();
 
 	private final ResourceData data;
 	private final ResourceBuilder builder;
@@ -242,7 +242,7 @@ public final class Resource {
 		}
 
 		if (this.builder != null && this.builder.getCache() != null) {
-			this.builder.getCache().invalidate(this.data.getUniqueId());
+			this.builder.getCache().remove(this.data.getUniqueId());
 		}
 	}
 

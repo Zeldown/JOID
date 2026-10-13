@@ -5,8 +5,6 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-import javax.vecmath.Vector2d;
-
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,6 +32,7 @@ import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.transform.Scale;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
+import dev.joid.lib.utils.point.Point;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;
@@ -197,7 +196,7 @@ public abstract class RenderBridgeContractSuite {
 	public void drawsAWideLineAsWideAsItsWidth() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.getState().lineWidth(6F);
-			DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, new Vector2d(8D, 32D), new Vector2d(56D, 32D));
+			DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, Point.create(8D, 32D), Point.create(56D, 32D));
 		});
 		RenderBridgeContractSuite.assertPixel(image, 32, 27, RenderBridgeContractSuite.BLACK);
 		RenderBridgeContractSuite.assertPixel(image, 32, 30, RenderBridgeContractSuite.WHITE);
@@ -213,7 +212,7 @@ public abstract class RenderBridgeContractSuite {
 			bridge.getState().lineWidth(6F);
 			shader.bind();
 			try {
-				DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, new Vector2d(8D, 32D), new Vector2d(56D, 32D));
+				DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, Point.create(8D, 32D), Point.create(56D, 32D));
 			} finally {
 				shader.unbind();
 			}

@@ -1,9 +1,5 @@
 package dev.joid.demo.ui.shader;
 
-import javax.vecmath.Vector2d;
-import javax.vecmath.Vector2f;
-import javax.vecmath.Vector4f;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.internal.JOID;
@@ -27,6 +23,8 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.point.Point;
 
 @UIData(background = true)
 public class UIDemoShader extends UIDemo {
@@ -44,10 +42,10 @@ public class UIDemoShader extends UIDemo {
 		RectNode.create(285, 40, 200, 120).color(Color.BLUE.toGradient(Color.GREEN)).attach(this);
 		TextNode.create(385, 175).text(Text.create("Gradient", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(515, 40, 200, 120).color(Color.CYAN.toGradient(Color.MAGENTA, new Vector4f(0F, 0F, 0F, 1F))).attach(this);
+		RectNode.create(515, 40, 200, 120).color(Color.CYAN.toGradient(Color.MAGENTA, Point.create(0D, 0D), Point.create(0D, 1D))).attach(this);
 		TextNode.create(615, 175).text(Text.create("Vertical gradient", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(745, 40, 200, 120).color(Color.ORANGE.toGradient(Color.BLUE, new Vector4f(0F, 0F, 1F, 1F))).attach(this);
+		RectNode.create(745, 40, 200, 120).color(Color.ORANGE.toGradient(Color.BLUE, Point.create(0D, 0D), Point.create(1D, 1D))).attach(this);
 		TextNode.create(845, 175).text(Text.create("Diagonal gradient", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1045, 30, 60, 140).color(Color.WHITE).attach(this);
@@ -107,53 +105,53 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(1665, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, new Vector2d(node.getX() + 100D, node.getY()), new Vector2d(node.getX() + 200D, node.getY() + 120D), new Vector2d(node.getX(), node.getY() + 120D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, Point.create(node.getX() + 100D, node.getY()), Point.create(node.getX() + 200D, node.getY() + 120D), Point.create(node.getX(), node.getY() + 120D))))
 		.attach(this);
 		TextNode.create(1765, 375).text(Text.create("Polygon", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(55, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, new Vector2d(node.getX(), node.getY() + 110D), new Vector2d(node.getX() + 200D, node.getY() + 10D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 110D), Point.create(node.getX() + 200D, node.getY() + 10D))))
 		.attach(this);
 		TextNode.create(155, 575).text(Text.create("Line", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(285, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, new Vector2d(node.getX(), node.getY() + 100D), new Vector2d(node.getX() + 50D, node.getY() + 20D), new Vector2d(node.getX() + 100D, node.getY() + 100D), new Vector2d(node.getX() + 150D, node.getY() + 20D), new Vector2d(node.getX() + 200D, node.getY() + 100D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 100D), Point.create(node.getX() + 50D, node.getY() + 20D), Point.create(node.getX() + 100D, node.getY() + 100D), Point.create(node.getX() + 150D, node.getY() + 20D), Point.create(node.getX() + 200D, node.getY() + 100D))))
 		.attach(this);
 		TextNode.create(385, 575).text(Text.create("Polyline", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(515, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, new Vector2d(node.getX(), node.getY() + 110D), new Vector2d(node.getX() + 200D, node.getY() + 110D), new Vector2d(node.getX() + 100D, node.getY() - 90D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 110D), Point.create(node.getX() + 200D, node.getY() + 110D), Point.create(node.getX() + 100D, node.getY() - 90D))))
 		.attach(this);
 		TextNode.create(615, 575).text(Text.create("Curve", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(745, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, new Vector2d(node.getX(), node.getY() + 60D), new Vector2d(node.getX() + 70D, node.getY() - 60D), new Vector2d(node.getX() + 200D, node.getY() + 60D), new Vector2d(node.getX() + 130D, node.getY() + 180D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 60D), Point.create(node.getX() + 70D, node.getY() - 60D), Point.create(node.getX() + 200D, node.getY() + 60D), Point.create(node.getX() + 130D, node.getY() + 180D))))
 		.attach(this);
 		TextNode.create(845, 575).text(Text.create("Bezier", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(975, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.CYAN, new Vector2d(node.getX() + 100D, node.getY()), new Vector2d(node.getX() + 200D, node.getY() + 60D), new Vector2d(node.getX() + 100D, node.getY() + 120D), new Vector2d(node.getX(), node.getY() + 60D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.CYAN, Point.create(node.getX() + 100D, node.getY()), Point.create(node.getX() + 200D, node.getY() + 60D), Point.create(node.getX() + 100D, node.getY() + 120D), Point.create(node.getX(), node.getY() + 60D))))
 		.attach(this);
 		TextNode.create(1075, 575).text(Text.create("Line loop", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1205, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, Color.ORANGE, new Vector2d(node.getX(), node.getY()), new Vector2d(node.getX() + 90D, node.getY() + 120D), new Vector2d(node.getX(), node.getY() + 120D), new Vector2d(node.getX() + 110D, node.getY()), new Vector2d(node.getX() + 200D, node.getY()), new Vector2d(node.getX() + 200D, node.getY() + 120D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, Color.ORANGE, Point.create(node.getX(), node.getY()), Point.create(node.getX() + 90D, node.getY() + 120D), Point.create(node.getX(), node.getY() + 120D), Point.create(node.getX() + 110D, node.getY()), Point.create(node.getX() + 200D, node.getY()), Point.create(node.getX() + 200D, node.getY() + 120D))))
 		.attach(this);
 		TextNode.create(1305, 575).text(Text.create("Triangles", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1435, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE), new Vector4f((float) node.getX(), (float) node.getY(), (float) (node.getX() + node.getWidth()), (float) (node.getY() + node.getHeight())))))
+		.self(node -> node.layer((mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(node.getX(), node.getY(), node.getWidth(), node.getHeight()))))
 		.attach(this);
 		TextNode.create(1535, 575).text(Text.create("Shader bound", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		TextNode.create(1765, 470).text(Text.create("Gradient", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.RED.toGradient(Color.YELLOW, new Vector4f(0F, 0F, 1F, 0F))))).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1765, 470).text(Text.create("Gradient", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.RED.toGradient(Color.YELLOW, Point.create(0D, 0D), Point.create(1D, 0D))))).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1765, 575).text(Text.create("Gradient text", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode
@@ -194,7 +192,7 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(1225, 660, 160, 80)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, new Vector2d(node.getX(), node.getY() + 80D), new Vector2d(node.getX() + 160D, node.getY() + 80D), new Vector2d(node.getX() + 110D, node.getY()), new Vector2d(node.getX() + 30D, node.getY()))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, Point.create(node.getX(), node.getY() + 80D), Point.create(node.getX() + 160D, node.getY() + 80D), Point.create(node.getX() + 110D, node.getY()), Point.create(node.getX() + 30D, node.getY()))))
 		.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(12D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(1305, 775).text(Text.create("Rotated polygon", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
@@ -208,7 +206,7 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(1685, 660, 160, 80)
-		.self(node -> node.layer((mouseX, mouseY) -> GradientShader.use(new Vector2f(0F, 0F), new Vector2f(1F, 0F), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE), new Vector4f((float) node.getX(), (float) node.getY(), (float) (node.getX() + node.getWidth()), (float) (node.getY() + node.getHeight())))))
+		.self(node -> node.layer((mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(node.getX(), node.getY(), node.getWidth(), node.getHeight()))))
 		.self(node -> node.effect(TransformNodeEffect.create(new RotateTransformOperation(8D, Rotation.ROLL, Vector.create(() -> node.getX() + 80D, () -> node.getY() + 40D)))))
 		.attach(this);
 		TextNode.create(1765, 775).text(Text.create("Rotated shader", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
@@ -219,19 +217,19 @@ public class UIDemoShader extends UIDemo {
 		RectNode.create(325, 840, 120, 120).color(Color.CYAN.toGradient(Color.MAGENTA)).effect(CircleNodeEffect.create()).attach(this);
 		TextNode.create(385, 975).text(Text.create("Cool circle", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(555, 840, 120, 120).color(Color.GREEN.toGradient(Color.BLUE, new Vector4f(0F, 0F, 0F, 1F))).effect(CircleNodeEffect.create()).attach(this);
+		RectNode.create(555, 840, 120, 120).color(Color.GREEN.toGradient(Color.BLUE, Point.create(0D, 0D), Point.create(0D, 1D))).effect(CircleNodeEffect.create()).attach(this);
 		TextNode.create(615, 975).text(Text.create("Vertical circle", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(745, 840, 200, 120).color(Color.RED.toGradient(Color.BLUE)).effect(RoundedNodeEffect.create(20F)).attach(this);
 		TextNode.create(845, 975).text(Text.create("Rounded gradient", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(975, 840, 200, 120).color(Color.CYAN.toGradient(Color.MAGENTA, new Vector4f(0F, 0F, 0F, 1F))).effect(RoundedNodeEffect.create(30F)).attach(this);
+		RectNode.create(975, 840, 200, 120).color(Color.CYAN.toGradient(Color.MAGENTA, Point.create(0D, 0D), Point.create(0D, 1D))).effect(RoundedNodeEffect.create(30F)).attach(this);
 		TextNode.create(1075, 975).text(Text.create("Vertical rounded", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1205, 840, 200, 120).color(Color.ORANGE.toGradient(Color.PINK)).effect(RoundedNodeEffect.create(60F)).attach(this);
 		TextNode.create(1305, 975).text(Text.create("Pill gradient", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		TextNode.create(1535, 870).text(Text.create("Vertical", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.CYAN.toGradient(Color.MAGENTA, new Vector4f(0F, 0F, 0F, 1F))))).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1535, 870).text(Text.create("Vertical", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.CYAN.toGradient(Color.MAGENTA, Point.create(0D, 0D), Point.create(0D, 1D))))).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1535, 975).text(Text.create("Vertical text", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		TextNode

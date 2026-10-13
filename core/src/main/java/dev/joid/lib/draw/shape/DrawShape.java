@@ -3,9 +3,6 @@ package dev.joid.lib.draw.shape;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
-import javax.vecmath.Vector4f;
-
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
@@ -21,6 +18,8 @@ import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.ShadowShader;
 import dev.joid.lib.utils.bezier.Bezier;
+import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.point.Point;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -68,17 +67,17 @@ public final class DrawShape {
 		final double spread = blur * 1.5D;
 		final Color shadow = color.isGradient() ? color.gradient.getStartColor() : color;
 		ShadowShader.use(radius, blur, (float) x, (float) y, (float) (x + width), (float) (y + height), () -> {
-			this.drawPoints(DrawMode.POLYGON, shadow, false, new Vector2d(x - spread, y + height + spread), new Vector2d(x + width + spread, y + height + spread), new Vector2d(x + width + spread, y - spread), new Vector2d(x - spread, y - spread));
+			this.drawPoints(DrawMode.POLYGON, shadow, false, Point.create(x - spread, y + height + spread), Point.create(x + width + spread, y + height + spread), Point.create(x + width + spread, y - spread), Point.create(x - spread, y - spread));
 		});
 	}
 
 	public void drawCircle(final double x, final double y, final @NonNull Color color, final double radius) {
 		CircleShader.use((float) radius, (float) x, (float) y, () -> {
 			if (color.isGradient()) {
-				CircleShader.inst().gradient(color.gradient, new Vector4f((float) (x - radius), (float) (y - radius), (float) (x + radius), (float) (y + radius)));
+				CircleShader.inst().gradient(color.gradient, BoundingBox.create(x - radius, y - radius, radius * 2D, radius * 2D));
 			}
 
-			this.drawPoints(DrawMode.POLYGON, color.isGradient() ? Color.WHITE : color, false, new Vector2d(x - radius, y + radius), new Vector2d(x + radius, y + radius), new Vector2d(x + radius, y - radius), new Vector2d(x - radius, y - radius));
+			this.drawPoints(DrawMode.POLYGON, color.isGradient() ? Color.WHITE : color, false, Point.create(x - radius, y + radius), Point.create(x + radius, y + radius), Point.create(x + radius, y - radius), Point.create(x - radius, y - radius));
 		});
 	}
 
@@ -109,11 +108,11 @@ public final class DrawShape {
 		this.drawEdges(right, top, outerRight, bottom, vertical);
 	}
 
-	public void drawPolygon(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
+	public void drawPolygon(final @NonNull Color color, final @NonNull Point @NonNull... points) {
 		this.drawShape(DrawMode.POLYGON, color, points);
 	}
 
-	public void drawLine(final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
+	public void drawLine(final @NonNull Color color, final @NonNull Point @NonNull... points) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
@@ -124,7 +123,7 @@ public final class DrawShape {
 		}
 	}
 
-	public void drawLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d @NonNull... points) {
+	public void drawLine(final @NonNull Color color, final float stroke, final @NonNull Point @NonNull... points) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
@@ -135,17 +134,17 @@ public final class DrawShape {
 		}
 	}
 
-	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Vector2d @NonNull... points) {
-		final List<Vector2d> dashes = new ArrayList<>();
+	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Point @NonNull... points) {
+		final List<Point> dashes = new ArrayList<>();
 		for (int i = 0; i + 1 < points.length; i++) {
-			final Vector2d start = points[i];
-			final Vector2d end = points[i + 1];
-			final double length = Math.sqrt(Math.pow(end.x - start.x, 2D) + Math.pow(end.y - start.y, 2D));
+			final Point start = points[i];
+			final Point end = points[i + 1];
+			final double length = Math.sqrt(Math.pow(end.getX() - start.getX(), 2D) + Math.pow(end.getY() - start.getY(), 2D));
 			for (double offset = 0D; offset < length; offset += pattern * 2D) {
 				final double from = offset / length;
 				final double to = Math.min(length, offset + pattern) / length;
-				dashes.add(new Vector2d(start.x + (end.x - start.x) * from, start.y + (end.y - start.y) * from));
-				dashes.add(new Vector2d(start.x + (end.x - start.x) * to, start.y + (end.y - start.y) * to));
+				dashes.add(Point.create(start.getX() + (end.getX() - start.getX()) * from, start.getY() + (end.getY() - start.getY()) * from));
+				dashes.add(Point.create(start.getX() + (end.getX() - start.getX()) * to, start.getY() + (end.getY() - start.getY()) * to));
 			}
 		}
 
@@ -157,23 +156,23 @@ public final class DrawShape {
 		render.pushState();
 		try {
 			render.getState().lineWidth(stroke).lineSmooth(true);
-			this.drawShape(DrawMode.LINES, color, dashes.toArray(new Vector2d[0]));
+			this.drawShape(DrawMode.LINES, color, dashes.toArray(new Point[0]));
 		} finally {
 			render.popState();
 		}
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
-		Vector2d last = start;
-		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(control.x - start.x, control.y - start.y) + Math.hypot(end.x - control.x, end.y - control.y)));
+	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point end, final @NonNull Point control) {
+		Point last = start;
+		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(control.getX() - start.getX(), control.getY() - start.getY()) + Math.hypot(end.getX() - control.getX(), end.getY() - control.getY())));
 		for (int step = 1; step <= steps; step++) {
-			final Vector2d point = Bezier.quadratic((float) step / steps, start, end, control);
+			final Point point = Bezier.quadratic((float) step / steps, start, end, control);
 			DrawUtils.SHAPE.drawLine(color, last, point);
 			last = point;
 		}
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d end, final @NonNull Vector2d control) {
+	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point end, final @NonNull Point control) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
@@ -184,17 +183,17 @@ public final class DrawShape {
 		}
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
-		Vector2d last = start;
-		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(startControl.x - start.x, startControl.y - start.y) + Math.hypot(endControl.x - startControl.x, endControl.y - startControl.y) + Math.hypot(end.x - endControl.x, end.y - endControl.y)));
+	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point end, final @NonNull Point endControl) {
+		Point last = start;
+		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(startControl.getX() - start.getX(), startControl.getY() - start.getY()) + Math.hypot(endControl.getX() - startControl.getX(), endControl.getY() - startControl.getY()) + Math.hypot(end.getX() - endControl.getX(), end.getY() - endControl.getY())));
 		for (int step = 1; step <= steps; step++) {
-			final Vector2d point = Bezier.cubic((float) step / steps, start, startControl, end, endControl);
+			final Point point = Bezier.cubic((float) step / steps, start, startControl, end, endControl);
 			DrawUtils.SHAPE.drawLine(color, last, point);
 			last = point;
 		}
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Vector2d start, final @NonNull Vector2d startControl, final @NonNull Vector2d end, final @NonNull Vector2d endControl) {
+	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point end, final @NonNull Point endControl) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
@@ -205,7 +204,7 @@ public final class DrawShape {
 		}
 	}
 
-	public void drawShape(final @NonNull DrawMode mode, final @NonNull Color color, final @NonNull Vector2d @NonNull... points) {
+	public void drawShape(final @NonNull DrawMode mode, final @NonNull Color color, final @NonNull Point @NonNull... points) {
 		final boolean smooth = mode == DrawMode.POLYGON && EdgeSmoothing.isConvex(points) && (!BridgeHandler.RENDER.get().getPixelGrid().isAligned() || DrawShape.isSlanted(points));
 		this.drawPoints(mode, color, smooth, points);
 	}
@@ -242,7 +241,7 @@ public final class DrawShape {
 			RoundedShader.inst().aligned(grid.isAligned());
 			RoundedShader.inst().stroke((float) stroke);
 			if (color.isGradient()) {
-				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) left, (float) top, (float) right, (float) bottom));
+				RoundedShader.inst().gradient(color.gradient, BoundingBox.create(left, top, right - left, bottom - top));
 			}
 
 			if (grid.isAligned()) {
@@ -262,7 +261,7 @@ public final class DrawShape {
 
 		final IShader rounded = RoundedShader.inst().getShader();
 		if (render.getState().getShader() != null || rounded == null || !rounded.isActive()) {
-			this.drawPoints(DrawMode.POLYGON, color, true, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
+			this.drawPoints(DrawMode.POLYGON, color, true, Point.create(left, bottom), Point.create(right, bottom), Point.create(right, top), Point.create(left, top));
 			return;
 		}
 
@@ -273,7 +272,7 @@ public final class DrawShape {
 		RoundedShader.use(0F, (float) (minX + 0.5D), (float) (minY + 0.5D), (float) (maxX - 0.5D), (float) (maxY - 0.5D), () -> {
 			RoundedShader.inst().aligned(false);
 			if (color.isGradient()) {
-				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
+				RoundedShader.inst().gradient(color.gradient, BoundingBox.create(minX, minY, maxX - minX, maxY - minY));
 			}
 
 			this.drawQuad(minX - 1D, minY - 1D, maxX + 1D, maxY + 1D, color.isGradient() ? Color.WHITE : color);
@@ -285,7 +284,7 @@ public final class DrawShape {
 			RoundedShader.inst().aligned(false);
 			RoundedShader.inst().stroke((float) Math.max(stroke - 0.5D, 1E-3D));
 			if (color.isGradient()) {
-				RoundedShader.inst().gradient(color.gradient, new Vector4f((float) left, (float) top, (float) right, (float) bottom));
+				RoundedShader.inst().gradient(color.gradient, BoundingBox.create(left, top, right - left, bottom - top));
 			}
 
 			this.drawQuad(left - 1D, top - 1D, right + 1D, bottom + 1D, color.isGradient() ? Color.WHITE : color);
@@ -293,20 +292,20 @@ public final class DrawShape {
 	}
 
 	private void drawQuad(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
-		this.drawPoints(DrawMode.POLYGON, color, false, new Vector2d(left, bottom), new Vector2d(right, bottom), new Vector2d(right, top), new Vector2d(left, top));
+		this.drawPoints(DrawMode.POLYGON, color, false, Point.create(left, bottom), Point.create(right, bottom), Point.create(right, top), Point.create(left, top));
 	}
 
-	private void drawPoints(final @NonNull DrawMode mode, final @NonNull Color color, final boolean smooth, final @NonNull Vector2d @NonNull... points) {
+	private void drawPoints(final @NonNull DrawMode mode, final @NonNull Color color, final boolean smooth, final @NonNull Point @NonNull... points) {
 		double minX = Double.POSITIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY;
 		double maxX = Double.NEGATIVE_INFINITY;
 		double maxY = Double.NEGATIVE_INFINITY;
 
-		for (final Vector2d point : points) {
-			minX = Math.min(minX, point.x);
-			minY = Math.min(minY, point.y);
-			maxX = Math.max(maxX, point.x);
-			maxY = Math.max(maxY, point.y);
+		for (final Point point : points) {
+			minX = Math.min(minX, point.getX());
+			minY = Math.min(minY, point.getY());
+			maxX = Math.max(maxX, point.getX());
+			maxY = Math.max(maxY, point.getY());
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
@@ -323,22 +322,22 @@ public final class DrawShape {
 				}
 
 				tessellator.start(mode);
-				for (final Vector2d point : points) {
-					tessellator.addVertex(point.x, point.y, 0D);
+				for (final Point point : points) {
+					tessellator.addVertex(point.getX(), point.getY(), 0D);
 				}
 				tessellator.draw();
-			}, new Vector4f((float) minX, (float) minY, (float) maxX, (float) maxY));
+			}, BoundingBox.create(minX, minY, maxX - minX, maxY - minY));
 		} finally {
 			render.popState();
 			render.getModelView().pop();
 		}
 	}
 
-	private static boolean isSlanted(final @NonNull Vector2d @NonNull... points) {
+	private static boolean isSlanted(final @NonNull Point @NonNull... points) {
 		for (int i = 0; i < points.length; i++) {
-			final Vector2d start = points[i];
-			final Vector2d end = points[(i + 1) % points.length];
-			if (start.x != end.x && start.y != end.y) {
+			final Point start = points[i];
+			final Point end = points[(i + 1) % points.length];
+			if (start.getX() != end.getX() && start.getY() != end.getY()) {
 				return true;
 			}
 		}

@@ -3,8 +3,6 @@ package dev.joid.showcase;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
-
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -17,6 +15,7 @@ import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 
 public class ShowTheme extends ShowUI {
 
@@ -103,14 +102,14 @@ public class ShowTheme extends ShowUI {
 			DrawUtils.SHAPE.drawRect(x, y + i * (height - 40D) / 4D, width, 1D, this.line());
 		}
 		final double slot = width / values.length;
-		final List<Vector2d> points = new ArrayList<>();
+		final List<Point> points = new ArrayList<>();
 		for (int i = 0; i < values.length; i++) {
 			final double bar = values[i] * (height - 40D);
 			final double bx = x + i * slot + slot * 0.2D;
 			DrawUtils.SHAPE.drawRoundedRect(bx, y + height - 40D - bar, slot * 0.6D, bar, ShowUI.vertical(ShowUI.FUCHSIA, ShowUI.VIOLET.copyAlpha(0.35F)), 10F, true, true, true, false);
-			points.add(new Vector2d(bx + slot * 0.3D, y + height - 40D - bar - 26D));
+			points.add(Point.create(bx + slot * 0.3D, y + height - 40D - bar - 26D));
 		}
-		DrawUtils.SHAPE.drawLine(this.tone("#0F0E1A", "#F8FAFC").copyAlpha(0.7F), 3F, points.toArray(new Vector2d[0]));
+		DrawUtils.SHAPE.drawLine(this.tone("#0F0E1A", "#F8FAFC").copyAlpha(0.7F), 3F, points.toArray(new Point[0]));
 	}
 
 	private Color text() {

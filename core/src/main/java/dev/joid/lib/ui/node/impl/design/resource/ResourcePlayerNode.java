@@ -2,8 +2,6 @@ package dev.joid.lib.ui.node.impl.design.resource;
 
 import java.util.function.Supplier;
 
-import javax.vecmath.Vector3f;
-
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
@@ -19,6 +17,7 @@ import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPaus
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerPlayCallback;
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerProgressCallback;
 import dev.joid.lib.ui.node.impl.design.resource.callback.NodeResourcePlayerStopCallback;
+import dev.joid.lib.utils.point.Point;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -42,7 +41,7 @@ public class ResourcePlayerNode extends Node {
 	private boolean autoplay = true;
 	private Object audioGroup;
 
-	private Vector3f location;
+	private Point location;
 	private Float    maxDistance;
 	private Float    referenceDistance;
 
@@ -116,7 +115,7 @@ public class ResourcePlayerNode extends Node {
 			if (video != null) {
 				video.volume(this.volume).audioGroup(this.audioGroup);
 				if (this.location != null) {
-					video.location(this.location.x, this.location.y, this.location.z);
+					video.location((float) this.location.getX(), (float) this.location.getY(), (float) this.location.getZ());
 				}
 
 				if (this.maxDistance != null) {
@@ -304,16 +303,16 @@ public class ResourcePlayerNode extends Node {
 		});
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Vector3f location) {
+	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Point location) {
 		return this.location(Signal.from(location));
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Supplier<@NonNull Vector3f> location) {
+	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Supplier<@NonNull Point> location) {
 		return super.follow("location", location, value -> {
 			this.location = value;
 			final VideoResourceDecoder video = this.getVideo();
 			if (video != null) {
-				video.location(value.x, value.y, value.z);
+				video.location((float) value.getX(), (float) value.getY(), (float) value.getZ());
 			}
 		});
 	}

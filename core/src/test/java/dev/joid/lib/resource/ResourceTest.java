@@ -13,9 +13,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
@@ -24,6 +21,7 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.resource.animation.impl.GifResourceAnimationReader;
+import dev.joid.lib.resource.cache.impl.MemoryResourceCache;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import lombok.NonNull;
@@ -36,10 +34,10 @@ public class ResourceTest {
 	@Test
 	public void loadsThroughTheDefaultAsyncLinearBuilder() {
 		final Resource resource = Resource.of(new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB));
-		Assert.assertSame(ResourceBuilder.DEFAULT_CACHE, resource.getBuilder().getCache());
+		Assert.assertSame(ResourceBuilder.create().getCache(), resource.getBuilder().getCache());
 		Assert.assertTrue(resource.getProperties().isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, resource.getProperties().getInterpolation());
-		Assert.assertSame(resource.getResourceData(), ResourceBuilder.DEFAULT_CACHE.getIfPresent(resource.getUniqueId()));
+		Assert.assertSame(resource.getResourceData(), resource.getBuilder().getCache().get(resource.getUniqueId()));
 	}
 
 	@Test
@@ -348,13 +346,13 @@ public class ResourceTest {
 	@Test
 	public void clearsItsDataAndLeavesItsCache() {
 		final Decoder decoder = new Decoder(true);
-		final Cache<String, ResourceData> cache = CacheBuilder.newBuilder().build();
+		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final Resource resource = ResourceBuilder.create().cache(cache).compute("image", () -> new ResourceData("image", decoder));
 		resource.prepareBind();
 		resource.clear();
 		Assert.assertTrue(decoder.texture.isDeleted());
 		Assert.assertTrue(decoder.calls.contains("clear"));
-		Assert.assertNull(cache.getIfPresent("image"));
+		Assert.assertNull(cache.get("image"));
 	}
 
 	@Test

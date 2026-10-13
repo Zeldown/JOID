@@ -2,8 +2,6 @@ package dev.joid.showcase;
 
 import java.util.Locale;
 
-import javax.vecmath.Vector2d;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -24,6 +22,7 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 
 public class ShowPlayer extends ShowUI {
 
@@ -109,7 +108,7 @@ public class ShowPlayer extends ShowUI {
 			DrawUtils.SHAPE.drawRoundedRect(x - 13D, y - 16D, 9D, 32D, ink, 3F);
 			DrawUtils.SHAPE.drawRoundedRect(x + 4D, y - 16D, 9D, 32D, ink, 3F);
 		} else {
-			DrawUtils.SHAPE.drawPolygon(ink, new Vector2d(x - 9D, y - 17D), new Vector2d(x - 9D, y + 17D), new Vector2d(x + 17D, y));
+			DrawUtils.SHAPE.drawPolygon(ink, Point.create(x - 9D, y - 17D), Point.create(x - 9D, y + 17D), Point.create(x + 17D, y));
 		}
 	}
 

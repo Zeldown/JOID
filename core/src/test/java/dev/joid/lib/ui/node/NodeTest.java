@@ -18,6 +18,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
@@ -2808,7 +2809,7 @@ public class NodeTest {
 	public void describesItselfInJson() {
 		final RectNode node = RectNode.create(10D, 20D, 30D, 40D).zindex(2);
 		node.x(15D);
-		final JsonObject json = node.toJson();
+		final JsonObject json = JsonParser.parseString(node.toJson()).getAsJsonObject();
 		Assert.assertEquals(2, json.get("index").getAsInt());
 		Assert.assertEquals("N/A", json.get("mappedIndex").getAsString());
 		Assert.assertEquals("RectNode", json.get("name").getAsString());
@@ -2831,7 +2832,7 @@ public class NodeTest {
 		try {
 			final RectNode child = RectNode.create(0D, 0D, 10D, 10D).overflow(OverflowProperty.SCROLL);
 			final RectNode parent = RectNode.create(0D, 0D, 100D, 100D).append(child);
-			final JsonObject json = child.toJson();
+			final JsonObject json = JsonParser.parseString(child.toJson()).getAsJsonObject();
 			Assert.assertEquals("0.0 / 0.0 [SCROLL]", json.get("scrollX").getAsString());
 			Assert.assertEquals("0.0 / 0.0 [SCROLL]", json.get("scrollY").getAsString());
 			Assert.assertTrue(json.get("visible").getAsBoolean());
@@ -2840,8 +2841,8 @@ public class NodeTest {
 			Assert.assertTrue(json.get("isChild").getAsBoolean());
 			Assert.assertEquals(0, json.get("children").getAsInt());
 			Assert.assertEquals("RectNode - RectNode (this)", json.get("hierarchy").getAsString());
-			Assert.assertFalse(parent.toJson().get("isChild").getAsBoolean());
-			Assert.assertEquals(1, parent.toJson().get("children").getAsInt());
+			Assert.assertFalse(JsonParser.parseString(parent.toJson()).getAsJsonObject().get("isChild").getAsBoolean());
+			Assert.assertEquals(1, JsonParser.parseString(parent.toJson()).getAsJsonObject().get("children").getAsInt());
 			Assert.assertTrue(child.toString().contains("\n"));
 		} finally {
 			JOIDEnv.devMode(previous);

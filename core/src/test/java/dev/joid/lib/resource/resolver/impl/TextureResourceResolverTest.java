@@ -5,11 +5,10 @@ import java.awt.image.BufferedImage;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.google.common.cache.CacheBuilder;
-
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
+import dev.joid.lib.resource.cache.impl.MemoryResourceCache;
 import lombok.NonNull;
 
 public class TextureResourceResolverTest {
@@ -33,7 +32,7 @@ public class TextureResourceResolverTest {
 	@Test
 	public void sharesTheDataOfACachedTexture() {
 		final Texture texture = new Texture();
-		final ResourceBuilder builder = ResourceBuilder.create().cache(CacheBuilder.newBuilder().build());
+		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create());
 		final TextureResourceResolver resolver = new TextureResourceResolver();
 		Assert.assertSame(resolver.resolve(builder, texture).getResourceData(), resolver.resolve(builder, texture).getResourceData());
 	}

@@ -1,15 +1,13 @@
 package dev.joid.lib.ui.core.hook.store;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.Reader;
 import java.io.Writer;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -42,14 +40,14 @@ public final class UIStoreHook {
 		final T store = UIStoreHook.createStoreInstance(clazz, args);
 		final File file = UIStoreHook.getFile(UIStoreHook.getId(store));
 		if (store.getData().scope() == StoreScope.PERMANENT && file.exists()) {
-			final JsonObject json = UIStoreHook.loadFile(UIStoreHook.getId(store));
+			final String json = UIStoreHook.loadFile(UIStoreHook.getId(store));
 			if (json == null) {
 				if (!file.delete()) {
 					System.err.println("Failed to delete corrupted store file: " + file.getAbsolutePath());
 				}
 				store.init();
 			} else {
-				store.load(json);
+				store.fromJson(json);
 			}
 		} else {
 			store.init();
@@ -81,9 +79,7 @@ public final class UIStoreHook {
 			return;
 		}
 
-		final JsonObject json = new JsonObject();
-		store.save(json);
-		UIStoreHook.saveFile(UIStoreHook.getId(store), json);
+		UIStoreHook.saveFile(UIStoreHook.getId(store), store.toJson());
 	}
 
 	public static void saveAll() {
@@ -148,12 +144,10 @@ public final class UIStoreHook {
 		return new File(parent, id + ".store");
 	}
 
-	private static JsonObject loadFile(final @NonNull String id) {
+	private static String loadFile(final @NonNull String id) {
 		try {
-			final File file = UIStoreHook.getFile(id);
-			try (final Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
-				return UIStoreHook.GSON.fromJson(reader, JsonObject.class);
-			}
+			final String json = new String(Files.readAllBytes(UIStoreHook.getFile(id).toPath()), StandardCharsets.UTF_8);
+			return UIStoreHook.GSON.fromJson(json, JsonObject.class) == null ? null : json;
 		} catch (final Exception e) {
 			System.err.println("Failed to load store file: " + id);
 			e.printStackTrace();
@@ -162,7 +156,7 @@ public final class UIStoreHook {
 		return null;
 	}
 
-	private static void saveFile(final @NonNull String id, final @NonNull JsonObject json) {
+	private static void saveFile(final @NonNull String id, final @NonNull String json) {
 		try {
 			final File file = UIStoreHook.getFile(id);
 			if (!file.exists()) {
@@ -177,7 +171,7 @@ public final class UIStoreHook {
 			}
 
 			try (final Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
-				UIStoreHook.GSON.toJson(json, writer);
+				writer.write(json);
 			}
 		} catch (final Exception e) {
 			System.err.println("Failed to save store file: " + id);

@@ -3,8 +3,6 @@ package dev.joid.showcase;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.vecmath.Vector2d;
-
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
@@ -18,6 +16,7 @@ import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.point.Point;
 
 public class ShowMotion extends ShowUI {
 
@@ -75,13 +74,13 @@ public class ShowMotion extends ShowUI {
 	}
 
 	private void curve(final double x, final double y, final double width, final double height, final TweenEquation equation, final float time, final Color from, final Color to) {
-		final List<Vector2d> points = new ArrayList<>();
+		final List<Point> points = new ArrayList<>();
 		for (int i = 0; i <= 60; i++) {
 			final float t = i / 60F;
-			points.add(new Vector2d(x + t * width, y + height - equation.compute(t) * height));
+			points.add(Point.create(x + t * width, y + height - equation.compute(t) * height));
 		}
-		DrawUtils.SHAPE.drawLine(Color.WHITE.copyAlpha(0.10F), 2F, new Vector2d(x, y + height), new Vector2d(x + width, y + height));
-		DrawUtils.SHAPE.drawLine(from.toGradient(to), 3F, points.toArray(new Vector2d[0]));
+		DrawUtils.SHAPE.drawLine(Color.WHITE.copyAlpha(0.10F), 2F, Point.create(x, y + height), Point.create(x + width, y + height));
+		DrawUtils.SHAPE.drawLine(from.toGradient(to), 3F, points.toArray(new Point[0]));
 		DrawUtils.SHAPE.drawCircle(x + time * width, y + height - equation.compute(time) * height, Color.WHITE, 6D);
 	}
 
