@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
 
-import dev.joid.backend.lwjgl2.Natives;
+import dev.joid.backend.lwjgl2.Lwjgl2Natives;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.utils.platform.Platform;
 
@@ -50,7 +50,7 @@ public class NativeCursorTest {
 	public void appliesNothingWithoutDisplay() {
 		final NativeCursor cursor = NativeCursors.get();
 		Assume.assumeNotNull(cursor);
-		Natives.install();
+		Lwjgl2Natives.install();
 		cursor.apply(Cursor.POINTER);
 		cursor.apply(Cursor.DEFAULT);
 	}

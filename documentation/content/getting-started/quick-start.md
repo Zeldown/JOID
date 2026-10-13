@@ -236,7 +236,7 @@ bridge.frame();
 For LWJGL 2, create a `Display` with depth and stencil bits, call `Backend.register()`, and forward the input with `Lwjgl2InputForwarder`:
 
 ```java
-Natives.install();
+Lwjgl2Natives.install();
 Display.setDisplayMode(new DisplayMode(1280, 720));
 Display.setResizable(true);
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));

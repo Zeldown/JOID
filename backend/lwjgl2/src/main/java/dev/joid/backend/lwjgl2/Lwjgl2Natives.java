@@ -13,19 +13,19 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Natives {
+public final class Lwjgl2Natives {
 
 	private static boolean installed;
 
 	public static synchronized void install() {
-		if (Natives.installed) {
+		if (Lwjgl2Natives.installed) {
 			return;
 		}
 
-		Natives.installed = true;
-		final String platform = Natives.getPlatform();
-		final String[] libraries = Natives.getLibraries(platform);
-		if (System.getProperty("org.lwjgl.librarypath") != null || Natives.isProvided(libraries)) {
+		Lwjgl2Natives.installed = true;
+		final String platform = Lwjgl2Natives.getPlatform();
+		final String[] libraries = Lwjgl2Natives.getLibraries(platform);
+		if (System.getProperty("org.lwjgl.librarypath") != null || Lwjgl2Natives.isProvided(libraries)) {
 			return;
 		}
 
@@ -36,7 +36,7 @@ public final class Natives {
 
 		for (final String library : libraries) {
 			final File target = new File(directory, library);
-			try (InputStream stream = Natives.class.getResourceAsStream("/dev/joid/backend/lwjgl2/natives/" + platform + "/" + library)) {
+			try (InputStream stream = Lwjgl2Natives.class.getResourceAsStream("/dev/joid/backend/lwjgl2/natives/" + platform + "/" + library)) {
 				if (stream == null) {
 					throw new IllegalStateException("The LWJGL 2 native " + library + " is missing from the backend");
 				}

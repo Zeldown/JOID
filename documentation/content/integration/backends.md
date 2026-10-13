@@ -109,7 +109,7 @@ The UI bridge, the input and the resize are set up as with LWJGL 3. Every clear 
 Install the natives before creating the `Display`, ask for a stencil buffer, then register the backend. `Lwjgl2InputForwarder` reads the mouse and keyboard queues once per frame:
 
 ```java
-Natives.install();
+Lwjgl2Natives.install();
 Display.setDisplayMode(new DisplayMode(1920, 1080));
 Display.setResizable(true);
 Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
@@ -198,7 +198,7 @@ BridgeHandler.THREAD.register(new GameThreadBridge());
 | Method | Description |
 |---|---|
 | `Backend.register(...)` | Check the version, register the audio, window and render bridges. LWJGL 3 also takes `(long window, IGlBinding binding)`. |
-| `Natives.install()` | Install the LWJGL 2 natives, before `Display.create()`. |
+| `Lwjgl2Natives.install()` | Install the LWJGL 2 natives, before `Display.create()`. |
 | `VulkanRenderBridge.present()` | Show the last frame on the window. |
 | `BridgeRegistry.register(T)` / `unregister(T)` | Add a bridge at its sorted position, or remove it. |
 | `BridgeRegistry.get()` | The bridge in front; throws an `IllegalStateException` when the registry is empty. |

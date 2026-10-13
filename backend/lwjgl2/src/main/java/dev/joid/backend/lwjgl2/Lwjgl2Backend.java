@@ -20,7 +20,7 @@ public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
 
 	private Lwjgl2Backend() {
 		super(JOID.VERSION);
-		Natives.install();
+		Lwjgl2Natives.install();
 	}
 
 	public static @NonNull Lwjgl2Backend create() {
