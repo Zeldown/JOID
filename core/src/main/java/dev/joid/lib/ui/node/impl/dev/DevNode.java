@@ -119,8 +119,8 @@ public final class DevNode extends Node {
 				ResourceNode
 				.create(0, 0, 24, 24)
 				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
-				.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()))
-				.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.getValue()).darker(0.3F))
+				.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()))
+				.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()).darker(0.3F))
 				.onClick((node, mouseX, mouseY, button) -> {
 					node.getUi().reload();
 				})

@@ -2637,7 +2637,7 @@ public class NodeTest {
 		new AnimatorUI(animator.sequence(0F, 1F)).load(1920D, 1080D);
 		this.bridges.frame();
 		Assert.assertTrue(values.isEmpty());
-		Assert.assertEquals(1F, animator.getValue(), 0F);
+		Assert.assertEquals(1F, animator.get(), 0F);
 		parent.append(node);
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(1F), values);
@@ -2695,7 +2695,7 @@ public class NodeTest {
 		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frames(3);
 		Assert.assertTrue(values.isEmpty());
-		Assert.assertEquals(1F, animator.getValue(), 0F);
+		Assert.assertEquals(1F, animator.get(), 0F);
 	}
 
 	@Test
@@ -2762,13 +2762,46 @@ public class NodeTest {
 	@Test
 	public void animatesWithoutBeingAnimatedByANode() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).<RectNode>width(() -> 10D + 90D * animator.getValue());
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).<RectNode>width(() -> 10D + 90D * animator.get());
 		this.bridges.open(new NodeUI(node));
 		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frame();
 		Assert.assertEquals(55D, node.getWidth(), 1E-9D);
 		this.bridges.frame();
 		Assert.assertEquals(100D, node.getWidth(), 1E-9D);
+	}
+
+	@Test
+	public void recomputesAnAnimatedPropertyOnlyWhenTheAnimatorChanges() {
+		final int[] computed = {0};
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).width(animator.map(value -> {
+			computed[0]++;
+			return 10D + 90D * value;
+		}));
+		this.bridges.open(new NodeUI(node)).frames(2);
+		final int idle = computed[0];
+		new AnimatorUI(animator).load(1920D, 1080D);
+		this.bridges.frames(2);
+		Assert.assertEquals(100D, node.getWidth(), 1E-9D);
+		Assert.assertEquals(idle + 2, computed[0]);
+		this.bridges.frames(3);
+		Assert.assertEquals(idle + 2, computed[0]);
+	}
+
+	@Test
+	public void reportsTheValueSetOnItsAnimator() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(160F, 1F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate((rect, tween, value) -> values.add(value));
+		this.bridges.open(new NodeUI(node));
+		new AnimatorUI(animator).load(1920D, 1080D);
+		this.bridges.frame();
+		animator.setValue(0F);
+		this.bridges.frames(2);
+		Assert.assertEquals(2, values.size());
+		Assert.assertEquals(0.1F, values.get(0), 1E-5F);
+		Assert.assertEquals(0F, values.get(1), 0F);
 	}
 
 	@Test

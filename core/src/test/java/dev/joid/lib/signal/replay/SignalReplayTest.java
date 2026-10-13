@@ -12,11 +12,13 @@ import org.junit.Assume;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.demo.replay.ReplayAnimatorUI;
 import dev.joid.demo.replay.ReplayCountedSignal;
 import dev.joid.demo.replay.ReplayLocalUI;
 import dev.joid.demo.replay.ReplayPitfallsUI;
 import dev.joid.demo.replay.ReplayScenarioUI;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
@@ -24,6 +26,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.showcase.ReplayShowcaseFixture;
 import example.replay.LabelNode;
@@ -84,6 +87,20 @@ public class SignalReplayTest {
 		ui.getClicks().set(2);
 		Assert.assertEquals("Next: 3, double: 4", SignalReplayTest.node(ui, 0).getText().get());
 		Assert.assertEquals("ADA has 2 clicks", SignalReplayTest.node(ui, 4).getText().get());
+	}
+
+	@Test
+	public void followsAnAnimatorAndItsChannelsReadInASetter() {
+		final TweenAnimator animator = TweenAnimator.create().parallel(32F, 1F).push(64F, 1F);
+		final ReplayAnimatorUI ui = new ReplayAnimatorUI(animator);
+		Assert.assertEquals("", this.open(ui));
+		final Node node = ui.getNodeList().get(0);
+		this.bridges.frame();
+		Assert.assertEquals(55D, node.getWidth(), 1E-9D);
+		Assert.assertEquals(32.5D, node.getHeight(), 1E-9D);
+		this.bridges.frame();
+		Assert.assertEquals(100D, node.getWidth(), 1E-9D);
+		Assert.assertEquals(55D, node.getHeight(), 1E-9D);
 	}
 
 	@Test

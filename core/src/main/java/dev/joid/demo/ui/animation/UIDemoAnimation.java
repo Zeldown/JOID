@@ -188,7 +188,7 @@ public class UIDemoAnimation extends UIDemo {
 		.create(100, 720, 400, 260)
 		.color(UIDemoAnimation.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(140, 70, 120, 120).color(() -> UIDemoAnimation.INK.to(Color.WHITE, color.getValue())).attach(rect);
+			RectNode.create(140, 70, 120, 120).color(() -> UIDemoAnimation.INK.to(Color.WHITE, color.get())).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Color", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -197,7 +197,7 @@ public class UIDemoAnimation extends UIDemo {
 		.create(540, 720, 400, 260)
 		.color(UIDemoAnimation.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 100, 60, 60).color(UIDemoAnimation.INK).width(() -> 60D + 260D * size.getValue()).attach(rect);
+			RectNode.create(40, 100, 60, 60).color(UIDemoAnimation.INK).width(60D + 260D * size.get()).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Size", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -209,7 +209,7 @@ public class UIDemoAnimation extends UIDemo {
 			RectNode
 			.create(150, 80, 100, 100)
 			.color(UIDemoAnimation.INK)
-			.self(square -> square.effect(TransformNodeEffect.create(new RotateTransformOperation(() -> rotation.getValue() * 360D, Rotation.ROLL, Vector.create(() -> square.getX() + 50D, () -> square.getY() + 50D)))))
+			.self(square -> square.effect(TransformNodeEffect.create(new RotateTransformOperation(() -> rotation.get() * 360D, Rotation.ROLL, Vector.create(() -> square.getX() + 50D, () -> square.getY() + 50D)))))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Rotation", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -227,15 +227,23 @@ public class UIDemoAnimation extends UIDemo {
 			})
 			.attach(rect);
 			RectNode
-			.create(40, 150, 120, 50)
+			.create(40, 150, 100, 50)
 			.color(UIDemoAnimation.INK)
-			.onClick((node, mouseX, mouseY, button) -> once.sequence(1000F, once.getValue() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).setCallback(tween -> plays.increment()).start())
+			.onClick((node, mouseX, mouseY, button) -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).setCallback(tween -> plays.increment()).start())
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Play", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(190, 162).text(Text.create("Ends: " + plays.get(), caption)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Start on click", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			RectNode
+			.create(160, 150, 100, 50)
+			.color(UIDemoAnimation.INK)
+			.onClick((node, mouseX, mouseY, button) -> once.setValue(0F))
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Stop", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(280, 162).text(Text.create("Ends: " + plays.get(), caption)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Play and stop", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

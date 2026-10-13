@@ -16,7 +16,7 @@ public class TweenAnimatorAccessorTest {
 	public void writesTheValueOfAnAnimator() {
 		final TweenAnimator animator = TweenAnimator.create(4F);
 		new TweenAnimatorAccessor().setValues(animator, TweenAnimatorAccessor.ANIMATION_VALUE, new float[] {7F});
-		Assert.assertEquals(7F, animator.getValue(), 0F);
+		Assert.assertEquals(7F, animator.get(), 0F);
 	}
 
 	@Test
@@ -26,8 +26,8 @@ public class TweenAnimatorAccessorTest {
 		new TweenAnimatorAccessor().getValues(animator, 5, values);
 		Assert.assertEquals(0F, values[0], 0F);
 		new TweenAnimatorAccessor().setValues(animator, 5, new float[] {7F});
-		Assert.assertEquals(7F, animator.getValue(5), 0F);
-		Assert.assertEquals(4F, animator.getValue(), 0F);
+		Assert.assertEquals(7F, animator.channel(5).get(), 0F);
+		Assert.assertEquals(4F, animator.get(), 0F);
 	}
 
 }

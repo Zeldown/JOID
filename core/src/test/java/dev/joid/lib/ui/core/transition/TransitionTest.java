@@ -37,8 +37,8 @@ public class TransitionTest {
 
 	@Test
 	public void startsAnInStateHiddenAndAnOutStateShown() {
-		Assert.assertEquals(0F, new FadeIn().getAnimator().getValue(), 0F);
-		Assert.assertEquals(1F, new FadeOut().getAnimator().getValue(), 0F);
+		Assert.assertEquals(0F, new FadeIn().getAnimator().get(), 0F);
+		Assert.assertEquals(1F, new FadeOut().getAnimator().get(), 0F);
 	}
 
 	@Test
@@ -57,10 +57,10 @@ public class TransitionTest {
 		in.endFrame();
 		this.clock.advance(50L);
 		in.update();
-		Assert.assertEquals(0.5F, in.getAnimator().getValue(), 0.0001F);
+		Assert.assertEquals(0.5F, in.getAnimator().get(), 0.0001F);
 		this.clock.advance(50L);
 		in.update();
-		Assert.assertEquals(1F, in.getAnimator().getValue(), 0F);
+		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
 	}
 
 	@Test
@@ -69,13 +69,13 @@ public class TransitionTest {
 		in.start();
 		this.clock.advance(500L);
 		in.update();
-		Assert.assertEquals(0F, in.getAnimator().getValue(), 0F);
+		Assert.assertEquals(0F, in.getAnimator().get(), 0F);
 		Assert.assertTrue(in.isRunning());
 		this.clock.advance(500L);
 		in.endFrame();
 		this.clock.advance(50L);
 		in.update();
-		Assert.assertEquals(0.5F, in.getAnimator().getValue(), 0.0001F);
+		Assert.assertEquals(0.5F, in.getAnimator().get(), 0.0001F);
 	}
 
 	@Test
@@ -89,7 +89,7 @@ public class TransitionTest {
 		this.clock.advance(20L);
 		in.endFrame();
 		in.update();
-		Assert.assertEquals(0.5F, in.getAnimator().getValue(), 0.0001F);
+		Assert.assertEquals(0.5F, in.getAnimator().get(), 0.0001F);
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class TransitionTest {
 		out.getAnimator().sequence(100F, 0F).start();
 		this.clock.advance(50L);
 		out.update();
-		Assert.assertEquals(1F, out.getAnimator().getValue(), 0F);
+		Assert.assertEquals(1F, out.getAnimator().get(), 0F);
 	}
 
 	@Test
@@ -110,7 +110,7 @@ public class TransitionTest {
 		out.update();
 		Assert.assertFalse(out.isEnabled());
 		Assert.assertFalse(out.isRunning());
-		Assert.assertEquals(1F, out.getAnimator().getValue(), 0F);
+		Assert.assertEquals(1F, out.getAnimator().get(), 0F);
 	}
 
 	@Test
@@ -125,7 +125,7 @@ public class TransitionTest {
 		out.update();
 		Assert.assertTrue(out.isEnabled());
 		Assert.assertTrue(out.isRunning());
-		Assert.assertEquals(0F, out.getAnimator().getValue(), 0F);
+		Assert.assertEquals(0F, out.getAnimator().get(), 0F);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -141,7 +141,7 @@ public class TransitionTest {
 		in.endFrame();
 		this.clock.advance(200L);
 		in.update();
-		Assert.assertEquals(1F, in.getAnimator().getValue(), 0F);
+		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
 		Assert.assertFalse(in.isRunning());
 	}
 

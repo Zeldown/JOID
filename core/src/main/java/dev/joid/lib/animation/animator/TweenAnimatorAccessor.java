@@ -8,13 +8,13 @@ public class TweenAnimatorAccessor implements TweenAccessor<TweenAnimator> {
 
 	@Override
 	public int getValues(final TweenAnimator target, final int tweenType, final float[] returnValues) {
-		returnValues[0] = target.getValue(tweenType);
+		returnValues[0] = target.readValue(tweenType);
 		return 1;
 	}
 
 	@Override
 	public void setValues(final TweenAnimator target, final int tweenType, final float[] newValues) {
-		target.setValue(tweenType, newValues[0]);
+		target.writeValue(tweenType, newValues[0]);
 	}
 
 }

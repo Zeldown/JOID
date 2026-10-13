@@ -55,20 +55,20 @@ public class ShowMotion extends ShowUI {
 		.create(420, y - 42D, 150, 84)
 		.color(Color.BLACK.copyAlpha(0.22F))
 		.effect(RoundedNodeEffect.create(14F))
-		.layer((mouseX, mouseY) -> this.curve(434D, y - 30D, 122D, 60D, equation, clock.getValue(), from, to))
+		.layer((mouseX, mouseY) -> this.curve(434D, y - 30D, 122D, 60D, equation, clock.get(), from, to))
 		.attach(this);
 
 		RectNode.create(640, y - 4D, 856, 8).color(Color.WHITE.copyAlpha(0.08F)).effect(RoundedNodeEffect.create(4F)).attach(this);
 		RectNode
 		.create(640, y - 4D, 0, 8)
 		.color(from.copyAlpha(0F).toGradient(to))
-		.<RectNode>width(() -> Math.max(0D, 28D + 800D * eased.getValue()))
+		.<RectNode>width(() -> Math.max(0D, 28D + 800D * eased.get()))
 		.effect(RoundedNodeEffect.create(4F))
 		.attach(this);
 		RectNode
 		.create(640, y - 28D, 56, 56)
 		.color(ShowUI.diagonal(from, to))
-		.<RectNode>x(() -> 640D + 800D * eased.getValue())
+		.<RectNode>x(() -> 640D + 800D * eased.get())
 		.effect(CircleNodeEffect.create())
 		.effect(ShadowNodeEffect.create(to.copyAlpha(0.9F), 26F))
 		.attach(this);

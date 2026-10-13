@@ -16,7 +16,7 @@ public class DemoSlideTransition extends Transition {
 
 	public static class SlideInTransition extends Transition.In {
 
-		private final Transformation transformation = Transformation.create().translate(Vector.Y(() -> 1080D * (1F - super.getAnimator().getValue())));
+		private final Transformation transformation = Transformation.create().translate(Vector.Y(() -> 1080D * (1F - super.getAnimator().get())));
 
 		@Override
 		public void init(final @NonNull UI ui) {}
@@ -41,7 +41,7 @@ public class DemoSlideTransition extends Transition {
 
 	public static class SlideOutTransition extends Transition.Out {
 
-		private final Transformation transformation = Transformation.create().translate(Vector.Y(() -> 1080D * (1F - super.getAnimator().getValue())));
+		private final Transformation transformation = Transformation.create().translate(Vector.Y(() -> 1080D * (1F - super.getAnimator().get())));
 
 		@Override
 		public void init(final @NonNull UI ui) {}

@@ -1504,7 +1504,7 @@ public abstract class Node implements INode {
 	}
 
 	public final float hoverValue(final float value) {
-		return value * this.hoverAnimator.getValue();
+		return value * this.hoverAnimator.get();
 	}
 
 	public final double w() {
@@ -1664,7 +1664,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T animate(final @NonNull TweenAnimator animator) {
-		this.animatorMap.put(animator, animator.getValue());
+		this.animatorMap.put(animator, animator.peek());
 		return (T) this;
 	}
 
@@ -1846,7 +1846,7 @@ public abstract class Node implements INode {
 				continue;
 			}
 
-			final float value = animator.getValue();
+			final float value = animator.peek();
 			if (value != previous) {
 				this.animatorMap.put(animator, value);
 				this.executeCallback(Node.CALLBACK_ANIMATION, DispatchContext.create(), animator, value);

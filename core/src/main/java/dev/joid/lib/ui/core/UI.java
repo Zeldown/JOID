@@ -824,11 +824,11 @@ public abstract class UI implements IUI, IndexedElement {
 			float opacity = this.data.getBackgroundColor().getAlpha() / 255F;
 			if (this.transition != null) {
 				if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
-					opacity = this.transition.getIn().getAnimator().getValue() * (this.data.getBackgroundColor().getAlpha() / 255F);
+					opacity = this.transition.getIn().getAnimator().get() * (this.data.getBackgroundColor().getAlpha() / 255F);
 				}
 
 				if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
-					opacity = this.transition.getOut().getAnimator().getValue() * (this.data.getBackgroundColor().getAlpha() / 255F);
+					opacity = this.transition.getOut().getAnimator().get() * (this.data.getBackgroundColor().getAlpha() / 255F);
 				}
 			}
 			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().copyAlpha(opacity));

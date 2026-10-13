@@ -709,7 +709,7 @@ public class UITest {
 		Assert.assertSame(panel, ui.getDevNode());
 		Assert.assertTrue(ui.getNodeList().contains(panel));
 		this.bridges.frames(3);
-		Assert.assertTrue(panel.getReloadAnimator().getValue() > 0F);
+		Assert.assertTrue(panel.getReloadAnimator().get() > 0F);
 	}
 
 	@Test

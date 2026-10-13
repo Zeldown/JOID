@@ -35,7 +35,7 @@ public class PopTransitionTest {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
 		final PopInTransition in = new PopInTransition();
 		in.init(ui);
-		Assert.assertEquals(0F, in.getAnimator().getValue(), 0F);
+		Assert.assertEquals(0F, in.getAnimator().get(), 0F);
 		this.assertScale(ui, in, 0.75D);
 	}
 
@@ -49,10 +49,10 @@ public class PopTransitionTest {
 		in.endFrame();
 		this.bridges.getClock().advance(65L);
 		in.update();
-		Assert.assertTrue(in.getAnimator().getValue() > 0.5F && in.getAnimator().getValue() < 1F);
+		Assert.assertTrue(in.getAnimator().get() > 0.5F && in.getAnimator().get() < 1F);
 		this.bridges.getClock().advance(100L);
 		in.update();
-		Assert.assertEquals(1F, in.getAnimator().getValue(), 0F);
+		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
 		this.assertScale(ui, in, 1D);
 	}
 
@@ -67,10 +67,10 @@ public class PopTransitionTest {
 		out.endFrame();
 		this.bridges.getClock().advance(65L);
 		out.update();
-		Assert.assertTrue(out.getAnimator().getValue() > 0F && out.getAnimator().getValue() < 1F);
+		Assert.assertTrue(out.getAnimator().get() > 0F && out.getAnimator().get() < 1F);
 		this.bridges.getClock().advance(100L);
 		out.update();
-		Assert.assertEquals(0F, out.getAnimator().getValue(), 0F);
+		Assert.assertEquals(0F, out.getAnimator().get(), 0F);
 		this.assertScale(ui, out, 0.75D);
 	}
 

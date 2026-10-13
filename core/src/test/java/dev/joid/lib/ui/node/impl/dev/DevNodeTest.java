@@ -74,7 +74,7 @@ public class DevNodeTest {
 		Assert.assertFalse(panel.getGridSignal().get());
 		Assert.assertFalse(panel.getInspectedNodeLocked().get());
 		Assert.assertNull(panel.getInspectedNode().get());
-		Assert.assertEquals(0F, panel.getReloadAnimator().getValue(), 0F);
+		Assert.assertEquals(0F, panel.getReloadAnimator().get(), 0F);
 		Assert.assertEquals(0, panel.getGridColorIndex());
 	}
 
@@ -379,9 +379,9 @@ public class DevNodeTest {
 		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(1));
 		Assert.assertEquals(2, ui.inits);
 		this.bridges.frames(2);
-		Assert.assertTrue(panel.getReloadAnimator().getValue() > 0F);
+		Assert.assertTrue(panel.getReloadAnimator().get() > 0F);
 		this.bridges.frames(20);
-		Assert.assertEquals(0F, panel.getReloadAnimator().getValue(), 0F);
+		Assert.assertEquals(0F, panel.getReloadAnimator().get(), 0F);
 	}
 
 	@Test
@@ -392,7 +392,7 @@ public class DevNodeTest {
 		for (int i = 0; i < 20; i++) {
 			this.bridges.frame();
 			final ResourceNode button = DevNodeTest.buttons(panel).get(1);
-			Assert.assertEquals(DevNodeTest.WHITE.to(DevNodeTest.ACTION, panel.getReloadAnimator().getValue()), button.getColor());
+			Assert.assertEquals(DevNodeTest.WHITE.to(DevNodeTest.ACTION, panel.getReloadAnimator().get()), button.getColor());
 			colors.add(button.getColor());
 		}
 		Assert.assertTrue(colors.toString(), colors.stream().distinct().count() > 3L);

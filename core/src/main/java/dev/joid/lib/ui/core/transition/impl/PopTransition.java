@@ -28,7 +28,7 @@ public class PopTransition extends Transition {
 
 		@Override
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			final double scale = 0.75D + super.getAnimator().getValue() * 0.25D;
+			final double scale = 0.75D + super.getAnimator().get() * 0.25D;
 
 			final UIView view = ui.getView();
 			final double pivotX = view.getOffsetX() + view.getAnchorX();
@@ -61,7 +61,7 @@ public class PopTransition extends Transition {
 
 		@Override
 		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			final double scale = 0.75D + super.getAnimator().getValue() * 0.25D;
+			final double scale = 0.75D + super.getAnimator().get() * 0.25D;
 
 			final UIView view = ui.getView();
 			final double pivotX = view.getOffsetX() + view.getAnchorX();

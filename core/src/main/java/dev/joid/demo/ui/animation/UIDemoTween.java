@@ -4,6 +4,7 @@ import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.animator.TweenAnimatorAccessor;
+import dev.joid.lib.animation.animator.TweenAnimatorChannel;
 import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
@@ -48,6 +49,8 @@ public class UIDemoTween extends UIDemo {
 		final TweenAnimator parallel = TweenAnimator.create(0F).parallel(1000F, 1F, TweenEquations.QUAD_INOUT).push(500F, 1F, TweenEquations.SINE_INOUT);
 		parallel.getTimeline().repeatYoyo(-1, 0F);
 		parallel.start();
+		final TweenAnimatorChannel horizontal = parallel.channel(0);
+		final TweenAnimatorChannel vertical = parallel.channel(1);
 		final TweenAnimator paused = TweenAnimator.create(0F);
 		paused.setTimeline(Timeline.createSequence().push(Tween.to(paused, TweenAnimatorAccessor.ANIMATION_VALUE, 600F).target(1F).ease(TweenEquations.QUAD_OUT)).pushPause(600F).push(Tween.to(paused, TweenAnimatorAccessor.ANIMATION_VALUE, 600F).target(0F).ease(TweenEquations.QUAD_IN)));
 		paused.getTimeline().repeat(-1, 300F);
@@ -129,7 +132,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 40, 320, 180)
 			.color(Color.WHITE)
 			.body(area -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * parallel.getValue(0)).y(() -> 120D * parallel.getValue(1)).attach(area);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(260D * horizontal.get()).y(120D * vertical.get()).attach(area);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Parallel timeline", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
