@@ -356,8 +356,6 @@ public final class DevNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		this.reloadAnimator.update();
-
 		if (this.inspectSignal.peek()) {
 			if (!this.inspectedNodeLocked.peek()) {
 				this.inspectedNode.set(null);

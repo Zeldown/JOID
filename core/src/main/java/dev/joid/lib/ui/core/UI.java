@@ -187,24 +187,24 @@ public abstract class UI implements IUI, IndexedElement {
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
 			this.keybindMap.clear();
-			for (final Node node : this.nodeList) {
-				if (node != this.devNode) {
-					node.fireDetach();
+			this.scoped(() -> {
+				for (final Node node : this.nodeList) {
+					if (node != this.devNode) {
+						node.fireDetach();
+					}
 				}
-			}
-			this.nodeList.clear();
-			this.scheduledTaskList.clear();
+				this.nodeList.clear();
+				this.scheduledTaskList.clear();
 
-			UI.current = this;
-			SignalReplay.reset();
-			SignalReplay.enter(this);
-			try {
-				this.init();
-			} finally {
-				SignalReplay.exit();
-			}
+				SignalReplay.reset();
+				SignalReplay.enter(this);
+				try {
+					this.init();
+				} finally {
+					SignalReplay.exit();
+				}
+			});
 			this.initialized = true;
-			UI.current = null;
 
 			if (this.transition != null) {
 				if (this.transition.getIn() != null && this.transition.getIn().isEnabled()) {
@@ -219,7 +219,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 			if (JOIDEnv.isDevMode()) {
 				if (devNodeEnabled) {
-					this.devNode.attach(this);
+					this.scoped(() -> this.devNode.attach(this));
 				} else {
 					this.devNode = DevNode.create(1625, 1007).visible(node -> node.getUi().isOnTop()).enabled(node -> node.getUi().isOnTop()).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
 				}
@@ -231,7 +231,7 @@ public abstract class UI implements IUI, IndexedElement {
 				System.out.println("##########################");
 			}
 		} else if (this.closed) {
-			this.nodeList.forEach(node -> node.load(this));
+			this.scoped(() -> this.nodeList.forEach(node -> node.load(this)));
 		}
 
 		this.closed = false;
@@ -367,7 +367,7 @@ public abstract class UI implements IUI, IndexedElement {
 				if (enabled) {
 					this.nodeList.remove(this.devNode);
 				} else {
-					this.devNode.attach(this);
+					this.scoped(() -> this.devNode.attach(this));
 				}
 				context.cancel();
 			}
@@ -488,7 +488,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void dispose() {
-		this.nodeList.forEach(Node::fireDetach);
+		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
 		this.closed = true;
 
 		this.stopMonitor();
@@ -617,20 +617,22 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void reload() {
-		if (this.devNode != null) {
-			final DevNode devNode = (DevNode) this.devNode;
-			devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
-			devNode.getReloadAnimator().start();
-		}
+		this.scoped(() -> {
+			if (this.devNode != null) {
+				final DevNode devNode = (DevNode) this.devNode;
+				devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
+				devNode.getReloadAnimator().start();
+			}
 
-		UIPropertyHook.save(this);
-		SignalReplay.clear();
+			UIPropertyHook.save(this);
+			SignalReplay.clear();
 
-		this.readData();
-		this.refreshTransition();
+			this.readData();
+			this.refreshTransition();
 
-		this.initialized = false;
-		this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
+			this.initialized = false;
+			this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
+		});
 	}
 
 	public final @NonNull UI renew() {
@@ -946,10 +948,20 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
+	private void scoped(final Runnable runnable) {
+		final UI previous = UI.current;
+		UI.current = this;
+		try {
+			runnable.run();
+		} finally {
+			UI.current = previous;
+		}
+	}
+
 	private void traced(final Runnable runnable) {
 		SignalReplay.enter(this);
 		try {
-			runnable.run();
+			this.scoped(runnable);
 		} finally {
 			SignalReplay.exit();
 		}
@@ -958,7 +970,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private void untraced(final Runnable runnable) {
 		final boolean tracing = SignalContext.current().tracing(false);
 		try {
-			runnable.run();
+			this.scoped(runnable);
 		} finally {
 			SignalContext.current().tracing(tracing);
 		}

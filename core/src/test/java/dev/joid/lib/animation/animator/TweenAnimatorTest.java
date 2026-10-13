@@ -16,6 +16,9 @@ import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
+import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import lombok.AllArgsConstructor;
 
 public class TweenAnimatorTest {
 
@@ -216,6 +219,72 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
+	public void advancesOnceAFrameWhenStartedInAUi() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		new AnimatorUI(animator).load(1920D, 1080D);
+		Assert.assertTrue(animator.isAutomatic());
+		this.clock.advance(16L);
+		TweenAnimator.updateRunning();
+		TweenAnimator.updateRunning();
+		Assert.assertEquals(0.5F, animator.getValue(), 0F);
+		this.clock.advance(16L);
+		TweenAnimator.updateRunning();
+		Assert.assertEquals(1F, animator.getValue(), 0F);
+	}
+
+	@Test
+	public void leavesTheRunningAnimatorsOnceItsTimelineEnds() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		new AnimatorUI(animator).load(1920D, 1080D);
+		this.clock.advance(48L);
+		TweenAnimator.updateRunning();
+		Assert.assertNull(animator.getTimeline());
+		Assert.assertFalse(animator.isAutomatic());
+		animator.setValue(0.5F);
+		this.clock.advance(16L);
+		TweenAnimator.updateRunning();
+		Assert.assertEquals(0.5F, animator.getValue(), 0F);
+	}
+
+	@Test
+	public void leavesTheRunningAnimatorsWhenItClears() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		new AnimatorUI(animator).load(1920D, 1080D);
+		animator.clear();
+		Assert.assertFalse(animator.isAutomatic());
+	}
+
+	@Test
+	public void leavesTheRunningAnimatorsForANewSequence() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		new AnimatorUI(animator).load(1920D, 1080D);
+		animator.sequence(32F, 2F);
+		Assert.assertFalse(animator.isAutomatic());
+		this.clock.advance(16L);
+		TweenAnimator.updateRunning();
+		Assert.assertEquals(0F, animator.getValue(), 0F);
+	}
+
+	@Test
+	public void leavesTheRunningAnimatorsForANewParallel() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		new AnimatorUI(animator).load(1920D, 1080D);
+		animator.parallel(32F, 2F);
+		Assert.assertFalse(animator.isAutomatic());
+	}
+
+	@Test
+	public void waitsForAManualUpdateWhenStartedOutsideAUi() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F).start();
+		Assert.assertFalse(animator.isAutomatic());
+		this.clock.advance(16L);
+		TweenAnimator.updateRunning();
+		Assert.assertEquals(0F, animator.getValue(), 0F);
+		animator.update();
+		Assert.assertEquals(0.5F, animator.getValue(), 0F);
+	}
+
+	@Test
 	public void refusesToStartWithoutTimeline() {
 		try {
 			TweenAnimator.create().start();
@@ -253,6 +322,19 @@ public class TweenAnimatorTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingCallback() {
 		TweenAnimator.create().sequence(1F, 10F).setCallback(null);
+	}
+
+	@AllArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class AnimatorUI extends UI {
+
+		private final TweenAnimator animator;
+
+		@Override
+		public void init() {
+			this.animator.start();
+		}
+
 	}
 
 }

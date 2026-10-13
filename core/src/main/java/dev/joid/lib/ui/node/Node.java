@@ -363,13 +363,10 @@ public abstract class Node implements INode {
 				}
 
 				this.hovered = hovered;
-				this.hoverAnimator.update();
 
 				if (this.hovered) {
 					this.executeCallback(Node.CALLBACK_HOVER, DispatchContext.create(), mouseX, mouseY);
 				}
-
-				this.updateAnimators();
 
 				boolean scrollsX = false;
 				boolean scrollsY = false;
@@ -620,8 +617,6 @@ public abstract class Node implements INode {
 				if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
 					this.scrollbar.render(mouseX, mouseY);
 				}
-			} else {
-				this.updateHiddenAnimators();
 			}
 		} finally {
 			Color.reset();
@@ -685,6 +680,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireUpdate() {
+		this.fireAnimate();
 		this.executeCallback(Node.CALLBACK_UPDATE, DispatchContext.create(), () -> {
 			this.children.ordered().stream().forEach(Node::fireUpdate);
 			this.update();
@@ -1833,24 +1829,19 @@ public abstract class Node implements INode {
 		}
 	}
 
-	private void updateAnimators() {
+	private void fireAnimate() {
 		for (final TweenAnimator animator : new ArrayList<>(this.animatorMap.keySet())) {
 			final Float previous = this.animatorMap.get(animator);
 			if (previous == null) {
 				continue;
 			}
 
-			final float value = animator.update().getValue();
+			final float value = animator.getValue();
 			if (value != previous) {
 				this.animatorMap.put(animator, value);
 				this.executeCallback(Node.CALLBACK_ANIMATION, DispatchContext.create(), animator, value);
 			}
 		}
-	}
-
-	private void updateHiddenAnimators() {
-		this.updateAnimators();
-		this.children.ordered().forEach(Node::updateHiddenAnimators);
 	}
 
 	private void endInteraction() {

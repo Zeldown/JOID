@@ -56,7 +56,6 @@ public class ShowMotion extends ShowUI {
 		.color(Color.BLACK.copyAlpha(0.22F))
 		.effect(RoundedNodeEffect.create(14F))
 		.layer((mouseX, mouseY) -> this.curve(434D, y - 30D, 122D, 60D, equation, clock.getValue(), from, to))
-		.animate(clock)
 		.attach(this);
 
 		RectNode.create(640, y - 4D, 856, 8).color(Color.WHITE.copyAlpha(0.08F)).effect(RoundedNodeEffect.create(4F)).attach(this);
@@ -72,7 +71,6 @@ public class ShowMotion extends ShowUI {
 		.<RectNode>x(() -> 640D + 800D * eased.getValue())
 		.effect(CircleNodeEffect.create())
 		.effect(ShadowNodeEffect.create(to.copyAlpha(0.9F), 26F))
-		.animate(eased)
 		.attach(this);
 	}
 

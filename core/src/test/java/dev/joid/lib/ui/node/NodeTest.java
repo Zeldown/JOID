@@ -39,6 +39,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.node.callback.DispatchContext;
@@ -2626,17 +2627,17 @@ public class NodeTest {
 	}
 
 	@Test
-	public void stopsUpdatingItsAnimatorsWhileDetached() {
+	public void stopsReportingItsAnimatorsWhileDetached() {
 		final List<Float> values = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create();
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate((rect, source, value) -> values.add(value));
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
 		this.bridges.open(new NodeUI(parent));
 		parent.remove(node);
-		animator.sequence(0F, 1F).start();
+		new AnimatorUI(animator.sequence(0F, 1F)).load(1920D, 1080D);
 		this.bridges.frame();
 		Assert.assertTrue(values.isEmpty());
-		Assert.assertEquals(0F, animator.getValue(), 0F);
+		Assert.assertEquals(1F, animator.getValue(), 0F);
 		parent.append(node);
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(1F), values);
@@ -2678,7 +2679,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate((rect, tween, value) -> values.add(value));
 		this.bridges.open(new NodeUI(node)).frames(2);
 		Assert.assertTrue(values.isEmpty());
-		animator.start();
+		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frames(3);
 		Assert.assertEquals(Arrays.asList(0.5F, 1F), values);
 	}
@@ -2691,9 +2692,10 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node)).frame();
 		Assert.assertSame(node, node.removeAnimator(animator));
 		Assert.assertTrue(node.getAnimatorMap().isEmpty());
-		animator.start();
+		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frames(3);
 		Assert.assertTrue(values.isEmpty());
+		Assert.assertEquals(1F, animator.getValue(), 0F);
 	}
 
 	@Test
@@ -2705,7 +2707,7 @@ public class NodeTest {
 			rect.removeAnimator(tween);
 		});
 		this.bridges.open(new NodeUI(node)).frame();
-		animator.start();
+		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frames(3);
 		Assert.assertEquals(Arrays.asList(0.5F), values);
 		Assert.assertEquals(1, node.getAnimatorMap().size());
@@ -2717,26 +2719,56 @@ public class NodeTest {
 	}
 
 	@Test
-	public void updatesTheAnimatorsOfAHiddenNode() {
+	public void reportsTheAnimatorsOfAHiddenNode() {
 		final List<Float> values = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(false).animate(animator).onAnimate((rect, tween, value) -> values.add(value));
 		this.bridges.open(new NodeUI(node)).frame();
-		animator.start();
+		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frames(3);
 		Assert.assertEquals(Arrays.asList(0.5F, 1F), values);
 	}
 
 	@Test
-	public void updatesTheAnimatorsUnderAHiddenParent() {
+	public void reportsTheAnimatorsUnderAHiddenParent() {
 		final List<Float> values = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate((rect, tween, value) -> values.add(value));
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).visible(false).append(ContainerNode.create(0D, 0D, 100D, 100D).append(node));
 		this.bridges.open(new NodeUI(parent)).frame();
-		animator.start();
+		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frames(3);
 		Assert.assertEquals(Arrays.asList(0.5F, 1F), values);
+	}
+
+	@Test
+	public void keepsAnimatingWithoutJumpWhileHidden() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(160F, 1F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate((rect, tween, value) -> values.add(value));
+		this.bridges.open(new NodeUI(node));
+		new AnimatorUI(animator).load(1920D, 1080D);
+		this.bridges.frames(2);
+		node.visible(false);
+		this.bridges.frames(3);
+		node.visible(true);
+		this.bridges.frames(2);
+		Assert.assertEquals(7, values.size());
+		for (int i = 0; i < values.size(); i++) {
+			Assert.assertEquals((i + 1) * 0.1F, values.get(i), 1E-5F);
+		}
+	}
+
+	@Test
+	public void animatesWithoutBeingAnimatedByANode() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).<RectNode>width(() -> 10D + 90D * animator.getValue());
+		this.bridges.open(new NodeUI(node));
+		new AnimatorUI(animator).load(1920D, 1080D);
+		this.bridges.frame();
+		Assert.assertEquals(55D, node.getWidth(), 1E-9D);
+		this.bridges.frame();
+		Assert.assertEquals(100D, node.getWidth(), 1E-9D);
 	}
 
 	@Test
@@ -3023,6 +3055,19 @@ public class NodeTest {
 		@Override
 		public void drawHover(final @NonNull Object content, final double mouseX, final double mouseY) {
 			this.tooltips.add(TextConverter.convertLines(content));
+		}
+
+	}
+
+	@AllArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class AnimatorUI extends UI {
+
+		private final TweenAnimator animator;
+
+		@Override
+		public void init() {
+			this.animator.start();
 		}
 
 	}

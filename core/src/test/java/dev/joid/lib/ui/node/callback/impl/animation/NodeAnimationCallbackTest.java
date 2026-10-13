@@ -11,9 +11,11 @@ import org.junit.Test;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.callback.DispatchContext;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import lombok.AllArgsConstructor;
 
 public class NodeAnimationCallbackTest {
 
@@ -61,13 +63,26 @@ public class NodeAnimationCallbackTest {
 		final TweenAnimator animator = TweenAnimator.create();
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).animate(animator).onAnimate((node, tween, value) -> values.add(value));
 		this.bridges.open(new NodeUI(rect)).frames(30);
-		animator.sequence(100F, 1F).start();
+		new AnimatorUI(animator.sequence(100F, 1F)).load(1920D, 1080D);
 		this.bridges.frames(20);
 		Assert.assertTrue(values.size() > 2);
 		for (int i = 1; i < values.size(); i++) {
 			Assert.assertTrue(values.get(i) > values.get(i - 1));
 		}
 		Assert.assertEquals(1F, values.get(values.size() - 1), 0F);
+	}
+
+	@AllArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class AnimatorUI extends UI {
+
+		private final TweenAnimator animator;
+
+		@Override
+		public void init() {
+			this.animator.start();
+		}
+
 	}
 
 	public static final class NodeUI extends UI {

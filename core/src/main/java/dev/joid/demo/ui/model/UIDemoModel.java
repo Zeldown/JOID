@@ -97,7 +97,7 @@ public class UIDemoModel extends UIDemo {
 		.create(1420, 550, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelNode.create(100, 20, 200, 200).model(model).rotationYaw(() -> spin.getValue() * 360D).animate(spin).attach(rect);
+			ModelNode.create(100, 20, 200, 200).model(model).rotationYaw(() -> spin.getValue() * 360D).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Spin", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

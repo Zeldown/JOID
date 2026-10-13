@@ -2,7 +2,6 @@ package dev.joid.lib.ui.core.transition;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.Timeline;
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.UI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,7 +36,6 @@ public abstract class Transition {
 			this.drawn = false;
 			this.running = true;
 			this.animator.setTimeline(timeline);
-			this.animator.start();
 		}
 
 		public abstract void start();
@@ -46,14 +44,12 @@ public abstract class Transition {
 		public abstract void post(final @NonNull UI ui, final double mouseX, final double mouseY);
 
 		public final void update() {
-			if (!this.running) {
+			if (!this.running || !this.drawn) {
 				return;
 			}
 
-			if (this.drawn) {
+			if (!this.animator.isAutomatic()) {
 				this.animator.update();
-			} else {
-				this.animator.update(0F);
 			}
 
 			if (this.animator.getTimeline() == null) {
@@ -67,7 +63,7 @@ public abstract class Transition {
 			}
 
 			this.drawn = true;
-			this.animator.setLastUpdate(BridgeHandler.CLOCK.get().currentTimeMillis());
+			this.animator.start();
 		}
 
 		public void enable() {

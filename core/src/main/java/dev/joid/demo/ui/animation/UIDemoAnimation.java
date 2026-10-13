@@ -188,7 +188,7 @@ public class UIDemoAnimation extends UIDemo {
 		.create(100, 720, 400, 260)
 		.color(UIDemoAnimation.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(140, 70, 120, 120).color(() -> UIDemoAnimation.INK.to(Color.WHITE, color.getValue())).animate(color).attach(rect);
+			RectNode.create(140, 70, 120, 120).color(() -> UIDemoAnimation.INK.to(Color.WHITE, color.getValue())).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Color", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -197,7 +197,7 @@ public class UIDemoAnimation extends UIDemo {
 		.create(540, 720, 400, 260)
 		.color(UIDemoAnimation.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 100, 60, 60).color(UIDemoAnimation.INK).width(() -> 60D + 260D * size.getValue()).animate(size).attach(rect);
+			RectNode.create(40, 100, 60, 60).color(UIDemoAnimation.INK).width(() -> 60D + 260D * size.getValue()).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Size", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -210,7 +210,6 @@ public class UIDemoAnimation extends UIDemo {
 			.create(150, 80, 100, 100)
 			.color(UIDemoAnimation.INK)
 			.self(square -> square.effect(TransformNodeEffect.create(new RotateTransformOperation(() -> rotation.getValue() * 360D, Rotation.ROLL, Vector.create(() -> square.getX() + 50D, () -> square.getY() + 50D)))))
-			.animate(rotation)
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Rotation", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

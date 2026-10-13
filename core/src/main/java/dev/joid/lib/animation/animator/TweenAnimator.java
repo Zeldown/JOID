@@ -1,6 +1,11 @@
 package dev.joid.lib.animation.animator;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.function.Consumer;
 
 import dev.joid.lib.animation.tween.BaseTween;
@@ -11,6 +16,7 @@ import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.ui.core.UI;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -18,8 +24,11 @@ import lombok.Setter;
 @Getter
 public class TweenAnimator {
 
+	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+
 	private float[] values;
 	private boolean parallel;
+	private boolean automatic;
 
 	@Setter
 	private float speed;
@@ -46,10 +55,17 @@ public class TweenAnimator {
 		this.requireTimeline();
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.timeline.start(this.manager);
+		this.automatic = UI.getCurrent() != null;
+		if (this.automatic) {
+			TweenAnimator.RUNNING_SET.add(this);
+		} else {
+			TweenAnimator.RUNNING_SET.remove(this);
+		}
 		return this;
 	}
 
 	public void clear() {
+		this.release();
 		this.manager.killAll();
 		this.manager.update(0F);
 		this.values     = new float[1];
@@ -131,11 +147,29 @@ public class TweenAnimator {
 		this.manager.update(delta * this.speed);
 		if (this.timeline != null && this.timeline.isFinished()) {
 			this.timeline = null;
+			this.release();
 		}
 		return this;
 	}
 
+	public static void updateRunning() {
+		final List<TweenAnimator> animatorList;
+		synchronized (TweenAnimator.RUNNING_SET) {
+			animatorList = new ArrayList<>(TweenAnimator.RUNNING_SET);
+		}
+
+		for (final TweenAnimator animator : animatorList) {
+			animator.update();
+		}
+	}
+
+	private void release() {
+		this.automatic = false;
+		TweenAnimator.RUNNING_SET.remove(this);
+	}
+
 	private void killTimeline() {
+		this.release();
 		if (this.timeline != null) {
 			this.timeline.kill();
 		}

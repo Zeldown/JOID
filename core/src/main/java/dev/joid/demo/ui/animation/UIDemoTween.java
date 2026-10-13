@@ -129,7 +129,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 40, 320, 180)
 			.color(Color.WHITE)
 			.body(area -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * parallel.getValue(0)).y(() -> 120D * parallel.getValue(1)).animate(parallel).attach(area);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * parallel.getValue(0)).y(() -> 120D * parallel.getValue(1)).attach(area);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Parallel timeline", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);

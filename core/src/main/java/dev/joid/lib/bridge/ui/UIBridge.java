@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
@@ -171,6 +172,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void update() {
+		TweenAnimator.updateRunning();
 		for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
 			ui.fireUpdate();
 		}

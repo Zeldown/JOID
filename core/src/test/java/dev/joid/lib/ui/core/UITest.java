@@ -70,6 +70,7 @@ import dev.joid.lib.utils.align.Align;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class UITest {
 
@@ -187,6 +188,34 @@ public class UITest {
 		final CurrentUI ui = new CurrentUI();
 		ui.load(1920D, 1080D);
 		Assert.assertSame(ui, ui.current);
+		Assert.assertNull(UI.getCurrent());
+	}
+
+	@Test
+	public void exposesItselfAsTheCurrentUiDuringItsFramesAndInputs() {
+		final ScopeUI ui = new ScopeUI();
+		this.bridges.open(ui);
+		this.bridges.getUi().keyPressed(Key.A);
+		Assert.assertEquals(Arrays.asList(ui, ui, ui), ui.currentList);
+		Assert.assertNull(UI.getCurrent());
+	}
+
+	@Test
+	public void restoresTheOuterUiAfterANestedOpening() {
+		final CurrentUI inner = new CurrentUI();
+		final NestingUI outer = new NestingUI(inner);
+		outer.load(1920D, 1080D);
+		Assert.assertSame(inner, inner.current);
+		Assert.assertSame(outer, outer.current);
+		Assert.assertNull(UI.getCurrent());
+	}
+
+	@Test
+	public void restoresTheOuterUiWhenANestedInitFails() {
+		final NestingUI outer = new NestingUI(new FailingUI());
+		outer.load(1920D, 1080D);
+		Assert.assertEquals("Init failed", outer.failure);
+		Assert.assertSame(outer, outer.current);
 		Assert.assertNull(UI.getCurrent());
 	}
 
@@ -1985,6 +2014,59 @@ public class UITest {
 		@Override
 		public void init() {
 			this.current = UI.getCurrent();
+		}
+
+	}
+
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class ScopeUI extends UI {
+
+		private final List<UI> currentList = new ArrayList<>();
+
+		@Override
+		public void init() {
+			RectNode.create(0D, 0D, 10D, 10D).layer((mouseX, mouseY) -> this.currentList.add(UI.getCurrent())).attach(this);
+		}
+
+		@Override
+		public void update() {
+			this.currentList.add(UI.getCurrent());
+		}
+
+		@Override
+		public void keyPressed(final @NonNull Key key, final @NonNull DispatchContext context) {
+			this.currentList.add(UI.getCurrent());
+		}
+
+	}
+
+	@RequiredArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class NestingUI extends UI {
+
+		private final UI inner;
+
+		private UI     current;
+		private String failure;
+
+		@Override
+		public void init() {
+			try {
+				this.inner.load(1920D, 1080D);
+			} catch (final IllegalStateException exception) {
+				this.failure = exception.getMessage();
+			}
+			this.current = UI.getCurrent();
+		}
+
+	}
+
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class FailingUI extends UI {
+
+		@Override
+		public void init() {
+			throw new IllegalStateException("Init failed");
 		}
 
 	}
