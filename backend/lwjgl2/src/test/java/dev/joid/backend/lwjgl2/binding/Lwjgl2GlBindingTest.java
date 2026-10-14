@@ -55,6 +55,16 @@ public class Lwjgl2GlBindingTest {
 		Assert.assertNull(version.get());
 	}
 
+	@Test
+	public void refusesToPointAnAttributeAtClientMemory() {
+		try {
+			Lwjgl2GlBufferBinding.create().vertexAttribPointer(2, 4, GlConstants.UNSIGNED_BYTE, true, 32, 20L);
+			Assert.fail("A pointer without array buffer must be refused");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("LWJGL 2 cannot point the vertex attribute 2 at client memory (offset 20), bind an array buffer with bindBuffer(ARRAY_BUFFER, buffer) before vertexAttribPointer", expected.getMessage());
+		}
+	}
+
 	private static int find(final String name) throws ReflectiveOperationException {
 		for (final Class<?> type : new Class<?>[] {GL11.class, GL12.class, GL13.class, GL14.class, GL15.class, GL20.class, GL21.class, GL30.class, GL31.class, GL32.class, GL33.class}) {
 			for (final Field field : type.getFields()) {

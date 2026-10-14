@@ -13,8 +13,17 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public abstract class NodeEffect<T extends Node> {
 
-	private Supplier<Integer>         priority = () -> 0;
-	private Supplier<NodeEffectScope> scope    = () -> NodeEffectScope.SELF;
+	private Supplier<Integer>         priority;
+	private Supplier<NodeEffectScope> scope;
+
+	protected NodeEffect() {
+		this(0);
+	}
+
+	protected NodeEffect(final int priority) {
+		this.scope    = () -> NodeEffectScope.SELF;
+		this.priority = () -> priority;
+	}
 
 	public void init(final @NonNull T node, final @NonNull UI ui) {}
 

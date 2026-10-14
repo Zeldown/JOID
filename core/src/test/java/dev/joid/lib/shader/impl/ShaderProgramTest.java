@@ -39,6 +39,16 @@ public class ShaderProgramTest {
 	}
 
 	@Test
+	public void deletesTheProgramOfItsShader() {
+		final SourceShader shader = new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source());
+		final RecordingShader recording = (RecordingShader) shader.getShader();
+		shader.delete();
+		Assert.assertFalse(recording.isActive());
+		Assert.assertSame(recording, shader.getShader());
+		new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source()).delete();
+	}
+
+	@Test
 	public void createsItsShaderOnFirstUse() {
 		BridgeHandler.RENDER.unregister(this.bridges.getRender());
 		final SourceShader shader;

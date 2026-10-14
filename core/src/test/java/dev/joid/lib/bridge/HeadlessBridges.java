@@ -1,12 +1,14 @@
 package dev.joid.lib.bridge;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 import org.junit.rules.ExternalResource;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
+import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
 import dev.joid.lib.ui.core.UI;
 import lombok.Getter;
@@ -76,7 +78,28 @@ public final class HeadlessBridges extends ExternalResource {
 		this.render.getDraws().clear();
 		BridgeHandler.UI.fireFrame();
 		this.ui.update();
-		this.ui.draw();
+		return this.draw();
+	}
+
+	public @NonNull HeadlessBridges draw() {
+		return this.draw(this.ui, ui -> true);
+	}
+
+	public @NonNull HeadlessBridges draw(final @NonNull UIBridge bridge) {
+		return this.draw(bridge, ui -> true);
+	}
+
+	public @NonNull HeadlessBridges draw(final @NonNull Predicate<@NonNull UI> filter) {
+		return this.draw(this.ui, filter);
+	}
+
+	public @NonNull HeadlessBridges draw(final @NonNull UIBridge bridge, final @NonNull Predicate<@NonNull UI> filter) {
+		this.render.beginFrame();
+		try {
+			bridge.draw(filter);
+		} finally {
+			this.render.endFrame();
+		}
 		return this;
 	}
 

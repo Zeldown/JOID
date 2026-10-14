@@ -20,6 +20,7 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 	private Supplier<Float> radiusSupplier;
 
 	protected BlurNodeEffect(final float radius) {
+		super(150);
 		this.radiusSupplier = () -> radius;
 	}
 
@@ -39,7 +40,7 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 			return Collections.emptyList();
 		}
 
-		return Arrays.asList(new BlurShaderPass(radius, true, 0), new BlurShaderPass(radius, false, 0));
+		return Arrays.asList(new BlurShaderPass(radius, true), new BlurShaderPass(radius, false));
 	}
 
 	public final <E extends BlurNodeEffect> @NonNull E radius(final float radius) {

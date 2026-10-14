@@ -208,7 +208,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 	@Override
 	protected void clearStencilBuffer() {
 		super.requireFrame();
-		this.beginPass(null);
+		this.beginPass((VulkanFrameBuffer) super.getState().getFrameBuffer());
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_STENCIL_BIT);
 			attachment.clearValue().depthStencil().stencil(0);
@@ -304,9 +304,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 				this.passWidth = target.getWidth();
 				this.passHeight = target.getHeight();
 				VulkanContext.transition(this.commandBuffer, target.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
-				final VkClearValue.Buffer clearValues = VkClearValue.calloc(2, stack);
-				clearValues.get(1).depthStencil().depth(1F).stencil(0);
-				info.renderPass(this.context.getOffscreenRenderPass()).framebuffer(target.getFramebuffer()).pClearValues(clearValues);
+				info.renderPass(this.context.getOffscreenRenderPass()).framebuffer(target.getFramebuffer());
 			}
 
 			info.renderArea().extent().set(this.passWidth, this.passHeight);

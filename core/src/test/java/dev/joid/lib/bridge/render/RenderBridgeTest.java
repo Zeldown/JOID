@@ -56,6 +56,33 @@ public class RenderBridgeTest {
 	}
 
 	@Test
+	public void closesAFrameWhoseCommandsFailedToBegin() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.setFrameFailure(new IllegalStateException("lost device"));
+		try {
+			render.beginFrame();
+			Assert.fail("The failure of the frame commands must reach the caller");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("lost device", expected.getMessage());
+		}
+		Assert.assertFalse(render.isFrameActive());
+		render.setFrameFailure(null);
+		render.beginFrame();
+		Assert.assertTrue(render.isFrameActive());
+		render.endFrame();
+	}
+
+	@Test
+	public void countsItsPushedStates() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		render.pushState();
+		render.pushState();
+		Assert.assertEquals(2, render.getStateDepth());
+		render.popState();
+		Assert.assertEquals(1, render.getStateDepth());
+	}
+
+	@Test
 	public void refusesToEndAFrameThatNeverBegan() {
 		try {
 			new RecordingRenderBridge().endFrame();

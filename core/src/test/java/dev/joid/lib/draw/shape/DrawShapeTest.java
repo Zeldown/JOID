@@ -267,6 +267,15 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void roundsOnlyTheShadowCornersBetweenTwoRoundedSides() {
+		final RecordingShader shader = (RecordingShader) ShadowShader.inst().getShader();
+		DrawUtils.SHAPE.drawShadow(100D, 100D, 200D, 50D, new Color(0F, 0F, 1F, 0.5F), 10F, false, true, true, false, 8F);
+		Assert.assertArrayEquals(new float[] {0F, 1F, 1F, 0F}, (float[]) shader.getValues().get("u_Sides"), 0F);
+		DrawUtils.SHAPE.drawShadow(100D, 100D, 200D, 50D, new Color(0F, 0F, 1F, 0.5F), 10F, 8F);
+		Assert.assertArrayEquals(new float[] {1F, 1F, 1F, 1F}, (float[]) shader.getValues().get("u_Sides"), 0F);
+	}
+
+	@Test
 	public void drawsASharpShadowWithoutBlur() {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawShadow(100D, 100D, 200D, 50D, new Color(0F, 0F, 1F, 0.5F), 10F, 0F);
@@ -478,7 +487,7 @@ public class DrawShapeTest {
 		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), Point.create(10D, 20D), Point.create(110D, 20D), Point.create(110D, 80D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertSame(Primitive.TRIANGLES, draw.getPrimitive());
-		Assert.assertEquals(12, draw.getXs().length);
+		Assert.assertEquals(24, draw.getXs().length);
 		Assert.assertEquals(10D * 1366D / 1920D, draw.getLeft(), 1E-4D);
 		Assert.assertEquals(110D * 1366D / 1920D, draw.getRight(), 1E-4D);
 		Assert.assertEquals(80D * 768D / 1080D, draw.getBottom(), 1E-4D);
@@ -523,10 +532,10 @@ public class DrawShapeTest {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 2F, Point.create(0D, 50D), Point.create(100D, 50D));
 		final Draw draw = this.single(0F, 1F, 0F);
-		Assert.assertEquals(30, draw.getXs().length);
+		Assert.assertEquals(90, draw.getXs().length);
 		for (int dash = 0; dash < 5; dash++) {
-			Assert.assertEquals(dash * 20D, draw.getXs()[dash * 6], 1E-3D);
-			Assert.assertEquals(dash * 20D + 10D, draw.getXs()[dash * 6 + 2], 1E-3D);
+			Assert.assertEquals(dash * 20D, draw.getXs()[dash * 18], 1E-3D);
+			Assert.assertEquals(dash * 20D + 10D, draw.getXs()[dash * 18 + 8], 1E-3D);
 		}
 		Assert.assertEquals(2F, draw.getLineWidth(), 0F);
 		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
@@ -538,11 +547,11 @@ public class DrawShapeTest {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 1F, Point.create(0D, 0D), Point.create(25D, 0D), Point.create(25D, 25D));
 		final Draw draw = this.single(0F, 1F, 0F);
-		Assert.assertEquals(24, draw.getXs().length);
-		Assert.assertEquals(20D, draw.getXs()[6], 1E-3D);
-		Assert.assertEquals(25D, draw.getXs()[8], 1E-3D);
-		Assert.assertEquals(20D, draw.getYs()[18], 1E-3D);
-		Assert.assertEquals(25D, draw.getYs()[20], 1E-3D);
+		Assert.assertEquals(72, draw.getXs().length);
+		Assert.assertEquals(20D, draw.getXs()[18], 1E-3D);
+		Assert.assertEquals(25D, draw.getXs()[26], 1E-3D);
+		Assert.assertEquals(20D, draw.getYs()[54], 1E-3D);
+		Assert.assertEquals(25D, draw.getYs()[62], 1E-3D);
 	}
 
 	@Test
@@ -557,17 +566,11 @@ public class DrawShapeTest {
 	public void followsAQuadraticCurve() {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(100D, 0D), Point.create(50D, 50D));
-		final List<Draw> draws = this.bridges.getRender().getDraws(0F, 1F, 0F);
-		Assert.assertEquals(142D, draws.size(), 1D);
-		Assert.assertEquals(0D, draws.get(0).getXs()[0], 1E-3D);
-		for (int i = 0; i < draws.size(); i++) {
-			final Draw draw = draws.get(i);
-			for (int vertex = 0; vertex < draw.getXs().length; vertex++) {
-				Assert.assertEquals(draw.getXs()[vertex] * (100D - draw.getXs()[vertex]) / 100D, draw.getYs()[vertex], 1E-3D);
-			}
-			if (i > 0) {
-				Assert.assertEquals(draws.get(i - 1).getXs()[2], draw.getXs()[0], 1E-4D);
-			}
+		final Draw draw = this.single(0F, 1F, 0F);
+		Assert.assertEquals(12 + 142 * 6, draw.getXs().length);
+		Assert.assertEquals(0D, draw.getXs()[0], 1E-3D);
+		for (int vertex = 0; vertex < draw.getXs().length; vertex++) {
+			Assert.assertEquals(draw.getXs()[vertex] * (100D - draw.getXs()[vertex]) / 100D, draw.getYs()[vertex], 1E-3D);
 		}
 	}
 
@@ -575,15 +578,25 @@ public class DrawShapeTest {
 	public void followsACubicCurve() {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(0D, 50D), Point.create(100D, 0D), Point.create(100D, 50D));
-		final List<Draw> draws = this.bridges.getRender().getDraws(0F, 1F, 0F);
-		Assert.assertEquals(200D, draws.size(), 1D);
-		double deepest = 0D;
-		for (int i = 1; i < draws.size(); i++) {
-			deepest = Math.max(deepest, draws.get(i).getBottom());
-			Assert.assertEquals(draws.get(i - 1).getXs()[2], draws.get(i).getXs()[0], 1E-4D);
-			Assert.assertTrue(draws.get(i).getXs()[2] > draws.get(i).getXs()[0]);
-		}
-		Assert.assertEquals(37.5D, deepest, 1E-2D);
+		final Draw draw = this.single(0F, 1F, 0F);
+		Assert.assertEquals(12 + 200 * 6, draw.getXs().length);
+		Assert.assertEquals(37.5D, draw.getBottom(), 1E-2D);
+	}
+
+	@Test
+	public void spansTheGradientOverAWholeCurve() {
+		this.bridges.resize(1920, 1080);
+		DrawUtils.SHAPE.drawCurvedLine(Color.BLUE.toGradient(Color.GREEN), Point.create(0D, 0D), Point.create(100D, 0D), Point.create(50D, 50D));
+		Assert.assertEquals(1, this.bridges.getRender().getDraws().size());
+		Assert.assertArrayEquals(new float[] {0F, 0F, 100F, 25F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("canvas"), 1E-3F);
+	}
+
+	@Test
+	public void spansTheGradientOverAWholeBorder() {
+		this.bridges.resize(1920, 1080);
+		DrawUtils.SHAPE.drawBorder(10D, 20D, 110D, 70D, Color.BLUE.toGradient(Color.GREEN), 3D);
+		Assert.assertEquals(4, this.bridges.getRender().getDraws().size());
+		Assert.assertArrayEquals(new float[] {7F, 17F, 113F, 73F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("canvas"), 1E-3F);
 	}
 
 	@Test
@@ -608,10 +621,9 @@ public class DrawShapeTest {
 	public void endsAShortCurveOnItsEndPoint() {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(3D, 0D), Point.create(1.5D, 3D));
-		final List<Draw> draws = this.bridges.getRender().getDraws(0F, 1F, 0F);
-		final Draw last = draws.get(draws.size() - 1);
-		Assert.assertEquals(3D, last.getXs()[2], 1E-3D);
-		Assert.assertEquals(0D, last.getYs()[2], 1E-3D);
+		final Draw draw = this.single(0F, 1F, 0F);
+		Assert.assertEquals(3D, draw.getXs()[draw.getXs().length - 1], 1E-3D);
+		Assert.assertEquals(0D, draw.getYs()[draw.getYs().length - 1], 1E-3D);
 	}
 
 	@Test

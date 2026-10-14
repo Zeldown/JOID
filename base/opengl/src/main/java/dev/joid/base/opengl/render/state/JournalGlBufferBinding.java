@@ -78,6 +78,11 @@ public final class JournalGlBufferBinding implements IGlBufferBinding {
 	}
 
 	@Override
+	public boolean canPointClientMemory() {
+		return this.binding.canPointClientMemory();
+	}
+
+	@Override
 	public void vertexAttribPointer(final int index, final int size, final int type, final boolean normalized, final int stride, final long offset) {
 		this.journal.saveVertexAttribute(index);
 		this.binding.vertexAttribPointer(index, size, type, normalized, stride, offset);

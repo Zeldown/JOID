@@ -184,8 +184,8 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
 		this.zoomLevel = new DoubleSignal(1D);
-		this.scaledWidth = new DoubleSignal(1920D);
-		this.scaledHeight = new DoubleSignal(1080D);
+		this.scaledWidth = new DoubleSignal(UIView.DESIGN_WIDTH);
+		this.scaledHeight = new DoubleSignal(UIView.DESIGN_HEIGHT);
 
 		this.devNode = null;
 		this.lastHoveredFrame = -1L;
@@ -871,7 +871,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	private void drawFrame(final double mouseX, final double mouseY) {
-		final long start = System.nanoTime();
+		final long start = BridgeHandler.CLOCK.get().nanoTime();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 
 		final long frame = BridgeHandler.CLOCK.get().nanoTime();
@@ -971,7 +971,7 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
-		final long end = System.nanoTime();
+		final long end = BridgeHandler.CLOCK.get().nanoTime();
 		this.renderTime = end - start;
 
 		if (JOIDEnv.isDevMode() && this.debug.profiler()) {

@@ -68,9 +68,4 @@ public class RoundedShaderPass implements IShaderPass {
 		RoundedShader.inst().aligned(grid.isAligned());
 	}
 
-	@Override
-	public int priority() {
-		return 100;
-	}
-
 }

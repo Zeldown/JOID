@@ -7,6 +7,9 @@ import lombok.NonNull;
 @Getter
 public final class UIView {
 
+	public static final double DESIGN_WIDTH  = 1920D;
+	public static final double DESIGN_HEIGHT = 1080D;
+
 	private double anchorX;
 	private double anchorY;
 
@@ -22,8 +25,8 @@ public final class UIView {
 		this.anchorY = anchorY;
 		this.zoom = 1D;
 		this.interfaceScale = 1D;
-		this.viewportWidth = 1920D;
-		this.viewportHeight = 1080D;
+		this.viewportWidth = UIView.DESIGN_WIDTH;
+		this.viewportHeight = UIView.DESIGN_HEIGHT;
 	}
 
 	public static @NonNull UIView create(final double anchorX, final double anchorY) {
@@ -39,11 +42,11 @@ public final class UIView {
 	}
 
 	public double getOffsetX() {
-		return (this.viewportWidth - 1920D) * this.anchorX / 1920D;
+		return (this.viewportWidth - UIView.DESIGN_WIDTH) * this.anchorX / UIView.DESIGN_WIDTH;
 	}
 
 	public double getOffsetY() {
-		return (this.viewportHeight - 1080D) * this.anchorY / 1080D;
+		return (this.viewportHeight - UIView.DESIGN_HEIGHT) * this.anchorY / UIView.DESIGN_HEIGHT;
 	}
 
 	public double getVisibleWidth() {
@@ -99,7 +102,7 @@ public final class UIView {
 	}
 
 	public @NonNull UIView resize(final double width, final double height) {
-		final double fit = Math.min(width / 1920D, height / 1080D);
+		final double fit = Math.min(width / UIView.DESIGN_WIDTH, height / UIView.DESIGN_HEIGHT);
 		this.width = width;
 		this.height = height;
 		this.viewportWidth = width / fit;

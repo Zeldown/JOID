@@ -34,7 +34,7 @@ public class GlslShaderTranslator {
 
 	public static final String BORDER = "joid_Border_";
 
-	private static final String[] LINE_VARYINGS = {"joid_LineAcross", "joid_LineAlong", "joid_LineLength"};
+	private static final String[] LINE_VARYINGS = {"joid_LineAcross", "joid_LineAlong"};
 
 	private final GlslDialect   dialect;
 	private final UniformLayout layout;
@@ -70,7 +70,7 @@ public class GlslShaderTranslator {
 
 	public final @NonNull String translateVertex(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
 		this.require(vertex.getFeatures());
-		final StringBuilder builder = this.createHeader(vertex, fragment, vertex);
+		final StringBuilder builder = this.createHeader(vertex, fragment, vertex, this.stencil);
 		for (final ShaderBuiltin builtin : vertex.getBuiltins()) {
 			if (builtin.getKind() == ShaderBuiltin.Kind.ATTRIBUTE) {
 				builder.append(this.declareAttribute(builtin, VertexAttribute.of(builtin).getLocation()));
@@ -106,7 +106,7 @@ public class GlslShaderTranslator {
 		}
 		this.require(featureSet);
 
-		final StringBuilder builder = this.createHeader(vertex, fragment, fragment).append(this.declareOutput());
+		final StringBuilder builder = this.createHeader(vertex, fragment, fragment, stencil).append(this.declareOutput());
 		this.appendSamplers(builder, vertex, fragment, fragment);
 		builder.append(this.getBorderFunctions(true));
 		final List<String> varyings = GlslShaderTranslator.getVaryings(vertex, fragment);
@@ -120,7 +120,7 @@ public class GlslShaderTranslator {
 
 		this.appendLineVaryings(builder, varyings.size(), false);
 		builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
-		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(min(joid_LineAlong, joid_LineLength - joid_LineAlong) + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain(stencil)).toString();
+		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(joid_LineAlong + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain(stencil)).toString();
 	}
 
 	public final @NonNull ShaderTranslation translate(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
@@ -133,6 +133,10 @@ public class GlslShaderTranslator {
 	}
 
 	public final @NonNull List<@NonNull ShaderVariable> getUniforms(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
+		return this.getUniforms(vertex, fragment, this.stencil);
+	}
+
+	public final @NonNull List<@NonNull ShaderVariable> getUniforms(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull StencilEmulation.Pass stencil) {
 		final List<ShaderVariable> uniformList = new ArrayList<>();
 		for (final ShaderBuiltin builtin : ShaderBuiltin.values()) {
 			if (builtin.getKind() == ShaderBuiltin.Kind.UNIFORM && this.isUniform(builtin) && (vertex.getBuiltins().contains(builtin) || fragment.getBuiltins().contains(builtin))) {
@@ -140,7 +144,7 @@ public class GlslShaderTranslator {
 			}
 		}
 
-		uniformList.addAll(this.getInternals(vertex, fragment));
+		uniformList.addAll(this.getInternals(vertex, fragment, stencil));
 		for (final ShaderSource source : new ShaderSource[] {vertex, fragment}) {
 			for (final ShaderVariable uniform : source.getUniforms()) {
 				if (uniformList.stream().noneMatch(variable -> variable.getName().equals(uniform.getName()))) {
@@ -159,6 +163,10 @@ public class GlslShaderTranslator {
 					samplerList.add(sampler);
 				}
 			}
+		}
+
+		if (this.stencil != StencilEmulation.Pass.NONE) {
+			samplerList.add(ShaderVariable.create("sampler2D", GlslShaderTranslator.STENCIL, "", false));
 		}
 		return samplerList;
 	}
@@ -184,7 +192,7 @@ public class GlslShaderTranslator {
 		+ (stencil == StencilEmulation.Pass.WRITE ? "\tint value = joid_stencilValue();\n\tvalue = joid_stencilApply(joid_stencilCompare(value) ? joid_StencilPass : joid_StencilFail, value);\n\tfragColor = vec4(float(value) / 255.0, 0.0, 0.0, 1.0);\n}\n" : "\tif (joid_StencilTest != 0 && !joid_stencilCompare(joid_stencilValue())) {\n\t\tdiscard;\n\t}\n}\n");
 	}
 
-	protected @NonNull List<@NonNull ShaderVariable> getInternals(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
+	protected @NonNull List<@NonNull ShaderVariable> getInternals(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull StencilEmulation.Pass stencil) {
 		final List<ShaderVariable> internalList = new ArrayList<>();
 		internalList.add(ShaderVariable.create("int", GlslShaderTranslator.ALPHA_TEST, "", false));
 		internalList.add(ShaderVariable.create("float", GlslShaderTranslator.ALPHA_THRESHOLD, "", false));
@@ -197,7 +205,7 @@ public class GlslShaderTranslator {
 				internalList.add(ShaderVariable.create("vec3", GlslShaderTranslator.BORDER + sampler.getName(), "", false));
 			}
 		}
-		if (this.stencil != StencilEmulation.Pass.NONE) {
+		if (stencil != StencilEmulation.Pass.NONE) {
 			for (final String name : new String[] {GlslShaderTranslator.STENCIL_TEST, GlslShaderTranslator.STENCIL_FUNCTION, GlslShaderTranslator.STENCIL_REFERENCE, GlslShaderTranslator.STENCIL_MASK, GlslShaderTranslator.STENCIL_FAIL, GlslShaderTranslator.STENCIL_PASS}) {
 				internalList.add(ShaderVariable.create("int", name, "", false));
 			}
@@ -237,7 +245,7 @@ public class GlslShaderTranslator {
 		return (this.dialect.hasExplicitLocations() ? "layout(location = 0) " : "") + "out vec4 fragColor;\n";
 	}
 
-	private StringBuilder createHeader(final ShaderSource vertex, final ShaderSource fragment, final ShaderSource source) {
+	private StringBuilder createHeader(final ShaderSource vertex, final ShaderSource fragment, final ShaderSource source, final StencilEmulation.Pass stencil) {
 		final StringBuilder builder = new StringBuilder(this.dialect.getDeclaration()).append("\n\n").append(this.dialect.getPrecision());
 		if (!this.dialect.hasInputOutputs()) {
 			builder.append("#define texture texture2D\n");
@@ -250,14 +258,14 @@ public class GlslShaderTranslator {
 		}
 
 		if (this.layout == UniformLayout.LOOSE) {
-			for (final ShaderVariable uniform : this.getUniforms(vertex, fragment)) {
+			for (final ShaderVariable uniform : this.getUniforms(vertex, fragment, stencil)) {
 				builder.append("uniform ").append(uniform.getDeclaration()).append(";\n");
 			}
 			return builder;
 		}
 
 		builder.append("layout(").append(this.getLayout()).append(") uniform ").append(GlslShaderTranslator.BLOCK).append(" {\n");
-		for (final ShaderVariable uniform : this.getUniforms(vertex, fragment)) {
+		for (final ShaderVariable uniform : this.getUniforms(vertex, fragment, stencil)) {
 			builder.append('\t').append(uniform.getDeclaration()).append(";\n");
 		}
 		return builder.append("};\n");
@@ -334,15 +342,20 @@ public class GlslShaderTranslator {
 		+ "\tvec2 joid_screen = gl_Position.xy / gl_Position.w * joid_halfViewport;\n"
 		+ "\tvec2 joid_otherScreen = joid_other.xy / joid_other.w * joid_halfViewport;\n"
 		+ "\tfloat joid_length = max(distance(joid_screen, joid_otherScreen), 0.0001);\n"
-		+ "\tfloat joid_side = sign(aNormal.x);\n\tfloat joid_end = sign(aNormal.y);\n"
+		+ "\tfloat joid_side = aNormal.x > 0.5 ? 1.0 : aNormal.x < -0.5 ? -1.0 : 0.0;\n"
+		+ "\tfloat joid_end = sign(aNormal.y);\n\tfloat joid_corner = abs(aNormal.y);\n"
 		+ "\tvec2 joid_direction = (joid_otherScreen - joid_screen) / joid_length * -joid_end;\n"
 		+ "\tvec2 joid_normal = vec2(-joid_direction.y, joid_direction.x);\n"
 		+ "\tfloat joid_halfWidth = joid_LineWidth * 0.5 + 1.0;\n"
-		+ "\tvec2 joid_offset = joid_normal * joid_side * joid_halfWidth + joid_direction * joid_end;\n"
+		+ "\tfloat joid_inset = min(1.0, joid_length * 0.5);\n"
+		+ "\tvec2 joid_offset = joid_normal * joid_side * joid_halfWidth;\n"
+		+ "\tfloat joid_along = 1.0;\n"
+		+ "\tif (joid_corner > 0.875) {\n\t\tjoid_offset += joid_direction * joid_end;\n\t\tjoid_along = -1.0;\n"
+		+ "\t} else if (joid_corner > 0.625) {\n\t\tjoid_offset -= joid_direction * joid_end * joid_inset;\n\t\tjoid_along = joid_inset;\n"
+		+ "\t} else if (joid_corner < 0.375) {\n\t\tjoid_offset *= 1.0 + floor(aNormal.z * 127.0 + 0.5) / 127.0 * 3.0;\n\t}\n"
 		+ "\tgl_Position = vec4(gl_Position.xy + joid_offset / joid_halfViewport * gl_Position.w, gl_Position.zw);\n\n"
 		+ "\tjoid_LineAcross = joid_side * joid_halfWidth;\n"
-		+ "\tjoid_LineAlong = joid_end < 0.0 ? -1.0 : joid_length + 1.0;\n"
-		+ "\tjoid_LineLength = joid_length;\n}\n";
+		+ "\tjoid_LineAlong = joid_along;\n}\n";
 	}
 
 	private static List<String> getVaryings(final ShaderSource vertex, final ShaderSource fragment) {

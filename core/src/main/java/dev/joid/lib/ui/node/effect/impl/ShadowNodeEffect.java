@@ -62,8 +62,12 @@ public class ShadowNodeEffect extends NodeEffect<Node> {
 		}
 
 		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
-		final float radius = rounded != null ? rounded.getRadius() : 0F;
-		DrawUtils.SHAPE.drawShadow(x, y, node.getWidth(), node.getHeight(), this.getColor(), radius, this.getBlur());
+		if (rounded == null) {
+			DrawUtils.SHAPE.drawShadow(x, y, node.getWidth(), node.getHeight(), this.getColor(), 0F, this.getBlur());
+			return;
+		}
+
+		DrawUtils.SHAPE.drawShadow(x, y, node.getWidth(), node.getHeight(), this.getColor(), rounded.getRadius(), rounded.isLeft(), rounded.isTop(), rounded.isRight(), rounded.isBottom(), this.getBlur());
 	}
 
 	public final <E extends ShadowNodeEffect> @NonNull E blur(final float blur) {

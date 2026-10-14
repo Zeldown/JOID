@@ -38,15 +38,6 @@ public final class UniformMember {
 		return new UniformMember(name, type, length, start);
 	}
 
-	public @NonNull UniformMember value(final int value) {
-		if (!this.type.isInteger() || this.type.getComponents() != 1 || this.length > 0) {
-			throw this.refuse("an int");
-		}
-
-		this.put(0, value);
-		return this;
-	}
-
 	public @NonNull UniformMember value(final boolean value) {
 		if (this.type != UniformType.BOOL && this.type != UniformType.INT || this.length > 0) {
 			throw this.refuse("a boolean");
@@ -56,10 +47,19 @@ public final class UniformMember {
 		return this;
 	}
 
+	public @NonNull UniformMember value(final @NonNull int... values) {
+		if (!this.type.isInteger() || !this.fits(values.length)) {
+			throw this.refuse(values.length + (values.length == 1 ? " int" : " ints"));
+		}
+
+		for (int i = 0; i < values.length; i++) {
+			this.put(i, values[i]);
+		}
+		return this;
+	}
+
 	public @NonNull UniformMember value(final @NonNull float... values) {
-		final int count = this.type.getCount();
-		final boolean fits = this.length > 0 ? values.length > 0 && values.length % count == 0 && values.length <= count * this.length : values.length == count;
-		if (this.type.isInteger() || !fits) {
+		if (this.type.isInteger() || !this.fits(values.length)) {
 			throw this.refuse(values.length + (values.length == 1 ? " float" : " floats"));
 		}
 
@@ -87,6 +87,11 @@ public final class UniformMember {
 
 	public @NonNull String getDeclaration() {
 		return this.type.getIdentifier() + " " + this.name + (this.length > 0 ? "[" + this.length + "]" : "");
+	}
+
+	private boolean fits(final int count) {
+		final int components = this.type.getCount();
+		return this.length > 0 ? count > 0 && count % components == 0 && count <= components * this.length : count == components;
 	}
 
 	private void put(final int index, final int bits) {

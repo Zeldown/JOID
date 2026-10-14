@@ -11,6 +11,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
@@ -30,6 +31,9 @@ public final class RecordingRenderBridge extends RenderBridge {
 	@Setter
 	private boolean borderless;
 
+	@Setter
+	private RuntimeException frameFailure;
+
 	private int colorClears;
 	private int depthClears;
 	private int stencilClears;
@@ -44,6 +48,10 @@ public final class RecordingRenderBridge extends RenderBridge {
 
 	@Override
 	protected void beginFrameCommands() {
+		if (this.frameFailure != null) {
+			throw this.frameFailure;
+		}
+
 		this.frameCommands++;
 	}
 
@@ -79,7 +87,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 		}
 
 		final RenderState state = super.getState();
-		this.draws.add(new Draw(primitive, xs, ys, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha(), state.getLineWidth(), state.getShader()));
+		this.draws.add(new Draw(primitive, xs, ys, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha(), state.getLineWidth(), state.getShader(), state.getTextureFilter()));
 	}
 
 	@Override
@@ -105,15 +113,16 @@ public final class RecordingRenderBridge extends RenderBridge {
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class Draw {
 
-		private final Primitive primitive;
-		private final double[]  xs;
-		private final double[]  ys;
-		private final float     red;
-		private final float     green;
-		private final float     blue;
-		private final float     alpha;
-		private final float     lineWidth;
-		private final IShader   shader;
+		private final Primitive     primitive;
+		private final double[]      xs;
+		private final double[]      ys;
+		private final float         red;
+		private final float         green;
+		private final float         blue;
+		private final float         alpha;
+		private final float         lineWidth;
+		private final IShader       shader;
+		private final TextureFilter textureFilter;
 
 		public double getLeft() {
 			double value = Double.MAX_VALUE;

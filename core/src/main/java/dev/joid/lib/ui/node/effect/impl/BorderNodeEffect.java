@@ -22,6 +22,7 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 	private Supplier<BorderMode> modeSupplier;
 
 	protected BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
+		super(200);
 		this.fillSupplier  = () -> true;
 		this.modeSupplier  = () -> mode;
 		this.colorSupplier = () -> color;

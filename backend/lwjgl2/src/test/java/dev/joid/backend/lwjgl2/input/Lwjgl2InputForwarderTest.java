@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.lwjgl.input.Keyboard;
 
+import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
@@ -59,9 +60,35 @@ public class Lwjgl2InputForwarderTest {
 
 	@Test
 	public void forwardsTheKeyAndTheCharacterApart() {
-		this.input.keyPressed(Keyboard.KEY_A);
+		this.input.keyPressed(Keyboard.KEY_A, 'a');
 		this.input.charTyped('a');
 		Assert.assertEquals(Arrays.asList("key A", "char a"), this.trace);
+	}
+
+	@Test
+	public void namesTheLettersAndDigitsAfterTheirCharacter() {
+		this.input.keyPressed(Keyboard.KEY_Q, 'a');
+		this.input.keyPressed(Keyboard.KEY_SEMICOLON, 'M');
+		this.input.keyPressed(Keyboard.KEY_W, '\u001A');
+		this.input.keyPressed(Keyboard.KEY_1, '1');
+		this.input.keyPressed(Keyboard.KEY_2, '\u00E9');
+		Assert.assertEquals(Arrays.asList("key A", "key M", "key Z", "key DIGIT_1", "key DIGIT_2"), this.trace);
+	}
+
+	@Test
+	public void keepsThePositionOfTheKeysOutsideTheMainBlock() {
+		this.input.keyPressed(Keyboard.KEY_BACK, '\b');
+		this.input.keyPressed(Keyboard.KEY_RETURN, '\r');
+		this.input.keyPressed(Keyboard.KEY_NUMPAD1, '1');
+		Assert.assertEquals(Arrays.asList("key BACKSPACE", "key ENTER", "key " + Lwjgl2WindowBridge.getKey(Keyboard.KEY_NUMPAD1)), this.trace);
+	}
+
+	@Test
+	public void releasesTheKeyItPressed() {
+		this.ui.cancel = true;
+		this.input.keyPressed(Keyboard.KEY_Q, 'a');
+		Assert.assertTrue(this.input.keyReleased(Keyboard.KEY_Q));
+		Assert.assertFalse(this.input.keyReleased(Keyboard.KEY_Q));
 	}
 
 	@Test
@@ -73,11 +100,11 @@ public class Lwjgl2InputForwarderTest {
 
 	@Test
 	public void reportsTheEventsTheUiConsumed() {
-		Assert.assertFalse(this.input.keyPressed(Keyboard.KEY_A));
+		Assert.assertFalse(this.input.keyPressed(Keyboard.KEY_A, 'a'));
 		Assert.assertFalse(this.input.keyReleased(Keyboard.KEY_A));
 		Assert.assertFalse(this.input.charTyped('a'));
 		this.ui.cancel = true;
-		Assert.assertTrue(this.input.keyPressed(Keyboard.KEY_A));
+		Assert.assertTrue(this.input.keyPressed(Keyboard.KEY_A, 'a'));
 		Assert.assertTrue(this.input.keyReleased(Keyboard.KEY_A));
 		Assert.assertTrue(this.input.charTyped('a'));
 		Assert.assertTrue(this.input.mousePressed(0));

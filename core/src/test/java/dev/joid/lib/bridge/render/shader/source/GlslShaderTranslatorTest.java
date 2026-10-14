@@ -1,6 +1,6 @@
 package dev.joid.lib.bridge.render.shader.source;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -225,7 +225,23 @@ public class GlslShaderTranslatorTest {
 	public void declaresTheStencilSamplerAfterTheShaderSamplers() {
 		final String translated = GlslShaderTranslatorTest.translateStencil(StencilEmulation.Pass.TEST);
 		Assert.assertTrue(translated.indexOf("uniform sampler2D tex;\n") < translated.indexOf("uniform sampler2D joid_Stencil;\n"));
-		Assert.assertEquals(Collections.singletonList("tex"), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST).getSamplers(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment()).stream().map(ShaderVariable::getName).collect(Collectors.toList()));
+		Assert.assertEquals(Arrays.asList("tex", GlslShaderTranslator.STENCIL), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST).getSamplers(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment()).stream().map(ShaderVariable::getName).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void declaresTheStencilUniformsOfThePassItTranslates() {
+		final String translated = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.LOOSE).translateFragment(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment(), StencilEmulation.Pass.WRITE);
+		Assert.assertTrue(translated, translated.contains("uniform int joid_StencilPass;\n"));
+		Assert.assertFalse(GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.LOOSE).stencil(StencilEmulation.Pass.TEST).translateFragment(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment(), StencilEmulation.Pass.NONE).contains("joid_StencilPass"));
+	}
+
+	@Test
+	public void softensOnlyTheCapsOfALine() {
+		final String vertex = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateVertex(GlslShaderTranslatorTest.vertex().toLine(), GlslShaderTranslatorTest.fragment());
+		final String fragment = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateFragment(GlslShaderTranslatorTest.vertex().toLine(), GlslShaderTranslatorTest.fragment());
+		Assert.assertTrue(vertex.contains("\tif (joid_corner > 0.875) {\n\t\tjoid_offset += joid_direction * joid_end;\n\t\tjoid_along = -1.0;\n"));
+		Assert.assertTrue(vertex.contains("\t} else if (joid_corner < 0.375) {\n\t\tjoid_offset *= 1.0 + floor(aNormal.z * 127.0 + 0.5) / 127.0 * 3.0;\n"));
+		Assert.assertTrue(fragment.contains("\tfloat joid_along = clamp(joid_LineAlong + 0.5, 0.0, 1.0);\n"));
 	}
 
 	@Test
@@ -257,7 +273,7 @@ public class GlslShaderTranslatorTest {
 		final String vertex = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateVertex(GlslShaderTranslatorTest.vertex().toLine(), GlslShaderTranslatorTest.fragment());
 		Assert.assertTrue(vertex.contains("layout(location = 1) in vec2 aTexCoord;\n"));
 		Assert.assertTrue(vertex.contains("layout(location = 3) in vec3 aNormal;\n"));
-		Assert.assertTrue(vertex.contains("out float joid_LineAcross;\nout float joid_LineAlong;\nout float joid_LineLength;\nvec3 joid_Position;\nvec2 joid_TexCoord;\nvec3 joid_Normal;\n#line 1\n"));
+		Assert.assertTrue(vertex.contains("out float joid_LineAcross;\nout float joid_LineAlong;\nvec3 joid_Position;\nvec2 joid_TexCoord;\nvec3 joid_Normal;\n#line 1\n"));
 		Assert.assertTrue(vertex.contains("\nvoid joid_body() {\n    vTexCoord = joid_TexCoord * u_Scale;\n"));
 		Assert.assertTrue(vertex.contains("vec4(joid_Position, 1.0);"));
 		Assert.assertTrue(vertex.contains("\tjoid_Position = vec3(aTexCoord, aPosition.z);\n\tjoid_body();\n\tvec4 joid_other = gl_Position;\n\tjoid_Position = aPosition;\n\tjoid_body();\n"));
@@ -267,7 +283,7 @@ public class GlslShaderTranslatorTest {
 	@Test
 	public void coversTheFragmentsOfALine() {
 		final String fragment = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateFragment(GlslShaderTranslatorTest.vertex().toLine(), GlslShaderTranslatorTest.fragment());
-		Assert.assertTrue(fragment.contains("in float joid_LineAcross;\nin float joid_LineAlong;\nin float joid_LineLength;\n"));
+		Assert.assertTrue(fragment.contains("in float joid_LineAcross;\nin float joid_LineAlong;\n"));
 		Assert.assertTrue(fragment.contains("\nvoid joid_body() {\n"));
 		Assert.assertTrue(fragment.contains("\nvoid joid_main() {\n\tjoid_body();\n"));
 		Assert.assertTrue(fragment.contains("\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n\nvoid main() {\n\tjoid_main();\n"));

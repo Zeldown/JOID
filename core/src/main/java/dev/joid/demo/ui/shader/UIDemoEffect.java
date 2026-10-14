@@ -42,7 +42,7 @@ public class UIDemoEffect extends UIDemo {
 		RectNode.create(55, 40, 200, 120).color(Color.WHITE).effect(RoundedNodeEffect.create(20F)).attach(this);
 		TextNode.create(155, 175).text(Text.create("Rounded", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(285, 40, 200, 120).color(Color.WHITE).effect(RoundedNodeEffect.create(40F, true, false, false, true)).attach(this);
+		RectNode.create(285, 40, 200, 120).color(Color.WHITE).effect(RoundedNodeEffect.create(40F, true, false, false, true)).effect(ShadowNodeEffect.create(Color.CYAN, 16F)).attach(this);
 		TextNode.create(385, 175).text(Text.create("Some corners", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(515, 40, 200, 120).color(Color.WHITE).effect(RoundedNodeEffect.create(6F)).attach(this);

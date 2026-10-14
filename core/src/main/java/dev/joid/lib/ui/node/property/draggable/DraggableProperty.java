@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
@@ -122,8 +123,8 @@ public class DraggableProperty {
 		case UI:
 			boundX = 0;
 			boundY = 0;
-			boundWidth = 1920;
-			boundHeight = 1080;
+			boundWidth = UIView.DESIGN_WIDTH;
+			boundHeight = UIView.DESIGN_HEIGHT;
 			break;
 		case SCREEN:
 			final UI ui = node.getUi();

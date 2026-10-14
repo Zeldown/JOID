@@ -12,6 +12,8 @@ import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -78,7 +80,7 @@ public final class Tessellator {
 		final int count = Tessellator.getOutputCount(this.drawMode, this.vertexCount);
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (count > 0 && this.isLineMode() && (render.getState().isLineSmooth() || render.getState().getLineWidth() != 1F)) {
-			this.drawWideLines(render, count / 2);
+			this.drawWideLines(render);
 		} else if (count > 0) {
 			Tessellator.ensureCapacity(count);
 			Tessellator.intBuffer.clear();
@@ -129,6 +131,11 @@ public final class Tessellator {
 			this.rawBuffer = new int[this.rawBufferSize];
 		}
 
+		this.reset();
+	}
+
+	public void abort() {
+		this.isDrawing = false;
 		this.reset();
 	}
 
@@ -260,35 +267,38 @@ public final class Tessellator {
 		Tessellator.intBuffer.put(this.rawBuffer, index * 8, 8);
 	}
 
-	private int getSegmentVertex(final int segment, final int point) {
-		switch (this.drawMode) {
-		case LINE_STRIP:
-			return segment + point;
-		case LINE_LOOP:
-			return (segment + point) % this.vertexCount;
-		default:
-			return segment * 2 + point;
-		}
+	private boolean isSamePoint(final int vertex, final int other) {
+		return this.rawBuffer[vertex * 8] == this.rawBuffer[other * 8] && this.rawBuffer[vertex * 8 + 1] == this.rawBuffer[other * 8 + 1];
 	}
 
-	private void drawWideLines(final IRenderBridge render, final int segments) {
-		Tessellator.ensureCapacity(segments * 6);
+	private double getPointX(final int vertex) {
+		return Float.intBitsToFloat(this.rawBuffer[vertex * 8]);
+	}
+
+	private double getPointY(final int vertex) {
+		return Float.intBitsToFloat(this.rawBuffer[vertex * 8 + 1]);
+	}
+
+	private void drawWideLines(final IRenderBridge render) {
+		Tessellator.ensureCapacity(this.vertexCount * 12 + 12);
 		Tessellator.intBuffer.clear();
-		for (int segment = 0; segment < segments; segment++) {
-			final int start = this.getSegmentVertex(segment, 0);
-			final int end = this.getSegmentVertex(segment, 1);
-			this.putLineVertex(start, end, -1, -1);
-			this.putLineVertex(start, end, 1, -1);
-			this.putLineVertex(end, start, 1, 1);
-			this.putLineVertex(start, end, -1, -1);
-			this.putLineVertex(end, start, 1, 1);
-			this.putLineVertex(end, start, -1, 1);
+		if (this.drawMode == DrawMode.LINES) {
+			for (int i = 0; i + 1 < this.vertexCount; i += 2) {
+				this.putLineSegment(i, i + 1, true, true, null, null);
+			}
+		} else {
+			this.putLineStrip();
+		}
+
+		final int count = Tessellator.intBuffer.position() / 8;
+		if (count == 0) {
+			return;
 		}
 
 		Tessellator.byteBuffer.position(0);
-		Tessellator.byteBuffer.limit(segments * 6 * VertexBuffer.STRIDE);
+		Tessellator.byteBuffer.limit(count * VertexBuffer.STRIDE);
 
-		final VertexBuffer buffer = VertexBuffer.create(Tessellator.byteBuffer, segments * 6, true, this.hasColor, true);
+		final VertexBuffer buffer = VertexBuffer.create(Tessellator.byteBuffer, count, true, this.hasColor, true);
 		final IShader shader = render.getState().getShader();
 		if (shader == null) {
 			LineShader.SHADER.bind();
@@ -308,13 +318,111 @@ public final class Tessellator {
 		}
 	}
 
-	private void putLineVertex(final int vertex, final int other, final int side, final int end) {
+	private void putLineStrip() {
+		final int[] points = new int[this.vertexCount];
+		int size = 0;
+		for (int i = 0; i < this.vertexCount; i++) {
+			if (size == 0 || !this.isSamePoint(points[size - 1], i)) {
+				points[size] = i;
+				size++;
+			}
+		}
+
+		if (this.drawMode == DrawMode.LINE_LOOP && size > 1 && this.isSamePoint(points[0], points[size - 1])) {
+			size--;
+		}
+
+		if (size < 2) {
+			return;
+		}
+
+		final boolean closed = this.drawMode == DrawMode.LINE_LOOP && size > 2;
+		final int segments = closed ? size : size - 1;
+		final int[] miters = new int[this.vertexCount];
+		final float[] tangents = new float[this.vertexCount * 2];
+		for (int i = closed ? 0 : 1; i < segments; i++) {
+			this.putLineJoint(points[(i + size - 1) % size], points[i], points[(i + 1) % size], miters, tangents);
+		}
+
+		for (int i = 0; i < segments; i++) {
+			this.putLineSegment(points[i], points[(i + 1) % size], !closed && i == 0, !closed && i == segments - 1, miters, tangents);
+		}
+	}
+
+	private void putLineJoint(final int previous, final int vertex, final int next, final int[] miters, final float[] tangents) {
+		final double x = this.getPointX(vertex);
+		final double y = this.getPointY(vertex);
+		final double inX = x - this.getPointX(previous);
+		final double inY = y - this.getPointY(previous);
+		final double outX = this.getPointX(next) - x;
+		final double outY = this.getPointY(next) - y;
+		final double inLength = Math.hypot(inX, inY);
+		final double outLength = Math.hypot(outX, outY);
+		final double halfCosine = Math.sqrt(Math.max(0D, (1D + (inX * outX + inY * outY) / (inLength * outLength)) / 2D));
+		if (halfCosine * 4D < 1D) {
+			miters[vertex] = -1;
+			for (final int side : new int[] {-127, 127}) {
+				this.putLineVertex(vertex, previous, 0, 1, LineCorner.BODY);
+				this.putLineVertex(vertex, previous, side, 1, LineCorner.BODY);
+				this.putLineVertex(vertex, next, side, -1, LineCorner.BODY);
+			}
+			return;
+		}
+
+		final double scale = Math.min(inLength, outLength);
+		miters[vertex] = (int) Math.round((1D / halfCosine - 1D) / 3D * 127D);
+		tangents[vertex * 2] = (float) (x + (inX / inLength + outX / outLength) * scale);
+		tangents[vertex * 2 + 1] = (float) (y + (inY / inLength + outY / outLength) * scale);
+	}
+
+	private void putLineSegment(final int start, final int end, final boolean startCap, final boolean endCap, final int[] miters, final float[] tangents) {
+		if (startCap) {
+			this.putLineVertex(start, end, -127, -1, LineCorner.CAP);
+			this.putLineVertex(start, end, 127, -1, LineCorner.CAP);
+			this.putLineVertex(start, end, 127, -1, LineCorner.INSET);
+			this.putLineVertex(start, end, -127, -1, LineCorner.CAP);
+			this.putLineVertex(start, end, 127, -1, LineCorner.INSET);
+			this.putLineVertex(start, end, -127, -1, LineCorner.INSET);
+		}
+
+		this.putLineEnd(start, end, -1, -127, startCap, miters, tangents);
+		this.putLineEnd(start, end, -1, 127, startCap, miters, tangents);
+		this.putLineEnd(end, start, 1, 127, endCap, miters, tangents);
+		this.putLineEnd(start, end, -1, -127, startCap, miters, tangents);
+		this.putLineEnd(end, start, 1, 127, endCap, miters, tangents);
+		this.putLineEnd(end, start, 1, -127, endCap, miters, tangents);
+
+		if (endCap) {
+			this.putLineVertex(end, start, -127, 1, LineCorner.INSET);
+			this.putLineVertex(end, start, 127, 1, LineCorner.INSET);
+			this.putLineVertex(end, start, 127, 1, LineCorner.CAP);
+			this.putLineVertex(end, start, -127, 1, LineCorner.INSET);
+			this.putLineVertex(end, start, 127, 1, LineCorner.CAP);
+			this.putLineVertex(end, start, -127, 1, LineCorner.CAP);
+		}
+	}
+
+	private void putLineEnd(final int vertex, final int other, final int end, final int side, final boolean cap, final int[] miters, final float[] tangents) {
+		if (cap) {
+			this.putLineVertex(vertex, other, side, end, LineCorner.INSET);
+		} else if (miters[vertex] < 0) {
+			this.putLineVertex(vertex, other, side, end, LineCorner.BODY);
+		} else {
+			this.putLineAttributes(vertex, Float.floatToRawIntBits(tangents[vertex * 2]), Float.floatToRawIntBits(tangents[vertex * 2 + 1]), side, -LineCorner.MITER.getCode(), miters[vertex]);
+		}
+	}
+
+	private void putLineVertex(final int vertex, final int other, final int side, final int end, final LineCorner corner) {
+		this.putLineAttributes(vertex, this.rawBuffer[other * 8], this.rawBuffer[other * 8 + 1], side, end * corner.getCode(), 0);
+	}
+
+	private void putLineAttributes(final int vertex, final int otherX, final int otherY, final int side, final int corner, final int miter) {
 		final int offset = vertex * 8;
 		Tessellator.intBuffer.put(this.rawBuffer, offset, 3);
-		Tessellator.intBuffer.put(this.rawBuffer[other * 8]);
-		Tessellator.intBuffer.put(this.rawBuffer[other * 8 + 1]);
+		Tessellator.intBuffer.put(otherX);
+		Tessellator.intBuffer.put(otherY);
 		Tessellator.intBuffer.put(this.rawBuffer[offset + 5]);
-		Tessellator.intBuffer.put(side * 127 & 255 | (end * 127 & 255) << 8);
+		Tessellator.intBuffer.put(side & 255 | (corner & 255) << 8 | (miter & 255) << 16);
 		Tessellator.intBuffer.put(this.rawBuffer[offset + 7]);
 	}
 
@@ -351,6 +459,19 @@ public final class Tessellator {
 	private static final class LineShader {
 
 		private static final IShader SHADER = CoreShader.LINE.create(BlendState.NORMAL).getLineShader();
+
+	}
+
+	@Getter
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	private enum LineCorner {
+
+		CAP(127),
+		INSET(95),
+		BODY(64),
+		MITER(32);
+
+		private final int code;
 
 	}
 

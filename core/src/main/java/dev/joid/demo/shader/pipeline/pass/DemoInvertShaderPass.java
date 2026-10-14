@@ -25,9 +25,4 @@ public class DemoInvertShaderPass implements IShaderPass {
 		DemoInvertShader.inst().bind(this.amount);
 	}
 
-	@Override
-	public int priority() {
-		return 200;
-	}
-
 }

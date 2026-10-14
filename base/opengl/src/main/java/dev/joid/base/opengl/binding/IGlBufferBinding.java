@@ -22,4 +22,8 @@ public interface IGlBufferBinding {
 
 	public void drawArrays(final int mode, final int first, final int count);
 
+	public default boolean canPointClientMemory() {
+		return true;
+	}
+
 }

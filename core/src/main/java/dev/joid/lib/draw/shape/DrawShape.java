@@ -10,7 +10,6 @@ import dev.joid.lib.bridge.render.matrix.PixelGrid.Span;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.EdgeSmoothing;
 import dev.joid.lib.render.tessellator.Tessellator;
@@ -59,14 +58,19 @@ public final class DrawShape {
 	}
 
 	public void drawShadow(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final float blur) {
+		this.drawShadow(x, y, width, height, color, radius, true, true, true, true, blur);
+	}
+
+	public void drawShadow(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom, final float blur) {
 		if (blur <= 0F) {
-			this.drawRoundedRect(x, y, width, height, color, radius);
+			this.drawRoundedRect(x, y, width, height, color, radius, roundedLeft, roundedTop, roundedRight, roundedBottom);
 			return;
 		}
 
 		final double spread = blur * 1.5D;
 		final Color shadow = color.isGradient() ? color.getGradient().getStartColor() : color;
 		ShadowShader.use(radius, blur, (float) x, (float) y, (float) (x + width), (float) (y + height), () -> {
+			ShadowShader.inst().sides(roundedLeft, roundedTop, roundedRight, roundedBottom);
 			this.drawPoints(DrawMode.POLYGON, shadow, false, Point.create(x - spread, y + height + spread), Point.create(x + width + spread, y + height + spread), Point.create(x + width + spread, y - spread), Point.create(x - spread, y - spread));
 		});
 	}
@@ -99,13 +103,18 @@ public final class DrawShape {
 		final double right = grid.snapX(x2);
 		final double bottom = grid.snapY(y2);
 		final double outerLeft = grid.snapWidth(x, -stroke);
+		final double outerTop = grid.snapHeight(y, -stroke);
 		final double outerRight = grid.snapWidth(x2, stroke);
-		final Color horizontal = DrawShape.cover(color, stroke * grid.getScaleY());
-		final Color vertical = DrawShape.cover(color, stroke * grid.getScaleX());
-		this.drawEdges(outerLeft, grid.snapHeight(y, -stroke), outerRight, top, horizontal);
-		this.drawEdges(outerLeft, top, left, bottom, vertical);
-		this.drawEdges(outerLeft, bottom, outerRight, grid.snapHeight(y2, stroke), horizontal);
-		this.drawEdges(right, top, outerRight, bottom, vertical);
+		final double outerBottom = grid.snapHeight(y2, stroke);
+		final Color edge = color.isGradient() ? Color.WHITE : color;
+		final Color horizontal = DrawShape.cover(edge, stroke * grid.getScaleY());
+		final Color vertical = DrawShape.cover(edge, stroke * grid.getScaleX());
+		color.bind(() -> {
+			this.drawEdges(outerLeft, outerTop, outerRight, top, horizontal);
+			this.drawEdges(outerLeft, top, left, bottom, vertical);
+			this.drawEdges(outerLeft, bottom, outerRight, outerBottom, horizontal);
+			this.drawEdges(right, top, outerRight, bottom, vertical);
+		}, BoundingBox.create(Math.min(outerLeft, outerRight), Math.min(outerTop, outerBottom), Math.abs(outerRight - outerLeft), Math.abs(outerBottom - outerTop)));
 	}
 
 	public void drawPolygon(final @NonNull Color color, final @NonNull Point @NonNull... points) {
@@ -163,13 +172,13 @@ public final class DrawShape {
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point end, final @NonNull Point control) {
-		Point last = start;
 		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(control.getX() - start.getX(), control.getY() - start.getY()) + Math.hypot(end.getX() - control.getX(), end.getY() - control.getY())));
+		final Point[] points = new Point[steps + 1];
+		points[0] = start;
 		for (int step = 1; step <= steps; step++) {
-			final Point point = Bezier.quadratic((float) step / steps, start, end, control);
-			DrawUtils.SHAPE.drawLine(color, last, point);
-			last = point;
+			points[step] = Bezier.quadratic((float) step / steps, start, end, control);
 		}
+		this.drawLine(color, points);
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point end, final @NonNull Point control) {
@@ -184,13 +193,13 @@ public final class DrawShape {
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point end, final @NonNull Point endControl) {
-		Point last = start;
 		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(startControl.getX() - start.getX(), startControl.getY() - start.getY()) + Math.hypot(endControl.getX() - startControl.getX(), endControl.getY() - startControl.getY()) + Math.hypot(end.getX() - endControl.getX(), end.getY() - endControl.getY())));
+		final Point[] points = new Point[steps + 1];
+		points[0] = start;
 		for (int step = 1; step <= steps; step++) {
-			final Point point = Bezier.cubic((float) step / steps, start, startControl, end, endControl);
-			DrawUtils.SHAPE.drawLine(color, last, point);
-			last = point;
+			points[step] = Bezier.cubic((float) step / steps, start, startControl, end, endControl);
 		}
+		this.drawLine(color, points);
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point end, final @NonNull Point endControl) {

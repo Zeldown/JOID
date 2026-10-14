@@ -27,7 +27,7 @@ public final class GlShader extends Shader {
 	private final Map<String, Integer> locationMap;
 
 	private int     program;
-	private boolean active;
+	private boolean programActive;
 
 	private GlShader(final GlRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
 		super(bridge, bridge.getStrategies().createTranslator(), vertex, fragment, blend);
@@ -49,10 +49,17 @@ public final class GlShader extends Shader {
 	}
 
 	@Override
+	protected void deleteProgram() {
+		this.programs.deleteProgram(this.program);
+		this.locationMap.clear();
+		this.program       = 0;
+		this.programActive = false;
+	}
+
+	@Override
 	protected void compileProgram(final @NonNull ShaderTranslation translation) {
-		final IGlProgramBinding programs = ((GlRenderBridge) super.getBridge()).getBinding().getProgramBinding();
-		this.program = programs.createProgram();
-		this.active  = GlShader.link(programs, translation.getDialect(), this.program, translation.getVertex(), translation.getFragment());
+		this.program       = this.programs.createProgram();
+		this.programActive = GlShader.link(this.programs, translation.getDialect(), this.program, translation.getVertex(), translation.getFragment());
 	}
 
 	private void upload(final UniformMember member) {

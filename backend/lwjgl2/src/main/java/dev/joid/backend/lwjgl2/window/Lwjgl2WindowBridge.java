@@ -176,6 +176,26 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 		return code < 0 || code >= Lwjgl2WindowBridge.KEY_ARRAY.length ? Key.UNKNOWN : Lwjgl2WindowBridge.KEY_ARRAY[code];
 	}
 
+	public static @NonNull Key getKey(final int code, final char character) {
+		final Key position = Lwjgl2WindowBridge.getKey(code);
+		if (position.compareTo(Key.DIGIT_9) > 0 && (position.compareTo(Key.APOSTROPHE) < 0 || position.compareTo(Key.GRAVE_ACCENT) > 0)) {
+			return position;
+		}
+
+		if (character >= 0x01 && character <= 0x1A) {
+			return Key.values()[Key.A.ordinal() + character - 0x01];
+		}
+
+		if (character >= 'a' && character <= 'z' || character >= 'A' && character <= 'Z') {
+			return Key.values()[Key.A.ordinal() + Character.toUpperCase(character) - 'A'];
+		}
+
+		if (character >= '0' && character <= '9') {
+			return Key.values()[Key.DIGIT_0.ordinal() + character - '0'];
+		}
+		return position;
+	}
+
 	@Override
 	public boolean isMouseGrabbed() {
 		return Mouse.isGrabbed();

@@ -225,7 +225,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> ShaderPipeline.render(node, () -> DrawUtils.RESOURCE.drawResource(node.getX(), node.getY(), 200D, 200D, image), new BlurShaderPass(12F, true, 0))))
+			.self(node -> node.layer((mouseX, mouseY) -> ShaderPipeline.render(node, () -> DrawUtils.RESOURCE.drawResource(node.getX(), node.getY(), 200D, 200D, image), new BlurShaderPass(12F, true))))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Horizontal blur", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -265,6 +265,30 @@ public class UIDemoRender extends UIDemo {
 			}))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Custom shader", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1160, 720, 320, 260)
+		.color(UIDemoRender.PLACEHOLDER)
+		.body(rect -> {
+			ContainerNode
+			.create(60, 30, 200, 200)
+			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(UIDemoRender.INK, 14F, Point.create(node.getX() + 10D, node.getY() + 180D), Point.create(node.getX() + 100D, node.getY() + 20D), Point.create(node.getX() + 60D, node.getY() + 180D), Point.create(node.getX() + 190D, node.getY() + 120D))))
+			.attach(rect);
+			TextNode.create(160, 275).text(Text.create("Line joins", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1520, 720, 320, 260)
+		.color(UIDemoRender.PLACEHOLDER)
+		.body(rect -> {
+			ContainerNode
+			.create(60, 30, 200, 200)
+			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE.toGradient(UIDemoRender.INK), 10F, Point.create(node.getX() + 10D, node.getY() + 180D), Point.create(node.getX() + 190D, node.getY() + 180D), Point.create(node.getX() + 100D, node.getY() - 100D))))
+			.attach(rect);
+			TextNode.create(160, 275).text(Text.create("Gradient curve", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

@@ -128,6 +128,14 @@ public class BackendTest {
 	}
 
 	@Test
+	public void setsItsFoldersBeforeCreatingTheBridges() {
+		final TraceBackend backend = this.backend().dataDir(new File("data")).cacheDir(new File("cache"));
+		backend.windowed = () -> this.trace.add(JOIDEnv.getDataDir() + " " + JOIDEnv.getCacheDir());
+		backend.register();
+		Assert.assertEquals(this.trace.indexOf("window") - 1, this.trace.indexOf("data cache"));
+	}
+
+	@Test
 	public void setsItsFoldersBeforeLoading() {
 		final File data = new File("data");
 		final File cache = new File("cache");
@@ -252,6 +260,7 @@ public class BackendTest {
 
 		private boolean  threaded = true;
 		private Runnable defaults = () -> {};
+		private Runnable windowed = () -> {};
 
 		private TraceBackend(final List<String> trace, final String version) {
 			super(version);
@@ -280,6 +289,7 @@ public class BackendTest {
 
 		@Override
 		protected @NonNull IWindowBridge createWindowBridge() {
+			this.windowed.run();
 			this.trace.add("window");
 			return this.window;
 		}

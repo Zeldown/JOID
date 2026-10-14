@@ -17,6 +17,7 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
+import dev.joid.lib.bridge.ui.UIBridgeCursorTest.NodeUI;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
@@ -24,6 +25,8 @@ import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.render.tessellator.DrawMode;
+import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.overlay.interaction.UIDataOverlayInteraction;
@@ -34,6 +37,7 @@ import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.event.ConsumableEvent;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.shortcut.Shortcut;
 
 import lombok.NonNull;
@@ -341,7 +345,7 @@ public class UIBridgeTest {
 		hidden.getData().setVisible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hidden).open(new TraceUI("hud", this.trace));
 		this.trace.clear();
-		this.bridges.getUi().draw();
+		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw hud -1990.0"), this.trace);
 	}
 
@@ -353,14 +357,14 @@ public class UIBridgeTest {
 		hud.getData().setZlevel(5D);
 		this.bridges.open(menu).open(hud);
 		this.trace.clear();
-		this.bridges.getUi().draw();
+		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw hud -1945.0"), this.trace);
 		Assert.assertEquals(0F, UIBridgeTest.depth(), 0F);
 	}
 
 	@Test
 	public void drawsNothingWithoutUi() {
-		this.bridges.getUi().draw();
+		this.bridges.draw();
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
@@ -373,12 +377,53 @@ public class UIBridgeTest {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
 		try {
-			this.bridges.getUi().draw();
+			this.bridges.draw();
 		} finally {
 			System.setErr(previous);
 		}
 		Assert.assertTrue(output.toString(), output.toString().contains("broken"));
 		Assert.assertEquals(0F, UIBridgeTest.depth(), 0F);
+	}
+
+	@Test
+	public void givesBackTheStacksAndTheTessellatorOfAFailedDraw() {
+		final RenderBridge render = this.bridges.getRender();
+		final PrintStream previous = System.err;
+		System.setErr(new PrintStream(new ByteArrayOutputStream(), true));
+		try {
+			this.bridges.open(new NodeUI(new DrawingNode(() -> {
+				render.pushState();
+				render.getModelView().push();
+				render.getProjection().push();
+				Tessellator.inst().start(DrawMode.QUADS);
+				throw new IllegalStateException("half drawn");
+			})));
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertEquals(0, render.getStateDepth());
+		Assert.assertEquals(0, render.getModelView().getDepth());
+		Assert.assertEquals(0, render.getProjection().getDepth());
+		Assert.assertFalse(Tessellator.inst().isDrawing());
+	}
+
+	@Test
+	public void timesItsDrawsWithTheClockBridge() {
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D);
+		final NodeUI ui = new NodeUI(node);
+		this.bridges.open(ui).frame();
+		Assert.assertEquals(0L, ui.getRenderTime());
+		Assert.assertEquals(0L, node.getRenderTime());
+	}
+
+	@Test
+	public void refusesToDrawOutsideAFrame() {
+		try {
+			this.bridges.getUi().draw();
+			Assert.fail("A draw outside a frame must be refused");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("DemoUIBridge.draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use frame()", expected.getMessage());
+		}
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -503,7 +548,7 @@ public class UIBridgeTest {
 		this.bridges.open(menu).open(hud);
 		menu.getData().setZindex(10);
 		this.trace.clear();
-		this.bridges.getUi().draw();
+		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList(hud, menu), this.bridges.getUi().getUiList().ordered());
 		Assert.assertEquals(Arrays.asList("draw hud -2000.0", "draw menu -1990.0"), this.trace);
 	}
@@ -738,7 +783,7 @@ public class UIBridgeTest {
 		low.getOverlay().render().setZindex(1);
 		this.bridges.open(high).open(low).open(new TraceUI("menu", this.trace));
 		this.trace.clear();
-		this.bridges.getUi().draw();
+		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw low -1990.0", "draw high -1980.0"), this.trace);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -750,15 +795,15 @@ public class UIBridgeTest {
 		final PassiveOverlayUI overlay = new PassiveOverlayUI("overlay", this.trace);
 		this.bridges.open(overlay);
 		this.trace.clear();
-		this.bridges.getUi().draw();
+		this.bridges.draw();
 		Assert.assertEquals(Collections.singletonList("draw overlay -2000.0"), this.trace);
 		this.bridges.open(new TraceUI("menu", this.trace));
 		this.trace.clear();
-		this.bridges.getUi().draw();
+		this.bridges.draw();
 		Assert.assertEquals(Collections.singletonList("draw menu -2000.0"), this.trace);
 		overlay.getOverlay().render().setScreens(true);
 		this.trace.clear();
-		this.bridges.getUi().draw();
+		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw overlay -1990.0"), this.trace);
 	}
 
@@ -769,11 +814,11 @@ public class UIBridgeTest {
 		bridge.add(overlay);
 		bridge.hidden = true;
 		this.trace.clear();
-		bridge.draw();
+		this.bridges.draw(bridge);
 		bridge.mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(this.trace.isEmpty());
 		overlay.getOverlay().render().setAlways(true);
-		bridge.draw();
+		this.bridges.draw(bridge);
 		bridge.mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("draw overlay -2000.0", "pressed overlay LEFT"), this.trace);
 		bridge.getUiList().remove(overlay);
@@ -845,7 +890,7 @@ public class UIBridgeTest {
 		final OverlayUI hud = new OverlayUI("hud", this.trace);
 		this.bridges.open(menu).open(hud);
 		this.trace.clear();
-		this.bridges.getUi().draw(ui -> ui == hud);
+		this.bridges.draw(ui -> ui == hud);
 		Assert.assertEquals(1, this.trace.size());
 		Assert.assertTrue(this.trace.get(0), this.trace.get(0).startsWith("draw hud"));
 	}

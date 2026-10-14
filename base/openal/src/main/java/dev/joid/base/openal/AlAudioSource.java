@@ -15,7 +15,7 @@ public final class AlAudioSource implements IAudioSource {
 	private final int            channels;
 	private final int            sampleRate;
 	private final IAlBinding     binding;
-	private final IAudioGain     audioGain;
+	private final AlAudioBridge  bridge;
 	private final List<Integer>  bufferList;
 	private final Deque<Integer> freeBufferQueue;
 	private final Deque<Integer> sampleCountQueue;
@@ -28,9 +28,9 @@ public final class AlAudioSource implements IAudioSource {
 	private float   appliedGain;
 	private int     bufferedSamples;
 
-	private AlAudioSource(final IAlBinding binding, final IAudioGain audioGain, final int sampleRate, final int channels) {
-		this.binding          = binding;
-		this.audioGain        = audioGain;
+	private AlAudioSource(final AlAudioBridge bridge, final int sampleRate, final int channels) {
+		this.bridge           = bridge;
+		this.binding          = bridge.getBinding();
 		this.channels         = channels;
 		this.sampleRate       = sampleRate;
 		this.bufferList       = new ArrayList<>();
@@ -39,14 +39,14 @@ public final class AlAudioSource implements IAudioSource {
 		this.gain             = 1F;
 	}
 
-	public static @NonNull AlAudioSource create(final @NonNull IAlBinding binding, final @NonNull IAudioGain audioGain, final int sampleRate, final int channels) {
-		return new AlAudioSource(binding, audioGain, sampleRate, channels);
+	public static @NonNull AlAudioSource create(final @NonNull AlAudioBridge bridge, final int sampleRate, final int channels) {
+		return new AlAudioSource(bridge, sampleRate, channels);
 	}
 
 	@Override
 	public void play() {
 		this.playing = true;
-		if (this.isAvailable()) {
+		if (this.sync()) {
 			this.binding.play(this.source);
 		}
 	}
@@ -54,7 +54,7 @@ public final class AlAudioSource implements IAudioSource {
 	@Override
 	public void stop() {
 		this.playing = false;
-		if (!this.isAvailable()) {
+		if (!this.sync()) {
 			return;
 		}
 
@@ -71,7 +71,7 @@ public final class AlAudioSource implements IAudioSource {
 	@Override
 	public void pause() {
 		this.playing = false;
-		if (this.isAvailable()) {
+		if (this.sync()) {
 			this.binding.pause(this.source);
 		}
 	}
@@ -79,27 +79,28 @@ public final class AlAudioSource implements IAudioSource {
 	@Override
 	public void gain(final float gain) {
 		this.gain = gain;
-		this.isAvailable();
+		this.sync();
 	}
 
 	@Override
 	public void group(final Object group) {
 		this.group = group;
-		this.isAvailable();
+		this.sync();
 	}
 
 	@Override
 	public void write(final @NonNull short[] samples) {
-		if (!this.isAvailable()) {
+		if (!this.sync()) {
 			return;
 		}
 
 		this.reclaim();
 		final int buffer = this.nextBuffer();
-		this.binding.bufferData(buffer, Math.min(this.channels, 2), AudioDownmix.stereo(samples, this.channels), this.sampleRate);
+		final short[] stereo = AudioDownmix.stereo(samples, this.channels);
+		this.binding.bufferData(buffer, Math.min(this.channels, 2), stereo, this.sampleRate);
 		this.binding.queueBuffer(this.source, buffer);
-		this.sampleCountQueue.add(samples.length);
-		this.bufferedSamples += samples.length;
+		this.sampleCountQueue.add(stereo.length);
+		this.bufferedSamples += stereo.length;
 
 		if (this.playing && !this.binding.isPlaying(this.source)) {
 			this.binding.play(this.source);
@@ -113,7 +114,7 @@ public final class AlAudioSource implements IAudioSource {
 
 	@Override
 	public int getBufferedSamples() {
-		if (!this.isAvailable()) {
+		if (!this.sync()) {
 			return 0;
 		}
 
@@ -123,6 +124,7 @@ public final class AlAudioSource implements IAudioSource {
 
 	@Override
 	public void delete() {
+		this.bridge.releaseSource(this);
 		if (this.context != null && this.context.equals(this.binding.getCurrentContext())) {
 			this.binding.stop(this.source);
 			this.binding.deleteSource(this.source);
@@ -139,7 +141,7 @@ public final class AlAudioSource implements IAudioSource {
 		this.bufferedSamples = 0;
 	}
 
-	private boolean isAvailable() {
+	public boolean sync() {
 		final Object current = this.binding.getCurrentContext();
 		if (current == null) {
 			return false;
@@ -155,7 +157,7 @@ public final class AlAudioSource implements IAudioSource {
 			this.appliedGain = Float.NaN;
 		}
 
-		final float applied = this.audioGain.apply(this.gain, this.group);
+		final float applied = this.bridge.getGain().apply(this.gain, this.group);
 		if (Float.compare(applied, this.appliedGain) != 0) {
 			this.appliedGain = applied;
 			this.binding.gain(this.source, applied);

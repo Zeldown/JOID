@@ -58,7 +58,7 @@ public final class DescriptorCache {
 		final Iterator<Map.Entry<List<Long>, long[]>> iterator = this.setMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			final Map.Entry<List<Long>, long[]> entry = iterator.next();
-			if (!entry.getKey().subList(1, entry.getKey().size()).contains(handle)) {
+			if (!entry.getKey().contains(handle)) {
 				continue;
 			}
 

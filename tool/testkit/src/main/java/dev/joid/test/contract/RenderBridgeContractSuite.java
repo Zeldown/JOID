@@ -206,6 +206,17 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void joinsTheSegmentsOfAWideLine() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.getState().lineWidth(6F);
+			DrawUtils.SHAPE.drawShape(DrawMode.LINE_STRIP, Color.WHITE, Point.create(8D, 32D), Point.create(32D, 32D), Point.create(32D, 56D));
+		});
+		RenderBridgeContractSuite.assertPixel(image, 32, 31, RenderBridgeContractSuite.WHITE);
+		RenderBridgeContractSuite.assertPixel(image, 34, 29, RenderBridgeContractSuite.WHITE);
+		RenderBridgeContractSuite.assertPixel(image, 36, 27, RenderBridgeContractSuite.BLACK);
+	}
+
+	@Test
 	public void drawsAWideLineWithTheBoundShader() {
 		final IShader shader = RenderBridgeContractSuite.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
 		shader.uniform("tint", 0F, 1F, 0F, 1F);
@@ -373,6 +384,39 @@ public abstract class RenderBridgeContractSuite {
 			bridge.getState().frameBuffer(frameBuffer);
 			bridge.clearColor(0F, 0F, 0F, 1F);
 			RenderBridgeContractSuite.drawInDepth(bridge, false);
+			bridge.getState().frameBuffer(null).color(1F, 1F, 1F, 1F);
+			bridge.getState().texture(frameBuffer.getTexture()).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
+		});
+		frameBuffer.delete();
+
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
+	}
+
+	@Test
+	public void keepsTheFrameBufferDepthAcrossTargets() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.getModelView().push();
+			try {
+				bridge.getState().frameBuffer(frameBuffer).depthTest(true).depthWrite(true);
+				bridge.clearColor(0F, 0F, 0F, 1F);
+				bridge.clearDepth();
+				bridge.getModelView().translate(0D, 0D, -10D);
+				bridge.getState().color(1F, 0F, 0F, 1F);
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+				bridge.getState().frameBuffer(null);
+				bridge.clearColor(0F, 0F, 0F, 1F);
+				bridge.getState().frameBuffer(frameBuffer);
+				bridge.getModelView().translate(0D, 0D, -10D);
+				bridge.getState().color(0F, 0F, 1F, 1F);
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			} finally {
+				bridge.getState().depthTest(false).depthWrite(false);
+				bridge.getModelView().pop();
+			}
+
 			bridge.getState().frameBuffer(null).color(1F, 1F, 1F, 1F);
 			bridge.getState().texture(frameBuffer.getTexture()).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));

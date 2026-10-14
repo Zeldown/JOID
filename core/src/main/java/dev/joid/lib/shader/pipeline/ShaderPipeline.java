@@ -2,7 +2,6 @@ package dev.joid.lib.shader.pipeline;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -48,14 +47,11 @@ public final class ShaderPipeline {
 
 		ShaderPipeline.pipelineDepth++;
 		try {
-			final List<IShaderPass> sorted = new ArrayList<>(passes);
-			sorted.sort(Comparator.comparingInt(IShaderPass::priority));
-
 			float expansion = 0F;
-			for (final IShaderPass pass : sorted) {
+			for (final IShaderPass pass : passes) {
 				expansion = Math.max(expansion, pass.expansion());
 			}
-			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, BridgeHandler.RENDER.get().getPixelGrid()), sorted, baseDraw);
+			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, BridgeHandler.RENDER.get().getPixelGrid()), new ArrayList<>(passes), baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}

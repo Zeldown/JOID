@@ -84,7 +84,7 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 			this.bindPixel(pixelX, pixelY);
 		}
 
-		this.shader.uniform("bounds", cell.getTexelLeft(), cell.getTexelTop(), cell.getTexelRight(), cell.getTexelBottom());
+		this.shader.uniform("bounds", (float) cell.getTexelLeft(), (float) cell.getTexelTop(), (float) cell.getTexelRight(), (float) cell.getTexelBottom());
 
 		final ITexture texture = cell.getTexture();
 		final double marginX = 1D / this.grid.getScaleX();

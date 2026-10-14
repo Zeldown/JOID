@@ -46,11 +46,6 @@ public class BorderShaderPass implements IShaderPass {
 	}
 
 	@Override
-	public int priority() {
-		return 200;
-	}
-
-	@Override
 	public float expansion() {
 		return this.borderWidth + 2F;
 	}

@@ -263,7 +263,7 @@ public final class VideoAudioPlayer {
 	}
 
 	private void fill() {
-		final int target = 8 * (4096 / this.channels * this.channels);
+		final int target = 8 * (4096 / this.channels) * Math.min(this.channels, 2);
 		while (this.source.getBufferedSamples() < target) {
 			final short[] merged = this.mergeNextChunk();
 			if (merged == null) {

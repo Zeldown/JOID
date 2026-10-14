@@ -14,6 +14,7 @@ import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
@@ -180,12 +181,27 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void draw(final @NonNull Predicate<@NonNull UI> filter) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (!render.isFrameActive()) {
+			throw new IllegalStateException(this.getClass().getSimpleName() + ".draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use frame()");
+		}
+
+		final int stateDepth = render.getStateDepth();
+		final int modelViewDepth = render.getModelView().getDepth();
+		final int projectionDepth = render.getProjection().getDepth();
 		try {
 			ResourceData.releaseCollected();
 			ShaderPipeline.releaseUnused();
 			this.drawLayers(filter);
 			this.updateCursor();
 		} catch (final Exception exception) {
+			Tessellator.inst().abort();
+			render.getModelView().pop(modelViewDepth);
+			render.getProjection().pop(projectionDepth);
+			while (render.getStateDepth() > stateDepth) {
+				render.popState();
+			}
+
 			JOIDLog.warnOnce("UIBridge.draw." + System.identityHashCode(this) + exception, this.getClass().getSimpleName() + " cannot draw a frame and skips the rest of it: " + exception, exception);
 		}
 	}

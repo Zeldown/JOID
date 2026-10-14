@@ -33,7 +33,6 @@ public class BorderShaderPassTest {
 		pass.bind(this.context());
 		Assert.assertEquals(1, this.shader.getValues().get("u_Fill"));
 		Assert.assertEquals(BorderMode.OUT.ordinal(), this.shader.getValues().get("u_Mode"));
-		Assert.assertEquals(200, pass.priority());
 		Assert.assertEquals(5F, pass.expansion(), 0F);
 	}
 

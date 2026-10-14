@@ -428,7 +428,7 @@ public class VideoAudioPlayerTest {
 
 		@Override
 		public @NonNull IAudioSource createSource(final int sampleRate, final int channels) {
-			final RecordingAudioSource source = new RecordingAudioSource();
+			final RecordingAudioSource source = new RecordingAudioSource(channels);
 			this.created.add(sampleRate + "x" + channels);
 			this.sources.add(source);
 			return source;
@@ -446,9 +446,15 @@ public class VideoAudioPlayerTest {
 		private final List<String>  calls   = new ArrayList<>();
 		private final List<short[]> written = new ArrayList<>();
 
+		private final int channels;
+
 		private int     played;
 		private Object  group;
 		private boolean playing;
+
+		private RecordingAudioSource(final int channels) {
+			this.channels = channels;
+		}
 
 		@Override
 		public void play() {
@@ -506,7 +512,7 @@ public class VideoAudioPlayerTest {
 		private int getWrittenSamples() {
 			int samples = 0;
 			for (final short[] chunk : this.written) {
-				samples += chunk.length;
+				samples += chunk.length / this.channels * Math.min(this.channels, 2);
 			}
 			return samples;
 		}

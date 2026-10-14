@@ -190,12 +190,13 @@ public class ResourceNodeTest {
 		Assert.assertNull(node.getLinear());
 		Assert.assertSame(node, node.linear(false));
 		Assert.assertFalse(node.getLinear());
+		final List<Draw> draws = this.bridges.getRender().getDraws();
 		node.draw(0D, 0D);
-		Assert.assertSame(TextureFilter.NEAREST, this.bridges.getRender().getState().getTextureFilter());
+		Assert.assertSame(TextureFilter.NEAREST, draws.get(draws.size() - 1).getTextureFilter());
 		Assert.assertSame(TextureFilter.LINEAR, main.getProperties().getInterpolation());
 		Assert.assertSame(TextureFilter.LINEAR, hovered.getProperties().getInterpolation());
 		ResourceNode.create(100D, 100D, 20D, 10D).resource(main).draw(0D, 0D);
-		Assert.assertSame(TextureFilter.LINEAR, this.bridges.getRender().getState().getTextureFilter());
+		Assert.assertSame(TextureFilter.LINEAR, draws.get(draws.size() - 1).getTextureFilter());
 		final ResourceNode empty = ResourceNode.create(100D, 100D);
 		Assert.assertSame(empty, empty.linear(true));
 	}

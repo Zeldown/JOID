@@ -3,7 +3,9 @@ package dev.joid.backend.vulkan.render.pipeline;
 import java.nio.ByteBuffer;
 import java.nio.LongBuffer;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK10;
@@ -48,6 +50,24 @@ public final class PipelineCache {
 			variants[index] = this.create(key, renderPass);
 		}
 		return variants[index];
+	}
+
+	public void invalidate(final @NonNull VulkanShader shader, final @NonNull Consumer<Runnable> disposer) {
+		final Iterator<Map.Entry<PipelineKey, long[]>> iterator = this.pipelineMap.entrySet().iterator();
+		while (iterator.hasNext()) {
+			final Map.Entry<PipelineKey, long[]> entry = iterator.next();
+			if (entry.getKey().getShader() != shader) {
+				continue;
+			}
+
+			final long[] variants = entry.getValue();
+			iterator.remove();
+			disposer.accept(() -> {
+				for (final long pipeline : variants) {
+					VK10.vkDestroyPipeline(this.context.getDevice(), pipeline, null);
+				}
+			});
+		}
 	}
 
 	private long create(final PipelineKey key, final long renderPass) {

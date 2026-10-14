@@ -125,10 +125,24 @@ public class UniformBlockTest {
 	}
 
 	@Test
-	public void ignoresAValueForAnUndeclaredMember() {
+	public void refusesAValueForAnUndeclaredMember() {
 		final UniformBlock block = UniformBlockTest.create();
-		block.value("unknown", 1F).value("unknown", 1).value("unknown", true);
+		try {
+			block.value("unknown", 1F);
+			Assert.fail("An undeclared member must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The shader declares no uniform unknown, declare it in the shader source or fix its name (uniforms: [a, b, "));
+		}
 		Assert.assertFalse(block.pack());
+	}
+
+	@Test
+	public void writesTheIntegerVectors() {
+		final UniformBlock block = UniformBlockTest.create();
+		block.value("e", 1, 2, 3).value("n", 4, 5).value("p", 1, 0, 1, 1);
+		Assert.assertEquals(3, block.getMember("e").getValues().getInt(8));
+		Assert.assertEquals(5, block.getMember("n").getValues().getInt(4));
+		Assert.assertEquals(0, block.getMember("p").getValues().getInt(4));
 	}
 
 	@Test

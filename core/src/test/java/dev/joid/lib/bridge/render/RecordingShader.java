@@ -36,6 +36,11 @@ public final class RecordingShader implements IShader {
 	}
 
 	@Override
+	public void delete() {
+		this.active = false;
+	}
+
+	@Override
 	public @NonNull IShader getLineShader() {
 		if (this.lineShader == null) {
 			this.lineShader = new RecordingShader();
@@ -44,14 +49,14 @@ public final class RecordingShader implements IShader {
 	}
 
 	@Override
-	public @NonNull IShader uniform(final @NonNull String name, final int value) {
+	public @NonNull IShader uniform(final @NonNull String name, final boolean value) {
 		this.values.put(name, value);
 		return this;
 	}
 
 	@Override
-	public @NonNull IShader uniform(final @NonNull String name, final boolean value) {
-		this.values.put(name, value);
+	public @NonNull IShader uniform(final @NonNull String name, final @NonNull int... values) {
+		this.values.put(name, values.length == 1 ? (Object) values[0] : values.clone());
 		return this;
 	}
 

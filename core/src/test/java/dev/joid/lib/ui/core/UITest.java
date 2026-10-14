@@ -43,6 +43,7 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.state.RenderState;
@@ -1113,7 +1114,7 @@ public class UITest {
 		try {
 			bridge.add(ui);
 			this.bridges.move(150D, 160D).frame();
-			bridge.draw();
+			this.bridges.draw(bridge);
 			Assert.assertTrue(ui.isOnTop());
 			Assert.assertEquals(Collections.singletonList("[Save] 150.0 160.0"), bridge.hovers);
 		} finally {
@@ -1130,7 +1131,7 @@ public class UITest {
 		try {
 			bridge.add(ui);
 			this.bridges.move(0D, 0D).frame();
-			bridge.draw();
+			this.bridges.draw(bridge);
 			Assert.assertEquals(0.5D, ui.getView().getInterfaceScale(), 0D);
 			Assert.assertEquals(3840D, ui.getScaledWidth().get(), 0D);
 			Assert.assertEquals(2160D, ui.getScaledHeight().get(), 0D);
@@ -1159,12 +1160,12 @@ public class UITest {
 		try {
 			bridge.add(ui);
 			this.bridges.move(0D, 0D).frame();
-			bridge.draw();
+			this.bridges.draw(bridge);
 			Assert.assertEquals(1D, ui.getView().getInterfaceScale(), 0D);
 			Assert.assertEquals(1920D, ui.getScaledWidth().get(), 0D);
 			Assert.assertEquals(0, bridge.scaleQueries);
 			ui.getScale().setActive(true);
-			bridge.draw();
+			this.bridges.draw(bridge);
 			Assert.assertEquals(0.5D, ui.getView().getInterfaceScale(), 0D);
 			Assert.assertEquals(1, bridge.scaleQueries);
 		} finally {
@@ -1181,14 +1182,14 @@ public class UITest {
 		try {
 			bridge.add(ui);
 			this.bridges.move(0D, 0D).frame();
-			bridge.draw();
+			this.bridges.draw(bridge);
 			Assert.assertEquals(0.75D, ui.getView().getInterfaceScale(), 0D);
 			bridge.interfaceScale = 0.5D;
-			bridge.draw();
+			this.bridges.draw(bridge);
 			Assert.assertEquals(0.5D, ui.getView().getInterfaceScale(), 0D);
 			ui.getScale().setLimited(false);
 			bridge.interfaceScale = 2D;
-			bridge.draw();
+			this.bridges.draw(bridge);
 			Assert.assertEquals(2D, ui.getView().getInterfaceScale(), 0D);
 		} finally {
 			BridgeHandler.UI.unregister(bridge);
@@ -1964,13 +1965,7 @@ public class UITest {
 		@Override
 		public void init() {
 			super.init();
-			super.add(new DrawingNode(() -> {
-				try {
-					Thread.sleep(this.pause);
-				} catch (final InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-			}));
+			super.add(new DrawingNode(() -> ((ManualClockBridge) BridgeHandler.CLOCK.get()).advance(this.pause)));
 		}
 
 	}

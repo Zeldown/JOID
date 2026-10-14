@@ -44,11 +44,12 @@ public final class DrawResource {
 
 	public void drawTexture(final double x, final double y, final double width, final double height, final @NonNull ITexture texture, final double u0, final double v0, final double u1, final double v1, final @NonNull TextureFilter filter, final @NonNull BlendState blend) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getState().blend(blend).texture(texture).textureFilter(filter).textureWrap(TextureWrap.CLAMP_TO_EDGE);
+		render.pushState();
 		try {
+			render.getState().blend(blend).texture(texture).textureFilter(filter).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 			DrawResource.drawQuad(x, y, x + width, y + height, new double[] {u0, v0, u1, v1}, 0D);
 		} finally {
-			render.getState().texture(null).blend(BlendState.DISABLED);
+			render.popState();
 		}
 	}
 
@@ -82,6 +83,7 @@ public final class DrawResource {
 
 		final double[] uv = failed || region == null || region.length != 4 ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getSourceWidth(), region[1] / resource.getSourceHeight(), (region[0] + region[2]) / resource.getSourceWidth(), (region[1] + region[3]) / resource.getSourceHeight()};
 		render.getModelView().push();
+		render.pushState();
 		try {
 			render.getState().blend(BlendState.NORMAL);
 			if (grid.isAligned()) {
@@ -94,8 +96,8 @@ public final class DrawResource {
 			} else {
 				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> EdgeSmoothing.rect(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 1F, 1F, 1F, 1F));
 			}
-			render.getState().blend(BlendState.DISABLED);
 		} finally {
+			render.popState();
 			render.getModelView().pop();
 		}
 	}

@@ -31,7 +31,6 @@ public final class GlfwSnapshotWindow {
 
 	public void destroy() {
 		GLFW.glfwDestroyWindow(this.window);
-		GLFW.glfwTerminate();
 	}
 
 }

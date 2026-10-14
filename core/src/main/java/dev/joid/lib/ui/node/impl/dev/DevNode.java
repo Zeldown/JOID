@@ -24,6 +24,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
@@ -398,20 +399,20 @@ public final class DevNode extends Node {
 
 		if (this.gridSignal.peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
-			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(1920 / 2 - 1, 0), Point.create(1920 / 2 + 1, 1080));
-			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, 1080 / 2 - 1), Point.create(1920, 1080 / 2 + 1));
+			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(UIView.DESIGN_WIDTH / 2D - 1D, 0), Point.create(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
+			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.create(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
 
 			DrawUtils.SHAPE.drawRect(0, mouseY, mouseX, 3, gridColor);
 			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
 
-			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 1920 - mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + (1920 - mouseX) / 2, mouseY + 5, Text.create((int) (1920 - mouseX) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
+			DrawUtils.SHAPE.drawRect(mouseX, mouseY, UIView.DESIGN_WIDTH - mouseX, 3, gridColor);
+			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2, mouseY + 5, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, 0, 3, mouseY, gridColor);
 			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
 
-			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 3, 1080 - mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (1080 - mouseY) / 2, Text.create((int) (1080 - mouseY) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
+			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 3, UIView.DESIGN_HEIGHT - mouseY, gridColor);
+			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (UIView.DESIGN_HEIGHT - mouseY) / 2, Text.create((int) (UIView.DESIGN_HEIGHT - mouseY) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
 		}
 
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK, 10F);

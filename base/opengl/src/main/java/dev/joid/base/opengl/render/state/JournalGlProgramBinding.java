@@ -24,6 +24,11 @@ public final class JournalGlProgramBinding implements IGlProgramBinding {
 	}
 
 	@Override
+	public void deleteProgram(final int program) {
+		this.binding.deleteProgram(program);
+	}
+
+	@Override
 	public void useProgram(final int program) {
 		this.journal.touch(GlStateKey.PROGRAM);
 		this.binding.useProgram(program);

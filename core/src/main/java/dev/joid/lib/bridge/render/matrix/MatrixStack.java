@@ -22,6 +22,12 @@ public final class MatrixStack {
 		this.matrix = this.stack.pop();
 	}
 
+	public void pop(final int depth) {
+		while (this.stack.size() > depth) {
+			this.pop();
+		}
+	}
+
 	public void push() {
 		this.stack.push(this.matrix.clone());
 	}
@@ -94,6 +100,10 @@ public final class MatrixStack {
 			}
 		}
 		this.matrix = result;
+	}
+
+	public int getDepth() {
+		return this.stack.size();
 	}
 
 	public float[] getNormalMatrix() {

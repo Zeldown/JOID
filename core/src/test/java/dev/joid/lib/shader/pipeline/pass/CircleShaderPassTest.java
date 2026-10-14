@@ -46,9 +46,8 @@ public class CircleShaderPassTest {
 	}
 
 	@Test
-	public void runsBeforeTheOtherPassesWithoutExpanding() {
+	public void drawsWithoutExpanding() {
 		final CircleShaderPass pass = new CircleShaderPass(15F, 40F, 50F);
-		Assert.assertEquals(100, pass.priority());
 		Assert.assertEquals(0F, pass.expansion(), 0F);
 	}
 

@@ -54,7 +54,7 @@ public class BorderNodeEffectTest {
 		pass.bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(5F, pass.expansion(), 0F);
-		Assert.assertEquals(200, pass.priority());
+		Assert.assertEquals(200, BorderNodeEffect.create(Color.RED, 3F).getPriority());
 		Assert.assertEquals(3F, (Float) values.get("u_BorderWidth"), 1E-4F);
 		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) values.get("u_BorderColor"), 0F);
 		Assert.assertEquals(0, values.get("u_Fill"));

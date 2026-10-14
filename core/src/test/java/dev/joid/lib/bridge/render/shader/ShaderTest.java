@@ -69,9 +69,65 @@ public class ShaderTest {
 	}
 
 	@Test
+	public void unbindsOnlyWhileItIsBound() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final TestShader shader = new TestShader(render, BlendState.NORMAL);
+		final TestShader other = new TestShader(render, BlendState.NORMAL);
+		other.bind();
+		shader.unbind();
+		Assert.assertSame(other, render.getState().getShader());
+	}
+
+	@Test
 	public void reportsWhetherItCompiled() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		Assert.assertTrue(new TestShader(render, BlendState.NORMAL).isActive());
+	}
+
+	@Test
+	public void compilesOnItsFirstUse() {
+		final TestShader shader = ShaderTest.create();
+		Assert.assertEquals(0, shader.compilations);
+		shader.isActive();
+		shader.isActive();
+		Assert.assertEquals(1, shader.compilations);
+	}
+
+	@Test
+	public void deletesItsProgramAndCompilesItAgainOnTheNextUse() {
+		final TestShader shader = ShaderTest.create();
+		shader.delete();
+		Assert.assertEquals(0, shader.deletions);
+		shader.isActive();
+		shader.delete();
+		shader.delete();
+		Assert.assertEquals(1, shader.deletions);
+		Assert.assertTrue(shader.isActive());
+		Assert.assertEquals(2, shader.compilations);
+	}
+
+	@Test
+	public void deletesItsLineShaderWithIt() {
+		final TestShader shader = ShaderTest.create(new LineRenderBridge());
+		final TestShader line = (TestShader) shader.getLineShader();
+		line.isActive();
+		shader.delete();
+		Assert.assertEquals(1, line.deletions);
+	}
+
+	@Test
+	public void writesIntegerUniforms() {
+		final TestShader shader = new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "void main() {}"), ShaderSource.parse(ShaderStage.FRAGMENT, "uniform ivec2 u_Cell;\nuniform int u_Mode;\n\nvoid main() {\n    fragColor = vec4(float(u_Cell.x + u_Mode));\n}\n"));
+		shader.uniform("u_Cell", 3, 4).uniform("u_Mode", 2);
+		Assert.assertEquals(4, shader.getBlock().getMember("u_Cell").getValues().getInt(4));
+		Assert.assertEquals(2, shader.getBlock().getMember("u_Mode").getValues().getInt(0));
+	}
+
+	@Test
+	public void declaresTheStencilSamplerOfAnEmulatedStencil() {
+		final TestShader shader = new TestShader(new RecordingRenderBridge(), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		Assert.assertEquals(3, shader.getSamplerMap().get(GlslShaderTranslator.STENCIL).getUnit());
+		Assert.assertNull(ShaderTest.create().getSamplerMap().get(GlslShaderTranslator.STENCIL));
 	}
 
 	@Test
@@ -89,7 +145,7 @@ public class ShaderTest {
 			ShaderTest.create().uniform("u_Radius", 1F);
 			Assert.fail("An undeclared uniform must be refused");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("The shader declares no uniform u_Radius, declare it in the shader source or fix its name", expected.getMessage());
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The shader declares no uniform u_Radius, declare it in the shader source or fix its name (uniforms: "));
 		}
 	}
 
@@ -159,12 +215,12 @@ public class ShaderTest {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.setBorderless(true);
 		final TestShader shader = new TestShader(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
-		Assert.assertSame(GlslDialect.GLSL_330, shader.translation.getDialect());
-		Assert.assertTrue(shader.translation.getVertex().startsWith("#version 330 core\n"));
-		Assert.assertTrue(shader.translation.getFragment().contains("joid_borderTexture(tex, joid_Border_tex, "));
-		Assert.assertTrue(shader.translation.getFragment().contains("if (joid_StencilTest != 0"));
-		Assert.assertTrue(shader.translation.getStencilFragment().contains("joid_stencilApply(joid_stencilCompare(value)"));
-		Assert.assertNull(ShaderTest.create().translation.getStencilFragment());
+		Assert.assertSame(GlslDialect.GLSL_330, shader.getTranslation().getDialect());
+		Assert.assertTrue(shader.getTranslation().getVertex().startsWith("#version 330 core\n"));
+		Assert.assertTrue(shader.getTranslation().getFragment().contains("joid_borderTexture(tex, joid_Border_tex, "));
+		Assert.assertTrue(shader.getTranslation().getFragment().contains("if (joid_StencilTest != 0"));
+		Assert.assertTrue(shader.getTranslation().getStencilFragment().contains("joid_stencilApply(joid_stencilCompare(value)"));
+		Assert.assertNull(ShaderTest.create().getTranslation().getStencilFragment());
 	}
 
 	@Test
@@ -287,7 +343,8 @@ public class ShaderTest {
 
 	private static final class TestShader extends Shader {
 
-		private ShaderTranslation translation;
+		private int deletions;
+		private int compilations;
 
 		private TestShader(final RenderBridge render, final BlendState blend) {
 			this(render, blend, ShaderSource.parse(ShaderStage.VERTEX, "void main() {}"), ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {}"));
@@ -302,13 +359,18 @@ public class ShaderTest {
 		}
 
 		@Override
-		public boolean isActive() {
+		protected boolean isProgramActive() {
 			return true;
 		}
 
 		@Override
+		protected void deleteProgram() {
+			this.deletions++;
+		}
+
+		@Override
 		protected void compileProgram(final @NonNull ShaderTranslation translation) {
-			this.translation = translation;
+			this.compilations++;
 		}
 
 	}

@@ -95,6 +95,14 @@ public class ShadowNodeEffectTest {
 		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(RoundedNodeEffect.create(12F)).effect(ShadowNodeEffect.create(Color.BLACK, 8F)))).frame();
 		Assert.assertEquals(12F, (Float) this.shader.getValues().get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {100F, 100F, 300F, 150F}, (float[]) this.shader.getValues().get("u_Box"), 1E-3F);
+		Assert.assertArrayEquals(new float[] {1F, 1F, 1F, 1F}, (float[]) this.shader.getValues().get("u_Sides"), 0F);
+	}
+
+	@Test
+	public void followsTheRoundedSidesOfItsNode() {
+		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(RoundedNodeEffect.create(12F, true, true, false, false)).effect(ShadowNodeEffect.create(Color.BLACK, 8F)))).frame();
+		Assert.assertEquals(12F, (Float) this.shader.getValues().get("u_Radius"), 0F);
+		Assert.assertArrayEquals(new float[] {1F, 1F, 0F, 0F}, (float[]) this.shader.getValues().get("u_Sides"), 0F);
 	}
 
 	@Test

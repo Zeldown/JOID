@@ -52,6 +52,12 @@ public abstract class ShaderProgram {
 		}
 	}
 
+	public void delete() {
+		if (this.shader != null) {
+			this.shader.delete();
+		}
+	}
+
 	public boolean canDraw() {
 		final boolean available = this.isAvailable();
 		if (!available) {

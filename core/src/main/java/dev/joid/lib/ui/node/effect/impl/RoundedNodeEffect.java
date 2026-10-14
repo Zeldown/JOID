@@ -7,13 +7,10 @@ import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @SuppressWarnings("unchecked")
 public class RoundedNodeEffect extends NodeEffect<Node> {
 
@@ -24,11 +21,16 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	private Supplier<Boolean> bottomSupplier;
 
 	protected RoundedNodeEffect(final float radius, final boolean left, final boolean top, final boolean right, final boolean bottom) {
-		this.radiusSupplier = () -> radius;
-		this.leftSupplier = () -> left;
-		this.topSupplier = () -> top;
-		this.rightSupplier = () -> right;
-		this.bottomSupplier = () -> bottom;
+		this(() -> radius, () -> left, () -> top, () -> right, () -> bottom);
+	}
+
+	protected RoundedNodeEffect(final Supplier<Float> radiusSupplier, final Supplier<Boolean> leftSupplier, final Supplier<Boolean> topSupplier, final Supplier<Boolean> rightSupplier, final Supplier<Boolean> bottomSupplier) {
+		super(100);
+		this.radiusSupplier = radiusSupplier;
+		this.leftSupplier = leftSupplier;
+		this.topSupplier = topSupplier;
+		this.rightSupplier = rightSupplier;
+		this.bottomSupplier = bottomSupplier;
 	}
 
 	public static RoundedNodeEffect create(final float radius) {

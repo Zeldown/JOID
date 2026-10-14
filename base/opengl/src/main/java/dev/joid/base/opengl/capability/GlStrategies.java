@@ -25,16 +25,16 @@ public final class GlStrategies {
 	private final GlFrameBufferFamily frameBufferFamily;
 
 	public static @NonNull GlStrategies of(final @NonNull GlCapabilities capabilities) {
-		if (capabilities.getVersion() < 200 || capabilities.getGlslVersion() < GlslDialect.GLSL_110.getVersion()) {
-			throw new IllegalStateException("JOID needs OpenGL 2.0 with GLSL 1.10, this context offers " + capabilities.getName());
+		if (capabilities.getVersion() < 210 || capabilities.getGlslVersion() < GlslDialect.GLSL_120.getVersion()) {
+			throw new IllegalStateException("JOID needs OpenGL 2.1 with GLSL 1.20, this context offers " + capabilities.getName() + ": update the graphics driver or create a newer OpenGL context");
 		}
 
 		final GlFrameBufferFamily frameBufferFamily = capabilities.getFrameBufferFamily();
-		if (frameBufferFamily == null) {
+		if (frameBufferFamily == GlFrameBufferFamily.UNSUPPORTED) {
 			throw new IllegalStateException("JOID needs framebuffer objects (OpenGL 3.0, GL_ARB_framebuffer_object or GL_EXT_framebuffer_object), this context offers " + capabilities.getName());
 		}
 
-		GlslDialect dialect = GlslDialect.GLSL_110;
+		GlslDialect dialect = GlslDialect.GLSL_120;
 		for (final GlslDialect candidate : GlslDialect.values()) {
 			if (!candidate.isEs() && candidate.getVersion() <= Math.min(capabilities.getGlslVersion(), GlslDialect.GLSL_330.getVersion()) && candidate.getVersion() > dialect.getVersion()) {
 				dialect = candidate;

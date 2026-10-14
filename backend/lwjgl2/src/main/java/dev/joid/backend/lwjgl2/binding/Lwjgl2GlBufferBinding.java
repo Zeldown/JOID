@@ -77,9 +77,16 @@ public final class Lwjgl2GlBufferBinding implements IGlBufferBinding {
 
 	@Override
 	public void vertexAttribPointer(final int index, final int size, final int type, final boolean normalized, final int stride, final long offset) {
-		if (this.arrayBuffer != 0) {
-			GL20.glVertexAttribPointer(index, size, type, normalized, stride, offset);
+		if (this.arrayBuffer == 0) {
+			throw new IllegalStateException("LWJGL 2 cannot point the vertex attribute " + index + " at client memory (offset " + offset + "), bind an array buffer with bindBuffer(ARRAY_BUFFER, buffer) before vertexAttribPointer");
 		}
+
+		GL20.glVertexAttribPointer(index, size, type, normalized, stride, offset);
+	}
+
+	@Override
+	public boolean canPointClientMemory() {
+		return false;
 	}
 
 	@Override

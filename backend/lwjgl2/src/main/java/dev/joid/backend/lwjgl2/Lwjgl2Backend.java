@@ -18,7 +18,6 @@ public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
 
 	private Lwjgl2Backend() {
 		super(JOID.VERSION);
-		Lwjgl2Natives.install();
 	}
 
 	public static @NonNull Lwjgl2Backend create() {
@@ -32,6 +31,7 @@ public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
 
 	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
+		Lwjgl2Natives.install();
 		return new Lwjgl2WindowBridge();
 	}
 

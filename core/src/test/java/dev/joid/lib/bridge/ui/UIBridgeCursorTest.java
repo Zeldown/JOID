@@ -179,7 +179,7 @@ public class UIBridgeCursorTest {
 		try {
 			this.bridges.open(new NodeUI(RectNode.create(100, 100, 200, 200).cursor(Cursor.TEXT))).move(150D, 150D);
 			other.add(ui);
-			other.draw();
+			this.bridges.draw(other);
 			other.close(ui);
 			this.bridges.frame();
 			Assert.assertEquals(Arrays.asList(Cursor.POINTER, Cursor.TEXT), this.bridges.getWindow().getCursors());

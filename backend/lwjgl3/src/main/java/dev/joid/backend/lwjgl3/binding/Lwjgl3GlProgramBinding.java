@@ -24,6 +24,11 @@ public final class Lwjgl3GlProgramBinding implements IGlProgramBinding {
 	}
 
 	@Override
+	public void deleteProgram(final int program) {
+		GL20C.glDeleteProgram(program);
+	}
+
+	@Override
 	public void useProgram(final int program) {
 		GL20C.glUseProgram(program);
 	}

@@ -17,6 +17,9 @@ import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
+import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import lombok.AllArgsConstructor;
@@ -34,6 +37,14 @@ public class NodeEffectTest {
 		final PlainEffect effect = new PlainEffect();
 		Assert.assertEquals(0, effect.getPriority());
 		Assert.assertEquals(NodeEffectScope.SELF, effect.getScope());
+	}
+
+	@Test
+	public void ordersTheBuiltInShaderEffectsByTheirDefaultPriority() {
+		Assert.assertEquals(100, RoundedNodeEffect.create(4F).getPriority());
+		Assert.assertEquals(100, CircleNodeEffect.create().getPriority());
+		Assert.assertEquals(150, BlurNodeEffect.create(4F).getPriority());
+		Assert.assertEquals(200, BorderNodeEffect.create(Color.RED, 2F).getPriority());
 	}
 
 	@Test
@@ -268,11 +279,6 @@ public class NodeEffectTest {
 		@Override
 		public void unbind() {
 			this.trace.add("unbind");
-		}
-
-		@Override
-		public int priority() {
-			return 0;
 		}
 
 		@Override

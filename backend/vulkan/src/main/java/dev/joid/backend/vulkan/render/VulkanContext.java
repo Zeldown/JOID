@@ -3,6 +3,7 @@ package dev.joid.backend.vulkan.render;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import org.lwjgl.PointerBuffer;
@@ -53,6 +54,7 @@ public final class VulkanContext {
 	private final VkQueue                          queue;
 	private final int                              queueFamily;
 	private final VkDevice                         device;
+	private final int                              depthFormat;
 	private final long                             commandPool;
 	private final VkInstance                       instance;
 	private final long                             uniformAlignment;
@@ -84,15 +86,16 @@ public final class VulkanContext {
 			this.memoryProperties = VkPhysicalDeviceMemoryProperties.malloc();
 			VK10.vkGetPhysicalDeviceMemoryProperties(this.physicalDevice, this.memoryProperties);
 
-			this.depthStencilFormat  = VulkanContext.selectDepthStencilFormat(stack, this.physicalDevice);
-			this.offscreenRenderPass = this.createRenderPass(VulkanContext.TEXTURE_FORMAT, false, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, true, true);
+			this.depthFormat         = VulkanContext.selectDepthFormat(stack, this.physicalDevice, VK10.VK_FORMAT_X8_D24_UNORM_PACK32, VK10.VK_FORMAT_D32_SFLOAT, VK10.VK_FORMAT_D16_UNORM);
+			this.depthStencilFormat  = VulkanContext.selectDepthFormat(stack, this.physicalDevice, VK10.VK_FORMAT_D24_UNORM_S8_UINT, VK10.VK_FORMAT_D32_SFLOAT_S8_UINT);
+			this.offscreenRenderPass = this.createRenderPass(VulkanContext.TEXTURE_FORMAT, false, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, this.depthFormat, false);
 		}
 	}
 
-	public long createRenderPass(final int colorFormat, final boolean clear, final int initialLayout, final int finalLayout, final boolean depthStencil, final boolean clearDepthStencil) {
+	public long createRenderPass(final int colorFormat, final boolean clear, final int initialLayout, final int finalLayout, final int depthFormat, final boolean clearDepth) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final int loadOperation = clear ? VK10.VK_ATTACHMENT_LOAD_OP_CLEAR : VK10.VK_ATTACHMENT_LOAD_OP_LOAD;
-			final VkAttachmentDescription.Buffer attachments = VkAttachmentDescription.calloc(depthStencil ? 2 : 1, stack);
+			final VkAttachmentDescription.Buffer attachments = VkAttachmentDescription.calloc(2, stack);
 			attachments.get(0)
 					.format(colorFormat)
 					.samples(VK10.VK_SAMPLE_COUNT_1_BIT)
@@ -103,24 +106,23 @@ public final class VulkanContext {
 					.initialLayout(initialLayout)
 					.finalLayout(finalLayout);
 
+			final int depthLoadOperation = clearDepth ? VK10.VK_ATTACHMENT_LOAD_OP_CLEAR : VK10.VK_ATTACHMENT_LOAD_OP_LOAD;
+			final boolean stencil = VulkanContext.hasStencil(depthFormat);
+			attachments.get(1)
+					.format(depthFormat)
+					.samples(VK10.VK_SAMPLE_COUNT_1_BIT)
+					.loadOp(depthLoadOperation)
+					.storeOp(VK10.VK_ATTACHMENT_STORE_OP_STORE)
+					.stencilLoadOp(stencil ? depthLoadOperation : VK10.VK_ATTACHMENT_LOAD_OP_DONT_CARE)
+					.stencilStoreOp(stencil ? VK10.VK_ATTACHMENT_STORE_OP_STORE : VK10.VK_ATTACHMENT_STORE_OP_DONT_CARE)
+					.initialLayout(clearDepth ? VK10.VK_IMAGE_LAYOUT_UNDEFINED : VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
+					.finalLayout(VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+
 			final VkSubpassDescription.Buffer subpass = VkSubpassDescription.calloc(1, stack)
 					.pipelineBindPoint(VK10.VK_PIPELINE_BIND_POINT_GRAPHICS)
 					.colorAttachmentCount(1)
-					.pColorAttachments(VkAttachmentReference.calloc(1, stack).attachment(0).layout(VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL));
-
-			if (depthStencil) {
-				final int depthLoadOperation = clearDepthStencil ? VK10.VK_ATTACHMENT_LOAD_OP_CLEAR : VK10.VK_ATTACHMENT_LOAD_OP_LOAD;
-				attachments.get(1)
-						.format(this.depthStencilFormat)
-						.samples(VK10.VK_SAMPLE_COUNT_1_BIT)
-						.loadOp(depthLoadOperation)
-						.storeOp(VK10.VK_ATTACHMENT_STORE_OP_STORE)
-						.stencilLoadOp(depthLoadOperation)
-						.stencilStoreOp(VK10.VK_ATTACHMENT_STORE_OP_STORE)
-						.initialLayout(clearDepthStencil ? VK10.VK_IMAGE_LAYOUT_UNDEFINED : VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL)
-						.finalLayout(VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
-				subpass.pDepthStencilAttachment(VkAttachmentReference.calloc(stack).attachment(1).layout(VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
-			}
+					.pColorAttachments(VkAttachmentReference.calloc(1, stack).attachment(0).layout(VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL))
+					.pDepthStencilAttachment(VkAttachmentReference.calloc(stack).attachment(1).layout(VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL));
 
 			final LongBuffer renderPass = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkCreateRenderPass(this.device, VkRenderPassCreateInfo.calloc(stack).sType$Default().pAttachments(attachments).pSubpasses(subpass), null, renderPass), "vkCreateRenderPass");
@@ -355,15 +357,19 @@ public final class VulkanContext {
 		return false;
 	}
 
-	private static int selectDepthStencilFormat(final MemoryStack stack, final VkPhysicalDevice device) {
+	private static boolean hasStencil(final int format) {
+		return format == VK10.VK_FORMAT_D16_UNORM_S8_UINT || format == VK10.VK_FORMAT_D24_UNORM_S8_UINT || format == VK10.VK_FORMAT_D32_SFLOAT_S8_UINT;
+	}
+
+	private static int selectDepthFormat(final MemoryStack stack, final VkPhysicalDevice device, final int... formats) {
 		final VkFormatProperties properties = VkFormatProperties.malloc(stack);
-		for (final int format : new int[] {VK10.VK_FORMAT_D24_UNORM_S8_UINT, VK10.VK_FORMAT_D32_SFLOAT_S8_UINT}) {
+		for (final int format : formats) {
 			VK10.vkGetPhysicalDeviceFormatProperties(device, format, properties);
 			if ((properties.optimalTilingFeatures() & VK10.VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT) != 0) {
 				return format;
 			}
 		}
-		throw new IllegalStateException("No depth stencil format is supported by the Vulkan device");
+		throw new IllegalStateException("The Vulkan device supports none of the depth formats " + Arrays.toString(formats) + ", use a device that supports one of them");
 	}
 
 	private static VkDevice createDevice(final MemoryStack stack, final VkPhysicalDevice physicalDevice, final int queueFamily) {

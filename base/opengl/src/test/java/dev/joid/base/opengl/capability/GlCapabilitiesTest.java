@@ -61,7 +61,7 @@ public class GlCapabilitiesTest {
 		Assert.assertSame(GlFrameBufferFamily.EXT, GlCapabilities.read(new ContextBinding("2.1", "1.20", 0, 0, "GL_EXT_framebuffer_object")).getFrameBufferFamily());
 		Assert.assertFalse(GlCapabilities.read(new ContextBinding("2.1", "1.20", 0, 0, "GL_EXT_framebuffer_object")).hasFrameBufferBlit());
 		Assert.assertTrue(GlCapabilities.read(new ContextBinding("2.1", "1.20", 0, 0, "GL_EXT_framebuffer_object", "GL_EXT_framebuffer_blit")).hasFrameBufferBlit());
-		Assert.assertNull(GlCapabilities.read(new ContextBinding("2.1", "1.20", 0, 0)).getFrameBufferFamily());
+		Assert.assertSame(GlFrameBufferFamily.UNSUPPORTED, GlCapabilities.read(new ContextBinding("2.1", "1.20", 0, 0)).getFrameBufferFamily());
 	}
 
 	@Test
@@ -86,7 +86,6 @@ public class GlCapabilitiesTest {
 
 	@Test
 	public void choosesTheHighestDialectOfTheContext() {
-		Assert.assertSame(GlslDialect.GLSL_110, GlCapabilitiesTest.dialect("2.0 Mesa", "1.10"));
 		Assert.assertSame(GlslDialect.GLSL_120, GlCapabilitiesTest.dialect("2.1 Mesa", "1.20"));
 		Assert.assertSame(GlslDialect.GLSL_130, GlCapabilitiesTest.dialect("3.0 Mesa", "1.30"));
 		Assert.assertSame(GlslDialect.GLSL_140, GlCapabilitiesTest.dialect("3.1 Mesa", "1.40"));
@@ -104,12 +103,15 @@ public class GlCapabilitiesTest {
 	}
 
 	@Test
-	public void refusesAContextBelowOpenGl20() {
-		try {
-			GlStrategies.of(GlCapabilities.read(new ContextBinding("1.5 Mesa", "", 0, 0, "GL_EXT_framebuffer_object")));
-			Assert.fail();
-		} catch (final IllegalStateException e) {
-			Assert.assertEquals("JOID needs OpenGL 2.0 with GLSL 1.10, this context offers OpenGL 1.5 with GLSL 0.00 (Test renderer)", e.getMessage());
+	public void refusesAContextBelowOpenGl21() {
+		for (final String[] context : new String[][] {{"1.5 Mesa", ""}, {"2.0 Mesa", "1.10"}, {"2.1 Mesa", "1.10"}}) {
+			try {
+				GlStrategies.of(GlCapabilities.read(new ContextBinding(context[0], context[1], 0, 0, "GL_EXT_framebuffer_object")));
+				Assert.fail();
+			} catch (final IllegalStateException e) {
+				Assert.assertTrue(e.getMessage(), e.getMessage().startsWith("JOID needs OpenGL 2.1 with GLSL 1.20, this context offers OpenGL "));
+				Assert.assertTrue(e.getMessage(), e.getMessage().endsWith(": update the graphics driver or create a newer OpenGL context"));
+			}
 		}
 	}
 

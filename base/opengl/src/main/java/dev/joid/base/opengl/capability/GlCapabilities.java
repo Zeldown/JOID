@@ -95,11 +95,11 @@ public final class GlCapabilities {
 		return "OpenGL " + this.version / 100 + "." + this.version / 10 % 10 + " with GLSL " + this.glslVersion / 100 + "." + String.format(Locale.ROOT, "%02d", this.glslVersion % 100) + " (" + this.renderer + ")";
 	}
 
-	public GlFrameBufferFamily getFrameBufferFamily() {
+	public @NonNull GlFrameBufferFamily getFrameBufferFamily() {
 		if (this.version >= 300 || this.hasExtension("GL_ARB_framebuffer_object")) {
 			return GlFrameBufferFamily.CORE;
 		}
-		return this.hasExtension("GL_EXT_framebuffer_object") ? GlFrameBufferFamily.EXT : null;
+		return this.hasExtension("GL_EXT_framebuffer_object") ? GlFrameBufferFamily.EXT : GlFrameBufferFamily.UNSUPPORTED;
 	}
 
 	private static int parseVersion(final String version) {

@@ -8,13 +8,11 @@ import lombok.NonNull;
 public class BlurShaderPass implements IShaderPass {
 
 	private final float radius;
-	private final int priorityValue;
 	private final boolean horizontal;
 
-	public BlurShaderPass(final float radius, final boolean horizontal, final int iteration) {
+	public BlurShaderPass(final float radius, final boolean horizontal) {
 		this.radius = radius;
 		this.horizontal = horizontal;
-		this.priorityValue = 150 + iteration * 2 + (horizontal ? 0 : 1);
 	}
 
 	@Override
@@ -30,11 +28,6 @@ public class BlurShaderPass implements IShaderPass {
 
 		final double scale = this.horizontal ? context.getGrid().getScaleX() : context.getGrid().getScaleY();
 		BlurShader.inst().bind((float) (this.radius * scale), this.horizontal ? 1F : 0F, this.horizontal ? 0F : 1F, context.getTexelWidth(), context.getTexelHeight());
-	}
-
-	@Override
-	public int priority() {
-		return this.priorityValue;
 	}
 
 	@Override

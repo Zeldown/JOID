@@ -81,9 +81,8 @@ public class RoundedShaderPassTest {
 	}
 
 	@Test
-	public void runsBeforeTheOtherPassesWithoutExpanding() {
+	public void drawsWithoutExpanding() {
 		final RoundedShaderPass pass = new RoundedShaderPass(6F, 1F, 2F, 3F, 4F);
-		Assert.assertEquals(100, pass.priority());
 		Assert.assertEquals(0F, pass.expansion(), 0F);
 	}
 

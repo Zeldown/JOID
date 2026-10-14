@@ -7,6 +7,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.RecordingFrameBuffer;
+import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -201,6 +202,15 @@ public class FrameBufferTest {
 		FrameBuffer.create(64, 32, TextureFilter.LINEAR).fill(() -> {}).draw(10D, 20D, 100D, 50D);
 		Assert.assertSame(BlendState.DISABLED, this.render.getState().getBlend());
 		Assert.assertNull(this.render.getState().getTexture());
+	}
+
+	@Test
+	public void givesBackTheStateOfItsCaller() {
+		final RecordingTexture texture = new RecordingTexture();
+		this.render.getState().blend(BlendState.PREMULTIPLIED).texture(texture);
+		FrameBuffer.create(64, 32, TextureFilter.LINEAR).fill(() -> {}).draw(10D, 20D, 100D, 50D);
+		Assert.assertSame(BlendState.PREMULTIPLIED, this.render.getState().getBlend());
+		Assert.assertSame(texture, this.render.getState().getTexture());
 	}
 
 	@Test

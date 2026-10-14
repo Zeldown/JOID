@@ -49,6 +49,14 @@ public abstract class Backend<T extends Backend<T>> {
 		}
 
 		this.registered = true;
+		if (this.dataDir != null) {
+			JOIDEnv.dataDir(this.dataDir);
+		}
+
+		if (this.cacheDir != null) {
+			JOIDEnv.cacheDir(this.cacheDir);
+		}
+
 		JOID.checkVersion(this.version);
 
 		final IAudioBridge audio = this.audio ? this.createAudioBridge() : null;
@@ -66,14 +74,6 @@ public abstract class Backend<T extends Backend<T>> {
 
 		this.registerDefaults();
 		this.attachInput();
-
-		if (this.dataDir != null) {
-			JOIDEnv.dataDir(this.dataDir);
-		}
-
-		if (this.cacheDir != null) {
-			JOIDEnv.cacheDir(this.cacheDir);
-		}
 
 		JOID.inst().load();
 		return (T) this;

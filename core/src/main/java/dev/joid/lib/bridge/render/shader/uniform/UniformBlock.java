@@ -35,27 +35,18 @@ public final class UniformBlock {
 		return new UniformBlock(ByteBuffer.allocateDirect(Math.max((end + 15) / 16 * 16, 16)).order(ByteOrder.nativeOrder()), memberMap);
 	}
 
-	public @NonNull UniformBlock value(final @NonNull String name, final int value) {
-		final UniformMember member = this.memberMap.get(name);
-		if (member != null) {
-			member.value(value);
-		}
+	public @NonNull UniformBlock value(final @NonNull String name, final boolean value) {
+		this.requireMember(name).value(value);
 		return this;
 	}
 
-	public @NonNull UniformBlock value(final @NonNull String name, final boolean value) {
-		final UniformMember member = this.memberMap.get(name);
-		if (member != null) {
-			member.value(value);
-		}
+	public @NonNull UniformBlock value(final @NonNull String name, final @NonNull int... values) {
+		this.requireMember(name).value(values);
 		return this;
 	}
 
 	public @NonNull UniformBlock value(final @NonNull String name, final @NonNull float... values) {
-		final UniformMember member = this.memberMap.get(name);
-		if (member != null) {
-			member.value(values);
-		}
+		this.requireMember(name).value(values);
 		return this;
 	}
 
@@ -100,6 +91,14 @@ public final class UniformBlock {
 
 	public UniformMember getMember(final @NonNull String name) {
 		return this.memberMap.get(name);
+	}
+
+	public @NonNull UniformMember requireMember(final @NonNull String name) {
+		final UniformMember member = this.memberMap.get(name);
+		if (member == null) {
+			throw new IllegalArgumentException("The shader declares no uniform " + name + ", declare it in the shader source or fix its name (uniforms: " + this.memberMap.keySet() + ")");
+		}
+		return member;
 	}
 
 	private static int getLength(final ShaderVariable variable, final String code) {

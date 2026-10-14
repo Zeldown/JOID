@@ -6,6 +6,7 @@ import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
 import dev.joid.backend.lwjgl2.Lwjgl2Backend;
+import dev.joid.backend.lwjgl2.Lwjgl2Natives;
 import dev.joid.backend.lwjgl2.input.Lwjgl2InputForwarder;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
@@ -18,6 +19,7 @@ public class DemoWindow extends DemoUIBridge {
 
 	public DemoWindow() throws LWJGLException {
 		this.backend = Lwjgl2Backend.create();
+		Lwjgl2Natives.install();
 		Display.setDisplayMode(new DisplayMode(1920, 1080));
 		Display.setResizable(true);
 		Display.setTitle("JOID - Demo (LWJGL 2)");

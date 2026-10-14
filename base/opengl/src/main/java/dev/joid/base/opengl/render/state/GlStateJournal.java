@@ -332,7 +332,7 @@ public final class GlStateJournal {
 			if (this.capabilities.hasVertexArrays()) {
 				buffers.bindVertexArray(entry.container);
 			}
-			if (ints[1] != 0 || this.capabilities.getProfile() == GlProfile.COMPATIBILITY) {
+			if (ints[1] != 0 || this.capabilities.getProfile() == GlProfile.COMPATIBILITY && buffers.canPointClientMemory()) {
 				buffers.bindBuffer(GlConstants.ARRAY_BUFFER, ints[1]);
 				buffers.vertexAttribPointer(entry.index, ints[2], ints[3], ints[4] != 0, ints[5], entry.pointer);
 			}

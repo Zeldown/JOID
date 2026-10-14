@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 
@@ -75,14 +76,8 @@ public final class Lwjgl2Natives {
 	}
 
 	private static boolean isProvided(final String[] libraries) {
-		for (final String path : System.getProperty("java.library.path", "").split(File.pathSeparator)) {
-			for (final String library : libraries) {
-				if (!path.isEmpty() && new File(path, library).isFile()) {
-					return true;
-				}
-			}
-		}
-		return false;
+		final String[] paths = System.getProperty("java.library.path", "").split(File.pathSeparator);
+		return Arrays.stream(libraries).allMatch(library -> Arrays.stream(paths).anyMatch(path -> !path.isEmpty() && new File(path, library).isFile()));
 	}
 
 }

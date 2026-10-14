@@ -36,9 +36,11 @@ public abstract class Shader implements IShader {
 	private final ShaderSource fragment;
 
 	private final UniformBlock                block;
+	private final ShaderTranslation           translation;
 	private final Map<String, UniformSampler> samplerMap;
 
 	private boolean    bound;
+	private boolean    compiled;
 	private Shader     lineShader;
 	private BlendState previousBlend;
 
@@ -62,7 +64,7 @@ public abstract class Shader implements IShader {
 			Shader.warnBeyondBaseline(fragment);
 		}
 
-		this.compileProgram(translator.translate(vertex, fragment));
+		this.translation = translator.translate(vertex, fragment);
 	}
 
 	@Override
@@ -74,7 +76,10 @@ public abstract class Shader implements IShader {
 
 	@Override
 	public final void unbind() {
-		this.bridge.getState().shader(null);
+		if (this.bridge.getState().getShader() == this) {
+			this.bridge.getState().shader(null);
+		}
+
 		if (this.previousBlend != null) {
 			this.bridge.getState().blend(this.previousBlend);
 			this.previousBlend = null;
@@ -84,20 +89,41 @@ public abstract class Shader implements IShader {
 	}
 
 	@Override
-	public final @NonNull IShader uniform(final @NonNull String name, final int value) {
-		this.getMember(name).value(value);
-		return this;
+	public final void delete() {
+		if (this.lineShader != null) {
+			this.lineShader.delete();
+		}
+
+		if (this.compiled) {
+			this.compiled = false;
+			this.deleteProgram();
+		}
+	}
+
+	@Override
+	public final boolean isActive() {
+		if (!this.compiled) {
+			this.compiled = true;
+			this.compileProgram(this.translation);
+		}
+		return this.isProgramActive();
 	}
 
 	@Override
 	public final @NonNull IShader uniform(final @NonNull String name, final boolean value) {
-		this.getMember(name).value(value);
+		this.block.value(name, value);
+		return this;
+	}
+
+	@Override
+	public final @NonNull IShader uniform(final @NonNull String name, final @NonNull int... values) {
+		this.block.value(name, values);
 		return this;
 	}
 
 	@Override
 	public final @NonNull IShader uniform(final @NonNull String name, final @NonNull float... values) {
-		this.getMember(name).value(values);
+		this.block.value(name, values);
 		return this;
 	}
 
@@ -141,27 +167,36 @@ public abstract class Shader implements IShader {
 			}
 		}
 
-		return this.block
-		.value(ShaderBuiltin.PROJECTION_MATRIX.getIdentifier(), projection)
-		.value(ShaderBuiltin.MODEL_VIEW_MATRIX.getIdentifier(), modelView.getMatrix())
-		.value(ShaderBuiltin.NORMAL_MATRIX.getIdentifier(), modelView.getNormalMatrix())
-		.value(ShaderBuiltin.LIGHTING.getIdentifier(), state.isLighting())
-		.value(GlslShaderTranslator.ALPHA_TEST, state.getAlphaCutoff() > 0F)
-		.value(GlslShaderTranslator.ALPHA_THRESHOLD, state.getAlphaCutoff())
-		.value(GlslShaderTranslator.LINE_WIDTH, state.getLineWidth())
-		.value(GlslShaderTranslator.LINE_VIEWPORT, state.getViewportWidth(), state.getViewportHeight())
-		.value(GlslShaderTranslator.VERTEX_COLOR, buffer.isColor())
-		.value(GlslShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
+		this.builtin(ShaderBuiltin.PROJECTION_MATRIX.getIdentifier(), projection);
+		this.builtin(ShaderBuiltin.MODEL_VIEW_MATRIX.getIdentifier(), modelView.getMatrix());
+		this.builtin(ShaderBuiltin.NORMAL_MATRIX.getIdentifier(), modelView.getNormalMatrix());
+		this.builtin(ShaderBuiltin.LIGHTING.getIdentifier(), state.isLighting());
+		this.builtin(GlslShaderTranslator.ALPHA_TEST, state.getAlphaCutoff() > 0F);
+		this.builtin(GlslShaderTranslator.ALPHA_THRESHOLD, state.getAlphaCutoff());
+		this.builtin(GlslShaderTranslator.LINE_WIDTH, state.getLineWidth());
+		this.builtin(GlslShaderTranslator.LINE_VIEWPORT, state.getViewportWidth(), state.getViewportHeight());
+		this.builtin(GlslShaderTranslator.VERTEX_COLOR, buffer.isColor());
+		this.builtin(GlslShaderTranslator.CURRENT_COLOR, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha());
+		return this.block;
 	}
 
+	protected abstract boolean isProgramActive();
+
+	protected abstract void deleteProgram();
 	protected abstract void compileProgram(final @NonNull ShaderTranslation translation);
 
-	private UniformMember getMember(final String name) {
+	private void builtin(final String name, final boolean value) {
 		final UniformMember member = this.block.getMember(name);
-		if (member == null) {
-			throw new IllegalArgumentException("The shader declares no uniform " + name + ", declare it in the shader source or fix its name");
+		if (member != null) {
+			member.value(value);
 		}
-		return member;
+	}
+
+	private void builtin(final String name, final float... values) {
+		final UniformMember member = this.block.getMember(name);
+		if (member != null) {
+			member.value(values);
+		}
 	}
 
 	private static void warnBeyondBaseline(final ShaderSource source) {

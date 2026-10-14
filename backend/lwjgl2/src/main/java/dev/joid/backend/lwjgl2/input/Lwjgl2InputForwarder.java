@@ -5,6 +5,7 @@ import org.lwjgl.input.Mouse;
 
 import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,8 @@ import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2InputForwarder {
+
+	private final Key[] pressedKeys = new Key[Keyboard.KEYBOARD_SIZE];
 
 	public static @NonNull Lwjgl2InputForwarder create() {
 		return new Lwjgl2InputForwarder();
@@ -40,19 +43,29 @@ public final class Lwjgl2InputForwarder {
 				continue;
 			}
 
-			this.keyPressed(Keyboard.getEventKey());
+			this.keyPressed(Keyboard.getEventKey(), Keyboard.getEventCharacter());
 			if (Keyboard.getEventCharacter() != Keyboard.CHAR_NONE) {
 				this.charTyped(Keyboard.getEventCharacter());
 			}
 		}
 	}
 
-	public boolean keyPressed(final int code) {
-		return BridgeHandler.UI.keyPressed(Lwjgl2WindowBridge.getKey(code));
+	public boolean keyPressed(final int code, final char character) {
+		final Key key = Lwjgl2WindowBridge.getKey(code, character);
+		if (code >= 0 && code < this.pressedKeys.length) {
+			this.pressedKeys[code] = key;
+		}
+		return BridgeHandler.UI.keyPressed(key);
 	}
 
 	public boolean keyReleased(final int code) {
-		return BridgeHandler.UI.keyReleased(Lwjgl2WindowBridge.getKey(code));
+		if (code < 0 || code >= this.pressedKeys.length || this.pressedKeys[code] == null) {
+			return BridgeHandler.UI.keyReleased(Lwjgl2WindowBridge.getKey(code));
+		}
+
+		final Key key = this.pressedKeys[code];
+		this.pressedKeys[code] = null;
+		return BridgeHandler.UI.keyReleased(key);
 	}
 
 	public boolean charTyped(final int codepoint) {

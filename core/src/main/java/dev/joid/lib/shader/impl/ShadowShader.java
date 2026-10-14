@@ -40,7 +40,12 @@ public class ShadowShader extends ShaderProgram {
 		ShadowShader.INSTANCE.getShader()
 		.uniform("u_Radius", radius)
 		.uniform("u_Blur", blur)
-		.uniform("u_Box", x1, y1, x2, y2);
+		.uniform("u_Box", x1, y1, x2, y2)
+		.uniform("u_Sides", 1F, 1F, 1F, 1F);
+	}
+
+	public void sides(final boolean left, final boolean top, final boolean right, final boolean bottom) {
+		ShadowShader.INSTANCE.getShader().uniform("u_Sides", left ? 1F : 0F, top ? 1F : 0F, right ? 1F : 0F, bottom ? 1F : 0F);
 	}
 
 }

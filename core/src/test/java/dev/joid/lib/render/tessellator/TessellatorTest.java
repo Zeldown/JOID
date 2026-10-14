@@ -54,6 +54,19 @@ public class TessellatorTest {
 		}
 	}
 
+	@Test
+	public void abortsAnUnfinishedShape() {
+		final Tessellator tessellator = Tessellator.inst().copy();
+		tessellator.start(DrawMode.TRIANGLES);
+		tessellator.addVertex(1D, 2D, 3D);
+		tessellator.abort();
+		Assert.assertFalse(tessellator.isDrawing());
+		Assert.assertEquals(0, tessellator.getVertexCount());
+		tessellator.start(DrawMode.TRIANGLES);
+		TessellatorTest.triangle(tessellator);
+		Assert.assertEquals(3, this.single().getCount());
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingMode() {
 		Tessellator.inst().copy().start(null);
@@ -149,16 +162,63 @@ public class TessellatorTest {
 		this.render.getState().lineSmooth(true).lineWidth(3F);
 		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
 		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
-		Assert.assertEquals(12, capture.getCount());
+		Assert.assertEquals(24, capture.getCount());
 		Assert.assertTrue(capture.isTexture());
 		Assert.assertTrue(capture.isNormal());
-		Assert.assertArrayEquals(new float[] {0F, 0F, 1F, 0F, 1F, 1F, 1F, 1F, 2F, 1F, 2F, 2F}, TessellatorTest.xs(capture), 0F);
+		Assert.assertArrayEquals(new float[] {0F, 0F, 0F, 0F, 0F, 0F, 0F, 0F, 1F, 0F, 1F, 1F, 1F, 1F, 2F, 1F, 2F, 2F, 2F, 2F, 2F, 2F, 2F, 2F}, TessellatorTest.xs(capture), 0F);
 		Assert.assertEquals(1F, capture.getU(0), 0F);
-		Assert.assertEquals(0F, capture.getU(2), 0F);
 		Assert.assertEquals(0x8181, capture.getNormal(0));
 		Assert.assertEquals(0x817F, capture.getNormal(1));
-		Assert.assertEquals(0x7F7F, capture.getNormal(2));
-		Assert.assertEquals(0x7F81, capture.getNormal(5));
+		Assert.assertEquals(0xA17F, capture.getNormal(2));
+		Assert.assertEquals(0xA181, capture.getNormal(5));
+		Assert.assertEquals(0x7F7F, capture.getNormal(22));
+	}
+
+	@Test
+	public void joinsTheSegmentsOfAStripWithAMiter() {
+		this.render.getState().lineSmooth(true).lineWidth(3F);
+		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
+		Assert.assertEquals(3F, capture.getU(8), 0F);
+		Assert.assertEquals(1F, capture.getV(8), 0F);
+		Assert.assertEquals(0x12E07F, capture.getNormal(8));
+		Assert.assertEquals(capture.getNormal(8), capture.getNormal(13));
+		Assert.assertEquals(capture.getU(8), capture.getU(13), 0F);
+	}
+
+	@Test
+	public void bevelsASharpTurn() {
+		this.render.getState().lineSmooth(true).lineWidth(3F);
+		final Tessellator tessellator = Tessellator.inst();
+		tessellator.start(DrawMode.LINE_STRIP);
+		tessellator.addVertex(0D, 0D, 0D);
+		tessellator.addVertex(10D, 0D, 0D);
+		tessellator.addVertex(0D, 1D, 0D);
+		tessellator.draw();
+
+		final Capture capture = this.single();
+		Assert.assertEquals(30, capture.getCount());
+		Assert.assertEquals(0x4000, capture.getNormal(0));
+		Assert.assertEquals(0x4081, capture.getNormal(1));
+		Assert.assertEquals(0xC081, capture.getNormal(2));
+		Assert.assertEquals(10F, capture.getX(0), 0F);
+		Assert.assertEquals(0F, capture.getU(2), 0F);
+		Assert.assertEquals(1F, capture.getV(2), 0F);
+	}
+
+	@Test
+	public void skipsTheRepeatedPointsOfAStrip() {
+		this.render.getState().lineSmooth(true).lineWidth(3F);
+		final Tessellator tessellator = Tessellator.inst();
+		tessellator.start(DrawMode.LINE_STRIP);
+		tessellator.addVertex(0D, 0D, 0D);
+		tessellator.addVertex(1D, 0D, 0D);
+		tessellator.addVertex(1D, 0D, 0D);
+		tessellator.addVertex(2D, 0D, 0D);
+		tessellator.draw();
+
+		final Capture capture = this.single();
+		Assert.assertEquals(24, capture.getCount());
+		Assert.assertEquals(0xE07F, capture.getNormal(8));
 	}
 
 	@Test
@@ -175,7 +235,7 @@ public class TessellatorTest {
 		this.render.getState().lineWidth(3F);
 		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
 		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
-		Assert.assertEquals(12, capture.getCount());
+		Assert.assertEquals(24, capture.getCount());
 		Assert.assertEquals(3F, capture.getState().getLineWidth(), 0F);
 	}
 
@@ -199,9 +259,9 @@ public class TessellatorTest {
 	public void expandsSeparateSmoothLines() {
 		this.render.getState().lineSmooth(true);
 		final Capture capture = this.lines(DrawMode.LINES, 4);
-		Assert.assertEquals(12, capture.getCount());
-		Assert.assertEquals(2F, capture.getX(6), 0F);
-		Assert.assertEquals(3F, capture.getX(8), 0F);
+		Assert.assertEquals(36, capture.getCount());
+		Assert.assertEquals(2F, capture.getX(18), 0F);
+		Assert.assertEquals(3F, capture.getX(26), 0F);
 	}
 
 	@Test
@@ -210,7 +270,7 @@ public class TessellatorTest {
 		this.render.getState().lineWidth(4F).shader(shader);
 		final Capture capture = this.lines(DrawMode.LINE_STRIP, 3);
 		Assert.assertSame(Primitive.TRIANGLES, capture.getPrimitive());
-		Assert.assertEquals(12, capture.getCount());
+		Assert.assertEquals(24, capture.getCount());
 		Assert.assertSame(shader.getLineShader(), capture.getState().getShader());
 		Assert.assertSame(shader, this.render.getState().getShader());
 	}

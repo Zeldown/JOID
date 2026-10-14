@@ -23,6 +23,25 @@ public class MatrixStackTest {
 		Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F, 0F, 1F, 2F, 3F, 1F}, stack.getMatrix(), 0F);
 	}
 
+	@Test
+	public void popsBackToADepth() {
+		final MatrixStack stack = new MatrixStack();
+		stack.translate(1D, 0D, 0D);
+		stack.push();
+		stack.translate(2D, 0D, 0D);
+		stack.push();
+		stack.push();
+		Assert.assertEquals(3, stack.getDepth());
+		stack.pop(1);
+		Assert.assertEquals(1, stack.getDepth());
+		Assert.assertEquals(3F, stack.getMatrix()[12], 0F);
+		stack.pop(0);
+		Assert.assertEquals(0, stack.getDepth());
+		Assert.assertEquals(1F, stack.getMatrix()[12], 0F);
+		stack.pop(0);
+		Assert.assertEquals(0, stack.getDepth());
+	}
+
 	@Test(expected = NoSuchElementException.class)
 	public void refusesToPopAnEmptyStack() {
 		new MatrixStack().pop();

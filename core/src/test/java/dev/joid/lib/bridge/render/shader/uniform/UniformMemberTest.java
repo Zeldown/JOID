@@ -68,12 +68,28 @@ public class UniformMemberTest {
 	}
 
 	@Test
+	public void writesAnArrayOfInts() {
+		final UniformMember member = UniformMember.create("u_Cells", UniformType.IVEC2, 2, 0).value(1, 2, 3, 4);
+		Assert.assertEquals(4, member.getValues().getInt(12));
+	}
+
+	@Test
+	public void refusesIntsOfTheWrongCount() {
+		try {
+			UniformMember.create("u_Cell", UniformType.IVEC2, 0, 0).value(1, 2, 3);
+			Assert.fail("An ivec2 must refuse three ints");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The uniform ivec2 u_Cell cannot take 3 ints", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void refusesAnIntForAFloat() {
 		try {
 			UniformMember.create("u_Radius", UniformType.FLOAT, 0, 0).value(4);
 			Assert.fail("A float must refuse an int");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("The uniform float u_Radius cannot take an int", expected.getMessage());
+			Assert.assertEquals("The uniform float u_Radius cannot take 1 int", expected.getMessage());
 		}
 	}
 

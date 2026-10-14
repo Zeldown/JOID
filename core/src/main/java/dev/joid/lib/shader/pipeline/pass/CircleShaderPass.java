@@ -39,9 +39,4 @@ public class CircleShaderPass implements IShaderPass {
 		CircleShader.inst().bind(this.radius, this.centerX, this.centerY, RoundedShaderType.TEXTURE);
 	}
 
-	@Override
-	public int priority() {
-		return 100;
-	}
-
 }

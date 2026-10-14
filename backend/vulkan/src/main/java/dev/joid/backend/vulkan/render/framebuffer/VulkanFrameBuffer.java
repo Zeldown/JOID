@@ -4,7 +4,9 @@ import java.nio.LongBuffer;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK10;
+import org.lwjgl.vulkan.VkClearDepthStencilValue;
 import org.lwjgl.vulkan.VkFramebufferCreateInfo;
+import org.lwjgl.vulkan.VkImageSubresourceRange;
 
 import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
@@ -35,8 +37,16 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 		final VulkanContext context = bridge.getContext();
 		final VulkanTexture texture = new VulkanTexture(bridge);
 		texture.allocate(width, height);
-		final long[] depth = context.createImage(width, height, context.getDepthStencilFormat(), VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
-		final long depthView = context.createImageView(depth[0], context.getDepthStencilFormat(), VK10.VK_IMAGE_ASPECT_DEPTH_BIT | VK10.VK_IMAGE_ASPECT_STENCIL_BIT);
+		final long[] depth = context.createImage(width, height, context.getDepthFormat(), VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT);
+		final long depthView = context.createImageView(depth[0], context.getDepthFormat(), VK10.VK_IMAGE_ASPECT_DEPTH_BIT);
+		context.submit(buffer -> {
+			try (MemoryStack stack = MemoryStack.stackPush()) {
+				VulkanContext.transition(buffer, depth[0], VK10.VK_IMAGE_ASPECT_DEPTH_BIT, VK10.VK_IMAGE_LAYOUT_UNDEFINED, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+				final VkImageSubresourceRange range = VkImageSubresourceRange.calloc(stack).aspectMask(VK10.VK_IMAGE_ASPECT_DEPTH_BIT).baseMipLevel(0).levelCount(1).baseArrayLayer(0).layerCount(1);
+				VK10.vkCmdClearDepthStencilImage(buffer, depth[0], VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VkClearDepthStencilValue.calloc(stack).depth(1F), range);
+				VulkanContext.transition(buffer, depth[0], VK10.VK_IMAGE_ASPECT_DEPTH_BIT, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK10.VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL);
+			}
+		});
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer framebuffer = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkCreateFramebuffer(context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(context.getOffscreenRenderPass()).pAttachments(stack.longs(texture.getView(), depthView)).width(width).height(height).layers(1), null, framebuffer), "vkCreateFramebuffer");

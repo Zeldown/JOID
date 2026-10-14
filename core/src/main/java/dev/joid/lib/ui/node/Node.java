@@ -315,7 +315,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void render(final double mouseX, final double mouseY) {
-		final long now = System.nanoTime();
+		final long now = BridgeHandler.CLOCK.get().nanoTime();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.getModelView().push();
 		try {
@@ -628,7 +628,7 @@ public abstract class Node implements INode {
 			Color.reset();
 			render.getModelView().pop();
 		}
-		this.renderTime = System.nanoTime() - now;
+		this.renderTime = BridgeHandler.CLOCK.get().nanoTime() - now;
 	}
 
 	public boolean renderHover(final double mouseX, final double mouseY) {

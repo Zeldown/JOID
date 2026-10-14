@@ -7,6 +7,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkDescriptorSetLayoutBinding;
 import org.lwjgl.vulkan.VkDescriptorSetLayoutCreateInfo;
+import org.lwjgl.vulkan.VkDevice;
 import org.lwjgl.vulkan.VkPipelineLayoutCreateInfo;
 import org.lwjgl.vulkan.VkShaderModuleCreateInfo;
 
@@ -23,10 +24,10 @@ import lombok.NonNull;
 @Getter
 public final class VulkanShader extends Shader {
 
-	private boolean active;
 	private long    vertexModule;
 	private long    fragmentModule;
 	private long    pipelineLayout;
+	private boolean programActive;
 	private long    descriptorSetLayout;
 
 	private VulkanShader(final VulkanRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
@@ -35,6 +36,30 @@ public final class VulkanShader extends Shader {
 
 	public static @NonNull VulkanShader create(final VulkanRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
 		return new VulkanShader(bridge, vertex, fragment, blend);
+	}
+
+	@Override
+	protected void deleteProgram() {
+		final VulkanRenderBridge bridge = (VulkanRenderBridge) super.getBridge();
+		final VkDevice device = bridge.getContext().getDevice();
+		final long vertexModule = this.vertexModule;
+		final long fragmentModule = this.fragmentModule;
+		final long pipelineLayout = this.pipelineLayout;
+		final long descriptorSetLayout = this.descriptorSetLayout;
+		bridge.getPipelineCache().invalidate(this, bridge::dispose);
+		bridge.getDescriptorCache().invalidate(descriptorSetLayout, bridge::dispose);
+		bridge.dispose(() -> {
+			VK10.vkDestroyShaderModule(device, vertexModule, null);
+			VK10.vkDestroyShaderModule(device, fragmentModule, null);
+			VK10.vkDestroyPipelineLayout(device, pipelineLayout, null);
+			VK10.vkDestroyDescriptorSetLayout(device, descriptorSetLayout, null);
+		});
+
+		this.vertexModule        = VK10.VK_NULL_HANDLE;
+		this.programActive       = false;
+		this.fragmentModule      = VK10.VK_NULL_HANDLE;
+		this.pipelineLayout      = VK10.VK_NULL_HANDLE;
+		this.descriptorSetLayout = VK10.VK_NULL_HANDLE;
 	}
 
 	@Override
@@ -69,7 +94,7 @@ public final class VulkanShader extends Shader {
 			this.pipelineLayout      = pipelineLayout.get(0);
 			this.vertexModule        = VulkanShader.createModule(stack, context, vertex);
 			this.fragmentModule      = VulkanShader.createModule(stack, context, fragment);
-			this.active              = true;
+			this.programActive       = true;
 		}
 	}
 

@@ -8,6 +8,7 @@ import lombok.NonNull;
 public interface IGlProgramBinding {
 
 	public int createProgram();
+	public void deleteProgram(final int program);
 	public void useProgram(final int program);
 	public void linkProgram(final int program);
 	public int getProgrami(final int program, final int name);

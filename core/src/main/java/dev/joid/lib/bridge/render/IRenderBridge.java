@@ -19,6 +19,10 @@ public interface IRenderBridge extends IBridge {
 	public default void endFrame() {}
 	public default void beginFrame() {}
 
+	public default boolean isFrameActive() {
+		return true;
+	}
+
 	public default void suspend(final @NonNull Runnable draw) {
 		draw.run();
 	}
@@ -32,6 +36,8 @@ public interface IRenderBridge extends IBridge {
 
 	public void popState();
 	public void pushState();
+
+	public int getStateDepth();
 
 	public void clearDepth();
 	public void clearStencil();

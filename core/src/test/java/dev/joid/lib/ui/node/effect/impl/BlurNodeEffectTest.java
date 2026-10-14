@@ -31,8 +31,7 @@ public class BlurNodeEffectTest {
 	public void blursHorizontallyThenVertically() {
 		final List<IShaderPass> passes = BlurNodeEffect.create(4F).toShaderPasses(RectNode.create(0D, 0D, 10D, 10D));
 		Assert.assertEquals(2, passes.size());
-		Assert.assertEquals(150, passes.get(0).priority());
-		Assert.assertEquals(151, passes.get(1).priority());
+		Assert.assertEquals(150, BlurNodeEffect.create(4F).getPriority());
 		Assert.assertEquals(4F, passes.get(0).expansion(), 0F);
 		Assert.assertEquals(4F, passes.get(1).expansion(), 0F);
 	}

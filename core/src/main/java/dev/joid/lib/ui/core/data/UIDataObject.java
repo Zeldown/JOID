@@ -4,6 +4,7 @@ import java.lang.annotation.Annotation;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.utils.align.Align;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -51,9 +52,9 @@ public final class UIDataObject implements UIData {
 	public double getAnchorPositionX() {
 		switch (this.anchorX) {
 		case CENTER:
-			return 1920D / 2D;
+			return UIView.DESIGN_WIDTH / 2D;
 		case END:
-			return 1920D;
+			return UIView.DESIGN_WIDTH;
 		case START:
 		default:
 			return 0D;
@@ -63,9 +64,9 @@ public final class UIDataObject implements UIData {
 	public double getAnchorPositionY() {
 		switch (this.anchorY) {
 		case CENTER:
-			return 1080D / 2D;
+			return UIView.DESIGN_HEIGHT / 2D;
 		case END:
-			return 1080D;
+			return UIView.DESIGN_HEIGHT;
 		case START:
 		default:
 			return 0D;

@@ -48,7 +48,12 @@ public abstract class RenderBridge implements IRenderBridge {
 		}
 
 		this.frameActive = true;
-		this.beginFrameCommands();
+		try {
+			this.beginFrameCommands();
+		} catch (final RuntimeException exception) {
+			this.frameActive = false;
+			throw exception;
+		}
 	}
 
 	@Override
@@ -85,6 +90,11 @@ public abstract class RenderBridge implements IRenderBridge {
 	@Override
 	public final void pushState() {
 		this.stateStack.push(this.state.copy());
+	}
+
+	@Override
+	public final int getStateDepth() {
+		return this.stateStack.size();
 	}
 
 	@Override

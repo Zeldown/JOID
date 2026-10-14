@@ -80,6 +80,18 @@ public class DrawResourceTest {
 	}
 
 	@Test
+	public void givesBackTheStateOfItsCaller() {
+		final RecordingTexture texture = new RecordingTexture();
+		texture.allocate(8, 8);
+		this.render.getState().blend(BlendState.PREMULTIPLIED).texture(texture).textureFilter(TextureFilter.NEAREST);
+		DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 50D, DrawResourceTest.image(64, 32));
+		DrawUtils.RESOURCE.drawTexture(10D, 20D, 100D, 50D, new RecordingTexture().allocate(4, 4), 0D, 0D, 1D, 1D, TextureFilter.LINEAR, BlendState.NORMAL);
+		Assert.assertSame(BlendState.PREMULTIPLIED, this.render.getState().getBlend());
+		Assert.assertSame(texture, this.render.getState().getTexture());
+		Assert.assertSame(TextureFilter.NEAREST, this.render.getState().getTextureFilter());
+	}
+
+	@Test
 	public void releasesTheTextureAndTheBlendingAfterItsDraw() {
 		DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 50D, DrawResourceTest.image(64, 32));
 		Assert.assertNull(this.render.getState().getTexture());

@@ -38,9 +38,19 @@ public final class Lwjgl3AlBinding implements IAlBinding {
 
 	@Override
 	public void destroyContext() {
-		ALC10.alcMakeContextCurrent(0L);
-		ALC10.alcDestroyContext(this.context);
-		ALC10.alcCloseDevice(this.device);
+		if (this.context != 0L) {
+			if (ALC10.alcGetCurrentContext() == this.context) {
+				ALC10.alcMakeContextCurrent(0L);
+			}
+
+			ALC10.alcDestroyContext(this.context);
+			this.context = 0L;
+		}
+
+		if (this.device != 0L) {
+			ALC10.alcCloseDevice(this.device);
+			this.device = 0L;
+		}
 	}
 
 	@Override
