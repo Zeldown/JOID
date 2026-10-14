@@ -208,9 +208,15 @@ public class BackendTest {
 	}
 
 	@Test
-	public void registersAnyVersionWhileJOIDRunsInDevelopment() {
-		this.backend = TraceBackend.create(this.trace, "6.0.0").register();
-		Assert.assertTrue(this.backend.isRegistered());
+	public void refusesABackendOfAnotherMajorVersion() {
+		this.backend = TraceBackend.create(this.trace, "70.0.0");
+		try {
+			this.backend.register();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The backend was built for JOID 70.x, but JOID " + JOID.VERSION + " is loaded: update the backend", exception.getMessage());
+		}
+		Assert.assertFalse(this.backend.isRegistered());
 	}
 
 	@Test

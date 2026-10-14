@@ -84,6 +84,7 @@ subprojects {
 
     tasks.withType(Test) {
         systemProperty 'joid.data', file("$buildDir/data").absolutePath
+        systemProperty 'joid.version', project.version
     }
 
     dependencies {
@@ -94,10 +95,6 @@ subprojects {
     }
 
     tasks.withType(Jar) {
-        manifest {
-            attributes(['Implementation-Version': project.version], 'dev/joid/internal/')
-        }
-
         from(rootProject.file('LICENSE')) {
             into 'META-INF'
         }
@@ -223,9 +220,9 @@ task checkJars {
                 if (!holds('dev/joid/internal/JOID.class')) {
                     failures << "${jar.name} misses JOID"
                 }
-                def version = new java.util.jar.JarFile(jar).withCloseable { file -> file.manifest?.getAttributes('dev/joid/internal/')?.getValue('Implementation-Version') }
+                def version = new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.getEntry('dev/joid/internal/joid.properties')?.with { entry -> def properties = new Properties(); zip.getInputStream(entry).withCloseable { input -> properties.load(input) }; properties.getProperty('version') } }
                 if (version != project.version.toString()) {
-                    failures << "${jar.name} gives JOID the version $version instead of ${project.version} in its manifest"
+                    failures << "${jar.name} gives JOID the version $version instead of ${project.version} in dev/joid/internal/joid.properties"
                 }
                 ['META-INF/LICENSE', 'META-INF/NOTICE'].findAll { name -> !entries.contains(name) }.each { name ->
                     failures << "${jar.name} misses $name"

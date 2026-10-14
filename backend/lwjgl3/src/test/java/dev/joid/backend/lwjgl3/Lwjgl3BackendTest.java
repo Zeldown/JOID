@@ -8,7 +8,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
-import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.bridge.ui.StackUIBridge;
@@ -19,7 +18,7 @@ public class Lwjgl3BackendTest {
 
 	@Test
 	public void registersWithTheVersionOfTheJOIDItEmbeds() {
-		Assert.assertEquals(JOID.VERSION, Lwjgl3Backend.create(0L).getVersion());
+		Assert.assertEquals(System.getProperty("joid.version", "development"), Lwjgl3Backend.create(0L).getVersion());
 	}
 
 	@Test

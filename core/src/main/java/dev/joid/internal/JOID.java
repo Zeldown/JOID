@@ -1,7 +1,10 @@
 package dev.joid.internal;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
@@ -207,8 +210,22 @@ public final class JOID {
 	}
 
 	private static String readVersion() {
-		final String version = JOID.class.getPackage().getImplementationVersion();
-		return version != null ? version : JOID.DEVELOPMENT_VERSION;
+		try (final InputStream input = JOID.class.getResourceAsStream("joid.properties")) {
+			return JOID.readVersion(input);
+		} catch (final IOException exception) {
+			return JOID.DEVELOPMENT_VERSION;
+		}
+	}
+
+	private static String readVersion(final InputStream input) throws IOException {
+		if (input == null) {
+			return JOID.DEVELOPMENT_VERSION;
+		}
+
+		final Properties properties = new Properties();
+		properties.load(input);
+		final String version = properties.getProperty("version");
+		return version == null || version.contains("${") ? JOID.DEVELOPMENT_VERSION : version;
 	}
 
 }

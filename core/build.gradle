@@ -32,6 +32,13 @@ dependencies {
     shade("org.bytedeco:ffmpeg:6.0-1.5.9") { transitive = false }
 }
 
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('dev/joid/internal/joid.properties') {
+        expand(version: project.version)
+    }
+}
+
 rootProject.variants.each { variant ->
     task("${variant}Jar", type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
         group = 'build'

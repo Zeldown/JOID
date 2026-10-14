@@ -1,8 +1,10 @@
 package dev.joid.internal;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -155,14 +157,26 @@ public class JOIDTest {
 	}
 
 	@Test
-	public void runsInDevelopmentOutsideAJar() {
-		Assert.assertEquals("development", JOID.VERSION);
+	public void readsTheVersionOfItsBuild() {
+		Assert.assertEquals(System.getProperty("joid.version", "development"), JOID.VERSION);
+	}
+
+	@Test
+	public void readsTheVersionOfItsResource() throws Throwable {
+		Assert.assertEquals("8.1.0", JOIDTest.readVersion("version=8.1.0"));
+	}
+
+	@Test
+	public void runsInDevelopmentWithoutAnExpandedVersion() throws Throwable {
+		Assert.assertEquals("development", JOIDTest.readVersion(null));
+		Assert.assertEquals("development", JOIDTest.readVersion(""));
+		Assert.assertEquals("development", JOIDTest.readVersion("version=${version}"));
 	}
 
 	@Test
 	public void comparesNothingInDevelopment() throws Throwable {
-		JOID.checkVersion("70.0.1");
 		JOIDTest.checkVersion("development", "8.0.0");
+		JOIDTest.checkVersion("70.0.1", "development");
 	}
 
 	@Test
@@ -474,6 +488,16 @@ public class JOIDTest {
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
 			Assert.assertEquals("No IUIBridge can open MenuUI: register one whose canHandle accepts it", exception.getMessage());
+		}
+	}
+
+	private static String readVersion(final String properties) throws Throwable {
+		final Method read = JOID.class.getDeclaredMethod("readVersion", InputStream.class);
+		read.setAccessible(true);
+		try {
+			return (String) read.invoke(null, properties == null ? null : new ByteArrayInputStream(properties.getBytes(StandardCharsets.ISO_8859_1)));
+		} catch (final InvocationTargetException exception) {
+			throw exception.getCause();
 		}
 	}
 

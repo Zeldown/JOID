@@ -52,12 +52,6 @@ dependencies {
 }
 
 /* Packaging */
-tasks.withType(Jar) {
-    manifest {
-        attributes(['Implementation-Version': joidVersion], 'dev/joid/internal/')
-    }
-}
-
 task demoJar(type: Jar) {
     group = 'build'
     description = 'Builds the demo jar, with the JOID core, its dev tools, its demos and the demo window.'
