@@ -1,5 +1,7 @@
 package dev.joid.lib.shader.pipeline;
 
+import java.lang.reflect.Constructor;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -10,7 +12,7 @@ public class ShaderPassContextTest {
 
 	@Test
 	public void keepsTheDrawnArea() {
-		final PixelGrid grid = PixelGrid.of(1D, 1D);
+		final PixelGrid grid = ShaderPassContextTest.grid(1D, 1D);
 		final ShaderPassContext context = ShaderPassContext.create(10D, 20D, 100D, 50D, 5D, grid);
 		Assert.assertEquals(10D, context.getX(), 0D);
 		Assert.assertEquals(20D, context.getY(), 0D);
@@ -22,7 +24,7 @@ public class ShaderPassContextTest {
 
 	@Test
 	public void alignsTheTextureOnScreenPixels() {
-		final ShaderPassContext context = ShaderPassContext.create(10.3D, 20.6D, 100D, 50D, 5D, PixelGrid.of(2D, 0.5D));
+		final ShaderPassContext context = ShaderPassContext.create(10.3D, 20.6D, 100D, 50D, 5D, ShaderPassContextTest.grid(2D, 0.5D));
 		Assert.assertEquals(5D, context.getRegionX(), 1E-9D);
 		Assert.assertEquals(14D, context.getRegionY(), 1E-9D);
 		Assert.assertEquals(110.5D, context.getRegionWidth(), 1E-9D);
@@ -46,6 +48,16 @@ public class ShaderPassContextTest {
 		Assert.assertEquals(60D, context.getRegionHeight(), 1E-9D);
 		Assert.assertEquals(220, context.getTextureWidth());
 		Assert.assertEquals(120, context.getTextureHeight());
+	}
+
+	private static PixelGrid grid(final double scaleX, final double scaleY) {
+		try {
+			final Constructor<PixelGrid> constructor = PixelGrid.class.getDeclaredConstructor(double.class, double.class, double.class, double.class, double.class, double.class, boolean.class);
+			constructor.setAccessible(true);
+			return constructor.newInstance(scaleX, scaleY, scaleX, scaleY, 0D, 0D, true);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 }

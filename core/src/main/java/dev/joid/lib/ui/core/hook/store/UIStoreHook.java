@@ -68,10 +68,6 @@ public final class UIStoreHook {
 			UIStoreHook.GLOBAL_CACHE.remove(clazz);
 		}
 
-		if (store.getData().scope() == StoreScope.PERMANENT) {
-			UIStoreHook.deleteFile(UIStoreHook.getId(store));
-		}
-
 		store.destroy();
 	}
 
@@ -152,14 +148,6 @@ public final class UIStoreHook {
 	private static @NonNull String getId(final @NonNull UIStore store) {
 		final String id = store.getData().id();
 		return id.isEmpty() ? store.getClass().getName() : id;
-	}
-
-	private static void deleteFile(final @NonNull String id) {
-		final File parent = new File(JOIDEnv.getDataDir(), "store");
-		final File file = new File(parent, id + ".store");
-		if (file.exists()) {
-			file.delete();
-		}
 	}
 
 	private static @NonNull File getFile(final @NonNull String id) {

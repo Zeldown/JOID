@@ -110,7 +110,7 @@ public class UIDemoResource extends UIDemo {
 		TextNode.create(155, 635).text(Text.create("Tint", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(375, 500, 20, 120).color(Color.WHITE).attach(this);
-		ResourceNode.create(335, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).color(Color.WHITE.copyAlpha(0.4F)).attach(this);
+		ResourceNode.create(335, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).color(Color.WHITE.withAlpha(0.4F)).attach(this);
 		TextNode.create(385, 635).text(Text.create("Transparent", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode.create(565, 510, 100, 100).resource(Resource.of("https://placehold.co/100x100.png")).hoveredResource(Resource.of("assets/demo/textures/image/placeholder.webp")).attach(this);

@@ -1,6 +1,7 @@
 package dev.joid.lib.signal.impl.iterable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -37,7 +38,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public Set<Entry<K, V>> entrySet() {
-		return this.get().entrySet();
+		return Collections.unmodifiableSet(this.get().entrySet());
 	}
 
 	public V get(final K key) {
@@ -49,7 +50,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public Set<K> keySet() {
-		return this.get().keySet();
+		return Collections.unmodifiableSet(this.get().keySet());
 	}
 
 	public V put(final K key, final V value) {
@@ -73,7 +74,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public Collection<V> values() {
-		return this.get().values();
+		return Collections.unmodifiableCollection(this.get().values());
 	}
 
 	private Map<K, V> copy() {

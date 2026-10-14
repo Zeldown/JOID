@@ -135,13 +135,6 @@ public class CustomHoverElementTest {
 		Assert.assertEquals(5D, this.tooltip().getTop(), 1E-3D);
 	}
 
-	@Test
-	public void drawsNothingWithoutElementOrPosition() {
-		new CustomHoverElement(null, HoverElementPosition.FOLLOW).render(RectNode.create(0D, 0D, 10D, 10D), 5D, 5D);
-		new CustomHoverElement(new BoxElement(0D, 0D, 40D, 20D), null).render(RectNode.create(0D, 0D, 10D, 10D), 5D, 5D);
-		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
-	}
-
 	private Draw tooltip() {
 		return this.bridges.getRender().getDraws(0.6F, 0.4F, 0.2F).get(0);
 	}

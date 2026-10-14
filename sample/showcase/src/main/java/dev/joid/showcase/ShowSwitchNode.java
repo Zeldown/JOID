@@ -30,9 +30,9 @@ public class ShowSwitchNode extends CheckboxNode {
 		this.knob += (target - this.knob) * (1D - Math.exp(-delta * 16D));
 		final float k = (float) this.knob;
 		if (k > 0.01F) {
-			DrawUtils.SHAPE.drawShadow(super.getX(), super.getY(), 76D, 42D, this.on.copyAlpha(0.7F * k), 21F, 18F);
+			DrawUtils.SHAPE.drawShadow(super.getX(), super.getY(), 76D, 42D, this.on.withAlpha(0.7F * k), 21F, 18F);
 		}
-		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), 76D, 42D, Color.WHITE.copyAlpha(0.14F).to(this.on, k), 21F);
+		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), 76D, 42D, Color.WHITE.withAlpha(0.14F).to(this.on, k), 21F);
 		DrawUtils.SHAPE.drawCircle(super.getX() + 21D + 34D * this.knob, super.getY() + 21D, Color.WHITE, 16D);
 	}
 

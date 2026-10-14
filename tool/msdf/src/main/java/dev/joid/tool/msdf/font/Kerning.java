@@ -2,20 +2,19 @@ package dev.joid.tool.msdf.font;
 
 import java.awt.Font;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-import lombok.Getter;
-
 public final class Kerning {
 
-	private final int[]    glyphs;
-	private final FontFile file;
-	private final Map<Long, Integer> pairs = new HashMap<>();
-	@Getter private final Map<Long, Integer> kerning = new LinkedHashMap<>();
+	private final int[]              glyphs;
+	private final FontFile           file;
+	private final Map<Long, Integer> pairs   = new HashMap<>();
+	private final Map<Long, Integer> kerning = new LinkedHashMap<>();
 
 	private Kerning(final FontFile file, final int[] glyphs) {
 		this.file = file;
@@ -48,6 +47,10 @@ public final class Kerning {
 		}
 
 		return reader;
+	}
+
+	public final Map<Long, Integer> getKerning() {
+		return Collections.unmodifiableMap(this.kerning);
 	}
 
 	public int getUnitsPerEm() {

@@ -314,7 +314,7 @@ public class RectNodeTest {
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(3D);
 		Assert.assertEquals(1, rect.getEffectMap().size());
 		rect.borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(0D);
-		Assert.assertFalse(rect.shouldApplyEffect(rect.getEffectMap().values().iterator().next()));
+		Assert.assertFalse(rect.getEffectMap().values().iterator().next().shouldApply(rect));
 		this.bridges.open(new NodeUI(rect)).frame();
 		Assert.assertTrue(this.border.getValues().isEmpty());
 	}

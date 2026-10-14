@@ -21,12 +21,12 @@ public class ShowModel extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-300, -250, 900, ShowUI.VIOLET.copyAlpha(0.40F), 9D, 0D, 50D);
-		this.blob(1300, 550, 900, ShowUI.PINK.copyAlpha(0.20F), 9D, 0.5D, 50D);
+		this.blob(-300, -250, 900, ShowUI.VIOLET.withAlpha(0.40F), 9D, 0D, 50D);
+		this.blob(1300, 550, 900, ShowUI.PINK.withAlpha(0.20F), 9D, 0.5D, 50D);
 
 		final ObjModel model = ObjModel.load("teapot", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
 		this.glass(110, 100, 1700, 880, 32F).attach(this);
-		CircleNode.create(330, 220, 640).color(ShowUI.FUCHSIA.copyAlpha(0.32F)).effect(BlurNodeEffect.create(110F)).attach(this);
+		CircleNode.create(330, 220, 640).color(ShowUI.FUCHSIA.withAlpha(0.32F)).effect(BlurNodeEffect.create(110F)).attach(this);
 
 		final ModelViewerNode viewer = ModelViewerNode
 		.create(170, 150, 960, 780)
@@ -55,7 +55,7 @@ public class ShowModel extends ShowUI {
 
 	private void stat(final int index, final String label, final Supplier<String> value, final Color color) {
 		final double y = 420D + index * 66D;
-		RectNode.create(1250, y + 52D, 510, 1).color(Color.WHITE.copyAlpha(0.08F)).attach(this);
+		RectNode.create(1250, y + 52D, 510, 1).color(Color.WHITE.withAlpha(0.08F)).attach(this);
 		TextNode.create(1250, y + 24D).text(Text.create(label, ShowUI.font(FontWeight.MEDIUM, 22F, ShowUI.MUTED))).anchorY(Align.CENTER).attach(this);
 		TextNode.create(1760, y + 24D).text(Text.create(value, ShowUI.font(FontWeight.BOLD, 24F, color))).anchorX(Align.END).anchorY(Align.CENTER).attach(this);
 	}
@@ -64,7 +64,7 @@ public class ShowModel extends ShowUI {
 		final double width = ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.TEXT).getWidth(text) + 44D;
 		RectNode
 		.create(x, y, width, 48)
-		.color(Color.WHITE.copyAlpha(0.08F))
+		.color(Color.WHITE.withAlpha(0.08F))
 		.effect(RoundedNodeEffect.create(24F))
 		.body(chip -> {
 			TextNode.create(width / 2D, 24).text(Text.create(text, ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.TEXT))).anchor(Align.CENTER).attach(chip);

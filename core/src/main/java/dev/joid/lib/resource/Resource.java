@@ -193,7 +193,7 @@ public final class Resource {
 		return this.data.isFailed();
 	}
 
-	public final void dispatch(final @NonNull Runnable task) {
+	protected final void dispatch(final @NonNull Runnable task) {
 		this.data.dispatch(task);
 	}
 

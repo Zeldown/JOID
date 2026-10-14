@@ -30,10 +30,9 @@ public class DrawResourceTest {
 	@Rule
 	public final CapturingRenderBridge render = new CapturingRenderBridge(1920, 1080);
 
-	@Test(expected = RuntimeException.class)
-	public void refusesASecondInstance() {
-		Assert.assertSame(DrawUtils.RESOURCE, DrawResource.getInstance());
-		new DrawResource();
+	@Test
+	public void isTheSharedInstance() {
+		Assert.assertSame(DrawUtils.RESOURCE, DrawResource.inst());
 	}
 
 	@Test(expected = NullPointerException.class)

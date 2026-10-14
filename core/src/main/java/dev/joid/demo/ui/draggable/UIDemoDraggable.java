@@ -226,7 +226,7 @@ public class UIDemoDraggable extends UIDemo {
 		.create(980, 720, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(160, 90, 80, 80).color(UIDemoDraggable.INK.copyAlpha(0.4F)).draggable(DraggableProperty.disabled()).attach(rect);
+			RectNode.create(160, 90, 80, 80).color(UIDemoDraggable.INK.withAlpha(0.4F)).draggable(DraggableProperty.disabled()).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Disabled", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

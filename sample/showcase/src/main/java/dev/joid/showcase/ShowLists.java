@@ -31,8 +31,8 @@ public class ShowLists extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-250, 400, 900, ShowUI.VIOLET.copyAlpha(0.40F), 9D, 0D, 50D);
-		this.blob(1350, -250, 900, ShowUI.CYAN.copyAlpha(0.20F), 9D, 0.5D, 50D);
+		this.blob(-250, 400, 900, ShowUI.VIOLET.withAlpha(0.40F), 9D, 0D, 50D);
+		this.blob(1350, -250, 900, ShowUI.CYAN.withAlpha(0.20F), 9D, 0.5D, 50D);
 
 		for (final String title : ShowLists.TITLES) {
 			this.order.add(title);
@@ -43,7 +43,7 @@ public class ShowLists extends ShowUI {
 		TextNode.create(492, 182).text(Text.create("12 tracks  ·  46 min  ·  drag to reorder, scroll for more", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 		RectNode
 		.create(1130, 124, 300, 56)
-		.color(ShowUI.VIOLET.copyAlpha(0.18F))
+		.color(ShowUI.VIOLET.withAlpha(0.18F))
 		.effect(RoundedNodeEffect.create(28F))
 		.body(chip -> {
 			TextNode.create(24, 28).text(Text.create("UP NEXT", ShowUI.font(FontWeight.BOLD, 15F, ShowUI.FAINT).letterSpacing(0.2F))).anchorY(Align.CENTER).attach(chip);
@@ -78,8 +78,8 @@ public class ShowLists extends ShowUI {
 		final Color color = ShowLists.COLORS[index];
 		RectNode
 		.create(0, 0, 920, 88)
-		.<RectNode>self(row -> row.color(() -> list.isDragging(row) ? Color.decode("#2B2647") : Color.WHITE.copyAlpha(0.05F + row.hoverValue(0.05F))))
-		.<RectNode>self(row -> row.effect(ShadowNodeEffect.create(color, 30F).color(() -> color.copyAlpha(list.isDragging(row) ? 0.55F : 0F))))
+		.<RectNode>self(row -> row.color(() -> list.isDragging(row) ? Color.decode("#2B2647") : Color.WHITE.withAlpha(0.05F + row.hoverValue(0.05F))))
+		.<RectNode>self(row -> row.effect(ShadowNodeEffect.create(color, 30F).color(() -> color.withAlpha(list.isDragging(row) ? 0.55F : 0F))))
 		.effect(RoundedNodeEffect.create(20F))
 		.body(row -> {
 			RectNode
@@ -94,7 +94,7 @@ public class ShowLists extends ShowUI {
 			TextNode.create(102, 62).text(Text.create(ShowLists.ARTISTS[index], ShowUI.font(FontWeight.MEDIUM, 18F, ShowUI.MUTED))).anchorY(Align.CENTER).attach(row);
 			TextNode.create(810, 44).text(Text.create(ShowLists.TIMES[index], ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).anchorX(Align.END).anchorY(Align.CENTER).attach(row);
 			for (int line = 0; line < 3; line++) {
-				RectNode.create(848, 34 + line * 9, 28, 3).color(Color.WHITE.copyAlpha(0.3F)).effect(RoundedNodeEffect.create(1.5F)).attach(row);
+				RectNode.create(848, 34 + line * 9, 28, 3).color(Color.WHITE.withAlpha(0.3F)).effect(RoundedNodeEffect.create(1.5F)).attach(row);
 			}
 		})
 		.hoverDuration(160L)

@@ -42,7 +42,7 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 			points[i] = this.getPoint(i, super.dh(2) * p * 0.8D);
 		}
 
-		DrawUtils.SHAPE.drawPolygon(DemoRadarChartNode.INK.copyAlpha(0.5F), points);
+		DrawUtils.SHAPE.drawPolygon(DemoRadarChartNode.INK.withAlpha(0.5F), points);
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();

@@ -82,9 +82,6 @@ import lombok.NonNull;
 @Getter
 public abstract class UI implements IUI, IndexedElement {
 
-	@NonNull private static final Color HOVER_COLOR = new Color(16, 0, 16, 180);
-	@NonNull private static final Color HOVER_BORDER_COLOR = new Color(30, 55, 153, 180);
-
 	private static final Map<File, Set<UI>>               WATCHER_MAP      = new HashMap<>();
 	private static final Map<File, FileAlterationMonitor> MONITOR_MAP      = new HashMap<>();
 	private static final Set<FileAlterationMonitor>       RUNNING_SET      = new HashSet<>();
@@ -158,7 +155,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private double     lastHoveredY;
 	private long       lastHoveredFrame;
 
-	public UI() {
+	protected UI() {
 		this.annotatedData    = UIDataObject.getOrDefault(this.getClass());
 		this.annotatedDebug   = UIDataDebugObject.getOrDefault(this.getClass());
 		this.annotatedPopup   = UIDataPopupObject.getOrDefault(this.getClass());
@@ -492,6 +489,14 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.dispose();
 		return true;
+	}
+
+	public final @NonNull List<MaskRegion> getStencilStack() {
+		return Collections.unmodifiableList(this.stencilStack);
+	}
+
+	public final @NonNull Map<Class<? extends UIStore>, UIStore> getStoreMap() {
+		return Collections.unmodifiableMap(this.storeMap);
 	}
 
 	@Override
@@ -917,7 +922,7 @@ public abstract class UI implements IUI, IndexedElement {
 					opacity = Math.min(1F, Math.max(0F, this.transition.getOut().getAnimator().get())) * (this.data.getBackgroundColor().getAlpha() / 255F);
 				}
 			}
-			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().copyAlpha(opacity));
+			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().withAlpha(opacity));
 		}
 
 		final boolean transitionIn = this.transition != null && this.transition.getIn() != null && this.transition.getIn().isRunning();

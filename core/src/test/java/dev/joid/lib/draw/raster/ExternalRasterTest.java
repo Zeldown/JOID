@@ -1,5 +1,6 @@
 package dev.joid.lib.draw.raster;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class ExternalRasterTest {
 		final List<String> calls = new ArrayList<>();
 		DrawUtils.RASTER.drawRaster(10D, 20D, 32D, 16D, (width, height) -> {
 			calls.add(width + "x" + height);
-			Assert.assertSame(DrawUtils.RASTER.getTarget(), this.render.getState().getFrameBuffer());
+			Assert.assertSame(ExternalRasterTest.target(), this.render.getState().getFrameBuffer());
 			Assert.assertEquals(32, this.render.getState().getViewportWidth());
 			Assert.assertEquals(16, this.render.getState().getViewportHeight());
 		});
@@ -36,7 +37,7 @@ public class ExternalRasterTest {
 	@Test
 	public void drawsItsTargetAsAPremultipliedQuad() {
 		DrawUtils.RASTER.drawRaster(10D, 20D, 32D, 16D, (width, height) -> {});
-		final IFrameBuffer target = DrawUtils.RASTER.getTarget();
+		final IFrameBuffer target = ExternalRasterTest.target();
 		final Capture capture = this.render.getLast();
 		Assert.assertSame(target.getTexture(), capture.getState().getTexture());
 		Assert.assertSame(BlendState.PREMULTIPLIED, capture.getState().getBlend());
@@ -73,13 +74,13 @@ public class ExternalRasterTest {
 	@Test
 	public void keepsItsTargetForSmallerDrawsAndGrowsItForLargerOnes() {
 		DrawUtils.RASTER.drawRaster(0D, 0D, 100D, 30D, (width, height) -> {});
-		final IFrameBuffer first = DrawUtils.RASTER.getTarget();
+		final IFrameBuffer first = ExternalRasterTest.target();
 		DrawUtils.RASTER.drawRaster(0D, 0D, 20D, 10D, (width, height) -> {});
-		Assert.assertSame(first, DrawUtils.RASTER.getTarget());
+		Assert.assertSame(first, ExternalRasterTest.target());
 		DrawUtils.RASTER.drawRaster(0D, 0D, 300D, 10D, (width, height) -> {});
-		Assert.assertNotSame(first, DrawUtils.RASTER.getTarget());
+		Assert.assertNotSame(first, ExternalRasterTest.target());
 		Assert.assertTrue(((RecordingFrameBuffer) first).isDeleted());
-		Assert.assertTrue(DrawUtils.RASTER.getTarget().getWidth() >= 300);
+		Assert.assertTrue(ExternalRasterTest.target().getWidth() >= 300);
 	}
 
 	@Test
@@ -88,6 +89,16 @@ public class ExternalRasterTest {
 		DrawUtils.RASTER.drawRaster(0D, 0D, 0D, 10D, (width, height) -> calls.add("draw"));
 		Assert.assertTrue(calls.isEmpty());
 		Assert.assertTrue(this.render.getCaptures().isEmpty());
+	}
+
+	private static IFrameBuffer target() {
+		try {
+			final Field field = ExternalRaster.class.getDeclaredField("target");
+			field.setAccessible(true);
+			return (IFrameBuffer) field.get(DrawUtils.RASTER);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 }

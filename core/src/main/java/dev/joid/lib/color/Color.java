@@ -18,35 +18,42 @@ import lombok.NonNull;
 @EqualsAndHashCode
 public final class Color {
 
-	public static final Color RED         = new Color(1F, 0F, 0F, 1F);
-	public static final Color BLUE        = new Color(0F, 0F, 1F, 1F);
-	public static final Color GRAY        = new Color(0.5F, 0.5F, 0.5F, 1F);
-	public static final Color CYAN        = new Color(0F, 1F, 1F, 1F);
-	public static final Color PINK        = new Color(1F, 0.7F, 0.7F, 1F);
-	public static final Color WHITE       = new Color(1F, 1F, 1F, 1F);
-	public static final Color GREEN       = new Color(0F, 1F, 0F, 1F);
-	public static final Color BLACK       = new Color(0F, 0F, 0F, 1F);
-	public static final Color YELLOW      = new Color(1F, 1F, 0F, 1F);
-	public static final Color ORANGE      = new Color(1F, 0.5F, 0F, 1F);
-	public static final Color MAGENTA     = new Color(1F, 0F, 1F, 1F);
-	public static final Color DARKGRAY    = new Color(0.3F, 0.3F, 0.3F, 1F);
-	public static final Color LIGHTGRAY   = new Color(0.7F, 0.7F, 0.7F, 1F);
-	public static final Color TRANSPARENT = new Color(0F, 0F, 0F, 0F);
+	public static final Color RED         = new Color(1F, 0F, 0F, 1F).constant("RED");
+	public static final Color BLUE        = new Color(0F, 0F, 1F, 1F).constant("BLUE");
+	public static final Color GRAY        = new Color(0.5F, 0.5F, 0.5F, 1F).constant("GRAY");
+	public static final Color CYAN        = new Color(0F, 1F, 1F, 1F).constant("CYAN");
+	public static final Color PINK        = new Color(1F, 0.7F, 0.7F, 1F).constant("PINK");
+	public static final Color WHITE       = new Color(1F, 1F, 1F, 1F).constant("WHITE");
+	public static final Color GREEN       = new Color(0F, 1F, 0F, 1F).constant("GREEN");
+	public static final Color BLACK       = new Color(0F, 0F, 0F, 1F).constant("BLACK");
+	public static final Color YELLOW      = new Color(1F, 1F, 0F, 1F).constant("YELLOW");
+	public static final Color ORANGE      = new Color(1F, 0.5F, 0F, 1F).constant("ORANGE");
+	public static final Color MAGENTA     = new Color(1F, 0F, 1F, 1F).constant("MAGENTA");
+	public static final Color DARKGRAY    = new Color(0.3F, 0.3F, 0.3F, 1F).constant("DARKGRAY");
+	public static final Color LIGHTGRAY   = new Color(0.7F, 0.7F, 0.7F, 1F).constant("LIGHTGRAY");
+	public static final Color TRANSPARENT = new Color(0F, 0F, 0F, 0F).constant("TRANSPARENT");
 
-	public static final Color RAINBOW = new Color(1F, 1F, 1F, 1F, color -> Color.RAINBOW().copyAlpha(color.a));
-	public static final Color LOADING = new Color(1F, 1F, 1F, 1F, color -> Color.LOADING().copyAlpha(color.a));
+	public static final Color RAINBOW = new Color(1F, 1F, 1F, 1F, color -> Color.RAINBOW().withAlpha(color.a)).constant("RAINBOW");
+	public static final Color LOADING = new Color(1F, 1F, 1F, 1F, color -> Color.LOADING().withAlpha(color.a)).constant("LOADING");
 
-	private final float r;
-	private final float g;
-	private final float b;
-	private final float a;
+	private float r;
+	private float g;
+	private float b;
+	private float a;
 
 	@EqualsAndHashCode.Exclude
-	private final UnaryOperator<Color> update;
+	private UnaryOperator<Color> update;
 
 	@Getter
 	@EqualsAndHashCode.Exclude
-	private final ColorGradient gradient;
+	private ColorGradient gradient;
+
+	@Getter
+	@EqualsAndHashCode.Exclude
+	private boolean frozen;
+
+	@EqualsAndHashCode.Exclude
+	private String constant;
 
 	public Color(final Color color) {
 		this(color.r, color.g, color.b, color.a, color.update, color.isGradient() ? new ColorGradient(color.gradient.getStartColor().copy(), color.gradient.getEndColor().copy(), color.gradient.getStartPoint(), color.gradient.getEndPoint()) : null);
@@ -107,11 +114,11 @@ public final class Color {
 		final String lower = text.toLowerCase(Locale.ROOT);
 
 		if ("rainbow".equals(lower.replace("#", ""))) {
-			return Color.RAINBOW;
+			return Color.RAINBOW.copy();
 		}
 
 		if ("loading".equals(lower.replace("#", ""))) {
-			return Color.LOADING;
+			return Color.LOADING.copy();
 		}
 
 		if (lower.startsWith("rgb(")) {
@@ -158,10 +165,10 @@ public final class Color {
 
 	public static @NonNull Color transition(final @NonNull Color color1, final @NonNull Color color2, final float progress) {
 		if (progress == 0) {
-			return color1;
+			return color1.copy();
 		}
 		if (progress == 1) {
-			return color2;
+			return color2.copy();
 		}
 
 		final float inv = 1F - progress;
@@ -332,11 +339,11 @@ public final class Color {
 		return this.derive(this.r * c.r, this.g * c.g, this.b * c.b, this.a * c.a, color -> color.multiply(c));
 	}
 
-	public @NonNull Color addToCopy(final @NonNull Color c) {
+	public @NonNull Color add(final @NonNull Color c) {
 		return new Color(this.r + c.r, this.g + c.g, this.b + c.b, this.a + c.a, this.update);
 	}
 
-	public @NonNull Color scaleCopy(final float value) {
+	public @NonNull Color scale(final float value) {
 		return new Color(this.r * value, this.g * value, this.b * value, this.a * value, this.update);
 	}
 
@@ -444,30 +451,51 @@ public final class Color {
 		return values;
 	}
 
-	public @NonNull Color copy() {
-		return new Color(this);
+	public @NonNull Color red(final float red) {
+		return this.assign(this.withRed(red), "withRed");
 	}
 
-	public @NonNull Color copyAlpha(final float alpha) {
+	public @NonNull Color blue(final float blue) {
+		return this.assign(this.withBlue(blue), "withBlue");
+	}
+
+	public @NonNull Color alpha(final float alpha) {
+		return this.assign(this.withAlpha(alpha), "withAlpha");
+	}
+
+	public @NonNull Color green(final float green) {
+		return this.assign(this.withGreen(green), "withGreen");
+	}
+
+	public @NonNull Color withRed(final float red) {
+		return this.derive(red, this.g, this.b, this.a, color -> color.withRed(red));
+	}
+
+	public @NonNull Color withBlue(final float blue) {
+		return this.derive(this.r, this.g, blue, this.a, color -> color.withBlue(blue));
+	}
+
+	public @NonNull Color withAlpha(final float alpha) {
 		if (this.isGradient()) {
 			final Color start = this.gradient.getStartColor();
 			final Color end = this.gradient.getEndColor();
 			final float scale = this.a > 0F ? alpha / this.a : 0F;
-			return new Color(this.r, this.g, this.b, alpha, this.update, new ColorGradient(start.copyAlpha(this.a > 0F ? start.a * scale : alpha), end.copyAlpha(this.a > 0F ? end.a * scale : alpha), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
+			return new Color(this.r, this.g, this.b, alpha, this.update, new ColorGradient(start.withAlpha(this.a > 0F ? start.a * scale : alpha), end.withAlpha(this.a > 0F ? end.a * scale : alpha), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
 		}
 		return new Color(this.r, this.g, this.b, alpha, this.update);
 	}
 
-	public @NonNull Color copyRed(final float red) {
-		return this.derive(red, this.g, this.b, this.a, color -> color.copyRed(red));
+	public @NonNull Color withGreen(final float green) {
+		return this.derive(this.r, green, this.b, this.a, color -> color.withGreen(green));
 	}
 
-	public @NonNull Color copyGreen(final float green) {
-		return this.derive(this.r, green, this.b, this.a, color -> color.copyGreen(green));
+	public @NonNull Color copy() {
+		return new Color(this);
 	}
 
-	public @NonNull Color copyBlue(final float blue) {
-		return this.derive(this.r, this.g, blue, this.a, color -> color.copyBlue(blue));
+	public @NonNull Color freeze() {
+		this.frozen = true;
+		return this;
 	}
 
 	public @NonNull Color update() {
@@ -480,6 +508,25 @@ public final class Color {
 
 	public static void reset() {
 		BridgeHandler.RENDER.get().getState().color(1F, 1F, 1F, 1F);
+	}
+
+	private @NonNull Color constant(final @NonNull String name) {
+		this.constant = name;
+		return this.freeze();
+	}
+
+	private @NonNull Color assign(final @NonNull Color color, final @NonNull String copy) {
+		if (this.frozen) {
+			throw new IllegalStateException((this.constant != null ? "Color." + this.constant + " is a constant" : "This color is frozen") + ", use " + copy + "(...) to get a modified copy");
+		}
+
+		this.r = color.r;
+		this.g = color.g;
+		this.b = color.b;
+		this.a = color.a;
+		this.update = color.update;
+		this.gradient = color.gradient;
+		return this;
 	}
 
 	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform) {

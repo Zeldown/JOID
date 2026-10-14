@@ -27,9 +27,9 @@ public class ShowNeonKit implements IShowKit {
 	@Override
 	public void backdrop(final Node layer) {
 		RectNode.create(0, 0, 1920, 1080).color(ShowUI.diagonal(ShowUI.NIGHT, ShowUI.DUSK)).attach(layer);
-		this.blob(layer, -260, 420, 900, ShowUI.VIOLET.copyAlpha(0.42F), 0D);
-		this.blob(layer, 1250, -320, 900, ShowUI.CYAN.copyAlpha(0.22F), 0.4D);
-		this.blob(layer, 1300, 640, 760, ShowUI.PINK.copyAlpha(0.24F), 0.7D);
+		this.blob(layer, -260, 420, 900, ShowUI.VIOLET.withAlpha(0.42F), 0D);
+		this.blob(layer, 1250, -320, 900, ShowUI.CYAN.withAlpha(0.22F), 0.4D);
+		this.blob(layer, 1300, 640, 760, ShowUI.PINK.withAlpha(0.24F), 0.7D);
 	}
 
 	@Override
@@ -61,24 +61,24 @@ public class ShowNeonKit implements IShowKit {
 	public RectNode panel(final double x, final double y, final double width, final double height) {
 		return RectNode
 		.create(x, y, width, height)
-		.color(ShowUI.vertical(Color.WHITE.copyAlpha(0.10F), Color.WHITE.copyAlpha(0.04F)))
+		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.10F), Color.WHITE.withAlpha(0.04F)))
 		.effect(RoundedNodeEffect.create(36F))
-		.effect(BorderNodeEffect.create(Color.WHITE.copyAlpha(0.14F), 1.5F, BorderMode.IN))
-		.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.45F), 48F, 0D, 24D));
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.14F), 1.5F, BorderMode.IN))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F, 0D, 24D));
 	}
 
 	@Override
 	public RectNode divider(final double x, final double y, final double width) {
-		return RectNode.create(x, y, width, 1.5D).color(Color.WHITE.copyAlpha(0.1F));
+		return RectNode.create(x, y, width, 1.5D).color(Color.WHITE.withAlpha(0.1F));
 	}
 
 	@Override
 	public RectNode choice(final double x, final double y, final String label, final BooleanSupplier selected) {
 		return RectNode
 		.create(x, y, 180, 64)
-		.color(() -> selected.getAsBoolean() ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.copyAlpha(0.08F))
+		.color(() -> selected.getAsBoolean() ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.withAlpha(0.08F))
 		.effect(RoundedNodeEffect.create(32F))
-		.effect(ShadowNodeEffect.create(ShowUI.FUCHSIA, 26F).color(() -> ShowUI.FUCHSIA.copyAlpha(selected.getAsBoolean() ? 0.6F : 0F)))
+		.effect(ShadowNodeEffect.create(ShowUI.FUCHSIA, 26F).color(() -> ShowUI.FUCHSIA.withAlpha(selected.getAsBoolean() ? 0.6F : 0F)))
 		.body(chip -> {
 			TextNode.create(90, 32).text(() -> Text.create(label, ShowUI.font(FontWeight.BOLD, 23F, selected.getAsBoolean() ? Color.WHITE : ShowUI.MUTED))).anchor(Align.CENTER).attach(chip);
 		});
@@ -88,9 +88,9 @@ public class ShowNeonKit implements IShowKit {
 	public RectNode button(final double x, final double y, final double width, final Supplier<String> label, final boolean primary) {
 		return RectNode
 		.create(x, y, width, 72)
-		.<RectNode>self(button -> button.color(() -> primary ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.copyAlpha(0.07F + button.hoverValue(0.06F))))
+		.<RectNode>self(button -> button.color(() -> primary ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.withAlpha(0.07F + button.hoverValue(0.06F))))
 		.effect(RoundedNodeEffect.create(22F))
-		.effect(ShadowNodeEffect.create(ShowUI.FUCHSIA.copyAlpha(primary ? 0.6F : 0F), 30F))
+		.effect(ShadowNodeEffect.create(ShowUI.FUCHSIA.withAlpha(primary ? 0.6F : 0F), 30F))
 		.body(button -> {
 			TextNode.create(width / 2D, 36).text(() -> Text.create(label.get(), ShowUI.font(FontWeight.BOLD, 24F, primary ? Color.WHITE : ShowUI.TEXT))).anchor(Align.CENTER).attach(button);
 		})

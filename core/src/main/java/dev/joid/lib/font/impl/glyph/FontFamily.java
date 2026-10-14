@@ -10,12 +10,11 @@ import java.util.stream.Collectors;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
-import lombok.Getter;
 import lombok.NonNull;
 
 public final class FontFamily<F extends IFontFace> {
 
-	@Getter private final List<F> faces;
+	private final List<F> faces;
 
 	private FontFamily(final List<F> faces) {
 		this.faces = faces;
@@ -54,6 +53,10 @@ public final class FontFamily<F extends IFontFace> {
 			this.warn(weight, italic, face);
 		}
 		return face;
+	}
+
+	public final @NonNull List<F> getFaces() {
+		return Collections.unmodifiableList(this.faces);
 	}
 
 	private void warn(final @NonNull FontWeight weight, final boolean italic, final @NonNull F face) {

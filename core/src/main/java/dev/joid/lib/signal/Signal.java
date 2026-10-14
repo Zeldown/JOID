@@ -146,7 +146,7 @@ public class Signal<T> implements ISignal<T> {
 		return this.value != null ? this.value : this.defaultValue;
 	}
 
-	public @NonNull Set<@NonNull ISignalSubscriber<T>> getEventSet() {
+	protected @NonNull Set<@NonNull ISignalSubscriber<T>> getEventSet() {
 		return this.eventSet;
 	}
 

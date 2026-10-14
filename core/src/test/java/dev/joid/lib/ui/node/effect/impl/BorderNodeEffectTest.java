@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.effect.impl;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingShader;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BorderShader;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
@@ -19,6 +21,7 @@ import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+
 import lombok.AllArgsConstructor;
 
 public class BorderNodeEffectTest {
@@ -99,7 +102,13 @@ public class BorderNodeEffectTest {
 	}
 
 	private ShaderPassContext context() {
-		return ShaderPassContext.create(10D, 20D, 100D, 50D, 5D, this.bridges.getRender().getPixelGrid());
+		try {
+			final Method create = ShaderPassContext.class.getDeclaredMethod("create", double.class, double.class, double.class, double.class, double.class, PixelGrid.class);
+			create.setAccessible(true);
+			return (ShaderPassContext) create.invoke(null, 10D, 20D, 100D, 50D, 5D, this.bridges.getRender().getPixelGrid());
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	@AllArgsConstructor

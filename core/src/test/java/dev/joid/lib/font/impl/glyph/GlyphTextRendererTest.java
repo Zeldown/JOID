@@ -258,7 +258,7 @@ public class GlyphTextRendererTest {
 
 	@Test
 	public void colorsTheGlyphsThroughMarkup() {
-		GlyphTextRendererTest.draw("A~A", GlyphTextRendererTest.info().color(Color.WHITE.copyAlpha(0.5F)));
+		GlyphTextRendererTest.draw("A~A", GlyphTextRendererTest.info().color(Color.WHITE.withAlpha(0.5F)));
 		Assert.assertEquals(0.5F, GlyphTextRendererTest.RENDERER.drawn.get(0).getColor().getAlphaF(), 0F);
 		Assert.assertEquals(Color.RED.getRedF(), GlyphTextRendererTest.RENDERER.drawn.get(1).getColor().getRedF(), 0F);
 		Assert.assertEquals(0.5F, GlyphTextRendererTest.RENDERER.drawn.get(1).getColor().getAlphaF(), 0F);

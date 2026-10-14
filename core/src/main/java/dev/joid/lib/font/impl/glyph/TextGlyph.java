@@ -42,7 +42,7 @@ public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 		return new TextGlyph<>(font, face, index, codepoint, style, x, baseline, size, advance, color, false);
 	}
 
-	public @NonNull TextGlyph<F> shadow(final double x, final double y, final @NonNull Color color) {
+	protected @NonNull TextGlyph<F> shadow(final double x, final double y, final @NonNull Color color) {
 		return new TextGlyph<>(this.font, this.face, this.index, this.codepoint, this.style, this.x + x, this.baseline + y, this.size, this.advance, color, true).offset(this.offsetX, this.offsetY);
 	}
 

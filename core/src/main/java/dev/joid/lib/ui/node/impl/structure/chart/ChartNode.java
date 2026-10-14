@@ -155,6 +155,14 @@ public abstract class ChartNode extends Node {
 				return this.dataMap.get(data);
 			}
 
+			public final @NonNull Set<String> getLabelSet() {
+				return Collections.unmodifiableSet(this.labelSet);
+			}
+
+			public final @NonNull Map<String, ChartData> getDataMap() {
+				return Collections.unmodifiableMap(this.dataMap);
+			}
+
 			public final @NonNull XChartAxis labelSet(final @NonNull String... labels) {
 				this.labelSet.clear();
 				Collections.addAll(this.labelSet, labels);

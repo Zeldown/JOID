@@ -195,7 +195,7 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	@Override
-	public void free() {
+	protected void free() {
 		for (int i = this.children.size() - 1; i >= 0; i--) {
 			final BaseTween<?> obj = this.children.remove(i);
 			obj.free();

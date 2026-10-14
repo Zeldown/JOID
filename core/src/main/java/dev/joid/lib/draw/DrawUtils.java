@@ -18,11 +18,11 @@ public final class DrawUtils {
 	public static final ExternalRaster RASTER;
 
 	static {
-		RESOURCE = new DrawResource();
-		SHAPE    = new DrawShape();
-		TEXT     = new DrawText();
-		MODEL    = new DrawModel();
-		RASTER   = new ExternalRaster();
+		RESOURCE = DrawResource.inst();
+		SHAPE    = DrawShape.inst();
+		TEXT     = DrawText.inst();
+		MODEL    = DrawModel.inst();
+		RASTER   = ExternalRaster.inst();
 	}
 
 }

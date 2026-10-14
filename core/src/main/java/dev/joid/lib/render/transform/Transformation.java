@@ -1,5 +1,6 @@
 package dev.joid.lib.render.transform;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,6 +21,10 @@ public class Transformation {
 
 	private Transformation() {
 		this.operations = new LinkedList<>();
+	}
+
+	public final @NonNull List<@NonNull ITransformOperation> getOperations() {
+		return Collections.unmodifiableList(this.operations);
 	}
 
 	public static @NonNull Transformation create() {

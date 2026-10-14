@@ -37,9 +37,14 @@ public class DraggablePropertyTest {
 		Assert.assertTrue(draggable.isEnabled(RectNode.create(0D, 0D, 10D, 10D)));
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void hasNoBoundsWhenFree() {
-		DraggableProperty.free().getBounds(RectNode.create(0D, 0D, 10D, 10D));
+		try {
+			DraggableProperty.free().getBounds(RectNode.create(0D, 0D, 10D, 10D));
+			Assert.fail("A free area must have no bounds");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("A free draggable area has no bounds, check getAreaType() before calling getBounds() or pick a bounded area such as DraggableProperty.parent()", expected.getMessage());
+		}
 	}
 
 	@Test

@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.structure.reorderable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -243,6 +244,18 @@ public class ReorderableFlexNode extends Node {
 
 	public final <T extends ReorderableFlexNode> @NonNull T autoDrag(final @NonNull Supplier<Boolean> autoDrag) {
 		return super.follow("autoDrag", autoDrag, (final ReorderableFlexNode node, final Boolean value) -> node.autoDrag = value);
+	}
+
+	public final @NonNull Set<Node> getLockedNodes() {
+		return Collections.unmodifiableSet(this.lockedNodes);
+	}
+
+	public final @NonNull List<Node> getLogicalOrder() {
+		return Collections.unmodifiableList(this.logicalOrder);
+	}
+
+	public final @NonNull Map<Node, Double> getChildCurrent() {
+		return Collections.unmodifiableMap(this.childCurrent);
 	}
 
 	public final int getChildIndex(final @NonNull Node child) {

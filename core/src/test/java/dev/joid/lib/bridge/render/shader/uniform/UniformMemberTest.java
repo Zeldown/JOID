@@ -84,12 +84,25 @@ public class UniformMemberTest {
 	}
 
 	@Test
-	public void refusesAnIntForAFloat() {
+	public void convertsAnIntForAFloat() {
+		final UniformMember member = UniformMember.create("u_Radius", UniformType.FLOAT, 0, 0).value(4);
+		Assert.assertEquals(4F, Float.intBitsToFloat(member.getValues().getInt(0)), 0F);
+	}
+
+	@Test
+	public void convertsIntsForAVector() {
+		final UniformMember member = UniformMember.create("u_Size", UniformType.VEC2, 0, 0).value(2, 3);
+		Assert.assertEquals(2F, Float.intBitsToFloat(member.getValues().getInt(0)), 0F);
+		Assert.assertEquals(3F, Float.intBitsToFloat(member.getValues().getInt(4)), 0F);
+	}
+
+	@Test
+	public void refusesTooManyIntsForAFloat() {
 		try {
-			UniformMember.create("u_Radius", UniformType.FLOAT, 0, 0).value(4);
-			Assert.fail("A float must refuse an int");
+			UniformMember.create("u_Radius", UniformType.FLOAT, 0, 0).value(4, 5);
+			Assert.fail("A float must refuse two ints");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("The uniform float u_Radius cannot take 1 int", expected.getMessage());
+			Assert.assertEquals("The uniform float u_Radius cannot take 2 floats", expected.getMessage());
 		}
 	}
 

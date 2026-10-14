@@ -183,10 +183,9 @@ public class DrawShapeTest {
 		Assert.assertEquals(0, Tessellator.inst().getRawBuffer()[14 * 8 + 5] >>> 24);
 	}
 
-	@Test(expected = RuntimeException.class)
-	public void refusesASecondInstance() {
-		Assert.assertSame(DrawUtils.SHAPE, DrawShape.getInstance());
-		new DrawShape();
+	@Test
+	public void isTheSharedInstance() {
+		Assert.assertSame(DrawUtils.SHAPE, DrawShape.inst());
 	}
 
 	@Test(expected = NullPointerException.class)

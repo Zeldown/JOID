@@ -33,7 +33,7 @@ public final class UIDataOverlayObject implements UIDataOverlay {
 		return data != null ? data : new UIDataOverlayObject();
 	}
 
-	public static UIDataOverlayObject get(final @NonNull Class<? extends UI> clazz) {
+	protected static UIDataOverlayObject get(final @NonNull Class<? extends UI> clazz) {
 		Class<?> currentClass = clazz;
 		UIDataOverlay data = currentClass.getAnnotation(UIDataOverlay.class);
 		while (data == null && currentClass.getSuperclass() != null) {

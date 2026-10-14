@@ -1,9 +1,11 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -1275,8 +1277,8 @@ public class TextFieldNodeTest {
 		name.set("Max");
 		Assert.assertEquals("Sam", field.getText());
 		Assert.assertSame(nickname, field.getSignal());
-		Assert.assertTrue(name.getEventSet().isEmpty());
-		Assert.assertEquals(1, nickname.getEventSet().size());
+		Assert.assertTrue(TextFieldNodeTest.subscribers(name).isEmpty());
+		Assert.assertEquals(1, TextFieldNodeTest.subscribers(nickname).size());
 	}
 
 	@Test
@@ -1358,6 +1360,16 @@ public class TextFieldNodeTest {
 
 	private List<Draw> selections() {
 		return this.bridges.getRender().getDraws(50 / 255F, 152 / 255F, 253 / 255F);
+	}
+
+	private static Set<?> subscribers(final Signal<?> signal) {
+		try {
+			final Field field = Signal.class.getDeclaredField("eventSet");
+			field.setAccessible(true);
+			return (Set<?>) field.get(signal);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	public static final class NodeUI extends UI {

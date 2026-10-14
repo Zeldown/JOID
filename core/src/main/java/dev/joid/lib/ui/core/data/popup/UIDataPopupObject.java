@@ -24,7 +24,7 @@ public final class UIDataPopupObject implements UIDataPopup {
 		return data != null ? data : new UIDataPopupObject();
 	}
 
-	public static UIDataPopupObject get(final @NonNull Class<? extends UI> clazz) {
+	protected static UIDataPopupObject get(final @NonNull Class<? extends UI> clazz) {
 		Class<?> currentClass = clazz;
 		UIDataPopup data = currentClass.getAnnotation(UIDataPopup.class);
 		while (data == null && currentClass.getSuperclass() != null) {

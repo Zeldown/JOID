@@ -77,7 +77,7 @@ public final class UIDataObject implements UIData {
 		return this.backgroundColorCache;
 	}
 
-	public static UIDataObject get(final @NonNull Class<? extends UI> clazz) {
+	protected static UIDataObject get(final @NonNull Class<? extends UI> clazz) {
 		Class<?> currentClass = clazz;
 		UIData data = currentClass.getAnnotation(UIData.class);
 		while (data == null && currentClass.getSuperclass() != null) {

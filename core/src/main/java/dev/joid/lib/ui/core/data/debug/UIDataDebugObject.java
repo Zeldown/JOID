@@ -24,7 +24,7 @@ public final class UIDataDebugObject implements UIDataDebug {
 		return data != null ? data : new UIDataDebugObject();
 	}
 
-	public static UIDataDebugObject get(final @NonNull Class<? extends UI> clazz) {
+	protected static UIDataDebugObject get(final @NonNull Class<? extends UI> clazz) {
 		Class<?> currentClass = clazz;
 		UIDataDebug data = currentClass.getAnnotation(UIDataDebug.class);
 		while (data == null && currentClass.getSuperclass() != null) {

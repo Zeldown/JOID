@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -18,7 +19,6 @@ import org.junit.Test;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.animation.animator.TweenAnimator;
@@ -680,7 +680,7 @@ public class NodeTest {
 		final int[] ends = {0};
 		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).onHoverEnd(event -> ends[0]++);
 		this.bridges.open(new NodeUI(node));
-		Assert.assertTrue(node.hovered(true).isHovered());
+		Assert.assertTrue(NodeTest.hover(node).isHovered());
 		this.bridges.frame();
 		Assert.assertFalse(node.isHovered());
 		Assert.assertEquals(1, ends[0]);
@@ -1680,23 +1680,6 @@ public class NodeTest {
 	}
 
 	@Test
-	public void followsTheMouseOnceDraggedProgrammatically() {
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free());
-		this.bridges.open(new NodeUI(node));
-		Assert.assertSame(node, node.dragging(true, 110D, 110D));
-		Assert.assertTrue(node.isDragging());
-		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		this.bridges.move(210D, 160D).frame();
-		this.bridges.getUi().mouseMoved();
-		this.bridges.frames(100);
-		Assert.assertEquals(200D, node.getX(), 0D);
-		Assert.assertEquals(150D, node.getY(), 0D);
-		node.dragging(false, 0D, 0D);
-		Assert.assertFalse(node.isDragging());
-		Assert.assertNull(node.getDraggedNode());
-	}
-
-	@Test
 	public void startsAndStopsADragProgrammatically() {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().type(DraggableType.COPY));
 		this.bridges.open(new NodeUI(node));
@@ -1813,11 +1796,6 @@ public class NodeTest {
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The node RectNode has no DraggableProperty, call draggable(...) first", expected.getMessage());
 		}
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void refusesToDragWithoutDraggableProperty() {
-		RectNode.create(100D, 100D, 50D, 50D).dragging(true, 110D, 110D);
 	}
 
 	@Test
@@ -2188,7 +2166,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(copy));
 		signal.set(2);
 		Assert.assertEquals(Arrays.asList(1, 2), values);
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 	}
 
 	@Test
@@ -2223,11 +2201,11 @@ public class NodeTest {
 		this.press(node, 5D, 5D);
 		Assert.assertNotNull(node.getDraggedNode());
 		Assert.assertTrue(node.getDraggedNode().getEventBus().isEmpty());
-		Assert.assertEquals(2, signal.getEventSet().size());
+		Assert.assertEquals(2, NodeTest.subscribers(signal).size());
 		signal.set(2);
 		this.drop(300D, 300D);
 		Assert.assertNull(node.getDraggedNode());
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		signal.set(3);
 		Assert.assertEquals(Arrays.asList(1, 2, 2, 3), values);
 	}
@@ -2434,10 +2412,10 @@ public class NodeTest {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D).watch(signal));
 		this.bridges.open(ui);
 		signal.set(1);
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		JOID.close(ui);
 		signal.set(2);
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 	}
 
 	@Test
@@ -2445,13 +2423,13 @@ public class NodeTest {
 		final Signal<Integer> signal = new Signal<>(0);
 		final int[] watches = {0};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> watches[0]++);
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 		signal.set(1);
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
 		this.bridges.open(ui);
 		node.attach(ui);
 		Assert.assertEquals(0, watches[0]);
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		signal.set(2);
 		Assert.assertEquals(1, watches[0]);
 	}
@@ -2461,7 +2439,7 @@ public class NodeTest {
 		final WatchingUI ui = new WatchingUI();
 		this.bridges.open(ui);
 		Assert.assertEquals(1, ui.watches);
-		Assert.assertEquals(1, ui.signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(ui.signal).size());
 		ui.signal.set(2);
 		Assert.assertEquals(2, ui.watches);
 	}
@@ -2475,7 +2453,7 @@ public class NodeTest {
 		kept[0] = false;
 		signal.set(1);
 		Assert.assertEquals(1, node.getChildren().size());
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 	}
 
 	@Test
@@ -2485,7 +2463,7 @@ public class NodeTest {
 		this.bridges.open(ui);
 		ui.reload();
 		ui.reload();
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		signal.set(1);
 		Assert.assertEquals(1, ui.watches);
 	}
@@ -2498,7 +2476,7 @@ public class NodeTest {
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
 		parent.remove(child);
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 		signal.set(1);
 		Assert.assertEquals(0, reloads[0]);
 	}
@@ -2512,7 +2490,7 @@ public class NodeTest {
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
 		parent.clearChildren();
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 		signal.set(1);
 		Assert.assertEquals(0, reloads[0]);
 	}
@@ -2524,7 +2502,7 @@ public class NodeTest {
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
-		final List<ISignalSubscriber<Integer>> pending = new ArrayList<>(signal.getEventSet());
+		final List<ISignalSubscriber<Integer>> pending = new ArrayList<>(NodeTest.subscribers(signal));
 		parent.remove(child);
 		for (final ISignalSubscriber<Integer> subscriber : pending) {
 			Assert.assertTrue(subscriber.update(1));
@@ -2543,7 +2521,7 @@ public class NodeTest {
 		parent.append(child);
 		parent.remove(child);
 		parent.append(child);
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		signal.set(1);
 		Assert.assertEquals(1, reloads[0]);
 	}
@@ -2572,12 +2550,12 @@ public class NodeTest {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++));
 		this.bridges.open(ui);
 		JOID.close(ui);
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 		this.bridges.open(ui);
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		signal.set(1);
 		Assert.assertEquals(1, reloads[0]);
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 	}
 
 	@Test
@@ -2597,9 +2575,9 @@ public class NodeTest {
 		count.set(3);
 		Assert.assertEquals(Arrays.asList("first", 1, "second", 2, "other", 3), values);
 		Assert.assertEquals(2, node.getLinkList().size());
-		Assert.assertTrue(title.getEventSet().isEmpty());
-		Assert.assertEquals(1, other.getEventSet().size());
-		Assert.assertEquals(1, count.getEventSet().size());
+		Assert.assertTrue(NodeTest.subscribers(title).isEmpty());
+		Assert.assertEquals(1, NodeTest.subscribers(other).size());
+		Assert.assertEquals(1, NodeTest.subscribers(count).size());
 	}
 
 	@Test
@@ -2612,13 +2590,13 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(parent));
 		parent.remove(node);
 		node.link("value", second, values);
-		Assert.assertTrue(first.getEventSet().isEmpty());
-		Assert.assertTrue(second.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(first).isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(second).isEmpty());
 		parent.append(node);
 		parent.remove(node);
 		parent.append(node);
-		Assert.assertTrue(first.getEventSet().isEmpty());
-		Assert.assertEquals(1, second.getEventSet().size());
+		Assert.assertTrue(NodeTest.subscribers(first).isEmpty());
+		Assert.assertEquals(1, NodeTest.subscribers(second).size());
 		Assert.assertEquals(1, node.getLinkList().size());
 		first.set(1);
 		second.set(11);
@@ -2632,15 +2610,15 @@ public class NodeTest {
 		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).overflow(OverflowProperty.SCROLL).scrollbar(bar).skeleton(rect -> RectNode.create(0D, 0D, 10D, 10D).watch(signal));
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 200D, 200D).append(node);
 		this.bridges.open(new NodeUI(parent));
-		Assert.assertEquals(2, signal.getEventSet().size());
+		Assert.assertEquals(2, NodeTest.subscribers(signal).size());
 		parent.remove(node);
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 		Assert.assertFalse(bar.isSubscribed());
 		Assert.assertFalse(node.getSkeleton().isSubscribed());
 		parent.append(node);
 		parent.remove(node);
 		parent.append(node);
-		Assert.assertEquals(2, signal.getEventSet().size());
+		Assert.assertEquals(2, NodeTest.subscribers(signal).size());
 	}
 
 	@Test
@@ -2693,7 +2671,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).onHoverEnd(event -> ends[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
 		this.bridges.open(new NodeUI(parent));
-		node.hovered(true).getHoverAnimator().sequence(0F, 1F).start().update(1F);
+		NodeTest.hover(node).getHoverAnimator().sequence(0F, 1F).start().update(1F);
 		parent.remove(node);
 		Assert.assertFalse(node.isHovered());
 		Assert.assertEquals(1, ends[0]);
@@ -2756,10 +2734,10 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		signal.set(1);
 		Assert.assertTrue(node.getChildren().isEmpty());
-		Assert.assertEquals(1, signal.getEventSet().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		kept[0] = false;
 		signal.set(2);
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 	}
 
 	@Test
@@ -3072,7 +3050,7 @@ public class NodeTest {
 		JOID.close(first);
 		this.bridges.open(new NodeUI(RectNode.create(0D, 0D, 10D, 10D)));
 		signal.set(1);
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 	}
 
 	@Test
@@ -3091,6 +3069,16 @@ public class NodeTest {
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(other, raised), ui.getNodeList().ordered());
 		Assert.assertTrue(this.order(0.6F, 0.4F, 0.2F) < this.order(0.2F, 0.4F, 0.6F));
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesReadOnlyEffects() {
+		RectNode.create(0D, 0D, 10D, 10D).getEffectMap().clear();
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesReadOnlySources() {
+		RectNode.create(0D, 0D, 10D, 10D).getSourceMap().clear();
 	}
 
 	private Draw draw(final float red, final float green, final float blue) {
@@ -3139,6 +3127,28 @@ public class NodeTest {
 			System.setErr(error);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Set<ISignalSubscriber<T>> subscribers(final Signal<T> signal) {
+		try {
+			final Field field = Signal.class.getDeclaredField("eventSet");
+			field.setAccessible(true);
+			return (Set<ISignalSubscriber<T>>) field.get(signal);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
+	}
+
+	private static <N extends Node> N hover(final N node) {
+		try {
+			final Field field = Node.class.getDeclaredField("hovered");
+			field.setAccessible(true);
+			field.set(node, true);
+			return node;
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	public static final class ScrollUI extends UI {

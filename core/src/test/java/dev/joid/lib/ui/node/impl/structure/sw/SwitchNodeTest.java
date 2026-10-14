@@ -1,8 +1,10 @@
 package dev.joid.lib.ui.node.impl.structure.sw;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -73,8 +75,8 @@ public class SwitchNodeTest {
 		quality.set("medium");
 		Assert.assertEquals("low", node.getState());
 		Assert.assertSame(shadows, node.getSignal());
-		Assert.assertTrue(quality.getEventSet().isEmpty());
-		Assert.assertEquals(1, shadows.getEventSet().size());
+		Assert.assertTrue(SwitchNodeTest.subscribers(quality).isEmpty());
+		Assert.assertEquals(1, SwitchNodeTest.subscribers(shadows).size());
 	}
 
 	@Test
@@ -253,6 +255,16 @@ public class SwitchNodeTest {
 		final SwitchUI ui = new SwitchUI(this.changes);
 		this.bridges.open(ui).frame();
 		return ui.node;
+	}
+
+	private static Set<?> subscribers(final Signal<?> signal) {
+		try {
+			final Field field = Signal.class.getDeclaredField("eventSet");
+			field.setAccessible(true);
+			return (Set<?>) field.get(signal);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	@RequiredArgsConstructor

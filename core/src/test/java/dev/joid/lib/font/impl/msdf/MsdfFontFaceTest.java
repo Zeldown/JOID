@@ -54,8 +54,8 @@ public class MsdfFontFaceTest {
 		Assert.assertSame(FontWeight.BOLD, bold.getWeight());
 		Assert.assertTrue(bold.isItalic());
 		Assert.assertSame(face.getTexture(), bold.getTexture());
-		Assert.assertSame(face.getGlyphs(), bold.getGlyphs());
-		Assert.assertSame(face.getKerningPairs(), bold.getKerningPairs());
+		Assert.assertEquals(face.getGlyphs(), bold.getGlyphs());
+		Assert.assertEquals(face.getKerningPairs(), bold.getKerningPairs());
 		Assert.assertEquals(face.getName(), bold.getName());
 		Assert.assertSame(face.getAtlas(), bold.getAtlas());
 		Assert.assertSame(face.getMetrics(), bold.getMetrics());

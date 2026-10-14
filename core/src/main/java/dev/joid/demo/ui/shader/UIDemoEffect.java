@@ -70,7 +70,7 @@ public class UIDemoEffect extends UIDemo {
 		.attach(this);
 		TextNode.create(1765, 175).text(Text.create("Rounded subtree", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(55, 240, 200, 120).color(Color.GRAY).effect(ShadowNodeEffect.create(Color.WHITE.copyAlpha(0.5F), 16F, 0D, 8D)).attach(this);
+		RectNode.create(55, 240, 200, 120).color(Color.GRAY).effect(ShadowNodeEffect.create(Color.WHITE.withAlpha(0.5F), 16F, 0D, 8D)).attach(this);
 		TextNode.create(155, 375).text(Text.create("Shadow", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(285, 240, 200, 120).color(Color.WHITE).effect(ShadowNodeEffect.create(Color.CYAN, 24F)).attach(this);
@@ -262,7 +262,7 @@ public class UIDemoEffect extends UIDemo {
 		.attach(this);
 		TextNode.create(1075, 975).text(Text.create("Stacked effects", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(1205, 840, 200, 120).color(Color.RED.copyAlpha(0.3F)).effect(BorderNodeEffect.create(Color.BLUE, 3F)).attach(this);
+		RectNode.create(1205, 840, 200, 120).color(Color.RED.withAlpha(0.3F)).effect(BorderNodeEffect.create(Color.BLUE, 3F)).attach(this);
 		TextNode.create(1305, 975).text(Text.create("Alpha and border", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode

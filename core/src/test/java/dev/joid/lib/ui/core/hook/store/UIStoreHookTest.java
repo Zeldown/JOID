@@ -235,13 +235,13 @@ public class UIStoreHookTest {
 	}
 
 	@Test
-	public void deletesTheFileOfADestroyedPermanentStore() {
+	public void keepsTheFileOfADestroyedPermanentStore() {
 		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
 		UIStoreHook.saveStore(store);
 		Assert.assertTrue(this.file().exists());
 		UIStoreHook.destroyStore(store);
 		Assert.assertTrue(store.destroyed);
-		Assert.assertFalse(this.file().exists());
+		Assert.assertTrue(this.file().exists());
 	}
 
 	@Test

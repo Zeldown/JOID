@@ -254,7 +254,6 @@ public final class SignalReplayMethod {
 		}
 
 		final Class<?> owner = this.type(Type.getObjectType(call.owner));
-		final String name = remapper.mapMethod(call.owner, call.name, call.desc);
 		if (call.name.equals("<init>")) {
 			try {
 				return this.access(owner.getDeclaredConstructor(parameterTypes));
@@ -263,6 +262,7 @@ public final class SignalReplayMethod {
 			}
 		}
 
+		final String name = remapper.mapMethod(call.owner, call.name, call.desc);
 		for (Class<?> type = owner; type != null; type = type.getSuperclass()) {
 			try {
 				return this.access(type.getDeclaredMethod(name, parameterTypes));

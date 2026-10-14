@@ -86,7 +86,7 @@ public abstract class BaseTween<T> {
 		this.isKilled = true;
 	}
 
-	public void free() {}
+	protected void free() {}
 
 	public void pause() {
 		this.isPaused = true;

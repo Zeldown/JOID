@@ -87,10 +87,10 @@ public abstract class ShowUI extends UI {
 	protected RectNode glass(final double x, final double y, final double width, final double height, final float radius) {
 		return RectNode
 		.create(x, y, width, height)
-		.color(ShowUI.vertical(Color.WHITE.copyAlpha(0.10F), Color.WHITE.copyAlpha(0.04F)))
+		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.10F), Color.WHITE.withAlpha(0.04F)))
 		.effect(RoundedNodeEffect.create(radius))
-		.effect(BorderNodeEffect.create(Color.WHITE.copyAlpha(0.14F), 1.5F, BorderMode.IN))
-		.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.45F), 48F, 0D, 24D));
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.14F), 1.5F, BorderMode.IN))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F, 0D, 24D));
 	}
 
 	private void navigate(final int offset) {

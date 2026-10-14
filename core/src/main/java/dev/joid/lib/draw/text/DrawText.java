@@ -15,19 +15,17 @@ import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.utils.align.Align;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DrawText {
 
-	@Getter
-	private static DrawText instance;
+	private static final DrawText INSTANCE = new DrawText();
 
-	public DrawText() {
-		if (DrawText.instance != null) {
-			throw new IllegalStateException("DrawText is created once by DrawUtils, use DrawUtils.TEXT instead of new DrawText()");
-		}
-		DrawText.instance = this;
+	public static @NonNull DrawText inst() {
+		return DrawText.INSTANCE;
 	}
 
 	public FontBounds drawText(final double x, final double y, final @NonNull Text text) {

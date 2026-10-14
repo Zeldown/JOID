@@ -19,19 +19,17 @@ import dev.joid.lib.shader.impl.ShadowShader;
 import dev.joid.lib.utils.bezier.Bezier;
 import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.point.Point;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DrawShape {
 
-	@Getter
-	private static DrawShape instance;
+	private static final DrawShape INSTANCE = new DrawShape();
 
-	public DrawShape() {
-		if (DrawShape.instance != null) {
-			throw new IllegalStateException("DrawShape is created once by DrawUtils, use DrawUtils.SHAPE instead of new DrawShape()");
-		}
-		DrawShape.instance = this;
+	public static @NonNull DrawShape inst() {
+		return DrawShape.INSTANCE;
 	}
 
 	public void drawRect(final double x, final double y, final double width, final double height, final @NonNull Color color) {
@@ -354,7 +352,7 @@ public final class DrawShape {
 	}
 
 	private static Color cover(final Color color, final double coverage) {
-		return Math.abs(coverage) >= 1D ? color : color.copyAlpha((float) (color.getAlphaF() * Math.abs(coverage)));
+		return Math.abs(coverage) >= 1D ? color : color.withAlpha((float) (color.getAlphaF() * Math.abs(coverage)));
 	}
 
 }

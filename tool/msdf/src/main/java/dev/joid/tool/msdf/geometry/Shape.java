@@ -17,6 +17,10 @@ public final class Shape {
 		}
 	}
 
+	public final List<List<Edge>> getContours() {
+		return Collections.unmodifiableList(this.contours);
+	}
+
 	public boolean isEmpty() {
 		return this.contours.isEmpty();
 	}

@@ -1,6 +1,7 @@
 package dev.joid.lib.font.impl.msdf;
 
 import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.Map;
 
 import dev.joid.lib.font.FontWeight;
@@ -43,6 +44,14 @@ public final class MsdfFontFace implements IFontFace {
 		}
 
 		return new MsdfFontFace(atlas, metrics, glyphs, kerningPairs, MsdfFontFace.BUILDER.of(image).blocking(), name, weight, italic);
+	}
+
+	public final @NonNull Map<Long, Float> getKerningPairs() {
+		return Collections.unmodifiableMap(this.kerningPairs);
+	}
+
+	public final @NonNull Map<Integer, MsdfGlyph> getGlyphs() {
+		return Collections.unmodifiableMap(this.glyphs);
 	}
 
 	@Override

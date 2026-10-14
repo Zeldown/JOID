@@ -6,6 +6,7 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -43,6 +44,30 @@ public final class ShaderSource {
 		this.samplers = new ArrayList<>();
 		this.builtins = EnumSet.noneOf(ShaderBuiltin.class);
 		this.features = EnumSet.noneOf(ShaderFeature.class);
+	}
+
+	public final @NonNull List<ShaderVariable> getInputs() {
+		return Collections.unmodifiableList(this.inputs);
+	}
+
+	public final @NonNull Set<ShaderBuiltin> getBuiltins() {
+		return Collections.unmodifiableSet(this.builtins);
+	}
+
+	public final @NonNull Set<ShaderFeature> getFeatures() {
+		return Collections.unmodifiableSet(this.features);
+	}
+
+	public final @NonNull List<ShaderVariable> getOutputs() {
+		return Collections.unmodifiableList(this.outputs);
+	}
+
+	public final @NonNull List<ShaderVariable> getUniforms() {
+		return Collections.unmodifiableList(this.uniforms);
+	}
+
+	public final @NonNull List<ShaderVariable> getSamplers() {
+		return Collections.unmodifiableList(this.samplers);
 	}
 
 	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull Object handle) {

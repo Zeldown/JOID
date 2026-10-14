@@ -147,7 +147,7 @@ public class UIDemoReorderable extends UIDemo {
 					final boolean locked = index == 0 || index == 2;
 					final RectNode node = RectNode
 							.create(0, 0, 360, 34)
-							.color(locked ? UIDemoReorderable.INK.copyAlpha(0.4F) : UIDemoReorderable.INK)
+							.color(locked ? UIDemoReorderable.INK.withAlpha(0.4F) : UIDemoReorderable.INK)
 							.body(item -> {
 								if (!locked) {
 									RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
@@ -344,7 +344,7 @@ public class UIDemoReorderable extends UIDemo {
 					final int index = i;
 					RectNode
 					.create(0, 0, 360, 34)
-					.color(UIDemoReorderable.INK.copyAlpha(0.4F))
+					.color(UIDemoReorderable.INK.withAlpha(0.4F))
 					.body(item -> {
 						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
 					})

@@ -91,7 +91,7 @@ public class UIDemoCursor extends UIDemo {
 		.body(rect -> {
 			RectNode
 			.create(100, 40, 120, 120)
-			.color(() -> locked.get() ? UIDemoCursor.INK.copyAlpha(0.4F) : UIDemoCursor.INK)
+			.color(() -> locked.get() ? UIDemoCursor.INK.withAlpha(0.4F) : UIDemoCursor.INK)
 			.cursor(() -> locked.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER)
 			.onClick(event -> locked.set(!locked.get()))
 			.attach(rect);

@@ -500,7 +500,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final @NonNull TextInfo getShownInfo() {
-		return this.markup ? this.info : this.info.markups();
+		return this.markup ? this.info : this.info.copy().markups();
 	}
 
 	protected final void focus(final boolean focused) {

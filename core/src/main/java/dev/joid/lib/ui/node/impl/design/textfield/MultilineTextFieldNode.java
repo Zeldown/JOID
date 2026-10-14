@@ -64,7 +64,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY() + super.getMarginTop(), maxWidth, this.getRawHeight(), () -> {
 			if (text.isEmpty() && !super.isFocused()) {
-				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), super.getPlaceholder(), super.getShownInfo().color(new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), 0.5F)), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
+				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), super.getPlaceholder(), super.getShownInfo().withColor(new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), 0.5F)), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
 			}
 
 			for (int i = 0; i < lines.size(); i++) {

@@ -35,7 +35,7 @@ public class ShowPaperKit implements IShowKit {
 			for (int y = 54; y < 1080; y += 54) {
 				DrawUtils.SHAPE.drawRect(0D, y, 1920D, 2D, ShowPaperKit.RULE);
 			}
-			DrawUtils.SHAPE.drawRect(96D, 0D, 3D, 1080D, ShowPaperKit.TOMATO.copyAlpha(0.45F));
+			DrawUtils.SHAPE.drawRect(96D, 0D, 3D, 1080D, ShowPaperKit.TOMATO.withAlpha(0.45F));
 		}).attach(layer);
 		CircleNode.create(1610, -150, 520).color(ShowPaperKit.BUTTER).<CircleNode>y(() -> -150D + ShowPaperKit.wave(0D) * 18D).attach(layer);
 		CircleNode.create(800, 900, 260).color(ShowPaperKit.TOMATO).<CircleNode>x(() -> 800D + ShowPaperKit.wave(0.3D) * 24D).attach(layer);
@@ -76,7 +76,7 @@ public class ShowPaperKit implements IShowKit {
 
 	@Override
 	public RectNode divider(final double x, final double y, final double width) {
-		return RectNode.create(x, y, width, 2D).color(ShowPaperKit.INK.copyAlpha(0.18F));
+		return RectNode.create(x, y, width, 2D).color(ShowPaperKit.INK.withAlpha(0.18F));
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public class ShowPaperKit implements IShowKit {
 			ShowPaperKit.box(super.getX(), super.getY() + 10D, super.getWidth(), 16D, ShowPaperKit.CARD, 3D);
 			ShowPaperKit.box(super.getX(), super.getY() + 10D, center, 16D, ShowPaperKit.TOMATO, 3D);
 			for (int i = 1; i < 10; i++) {
-				DrawUtils.SHAPE.drawRect(super.getX() + super.getWidth() * i / 10D - 1D, super.getY() + 30D, 2D, 8D, ShowPaperKit.INK.copyAlpha(0.35F));
+				DrawUtils.SHAPE.drawRect(super.getX() + super.getWidth() * i / 10D - 1D, super.getY() + 30D, 2D, 8D, ShowPaperKit.INK.withAlpha(0.35F));
 			}
 		}
 

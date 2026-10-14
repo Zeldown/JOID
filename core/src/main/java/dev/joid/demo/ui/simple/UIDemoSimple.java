@@ -208,7 +208,7 @@ public class UIDemoSimple extends UIDemo {
 		.body(rect -> {
 			RectNode
 			.create(100, 50, 120, 120)
-			.color(UIDemoSimple.INK.copyAlpha(0.4F))
+			.color(UIDemoSimple.INK.withAlpha(0.4F))
 			.hoveredColor(Color.WHITE)
 			.hover(() -> "Disabled: no hover color, no click")
 			.onClick(event -> System.out.println("[UIDemoSimple] never clicked"))

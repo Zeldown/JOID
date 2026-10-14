@@ -29,10 +29,10 @@ public class ShowFieldNode extends TextFieldNode {
 		this.focus += ((super.isFocused() ? 1D : 0D) - this.focus) * (1D - Math.exp(-delta * 12D));
 		final float f = (float) this.focus;
 		if (f > 0.01F) {
-			DrawUtils.SHAPE.drawShadow(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.accent.copyAlpha(0.55F * f), 18F, 22F);
+			DrawUtils.SHAPE.drawShadow(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.accent.withAlpha(0.55F * f), 18F, 22F);
 		}
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.decode("#151327").to(Color.decode("#1D1838"), f), 18F);
-		DrawUtils.SHAPE.drawRoundedBorder(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.copyAlpha(0.14F).to(this.accent, f), 18F, 2D);
+		DrawUtils.SHAPE.drawRoundedBorder(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.withAlpha(0.14F).to(this.accent, f), 18F, 2D);
 		super.draw(mouseX, mouseY);
 	}
 

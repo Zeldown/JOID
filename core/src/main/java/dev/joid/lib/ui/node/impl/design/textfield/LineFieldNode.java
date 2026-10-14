@@ -69,7 +69,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		final double textY = tmpTextY;
 		final int[] tags = FieldNode.tags(text, super.getShownInfo());
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY(), super.getWidth() - super.getMarginLeft() - super.getMarginRight(), super.getHeight(), () -> {
-			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getShownInfo().color(new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), 0.5F)) : super.getShownInfo(), Align.START, Align.START);
+			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getShownInfo().withColor(new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), 0.5F)) : super.getShownInfo(), Align.START, Align.START);
 
 			if (super.isFocused()) {
 				final double cursorX = textX + this.getX(text, tags, super.getCursorPos());

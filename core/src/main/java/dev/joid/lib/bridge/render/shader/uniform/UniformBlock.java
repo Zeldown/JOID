@@ -2,6 +2,7 @@ package dev.joid.lib.bridge.render.shader.uniform;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,10 @@ public final class UniformBlock {
 			}
 		}
 		return this;
+	}
+
+	public final @NonNull Map<String, UniformMember> getMemberMap() {
+		return Collections.unmodifiableMap(this.memberMap);
 	}
 
 	public int getSize() {

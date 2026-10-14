@@ -13,7 +13,7 @@ public final class TaskEvent extends Event {
 	@NonNull
 	private final Task task;
 
-	public static @NonNull TaskEvent create(final @NonNull Task task) {
+	protected static @NonNull TaskEvent create(final @NonNull Task task) {
 		return new TaskEvent(task);
 	}
 

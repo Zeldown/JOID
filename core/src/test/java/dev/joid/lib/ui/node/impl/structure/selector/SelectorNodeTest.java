@@ -2,9 +2,11 @@ package dev.joid.lib.ui.node.impl.structure.selector;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,6 +23,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode.SelectorDirection;
+
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -330,8 +333,8 @@ public class SelectorNodeTest {
 		this.bridges.frame();
 		Assert.assertEquals("third", this.selector.getValue());
 		Assert.assertSame(subtitles, this.selector.getSignal());
-		Assert.assertTrue(language.getEventSet().isEmpty());
-		Assert.assertEquals(1, subtitles.getEventSet().size());
+		Assert.assertTrue(SelectorNodeTest.subscribers(language).isEmpty());
+		Assert.assertEquals(1, SelectorNodeTest.subscribers(subtitles).size());
 	}
 
 	@Test
@@ -378,6 +381,16 @@ public class SelectorNodeTest {
 		Assert.assertEquals(300D, draws.get(0).getRight(), 1E-3D);
 		Assert.assertEquals(top, draws.get(0).getTop(), 1E-3D);
 		Assert.assertEquals(bottom, draws.get(0).getBottom(), 1E-3D);
+	}
+
+	private static Set<?> subscribers(final Signal<?> signal) {
+		try {
+			final Field field = Signal.class.getDeclaredField("eventSet");
+			field.setAccessible(true);
+			return (Set<?>) field.get(signal);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	@AllArgsConstructor

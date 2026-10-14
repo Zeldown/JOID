@@ -14,7 +14,7 @@ public class PixelGridTest {
 
 	@Test
 	public void roundsPixelSizesUp() {
-		final PixelGrid grid = PixelGrid.of(1.5D, 0.25D);
+		final PixelGrid grid = PixelGridTest.grid(new MatrixStack(), 2880, 270);
 		Assert.assertEquals(15, grid.toPixelWidth(10D));
 		Assert.assertEquals(16, grid.toPixelWidth(10.1D));
 		Assert.assertEquals(3, grid.toPixelHeight(10D));

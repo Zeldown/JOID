@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import java.lang.reflect.ReflectPermission;
 import java.nio.charset.StandardCharsets;
 import java.security.Permission;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Assume;
@@ -447,10 +449,12 @@ public class SignalReplayTest {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenRemapped", true, true, "get", "obtain");
 		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = IntegerSignal.of(0);
+		final List<String> mapped = new ArrayList<>();
 		final ISignalReplayRemapper remapper = new ISignalReplayRemapper() {
 
 			@Override
 			public String mapMethod(final String owner, final String name, final String descriptor) {
+				mapped.add(name);
 				return name.equals("obtain") ? "get" : name;
 			}
 
@@ -463,6 +467,8 @@ public class SignalReplayTest {
 		}
 		clicks.set(2);
 		Assert.assertEquals("Hidden 2", node.getText().get());
+		Assert.assertTrue(mapped.contains("obtain"));
+		Assert.assertFalse(mapped.contains("<init>"));
 	}
 
 	private static SignalReplayNode node(final UI ui, final int index) {

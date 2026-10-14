@@ -31,8 +31,8 @@ public class ShowType extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(1250, -350, 900, ShowUI.FUCHSIA.copyAlpha(0.28F), 7D, 0D, 50D);
-		this.blob(-350, 600, 900, ShowUI.CYAN.copyAlpha(0.20F), 7D, 0.5D, 50D);
+		this.blob(1250, -350, 900, ShowUI.FUCHSIA.withAlpha(0.28F), 7D, 0D, 50D);
+		this.blob(-350, 600, 900, ShowUI.CYAN.withAlpha(0.20F), 7D, 0.5D, 50D);
 
 		final long start = BridgeHandler.CLOCK.get().currentTimeMillis();
 		ContainerNode
@@ -63,7 +63,7 @@ public class ShowType extends ShowUI {
 
 		RectNode
 		.create(1700, 84, 120, 56)
-		.color(Color.WHITE.copyAlpha(0.08F))
+		.color(Color.WHITE.withAlpha(0.08F))
 		.effect(RoundedNodeEffect.create(28F))
 		.body(pill -> {
 			TextNode.create(60, 28).text(Text.create(() -> String.format(Locale.US, "%.1f×", 1D + 5D * this.zoom()), ShowUI.font(FontWeight.BOLD, 24F, ShowUI.TEXT))).anchor(Align.CENTER).attach(pill);

@@ -1,5 +1,6 @@
 package dev.joid.lib.bridge.render.shader;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -98,6 +99,10 @@ public abstract class Shader implements IShader {
 			this.compiled = false;
 			this.deleteProgram();
 		}
+	}
+
+	public final @NonNull Map<String, UniformSampler> getSamplerMap() {
+		return Collections.unmodifiableMap(this.samplerMap);
 	}
 
 	@Override

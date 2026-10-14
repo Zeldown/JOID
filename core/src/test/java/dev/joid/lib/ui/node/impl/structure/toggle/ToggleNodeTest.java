@@ -1,8 +1,10 @@
 package dev.joid.lib.ui.node.impl.structure.toggle;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -10,6 +12,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -77,8 +80,8 @@ public class ToggleNodeTest {
 		music.set(false);
 		Assert.assertTrue(toggle.isToggle());
 		Assert.assertSame(sounds, toggle.getSignal());
-		Assert.assertTrue(music.getEventSet().isEmpty());
-		Assert.assertEquals(1, sounds.getEventSet().size());
+		Assert.assertTrue(ToggleNodeTest.subscribers(music).isEmpty());
+		Assert.assertEquals(1, ToggleNodeTest.subscribers(sounds).size());
 	}
 
 	@Test
@@ -158,6 +161,16 @@ public class ToggleNodeTest {
 	private void click(final double x, final double y) {
 		this.bridges.move(x, y).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+	}
+
+	private static Set<?> subscribers(final Signal<?> signal) {
+		try {
+			final Field field = Signal.class.getDeclaredField("eventSet");
+			field.setAccessible(true);
+			return (Set<?>) field.get(signal);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	public static final class NodeUI extends UI {

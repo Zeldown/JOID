@@ -29,9 +29,9 @@ public class ShowReactive extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-300, 200, 900, ShowUI.VIOLET.copyAlpha(0.45F), 9D, 0D, 50D);
-		this.blob(1300, -300, 900, ShowUI.CYAN.copyAlpha(0.22F), 9D, 0.4D, 50D);
-		this.blob(1100, 700, 700, ShowUI.PINK.copyAlpha(0.22F), 9D, 0.7D, 50D);
+		this.blob(-300, 200, 900, ShowUI.VIOLET.withAlpha(0.45F), 9D, 0D, 50D);
+		this.blob(1300, -300, 900, ShowUI.CYAN.withAlpha(0.22F), 9D, 0.4D, 50D);
+		this.blob(1100, 700, 700, ShowUI.PINK.withAlpha(0.22F), 9D, 0.7D, 50D);
 
 		this.mixer();
 		this.stage();
@@ -67,7 +67,7 @@ public class ShowReactive extends ShowUI {
 			.create(156 + i * 125, 842, 110, 72)
 			.color(() -> Color.transition(from, to, this.warmth.get().floatValue()))
 			.effect(RoundedNodeEffect.create(18F))
-			.effect(ShadowNodeEffect.create(from, 10F).color(() -> Color.transition(from, to, this.warmth.get().floatValue()).copyAlpha(0.7F)).blur(() -> 4F + 30F * this.energy.get().floatValue()))
+			.effect(ShadowNodeEffect.create(from, 10F).color(() -> Color.transition(from, to, this.warmth.get().floatValue()).withAlpha(0.7F)).blur(() -> 4F + 30F * this.energy.get().floatValue()))
 			.attach(this);
 		}
 	}
@@ -77,7 +77,7 @@ public class ShowReactive extends ShowUI {
 
 		CircleNode
 		.create(1335 - 330, 500 - 330, 660)
-		.color(Color.transition(ShowUI.SKY, ShowUI.ORANGE, this.warmth.get().floatValue()).copyAlpha(0.55F))
+		.color(Color.transition(ShowUI.SKY, ShowUI.ORANGE, this.warmth.get().floatValue()).withAlpha(0.55F))
 		.visible(this.halo)
 		.effect(BlurNodeEffect.create(70F))
 		.attach(this);
@@ -105,7 +105,7 @@ public class ShowReactive extends ShowUI {
 			final int index = i;
 			RectNode
 			.create(898 + i * 24, 0, 14, 0)
-			.color(() -> ShowUI.vertical(Color.transition(ShowUI.FUCHSIA, ShowUI.AMBER, this.warmth.get().floatValue()), Color.transition(ShowUI.VIOLET, ShowUI.ORANGE, this.warmth.get().floatValue()).copyAlpha(0.35F)))
+			.color(() -> ShowUI.vertical(Color.transition(ShowUI.FUCHSIA, ShowUI.AMBER, this.warmth.get().floatValue()), Color.transition(ShowUI.VIOLET, ShowUI.ORANGE, this.warmth.get().floatValue()).withAlpha(0.35F)))
 			.<RectNode>height(() -> this.bar(index))
 			.<RectNode>y(() -> 915D - this.bar(index))
 			.effect(RoundedNodeEffect.create(7F))
@@ -128,7 +128,7 @@ public class ShowReactive extends ShowUI {
 				final double angle = i / 120D * Math.PI * 2D + this.t() * 0.3D * ring;
 				points.add(Point.create(1335D + Math.cos(angle) * r, 500D + Math.sin(angle) * r));
 			}
-			DrawUtils.SHAPE.drawLine(Color.WHITE.copyAlpha(0.16F / ring + 0.04F), 2F, points.toArray(new Point[0]));
+			DrawUtils.SHAPE.drawLine(Color.WHITE.withAlpha(0.16F / ring + 0.04F), 2F, points.toArray(new Point[0]));
 		}
 	}
 

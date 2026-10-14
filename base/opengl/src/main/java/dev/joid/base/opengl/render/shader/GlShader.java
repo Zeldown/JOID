@@ -1,5 +1,6 @@
 package dev.joid.base.opengl.render.shader;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +43,10 @@ public final class GlShader extends Shader {
 	public void use(final @NonNull RenderState state, final @NonNull VertexBuffer buffer) {
 		this.programs.useProgram(this.program);
 		super.builtins(state, buffer, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
+	}
+
+	public final @NonNull Map<String, Integer> getLocationMap() {
+		return Collections.unmodifiableMap(this.locationMap);
 	}
 
 	public int getLocation(final @NonNull String name) {

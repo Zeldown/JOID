@@ -20,9 +20,9 @@ public class ShowMenu extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-260, -320, 1000, ShowUI.VIOLET.copyAlpha(0.45F), 9D, 0D, 60D);
-		this.blob(1480, -260, 760, ShowUI.CYAN.copyAlpha(0.24F), 9D, 0.3D, 50D);
-		this.blob(1000, 700, 760, ShowUI.PINK.copyAlpha(0.20F), 9D, 0.6D, 60D);
+		this.blob(-260, -320, 1000, ShowUI.VIOLET.withAlpha(0.45F), 9D, 0D, 60D);
+		this.blob(1480, -260, 760, ShowUI.CYAN.withAlpha(0.24F), 9D, 0.3D, 50D);
+		this.blob(1000, 700, 760, ShowUI.PINK.withAlpha(0.20F), 9D, 0.6D, 60D);
 
 		this.header();
 
@@ -47,7 +47,7 @@ public class ShowMenu extends ShowUI {
 		.create(132, 64, 56, 56)
 		.color(ShowUI.diagonal(ShowUI.FUCHSIA, ShowUI.VIOLET))
 		.effect(RoundedNodeEffect.create(16F))
-		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.copyAlpha(0.8F), 26F))
+		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.withAlpha(0.8F), 26F))
 		.body(logo -> {
 			TextNode.create(28, 28).text(Text.create("J", ShowUI.font(FontWeight.BLACK, 32F, Color.WHITE))).anchor(Align.CENTER).attach(logo);
 		})
@@ -55,7 +55,7 @@ public class ShowMenu extends ShowUI {
 		TextNode.create(208, 92).text(Text.create("JOID", ShowUI.font(FontWeight.EXTRA_BOLD, 30F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);
 		RectNode
 		.create(308, 72, 92, 40)
-		.color(Color.WHITE.copyAlpha(0.08F))
+		.color(Color.WHITE.withAlpha(0.08F))
 		.effect(RoundedNodeEffect.create(20F))
 		.body(pill -> {
 			TextNode.create(46, 20).text(Text.create(JOID.VERSION, ShowUI.font(FontWeight.SEMI_BOLD, 18F, ShowUI.MUTED))).anchor(Align.CENTER).attach(pill);
@@ -69,17 +69,17 @@ public class ShowMenu extends ShowUI {
 		final Color accent = scene.getAccent();
 		RectNode
 		.create(132, 300, 816, 324)
-		.<RectNode>self(card -> card.color(() -> ShowUI.diagonal(accent.copyAlpha(0.32F + card.hoverValue(0.14F)), ShowUI.PINK.copyAlpha(0.12F + card.hoverValue(0.10F)))))
-		.<RectNode>self(card -> card.effect(ShadowNodeEffect.create(accent, 48F).color(() -> accent.copyAlpha(card.hoverValue(0.55F)))))
+		.<RectNode>self(card -> card.color(() -> ShowUI.diagonal(accent.withAlpha(0.32F + card.hoverValue(0.14F)), ShowUI.PINK.withAlpha(0.12F + card.hoverValue(0.10F)))))
+		.<RectNode>self(card -> card.effect(ShadowNodeEffect.create(accent, 48F).color(() -> accent.withAlpha(card.hoverValue(0.55F)))))
 		.effect(RoundedNodeEffect.create(30F))
-		.effect(BorderNodeEffect.create(Color.WHITE.copyAlpha(0.16F), 1.5F, BorderMode.IN))
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.16F), 1.5F, BorderMode.IN))
 		.body(card -> {
-			TextNode.create(40, 40).text(Text.create(ShowMenu.number(scene) + "  ·  START HERE", ShowUI.font(FontWeight.BOLD, 17F, ShowUI.TEXT.copyAlpha(0.7F)).letterSpacing(0.25F))).attach(card);
+			TextNode.create(40, 40).text(Text.create(ShowMenu.number(scene) + "  ·  START HERE", ShowUI.font(FontWeight.BOLD, 17F, ShowUI.TEXT.withAlpha(0.7F)).letterSpacing(0.25F))).attach(card);
 			TextNode.create(36, 78).text(Text.create(scene.getTitle(), ShowUI.font(FontWeight.BLACK, 84F, ShowUI.TEXT))).attach(card);
 			TextNode.create(40, 190).text(Text.create(scene.getCaption(), ShowUI.font(FontWeight.MEDIUM, 22F, ShowUI.MUTED))).attach(card);
 			RectNode
 			.create(40, 244, 150, 48)
-			.color(() -> Color.WHITE.copyAlpha(0.85F + card.hoverValue(0.15F)))
+			.color(() -> Color.WHITE.withAlpha(0.85F + card.hoverValue(0.15F)))
 			.effect(RoundedNodeEffect.create(24F))
 			.body(button -> {
 				TextNode.create(75, 24).text(Text.create("Open", ShowUI.font(FontWeight.BOLD, 20F, ShowUI.NIGHT))).anchor(Align.CENTER).attach(button);
@@ -95,10 +95,10 @@ public class ShowMenu extends ShowUI {
 		final Color accent = scene.getAccent();
 		RectNode
 		.create(x, y, 396, 150)
-		.<RectNode>self(card -> card.color(() -> Color.WHITE.copyAlpha(0.06F + card.hoverValue(0.06F))))
-		.<RectNode>self(card -> card.effect(ShadowNodeEffect.create(accent, 36F).color(() -> accent.copyAlpha(card.hoverValue(0.30F)))))
+		.<RectNode>self(card -> card.color(() -> Color.WHITE.withAlpha(0.06F + card.hoverValue(0.06F))))
+		.<RectNode>self(card -> card.effect(ShadowNodeEffect.create(accent, 36F).color(() -> accent.withAlpha(card.hoverValue(0.30F)))))
 		.effect(RoundedNodeEffect.create(24F))
-		.effect(BorderNodeEffect.create(Color.WHITE.copyAlpha(0.12F), 1.5F, BorderMode.IN))
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.12F), 1.5F, BorderMode.IN))
 		.body(card -> {
 			RectNode
 			.create(24, 24, 52, 52)
@@ -122,9 +122,9 @@ public class ShowMenu extends ShowUI {
 		final double width = cap.getWidth(key) + 28D;
 		RectNode
 		.create(x, 1002, width, 36)
-		.color(Color.WHITE.copyAlpha(0.10F))
+		.color(Color.WHITE.withAlpha(0.10F))
 		.effect(RoundedNodeEffect.create(9F))
-		.effect(BorderNodeEffect.create(Color.WHITE.copyAlpha(0.16F), 1F, BorderMode.IN))
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.16F), 1F, BorderMode.IN))
 		.body(keycap -> {
 			TextNode.create(width / 2D, 18).text(Text.create(key, cap)).anchor(Align.CENTER).attach(keycap);
 		})

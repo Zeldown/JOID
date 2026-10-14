@@ -27,9 +27,9 @@ public class ShowForm extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-300, 350, 900, ShowUI.VIOLET.copyAlpha(0.40F), 9D, 0D, 50D);
-		this.blob(1300, -300, 900, ShowUI.SKY.copyAlpha(0.20F), 9D, 0.4D, 50D);
-		this.blob(1250, 700, 700, ShowUI.PINK.copyAlpha(0.20F), 9D, 0.7D, 50D);
+		this.blob(-300, 350, 900, ShowUI.VIOLET.withAlpha(0.40F), 9D, 0D, 50D);
+		this.blob(1300, -300, 900, ShowUI.SKY.withAlpha(0.20F), 9D, 0.4D, 50D);
+		this.blob(1250, 700, 700, ShowUI.PINK.withAlpha(0.20F), 9D, 0.7D, 50D);
 
 		this.form();
 		this.profile();
@@ -56,13 +56,13 @@ public class ShowForm extends ShowUI {
 		.attach(this);
 
 		TextNode.create(160, 580).text(Text.create("Bio, with markup", ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.MUTED))).attach(this);
-		ShowFieldNode.create(158, 612, 654, ShowUI.PINK).info(input.markups(DemoTextMarkup.inst())).marginHorizontal(24D).markup(true).signal(this.bio).attach(this);
+		ShowFieldNode.create(158, 612, 654, ShowUI.PINK).info(input.copy().markups(DemoTextMarkup.inst())).marginHorizontal(24D).markup(true).signal(this.bio).attach(this);
 
 		RectNode
 		.create(158, 770, 654, 76)
-		.color(() -> this.isValid() ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.copyAlpha(0.08F))
+		.color(() -> this.isValid() ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.withAlpha(0.08F))
 		.effect(RoundedNodeEffect.create(20F))
-		.effect(ShadowNodeEffect.create(ShowUI.VIOLET, 30F).color(() -> ShowUI.FUCHSIA.copyAlpha(this.isValid() ? 0.7F : 0F)))
+		.effect(ShadowNodeEffect.create(ShowUI.VIOLET, 30F).color(() -> ShowUI.FUCHSIA.withAlpha(this.isValid() ? 0.7F : 0F)))
 		.body(button -> {
 			TextNode.create(327, 38).text(() -> Text.create("Create account", ShowUI.font(FontWeight.BOLD, 24F, this.isValid() ? Color.WHITE : ShowUI.FAINT))).anchor(Align.CENTER).attach(button);
 		})
@@ -72,12 +72,12 @@ public class ShowForm extends ShowUI {
 	private void profile() {
 		this.glass(960, 120, 850, 840, 32F).attach(this);
 		TextNode.create(1006, 164).text(Text.create("PREVIEW", ShowUI.font(FontWeight.BOLD, 18F, ShowUI.FAINT).letterSpacing(0.25F))).attach(this);
-		CircleNode.create(1235, 230, 400).color(ShowUI.VIOLET.copyAlpha(0.45F)).effect(BlurNodeEffect.create(70F)).attach(this);
+		CircleNode.create(1235, 230, 400).color(ShowUI.VIOLET.withAlpha(0.45F)).effect(BlurNodeEffect.create(70F)).attach(this);
 		RectNode
 		.create(1305, 300, 200, 200)
 		.color(ShowUI.diagonal(ShowUI.FUCHSIA, ShowUI.VIOLET))
 		.effect(CircleNodeEffect.create())
-		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.copyAlpha(0.8F), 36F))
+		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.withAlpha(0.8F), 36F))
 		.body(avatar -> {
 			TextNode.create(100, 100).text(() -> Text.create(ShowForm.initials(this.name.get()), ShowUI.font(FontWeight.BLACK, 72F, Color.WHITE))).anchor(Align.CENTER).attach(avatar);
 		})
@@ -87,7 +87,7 @@ public class ShowForm extends ShowUI {
 		TextNode.create(1405, 730).text(() -> Text.create(this.bio.get(), ShowUI.font(FontWeight.MEDIUM, 28F, ShowUI.TEXT).markups(DemoTextMarkup.inst()))).anchorX(Align.CENTER).attach(this);
 		RectNode
 		.create(1300, 810, 210, 48)
-		.color(ShowUI.EMERALD.copyAlpha(0.16F))
+		.color(ShowUI.EMERALD.withAlpha(0.16F))
 		.visible(() -> this.isValid())
 		.effect(RoundedNodeEffect.create(24F))
 		.body(chip -> {

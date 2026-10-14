@@ -139,7 +139,7 @@ public final class Tessellator {
 		this.reset();
 	}
 
-	public void quads() {
+	protected void quads() {
 		this.start(DrawMode.QUADS);
 	}
 

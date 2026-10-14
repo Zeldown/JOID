@@ -7,23 +7,20 @@ import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.draw.DrawUtils;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ExternalRaster {
 
-	@Getter
-	private static ExternalRaster instance;
+	private static final ExternalRaster INSTANCE = new ExternalRaster();
 
 	private IFrameBuffer  target;
 	private IRenderBridge bridge;
 
-	public ExternalRaster() {
-		if (ExternalRaster.instance != null) {
-			throw new IllegalStateException("ExternalRaster is created once by DrawUtils, use DrawUtils.RASTER instead of new ExternalRaster()");
-		}
-		ExternalRaster.instance = this;
+	public static @NonNull ExternalRaster inst() {
+		return ExternalRaster.INSTANCE;
 	}
 
 	public void drawRaster(final double x, final double y, final double width, final double height, final @NonNull IExternalRasterDrawable drawable) {

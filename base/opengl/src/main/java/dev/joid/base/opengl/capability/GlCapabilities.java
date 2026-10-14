@@ -91,6 +91,10 @@ public final class GlCapabilities {
 		return this.getFrameBufferFamily() == GlFrameBufferFamily.CORE || this.hasExtension("GL_EXT_framebuffer_blit");
 	}
 
+	public final @NonNull Set<String> getExtensionSet() {
+		return Collections.unmodifiableSet(this.extensionSet);
+	}
+
 	public @NonNull String getName() {
 		return "OpenGL " + this.version / 100 + "." + this.version / 10 % 10 + " with GLSL " + this.glslVersion / 100 + "." + String.format(Locale.ROOT, "%02d", this.glslVersion % 100) + " (" + this.renderer + ")";
 	}

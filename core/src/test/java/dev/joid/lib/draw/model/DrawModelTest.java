@@ -15,10 +15,9 @@ public class DrawModelTest {
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
-	@Test(expected = RuntimeException.class)
-	public void refusesASecondInstance() {
-		Assert.assertSame(DrawUtils.MODEL, DrawModel.getInstance());
-		new DrawModel();
+	@Test
+	public void isTheSharedInstance() {
+		Assert.assertSame(DrawUtils.MODEL, DrawModel.inst());
 	}
 
 	@Test

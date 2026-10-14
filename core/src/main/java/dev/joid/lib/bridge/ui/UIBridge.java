@@ -39,7 +39,7 @@ public abstract class UIBridge implements IUIBridge {
 	private Node   pressedNode;
 	private Cursor hoveredCursor;
 
-	public UIBridge() {
+	protected UIBridge() {
 		this.uiList = new IndexedLinkedList<>();
 		this.consumedKeySet = EnumSet.noneOf(Key.class);
 		this.consumedButtonSet = EnumSet.noneOf(MouseButton.class);

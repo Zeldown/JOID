@@ -19,7 +19,6 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.obj.data.ObjFace;
-import dev.joid.lib.obj.data.ObjGroup;
 import dev.joid.lib.obj.data.ObjTextureCoordinate;
 import dev.joid.lib.obj.data.ObjVertex;
 import dev.joid.lib.render.tessellator.DrawMode;
@@ -298,10 +297,10 @@ public class ObjModelTest {
 	}
 
 	@Test
-	public void startsEmpty() {
-		final ObjModel model = new ObjModel();
-		Assert.assertNull(model.getName());
-		Assert.assertNull(model.getTexture());
+	public void loadsAnEmptyFile() {
+		final ObjModel model = ObjModel.load("empty", new ByteArrayInputStream(new byte[0]), ObjModelTest.TEXTURE);
+		Assert.assertEquals("empty", model.getName());
+		Assert.assertSame(ObjModelTest.TEXTURE, model.getTexture());
 		Assert.assertNull(model.getCurrentGroup());
 		Assert.assertTrue(model.getVertices().isEmpty());
 		Assert.assertTrue(model.getGroups().isEmpty());
@@ -310,21 +309,9 @@ public class ObjModelTest {
 		Assert.assertEquals(0D, model.getDepth(), 0D);
 	}
 
-	@Test
-	public void changesItsParts() {
-		final ObjGroup group = new ObjGroup("part");
-		final ObjModel model = new ObjModel("model", ObjModelTest.TEXTURE, group);
-		Assert.assertEquals("model", model.getName());
-		Assert.assertSame(ObjModelTest.TEXTURE, model.getTexture());
-		Assert.assertSame(group, model.getCurrentGroup());
-
-		final Resource texture = Resource.of(new Texture());
-		model.setName("renamed");
-		model.setTexture(texture);
-		model.setCurrentGroup(null);
-		Assert.assertEquals("renamed", model.getName());
-		Assert.assertSame(texture, model.getTexture());
-		Assert.assertNull(model.getCurrentGroup());
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesReadOnlyParts() {
+		ObjModelTest.cube().getVertices().clear();
 	}
 
 	@Test
@@ -348,7 +335,7 @@ public class ObjModelTest {
 
 	@Test
 	public void drawsNothingWithoutGroup() {
-		new ObjModel("empty", ObjModelTest.TEXTURE, (ObjGroup) null).render();
+		ObjModel.load("empty", new ByteArrayInputStream(new byte[0]), ObjModelTest.TEXTURE).render();
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 		Assert.assertNull(this.bridges.getRender().getState().getTexture());
 	}

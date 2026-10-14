@@ -248,7 +248,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		final Color color = style.getColor();
-		return color.getAlphaF() == info.getColor().getAlphaF() ? color : color.copyAlpha(info.getColor().getAlphaF());
+		return color.getAlphaF() == info.getColor().getAlphaF() ? color : color.withAlpha(info.getColor().getAlphaF());
 	}
 
 }

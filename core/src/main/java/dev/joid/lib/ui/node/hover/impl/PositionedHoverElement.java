@@ -19,10 +19,6 @@ public abstract class PositionedHoverElement implements IHoverElement {
 
 	@Override
 	public void render(final @NonNull Node node, final double mouseX, final double mouseY) {
-		if (this.element == null || this.position == null) {
-			return;
-		}
-
 		double x;
 		double y;
 

@@ -35,15 +35,15 @@ public class ShowPlayer extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-250, 500, 900, ShowUI.AMBER.copyAlpha(0.22F), 9D, 0D, 50D);
-		this.blob(1350, -300, 900, ShowUI.PINK.copyAlpha(0.22F), 9D, 0.5D, 50D);
-		CircleNode.create(560, 140, 800).color(ShowUI.ORANGE.copyAlpha(0.25F)).effect(BlurNodeEffect.create(120F)).attach(this);
+		this.blob(-250, 500, 900, ShowUI.AMBER.withAlpha(0.22F), 9D, 0D, 50D);
+		this.blob(1350, -300, 900, ShowUI.PINK.withAlpha(0.22F), 9D, 0.5D, 50D);
+		CircleNode.create(560, 140, 800).color(ShowUI.ORANGE.withAlpha(0.25F)).effect(BlurNodeEffect.create(120F)).attach(this);
 
 		final Resource clip = Resource.of("assets/showcase/honey.mp4");
 		RectNode
 		.create(240, 96, 1440, 810)
 		.color(ShowUI.NIGHT)
-		.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.6F), 70F, 0D, 34D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.6F), 70F, 0D, 34D))
 		.effect(RoundedNodeEffect.create(34F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
 			this.player = ResourcePlayerNode
@@ -56,10 +56,10 @@ public class ShowPlayer extends ShowUI {
 			.onPause(event -> this.playing.set(false))
 			.onProgress(event -> this.progress.set(event.getProgress()))
 			.attach(card);
-			RectNode.create(0, 0, 1440, 220).color(() -> ShowUI.vertical(Color.BLACK.copyAlpha(0.55F * card.hoverValue(1F)), Color.BLACK.copyAlpha(0F))).attach(card);
-			RectNode.create(0, 500, 1440, 310).color(() -> ShowUI.vertical(Color.BLACK.copyAlpha(0F), Color.BLACK.copyAlpha(0.35F + 0.5F * card.hoverValue(1F)))).attach(card);
-			TextNode.create(56, 48).text(() -> Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.BOLD, 54F, ShowUI.TEXT.copyAlpha(card.hoverValue(1F))))).attach(card);
-			TextNode.create(60, 120).text(() -> Text.create("Slow motion  ·  honey and light", ShowUI.font(FontWeight.MEDIUM, 22F, ShowUI.MUTED.copyAlpha(card.hoverValue(1F))))).attach(card);
+			RectNode.create(0, 0, 1440, 220).color(() -> ShowUI.vertical(Color.BLACK.withAlpha(0.55F * card.hoverValue(1F)), Color.BLACK.withAlpha(0F))).attach(card);
+			RectNode.create(0, 500, 1440, 310).color(() -> ShowUI.vertical(Color.BLACK.withAlpha(0F), Color.BLACK.withAlpha(0.35F + 0.5F * card.hoverValue(1F)))).attach(card);
+			TextNode.create(56, 48).text(() -> Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.BOLD, 54F, ShowUI.TEXT.withAlpha(card.hoverValue(1F))))).attach(card);
+			TextNode.create(60, 120).text(() -> Text.create("Slow motion  ·  honey and light", ShowUI.font(FontWeight.MEDIUM, 22F, ShowUI.MUTED.withAlpha(card.hoverValue(1F))))).attach(card);
 			this.controls(card);
 		})
 		.hoverDuration(350L)
@@ -71,8 +71,8 @@ public class ShowPlayer extends ShowUI {
 	private void controls(final Node card) {
 		CircleNode
 		.create(56, 690, 84)
-		.color(() -> Color.WHITE.copyAlpha(0.92F * card.hoverValue(1F) + 0.08F))
-		.effect(ShadowNodeEffect.create(ShowUI.AMBER, 26F).color(() -> ShowUI.AMBER.copyAlpha(0.8F * card.hoverValue(1F))))
+		.color(() -> Color.WHITE.withAlpha(0.92F * card.hoverValue(1F) + 0.08F))
+		.effect(ShadowNodeEffect.create(ShowUI.AMBER, 26F).color(() -> ShowUI.AMBER.withAlpha(0.8F * card.hoverValue(1F))))
 		.onClick(event -> {
 			if (this.player.isPlaying()) {
 				this.player.pause();
@@ -99,11 +99,11 @@ public class ShowPlayer extends ShowUI {
 		})
 		.layer((mouseX, mouseY) -> this.bar(176D, 732D, 1060D, card.hoverValue(1F)))
 		.attach(card);
-		TextNode.create(1384, 732).text(() -> Text.create(ShowPlayer.clock(this.shown() * Math.max(1D, this.player.getDuration())) + " / " + ShowPlayer.clock(this.player.getDuration()), ShowUI.font(FontWeight.SEMI_BOLD, 22F, ShowUI.TEXT.copyAlpha(0.4F + 0.6F * card.hoverValue(1F))))).anchorX(Align.END).anchorY(Align.CENTER).attach(card);
+		TextNode.create(1384, 732).text(() -> Text.create(ShowPlayer.clock(this.shown() * Math.max(1D, this.player.getDuration())) + " / " + ShowPlayer.clock(this.player.getDuration()), ShowUI.font(FontWeight.SEMI_BOLD, 22F, ShowUI.TEXT.withAlpha(0.4F + 0.6F * card.hoverValue(1F))))).anchorX(Align.END).anchorY(Align.CENTER).attach(card);
 	}
 
 	private void icon(final double x, final double y, final float hover) {
-		final Color ink = ShowUI.NIGHT.copyAlpha(0.3F + 0.7F * hover);
+		final Color ink = ShowUI.NIGHT.withAlpha(0.3F + 0.7F * hover);
 		if (this.playing.get()) {
 			DrawUtils.SHAPE.drawRoundedRect(x - 13D, y - 16D, 9D, 32D, ink, 3F);
 			DrawUtils.SHAPE.drawRoundedRect(x + 4D, y - 16D, 9D, 32D, ink, 3F);
@@ -115,8 +115,8 @@ public class ShowPlayer extends ShowUI {
 	private void bar(final double x, final double y, final double width, final float hover) {
 		final double shown = this.shown();
 		final double thickness = 6D + 4D * hover;
-		DrawUtils.SHAPE.drawRoundedRect(x, y - thickness / 2D, width, thickness, Color.WHITE.copyAlpha(0.22F), (float) thickness / 2F);
-		DrawUtils.SHAPE.drawShadow(x, y - thickness / 2D, width * shown, thickness, ShowUI.ORANGE.copyAlpha(0.6F * hover), (float) thickness / 2F, 16F);
+		DrawUtils.SHAPE.drawRoundedRect(x, y - thickness / 2D, width, thickness, Color.WHITE.withAlpha(0.22F), (float) thickness / 2F);
+		DrawUtils.SHAPE.drawShadow(x, y - thickness / 2D, width * shown, thickness, ShowUI.ORANGE.withAlpha(0.6F * hover), (float) thickness / 2F, 16F);
 		DrawUtils.SHAPE.drawRoundedRect(x, y - thickness / 2D, width * shown, thickness, ShowUI.AMBER.toGradient(ShowUI.PINK), (float) thickness / 2F);
 		final double knob = (this.scrub.get() >= 0D ? 14D : 9D) * hover;
 		if (knob > 0.5D) {

@@ -39,10 +39,10 @@ public class ShowHero extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-260, -320, 1000, ShowUI.VIOLET.copyAlpha(0.55F), 6D, 0D, 60D);
-		this.blob(1480, -260, 760, ShowUI.CYAN.copyAlpha(0.32F), 6D, 0.3D, 50D);
-		this.blob(1080, 640, 720, ShowUI.PINK.copyAlpha(0.30F), 6D, 0.6D, 70D);
-		this.blob(560, 820, 420, ShowUI.AMBER.copyAlpha(0.16F), 6D, 0.85D, 40D);
+		this.blob(-260, -320, 1000, ShowUI.VIOLET.withAlpha(0.55F), 6D, 0D, 60D);
+		this.blob(1480, -260, 760, ShowUI.CYAN.withAlpha(0.32F), 6D, 0.3D, 50D);
+		this.blob(1080, 640, 720, ShowUI.PINK.withAlpha(0.30F), 6D, 0.6D, 70D);
+		this.blob(560, 820, 420, ShowUI.AMBER.withAlpha(0.16F), 6D, 0.85D, 40D);
 
 		this.brand();
 		this.headline();
@@ -60,7 +60,7 @@ public class ShowHero extends ShowUI {
 		.create(120, 86, 60, 60)
 		.color(ShowUI.diagonal(ShowUI.FUCHSIA, ShowUI.VIOLET))
 		.effect(RoundedNodeEffect.create(18F))
-		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.copyAlpha(0.8F), 28F))
+		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.withAlpha(0.8F), 28F))
 		.body(logo -> {
 			TextNode.create(30, 30).text(Text.create("J", ShowUI.font(FontWeight.BLACK, 34F, Color.WHITE))).anchor(Align.CENTER).attach(logo);
 		})
@@ -68,7 +68,7 @@ public class ShowHero extends ShowUI {
 		TextNode.create(200, 116).text(Text.create("JOID", ShowUI.font(FontWeight.EXTRA_BOLD, 32F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);
 		RectNode
 		.create(306, 96, 92, 40)
-		.color(Color.WHITE.copyAlpha(0.08F))
+		.color(Color.WHITE.withAlpha(0.08F))
 		.effect(RoundedNodeEffect.create(20F))
 		.body(pill -> {
 			TextNode.create(46, 20).text(Text.create("8.0.0", ShowUI.font(FontWeight.SEMI_BOLD, 18F, ShowUI.MUTED))).anchor(Align.CENTER).attach(pill);
@@ -91,7 +91,7 @@ public class ShowHero extends ShowUI {
 			final Color dot = dots[i];
 			RectNode
 			.create(x, 672, width, 52)
-			.color(Color.WHITE.copyAlpha(0.07F))
+			.color(Color.WHITE.withAlpha(0.07F))
 			.effect(RoundedNodeEffect.create(26F))
 			.body(pill -> {
 				CircleNode.create(20, 20, 12).color(dot).effect(ShadowNodeEffect.create(dot, 10F)).attach(pill);
@@ -122,7 +122,7 @@ public class ShowHero extends ShowUI {
 		.create(x, 858, 84, 84)
 		.color(ShowUI.diagonal(from, to))
 		.effect(RoundedNodeEffect.create(18F))
-		.effect(ShadowNodeEffect.create(from.copyAlpha(0.45F), 18F, 0D, 6D))
+		.effect(ShadowNodeEffect.create(from.withAlpha(0.45F), 18F, 0D, 6D))
 		.body(art -> {
 			TextNode.create(42, 42).text(Text.create(name.substring(0, 1), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 40F, Color.WHITE))).anchor(Align.CENTER).attach(art);
 		})
@@ -137,7 +137,7 @@ public class ShowHero extends ShowUI {
 		.create(1010, 96, 620, 400)
 		.color(ShowUI.NIGHT)
 		.<RectNode>y(() -> 96D + this.wave(6D, 0.1D) * 8D)
-		.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.55F), 60F, 0D, 30D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.55F), 60F, 0D, 30D))
 		.effect(RoundedNodeEffect.create(30F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
 			ResourcePlayerNode
@@ -148,10 +148,10 @@ public class ShowHero extends ShowUI {
 			.volume(0F)
 			.onProgress(event -> this.progress.set(event.getProgress()))
 			.attach(card);
-			RectNode.create(0, 170, 620, 230).color(ShowUI.vertical(Color.BLACK.copyAlpha(0F), Color.BLACK.copyAlpha(0.82F))).attach(card);
+			RectNode.create(0, 170, 620, 230).color(ShowUI.vertical(Color.BLACK.withAlpha(0F), Color.BLACK.withAlpha(0.82F))).attach(card);
 			RectNode
 			.create(24, 24, 150, 38)
-			.color(Color.BLACK.copyAlpha(0.35F))
+			.color(Color.BLACK.withAlpha(0.35F))
 			.effect(RoundedNodeEffect.create(19F))
 			.body(pill -> {
 				CircleNode.create(16, 14, 10).color(Color.decode("#F43F5E")).effect(ShadowNodeEffect.create(Color.decode("#F43F5E"), 8F)).attach(pill);
@@ -160,12 +160,12 @@ public class ShowHero extends ShowUI {
 			.attach(card);
 			TextNode.create(32, 282).text(Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.BOLD, 46F, ShowUI.TEXT))).attach(card);
 			TextNode.create(34, 340).text(Text.create("Slow motion  ·  honey and light", ShowUI.font(FontWeight.MEDIUM, 19F, ShowUI.MUTED))).attach(card);
-			RectNode.create(32, 372, 476, 6).color(Color.WHITE.copyAlpha(0.18F)).effect(RoundedNodeEffect.create(3F)).attach(card);
+			RectNode.create(32, 372, 476, 6).color(Color.WHITE.withAlpha(0.18F)).effect(RoundedNodeEffect.create(3F)).attach(card);
 			RectNode.create(32, 372, 0, 6).color(ShowUI.AMBER.toGradient(ShowUI.PINK)).width(476D * this.progress.get()).effect(RoundedNodeEffect.create(3F)).attach(card);
 			CircleNode
 			.create(536, 300, 64)
 			.color(Color.WHITE)
-			.effect(ShadowNodeEffect.create(ShowUI.AMBER.copyAlpha(0.9F), 26F))
+			.effect(ShadowNodeEffect.create(ShowUI.AMBER.withAlpha(0.9F), 26F))
 			.layer((mouseX, mouseY) -> {
 				final double cx = 571D;
 				final double cy = 332D;
@@ -179,16 +179,16 @@ public class ShowHero extends ShowUI {
 	private void stats() {
 		RectNode
 		.create(1010, 560, 500, 340)
-		.color(ShowUI.vertical(Color.WHITE.copyAlpha(0.10F), Color.WHITE.copyAlpha(0.04F)))
+		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.10F), Color.WHITE.withAlpha(0.04F)))
 		.<RectNode>y(() -> 560D + this.wave(6D, 0.45D) * 7D)
 		.effect(RoundedNodeEffect.create(28F))
-		.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.45F), 48F, 0D, 24D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F, 0D, 24D))
 		.body(card -> {
 			TextNode.create(32, 34).text(Text.create("Plays this week", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(card);
 			TextNode.create(30, 70).text(Text.create(String.format(Locale.US, "%,d", this.plays.get()), ShowUI.font(FontWeight.BLACK, 64F, ShowUI.TEXT))).attach(card);
 			RectNode
 			.create(360, 36, 108, 36)
-			.color(ShowUI.EMERALD.copyAlpha(0.16F))
+			.color(ShowUI.EMERALD.withAlpha(0.16F))
 			.effect(RoundedNodeEffect.create(18F))
 			.body(pill -> {
 				TextNode.create(54, 18).text(Text.create("+18.4 %", ShowUI.font(FontWeight.BOLD, 17F, ShowUI.EMERALD))).anchor(Align.CENTER).attach(pill);
@@ -217,7 +217,7 @@ public class ShowHero extends ShowUI {
 			area.add(Point.create(line.get(i + 1).getX(), y + height));
 			area.add(Point.create(line.get(i).getX(), y + height));
 		}
-		DrawUtils.SHAPE.drawShape(DrawMode.QUADS, ShowUI.vertical(ShowUI.FUCHSIA.copyAlpha(0.45F), ShowUI.FUCHSIA.copyAlpha(0F)), area.toArray(new Point[0]));
+		DrawUtils.SHAPE.drawShape(DrawMode.QUADS, ShowUI.vertical(ShowUI.FUCHSIA.withAlpha(0.45F), ShowUI.FUCHSIA.withAlpha(0F)), area.toArray(new Point[0]));
 		DrawUtils.SHAPE.drawLine(ShowUI.FUCHSIA.toGradient(ShowUI.CYAN), 4F, line.toArray(new Point[0]));
 		final Point last = line.get(count);
 		DrawUtils.SHAPE.drawCircle(last.getX(), last.getY(), ShowUI.CYAN, 8D);
@@ -227,12 +227,12 @@ public class ShowHero extends ShowUI {
 		final ObjModel model = ObjModel.load("showcase", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
 		RectNode
 		.create(1550, 560, 300, 340)
-		.color(ShowUI.vertical(Color.WHITE.copyAlpha(0.12F), Color.WHITE.copyAlpha(0.04F)))
+		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.12F), Color.WHITE.withAlpha(0.04F)))
 		.<RectNode>y(() -> 560D + this.wave(6D, 0.7D) * 9D)
 		.effect(RoundedNodeEffect.create(28F))
-		.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.45F), 48F, 0D, 24D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F, 0D, 24D))
 		.body(card -> {
-			CircleNode.create(40, 20, 220).color(ShowUI.VIOLET.copyAlpha(0.7F)).effect(BlurNodeEffect.create(40F)).attach(card);
+			CircleNode.create(40, 20, 220).color(ShowUI.VIOLET.withAlpha(0.7F)).effect(BlurNodeEffect.create(40F)).attach(card);
 			ModelNode.create(30, 10, 240, 240).model(model).size(0.92D).rotationPitch(-18D).rotationYaw(() -> this.t() * 60D).attach(card);
 			TextNode.create(30, 252).text(Text.create("teapot.obj", ShowUI.font(FontWeight.BOLD, 26F, ShowUI.TEXT))).attach(card);
 			TextNode.create(30, 292).text(Text.create("Lit, textured, smooth", ShowUI.font(FontWeight.MEDIUM, 18F, ShowUI.MUTED))).attach(card);
@@ -243,10 +243,10 @@ public class ShowHero extends ShowUI {
 	private void toast() {
 		RectNode
 		.create(1290, 940, 520, 100)
-		.color(Color.decode("#1E1B3A").copyAlpha(0.92F))
+		.color(Color.decode("#1E1B3A").withAlpha(0.92F))
 		.<RectNode>x(() -> 1290D + 700D * (1D - this.ease(TweenEquations.BACK_OUT, 1D, 1.8D)) + 700D * this.ease(TweenEquations.QUAD_IN, 5.2D, 5.8D))
 		.effect(RoundedNodeEffect.create(24F))
-		.effect(ShadowNodeEffect.create(Color.BLACK.copyAlpha(0.5F), 40F, 0D, 18D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.5F), 40F, 0D, 18D))
 		.body(toast -> {
 			RectNode
 			.create(22, 22, 56, 56)

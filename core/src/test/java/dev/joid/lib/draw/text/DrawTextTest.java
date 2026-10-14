@@ -56,10 +56,9 @@ public class DrawTextTest {
 		DrawTextTest.montserrat = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf")).join();
 	}
 
-	@Test(expected = RuntimeException.class)
-	public void refusesASecondInstance() {
-		Assert.assertNotNull(DrawTextTest.draw());
-		new DrawText();
+	@Test
+	public void isTheSharedInstance() {
+		Assert.assertSame(DrawUtils.TEXT, DrawText.inst());
 	}
 
 	@Test
@@ -224,7 +223,7 @@ public class DrawTextTest {
 
 	@Test
 	public void keepsTheInfoOfEachElementOnItsLine() {
-		final TextInfo large = this.info.fontSize(20F);
+		final TextInfo large = this.info.copy().fontSize(20F);
 		final List<Text> lines = DrawTextTest.draw().getLines(55D, Text.create(TextElement.create("ab", this.info), TextElement.create(" cd", large)));
 		Assert.assertEquals(2, lines.size());
 		Assert.assertEquals("ab", lines.get(0).getText());
@@ -368,12 +367,12 @@ public class DrawTextTest {
 
 	@Test
 	public void neverWrapsInsideATag() {
-		Assert.assertEquals(Arrays.asList("a<c red>bc", "<c red>d"), DrawTextTest.draw().getLines(35D, "a<c red>bcd", this.info.markups(DrawTextTest.MARKUP)));
+		Assert.assertEquals(Arrays.asList("a<c red>bc", "<c red>d"), DrawTextTest.draw().getLines(35D, "a<c red>bcd", this.info.copy().markups(DrawTextTest.MARKUP)));
 	}
 
 	@Test
 	public void continuesAnOpenStyleOnTheWrappedLines() {
-		final List<Text> lines = DrawTextTest.draw().getLines(55D, Text.create("<b>ab cd</b> ef", this.info.markups(DrawTextTest.MARKUP)));
+		final List<Text> lines = DrawTextTest.draw().getLines(55D, Text.create("<b>ab cd</b> ef", this.info.copy().markups(DrawTextTest.MARKUP)));
 		Assert.assertEquals(Arrays.asList("<b>ab", "<b>cd</b>", "<b></b>ef"), lines.stream().map(Text::getText).collect(Collectors.toList()));
 		Assert.assertEquals(40D, lines.get(1).getWidth(), 0D);
 		Assert.assertEquals(20D, lines.get(2).getWidth(), 0D);
@@ -381,17 +380,17 @@ public class DrawTextTest {
 
 	@Test
 	public void continuesAnOpenStyleAfterALineBreak() {
-		Assert.assertEquals(Arrays.asList("<b>ab", "<b>cd"), DrawTextTest.draw().getLines(1000D, "<b>ab\ncd", this.info.markups(DrawTextTest.MARKUP)));
+		Assert.assertEquals(Arrays.asList("<b>ab", "<b>cd"), DrawTextTest.draw().getLines(1000D, "<b>ab\ncd", this.info.copy().markups(DrawTextTest.MARKUP)));
 	}
 
 	@Test
 	public void neverCutsInsideATag() {
-		DrawTextTest.draw().drawText(0D, 0D, 55D, 30D, "a<c red>bcdef", this.info.markups(DrawTextTest.MARKUP), Align.START, Align.START, TextOverflow.ELLIPSIS, TextMode.OVERFLOW);
+		DrawTextTest.draw().drawText(0D, 0D, 55D, 30D, "a<c red>bcdef", this.info.copy().markups(DrawTextTest.MARKUP), Align.START, Align.START, TextOverflow.ELLIPSIS, TextMode.OVERFLOW);
 		Assert.assertEquals(Collections.singletonList("a<c red>b...@0.0,0.0"), this.font.drawn);
 	}
 
 	private Text text() {
-		return Text.create(TextElement.create("ab", this.info), TextElement.create("c", this.info.fontSize(20F)));
+		return Text.create(TextElement.create("ab", this.info), TextElement.create("c", this.info.copy().fontSize(20F)));
 	}
 
 	private static DrawText draw() {

@@ -17,10 +17,6 @@ public final class PixelGrid {
 	private final double  originY;
 	private final boolean aligned;
 
-	public static @NonNull PixelGrid of(final double scaleX, final double scaleY) {
-		return new PixelGrid(scaleX, scaleY, scaleX, scaleY, 0D, 0D, true);
-	}
-
 	public static @NonNull PixelGrid of(final @NonNull float[] projection, final @NonNull float[] modelView, final int viewportWidth, final int viewportHeight) {
 		final double halfWidth = viewportWidth / 2D;
 		final double halfHeight = viewportHeight / 2D;

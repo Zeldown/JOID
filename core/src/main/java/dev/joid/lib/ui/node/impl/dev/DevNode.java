@@ -403,16 +403,16 @@ public final class DevNode extends Node {
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.create(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
 
 			DrawUtils.SHAPE.drawRect(0, mouseY, mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
+			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F)), Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, mouseY, UIView.DESIGN_WIDTH - mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2, mouseY + 5, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F)), Align.CENTER));
+			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2, mouseY + 5, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F)), Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, 0, 3, mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
+			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))));
 
 			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 3, UIView.DESIGN_HEIGHT - mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (UIView.DESIGN_HEIGHT - mouseY) / 2, Text.create((int) (UIView.DESIGN_HEIGHT - mouseY) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.copyAlpha(0.7F))));
+			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (UIView.DESIGN_HEIGHT - mouseY) / 2, Text.create((int) (UIView.DESIGN_HEIGHT - mouseY) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))));
 		}
 
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK, 10F);
@@ -482,13 +482,13 @@ public final class DevNode extends Node {
 	}
 
 	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {
-		DrawUtils.SHAPE.drawRect(x, y, width, height, color.copyAlpha(0.3F * opacity));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, Point.create(x, y), Point.create(x + width, y));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, Point.create(x, y), Point.create(x, y + height));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, Point.create(x + width, y), Point.create(x + width, y + height));
-		DrawUtils.SHAPE.drawDashedLine(color.copyAlpha(opacity), 7, 2F, Point.create(x, y + height), Point.create(x + width, y + height));
+		DrawUtils.SHAPE.drawRect(x, y, width, height, color.withAlpha(0.3F * opacity));
+		DrawUtils.SHAPE.drawDashedLine(color.withAlpha(opacity), 7, 2F, Point.create(x, y), Point.create(x + width, y));
+		DrawUtils.SHAPE.drawDashedLine(color.withAlpha(opacity), 7, 2F, Point.create(x, y), Point.create(x, y + height));
+		DrawUtils.SHAPE.drawDashedLine(color.withAlpha(opacity), 7, 2F, Point.create(x + width, y), Point.create(x + width, y + height));
+		DrawUtils.SHAPE.drawDashedLine(color.withAlpha(opacity), 7, 2F, Point.create(x, y + height), Point.create(x + width, y + height));
 
-		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE.copyAlpha(opacity)).shadow().shadow(Color.BLACK.copyAlpha(0.7F * opacity));
+		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE.withAlpha(opacity)).shadow().shadow(Color.BLACK.withAlpha(0.7F * opacity));
 		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);
 		final Text nodeTimeText = Text.create(String.format(Locale.ROOT, "%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
 
@@ -499,11 +499,11 @@ public final class DevNode extends Node {
 		final double infoBoxY = y - 35 < 0 ? y + height + 5 : y - 35;
 		final double infoBoxWidth = margin + padding * 2 + nodeNameText.getWidth() + nodeTimeText.getWidth();
 
-		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.copyAlpha(0.8F * opacity), 5F);
+		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.withAlpha(0.8F * opacity), 5F);
 
 		double ox = infoBoxX + padding;
 		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeNameText.verticalAlign(Align.CENTER)).getWidth() + margin;
-		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.copyAlpha(opacity), 2);
+		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.withAlpha(opacity), 2);
 		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.verticalAlign(Align.CENTER)).getWidth() + margin;
 	}
 

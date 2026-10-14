@@ -67,7 +67,7 @@ public class ChartNodeTest {
 		Assert.assertSame(chart, chart.data("api", api));
 		Assert.assertSame(api, chart.getData("api"));
 		Assert.assertSame(api, x.get("api"));
-		Assert.assertSame(x.getDataMap(), chart.getDataMap());
+		Assert.assertEquals(x.getDataMap(), chart.getDataMap());
 		Assert.assertEquals(Arrays.asList("Mon", "Tue"), new ArrayList<>(chart.getLabels()));
 	}
 

@@ -2,6 +2,7 @@ package dev.joid.lib.animation.animator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,9 +45,9 @@ public class TweenAnimatorTest {
 		final TweenAnimator animator = TweenAnimator.create();
 		Assert.assertEquals(0F, animator.get(), 0F);
 		Assert.assertEquals(1F, animator.getSpeed(), 0F);
-		Assert.assertEquals(0L, animator.getLastUpdate());
+		Assert.assertEquals(0L, TweenAnimatorTest.lastUpdate(animator));
 		Assert.assertNull(animator.getTimeline());
-		Assert.assertNotNull(animator.getManager());
+		Assert.assertNotNull(TweenAnimatorTest.manager(animator));
 	}
 
 	@Test
@@ -113,11 +114,11 @@ public class TweenAnimatorTest {
 	@Test
 	public void readsTheElapsedTimeFromTheClock() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(100F, 10F).start();
-		Assert.assertEquals(1000L, animator.getLastUpdate());
+		Assert.assertEquals(1000L, TweenAnimatorTest.lastUpdate(animator));
 		this.clock.advance(25L);
 		animator.update();
 		Assert.assertEquals(2.5F, animator.get(), 0F);
-		Assert.assertEquals(1025L, animator.getLastUpdate());
+		Assert.assertEquals(1025L, TweenAnimatorTest.lastUpdate(animator));
 	}
 
 	@Test
@@ -179,7 +180,7 @@ public class TweenAnimatorTest {
 		animator.sequence(1F, 20F).start();
 		Assert.assertTrue(previous.isFinished());
 		animator.update(0.5F);
-		Assert.assertEquals(1, animator.getManager().size());
+		Assert.assertEquals(1, TweenAnimatorTest.manager(animator).size());
 		Assert.assertEquals(10F, animator.get(), 0F);
 	}
 
@@ -190,7 +191,7 @@ public class TweenAnimatorTest {
 		animator.clear();
 		Assert.assertEquals(0F, animator.get(), 0F);
 		Assert.assertEquals(1F, animator.getSpeed(), 0F);
-		Assert.assertEquals(0L, animator.getLastUpdate());
+		Assert.assertEquals(0L, TweenAnimatorTest.lastUpdate(animator));
 		Assert.assertNull(animator.getTimeline());
 		animator.update(1F);
 		Assert.assertEquals(0F, animator.get(), 0F);
@@ -200,7 +201,7 @@ public class TweenAnimatorTest {
 	public void killsAndFreesItsTimelineWhenItClears() {
 		final List<BaseTween<?>> ends = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).onComplete(event -> ends.add(event.getTween())).start();
-		final TweenManager manager = animator.getManager();
+		final TweenManager manager = TweenAnimatorTest.manager(animator);
 		final int pooled = Timeline.getPoolSize();
 		animator.clear();
 		Assert.assertEquals(0, manager.size());
@@ -463,6 +464,24 @@ public class TweenAnimatorTest {
 	public void staysDistinctFromAnAnimatorOfTheSameValue() {
 		Assert.assertNotEquals(TweenAnimator.create(), TweenAnimator.create());
 		Assert.assertEquals(2, new HashSet<>(Arrays.asList(TweenAnimator.create(), TweenAnimator.create())).size());
+	}
+
+	private static long lastUpdate(final TweenAnimator animator) {
+		return (long) TweenAnimatorTest.field(animator, "lastUpdate");
+	}
+
+	private static TweenManager manager(final TweenAnimator animator) {
+		return (TweenManager) TweenAnimatorTest.field(animator, "manager");
+	}
+
+	private static Object field(final TweenAnimator animator, final String name) {
+		try {
+			final Field field = TweenAnimator.class.getDeclaredField(name);
+			field.setAccessible(true);
+			return field.get(animator);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	@UIDataDebug(profiler = false, hotreload = false)

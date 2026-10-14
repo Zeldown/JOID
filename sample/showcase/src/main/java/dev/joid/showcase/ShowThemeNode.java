@@ -29,7 +29,7 @@ public class ShowThemeNode extends CheckboxNode {
 		final double cx = super.getX() + 28D + 56D * this.knob;
 		final double cy = super.getY() + 28D;
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), 112D, 56D, track, 28F);
-		DrawUtils.SHAPE.drawShadow(cx - 22D, cy - 22D, 44D, 44D, ShowUI.AMBER.to(ShowUI.VIOLET, k).copyAlpha(0.7F), 22F, 18F);
+		DrawUtils.SHAPE.drawShadow(cx - 22D, cy - 22D, 44D, 44D, ShowUI.AMBER.to(ShowUI.VIOLET, k).withAlpha(0.7F), 22F, 18F);
 		DrawUtils.SHAPE.drawCircle(cx, cy, ShowUI.AMBER.to(Color.decode("#F5F3FF"), k), 20D);
 		if (k > 0.01F) {
 			DrawUtils.SHAPE.drawCircle(cx + 9D * k, cy - 7D * k, track, 15D * k);

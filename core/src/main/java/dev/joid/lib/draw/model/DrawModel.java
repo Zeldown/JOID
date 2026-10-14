@@ -2,19 +2,17 @@ package dev.joid.lib.draw.model;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DrawModel {
 
-	@Getter
-	private static DrawModel instance;
+	private static final DrawModel INSTANCE = new DrawModel();
 
-	public DrawModel() {
-		if (DrawModel.instance != null) {
-			throw new IllegalStateException("DrawModel is created once by DrawUtils, use DrawUtils.MODEL instead of new DrawModel()");
-		}
-		DrawModel.instance = this;
+	public static @NonNull DrawModel inst() {
+		return DrawModel.INSTANCE;
 	}
 
 	public void drawModel(final double x, final double y, final double size, final @NonNull IDrawableModel model) {

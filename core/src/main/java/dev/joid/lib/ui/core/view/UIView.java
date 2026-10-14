@@ -37,10 +37,6 @@ public final class UIView {
 		return this.interfaceScale * this.zoom;
 	}
 
-	public double getMaxZoom() {
-		return Math.max(1D, 1D / this.interfaceScale);
-	}
-
 	public double getOffsetX() {
 		return (this.viewportWidth - UIView.DESIGN_WIDTH) * this.anchorX / UIView.DESIGN_WIDTH;
 	}
@@ -132,6 +128,10 @@ public final class UIView {
 				render.getProjection().pop();
 			}
 		}
+	}
+
+	private double getMaxZoom() {
+		return Math.max(1D, 1D / this.interfaceScale);
 	}
 
 }

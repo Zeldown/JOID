@@ -22,7 +22,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-@Getter
 public class TweenAnimator extends Signal<Float> {
 
 	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
@@ -31,14 +30,18 @@ public class TweenAnimator extends Signal<Float> {
 		BridgeHandler.UI.onFrame(TweenAnimator::updateRunning);
 	}
 
+	@Getter
 	private boolean automatic;
 
+	@Getter
 	@Setter
 	private float speed;
 
 	private long         lastUpdate;
-	private Timeline     timeline;
 	private TweenManager manager;
+
+	@Getter
+	private Timeline timeline;
 
 	private TweenAnimator(final float value) {
 		super(value);

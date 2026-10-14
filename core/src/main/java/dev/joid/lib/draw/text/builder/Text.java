@@ -2,6 +2,7 @@ package dev.joid.lib.draw.text.builder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -17,7 +18,6 @@ import lombok.NonNull;
 
 public final class Text {
 
-	@Getter
 	private final List<TextElement> elementList;
 
 	@Getter private TextOverflow  overflow;
@@ -101,6 +101,10 @@ public final class Text {
 
 	public static final @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow) {
 		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign).overflow(overflow);
+	}
+
+	public final @NonNull List<TextElement> getElementList() {
+		return Collections.unmodifiableList(this.elementList);
 	}
 
 	public final double getWidth() {
@@ -303,10 +307,16 @@ public final class Text {
 		final List<Object> key = new ArrayList<>();
 		key.add(this.modifier);
 		for (final TextElement element : this.elementList) {
+			final TextInfo info = element.getInfo();
 			key.add(element.getRawText());
 			key.add(element.getModifier());
-			key.add(element.getInfo());
-			key.add(new ArrayList<>(element.getInfo().getMarkups()));
+			key.add(info.getFont());
+			key.add(info.getFontSize());
+			key.add(info.getWeight());
+			key.add(info.isItalic());
+			key.add(info.getLetterSpacing());
+			key.add(info.getLineHeight());
+			key.add(new ArrayList<>(info.getMarkups()));
 		}
 		return key;
 	}

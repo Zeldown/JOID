@@ -21,7 +21,7 @@ public class DemoDoubleSliderNode extends DoubleSliderNode {
 
 	@Override
 	public void drawSlider(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.copyAlpha(super.isEnabled() ? 1F : 0.4F));
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F));
 	}
 
 	private final class Thumb extends SliderThumbNode {
@@ -32,7 +32,7 @@ public class DemoDoubleSliderNode extends DoubleSliderNode {
 
 		@Override
 		public void drawThumb(final double mouseX, final double mouseY) {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DemoDoubleSliderNode.INK.copyAlpha(super.isEnabled() ? 1F : 0.4F));
+			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DemoDoubleSliderNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F));
 		}
 
 	}

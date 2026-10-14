@@ -48,10 +48,10 @@ public class UIDemoShader extends UIDemo {
 		TextNode.create(845, 175).text(Text.create("Diagonal gradient", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1045, 30, 60, 140).color(Color.WHITE).attach(this);
-		RectNode.create(975, 40, 200, 120).color(Color.RED.copyAlpha(0.5F)).attach(this);
+		RectNode.create(975, 40, 200, 120).color(Color.RED.withAlpha(0.5F)).attach(this);
 		TextNode.create(1075, 175).text(Text.create("Transparent", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(1205, 40, 200, 120).color(Color.RED.toGradient(Color.RED.copyAlpha(0F))).attach(this);
+		RectNode.create(1205, 40, 200, 120).color(Color.RED.toGradient(Color.RED.withAlpha(0F))).attach(this);
 		TextNode.create(1305, 175).text(Text.create("Fading gradient", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1435, 40, 200, 120).color(Color.RAINBOW).attach(this);

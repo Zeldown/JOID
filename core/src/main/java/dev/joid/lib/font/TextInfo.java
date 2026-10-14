@@ -12,29 +12,29 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.With;
 
 @Getter
-@With(AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextInfo {
 
-	private final IFont      font;
-	private final float      fontSize;
-	private final FontWeight weight;
-	private final float      letterSpacing;
-	private final float      lineHeight;
-	private final Color      color;
-	private final boolean    colored;
-	private final boolean    italic;
+	private IFont      font;
+	private float      fontSize;
+	private FontWeight weight;
+	private float      letterSpacing;
+	private float      lineHeight;
+	private Color      color;
+	private boolean    colored;
+	private boolean    italic;
 
-	private final Color shadowColor;
-	private final Float shadowX;
-	private final Float shadowY;
-	private final Float shadowTint;
+	private Color shadowColor;
+	private Float shadowX;
+	private Float shadowY;
+	private Float shadowTint;
 
-	private final ITextMarkup[] markups;
-	private final ITextEffect[] effects;
+	private ITextMarkup[] markups;
+	private ITextEffect[] effects;
+
+	private boolean frozen;
 
 	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
 		return new TextInfo(font, FontWeight.REGULAR, fontSize, Color.BLACK);
@@ -53,7 +53,7 @@ public final class TextInfo {
 	}
 
 	private TextInfo(final IFont font, final FontWeight weight, final float fontSize, final Color color) {
-		this(font, fontSize, weight, 0, 0, color, true, false, null, null, null, null, null, new ITextEffect[0]);
+		this(font, fontSize, weight, 0, 0, color, true, false, null, null, null, null, null, new ITextEffect[0], false);
 	}
 
 	public final double getHeight() {
@@ -117,59 +117,159 @@ public final class TextInfo {
 	}
 
 	public final @NonNull TextInfo font(final IFont font) {
-		return this.withFont(font);
+		this.checkFrozen("withFont");
+		this.font = font;
+		return this;
 	}
 
 	public final @NonNull TextInfo fontSize(final float fontSize) {
-		return this.withFontSize(fontSize);
+		this.checkFrozen("withFontSize");
+		this.fontSize = fontSize;
+		return this;
 	}
 
 	public final @NonNull TextInfo weight(final @NonNull FontWeight weight) {
-		return this.withWeight(weight);
+		this.checkFrozen("withWeight");
+		this.weight = weight;
+		return this;
 	}
 
 	public final @NonNull TextInfo letterSpacing(final float letterSpacing) {
-		return this.withLetterSpacing(letterSpacing);
+		this.checkFrozen("withLetterSpacing");
+		this.letterSpacing = letterSpacing;
+		return this;
 	}
 
 	public final @NonNull TextInfo lineHeight(final float lineHeight) {
-		return this.withLineHeight(lineHeight);
+		this.checkFrozen("withLineHeight");
+		this.lineHeight = lineHeight;
+		return this;
 	}
 
 	public final @NonNull TextInfo color(final @NonNull Color color) {
-		return this.withColor(color);
+		this.checkFrozen("withColor");
+		this.color = color;
+		return this;
 	}
 
 	public final @NonNull TextInfo colored(final boolean colored) {
-		return this.withColored(colored);
+		this.checkFrozen("withColored");
+		this.colored = colored;
+		return this;
 	}
 
 	public final @NonNull TextInfo italic(final boolean italic) {
-		return this.withItalic(italic);
+		this.checkFrozen("withItalic");
+		this.italic = italic;
+		return this;
 	}
 
 	public final @NonNull TextInfo markups(final @NonNull ITextMarkup @NonNull... markups) {
-		return this.withMarkups(markups.clone());
+		this.checkFrozen("withMarkups");
+		this.markups = markups.clone();
+		return this;
 	}
 
 	public final @NonNull TextInfo effects(final @NonNull ITextEffect @NonNull... effects) {
-		return this.withEffects(effects.clone());
+		this.checkFrozen("withEffects");
+		this.effects = effects.clone();
+		return this;
 	}
 
 	public final @NonNull TextInfo shadow() {
-		return this.withShadowColor(this.color.darker(0.3F));
+		this.checkFrozen("withShadow");
+		this.shadowColor = this.color.darker(0.3F);
+		return this;
 	}
 
 	public final @NonNull TextInfo shadow(final Color color) {
-		return this.withShadowColor(color);
+		this.checkFrozen("withShadow");
+		this.shadowColor = color;
+		return this;
 	}
 
 	public final @NonNull TextInfo shadow(final float x, final float y) {
-		return this.withShadowX(x).withShadowY(y);
+		this.checkFrozen("withShadow");
+		this.shadowX = x;
+		this.shadowY = y;
+		return this;
 	}
 
 	public final @NonNull TextInfo shadowTint(final Float shadowTint) {
-		return this.withShadowTint(shadowTint);
+		this.checkFrozen("withShadowTint");
+		this.shadowTint = shadowTint;
+		return this;
+	}
+
+	public final @NonNull TextInfo withFont(final IFont font) {
+		return this.copy().font(font);
+	}
+
+	public final @NonNull TextInfo withFontSize(final float fontSize) {
+		return this.copy().fontSize(fontSize);
+	}
+
+	public final @NonNull TextInfo withWeight(final @NonNull FontWeight weight) {
+		return this.copy().weight(weight);
+	}
+
+	public final @NonNull TextInfo withLetterSpacing(final float letterSpacing) {
+		return this.copy().letterSpacing(letterSpacing);
+	}
+
+	public final @NonNull TextInfo withLineHeight(final float lineHeight) {
+		return this.copy().lineHeight(lineHeight);
+	}
+
+	public final @NonNull TextInfo withColor(final @NonNull Color color) {
+		return this.copy().color(color);
+	}
+
+	public final @NonNull TextInfo withColored(final boolean colored) {
+		return this.copy().colored(colored);
+	}
+
+	public final @NonNull TextInfo withItalic(final boolean italic) {
+		return this.copy().italic(italic);
+	}
+
+	public final @NonNull TextInfo withMarkups(final @NonNull ITextMarkup @NonNull... markups) {
+		return this.copy().markups(markups);
+	}
+
+	public final @NonNull TextInfo withEffects(final @NonNull ITextEffect @NonNull... effects) {
+		return this.copy().effects(effects);
+	}
+
+	public final @NonNull TextInfo withShadow() {
+		return this.copy().shadow();
+	}
+
+	public final @NonNull TextInfo withShadow(final Color color) {
+		return this.copy().shadow(color);
+	}
+
+	public final @NonNull TextInfo withShadow(final float x, final float y) {
+		return this.copy().shadow(x, y);
+	}
+
+	public final @NonNull TextInfo withShadowTint(final Float shadowTint) {
+		return this.copy().shadowTint(shadowTint);
+	}
+
+	public final @NonNull TextInfo copy() {
+		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.shadowTint, this.markups, this.effects, false);
+	}
+
+	public final @NonNull TextInfo freeze() {
+		this.frozen = true;
+		return this;
+	}
+
+	private void checkFrozen(final @NonNull String copy) {
+		if (this.frozen) {
+			throw new IllegalStateException("This TextInfo is frozen, use " + copy + "(...) to get a modified copy");
+		}
 	}
 
 	@Override

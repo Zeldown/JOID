@@ -23,8 +23,8 @@ public class ShowMotion extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-250, -250, 900, ShowUI.VIOLET.copyAlpha(0.38F), 9D, 0D, 50D);
-		this.blob(1300, 500, 900, ShowUI.CYAN.copyAlpha(0.20F), 9D, 0.5D, 50D);
+		this.blob(-250, -250, 900, ShowUI.VIOLET.withAlpha(0.38F), 9D, 0D, 50D);
+		this.blob(1300, 500, 900, ShowUI.CYAN.withAlpha(0.20F), 9D, 0.5D, 50D);
 
 		this.glass(110, 100, 1700, 880, 32F).attach(this);
 		TextNode.create(156, 144).text(Text.create("Motion", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);
@@ -52,15 +52,15 @@ public class ShowMotion extends ShowUI {
 
 		RectNode
 		.create(420, y - 42D, 150, 84)
-		.color(Color.BLACK.copyAlpha(0.22F))
+		.color(Color.BLACK.withAlpha(0.22F))
 		.effect(RoundedNodeEffect.create(14F))
 		.layer((mouseX, mouseY) -> this.curve(434D, y - 30D, 122D, 60D, equation, clock.get(), from, to))
 		.attach(this);
 
-		RectNode.create(640, y - 4D, 856, 8).color(Color.WHITE.copyAlpha(0.08F)).effect(RoundedNodeEffect.create(4F)).attach(this);
+		RectNode.create(640, y - 4D, 856, 8).color(Color.WHITE.withAlpha(0.08F)).effect(RoundedNodeEffect.create(4F)).attach(this);
 		RectNode
 		.create(640, y - 4D, 0, 8)
-		.color(from.copyAlpha(0F).toGradient(to))
+		.color(from.withAlpha(0F).toGradient(to))
 		.<RectNode>width(() -> Math.max(0D, 28D + 800D * eased.get()))
 		.effect(RoundedNodeEffect.create(4F))
 		.attach(this);
@@ -69,7 +69,7 @@ public class ShowMotion extends ShowUI {
 		.color(ShowUI.diagonal(from, to))
 		.<RectNode>x(() -> 640D + 800D * eased.get())
 		.effect(CircleNodeEffect.create())
-		.effect(ShadowNodeEffect.create(to.copyAlpha(0.9F), 26F))
+		.effect(ShadowNodeEffect.create(to.withAlpha(0.9F), 26F))
 		.attach(this);
 	}
 
@@ -79,7 +79,7 @@ public class ShowMotion extends ShowUI {
 			final float t = i / 60F;
 			points.add(Point.create(x + t * width, y + height - equation.compute(t) * height));
 		}
-		DrawUtils.SHAPE.drawLine(Color.WHITE.copyAlpha(0.10F), 2F, Point.create(x, y + height), Point.create(x + width, y + height));
+		DrawUtils.SHAPE.drawLine(Color.WHITE.withAlpha(0.10F), 2F, Point.create(x, y + height), Point.create(x + width, y + height));
 		DrawUtils.SHAPE.drawLine(from.toGradient(to), 3F, points.toArray(new Point[0]));
 		DrawUtils.SHAPE.drawCircle(x + time * width, y + height - equation.compute(time) * height, Color.WHITE, 6D);
 	}

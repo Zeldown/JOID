@@ -3,12 +3,13 @@ package dev.joid.lib.ui.core.transition;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.ui.core.UI;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Transition {
 
 	private final In in;
@@ -23,7 +24,7 @@ public abstract class Transition {
 		private boolean running;
 		private boolean enabled;
 
-		public TransitionState(final float defaultValue) {
+		protected TransitionState(final float defaultValue) {
 			this.defaultValue = defaultValue;
 			this.animator = TweenAnimator.create(defaultValue);
 			this.running = false;
@@ -86,7 +87,7 @@ public abstract class Transition {
 
 	public static abstract class In extends TransitionState {
 
-		public In() {
+		protected In() {
 			super(0F);
 		}
 
@@ -94,7 +95,7 @@ public abstract class Transition {
 
 	public static abstract class Out extends TransitionState {
 
-		public Out() {
+		protected Out() {
 			super(1F);
 		}
 

@@ -41,8 +41,7 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 
 	@Override
 	public int getId() {
-		final Integer texture = super.getHandle();
-		return texture != null ? texture : 0;
+		return super.getHandle();
 	}
 
 	@Override

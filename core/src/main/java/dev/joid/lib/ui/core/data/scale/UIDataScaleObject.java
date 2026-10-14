@@ -26,7 +26,7 @@ public final class UIDataScaleObject implements UIDataScale {
 		return data != null ? data : new UIDataScaleObject();
 	}
 
-	public static UIDataScaleObject get(final @NonNull Class<? extends UI> clazz) {
+	protected static UIDataScaleObject get(final @NonNull Class<? extends UI> clazz) {
 		Class<?> currentClass = clazz;
 		UIDataScale data = currentClass.getAnnotation(UIDataScale.class);
 		while (data == null && currentClass.getSuperclass() != null) {

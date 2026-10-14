@@ -24,8 +24,8 @@ public class ShowSliderNode extends DoubleSliderNode {
 	@Override
 	public void drawSlider(final double mouseX, final double mouseY) {
 		final double center = 18D + super.getProgress() * (super.getWidth() - 36D);
-		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY() + 13D, super.getWidth(), 10D, Color.WHITE.copyAlpha(0.12F), 5F);
-		DrawUtils.SHAPE.drawShadow(super.getX(), super.getY() + 13D, center, 10D, this.to.copyAlpha(0.6F), 5F, 14F);
+		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY() + 13D, super.getWidth(), 10D, Color.WHITE.withAlpha(0.12F), 5F);
+		DrawUtils.SHAPE.drawShadow(super.getX(), super.getY() + 13D, center, 10D, this.to.withAlpha(0.6F), 5F, 14F);
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY() + 13D, center, 10D, this.from.toGradient(this.to), 5F);
 	}
 
@@ -37,7 +37,7 @@ public class ShowSliderNode extends DoubleSliderNode {
 
 		@Override
 		public void drawThumb(final double mouseX, final double mouseY) {
-			DrawUtils.SHAPE.drawShadow(super.getX(), super.getY(), 36D, 36D, ShowSliderNode.this.to.copyAlpha(0.9F), 18F, 18F);
+			DrawUtils.SHAPE.drawShadow(super.getX(), super.getY(), 36D, 36D, ShowSliderNode.this.to.withAlpha(0.9F), 18F, 18F);
 			DrawUtils.SHAPE.drawCircle(super.getX() + 18D, super.getY() + 18D, Color.WHITE, 18D);
 			DrawUtils.SHAPE.drawCircle(super.getX() + 18D, super.getY() + 18D, ShowSliderNode.this.to, 7D);
 		}

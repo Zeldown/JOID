@@ -25,7 +25,7 @@ public final class JOID {
 	@Getter
 	private boolean ready;
 
-	public JOID() {
+	protected JOID() {
 		this.readyList = new ArrayList<>();
 	}
 

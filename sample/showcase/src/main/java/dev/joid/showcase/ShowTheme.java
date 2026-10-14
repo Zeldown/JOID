@@ -34,7 +34,7 @@ public class ShowTheme extends ShowUI {
 		.create(48, 56, 52, 52)
 		.color(ShowUI.diagonal(ShowUI.FUCHSIA, ShowUI.VIOLET))
 		.effect(RoundedNodeEffect.create(16F))
-		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.copyAlpha(0.6F), 20F))
+		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.withAlpha(0.6F), 20F))
 		.body(logo -> {
 			TextNode.create(26, 26).text(Text.create("J", ShowUI.font(FontWeight.BLACK, 28F, Color.WHITE))).anchor(Align.CENTER).attach(logo);
 		})
@@ -44,7 +44,7 @@ public class ShowTheme extends ShowUI {
 		for (int i = 0; i < items.length; i++) {
 			final boolean active = i == 0;
 			final String item = items[i];
-			RectNode.create(32, 170 + i * 68, 236, 54).color(() -> active ? ShowUI.VIOLET.copyAlpha(0.14F + 0.1F * (float) this.level) : Color.TRANSPARENT).effect(RoundedNodeEffect.create(16F)).attach(this);
+			RectNode.create(32, 170 + i * 68, 236, 54).color(() -> active ? ShowUI.VIOLET.withAlpha(0.14F + 0.1F * (float) this.level) : Color.TRANSPARENT).effect(RoundedNodeEffect.create(16F)).attach(this);
 			RectNode.create(56, 189 + i * 68, 16, 16).color(() -> active ? ShowUI.VIOLET : this.muted()).effect(RoundedNodeEffect.create(5F)).attach(this);
 			TextNode.create(92, 197 + i * 68).text(() -> Text.create(item, ShowUI.font(FontWeight.SEMI_BOLD, 21F, active ? this.tone("#5B21B6", "#C4B5FD") : this.muted()))).anchorY(Align.CENTER).attach(this);
 		}
@@ -80,7 +80,7 @@ public class ShowTheme extends ShowUI {
 	private void stat(final int index, final String label, final String value, final String delta, final Color accent) {
 		final double x = 360D + index * 500D;
 		this.card(x, 190, 460, 200).attach(this);
-		RectNode.create(x + 40D, 230, 44, 44).color(accent.copyAlpha(0.18F)).effect(RoundedNodeEffect.create(14F)).body(icon -> {
+		RectNode.create(x + 40D, 230, 44, 44).color(accent.withAlpha(0.18F)).effect(RoundedNodeEffect.create(14F)).body(icon -> {
 			RectNode.create(14, 14, 16, 16).color(accent).effect(CircleNodeEffect.create()).attach(icon);
 		}).attach(this);
 		TextNode.create(x + 100D, 252).text(() -> Text.create(label, ShowUI.font(FontWeight.SEMI_BOLD, 20F, this.muted()))).anchorY(Align.CENTER).attach(this);
@@ -93,7 +93,7 @@ public class ShowTheme extends ShowUI {
 		.create(x, y, width, height)
 		.color(() -> this.tone("#FFFFFF", "#17162C"))
 		.effect(RoundedNodeEffect.create(28F))
-		.effect(ShadowNodeEffect.create(Color.BLACK, 40F, 0D, 14D).color(() -> Color.BLACK.copyAlpha(0.07F + 0.33F * (float) this.level)));
+		.effect(ShadowNodeEffect.create(Color.BLACK, 40F, 0D, 14D).color(() -> Color.BLACK.withAlpha(0.07F + 0.33F * (float) this.level)));
 	}
 
 	private void chart(final double x, final double y, final double width, final double height) {
@@ -106,10 +106,10 @@ public class ShowTheme extends ShowUI {
 		for (int i = 0; i < values.length; i++) {
 			final double bar = values[i] * (height - 40D);
 			final double bx = x + i * slot + slot * 0.2D;
-			DrawUtils.SHAPE.drawRoundedRect(bx, y + height - 40D - bar, slot * 0.6D, bar, ShowUI.vertical(ShowUI.FUCHSIA, ShowUI.VIOLET.copyAlpha(0.35F)), 10F, true, true, true, false);
+			DrawUtils.SHAPE.drawRoundedRect(bx, y + height - 40D - bar, slot * 0.6D, bar, ShowUI.vertical(ShowUI.FUCHSIA, ShowUI.VIOLET.withAlpha(0.35F)), 10F, true, true, true, false);
 			points.add(Point.create(bx + slot * 0.3D, y + height - 40D - bar - 26D));
 		}
-		DrawUtils.SHAPE.drawLine(this.tone("#0F0E1A", "#F8FAFC").copyAlpha(0.7F), 3F, points.toArray(new Point[0]));
+		DrawUtils.SHAPE.drawLine(this.tone("#0F0E1A", "#F8FAFC").withAlpha(0.7F), 3F, points.toArray(new Point[0]));
 	}
 
 	private Color text() {

@@ -1,8 +1,10 @@
 package dev.joid.lib.ui.node.impl.structure.slider;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -203,8 +205,8 @@ public class SliderNodeTest {
 		this.bridges.frame();
 		Assert.assertEquals(7, slider.getValue().intValue());
 		Assert.assertSame(balance, slider.getSignal());
-		Assert.assertTrue(volume.getEventSet().isEmpty());
-		Assert.assertEquals(1, balance.getEventSet().size());
+		Assert.assertTrue(SliderNodeTest.subscribers(volume).isEmpty());
+		Assert.assertEquals(1, SliderNodeTest.subscribers(balance).size());
 	}
 
 	@Test
@@ -368,6 +370,16 @@ public class SliderNodeTest {
 
 	private static Integer[] digits() {
 		return new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+	}
+
+	private static Set<?> subscribers(final Signal<?> signal) {
+		try {
+			final Field field = Signal.class.getDeclaredField("eventSet");
+			field.setAccessible(true);
+			return (Set<?>) field.get(signal);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	@AllArgsConstructor

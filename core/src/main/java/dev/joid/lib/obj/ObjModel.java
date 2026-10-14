@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,16 +21,10 @@ import dev.joid.lib.obj.data.ObjVertex;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.Resource;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public final class ObjModel implements IDrawableModel {
 
 	private static final Pattern VERTEX_PATTERN       = Pattern.compile("(v( (\\-){0,1}\\d+(\\.\\d+)?){3,4} *\\n)|(v( (\\-){0,1}\\d+(\\.\\d+)?){3,4} *$)");
@@ -55,8 +50,8 @@ public final class ObjModel implements IDrawableModel {
 	private final List<ObjTextureCoordinate> textureCoordinates = new ArrayList<>();
 	private final List<ObjGroup>             groups             = new ArrayList<>();
 
-	private String   name;
-	private Resource texture;
+	private final String   name;
+	private final Resource texture;
 
 	private ObjGroup currentGroup;
 
@@ -156,6 +151,22 @@ public final class ObjModel implements IDrawableModel {
 
 			tessellator.draw();
 		});
+	}
+
+	public final @NonNull List<ObjVertex> getVertices() {
+		return Collections.unmodifiableList(this.vertices);
+	}
+
+	public final @NonNull List<ObjVertex> getVertexNormals() {
+		return Collections.unmodifiableList(this.vertexNormals);
+	}
+
+	public final @NonNull List<ObjTextureCoordinate> getTextureCoordinates() {
+		return Collections.unmodifiableList(this.textureCoordinates);
+	}
+
+	public final @NonNull List<ObjGroup> getGroups() {
+		return Collections.unmodifiableList(this.groups);
 	}
 
 	@Override

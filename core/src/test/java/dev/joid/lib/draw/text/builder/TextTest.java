@@ -276,9 +276,28 @@ public class TextTest {
 		final TextInfo info = TextTest.info();
 		final Text text = Text.create("ab", info);
 		Assert.assertEquals(20D, text.getWidth(), 0D);
-		text.get(0).info(info.fontSize(20F));
+		text.get(0).info(info.withFontSize(20F));
 		Assert.assertEquals(40D, text.getWidth(), 0D);
 		Assert.assertEquals(40D, text.getHeight(), 0D);
+	}
+
+	@Test
+	public void remeasuresOnceItsInfoChangesInPlace() {
+		final TextInfo info = TextTest.info();
+		final Text text = Text.create("ab", info);
+		Assert.assertEquals(20D, text.getWidth(), 0D);
+		info.fontSize(20F);
+		Assert.assertEquals(40D, text.getWidth(), 0D);
+		Assert.assertEquals(40D, text.getHeight(), 0D);
+	}
+
+	@Test
+	public void remeasuresOnceItsMarkupChangesInPlace() {
+		final TextInfo info = TextTest.montserrat();
+		final Text text = Text.create("*ab", info);
+		Assert.assertEquals(info.getWidth("*ab"), text.getWidth(), 0D);
+		info.markups((value, index, style) -> value.charAt(index) == '*' ? 1 : 0);
+		Assert.assertEquals(info.getWidth("ab"), text.getWidth(), 0D);
 	}
 
 	@Test

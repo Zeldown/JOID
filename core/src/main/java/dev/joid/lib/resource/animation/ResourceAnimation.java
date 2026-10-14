@@ -37,6 +37,10 @@ public final class ResourceAnimation {
 		return new ResourceAnimation(width, height, plays, frames);
 	}
 
+	public final @NonNull List<ResourceAnimationFrame> getFrames() {
+		return Collections.unmodifiableList(this.frames);
+	}
+
 	public long getDuration() {
 		return this.ends[this.ends.length - 1];
 	}

@@ -44,12 +44,12 @@ public final class JOIDEnv {
 		JOIDEnv.cacheDir = cacheDir;
 	}
 
-	public static @NonNull File locateDataDir() {
+	protected static @NonNull File locateDataDir() {
 		final String property = System.getProperty("joid.data");
 		return property != null ? new File(property) : new File("joid");
 	}
 
-	public static @NonNull File locateCacheDir() {
+	protected static @NonNull File locateCacheDir() {
 		final String property = System.getProperty("joid.cache");
 		return property != null ? new File(property) : new File(Platform.current().getCacheDir(System.getProperty("user.home"), System::getenv), "joid");
 	}

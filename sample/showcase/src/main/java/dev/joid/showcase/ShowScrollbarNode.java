@@ -18,8 +18,8 @@ public class ShowScrollbarNode extends ScrollbarNode {
 	@Override
 	public void drawScrollbar(final double mouseX, final double mouseY) {
 		final BoundingBox scroll = super.getScroll();
-		DrawUtils.SHAPE.drawRoundedRect(scroll.getMinX(), scroll.getMinY(), scroll.getWidth(), scroll.getHeight(), Color.WHITE.copyAlpha(0.06F), (float) scroll.getWidth() / 2F);
-		DrawUtils.SHAPE.drawShadow(super.getX(), super.getY(), super.getWidth(), super.getHeight(), ShowUI.VIOLET.copyAlpha(0.6F), (float) super.getWidth() / 2F, 12F);
+		DrawUtils.SHAPE.drawRoundedRect(scroll.getMinX(), scroll.getMinY(), scroll.getWidth(), scroll.getHeight(), Color.WHITE.withAlpha(0.06F), (float) scroll.getWidth() / 2F);
+		DrawUtils.SHAPE.drawShadow(super.getX(), super.getY(), super.getWidth(), super.getHeight(), ShowUI.VIOLET.withAlpha(0.6F), (float) super.getWidth() / 2F, 12F);
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), ShowUI.vertical(ShowUI.FUCHSIA, ShowUI.VIOLET), (float) super.getWidth() / 2F);
 	}
 

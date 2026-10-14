@@ -23,7 +23,7 @@ public class DemoIntegerFieldNode extends IntegerFieldNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.copyAlpha(super.isEnabled() ? 1F : 0.4F));
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F));
 		if (super.isFocused()) {
 			DrawUtils.SHAPE.drawBorder(super.getX(), super.getY(), super.getX() + super.getWidth(), super.getY() + super.getHeight(), DemoIntegerFieldNode.INK, 2D);
 		}

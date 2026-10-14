@@ -1,6 +1,7 @@
 package dev.joid.tool.msdf.font;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +25,10 @@ public final class FontFile {
 
 	public static FontFile read(final byte[] data) {
 		return new FontFile(data);
+	}
+
+	public final Map<String, Integer> getTables() {
+		return Collections.unmodifiableMap(this.tables);
 	}
 
 	public boolean isItalic() {

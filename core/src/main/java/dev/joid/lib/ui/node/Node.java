@@ -248,11 +248,11 @@ public abstract class Node implements INode {
 	private long renderTime;
 	private long updateCount;
 
-	public Node(final double x, final double y) {
+	protected Node(final double x, final double y) {
 		this(x, y, 0, 0);
 	}
 
-	public Node(final double x, final double y, final double width, final double height) {
+	protected Node(final double x, final double y, final double width, final double height) {
 		this.linkList = new ArrayList<>();
 		this.waitingList = new ArrayList<>();
 		this.sourceMap = new LinkedHashMap<>();
@@ -1326,6 +1326,34 @@ public abstract class Node implements INode {
 		return this.effectMap.containsKey(clazz);
 	}
 
+	public final @NonNull List<Predicate<Node>> getWaitingList() {
+		return Collections.unmodifiableList(this.waitingList);
+	}
+
+	public final @NonNull Map<String, NodeSource<?>> getSourceMap() {
+		return Collections.unmodifiableMap(this.sourceMap);
+	}
+
+	public final @NonNull List<NodeRequirement> getRequirementList() {
+		return Collections.unmodifiableList(this.requirementList);
+	}
+
+	public final @NonNull List<INodeLayer> getLayerList() {
+		return Collections.unmodifiableList(this.layerList);
+	}
+
+	public final @NonNull Map<Class<?>, NodeEffect<Node>> getEffectMap() {
+		return Collections.unmodifiableMap(this.effectMap);
+	}
+
+	public final @NonNull List<IHoverElement> getHoverElementList() {
+		return Collections.unmodifiableList(this.hoverElementList);
+	}
+
+	public final @NonNull List<Supplier<List<String>>> getHoverSupplierList() {
+		return Collections.unmodifiableList(this.hoverSupplierList);
+	}
+
 	@Override
 	public int getIndex() {
 		return this.zindex;
@@ -1618,7 +1646,7 @@ public abstract class Node implements INode {
 		return this.y + value;
 	}
 
-	public boolean shouldApplyEffect(final @NonNull NodeEffect<Node> effect) {
+	protected boolean shouldApplyEffect(final @NonNull NodeEffect<Node> effect) {
 		return effect.shouldApply(this);
 	}
 
@@ -1789,25 +1817,6 @@ public abstract class Node implements INode {
 		});
 	}
 
-	public final <T extends Node> @NonNull T dragging(final boolean dragging, final double mouseX, final double mouseY) {
-		if (!dragging) {
-			this.dragging = false;
-			this.releaseDraggedNode();
-			return (T) this;
-		}
-
-		this.checkDraggable();
-		this.dragging = dragging;
-		this.dragX = mouseX - this.getAbsoluteX();
-		this.dragY = mouseY - this.getAbsoluteY();
-		this.startDragX = this.getAbsoluteX();
-		this.startDragY = this.getAbsoluteY();
-		this.targetDragX = this.getAbsoluteX();
-		this.targetDragY = this.getAbsoluteY();
-		this.dragged = true;
-		return (T) this;
-	}
-
 	public final <T extends Node> @NonNull T aspectRatio(final double aspectRatio) {
 		return this.aspectRatio(Signal.from(aspectRatio));
 	}
@@ -1821,7 +1830,7 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T parent(final Node parent) {
+	private <T extends Node> @NonNull T parent(final Node parent) {
 		this.parent = parent;
 		return (T) this;
 	}
@@ -2143,11 +2152,6 @@ public abstract class Node implements INode {
 		}
 	}
 
-	public final <T extends Node> @NonNull T hovered(final boolean hovered) {
-		this.hovered = hovered;
-		return (T) this;
-	}
-
 	public final <T extends Node> @NonNull T cursor(final @NonNull Cursor cursor) {
 		return this.cursor(Signal.from(cursor));
 	}
@@ -2187,7 +2191,7 @@ public abstract class Node implements INode {
 
 		this.scrollbar = scrollbar;
 		this.scrollbar.scrollNode(this);
-		this.scrollbar.parent(this);
+		((Node) this.scrollbar).parent(this);
 		if (this.ui != null) {
 			this.scrollbar.load(this.ui);
 		}

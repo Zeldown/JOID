@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.structure.chart;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
@@ -20,6 +21,10 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		super(x, y, width, height);
 		this.dataList = new LinkedList<>();
 		super.<RadarChartNode<DATA>>wait(node -> node.dataList.size() >= 3 && node.dataList.stream().noneMatch(RadarChartData::isEmpty));
+	}
+
+	public final @NonNull List<DATA> getDataList() {
+		return Collections.unmodifiableList(this.dataList);
 	}
 
 	public final Number getMax() {

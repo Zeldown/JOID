@@ -48,7 +48,15 @@ public final class UniformMember {
 	}
 
 	public @NonNull UniformMember value(final @NonNull int... values) {
-		if (!this.type.isInteger() || !this.fits(values.length)) {
+		if (!this.type.isInteger()) {
+			final float[] floats = new float[values.length];
+			for (int i = 0; i < values.length; i++) {
+				floats[i] = values[i];
+			}
+			return this.value(floats);
+		}
+
+		if (!this.fits(values.length)) {
 			throw this.refuse(values.length + (values.length == 1 ? " int" : " ints"));
 		}
 

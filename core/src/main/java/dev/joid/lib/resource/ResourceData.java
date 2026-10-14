@@ -26,7 +26,6 @@ import dev.joid.lib.video.VideoNativesException;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public final class ResourceData {
 
 	private static final Queue<ResourceData> COLLECTED      = new ConcurrentLinkedQueue<>();
@@ -37,14 +36,17 @@ public final class ResourceData {
 	private final List<Runnable>            loadListeners  = new CopyOnWriteArrayList<>();
 	private final List<Consumer<Throwable>> errorListeners = new CopyOnWriteArrayList<>();
 
-	private String           uniqueId;
-	private IResourceDecoder decoder;
+	@Getter private String           uniqueId;
+	@Getter private IResourceDecoder decoder;
 
-	private int[][]    data;
-	private ITexture[] textures;
-	private ITexture   missingTexture;
+	@Getter private int[][]    data;
+	@Getter private ITexture[] textures;
 
+	private ITexture missingTexture;
+
+	@Getter
 	private volatile Throwable error;
+
 	private volatile Future<?> decoding;
 
 	private volatile int     generation;
@@ -52,12 +54,14 @@ public final class ResourceData {
 
 	private Runnable pendingRelease;
 
-	private boolean loaded;
-	private boolean uploaded;
-	private boolean generated;
+	@Getter private boolean loaded;
+	@Getter private boolean uploaded;
+	@Getter private boolean generated;
 
-	private int   width;
-	private int   height;
+	private int width;
+	private int height;
+
+	@Getter
 	private int[] region;
 
 	public ResourceData(final @NonNull String uniqueId, final IResourceDecoder decoder) {
@@ -101,7 +105,7 @@ public final class ResourceData {
 		return this;
 	}
 
-	public final @NonNull ResourceData loaded(final boolean loaded) {
+	protected final @NonNull ResourceData loaded(final boolean loaded) {
 		if (loaded) {
 			this.fireLoad();
 		} else {
@@ -110,7 +114,7 @@ public final class ResourceData {
 		return this;
 	}
 
-	public final @NonNull ResourceData uploaded(final boolean uploaded) {
+	protected final @NonNull ResourceData uploaded(final boolean uploaded) {
 		this.uploaded = uploaded;
 		return this;
 	}
@@ -164,7 +168,7 @@ public final class ResourceData {
 		return fork;
 	}
 
-	public final void dispatch(final @NonNull Runnable task) {
+	protected final void dispatch(final @NonNull Runnable task) {
 		final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
 		this.tasks.add(thread);
 		thread.start();
@@ -315,6 +319,10 @@ public final class ResourceData {
 		return this.error != null;
 	}
 
+	public final @NonNull List<@NonNull Thread> getTasks() {
+		return Collections.unmodifiableList(this.tasks);
+	}
+
 	public final @NonNull List<@NonNull ResourceData> getForks() {
 		synchronized (this.forks) {
 			return new ArrayList<>(this.forks);
@@ -335,7 +343,7 @@ public final class ResourceData {
 		return this.isBorrowed() ? this.textures[0].getHeight() : this.height;
 	}
 
-	public final @NonNull ITexture getMissingTexture() {
+	protected final @NonNull ITexture getMissingTexture() {
 		if (this.missingTexture == null) {
 			final int[] pixels = new int[64];
 			for (int i = 0; i < pixels.length; i++) {

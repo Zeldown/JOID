@@ -14,20 +14,17 @@ import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceProperties;
 import dev.joid.lib.shader.impl.RoundedShader;
-import lombok.Getter;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DrawResource {
 
-	@Getter
-	private static DrawResource instance;
+	private static final DrawResource INSTANCE = new DrawResource();
 
-	public DrawResource() {
-		if (DrawResource.instance != null) {
-			throw new IllegalStateException("DrawResource is created once by DrawUtils, use DrawUtils.RESOURCE instead of new DrawResource()");
-		}
-		DrawResource.instance = this;
+	public static @NonNull DrawResource inst() {
+		return DrawResource.INSTANCE;
 	}
 
 	public void drawResource(final double x, final double y, final @NonNull Resource resource) {

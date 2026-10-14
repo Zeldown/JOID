@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.lwjgl.system.MemoryStack;
@@ -259,6 +260,10 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	public void releaseHandle(final long handle) {
 		this.descriptorCache.invalidate(handle, this::dispose);
+	}
+
+	public final @NonNull List<Runnable> getGarbage() {
+		return Collections.unmodifiableList(this.garbage);
 	}
 
 	public @NonNull Buffer getStagingBuffer(final long size) {

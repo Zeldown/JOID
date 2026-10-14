@@ -59,7 +59,7 @@ public abstract class SliderThumbNode extends Node {
 		return this.dragging || super.computeHovered();
 	}
 
-	public final <T extends SliderThumbNode> @NonNull T dragging(final boolean dragging) {
+	protected final <T extends SliderThumbNode> @NonNull T dragging(final boolean dragging) {
 		this.dragging = dragging;
 		return (T) this;
 	}

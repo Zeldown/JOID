@@ -158,4 +158,19 @@ public class MapSignalTest {
 		signal.reset();
 		Assert.assertEquals(Collections.singletonMap("a", 1), signal.get());
 	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesReadOnlyEntries() {
+		MapSignal.of(Collections.singletonMap("a", 1)).entrySet().clear();
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesReadOnlyKeys() {
+		MapSignal.of(Collections.singletonMap("a", 1)).keySet().remove("a");
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesReadOnlyValues() {
+		MapSignal.of(Collections.singletonMap("a", 1)).values().clear();
+	}
 }

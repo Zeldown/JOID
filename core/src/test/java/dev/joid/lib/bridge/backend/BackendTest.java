@@ -1,6 +1,7 @@
 package dev.joid.lib.bridge.backend;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
 import dev.joid.lib.color.Color;
+
 import lombok.NonNull;
 
 public class BackendTest {
@@ -49,7 +51,7 @@ public class BackendTest {
 		this.cacheDir = JOIDEnv.getCacheDir();
 		JOIDEnv.devMode(false);
 		JOIDEnv.demoMode(false);
-		BackendTest.instance(new JOID());
+		BackendTest.instance(BackendTest.create());
 	}
 
 	@After
@@ -237,6 +239,12 @@ public class BackendTest {
 	private TraceBackend backend() {
 		this.backend = TraceBackend.create(this.trace, JOID.VERSION);
 		return this.backend;
+	}
+
+	private static JOID create() throws ReflectiveOperationException {
+		final Constructor<JOID> constructor = JOID.class.getDeclaredConstructor();
+		constructor.setAccessible(true);
+		return constructor.newInstance();
 	}
 
 	private static void instance(final JOID joid) throws ReflectiveOperationException {

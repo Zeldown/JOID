@@ -1,5 +1,6 @@
 package dev.joid.lib.font.impl.glyph;
 
+import java.util.Collections;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,5 +12,9 @@ public final class GlyphLayout<F extends IFontFace> {
 
 	private final List<GlyphPlacement<F>> placements;
 	private final double                  width;
+
+	public final List<GlyphPlacement<F>> getPlacements() {
+		return Collections.unmodifiableList(this.placements);
+	}
 
 }

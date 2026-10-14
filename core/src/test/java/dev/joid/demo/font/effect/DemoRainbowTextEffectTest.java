@@ -13,7 +13,7 @@ public class DemoRainbowTextEffectTest {
 
 	@Test
 	public void colorsTheGlyphAndKeepsItsAlpha() {
-		final Color base = Color.WHITE.copyAlpha(0.5F);
+		final Color base = Color.WHITE.withAlpha(0.5F);
 		final DemoFace face = DemoFace.create(0.5F);
 		final TextGlyph<DemoFace> glyph = TextGlyph.create(SingleFaceFont.of(face), face, 7, 'A', TextStyle.create(FontWeight.REGULAR, false, base), 0D, 0D, 40D, 20D, base);
 		DemoRainbowTextEffect.inst().apply(glyph);

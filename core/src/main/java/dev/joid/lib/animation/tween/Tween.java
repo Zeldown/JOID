@@ -320,7 +320,7 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	@Override
-	public void free() {
+	protected void free() {
 		Tween.pool.free(this);
 	}
 

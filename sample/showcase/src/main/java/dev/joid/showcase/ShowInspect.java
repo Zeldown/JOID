@@ -20,7 +20,7 @@ public class ShowInspect extends ShowLists {
 	}
 
 	private Color veil(final double delay) {
-		return Color.decode("#120C2A").copyAlpha((float) (1D - this.ease(TweenEquations.QUAD_INOUT, 0.1D + delay, 0.55D + delay)));
+		return Color.decode("#120C2A").withAlpha((float) (1D - this.ease(TweenEquations.QUAD_INOUT, 0.1D + delay, 0.55D + delay)));
 	}
 
 }

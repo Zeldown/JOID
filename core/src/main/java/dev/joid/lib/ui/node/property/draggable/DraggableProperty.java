@@ -134,8 +134,8 @@ public class DraggableProperty {
 			boundWidth = ui.getView().toUiX(ui.getWindowWidth()) - boundX;
 			boundHeight = ui.getView().toUiY(ui.getWindowHeight()) - boundY;
 			break;
-		default:
-			throw new IllegalArgumentException("Invalid DraggableAreaType: " + this.areaType);
+		case FREE:
+			throw new IllegalStateException("A free draggable area has no bounds, check getAreaType() before calling getBounds() or pick a bounded area such as DraggableProperty.parent()");
 		}
 
 		return new double[] {boundX, boundY, boundWidth, boundHeight};

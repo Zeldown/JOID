@@ -29,12 +29,12 @@ public class DemoSelectorNode extends SelectorNode<String> {
 	protected @NonNull Node option(final @NonNull String value) {
 		return RectNode
 		.create(0, 0, super.getDefaultWidth(), super.getDefaultHeight())
-		.color(() -> Color.WHITE.copyAlpha(super.isEnabled() ? 1F : 0.4F))
+		.color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F))
 		.hoveredColor(DemoSelectorNode.PLACEHOLDER)
 		.body(rect -> {
 			TextNode
 			.create(16, rect.dh(2))
-			.text(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 22, DemoSelectorNode.INK.copyAlpha(super.isEnabled() ? 1F : 0.4F)), Align.START, Align.CENTER))
+			.text(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 22, DemoSelectorNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F)), Align.START, Align.CENTER))
 			.anchorY(Align.CENTER)
 			.attach(rect);
 		});
