@@ -342,7 +342,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 		VK13.vkCmdSetPrimitiveTopology(this.commandBuffer, topology);
 		VK13.vkCmdSetCullMode(this.commandBuffer, state.isCull() ? VK10.VK_CULL_MODE_BACK_BIT : VK10.VK_CULL_MODE_NONE);
-		VK13.vkCmdSetFrontFace(this.commandBuffer, offscreen ? VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE : VK10.VK_FRONT_FACE_CLOCKWISE);
+		VK13.vkCmdSetFrontFace(this.commandBuffer, offscreen ? VK10.VK_FRONT_FACE_CLOCKWISE : VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE);
 		VK13.vkCmdSetDepthTestEnable(this.commandBuffer, state.isDepthTest());
 		VK13.vkCmdSetDepthWriteEnable(this.commandBuffer, state.isDepthWrite());
 		VK13.vkCmdSetDepthCompareOp(this.commandBuffer, VK10.VK_COMPARE_OP_LESS);
