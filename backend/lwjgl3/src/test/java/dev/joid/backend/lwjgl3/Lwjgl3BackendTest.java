@@ -5,9 +5,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
+import dev.joid.backend.lwjgl3.snapshot.SnapshotProfile;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.bridge.ui.StackUIBridge;
@@ -55,6 +57,20 @@ public class Lwjgl3BackendTest {
 			backend.destroy();
 			Lwjgl3BackendTest.unregisterUIBridges();
 			previous.forEach(BridgeHandler.UI::register);
+		}
+	}
+
+	@Test
+	public void refusesOpenGl20() {
+		Assume.assumeTrue(SnapshotProfile.current() == SnapshotProfile.GL_20);
+		final Lwjgl3SnapshotBackend backend = new Lwjgl3SnapshotBackend();
+		try {
+			backend.create(64, 64);
+			Assert.fail("JOID accepted an OpenGL 2.0 context");
+		} catch (final IllegalStateException e) {
+			Assert.assertTrue(e.getMessage(), e.getMessage().startsWith("JOID needs OpenGL 2.1 with GLSL 1.20, this context offers OpenGL 2.0"));
+		} finally {
+			backend.destroy();
 		}
 	}
 

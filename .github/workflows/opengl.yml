@@ -56,6 +56,7 @@ jobs:
           - profile: GL_20
             gl: '2.0'
             glsl: '120'
+            tasks: ':backend-lwjgl3:test --tests dev.joid.backend.lwjgl3.Lwjgl3BackendTest.refusesOpenGl20'
           - profile: GL_21
             gl: '2.1'
             glsl: '120'
@@ -98,7 +99,7 @@ jobs:
             export MESA_GL_VERSION_OVERRIDE=${{ matrix.gl }}
             export MESA_GLSL_VERSION_OVERRIDE=${{ matrix.glsl }}
           fi
-          chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew :base-opengl:test :backend-lwjgl3:test -PglProfile=${{ matrix.profile }} --continue
+          chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew ${{ matrix.tasks || ':base-opengl:test :backend-lwjgl3:test' }} -PglProfile=${{ matrix.profile }} --continue
       - name: Upload the report
         if: failure()
         uses: actions/upload-artifact@v4

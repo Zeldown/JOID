@@ -2891,20 +2891,26 @@ public class NodeTest {
 	public void describesItselfInJson() {
 		final RectNode node = RectNode.create(10D, 20D, 30D, 40D).zindex(2);
 		node.x(15D);
-		final JsonObject json = JsonParser.parseString(node.toJson()).getAsJsonObject();
-		Assert.assertEquals(2, json.get("index").getAsInt());
-		Assert.assertEquals("N/A", json.get("mappedIndex").getAsString());
-		Assert.assertEquals("RectNode", json.get("name").getAsString());
-		Assert.assertEquals(RectNode.class.getName(), json.get("class").getAsString());
-		Assert.assertEquals(15D, json.get("defaultX").getAsDouble(), 0D);
-		Assert.assertEquals(20D, json.get("defaultY").getAsDouble(), 0D);
-		Assert.assertEquals("15.0 / 15.0", json.getAsJsonObject("bounding").get("x").getAsString());
-		Assert.assertEquals("20.0 / 20.0", json.getAsJsonObject("bounding").get("y").getAsString());
-		Assert.assertEquals(30D, json.getAsJsonObject("bounding").get("width").getAsDouble(), 0D);
-		Assert.assertEquals(40D, json.getAsJsonObject("bounding").get("height").getAsDouble(), 0D);
-		Assert.assertFalse(json.has("hierarchy"));
-		Assert.assertFalse(node.toString().contains("\n"));
-		Assert.assertTrue(node.toString().contains("\"name\":\"RectNode\""));
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(false);
+		try {
+			final JsonObject json = JsonParser.parseString(node.toJson()).getAsJsonObject();
+			Assert.assertEquals(2, json.get("index").getAsInt());
+			Assert.assertEquals("N/A", json.get("mappedIndex").getAsString());
+			Assert.assertEquals("RectNode", json.get("name").getAsString());
+			Assert.assertEquals(RectNode.class.getName(), json.get("class").getAsString());
+			Assert.assertEquals(15D, json.get("defaultX").getAsDouble(), 0D);
+			Assert.assertEquals(20D, json.get("defaultY").getAsDouble(), 0D);
+			Assert.assertEquals("15.0 / 15.0", json.getAsJsonObject("bounding").get("x").getAsString());
+			Assert.assertEquals("20.0 / 20.0", json.getAsJsonObject("bounding").get("y").getAsString());
+			Assert.assertEquals(30D, json.getAsJsonObject("bounding").get("width").getAsDouble(), 0D);
+			Assert.assertEquals(40D, json.getAsJsonObject("bounding").get("height").getAsDouble(), 0D);
+			Assert.assertFalse(json.has("hierarchy"));
+			Assert.assertFalse(node.toString().contains("\n"));
+			Assert.assertTrue(node.toString().contains("\"name\":\"RectNode\""));
+		} finally {
+			JOIDEnv.devMode(previous);
+		}
 	}
 
 	@Test

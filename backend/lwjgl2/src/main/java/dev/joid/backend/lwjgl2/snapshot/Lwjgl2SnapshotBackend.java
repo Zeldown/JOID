@@ -1,6 +1,8 @@
 package dev.joid.backend.lwjgl2.snapshot;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.Pbuffer;
 import org.lwjgl.opengl.PixelFormat;
 
@@ -10,6 +12,7 @@ import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.snapshot.GlSnapshotCapture;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.utils.platform.Platform;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.Getter;
@@ -23,6 +26,11 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public void destroy() {
+		if (this.buffer == null) {
+			Display.destroy();
+			return;
+		}
+
 		this.buffer.destroy();
 	}
 
@@ -30,11 +38,17 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 	public void create(final int width, final int height) {
 		final Lwjgl2Backend backend = Lwjgl2Backend.create().audio(false);
 		Lwjgl2Natives.install();
+		final PixelFormat format = new PixelFormat().withDepthBits(24).withStencilBits(8);
 		try {
-			this.buffer = new Pbuffer(width, height, new PixelFormat().withDepthBits(24).withStencilBits(8), null);
-			this.buffer.makeCurrent();
+			if (Platform.current() == Platform.LINUX) {
+				Display.setDisplayMode(new DisplayMode(width, height));
+				Display.create(format);
+			} else {
+				this.buffer = new Pbuffer(width, height, format, null);
+				this.buffer.makeCurrent();
+			}
 		} catch (final LWJGLException e) {
-			throw new IllegalStateException("Unable to create the LWJGL 2 pbuffer", e);
+			throw new IllegalStateException("Unable to create the LWJGL 2 context", e);
 		}
 
 		backend.register();

@@ -245,6 +245,7 @@ public class ShaderTest {
 	@Test
 	public void warnsOnceInDevModeOfAFeatureBeyondGlsl120() {
 		final String fragment = "flat in vec4 vColor;\n\nvoid main() {\n    fragColor = vColor;\n}\n";
+		final boolean devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(true);
 		try {
 			final String first = ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, fragment)));
@@ -252,12 +253,13 @@ public class ShaderTest {
 			Assert.assertTrue(first, first.contains("[JOID] A vertex shader uses flat varyings"));
 			Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, fragment))));
 		} finally {
-			JOIDEnv.devMode(false);
+			JOIDEnv.devMode(devMode);
 		}
 	}
 
 	@Test
 	public void staysSilentForTheCoreShadersAndOutOfDevMode() {
+		final boolean devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(true);
 		try {
 			Assert.assertEquals("", ShaderTest.capture(() -> {
@@ -265,10 +267,11 @@ public class ShaderTest {
 					new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, shader.read(ShaderStage.VERTEX), shader.read(ShaderStage.FRAGMENT));
 				}
 			}));
-		} finally {
 			JOIDEnv.devMode(false);
+			Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vTint;\n\nvoid main() {\n    vTint = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, "flat in vec4 vTint;\n\nvoid main() {\n    fragColor = vTint;\n}\n"))));
+		} finally {
+			JOIDEnv.devMode(devMode);
 		}
-		Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vTint;\n\nvoid main() {\n    vTint = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, "flat in vec4 vTint;\n\nvoid main() {\n    fragColor = vTint;\n}\n"))));
 	}
 
 	@Test

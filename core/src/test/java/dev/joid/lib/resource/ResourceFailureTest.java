@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -36,6 +38,19 @@ public class ResourceFailureTest {
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
+
+	private boolean devMode;
+
+	@Before
+	public void leaveTheDevMode() {
+		this.devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(false);
+	}
+
+	@After
+	public void restoreTheDevMode() {
+		JOIDEnv.devMode(this.devMode);
+	}
 
 	@Test
 	public void failsAHeifImageInsteadOfThrowing() {

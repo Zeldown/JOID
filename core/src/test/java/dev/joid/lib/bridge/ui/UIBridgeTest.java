@@ -944,12 +944,13 @@ public class UIBridgeTest {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
+		final boolean devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(true);
 		try {
 			bridge.drawHover(menu, "Play", 100D, 100D);
 			bridge.drawHover(menu, "Play", 100D, 100D);
 		} finally {
-			JOIDEnv.devMode(false);
+			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
 		Assert.assertEquals("[JOID] " + bridge.getClass().getSimpleName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them" + System.lineSeparator(), output.toString());
@@ -963,9 +964,12 @@ public class UIBridgeTest {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
+		final boolean devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(false);
 		try {
 			new StackUIBridge() {}.drawHover(menu, "Play", 100D, 100D);
 		} finally {
+			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
 		Assert.assertEquals("", output.toString());
@@ -1014,12 +1018,13 @@ public class UIBridgeTest {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
+		final boolean devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(true);
 		try {
 			bridge.drawHover(menu, "Play", 100D, 100D);
 			bridge.drawHover(menu, "Play", 100D, 100D);
 		} finally {
-			JOIDEnv.devMode(false);
+			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
 		Assert.assertEquals("[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them" + System.lineSeparator(), output.toString());

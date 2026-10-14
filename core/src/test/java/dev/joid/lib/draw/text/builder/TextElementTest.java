@@ -36,7 +36,13 @@ public class TextElementTest {
 
 	@Test
 	public void remembersNothingOutsideDevMode() {
-		Assert.assertNull(TextElement.create("text", TextElementTest.INFO).getOrigin());
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(false);
+		try {
+			Assert.assertNull(TextElement.create("text", TextElementTest.INFO).getOrigin());
+		} finally {
+			JOIDEnv.devMode(previous);
+		}
 	}
 
 	@Test

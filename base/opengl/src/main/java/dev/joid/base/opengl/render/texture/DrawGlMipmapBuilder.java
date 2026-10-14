@@ -48,6 +48,10 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 		final IGlTextureBinding textures = binding.getTextureBinding();
 		final IGlFrameBufferBinding frameBuffer = bridge.getFrameBufferBinding();
 		final GlShader shader = this.getShader(bridge);
+		if (!shader.isActive()) {
+			throw new IllegalStateException("The shader that draws the mipmaps does not compile on " + bridge.getCapabilities().getName());
+		}
+
 		binding.getProgramBinding().useProgram(shader.getProgram());
 		binding.getProgramBinding().uniform1i(shader.getLocation("tex"), 0);
 		binding.disable(GlConstants.BLEND);
