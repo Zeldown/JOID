@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
@@ -51,9 +52,8 @@ public class CheckboxNodeTest {
 	public void staysInSyncWithItsSignal() {
 		final List<Boolean> changes = new ArrayList<>();
 		final BooleanSignal subtitles = new BooleanSignal(true);
-		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange(event -> changes.add(event.getValue()));
+		final Checkbox checkbox = new Checkbox().checked(subtitles).onChange(event -> changes.add(event.getValue()));
 		Assert.assertTrue(checkbox.isChecked());
-		Assert.assertSame(subtitles, checkbox.getSignal());
 		this.bridges.open(new NodeUI(checkbox)).frame();
 		this.click(110D, 110D);
 		Assert.assertFalse(subtitles.get());
@@ -65,7 +65,7 @@ public class CheckboxNodeTest {
 	@Test
 	public void catchesUpWithItsSignalOnceAttachedAgain() {
 		final BooleanSignal subtitles = new BooleanSignal(true);
-		final Checkbox checkbox = new Checkbox().signal(subtitles);
+		final Checkbox checkbox = new Checkbox().checked(subtitles);
 		final ContainerNode container = ContainerNode.create(0D, 0D, 200D, 200D).append(checkbox);
 		this.bridges.open(new NodeUI(container)).frame();
 		container.remove(checkbox);
@@ -81,16 +81,15 @@ public class CheckboxNodeTest {
 	public void followsOnlyItsLastSignal() {
 		final BooleanSignal subtitles = new BooleanSignal(false);
 		final BooleanSignal captions = new BooleanSignal(false);
-		final Checkbox checkbox = new Checkbox().signal(subtitles).signal(captions);
+		final Checkbox checkbox = new Checkbox().checked(subtitles).checked(captions);
 		final ContainerNode container = ContainerNode.create(0D, 0D, 200D, 200D).append(checkbox);
 		this.bridges.open(new NodeUI(container)).frame();
-		checkbox.checked(true);
+		this.click(110D, 110D);
 		Assert.assertTrue(captions.get());
 		Assert.assertFalse(subtitles.get());
 		subtitles.set(true);
 		subtitles.set(false);
 		Assert.assertTrue(checkbox.isChecked());
-		Assert.assertSame(captions, checkbox.getSignal());
 		Assert.assertTrue(CheckboxNodeTest.subscribers(subtitles).isEmpty());
 		Assert.assertEquals(1, CheckboxNodeTest.subscribers(captions).size());
 		container.remove(checkbox);
@@ -102,31 +101,36 @@ public class CheckboxNodeTest {
 	}
 
 	@Test
-	public void refusesAComputedSignal() {
+	public void followsAComputedSignalWithoutWritingIt() {
 		final BooleanSignal subtitles = new BooleanSignal(true);
-		final Checkbox checkbox = new Checkbox().signal(subtitles);
-		try {
-			checkbox.signal(subtitles.map(value -> !value));
-			Assert.fail("A ComputedSignal cannot be bound in both directions");
-		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("Checkbox.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
-		}
-		this.bridges.open(new NodeUI(checkbox));
-		subtitles.set(false);
+		final Checkbox checkbox = new Checkbox().checked(subtitles.map(value -> !value));
 		Assert.assertFalse(checkbox.isChecked());
-		Assert.assertSame(subtitles, checkbox.getSignal());
+		this.bridges.open(new NodeUI(checkbox)).frame();
+		subtitles.set(false);
+		this.bridges.frame();
+		Assert.assertTrue(checkbox.isChecked());
+		this.click(110D, 110D);
+		Assert.assertFalse(subtitles.get());
 	}
 
 	@Test
-	public void writesAChosenStateIntoItsSignal() {
+	public void replacesItsSignalWithAnySetter() {
 		final List<Boolean> changes = new ArrayList<>();
 		final BooleanSignal subtitles = new BooleanSignal(false);
-		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange(event -> changes.add(event.getValue()));
+		final Checkbox checkbox = new Checkbox().checked(subtitles).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(checkbox));
 		checkbox.checked(true);
 		checkbox.checked(true);
-		Assert.assertTrue(subtitles.get());
-		Assert.assertEquals(Arrays.asList(true), changes);
+		Assert.assertFalse(subtitles.get());
+		subtitles.set(true);
+		subtitles.set(false);
+		Assert.assertTrue(checkbox.isChecked());
+		Assert.assertTrue(CheckboxNodeTest.subscribers(subtitles).isEmpty());
+		checkbox.checked(subtitles).checked(true);
+		Assert.assertFalse(subtitles.get());
+		checkbox.checked(subtitles).checked(() -> true);
+		Assert.assertTrue(CheckboxNodeTest.subscribers(subtitles).isEmpty());
+		Assert.assertEquals(Arrays.asList(true, false, true, false, true), changes);
 	}
 
 	@Test
@@ -139,14 +143,14 @@ public class CheckboxNodeTest {
 	}
 
 	@Test
-	public void letsItsListenersRefuseASetterButNeitherAForcedStateNorASupplier() {
+	public void letsItsListenersRefuseOnlyTheUser() {
 		final List<Boolean> changes = new ArrayList<>();
 		final BooleanSignal subtitles = new BooleanSignal(false);
 		final Checkbox checkbox = new Checkbox().<Checkbox>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
-		this.bridges.open(new NodeUI(checkbox));
+		this.bridges.open(new NodeUI(checkbox)).frame();
 		checkbox.checked(true);
-		Assert.assertFalse(checkbox.isChecked());
-		checkbox.forceChecked(true);
+		Assert.assertTrue(checkbox.isChecked());
+		this.click(110D, 110D);
 		Assert.assertTrue(checkbox.isChecked());
 		checkbox.checked(subtitles);
 		Assert.assertFalse(checkbox.isChecked());
@@ -178,7 +182,7 @@ public class CheckboxNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = Signal.class.getDeclaredField("eventSet");
+			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

@@ -47,14 +47,4 @@ public class IntegerSignal extends Signal<Integer> {
 		return this;
 	}
 
-	public @NonNull IntegerSignal power(final int exponent) {
-		this.transform(current -> (int) Math.pow(current, exponent));
-		return this;
-	}
-
-	@Override
-	public String toString() {
-		return this.peek() == null ? "IntegerSignal{null}" : "IntegerSignal{" + this.peek().toString() + "}";
-	}
-
 }

@@ -77,22 +77,12 @@ public class IntegerSignalTest {
 	}
 
 	@Test
-	public void raisesToAPower() {
-		final IntegerSignal signal = new IntegerSignal(3);
-		signal.power(4);
-		Assert.assertEquals(81, signal.get().intValue());
-		signal.power(0);
-		Assert.assertEquals(1, signal.get().intValue());
-	}
-
-	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Integer> received = new ArrayList<>();
 		final IntegerSignal signal = new IntegerSignal();
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.increment();
 		signal.add(2);
-		signal.power(1);
 		signal.multiply(1);
 		Assert.assertEquals(Arrays.asList(1, 3), received);
 	}
@@ -100,8 +90,8 @@ public class IntegerSignalTest {
 	@Test
 	public void chainsItsOperations() {
 		final IntegerSignal signal = new IntegerSignal(1);
-		Assert.assertSame(signal, signal.increment().add(2).multiply(3).subtract(2).divide(2).power(2).decrement());
-		Assert.assertEquals(24, signal.get().intValue());
+		Assert.assertSame(signal, signal.increment().add(2).multiply(3).subtract(2).divide(2).decrement());
+		Assert.assertEquals(4, signal.get().intValue());
 	}
 
 	@Test

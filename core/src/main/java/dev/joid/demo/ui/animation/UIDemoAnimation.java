@@ -237,7 +237,7 @@ public class UIDemoAnimation extends UIDemo {
 			RectNode
 			.create(160, 150, 100, 50)
 			.color(UIDemoAnimation.INK)
-			.onClick(event -> once.setValue(0F))
+			.onClick(event -> once.value(0F))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Stop", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})

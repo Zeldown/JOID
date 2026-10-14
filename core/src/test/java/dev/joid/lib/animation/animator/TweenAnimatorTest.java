@@ -3,6 +3,7 @@ package dev.joid.lib.animation.animator;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 
@@ -79,7 +81,7 @@ public class TweenAnimatorTest {
 	public void chainsItsStepsOnItsSingleValue() {
 		final List<Float> values = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create(4F).sequence(1F, 10F).push(1F, 30F).push(1F, 30F).start();
-		animator.subscribe(values::add);
+		animator.onChange(values::add);
 		animator.update(1.5F);
 		Assert.assertEquals(20F, animator.get(), 0F);
 		animator.update(1F);
@@ -262,7 +264,7 @@ public class TweenAnimatorTest {
 		BridgeHandler.UI.fireFrame();
 		Assert.assertNull(animator.getTimeline());
 		Assert.assertFalse(animator.isAutomatic());
-		animator.setValue(0.5F);
+		animator.value(0.5F);
 		this.clock.advance(16L);
 		BridgeHandler.UI.fireFrame();
 		Assert.assertEquals(0.5F, animator.get(), 0F);
@@ -291,7 +293,7 @@ public class TweenAnimatorTest {
 	public void keepsTheFrameGoingWhenAnAnimatorFails() {
 		final TweenAnimator failing = TweenAnimator.create().sequence(64F, 1F);
 		final TweenAnimator other = TweenAnimator.create().sequence(64F, 1F);
-		failing.subscribe(value -> {
+		failing.onChange(value -> {
 			throw new IllegalStateException("boom");
 		});
 		new AnimatorUI(failing, other).load(1920D, 1080D);
@@ -387,7 +389,7 @@ public class TweenAnimatorTest {
 	public void notifiesOnlyWhenItsValueChanges() {
 		final List<Float> values = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(2F, 10F).start();
-		animator.subscribe(values::add);
+		animator.onChange(values::add);
 		animator.update(1F);
 		animator.update(0F);
 		animator.update(1F);
@@ -399,7 +401,7 @@ public class TweenAnimatorTest {
 		final List<Float> values = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).start();
 		animator.update(2F);
-		animator.subscribe(values::add);
+		animator.onChange(values::add);
 		animator.update(1F);
 		animator.update(1F);
 		Assert.assertTrue(values.isEmpty());
@@ -409,7 +411,7 @@ public class TweenAnimatorTest {
 	public void staysSilentOnceItsAutomaticAnimationEnds() {
 		final List<Float> values = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
-		animator.subscribe(values::add);
+		animator.onChange(values::add);
 		new AnimatorUI(animator).load(1920D, 1080D);
 		for (int i = 0; i < 5; i++) {
 			this.clock.advance(16L);
@@ -422,14 +424,14 @@ public class TweenAnimatorTest {
 	public void cutsItsAnimationWhenItsValueIsSet() {
 		final List<Float> values = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(2F, 10F).start();
-		animator.subscribe(values::add);
+		animator.onChange(values::add);
 		animator.update(1F);
 		final Timeline timeline = animator.getTimeline();
-		animator.setValue(2F);
+		animator.value(2F);
 		Assert.assertTrue(timeline.isFinished());
 		Assert.assertNull(animator.getTimeline());
 		animator.update(1F);
-		animator.setValue(2F);
+		animator.value(2F);
 		Assert.assertEquals(2F, animator.get(), 0F);
 		Assert.assertEquals(Arrays.asList(5F, 2F), values);
 	}
@@ -438,7 +440,7 @@ public class TweenAnimatorTest {
 	public void leavesTheRunningAnimatorsWhenItsValueIsSet() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F);
 		new AnimatorUI(animator).load(1920D, 1080D);
-		animator.setValue(0.25F);
+		animator.value(0.25F);
 		Assert.assertFalse(animator.isAutomatic());
 		this.clock.advance(16L);
 		BridgeHandler.UI.fireFrame();
@@ -446,18 +448,14 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
-	public void refusesToBeSetAsASignal() {
-		try {
-			TweenAnimator.create().set(1F);
-			Assert.fail();
-		} catch (final UnsupportedOperationException exception) {
-			Assert.assertEquals("A TweenAnimator is read-only and takes the value of its animation: call setValue(...) instead", exception.getMessage());
+	public void isAReadOnlySignal() {
+		Assert.assertFalse(Signal.class.isAssignableFrom(TweenAnimator.class));
+		for (final Method method : TweenAnimator.class.getMethods()) {
+			Assert.assertFalse(method.getName(), Arrays.asList("set", "reset", "silent", "fireChange", "setValue").contains(method.getName()));
 		}
-	}
-
-	@Test(expected = UnsupportedOperationException.class)
-	public void refusesToBeReset() {
-		TweenAnimator.create().reset();
+		final TweenAnimator animator = TweenAnimator.create();
+		Assert.assertSame(animator, animator.value(0.5F).clear());
+		Assert.assertEquals(0F, animator.get(), 0F);
 	}
 
 	@Test

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,25 @@ public class SignalContextTest {
 	@Before
 	public void forgetTheEarlierReads() {
 		SignalContext.current().takeReads();
+		SignalContext.current().tracing(true);
+	}
+
+	@After
+	public void stopTracing() {
+		SignalContext.current().tracing(false);
+	}
+
+	@Test
+	public void tracesNothingByDefault() throws InterruptedException {
+		final Signal<String> signal = new Signal<>("a");
+		final List<List<BaseSignal<?>>> readList = new ArrayList<>();
+		final Thread thread = new Thread(() -> {
+			signal.get();
+			readList.add(SignalContext.current().takeReads());
+		});
+		thread.start();
+		thread.join();
+		Assert.assertEquals(Collections.singletonList(Collections.emptyList()), readList);
 	}
 
 	@Test
@@ -37,7 +57,7 @@ public class SignalContextTest {
 			signalList.add(signal);
 			signal.get();
 		}
-		final List<Signal<?>> readList = SignalContext.current().takeReads();
+		final List<BaseSignal<?>> readList = SignalContext.current().takeReads();
 		Assert.assertEquals(64, readList.size());
 		for (int index = 0; index < 64; index++) {
 			Assert.assertSame(signalList.get(36 + index), readList.get(index));
@@ -95,7 +115,7 @@ public class SignalContextTest {
 		final Signal<String> third = new Signal<>("c");
 		first.get();
 		second.get();
-		final List<Signal<?>> readList = SignalContext.current().takeReads();
+		final List<BaseSignal<?>> readList = SignalContext.current().takeReads();
 		third.get();
 		SignalContext.current().putBackReads(readList);
 		Assert.assertEquals(Arrays.asList(first, second, third), SignalContext.current().takeReads());
@@ -105,9 +125,10 @@ public class SignalContextTest {
 	public void keepsTheReadsOfEachThreadApart() throws InterruptedException {
 		final Signal<String> mine = new Signal<>("a");
 		final Signal<String> other = new Signal<>("b");
-		final List<List<Signal<?>>> otherReads = new ArrayList<>();
+		final List<List<BaseSignal<?>>> otherReads = new ArrayList<>();
 		mine.get();
 		final Thread thread = new Thread(() -> {
+			SignalContext.current().tracing(true);
 			other.get();
 			otherReads.add(SignalContext.current().takeReads());
 		});
@@ -137,7 +158,7 @@ public class SignalContextTest {
 	@Test
 	public void movesTheEpochOnEveryChange() {
 		final long epoch = SignalContext.getEpoch();
-		new Signal<>("a").set("b").publish();
+		new Signal<>("a").set("b").fireChange();
 		Assert.assertTrue(SignalContext.getEpoch() >= epoch + 2);
 	}
 

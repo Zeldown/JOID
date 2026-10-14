@@ -34,7 +34,8 @@ import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
-import dev.joid.lib.signal.ISignalSubscriber;
+import dev.joid.lib.signal.BaseSignal;
+import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
@@ -2453,7 +2454,7 @@ public class NodeTest {
 		kept[0] = false;
 		signal.set(1);
 		Assert.assertEquals(1, node.getChildren().size());
-		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 	}
 
 	@Test
@@ -2502,10 +2503,10 @@ public class NodeTest {
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
-		final List<ISignalSubscriber<Integer>> pending = new ArrayList<>(NodeTest.subscribers(signal));
+		final List<ISignalListener<Integer>> pending = new ArrayList<>(NodeTest.subscribers(signal));
 		parent.remove(child);
-		for (final ISignalSubscriber<Integer> subscriber : pending) {
-			Assert.assertTrue(subscriber.update(1));
+		for (final ISignalListener<Integer> subscriber : pending) {
+			subscriber.onChange(1);
 		}
 		Assert.assertEquals(0, reloads[0]);
 	}
@@ -2569,12 +2570,12 @@ public class NodeTest {
 		title.set("second");
 		count.set(2);
 		Assert.assertEquals(Arrays.asList("first", 1, "second", 2), values);
-		Assert.assertEquals(2, node.getLinkList().size());
+		Assert.assertEquals(2, NodeTest.links(node).size());
 		node.link("title", other, values);
 		title.set("third");
 		count.set(3);
 		Assert.assertEquals(Arrays.asList("first", 1, "second", 2, "other", 3), values);
-		Assert.assertEquals(2, node.getLinkList().size());
+		Assert.assertEquals(2, NodeTest.links(node).size());
 		Assert.assertTrue(NodeTest.subscribers(title).isEmpty());
 		Assert.assertEquals(1, NodeTest.subscribers(other).size());
 		Assert.assertEquals(1, NodeTest.subscribers(count).size());
@@ -2597,7 +2598,7 @@ public class NodeTest {
 		parent.append(node);
 		Assert.assertTrue(NodeTest.subscribers(first).isEmpty());
 		Assert.assertEquals(1, NodeTest.subscribers(second).size());
-		Assert.assertEquals(1, node.getLinkList().size());
+		Assert.assertEquals(1, NodeTest.links(node).size());
 		first.set(1);
 		second.set(11);
 		Assert.assertEquals(Arrays.asList(0, 10, 11), values);
@@ -2736,8 +2737,13 @@ public class NodeTest {
 		Assert.assertTrue(node.getChildren().isEmpty());
 		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		kept[0] = false;
+		node.append(RectNode.create(0D, 0D, 10D, 10D));
 		signal.set(2);
-		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
+		Assert.assertEquals(1, node.getChildren().size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
+		kept[0] = true;
+		signal.set(3);
+		Assert.assertTrue(node.getChildren().isEmpty());
 	}
 
 	@Test
@@ -2880,7 +2886,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frame();
-		animator.setValue(0F);
+		animator.value(0F);
 		this.bridges.frames(2);
 		Assert.assertEquals(2, values.size());
 		Assert.assertEquals(0.1F, values.get(0), 1E-5F);
@@ -3082,9 +3088,11 @@ public class NodeTest {
 		RectNode.create(0D, 0D, 10D, 10D).getEffectMap().clear();
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void exposesReadOnlySources() {
-		RectNode.create(0D, 0D, 10D, 10D).getSourceMap().clear();
+	@Test
+	public void hidesItsSourcesAndLinks() {
+		for (final Method method : Node.class.getMethods()) {
+			Assert.assertFalse(method.getName(), Arrays.asList("getSourceMap", "getLinkList", "getRequirementList", "isFollowed").contains(method.getName()));
+		}
 	}
 
 	private Draw draw(final float red, final float green, final float blue) {
@@ -3135,12 +3143,21 @@ public class NodeTest {
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <T> Set<ISignalSubscriber<T>> subscribers(final Signal<T> signal) {
+	private static List<?> links(final Node node) {
 		try {
-			final Field field = Signal.class.getDeclaredField("eventSet");
+			final Field field = Node.class.getDeclaredField("linkList");
 			field.setAccessible(true);
-			return (Set<ISignalSubscriber<T>>) field.get(signal);
+			return (List<?>) field.get(node);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
+	}
+
+	private static <T> Set<ISignalListener<T>> subscribers(final Signal<T> signal) {
+		try {
+			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+			field.setAccessible(true);
+			return (Set<ISignalListener<T>>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}
@@ -3454,7 +3471,6 @@ public class NodeTest {
 	}
 
 	@Getter
-	@SuppressWarnings("unchecked")
 	public static class GlowBorderEffect extends BorderNodeEffect {
 
 		private float glow;

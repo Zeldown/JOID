@@ -2,10 +2,9 @@ package dev.joid.lib.signal.impl.iterable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
 import dev.joid.lib.signal.Signal;
 import lombok.NonNull;
@@ -13,7 +12,7 @@ import lombok.NonNull;
 public class ListSignal<E> extends Signal<List<E>> {
 
 	public ListSignal() {
-		super(new ArrayList<>());
+		super(Collections.emptyList());
 	}
 
 	public ListSignal(final @NonNull Collection<E> value) {
@@ -21,24 +20,19 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public @NonNull ListSignal<E> clear() {
-		this.mutate(list -> {
-			final boolean changed = !list.isEmpty();
-			list.clear();
-			return changed;
-		}, Boolean::booleanValue);
-		return this;
+		return this.mutate(List::clear);
 	}
 
-	public boolean add(final E e) {
-		return this.mutate(list -> list.add(e), Boolean::booleanValue);
+	public @NonNull ListSignal<E> add(final E e) {
+		return this.mutate(list -> list.add(e));
 	}
 
-	public boolean remove(final E e) {
-		return this.mutate(list -> list.remove(e), Boolean::booleanValue);
+	public @NonNull ListSignal<E> remove(final E e) {
+		return this.mutate(list -> list.remove(e));
 	}
 
-	public E remove(final int index) {
-		return this.mutate(list -> list.remove(index), result -> true);
+	public @NonNull ListSignal<E> remove(final int index) {
+		return this.mutate(list -> list.remove(index));
 	}
 
 	public boolean contains(final E e) {
@@ -57,39 +51,31 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return this.get().isEmpty();
 	}
 
-	public E set(final int index, final E element) {
-		return this.mutate(list -> list.set(index, element), result -> !Objects.equals(result, element));
+	public @NonNull ListSignal<E> set(final int index, final E element) {
+		return this.mutate(list -> list.set(index, element));
 	}
 
 	public int size() {
 		return this.get().size();
 	}
 
-	private <R> R mutate(final Function<List<E>, R> mutation, final Predicate<R> changed) {
+	@Override
+	protected List<E> seal(final List<E> value) {
+		return Collections.unmodifiableList(new ArrayList<>(value));
+	}
+
+	private @NonNull ListSignal<E> mutate(final @NonNull Consumer<List<E>> mutation) {
 		final List<E> base = this.peek();
 		final List<E> list = new ArrayList<>(base);
-		final R result = mutation.apply(list);
+		mutation.accept(list);
 		this.write(() -> {
 			if (this.peek() == base) {
-				this.commit(list, changed.test(result));
+				this.set(list);
 			} else {
-				this.mutate(mutation, changed);
+				this.mutate(mutation);
 			}
 		});
-		return result;
-	}
-
-	private void commit(final List<E> list, final boolean changed) {
-		if (changed) {
-			this.set(list);
-		} else {
-			this.publishIf(false);
-		}
-	}
-
-	@Override
-	public String toString() {
-		return "ListSignal{" + this.peek() + "}";
+		return this;
 	}
 
 }

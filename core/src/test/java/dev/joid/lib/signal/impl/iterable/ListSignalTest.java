@@ -67,18 +67,15 @@ public class ListSignalTest {
 	@Test
 	public void addsAndRemovesElements() {
 		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Arrays.asList("a")));
-		Assert.assertTrue(signal.add("b"));
-		Assert.assertTrue(signal.add("c"));
-		Assert.assertTrue(signal.remove("a"));
-		Assert.assertFalse(signal.remove("a"));
-		Assert.assertEquals("c", signal.remove(1));
+		Assert.assertSame(signal, signal.add("b").add("c").remove("a").remove("a"));
+		Assert.assertSame(signal, signal.remove(1));
 		Assert.assertEquals(Collections.singletonList("b"), signal.get());
 	}
 
 	@Test
 	public void replacesAnElement() {
 		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Arrays.asList("a", "b")));
-		Assert.assertEquals("b", signal.set(1, "c"));
+		Assert.assertSame(signal, signal.set(1, "c"));
 		Assert.assertEquals(Arrays.asList("a", "c"), signal.get());
 	}
 
@@ -94,7 +91,7 @@ public class ListSignalTest {
 	public void notifiesEveryMutation() {
 		final List<List<String>> received = new ArrayList<>();
 		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Arrays.asList("a")));
-		signal.subscribe(value -> received.add(new ArrayList<>(value)));
+		signal.onChange(value -> received.add(new ArrayList<>(value)));
 		signal.add("b");
 		signal.set(0, "c");
 		signal.remove("b");
@@ -102,6 +99,22 @@ public class ListSignalTest {
 		signal.add("d");
 		signal.clear();
 		Assert.assertEquals(Arrays.asList(Arrays.asList("a", "b"), Arrays.asList("c", "b"), Arrays.asList("c"), Arrays.asList(), Arrays.asList("d"), Arrays.asList()), received);
+	}
+
+	@Test
+	public void neverExposesItsList() {
+		final List<String> list = new ArrayList<>(Collections.singletonList("a"));
+		final ListSignal<String> signal = new ListSignal<>(list);
+		ListSignalTest.assertReadOnly(signal.get());
+		ListSignalTest.assertReadOnly(signal.peek());
+		ListSignalTest.assertReadOnly(new ListSignal<String>().get());
+		signal.set(list);
+		list.add("x");
+		Assert.assertEquals(Collections.singletonList("a"), signal.get());
+		ListSignalTest.assertReadOnly(signal.get());
+		signal.add("b");
+		ListSignalTest.assertReadOnly(signal.get());
+		Assert.assertEquals(Collections.singletonList("a"), signal.reset().get());
 	}
 
 	@Test(expected = IndexOutOfBoundsException.class)
@@ -119,7 +132,7 @@ public class ListSignalTest {
 	public void notifiesTheMutatedListWhenBuiltWithADefault() {
 		final List<List<String>> received = new ArrayList<>();
 		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Collections.singletonList("a")));
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.add("b");
 		Assert.assertEquals(Collections.singletonList(Arrays.asList("a", "b")), received);
 	}
@@ -128,9 +141,8 @@ public class ListSignalTest {
 	public void ignoresAMutationThatChangesNothing() {
 		final List<List<String>> received = new ArrayList<>();
 		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Arrays.asList("a")));
-		signal.subscribe(received::add);
-		Assert.assertFalse(signal.remove("b"));
-		Assert.assertEquals("a", signal.set(0, "a"));
+		signal.onChange(received::add);
+		signal.remove("b").set(0, "a");
 		signal.remove(0);
 		signal.clear();
 		Assert.assertEquals(Collections.singletonList(Collections.emptyList()), received);
@@ -140,7 +152,7 @@ public class ListSignalTest {
 	public void keepsItsSilenceForTheFirstMutationOfItsDefault() {
 		final List<List<String>> received = new ArrayList<>();
 		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Collections.singletonList("a")));
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.silent();
 		signal.add("b");
 		Assert.assertTrue(received.isEmpty());
@@ -152,7 +164,7 @@ public class ListSignalTest {
 	public void disarmsItsSilenceOnAMutationThatChangesNothing() {
 		final List<List<String>> received = new ArrayList<>();
 		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Arrays.asList("a")));
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.silent();
 		signal.remove("b");
 		signal.add("c");
@@ -164,7 +176,7 @@ public class ListSignalTest {
 	public void notifiesAValueDerivedFromItsListAtEveryMutation() {
 		final List<List<String>> received = new ArrayList<>();
 		final ListSignal<String> signal = new ListSignal<>(Collections.singletonList("a"));
-		final ComputedSignal<List<String>> derived = Signal.from(() -> signal.get()).subscribe(received::add);
+		final ComputedSignal<List<String>> derived = Signal.from(() -> signal.get()).onChange(received::add);
 		signal.add("b");
 		signal.add("c");
 		signal.remove(0);
@@ -197,22 +209,26 @@ public class ListSignalTest {
 	public void appliesADeferredMutationOnTheCurrentList() throws InterruptedException {
 		final FrameThreadBridge thread = FrameThreadBridge.create();
 		final ListSignal<String> signal = new ListSignal<>(Collections.singletonList("a"));
-		final List<Boolean> results = new ArrayList<>();
 		BridgeHandler.THREAD.register(thread);
 		try {
-			final Thread worker = ThreadUtils.daemonThread(() -> {
-				results.add(signal.add("b"));
-				results.add(signal.remove("a"));
-			}, "worker");
+			final Thread worker = ThreadUtils.daemonThread(() -> signal.add("b").remove("a"), "worker");
 			worker.start();
 			worker.join();
 			Assert.assertEquals(Collections.singletonList("a"), signal.peek());
 			signal.add("c");
 			thread.runTasks();
 			Assert.assertEquals(Arrays.asList("c", "b"), signal.peek());
-			Assert.assertEquals(Arrays.asList(true, true), results);
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	private static void assertReadOnly(final List<String> list) {
+		try {
+			list.add("z");
+			Assert.fail("The list of a ListSignal is read-only");
+		} catch (final UnsupportedOperationException expected) {
+			Assert.assertFalse(list.contains("z"));
 		}
 	}
 

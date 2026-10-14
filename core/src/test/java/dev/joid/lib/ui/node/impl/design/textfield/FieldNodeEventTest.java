@@ -64,7 +64,7 @@ public class FieldNodeEventTest {
 	}
 
 	@Test
-	public void refusesTheUserAndTheSettersButNeitherTheForcedTextNorTheSuppliers() {
+	public void refusesOnlyTheUser() {
 		final List<String> proposals = new ArrayList<>();
 		final StringSignal text = new StringSignal("supplied");
 		final TextFieldNode field = this.field().beforeChange(event -> {
@@ -75,19 +75,17 @@ public class FieldNodeEventTest {
 		field.charTyped(NodeCharEvent.create(field, 'c', null));
 		Assert.assertEquals("ab", field.getText());
 		field.text("xyz");
-		Assert.assertEquals("ab", field.getText());
-		field.forceText("xyz");
 		Assert.assertEquals("xyz", field.getText());
 		field.text(text);
 		Assert.assertEquals("supplied", field.getText());
-		Assert.assertEquals(Arrays.asList("abc", "xyz"), proposals);
+		Assert.assertEquals(Arrays.asList("abc"), proposals);
 	}
 
 	@Test
 	public void followsItsSignalWhateverItsBeforeChangeListeners() {
 		final StringSignal signal = new StringSignal("ab");
 		final List<String> changes = new ArrayList<>();
-		final TextFieldNode field = this.field().signal(signal).<TextFieldNode>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getText()));
+		final TextFieldNode field = this.field().text(signal).<TextFieldNode>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getText()));
 		this.bridges.open(new NodeUI(field));
 		signal.set("abcd");
 		Assert.assertEquals("abcd", field.getText());

@@ -67,9 +67,8 @@ public class ReplayLocalUI extends UI {
 			case "subscribed": {
 				final IntegerSignal sent = this.create(0);
 				final IntegerSignal saved = this.create(0);
-				sent.subscribe(value -> {
+				sent.onChange(value -> {
 					saved.set(value);
-					return true;
 				});
 				SignalReplayNode.create().<SignalReplayNode>body(node -> node.text("Saved: " + saved.get())).attach(this);
 				break;

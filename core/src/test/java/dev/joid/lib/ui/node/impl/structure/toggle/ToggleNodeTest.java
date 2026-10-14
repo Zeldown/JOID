@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
@@ -56,9 +57,8 @@ public class ToggleNodeTest {
 	public void staysInSyncWithItsSignal() {
 		final List<Object> changes = new ArrayList<>();
 		final BooleanSignal music = new BooleanSignal(true);
-		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange(event -> changes.add(event.getValue()));
+		final Toggle toggle = new Toggle().state("on", 0).toggle(music).onChange(event -> changes.add(event.getValue()));
 		Assert.assertTrue(toggle.isToggle());
-		Assert.assertSame(music, toggle.getSignal());
 		this.bridges.open(new NodeUI(toggle)).frame();
 		this.click(110D, 110D);
 		Assert.assertFalse(music.get());
@@ -71,54 +71,55 @@ public class ToggleNodeTest {
 	public void followsOnlyItsLastSignal() {
 		final BooleanSignal music = new BooleanSignal(false);
 		final BooleanSignal sounds = new BooleanSignal(false);
-		final Toggle toggle = new Toggle().state("on", 0).signal(music).signal(sounds);
+		final Toggle toggle = new Toggle().state("on", 0).toggle(music).toggle(sounds);
 		this.bridges.open(new NodeUI(toggle)).frame();
-		toggle.toggle(true);
-		Assert.assertTrue(sounds.get());
+		sounds.set(true);
+		Assert.assertTrue(toggle.isToggle());
 		Assert.assertFalse(music.get());
 		music.set(true);
 		music.set(false);
 		Assert.assertTrue(toggle.isToggle());
-		Assert.assertSame(sounds, toggle.getSignal());
 		Assert.assertTrue(ToggleNodeTest.subscribers(music).isEmpty());
 		Assert.assertEquals(1, ToggleNodeTest.subscribers(sounds).size());
 	}
 
 	@Test
-	public void refusesAComputedSignal() {
+	public void followsAComputedSignalWithoutWritingIt() {
 		final BooleanSignal music = new BooleanSignal(false);
-		final Toggle toggle = new Toggle().state("on", 0).signal(music);
-		try {
-			toggle.signal(music.map(value -> !value));
-			Assert.fail("A ComputedSignal cannot be bound in both directions");
-		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("Toggle.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
-		}
-		this.bridges.open(new NodeUI(toggle));
-		music.set(true);
+		final Toggle toggle = new Toggle().state("on", 0).toggle(music.map(value -> !value));
 		Assert.assertTrue(toggle.isToggle());
-		Assert.assertSame(music, toggle.getSignal());
+		this.bridges.open(new NodeUI(toggle)).frame();
+		music.set(true);
+		this.bridges.frame();
+		Assert.assertFalse(toggle.isToggle());
+		Assert.assertTrue(music.get());
 	}
 
 	@Test
-	public void writesAChosenSideIntoItsSignal() {
+	public void replacesItsSignalWithAnySetter() {
 		final List<Object> changes = new ArrayList<>();
 		final BooleanSignal music = new BooleanSignal(false);
-		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange(event -> changes.add(event.getValue()));
+		final Toggle toggle = new Toggle().state("on", 0).toggle(music).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(toggle));
 		toggle.toggle(true);
 		toggle.toggle(true);
-		Assert.assertTrue(music.get());
-		Assert.assertEquals(Arrays.asList(true), changes);
+		Assert.assertFalse(music.get());
+		music.set(true);
+		music.set(false);
+		Assert.assertTrue(toggle.isToggle());
+		Assert.assertTrue(ToggleNodeTest.subscribers(music).isEmpty());
+		toggle.toggle(music).toggle(true);
+		Assert.assertFalse(music.get());
+		Assert.assertEquals(Arrays.asList(true, false, true), changes);
 	}
 
 	@Test
-	public void letsItsListenersRefuseASetterButNotAForcedSide() {
+	public void letsItsListenersRefuseOnlyTheUser() {
 		final Toggle toggle = new Toggle().state("on", 0).beforeChange(event -> event.cancel());
-		this.bridges.open(new NodeUI(toggle));
+		this.bridges.open(new NodeUI(toggle)).frame();
 		toggle.toggle(true);
-		Assert.assertFalse(toggle.isToggle());
-		toggle.forceToggle(true);
+		Assert.assertTrue(toggle.isToggle());
+		this.click(110D, 110D);
 		Assert.assertTrue(toggle.isToggle());
 	}
 
@@ -165,7 +166,7 @@ public class ToggleNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = Signal.class.getDeclaredField("eventSet");
+			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

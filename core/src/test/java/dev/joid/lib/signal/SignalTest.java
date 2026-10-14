@@ -1,11 +1,13 @@
 package dev.joid.lib.signal;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import org.junit.Assert;
@@ -24,7 +26,7 @@ public class SignalTest {
 	public void notifiesItsSubscribersOnTheRenderThread() {
 		final QueueThreadBridge thread = new QueueThreadBridge();
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<String>().subscribe(received::add);
+		final Signal<String> signal = new Signal<String>().onChange(received::add);
 		BridgeHandler.THREAD.register(thread);
 		try {
 			signal.set("ui");
@@ -69,7 +71,7 @@ public class SignalTest {
 	@Test
 	public void resetsToItsDefault() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<>("joid").set("ui").subscribe(received::add).reset();
+		final Signal<String> signal = new Signal<>("joid").set("ui").onChange(received::add).reset();
 		Assert.assertEquals("joid", signal.get());
 		Assert.assertEquals(Collections.singletonList("joid"), received);
 	}
@@ -83,28 +85,28 @@ public class SignalTest {
 	@Test
 	public void notifiesEveryChange() {
 		final List<String> received = new ArrayList<>();
-		new Signal<String>().subscribe(received::add).set("a").set("b");
+		new Signal<String>().onChange(received::add).set("a").set("b");
 		Assert.assertEquals(Arrays.asList("a", "b"), received);
 	}
 
 	@Test
 	public void ignoresAnUnchangedValue() {
 		final List<String> received = new ArrayList<>();
-		new Signal<String>().subscribe(received::add).set(null).set("a").set(new String("a"));
+		new Signal<String>().onChange(received::add).set(null).set("a").set(new String("a"));
 		Assert.assertEquals(Collections.singletonList("a"), received);
 	}
 
 	@Test
 	public void publishesItsValueOnDemand() {
 		final List<String> received = new ArrayList<>();
-		new Signal<>("joid").subscribe(received::add).publish().publish();
+		new Signal<>("joid").onChange(received::add).fireChange().fireChange();
 		Assert.assertEquals(Arrays.asList("joid", "joid"), received);
 	}
 
 	@Test
 	public void silencesOnlyTheNextPublish() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<String>().subscribe(received::add).silent().set("a");
+		final Signal<String> signal = new Signal<String>().onChange(received::add).silent().set("a");
 		Assert.assertEquals("a", signal.get());
 		Assert.assertTrue(received.isEmpty());
 		signal.set("b");
@@ -114,55 +116,95 @@ public class SignalTest {
 	@Test
 	public void silencesAManualPublish() {
 		final List<String> received = new ArrayList<>();
-		new Signal<>("joid").subscribe(received::add).silent().publish().publish();
+		new Signal<>("joid").onChange(received::add).silent().fireChange().fireChange();
 		Assert.assertEquals(Collections.singletonList("joid"), received);
 	}
 
 	@Test
-	public void exposesItsSubscribers() {
-		final ISignalSubscriber<String> subscriber = value -> true;
-		Assert.assertEquals(Collections.singleton(subscriber), new Signal<String>().subscribe(subscriber).getEventSet());
+	public void notifiesItsListenersInTheirOrder() throws ReflectiveOperationException {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<>();
+		for (int index = 0; index < 20; index++) {
+			final int number = index;
+			signal.onChange(value -> received.add(value + number));
+		}
+		signal.set("a");
+		Assert.assertEquals(20, SignalTest.listeners(signal).size());
+		for (int index = 0; index < 20; index++) {
+			Assert.assertEquals("a" + index, received.get(index));
+		}
 	}
 
 	@Test
 	public void notifiesASubscriberOnceWhenSubscribedTwice() {
 		final List<String> received = new ArrayList<>();
-		final ISignalSubscriber<String> subscriber = received::add;
-		new Signal<String>().subscribe(subscriber).subscribe(subscriber).set("a");
+		final ISignalListener<String> subscriber = received::add;
+		new Signal<String>().onChange(subscriber).onChange(subscriber).set("a");
 		Assert.assertEquals(Collections.singletonList("a"), received);
 	}
 
 	@Test
-	public void stopsNotifyingAnUnsubscribedSubscriber() {
+	public void stopsNotifyingAnUnsubscribedSubscriber() throws ReflectiveOperationException {
 		final List<String> received = new ArrayList<>();
-		final ISignalSubscriber<String> subscriber = received::add;
-		final Signal<String> signal = new Signal<String>().subscribe(subscriber).set("a").unsubscribe(subscriber).set("b");
+		final ISignalListener<String> subscriber = received::add;
+		final Signal<String> signal = new Signal<String>().onChange(subscriber).set("a").removeOnChange(subscriber).set("b");
 		Assert.assertEquals(Collections.singletonList("a"), received);
-		Assert.assertTrue(signal.getEventSet().isEmpty());
+		Assert.assertTrue(SignalTest.listeners(signal).isEmpty());
 	}
 
 	@Test
-	public void dropsASubscriberReturningFalse() {
-		final AtomicInteger calls = new AtomicInteger();
+	public void notifiesTheOtherListenersWhenOneFails() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<String>().subscribe(value -> {
-			calls.incrementAndGet();
-			return false;
-		}).subscribe(received::add).set("a").set("b");
-		Assert.assertEquals(1, calls.get());
-		Assert.assertEquals(Arrays.asList("a", "b"), received);
-		Assert.assertEquals(1, signal.getEventSet().size());
+		final IllegalStateException first = new IllegalStateException("first");
+		final IllegalArgumentException second = new IllegalArgumentException("second");
+		final Signal<String> signal = new Signal<String>().onChange(value -> {
+			throw first;
+		}).onChange(received::add).onChange(value -> {
+			throw second;
+		}).onChange(received::add);
+		try {
+			signal.set("a");
+			Assert.fail("The first failure is thrown once every listener ran");
+		} catch (final IllegalStateException exception) {
+			Assert.assertSame(first, exception);
+			Assert.assertArrayEquals(new Throwable[] {second}, exception.getSuppressed());
+		}
+		Assert.assertEquals(Arrays.asList("a", "a"), received);
 	}
 
 	@Test
 	public void acceptsASubscriberDuringAPublish() {
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<>();
-		signal.subscribe(value -> {
-			signal.subscribe(received::add);
-			return false;
-		}).set("a").set("b");
+		final ISignalListener<String> adder = value -> signal.onChange(received::add);
+		signal.onChange(adder).onChange(value -> signal.removeOnChange(adder)).set("a").set("b");
 		Assert.assertEquals(Collections.singletonList("b"), received);
+	}
+
+	@Test
+	public void acceptsListenersFromAnotherThreadDuringANotification() throws InterruptedException {
+		final AtomicBoolean running = new AtomicBoolean(true);
+		final List<Throwable> failures = Collections.synchronizedList(new ArrayList<>());
+		final IntegerSignal signal = new IntegerSignal();
+		signal.onChange(value -> {});
+		final Thread worker = ThreadUtils.daemonThread(() -> {
+			while (running.get()) {
+				final ISignalListener<Integer> listener = value -> {};
+				signal.onChange(listener).removeOnChange(listener);
+			}
+		}, "listener");
+		worker.start();
+		try {
+			for (int index = 0; index < 20000; index++) {
+				signal.increment();
+			}
+		} catch (final RuntimeException exception) {
+			failures.add(exception);
+		} finally {
+			running.set(false);
+			worker.join();
+		}
+		Assert.assertTrue(failures.toString(), failures.isEmpty());
 	}
 
 	@Test
@@ -186,7 +228,7 @@ public class SignalTest {
 	@Test
 	public void notifiesOnceTheBatchEnds() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<String>().subscribe(received::add);
+		final Signal<String> signal = new Signal<String>().onChange(received::add);
 		Signal.batch(() -> {
 			signal.set("a");
 			signal.set("b");
@@ -200,21 +242,18 @@ public class SignalTest {
 	public void notifiesTheChangesMadeByASubscriber() {
 		final List<String> received = new ArrayList<>();
 		final Signal<String> first = new Signal<>();
-		final Signal<String> second = new Signal<String>().subscribe(received::add);
-		first.subscribe(value -> {
-			second.set(value + "!");
-			return true;
-		}).set("a");
+		final Signal<String> second = new Signal<String>().onChange(received::add);
+		first.onChange(value -> second.set(value + "!")).set("a");
 		Assert.assertEquals(Collections.singletonList("a!"), received);
 	}
 
 	@Test
 	public void notifiesTheRestOfABatchAfterAFailingSubscriber() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> first = new Signal<String>().subscribe(value -> {
+		final Signal<String> first = new Signal<String>().onChange(value -> {
 			throw new IllegalStateException();
 		});
-		final Signal<String> second = new Signal<String>().subscribe(received::add);
+		final Signal<String> second = new Signal<String>().onChange(received::add);
 		try {
 			Signal.batch(() -> {
 				first.set("a");
@@ -229,12 +268,12 @@ public class SignalTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullSubscriber() {
-		new Signal<String>().subscribe(null);
+		new Signal<String>().onChange(null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToUnsubscribeNull() {
-		new Signal<String>().unsubscribe(null);
+		new Signal<String>().removeOnChange(null);
 	}
 
 	@Test
@@ -248,9 +287,17 @@ public class SignalTest {
 	}
 
 	@Test
+	public void describesItselfWithItsClassAndValue() {
+		Assert.assertEquals("Signal{joid}", new Signal<>("joid").toString());
+		Assert.assertEquals("Signal{null}", new Signal<String>().toString());
+		Assert.assertEquals("IntegerSignal{5}", new IntegerSignal(5).toString());
+		Assert.assertEquals("ComputedSignal{6}", new IntegerSignal(5).map(value -> value + 1).toString());
+	}
+
+	@Test
 	public void disarmsItsSilenceOnAnUnchangedValue() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<String>().set("a").subscribe(received::add);
+		final Signal<String> signal = new Signal<String>().set("a").onChange(received::add);
 		signal.silent().set("a");
 		signal.set("b");
 		Assert.assertEquals(Collections.singletonList("b"), received);
@@ -259,7 +306,7 @@ public class SignalTest {
 	@Test
 	public void notifiesNullOnceItsValueIsCleared() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<>("joid").set("ui").subscribe(received::add).set(null);
+		final Signal<String> signal = new Signal<>("joid").set("ui").onChange(received::add).set(null);
 		Assert.assertNull(signal.get());
 		Assert.assertEquals(Collections.singletonList(null), received);
 		Assert.assertEquals("joid", signal.reset().get());
@@ -268,7 +315,7 @@ public class SignalTest {
 	@Test
 	public void notifiesNullWithoutDefault() {
 		final List<String> received = new ArrayList<>();
-		new Signal<String>().set("ui").subscribe(received::add).set(null);
+		new Signal<String>().set("ui").onChange(received::add).set(null);
 		Assert.assertEquals(Collections.singletonList(null), received);
 	}
 
@@ -291,7 +338,7 @@ public class SignalTest {
 	public void appliesTheWritesOfAThreadInOrder() throws InterruptedException {
 		final FrameThreadBridge thread = FrameThreadBridge.create();
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<>("joid").subscribe(received::add);
+		final Signal<String> signal = new Signal<>("joid").onChange(received::add);
 		BridgeHandler.THREAD.register(thread);
 		try {
 			SignalTest.fromWorker(() -> signal.set("a").set("b").reset().set("c"));
@@ -307,7 +354,7 @@ public class SignalTest {
 	public void carriesItsSilenceWithADeferredWrite() throws InterruptedException {
 		final FrameThreadBridge thread = FrameThreadBridge.create();
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<>("joid").subscribe(received::add);
+		final Signal<String> signal = new Signal<>("joid").onChange(received::add);
 		BridgeHandler.THREAD.register(thread);
 		try {
 			SignalTest.fromWorker(() -> signal.silent().set("quiet"));
@@ -342,7 +389,7 @@ public class SignalTest {
 		final IntegerSignal left = new IntegerSignal(0);
 		final IntegerSignal right = new IntegerSignal(0);
 		final List<Integer> received = new ArrayList<>();
-		Signal.from(() -> left.get() + right.get()).subscribe(received::add);
+		Signal.from(() -> left.get() + right.get()).onChange(received::add);
 		BridgeHandler.THREAD.register(thread);
 		try {
 			SignalTest.fromWorker(() -> Signal.batch(() -> {
@@ -355,6 +402,12 @@ public class SignalTest {
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
 		}
+	}
+
+	private static Set<?> listeners(final BaseSignal<?> signal) throws ReflectiveOperationException {
+		final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+		field.setAccessible(true);
+		return (Set<?>) field.get(signal);
 	}
 
 	private static void fromWorker(final Runnable task) throws InterruptedException {

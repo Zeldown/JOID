@@ -65,10 +65,8 @@ public final class GridNode extends Node {
 	}
 
 	public final @NonNull GridNode margin(final @NonNull Supplier<Double> margin) {
-		return super.follow("margin", margin, (final GridNode node, final Double value) -> {
-			node.verticalMargin   = value;
-			node.horizontalMargin = value;
-		});
+		this.verticalMargin(margin);
+		return this.horizontalMargin(margin);
 	}
 
 	private final void updateGrid() {

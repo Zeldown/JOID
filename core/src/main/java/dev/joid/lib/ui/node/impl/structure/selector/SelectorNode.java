@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
@@ -17,7 +16,6 @@ import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public abstract class SelectorNode<V> extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
@@ -25,7 +23,6 @@ public abstract class SelectorNode<V> extends Node {
 
 	private final Map<Node, V> optionMap;
 
-	@Getter private Signal<V>         signal;
 	@Getter private SelectorDirection direction;
 
 	@Getter private Node    selected;
@@ -166,8 +163,6 @@ public abstract class SelectorNode<V> extends Node {
 		final V value;
 		if (pending != null) {
 			value = pending;
-		} else if (previous == null && this.signal != null && this.optionMap.containsValue(this.signal.peek())) {
-			value = this.signal.peek();
 		} else if (this.optionMap.containsValue(previous)) {
 			value = previous;
 		} else {
@@ -183,26 +178,19 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull V value) {
-		final ComputedSignal<V> source = Signal.from(value);
-		final boolean refusable = source.isConstant();
-		return super.follow("value", source, (final SelectorNode<V> node, final V option) -> node.choose(option, refusable));
+		return this.value(Signal.from(value));
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Signal<V> value) {
+		return super.bind("value", value, (final SelectorNode<V> node, final V option) -> {
+			if (node.optionMap.isEmpty() || node.optionMap.containsValue(option)) {
+				node.choose(option, false);
+			}
+		});
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Supplier<@NonNull V> value) {
 		return super.follow("value", value, (final SelectorNode<V> node, final V option) -> node.choose(option, false));
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T forceValue(final @NonNull V value) {
-		return super.follow("value", Signal.from(value), (final SelectorNode<V> node, final V option) -> node.choose(option, false));
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
-		this.signal = super.writable(signal);
-		return super.bind("signal", signal, (final SelectorNode<V> node, final V value) -> {
-			if (node.optionMap.containsValue(value)) {
-				node.select(node.find(value), false);
-			}
-		});
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T direction(final @NonNull SelectorDirection direction) {
@@ -219,6 +207,11 @@ public abstract class SelectorNode<V> extends Node {
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final @NonNull Supplier<Boolean> active) {
 		return super.follow("active", active, (final SelectorNode<V> node, final Boolean value) -> node.active = value);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T change(final @NonNull V value) {
+		this.choose(value, true);
+		return (T) this;
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, V>> listener) {
@@ -266,7 +259,7 @@ public abstract class SelectorNode<V> extends Node {
 		super.change(SelectorNode.BEFORE_CHANGE, SelectorNode.CHANGE, previous, value, refusable, () -> {
 			this.selected = option;
 			this.active   = false;
-			super.sync(this.signal, value);
+			super.sync("value", value);
 		});
 	}
 

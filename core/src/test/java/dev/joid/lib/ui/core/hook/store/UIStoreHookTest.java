@@ -7,6 +7,8 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -20,8 +22,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
@@ -193,6 +197,25 @@ public class UIStoreHookTest {
 		final File file = new File(new File(this.folder.getRoot(), "store"), "signal.store");
 		Assert.assertEquals("{\"count\":{\"value\":7}}", new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
 		Assert.assertEquals(7, UIStoreHook.useStore(SignalStore.class).count.get().intValue());
+	}
+
+	@Test
+	public void reloadsAReadOnlyCollectionSignal() throws IOException {
+		final ListStore store = UIStoreHook.useStore(ListStore.class);
+		store.names.add("b");
+		UIStoreHook.saveStore(store);
+		UIStoreHook.destroyStore(store);
+
+		final ListStore loaded = UIStoreHook.useStore(ListStore.class);
+		Assert.assertEquals(Arrays.asList("a", "b"), loaded.names.get());
+		try {
+			loaded.names.get().add("x");
+			Assert.fail("The list of a reloaded ListSignal is read-only");
+		} catch (final UnsupportedOperationException expected) {
+			Assert.assertEquals(Arrays.asList("a", "b"), loaded.names.peek());
+		}
+		Assert.assertEquals(Arrays.asList("a", "b", "c"), loaded.names.add("c").get());
+		Assert.assertEquals(Collections.emptyList(), loaded.names.reset().get());
 	}
 
 	@Test
@@ -426,6 +449,27 @@ public class UIStoreHookTest {
 		public @NonNull String toJson() {
 			final JsonObject json = new JsonObject();
 			json.add("count", SignalStore.GSON.toJsonTree(this.count));
+			return json.toString();
+		}
+
+	}
+
+	@UIStoreData(id = "list", scope = StoreScope.PERMANENT)
+	public static class ListStore extends UIStore {
+
+		private static final Gson GSON = new GsonBuilder().create();
+
+		private ListSignal<String> names = new ListSignal<>(Collections.singletonList("a"));
+
+		@Override
+		public void fromJson(final @NonNull String json) {
+			this.names = ListStore.GSON.fromJson(JsonParser.parseString(json).getAsJsonObject().get("names"), new TypeToken<ListSignal<String>>() {}.getType());
+		}
+
+		@Override
+		public @NonNull String toJson() {
+			final JsonObject json = new JsonObject();
+			json.add("names", ListStore.GSON.toJsonTree(this.names));
 			return json.toString();
 		}
 

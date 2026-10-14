@@ -18,6 +18,7 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
@@ -145,7 +146,7 @@ public class IntegerFieldNodeTest {
 	@Test
 	public void keepsAnEmptyTextWithoutValueWhenAllowed() {
 		final IntegerSignal signal = new IntegerSignal(4);
-		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).allowEmpty(true).signal(signal));
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>allowEmpty(true).value(signal));
 		this.control(field, Key.A);
 		this.press(field, Key.BACKSPACE);
 		Assert.assertNull(field.getValue());
@@ -242,21 +243,25 @@ public class IntegerFieldNodeTest {
 	public void bindsItsValueToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
 		final IntegerSignal signal = new IntegerSignal(7);
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>onChange(event -> changes.add(event.getText())).signal(signal);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>onChange(event -> changes.add(event.getText())).value(signal);
 		this.bridges.open(new NodeUI(field));
 		Assert.assertEquals(7, (int) field.getValue());
 		signal.set(42);
 		Assert.assertEquals("10", field.getText());
 		Assert.assertEquals(10, (int) signal.get());
+		field.max(5);
+		Assert.assertEquals(5, (int) signal.get());
 		field.value(3);
-		Assert.assertEquals(3, (int) signal.get());
-		Assert.assertEquals(Arrays.asList("10", "3"), changes);
+		Assert.assertEquals(5, (int) signal.get());
+		signal.set(1);
+		Assert.assertEquals(3, (int) field.getValue());
+		Assert.assertEquals(Arrays.asList("10", "5", "3"), changes);
 	}
 
 	@Test
 	public void writesTheCorrectedValueToItsSignalOnEveryKeystrokeWithoutRewritingItsText() {
 		final IntegerSignal signal = new IntegerSignal(4);
-		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).signal(signal)).cursorPosition(1);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).value(signal)).cursorPosition(1);
 		this.type(field, "2");
 		Assert.assertEquals(42, (int) signal.get());
 		this.type(field, "5");
@@ -272,7 +277,7 @@ public class IntegerFieldNodeTest {
 	@Test
 	public void showsAChangeOfItsSignalMadeElsewhereEvenWhileFocused() {
 		final IntegerSignal signal = new IntegerSignal(4);
-		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).signal(signal)).cursorPosition(1);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(signal)).cursorPosition(1);
 		this.type(field, "2");
 		signal.set(9);
 		Assert.assertEquals("9", field.getText());
@@ -282,21 +287,54 @@ public class IntegerFieldNodeTest {
 	@Test
 	public void bindsItsValueToAnyIntegerSignal() {
 		final Signal<Integer> signal = new Signal<>(4);
-		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).signal(signal);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).min(0).max(10).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);
 		this.bridges.open(new NodeUI(field));
 		Assert.assertEquals("4", field.getText());
-		Assert.assertSame(signal, field.getSignal());
 		signal.set(12);
 		Assert.assertEquals(10, (int) field.getValue());
 		Assert.assertEquals(10, (int) signal.get());
 		field.value(6);
-		Assert.assertEquals(6, (int) signal.get());
+		Assert.assertEquals(10, (int) signal.get());
+		Assert.assertEquals(6, (int) field.getValue());
+	}
+
+	@Test
+	public void changesItsValueLikeTheUserWithoutReplacingItsSignal() {
+		final IntegerSignal number = new IntegerSignal(4);
+		final List<Integer> refused = new ArrayList<>();
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(number);
+		this.bridges.open(new NodeUI(field));
+		field.change(7);
+		Assert.assertEquals(7, number.get().intValue());
+		number.set(2);
+		Assert.assertEquals("2", field.getText());
+		field.<IntegerFieldNode>beforeChange(event -> {
+			refused.add(event.getValue());
+			event.cancel();
+		}).change(9);
+		Assert.assertEquals(2, number.get().intValue());
+		Assert.assertEquals(Collections.singletonList(9), refused);
+	}
+
+	@Test
+	public void sharesOneSourceBetweenItsTextAndItsValue() {
+		final IntegerSignal number = new IntegerSignal(4);
+		final StringSignal text = new StringSignal("7");
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(number).text(text);
+		this.bridges.open(new NodeUI(field));
+		Assert.assertEquals("7", field.getText());
+		number.set(9);
+		Assert.assertEquals("7", field.getText());
+		field.value(number);
+		Assert.assertEquals("9", field.getText());
+		text.set("1");
+		Assert.assertEquals("9", field.getText());
 	}
 
 	@Test
 	public void stepsItsValueWithTheArrowsInsideItsBounds() {
 		final IntegerSignal signal = new IntegerSignal(5);
-		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(8).step(2).signal(signal));
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(8).step(2).value(signal));
 		this.press(field, Key.UP);
 		Assert.assertEquals("7", field.getText());
 		Assert.assertEquals(7, (int) signal.get());
@@ -379,7 +417,7 @@ public class IntegerFieldNodeTest {
 	@Test
 	public void keepsItsCursorAtItsDistanceFromTheEndWhenItsSignalRewritesIt() {
 		final IntegerSignal signal = new IntegerSignal(5);
-		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).signal(signal)).cursorPosition(1);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(signal)).cursorPosition(1);
 		signal.set(1000);
 		Assert.assertEquals("1000", field.getText());
 		Assert.assertEquals(4, field.getCursorPos());
@@ -441,7 +479,7 @@ public class IntegerFieldNodeTest {
 	@Test
 	public void keepsItsTypedValueOnEscape() {
 		final IntegerSignal signal = new IntegerSignal(4);
-		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).signal(signal)).cursorPosition(1);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(signal)).cursorPosition(1);
 		this.type(field, "21");
 		Assert.assertEquals(421, (int) signal.get());
 		this.press(field, Key.ESCAPE);

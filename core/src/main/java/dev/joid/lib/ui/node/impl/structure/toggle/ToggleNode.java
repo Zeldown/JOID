@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
@@ -20,7 +19,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public abstract class ToggleNode<F, S> extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
@@ -29,7 +27,6 @@ public abstract class ToggleNode<F, S> extends Node {
 	private static final Map<Class<?>, Boolean> BOOLEAN_MAP = new ConcurrentHashMap<>();
 
 	private boolean           toggle;
-	private Signal<Boolean>   signal;
 	private ToggleState<F, S> state;
 
 	protected ToggleNode(final double x, final double y, final double width, final double height) {
@@ -42,22 +39,20 @@ public abstract class ToggleNode<F, S> extends Node {
 			return;
 		}
 
-		this.change(!this.toggle, true);
+		this.change(!this.toggle);
 		event.consume();
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final boolean toggle) {
-		final ComputedSignal<Boolean> source = Signal.from(toggle);
-		final boolean refusable = source.isConstant();
-		return super.follow("toggle", source, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, refusable));
+		return this.toggle(Signal.from(toggle));
+	}
+
+	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final @NonNull Signal<Boolean> toggle) {
+		return super.bind("toggle", toggle, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final @NonNull Supplier<Boolean> toggle) {
 		return super.follow("toggle", toggle, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
-	}
-
-	public final <T extends ToggleNode<F, S>> @NonNull T forceToggle(final boolean toggle) {
-		return super.follow("toggle", Signal.from(toggle), (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T state(final F toggle, final S back) {
@@ -77,9 +72,9 @@ public abstract class ToggleNode<F, S> extends Node {
 		return (T) Boolean.valueOf(this.toggle);
 	}
 
-	public final <T extends ToggleNode<F, S>> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
-		this.signal = super.writable(signal);
-		return super.bind("signal", signal, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
+	public final <T extends ToggleNode<F, S>> @NonNull T change(final boolean toggle) {
+		this.change(toggle, true);
+		return (T) this;
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
@@ -105,7 +100,7 @@ public abstract class ToggleNode<F, S> extends Node {
 
 		super.change(ToggleNode.BEFORE_CHANGE, ToggleNode.CHANGE, this.toggle, toggle, refusable, () -> {
 			this.toggle = toggle;
-			super.sync(this.signal, toggle);
+			super.sync("toggle", toggle);
 		});
 	}
 

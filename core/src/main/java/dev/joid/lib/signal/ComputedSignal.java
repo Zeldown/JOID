@@ -2,22 +2,24 @@ package dev.joid.lib.signal;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+import dev.joid.internal.JOIDLog;
 import lombok.NonNull;
 
-public class ComputedSignal<T> extends Signal<T> {
+public class ComputedSignal<T> extends BaseSignal<T> {
 
-	private final transient boolean     constant;
-	private final transient Supplier<T> supplier;
+	private final transient boolean               constant;
+	private final transient Supplier<? extends T> supplier;
 
-	private transient int[]       versions;
-	private transient int         dependencyCount;
-	private transient Signal<?>[] dependencies;
+	private transient int[]           versions;
+	private transient int             dependencyCount;
+	private transient BaseSignal<?>[] dependencies;
 
-	private transient int         collectedCount;
-	private transient int[]       collectedVersions;
-	private transient Signal<?>[] collectedDependencies;
+	private transient int             collectedCount;
+	private transient int[]           collectedVersions;
+	private transient BaseSignal<?>[] collectedDependencies;
 
 	private transient long             epoch;
 	private transient boolean          linked;
@@ -27,13 +29,13 @@ public class ComputedSignal<T> extends Signal<T> {
 	private transient int              publishedVersion;
 	private transient volatile boolean stale = true;
 
-	protected ComputedSignal(final @NonNull Supplier<T> supplier) {
+	protected ComputedSignal(final @NonNull Supplier<? extends T> supplier) {
 		this.constant = false;
 		this.supplier = supplier;
 		this.versions = new int[4];
 		this.collectedVersions = new int[4];
-		this.dependencies = new Signal<?>[4];
-		this.collectedDependencies = new Signal<?>[4];
+		this.dependencies = new BaseSignal<?>[4];
+		this.collectedDependencies = new BaseSignal<?>[4];
 	}
 
 	private ComputedSignal(final T value) {
@@ -49,21 +51,11 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public @NonNull ComputedSignal<T> reset() {
-		throw new UnsupportedOperationException("A ComputedSignal is read-only and has no default value to reset to: reset the signals it reads instead");
-	}
-
-	@Override
-	public @NonNull ComputedSignal<T> set(final T value) {
-		throw new UnsupportedOperationException("A ComputedSignal is read-only and takes the value of its function: set the signals it reads instead");
-	}
-
-	@Override
-	public @NonNull ComputedSignal<T> subscribe(final @NonNull ISignalSubscriber<T> subscriber) {
-		final boolean subscribed = !super.getEventSet().isEmpty();
-		super.subscribe(subscriber);
+	public @NonNull ComputedSignal<T> onChange(final @NonNull ISignalListener<? super T> listener) {
+		final boolean listened = super.hasListeners();
+		super.onChange(listener);
 		this.follow();
-		if (!subscribed) {
+		if (!listened) {
 			this.refresh();
 			this.publishedVersion = super.getVersion();
 		}
@@ -71,10 +63,15 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public @NonNull ComputedSignal<T> unsubscribe(final @NonNull ISignalSubscriber<T> subscriber) {
-		super.unsubscribe(subscriber);
+	public @NonNull ComputedSignal<T> removeOnChange(final @NonNull ISignalListener<? super T> listener) {
+		super.removeOnChange(listener);
 		this.follow();
 		return this;
+	}
+
+	@Override
+	public <R> @NonNull ComputedSignal<R> map(final @NonNull Function<? super T, ? extends R> function) {
+		return this.constant ? ComputedSignal.constant(function.apply(this.value)) : super.map(function);
 	}
 
 	@Override
@@ -125,7 +122,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	protected void dispatch() {
 		final T current;
 		synchronized (this) {
-			if (super.getEventSet().isEmpty()) {
+			if (!super.hasListeners()) {
 				return;
 			}
 
@@ -153,7 +150,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	protected void markStale(final SignalContext context) {
-		if (!super.getEventSet().isEmpty()) {
+		if (super.hasListeners()) {
 			context.schedule(this);
 		}
 
@@ -163,7 +160,7 @@ public class ComputedSignal<T> extends Signal<T> {
 		}
 	}
 
-	protected void depend(final Signal<?> signal) {
+	protected void depend(final BaseSignal<?> signal) {
 		for (int index = 0; index < this.collectedCount; index++) {
 			if (this.collectedDependencies[index] == signal) {
 				return;
@@ -181,7 +178,7 @@ public class ComputedSignal<T> extends Signal<T> {
 
 	private boolean isOutdated() {
 		for (int index = 0; index < this.dependencyCount; index++) {
-			final Signal<?> dependency = this.dependencies[index];
+			final BaseSignal<?> dependency = this.dependencies[index];
 			dependency.refresh();
 			if (dependency.getVersion() != this.versions[index]) {
 				return true;
@@ -203,6 +200,10 @@ public class ComputedSignal<T> extends Signal<T> {
 			this.computing = false;
 		}
 
+		if (this.collectedCount == 0) {
+			JOIDLog.devWarnOnce("ComputedSignal.from." + this.supplier.getClass().getName(), () -> "A Signal.from(...) of " + ComputedSignal.ownerOf(this.supplier) + " reads no signal, so its value never changes: read a signal with get() inside it, or pass a lambda to the setter to read the value at every frame");
+		}
+
 		if (this.linked) {
 			for (int index = 0; index < this.collectedCount; index++) {
 				if (!ComputedSignal.contains(this.dependencies, this.dependencyCount, this.collectedDependencies[index])) {
@@ -216,7 +217,7 @@ public class ComputedSignal<T> extends Signal<T> {
 			}
 		}
 
-		final Signal<?>[] previousDependencies = this.dependencies;
+		final BaseSignal<?>[] previousDependencies = this.dependencies;
 		final int[] previousVersions = this.versions;
 		final int previousCount = this.dependencyCount;
 		this.dependencies = this.collectedDependencies;
@@ -251,18 +252,20 @@ public class ComputedSignal<T> extends Signal<T> {
 		this.stale = !this.computed || this.epoch != SignalContext.getEpoch();
 	}
 
-	private static boolean contains(final Signal<?>[] signals, final int count, final Signal<?> signal) {
+	private static String ownerOf(final Supplier<?> supplier) {
+		final String name = supplier.getClass().getName();
+		final int lambda = name.indexOf("$$Lambda");
+		final String owner = lambda == -1 ? name : name.substring(0, lambda);
+		return owner.substring(owner.lastIndexOf('.') + 1);
+	}
+
+	private static boolean contains(final BaseSignal<?>[] signals, final int count, final BaseSignal<?> signal) {
 		for (int index = 0; index < count; index++) {
 			if (signals[index] == signal) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public String toString() {
-		return this.peek() == null ? "ComputedSignal{null}" : "ComputedSignal{" + this.peek().toString() + "}";
 	}
 
 }

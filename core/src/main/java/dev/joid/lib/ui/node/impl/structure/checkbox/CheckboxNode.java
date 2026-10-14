@@ -2,7 +2,6 @@ package dev.joid.lib.ui.node.impl.structure.checkbox;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
@@ -14,14 +13,12 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public abstract class CheckboxNode extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	private boolean         checked;
-	private Signal<Boolean> signal;
+	private boolean checked;
 
 	protected CheckboxNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -33,27 +30,25 @@ public abstract class CheckboxNode extends Node {
 			return;
 		}
 
-		this.change(!this.checked, true);
+		this.change(!this.checked);
 		event.consume();
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
-		final ComputedSignal<Boolean> source = Signal.from(checked);
-		final boolean refusable = source.isConstant();
-		return super.follow("checked", source, (final CheckboxNode node, final Boolean value) -> node.change(value, refusable));
+		return this.checked(Signal.from(checked));
+	}
+
+	public final <T extends CheckboxNode> @NonNull T checked(final @NonNull Signal<Boolean> checked) {
+		return super.bind("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final @NonNull Supplier<Boolean> checked) {
 		return super.follow("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
 	}
 
-	public final <T extends CheckboxNode> @NonNull T forceChecked(final boolean checked) {
-		return super.follow("checked", Signal.from(checked), (final CheckboxNode node, final Boolean value) -> node.change(value, false));
-	}
-
-	public final <T extends CheckboxNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
-		this.signal = super.writable(signal);
-		return super.bind("signal", signal, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
+	public final <T extends CheckboxNode> @NonNull T change(final boolean checked) {
+		this.change(checked, true);
+		return (T) this;
 	}
 
 	public final <T extends CheckboxNode> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
@@ -79,7 +74,7 @@ public abstract class CheckboxNode extends Node {
 
 		super.change(CheckboxNode.BEFORE_CHANGE, CheckboxNode.CHANGE, this.checked, checked, refusable, () -> {
 			this.checked = checked;
-			super.sync(this.signal, checked);
+			super.sync("checked", checked);
 		});
 	}
 

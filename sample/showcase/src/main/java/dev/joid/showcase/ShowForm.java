@@ -42,10 +42,10 @@ public class ShowForm extends ShowUI {
 		TextNode.create(158, 226).text(Text.create("Fields, selection and markup, drawn in your kit.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 
 		TextNode.create(160, 300).text(Text.create("Full name", ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.MUTED))).attach(this);
-		ShowFieldNode.create(158, 332, 654, ShowUI.VIOLET).info(input).marginHorizontal(24D).placeholder("Your name").signal(this.name).attach(this);
+		ShowFieldNode.create(158, 332, 654, ShowUI.VIOLET).info(input).marginHorizontal(24D).placeholder("Your name").text(this.name).attach(this);
 
 		TextNode.create(160, 440).text(Text.create("Email", ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.MUTED))).attach(this);
-		ShowFieldNode.create(158, 472, 654, ShowUI.SKY).info(input).marginHorizontal(24D).placeholder("you@example.com").signal(this.email).attach(this);
+		ShowFieldNode.create(158, 472, 654, ShowUI.SKY).info(input).marginHorizontal(24D).placeholder("you@example.com").text(this.email).attach(this);
 		CircleNode
 		.create(752, 488, 36)
 		.color(ShowUI.EMERALD)
@@ -56,7 +56,7 @@ public class ShowForm extends ShowUI {
 		.attach(this);
 
 		TextNode.create(160, 580).text(Text.create("Bio, with markup", ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.MUTED))).attach(this);
-		ShowFieldNode.create(158, 612, 654, ShowUI.PINK).info(input.copy().markups(DemoTextMarkup.inst())).marginHorizontal(24D).markup(true).signal(this.bio).attach(this);
+		ShowFieldNode.create(158, 612, 654, ShowUI.PINK).info(input.copy().markups(DemoTextMarkup.inst())).marginHorizontal(24D).markup(true).text(this.bio).attach(this);
 
 		RectNode
 		.create(158, 770, 654, 76)

@@ -58,7 +58,7 @@ public class UIDemoSlider extends UIDemo {
 		.create(440, 210, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
-			DemoIntegerSliderNode.create(40, 40, 240, 40).values(0, 25, 50, 75, 100).signal(percent).attach(rect);
+			DemoIntegerSliderNode.create(40, 40, 240, 40).values(0, 25, 50, 75, 100).value(percent).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + percent.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Value list", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -68,7 +68,7 @@ public class UIDemoSlider extends UIDemo {
 		.create(800, 210, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
-			DemoDoubleSliderNode.create(40, 40, 240, 40).range(0D, 1D, 0.25D).signal(ratio).attach(rect);
+			DemoDoubleSliderNode.create(40, 40, 240, 40).range(0D, 1D, 0.25D).value(ratio).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + ratio.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Double step", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -78,7 +78,7 @@ public class UIDemoSlider extends UIDemo {
 		.create(1160, 210, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
-			DemoStringSliderNode.create(40, 40, 240, 40).values("Low", "Medium", "High").signal(level).attach(rect);
+			DemoStringSliderNode.create(40, 40, 240, 40).values("Low", "Medium", "High").value(level).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + level.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Strings", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -88,7 +88,7 @@ public class UIDemoSlider extends UIDemo {
 		.create(1520, 210, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
-			DemoStringSliderNode.create(40, 40, 240, 40).values(Align.values()).signal(align).attach(rect);
+			DemoStringSliderNode.create(40, 40, 240, 40).values(Align.values()).value(align).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + align.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Enum", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -98,7 +98,7 @@ public class UIDemoSlider extends UIDemo {
 		.create(80, 550, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
-			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).signal(volume).attach(rect);
+			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).value(volume).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + volume.get(), info)).attach(rect);
 			RectNode
 			.create(40, 170, 80, 50)
@@ -124,8 +124,8 @@ public class UIDemoSlider extends UIDemo {
 		.create(440, 550, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
-			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).signal(shared).attach(rect);
-			DemoIntegerSliderNode.create(40, 100, 240, 40).range(0, 10).signal(shared).attach(rect);
+			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).value(shared).attach(rect);
+			DemoIntegerSliderNode.create(40, 100, 240, 40).range(0, 10).value(shared).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Value: " + shared.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Shared signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

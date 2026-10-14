@@ -47,30 +47,4 @@ public class LongSignal extends Signal<Long> {
 		return this;
 	}
 
-	public @NonNull LongSignal power(final int exponent) {
-		this.transform(current -> LongSignal.raise(current, exponent));
-		return this;
-	}
-
-	private static long raise(final long value, final int exponent) {
-		if (exponent < 0) {
-			return (long) Math.pow(value, exponent);
-		}
-
-		long result = 1L;
-		long base = value;
-		for (int remaining = exponent; remaining > 0; remaining >>= 1) {
-			if ((remaining & 1) == 1) {
-				result *= base;
-			}
-			base *= base;
-		}
-		return result;
-	}
-
-	@Override
-	public String toString() {
-		return this.peek() == null ? "LongSignal{null}" : "LongSignal{" + this.peek().toString() + "}";
-	}
-
 }

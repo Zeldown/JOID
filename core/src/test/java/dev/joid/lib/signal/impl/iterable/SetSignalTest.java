@@ -60,10 +60,9 @@ public class SetSignalTest {
 	@Test
 	public void addsAndRemovesElements() {
 		final SetSignal<String> signal = new SetSignal<>(new HashSet<>());
-		Assert.assertTrue(signal.add("a"));
-		Assert.assertFalse(signal.add("a"));
-		Assert.assertTrue(signal.remove("a"));
-		Assert.assertFalse(signal.remove("a"));
+		Assert.assertSame(signal, signal.add("a").add("a"));
+		Assert.assertEquals(Collections.singleton("a"), signal.get());
+		Assert.assertSame(signal, signal.remove("a").remove("a"));
 		Assert.assertTrue(signal.isEmpty());
 	}
 
@@ -79,7 +78,7 @@ public class SetSignalTest {
 	public void notifiesEveryMutation() {
 		final List<Set<String>> received = new ArrayList<>();
 		final SetSignal<String> signal = new SetSignal<>(new HashSet<>());
-		signal.subscribe(value -> received.add(new HashSet<>(value)));
+		signal.onChange(value -> received.add(new HashSet<>(value)));
 		signal.add("a");
 		signal.add("b");
 		signal.remove("a");
@@ -97,7 +96,7 @@ public class SetSignalTest {
 	public void notifiesTheMutatedSetWhenBuiltWithADefault() {
 		final List<Set<String>> received = new ArrayList<>();
 		final SetSignal<String> signal = new SetSignal<>(new HashSet<>());
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.add("a");
 		Assert.assertEquals(Collections.singletonList(Collections.singleton("a")), received);
 	}
@@ -106,9 +105,8 @@ public class SetSignalTest {
 	public void ignoresAMutationThatChangesNothing() {
 		final List<Set<String>> received = new ArrayList<>();
 		final SetSignal<String> signal = new SetSignal<>(new HashSet<>(Collections.singleton("a")));
-		signal.subscribe(received::add);
-		Assert.assertFalse(signal.add("a"));
-		Assert.assertFalse(signal.remove("b"));
+		signal.onChange(received::add);
+		signal.add("a").remove("b");
 		signal.remove("a");
 		signal.clear();
 		Assert.assertEquals(Collections.singletonList(Collections.emptySet()), received);
@@ -119,7 +117,7 @@ public class SetSignalTest {
 	public void notifiesAValueDerivedFromItsSetAtEveryMutation() {
 		final List<Set<String>> received = new ArrayList<>();
 		final SetSignal<String> signal = new SetSignal<>(Collections.singleton("a"));
-		final ComputedSignal<Set<String>> derived = Signal.from(() -> signal.get()).subscribe(received::add);
+		final ComputedSignal<Set<String>> derived = Signal.from(() -> signal.get()).onChange(received::add);
 		signal.add("b");
 		signal.add("c");
 		Assert.assertEquals(new HashSet<>(Arrays.asList("a", "b", "c")), derived.get());
@@ -134,5 +132,29 @@ public class SetSignalTest {
 		signal.add("b");
 		signal.reset();
 		Assert.assertEquals(Collections.singleton("a"), signal.get());
+	}
+
+	@Test
+	public void neverExposesItsSet() {
+		final Set<String> set = new HashSet<>(Collections.singleton("a"));
+		final SetSignal<String> signal = new SetSignal<>(set);
+		SetSignalTest.assertReadOnly(signal.get());
+		SetSignalTest.assertReadOnly(signal.peek());
+		SetSignalTest.assertReadOnly(new SetSignal<String>().get());
+		signal.set(set);
+		set.add("x");
+		Assert.assertEquals(Collections.singleton("a"), signal.get());
+		signal.add("b");
+		SetSignalTest.assertReadOnly(signal.get());
+		Assert.assertEquals(Collections.singleton("a"), signal.reset().get());
+	}
+
+	private static void assertReadOnly(final Set<String> set) {
+		try {
+			set.add("z");
+			Assert.fail("The set of a SetSignal is read-only");
+		} catch (final UnsupportedOperationException expected) {
+			Assert.assertFalse(set.contains("z"));
+		}
 	}
 }

@@ -54,7 +54,7 @@ public class ShowEffects extends ShowUI {
 			final Color dot = dots[i];
 			CircleNode.create(158, y + 15D, 12).color(() -> on.get() ? dot : Color.WHITE.withAlpha(0.18F)).effect(ShadowNodeEffect.create(dot, 10F).color(() -> dot.withAlpha(on.get() ? 0.9F : 0F))).attach(this);
 			TextNode.create(188, y + 21D).text(Text.create(ShowEffects.NAMES[i], ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);
-			ShowSwitchNode.create(650, y, dot).signal(on).attach(this);
+			ShowSwitchNode.create(650, y, dot).checked(on).attach(this);
 		}
 	}
 

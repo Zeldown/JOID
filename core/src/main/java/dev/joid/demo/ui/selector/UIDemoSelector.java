@@ -71,8 +71,8 @@ public class UIDemoSelector extends UIDemo {
 		.create(320, 550, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
-			DemoSelectorNode.create(40, 30, 150, 50).values("First", "Second", "Third").value("Second").signal(shared).attach(rect);
-			DemoSelectorNode.create(210, 30, 150, 50).values("First", "Second", "Third").value("Second").signal(shared).attach(rect);
+			DemoSelectorNode.create(40, 30, 150, 50).values("First", "Second", "Third").value(shared).attach(rect);
+			DemoSelectorNode.create(210, 30, 150, 50).values("First", "Second", "Third").value(shared).attach(rect);
 			TextNode.create(40, 200).text(Text.create("Value: " + shared.get(), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Shared signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

@@ -10,7 +10,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.ComputedSignal;
-import dev.joid.lib.signal.ISignalSubscriber;
+import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.iterable.MapSignal;
 import dev.joid.lib.signal.impl.iterable.SetSignal;
@@ -57,20 +57,17 @@ public class UIDemoWatch extends UIDemo {
 		final IntegerSignal sent = new IntegerSignal(0);
 		final IntegerSignal received = new IntegerSignal(0);
 		final BooleanSignal listening = new BooleanSignal(true);
-		final ISignalSubscriber<Integer> listener = value -> {
+		final ISignalListener<Integer> listener = value -> {
 			received.increment();
-			return true;
 		};
 
-		sum.subscribe(value -> {
+		sum.onChange(value -> {
 			updates.increment();
-			return true;
 		});
-		quiet.subscribe(value -> {
+		quiet.onChange(value -> {
 			notified.increment();
-			return true;
 		});
-		sent.subscribe(listener);
+		sent.onChange(listener);
 		future.thenAccept(result::set);
 
 		RectNode
@@ -100,7 +97,7 @@ public class UIDemoWatch extends UIDemo {
 		.create(540, 40, 400, 260)
 		.color(UIDemoWatch.PLACEHOLDER)
 		.body(rect -> {
-			DemoCheckboxNode.create(40, 40, 50, 50).signal(live).attach(rect);
+			DemoCheckboxNode.create(40, 40, 50, 50).checked(live).attach(rect);
 			TextNode.create(105, 52).text(Text.create(live.get() ? "Live" : "Paused", info)).attach(rect);
 			RectNode
 			.create(240, 40, 120, 50)
@@ -350,9 +347,9 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> {
 				if (listening.get()) {
-					sent.unsubscribe(listener);
+					sent.removeOnChange(listener);
 				} else {
-					sent.subscribe(listener);
+					sent.onChange(listener);
 				}
 				listening.toggle();
 			})

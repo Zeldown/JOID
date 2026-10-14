@@ -32,7 +32,7 @@ public abstract class Transition {
 		}
 
 		public final void start() {
-			this.animator.setValue(this.defaultValue);
+			this.animator.value(this.defaultValue);
 			this.startTimeline();
 		}
 

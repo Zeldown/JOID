@@ -13,6 +13,16 @@ public class FloatSignal extends Signal<Float> {
 		super(value);
 	}
 
+	public @NonNull FloatSignal decrement() {
+		this.transform(current -> current - 1F);
+		return this;
+	}
+
+	public @NonNull FloatSignal increment() {
+		this.transform(current -> current + 1F);
+		return this;
+	}
+
 	public @NonNull FloatSignal add(final float value) {
 		this.transform(current -> current + value);
 		return this;
@@ -31,21 +41,6 @@ public class FloatSignal extends Signal<Float> {
 	public @NonNull FloatSignal divide(final float value) {
 		this.transform(current -> current / value);
 		return this;
-	}
-
-	public @NonNull FloatSignal decrement() {
-		this.transform(current -> current - 1F);
-		return this;
-	}
-
-	public @NonNull FloatSignal increment() {
-		this.transform(current -> current + 1F);
-		return this;
-	}
-
-	@Override
-	public String toString() {
-		return this.peek() == null ? "FloatSignal{null}" : "FloatSignal{" + this.peek().toString() + "}";
 	}
 
 }

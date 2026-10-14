@@ -1,6 +1,10 @@
 package dev.joid.lib.signal;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,6 +17,7 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.iterable.MapSignal;
 import dev.joid.lib.signal.impl.iterable.SetSignal;
@@ -78,7 +83,7 @@ public class ComputedSignalTest {
 		final ComputedSignal<String> chosen = Signal.from(() -> {
 			evaluations.incrementAndGet();
 			return left.get() ? first.get() : second.get();
-		}).subscribe(value -> true);
+		}).onChange(value -> {});
 		Assert.assertEquals("a", chosen.get());
 		second.set("c");
 		Assert.assertEquals("a", chosen.get());
@@ -104,7 +109,7 @@ public class ComputedSignalTest {
 			final String value = doubled.get() + "+" + tripled.get();
 			computed.add(value);
 			return value;
-		}).subscribe(received::add);
+		}).onChange(received::add);
 		source.increment();
 		source.set(5);
 		Assert.assertEquals("10+15", sum.get());
@@ -121,7 +126,7 @@ public class ComputedSignalTest {
 		final ComputedSignal<String> text = odd.map(value -> {
 			evaluations.incrementAndGet();
 			return value ? "odd" : "even";
-		}).subscribe(received::add);
+		}).onChange(received::add);
 		source.set(3);
 		source.set(5);
 		Assert.assertEquals("odd", text.get());
@@ -135,7 +140,7 @@ public class ComputedSignalTest {
 	public void notifiesItsSubscribersWhenItsValueChanges() {
 		final List<Integer> received = new ArrayList<>();
 		final IntegerSignal count = new IntegerSignal(1);
-		count.map(value -> value * 10).subscribe(received::add);
+		count.map(value -> value * 10).onChange(received::add);
 		count.increment();
 		count.set(2);
 		count.set(3);
@@ -145,11 +150,11 @@ public class ComputedSignalTest {
 	@Test
 	public void stopsNotifyingOnceUnsubscribed() {
 		final List<Integer> received = new ArrayList<>();
-		final ISignalSubscriber<Integer> subscriber = received::add;
+		final ISignalListener<Integer> subscriber = received::add;
 		final IntegerSignal count = new IntegerSignal(1);
-		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10).subscribe(subscriber);
+		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10).onChange(subscriber);
 		count.increment();
-		tenfold.unsubscribe(subscriber);
+		tenfold.removeOnChange(subscriber);
 		count.increment();
 		Assert.assertEquals(Collections.singletonList(20), received);
 		Assert.assertFalse(count.isObserved());
@@ -157,14 +162,23 @@ public class ComputedSignalTest {
 	}
 
 	@Test
-	public void dropsASubscriberReturningFalse() {
+	public void stopsFollowingOnceItsListenerRemovesItself() {
 		final AtomicInteger calls = new AtomicInteger();
 		final IntegerSignal count = new IntegerSignal(1);
-		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10).subscribe(value -> calls.incrementAndGet() < 0);
+		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10);
+		tenfold.onChange(new ISignalListener<Integer>() {
+
+			@Override
+			public void onChange(final Integer value) {
+				calls.incrementAndGet();
+				tenfold.removeOnChange(this);
+			}
+
+		});
 		count.increment();
 		count.increment();
 		Assert.assertEquals(1, calls.get());
-		Assert.assertTrue(tenfold.getEventSet().isEmpty());
+		Assert.assertFalse(tenfold.hasListeners());
 		Assert.assertFalse(count.isObserved());
 	}
 
@@ -173,7 +187,7 @@ public class ComputedSignalTest {
 		final List<String> received = new ArrayList<>();
 		final Signal<String> first = new Signal<>("a");
 		final Signal<String> second = new Signal<>("b");
-		Signal.from(() -> first.get() + second.get()).subscribe(received::add);
+		Signal.from(() -> first.get() + second.get()).onChange(received::add);
 		Signal.batch(() -> {
 			first.set("c");
 			second.set("d");
@@ -185,7 +199,7 @@ public class ComputedSignalTest {
 	@Test
 	public void readsTheLatestValueInsideABatch() {
 		final IntegerSignal count = new IntegerSignal(1);
-		final ComputedSignal<Integer> doubled = count.map(value -> value * 2).subscribe(value -> true);
+		final ComputedSignal<Integer> doubled = count.map(value -> value * 2).onChange(value -> {});
 		Signal.batch(() -> {
 			count.set(2);
 			Assert.assertEquals(4, doubled.get().intValue());
@@ -217,7 +231,7 @@ public class ComputedSignalTest {
 	public void followsTheMutationsOfAListSignal() {
 		final List<Integer> received = new ArrayList<>();
 		final ListSignal<String> list = new ListSignal<>(new ArrayList<>(Collections.singletonList("a")));
-		final ComputedSignal<Integer> size = Signal.from(list::size).subscribe(received::add);
+		final ComputedSignal<Integer> size = Signal.from(list::size).onChange(received::add);
 		list.add("b");
 		list.set(0, "c");
 		list.remove("b");
@@ -253,7 +267,7 @@ public class ComputedSignalTest {
 	public void followsTheOperationsOfAPrimitiveSignal() {
 		final List<String> received = new ArrayList<>();
 		final StringSignal name = new StringSignal("joid");
-		name.map(String::length).map(length -> name.peek() + ":" + length).subscribe(received::add);
+		name.map(String::length).map(length -> name.peek() + ":" + length).onChange(received::add);
 		name.append("-ui");
 		name.toUpperCase();
 		name.substring(0, 2);
@@ -265,10 +279,10 @@ public class ComputedSignalTest {
 		final List<StringBuilder> received = new ArrayList<>();
 		final Signal<StringBuilder> builder = new Signal<>(new StringBuilder("a"));
 		final ComputedSignal<String> text = builder.map(StringBuilder::toString);
-		builder.subscribe(received::add);
+		builder.onChange(received::add);
 		Assert.assertEquals("a", text.get());
 		builder.get().append("b");
-		builder.publish();
+		builder.fireChange();
 		Assert.assertEquals("ab", text.get());
 		Assert.assertEquals(1, received.size());
 	}
@@ -276,7 +290,7 @@ public class ComputedSignalTest {
 	@Test
 	public void staysConsistentAfterASilentChange() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> name = new Signal<>("joid").subscribe(received::add);
+		final Signal<String> name = new Signal<>("joid").onChange(received::add);
 		final ComputedSignal<String> upper = name.map(String::toUpperCase);
 		Assert.assertEquals("JOID", upper.get());
 		name.silent().set("ui");
@@ -288,7 +302,7 @@ public class ComputedSignalTest {
 	public void notifiesAChangeMadeOnAnotherThread() throws InterruptedException {
 		final List<String> received = Collections.synchronizedList(new ArrayList<>());
 		final Signal<String> name = new Signal<>("joid");
-		name.map(String::toUpperCase).subscribe(received::add);
+		name.map(String::toUpperCase).onChange(received::add);
 		final Thread thread = new Thread(() -> name.set("ui"));
 		thread.start();
 		thread.join();
@@ -326,25 +340,28 @@ public class ComputedSignalTest {
 	}
 
 	@Test
-	public void refusesToBeSet() {
-		final ComputedSignal<Integer> computed = new IntegerSignal(1).map(value -> value * 2);
-		try {
-			computed.set(3);
-			Assert.fail();
-		} catch (final UnsupportedOperationException exception) {
-			Assert.assertEquals("A ComputedSignal is read-only and takes the value of its function: set the signals it reads instead", exception.getMessage());
+	public void isReadOnly() {
+		Assert.assertFalse(Signal.class.isAssignableFrom(ComputedSignal.class));
+		for (final Method method : ComputedSignal.class.getMethods()) {
+			Assert.assertFalse(method.getName(), Arrays.asList("set", "reset", "silent", "fireChange").contains(method.getName()));
 		}
-		Assert.assertEquals(2, computed.get().intValue());
 	}
 
 	@Test
-	public void refusesToBeReset() {
-		final ComputedSignal<Integer> computed = new IntegerSignal(1).map(value -> value * 2);
+	public void warnsOnceInDevModeWhenItReadsNoSignal() {
+		final boolean devMode = JOIDEnv.isDevMode();
+		final IntegerSignal count = new IntegerSignal(1);
 		try {
-			computed.reset();
-			Assert.fail();
-		} catch (final UnsupportedOperationException exception) {
-			Assert.assertEquals("A ComputedSignal is read-only and has no default value to reset to: reset the signals it reads instead", exception.getMessage());
+			JOIDEnv.devMode(true);
+			final ComputedSignal<Integer> fixed = Signal.from(() -> 42);
+			final String output = ComputedSignalTest.capture(() -> {
+				Assert.assertEquals(42, fixed.get().intValue());
+				Assert.assertEquals(42, Signal.from(() -> 42).get().intValue());
+			});
+			Assert.assertEquals("[JOID] A Signal.from(...) of ComputedSignalTest reads no signal, so its value never changes: read a signal with get() inside it, or pass a lambda to the setter to read the value at every frame" + System.lineSeparator(), output.substring(0, output.indexOf(System.lineSeparator()) + System.lineSeparator().length()));
+			Assert.assertEquals("", ComputedSignalTest.capture(() -> count.map(value -> value + 1).get()));
+		} finally {
+			JOIDEnv.devMode(devMode);
 		}
 	}
 
@@ -377,7 +394,7 @@ public class ComputedSignalTest {
 	public void notifiesAgainAfterAFailure() {
 		final List<Integer> received = new ArrayList<>();
 		final IntegerSignal count = new IntegerSignal(1);
-		final ComputedSignal<Integer> inverse = count.map(value -> 10 / value).subscribe(received::add);
+		final ComputedSignal<Integer> inverse = count.map(value -> 10 / value).onChange(received::add);
 		try {
 			count.set(0);
 			Assert.fail();
@@ -443,6 +460,18 @@ public class ComputedSignalTest {
 			message.get();
 		}
 		Assert.assertTrue((System.nanoTime() - start) / changes < 5000L);
+	}
+
+	private static String capture(final Runnable runnable) {
+		final PrintStream error = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setErr(new PrintStream(output, true));
+			runnable.run();
+		} finally {
+			System.setErr(error);
+		}
+		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 }

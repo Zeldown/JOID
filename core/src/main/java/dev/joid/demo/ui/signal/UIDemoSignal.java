@@ -49,9 +49,8 @@ public class UIDemoSignal extends UIDemo {
 		final IntegerSignal sent = new IntegerSignal(0);
 		final IntegerSignal saved = new IntegerSignal(0);
 
-		sent.subscribe(value -> {
+		sent.onChange(value -> {
 			saved.set(value);
-			return true;
 		});
 
 		RectNode
@@ -132,7 +131,7 @@ public class UIDemoSignal extends UIDemo {
 		.create(100, 380, 400, 260)
 		.color(UIDemoSignal.PLACEHOLDER)
 		.body(rect -> {
-			DemoIntegerSliderNode.create(40, 40, 320, 40).range(0, 10).signal(volume).attach(rect);
+			DemoIntegerSliderNode.create(40, 40, 320, 40).range(0, 10).value(volume).attach(rect);
 			ProgressNode
 			.create(40, 110, 320, 20)
 			.background(Color.WHITE)
@@ -155,7 +154,7 @@ public class UIDemoSignal extends UIDemo {
 		.create(540, 380, 400, 260)
 		.color(UIDemoSignal.PLACEHOLDER)
 		.body(rect -> {
-			DemoCheckboxNode.create(40, 40, 50, 50).signal(muted).attach(rect);
+			DemoCheckboxNode.create(40, 40, 50, 50).checked(muted).attach(rect);
 			TextNode.create(110, 52).text(Text.create(muted.get() ? "Muted" : "Sound on", info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Checkbox", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -165,7 +164,7 @@ public class UIDemoSignal extends UIDemo {
 		.create(980, 380, 400, 260)
 		.color(UIDemoSignal.PLACEHOLDER)
 		.body(rect -> {
-			DemoTextFieldNode.create(40, 40, 320, 50).info(info).marginHorizontal(12D).signal(name).attach(rect);
+			DemoTextFieldNode.create(40, 40, 320, 50).info(info).marginHorizontal(12D).text(name).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Hello " + name.get(), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Text field", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

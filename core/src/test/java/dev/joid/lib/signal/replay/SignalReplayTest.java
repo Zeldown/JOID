@@ -343,7 +343,7 @@ public class SignalReplayTest {
 	public void followsTheNativeExpressionsOfTheShowcase() {
 		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = new IntegerSignal(0);
-		Assert.assertEquals("", SignalReplayTest.capture(true, () -> ReplayShowcaseFixture.run(node, clicks)));
+		Assert.assertEquals("", SignalReplayTest.capture(true, SignalReplayTest.traced(() -> ReplayShowcaseFixture.run(node, clicks))));
 		clicks.set(2);
 		Assert.assertEquals("Showcase 2", node.getText().get());
 	}
@@ -484,10 +484,21 @@ public class SignalReplayTest {
 		Thread.currentThread().setContextClassLoader(loader);
 		try {
 			SignalReplay.reset();
-			return SignalReplayTest.capture(true, () -> loader.run(node, clicks)).replaceAll("\\.java:\\d+ ", ".java:N ");
+			return SignalReplayTest.capture(true, SignalReplayTest.traced(() -> loader.run(node, clicks))).replaceAll("\\.java:\\d+ ", ".java:N ");
 		} finally {
 			Thread.currentThread().setContextClassLoader(previous);
 		}
+	}
+
+	private static Runnable traced(final Runnable runnable) {
+		return () -> {
+			final boolean tracing = SignalContext.current().tracing(true);
+			try {
+				runnable.run();
+			} finally {
+				SignalContext.current().tracing(tracing);
+			}
+		};
 	}
 
 	private static String capture(final boolean devMode, final Runnable runnable) {

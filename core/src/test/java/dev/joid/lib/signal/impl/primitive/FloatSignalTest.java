@@ -72,7 +72,7 @@ public class FloatSignalTest {
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Float> received = new ArrayList<>();
 		final FloatSignal signal = new FloatSignal();
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.increment();
 		signal.multiply(4F);
 		signal.multiply(1F);

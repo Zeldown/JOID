@@ -18,9 +18,4 @@ public class BooleanSignal extends Signal<Boolean> {
 		return this;
 	}
 
-	@Override
-	public String toString() {
-		return this.peek() == null ? "BooleanSignal{null}" : "BooleanSignal{" + this.peek().toString() + "}";
-	}
-
 }

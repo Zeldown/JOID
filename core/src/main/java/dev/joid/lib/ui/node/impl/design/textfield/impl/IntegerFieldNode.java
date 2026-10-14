@@ -3,7 +3,6 @@ package dev.joid.lib.ui.node.impl.design.textfield.impl;
 import java.math.BigInteger;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.impl.design.textfield.LineFieldNode;
 import lombok.NonNull;
@@ -96,17 +95,20 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final int value) {
-		final ComputedSignal<Integer> source = Signal.from(value);
-		final boolean refusable = source.isConstant();
-		return super.follow("value", source, (final IntegerFieldNode node, final Integer number) -> node.write(number, refusable));
+		return this.value(Signal.from(value));
+	}
+
+	public final <T extends IntegerFieldNode> @NonNull T value(final @NonNull Signal<Integer> value) {
+		return super.bindValue(value);
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final @NonNull Supplier<Integer> value) {
-		return super.follow("value", value, (final IntegerFieldNode node, final Integer number) -> node.write(number, false));
+		return super.followValue(value);
 	}
 
-	public final <T extends IntegerFieldNode> @NonNull T forceValue(final int value) {
-		return super.follow("value", Signal.from(value), (final IntegerFieldNode node, final Integer number) -> node.write(number, false));
+	public final <T extends IntegerFieldNode> @NonNull T change(final int value) {
+		super.write(value, true);
+		return (T) this;
 	}
 
 }

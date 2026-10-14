@@ -72,7 +72,7 @@ public class DoubleSignalTest {
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Double> received = new ArrayList<>();
 		final DoubleSignal signal = new DoubleSignal();
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.increment();
 		signal.multiply(4D);
 		signal.multiply(1D);

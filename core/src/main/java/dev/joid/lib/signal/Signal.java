@@ -1,43 +1,29 @@
 package dev.joid.lib.signal;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.signal.replay.SignalReplay;
-import dev.joid.lib.utils.thread.ThreadUtils;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
 
-public class Signal<T> implements ISignal<T> {
-
-	private final transient Set<@NonNull ISignalSubscriber<T>> eventSet;
-	private final transient List<@NonNull ComputedSignal<?>>   observerList;
+public class Signal<T> extends BaseSignal<T> {
 
 	private final transient T defaultValue;
 
 	private volatile T value;
 
+	private transient T       sealedValue;
 	private transient boolean nextSilent = false;
-
-	@Getter(AccessLevel.PROTECTED)
-	private transient int version;
 
 	public Signal() {
 		this(null);
 	}
 
 	public Signal(final T value) {
-		this.value = value;
-		this.defaultValue = value;
-		this.eventSet = new HashSet<>();
-		this.observerList = new CopyOnWriteArrayList<>();
+		this.value = this.seal(value);
+		this.sealedValue = this.value;
+		this.defaultValue = this.value;
 	}
 
 	public static <T> @NonNull ComputedSignal<T> from(final T value) {
@@ -45,7 +31,7 @@ public class Signal<T> implements ISignal<T> {
 		return replay != null ? new ComputedSignal<>(replay) : ComputedSignal.constant(value);
 	}
 
-	public static <T> @NonNull ComputedSignal<T> from(final @NonNull Supplier<T> supplier) {
+	public static <T> @NonNull ComputedSignal<T> from(final @NonNull Supplier<? extends T> supplier) {
 		return new ComputedSignal<>(supplier);
 	}
 
@@ -59,104 +45,43 @@ public class Signal<T> implements ISignal<T> {
 		}
 	}
 
-	@Override
 	public @NonNull Signal<T> reset() {
 		this.set(this.defaultValue);
 		return this;
 	}
 
-	@Override
 	public @NonNull Signal<T> set(final T value) {
 		return this.write(() -> this.store(value));
 	}
 
 	@Override
-	public @NonNull Signal<T> subscribe(final @NonNull ISignalSubscriber<T> subscriber) {
-		this.eventSet.add(subscriber);
+	public @NonNull Signal<T> onChange(final @NonNull ISignalListener<? super T> listener) {
+		super.onChange(listener);
 		return this;
 	}
 
 	@Override
-	public @NonNull Signal<T> unsubscribe(final @NonNull ISignalSubscriber<T> subscriber) {
-		this.eventSet.remove(subscriber);
+	public @NonNull Signal<T> removeOnChange(final @NonNull ISignalListener<? super T> listener) {
+		super.removeOnChange(listener);
 		return this;
 	}
 
-	@Override
-	public @NonNull Signal<T> publish() {
-		return this.write(this::propagate);
-	}
-
-	@Override
-	public <R> @NonNull ComputedSignal<R> map(final @NonNull Function<T, R> function) {
-		return Signal.from(() -> function.apply(this.get()));
-	}
-
-	@Override
-	public T get() {
-		final T current = this.peek();
-		SignalContext.current().read(this);
-		return current;
-	}
-
-	@Override
-	public T peek() {
-		return this.value;
-	}
-
-	protected @NonNull Set<@NonNull ISignalSubscriber<T>> getEventSet() {
-		return this.eventSet;
-	}
-
-	@Override
 	public @NonNull Signal<T> silent() {
 		this.nextSilent = true;
 		return this;
 	}
 
-	protected void refresh() {}
-
-	protected void dispatch() {
-		this.emit(this.peek());
+	public @NonNull Signal<T> fireChange() {
+		return this.write(this::fire);
 	}
 
-	protected boolean isObserved() {
-		return !this.observerList.isEmpty() || !this.eventSet.isEmpty();
+	@Override
+	public T peek() {
+		final T current = this.value;
+		return current == this.sealedValue ? current : this.reseal(current);
 	}
 
-	protected synchronized void addObserver(final ComputedSignal<?> observer) {
-		for (final ComputedSignal<?> current : this.observerList) {
-			if (current == observer) {
-				return;
-			}
-		}
-
-		this.observerList.add(observer);
-	}
-
-	protected synchronized void removeObserver(final ComputedSignal<?> observer) {
-		for (int index = 0; index < this.observerList.size(); index++) {
-			if (this.observerList.get(index) == observer) {
-				this.observerList.remove(index);
-				return;
-			}
-		}
-	}
-
-	protected final void invalidate(final SignalContext context) {
-		for (final ComputedSignal<?> observer : this.observerList) {
-			observer.markStale(context);
-		}
-	}
-
-	protected final void nextVersion() {
-		this.version++;
-	}
-
-	protected final @NonNull Signal<T> transform(final @NonNull UnaryOperator<T> operator) {
-		return this.write(() -> this.store(operator.apply(this.peek())));
-	}
-
+	@Override
 	protected final @NonNull Signal<T> write(final @NonNull Runnable task) {
 		if (BridgeHandler.THREAD.get().isRenderThread()) {
 			task.run();
@@ -165,7 +90,7 @@ public class Signal<T> implements ISignal<T> {
 
 		final boolean silent = this.nextSilent;
 		this.nextSilent = false;
-		SignalContext.current().defer(() -> {
+		super.write(() -> {
 			final boolean previous = this.nextSilent;
 			this.nextSilent = silent;
 			try {
@@ -177,67 +102,38 @@ public class Signal<T> implements ISignal<T> {
 		return this;
 	}
 
-	protected final void assign(final T value) {
-		final boolean silent = this.nextSilent;
-		this.nextSilent = true;
-		this.set(value);
-		this.nextSilent = silent;
+	protected T seal(final T value) {
+		return value;
 	}
 
-	protected final void publishIf(final boolean changed) {
-		if (changed) {
-			this.publish();
-		} else {
-			this.nextSilent = false;
-		}
-	}
-
-	protected final void emit(final T value) {
-		if (!this.eventSet.isEmpty()) {
-			ThreadUtils.runOnRenderThread(() -> this.notifySubscribers(value));
-		}
+	protected final @NonNull Signal<T> transform(final @NonNull UnaryOperator<T> operator) {
+		return this.write(() -> this.store(operator.apply(this.peek())));
 	}
 
 	private void store(final T value) {
 		final T oldValue = this.value;
-		this.value = value;
+		this.value = this.seal(value);
+		this.sealedValue = this.value;
 		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
 			this.nextSilent = false;
 			return;
 		}
 
-		this.propagate();
+		this.fire();
 	}
 
-	private void propagate() {
-		final SignalContext context = SignalContext.current();
-		this.version++;
-		SignalContext.nextEpoch();
-		context.open();
-		try {
-			if (this.nextSilent) {
-				this.nextSilent = false;
-			} else if (!this.eventSet.isEmpty()) {
-				context.schedule(this);
-			}
-			this.invalidate(context);
-		} finally {
-			context.close();
+	private synchronized T reseal(final T current) {
+		if (this.value == current) {
+			this.value = this.seal(current);
+			this.sealedValue = this.value;
 		}
+		return this.value;
 	}
 
-	private void notifySubscribers(final T value) {
-		final Set<ISignalSubscriber<T>> outdatedSet = new HashSet<>();
-		final Set<ISignalSubscriber<T>> copiedSet = new HashSet<>(this.eventSet);
-		for (final ISignalSubscriber<T> subscriber : copiedSet) {
-			if (!subscriber.update(value)) {
-				outdatedSet.add(subscriber);
-			}
-		}
-
-		for (final ISignalSubscriber<T> subscriber : outdatedSet) {
-			this.unsubscribe(subscriber);
-		}
+	private void fire() {
+		final boolean silent = this.nextSilent;
+		this.nextSilent = false;
+		super.propagate(!silent);
 	}
 
 }

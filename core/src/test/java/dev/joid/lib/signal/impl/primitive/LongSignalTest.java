@@ -77,22 +77,12 @@ public class LongSignalTest {
 	}
 
 	@Test
-	public void raisesToAPower() {
-		final LongSignal signal = new LongSignal(2L);
-		signal.power(40);
-		Assert.assertEquals(1099511627776L, signal.get().longValue());
-		signal.power(0);
-		Assert.assertEquals(1L, signal.get().longValue());
-	}
-
-	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Long> received = new ArrayList<>();
 		final LongSignal signal = new LongSignal();
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.increment();
 		signal.add(2L);
-		signal.power(1);
 		signal.multiply(1L);
 		Assert.assertEquals(Arrays.asList(1L, 3L), received);
 	}
@@ -100,31 +90,14 @@ public class LongSignalTest {
 	@Test
 	public void chainsItsOperations() {
 		final LongSignal signal = new LongSignal(1L);
-		Assert.assertSame(signal, signal.increment().add(2L).multiply(3L).subtract(2L).divide(2L).power(2).decrement());
-		Assert.assertEquals(24L, signal.get().longValue());
+		Assert.assertSame(signal, signal.increment().add(2L).multiply(3L).subtract(2L).divide(2L).decrement());
+		Assert.assertEquals(4L, signal.get().longValue());
 	}
 
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("LongSignal{5}", new LongSignal(5L).toString());
 		Assert.assertEquals("LongSignal{0}", new LongSignal().toString());
-	}
-
-	@Test
-	public void raisesToAPowerBeyondTheDoublePrecision() {
-		final LongSignal signal = new LongSignal(3L);
-		signal.power(39);
-		Assert.assertEquals(4052555153018976267L, signal.get().longValue());
-	}
-
-	@Test
-	public void truncatesANegativePowerTowardZero() {
-		final LongSignal half = new LongSignal(2L);
-		half.power(-1);
-		Assert.assertEquals(0L, half.get().longValue());
-		final LongSignal unit = new LongSignal(-1L);
-		unit.power(-3);
-		Assert.assertEquals(-1L, unit.get().longValue());
 	}
 
 }

@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -18,7 +17,6 @@ import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public abstract class SliderNode<O> extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
@@ -27,7 +25,6 @@ public abstract class SliderNode<O> extends Node {
 	@Getter private O value;
 	private Set<O>    valueSet;
 
-	@Getter private Signal<O>       signal;
 	@Getter private SliderThumbNode thumb;
 
 	private O pendingValue;
@@ -99,8 +96,6 @@ public abstract class SliderNode<O> extends Node {
 		this.pendingValue = null;
 		if (pending != null) {
 			this.choose(pending, false);
-		} else if (this.value == null && this.signal != null && this.valueSet.contains(this.signal.peek())) {
-			this.change(this.signal.peek(), false);
 		} else if (!this.valueSet.contains(this.value)) {
 			this.change(values[0], false);
 		} else if (super.hasUi()) {
@@ -110,26 +105,24 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull O value) {
-		final ComputedSignal<O> source = Signal.from(value);
-		final boolean refusable = source.isConstant();
-		return super.follow("value", source, (final SliderNode<O> node, final O option) -> node.choose(option, refusable));
+		return this.value(Signal.from(value));
+	}
+
+	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Signal<O> value) {
+		return super.bind("value", value, (final SliderNode<O> node, final O option) -> {
+			if (node.valueSet.isEmpty() || node.valueSet.contains(option)) {
+				node.choose(option, false);
+			}
+		});
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Supplier<@NonNull O> value) {
 		return super.follow("value", value, (final SliderNode<O> node, final O option) -> node.choose(option, false));
 	}
 
-	public final <T extends SliderNode<O>> @NonNull T forceValue(final @NonNull O value) {
-		return super.follow("value", Signal.from(value), (final SliderNode<O> node, final O option) -> node.choose(option, false));
-	}
-
-	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
-		this.signal = super.writable(signal);
-		return super.bind("signal", signal, (final SliderNode<O> node, final O value) -> {
-			if (node.valueSet.contains(value)) {
-				node.change(value, false);
-			}
-		});
+	public final <T extends SliderNode<O>> @NonNull T change(final @NonNull O value) {
+		this.choose(value, true);
+		return (T) this;
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, O>> listener) {
@@ -173,7 +166,7 @@ public abstract class SliderNode<O> extends Node {
 
 		super.change(SliderNode.BEFORE_CHANGE, SliderNode.CHANGE, this.value, value, refusable, () -> {
 			this.value = value;
-			super.sync(this.signal, value);
+			super.sync("value", value);
 		});
 
 		if (super.hasUi()) {
@@ -189,7 +182,7 @@ public abstract class SliderNode<O> extends Node {
 
 		final boolean changed = super.change(SliderNode.BEFORE_CHANGE, SliderNode.CHANGE, this.value, newValue, true, () -> {
 			this.value = newValue;
-			super.sync(this.signal, newValue);
+			super.sync("value", newValue);
 		});
 
 		if (!changed) {

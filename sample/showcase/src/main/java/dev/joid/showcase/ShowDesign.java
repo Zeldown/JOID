@@ -71,17 +71,17 @@ public class ShowDesign extends ShowUI {
 		kit.divider(1040, 316, 680).attach(layer);
 
 		TextNode.create(1040, 366).text(Text.create("Notifications", kit.label())).anchorY(Align.CENTER).attach(layer);
-		kit.toggle(1644, 345).signal(this.notify).attach(layer);
+		kit.toggle(1644, 345).checked(this.notify).attach(layer);
 		TextNode.create(1040, 452).text(Text.create("Autoplay videos", kit.label())).anchorY(Align.CENTER).attach(layer);
-		kit.toggle(1644, 431).signal(this.autoplay).attach(layer);
+		kit.toggle(1644, 431).checked(this.autoplay).attach(layer);
 		kit.divider(1040, 506, 680).attach(layer);
 
 		TextNode.create(1040, 554).text(Text.create("Volume", kit.label())).anchorY(Align.CENTER).attach(layer);
 		TextNode.create(1720, 554).text(() -> Text.create(String.format(Locale.US, "%d %%", Math.round(this.volume.get() * 100D)), kit.label())).anchorX(Align.END).anchorY(Align.CENTER).attach(layer);
-		kit.slider(1040, 584, 680).range(0D, 1D, 0.01D).signal(this.volume).attach(layer);
+		kit.slider(1040, 584, 680).range(0D, 1D, 0.01D).value(this.volume).attach(layer);
 
 		TextNode.create(1040, 674).text(Text.create("Display name", kit.label())).anchorY(Align.CENTER).attach(layer);
-		kit.field(1040, 704, 680).signal(this.name).attach(layer);
+		kit.field(1040, 704, 680).text(this.name).attach(layer);
 
 		kit.button(1040, 826, 320, () -> "Reset", false).onClick(event -> this.reset()).attach(layer);
 		kit.button(1400, 826, 320, () -> this.isSaved() ? "Saved" : "Save changes", true).onClick(event -> this.saved = BridgeHandler.CLOCK.get().currentTimeMillis()).attach(layer);

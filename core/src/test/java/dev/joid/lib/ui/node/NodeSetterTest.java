@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,8 +27,10 @@ import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode.ProgressDirection;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
+import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.point.Point;
@@ -145,7 +148,9 @@ public class NodeSetterTest {
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).x(5D).width(30D).zlevel(2D);
 		Assert.assertEquals(5D, rect.getX(), 0D);
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
-		Assert.assertTrue(rect.getSourceMap().isEmpty());
+		Assert.assertFalse(NodeSetterTest.isFollowed(rect, "x"));
+		Assert.assertFalse(NodeSetterTest.isFollowed(rect, "width"));
+		Assert.assertFalse(NodeSetterTest.isFollowed(rect, "zlevel"));
 		this.bridges.open(new NodeUI(rect));
 		Assert.assertEquals(5D, rect.getX(), 0D);
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
@@ -209,16 +214,16 @@ public class NodeSetterTest {
 		this.bridges.frame();
 		Assert.assertEquals(0D, rect.getX(), 0D);
 		Assert.assertEquals(-10D, rect.getLayoutX(), 0D);
-		Assert.assertTrue(rect.getSourceMap().containsKey("x"));
+		Assert.assertTrue(NodeSetterTest.isFollowed(rect, "x"));
 	}
 
 	@Test
 	public void replacesTheSourceOfAPropertyWithTheLastSetter() {
 		final double[] width = {10D};
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).width(() -> width[0]);
-		Assert.assertTrue(rect.getSourceMap().containsKey("width"));
+		Assert.assertTrue(NodeSetterTest.isFollowed(rect, "width"));
 		rect.width(50D);
-		Assert.assertFalse(rect.getSourceMap().containsKey("width"));
+		Assert.assertFalse(NodeSetterTest.isFollowed(rect, "width"));
 		this.bridges.open(new NodeUI(rect));
 		width[0] = 30D;
 		this.bridges.frame();
@@ -229,7 +234,7 @@ public class NodeSetterTest {
 	public void keepsDrawingWhenAFollowedValueIsRefused() {
 		final IntegerSignal index = new IntegerSignal(0);
 		final DoubleSignal width = new DoubleSignal(10D);
-		final Switch node = new Switch().states("low", "high").index(index);
+		final Switch node = new Switch().states("low", "high").index(index.map(value -> value));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).width(width);
 		this.bridges.open(new NodeUI(node, rect));
 		final PrintStream error = System.err;
@@ -244,7 +249,33 @@ public class NodeSetterTest {
 		}
 		Assert.assertEquals("low", node.getState());
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
-		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The index of Switch cannot take its new value (java.lang.IllegalArgumentException: The index 5 is out of the state list [low, high]"));
+		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The state of Switch cannot take its new value (java.lang.IllegalArgumentException: The index 5 is out of the state list [low, high]"));
+	}
+
+	@Test
+	public void followsOneSourcePerPropertyBehindAShorthand() {
+		final Align[] anchor = {Align.CENTER};
+		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).anchor(() -> anchor[0]).anchorX(Align.END);
+		this.bridges.open(new NodeUI(rect));
+		anchor[0] = Align.START;
+		this.bridges.frame();
+		Assert.assertSame(Align.END, rect.getAnchorX());
+		Assert.assertSame(Align.START, rect.getAnchorY());
+		rect.anchor(Align.CENTER);
+		Assert.assertFalse(NodeSetterTest.isFollowed(rect, "anchorY"));
+		final double[] margin = {4D};
+		final TextFieldNode field = TextFieldNode.create(0D, 0D, 100D).margin(() -> margin[0]).marginTop(1D).marginHorizontal(2D);
+		Assert.assertEquals(1D, field.getMarginTop(), 0D);
+		Assert.assertEquals(2D, field.getMarginLeft(), 0D);
+		Assert.assertEquals(4D, field.getMarginBottom(), 0D);
+		Assert.assertFalse(NodeSetterTest.isFollowed(field, "marginTop"));
+		Assert.assertFalse(NodeSetterTest.isFollowed(field, "marginRight"));
+		Assert.assertTrue(NodeSetterTest.isFollowed(field, "marginBottom"));
+		final GridNode grid = GridNode.create(0D, 0D, 100D, 100D).margin(() -> margin[0]).verticalMargin(3D);
+		Assert.assertEquals(3D, grid.getVerticalMargin(), 0D);
+		Assert.assertEquals(4D, grid.getHorizontalMargin(), 0D);
+		Assert.assertFalse(NodeSetterTest.isFollowed(grid, "verticalMargin"));
+		Assert.assertTrue(NodeSetterTest.isFollowed(grid, "horizontalMargin"));
 	}
 
 	@Test
@@ -257,6 +288,16 @@ public class NodeSetterTest {
 		Assert.assertEquals(4F, blur.getRadiusSupplier().get(), 0F);
 		Assert.assertEquals(3, blur.getPriority());
 		Assert.assertSame(NodeEffectScope.CHILDREN, blur.getScope());
+	}
+
+	private static boolean isFollowed(final Node node, final String property) {
+		try {
+			final Method method = Node.class.getDeclaredMethod("isFollowed", String.class);
+			method.setAccessible(true);
+			return (boolean) method.invoke(node, property);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	public static final class NodeUI extends UI {

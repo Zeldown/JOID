@@ -14,6 +14,8 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenEvent;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.signal.BaseSignal;
+import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -22,7 +24,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-public class TweenAnimator extends Signal<Float> {
+public class TweenAnimator extends BaseSignal<Float> {
 
 	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
@@ -40,11 +42,13 @@ public class TweenAnimator extends Signal<Float> {
 	private long         lastUpdate;
 	private TweenManager manager;
 
+	private volatile float value;
+
 	@Getter
 	private Timeline timeline;
 
 	protected TweenAnimator(final float value) {
-		super(value);
+		this.value = value;
 		this.manager = new TweenManager();
 		this.speed = 1F;
 	}
@@ -70,7 +74,7 @@ public class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
-	public void clear() {
+	public @NonNull TweenAnimator clear() {
 		this.release();
 		this.manager.killAll();
 		this.manager.update(0F);
@@ -78,6 +82,7 @@ public class TweenAnimator extends Signal<Float> {
 		this.timeline   = null;
 		this.lastUpdate = 0L;
 		this.writeValue(0F);
+		return this;
 	}
 
 	public @NonNull TweenAnimator sequence(final float duration, final float value) {
@@ -211,26 +216,37 @@ public class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
-	public void setValue(final float value) {
+	public @NonNull TweenAnimator value(final float value) {
 		this.killTimeline();
 		this.timeline = null;
 		this.writeValue(value);
+		return this;
 	}
 
 	@Override
-	public @NonNull TweenAnimator reset() {
-		throw new UnsupportedOperationException("A TweenAnimator is read-only and takes the value of its animation: call clear() or setValue(...) instead");
+	public @NonNull TweenAnimator onChange(final @NonNull ISignalListener<? super Float> listener) {
+		super.onChange(listener);
+		return this;
 	}
 
 	@Override
-	public @NonNull TweenAnimator set(final Float value) {
-		throw new UnsupportedOperationException("A TweenAnimator is read-only and takes the value of its animation: call setValue(...) instead");
+	public @NonNull TweenAnimator removeOnChange(final @NonNull ISignalListener<? super Float> listener) {
+		super.removeOnChange(listener);
+		return this;
+	}
+
+	@Override
+	public @NonNull Float peek() {
+		return this.value;
 	}
 
 	protected void writeValue(final float value) {
-		if (Float.compare(this.peek(), value) != 0) {
-			super.set(value);
-		}
+		super.write(() -> {
+			if (Float.compare(this.value, value) != 0) {
+				this.value = value;
+				super.propagate(true);
+			}
+		});
 	}
 
 	private void release() {

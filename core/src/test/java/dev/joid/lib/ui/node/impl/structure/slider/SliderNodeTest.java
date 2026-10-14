@@ -15,6 +15,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -60,22 +61,22 @@ public class SliderNodeTest {
 	@Test
 	public void takesTheValueOfItsSignalWhenItsOptionsArrive() {
 		final Signal<Integer> volume = new Signal<>(7);
-		final Slider slider = new Slider().signal(volume).values(SliderNodeTest.digits());
+		final Slider slider = new Slider().value(volume).values(SliderNodeTest.digits());
 		Assert.assertEquals(7, slider.getValue().intValue());
 		Assert.assertEquals(7, volume.get().intValue());
 	}
 
 	@Test
-	public void letsItsListenersRefuseASetterButNeitherAForcedValueNorItsSignal() {
+	public void neverRefusesItsSettersNorItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> volume = new Signal<>(5);
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).signal(volume).thumb(new Thumb()).<Slider>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(volume).thumb(new Thumb()).<Slider>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.value(9);
-		Assert.assertEquals(5, slider.getValue().intValue());
-		slider.forceValue(9);
 		Assert.assertEquals(9, slider.getValue().intValue());
 		volume.set(2);
+		Assert.assertEquals(9, slider.getValue().intValue());
+		slider.value(volume);
 		Assert.assertEquals(2, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(9, 2), changes);
 	}
@@ -166,7 +167,7 @@ public class SliderNodeTest {
 	public void jumpsToTheClickedPosition() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(5);
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).signal(signal).onChange(event -> changes.add(event.getValue()));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).value(signal).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -175,14 +176,13 @@ public class SliderNodeTest {
 		Assert.assertEquals(7, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(7), changes);
 		Assert.assertEquals(7, signal.get().intValue());
-		Assert.assertSame(signal, slider.getSignal());
 	}
 
 	@Test
 	public void followsItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(5);
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(signal).onChange(event -> changes.add(event.getValue()));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).value(signal).onChange(event -> changes.add(event.getValue()));
 		Assert.assertEquals(5, slider.getValue().intValue());
 		this.bridges.open(new NodeUI(slider)).frame();
 		signal.set(2);
@@ -195,47 +195,45 @@ public class SliderNodeTest {
 	public void followsOnlyItsLastSignal() {
 		final Signal<Integer> volume = new Signal<>(5);
 		final Signal<Integer> balance = new Signal<>(3);
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(volume).signal(balance);
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).value(volume).value(balance);
 		this.bridges.open(new NodeUI(slider)).frame();
-		slider.value(7);
+		balance.set(7);
 		this.bridges.frame();
-		Assert.assertEquals(7, balance.get().intValue());
 		Assert.assertEquals(5, volume.get().intValue());
 		volume.set(2);
 		this.bridges.frame();
 		Assert.assertEquals(7, slider.getValue().intValue());
-		Assert.assertSame(balance, slider.getSignal());
 		Assert.assertTrue(SliderNodeTest.subscribers(volume).isEmpty());
 		Assert.assertEquals(1, SliderNodeTest.subscribers(balance).size());
 	}
 
 	@Test
-	public void refusesAComputedSignal() {
+	public void followsAComputedSignalWithoutWritingIt() {
 		final Signal<Integer> volume = new Signal<>(5);
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(volume);
-		try {
-			slider.signal(volume.map(value -> value + 1));
-			Assert.fail("A ComputedSignal cannot be bound in both directions");
-		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("Slider.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
-		}
-		this.bridges.open(new NodeUI(slider));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).value(volume.map(value -> value + 1));
+		Assert.assertEquals(6, slider.getValue().intValue());
+		this.bridges.open(new NodeUI(slider)).frame();
 		volume.set(2);
-		Assert.assertEquals(2, slider.getValue().intValue());
-		Assert.assertSame(volume, slider.getSignal());
+		this.bridges.frame();
+		Assert.assertEquals(3, slider.getValue().intValue());
+		Assert.assertEquals(2, volume.get().intValue());
 	}
 
 	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(5);
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).signal(signal).onChange(event -> changes.add(event.getValue()));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).value(signal).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(slider)).frame();
+		slider.values(1, 2, 3);
+		Assert.assertEquals(1, signal.get().intValue());
 		slider.value(3);
 		slider.value(3);
 		this.bridges.frame();
-		Assert.assertEquals(3, signal.get().intValue());
-		Assert.assertEquals(Arrays.asList(3), changes);
+		Assert.assertEquals(1, signal.get().intValue());
+		signal.set(2);
+		Assert.assertEquals(3, slider.getValue().intValue());
+		Assert.assertEquals(Arrays.asList(1, 3), changes);
 	}
 
 	@Test
@@ -374,7 +372,7 @@ public class SliderNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = Signal.class.getDeclaredField("eventSet");
+			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

@@ -28,7 +28,7 @@ public class NodeAnimateEventTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).animate(animator).onAnimate(event -> received.addAll(Arrays.asList(event.getNode(), event.getAnimator(), event.getValue())));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		Assert.assertTrue(received.isEmpty());
-		animator.setValue(0.5F);
+		animator.value(0.5F);
 		this.bridges.frames(3);
 		Assert.assertEquals(Arrays.asList(rect, animator, 0.5F), received);
 	}

@@ -199,7 +199,7 @@ public class UIDemoTextField extends UIDemo {
 		.create(440, 720, 320, 260)
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
-			DemoIntegerFieldNode.create(40, 40, 240, 50).info(info).marginHorizontal(12D).signal(number).attach(rect);
+			DemoIntegerFieldNode.create(40, 40, 240, 50).value(number).info(info).marginHorizontal(12D).attach(rect);
 			TextNode.create(40, 130).text(Text.create("Doubled: " + number.get() * 2, info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Integer signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

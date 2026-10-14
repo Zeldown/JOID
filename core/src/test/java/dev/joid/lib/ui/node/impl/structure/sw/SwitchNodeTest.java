@@ -11,7 +11,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
@@ -54,13 +56,52 @@ public class SwitchNodeTest {
 	public void staysInSyncWithItsSignal() {
 		final Switch node = this.open();
 		final Signal<String> quality = new Signal<>("high");
-		Assert.assertSame(node, node.signal(quality));
+		Assert.assertSame(node, node.state(quality));
 		Assert.assertEquals("high", node.getState());
-		node.state("low");
+		quality.set("medium");
+		Assert.assertEquals("medium", node.getState());
+		node.states("low", "high");
+		Assert.assertEquals("low", quality.get());
+		node.state("high");
+		Assert.assertEquals("low", quality.get());
+		quality.set("low");
+		Assert.assertEquals("high", node.getState());
+		Assert.assertEquals(Arrays.asList("high", "medium", "low", "high"), this.changes);
+	}
+
+	@Test
+	public void keepsItsSignalWhenItsSkinChoosesAState() {
+		final Switch node = this.open();
+		final Signal<String> quality = new Signal<>("high");
+		node.<Switch>state(quality).pick("low");
 		Assert.assertEquals("low", quality.get());
 		quality.set("medium");
 		Assert.assertEquals("medium", node.getState());
-		Assert.assertEquals(Arrays.asList("high", "low", "medium"), this.changes);
+	}
+
+	@Test
+	public void bindsItsIndexBothWays() {
+		final Switch node = this.open();
+		final IntegerSignal level = new IntegerSignal(2);
+		final Signal<String> quality = new Signal<>("low");
+		node.index(level);
+		Assert.assertEquals("high", node.getState());
+		level.set(1);
+		Assert.assertEquals("medium", node.getState());
+		Assert.assertEquals(1, node.getStateIndex().get().intValue());
+		node.state(quality);
+		Assert.assertEquals("low", node.getState());
+		level.set(2);
+		Assert.assertEquals("low", node.getState());
+		Assert.assertTrue(SwitchNodeTest.subscribers(level).isEmpty());
+		node.index(level);
+		Assert.assertEquals("high", node.getState());
+		quality.set("medium");
+		Assert.assertEquals("high", node.getState());
+		Assert.assertTrue(SwitchNodeTest.subscribers(quality).isEmpty());
+		node.index(0);
+		Assert.assertEquals(2, level.get().intValue());
+		Assert.assertTrue(SwitchNodeTest.subscribers(level).isEmpty());
 	}
 
 	@Test
@@ -68,31 +109,24 @@ public class SwitchNodeTest {
 		final Switch node = this.open();
 		final Signal<String> quality = new Signal<>("high");
 		final Signal<String> shadows = new Signal<>("medium");
-		node.signal(quality).signal(shadows);
-		node.state("low");
-		Assert.assertEquals("low", shadows.get());
+		node.state(quality).state(shadows);
+		shadows.set("low");
 		Assert.assertEquals("high", quality.get());
 		quality.set("medium");
 		Assert.assertEquals("low", node.getState());
-		Assert.assertSame(shadows, node.getSignal());
 		Assert.assertTrue(SwitchNodeTest.subscribers(quality).isEmpty());
 		Assert.assertEquals(1, SwitchNodeTest.subscribers(shadows).size());
 	}
 
 	@Test
-	public void refusesAComputedSignal() {
+	public void followsAComputedSignalWithoutWritingIt() {
 		final Switch node = this.open();
 		final Signal<String> quality = new Signal<>("high");
-		node.signal(quality);
-		try {
-			node.signal(quality.map(value -> value));
-			Assert.fail("A ComputedSignal cannot be bound in both directions");
-		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("Switch.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
-		}
+		node.state(quality.map(value -> value));
+		Assert.assertEquals("high", node.getState());
 		quality.set("low");
+		this.bridges.frame();
 		Assert.assertEquals("low", node.getState());
-		Assert.assertSame(quality, node.getSignal());
 	}
 
 	@Test
@@ -146,7 +180,7 @@ public class SwitchNodeTest {
 		node.states("off", "on");
 		Assert.assertEquals(loads + 1, node.loads);
 		Assert.assertEquals(1, node.getChildren().size());
-		node.getStateList().add("eco");
+		node.states("off", "on", "eco");
 		Assert.assertEquals(loads + 2, node.loads);
 		Assert.assertEquals(1, node.getChildren().size());
 	}
@@ -199,7 +233,7 @@ public class SwitchNodeTest {
 	@Test
 	public void takesTheStateOfItsSignalWhenItsStatesArrive() {
 		final Signal<String> quality = new Signal<>("high");
-		Assert.assertEquals("high", new Switch().signal(quality).states("low", "medium", "high").getState());
+		Assert.assertEquals("high", new Switch().state(quality).states("low", "medium", "high").getState());
 		Assert.assertEquals("high", quality.get());
 	}
 
@@ -242,15 +276,15 @@ public class SwitchNodeTest {
 	}
 
 	@Test
-	public void letsItsListenersRefuseASetterButNotAForcedState() {
+	public void letsItsListenersRefuseOnlyItsSkin() {
 		final Switch node = this.open();
 		node.beforeChange(event -> event.cancel());
 		node.state("high");
 		node.index(1);
-		Assert.assertEquals("low", node.getState());
-		node.forceState("high");
-		Assert.assertEquals("high", node.getState());
-		Assert.assertEquals(Arrays.asList("high"), this.changes);
+		Assert.assertEquals("medium", node.getState());
+		node.pick("low");
+		Assert.assertEquals("medium", node.getState());
+		Assert.assertEquals(Arrays.asList("high", "medium"), this.changes);
 	}
 
 	@Test
@@ -269,7 +303,7 @@ public class SwitchNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = Signal.class.getDeclaredField("eventSet");
+			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {
@@ -316,6 +350,10 @@ public class SwitchNodeTest {
 		public void init(final @NonNull UI ui) {
 			this.loads++;
 			RectNode.create(0D, 0D, 10D, 10D).attach(this);
+		}
+
+		public void pick(final @NonNull String state) {
+			super.change(state);
 		}
 
 	}

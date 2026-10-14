@@ -29,17 +29,17 @@ public class DemoSwitchNode extends SwitchNode {
 	public void init(final @NonNull UI ui) {
 		RectNode
 		.create(0, 0, super.getWidth(), super.getHeight())
-		.color(Signal.from(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F)))
+		.color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F))
 		.attach(this);
 
-		final double stateWidth = super.getWidth() / super.getStateList().size();
+		final double stateWidth = super.getWidth() / super.getStateList().get().size();
 		FlexNode
 		.horizontal(0, 0, super.getHeight())
 		.body(flex -> {
 			for (final String state : super.getStateList().get()) {
 				RectNode
 				.create(0, 0, stateWidth, super.getHeight())
-				.color(Signal.from(() -> (super.getState().equals(state) ? DemoSwitchNode.INK : Color.WHITE).withAlpha(super.isEnabled() ? 1F : 0.4F)))
+				.color(() -> (super.getState().equals(state) ? DemoSwitchNode.INK : Color.WHITE).withAlpha(super.isEnabled() ? 1F : 0.4F))
 				.body(rect -> {
 					TextNode
 					.create(0, 0, rect.getWidth(), rect.getHeight())
@@ -47,7 +47,7 @@ public class DemoSwitchNode extends SwitchNode {
 					.attach(rect);
 				})
 				.onClick(event -> {
-					super.state(state);
+					super.change(state);
 				})
 				.attach(flex);
 			}

@@ -114,7 +114,7 @@ public class UIDemoEventFlow extends UIDemo {
 		.body(rect -> {
 			DemoCheckboxNode
 			.create(40, 40, 60, 60)
-			.signal(guarded)
+			.checked(guarded)
 			.beforeChange(event -> {
 				refused.increment();
 				event.cancel();
@@ -147,7 +147,7 @@ public class UIDemoEventFlow extends UIDemo {
 		.create(80, 380, 320, 260)
 		.color(UIDemoEventFlow.PLACEHOLDER)
 		.body(rect -> {
-			DemoCheckboxNode.create(40, 40, 60, 60).signal(locked).attach(rect);
+			DemoCheckboxNode.create(40, 40, 60, 60).checked(locked).attach(rect);
 			TextNode.create(120, 55).text(Text.create("Locked", info)).attach(rect);
 			TextNode.create(40, 140).text(Text.create("Kept open: " + kept.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Before close", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);

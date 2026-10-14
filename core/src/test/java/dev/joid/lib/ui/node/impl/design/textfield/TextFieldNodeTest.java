@@ -21,6 +21,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
@@ -759,7 +760,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void keepsItsTypedTextOnEscape() {
 		final Signal<String> signal = new Signal<>("hello");
-		final TextFieldNode field = this.field("").signal(signal).cursorPosition(5);
+		final TextFieldNode field = this.field("").text(signal).cursorPosition(5);
 		field.focused(false).focused(true);
 		this.type(field, " world");
 		Assert.assertEquals("hello world", signal.get());
@@ -1251,7 +1252,7 @@ public class TextFieldNodeTest {
 	public void bindsItsTextToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("hi");
-		final TextFieldNode field = this.field("").onChange(event -> changes.add(event.getText())).signal(signal);
+		final TextFieldNode field = this.field("").onChange(event -> changes.add(event.getText())).text(signal);
 		Assert.assertEquals("hi", field.getText());
 		this.type(field.cursorPosition(2), "!");
 		Assert.assertEquals("hi!", signal.get());
@@ -1261,7 +1262,9 @@ public class TextFieldNodeTest {
 		Assert.assertEquals("ab", field.getText());
 		Assert.assertEquals("ab", signal.get());
 		field.text("cd");
-		Assert.assertEquals("cd", signal.get());
+		Assert.assertEquals("ab", signal.get());
+		signal.set("ef");
+		Assert.assertEquals("cd", field.getText());
 		Assert.assertEquals(Arrays.asList("hi", "hi!", "yo", "ab", "cd"), changes);
 	}
 
@@ -1269,31 +1272,25 @@ public class TextFieldNodeTest {
 	public void followsOnlyItsLastSignal() {
 		final Signal<String> name = new Signal<>("Alex");
 		final Signal<String> nickname = new Signal<>("Al");
-		final TextFieldNode field = this.field("").signal(name).signal(nickname);
+		final TextFieldNode field = this.field("").text(name).text(nickname);
 		Assert.assertEquals("Al", field.getText());
-		field.text("Sam");
-		Assert.assertEquals("Sam", nickname.get());
-		Assert.assertEquals("Alex", name.get());
+		this.type(field.cursorPosition(2), "ex");
+		Assert.assertEquals("Alex", nickname.get());
 		name.set("Max");
-		Assert.assertEquals("Sam", field.getText());
-		Assert.assertSame(nickname, field.getSignal());
+		Assert.assertEquals("Alex", field.getText());
 		Assert.assertTrue(TextFieldNodeTest.subscribers(name).isEmpty());
 		Assert.assertEquals(1, TextFieldNodeTest.subscribers(nickname).size());
 	}
 
 	@Test
-	public void refusesAComputedSignal() {
+	public void followsAComputedSignalWithoutWritingIt() {
 		final Signal<String> name = new Signal<>("Alex");
-		final TextFieldNode field = this.field("").signal(name);
-		try {
-			field.signal(name.map(String::toUpperCase));
-			Assert.fail("A ComputedSignal cannot be bound in both directions");
-		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("TextFieldNode.signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead", expected.getMessage());
-		}
+		final TextFieldNode field = this.field("").text(name.map(String::toUpperCase));
+		Assert.assertEquals("ALEX", field.getText());
 		name.set("Max");
-		Assert.assertEquals("Max", field.getText());
-		Assert.assertSame(name, field.getSignal());
+		this.bridges.frame();
+		Assert.assertEquals("MAX", field.getText());
+		Assert.assertEquals("Max", name.get());
 	}
 
 	@Test
@@ -1364,7 +1361,7 @@ public class TextFieldNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = Signal.class.getDeclaredField("eventSet");
+			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

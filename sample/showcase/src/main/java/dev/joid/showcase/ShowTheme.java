@@ -52,7 +52,7 @@ public class ShowTheme extends ShowUI {
 		TextNode.create(360, 60).text(() -> Text.create("Good evening, Ada", ShowUI.font(FontWeight.EXTRA_BOLD, 46F, this.text()))).attach(this);
 		TextNode.create(362, 124).text(() -> Text.create("One signal drives every color on this screen.", ShowUI.font(FontWeight.MEDIUM, 21F, this.muted()))).attach(this);
 		TextNode.create(1700, 98).text(() -> Text.create(this.dark.get() ? "Dark" : "Light", ShowUI.font(FontWeight.SEMI_BOLD, 21F, this.muted()))).anchorX(Align.END).anchorY(Align.CENTER).attach(this);
-		ShowThemeNode.create(1730, 70).signal(this.dark).attach(this);
+		ShowThemeNode.create(1730, 70).checked(this.dark).attach(this);
 
 		this.stat(0, "Listeners", "48,210", "+12.4 %", ShowUI.VIOLET);
 		this.stat(1, "Minutes played", "1.2 M", "+8.1 %", ShowUI.PINK);

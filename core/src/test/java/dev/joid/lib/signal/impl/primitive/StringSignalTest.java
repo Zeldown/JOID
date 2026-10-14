@@ -35,11 +35,11 @@ public class StringSignalTest {
 	}
 
 	@Test
-	public void appendsAndConcatenates() {
+	public void appends() {
 		final StringSignal signal = new StringSignal("jo");
 		signal.append("id");
 		Assert.assertEquals("joid", signal.get());
-		signal.concat(" ui");
+		signal.append(" ui");
 		Assert.assertEquals("joid ui", signal.get());
 	}
 
@@ -88,20 +88,10 @@ public class StringSignalTest {
 	}
 
 	@Test
-	public void internsItsValueWithoutNotifying() {
-		final List<String> received = new ArrayList<>();
-		final StringSignal signal = new StringSignal(new String("joid"));
-		signal.subscribe(received::add);
-		signal.intern();
-		Assert.assertSame("joid", signal.get());
-		Assert.assertTrue(received.isEmpty());
-	}
-
-	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<String> received = new ArrayList<>();
 		final StringSignal signal = new StringSignal("Shop");
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.toUpperCase();
 		signal.trim();
 		signal.append("");

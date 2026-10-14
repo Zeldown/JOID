@@ -19,6 +19,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -45,8 +46,10 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
+import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.ComputedSignal;
-import dev.joid.lib.signal.ISignalSubscriber;
+import dev.joid.lib.signal.ISignal;
+import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.replay.SignalReplay;
@@ -98,7 +101,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@SuppressWarnings("unchecked")
 public abstract class Node implements INode {
 
 	private static final transient Gson GSON        = new GsonBuilder().create();
@@ -291,7 +293,7 @@ public abstract class Node implements INode {
 	public final void load(final @NonNull UI ui) {
 		this.checkRequirements();
 		final SignalContext context = SignalContext.current();
-		final List<Signal<?>> readList = context.takeReads();
+		final List<BaseSignal<?>> readList = context.takeReads();
 		try {
 			this.ui = ui;
 			this.attached = true;
@@ -1323,14 +1325,6 @@ public abstract class Node implements INode {
 		return Collections.unmodifiableList(this.waitingList);
 	}
 
-	public final @NonNull Map<String, NodeSource<?>> getSourceMap() {
-		return Collections.unmodifiableMap(this.sourceMap);
-	}
-
-	public final @NonNull List<NodeRequirement> getRequirementList() {
-		return Collections.unmodifiableList(this.requirementList);
-	}
-
 	public final @NonNull List<INodeLayer> getLayerList() {
 		return Collections.unmodifiableList(this.layerList);
 	}
@@ -1430,10 +1424,6 @@ public abstract class Node implements INode {
 
 	public final @NonNull List<@NonNull Node> getDrawList() {
 		return this.drawList.ordered();
-	}
-
-	public final @NonNull List<@NonNull ISignalSubscriber<?>> getLinkList() {
-		return Collections.unmodifiableList(this.linkList);
 	}
 
 	public final @NonNull List<@NonNull Task> getTaskList() {
@@ -1776,11 +1766,8 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T anchor(final @NonNull Supplier<@NonNull Align> anchor) {
-		return this.follow("anchor", anchor, (node, value) -> {
-			node.anchorX = value;
-			node.anchorY = value;
-			node.place();
-		});
+		this.anchorX(anchor);
+		return this.anchorY(anchor);
 	}
 
 	public final <T extends Node> @NonNull T anchorX(final @NonNull Align anchorX) {
@@ -2006,57 +1993,65 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal) {
+	public final <T extends Node> @NonNull T watch(final @NonNull ISignal<?> signal) {
 		return this.watch(signal, new WatchProperty[0]);
 	}
 
-	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
-		return this.addWatch(signal, node -> !node.ui.isClosed(), properties);
+	public final <T extends Node> @NonNull T watch(final @NonNull ISignal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
+		return this.addWatch(signal, node -> true, properties);
 	}
 
-	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
+	public final <T extends Node> @NonNull T watch(final @NonNull ISignal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
 		return this.addWatch(signal, node -> condition.get(), properties);
 	}
 
-	protected final <T extends Node, N extends Node, V> @NonNull T bind(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier) {
-		Node.checkApplier(this, property, applier);
-		final V current = signal.peek();
-		if (current != null) {
-			applier.accept((N) this, current);
-		}
+	protected final <T extends Node, N extends Node, V> @NonNull T bind(final @NonNull String property, final @NonNull ISignal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier) {
+		return this.bind(property, signal, applier, (final N node, final V value) -> value);
+	}
 
-		this.listen(new NodeLink<>(this, property, (Signal<Object>) signal, node -> !node.ui.isClosed(), true, (node, value) -> {
+	protected final <T extends Node, N extends Node, V, M> @NonNull T bind(final @NonNull String property, final @NonNull ISignal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier, final @NonNull BiFunction<@NonNull N, @NonNull M, V> writer) {
+		Node.checkApplier(this, property, applier);
+		final BiConsumer<Node, Object> nullSafe = (node, value) -> {
 			if (value != null) {
 				applier.accept((N) node, (V) value);
 			}
-		}));
+		};
+		final V current = signal.peek();
+		this.listen(new NodeLink<>(this, property, (ISignal<Object>) signal, node -> true, true, nullSafe));
+		this.sourceMap.put(property, new NodeSource<>((ISignal<Object>) signal, nullSafe, (BiFunction<Node, Object, Object>) writer, current));
+		nullSafe.accept(this, current);
 		return (T) this;
 	}
 
-	protected final <V> @NonNull Signal<V> writable(final @NonNull Signal<V> signal) {
-		if (signal instanceof ComputedSignal) {
-			throw new IllegalArgumentException(this.getClass().getSimpleName() + ".signal(...) needs a writable signal: a ComputedSignal is read-only, pass it to a setter instead");
+	protected final <M> void sync(final @NonNull String property, final @NonNull M value) {
+		final NodeSource<?> source = this.sourceMap.get(property);
+		if (source == null || source.writer == null || !(source.supplier instanceof Signal)) {
+			return;
 		}
-		return signal;
-	}
 
-	protected final <V> void sync(final Signal<V> signal, final @NonNull V value) {
-		if (signal != null && !value.equals(signal.peek())) {
-			signal.set(value);
+		final Signal<Object> signal = (Signal<Object>) source.supplier;
+		final Object written = source.writer.apply(this, value);
+		if (written != null && !written.equals(signal.peek())) {
+			signal.set(written);
 		}
 	}
 
 	protected final <T extends Node, N extends Node, V> @NonNull T follow(final @NonNull String property, final @NonNull Supplier<V> supplier, final @NonNull BiConsumer<@NonNull N, V> applier) {
 		Node.checkApplier(this, property, applier);
+		this.cancelLinks(property);
 		final V value = SignalContext.current().untracked(supplier);
 		if (supplier instanceof ComputedSignal && ((ComputedSignal<V>) supplier).isConstant()) {
 			this.sourceMap.remove(property);
 		} else {
-			this.sourceMap.put(property, new NodeSource<>(supplier, (BiConsumer<Node, V>) applier, value));
+			this.sourceMap.put(property, new NodeSource<>(supplier, (BiConsumer<Node, V>) applier, null, value));
 		}
 
 		applier.accept((N) this, value);
 		return (T) this;
+	}
+
+	protected final boolean isFollowed(final @NonNull String property) {
+		return this.getSourceMap().containsKey(property);
 	}
 
 	protected final <N extends Node> void require(final @NonNull String setting, final @NonNull String advice, final @NonNull Predicate<@NonNull N> present) {
@@ -2064,19 +2059,31 @@ public abstract class Node implements INode {
 	}
 
 	private void checkRequirements() {
-		for (final NodeRequirement requirement : this.requirementList) {
+		for (final NodeRequirement requirement : this.getRequirementList()) {
 			if (!requirement.present.test(this)) {
 				throw new IllegalStateException("The " + Node.nameOf(this.getClass()) + " has no " + requirement.setting + ", " + requirement.advice);
 			}
 		}
 	}
 
-	private <T extends Node> T addWatch(final Signal<?> signal, final Predicate<Node> condition, final WatchProperty[] properties) {
-		this.listen(new NodeLink<>(this, null, (Signal<Object>) signal, condition, false, (node, value) -> node.applyWatch(signal, properties)));
+	private List<NodeLink<?>> getLinkList() {
+		return this.linkList;
+	}
+
+	private Map<String, NodeSource<?>> getSourceMap() {
+		return this.sourceMap;
+	}
+
+	private List<NodeRequirement> getRequirementList() {
+		return this.requirementList;
+	}
+
+	private <T extends Node> T addWatch(final ISignal<?> signal, final Predicate<Node> condition, final WatchProperty[] properties) {
+		this.listen(new NodeLink<>(this, null, (ISignal<Object>) signal, condition, false, (node, value) -> node.applyWatch(signal, properties)));
 		return (T) this;
 	}
 
-	private void applyWatch(final Signal<?> signal, final WatchProperty[] properties) {
+	private void applyWatch(final ISignal<?> signal, final WatchProperty[] properties) {
 		if (this.ui == null) {
 			return;
 		}
@@ -2098,18 +2105,22 @@ public abstract class Node implements INode {
 
 	private <V> void listen(final NodeLink<V> link) {
 		if (link.property != null) {
-			for (final NodeLink<?> current : new ArrayList<>(this.linkList)) {
-				if (link.property.equals(current.property)) {
-					current.cancel();
-				}
-			}
+			this.cancelLinks(link.property);
 		}
 
 		this.linkList.add(link);
 		if (this.subscribed) {
-			link.signal.subscribe(link);
+			link.signal.onChange(link);
 		} else {
 			link.keep();
+		}
+	}
+
+	private void cancelLinks(final String property) {
+		for (final NodeLink<?> current : new ArrayList<>(this.getLinkList())) {
+			if (property.equals(current.property)) {
+				current.cancel();
+			}
 		}
 	}
 
@@ -2725,12 +2736,17 @@ public abstract class Node implements INode {
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class NodeSource<V> {
 
-		private final Supplier<V>         supplier;
-		private final BiConsumer<Node, V> applier;
+		private final Supplier<V>                      supplier;
+		private final BiConsumer<Node, V>              applier;
+		private final BiFunction<Node, Object, Object> writer;
 
 		private V value;
 
 		private void pull(final Node node) {
+			if (this.writer != null) {
+				return;
+			}
+
 			final V next = this.supplier.get();
 			if (Objects.equals(this.value, next)) {
 				return;
@@ -2741,17 +2757,17 @@ public abstract class Node implements INode {
 		}
 
 		private NodeSource<V> copy() {
-			return new NodeSource<>(this.supplier, this.applier, this.value);
+			return new NodeSource<>(this.supplier, this.applier, this.writer, this.value);
 		}
 
 	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-	private static final class NodeLink<V> implements ISignalSubscriber<V> {
+	private static final class NodeLink<V> implements ISignalListener<V> {
 
 		private final Node                node;
 		private final String              property;
-		private final Signal<V>           signal;
+		private final ISignal<V>          signal;
 		private final Predicate<Node>     condition;
 		private final boolean             bound;
 		private final BiConsumer<Node, V> applier;
@@ -2759,18 +2775,19 @@ public abstract class Node implements INode {
 		private V value;
 
 		@Override
-		public boolean update(final V value) {
+		public void onChange(final V value) {
 			if (!this.node.subscribed) {
-				return true;
+				return;
 			}
 
-			if (!this.condition.test(this.node)) {
-				this.node.linkList.remove(this);
-				return false;
+			if (this.node.ui.isClosed()) {
+				this.cancel();
+				return;
 			}
 
-			this.applier.accept(this.node, value);
-			return true;
+			if (this.condition.test(this.node)) {
+				this.applier.accept(this.node, value);
+			}
 		}
 
 		private NodeLink<V> copy(final Node node) {
@@ -2782,20 +2799,20 @@ public abstract class Node implements INode {
 		}
 
 		private void subscribe(final boolean loaded) {
-			this.signal.subscribe(this);
+			this.signal.onChange(this);
 			final V current = this.signal.peek();
-			if ((loaded || this.bound) && !Objects.equals(this.value, current) && !this.update(current)) {
-				this.signal.unsubscribe(this);
+			if ((loaded || this.bound) && !Objects.equals(this.value, current)) {
+				this.onChange(current);
 			}
 		}
 
 		private void unsubscribe() {
 			this.keep();
-			this.signal.unsubscribe(this);
+			this.signal.removeOnChange(this);
 		}
 
 		private void cancel() {
-			this.signal.unsubscribe(this);
+			this.signal.removeOnChange(this);
 			this.node.linkList.remove(this);
 		}
 

@@ -18,11 +18,6 @@ public class StringSignal extends Signal<String> {
 		return this;
 	}
 
-	public @NonNull StringSignal concat(final String str) {
-		this.transform(current -> current.concat(str));
-		return this;
-	}
-
 	public @NonNull StringSignal replace(final char oldChar, final char newChar) {
 		this.transform(current -> current.replace(oldChar, newChar));
 		return this;
@@ -56,16 +51,6 @@ public class StringSignal extends Signal<String> {
 	public @NonNull StringSignal substring(final int beginIndex, final int endIndex) {
 		this.transform(current -> current.substring(beginIndex, endIndex));
 		return this;
-	}
-
-	public @NonNull StringSignal intern() {
-		this.transform(String::intern);
-		return this;
-	}
-
-	@Override
-	public String toString() {
-		return this.peek() == null ? "StringSignal{null}" : "StringSignal{" + this.peek().toString() + "}";
 	}
 
 }

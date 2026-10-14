@@ -30,7 +30,7 @@ public class BooleanSignalTest {
 	public void togglesItsValue() {
 		final List<Boolean> received = new ArrayList<>();
 		final BooleanSignal signal = new BooleanSignal();
-		signal.subscribe(received::add);
+		signal.onChange(received::add);
 		signal.toggle();
 		Assert.assertTrue(signal.get());
 		signal.toggle();

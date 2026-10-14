@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ComputedSignal;
+import dev.joid.lib.signal.ISignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -15,20 +15,17 @@ import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
-import lombok.Getter;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public abstract class SwitchNode extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, String>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, String>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	@Getter private final IntegerSignal      stateIndex;
-	@Getter private final ListSignal<String> stateList;
+	private final IntegerSignal      stateIndex;
+	private final ListSignal<String> stateList;
 
-	@Getter private Signal<String> signal;
-	private String                 pendingState;
+	private String pendingState;
 
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -55,27 +52,35 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final int index) {
-		final ComputedSignal<Integer> source = Signal.from(index);
-		final boolean refusable = source.isConstant();
-		return super.follow("index", source, (final SwitchNode node, final Integer value) -> node.select(value, refusable));
+		return this.index(Signal.from(index));
+	}
+
+	public final <T extends SwitchNode> @NonNull T index(final @NonNull Signal<Integer> index) {
+		return super.bind("state", index, (final SwitchNode node, final Integer value) -> {
+			if (node.stateList.peek().isEmpty() || value >= 0 && value < node.stateList.peek().size()) {
+				node.select(value, false);
+			}
+		}, (final SwitchNode node, final String state) -> node.stateList.peek().indexOf(state));
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final @NonNull Supplier<Integer> index) {
-		return super.follow("index", index, (final SwitchNode node, final Integer value) -> node.select(value, false));
+		return super.follow("state", index, (final SwitchNode node, final Integer value) -> node.select(value, false));
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull String state) {
-		final ComputedSignal<String> source = Signal.from(state);
-		final boolean refusable = source.isConstant();
-		return super.follow("state", source, (final SwitchNode node, final String value) -> node.choose(value, refusable));
+		return this.state(Signal.from(state));
+	}
+
+	public final <T extends SwitchNode> @NonNull T state(final @NonNull Signal<String> state) {
+		return super.bind("state", state, (final SwitchNode node, final String value) -> {
+			if (node.stateList.peek().isEmpty() || node.stateList.peek().contains(value)) {
+				node.choose(value, false);
+			}
+		});
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull Supplier<@NonNull String> state) {
 		return super.follow("state", state, (final SwitchNode node, final String value) -> node.choose(value, false));
-	}
-
-	public final <T extends SwitchNode> @NonNull T forceState(final @NonNull String state) {
-		return super.follow("state", Signal.from(state), (final SwitchNode node, final String value) -> node.choose(value, false));
 	}
 
 	public final @NonNull String getState() {
@@ -87,13 +92,17 @@ public abstract class SwitchNode extends Node {
 		return stateList.get(this.stateIndex.get());
 	}
 
-	public final <T extends SwitchNode> @NonNull T signal(final @NonNull Signal<String> signal) {
-		this.signal = super.writable(signal);
-		return super.bind("signal", signal, (final SwitchNode node, final String value) -> {
-			if (node.stateList.peek().contains(value)) {
-				node.select(node.stateList.peek().indexOf(value), false);
-			}
-		});
+	public final @NonNull ISignal<Integer> getStateIndex() {
+		return this.stateIndex;
+	}
+
+	public final @NonNull ISignal<List<String>> getStateList() {
+		return this.stateList;
+	}
+
+	public final <T extends SwitchNode> @NonNull T change(final @NonNull String state) {
+		this.choose(state, true);
+		return (T) this;
 	}
 
 	public final <T extends SwitchNode> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, String>> listener) {
@@ -137,8 +146,6 @@ public abstract class SwitchNode extends Node {
 		this.pendingState = null;
 		if (pending != null) {
 			this.change(stateList, this.indexOf(stateList, pending), previous, false);
-		} else if (previous == null && this.signal != null && stateList.contains(this.signal.peek())) {
-			this.change(stateList, stateList.indexOf(this.signal.peek()), null, false);
 		} else if (previous == null) {
 			this.change(stateList, this.checkIndex(stateList, this.stateIndex.peek()), null, false);
 		} else {
@@ -173,7 +180,7 @@ public abstract class SwitchNode extends Node {
 		super.change(SwitchNode.BEFORE_CHANGE, SwitchNode.CHANGE, previous, state, refusable, () -> {
 			this.stateIndex.set(index);
 			this.stateList.set(stateList);
-			super.sync(this.signal, state);
+			super.sync("state", state);
 		});
 	}
 
