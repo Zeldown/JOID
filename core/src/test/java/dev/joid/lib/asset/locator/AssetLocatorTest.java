@@ -79,7 +79,8 @@ public class AssetLocatorTest {
 			AssetLocator.locate(new Object());
 			Assert.fail("An unknown handle must be refused");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("No asset locator found for input of type java.lang.Object", expected.getMessage());
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("No asset locator knows the input java.lang.Object@"));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith(" of type java.lang.Object, register an IAssetLocator that supports it with AssetLocator.register(...)"));
 		}
 	}
 

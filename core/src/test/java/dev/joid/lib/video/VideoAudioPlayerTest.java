@@ -40,28 +40,40 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void createsItsSourceOnceOnPlay() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(44100, 2);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 44100, 2);
 		player.play();
 		player.play();
 		Assert.assertEquals(Collections.singletonList("44100x2"), this.audio.created);
 	}
 
 	@Test
-	public void staysSilentWithoutAudioBridge() {
+	public void playsWithoutSoundWithoutAudioBridge() {
 		BridgeHandler.AUDIO.unregister(this.audio);
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer("mute.mp4", 8000, 1);
 		final String error = VideoAudioPlayerTest.capture(player::play);
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update();
 		BridgeHandler.AUDIO.register(this.audio);
-		Assert.assertTrue(error, error.contains("No audio bridge registered"));
+		final String again = VideoAudioPlayerTest.capture(player::play);
+		Assert.assertEquals("[JOID] The video mute.mp4 plays without sound: java.lang.IllegalStateException: No audio bridge registered, call BridgeHandler.AUDIO.register before using JOID" + System.lineSeparator(), error);
+		Assert.assertEquals("", again);
 		Assert.assertEquals(16, player.getQueueSize());
 		Assert.assertTrue(this.audio.created.isEmpty());
 	}
 
 	@Test
+	public void warnsOnceForEachVideoWithoutSound() {
+		BridgeHandler.AUDIO.unregister(this.audio);
+		final String first = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer("twice.mp4", 8000, 1).play());
+		final String second = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer("twice.mp4", 8000, 1).play());
+		BridgeHandler.AUDIO.register(this.audio);
+		Assert.assertTrue(first, first.startsWith("[JOID] The video twice.mp4 plays without sound: "));
+		Assert.assertEquals("", second);
+	}
+
+	@Test
 	public void waitsUntilItPlays() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update();
 		Assert.assertEquals(16, player.getQueueSize());
@@ -70,7 +82,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void dropsTheSamplesPushedBeforeItPlays() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		VideoAudioPlayerTest.push(player, 20, 1024);
 		player.play();
 		player.update();
@@ -117,7 +129,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void cutsItsChunksBetweenTwoFramesOfAMultichannelTrack() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 6);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 6);
 		player.play();
 		player.update();
 		VideoAudioPlayerTest.push(player, 16, 3000);
@@ -161,7 +173,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void givesItsGroupToItsSource() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		player.setGroup("music");
 		player.play();
 		Assert.assertEquals("music", this.audio.source().group);
@@ -199,7 +211,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void controlsNothingBeforeItPlays() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		VideoAudioPlayerTest.push(player, 2, 10);
 		player.pause();
 		player.resume();
@@ -258,7 +270,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void ignoresEmptyOrUnknownSamples() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		player.pushSamples(new Buffer[0]);
 		player.pushSamples(new Buffer[] {null});
 		player.pushSamples(new Buffer[] {ByteBuffer.allocate(4)});
@@ -267,7 +279,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void dropsSamplesBeyondItsQueue() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		VideoAudioPlayerTest.push(player, 200, 10);
 		Assert.assertEquals(128, player.getQueueSize());
 	}
@@ -356,7 +368,7 @@ public class VideoAudioPlayerTest {
 	}
 
 	private static VideoAudioPlayer started() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		player.play();
 		player.update();
 		return player;

@@ -25,7 +25,6 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 
 	private T       value;
 	private boolean started;
-	private boolean warned;
 
 	public static <T> SignalReplayBinding<T> create(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> readList, final T value) {
 		final SignalReplayBinding<T> binding = new SignalReplayBinding<>(call, match.getSlice(), match.getSelf(), match.isDefinitions(), match.getHoleMap(), match.getPositionalMap(), match.getReadList(readList), SignalContext.getEpoch());
@@ -54,10 +53,7 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 			}
 			this.value = (T) this.slice.convert(result);
 		} catch (final SignalReplayException exception) {
-			if (!this.warned) {
-				this.warned = true;
-				SignalReplay.warn(this.call, this.slice.getSignalNameList(), this.readList.size(), exception.getFailure() == SignalReplayFailure.REPLAY_FAILED ? exception : new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getMessage()), this.value);
-			}
+			SignalReplay.warn(this.call, this.slice.getSignalNameList(), this.readList.size(), exception.getFailure() == SignalReplayFailure.REPLAY_FAILED ? exception : new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getMessage()), this.value);
 		}
 		return this.value;
 	}

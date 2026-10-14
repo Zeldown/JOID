@@ -6,6 +6,7 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -69,11 +70,11 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		try (InputStream stream = this.asset.open()) {
 			this.document = new SVGLoader().load(stream, null, LoaderContext.createDefault());
 		} catch (final IOException exception) {
-			throw new RuntimeException("Unable to read the SVG of " + this.asset.getUniqueId(), exception);
+			throw new UncheckedIOException("The SVG " + this.asset.getUniqueId() + " cannot be read", exception);
 		}
 
 		if (this.document == null) {
-			throw new RuntimeException("Failed to parse the SVG of " + this.asset.getUniqueId());
+			throw new IllegalArgumentException(this.asset.getUniqueId() + " is not an SVG document that can be parsed");
 		}
 
 		final FloatSize size = this.document.size();

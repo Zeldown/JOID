@@ -228,47 +228,67 @@ public class TimelineTest {
 		Assert.assertEquals(size, Timeline.getPoolSize());
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void refusesToEndTheRootTimeline() {
-		Timeline.createSequence().end();
+		try {
+			Timeline.createSequence().end();
+			Assert.fail("The root timeline has nothing to end");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The timeline has no open beginSequence() or beginParallel() to close, remove this end()", expected.getMessage());
+		}
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void refusesATimelineLeftOpen() {
-		Timeline.createSequence().push(Timeline.createSequence().beginSequence());
+		try {
+			Timeline.createSequence().push(Timeline.createSequence().beginSequence());
+			Assert.fail("A timeline left open must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The pushed timeline still has an open beginSequence() or beginParallel(), close each one with end() before pushing it", expected.getMessage());
+		}
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void refusesAnInfiniteChild() {
-		Timeline.createSequence().push(Tween.mark().repeat(Tween.INFINITY, 0F)).start();
+		try {
+			Timeline.createSequence().push(Tween.mark().repeat(Tween.INFINITY, 0F)).start();
+			Assert.fail("A child that repeats forever must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("A timeline cannot hold a child that repeats forever (repeat count -1), give it a finite repeat count", expected.getMessage());
+		}
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void refusesATweenOnceStarted() {
-		Timeline.createSequence().start().push(Tween.mark());
+		try {
+			Timeline.createSequence().start().push(Tween.mark());
+			Assert.fail("A started timeline must refuse a new child");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("A timeline takes no new child once it is started, build it before start()", expected.getMessage());
+		}
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalStateException.class)
 	public void refusesATimelineOnceStarted() {
 		Timeline.createSequence().start().push(Timeline.createSequence());
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalStateException.class)
 	public void refusesAPauseOnceStarted() {
 		Timeline.createSequence().start().pushPause(1F);
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalStateException.class)
 	public void refusesASequenceOnceStarted() {
 		Timeline.createSequence().start().beginSequence();
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalStateException.class)
 	public void refusesAParallelOnceStarted() {
 		Timeline.createSequence().start().beginParallel();
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalStateException.class)
 	public void refusesToEndOnceStarted() {
 		Timeline.createSequence().start().end();
 	}

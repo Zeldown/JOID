@@ -41,7 +41,7 @@ public class ResourceResolver {
 				return resolver.resolve(builder, input);
 			}
 		}
-		throw new IllegalArgumentException("No resolver found for input of type " + input.getClass().getName());
+		throw new IllegalArgumentException("No resource resolver knows the input " + input + " of type " + input.getClass().getName() + ", register an IResourceResolver that supports it with ResourceResolver.register(...)");
 	}
 
 }

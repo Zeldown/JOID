@@ -11,7 +11,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SignalReplay {
 
-	private static final Set<String>              WARNINGS = ConcurrentHashMap.newKeySet();
 	private static final ThreadLocal<State>       STATE    = ThreadLocal.withInitial(State::new);
 	private static final Map<String, SignalReplaySite>  SITES    = new ConcurrentHashMap<>();
 	private static final Map<String, SignalReplayClass> CLASSES  = new ConcurrentHashMap<>();
@@ -93,10 +92,7 @@ public final class SignalReplay {
 	}
 
 	public static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
-		if (!JOIDEnv.isDevMode() || !SignalReplay.WARNINGS.add(call.getKey())) {
-			return;
-		}
-		System.err.println("[JOID] " + call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());
+		JOIDLog.devWarnOnce("SignalReplay." + call.getKey(), () -> call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());
 	}
 
 	private static <T> Supplier<T> resolve(final T value, final List<Signal<?>> readList, final SignalReplayCall call, final State state, final int stale) {

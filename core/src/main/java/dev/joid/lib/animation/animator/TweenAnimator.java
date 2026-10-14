@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquation;
@@ -25,7 +25,6 @@ import lombok.Setter;
 @Getter
 public class TweenAnimator extends Signal<Float> {
 
-	private static final Set<String>        FAILURE_SET = ConcurrentHashMap.newKeySet();
 	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	static {
@@ -251,11 +250,7 @@ public class TweenAnimator extends Signal<Float> {
 			try {
 				animator.update();
 			} catch (final RuntimeException exception) {
-				final String failure = exception.toString();
-				if (TweenAnimator.FAILURE_SET.add(System.identityHashCode(animator) + failure)) {
-					System.err.println("[JOID] The update of TweenAnimator failed: " + failure);
-					exception.printStackTrace();
-				}
+				JOIDLog.warnOnce("TweenAnimator.update." + System.identityHashCode(animator) + exception, "The update of TweenAnimator failed: " + exception, exception);
 			}
 		}
 	}

@@ -10,7 +10,7 @@ import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
 import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.shader.GlShader;
-import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -23,7 +23,6 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 
 	private final ByteBuffer quad;
 
-	private boolean  warned;
 	private GlShader shader;
 
 	private DrawGlMipmapBuilder() {
@@ -43,10 +42,7 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 
 	@Override
 	public void build(final @NonNull GlRenderBridge bridge, final @NonNull GlTexture texture, final @NonNull MipmapChain chain) {
-		if (!this.warned && JOIDEnv.isDevMode()) {
-			System.err.println("[JOID] This OpenGL context cannot blit framebuffers (" + bridge.getCapabilities().getName() + "): mipmaps are drawn, which may not give exactly the pixels of the other backends");
-			this.warned = true;
-		}
+		JOIDLog.devWarnOnce("DrawGlMipmapBuilder." + System.identityHashCode(this), () -> "This OpenGL context cannot blit framebuffers (" + bridge.getCapabilities().getName() + "): mipmaps are drawn, which may not give exactly the pixels of the other backends");
 
 		final IGlBinding binding = bridge.getBinding();
 		final IGlTextureBinding textures = binding.getTextureBinding();

@@ -3,10 +3,9 @@ package dev.joid.lib.bridge.render.shader;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.shader.source.GlslDialect;
@@ -30,8 +29,6 @@ import lombok.NonNull;
 
 @Getter
 public abstract class Shader implements IShader {
-
-	private static final Set<String> WARNED_SET = ConcurrentHashMap.newKeySet();
 
 	private final BlendState   blend;
 	private final RenderBridge bridge;
@@ -108,7 +105,7 @@ public abstract class Shader implements IShader {
 	public final @NonNull IShader sampler(final @NonNull String name, final @NonNull ITexture texture, final @NonNull TextureFilter filter, final @NonNull TextureWrap wrap) {
 		final UniformSampler sampler = this.samplerMap.get(name);
 		if (sampler == null) {
-			throw new IllegalArgumentException("The shader declares no sampler " + name);
+			throw new IllegalArgumentException("The shader declares no sampler " + name + ", declare it in the shader source or fix its name (samplers: " + this.samplerMap.keySet() + ")");
 		}
 
 		sampler.value(texture, filter, wrap);
@@ -162,15 +159,15 @@ public abstract class Shader implements IShader {
 	private UniformMember getMember(final String name) {
 		final UniformMember member = this.block.getMember(name);
 		if (member == null) {
-			throw new IllegalArgumentException("The shader declares no uniform " + name);
+			throw new IllegalArgumentException("The shader declares no uniform " + name + ", declare it in the shader source or fix its name");
 		}
 		return member;
 	}
 
 	private static void warnBeyondBaseline(final ShaderSource source) {
 		for (final ShaderFeature feature : source.getFeatures()) {
-			if (!GlslDialect.GLSL_120.supports(feature) && Shader.WARNED_SET.add(feature.name() + source.getBody())) {
-				System.err.println("[JOID] A " + source.getStage().name().toLowerCase(Locale.ROOT) + " shader uses " + feature.getDescription() + ", which needs " + feature.getGlsl().getName() + ": the OpenGL 2.1 contexts (GLSL 1.20) that JOID supports refuse it, keep to GLSL 1.20 to draw on every backend");
+			if (!GlslDialect.GLSL_120.supports(feature)) {
+				JOIDLog.warnOnce("Shader.baseline." + feature.name() + source.getBody(), "A " + source.getStage().name().toLowerCase(Locale.ROOT) + " shader uses " + feature.getDescription() + ", which needs " + feature.getGlsl().getName() + ": the OpenGL 2.1 contexts (GLSL 1.20) that JOID supports refuse it, keep to GLSL 1.20 to draw on every backend");
 			}
 		}
 	}

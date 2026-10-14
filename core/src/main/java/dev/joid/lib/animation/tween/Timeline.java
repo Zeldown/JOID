@@ -92,7 +92,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	public Timeline push(final Tween tween) {
 		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
+			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
 		}
 
 		this.current.children.add(tween);
@@ -101,11 +101,11 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	public Timeline push(final Timeline timeline) {
 		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
+			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
 		}
 
 		if (timeline.current != timeline) {
-			throw new RuntimeException("You forgot to call a few 'end()' statements in your pushed timeline");
+			throw new IllegalArgumentException("The pushed timeline still has an open beginSequence() or beginParallel(), close each one with end() before pushing it");
 		}
 
 		timeline.parent = this.current;
@@ -115,7 +115,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	public Timeline pushPause(final float time) {
 		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
+			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
 		}
 
 		this.current.children.add(Tween.mark().delay(time));
@@ -124,7 +124,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	public Timeline beginSequence() {
 		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
+			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
 		}
 
 		final Timeline tl = Timeline.pool.get();
@@ -137,7 +137,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	public Timeline beginParallel() {
 		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
+			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
 		}
 
 		final Timeline tl = Timeline.pool.get();
@@ -150,11 +150,11 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	public Timeline end() {
 		if (this.isBuilt) {
-			throw new RuntimeException("You can't push anything to a timeline once it is started");
+			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
 		}
 
 		if (this.current == this) {
-			throw new RuntimeException("Nothing to end...");
+			throw new IllegalStateException("The timeline has no open beginSequence() or beginParallel() to close, remove this end()");
 		}
 
 		this.current = this.current.parent;
@@ -172,7 +172,7 @@ public final class Timeline extends BaseTween<Timeline> {
 			final BaseTween<?> obj = element;
 
 			if (obj.getRepeatCount() < 0) {
-				throw new RuntimeException("You can't push an object with infinite repetitions in a timeline");
+				throw new IllegalArgumentException("A timeline cannot hold a child that repeats forever (repeat count " + obj.getRepeatCount() + "), give it a finite repeat count");
 			}
 
 			obj.build();

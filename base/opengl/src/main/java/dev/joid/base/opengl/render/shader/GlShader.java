@@ -6,6 +6,7 @@ import java.util.Map;
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlProgramBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.shader.Shader;
 import dev.joid.lib.bridge.render.shader.source.GlslDialect;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
@@ -93,7 +94,7 @@ public final class GlShader extends Shader {
 
 		final boolean linked = programs.getProgrami(program, GlConstants.LINK_STATUS) == GlConstants.TRUE;
 		if (!linked) {
-			System.err.println("Failed to link shader program: " + programs.getProgramInfoLog(program));
+			JOIDLog.warn("OpenGL cannot link a shader program: " + programs.getProgramInfoLog(program));
 		}
 
 		programs.detachShader(program, vertex);
@@ -108,7 +109,7 @@ public final class GlShader extends Shader {
 		programs.shaderSource(shader, source);
 		programs.compileShader(shader);
 		if (programs.getShaderi(shader, GlConstants.COMPILE_STATUS) != GlConstants.TRUE) {
-			System.err.println((type == GlConstants.VERTEX_SHADER ? "Vertex" : "Fragment") + " shader compilation failed: " + programs.getShaderInfoLog(shader));
+			JOIDLog.warn("OpenGL cannot compile a " + (type == GlConstants.VERTEX_SHADER ? "vertex" : "fragment") + " shader: " + programs.getShaderInfoLog(shader));
 			programs.deleteShader(shader);
 			return 0;
 		}

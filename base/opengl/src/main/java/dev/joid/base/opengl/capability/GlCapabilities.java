@@ -3,6 +3,7 @@ package dev.joid.base.opengl.capability;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -91,7 +92,7 @@ public final class GlCapabilities {
 	}
 
 	public @NonNull String getName() {
-		return "OpenGL " + this.version / 100 + "." + this.version / 10 % 10 + " with GLSL " + this.glslVersion / 100 + "." + String.format("%02d", this.glslVersion % 100) + " (" + this.renderer + ")";
+		return "OpenGL " + this.version / 100 + "." + this.version / 10 % 10 + " with GLSL " + this.glslVersion / 100 + "." + String.format(Locale.ROOT, "%02d", this.glslVersion % 100) + " (" + this.renderer + ")";
 	}
 
 	public GlFrameBufferFamily getFrameBufferFamily() {

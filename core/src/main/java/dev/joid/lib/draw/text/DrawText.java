@@ -25,7 +25,7 @@ public final class DrawText {
 
 	public DrawText() {
 		if (DrawText.instance != null) {
-			throw new RuntimeException("Attempted to create a duplicate instance of DrawText.");
+			throw new IllegalStateException("DrawText is created once by DrawUtils, use DrawUtils.TEXT instead of new DrawText()");
 		}
 		DrawText.instance = this;
 	}

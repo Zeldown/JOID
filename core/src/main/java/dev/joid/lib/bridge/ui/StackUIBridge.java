@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.UI;
 import lombok.NonNull;
@@ -34,7 +35,7 @@ public abstract class StackUIBridge extends UIBridge {
 
 				if (!result) {
 					if (JOIDEnv.isDevMode()) {
-						System.err.println("[JOID] " + current.getClass().getSimpleName() + " refused to close in beforeClose, " + ui.getClass().getSimpleName() + " is not opened");
+						JOIDLog.warn(current.getClass().getSimpleName() + " refused to close in beforeClose, " + ui.getClass().getSimpleName() + " is not opened");
 					}
 					return;
 				}

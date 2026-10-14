@@ -77,7 +77,7 @@ public class FrameBuffer {
 
 	public @NonNull FrameBuffer draw(final double x, final double y, final double width, final double height) {
 		if (!this.filled) {
-			throw new RuntimeException("You have to fill the framebuffer before drawing it.");
+			throw new IllegalStateException("The framebuffer of " + this.getWidth() + "x" + this.getHeight() + " is empty, call fill(...) before draw(...)");
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();

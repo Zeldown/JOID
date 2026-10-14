@@ -30,7 +30,7 @@ public final class DrawShape {
 
 	public DrawShape() {
 		if (DrawShape.instance != null) {
-			throw new RuntimeException("Attempted to create a duplicate instance of DrawShape.");
+			throw new IllegalStateException("DrawShape is created once by DrawUtils, use DrawUtils.SHAPE instead of new DrawShape()");
 		}
 		DrawShape.instance = this;
 	}

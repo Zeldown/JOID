@@ -40,7 +40,7 @@ public enum UniformType {
 				return type;
 			}
 		}
-		throw new IllegalArgumentException("Unsupported uniform type " + identifier);
+		throw new IllegalArgumentException("The uniform type " + identifier + " is not supported, use int, uint, bool, float, vec2 to vec4, ivec2 to ivec4, uvec2 to uvec4, bvec2 to bvec4 or mat2 to mat4");
 	}
 
 	public boolean isMatrix() {

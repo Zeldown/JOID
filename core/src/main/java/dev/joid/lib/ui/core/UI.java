@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -29,6 +30,7 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import com.google.common.util.concurrent.AtomicDouble;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.state.StencilFunction;
@@ -99,8 +101,6 @@ public abstract class UI implements IUI, IndexedElement {
 
 	@Getter
 	private static UI current;
-
-	private static boolean monitorWarned;
 
 	@NonNull private final EventBus                             eventBus;
 	@NonNull private final List<@NonNull Task>                  taskList;
@@ -198,10 +198,6 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void load(final double finalWidth, final double finalHeight, final double zoomLevel) {
 		final long start = System.nanoTime();
-		if (JOIDEnv.isDevMode() && this.debug.profiler() && !this.initialized) {
-			System.out.println("##########################");
-			System.out.println("Starting load...");
-		}
 
 		this.view.resize(finalWidth, finalHeight).zoom(zoomLevel);
 		this.refreshView();
@@ -256,8 +252,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 			if (JOIDEnv.isDevMode() && this.debug.profiler()) {
 				final long end = System.nanoTime();
-				System.out.println("Load completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
-				System.out.println("##########################");
+				JOIDLog.info(this.getClass().getSimpleName() + " loaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
 			}
 		} else if (this.closed) {
 			this.scoped(() -> this.nodeList.forEach(node -> node.load(this)));
@@ -432,7 +427,7 @@ public abstract class UI implements IUI, IndexedElement {
 					try {
 						this.renew();
 					} catch (final IllegalStateException exception) {
-						System.err.println("[JOID] " + exception.getMessage());
+						JOIDLog.warn(exception.getMessage());
 					}
 				}
 				event.consume();
@@ -597,14 +592,12 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void draw(final double mouseX, final double mouseY) {
 		if (this.reloadPending) {
 			this.reloadPending = false;
-			System.out.println("Starting reload...");
 
 			final long start = System.nanoTime();
 			this.reload();
 			final long end = System.nanoTime();
 
-			System.out.println("Reload completed in " + String.format("%.2f", (end - start) / 1000000F) + "ms");
-			System.out.println("##########################");
+			JOIDLog.info(this.getClass().getSimpleName() + " reloaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
 		}
 
 		this.untraced(() -> this.drawFrame(mouseX, mouseY));
@@ -842,18 +835,13 @@ public abstract class UI implements IUI, IndexedElement {
 		if (JOIDEnv.isDevMode() && this.debug.hotreload() && this.watchedLocation == null) {
 			final File location = UI.locate(this.getClass());
 			if (location == null) {
-				if (!UI.monitorWarned) {
-					UI.monitorWarned = true;
-					System.err.println("[JOID] Hot reload is off for " + this.getClass().getSimpleName() + ": its classes are not loaded from a folder or a jar file");
-				}
+				JOIDLog.warnOnce("UI.hotReload", "Hot reload is off for " + this.getClass().getSimpleName() + ": its classes are not loaded from a folder or a jar file");
 				return;
 			}
 
 			this.watchedLocation = location;
 			UI.watch(location, this);
-			System.out.println("##########################");
-			System.out.println("Hot-reload enabled on " + this.getClass().getSimpleName());
-			System.out.println("##########################");
+			JOIDLog.info("Hot reload is on for " + this.getClass().getSimpleName() + ", it reloads when its classes change");
 		}
 	}
 
@@ -989,9 +977,7 @@ public abstract class UI implements IUI, IndexedElement {
 		if (JOIDEnv.isDevMode() && this.debug.profiler()) {
 			final float ms = this.renderTime / 1_000_000F;
 			if (ms > 16.66F) {
-				System.err.println("##########################");
-				System.err.println("[!] Frame took " + String.format("%.2f", ms) + "ms to render");
-				System.err.println("##########################");
+				JOIDLog.warn(this.getClass().getSimpleName() + " took " + String.format(Locale.ROOT, "%.2f", ms) + "ms to draw a frame, more than the 16.66ms of 60 fps");
 			}
 		}
 
@@ -1138,7 +1124,7 @@ public abstract class UI implements IUI, IndexedElement {
 			monitor.start();
 			UI.RUNNING_SET.add(monitor);
 		} catch (final Exception e) {
-			e.printStackTrace();
+			JOIDLog.warn("The hot reload of " + location.getAbsolutePath() + " cannot start: " + e, e);
 		}
 	}
 
@@ -1150,7 +1136,7 @@ public abstract class UI implements IUI, IndexedElement {
 		try {
 			monitor.stop();
 		} catch (final Exception e) {
-			e.printStackTrace();
+			JOIDLog.warn("A hot reload watcher cannot stop: " + e, e);
 		}
 	}
 
@@ -1181,8 +1167,7 @@ public abstract class UI implements IUI, IndexedElement {
 					Thread.sleep(1000L);
 				} catch (final Exception e) {}
 
-				System.out.println("##########################");
-				System.out.println("Detected file change: " + this.change.getName());
+				JOIDLog.info(this.change.getName() + " changed, the UIs that use it reload");
 				this.change = null;
 				synchronized (UI.WATCHER_MAP) {
 					final Set<UI> watchers = UI.WATCHER_MAP.get(location);

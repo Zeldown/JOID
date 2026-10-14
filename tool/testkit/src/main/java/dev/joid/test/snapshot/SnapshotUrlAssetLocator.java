@@ -13,6 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.locator.IAssetLocator;
@@ -57,7 +58,7 @@ public final class SnapshotUrlAssetLocator implements IAssetLocator {
 
 	private static String hash(final String url) {
 		try {
-			return String.format("%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(url.getBytes(StandardCharsets.UTF_8))));
+			return String.format(Locale.ROOT, "%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(url.getBytes(StandardCharsets.UTF_8))));
 		} catch (final NoSuchAlgorithmException e) {
 			throw new IllegalStateException(e);
 		}

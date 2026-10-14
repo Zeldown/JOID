@@ -136,7 +136,7 @@ public final class Color {
 			return new Color(red, green, blue, alpha);
 		}
 
-		throw new NumberFormatException("Invalid color: " + hex);
+		throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
 	}
 
 	public static @NonNull Color fill(final int color) {
@@ -230,7 +230,7 @@ public final class Color {
 		hexAlpha = this.padZero(hexAlpha);
 
 		final String hexCode = "#" + hexRed + hexGreen + hexBlue + hexAlpha;
-		return hexCode.toUpperCase();
+		return hexCode.toUpperCase(Locale.ROOT);
 	}
 
 	public void bind() {
@@ -470,7 +470,7 @@ public final class Color {
 
 	private static @NonNull List<String> arguments(final @NonNull String text, final int start, final int... counts) {
 		if (!text.endsWith(")")) {
-			throw new NumberFormatException("Invalid color: " + text);
+			throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
 		}
 
 		final List<String> arguments = new ArrayList<>();
@@ -494,7 +494,7 @@ public final class Color {
 				return arguments;
 			}
 		}
-		throw new NumberFormatException("Invalid color: " + text);
+		throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
 	}
 
 	@Override

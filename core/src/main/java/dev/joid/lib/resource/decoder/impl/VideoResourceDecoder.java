@@ -19,6 +19,7 @@ import org.bytedeco.javacv.FFmpegLogCallback;
 import org.bytedeco.javacv.Frame;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.FileAsset;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -153,8 +154,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 				this.frameQueue = new ArrayBlockingQueue<>(5);
 
-				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
-					this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
+					this.audioPlayer = new VideoAudioPlayer(this.describe(), this.grabber.getSampleRate(), this.grabber.getAudioChannels());
 					this.audioPlayer.setGroup(this.audioGroup);
 					if (this.hasLocation) {
 						this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
@@ -450,8 +451,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					this.frameQueue.clear();
 				}
 
-				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F) {
-					this.audioPlayer = new VideoAudioPlayer(this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
+					this.audioPlayer = new VideoAudioPlayer(this.describe(), this.grabber.getSampleRate(), this.grabber.getAudioChannels());
 					this.audioPlayer.setGroup(this.audioGroup);
 					if (this.hasLocation) {
 						this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
@@ -460,9 +461,13 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					}
 				}
 			} catch (final Exception e) {
-				System.err.println("Failed to reopen video grabber: " + e.getMessage());
+				JOIDLog.warn("The video " + this.describe() + " cannot be reopened: " + e.getMessage());
 			}
 		}
+	}
+
+	private String describe() {
+		return this.asset != null ? this.asset.getUniqueId() : this.file.getPath();
 	}
 
 	private FFmpegFrameGrabber open() throws Exception {
@@ -527,7 +532,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					this.grabber.setTimestamp(microseconds);
 				}
 			} catch (final Exception e) {
-				e.printStackTrace();
+				JOIDLog.warn("The video " + this.describe() + " cannot seek to " + microseconds + "us: " + e, e);
 			}
 
 			final long now = BridgeHandler.CLOCK.get().nanoTime();
@@ -640,8 +645,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				}
 			} catch (final InterruptedException ignored) {
 			} catch (final Exception e) {
-				System.err.println("Video decode thread error: " + e.getMessage());
-				e.printStackTrace();
+				JOIDLog.warn("The video " + this.describe() + " stops decoding: " + e, e);
 			}
 		}, "joid-video-decode");
 		this.decodeThread.setDaemon(true);

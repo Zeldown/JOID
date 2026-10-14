@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
@@ -38,8 +38,6 @@ public abstract class UIBridge implements IUIBridge {
 
 	private Node   pressedNode;
 	private Cursor hoveredCursor;
-
-	private boolean hoverWarned;
 
 	public UIBridge() {
 		this.uiList = new IndexedLinkedList<>();
@@ -187,17 +185,14 @@ public abstract class UIBridge implements IUIBridge {
 			ShaderPipeline.releaseUnused();
 			this.drawLayers(filter);
 			this.updateCursor();
-		} catch (final Exception throwable) {
-			throwable.printStackTrace();
+		} catch (final Exception exception) {
+			JOIDLog.warnOnce("UIBridge.draw." + System.identityHashCode(this) + exception, this.getClass().getSimpleName() + " cannot draw a frame and skips the rest of it: " + exception, exception);
 		}
 	}
 
 	@Override
 	public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {
-		if (!this.hoverWarned && JOIDEnv.isDevMode()) {
-			this.hoverWarned = true;
-			System.err.println("[JOID] " + this.getClass().getSimpleName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them");
-		}
+		JOIDLog.devWarnOnce("UIBridge.drawHover." + System.identityHashCode(this), () -> this.getClass().getSimpleName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them");
 	}
 
 	@Override

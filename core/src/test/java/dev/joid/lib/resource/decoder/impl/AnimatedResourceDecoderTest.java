@@ -2,6 +2,7 @@ package dev.joid.lib.resource.decoder.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -49,8 +50,8 @@ public class AnimatedResourceDecoderTest {
 		try {
 			decoder.decode(new ResourceData("offline.gif", decoder));
 			Assert.fail("The animation must not decode");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Unable to read the animation of offline.gif", expected.getMessage());
+		} catch (final UncheckedIOException expected) {
+			Assert.assertEquals("The animation offline.gif cannot be read", expected.getMessage());
 			Assert.assertTrue(expected.getCause() instanceof IOException);
 		}
 	}

@@ -3,6 +3,7 @@ package dev.joid.lib.resource.decoder.impl;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 import javax.imageio.ImageIO;
 import javax.imageio.spi.ImageReaderSpi;
@@ -84,11 +85,11 @@ public class RasterResourceDecoder implements IResourceDecoder {
 		try (InputStream stream = asset.open()) {
 			image = reader == null ? ImageIO.read(stream) : ImageUtils.read(stream, reader);
 		} catch (final IOException exception) {
-			throw new RuntimeException("Unable to read the image of " + asset.getUniqueId(), exception);
+			throw new UncheckedIOException("The image " + asset.getUniqueId() + " cannot be read", exception);
 		}
 
 		if (image == null) {
-			throw new RuntimeException("Failed to decode image, ImageIO returned null for " + asset.getUniqueId());
+			throw new IllegalArgumentException(asset.getUniqueId() + " is not an image that ImageIO can decode");
 		}
 		return image;
 	}

@@ -137,7 +137,7 @@ public class UniformBlockTest {
 			UniformBlock.create(Collections.singletonList(ShaderVariable.create("dmat4", "x", "", false)), "");
 			Assert.fail("An unsupported type must be refused");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("Unsupported uniform type dmat4", expected.getMessage());
+			Assert.assertEquals("The uniform type dmat4 is not supported, use int, uint, bool, float, vec2 to vec4, ivec2 to ivec4, uvec2 to uvec4, bvec2 to bvec4 or mat2 to mat4", expected.getMessage());
 		}
 	}
 

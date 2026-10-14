@@ -21,7 +21,7 @@ public final class ExternalRaster {
 
 	public ExternalRaster() {
 		if (ExternalRaster.instance != null) {
-			throw new RuntimeException("Attempted to create a duplicate instance of ExternalRaster.");
+			throw new IllegalStateException("ExternalRaster is created once by DrawUtils, use DrawUtils.RASTER instead of new ExternalRaster()");
 		}
 		ExternalRaster.instance = this;
 	}

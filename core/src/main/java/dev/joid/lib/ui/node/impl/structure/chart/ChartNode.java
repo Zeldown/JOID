@@ -95,7 +95,7 @@ public abstract class ChartNode extends Node {
 
 	public final <T extends ChartNode> @NonNull T data(final @NonNull String dataName, final @NonNull ChartData data) {
 		if (this.xAxis == null) {
-			throw new IllegalStateException("You must set the X axis before adding data");
+			throw new IllegalStateException(this.getClass().getSimpleName() + " has no X axis to hold the data " + dataName + ", call xAxis(...) before data(...)");
 		}
 
 		this.xAxis.data(dataName, data);
@@ -104,7 +104,7 @@ public abstract class ChartNode extends Node {
 
 	public final <T extends ChartNode> @NonNull T remove(final @NonNull String data) {
 		if (this.xAxis == null) {
-			throw new IllegalStateException("You must set the X axis before removing data");
+			throw new IllegalStateException(this.getClass().getSimpleName() + " has no X axis to remove the data " + data + " from, call xAxis(...) before remove(...)");
 		}
 
 		this.xAxis.remove(data);

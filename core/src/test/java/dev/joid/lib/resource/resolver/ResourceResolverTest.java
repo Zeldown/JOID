@@ -52,7 +52,7 @@ public class ResourceResolverTest {
 			ResourceResolver.resolve(ResourceBuilder.create().cache(null), "image.png");
 			Assert.fail("An unknown input must be refused");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("No resolver found for input of type java.lang.String", expected.getMessage());
+			Assert.assertEquals("No resource resolver knows the input image.png of type java.lang.String, register an IResourceResolver that supports it with ResourceResolver.register(...)", expected.getMessage());
 		}
 	}
 

@@ -155,9 +155,14 @@ public class FrameBufferTest {
 		Assert.assertFalse(frameBuffer.isFilled());
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void refusesToDrawBeforeItsFill() {
-		FrameBuffer.create(64, 32, TextureFilter.NEAREST).draw(0D, 0D, 64D, 32D);
+		try {
+			FrameBuffer.create(64, 32, TextureFilter.NEAREST).draw(0D, 0D, 64D, 32D);
+			Assert.fail("An empty framebuffer must not be drawn");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The framebuffer of 64x32 is empty, call fill(...) before draw(...)", expected.getMessage());
+		}
 	}
 
 	@Test

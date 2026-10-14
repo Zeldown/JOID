@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,8 +61,8 @@ public class RasterResourceDecoderTest {
 		try {
 			new RasterResourceDecoder(new BytesAsset("notes.txt", "not an image".getBytes(StandardCharsets.UTF_8))).decode(new ResourceData("notes.txt", null));
 			Assert.fail("The image must not decode");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Failed to decode image, ImageIO returned null for notes.txt", expected.getMessage());
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("notes.txt is not an image that ImageIO can decode", expected.getMessage());
 		}
 	}
 
@@ -70,8 +71,8 @@ public class RasterResourceDecoderTest {
 		try {
 			new RasterResourceDecoder(new BytesAsset("offline.png", null)).decode(new ResourceData("offline.png", null));
 			Assert.fail("The image must not decode");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Unable to read the image of offline.png", expected.getMessage());
+		} catch (final UncheckedIOException expected) {
+			Assert.assertEquals("The image offline.png cannot be read", expected.getMessage());
 			Assert.assertTrue(expected.getCause() instanceof IOException);
 		}
 	}

@@ -94,7 +94,7 @@ public abstract class BaseTween<T> {
 
 	public T repeat(final int count, final float delay) {
 		if (this.isStarted) {
-			throw new RuntimeException("You can't change the repetitions of a tween or timeline once it is started");
+			throw new IllegalStateException("The repetitions of a tween or timeline cannot change once it is started, call repeat(...) before start()");
 		}
 
 		this.repeatCnt = count;
@@ -105,7 +105,7 @@ public abstract class BaseTween<T> {
 
 	public T repeatYoyo(final int count, final float delay) {
 		if (this.isStarted) {
-			throw new RuntimeException("You can't change the repetitions of a tween or timeline once it is started");
+			throw new IllegalStateException("The repetitions of a tween or timeline cannot change once it is started, call repeatYoyo(...) before start()");
 		}
 
 		this.repeatCnt = count;

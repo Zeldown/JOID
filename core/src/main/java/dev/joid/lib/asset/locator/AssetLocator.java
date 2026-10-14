@@ -55,7 +55,7 @@ public class AssetLocator {
 			}
 		}
 
-		throw new IllegalArgumentException("No asset locator found for input of type " + handle.getClass().getName());
+		throw new IllegalArgumentException("No asset locator knows the input " + handle + " of type " + handle.getClass().getName() + ", register an IAssetLocator that supports it with AssetLocator.register(...)");
 	}
 
 }

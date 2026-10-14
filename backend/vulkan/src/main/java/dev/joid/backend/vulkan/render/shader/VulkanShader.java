@@ -12,6 +12,7 @@ import org.lwjgl.vulkan.VkShaderModuleCreateInfo;
 
 import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.shader.Shader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderTranslation;
@@ -44,7 +45,7 @@ public final class VulkanShader extends Shader {
 			vertex = ShaderCompiler.compileVertex(translation.getVertex());
 			fragment = ShaderCompiler.compileFragment(translation.getFragment());
 		} catch (final IllegalStateException e) {
-			System.err.println(e.getMessage());
+			JOIDLog.warn(e.getMessage());
 			return;
 		}
 

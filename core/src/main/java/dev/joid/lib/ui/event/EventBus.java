@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import dev.joid.internal.JOIDLog;
 import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -126,8 +127,7 @@ public final class EventBus {
 			}
 
 			registration.failure = failure;
-			System.err.println("[JOID] The " + type.getName() + " listener of " + this.owner.get() + " failed: " + failure);
-			exception.printStackTrace();
+			JOIDLog.warn("The " + type.getName() + " listener of " + this.owner.get() + " failed: " + failure, exception);
 		}
 	}
 

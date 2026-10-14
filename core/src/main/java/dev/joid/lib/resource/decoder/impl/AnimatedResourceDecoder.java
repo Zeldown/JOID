@@ -2,6 +2,7 @@ package dev.joid.lib.resource.decoder.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -52,7 +53,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 		try (InputStream stream = this.asset.open()) {
 			this.animation = this.reader.read(stream);
 		} catch (final IOException exception) {
-			throw new RuntimeException("Unable to read the animation of " + this.asset.getUniqueId(), exception);
+			throw new UncheckedIOException("The animation " + this.asset.getUniqueId() + " cannot be read", exception);
 		}
 
 		resource.width(this.animation.getWidth());

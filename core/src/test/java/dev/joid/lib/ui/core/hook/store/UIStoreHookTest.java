@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -119,9 +118,9 @@ public class UIStoreHookTest {
 		try {
 			UIStoreHook.useStore(FailingStore.class);
 			Assert.fail("The failure of the constructor must reach the caller");
-		} catch (final RuntimeException expected) {
-			Assert.assertTrue(expected.getCause() instanceof InvocationTargetException);
-			Assert.assertEquals("broken store", expected.getCause().getCause().getMessage());
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The constructor of the store " + FailingStore.class.getName() + " failed: java.lang.IllegalStateException: broken store", expected.getMessage());
+			Assert.assertEquals("broken store", expected.getCause().getMessage());
 		}
 	}
 
@@ -223,6 +222,7 @@ public class UIStoreHookTest {
 		Assert.assertTrue(store.initialized);
 		Assert.assertFalse(store.loaded);
 		Assert.assertFalse(this.file().exists());
+		Assert.assertTrue(new File(this.file().getPath() + ".corrupt").exists());
 	}
 
 	@Test
@@ -230,7 +230,8 @@ public class UIStoreHookTest {
 		this.write("{ broken");
 		final List<PermanentStore> stores = new ArrayList<>();
 		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class)));
-		Assert.assertTrue(error, error.contains("Failed to load store file: permanent"));
+		Assert.assertTrue(error, error.startsWith("[JOID] The store file " + this.file().getAbsolutePath() + " cannot be read (com.google.gson.JsonSyntaxException: "));
+		Assert.assertTrue(error, error.endsWith("), it is kept as " + this.file().getAbsolutePath() + ".corrupt and the store starts from init()" + System.lineSeparator()));
 		Assert.assertTrue(stores.get(0).initialized);
 		Assert.assertEquals("default", stores.get(0).value);
 	}
@@ -240,18 +241,30 @@ public class UIStoreHookTest {
 		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
 		Assert.assertTrue(this.file().mkdirs());
 		final String error = UIStoreHookTest.capture(() -> UIStoreHook.saveStore(store));
-		Assert.assertTrue(error, error.contains("Failed to save store file: permanent"));
+		Assert.assertTrue(error, error.startsWith("[JOID] The store permanent cannot be saved into " + this.file().getAbsolutePath() + " ("));
+		Assert.assertTrue(error, error.endsWith("), check that the data folder can be written" + System.lineSeparator()));
 	}
 
 	@Test
-	public void deletesACorruptedFile() throws IOException {
-		final File file = new File(new File(this.folder.getRoot(), "store"), "permanent.store");
-		Assert.assertTrue(file.getParentFile().mkdirs());
-		Files.write(file.toPath(), "{ broken".getBytes(StandardCharsets.UTF_8));
+	public void keepsACorruptedFileInPlaceOfAnOlderOne() throws IOException {
+		this.write("{ broken");
+		final File corrupt = new File(this.file().getPath() + ".corrupt");
+		Files.write(corrupt.toPath(), "older".getBytes(StandardCharsets.UTF_8));
 
-		final String error = UIStoreHookTest.capture(() -> UIStoreHook.useStore(PermanentStore.class));
-		Assert.assertFalse(error, error.contains("Failed to delete corrupted store file"));
-		Assert.assertFalse(file.exists());
+		UIStoreHookTest.capture(() -> UIStoreHook.useStore(PermanentStore.class));
+		Assert.assertFalse(this.file().exists());
+		Assert.assertEquals("{ broken", new String(Files.readAllBytes(corrupt.toPath()), StandardCharsets.UTF_8));
+	}
+
+	@Test
+	public void leavesAFileItCannotReadUntouched() {
+		Assert.assertTrue(this.file().mkdirs());
+		final List<PermanentStore> stores = new ArrayList<>();
+		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class)));
+		Assert.assertTrue(error, error.startsWith("[JOID] The store file " + this.file().getAbsolutePath() + " cannot be read ("));
+		Assert.assertTrue(error, error.endsWith("), it is left untouched and the store starts from init()" + System.lineSeparator()));
+		Assert.assertTrue(stores.get(0).initialized);
+		Assert.assertTrue(this.file().isDirectory());
 	}
 
 	private File file() {

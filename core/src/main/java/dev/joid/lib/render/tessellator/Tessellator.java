@@ -53,7 +53,7 @@ public final class Tessellator {
 
 	public void start(final @NonNull DrawMode drawMode) {
 		if (this.isDrawing) {
-			throw new IllegalStateException("Already tesselating!");
+			throw new IllegalStateException("The Tessellator is already tessellating a " + this.drawMode + " shape, call draw() to end it before start(" + drawMode + ")");
 		}
 
 		this.isDrawing = true;
@@ -70,7 +70,7 @@ public final class Tessellator {
 
 	public void draw() {
 		if (!this.isDrawing) {
-			throw new IllegalStateException("Not tesselating!");
+			throw new IllegalStateException("The Tessellator has no shape to draw, call start(DrawMode) before draw()");
 		}
 
 		this.isDrawing = false;

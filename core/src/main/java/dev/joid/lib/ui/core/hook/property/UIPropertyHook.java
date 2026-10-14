@@ -3,6 +3,7 @@ package dev.joid.lib.ui.core.hook.property;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
@@ -10,6 +11,8 @@ import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,9 +20,12 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.ui.core.UI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -52,7 +58,7 @@ public final class UIPropertyHook {
 			try {
 				field.set(ui, UIPropertyHook.GSON.fromJson(json.get(key), field.getGenericType()));
 			} catch (final Exception e) {
-				e.printStackTrace();
+				JOIDLog.warn("The property " + key + " of " + ui.getClass().getSimpleName() + " cannot be read into its field " + field.getName() + " (" + e + "), the field keeps its default value");
 			}
 		}
 	}
@@ -76,7 +82,7 @@ public final class UIPropertyHook {
 
 				json.add(key, UIPropertyHook.GSON.toJsonTree(value, field.getGenericType()));
 			} catch (final Exception e) {
-				e.printStackTrace();
+				JOIDLog.warn("The field " + field.getName() + " of " + ui.getClass().getSimpleName() + " cannot be saved as the property " + key + " (" + e + "), the property is not saved");
 			}
 		}
 
@@ -129,30 +135,33 @@ public final class UIPropertyHook {
 
 		try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
 			return UIPropertyHook.GSON.fromJson(reader, JsonObject.class);
-		} catch (final Exception e) {
-			System.err.println("Failed to load property file: " + file.getAbsolutePath());
-			e.printStackTrace();
+		} catch (final JsonIOException | IOException e) {
+			JOIDLog.warn("The property file " + file.getAbsolutePath() + " cannot be read (" + e + "), it is left untouched and the properties of " + ui.getClass().getSimpleName() + " keep their default values");
+			return null;
+		} catch (final JsonParseException e) {
+			final File corrupt = new File(file.getPath() + ".corrupt");
+			try {
+				Files.move(file.toPath(), corrupt.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				JOIDLog.warn("The property file " + file.getAbsolutePath() + " cannot be read (" + e + "), it is kept as " + corrupt.getAbsolutePath() + " and the properties of " + ui.getClass().getSimpleName() + " keep their default values");
+			} catch (final IOException move) {
+				JOIDLog.warn("The property file " + file.getAbsolutePath() + " cannot be read (" + e + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + move + "), it is left untouched and the properties of " + ui.getClass().getSimpleName() + " keep their default values");
+			}
+			return null;
 		}
-
-		if (!file.delete()) {
-			System.err.println("Failed to delete corrupted property file: " + file.getAbsolutePath());
-		}
-		return null;
 	}
 
 	private static void saveFile(final @NonNull UI ui, final @NonNull JsonObject json) {
 		final File file = UIPropertyHook.getFile(ui);
 		final File parent = file.getParentFile();
 		if (!parent.exists() && !parent.mkdirs()) {
-			System.err.println("Failed to create property directory: " + parent.getAbsolutePath());
+			JOIDLog.warn("The property folder " + parent.getAbsolutePath() + " cannot be created, the properties of " + ui.getClass().getSimpleName() + " are not saved: check that the data folder can be written");
 			return;
 		}
 
 		try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
 			UIPropertyHook.GSON.toJson(json, writer);
 		} catch (final Exception e) {
-			System.err.println("Failed to save property file: " + file.getAbsolutePath());
-			e.printStackTrace();
+			JOIDLog.warn("The property file " + file.getAbsolutePath() + " cannot be saved (" + e + "), check that the data folder can be written");
 		}
 	}
 

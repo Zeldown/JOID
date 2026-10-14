@@ -107,14 +107,24 @@ public class ChartNodeTest {
 		Assert.assertEquals(0D, chart.getAverage("api").doubleValue(), 0D);
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void refusesDataWithoutAnXAxis() {
-		new BarChartNode(0D, 0D, 300D, 200D).data("api", ChartData.create());
+		try {
+			new BarChartNode(0D, 0D, 300D, 200D).data("api", ChartData.create());
+			Assert.fail("Data without an X axis must be refused");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("BarChartNode has no X axis to hold the data api, call xAxis(...) before data(...)", expected.getMessage());
+		}
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void refusesToRemoveDataWithoutAnXAxis() {
-		new BarChartNode(0D, 0D, 300D, 200D).remove("api");
+		try {
+			new BarChartNode(0D, 0D, 300D, 200D).remove("api");
+			Assert.fail("A removal without an X axis must be refused");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("BarChartNode has no X axis to remove the data api from, call xAxis(...) before remove(...)", expected.getMessage());
+		}
 	}
 
 	@Test

@@ -24,6 +24,7 @@ import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -71,7 +72,7 @@ public final class VideoNatives {
 				VideoNatives.register(VideoNatives.download(Loader.getPlatform(), JOIDEnv.getCacheDir()));
 				installation.complete(null);
 			} catch (final RuntimeException exception) {
-				System.err.println("[JOID] " + exception.getMessage() + (exception.getCause() != null ? " (" + exception.getCause() + ")" : ""));
+				JOIDLog.warn(exception.getMessage() + (exception.getCause() != null ? " (" + exception.getCause() + ")" : ""));
 				installation.completeExceptionally(exception);
 			}
 		}, "VideoNatives").start();
@@ -98,7 +99,7 @@ public final class VideoNatives {
 			Files.createDirectories(parent.toPath());
 			jar = File.createTempFile(platform + "-", ".jar.part", parent);
 			if (JOIDEnv.isDevMode()) {
-				System.out.println("[JOID] Downloading the FFmpeg natives of " + platform + " from " + url);
+				JOIDLog.info("Downloading the FFmpeg natives of " + platform + " from " + url);
 			}
 
 			VideoNatives.fetch(url, jar, platform, checksum);

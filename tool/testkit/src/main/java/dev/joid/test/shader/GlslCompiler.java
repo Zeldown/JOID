@@ -2,6 +2,7 @@ package dev.joid.test.shader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Locale;
 
 import org.lwjgl.util.shaderc.Shaderc;
 
@@ -31,7 +32,7 @@ public final class GlslCompiler {
 			Shaderc.shaderc_compile_options_set_optimization_level(options, Shaderc.shaderc_optimization_level_zero);
 
 			final int kind = stage == ShaderStage.VERTEX ? Shaderc.shaderc_vertex_shader : Shaderc.shaderc_fragment_shader;
-			final long result = Shaderc.shaderc_compile_into_spv(compiler, source, kind, stage.name().toLowerCase(), "main", options);
+			final long result = Shaderc.shaderc_compile_into_spv(compiler, source, kind, stage.name().toLowerCase(Locale.ROOT), "main", options);
 			try {
 				if (Shaderc.shaderc_result_get_compilation_status(result) != Shaderc.shaderc_compilation_status_success) {
 					throw new AssertionError(Shaderc.shaderc_result_get_error_message(result) + "\n" + source);

@@ -1,5 +1,7 @@
 package dev.joid.lib.bridge.render.shader.source;
 
+import java.util.Locale;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -44,7 +46,7 @@ public enum GlslDialect {
 	}
 
 	public @NonNull String getName() {
-		return (this.es ? "ESSL " : "GLSL ") + this.version / 100 + "." + String.format("%02d", this.version % 100);
+		return (this.es ? "ESSL " : "GLSL ") + this.version / 100 + "." + String.format(Locale.ROOT, "%02d", this.version % 100);
 	}
 
 	public @NonNull String getPrecision() {

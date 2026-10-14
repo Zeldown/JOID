@@ -2,12 +2,15 @@ package dev.joid.lib.ui.core.hook.store;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,8 +20,10 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import lombok.AccessLevel;
@@ -40,11 +45,8 @@ public final class UIStoreHook {
 		final T store = UIStoreHook.createStoreInstance(clazz, args);
 		final File file = UIStoreHook.getFile(UIStoreHook.getId(store));
 		if (store.getData().scope() == StoreScope.PERMANENT && file.exists()) {
-			final String json = UIStoreHook.loadFile(UIStoreHook.getId(store));
+			final String json = UIStoreHook.loadFile(file);
 			if (json == null) {
-				if (!file.delete()) {
-					System.err.println("Failed to delete corrupted store file: " + file.getAbsolutePath());
-				}
 				store.init();
 			} else {
 				store.fromJson(json);
@@ -106,8 +108,10 @@ public final class UIStoreHook {
 
 		try {
 			return (T) constructors.get(0).newInstance(args);
-		} catch (final Exception e) {
-			throw new RuntimeException("Failed to create store instance for class " + clazz.getName(), e);
+		} catch (final InvocationTargetException e) {
+			throw new IllegalStateException("The constructor of the store " + clazz.getName() + " failed: " + e.getCause(), e.getCause());
+		} catch (final ReflectiveOperationException e) {
+			throw new IllegalArgumentException("The store " + clazz.getName() + " cannot be created (" + e + "), make it a public class that is not abstract", e);
 		}
 	}
 
@@ -144,15 +148,31 @@ public final class UIStoreHook {
 		return new File(parent, id + ".store");
 	}
 
-	private static String loadFile(final @NonNull String id) {
+	private static String loadFile(final @NonNull File file) {
+		final String json;
 		try {
-			final String json = new String(Files.readAllBytes(UIStoreHook.getFile(id).toPath()), StandardCharsets.UTF_8);
-			return UIStoreHook.GSON.fromJson(json, JsonObject.class) == null ? null : json;
-		} catch (final Exception e) {
-			System.err.println("Failed to load store file: " + id);
-			e.printStackTrace();
+			json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		} catch (final IOException e) {
+			JOIDLog.warn("The store file " + file.getAbsolutePath() + " cannot be read (" + e + "), it is left untouched and the store starts from init()");
+			return null;
 		}
 
+		String failure = "it holds no JSON object";
+		try {
+			if (UIStoreHook.GSON.fromJson(json, JsonObject.class) != null) {
+				return json;
+			}
+		} catch (final JsonParseException e) {
+			failure = e.toString();
+		}
+
+		final File corrupt = new File(file.getPath() + ".corrupt");
+		try {
+			Files.move(file.toPath(), corrupt.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			JOIDLog.warn("The store file " + file.getAbsolutePath() + " cannot be read (" + failure + "), it is kept as " + corrupt.getAbsolutePath() + " and the store starts from init()");
+		} catch (final IOException e) {
+			JOIDLog.warn("The store file " + file.getAbsolutePath() + " cannot be read (" + failure + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + e + "), it is left untouched and the store starts from init()");
+		}
 		return null;
 	}
 
@@ -166,7 +186,7 @@ public final class UIStoreHook {
 				}
 
 				if (!file.createNewFile()) {
-					System.err.println("Failed to create store file: " + file.getAbsolutePath());
+					JOIDLog.warn("The store file " + file.getAbsolutePath() + " cannot be created, check that the data folder can be written");
 				}
 			}
 
@@ -174,8 +194,7 @@ public final class UIStoreHook {
 				writer.write(json);
 			}
 		} catch (final Exception e) {
-			System.err.println("Failed to save store file: " + id);
-			e.printStackTrace();
+			JOIDLog.warn("The store " + id + " cannot be saved into " + UIStoreHook.getFile(id).getAbsolutePath() + " (" + e + "), check that the data folder can be written");
 		}
 	}
 

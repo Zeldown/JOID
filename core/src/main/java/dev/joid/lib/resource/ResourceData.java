@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
@@ -247,7 +248,7 @@ public final class ResourceData {
 		this.loaded = false;
 		this.data = null;
 		if (JOIDEnv.isDevMode()) {
-			System.err.println("[JOID] The resource " + this.uniqueId + " cannot be read and is drawn empty: " + ResourceData.describe(error, !this.isBorrowed()));
+			JOIDLog.warn("The resource " + this.uniqueId + " cannot be read: " + ResourceData.describe(error, !this.isBorrowed()) + ". It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.");
 		}
 
 		for (final Consumer<Throwable> listener : this.errorListeners) {

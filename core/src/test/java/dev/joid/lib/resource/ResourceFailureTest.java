@@ -80,10 +80,10 @@ public class ResourceFailureTest {
 		JOIDEnv.devMode(true);
 		try {
 			final String heif = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new BytesAsset("photo.heic", false, ResourceFailureTest.HEIC)));
-			Assert.assertEquals("[JOID] The resource photo.heic cannot be read and is drawn empty: photo.heic is a HEIF or AVIF image, which JOID cannot decode, convert it to PNG, JPEG or WebP" + System.lineSeparator(), heif);
+			Assert.assertEquals("[JOID] The resource photo.heic cannot be read: photo.heic is a HEIF or AVIF image, which JOID cannot decode, convert it to PNG, JPEG or WebP. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production." + System.lineSeparator(), heif);
 			final String missing = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new File(this.folder.getRoot(), "missing.png")).prepareBind());
 			Assert.assertTrue(missing, missing.startsWith("[JOID] The resource "));
-			Assert.assertTrue(missing, missing.endsWith(", check that the file or the URL exists and can be read" + System.lineSeparator()));
+			Assert.assertTrue(missing, missing.endsWith(", check that the file or the URL exists and can be read. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production." + System.lineSeparator()));
 		} finally {
 			JOIDEnv.devMode(false);
 		}
@@ -95,7 +95,7 @@ public class ResourceFailureTest {
 		JOIDEnv.devMode(true);
 		try {
 			final String warning = ResourceFailureTest.capture(() -> data.fail(new VideoNativesException("The FFmpeg natives of linux-x86_64 cannot be downloaded, check the connection", new IOException("offline"))));
-			Assert.assertEquals("[JOID] The resource intro.mp4 cannot be read and is drawn empty: The FFmpeg natives of linux-x86_64 cannot be downloaded, check the connection (java.io.IOException: offline)" + System.lineSeparator(), warning);
+			Assert.assertEquals("[JOID] The resource intro.mp4 cannot be read: The FFmpeg natives of linux-x86_64 cannot be downloaded, check the connection (java.io.IOException: offline). It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production." + System.lineSeparator(), warning);
 		} finally {
 			JOIDEnv.devMode(false);
 		}

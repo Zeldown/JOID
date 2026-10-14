@@ -5,11 +5,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
 import lombok.Getter;
@@ -17,7 +15,6 @@ import lombok.NonNull;
 
 public final class FontFamily<F extends IFontFace> {
 
-	private final Set<String> warned = ConcurrentHashMap.newKeySet();
 	@Getter private final List<F> faces;
 
 	private FontFamily(final List<F> faces) {
@@ -53,27 +50,24 @@ public final class FontFamily<F extends IFontFace> {
 		}
 
 		final F face = FontFamily.match(styled.isEmpty() ? this.faces : styled, weight.getValue());
-		if (face.getWeight() != weight && JOIDEnv.isDevMode() && this.warned.add(FontFamily.style(weight, italic))) {
+		if (face.getWeight() != weight) {
 			this.warn(weight, italic, face);
 		}
 		return face;
 	}
 
 	private void warn(final @NonNull FontWeight weight, final boolean italic, final @NonNull F face) {
-		final StringBuilder warning = new StringBuilder("[JOID] The font weight ").append(FontFamily.style(weight, italic)).append(" is not loaded in the family of ").append(face.getName());
-		warning.append(", ").append(FontFamily.style(face.getWeight(), face.isItalic())).append(" is drawn instead (loaded: ").append(this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", "))).append(")");
-
-		final StackTraceElement[] origin = FontUsage.getOrigin();
-		for (final StackTraceElement element : origin != null ? origin : FontFamily.locate()) {
-			warning.append(System.lineSeparator()).append("\tat ").append(element);
-		}
-		System.err.println(warning);
+		JOIDLog.devWarnOnce("FontFamily." + System.identityHashCode(this) + "." + FontFamily.style(weight, italic), () -> {
+			final StackTraceElement[] origin = FontUsage.getOrigin();
+			final String trace = Arrays.stream(origin != null ? origin : FontFamily.locate()).map(element -> System.lineSeparator() + "\tat " + element).collect(Collectors.joining());
+			return "The font weight " + FontFamily.style(weight, italic) + " is not loaded in the family of " + face.getName() + ", " + FontFamily.style(face.getWeight(), face.isItalic()) + " is drawn instead (loaded: " + this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", ")) + ")" + trace;
+		});
 	}
 
 	private static @NonNull StackTraceElement[] locate() {
 		final StackTraceElement[] trace = new Throwable().getStackTrace();
 		int start = 0;
-		while (start < trace.length && (trace[start].getClassName().equals(FontFamily.class.getName()) || trace[start].getClassName().startsWith("java."))) {
+		while (start < trace.length && (trace[start].getClassName().equals(FontFamily.class.getName()) || trace[start].getClassName().equals(JOIDLog.class.getName()) || trace[start].getClassName().startsWith("java."))) {
 			start++;
 		}
 		return Arrays.copyOfRange(trace, start, trace.length);

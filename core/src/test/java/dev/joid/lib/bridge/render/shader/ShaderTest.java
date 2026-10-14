@@ -89,7 +89,7 @@ public class ShaderTest {
 			ShaderTest.create().uniform("u_Radius", 1F);
 			Assert.fail("An undeclared uniform must be refused");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("The shader declares no uniform u_Radius", expected.getMessage());
+			Assert.assertEquals("The shader declares no uniform u_Radius, declare it in the shader source or fix its name", expected.getMessage());
 		}
 	}
 
@@ -99,7 +99,7 @@ public class ShaderTest {
 			ShaderTest.create().sampler("u_Mask", new RecordingTexture(), TextureFilter.LINEAR, TextureWrap.REPEAT);
 			Assert.fail("An undeclared sampler must be refused");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("The shader declares no sampler u_Mask", expected.getMessage());
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The shader declares no sampler u_Mask, declare it in the shader source or fix its name (samplers: "));
 		}
 	}
 

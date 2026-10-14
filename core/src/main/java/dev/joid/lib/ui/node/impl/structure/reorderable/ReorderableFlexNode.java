@@ -247,7 +247,7 @@ public class ReorderableFlexNode extends Node {
 	public final int getChildIndex(final @NonNull Node child) {
 		final int index = super.getChildren().ordered().indexOf(child);
 		if (index == -1) {
-			throw new IllegalArgumentException("Node is not a child of this ReorderableFlexNode");
+			throw new IllegalArgumentException("The node " + child.getClass().getSimpleName() + " is not a child of this " + this.getClass().getSimpleName() + ", attach it to the flex first");
 		}
 		return index;
 	}

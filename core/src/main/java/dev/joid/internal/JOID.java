@@ -93,7 +93,7 @@ public final class JOID {
 	public static boolean checkVersion(final @NonNull String version) {
 		final boolean compatible = version.split("[.]")[0].equals(JOID.VERSION.split("[.]")[0]);
 		if (!compatible) {
-			System.err.println("[JOID] This backend targets JOID " + version + " but JOID " + JOID.VERSION + " is loaded");
+			JOIDLog.warn("This backend targets JOID " + version + " but JOID " + JOID.VERSION + " is loaded, use a backend built for JOID " + JOID.VERSION.split("[.]")[0] + ".x");
 		}
 		return compatible;
 	}

@@ -47,7 +47,7 @@ public abstract class SwitchNode extends Node {
 	public final <T extends SwitchNode> @NonNull T states(final @NonNull Supplier<@NonNull List<String>> states) {
 		return super.follow("states", states, value -> {
 			if (value.isEmpty()) {
-				throw new IllegalArgumentException("The state list is empty");
+				throw new IllegalArgumentException("A switch needs at least one state, pass them to states(...)");
 			}
 
 			this.configure(new LinkedList<>(value));

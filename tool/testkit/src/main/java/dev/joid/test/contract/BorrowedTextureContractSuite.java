@@ -2,6 +2,7 @@ package dev.joid.test.contract;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -144,7 +145,7 @@ public abstract class BorrowedTextureContractSuite {
 
 	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {
 		final int actual = image.getPixels()[x + y * image.getWidth()];
-		Assert.assertEquals("Pixel " + x + "," + y, String.format("#%08X", expected), String.format("#%08X", actual));
+		Assert.assertEquals("Pixel " + x + "," + y, String.format(Locale.ROOT, "#%08X", expected), String.format(Locale.ROOT, "#%08X", actual));
 	}
 
 	private static VertexBuffer quad() {

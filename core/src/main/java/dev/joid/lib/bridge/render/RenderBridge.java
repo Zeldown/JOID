@@ -133,7 +133,7 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	protected final void requireFrame() {
 		if (!this.frameActive) {
-			throw new IllegalStateException("The render bridge draws between beginFrame() and endFrame()");
+			throw new IllegalStateException(this.getClass().getSimpleName() + " draws only inside a frame and no frame has begun: draw between beginFrame() and endFrame(), from the draw of a UI or of the backend loop");
 		}
 	}
 

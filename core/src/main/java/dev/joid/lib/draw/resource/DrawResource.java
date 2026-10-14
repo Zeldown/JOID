@@ -25,7 +25,7 @@ public final class DrawResource {
 
 	public DrawResource() {
 		if (DrawResource.instance != null) {
-			throw new RuntimeException("Attempted to create a duplicate instance of DrawResource.");
+			throw new IllegalStateException("DrawResource is created once by DrawUtils, use DrawUtils.RESOURCE instead of new DrawResource()");
 		}
 		DrawResource.instance = this;
 	}

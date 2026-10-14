@@ -32,16 +32,26 @@ public class TessellatorTest {
 		copy.draw();
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void refusesToStartTwice() {
 		final Tessellator tessellator = Tessellator.inst().copy();
 		tessellator.start(DrawMode.TRIANGLES);
-		tessellator.start(DrawMode.TRIANGLES);
+		try {
+			tessellator.start(DrawMode.QUADS);
+			Assert.fail("A second start must be refused");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Tessellator is already tessellating a TRIANGLES shape, call draw() to end it before start(QUADS)", expected.getMessage());
+		}
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void refusesToDrawWithoutStarting() {
-		Tessellator.inst().copy().draw();
+		try {
+			Tessellator.inst().copy().draw();
+			Assert.fail("A draw without start must be refused");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Tessellator has no shape to draw, call start(DrawMode) before draw()", expected.getMessage());
+		}
 	}
 
 	@Test(expected = NullPointerException.class)

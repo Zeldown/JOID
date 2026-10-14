@@ -2146,8 +2146,9 @@ public class NodeTest {
 		try {
 			new NamedNode("label").copy();
 			Assert.fail("A node without known constructor cannot be copied");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Failed to copy node: NamedNode", expected.getMessage());
+		} catch (final IllegalStateException expected) {
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The node NamedNode cannot be copied: none of its constructors (x, y, width, height), (x, y) or () can be called (java.lang.NoSuchMethodException: "));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith("), declare one of them"));
 			Assert.assertTrue(expected.getCause() instanceof NoSuchMethodException);
 		}
 	}

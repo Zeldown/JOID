@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -125,7 +126,7 @@ public final class ObjModel implements IDrawableModel {
 				this.groups.add(this.currentGroup);
 			}
 		} catch (final IOException e) {
-			throw new RuntimeException("IO Exception reading model format", e);
+			throw new UncheckedIOException("The OBJ model " + this.name + " cannot be read: " + e.getMessage(), e);
 		} finally {
 			try {
 				if (reader != null) {
@@ -190,27 +191,27 @@ public final class ObjModel implements IDrawableModel {
 		return this.vertices.isEmpty() ? 0D : maxY - minY;
 	}
 
-	private ObjVertex parseVertex(final @NonNull String line, final int lineCount) throws RuntimeException {
+	private ObjVertex parseVertex(final @NonNull String line, final int lineCount) {
 		if (!ObjModel.isValidVertexLine(line)) {
-			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+			throw this.malformed(line, lineCount, "is not a vertex \"v x y z\"");
 		}
 		final String values = line.substring(line.indexOf(" ") + 1);
 		final String[] tokens = values.split(" ");
 		return new ObjVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
-	private ObjVertex parseVertexNormal(final @NonNull String line, final int lineCount) throws RuntimeException {
+	private ObjVertex parseVertexNormal(final @NonNull String line, final int lineCount) {
 		if (!ObjModel.isValidVertexNormalLine(line)) {
-			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+			throw this.malformed(line, lineCount, "is not a normal \"vn x y z\"");
 		}
 		final String values = line.substring(line.indexOf(" ") + 1);
 		final String[] tokens = values.split(" ");
 		return new ObjVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
-	private ObjTextureCoordinate parseTextureCoordinate(final @NonNull String line, final int lineCount) throws RuntimeException {
+	private ObjTextureCoordinate parseTextureCoordinate(final @NonNull String line, final int lineCount) {
 		if (!ObjModel.isValidTextureCoordinateLine(line)) {
-			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+			throw this.malformed(line, lineCount, "is not a texture coordinate \"vt u v\" or \"vt u v w\"");
 		}
 		final String values = line.substring(line.indexOf(" ") + 1);
 		final String[] tokens = values.split(" ");
@@ -221,10 +222,10 @@ public final class ObjModel implements IDrawableModel {
 		return new ObjTextureCoordinate(Float.parseFloat(tokens[0]), 1 - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
-	private ObjFace parseFace(final @NonNull String line, final int lineCount) throws RuntimeException {
+	private ObjFace parseFace(final @NonNull String line, final int lineCount) {
 		ObjFace face = null;
 		if (!ObjModel.isFaceLine(line)) {
-			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+			throw this.malformed(line, lineCount, "is not a face of 3 or 4 vertices \"f v1 v2 v3\"");
 		}
 		face = new ObjFace();
 
@@ -236,13 +237,13 @@ public final class ObjModel implements IDrawableModel {
 			if (this.currentGroup.getDrawMode() == null) {
 				this.currentGroup.setDrawMode(DrawMode.TRIANGLES);
 			} else if (this.currentGroup.getDrawMode() != DrawMode.TRIANGLES) {
-				throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Invalid number of points for face (expected 4, found " + tokens.length + ")");
+				throw this.malformed(line, lineCount, "has 3 vertices while the faces before it in its group have 4, keep one kind of face per group");
 			}
 		} else if (tokens.length == 4) {
 			if (this.currentGroup.getDrawMode() == null) {
 				this.currentGroup.setDrawMode(DrawMode.QUADS);
 			} else if (this.currentGroup.getDrawMode() != DrawMode.QUADS) {
-				throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Invalid number of points for face (expected 3, found " + tokens.length + ")");
+				throw this.malformed(line, lineCount, "has 4 vertices while the faces before it in its group have 3, keep one kind of face per group");
 			}
 		}
 
@@ -286,10 +287,10 @@ public final class ObjModel implements IDrawableModel {
 		return face;
 	}
 
-	private ObjGroup parseGroup(final @NonNull String line, final int lineCount) throws RuntimeException {
+	private ObjGroup parseGroup(final @NonNull String line, final int lineCount) {
 		ObjGroup group = null;
 		if (!ObjModel.isValidGroupLine(line)) {
-			throw new RuntimeException("Error parsing entry ('" + line + "'" + ", line " + lineCount + ") in file '" + this.name + "' - Incorrect format");
+			throw this.malformed(line, lineCount, "is not a group or an object \"g name\" or \"o name\" with names of letters, digits, underscores and dots");
 		}
 		final String trimmedLine = line.substring(line.indexOf(" ") + 1);
 		if (trimmedLine.length() > 0) {
@@ -297,6 +298,10 @@ public final class ObjModel implements IDrawableModel {
 		}
 
 		return group;
+	}
+
+	private @NonNull IllegalArgumentException malformed(final @NonNull String line, final int lineCount, final @NonNull String problem) {
+		return new IllegalArgumentException("The OBJ model " + this.name + " cannot be read: its line " + lineCount + " \"" + line + "\" " + problem + ", fix this line in the model file");
 	}
 
 	private static boolean isFaceLine(final @NonNull String line) {

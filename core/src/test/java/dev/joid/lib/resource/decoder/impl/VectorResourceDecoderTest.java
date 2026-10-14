@@ -3,6 +3,7 @@ package dev.joid.lib.resource.decoder.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
@@ -253,8 +254,8 @@ public class VectorResourceDecoderTest {
 		try {
 			decoder.decode(new ResourceData("notes.svg", decoder));
 			Assert.fail("The document must not decode");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Failed to parse the SVG of notes.svg", expected.getMessage());
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("notes.svg is not an SVG document that can be parsed", expected.getMessage());
 		}
 	}
 
@@ -264,8 +265,8 @@ public class VectorResourceDecoderTest {
 		try {
 			decoder.decode(new ResourceData("offline.svg", decoder));
 			Assert.fail("The document must not decode");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Unable to read the SVG of offline.svg", expected.getMessage());
+		} catch (final UncheckedIOException expected) {
+			Assert.assertEquals("The SVG offline.svg cannot be read", expected.getMessage());
 			Assert.assertTrue(expected.getCause() instanceof IOException);
 		}
 	}

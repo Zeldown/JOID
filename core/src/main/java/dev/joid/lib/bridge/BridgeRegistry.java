@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.function.Predicate;
 
@@ -61,7 +62,7 @@ public class BridgeRegistry<T extends IBridge> {
 	public final @NonNull T get() {
 		final List<T> bridgeList = this.bridgeList;
 		if (bridgeList.isEmpty()) {
-			throw new IllegalStateException("No " + this.name.toLowerCase() + " bridge registered, call BridgeHandler." + this.name + ".register before using JOID");
+			throw new IllegalStateException("No " + this.name.toLowerCase(Locale.ROOT) + " bridge registered, call BridgeHandler." + this.name + ".register before using JOID");
 		}
 		return bridgeList.get(bridgeList.size() - 1);
 	}

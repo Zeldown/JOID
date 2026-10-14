@@ -150,12 +150,17 @@ public class BaseTweenTest {
 		Assert.assertFalse(BaseTweenTest.tween(new MutableFloat(0F)).repeatYoyo(1, 0F).repeat(1, 0F).isYoyo());
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void refusesToRepeatOnceStarted() {
-		BaseTweenTest.tween(new MutableFloat(0F)).start().repeat(1, 0F);
+		try {
+			BaseTweenTest.tween(new MutableFloat(0F)).start().repeat(1, 0F);
+			Assert.fail("A started tween must keep its repetitions");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The repetitions of a tween or timeline cannot change once it is started, call repeat(...) before start()", expected.getMessage());
+		}
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalStateException.class)
 	public void refusesToRepeatYoyoOnceStarted() {
 		BaseTweenTest.tween(new MutableFloat(0F)).start().repeatYoyo(1, 0F);
 	}

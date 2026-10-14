@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.List;
@@ -197,8 +198,7 @@ public class ObjModelTest {
 			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 3", "f 1 2 4 3");
 			Assert.fail("A quad must not join a group of triangles");
 		} catch (final RuntimeException expected) {
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().contains("line 6"));
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().contains("expected 3, found 4"));
+			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 4 3\" has 4 vertices while the faces before it in its group have 3, keep one kind of face per group, fix this line in the model file", expected.getMessage());
 		}
 	}
 
@@ -208,8 +208,7 @@ public class ObjModelTest {
 			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 4 3", "f 1 2 3");
 			Assert.fail("A triangle must not join a group of quads");
 		} catch (final RuntimeException expected) {
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().contains("line 6"));
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().contains("expected 4, found 3"));
+			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 3\" has 3 vertices while the faces before it in its group have 4, keep one kind of face per group, fix this line in the model file", expected.getMessage());
 		}
 	}
 
@@ -218,8 +217,8 @@ public class ObjModelTest {
 		try {
 			ObjModelTest.load("# header", "v 1 2");
 			Assert.fail("A vertex with two coordinates must be refused");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Error parsing entry ('v 1 2', line 2) in file 'test' - Incorrect format", expected.getMessage());
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The OBJ model test cannot be read: its line 2 \"v 1 2\" is not a vertex \"v x y z\", fix this line in the model file", expected.getMessage());
 		}
 	}
 
@@ -262,7 +261,8 @@ public class ObjModelTest {
 		try {
 			ObjModel.load("broken", new FailingStream(failure), ObjModelTest.TEXTURE);
 			Assert.fail("A read failure must reach the caller");
-		} catch (final RuntimeException expected) {
+		} catch (final UncheckedIOException expected) {
+			Assert.assertEquals("The OBJ model broken cannot be read: unreadable", expected.getMessage());
 			Assert.assertSame(failure, expected.getCause());
 		}
 	}
@@ -392,8 +392,8 @@ public class ObjModelTest {
 		try {
 			ObjModelTest.load("v 0 0 0", "o left-wing");
 			Assert.fail("A group name with a dash must be refused");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("Error parsing entry ('o left-wing', line 2) in file 'test' - Incorrect format", expected.getMessage());
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The OBJ model test cannot be read: its line 2 \"o left-wing\" is not a group or an object \"g name\" or \"o name\" with names of letters, digits, underscores and dots, fix this line in the model file", expected.getMessage());
 		}
 	}
 

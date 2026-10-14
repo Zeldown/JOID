@@ -26,6 +26,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
@@ -1634,7 +1635,7 @@ public abstract class Node implements INode {
 				field.setAccessible(true);
 				field.set(copy, field.get(this));
 			} catch (final Exception e) {
-				throw new RuntimeException("Failed to copy node: " + this.getClass().getSimpleName(), e);
+				throw new IllegalStateException("The node " + this.getClass().getSimpleName() + " cannot be copied: its field " + field.getName() + " cannot be set (" + e + "), mark the field transient to leave it out of copy()", e);
 			}
 		}
 
@@ -1845,8 +1846,7 @@ public abstract class Node implements INode {
 			try {
 				source.getValue().pull();
 			} catch (final RuntimeException exception) {
-				System.err.println("[JOID] The " + source.getKey() + " of " + this.getClass().getSimpleName() + " cannot take its new value: " + exception);
-				exception.printStackTrace();
+				JOIDLog.warnOnce("Node.pull." + this.getClass().getName() + "." + source.getKey() + "." + exception.getClass().getName(), "The " + source.getKey() + " of " + this.getClass().getSimpleName() + " cannot take its new value: " + exception, exception);
 			}
 		}
 	}
@@ -1982,7 +1982,7 @@ public abstract class Node implements INode {
 					try {
 						property.apply(this, signal);
 					} catch (final Exception e) {
-						e.printStackTrace();
+						JOIDLog.warnOnce("Node.watch." + this.getClass().getName() + "." + e.getClass().getName(), "A watch of " + this.getClass().getSimpleName() + " cannot apply its property when its signal changes: " + e, e);
 					}
 				}
 			} finally {
@@ -2475,7 +2475,7 @@ public abstract class Node implements INode {
 			}
 		}
 
-		throw new RuntimeException("Failed to copy node: " + this.getClass().getSimpleName(), failure);
+		throw new IllegalStateException("The node " + this.getClass().getSimpleName() + " cannot be copied: none of its constructors (x, y, width, height), (x, y) or () can be called (" + failure + "), declare one of them", failure);
 	}
 
 	private @NonNull List<@NonNull Field> getFields(final @NonNull Class<?> clazz) {

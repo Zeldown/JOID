@@ -3,6 +3,7 @@ package dev.joid.test.contract;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.function.Consumer;
 
 import org.junit.AfterClass;
@@ -539,7 +540,7 @@ public abstract class RenderBridgeContractSuite {
 
 	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {
 		final int actual = image.getPixels()[x + y * image.getWidth()];
-		Assert.assertEquals("Pixel " + x + "," + y, String.format("#%08X", expected), String.format("#%08X", actual));
+		Assert.assertEquals("Pixel " + x + "," + y, String.format(Locale.ROOT, "#%08X", expected), String.format(Locale.ROOT, "#%08X", actual));
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final float start, final float end) {

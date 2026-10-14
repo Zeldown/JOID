@@ -55,9 +55,14 @@ public class RenderBridgeTest {
 		}
 	}
 
-	@Test(expected = IllegalStateException.class)
+	@Test
 	public void refusesToEndAFrameThatNeverBegan() {
-		new RecordingRenderBridge().endFrame();
+		try {
+			new RecordingRenderBridge().endFrame();
+			Assert.fail("A frame that never began cannot end");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("RecordingRenderBridge draws only inside a frame and no frame has begun: draw between beginFrame() and endFrame(), from the draw of a UI or of the backend loop", expected.getMessage());
+		}
 	}
 
 	@Test

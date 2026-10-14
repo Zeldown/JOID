@@ -2,10 +2,8 @@ package dev.joid.lib.font.impl.glyph;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -23,8 +21,6 @@ import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
 public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRenderer {
-
-	private static final Set<Class<?>> WARNED_FONTS = ConcurrentHashMap.newKeySet();
 
 	private double runX;
 	private double runY;
@@ -151,9 +147,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		if (!(styleFont instanceof GlyphFont) || styleFont.getTextRenderer().getClass() != this.getClass()) {
-			if (JOIDEnv.isDevMode() && GlyphTextRenderer.WARNED_FONTS.add(styleFont.getClass())) {
-				System.err.println("[JOID] The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font");
-			}
+			JOIDLog.devWarnOnce("GlyphTextRenderer.font." + styleFont.getClass().getName(), () -> "The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font");
 			return font;
 		}
 

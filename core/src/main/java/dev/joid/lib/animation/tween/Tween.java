@@ -187,7 +187,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween cast(final Class<?> targetClass) {
 		if (this.isStarted()) {
-			throw new RuntimeException("You can't cast the target of a tween once it is started");
+			throw new IllegalStateException("The target class of a tween cannot change once it is started, call cast(...) before start()");
 		}
 
 		this.targetClass = targetClass;
@@ -201,7 +201,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween target(final float... targetValues) {
 		if (targetValues.length > Tween.combinedAttrsLimit) {
-			throw this.combinedAttrsLimitReached();
+			throw this.combinedAttrsLimitReached(targetValues.length);
 		}
 
 		System.arraycopy(targetValues, 0, this.targetValues, 0, targetValues.length);
@@ -229,7 +229,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	public Tween targetRelative(final float... targetValues) {
 		if (targetValues.length > Tween.combinedAttrsLimit) {
-			throw this.combinedAttrsLimitReached();
+			throw this.combinedAttrsLimitReached(targetValues.length);
 		}
 
 		for (int i = 0; i < targetValues.length; i++) {
@@ -310,11 +310,11 @@ public final class Tween extends BaseTween<Tween> {
 		if (this.accessor != null) {
 			this.combinedAttrsCnt = this.accessor.getValues(this.target, this.type, this.accessorBuffer);
 		} else {
-			throw new RuntimeException("No TweenAccessor was found for the target");
+			throw new IllegalArgumentException("No TweenAccessor animates the target " + this.target + " of class " + this.target.getClass().getName() + ": register one with Tween.registerAccessor(...) or make the target implement TweenAccessor");
 		}
 
 		if (this.combinedAttrsCnt > Tween.combinedAttrsLimit) {
-			throw this.combinedAttrsLimitReached();
+			throw this.combinedAttrsLimitReached(this.combinedAttrsCnt);
 		}
 
 		return this;
@@ -430,7 +430,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	private void setup(final Object target, final int tweenType, final float duration) {
 		if (duration < 0) {
-			throw new RuntimeException("Duration can't be negative");
+			throw new IllegalArgumentException("The duration of a tween cannot be negative, got " + duration + ": pass 0 or more");
 		}
 
 		this.target = target;
@@ -462,12 +462,8 @@ public final class Tween extends BaseTween<Tween> {
 		}
 	}
 
-	private RuntimeException combinedAttrsLimitReached() {
-		final String msg = "You cannot combine more than " + Tween.combinedAttrsLimit + " "
-				+ "attributes in a tween. You can raise this limit with "
-				+ "Tween.setCombinedAttributesLimit(), which should be called once "
-				+ "in application initialization code.";
-		return new RuntimeException(msg);
+	private IllegalArgumentException combinedAttrsLimitReached(final int count) {
+		return new IllegalArgumentException("A tween combines " + count + " values but the limit is " + Tween.combinedAttrsLimit + ", raise it once at startup with Tween.setCombinedAttributesLimit(...)");
 	}
 
 }

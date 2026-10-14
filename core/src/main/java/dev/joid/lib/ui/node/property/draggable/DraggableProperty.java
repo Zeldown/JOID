@@ -169,11 +169,11 @@ public class DraggableProperty {
 		this.areaObject = area;
 
 		if (areaType == DraggableAreaType.NODE && !(area instanceof Node)) {
-			throw new IllegalArgumentException("Invalid area object for DraggableAreaType.NODE: " + area);
+			throw new IllegalArgumentException("DraggableAreaType.NODE needs the Node that bounds the drag, got " + area);
 		}
 
 		if (areaType == DraggableAreaType.CUSTOM && !(area instanceof double[])) {
-			throw new IllegalArgumentException("Invalid area object for DraggableAreaType.CUSTOM: " + area);
+			throw new IllegalArgumentException("DraggableAreaType.CUSTOM needs a double[] {x, y, width, height} that bounds the drag, got " + area);
 		}
 
 		return this;

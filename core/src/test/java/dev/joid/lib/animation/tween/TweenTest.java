@@ -118,9 +118,14 @@ public class TweenTest {
 		Assert.assertTrue(mark.isFinished());
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void refusesANegativeDuration() {
-		Tween.to(new MutableFloat(0F), 0, -1F);
+		try {
+			Tween.to(new MutableFloat(0F), 0, -1F);
+			Assert.fail("A negative duration must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The duration of a tween cannot be negative, got -1.0: pass 0 or more", expected.getMessage());
+		}
 	}
 
 	@Test
@@ -152,12 +157,12 @@ public class TweenTest {
 		Assert.assertEquals(15F, point.z, 0F);
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void refusesMoreAttributesThanTheLimit() {
 		Tween.to(new Point(0F, 0F, 0F), 3, 1F).target(1F, 2F, 3F, 4F);
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnAccessorCombiningMoreAttributesThanTheLimit() {
 		Tween.to(new Point(0F, 0F, 0F), 4, 1F).start();
 	}
@@ -171,7 +176,7 @@ public class TweenTest {
 		Assert.assertArrayEquals(new float[] {1F, 2F, 3F, 4F}, tween.getTargetValues(), 0F);
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void refusesMoreAttributesThanALoweredLimit() {
 		Tween.mark().free();
 		Tween.setCombinedAttributesLimit(2);
@@ -236,7 +241,7 @@ public class TweenTest {
 		}
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void refusesMoreRelativeAttributesThanTheLimit() {
 		Tween.to(new Point(0F, 0F, 0F), 3, 1F).targetRelative(1F, 2F, 3F, 4F);
 	}
@@ -345,9 +350,14 @@ public class TweenTest {
 		Assert.assertSame(value, Tween.to(value, 0, 1F).build().getAccessor());
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test
 	public void refusesATargetWithoutAccessor() {
-		Tween.to(new Object(), 0, 1F).start();
+		try {
+			Tween.to("label", 0, 1F).start();
+			Assert.fail("A target without accessor must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("No TweenAccessor animates the target label of class java.lang.String: register one with Tween.registerAccessor(...) or make the target implement TweenAccessor", expected.getMessage());
+		}
 	}
 
 	@Test
@@ -364,12 +374,12 @@ public class TweenTest {
 		Assert.assertSame(Pixel.class, Tween.to(new Pixel(), 1, 1F).cast(Pixel.class).getTargetClass());
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void looksTheAccessorUpByItsCastClass() {
 		Tween.to(new Pixel(), 1, 1F).cast(Pixel.class).start();
 	}
 
-	@Test(expected = RuntimeException.class)
+	@Test(expected = IllegalStateException.class)
 	public void refusesToCastOnceStarted() {
 		Tween.to(new Point(0F, 0F, 0F), 1, 1F).start().cast(Point.class);
 	}
@@ -424,7 +434,7 @@ public class TweenTest {
 
 	@Test
 	public void explainsTheCombinedAttributesLimitItReached() {
-		final String message = "You cannot combine more than 3 attributes in a tween. You can raise this limit with Tween.setCombinedAttributesLimit(), which should be called once in application initialization code.";
+		final String message = "A tween combines 4 values but the limit is 3, raise it once at startup with Tween.setCombinedAttributesLimit(...)";
 		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).target(1F, 2F, 3F, 4F)));
 		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 3, 1F).targetRelative(1F, 2F, 3F, 4F)));
 		Assert.assertEquals(message, TweenTest.refusal(() -> Tween.to(new Point(0F, 0F, 0F), 4, 1F).start()));

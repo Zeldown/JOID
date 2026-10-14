@@ -45,7 +45,7 @@ public class KeyResolver {
 				return resolver.resolve(binding);
 			}
 		}
-		throw new IllegalArgumentException("No key resolver found for a binding of type " + binding.getClass().getName());
+		throw new IllegalArgumentException("No key resolver knows the binding " + binding + " of type " + binding.getClass().getName() + ", pass a Key or register an IKeyResolver with KeyResolver.register(...)");
 	}
 
 }

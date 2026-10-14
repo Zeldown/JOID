@@ -1,9 +1,6 @@
 package dev.joid.lib.ui.shortcut;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.key.resolver.KeyResolver;
 import dev.joid.lib.ui.core.UI;
@@ -18,7 +15,6 @@ import lombok.NonNull;
 @Getter
 public final class Shortcut {
 
-	private static final Set<Object>              WARNED  = ConcurrentHashMap.newKeySet();
 	private static final EventType<ShortcutEvent> TRIGGER = EventType.create("onTrigger");
 
 	private final Object   binding;
@@ -33,8 +29,8 @@ public final class Shortcut {
 	private Node node;
 
 	private Shortcut(final Object binding) {
-		if (JOIDEnv.isDevMode() && !KeyResolver.supports(binding) && Shortcut.WARNED.add(binding)) {
-			System.err.println("[JOID] No key resolver knows the shortcut binding " + binding + " of type " + binding.getClass().getName() + ", the shortcut never fires: pass a Key or register an IKeyResolver first");
+		if (!KeyResolver.supports(binding)) {
+			JOIDLog.devWarnOnce("Shortcut.binding." + binding.getClass().getName() + "." + binding, () -> "No key resolver knows the shortcut binding " + binding + " of type " + binding.getClass().getName() + ", the shortcut never fires: pass a Key or register an IKeyResolver first");
 		}
 
 		this.binding = binding;

@@ -12,7 +12,7 @@ public final class DrawModel {
 
 	public DrawModel() {
 		if (DrawModel.instance != null) {
-			throw new RuntimeException("Attempted to create a duplicate instance of DrawModel.");
+			throw new IllegalStateException("DrawModel is created once by DrawUtils, use DrawUtils.MODEL instead of new DrawModel()");
 		}
 		DrawModel.instance = this;
 	}

@@ -43,7 +43,7 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 		}
 
 		if (!this.shader.isActive()) {
-			throw new IllegalStateException("The bitmap font shader is not usable");
+			throw new IllegalStateException("The bitmap font shader cannot be compiled by " + render.getClass().getSimpleName() + ", the error printed by JOID when it was created tells why");
 		}
 
 		this.color = null;

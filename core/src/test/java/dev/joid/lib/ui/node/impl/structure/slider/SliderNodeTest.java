@@ -31,9 +31,14 @@ public class SliderNodeTest {
 		new Slider().values();
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void refusesAValueOutsideItsSet() {
-		new Slider().values(SliderNodeTest.digits()).value(10);
+		try {
+			new Slider().values(3, 6, 9).value(10);
+			Assert.fail("A value outside the options must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The value 10 is not an option of the slider [3, 6, 9], pass one of them or add it with values(...)", expected.getMessage());
+		}
 	}
 
 	@Test

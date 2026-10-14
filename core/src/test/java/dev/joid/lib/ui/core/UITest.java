@@ -776,8 +776,7 @@ public class UITest {
 	public void printsItsLoadTimeWithItsProfilerInDevMode() {
 		JOIDEnv.devMode(true);
 		final String output = UITest.out(() -> new ProfiledUI(this.trace).load(1920D, 1080D));
-		Assert.assertTrue(output, output.contains("Starting load..."));
-		Assert.assertTrue(output, output.contains("Load completed in "));
+		Assert.assertTrue(output, output.matches("\\[JOID\\] ProfiledUI loaded in \\d+\\.\\d\\dms" + System.lineSeparator()));
 	}
 
 	@Test
@@ -808,7 +807,7 @@ public class UITest {
 		} finally {
 			System.setErr(previous);
 		}
-		Assert.assertTrue(output.toString(), output.toString().contains("[!] Frame took "));
+		Assert.assertTrue(output.toString(), output.toString().matches("\\[JOID\\] ProfiledUI took \\d+\\.\\d\\dms to draw a frame, more than the 16\\.66ms of 60 fps" + System.lineSeparator()));
 	}
 
 	@Test
@@ -1580,7 +1579,7 @@ public class UITest {
 			Assert.assertFalse(ui.isReloadPending());
 			Assert.assertEquals(2, inits.get());
 			Assert.assertTrue(ui.isInitialized());
-			Assert.assertTrue(output, output.contains("Reload completed in "));
+			Assert.assertTrue(output, output.matches("\\[JOID\\] \\w* ?reloaded in \\d+\\.\\d\\dms" + System.lineSeparator()));
 		} finally {
 			ui.dispose();
 		}

@@ -1,6 +1,6 @@
 package dev.joid.lib.shader.impl;
 
-import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
@@ -11,7 +11,6 @@ import lombok.NonNull;
 public abstract class ShaderProgram {
 
 	private IShader      shader;
-	private boolean      warned;
 	private ShaderSource vertex;
 	private ShaderSource fragment;
 
@@ -24,8 +23,7 @@ public abstract class ShaderProgram {
 			}
 		} catch (final Exception e) {
 			this.vertex = null;
-			System.err.println("[JOID] Unable to load the shader " + this.getClass().getSimpleName() + ": " + e.getMessage());
-			e.printStackTrace();
+			JOIDLog.warn("Unable to load the shader " + this.getClass().getSimpleName() + ": " + e.getMessage(), e);
 		}
 	}
 
@@ -35,8 +33,7 @@ public abstract class ShaderProgram {
 				this.shader = BridgeHandler.RENDER.get().createShader(this.vertex, this.fragment, BlendState.NORMAL);
 			} catch (final Exception e) {
 				this.vertex = null;
-				System.err.println("[JOID] Unable to create the shader " + this.getClass().getSimpleName() + ": " + e.getMessage());
-				e.printStackTrace();
+				JOIDLog.warn("Unable to create the shader " + this.getClass().getSimpleName() + ": " + e.getMessage(), e);
 			}
 		}
 		return this.shader;
@@ -57,9 +54,8 @@ public abstract class ShaderProgram {
 
 	public boolean canDraw() {
 		final boolean available = this.isAvailable();
-		if (!available && JOIDEnv.isDevMode() && !this.warned) {
-			this.warned = true;
-			System.err.println("[JOID] The shader " + this.getClass().getSimpleName() + " is unavailable, what it draws is skipped");
+		if (!available) {
+			JOIDLog.devWarnOnce("ShaderProgram.unavailable." + System.identityHashCode(this), () -> "The shader " + this.getClass().getSimpleName() + " is unavailable, what it draws is skipped");
 		}
 		return available;
 	}

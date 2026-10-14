@@ -4,10 +4,12 @@ import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDLog;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.color.Color;
@@ -135,7 +137,7 @@ public final class DevNode extends Node {
 				.hover(() -> "[G] Grid")
 				.attach(flex);
 			} catch (final Exception e) {
-				e.printStackTrace();
+				JOIDLog.warn("The dev panel cannot show its tool icons: " + e, e);
 			}
 		})
 		.attach(this);
@@ -182,7 +184,7 @@ public final class DevNode extends Node {
 
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(String.format("%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
+				.text(Text.create(String.format(Locale.ROOT, "%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 			})
@@ -328,7 +330,7 @@ public final class DevNode extends Node {
 								.width(scroll.aw(-20))
 								.attach(scroll);
 							} catch (final Exception e) {
-								e.printStackTrace();
+								JOIDLog.warn("The dev panel cannot read the field " + field.getName() + " of " + inspectedNode.getClass().getSimpleName() + ": " + e, e);
 							}
 						}
 					}
@@ -343,7 +345,7 @@ public final class DevNode extends Node {
 
 		TextNode
 		.create(123 + super.aw(-123) / 2, super.getHeight() - super.getDefaultHeight() + super.getDefaultHeight() / 2)
-		.text(Text.create(() -> String.format("%.0f fps", super.getUi().getFps()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
+		.text(Text.create(() -> String.format(Locale.ROOT, "%.0f fps", super.getUi().getFps()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
 		.anchor(Align.CENTER)
 		.attach(this);
 	}
@@ -479,7 +481,7 @@ public final class DevNode extends Node {
 
 		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE.copyAlpha(opacity)).shadow().shadow(Color.BLACK.copyAlpha(0.7F * opacity));
 		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);
-		final Text nodeTimeText = Text.create(String.format("%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
+		final Text nodeTimeText = Text.create(String.format(Locale.ROOT, "%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
 
 		final double margin = 15;
 		final double padding = 10;

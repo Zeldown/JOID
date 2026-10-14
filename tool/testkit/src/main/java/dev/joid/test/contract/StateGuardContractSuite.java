@@ -2,6 +2,7 @@ package dev.joid.test.contract;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicReference;
@@ -182,7 +183,7 @@ public abstract class StateGuardContractSuite {
 		final SnapshotImage actual = this.frame();
 		for (int i = 0; i < expected.getPixels().length; i++) {
 			if (expected.getPixels()[i] != actual.getPixels()[i]) {
-				Assert.fail("With the " + trap + " of the host, the pixel " + i % expected.getWidth() + "," + i / expected.getWidth() + " is " + String.format("#%08X", actual.getPixels()[i]) + " instead of " + String.format("#%08X", expected.getPixels()[i]));
+				Assert.fail("With the " + trap + " of the host, the pixel " + i % expected.getWidth() + "," + i / expected.getWidth() + " is " + String.format(Locale.ROOT, "#%08X", actual.getPixels()[i]) + " instead of " + String.format(Locale.ROOT, "#%08X", expected.getPixels()[i]));
 			}
 		}
 	}
@@ -312,7 +313,7 @@ public abstract class StateGuardContractSuite {
 
 	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {
 		final int actual = image.getPixels()[x + y * image.getWidth()];
-		Assert.assertEquals("Pixel " + x + "," + y, String.format("#%08X", expected), String.format("#%08X", actual));
+		Assert.assertEquals("Pixel " + x + "," + y, String.format(Locale.ROOT, "#%08X", expected), String.format(Locale.ROOT, "#%08X", actual));
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final float z, final boolean texture, final int color) {

@@ -106,7 +106,7 @@ public abstract class SliderNode<O> extends Node {
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Supplier<@NonNull O> value) {
 		return super.follow("value", value, option -> {
 			if (!this.valueSet.contains(option)) {
-				throw new IllegalArgumentException("The value is not in the value set");
+				throw new IllegalArgumentException("The value " + option + " is not an option of the slider " + this.valueSet + ", pass one of them or add it with values(...)");
 			}
 
 			this.change(option);

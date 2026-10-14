@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.concurrent.ArrayBlockingQueue;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import dev.joid.lib.utils.point.Point;
@@ -14,6 +15,7 @@ public final class VideoAudioPlayer {
 
 	private static AudioListenerPosition audioListenerPosition;
 
+	private final String name;
 	private final int channels;
 	private final int sampleRate;
 	private final ArrayBlockingQueue<short[]> sampleQueue = new ArrayBlockingQueue<>(128);
@@ -37,7 +39,8 @@ public final class VideoAudioPlayer {
 	private boolean positional;
 	private float referenceDistance = 5F;
 
-	public VideoAudioPlayer(final int sampleRate, final int channels) {
+	public VideoAudioPlayer(final String name, final int sampleRate, final int channels) {
+		this.name = name;
 		this.sampleRate = sampleRate;
 		this.channels = channels;
 	}
@@ -51,13 +54,13 @@ public final class VideoAudioPlayer {
 
 	public void play() {
 		if (!this.initialized) {
+			this.initialized = true;
 			try {
-				this.source = BridgeHandler.AUDIO.get().createSource(this.sampleRate, this.channels);
-				this.source.group(this.group);
-				this.initialized = true;
+				final IAudioSource source = BridgeHandler.AUDIO.get().createSource(this.sampleRate, this.channels);
+				source.group(this.group);
+				this.source = source;
 			} catch (final Exception e) {
-				e.printStackTrace();
-				return;
+				JOIDLog.warnOnce("VideoAudioPlayer.source." + this.name, "The video " + this.name + " plays without sound: " + e);
 			}
 		}
 

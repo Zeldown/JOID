@@ -3,12 +3,14 @@ package dev.joid.lib.font.impl.msdf;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
@@ -52,7 +54,7 @@ public final class MsdfFontLoader {
 				final IMsdfSource source = MsdfFontLoader.source(handle);
 				final MsdfFontFace face = source.read();
 				if (JOIDEnv.isDevMode()) {
-					System.out.println("[JOID] Font " + face.getName() + " " + source.describe() + " in " + String.format("%.2f", (System.nanoTime() - start) / 1000000F) + "ms");
+					JOIDLog.info("Font " + face.getName() + " " + source.describe() + " in " + String.format(Locale.ROOT, "%.2f", (System.nanoTime() - start) / 1000000F) + "ms");
 				}
 				return face;
 			} catch (final IOException exception) {
