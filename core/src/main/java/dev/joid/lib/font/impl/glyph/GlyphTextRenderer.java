@@ -8,7 +8,6 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.color.ColorGradient;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.ITextRenderer;
@@ -17,6 +16,7 @@ import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
+import dev.joid.lib.shader.impl.ShaderProgram;
 import lombok.NonNull;
 
 public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRenderer {
@@ -116,14 +116,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 			return;
 		}
 
-		final ColorGradient gradient = current.getGradient();
-		shader
-		.uniform("u_HasGradient", 1)
-		.uniform("u_GradientStart", gradient.getStartColor().getRedF(), gradient.getStartColor().getGreenF(), gradient.getStartColor().getBlueF(), gradient.getStartColor().getAlphaF())
-		.uniform("u_GradientEnd", gradient.getEndColor().getRedF(), gradient.getEndColor().getGreenF(), gradient.getEndColor().getBlueF(), gradient.getEndColor().getAlphaF())
-		.uniform("u_GradientStartPos", (float) gradient.getStartPoint().getX(), (float) gradient.getStartPoint().getY())
-		.uniform("u_GradientEndPos", (float) gradient.getEndPoint().getX(), (float) gradient.getEndPoint().getY())
-		.uniform("u_GradientCanvas", (float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
+		ShaderProgram.uniformGradient(shader, current.getGradient(), (float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
 	}
 
 	private @NonNull F getFace(final @NonNull TextInfo info) {

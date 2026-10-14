@@ -79,7 +79,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> ticks.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -89,7 +89,7 @@ public class UIDemoWatch extends UIDemo {
 			.onWatch(event -> watched.increment())
 			.attach(rect);
 			TextNode.create(40, 185).text(Text.create("Watched: " + watched.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("onWatch", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("onWatch", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -104,7 +104,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> squares.set(squares.get() % 6 + 1))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			FlexNode
@@ -118,7 +118,7 @@ public class UIDemoWatch extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 200).text(Text.create("Count: " + squares.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Watch while live", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Watch while live", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -131,7 +131,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> grown.set((grown.get() + 1) % 5))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Grow", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Grow", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -139,7 +139,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.watch(grown, WatchProperty.custom((node, signal) -> node.width(60D + grown.peek() * 60D)))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Custom property", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Custom property", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -157,7 +157,7 @@ public class UIDemoWatch extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 175).text(Text.create("Mounted: " + mounts.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("wait a delay", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("wait a delay", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -170,7 +170,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> ready.set(true))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Ready", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Ready", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -184,7 +184,7 @@ public class UIDemoWatch extends UIDemo {
 				TextNode.create(20, 25).text(Text.create("Shown when ready", info)).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("wait a condition", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("wait a condition", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -200,7 +200,7 @@ public class UIDemoWatch extends UIDemo {
 				TextNode.create(20, 35).text(Text.create("Result: " + result.get(), info)).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Future", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Future", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -216,7 +216,7 @@ public class UIDemoWatch extends UIDemo {
 				right.increment();
 			})
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Two sets", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Two sets", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -227,12 +227,12 @@ public class UIDemoWatch extends UIDemo {
 				right.increment();
 			}))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Batch", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Batch", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Sum: " + sum.get(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Updates: " + updates.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("batch", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("batch", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -245,7 +245,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> quiet.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -256,12 +256,12 @@ public class UIDemoWatch extends UIDemo {
 				quiet.increment();
 			})
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Silent +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Silent +1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + quiet.get(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Notified: " + notified.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("silent", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("silent", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -274,12 +274,12 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> read.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("get: " + read.get(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("peek: " + read.peek(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("peek", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("peek", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -292,7 +292,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> reset.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -300,11 +300,11 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> reset.reset())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + reset.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("reset", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("reset", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -321,12 +321,12 @@ public class UIDemoWatch extends UIDemo {
 				keys.add(key);
 			})
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Map keys: " + counts.size(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Set size: " + keys.size(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Map and set", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Map and set", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -339,7 +339,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.onClick(event -> sent.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -354,11 +354,11 @@ public class UIDemoWatch extends UIDemo {
 				listening.toggle();
 			})
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create(listening.get() ? "Unsubscribe" : "Subscribe", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create(listening.get() ? "Unsubscribe" : "Subscribe", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Received: " + received.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("unsubscribe", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("unsubscribe", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

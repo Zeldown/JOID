@@ -14,6 +14,7 @@ import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
+import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 public class CircleShaderPassTest {
@@ -31,7 +32,7 @@ public class CircleShaderPassTest {
 
 	@Test
 	public void fitsTheLargestCircleInANode() {
-		new CircleShaderPass(RectNode.create(10D, 20D, 100D, 60D)).bind(this.context());
+		CircleNodeEffect.create().toShaderPass(RectNode.create(10D, 20D, 100D, 60D)).bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(30F, (Float) values.get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {60F, 50F}, (float[]) values.get("center"), 0F);

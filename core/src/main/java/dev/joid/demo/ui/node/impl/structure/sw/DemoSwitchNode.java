@@ -43,7 +43,7 @@ public class DemoSwitchNode extends SwitchNode {
 				.body(rect -> {
 					TextNode
 					.create(0, 0, rect.getWidth(), rect.getHeight())
-					.text(Signal.from(() -> Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, super.getState().equals(state) ? Color.WHITE : DemoSwitchNode.INK), Align.CENTER, Align.CENTER)))
+					.text(Signal.from(() -> Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, super.getState().equals(state) ? Color.WHITE : DemoSwitchNode.INK)).align(Align.CENTER)))
 					.attach(rect);
 				})
 				.onClick(event -> {

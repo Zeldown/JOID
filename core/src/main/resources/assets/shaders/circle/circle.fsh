@@ -6,12 +6,12 @@ uniform float radius;
 uniform vec2 center;
 uniform int type;
 
-uniform int gradient;
-uniform vec2 startPos;
-uniform vec2 endPos;
-uniform vec4 startColor;
-uniform vec4 endColor;
-uniform vec4 canvas;
+uniform int u_HasGradient;
+uniform vec2 u_GradientStartPos;
+uniform vec2 u_GradientEndPos;
+uniform vec4 u_GradientStart;
+uniform vec4 u_GradientEnd;
+uniform vec4 u_GradientCanvas;
 
 uniform sampler2D tex;
 
@@ -21,17 +21,17 @@ vec2 snappedPosition() {
 
 vec4 gradientColor() {
     vec2 normalizedPos = snappedPosition();
-    if (canvas.z > canvas.x && canvas.w > canvas.y) {
-        normalizedPos = (snappedPosition() - canvas.xy) / (canvas.zw - canvas.xy);
+    if (u_GradientCanvas.z > u_GradientCanvas.x && u_GradientCanvas.w > u_GradientCanvas.y) {
+        normalizedPos = (snappedPosition() - u_GradientCanvas.xy) / (u_GradientCanvas.zw - u_GradientCanvas.xy);
     }
 
-    vec2 direction = endPos - startPos;
+    vec2 direction = u_GradientEndPos - u_GradientStartPos;
     float t = 0.0;
     if (length(direction) > 0.001) {
-        t = clamp(dot(normalizedPos - startPos, direction) / dot(direction, direction), 0.0, 1.0);
+        t = clamp(dot(normalizedPos - u_GradientStartPos, direction) / dot(direction, direction), 0.0, 1.0);
     }
 
-    return mix(startColor, endColor, t);
+    return mix(u_GradientStart, u_GradientEnd, t);
 }
 
 void main() {
@@ -44,7 +44,7 @@ void main() {
         baseColor = vColor;
     }
 
-    if (gradient == 1) {
+    if (u_HasGradient == 1) {
         baseColor *= gradientColor();
     }
 

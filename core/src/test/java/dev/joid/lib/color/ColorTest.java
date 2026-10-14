@@ -609,39 +609,6 @@ public class ColorTest {
 	}
 
 	@Test
-	public void convertsItselfToHsb() {
-		Assert.assertArrayEquals(new float[] {1F / 18F, 0.75F, 0.8F}, new Color(204, 102, 51).RGBtoHSB(null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {7F / 18F, 0.75F, 0.8F}, new Color(51, 204, 102).RGBtoHSB(null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {11F / 18F, 0.75F, 0.8F}, new Color(51, 102, 204).RGBtoHSB(null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {0.91634F, 1F, 1F}, new Color(255, 0, 128).RGBtoHSB(null), 0.0001F);
-	}
-
-	@Test
-	public void convertsComponentsToHsb() {
-		Assert.assertArrayEquals(new float[] {1F / 18F, 0.75F, 0.8F}, Color.RGBtoHSB(204, 102, 51, null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {7F / 18F, 0.75F, 0.8F}, Color.RGBtoHSB(51, 204, 102, null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {11F / 18F, 0.75F, 0.8F}, Color.RGBtoHSB(51, 102, 204, null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {0.91634F, 1F, 1F}, Color.RGBtoHSB(255, 0, 128, null), 0.0001F);
-	}
-
-	@Test
-	public void hasNoHueWithoutSaturation() {
-		Assert.assertArrayEquals(new float[] {0F, 0F, 0F}, Color.BLACK.RGBtoHSB(null), 0F);
-		Assert.assertArrayEquals(new float[] {0F, 0F, 128F / 255F}, new Color(128, 128, 128).RGBtoHSB(null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {0F, 0F, 0F}, Color.RGBtoHSB(0, 0, 0, null), 0F);
-		Assert.assertArrayEquals(new float[] {0F, 0F, 128F / 255F}, Color.RGBtoHSB(128, 128, 128, null), 0.0001F);
-	}
-
-	@Test
-	public void fillsTheGivenHsbArray() {
-		final float[] values = new float[3];
-		Assert.assertSame(values, Color.GREEN.RGBtoHSB(values));
-		Assert.assertArrayEquals(new float[] {1F / 3F, 1F, 1F}, values, 0.0001F);
-		Assert.assertSame(values, Color.RGBtoHSB(255, 0, 0, values));
-		Assert.assertArrayEquals(new float[] {0F, 1F, 1F}, values, 0F);
-	}
-
-	@Test
 	public void copiesAColorWithItsUpdate() {
 		final UnaryOperator<Color> update = color -> color.withRed(1F);
 		final Color color = new Color(0.25F, 0.5F, 0.75F, 0.5F, update);
@@ -706,9 +673,10 @@ public class ColorTest {
 	}
 
 	private static void assertRainbow(final Color color) {
-		final float[] hsb = color.RGBtoHSB(null);
-		Assert.assertEquals(0.8F, hsb[1], 0.01F);
-		Assert.assertEquals(0.8F, hsb[2], 0.01F);
+		final int max = Math.max(color.getRed(), Math.max(color.getGreen(), color.getBlue()));
+		final int min = Math.min(color.getRed(), Math.min(color.getGreen(), color.getBlue()));
+		Assert.assertEquals(0.8F, (max - min) / (float) max, 0.01F);
+		Assert.assertEquals(0.8F, max / 255F, 0.01F);
 		Assert.assertEquals(1F, color.getAlphaF(), 0F);
 	}
 

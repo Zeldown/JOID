@@ -47,7 +47,7 @@ public class UIDemoOverflow extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Vertical scroll", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Vertical scroll", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -67,7 +67,7 @@ public class UIDemoOverflow extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Horizontal scroll", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Horizontal scroll", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -92,7 +92,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Both axes", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Both axes", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -116,7 +116,7 @@ public class UIDemoOverflow extends UIDemo {
 				RectNode.create(20, 40, 240, 120).color(UIDemoOverflow.INK).attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Hidden and none", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Hidden and none", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -136,7 +136,7 @@ public class UIDemoOverflow extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Grid with scrollbar", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Grid with scrollbar", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -161,7 +161,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Horizontal scrollbar", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Horizontal scrollbar", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -186,7 +186,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Scroll speed", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Scroll speed", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -215,7 +215,7 @@ public class UIDemoOverflow extends UIDemo {
 			.color(UIDemoOverflow.INK)
 			.onClick(event -> area.scrollTo(area.getTargetScrollX(), 0D))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Top", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Top", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -223,10 +223,10 @@ public class UIDemoOverflow extends UIDemo {
 			.color(UIDemoOverflow.INK)
 			.onClick(event -> area.scrollTo(area.getTargetScrollX(), -area.getMaxScrollY()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Bottom", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Bottom", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Scroll from code", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Scroll from code", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -259,7 +259,7 @@ public class UIDemoOverflow extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(20, 200).text(Text.create("Items: " + items.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Load at the end", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Load at the end", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -290,7 +290,7 @@ public class UIDemoOverflow extends UIDemo {
 			.attach(rect);
 			TextNode.create(20, 175).text(Text.create("Offset: " + offset.get(), info)).attach(rect);
 			TextNode.create(220, 175).text(Text.create("Ends: " + ends.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Scroll events", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Scroll events", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -329,7 +329,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Nested scroll", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Nested scroll", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -358,7 +358,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Loading items", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Loading items", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

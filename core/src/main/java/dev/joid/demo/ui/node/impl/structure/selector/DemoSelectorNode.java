@@ -34,7 +34,7 @@ public class DemoSelectorNode extends SelectorNode<String> {
 		.body(rect -> {
 			TextNode
 			.create(16, rect.dh(2))
-			.text(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 22, DemoSelectorNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F)), Align.START, Align.CENTER))
+			.text(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 22, DemoSelectorNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F))).alignX(Align.START).alignY(Align.CENTER))
 			.anchorY(Align.CENTER)
 			.attach(rect);
 		});

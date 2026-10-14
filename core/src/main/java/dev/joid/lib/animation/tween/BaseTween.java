@@ -20,26 +20,21 @@ public abstract class BaseTween<T> {
 
 	private final EventBus eventBus = EventBus.create(() -> this.getClass().getSimpleName());
 
-	private int step;
-	private int repeatCnt;
+	private int     step = -2;
+	private int     repeatCnt;
 	private boolean isYoyo;
 	private boolean isIterationStep;
 
 	protected float delay;
-	private float deltaTime;
+	private float   deltaTime;
 	protected float duration;
 	private boolean isKilled;
 	private boolean isPaused;
-	private float repeatDelay;
-	private float currentTime;
+	private float   repeatDelay;
+	private float   currentTime;
 	private boolean isStarted;
 	private boolean isFinished;
 	private boolean isInitialized;
-
-	private Object userData;
-
-	protected boolean isAutoStartEnabled;
-	protected boolean isAutoRemoveEnabled;
 
 	public T start() {
 		this.build();
@@ -57,20 +52,6 @@ public abstract class BaseTween<T> {
 		return (T) this;
 	}
 
-	protected void reset() {
-		this.step = -2;
-		this.repeatCnt = 0;
-		this.isIterationStep = this.isYoyo = false;
-
-		this.delay = this.duration = this.repeatDelay = this.currentTime = this.deltaTime = 0;
-		this.isStarted = this.isInitialized = this.isFinished = this.isKilled = this.isPaused = false;
-
-		this.eventBus.clear();
-		this.userData = null;
-
-		this.isAutoRemoveEnabled = this.isAutoStartEnabled = true;
-	}
-
 	public T build() {
 		return (T) this;
 	}
@@ -83,8 +64,6 @@ public abstract class BaseTween<T> {
 	public void kill() {
 		this.isKilled = true;
 	}
-
-	protected void free() {}
 
 	public void pause() {
 		this.isPaused = true;
@@ -113,11 +92,6 @@ public abstract class BaseTween<T> {
 		this.repeatCnt = count;
 		this.repeatDelay = delay >= 0 ? delay : 0;
 		this.isYoyo = true;
-		return (T) this;
-	}
-
-	public T setUserData(final Object data) {
-		this.userData = data;
 		return (T) this;
 	}
 
@@ -169,10 +143,6 @@ public abstract class BaseTween<T> {
 		return this.repeatCnt;
 	}
 
-	public Object getUserData() {
-		return this.userData;
-	}
-
 	public float getCurrentTime() {
 		return this.currentTime;
 	}
@@ -181,7 +151,7 @@ public abstract class BaseTween<T> {
 		return this.repeatDelay;
 	}
 
-	public float getFullDuration() {
+	protected float getFullDuration() {
 		if (this.repeatCnt < 0) {
 			return -1;
 		}
@@ -220,9 +190,6 @@ public abstract class BaseTween<T> {
 	protected abstract void forceEndValues();
 	protected abstract void forceStartValues();
 
-	protected abstract boolean containsTarget(final Object target);
-	protected abstract boolean containsTarget(final Object target, final int tweenType);
-
 	protected void initializeOverride() {}
 
 	protected void updateOverride(final int step, final int lastStep, final boolean isIterationStep, final float delta) {}
@@ -234,7 +201,7 @@ public abstract class BaseTween<T> {
 		this.forceStartValues();
 	}
 
-	public void forceToEnd(final float time) {
+	protected void forceToEnd(final float time) {
 		this.currentTime = time - this.getFullDuration();
 		this.step = this.repeatCnt * 2 + 1;
 		this.isIterationStep = false;
@@ -242,18 +209,6 @@ public abstract class BaseTween<T> {
 			this.forceStartValues();
 		} else {
 			this.forceEndValues();
-		}
-	}
-
-	protected void killTarget(final Object target) {
-		if (this.containsTarget(target)) {
-			this.kill();
-		}
-	}
-
-	protected void killTarget(final Object target, final int tweenType) {
-		if (this.containsTarget(target, tweenType)) {
-			this.kill();
 		}
 	}
 

@@ -37,6 +37,7 @@ import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.resource.ResourceData;
+import dev.joid.lib.video.VideoAudioPlayerTest;
 import dev.joid.lib.video.VideoAudioPlayer;
 
 import lombok.NonNull;
@@ -625,7 +626,7 @@ public class VideoResourceDecoderTest {
 		Assert.assertNotNull(decoder.getAudioPlayer());
 		Assert.assertEquals("create 8000x1", this.audio.calls.get(0));
 		this.play(decoder, data, 60);
-		Assert.assertTrue(decoder.getAudioPlayer().getQueueSize() > 0);
+		Assert.assertTrue(VideoAudioPlayerTest.queueSize(decoder.getAudioPlayer()) > 0);
 		this.audio.calls.clear();
 		decoder.pause();
 		decoder.resume();

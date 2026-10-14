@@ -136,7 +136,7 @@ public class TextNodeTest {
 
 	@Test
 	public void alignsItsTextInsideItsBox() {
-		this.bridges.open(new NodeUI(TextNode.create(100D, 100D, 200D, 40D).text(Text.create("ab", this.info(), Align.CENTER, Align.CENTER))));
+		this.bridges.open(new NodeUI(TextNode.create(100D, 100D, 200D, 40D).text(Text.create("ab", this.info()).align(Align.CENTER))));
 		final Drawn drawn = this.font.getDrawn().get(0);
 		Assert.assertEquals(190D, drawn.getX(), 0D);
 		Assert.assertEquals(110D, drawn.getY(), 0D);

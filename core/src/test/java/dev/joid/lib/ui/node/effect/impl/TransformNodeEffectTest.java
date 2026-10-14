@@ -13,9 +13,6 @@ import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Scale;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.render.transform.operation.RotateTransformOperation;
-import dev.joid.lib.render.transform.operation.ScaleTransformOperation;
-import dev.joid.lib.render.transform.operation.TranslateTransformOperation;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -27,7 +24,7 @@ public class TransformNodeEffectTest {
 
 	@Test
 	public void movesTheNode() {
-		this.open(TransformNodeEffect.create(new TranslateTransformOperation(Vector.create(30D, 40D))));
+		this.open(TransformNodeEffect.create(Transformation.create().translate(Vector.create(30D, 40D))));
 		final Draw draw = this.single();
 		Assert.assertEquals(130D, draw.getLeft(), 1E-3D);
 		Assert.assertEquals(140D, draw.getTop(), 1E-3D);
@@ -37,7 +34,7 @@ public class TransformNodeEffectTest {
 
 	@Test
 	public void scalesTheNodeAroundItsPivot() {
-		this.open(TransformNodeEffect.create(new ScaleTransformOperation(Scale.create(2D, 3D, 1D), Vector.create(100D, 100D))));
+		this.open(TransformNodeEffect.create(Transformation.create().scale(Scale.create(2D, 3D, 1D), Vector.create(100D, 100D))));
 		final Draw draw = this.single();
 		Assert.assertEquals(100D, draw.getLeft(), 1E-3D);
 		Assert.assertEquals(100D, draw.getTop(), 1E-3D);
@@ -47,7 +44,7 @@ public class TransformNodeEffectTest {
 
 	@Test
 	public void turnsTheNodeAroundItsPivot() {
-		this.open(TransformNodeEffect.create(new RotateTransformOperation(180D, Rotation.YAW, Vector.create(200D, 0D))));
+		this.open(TransformNodeEffect.create(Transformation.create().rotate(180D, Rotation.YAW, Vector.create(200D, 0D))));
 		final Draw draw = this.single();
 		Assert.assertEquals(250D, draw.getLeft(), 1E-3D);
 		Assert.assertEquals(300D, draw.getRight(), 1E-3D);
@@ -60,7 +57,7 @@ public class TransformNodeEffectTest {
 		final TransformNodeEffect effect = TransformNodeEffect.create(transformation);
 		this.open(effect);
 		final Draw draw = this.single();
-		Assert.assertSame(transformation, effect.getTransformationSupplier().get());
+		Assert.assertSame(transformation, effect.getTransformation());
 		Assert.assertEquals(110D, draw.getLeft(), 1E-3D);
 		Assert.assertEquals(210D, draw.getRight(), 1E-3D);
 		Assert.assertEquals(200D, draw.getBottom(), 1E-3D);
@@ -76,20 +73,28 @@ public class TransformNodeEffectTest {
 	}
 
 	@Test
-	public void readsItsSuppliedTransformationOnEveryFrame() {
-		final Transformation[] current = {Transformation.create().translate(Vector.create(10D, 0D))};
-		final TransformNodeEffect effect = TransformNodeEffect.create(Transformation.create());
-		Assert.assertSame(effect, effect.transformation(() -> current[0]));
-		this.open(effect);
+	public void readsTheSuppliersOfItsOperationsOnEveryFrame() {
+		final double[] x = {10D};
+		this.open(TransformNodeEffect.create(Transformation.create().translate(Vector.create(() -> x[0], () -> 0D))));
 		Assert.assertEquals(110D, this.single().getLeft(), 1E-3D);
-		current[0] = Transformation.create().translate(Vector.create(20D, 0D));
+		x[0] = 20D;
 		this.bridges.frame();
 		Assert.assertEquals(120D, this.single().getLeft(), 1E-3D);
 	}
 
 	@Test
+	public void scalesAroundTheCenterOfItsNodeByDefault() {
+		this.open(TransformNodeEffect.create(Transformation.create().scale(Scale.create(2D, 2D, 1D))));
+		final Draw draw = this.single();
+		Assert.assertEquals(75D, draw.getLeft(), 1E-3D);
+		Assert.assertEquals(75D, draw.getTop(), 1E-3D);
+		Assert.assertEquals(175D, draw.getRight(), 1E-3D);
+		Assert.assertEquals(175D, draw.getBottom(), 1E-3D);
+	}
+
+	@Test
 	public void leavesTheNextNodesInPlace() {
-		final RectNode moved = RectNode.create(100D, 100D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(TransformNodeEffect.create(new TranslateTransformOperation(Vector.create(30D, 40D))));
+		final RectNode moved = RectNode.create(100D, 100D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(30D, 40D))));
 		final RectNode still = RectNode.create(300D, 100D, 50D, 50D).color(new Color(0.6F, 0.4F, 0.2F, 1F));
 		this.bridges.open(new NodeUI(moved, still)).frame();
 		final List<Draw> draws = this.bridges.getRender().getDraws(0.6F, 0.4F, 0.2F);

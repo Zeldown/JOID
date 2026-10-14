@@ -1,9 +1,11 @@
 package dev.joid.lib.obj;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,6 +21,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.obj.data.ObjFace;
+import dev.joid.lib.obj.data.ObjGroup;
 import dev.joid.lib.obj.data.ObjTextureCoordinate;
 import dev.joid.lib.obj.data.ObjVertex;
 import dev.joid.lib.render.tessellator.DrawMode;
@@ -45,10 +48,10 @@ public class ObjModelTest {
 		Assert.assertEquals(4, model.getTextureCoordinates().size());
 		Assert.assertEquals(6, model.getVertexNormals().size());
 		Assert.assertEquals(1, model.getGroups().size());
-		Assert.assertSame(model.getGroups().get(0), model.getCurrentGroup());
-		Assert.assertEquals("Cube", model.getCurrentGroup().getName());
-		Assert.assertSame(DrawMode.QUADS, model.getCurrentGroup().getDrawMode());
-		Assert.assertEquals(6, model.getCurrentGroup().getFaces().size());
+		Assert.assertSame(model.getGroups().get(0), ObjModelTest.lastGroup(model));
+		Assert.assertEquals("Cube", ObjModelTest.lastGroup(model).getName());
+		Assert.assertSame(DrawMode.QUADS, ObjModelTest.lastGroup(model).getDrawMode());
+		Assert.assertEquals(6, ObjModelTest.lastGroup(model).getFaces().size());
 	}
 
 	@Test
@@ -59,8 +62,8 @@ public class ObjModelTest {
 		Assert.assertEquals(1.2434D, model.getDepth(), 1E-4D);
 		Assert.assertEquals(model.getVertices().size(), model.getVertexNormals().size());
 		Assert.assertEquals(model.getVertices().size(), model.getTextureCoordinates().size());
-		Assert.assertSame(DrawMode.TRIANGLES, model.getCurrentGroup().getDrawMode());
-		for (final ObjFace face : model.getCurrentGroup().getFaces()) {
+		Assert.assertSame(DrawMode.TRIANGLES, ObjModelTest.lastGroup(model).getDrawMode());
+		for (final ObjFace face : ObjModelTest.lastGroup(model).getFaces()) {
 			Assert.assertEquals(3, face.getVertexNormals().length);
 			Assert.assertEquals(3, face.getTextureCoordinates().length);
 		}
@@ -68,7 +71,7 @@ public class ObjModelTest {
 
 	@Test
 	public void computesTheNormalOfEveryFace() {
-		for (final ObjFace face : ObjModelTest.cube().getCurrentGroup().getFaces()) {
+		for (final ObjFace face : ObjModelTest.lastGroup(ObjModelTest.cube()).getFaces()) {
 			Assert.assertEquals(face.getVertexNormals()[0].getX(), face.getFaceNormal().getX(), 0F);
 			Assert.assertEquals(face.getVertexNormals()[0].getY(), face.getFaceNormal().getY(), 0F);
 			Assert.assertEquals(face.getVertexNormals()[0].getZ(), face.getFaceNormal().getZ(), 0F);
@@ -146,13 +149,13 @@ public class ObjModelTest {
 		Assert.assertEquals("second.part", model.getGroups().get(1).getName());
 		Assert.assertSame(DrawMode.QUADS, model.getGroups().get(1).getDrawMode());
 		Assert.assertEquals(2, model.getGroups().get(1).getFaces().size());
-		Assert.assertSame(model.getGroups().get(1), model.getCurrentGroup());
+		Assert.assertSame(model.getGroups().get(1), ObjModelTest.lastGroup(model));
 	}
 
 	@Test
 	public void readsAFaceWithTexturesAndNormals() {
 		final ObjModel model = ObjModelTest.triangle("f 1/3/1 2/2/1 3/1/1");
-		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjFace face = ObjModelTest.lastGroup(model).getFaces().get(0);
 		Assert.assertArrayEquals(model.getVertices().toArray(), face.getVertices());
 		Assert.assertSame(model.getTextureCoordinates().get(2), face.getTextureCoordinates()[0]);
 		Assert.assertSame(model.getTextureCoordinates().get(0), face.getTextureCoordinates()[2]);
@@ -163,7 +166,7 @@ public class ObjModelTest {
 	@Test
 	public void readsAFaceWithTexturesOnly() {
 		final ObjModel model = ObjModelTest.triangle("f 1/1 2/2 3/3");
-		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjFace face = ObjModelTest.lastGroup(model).getFaces().get(0);
 		Assert.assertArrayEquals(model.getVertices().toArray(), face.getVertices());
 		Assert.assertArrayEquals(model.getTextureCoordinates().toArray(), face.getTextureCoordinates());
 		Assert.assertNull(face.getVertexNormals());
@@ -173,7 +176,7 @@ public class ObjModelTest {
 	@Test
 	public void readsAFaceWithNormalsOnly() {
 		final ObjModel model = ObjModelTest.triangle("f 1//1 2//1 3//1");
-		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjFace face = ObjModelTest.lastGroup(model).getFaces().get(0);
 		Assert.assertArrayEquals(model.getVertices().toArray(), face.getVertices());
 		Assert.assertNull(face.getTextureCoordinates());
 		Assert.assertSame(model.getVertexNormals().get(0), face.getVertexNormals()[2]);
@@ -183,7 +186,7 @@ public class ObjModelTest {
 	@Test
 	public void readsAFaceWithVerticesOnly() {
 		final ObjModel model = ObjModelTest.triangle("f 3 2 1");
-		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjFace face = ObjModelTest.lastGroup(model).getFaces().get(0);
 		Assert.assertSame(model.getVertices().get(2), face.getVertices()[0]);
 		Assert.assertSame(model.getVertices().get(0), face.getVertices()[2]);
 		Assert.assertNull(face.getTextureCoordinates());
@@ -234,8 +237,8 @@ public class ObjModelTest {
 	@Test
 	public void cutsAFaceOfMoreThanFourVerticesIntoAFanOfTriangles() {
 		final ObjModel model = ObjModelTest.load("v 0 0 0", "v 2 0 0", "v 3 1 0", "v 1 2 0", "v -1 1 0", "vt 0 0", "vt 1 0", "vt 1 1", "vt 0 1", "vt 0 0.5", "f 1/1 2/2 3/3 4/4 5/5");
-		final List<ObjFace> faces = model.getCurrentGroup().getFaces();
-		Assert.assertSame(DrawMode.TRIANGLES, model.getCurrentGroup().getDrawMode());
+		final List<ObjFace> faces = ObjModelTest.lastGroup(model).getFaces();
+		Assert.assertSame(DrawMode.TRIANGLES, ObjModelTest.lastGroup(model).getDrawMode());
 		Assert.assertEquals(3, faces.size());
 		final List<ObjVertex> vertices = model.getVertices();
 		for (int i = 0; i < faces.size(); i++) {
@@ -273,7 +276,7 @@ public class ObjModelTest {
 	@Test
 	public void readsNegativeIndicesFromTheEnd() {
 		final ObjModel model = ObjModelTest.load("v 9 9 9", "v 0 0 0", "v 1 0 0", "v 0 1 0", "vt 0 0", "vt 1 0", "vt 0 1", "vn 0 0 1", "f -3/-3/-1 -2/-2/-1 -1/-1/-1");
-		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
+		final ObjFace face = ObjModelTest.lastGroup(model).getFaces().get(0);
 		Assert.assertArrayEquals(model.getVertices().subList(1, 4).toArray(), face.getVertices());
 		Assert.assertArrayEquals(model.getTextureCoordinates().toArray(), face.getTextureCoordinates());
 		Assert.assertSame(model.getVertexNormals().get(0), face.getVertexNormals()[2]);
@@ -345,10 +348,18 @@ public class ObjModelTest {
 	}
 
 	@Test
-	public void ignoresAStreamFailingToClose() {
+	public void warnsAboutAStreamFailingToClose() {
 		final TrackedStream stream = new TrackedStream("v 1 2 3", true);
-		Assert.assertEquals(1, ObjModel.load("tracked", stream, ObjModelTest.TEXTURE).getVertices().size());
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			Assert.assertEquals(1, ObjModel.load("tracked", stream, ObjModelTest.TEXTURE).getVertices().size());
+		} finally {
+			System.setErr(previous);
+		}
 		Assert.assertTrue(stream.closed);
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The file of the OBJ model tracked cannot be closed ("));
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -361,7 +372,6 @@ public class ObjModelTest {
 		final ObjModel model = ObjModel.load("empty", new ByteArrayInputStream(new byte[0]), ObjModelTest.TEXTURE);
 		Assert.assertEquals("empty", model.getName());
 		Assert.assertSame(ObjModelTest.TEXTURE, model.getTexture());
-		Assert.assertNull(model.getCurrentGroup());
 		Assert.assertTrue(model.getVertices().isEmpty());
 		Assert.assertTrue(model.getGroups().isEmpty());
 		Assert.assertEquals(0D, model.getWidth(), 0D);
@@ -527,6 +537,10 @@ public class ObjModelTest {
 		@Override
 		public void delete() {}
 
+	}
+
+	private static ObjGroup lastGroup(final ObjModel model) {
+		return model.getGroups().get(model.getGroups().size() - 1);
 	}
 
 }

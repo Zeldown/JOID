@@ -71,8 +71,8 @@ public class TextTest {
 	@Test
 	public void startsAtTheTopLeftWithoutOverflowNorModifier() {
 		final Text text = Text.create("ab", TextTest.info());
-		Assert.assertSame(Align.START, text.getHorizontalAlignment());
-		Assert.assertSame(Align.START, text.getVerticalAlignment());
+		Assert.assertSame(Align.START, text.getAlignX());
+		Assert.assertSame(Align.START, text.getAlignY());
 		Assert.assertSame(TextOverflow.NONE, text.getOverflow());
 		Assert.assertNull(text.getModifier());
 	}
@@ -90,7 +90,7 @@ public class TextTest {
 	public void keepsItsOwnListOfElements() {
 		final List<TextElement> elementList = new ArrayList<>();
 		elementList.add(TextElement.create("ab", TextTest.info()));
-		final Text text = Text.create(elementList);
+		final Text text = Text.create().addAll(elementList);
 		elementList.add(TextElement.create("cd", TextTest.info()));
 		Assert.assertEquals("ab", text.getText());
 		Assert.assertEquals(1, text.getElementList().size());
@@ -107,61 +107,13 @@ public class TextTest {
 	}
 
 	@Test
-	public void takesItsHorizontalAlignmentAtCreation() {
-		final Text object = Text.create("ab", TextTest.info(), Align.END);
-		final Text supplier = Text.create(() -> "cd", TextTest.info(), Align.CENTER);
-		Assert.assertEquals("ab", object.getText());
-		Assert.assertSame(Align.END, object.getHorizontalAlignment());
-		Assert.assertEquals("cd", supplier.getText());
-		Assert.assertSame(Align.CENTER, supplier.getHorizontalAlignment());
-	}
-
-	@Test
-	public void takesItsOverflowAtCreation() {
-		final Text object = Text.create("ab", TextTest.info(), TextOverflow.ELLIPSIS);
-		final Text supplier = Text.create(() -> "cd", TextTest.info(), TextOverflow.DOT);
-		Assert.assertEquals("ab", object.getText());
-		Assert.assertSame(TextOverflow.ELLIPSIS, object.getOverflow());
-		Assert.assertEquals("cd", supplier.getText());
-		Assert.assertSame(TextOverflow.DOT, supplier.getOverflow());
-	}
-
-	@Test
-	public void takesItsAlignmentAndOverflowAtCreation() {
-		final Text object = Text.create("ab", TextTest.info(), Align.END, TextOverflow.HYPHEN);
-		final Text supplier = Text.create(() -> "cd", TextTest.info(), Align.CENTER, TextOverflow.DOT);
-		Assert.assertEquals("ab", object.getText());
-		Assert.assertSame(Align.END, object.getHorizontalAlignment());
-		Assert.assertSame(TextOverflow.HYPHEN, object.getOverflow());
-		Assert.assertEquals("cd", supplier.getText());
-		Assert.assertSame(Align.CENTER, supplier.getHorizontalAlignment());
-		Assert.assertSame(TextOverflow.DOT, supplier.getOverflow());
-	}
-
-	@Test
-	public void takesBothAlignmentsAtCreation() {
-		final Text object = Text.create("ab", TextTest.info(), Align.END, Align.CENTER);
-		final Text supplier = Text.create(() -> "cd", TextTest.info(), Align.CENTER, Align.END);
-		Assert.assertEquals("ab", object.getText());
-		Assert.assertSame(Align.END, object.getHorizontalAlignment());
-		Assert.assertSame(Align.CENTER, object.getVerticalAlignment());
-		Assert.assertEquals("cd", supplier.getText());
-		Assert.assertSame(Align.CENTER, supplier.getHorizontalAlignment());
-		Assert.assertSame(Align.END, supplier.getVerticalAlignment());
-	}
-
-	@Test
-	public void takesEverySettingAtCreation() {
-		final Text object = Text.create("ab", TextTest.info(), Align.END, Align.CENTER, TextOverflow.ELLIPSIS);
-		final Text supplier = Text.create(() -> "cd", TextTest.info(), Align.CENTER, Align.END, TextOverflow.HYPHEN);
-		Assert.assertEquals("ab", object.getText());
-		Assert.assertSame(Align.END, object.getHorizontalAlignment());
-		Assert.assertSame(Align.CENTER, object.getVerticalAlignment());
-		Assert.assertSame(TextOverflow.ELLIPSIS, object.getOverflow());
-		Assert.assertEquals("cd", supplier.getText());
-		Assert.assertSame(Align.CENTER, supplier.getHorizontalAlignment());
-		Assert.assertSame(Align.END, supplier.getVerticalAlignment());
-		Assert.assertSame(TextOverflow.HYPHEN, supplier.getOverflow());
+	public void alignsBothAxesAtOnce() {
+		final Text text = Text.create("ab", TextTest.info()).align(Align.CENTER);
+		Assert.assertSame(Align.CENTER, text.getAlignX());
+		Assert.assertSame(Align.CENTER, text.getAlignY());
+		text.alignY(Align.END);
+		Assert.assertSame(Align.CENTER, text.getAlignX());
+		Assert.assertSame(Align.END, text.getAlignY());
 	}
 
 	@Test
@@ -341,10 +293,10 @@ public class TextTest {
 
 	@Test
 	public void copiesItsElementsAndSettings() {
-		final Text copy = Text.create("ab", TextTest.info(), Align.CENTER, Align.END, TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copy();
+		final Text copy = Text.create("ab", TextTest.info()).alignX(Align.CENTER).alignY(Align.END).overflow(TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copy();
 		Assert.assertEquals("AB", copy.getText());
-		Assert.assertSame(Align.CENTER, copy.getHorizontalAlignment());
-		Assert.assertSame(Align.END, copy.getVerticalAlignment());
+		Assert.assertSame(Align.CENTER, copy.getAlignX());
+		Assert.assertSame(Align.END, copy.getAlignY());
 		Assert.assertSame(TextOverflow.ELLIPSIS, copy.getOverflow());
 		Assert.assertSame(TextModifier.UPPER_CASE, copy.getModifier());
 	}
@@ -359,67 +311,28 @@ public class TextTest {
 
 	@Test
 	public void copiesItsSettingsWithoutItsElements() {
-		final Text copy = Text.create("ab", TextTest.info(), Align.CENTER, Align.END, TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copyProperties();
+		final Text copy = Text.create("ab", TextTest.info()).alignX(Align.CENTER).alignY(Align.END).overflow(TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copyProperties();
 		Assert.assertTrue(copy.isEmpty());
-		Assert.assertSame(Align.CENTER, copy.getHorizontalAlignment());
-		Assert.assertSame(Align.END, copy.getVerticalAlignment());
+		Assert.assertSame(Align.CENTER, copy.getAlignX());
+		Assert.assertSame(Align.END, copy.getAlignY());
 		Assert.assertSame(TextOverflow.ELLIPSIS, copy.getOverflow());
 		Assert.assertSame(TextModifier.UPPER_CASE, copy.getModifier());
 	}
 
 	@Test
-	public void copiesWithAnotherModifier() {
-		final Text copy = Text.create("Ab", TextTest.info(), Align.CENTER, Align.END, TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copyWithModifier(TextModifier.LOWER_CASE);
-		Assert.assertEquals("ab", copy.getText());
-		Assert.assertSame(TextModifier.LOWER_CASE, copy.getModifier());
-		Assert.assertSame(Align.CENTER, copy.getHorizontalAlignment());
-		Assert.assertSame(Align.END, copy.getVerticalAlignment());
-		Assert.assertSame(TextOverflow.ELLIPSIS, copy.getOverflow());
-	}
-
-	@Test
-	public void copiesWithAnotherVerticalAlignment() {
-		final Text copy = Text.create("ab", TextTest.info(), Align.CENTER, Align.END, TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copyWithVerticalAlign(Align.START);
-		Assert.assertEquals("AB", copy.getText());
-		Assert.assertSame(Align.START, copy.getVerticalAlignment());
-		Assert.assertSame(Align.CENTER, copy.getHorizontalAlignment());
-		Assert.assertSame(TextOverflow.ELLIPSIS, copy.getOverflow());
-		Assert.assertSame(TextModifier.UPPER_CASE, copy.getModifier());
-	}
-
-	@Test
-	public void copiesWithAnotherHorizontalAlignment() {
-		final Text copy = Text.create("ab", TextTest.info(), Align.CENTER, TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copyWithHorizontalAlign(Align.END);
-		Assert.assertEquals("AB", copy.getText());
-		Assert.assertSame(Align.END, copy.getHorizontalAlignment());
-		Assert.assertSame(TextOverflow.ELLIPSIS, copy.getOverflow());
-		Assert.assertSame(TextModifier.UPPER_CASE, copy.getModifier());
-	}
-
-	@Test
-	public void copiesWithAnotherOverflow() {
-		final Text copy = Text.create("ab", TextTest.info(), Align.CENTER, Align.END, TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copyWithOverflow(TextOverflow.DOT);
-		Assert.assertEquals("AB", copy.getText());
-		Assert.assertSame(TextOverflow.DOT, copy.getOverflow());
-		Assert.assertSame(Align.CENTER, copy.getHorizontalAlignment());
-		Assert.assertSame(Align.END, copy.getVerticalAlignment());
-		Assert.assertSame(TextModifier.UPPER_CASE, copy.getModifier());
-	}
-
-	@Test
-	public void changesItsAlignmentAndOverflow() {
-		final Text text = Text.create("ab", TextTest.info()).horizontalAlign(Align.CENTER).verticalAlign(Align.END);
-		Assert.assertSame(Align.CENTER, text.getHorizontalAlignment());
-		Assert.assertSame(Align.END, text.getVerticalAlignment());
-		text.horizontalAlign(Align.END).verticalAlign(Align.CENTER).overflow(TextOverflow.HYPHEN);
-		Assert.assertSame(Align.END, text.getHorizontalAlignment());
-		Assert.assertSame(Align.CENTER, text.getVerticalAlignment());
+	public void changesItsAlignmentsAndOverflow() {
+		final Text text = Text.create("ab", TextTest.info()).alignX(Align.CENTER).alignY(Align.END);
+		Assert.assertSame(Align.CENTER, text.getAlignX());
+		Assert.assertSame(Align.END, text.getAlignY());
+		text.alignX(Align.END).alignY(Align.CENTER).overflow(TextOverflow.HYPHEN);
+		Assert.assertSame(Align.END, text.getAlignX());
+		Assert.assertSame(Align.CENTER, text.getAlignY());
 		Assert.assertSame(TextOverflow.HYPHEN, text.getOverflow());
 	}
 
 	@Test
 	public void describesItself() {
-		final Text text = Text.create(TextElement.create("ab", TextTest.info()), TextElement.create("cd", TextTest.info())).horizontalAlign(Align.CENTER).verticalAlign(Align.END).overflow(TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE);
+		final Text text = Text.create(TextElement.create("ab", TextTest.info()), TextElement.create("cd", TextTest.info())).alignX(Align.CENTER).alignY(Align.END).overflow(TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE);
 		Assert.assertEquals("\"ABCD\" - CENTER / END - ELLIPSIS [2]", text.toString());
 	}
 
@@ -494,11 +407,6 @@ public class TextTest {
 	public void replacesItsTextWithASupplier() {
 		Assert.assertEquals("cd", Text.create("ab", TextTest.info()).text(() -> "cd").getText());
 		Assert.assertEquals("cd", Text.create("ab", TextTest.info()).text(0, () -> "cd").getText());
-	}
-
-	@Test
-	public void keepsItsVerticalAlignmentInACopyWithAnotherHorizontalAlignment() {
-		Assert.assertSame(Align.END, Text.create("ab", TextTest.info(), Align.CENTER, Align.END).copyWithHorizontalAlign(Align.START).getVerticalAlignment());
 	}
 
 	@Test

@@ -11,14 +11,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.draw.text.builder.TextElement;
 import dev.joid.lib.draw.text.builder.TextOverflow;
 import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.font.FontBounds;
-import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.ITextRenderer;
@@ -82,19 +80,19 @@ public class DrawTextTest {
 
 	@Test
 	public void centersTheTextOnItsPosition() {
-		DrawTextTest.draw().drawText(100D, 100D, this.text().horizontalAlign(Align.CENTER).verticalAlign(Align.CENTER));
+		DrawTextTest.draw().drawText(100D, 100D, this.text().alignX(Align.CENTER).alignY(Align.CENTER));
 		Assert.assertEquals(Arrays.asList("ab@80.0,90.0", "c@100.0,80.0"), this.font.drawn);
 	}
 
 	@Test
 	public void endsTheTextOnItsPosition() {
-		DrawTextTest.draw().drawText(100D, 100D, this.text().horizontalAlign(Align.END).verticalAlign(Align.END));
+		DrawTextTest.draw().drawText(100D, 100D, this.text().alignX(Align.END).alignY(Align.END));
 		Assert.assertEquals(Arrays.asList("ab@60.0,80.0", "c@80.0,60.0"), this.font.drawn);
 	}
 
 	@Test
 	public void sharesTheBoundsOfTheWholeTextWithEveryElement() {
-		DrawTextTest.draw().drawText(100D, 100D, this.text().horizontalAlign(Align.CENTER).verticalAlign(Align.CENTER));
+		DrawTextTest.draw().drawText(100D, 100D, this.text().alignX(Align.CENTER).alignY(Align.CENTER));
 		Assert.assertEquals(Arrays.asList("80.0,80.0 40.0x40.0", "80.0,80.0 40.0x40.0"), this.font.runs);
 	}
 
@@ -102,19 +100,6 @@ public class DrawTextTest {
 	public void drawsTheModifiedText() {
 		DrawTextTest.draw().drawText(0D, 0D, Text.create("ab", this.info).modifier(TextModifier.UPPER_CASE));
 		Assert.assertEquals(Collections.singletonList("AB@0.0,0.0"), this.font.drawn);
-	}
-
-	@Test
-	public void drawsEachElementUnderItsOrigin() {
-		final boolean previous = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
-			final Text text = Text.create("ab", this.info);
-			DrawTextTest.draw().drawText(0D, 0D, text);
-			Assert.assertSame(text.get(0).getOrigin(), this.font.origin);
-		} finally {
-			JOIDEnv.devMode(previous);
-		}
 	}
 
 	@Test
@@ -128,8 +113,8 @@ public class DrawTextTest {
 	@Test
 	public void alignsTheTextInsideItsBox() {
 		final FontBounds bounds = DrawTextTest.draw().drawText(0D, 0D, 100D, 50D, Text.create("ab", this.info), TextMode.NORMAL);
-		DrawTextTest.draw().drawText(0D, 0D, 100D, 50D, Text.create("ab", this.info, Align.CENTER, Align.CENTER), TextMode.NORMAL);
-		DrawTextTest.draw().drawText(0D, 0D, 100D, 50D, Text.create("ab", this.info, Align.END, Align.END), TextMode.NORMAL);
+		DrawTextTest.draw().drawText(0D, 0D, 100D, 50D, Text.create("ab", this.info).align(Align.CENTER), TextMode.NORMAL);
+		DrawTextTest.draw().drawText(0D, 0D, 100D, 50D, Text.create("ab", this.info).align(Align.END), TextMode.NORMAL);
 		Assert.assertEquals(Arrays.asList("ab@0.0,0.0", "ab@40.0,15.0", "ab@80.0,30.0"), this.font.drawn);
 		Assert.assertEquals(20D, bounds.getWidth(), 0D);
 		Assert.assertEquals(20D, bounds.getHeight(), 0D);
@@ -145,7 +130,7 @@ public class DrawTextTest {
 
 	@Test
 	public void cutsTheModifiedText() {
-		DrawTextTest.draw().drawText(0D, 0D, 45D, 30D, Text.create("abcdef", this.info, TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE), TextMode.OVERFLOW);
+		DrawTextTest.draw().drawText(0D, 0D, 45D, 30D, Text.create("abcdef", this.info).overflow(TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE), TextMode.OVERFLOW);
 		Assert.assertEquals(Collections.singletonList("A...@0.0,0.0"), this.font.drawn);
 	}
 
@@ -157,7 +142,7 @@ public class DrawTextTest {
 
 	@Test
 	public void keepsAShortTextWhole() {
-		final FontBounds bounds = DrawTextTest.draw().drawText(0D, 0D, 100D, 30D, Text.create("abc", this.info, TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
+		final FontBounds bounds = DrawTextTest.draw().drawText(0D, 0D, 100D, 30D, Text.create("abc", this.info).overflow(TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
 		Assert.assertEquals(Collections.singletonList("abc@0.0,0.0"), this.font.drawn);
 		Assert.assertEquals(100D, bounds.getWidth(), 0D);
 		Assert.assertEquals(20D, bounds.getHeight(), 0D);
@@ -181,8 +166,8 @@ public class DrawTextTest {
 
 	@Test
 	public void alignsTheCutTextInsideItsBox() {
-		DrawTextTest.draw().drawText(0D, 0D, 45D, 40D, Text.create("abcdef", this.info, Align.CENTER, Align.CENTER, TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
-		DrawTextTest.draw().drawText(0D, 0D, 45D, 40D, Text.create("abcdef", this.info, Align.END, Align.END, TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
+		DrawTextTest.draw().drawText(0D, 0D, 45D, 40D, Text.create("abcdef", this.info).align(Align.CENTER).overflow(TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
+		DrawTextTest.draw().drawText(0D, 0D, 45D, 40D, Text.create("abcdef", this.info).align(Align.END).overflow(TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
 		Assert.assertEquals(Arrays.asList("a...@2.5,10.0", "a...@5.0,20.0"), this.font.drawn);
 	}
 
@@ -213,11 +198,11 @@ public class DrawTextTest {
 
 	@Test
 	public void keepsTheSettingsOfTheTextOnEachLine() {
-		final List<Text> lines = DrawTextTest.draw().getLines(35D, Text.create("ab cd", this.info, Align.END, TextOverflow.DOT).modifier(TextModifier.UPPER_CASE));
+		final List<Text> lines = DrawTextTest.draw().getLines(35D, Text.create("ab cd", this.info).alignX(Align.END).overflow(TextOverflow.DOT).modifier(TextModifier.UPPER_CASE));
 		Assert.assertEquals(2, lines.size());
 		Assert.assertEquals("AB", lines.get(0).getText());
 		Assert.assertEquals("CD", lines.get(1).getText());
-		Assert.assertSame(Align.END, lines.get(1).getHorizontalAlignment());
+		Assert.assertSame(Align.END, lines.get(1).getAlignX());
 		Assert.assertSame(TextOverflow.DOT, lines.get(1).getOverflow());
 	}
 
@@ -230,21 +215,6 @@ public class DrawTextTest {
 		Assert.assertSame(this.info, lines.get(0).get(0).getInfo());
 		Assert.assertEquals("cd", lines.get(1).getText());
 		Assert.assertSame(large, lines.get(1).get(0).getInfo());
-	}
-
-	@Test
-	public void keepsTheOriginOfTheSplitElements() {
-		final boolean previous = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
-			final Text text = Text.create("ab cd", this.info);
-			final List<Text> lines = DrawTextTest.draw().getLines(35D, text);
-			Assert.assertNotNull(text.get(0).getOrigin());
-			Assert.assertSame(text.get(0).getOrigin(), lines.get(0).get(0).getOrigin());
-			Assert.assertSame(text.get(0).getOrigin(), lines.get(1).get(0).getOrigin());
-		} finally {
-			JOIDEnv.devMode(previous);
-		}
 	}
 
 	@Test
@@ -265,13 +235,13 @@ public class DrawTextTest {
 
 	@Test
 	public void centersItsLinesInsideItsBox() {
-		DrawTextTest.draw().drawText(0D, 0D, 35D, 100D, Text.create("ab cd ef", this.info, Align.CENTER, Align.CENTER), TextMode.SPLIT);
+		DrawTextTest.draw().drawText(0D, 0D, 35D, 100D, Text.create("ab cd ef", this.info).align(Align.CENTER), TextMode.SPLIT);
 		Assert.assertEquals(Arrays.asList("ab@7.5,20.0", "cd@7.5,40.0", "ef@7.5,60.0"), this.font.drawn);
 	}
 
 	@Test
 	public void endsItsLinesInsideItsBox() {
-		DrawTextTest.draw().drawText(0D, 0D, 35D, 100D, Text.create("ab cd ef", this.info, Align.END, Align.END), TextMode.SPLIT);
+		DrawTextTest.draw().drawText(0D, 0D, 35D, 100D, Text.create("ab cd ef", this.info).align(Align.END), TextMode.SPLIT);
 		Assert.assertEquals(Arrays.asList("ab@15.0,40.0", "cd@15.0,60.0", "ef@15.0,80.0"), this.font.drawn);
 	}
 
@@ -293,21 +263,21 @@ public class DrawTextTest {
 
 	@Test
 	public void skipsTheLinesAboveItsBox() {
-		final FontBounds bounds = DrawTextTest.draw().drawText(0D, 0D, 35D, 50D, Text.create("ab cd ef", this.info, Align.START, Align.END), TextMode.BOX);
+		final FontBounds bounds = DrawTextTest.draw().drawText(0D, 0D, 35D, 50D, Text.create("ab cd ef", this.info).alignX(Align.START).alignY(Align.END), TextMode.BOX);
 		Assert.assertEquals(Arrays.asList("cd@0.0,10.0", "ef@0.0,30.0"), this.font.drawn);
 		Assert.assertEquals(40D, bounds.getHeight(), 0D);
 	}
 
 	@Test
 	public void skipsTheLinesOnBothSidesOfItsBox() {
-		final FontBounds bounds = DrawTextTest.draw().drawText(0D, 0D, 35D, 50D, Text.create("ab cd ef", this.info, Align.START, Align.CENTER), TextMode.BOX);
+		final FontBounds bounds = DrawTextTest.draw().drawText(0D, 0D, 35D, 50D, Text.create("ab cd ef", this.info).alignX(Align.START).alignY(Align.CENTER), TextMode.BOX);
 		Assert.assertEquals(Collections.singletonList("cd@0.0,15.0"), this.font.drawn);
 		Assert.assertEquals(20D, bounds.getHeight(), 0D);
 	}
 
 	@Test
 	public void keepsATextThatFitsWithoutItsOverflowMark() {
-		DrawTextTest.draw().drawText(0D, 0D, 50D, 30D, Text.create("abc", this.info, TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
+		DrawTextTest.draw().drawText(0D, 0D, 50D, 30D, Text.create("abc", this.info).overflow(TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
 		Assert.assertEquals(Collections.singletonList("abc@0.0,0.0"), this.font.drawn);
 	}
 
@@ -361,7 +331,7 @@ public class DrawTextTest {
 
 	@Test
 	public void cutsTheModifiedTextOnlyOnce() {
-		DrawTextTest.draw().drawText(0D, 0D, 85D, 30D, Text.create("hello big world", this.info, TextOverflow.DOT).modifier(TextModifier.CAMEL_CASE), TextMode.OVERFLOW);
+		DrawTextTest.draw().drawText(0D, 0D, 85D, 30D, Text.create("hello big world", this.info).overflow(TextOverflow.DOT).modifier(TextModifier.CAMEL_CASE), TextMode.OVERFLOW);
 		Assert.assertEquals(Collections.singletonList("helloBi.@0.0,0.0"), this.font.drawn);
 	}
 
@@ -402,8 +372,6 @@ public class DrawTextTest {
 		private final List<String> runs  = new ArrayList<>();
 		private final List<String> drawn = new ArrayList<>();
 
-		private StackTraceElement[] origin;
-
 		@Override
 		public ITextRenderer getTextRenderer() {
 			return this;
@@ -412,7 +380,6 @@ public class DrawTextTest {
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
 			this.drawn.add(text + "@" + x + "," + y);
-			this.origin = FontUsage.getOrigin();
 			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
 		}
 

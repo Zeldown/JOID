@@ -33,7 +33,6 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
@@ -3611,7 +3610,7 @@ public class NodeTest {
 		private float glow;
 
 		private GlowBorderEffect() {
-			super(Color.BLACK, 2F, BorderMode.OUT);
+			super(Color.BLACK, 2F);
 		}
 
 		public static GlowBorderEffect create() {

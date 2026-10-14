@@ -173,7 +173,7 @@ public final class DevNode extends Node {
 			.body(flex -> {
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(inspectedNode.getClass().getSimpleName(), TextInfo.create(DevFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE), Align.START, Align.CENTER))
+				.text(Text.create(inspectedNode.getClass().getSimpleName(), TextInfo.create(DevFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE)).alignX(Align.START).alignY(Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 
@@ -184,7 +184,7 @@ public final class DevNode extends Node {
 
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(String.format(Locale.ROOT, "%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE), Align.START, Align.CENTER))
+				.text(Text.create(String.format(Locale.ROOT, "%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE)).alignX(Align.START).alignY(Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 			})
@@ -345,7 +345,7 @@ public final class DevNode extends Node {
 
 		TextNode
 		.create(123 + super.aw(-123) / 2, super.getHeight() - super.getDefaultHeight() + super.getDefaultHeight() / 2)
-		.text(Text.create(() -> String.format(Locale.ROOT, "%.0f fps", super.getUi().getFps()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE), Align.CENTER, Align.CENTER))
+		.text(Text.create(() -> String.format(Locale.ROOT, "%.0f fps", super.getUi().getFps()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE)).align(Align.CENTER))
 		.anchor(Align.CENTER)
 		.attach(this);
 	}
@@ -403,10 +403,10 @@ public final class DevNode extends Node {
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.create(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
 
 			DrawUtils.SHAPE.drawRect(0, mouseY, mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F)), Align.CENTER));
+			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))).alignX(Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, mouseY, UIView.DESIGN_WIDTH - mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2, mouseY + 5, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F)), Align.CENTER));
+			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2, mouseY + 5, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))).alignX(Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, 0, 3, mouseY, gridColor);
 			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))));
@@ -522,9 +522,9 @@ public final class DevNode extends Node {
 		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.withAlpha(0.8F * opacity), 5F);
 
 		double ox = infoBoxX + padding;
-		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeNameText.verticalAlign(Align.CENTER)).getWidth() + margin;
+		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeNameText.alignY(Align.CENTER)).getWidth() + margin;
 		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.withAlpha(opacity), 2);
-		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.verticalAlign(Align.CENTER)).getWidth() + margin;
+		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.alignY(Align.CENTER)).getWidth() + margin;
 	}
 
 }

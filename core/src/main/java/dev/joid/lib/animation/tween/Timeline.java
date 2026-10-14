@@ -1,71 +1,40 @@
 package dev.joid.lib.animation.tween;
 
-
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public final class Timeline extends BaseTween<Timeline> {
 
-	private static final Pool.Callback<Timeline> poolCallback = new Pool.Callback<Timeline>() {
+	private final Mode               mode;
+	private final List<BaseTween<?>> children = new ArrayList<>();
 
-		@Override
-		public void onPool(final Timeline obj) {
-			obj.reset();
-		}
-
-		@Override
-		public void onUnPool(final Timeline obj) {
-			obj.reset();
-		}
-
-	};
-
-	private static final Pool<Timeline> pool = new Pool<Timeline>(10, Timeline.poolCallback) {
-
-		@Override
-		protected Timeline create() {
-			return new Timeline();
-		}
-
-	};
-
-	private final List<BaseTween<?>> children = new ArrayList<>(10);
-	private Modes mode;
 	private Timeline parent;
-	private boolean isBuilt;
+	private boolean  isBuilt;
 	private Timeline current;
 
+	private Timeline(final Mode mode) {
+		this.mode    = mode;
+		this.current = this;
+	}
+
 	public static Timeline createSequence() {
-		final Timeline tl = Timeline.pool.get();
-		tl.setup(Modes.SEQUENCE);
-		return tl;
+		return new Timeline(Mode.SEQUENCE);
 	}
 
 	public static Timeline createParallel() {
-		final Timeline tl = Timeline.pool.get();
-		tl.setup(Modes.PARALLEL);
-		return tl;
-	}
-
-	private Timeline() {
-		this.reset();
+		return new Timeline(Mode.PARALLEL);
 	}
 
 	@Override
 	public Timeline start() {
 		super.start();
 
-		for (final BaseTween<?> obj : this.children) {
-			obj.start();
+		for (final BaseTween<?> child : this.children) {
+			child.start();
 		}
 
 		return this;
-	}
-
-	public static int getPoolSize() {
-		return Timeline.pool.size();
 	}
 
 	public List<BaseTween<?>> getChildren() {
@@ -76,34 +45,14 @@ public final class Timeline extends BaseTween<Timeline> {
 		}
 	}
 
-	public static void ensurePoolCapacity(final int minCapacity) {
-		Timeline.pool.ensureCapacity(minCapacity);
-	}
-
-	@Override
-	protected void reset() {
-		super.reset();
-
-		this.children.clear();
-		this.current = this.parent = null;
-
-		this.isBuilt = false;
-	}
-
 	public Timeline push(final Tween tween) {
-		if (this.isBuilt) {
-			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
-		}
-
+		this.requireOpen();
 		this.current.children.add(tween);
 		return this;
 	}
 
 	public Timeline push(final Timeline timeline) {
-		if (this.isBuilt) {
-			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
-		}
-
+		this.requireOpen();
 		if (timeline.current != timeline) {
 			throw new IllegalArgumentException("The pushed timeline still has an open beginSequence() or beginParallel(), close each one with end() before pushing it");
 		}
@@ -114,45 +63,21 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	public Timeline pushPause(final float time) {
-		if (this.isBuilt) {
-			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
-		}
-
+		this.requireOpen();
 		this.current.children.add(Tween.mark().delay(time));
 		return this;
 	}
 
 	public Timeline beginSequence() {
-		if (this.isBuilt) {
-			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
-		}
-
-		final Timeline tl = Timeline.pool.get();
-		tl.parent = this.current;
-		tl.setup(Modes.SEQUENCE);
-		this.current.children.add(tl);
-		this.current = tl;
-		return this;
+		return this.begin(Mode.SEQUENCE);
 	}
 
 	public Timeline beginParallel() {
-		if (this.isBuilt) {
-			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
-		}
-
-		final Timeline tl = Timeline.pool.get();
-		tl.parent = this.current;
-		tl.setup(Modes.PARALLEL);
-		this.current.children.add(tl);
-		this.current = tl;
-		return this;
+		return this.begin(Mode.PARALLEL);
 	}
 
 	public Timeline end() {
-		if (this.isBuilt) {
-			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
-		}
-
+		this.requireOpen();
 		if (this.current == this) {
 			throw new IllegalStateException("The timeline has no open beginSequence() or beginParallel() to close, remove this end()");
 		}
@@ -168,25 +93,19 @@ public final class Timeline extends BaseTween<Timeline> {
 		}
 
 		this.duration = 0;
-		for (final BaseTween<?> element : this.children) {
-			final BaseTween<?> obj = element;
-
-			if (obj.getRepeatCount() < 0) {
-				throw new IllegalArgumentException("A timeline cannot hold a child that repeats forever (repeat count " + obj.getRepeatCount() + "), give it a finite repeat count");
+		for (final BaseTween<?> child : this.children) {
+			if (child.getRepeatCount() < 0) {
+				throw new IllegalArgumentException("A timeline cannot hold a child that repeats forever (repeat count " + child.getRepeatCount() + "), give it a finite repeat count");
 			}
 
-			obj.build();
+			child.build();
 
-			switch (this.mode) {
-			case SEQUENCE:
-				final float tDelay = this.duration;
-				this.duration += obj.getFullDuration();
-				obj.delay += tDelay;
-				break;
-
-			case PARALLEL:
-				this.duration = Math.max(this.duration, obj.getFullDuration());
-				break;
+			if (this.mode == Mode.SEQUENCE) {
+				final float delay = this.duration;
+				this.duration += child.getFullDuration();
+				child.delay += delay;
+			} else {
+				this.duration = Math.max(this.duration, child.getFullDuration());
 			}
 		}
 
@@ -195,117 +114,80 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	@Override
-	protected void free() {
-		for (int i = this.children.size() - 1; i >= 0; i--) {
-			final BaseTween<?> obj = this.children.remove(i);
-			obj.free();
-		}
-
-		Timeline.pool.free(this);
-	}
-
-	@Override
 	protected void updateOverride(final int step, final int lastStep, final boolean isIterationStep, final float delta) {
 		if (!isIterationStep && step > lastStep) {
-			assert delta >= 0;
-			final float dt = this.isReverse(lastStep) ? -delta - 1 : delta + 1;
-			for (final BaseTween<?> element : this.children) {
-				element.update(dt);
-			}
+			this.updateForward(this.isReverse(lastStep) ? -delta - 1 : delta + 1);
 			return;
 		}
 
 		if (!isIterationStep && step < lastStep) {
-			assert delta <= 0;
-			final float dt = this.isReverse(lastStep) ? -delta + 1 : delta - 1;
-			for (int i = this.children.size() - 1; i >= 0; i--) {
-				this.children.get(i).update(dt);
-			}
+			this.updateBackward(this.isReverse(lastStep) ? -delta + 1 : delta - 1);
 			return;
 		}
-
-		assert isIterationStep;
 
 		if (step > lastStep) {
 			if (this.isReverse(step)) {
 				this.forceEndValues();
-				for (final BaseTween<?> element : this.children) {
-					element.update(0F);
-				}
 			} else {
 				this.forceStartValues();
-				for (final BaseTween<?> element : this.children) {
-					element.update(0F);
-				}
 			}
+			this.updateForward(0F);
 		} else if (step < lastStep) {
 			if (this.isReverse(step)) {
 				this.forceStartValues();
-				for (int i = this.children.size() - 1; i >= 0; i--) {
-					this.children.get(i).update(0F);
-				}
 			} else {
 				this.forceEndValues();
-				for (int i = this.children.size() - 1; i >= 0; i--) {
-					this.children.get(i).update(0F);
-				}
 			}
+			this.updateBackward(0F);
+		} else if (delta >= 0) {
+			this.updateForward(this.isReverse(step) ? -delta : delta);
 		} else {
-			final float dt = this.isReverse(step) ? -delta : delta;
-			if (delta >= 0) {
-				for (final BaseTween<?> element : this.children) {
-					element.update(dt);
-				}
-			} else {
-				for (int i = this.children.size() - 1; i >= 0; i--) {
-					this.children.get(i).update(dt);
-				}
-			}
+			this.updateBackward(this.isReverse(step) ? -delta : delta);
 		}
 	}
 
 	@Override
 	protected void forceEndValues() {
-		for (final BaseTween<?> obj : this.children) {
-			obj.forceToEnd(this.duration);
+		for (final BaseTween<?> child : this.children) {
+			child.forceToEnd(this.duration);
 		}
 	}
 
 	@Override
 	protected void forceStartValues() {
 		for (int i = this.children.size() - 1; i >= 0; i--) {
-			final BaseTween<?> obj = this.children.get(i);
-			obj.forceToStart();
+			this.children.get(i).forceToStart();
 		}
 	}
 
-	@Override
-	protected boolean containsTarget(final Object target) {
-		for (final BaseTween<?> obj : this.children) {
-			if (obj.containsTarget(target)) {
-				return true;
-			}
+	private Timeline begin(final Mode mode) {
+		this.requireOpen();
+		final Timeline timeline = new Timeline(mode);
+		timeline.parent = this.current;
+		this.current.children.add(timeline);
+		this.current = timeline;
+		return this;
+	}
+
+	private void requireOpen() {
+		if (this.isBuilt) {
+			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
 		}
-
-		return false;
 	}
 
-	@Override
-	protected boolean containsTarget(final Object target, final int tweenType) {
-		for (final BaseTween<?> obj : this.children) {
-			if (obj.containsTarget(target, tweenType)) {
-				return true;
-			}
+	private void updateForward(final float delta) {
+		for (final BaseTween<?> child : this.children) {
+			child.update(delta);
 		}
-		return false;
 	}
 
-	private void setup(final Modes mode) {
-		this.mode = mode;
-		this.current = this;
+	private void updateBackward(final float delta) {
+		for (int i = this.children.size() - 1; i >= 0; i--) {
+			this.children.get(i).update(delta);
+		}
 	}
 
-	private enum Modes {
+	private enum Mode {
 		SEQUENCE,
 		PARALLEL;
 	}

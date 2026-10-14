@@ -63,7 +63,7 @@ public class UIDemoTextField extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 130).text(Text.create("Typed: " + typed.get(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Key: " + key.get() + "  Char: " + character.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Text", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Text", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -72,7 +72,7 @@ public class UIDemoTextField extends UIDemo {
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 40, 240, 50).info(markup).marginHorizontal(12D).markup(true).text("<b>bold</b> <c=ff5555>red</c>").attach(rect);
-			TextNode.create(160, 275).text(Text.create("Markup", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Markup", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -81,7 +81,7 @@ public class UIDemoTextField extends UIDemo {
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 40, 240, 50).info(markup).marginHorizontal(12D).text("<b>bold</b> <c=ff5555>red</c>").attach(rect);
-			TextNode.create(160, 275).text(Text.create("Raw tags", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Raw tags", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -90,7 +90,7 @@ public class UIDemoTextField extends UIDemo {
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 40, 240, 50).info(info).marginHorizontal(12D).placeholder("8 at most").maxTextLength(8).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Max length", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Max length", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -105,7 +105,7 @@ public class UIDemoTextField extends UIDemo {
 			.placeholder("Letters")
 			.accept(text -> text.chars().allMatch(Character::isLetter))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Letters only", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Letters only", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -120,7 +120,7 @@ public class UIDemoTextField extends UIDemo {
 			.marginHorizontal(12D)
 			.placeholder("Upper case")
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Format", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Format", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -128,10 +128,10 @@ public class UIDemoTextField extends UIDemo {
 		.create(440, 380, 320, 260)
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
-			DemoTextFieldNode.create(40, 20, 240, 50).horizontalAlign(Align.START).info(info).marginHorizontal(12D).text("Start").attach(rect);
-			DemoTextFieldNode.create(40, 90, 240, 50).horizontalAlign(Align.CENTER).info(info).marginHorizontal(12D).text("Center").attach(rect);
-			DemoTextFieldNode.create(40, 160, 240, 50).horizontalAlign(Align.END).info(info).marginHorizontal(12D).text("End").attach(rect);
-			TextNode.create(160, 275).text(Text.create("Horizontal align", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			DemoTextFieldNode.create(40, 20, 240, 50).alignX(Align.START).info(info).marginHorizontal(12D).text("Start").attach(rect);
+			DemoTextFieldNode.create(40, 90, 240, 50).alignX(Align.CENTER).info(info).marginHorizontal(12D).text("Center").attach(rect);
+			DemoTextFieldNode.create(40, 160, 240, 50).alignX(Align.END).info(info).marginHorizontal(12D).text("End").attach(rect);
+			TextNode.create(160, 275).text(Text.create("Horizontal align", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -139,10 +139,10 @@ public class UIDemoTextField extends UIDemo {
 		.create(800, 380, 320, 260)
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
-			DemoTextFieldNode.create(40, 40, 70, 180).verticalAlign(Align.START).info(info).marginHorizontal(12D).text("Aa").attach(rect);
-			DemoTextFieldNode.create(125, 40, 70, 180).verticalAlign(Align.CENTER).info(info).marginHorizontal(12D).text("Aa").attach(rect);
-			DemoTextFieldNode.create(210, 40, 70, 180).verticalAlign(Align.END).info(info).marginHorizontal(12D).text("Aa").attach(rect);
-			TextNode.create(160, 275).text(Text.create("Vertical align", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			DemoTextFieldNode.create(40, 40, 70, 180).alignY(Align.START).info(info).marginHorizontal(12D).text("Aa").attach(rect);
+			DemoTextFieldNode.create(125, 40, 70, 180).alignY(Align.CENTER).info(info).marginHorizontal(12D).text("Aa").attach(rect);
+			DemoTextFieldNode.create(210, 40, 70, 180).alignY(Align.END).info(info).marginHorizontal(12D).text("Aa").attach(rect);
+			TextNode.create(160, 275).text(Text.create("Vertical align", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -157,7 +157,7 @@ public class UIDemoTextField extends UIDemo {
 			.placeholder("Placeholder")
 			.onChange(event -> System.out.println("[UIDemoTextField] multiline field: " + event.getText()))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Multiline", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Multiline", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -172,7 +172,7 @@ public class UIDemoTextField extends UIDemo {
 			.markup(true)
 			.text("<b>Bold words</b> wrap with <c=ff5555>their color on every line</c>")
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Multiline markup", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Multiline markup", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -191,7 +191,7 @@ public class UIDemoTextField extends UIDemo {
 			.onChange(event -> valid.set(event.isValid()))
 			.attach(rect);
 			TextNode.create(40, 130).text(Text.create(valid.get() ? "In range" : "Out of range", info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("0 to 100, step 5", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("0 to 100, step 5", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -201,7 +201,7 @@ public class UIDemoTextField extends UIDemo {
 		.body(rect -> {
 			DemoIntegerFieldNode.create(40, 40, 240, 50).value(number).info(info).marginHorizontal(12D).attach(rect);
 			TextNode.create(40, 130).text(Text.create("Doubled: " + number.get() * 2, info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Integer signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Integer signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -218,7 +218,7 @@ public class UIDemoTextField extends UIDemo {
 			.onChange(event -> empty.set(String.valueOf(event.getValue())))
 			.attach(rect);
 			TextNode.create(40, 130).text(Text.create("Value: " + empty.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Empty integer", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Empty integer", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -239,7 +239,7 @@ public class UIDemoTextField extends UIDemo {
 			TextNode.create(40, 115).text(Text.create("Focus: " + focuses.get(), info)).attach(rect);
 			TextNode.create(40, 155).text(Text.create("Blur: " + blurs.get(), info)).attach(rect);
 			TextNode.create(40, 195).text(Text.create("Enter: " + enters.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Focus and Enter", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Focus and Enter", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -248,7 +248,7 @@ public class UIDemoTextField extends UIDemo {
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 40, 240, 50).info(info).marginHorizontal(12D).text("Read only").enabled(false).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Disabled", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Disabled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

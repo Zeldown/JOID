@@ -1,50 +1,32 @@
 package dev.joid.lib.input.mouse;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum MouseButton {
 
-	LEFT,
-	RIGHT,
-	MIDDLE,
+	LEFT(0),
+	RIGHT(1),
+	MIDDLE(2),
 
-	BACK,
-	FORWARD,
+	BACK(3),
+	FORWARD(4),
 
-	OTHER;
+	OTHER(-1);
+
+	private final int button;
 
 	public static @NonNull MouseButton from(final int button) {
-		switch (button) {
-		case 0:
-			return MouseButton.LEFT;
-		case 1:
-			return MouseButton.RIGHT;
-		case 2:
-			return MouseButton.MIDDLE;
-		case 3:
-			return MouseButton.BACK;
-		case 4:
-			return MouseButton.FORWARD;
-		default:
-			return MouseButton.OTHER;
+		for (final MouseButton value : MouseButton.values()) {
+			if (value.button == button) {
+				return value;
+			}
 		}
-	}
-
-	public int getButton() {
-		switch (this) {
-		case LEFT:
-			return 0;
-		case RIGHT:
-			return 1;
-		case MIDDLE:
-			return 2;
-		case BACK:
-			return 3;
-		case FORWARD:
-			return 4;
-		default:
-			return -1;
-		}
+		return MouseButton.OTHER;
 	}
 
 	public boolean isBack() {

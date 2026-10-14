@@ -34,10 +34,10 @@ public class ColorGradientTest {
 		final AtomicReference<IShader> used = new AtomicReference<>();
 		gradient.use(() -> used.set(this.bridges.getRender().getState().getShader()), BoundingBox.create(10D, 20D, 100D, 50D));
 		final RecordingShader shader = (RecordingShader) used.get();
-		Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 1F}, (float[]) shader.getValues().get("startColor"), 0F);
-		Assert.assertArrayEquals(new float[] {0F, 0F, 1F, 0.5F}, (float[]) shader.getValues().get("endColor"), 0F);
-		Assert.assertArrayEquals(new float[] {10F, 20F, 110F, 70F}, (float[]) shader.getValues().get("canvas"), 0F);
-		Assert.assertArrayEquals(new float[] {1F, 0F}, (float[]) shader.getValues().get("endPos"), 0F);
+		Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 1F}, (float[]) shader.getValues().get("u_GradientStart"), 0F);
+		Assert.assertArrayEquals(new float[] {0F, 0F, 1F, 0.5F}, (float[]) shader.getValues().get("u_GradientEnd"), 0F);
+		Assert.assertArrayEquals(new float[] {10F, 20F, 110F, 70F}, (float[]) shader.getValues().get("u_GradientCanvas"), 0F);
+		Assert.assertArrayEquals(new float[] {1F, 0F}, (float[]) shader.getValues().get("u_GradientEndPos"), 0F);
 		Assert.assertEquals(0, shader.getValues().get("hasTexture"));
 		Assert.assertNotSame(shader, this.bridges.getRender().getState().getShader());
 	}

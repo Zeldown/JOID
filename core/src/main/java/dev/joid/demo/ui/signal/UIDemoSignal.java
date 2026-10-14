@@ -62,12 +62,12 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.onClick(event -> clicks.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Clicks: " + clicks.get(), info)).attach(rect);
 			RectNode.create(40, 180, 20, 20).color(UIDemoSignal.INK).width(Math.min(320D, 20D + clicks.get() * 40D)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Native expression", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Native expression", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -80,11 +80,11 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.onClick(event -> mapped.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create(mapped.map(value -> "Doubled: " + value * 2), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("map", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("map", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -97,7 +97,7 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.onClick(event -> left.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("A +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("A +1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -105,11 +105,11 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.onClick(event -> right.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("B +1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("B +1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create(Signal.from(() -> "A + B = " + (left.get() + right.get())), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Signal.from", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Signal.from", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -123,7 +123,7 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.width(() -> (BridgeHandler.CLOCK.get().currentTimeMillis() - opened) % 2000L / 2000D * 320D)
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Every frame", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Every frame", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -143,10 +143,10 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.onClick(event -> volume.set(0))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Two-way slider", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Two-way slider", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -156,7 +156,7 @@ public class UIDemoSignal extends UIDemo {
 		.body(rect -> {
 			DemoCheckboxNode.create(40, 40, 50, 50).checked(muted).attach(rect);
 			TextNode.create(110, 52).text(Text.create(muted.get() ? "Muted" : "Sound on", info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Checkbox", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Checkbox", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -166,7 +166,7 @@ public class UIDemoSignal extends UIDemo {
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 40, 320, 50).info(info).marginHorizontal(12D).text(name).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Hello " + name.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Text field", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Text field", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -179,11 +179,11 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.onClick(event -> shown.toggle())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode.create(40, 120, 80, 80).color(UIDemoSignal.INK).visible(shown).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Visibility", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Visibility", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -196,12 +196,12 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.onClick(event -> heat.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode.create(40, 120, 80, 80).color(heat.get() >= 3 ? UIDemoSignal.INK : Color.WHITE).attach(rect);
 			TextNode.create(140, 145).text(Text.create(heat.get() >= 3 ? "3 clicks or more" : "Under 3 clicks", info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Color", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Color", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -218,7 +218,7 @@ public class UIDemoSignal extends UIDemo {
 				}
 			})
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -227,7 +227,7 @@ public class UIDemoSignal extends UIDemo {
 			.onClick(event -> items.remove(items.size() - 1))
 			.visible(!items.isEmpty())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Remove", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Remove", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			FlexNode
@@ -240,13 +240,13 @@ public class UIDemoSignal extends UIDemo {
 					.create(0, 0, 320, 30)
 					.color(Color.WHITE)
 					.body(container -> {
-						TextNode.create(10, container.dh(2)).text(Text.create(item, info, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(container);
+						TextNode.create(10, container.dh(2)).text(Text.create(item, info).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(container);
 					})
 					.attach(flex);
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("watch", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("watch", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -264,7 +264,7 @@ public class UIDemoSignal extends UIDemo {
 				TextNode.create(20, 120).text(Text.create(cards.isEmpty() ? "" : cards.get(2), info)).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("wait", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("wait", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -277,11 +277,11 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.onClick(event -> sent.increment())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Saved: " + saved.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("subscribe", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("subscribe", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

@@ -65,11 +65,11 @@ public class UIDemoOption extends UIDemo {
 				}
 			})
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Next", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Next", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(() -> Text.create("Scale: " + super.getView().getInterfaceScale(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Interface scale", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Interface scale", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -82,10 +82,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoFixedScalePopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Scale ignored", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Scale ignored", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -98,10 +98,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoLimitedScalePopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Scale limit", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Scale limit", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -114,10 +114,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoCornerPopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Corner anchor", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Corner anchor", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -130,10 +130,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoTintedPopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Tinted backdrop", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Tinted backdrop", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -146,10 +146,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoLockedPopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Not closeable", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Not closeable", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -162,10 +162,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoFixedZoomPopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Not zoomable", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Not zoomable", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -178,10 +178,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoDebugOffPopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Debug off", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Debug off", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -194,10 +194,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoInstantPopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("No transition", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("No transition", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -210,10 +210,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoPopInPopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pop in only", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Pop in only", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -226,10 +226,10 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> JOID.open(new UIDemoSlidePopup()))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Open", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Custom transition", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Custom transition", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -237,8 +237,8 @@ public class UIDemoOption extends UIDemo {
 		.create(440, 720, 320, 260)
 		.color(UIDemoOption.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(160, 130).text(Text.create("Ticks: " + ticks.get(), info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Periodic task", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 130).text(Text.create("Ticks: " + ticks.get(), info).align(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Periodic task", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -251,7 +251,7 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> super.zoomBy(-0.1D))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -259,7 +259,7 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> super.zoomBy(0.1D))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -267,11 +267,11 @@ public class UIDemoOption extends UIDemo {
 			.color(UIDemoOption.INK)
 			.onClick(event -> zoom.set(1D))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("1:1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("1:1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 130).text(() -> Text.create("Zoom: " + Math.round(zoom.get() * 100D) + " %", info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Zoom signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Zoom signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -282,7 +282,7 @@ public class UIDemoOption extends UIDemo {
 			DemoCheckboxNode.create(40, 40, 60, 60).checked(locked).attach(rect);
 			TextNode.create(120, 55).text(Text.create("Locked", info)).attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refusedZooms.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Before zoom", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Before zoom", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

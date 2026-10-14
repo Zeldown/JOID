@@ -28,13 +28,13 @@ public class UIDemoOptionPopup extends UI {
 		.create(640, 390, 640, 300)
 		.color(UIDemoOptionPopup.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(320, 100).text(Text.create(super.getClass().getSimpleName(), info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(320, 100).text(Text.create(super.getClass().getSimpleName(), info).align(Align.CENTER)).anchor(Align.CENTER).attach(rect);
 			RectNode
 			.create(260, 190, 120, 50)
 			.color(UIDemoOptionPopup.INK)
 			.onClick(event -> JOID.close(this))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Close", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Close", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 		})

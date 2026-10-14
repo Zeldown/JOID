@@ -1,14 +1,12 @@
 package dev.joid.lib.font.impl.glyph;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import dev.joid.internal.JOIDLog;
-import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.FontWeight;
 import lombok.NonNull;
 
@@ -60,20 +58,7 @@ public final class FontFamily<F extends IFontFace> {
 	}
 
 	private void warn(final @NonNull FontWeight weight, final boolean italic, final @NonNull F face) {
-		JOIDLog.devWarnOnce("FontFamily." + System.identityHashCode(this) + "." + FontFamily.style(weight, italic), () -> {
-			final StackTraceElement[] origin = FontUsage.getOrigin();
-			final String trace = Arrays.stream(origin != null ? origin : FontFamily.locate()).map(element -> System.lineSeparator() + "\tat " + element).collect(Collectors.joining());
-			return "The font weight " + FontFamily.style(weight, italic) + " is not loaded in the family of " + face.getName() + ", " + FontFamily.style(face.getWeight(), face.isItalic()) + " is drawn instead (loaded: " + this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", ")) + ")" + trace;
-		});
-	}
-
-	private static @NonNull StackTraceElement[] locate() {
-		final StackTraceElement[] trace = new Throwable().getStackTrace();
-		int start = 0;
-		while (start < trace.length && (trace[start].getClassName().equals(FontFamily.class.getName()) || trace[start].getClassName().equals(JOIDLog.class.getName()) || trace[start].getClassName().startsWith("java."))) {
-			start++;
-		}
-		return Arrays.copyOfRange(trace, start, trace.length);
+		JOIDLog.devWarnOnce("FontFamily." + System.identityHashCode(this) + "." + FontFamily.style(weight, italic), () -> "The font weight " + FontFamily.style(weight, italic) + " is not loaded in the family of " + face.getName() + ", " + FontFamily.style(face.getWeight(), face.isItalic()) + " is drawn instead (loaded: " + this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", ")) + ")");
 	}
 
 	private static @NonNull String style(final @NonNull FontWeight weight, final boolean italic) {

@@ -20,6 +20,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
+import dev.joid.lib.render.tessellator.TessellatorAccess;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.shader.impl.RoundedShader;
@@ -134,8 +135,8 @@ public class DrawShapeTest {
 		Assert.assertEquals(0F, (Float) shader.getValues().get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {10.5F, 20.5F, 109.5F, 69.5F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-4F);
 		Assert.assertEquals(0, shader.getValues().get("u_Aligned"));
-		Assert.assertEquals(9F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
-		Assert.assertEquals(71F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
+		Assert.assertEquals(9F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[0]), 0F);
+		Assert.assertEquals(71F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[1]), 0F);
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
@@ -156,8 +157,8 @@ public class DrawShapeTest {
 		Assert.assertSame(shader, draw.getShader());
 		Assert.assertArrayEquals(new float[] {18F, 28F, 102F, 62F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-4F);
 		Assert.assertEquals(0, shader.getValues().get("u_Aligned"));
-		Assert.assertEquals(9F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
-		Assert.assertEquals(71F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
+		Assert.assertEquals(9F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[0]), 0F);
+		Assert.assertEquals(71F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[1]), 0F);
 	}
 
 	@Test
@@ -177,10 +178,10 @@ public class DrawShapeTest {
 		final Draw draw = this.single(1F, 0F, 0F);
 		Assert.assertSame(shader, draw.getShader());
 		Assert.assertEquals(30, draw.getXs().length);
-		Assert.assertEquals(10.5F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
-		Assert.assertEquals(69.5F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
-		Assert.assertEquals(255, Tessellator.inst().getRawBuffer()[5] >>> 24);
-		Assert.assertEquals(0, Tessellator.inst().getRawBuffer()[14 * 8 + 5] >>> 24);
+		Assert.assertEquals(10.5F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[0]), 0F);
+		Assert.assertEquals(69.5F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[1]), 0F);
+		Assert.assertEquals(255, TessellatorAccess.rawBuffer(Tessellator.inst())[5] >>> 24);
+		Assert.assertEquals(0, TessellatorAccess.rawBuffer(Tessellator.inst())[14 * 8 + 5] >>> 24);
 	}
 
 	@Test
@@ -364,8 +365,8 @@ public class DrawShapeTest {
 		Assert.assertEquals(2.5F, (Float) shader.getValues().get("u_Stroke"), 0F);
 		Assert.assertArrayEquals(new float[] {7.5F, 17.5F, 112.5F, 72.5F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-4F);
 		Assert.assertEquals(0, shader.getValues().get("u_Aligned"));
-		Assert.assertEquals(6F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[0]), 0F);
-		Assert.assertEquals(74F, Float.intBitsToFloat(Tessellator.inst().getRawBuffer()[1]), 0F);
+		Assert.assertEquals(6F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[0]), 0F);
+		Assert.assertEquals(74F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[1]), 0F);
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
@@ -389,7 +390,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(21, draw.getXs().length);
 		Assert.assertTrue(draw.getLeft() < 10D * 1366D / 1920D);
 		Assert.assertTrue(draw.getBottom() > 70D * 768D / 1080D);
-		Assert.assertEquals(204, Tessellator.inst().getRawBuffer()[5] >>> 24);
+		Assert.assertEquals(204, TessellatorAccess.rawBuffer(Tessellator.inst())[5] >>> 24);
 	}
 
 	@Test
@@ -453,12 +454,12 @@ public class DrawShapeTest {
 		final Map<String, Object> values = shader.getValues();
 		Assert.assertEquals(1, this.bridges.getRender().getDraws().size());
 		Assert.assertSame(shader, this.bridges.getRender().getDraws().get(0).getShader());
-		Assert.assertArrayEquals(new float[] {0F, 0F}, (float[]) values.get("startPos"), 0F);
-		Assert.assertArrayEquals(new float[] {0F, 1F}, (float[]) values.get("endPos"), 0F);
-		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) values.get("startColor"), 0F);
-		Assert.assertArrayEquals(new float[] {0.8F, 0.6F, 0.4F, 0.5F}, (float[]) values.get("endColor"), 0F);
+		Assert.assertArrayEquals(new float[] {0F, 0F}, (float[]) values.get("u_GradientStartPos"), 0F);
+		Assert.assertArrayEquals(new float[] {0F, 1F}, (float[]) values.get("u_GradientEndPos"), 0F);
+		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) values.get("u_GradientStart"), 0F);
+		Assert.assertArrayEquals(new float[] {0.8F, 0.6F, 0.4F, 0.5F}, (float[]) values.get("u_GradientEnd"), 0F);
 		Assert.assertEquals(0, values.get("hasTexture"));
-		Assert.assertArrayEquals(new float[] {10F, 20F, 110F, 70F}, (float[]) values.get("canvas"), 1E-3F);
+		Assert.assertArrayEquals(new float[] {10F, 20F, 110F, 70F}, (float[]) values.get("u_GradientCanvas"), 1E-3F);
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
@@ -466,7 +467,7 @@ public class DrawShapeTest {
 	public void spansTheGradientOverEveryPoint() {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawPolygon(Color.BLUE.toGradient(Color.GREEN), Point.create(100D, 220D), Point.create(300D, 200D), Point.create(150D, 400D));
-		Assert.assertArrayEquals(new float[] {100F, 200F, 300F, 400F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("canvas"), 0F);
+		Assert.assertArrayEquals(new float[] {100F, 200F, 300F, 400F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 0F);
 	}
 
 	@Test
@@ -587,7 +588,7 @@ public class DrawShapeTest {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawCurvedLine(Color.BLUE.toGradient(Color.GREEN), Point.create(0D, 0D), Point.create(50D, 50D), Point.create(100D, 0D));
 		Assert.assertEquals(1, this.bridges.getRender().getDraws().size());
-		Assert.assertArrayEquals(new float[] {0F, 0F, 100F, 25F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("canvas"), 1E-3F);
+		Assert.assertArrayEquals(new float[] {0F, 0F, 100F, 25F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 1E-3F);
 	}
 
 	@Test
@@ -595,7 +596,7 @@ public class DrawShapeTest {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawBorder(10D, 20D, 110D, 70D, Color.BLUE.toGradient(Color.GREEN), 3D);
 		Assert.assertEquals(4, this.bridges.getRender().getDraws().size());
-		Assert.assertArrayEquals(new float[] {7F, 17F, 113F, 73F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("canvas"), 1E-3F);
+		Assert.assertArrayEquals(new float[] {7F, 17F, 113F, 73F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 1E-3F);
 	}
 
 	@Test
@@ -613,7 +614,7 @@ public class DrawShapeTest {
 	@Test
 	public void spansTheGradientOverAShapeOnNegativeCoordinates() {
 		DrawUtils.SHAPE.drawPolygon(Color.BLUE.toGradient(Color.GREEN), Point.create(-300D, -380D), Point.create(-100D, -400D), Point.create(-150D, -200D));
-		Assert.assertArrayEquals(new float[] {-300F, -400F, -100F, -200F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("canvas"), 0F);
+		Assert.assertArrayEquals(new float[] {-300F, -400F, -100F, -200F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 0F);
 	}
 
 	@Test

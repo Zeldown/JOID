@@ -50,7 +50,7 @@ public class UIDemoSlider extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + integer.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Integer step", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Integer step", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -60,7 +60,7 @@ public class UIDemoSlider extends UIDemo {
 		.body(rect -> {
 			DemoIntegerSliderNode.create(40, 40, 240, 40).values(0, 25, 50, 75, 100).value(percent).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + percent.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Value list", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Value list", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -70,7 +70,7 @@ public class UIDemoSlider extends UIDemo {
 		.body(rect -> {
 			DemoDoubleSliderNode.create(40, 40, 240, 40).range(0D, 1D, 0.25D).value(ratio).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + ratio.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Double step", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Double step", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -80,7 +80,7 @@ public class UIDemoSlider extends UIDemo {
 		.body(rect -> {
 			DemoStringSliderNode.create(40, 40, 240, 40).values("Low", "Medium", "High").value(level).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + level.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Strings", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Strings", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -90,7 +90,7 @@ public class UIDemoSlider extends UIDemo {
 		.body(rect -> {
 			DemoStringSliderNode.create(40, 40, 240, 40).values(Align.values()).value(align).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + align.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Enum", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Enum", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -105,7 +105,7 @@ public class UIDemoSlider extends UIDemo {
 			.color(UIDemoSlider.INK)
 			.onClick(event -> volume.set(Math.max(0, volume.get() - 1)))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -113,10 +113,10 @@ public class UIDemoSlider extends UIDemo {
 			.color(UIDemoSlider.INK)
 			.onClick(event -> volume.set(Math.min(10, volume.get() + 1)))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Two-way signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Two-way signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -127,7 +127,7 @@ public class UIDemoSlider extends UIDemo {
 			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).value(shared).attach(rect);
 			DemoIntegerSliderNode.create(40, 100, 240, 40).range(0, 10).value(shared).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Value: " + shared.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Shared signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Shared signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -141,10 +141,10 @@ public class UIDemoSlider extends UIDemo {
 			.color(UIDemoSlider.INK)
 			.onClick(event -> target.set((target.get() + 5) % 15))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Next", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Next", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Followed value", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Followed value", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -164,7 +164,7 @@ public class UIDemoSlider extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Refused: " + refused.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Refused above 5", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Refused above 5", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -173,7 +173,7 @@ public class UIDemoSlider extends UIDemo {
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).value(4).enabled(false).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Disabled", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Disabled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

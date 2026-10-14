@@ -53,7 +53,7 @@ public class UIDemoReorderable extends UIDemo {
 							RectNode.create(10, 9, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 							RectNode.create(10, 15, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 							RectNode.create(10, 21, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-							TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+							TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 						})
 						.attach(flex);
 					}
@@ -61,7 +61,7 @@ public class UIDemoReorderable extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Vertical auto", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Vertical auto", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -91,13 +91,13 @@ public class UIDemoReorderable extends UIDemo {
 						RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
 					})
 					.attach(item);
-					TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+					TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 				})
 				.attach(flex);
 			}
 			});
 			manual.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Vertical handle", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Vertical handle", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -121,7 +121,7 @@ public class UIDemoReorderable extends UIDemo {
 						RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 						RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 						RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 					})
 					.attach(flex);
 				}
@@ -130,7 +130,7 @@ public class UIDemoReorderable extends UIDemo {
 			TextNode.create(240, 40).text(Text.create("Start: " + starts.get(), info)).attach(rect);
 			TextNode.create(240, 100).text(Text.create("Moves: " + moves.get(), info)).attach(rect);
 			TextNode.create(240, 160).text(Text.create("End: " + last.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Callbacks", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Callbacks", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -154,7 +154,7 @@ public class UIDemoReorderable extends UIDemo {
 									RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 									RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 								}
-								TextNode.create(50, item.dh(2)).text(Text.create((locked ? "Locked " : "Item ") + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+								TextNode.create(50, item.dh(2)).text(Text.create((locked ? "Locked " : "Item ") + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 							})
 							.attach(flex);
 					if (locked) {
@@ -163,7 +163,7 @@ public class UIDemoReorderable extends UIDemo {
 				}
 			});
 			slots.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Locked", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Locked", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -190,7 +190,7 @@ public class UIDemoReorderable extends UIDemo {
 							RectNode.create(65, 13, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 							RectNode.create(65, 19, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 							RectNode.create(65, 25, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-							TextNode.create(item.dw(2), item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(item);
+							TextNode.create(item.dw(2), item.dh(2)).text(Text.create("Item " + (index + 1), label).align(Align.CENTER)).anchor(Align.CENTER).attach(item);
 						})
 						.attach(flex);
 					}
@@ -198,7 +198,7 @@ public class UIDemoReorderable extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(420, 275).text(Text.create("Horizontal auto", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(420, 275).text(Text.create("Horizontal auto", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -233,7 +233,7 @@ public class UIDemoReorderable extends UIDemo {
 								RectNode.create(65, 25, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(handle);
 							})
 							.attach(item);
-							TextNode.create(item.dw(2), item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(item);
+							TextNode.create(item.dw(2), item.dh(2)).text(Text.create("Item " + (index + 1), label).align(Align.CENTER)).anchor(Align.CENTER).attach(item);
 						})
 						.attach(flex);
 					}
@@ -241,7 +241,7 @@ public class UIDemoReorderable extends UIDemo {
 				manual.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(420, 275).text(Text.create("Horizontal handle", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(420, 275).text(Text.create("Horizontal handle", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -263,13 +263,13 @@ public class UIDemoReorderable extends UIDemo {
 						RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 						RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 						RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 					})
 					.attach(flex);
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Center align", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Center align", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -289,13 +289,13 @@ public class UIDemoReorderable extends UIDemo {
 						RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 						RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 						RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 					})
 					.attach(flex);
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("No margin", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("No margin", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -320,14 +320,14 @@ public class UIDemoReorderable extends UIDemo {
 						RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 						RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 						RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
-						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 					})
 					.attach(flex);
 				}
 			})
 			.attach(rect);
 			TextNode.create(20, 200).text(Text.create("Refused: " + refused.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Refused moves", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Refused moves", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -346,13 +346,13 @@ public class UIDemoReorderable extends UIDemo {
 					.create(0, 0, 360, 34)
 					.color(UIDemoReorderable.INK.withAlpha(0.4F))
 					.body(item -> {
-						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(item);
+						TextNode.create(50, item.dh(2)).text(Text.create("Item " + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 					})
 					.attach(flex);
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Disabled", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Disabled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

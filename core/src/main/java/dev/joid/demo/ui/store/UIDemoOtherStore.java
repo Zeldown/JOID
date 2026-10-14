@@ -31,8 +31,8 @@ public class UIDemoOtherStore extends UIDemo {
 		.create(300, 400, 400, 200)
 		.color(UIDemoOtherStore.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + local.getTime(), info, Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Local store", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 100).text(Text.create("Created at " + local.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Local store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -40,8 +40,8 @@ public class UIDemoOtherStore extends UIDemo {
 		.create(760, 400, 400, 200)
 		.color(UIDemoOtherStore.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + global.getTime(), info, Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Global store", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 100).text(Text.create("Created at " + global.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Global store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -49,8 +49,8 @@ public class UIDemoOtherStore extends UIDemo {
 		.create(1220, 400, 400, 200)
 		.color(UIDemoOtherStore.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + permanent.getTime(), info, Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Permanent store", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 100).text(Text.create("Created at " + permanent.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Permanent store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

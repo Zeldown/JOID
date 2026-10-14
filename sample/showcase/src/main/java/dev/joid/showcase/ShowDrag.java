@@ -40,7 +40,7 @@ public class ShowDrag extends ShowUI {
 		.create(540, 160, 230, 300)
 		.color(Color.WHITE.withAlpha(0.04F))
 		.effect(RoundedNodeEffect.create(26F))
-		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.28F), 2F, BorderMode.IN))
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.28F), 2F).mode(BorderMode.IN))
 		.body(node -> {
 			TextNode.create(115, 130).text(Text.create("+", ShowUI.font(FontWeight.LIGHT, 64F, ShowUI.FAINT))).anchor(Align.CENTER).attach(node);
 			TextNode.create(115, 190).text(Text.create("Drop a record", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.FAINT))).anchor(Align.CENTER).attach(node);

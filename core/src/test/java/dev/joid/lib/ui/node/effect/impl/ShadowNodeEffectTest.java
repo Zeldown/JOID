@@ -45,7 +45,7 @@ public class ShadowNodeEffectTest {
 
 	@Test
 	public void dropsTheShadowByItsOffset() {
-		final ShadowNodeEffect effect = ShadowNodeEffect.create(Color.BLACK, 12F, 2D, 6D);
+		final ShadowNodeEffect effect = ShadowNodeEffect.create(Color.BLACK, 12F).offsetX(2D).offsetY(6D);
 		Assert.assertEquals(12F, effect.getBlur(), 0F);
 		Assert.assertEquals(2D, effect.getOffsetX(), 0D);
 		Assert.assertEquals(6D, effect.getOffsetY(), 0D);
@@ -75,7 +75,7 @@ public class ShadowNodeEffectTest {
 
 	@Test
 	public void drawsTheShadowUnderItsNode() {
-		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(ShadowNodeEffect.create(new Color(0.1F, 0.3F, 0.5F, 0.5F), 8F, 0D, 4D)))).frame();
+		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(ShadowNodeEffect.create(new Color(0.1F, 0.3F, 0.5F, 0.5F), 8F).offsetY(4D)))).frame();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		final Draw shadow = this.bridges.getRender().getDraws(0.1F, 0.3F, 0.5F).get(0);
 		final Map<String, Object> values = this.shader.getValues();
@@ -100,7 +100,7 @@ public class ShadowNodeEffectTest {
 
 	@Test
 	public void followsTheRoundedSidesOfItsNode() {
-		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(RoundedNodeEffect.create(12F, true, true, false, false)).effect(ShadowNodeEffect.create(Color.BLACK, 8F)))).frame();
+		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(RoundedNodeEffect.create(12F).right(false).bottom(false)).effect(ShadowNodeEffect.create(Color.BLACK, 8F)))).frame();
 		Assert.assertEquals(12F, (Float) this.shader.getValues().get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {1F, 1F, 0F, 0F}, (float[]) this.shader.getValues().get("u_Sides"), 0F);
 	}
@@ -114,14 +114,14 @@ public class ShadowNodeEffectTest {
 
 	@Test
 	public void followsACircleNode() {
-		this.bridges.open(new NodeUI(CircleNode.create(100D, 100D, 60D).color(Color.WHITE).effect(ShadowNodeEffect.create(Color.BLACK, 8F, 5D, 5D)))).frame();
+		this.bridges.open(new NodeUI(CircleNode.create(100D, 100D, 60D).color(Color.WHITE).effect(ShadowNodeEffect.create(Color.BLACK, 8F).offsetX(5D).offsetY(5D)))).frame();
 		Assert.assertEquals(30F, (Float) this.shader.getValues().get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {105F, 105F, 165F, 165F}, (float[]) this.shader.getValues().get("u_Box"), 1E-3F);
 	}
 
 	@Test
 	public void drawsASharpShadowWithoutBlur() {
-		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(ShadowNodeEffect.create(new Color(0.1F, 0.3F, 0.5F, 0.5F), 0F, 10D, 10D)))).frame();
+		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(ShadowNodeEffect.create(new Color(0.1F, 0.3F, 0.5F, 0.5F), 0F).offsetX(10D).offsetY(10D)))).frame();
 		final Draw shadow = this.bridges.getRender().getDraws(0.1F, 0.3F, 0.5F).get(0);
 		Assert.assertSame(RoundedShader.inst().getShader(), shadow.getShader());
 		Assert.assertEquals(110D, shadow.getLeft(), 1E-3D);
@@ -133,7 +133,7 @@ public class ShadowNodeEffectTest {
 	@Test
 	public void startsFromSuppliedValues() {
 		final double[] offset = {1D};
-		final ShadowNodeEffect effect = ShadowNodeEffect.create(() -> Color.GREEN, () -> 4F, () -> offset[0], () -> -offset[0]);
+		final ShadowNodeEffect effect = ShadowNodeEffect.create(() -> Color.GREEN, () -> 4F).offsetX(() -> offset[0]).offsetY(() -> -offset[0]);
 		offset[0] = 3D;
 		Assert.assertSame(Color.GREEN, effect.getColor());
 		Assert.assertEquals(4F, effect.getBlur(), 0F);

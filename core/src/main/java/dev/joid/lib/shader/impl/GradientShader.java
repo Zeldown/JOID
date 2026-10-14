@@ -2,10 +2,6 @@ package dev.joid.lib.shader.impl;
 
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
-
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.point.Point;
@@ -23,34 +19,16 @@ public class GradientShader extends ShaderProgram {
 		return GradientShader.INSTANCE;
 	}
 
-	public static void use(final @NonNull Point startPoint, final @NonNull Point endPoint, final @NonNull Color startColor, final @NonNull Color endColor, final Runnable runnable, final @NonNull BoundingBox canvas) {
+	public static void use(final @NonNull Point startPoint, final @NonNull Point endPoint, final @NonNull Color startColor, final @NonNull Color endColor, final @NonNull Runnable runnable, final @NonNull BoundingBox canvas) {
 		GradientShader.use(startPoint, endPoint, startColor, endColor, false, runnable, canvas);
 	}
 
-	public static void use(final @NonNull Point startPoint, final @NonNull Point endPoint, final @NonNull Color startColor, final @NonNull Color endColor, final boolean hasTexture, final Runnable runnable, final @NonNull BoundingBox canvas) {
-		if (!GradientShader.INSTANCE.canDraw()) {
-			return;
-		}
-
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final IShader previousShader = render.getState().getShader();
-		GradientShader.INSTANCE.bind();
-		GradientShader.INSTANCE.getShader()
-		.uniform("startPos", (float) startPoint.getX(), (float) startPoint.getY())
-		.uniform("endPos", (float) endPoint.getX(), (float) endPoint.getY())
-		.uniform("startColor", startColor.getRedF(), startColor.getGreenF(), startColor.getBlueF(), startColor.getAlphaF())
-		.uniform("endColor", endColor.getRedF(), endColor.getGreenF(), endColor.getBlueF(), endColor.getAlphaF())
-		.uniform("hasTexture", hasTexture ? 1 : 0)
-		.uniform("canvas", (float) canvas.getMinX(), (float) canvas.getMinY(), (float) canvas.getMaxX(), (float) canvas.getMaxY());
-
-		try {
-			if (runnable != null) {
-				runnable.run();
-			}
-		} finally {
-			GradientShader.INSTANCE.unbind();
-			render.getState().shader(previousShader);
-		}
+	public static void use(final @NonNull Point startPoint, final @NonNull Point endPoint, final @NonNull Color startColor, final @NonNull Color endColor, final boolean hasTexture, final @NonNull Runnable runnable, final @NonNull BoundingBox canvas) {
+		GradientShader.INSTANCE.use(() -> {
+			GradientShader.INSTANCE.bind();
+			ShaderProgram.uniformGradient(GradientShader.INSTANCE.getShader(), startPoint, endPoint, startColor, endColor, (float) canvas.getMinX(), (float) canvas.getMinY(), (float) canvas.getMaxX(), (float) canvas.getMaxY());
+			GradientShader.INSTANCE.getShader().uniform("hasTexture", hasTexture ? 1 : 0);
+		}, runnable);
 	}
 
 }

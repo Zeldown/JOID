@@ -13,6 +13,7 @@ import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
+import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.signal.Signal;
@@ -66,6 +67,13 @@ public class ResourcePlayerNodeTest {
 		this.bridges.open(new NodeUI(ResourcePlayerNode.create(300D, 300D, 50D, 40D).resource(empty)));
 		this.assertBounds(this.skeleton(), 300D, 300D, 350D, 340D);
 		Assert.assertTrue(this.bridges.getRender().getDraws(1F, 1F, 1F).isEmpty());
+	}
+
+	@Test
+	public void drawsASkeletonForAResourceWithoutDecoderYet() {
+		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		this.bridges.open(new NodeUI(ResourcePlayerNode.create(300D, 300D, 50D, 40D).resource(pending)));
+		this.assertBounds(this.skeleton(), 300D, 300D, 350D, 340D);
 	}
 
 	@Test

@@ -38,7 +38,7 @@ public final class ObjGroup {
 
 	public void render() {
 		if (this.faces.size() > 0) {
-			final Tessellator tessellator = Tessellator.inst().copy();
+			final Tessellator tessellator = Tessellator.create();
 			tessellator.start(this.drawMode);
 			for (final ObjFace face : this.faces) {
 				face.render(tessellator);

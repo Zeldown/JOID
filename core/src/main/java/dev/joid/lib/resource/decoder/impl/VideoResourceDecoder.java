@@ -40,58 +40,56 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	private static final FileCacheArea AREA = FileCache.area("video").retention(Duration.ofDays(7L));
 
-	private final Asset asset;
-	private final Object grabberLock = new Object();
-	private final AtomicInteger seeks = new AtomicInteger(0);
-	private final AtomicBoolean paused = new AtomicBoolean(false);
-	private final AtomicBoolean running = new AtomicBoolean(false);
+	private final Asset                asset;
 	private final VideoResourceDecoder origin;
-	private final AtomicInteger decodedFrameIndex = new AtomicInteger(0);
+	private final Object               grabberLock       = new Object();
+	private final AtomicInteger        seeks             = new AtomicInteger(0);
+	private final AtomicBoolean        paused            = new AtomicBoolean(false);
+	private final AtomicBoolean        running           = new AtomicBoolean(false);
+	private final AtomicInteger        decodedFrameIndex = new AtomicInteger(0);
 
 	private File   file;
 	private String codec;
 
-	private File    shared;
-	private int     readers;
-	private boolean closed;
+	private File shared;
 
-	private Thread decodeThread;
+	private Thread             decodeThread;
 	private FFmpegFrameGrabber grabber;
-	private VideoAudioPlayer audioPlayer;
+	private VideoAudioPlayer   audioPlayer;
 
 	private ArrayBlockingQueue<DecodedFrame> frameQueue;
 
 	private volatile boolean ended;
 	private volatile boolean seeked;
-	private volatile double seekTime;
-	private volatile double loopOffset;
-	private volatile int displayedFrameIndex;
+	private volatile double  seekTime;
+	private volatile double  loopOffset;
+	private volatile int     displayedFrameIndex;
 
 	private long startTime;
 	private long pauseTime;
 
 	private volatile boolean released;
 
-	private int currentBuffer;
+	private int        currentBuffer;
 	private ITexture[] textures;
-	private boolean texturesAllocated;
+	private boolean    texturesAllocated;
 
-	private int videoWidth;
-	private int totalFrames;
+	private int    videoWidth;
+	private int    totalFrames;
 	private double duration;
 	private double frameRate;
 
 	private boolean loop;
-	private float volume = 1F;
+	private float   volume   = 1F;
+	private Object  audioGroup;
 	private boolean autoplay = true;
-	private Object audioGroup;
 
-	private float locationX;
-	private float locationY;
-	private float locationZ;
-	private float maxDistance = 50F;
+	private float   locationX;
+	private float   locationY;
+	private float   locationZ;
 	private boolean hasLocation;
-	private float referenceDistance = 5F;
+	private float   maxDistance       = 50F;
+	private float   referenceDistance = 5F;
 
 	public VideoResourceDecoder(final @NonNull File file) {
 		this(FileAsset.create(file));
@@ -146,7 +144,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 			try {
 				if (this.file == null) {
-					this.file = this.origin.share(this);
+					this.file = this.origin.share();
 				}
 
 				this.grabber = this.open();
@@ -167,15 +165,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 				this.frameQueue = new ArrayBlockingQueue<>(5);
 
-				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
-					this.audioPlayer = new VideoAudioPlayer(this.describe(), this.grabber.getSampleRate(), this.grabber.getAudioChannels());
-					this.audioPlayer.setGroup(this.audioGroup);
-					if (this.hasLocation) {
-						this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
-						this.audioPlayer.setReferenceDistance(this.referenceDistance);
-						this.audioPlayer.setMaxDistance(this.maxDistance);
-					}
-				}
+				this.createAudioPlayer();
 
 				final Frame firstFrame = this.grabber.grabImage();
 				if (firstFrame != null) {
@@ -190,12 +180,12 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		if (resource.getData() == null || resource.getData()[0] == null) {
+		if (resource.getData(0) == null) {
 			return;
 		}
 
-		this.textures[0].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData()[0], resource.getWidth(), resource.getHeight());
-		this.textures[1].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData()[0], resource.getWidth(), resource.getHeight());
+		this.textures[0].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0), resource.getWidth(), resource.getHeight());
+		this.textures[1].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0), resource.getWidth(), resource.getHeight());
 
 		if (this.autoplay) {
 			this.play();
@@ -247,13 +237,9 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	public void clear(final @NonNull ResourceData resource) {
 		this.release();
 
-		if (this.file != null) {
-			this.file = null;
-			this.origin.unshare();
-		}
-
+		this.file = null;
 		if (this.origin == this) {
-			this.close();
+			this.forget();
 		}
 
 		if (this.textures != null) {
@@ -466,7 +452,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 			try {
 				if (this.file == null) {
-					this.file = this.origin.share(this);
+					this.file = this.origin.share();
 				}
 
 				this.grabber = this.open();
@@ -477,50 +463,34 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					this.frameQueue.clear();
 				}
 
-				if (this.grabber.getAudioChannels() > 0 && this.volume > 0F && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
-					this.audioPlayer = new VideoAudioPlayer(this.describe(), this.grabber.getSampleRate(), this.grabber.getAudioChannels());
-					this.audioPlayer.setGroup(this.audioGroup);
-					if (this.hasLocation) {
-						this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
-						this.audioPlayer.setReferenceDistance(this.referenceDistance);
-						this.audioPlayer.setMaxDistance(this.maxDistance);
-					}
-				}
+				this.createAudioPlayer();
 			} catch (final Exception e) {
 				JOIDLog.warn("The video " + this.describe() + " cannot be reopened (" + e.getMessage() + "), check that the file can still be read");
 			}
 		}
 	}
 
-	private synchronized @NonNull File share(final @NonNull VideoResourceDecoder reader) throws IOException {
-		if (reader == this) {
-			this.closed = false;
-		}
-
+	private synchronized @NonNull File share() throws IOException {
 		if (this.shared == null) {
 			final File file = this.asset.getFile();
 			this.shared = file != null ? file : VideoResourceDecoder.extract(this.asset);
 		}
-
-		this.readers++;
 		return this.shared;
 	}
 
-	private synchronized void unshare() {
-		this.readers--;
-		if (this.closed) {
-			this.forgetCopy();
-		}
+	private synchronized void forget() {
+		this.shared = null;
 	}
 
-	private synchronized void close() {
-		this.closed = true;
-		this.forgetCopy();
-	}
-
-	private void forgetCopy() {
-		if (this.readers == 0) {
-			this.shared = null;
+	private void createAudioPlayer() {
+		if (this.grabber.getAudioChannels() > 0 && this.volume > 0F && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
+			this.audioPlayer = new VideoAudioPlayer(this.describe(), this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+			this.audioPlayer.setGroup(this.audioGroup);
+			if (this.hasLocation) {
+				this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
+				this.audioPlayer.setReferenceDistance(this.referenceDistance);
+				this.audioPlayer.setMaxDistance(this.maxDistance);
+			}
 		}
 	}
 

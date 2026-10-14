@@ -50,8 +50,8 @@ public class UIDemoStore extends UIDemo {
 		.create(300, 400, 400, 200)
 		.color(UIDemoStore.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + local.getTime(), info, Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Local store", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 100).text(Text.create("Created at " + local.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Local store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -59,8 +59,8 @@ public class UIDemoStore extends UIDemo {
 		.create(760, 400, 400, 200)
 		.color(UIDemoStore.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + global.getTime(), info, Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Global store", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 100).text(Text.create("Created at " + global.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Global store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -68,8 +68,8 @@ public class UIDemoStore extends UIDemo {
 		.create(1220, 400, 400, 200)
 		.color(UIDemoStore.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + permanent.getTime(), info, Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Permanent store", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 100).text(Text.create("Created at " + permanent.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Permanent store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -82,11 +82,11 @@ public class UIDemoStore extends UIDemo {
 			.color(UIDemoStore.INK)
 			.onClick(event -> this.clicks++)
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(190, 100).text(() -> Text.create("Clicks: " + this.clicks, info, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Remembered field", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(190, 100).text(() -> Text.create("Clicks: " + this.clicks, info).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Remembered field", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -107,11 +107,11 @@ public class UIDemoStore extends UIDemo {
 				}
 			})
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Cache", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Cache", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(190, 100).text(() -> Text.create(this.cache, info, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("File cache", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(190, 100).text(() -> Text.create(this.cache, info).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("File cache", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

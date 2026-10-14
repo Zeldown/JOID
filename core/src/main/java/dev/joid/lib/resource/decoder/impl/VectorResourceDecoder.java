@@ -82,7 +82,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		this.texture.allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData()[0], resource.getWidth(), resource.getHeight());
+		this.texture.allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0), resource.getWidth(), resource.getHeight());
 		this.store(resource, this.texture);
 	}
 

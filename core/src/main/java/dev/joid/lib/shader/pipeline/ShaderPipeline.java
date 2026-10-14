@@ -1,6 +1,5 @@
 package dev.joid.lib.shader.pipeline;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,19 +23,15 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderPipeline {
 
-	private static final Map<List<Integer>, PooledFrameBuffers> FBO_POOL = new HashMap<>();
-	private static int pipelineDepth = 0;
-
-	public static void render(final @NonNull Node node, final @NonNull Runnable baseDraw, final @NonNull IShaderPass... passes) {
-		ShaderPipeline.render(node, new ArrayList<>(Arrays.asList(passes)), baseDraw);
-	}
+	private static int                                          pipelineDepth = 0;
+	private static final Map<List<Integer>, PooledFrameBuffers> FBO_POOL      = new HashMap<>();
 
 	public static void render(final @NonNull Node node, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
 		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), passes, baseDraw);
 	}
 
 	public static void render(final double x, final double y, final double width, final double height, final @NonNull Runnable baseDraw, final @NonNull IShaderPass... passes) {
-		ShaderPipeline.render(x, y, width, height, new ArrayList<>(Arrays.asList(passes)), baseDraw);
+		ShaderPipeline.render(x, y, width, height, Arrays.asList(passes), baseDraw);
 	}
 
 	public static void render(final double x, final double y, final double width, final double height, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
@@ -51,7 +46,7 @@ public final class ShaderPipeline {
 			for (final IShaderPass pass : passes) {
 				expansion = Math.max(expansion, pass.expansion());
 			}
-			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, BridgeHandler.RENDER.get().getPixelGrid()), new ArrayList<>(passes), baseDraw);
+			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, BridgeHandler.RENDER.get().getPixelGrid()), passes, baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}

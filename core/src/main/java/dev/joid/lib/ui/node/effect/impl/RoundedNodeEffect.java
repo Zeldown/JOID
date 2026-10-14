@@ -2,6 +2,8 @@ package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.function.Supplier;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import dev.joid.lib.signal.Signal;
@@ -13,39 +15,27 @@ import lombok.NonNull;
 @Getter
 public class RoundedNodeEffect extends NodeEffect<Node> {
 
-	private Supplier<Float> radiusSupplier;
-	private Supplier<Boolean> leftSupplier;
 	private Supplier<Boolean> topSupplier;
+	private Supplier<Float>   radiusSupplier;
+	private Supplier<Boolean> leftSupplier;
 	private Supplier<Boolean> rightSupplier;
 	private Supplier<Boolean> bottomSupplier;
 
-	protected RoundedNodeEffect(final float radius, final boolean left, final boolean top, final boolean right, final boolean bottom) {
-		this(() -> radius, () -> left, () -> top, () -> right, () -> bottom);
-	}
-
-	protected RoundedNodeEffect(final Supplier<Float> radiusSupplier, final Supplier<Boolean> leftSupplier, final Supplier<Boolean> topSupplier, final Supplier<Boolean> rightSupplier, final Supplier<Boolean> bottomSupplier) {
+	protected RoundedNodeEffect(final Supplier<Float> radiusSupplier) {
 		super(100);
 		this.radiusSupplier = radiusSupplier;
-		this.leftSupplier = leftSupplier;
-		this.topSupplier = topSupplier;
-		this.rightSupplier = rightSupplier;
-		this.bottomSupplier = bottomSupplier;
+		this.topSupplier    = () -> true;
+		this.leftSupplier   = () -> true;
+		this.rightSupplier  = () -> true;
+		this.bottomSupplier = () -> true;
 	}
 
 	public static @NonNull RoundedNodeEffect create(final float radius) {
-		return new RoundedNodeEffect(radius, true, true, true, true);
+		return new RoundedNodeEffect(() -> radius);
 	}
 
 	public static @NonNull RoundedNodeEffect create(final @NonNull Supplier<Float> radiusSupplier) {
-		return RoundedNodeEffect.create(radiusSupplier, () -> true, () -> true, () -> true, () -> true);
-	}
-
-	public static @NonNull RoundedNodeEffect create(final float radius, final boolean left, final boolean top, final boolean right, final boolean bottom) {
-		return new RoundedNodeEffect(radius, left, top, right, bottom);
-	}
-
-	public static @NonNull RoundedNodeEffect create(final @NonNull Supplier<Float> radiusSupplier, final @NonNull Supplier<Boolean> leftSupplier, final @NonNull Supplier<Boolean> topSupplier, final @NonNull Supplier<Boolean> rightSupplier, final @NonNull Supplier<Boolean> bottomSupplier) {
-		return new RoundedNodeEffect(radiusSupplier, leftSupplier, topSupplier, rightSupplier, bottomSupplier);
+		return new RoundedNodeEffect(radiusSupplier);
 	}
 
 	public float getRadius() {
@@ -75,7 +65,13 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 
 	@Override
 	public IShaderPass toShaderPass(final @NonNull Node node) {
-		return new RoundedShaderPass(this, node);
+		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
+		final float radius = this.getRadius();
+		final float x1 = (float) (grid.snapX(node.getX()) + (this.isLeft() ? radius : 0));
+		final float y1 = (float) (grid.snapY(node.getY()) + (this.isTop() ? radius : 0));
+		final float x2 = (float) (grid.snapRight(node.getX(), node.getX() + node.getWidth()) - (this.isRight() ? radius : 0));
+		final float y2 = (float) (grid.snapBottom(node.getY(), node.getY() + node.getHeight()) - (this.isBottom() ? radius : 0));
+		return new RoundedShaderPass(radius, x1, y1, x2, y2);
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E radius(final float radius) {

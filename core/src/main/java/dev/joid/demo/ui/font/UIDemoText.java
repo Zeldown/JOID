@@ -38,24 +38,24 @@ public class UIDemoText extends UIDemo {
 			.create(20, 30, 360, 50)
 			.color(Color.WHITE)
 			.body(box -> {
-				TextNode.create(0, 0, 360, 50).text(Text.create("Start", caption, Align.START, Align.CENTER)).attach(box);
+				TextNode.create(0, 0, 360, 50).text(Text.create("Start", caption).alignX(Align.START).alignY(Align.CENTER)).attach(box);
 			})
 			.attach(rect);
 			RectNode
 			.create(20, 100, 360, 50)
 			.color(Color.WHITE)
 			.body(box -> {
-				TextNode.create(0, 0, 360, 50).text(Text.create("Center", caption, Align.CENTER, Align.CENTER)).attach(box);
+				TextNode.create(0, 0, 360, 50).text(Text.create("Center", caption).align(Align.CENTER)).attach(box);
 			})
 			.attach(rect);
 			RectNode
 			.create(20, 170, 360, 50)
 			.color(Color.WHITE)
 			.body(box -> {
-				TextNode.create(0, 0, 360, 50).text(Text.create("End", caption, Align.END, Align.CENTER)).attach(box);
+				TextNode.create(0, 0, 360, 50).text(Text.create("End", caption).alignX(Align.END).alignY(Align.CENTER)).attach(box);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Horizontal align", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Horizontal align", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -67,24 +67,24 @@ public class UIDemoText extends UIDemo {
 			.create(20, 30, 110, 200)
 			.color(Color.WHITE)
 			.body(box -> {
-				TextNode.create(0, 0, 110, 200).text(Text.create("Top", caption, Align.CENTER, Align.START)).attach(box);
+				TextNode.create(0, 0, 110, 200).text(Text.create("Top", caption).alignX(Align.CENTER).alignY(Align.START)).attach(box);
 			})
 			.attach(rect);
 			RectNode
 			.create(145, 30, 110, 200)
 			.color(Color.WHITE)
 			.body(box -> {
-				TextNode.create(0, 0, 110, 200).text(Text.create("Middle", caption, Align.CENTER, Align.CENTER)).attach(box);
+				TextNode.create(0, 0, 110, 200).text(Text.create("Middle", caption).align(Align.CENTER)).attach(box);
 			})
 			.attach(rect);
 			RectNode
 			.create(270, 30, 110, 200)
 			.color(Color.WHITE)
 			.body(box -> {
-				TextNode.create(0, 0, 110, 200).text(Text.create("Bottom", caption, Align.CENTER, Align.END)).attach(box);
+				TextNode.create(0, 0, 110, 200).text(Text.create("Bottom", caption).alignX(Align.CENTER).alignY(Align.END)).attach(box);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Vertical align", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Vertical align", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -93,8 +93,8 @@ public class UIDemoText extends UIDemo {
 		.color(UIDemoText.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 30, 360, 0).text(Text.create(paragraph, info)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(20, 140, 360, 0).text(Text.create(paragraph, info, Align.CENTER)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Split", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(20, 140, 360, 0).text(Text.create(paragraph, info).alignX(Align.CENTER)).mode(TextMode.SPLIT).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Split", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -109,7 +109,7 @@ public class UIDemoText extends UIDemo {
 				TextNode.create(0, 0, 360, 46).text(Text.create(paragraph, info)).mode(TextMode.BOX).attach(box);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Box", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Box", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -121,13 +121,13 @@ public class UIDemoText extends UIDemo {
 			.vertical(20, 30, 360)
 			.margin(20D)
 			.body(flex -> {
-				TextNode.create(0, 0, 360, 0).text(Text.create("None cuts this sentence where the node ends", info, TextOverflow.NONE)).mode(TextMode.OVERFLOW).attach(flex);
-				TextNode.create(0, 0, 360, 0).text(Text.create("Ellipsis cuts this sentence where the node ends", info, TextOverflow.ELLIPSIS)).mode(TextMode.OVERFLOW).attach(flex);
-				TextNode.create(0, 0, 360, 0).text(Text.create("Dot cuts this sentence where the node ends", info, TextOverflow.DOT)).mode(TextMode.OVERFLOW).attach(flex);
-				TextNode.create(0, 0, 360, 0).text(Text.create("Hyphen cuts this sentence where the node ends", info, TextOverflow.HYPHEN)).mode(TextMode.OVERFLOW).attach(flex);
+				TextNode.create(0, 0, 360, 0).text(Text.create("None cuts this sentence where the node ends", info).overflow(TextOverflow.NONE)).mode(TextMode.OVERFLOW).attach(flex);
+				TextNode.create(0, 0, 360, 0).text(Text.create("Ellipsis cuts this sentence where the node ends", info).overflow(TextOverflow.ELLIPSIS)).mode(TextMode.OVERFLOW).attach(flex);
+				TextNode.create(0, 0, 360, 0).text(Text.create("Dot cuts this sentence where the node ends", info).overflow(TextOverflow.DOT)).mode(TextMode.OVERFLOW).attach(flex);
+				TextNode.create(0, 0, 360, 0).text(Text.create("Hyphen cuts this sentence where the node ends", info).overflow(TextOverflow.HYPHEN)).mode(TextMode.OVERFLOW).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Overflow", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Overflow", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -145,7 +145,7 @@ public class UIDemoText extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("Spacing -0.05", caption.copy().letterSpacing(-0.05F))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Letter spacing", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Letter spacing", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -155,7 +155,7 @@ public class UIDemoText extends UIDemo {
 		.body(rect -> {
 			TextNode.create(20, 20, 360, 0).text(Text.create("A line height of 1 keeps the lines of a paragraph close", info.copy().lineHeight(1F))).mode(TextMode.SPLIT).attach(rect);
 			TextNode.create(20, 110, 360, 0).text(Text.create("A line height of 1.8 opens the lines of a paragraph", info.copy().lineHeight(1.8F))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Line height", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Line height", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -174,7 +174,7 @@ public class UIDemoText extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("<c=cc3333>Tinted</c> <c=3355cc>shadow</c>", caption.copy().markups(DemoTextMarkup.inst()).shadowTint(0.25F))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Shadow", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Shadow", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -197,7 +197,7 @@ public class UIDemoText extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("hello joid world", info).modifier(text -> new StringBuilder(text).reverse().toString())).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Modifiers", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Modifiers", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -214,7 +214,7 @@ public class UIDemoText extends UIDemo {
 			.text(Text.create(TextElement.create("They wrap ", info), TextElement.create("together ", info.copy().weight(FontWeight.BOLD)), TextElement.create("on the width of the node, ", info.copy().italic(true)), TextElement.create("element after element.", info)))
 			.mode(TextMode.SPLIT)
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Text elements", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Text elements", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -232,7 +232,7 @@ public class UIDemoText extends UIDemo {
 			.text(Text.create("A longer text", caption.copy().fontSize(36F)))
 			.self(text -> text.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(text.getX(), text.getY(), text.getX() + text.getWidth(), text.getY() + text.getHeight(), UIDemoText.INK, 1D)))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Size from text", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Size from text", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -244,7 +244,7 @@ public class UIDemoText extends UIDemo {
 			TextNode.create(200, 40).text(Text.create("Anchor start", caption)).anchorX(Align.START).attach(rect);
 			TextNode.create(200, 110).text(Text.create("Anchor center", caption)).anchorX(Align.CENTER).attach(rect);
 			TextNode.create(200, 180).text(Text.create("Anchor end", caption)).anchorX(Align.END).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Anchors", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Anchors", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

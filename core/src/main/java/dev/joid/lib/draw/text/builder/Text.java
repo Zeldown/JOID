@@ -9,7 +9,6 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.FontBounds;
-import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.utils.align.Align;
@@ -20,87 +19,32 @@ public final class Text {
 
 	private final List<TextElement> elementList;
 
+	@Getter private Align         alignX;
+	@Getter private Align         alignY;
 	@Getter private TextOverflow  overflow;
 	@Getter private ITextModifier modifier;
-	@Getter private Align         verticalAlignment;
-	@Getter private Align         horizontalAlignment;
 
 	private double       width;
 	private double       height;
 	private List<Object> measured;
 
-	protected Text() {
-		this.elementList         = new LinkedList<>();
-		this.horizontalAlignment = Align.START;
-		this.verticalAlignment   = Align.START;
-		this.overflow            = TextOverflow.NONE;
-	}
-
-	protected Text(final @NonNull List<@NonNull TextElement> elementList) {
-		this.elementList         = new LinkedList<>(elementList);
-		this.horizontalAlignment = Align.START;
-		this.verticalAlignment   = Align.START;
-		this.overflow            = TextOverflow.NONE;
-	}
-
-	public static final @NonNull Text create() {
-		return new Text();
+	private Text(final @NonNull List<@NonNull TextElement> elementList) {
+		this.elementList = new LinkedList<>(elementList);
+		this.alignX      = Align.START;
+		this.alignY      = Align.START;
+		this.overflow    = TextOverflow.NONE;
 	}
 
 	public static final @NonNull Text create(final @NonNull TextElement @NonNull... elementList) {
 		return new Text(Arrays.asList(elementList));
 	}
 
-	public static final @NonNull Text create(final @NonNull List<@NonNull TextElement> elementList) {
-		return new Text(elementList);
-	}
-
 	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info) {
-		return new Text().add(TextElement.create(Signal.from(text), info));
+		return Text.create(TextElement.create(Signal.from(text), info));
 	}
 
 	public static final @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
-		return new Text().add(TextElement.create(text, info));
-	}
-
-	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign) {
-		return new Text().add(TextElement.create(Signal.from(text), info)).horizontalAlign(horizontalAlign);
-	}
-
-	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info, final @NonNull TextOverflow overflow) {
-		return new Text().add(TextElement.create(Signal.from(text), info)).overflow(overflow);
-	}
-
-	public static final @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign) {
-		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign);
-	}
-
-	public static final @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final @NonNull TextOverflow overflow) {
-		return new Text().add(TextElement.create(text, info)).overflow(overflow);
-	}
-
-	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info, final @NonNull Align align, final @NonNull TextOverflow overflow) {
-		return new Text().add(TextElement.create(Signal.from(text), info)).horizontalAlign(align).overflow(overflow);
-	}
-
-	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {
-		return new Text().add(TextElement.create(Signal.from(text), info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign);
-	}
-
-	public static final @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final @NonNull Align align, final @NonNull TextOverflow overflow) {
-		return new Text().add(TextElement.create(text, info)).horizontalAlign(align).overflow(overflow);
-	}
-
-	public static final @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {
-		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign);
-	}
-
-	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow) {
-		return new Text().add(TextElement.create(Signal.from(text), info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign).overflow(overflow);
-	}
-
-	public static final @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow) {
-		return new Text().add(TextElement.create(text, info)).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign).overflow(overflow);
+		return Text.create(TextElement.create(text, info));
 	}
 
 	public final @NonNull List<TextElement> getElementList() {
@@ -228,36 +172,26 @@ public final class Text {
 	}
 
 	public @NonNull Text copy() {
-		return new Text(this.elementList).overflow(this.overflow).horizontalAlign(this.horizontalAlignment).verticalAlign(this.verticalAlignment).modifier(this.modifier);
+		return Text.create().add(this).overflow(this.overflow).alignX(this.alignX).alignY(this.alignY).modifier(this.modifier);
 	}
 
 	public @NonNull Text copyProperties() {
-		return new Text().overflow(this.overflow).horizontalAlign(this.horizontalAlignment).verticalAlign(this.verticalAlignment).modifier(this.modifier);
+		return Text.create().overflow(this.overflow).alignX(this.alignX).alignY(this.alignY).modifier(this.modifier);
 	}
 
-	public @NonNull Text copyWithModifier(final ITextModifier modifier) {
-		return new Text(this.elementList).overflow(this.overflow).horizontalAlign(this.horizontalAlignment).verticalAlign(this.verticalAlignment).modifier(modifier);
-	}
-
-	public @NonNull Text copyWithVerticalAlign(final @NonNull Align align) {
-		return new Text(this.elementList).overflow(this.overflow).horizontalAlign(this.horizontalAlignment).verticalAlign(align).modifier(this.modifier);
-	}
-
-	public @NonNull Text copyWithHorizontalAlign(final @NonNull Align align) {
-		return new Text(this.elementList).overflow(this.overflow).horizontalAlign(align).verticalAlign(this.verticalAlignment).modifier(this.modifier);
-	}
-
-	public @NonNull Text copyWithOverflow(final @NonNull TextOverflow overflow) {
-		return new Text(this.elementList).overflow(overflow).horizontalAlign(this.horizontalAlignment).verticalAlign(this.verticalAlignment).modifier(this.modifier);
-	}
-
-	public final @NonNull Text verticalAlign(final @NonNull Align align) {
-		this.verticalAlignment = align;
+	public final @NonNull Text align(final @NonNull Align align) {
+		this.alignX = align;
+		this.alignY = align;
 		return this;
 	}
 
-	public final @NonNull Text horizontalAlign(final @NonNull Align align) {
-		this.horizontalAlignment = align;
+	public final @NonNull Text alignX(final @NonNull Align alignX) {
+		this.alignX = alignX;
+		return this;
+	}
+
+	public final @NonNull Text alignY(final @NonNull Align alignY) {
+		this.alignY = alignY;
 		return this;
 	}
 
@@ -299,8 +233,8 @@ public final class Text {
 		}
 
 		this.measured     = key;
-		this.width        = this.elementList.stream().mapToDouble(element -> FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(this.getText(element)))).sum();
-		this.height       = this.elementList.stream().mapToDouble(element -> FontUsage.trace(element.getOrigin(), () -> element.getInfo().getHeight(this.getText(element)))).max().orElse(0);
+		this.width        = this.elementList.stream().mapToDouble(element -> element.getInfo().getWidth(this.getText(element))).sum();
+		this.height       = this.elementList.stream().mapToDouble(element -> element.getInfo().getHeight(this.getText(element))).max().orElse(0);
 	}
 
 	private @NonNull List<Object> measureKey() {
@@ -323,7 +257,7 @@ public final class Text {
 
 	@Override
 	public String toString() {
-		return "\"" + this.getText() + "\" - " + this.horizontalAlignment + " / " + this.verticalAlignment + " - " + this.overflow + " [" + this.elementList.size() + "]";
+		return "\"" + this.getText() + "\" - " + this.alignX + " / " + this.alignY + " - " + this.overflow + " [" + this.elementList.size() + "]";
 	}
 
 }

@@ -59,18 +59,18 @@ public class RasterResourceDecoder implements IResourceDecoder {
 		resource.height(this.image.getHeight());
 
 		resource.data(new int[1][resource.getWidth() * resource.getHeight()]);
-		this.image.getRGB(0, 0, resource.getWidth(), resource.getHeight(), resource.getData()[0], 0, resource.getWidth());
-		ImageUtils.bleedAlpha(resource.getData()[0], resource.getWidth(), resource.getHeight());
+		this.image.getRGB(0, 0, resource.getWidth(), resource.getHeight(), resource.getData(0), 0, resource.getWidth());
+		ImageUtils.bleedAlpha(resource.getData(0), resource.getWidth(), resource.getHeight());
 	}
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		for (int i = 0; i < resource.getTextures().length; i++) {
-			if (resource.getData()[i] == null) {
+		for (int i = 0; i < resource.getTextureCount(); i++) {
+			if (resource.getData(i) == null) {
 				continue;
 			}
 
-			resource.getTextures()[i].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData()[i], resource.getWidth(), resource.getHeight());
+			resource.getTexture(i).allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(i), resource.getWidth(), resource.getHeight());
 		}
 		this.clear(resource);
 	}

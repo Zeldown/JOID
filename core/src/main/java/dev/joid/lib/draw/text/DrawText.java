@@ -9,7 +9,6 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.draw.text.builder.TextElement;
 import dev.joid.lib.draw.text.builder.TextOverflow;
 import dev.joid.lib.font.FontBounds;
-import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.markup.ITextMarkup;
@@ -33,8 +32,8 @@ public final class DrawText {
 			return FontBounds.empty();
 		}
 
-		final double runX = text.getHorizontalAlignment().isCenter() ? x - text.getWidth() / 2 : text.getHorizontalAlignment().isEnd() ? x - text.getWidth() : x;
-		final double runY = text.getVerticalAlignment().isCenter() ? y - text.getHeight() / 2 : text.getVerticalAlignment().isEnd() ? y - text.getHeight() : y;
+		final double runX = text.getAlignX().isCenter() ? x - text.getWidth() / 2 : text.getAlignX().isEnd() ? x - text.getWidth() : x;
+		final double runY = text.getAlignY().isCenter() ? y - text.getHeight() / 2 : text.getAlignY().isEnd() ? y - text.getHeight() : y;
 		final double runWidth = text.getWidth();
 		final double runHeight = text.getHeight();
 
@@ -43,17 +42,14 @@ public final class DrawText {
 		for (final TextElement element : text.getElementList()) {
 			final String drawText = text.getText(element);
 			final TextInfo info = element.getInfo();
-			final double pen = penX;
-			penX += FontUsage.trace(element.getOrigin(), () -> {
-				double oy = runY;
-				if (text.getVerticalAlignment().isCenter()) {
-					oy += (text.getHeight() - info.getHeight()) / 2;
-				} else if (text.getVerticalAlignment().isEnd()) {
-					oy += text.getHeight() - info.getHeight();
-				}
+			double oy = runY;
+			if (text.getAlignY().isCenter()) {
+				oy += (text.getHeight() - info.getHeight()) / 2;
+			} else if (text.getAlignY().isEnd()) {
+				oy += text.getHeight() - info.getHeight();
+			}
 
-				return info.getFont().getTextRenderer().drawText(pen, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
-			});
+			penX += info.getFont().getTextRenderer().drawText(penX, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
 		}
 
 		return text.getBounds();
@@ -68,15 +64,15 @@ public final class DrawText {
 			double ox = x;
 			double oy = y;
 
-			if (text.getHorizontalAlignment().isCenter()) {
+			if (text.getAlignX().isCenter()) {
 				ox = x + width / 2;
-			} else if (text.getHorizontalAlignment().isEnd()) {
+			} else if (text.getAlignX().isEnd()) {
 				ox = x + width;
 			}
 
-			if (text.getVerticalAlignment().isCenter()) {
+			if (text.getAlignY().isCenter()) {
 				oy = y + height / 2;
-			} else if (text.getVerticalAlignment().isEnd()) {
+			} else if (text.getAlignY().isEnd()) {
 				oy = y + height;
 			}
 
@@ -89,7 +85,7 @@ public final class DrawText {
 				for (final TextElement element : text.getElementList()) {
 					final String elementText = text.getText(element);
 					final int[] tags = DrawText.tags(element, elementText);
-					final double overflowStrWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(overflowStr));
+					final double overflowStrWidth = element.getInfo().getWidth(overflowStr);
 					int fit = 0;
 					for (int i = 0; i <= elementText.length(); i++) {
 						if (i < elementText.length() && tags[i] != -1 && tags[i] != i) {
@@ -97,7 +93,7 @@ public final class DrawText {
 						}
 
 						final String subText = elementText.substring(0, i);
-						final double subTextWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(subText));
+						final double subTextWidth = element.getInfo().getWidth(subText);
 						if (overflowWidth + subTextWidth + overflowStrWidth > width && !subText.isEmpty()) {
 							overflowText.add(element.copyWithText(elementText.substring(0, fit)).modifier(null));
 							overflow = true;
@@ -111,7 +107,7 @@ public final class DrawText {
 						break;
 					}
 
-					overflowWidth += FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(elementText));
+					overflowWidth += element.getInfo().getWidth(elementText);
 					overflowText.add(element.copyWithText(elementText).modifier(null));
 				}
 
@@ -139,18 +135,18 @@ public final class DrawText {
 		double ox = x;
 		double oy = y;
 
-		if (text.getHorizontalAlignment().isCenter()) {
+		if (text.getAlignX().isCenter()) {
 			ox = x + width / 2;
-		} else if (text.getHorizontalAlignment().isEnd()) {
+		} else if (text.getAlignX().isEnd()) {
 			ox = x + width;
 		}
 
-		if (text.getVerticalAlignment().isCenter()) {
+		if (text.getAlignY().isCenter()) {
 			oy = y + height / 2;
 			for (final Text line : textList) {
 				oy -= line.dh(2);
 			}
-		} else if (text.getVerticalAlignment().isEnd()) {
+		} else if (text.getAlignY().isEnd()) {
 			oy = y + height;
 			for (final Text line : textList) {
 				oy -= line.getHeight();
@@ -164,7 +160,7 @@ public final class DrawText {
 				continue;
 			}
 
-			this.drawText(ox, oy, line.copyWithVerticalAlign(Align.START));
+			this.drawText(ox, oy, line.copy().alignY(Align.START));
 			oy += line.getHeight();
 			heightSum += line.getHeight();
 		}
@@ -172,12 +168,12 @@ public final class DrawText {
 		return FontBounds.create(width, heightSum);
 	}
 
-	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {
-		return this.drawText(x, y, Text.create(text, info).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign));
+	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align alignX, final @NonNull Align alignY) {
+		return this.drawText(x, y, Text.create(text, info).alignX(alignX).alignY(alignY));
 	}
 
-	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign, final @NonNull TextOverflow overflow, final @NonNull TextMode mode) {
-		return this.drawText(x, y, width, height, Text.create(text, info).horizontalAlign(horizontalAlign).verticalAlign(verticalAlign).overflow(overflow), mode);
+	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align alignX, final @NonNull Align alignY, final @NonNull TextOverflow overflow, final @NonNull TextMode mode) {
+		return this.drawText(x, y, width, height, Text.create(text, info).alignX(alignX).alignY(alignY).overflow(overflow), mode);
 	}
 
 	public @NonNull List<@NonNull Text> getLines(final double width, final @NonNull Text text) {
@@ -208,7 +204,7 @@ public final class DrawText {
 				}
 
 				final String part = opened + elementText.substring(lastSplit, i + 1);
-				final double elementWidth = FontUsage.trace(element.getOrigin(), () -> element.getInfo().getWidth(part));
+				final double elementWidth = element.getInfo().getWidth(part);
 				if (currentText.getWidth() + elementWidth > width) {
 					int foundSplit = i;
 					for (int j = i; j >= lastSplit; j--) {

@@ -20,16 +20,16 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	private static final EventType<NodeEvent<?>> SUBMIT = EventType.create("onSubmit");
 
-	private Align verticalAlignment;
-	private Align horizontalAlignment;
+	private Align alignX;
+	private Align alignY;
 
 	private double xOffset;
 
 	protected LineFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.horizontalAlignment = Align.START;
-		this.verticalAlignment   = Align.CENTER;
+		this.alignX = Align.START;
+		this.alignY = Align.CENTER;
 
 		super.marginHorizontal(2D);
 		super.marginVertical(10D);
@@ -57,9 +57,9 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		final boolean isPlaceholder = text.isEmpty() && !super.isFocused();
 		double tmpTextY = super.getY() + super.getMarginTop();
 
-		if (this.verticalAlignment.isCenter()) {
+		if (this.alignY.isCenter()) {
 			tmpTextY = super.getY() + (super.getHeight() - info.getHeight()) / 2D;
-		} else if (this.verticalAlignment.isEnd()) {
+		} else if (this.alignY.isEnd()) {
 			tmpTextY = super.getY() + super.getHeight() - info.getHeight() - super.getMarginBottom();
 		}
 
@@ -160,20 +160,29 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 	}
 
-	public final <T extends LineFieldNode<V>> @NonNull T verticalAlign(final @NonNull Align verticalAlignment) {
-		return this.verticalAlign(Signal.from(verticalAlignment));
+	public final <T extends LineFieldNode<V>> @NonNull T align(final @NonNull Align align) {
+		return this.align(Signal.from(align));
 	}
 
-	public final <T extends LineFieldNode<V>> @NonNull T verticalAlign(final @NonNull Supplier<@NonNull Align> verticalAlignment) {
-		return super.follow("verticalAlignment", verticalAlignment, (final LineFieldNode<V> node, final Align value) -> node.verticalAlignment = value);
+	public final <T extends LineFieldNode<V>> @NonNull T align(final @NonNull Supplier<@NonNull Align> align) {
+		this.alignX(align);
+		return this.alignY(align);
 	}
 
-	public final <T extends LineFieldNode<V>> @NonNull T horizontalAlign(final @NonNull Align horizontalAlignment) {
-		return this.horizontalAlign(Signal.from(horizontalAlignment));
+	public final <T extends LineFieldNode<V>> @NonNull T alignX(final @NonNull Align alignX) {
+		return this.alignX(Signal.from(alignX));
 	}
 
-	public final <T extends LineFieldNode<V>> @NonNull T horizontalAlign(final @NonNull Supplier<@NonNull Align> horizontalAlignment) {
-		return super.follow("horizontalAlignment", horizontalAlignment, (final LineFieldNode<V> node, final Align value) -> node.horizontalAlignment = value);
+	public final <T extends LineFieldNode<V>> @NonNull T alignX(final @NonNull Supplier<@NonNull Align> alignX) {
+		return super.follow("alignX", alignX, (final LineFieldNode<V> node, final Align value) -> node.alignX = value);
+	}
+
+	public final <T extends LineFieldNode<V>> @NonNull T alignY(final @NonNull Align alignY) {
+		return this.alignY(Signal.from(alignY));
+	}
+
+	public final <T extends LineFieldNode<V>> @NonNull T alignY(final @NonNull Supplier<@NonNull Align> alignY) {
+		return super.follow("alignY", alignY, (final LineFieldNode<V> node, final Align value) -> node.alignY = value);
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T onSubmit(final @NonNull EventListener<NodeEvent<T>> listener) {
@@ -181,7 +190,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	private final boolean isScrolling(final @NonNull String shown) {
-		return this.horizontalAlignment.isStart() || super.getShownInfo().getWidth(shown) > super.getWidth() - super.getMarginLeft() - super.getMarginRight() - 2D;
+		return this.alignX.isStart() || super.getShownInfo().getWidth(shown) > super.getWidth() - super.getMarginLeft() - super.getMarginRight() - 2D;
 	}
 
 	private final double getTextX(final double x, final @NonNull String shown) {
@@ -189,7 +198,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 			return x + super.getMarginLeft() - this.xOffset;
 		}
 
-		if (this.horizontalAlignment.isCenter()) {
+		if (this.alignX.isCenter()) {
 			return x + (super.getWidth() - super.getShownInfo().getWidth(shown)) / 2D;
 		}
 

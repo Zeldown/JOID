@@ -25,7 +25,7 @@ public class EdgeSmoothingTest {
 	@Test
 	public void fadesTheEdgesOverOneUnitCenteredOnThem() {
 		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, Point.create(10D, 70D), Point.create(110D, 70D), Point.create(110D, 20D), Point.create(10D, 20D));
-		final int[] buffer = Tessellator.inst().getRawBuffer();
+		final int[] buffer = TessellatorAccess.rawBuffer(Tessellator.inst());
 		Assert.assertEquals(10.5F, Float.intBitsToFloat(buffer[0]), 0F);
 		Assert.assertEquals(69.5F, Float.intBitsToFloat(buffer[1]), 0F);
 		Assert.assertEquals(255, buffer[5] >>> 24);
@@ -39,7 +39,7 @@ public class EdgeSmoothingTest {
 	@Test
 	public void lowersTheCoreOfAShapeThinnerThanOneUnit() {
 		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, Point.create(10D, 20.5D), Point.create(110D, 20.5D), Point.create(110D, 20D), Point.create(10D, 20D));
-		final int[] buffer = Tessellator.inst().getRawBuffer();
+		final int[] buffer = TessellatorAccess.rawBuffer(Tessellator.inst());
 		Assert.assertEquals(20.25F, Float.intBitsToFloat(buffer[1]), 1E-4F);
 		Assert.assertEquals(127, buffer[5] >>> 24);
 	}
@@ -47,7 +47,7 @@ public class EdgeSmoothingTest {
 	@Test
 	public void mapsTheTextureOfARectOnItsSpreadEdges() {
 		EdgeSmoothing.rect(10D, 20D, 110D, 70D, new double[] {0D, 0D, 1D, 1D}, 1F, 1F, 1F, 1F);
-		final int[] buffer = Tessellator.inst().getRawBuffer();
+		final int[] buffer = TessellatorAccess.rawBuffer(Tessellator.inst());
 		Assert.assertEquals(0.005F, Float.intBitsToFloat(buffer[3]), 1E-6F);
 		Assert.assertEquals(0.99F, Float.intBitsToFloat(buffer[4]), 1E-6F);
 		Assert.assertEquals(1.005F, Float.intBitsToFloat(buffer[8 * 8 + 3]), 1E-6F);

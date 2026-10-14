@@ -15,9 +15,10 @@ import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@Getter
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Tessellator {
 
 	private static final Tessellator INSTANCE = new Tessellator();
@@ -40,17 +41,16 @@ public final class Tessellator {
 	private boolean hasColor;
 	private boolean hasTexture;
 	private boolean hasNormals;
-	private boolean isColorDisabled;
-
-	private double xOffset;
-	private double yOffset;
-	private double zOffset;
 
 	private DrawMode drawMode;
 	private boolean  isDrawing;
 
 	public static Tessellator inst() {
 		return Tessellator.INSTANCE;
+	}
+
+	public static Tessellator create() {
+		return new Tessellator();
 	}
 
 	public void start(final @NonNull DrawMode drawMode) {
@@ -64,10 +64,6 @@ public final class Tessellator {
 		this.hasNormals = false;
 		this.hasColor = false;
 		this.hasTexture = false;
-		this.isColorDisabled = false;
-		this.xOffset = 0D;
-		this.yOffset = 0D;
-		this.zOffset = 0D;
 	}
 
 	public void draw() {
@@ -139,50 +135,22 @@ public final class Tessellator {
 		this.reset();
 	}
 
-	protected void quads() {
-		this.start(DrawMode.QUADS);
-	}
-
-	public void setColor(final int rgb) {
-		final int j = rgb >> 16 & 255;
-		final int k = rgb >> 8 & 255;
-		final int l = rgb & 255;
-		this.setColor(j, k, l);
-	}
-
-	public void setColor(final int rgb, final int a) {
-		final int k = rgb >> 16 & 255;
-		final int l = rgb >> 8 & 255;
-		final int i1 = rgb & 255;
-		this.setColor(k, l, i1, a);
-	}
-
 	public void setColor(final int r, final int g, final int b) {
 		this.setColor(r, g, b, 255);
 	}
 
-	public void setColor(final byte r, final byte g, final byte n) {
-		this.setColor(r & 255, g & 255, n & 255);
-	}
-
-	public void setColor(final float r, final float g, final float b) {
-		this.setColor((int) (r * 255F), (int) (g * 255F), (int) (b * 255F));
-	}
-
 	public void setColor(final int r, final int g, final int b, final int a) {
-		if (!this.isColorDisabled) {
-			final int red = Math.max(0, Math.min(255, r));
-			final int green = Math.max(0, Math.min(255, g));
-			final int blue = Math.max(0, Math.min(255, b));
-			final int alpha = Math.max(0, Math.min(255, a));
+		final int red = Math.max(0, Math.min(255, r));
+		final int green = Math.max(0, Math.min(255, g));
+		final int blue = Math.max(0, Math.min(255, b));
+		final int alpha = Math.max(0, Math.min(255, a));
 
-			this.hasColor = true;
+		this.hasColor = true;
 
-			if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
-				this.color = alpha << 24 | blue << 16 | green << 8 | red;
-			} else {
-				this.color = red << 24 | green << 16 | blue << 8 | alpha;
-			}
+		if (ByteOrder.nativeOrder() == ByteOrder.LITTLE_ENDIAN) {
+			this.color = alpha << 24 | blue << 16 | green << 8 | red;
+		} else {
+			this.color = red << 24 | green << 16 | blue << 8 | alpha;
 		}
 	}
 
@@ -228,9 +196,9 @@ public final class Tessellator {
 			this.rawBuffer[this.rawBufferIndex + 6] = this.normal;
 		}
 
-		this.rawBuffer[this.rawBufferIndex + 0] = Float.floatToRawIntBits((float) (x + this.xOffset));
-		this.rawBuffer[this.rawBufferIndex + 1] = Float.floatToRawIntBits((float) (y + this.yOffset));
-		this.rawBuffer[this.rawBufferIndex + 2] = Float.floatToRawIntBits((float) (v + this.zOffset));
+		this.rawBuffer[this.rawBufferIndex + 0] = Float.floatToRawIntBits((float) x);
+		this.rawBuffer[this.rawBufferIndex + 1] = Float.floatToRawIntBits((float) y);
+		this.rawBuffer[this.rawBufferIndex + 2] = Float.floatToRawIntBits((float) v);
 		this.rawBufferIndex += 8;
 		this.vertexCount++;
 	}
@@ -238,24 +206,6 @@ public final class Tessellator {
 	public void addVertexWithUV(final double x, final double y, final double z, final double u, final double v) {
 		this.setTextureUV(u, v);
 		this.addVertex(x, y, z);
-	}
-
-	public void disableColor() {
-		this.isColorDisabled = true;
-	}
-
-	public void translate(final float x, final float y, final float z) {
-		this.xOffset += x;
-		this.yOffset += y;
-		this.zOffset += z;
-	}
-
-	public int[] getRawBuffer() {
-		return this.rawBuffer == null ? null : this.rawBuffer.clone();
-	}
-
-	public Tessellator copy() {
-		return new Tessellator();
 	}
 
 	private void reset() {

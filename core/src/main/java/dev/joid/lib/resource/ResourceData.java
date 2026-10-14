@@ -32,9 +32,9 @@ public final class ResourceData {
 	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
 	private final List<Thread>              tasks          = new CopyOnWriteArrayList<>();
-	private final Set<ResourceData>         forks          = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 	private final List<Runnable>            loadListeners  = new CopyOnWriteArrayList<>();
 	private final List<Consumer<Throwable>> errorListeners = new CopyOnWriteArrayList<>();
+	private final Set<ResourceData>         forks          = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	@Getter private String           uniqueId;
 	@Getter private IResourceDecoder decoder;
@@ -350,8 +350,23 @@ public final class ResourceData {
 		return this.data == null ? null : this.data.clone();
 	}
 
+	public final int[] getData(final int index) {
+		final int[][] data = this.data;
+		return data == null || data.length <= index ? null : data[index];
+	}
+
 	public final ITexture[] getTextures() {
 		return this.textures == null ? null : this.textures.clone();
+	}
+
+	public final ITexture getTexture(final int index) {
+		final ITexture[] textures = this.textures;
+		return textures == null || textures.length <= index ? null : textures[index];
+	}
+
+	public final int getTextureCount() {
+		final ITexture[] textures = this.textures;
+		return textures == null ? 0 : textures.length;
 	}
 
 	protected final @NonNull ITexture getMissingTexture() {

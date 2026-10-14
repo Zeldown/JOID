@@ -6,77 +6,28 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class MaskNodeEffect extends NodeEffect<Node> {
 
+	private Supplier<Double>   xSupplier;
+	private Supplier<Double>   ySupplier;
+	private Supplier<Double>   widthSupplier;
+	private Supplier<Double>   heightSupplier;
 	private Supplier<Resource> resourceSupplier;
-	private Supplier<Double> xSupplier;
-	private Supplier<Double> ySupplier;
-	private Supplier<Double> widthSupplier;
-	private Supplier<Double> heightSupplier;
 
-	protected MaskNodeEffect(final double x, final double y, final double width, final double height) {
+	@Getter private double width;
+	@Getter private double height;
+
+	protected MaskNodeEffect() {
+		this.xSupplier        = () -> 0D;
+		this.ySupplier        = () -> 0D;
 		this.resourceSupplier = () -> null;
-		this.xSupplier = () -> x;
-		this.ySupplier = () -> y;
-		this.widthSupplier = () -> width;
-		this.heightSupplier = () -> height;
 	}
 
-	public static @NonNull MaskNodeEffect create(final @NonNull Node node) {
-		final MaskNodeEffect effect = new MaskNodeEffect(0, 0, 0, 0);
-		effect.xSupplier = () -> 0D;
-		effect.ySupplier = () -> 0D;
-		effect.widthSupplier = () -> node.w();
-		effect.heightSupplier = () -> node.h();
-		return effect;
-	}
-
-	public static @NonNull MaskNodeEffect create(final double width, final double height) {
-		return new MaskNodeEffect(0, 0, width, height);
-	}
-
-	public static @NonNull MaskNodeEffect create(final @NonNull Resource resource, final @NonNull Node node) {
-		final MaskNodeEffect effect = MaskNodeEffect.create(node);
-		effect.resourceSupplier = () -> resource;
-		return effect;
-	}
-
-	public static @NonNull MaskNodeEffect create(final double x, final double y, final double width, final double height) {
-		return new MaskNodeEffect(x, y, width, height);
-	}
-
-	public static @NonNull MaskNodeEffect create(final @NonNull Resource resource, final double width, final double height) {
-		return MaskNodeEffect.create(resource, 0D, 0D, width, height);
-	}
-
-	public static @NonNull MaskNodeEffect create(final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
-		return MaskNodeEffect.create(() -> 0D, () -> 0D, widthSupplier, heightSupplier);
-	}
-
-	public static @NonNull MaskNodeEffect create(final @NonNull Resource resource, final double x, final double y, final double width, final double height) {
-		final MaskNodeEffect effect = new MaskNodeEffect(x, y, width, height);
-		effect.resourceSupplier = () -> resource;
-		return effect;
-	}
-
-	public static @NonNull MaskNodeEffect create(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier, final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier) {
-		final MaskNodeEffect effect = new MaskNodeEffect(0, 0, 0, 0);
-		effect.xSupplier = xSupplier;
-		effect.ySupplier = ySupplier;
-		effect.widthSupplier = widthSupplier;
-		effect.heightSupplier = heightSupplier;
-		return effect;
-	}
-
-	public Resource getResource() {
-		return this.resourceSupplier.get();
+	public static @NonNull MaskNodeEffect create() {
+		return new MaskNodeEffect();
 	}
 
 	public double getX() {
@@ -87,21 +38,21 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 		return this.ySupplier.get();
 	}
 
-	public double getWidth() {
-		return this.widthSupplier.get();
-	}
-
-	public double getHeight() {
-		return this.heightSupplier.get();
+	public Resource getResource() {
+		return this.resourceSupplier.get();
 	}
 
 	@Override
 	public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
-		final Resource resource = this.getResource();
+		final Resource resource = this.resourceSupplier.get();
+		final double x = node.getX() + this.xSupplier.get();
+		final double y = node.getY() + this.ySupplier.get();
+		this.width = this.widthSupplier != null ? this.widthSupplier.get() : node.getWidth();
+		this.height = this.heightSupplier != null ? this.heightSupplier.get() : node.getHeight();
 		if (resource != null) {
-			node.getUi().startMask(resource, node.getX() + this.getX(), node.getY() + this.getY(), this.getWidth(), this.getHeight());
+			node.getUi().startMask(resource, x, y, this.width, this.height);
 		} else {
-			node.getUi().startMask(node.getX() + this.getX(), node.getY() + this.getY(), this.getWidth(), this.getHeight());
+			node.getUi().startMask(x, y, this.width, this.height);
 		}
 	}
 

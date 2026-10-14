@@ -72,7 +72,7 @@ public class ShowMenu extends ShowUI {
 		.<RectNode>self(card -> card.color(() -> ShowUI.diagonal(accent.withAlpha(0.32F + card.hoverValue(0.14F)), ShowUI.PINK.withAlpha(0.12F + card.hoverValue(0.10F)))))
 		.<RectNode>self(card -> card.effect(ShadowNodeEffect.create(accent, 48F).color(() -> accent.withAlpha(card.hoverValue(0.55F)))))
 		.effect(RoundedNodeEffect.create(30F))
-		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.16F), 1.5F, BorderMode.IN))
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.16F), 1.5F).mode(BorderMode.IN))
 		.body(card -> {
 			TextNode.create(40, 40).text(Text.create(ShowMenu.number(scene) + "  ·  START HERE", ShowUI.font(FontWeight.BOLD, 17F, ShowUI.TEXT.withAlpha(0.7F)).letterSpacing(0.25F))).attach(card);
 			TextNode.create(36, 78).text(Text.create(scene.getTitle(), ShowUI.font(FontWeight.BLACK, 84F, ShowUI.TEXT))).attach(card);
@@ -98,7 +98,7 @@ public class ShowMenu extends ShowUI {
 		.<RectNode>self(card -> card.color(() -> Color.WHITE.withAlpha(0.06F + card.hoverValue(0.06F))))
 		.<RectNode>self(card -> card.effect(ShadowNodeEffect.create(accent, 36F).color(() -> accent.withAlpha(card.hoverValue(0.30F)))))
 		.effect(RoundedNodeEffect.create(24F))
-		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.12F), 1.5F, BorderMode.IN))
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.12F), 1.5F).mode(BorderMode.IN))
 		.body(card -> {
 			RectNode
 			.create(24, 24, 52, 52)
@@ -124,7 +124,7 @@ public class ShowMenu extends ShowUI {
 		.create(x, 1002, width, 36)
 		.color(Color.WHITE.withAlpha(0.10F))
 		.effect(RoundedNodeEffect.create(9F))
-		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.16F), 1F, BorderMode.IN))
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.16F), 1F).mode(BorderMode.IN))
 		.body(keycap -> {
 			TextNode.create(width / 2D, 18).text(Text.create(key, cap)).anchor(Align.CENTER).attach(keycap);
 		})

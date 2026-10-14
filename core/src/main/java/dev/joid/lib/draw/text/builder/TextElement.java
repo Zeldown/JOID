@@ -1,9 +1,7 @@
 package dev.joid.lib.draw.text.builder;
 
-import java.util.Arrays;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.TextConverter;
@@ -14,21 +12,14 @@ import lombok.NonNull;
 @Getter
 public class TextElement {
 
-	private final StackTraceElement[] origin;
-
 	private TextInfo      info;
 	private Supplier<?>   text;
 	private ITextModifier modifier;
 
 	protected TextElement(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final ITextModifier modifier) {
-		this(text, info, modifier, JOIDEnv.isDevMode() ? TextElement.locate() : null);
-	}
-
-	private TextElement(final Supplier<?> text, final TextInfo info, final ITextModifier modifier, final StackTraceElement[] origin) {
 		this.text = text;
 		this.info = info;
 		this.modifier = modifier;
-		this.origin = origin;
 	}
 
 	public static final @NonNull TextElement create(final @NonNull Object text, final @NonNull TextInfo info) {
@@ -59,23 +50,15 @@ public class TextElement {
 	}
 
 	public final <T extends TextElement> @NonNull T copy() {
-		return (T) new TextElement(this.text, this.info, this.modifier, this.origin);
+		return (T) new TextElement(this.text, this.info, this.modifier);
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Object text) {
-		return (T) new TextElement(() -> text, this.info, this.modifier, this.origin);
+		return (T) new TextElement(() -> text, this.info, this.modifier);
 	}
 
 	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Supplier<?> text) {
-		return (T) new TextElement(text, this.info, this.modifier, this.origin);
-	}
-
-	public final <T extends TextElement> @NonNull T copyWithInfo(final @NonNull TextInfo info) {
-		return (T) new TextElement(this.text, info, this.modifier, this.origin);
-	}
-
-	public final <T extends TextElement> @NonNull T copyWithModifier(final ITextModifier modifier) {
-		return (T) new TextElement(this.text, this.info, modifier, this.origin);
+		return (T) new TextElement(text, this.info, this.modifier);
 	}
 
 	public final @NonNull String getText() {
@@ -85,15 +68,6 @@ public class TextElement {
 
 	public final @NonNull String getRawText() {
 		return TextConverter.convert(this.text.get());
-	}
-
-	private static @NonNull StackTraceElement[] locate() {
-		final StackTraceElement[] trace = new Throwable().getStackTrace();
-		int start = 0;
-		while (start < trace.length && (trace[start].getClassName().equals(TextElement.class.getName()) || trace[start].getClassName().equals(Text.class.getName()))) {
-			start++;
-		}
-		return Arrays.copyOfRange(trace, start, trace.length);
 	}
 
 }

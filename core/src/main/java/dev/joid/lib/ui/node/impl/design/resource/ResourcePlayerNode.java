@@ -402,6 +402,9 @@ public class ResourcePlayerNode extends Node {
 				this.resource.getResourceData().await();
 			}
 			this.fork = ResourcePlayerNode.fork(this.resource);
+			if (this.fork == null) {
+				return false;
+			}
 		}
 
 		this.fork.prepareBind();

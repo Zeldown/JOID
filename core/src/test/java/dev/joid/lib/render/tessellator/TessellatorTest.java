@@ -24,17 +24,17 @@ public class TessellatorTest {
 
 	@Test
 	public void copiesAnIndependentTessellator() {
-		final Tessellator copy = Tessellator.inst().copy();
+		final Tessellator copy = Tessellator.create();
 		copy.start(DrawMode.TRIANGLES);
 		Assert.assertNotSame(Tessellator.inst(), copy);
-		Assert.assertTrue(copy.isDrawing());
-		Assert.assertFalse(Tessellator.inst().isDrawing());
+		Assert.assertTrue(TessellatorAccess.isDrawing(copy));
+		Assert.assertFalse(TessellatorAccess.isDrawing(Tessellator.inst()));
 		copy.draw();
 	}
 
 	@Test
 	public void refusesToStartTwice() {
-		final Tessellator tessellator = Tessellator.inst().copy();
+		final Tessellator tessellator = Tessellator.create();
 		tessellator.start(DrawMode.TRIANGLES);
 		try {
 			tessellator.start(DrawMode.QUADS);
@@ -47,7 +47,7 @@ public class TessellatorTest {
 	@Test
 	public void refusesToDrawWithoutStarting() {
 		try {
-			Tessellator.inst().copy().draw();
+			Tessellator.create().draw();
 			Assert.fail("A draw without start must be refused");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The Tessellator has no shape to draw, call start(DrawMode) before draw()", expected.getMessage());
@@ -56,12 +56,12 @@ public class TessellatorTest {
 
 	@Test
 	public void abortsAnUnfinishedShape() {
-		final Tessellator tessellator = Tessellator.inst().copy();
+		final Tessellator tessellator = Tessellator.create();
 		tessellator.start(DrawMode.TRIANGLES);
 		tessellator.addVertex(1D, 2D, 3D);
 		tessellator.abort();
-		Assert.assertFalse(tessellator.isDrawing());
-		Assert.assertEquals(0, tessellator.getVertexCount());
+		Assert.assertFalse(TessellatorAccess.isDrawing(tessellator));
+		Assert.assertEquals(0, TessellatorAccess.vertexCount(tessellator));
 		tessellator.start(DrawMode.TRIANGLES);
 		TessellatorTest.triangle(tessellator);
 		Assert.assertEquals(3, this.single().getCount());
@@ -69,7 +69,7 @@ public class TessellatorTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingMode() {
-		Tessellator.inst().copy().start(null);
+		Tessellator.create().start(null);
 	}
 
 	@Test
@@ -90,14 +90,14 @@ public class TessellatorTest {
 		Assert.assertFalse(capture.isTexture());
 		Assert.assertFalse(capture.isColor());
 		Assert.assertFalse(capture.isNormal());
-		Assert.assertFalse(tessellator.isDrawing());
-		Assert.assertEquals(0, tessellator.getVertexCount());
+		Assert.assertFalse(TessellatorAccess.isDrawing(tessellator));
+		Assert.assertEquals(0, TessellatorAccess.vertexCount(tessellator));
 	}
 
 	@Test
 	public void splitsEachQuadIntoTwoTriangles() {
 		final Tessellator tessellator = Tessellator.inst();
-		tessellator.quads();
+		tessellator.start(DrawMode.QUADS);
 		for (int i = 0; i < 6; i++) {
 			tessellator.addVertex(i, 0D, 0D);
 		}
@@ -152,7 +152,7 @@ public class TessellatorTest {
 				tessellator.addVertex(1D, 2D, 0D);
 			}
 			tessellator.draw();
-			Assert.assertFalse(tessellator.isDrawing());
+			Assert.assertFalse(TessellatorAccess.isDrawing(tessellator));
 		}
 		Assert.assertTrue(this.render.getCaptures().isEmpty());
 	}
@@ -279,7 +279,7 @@ public class TessellatorTest {
 	public void writesTheColorAsRgbaBytes() {
 		final Tessellator tessellator = Tessellator.inst();
 		tessellator.start(DrawMode.TRIANGLES);
-		tessellator.setColor(0x336699);
+		tessellator.setColor(0x33, 0x66, 0x99);
 		TessellatorTest.triangle(tessellator);
 
 		final Capture capture = this.single();
@@ -291,11 +291,11 @@ public class TessellatorTest {
 	public void readsEveryColorFormat() {
 		final Tessellator tessellator = Tessellator.inst();
 		tessellator.start(DrawMode.TRIANGLES);
-		tessellator.setColor(0x102030, 0x40);
+		tessellator.setColor(0x10, 0x20, 0x30, 0x40);
 		tessellator.addVertex(0D, 0D, 0D);
-		tessellator.setColor((byte) 0x50, (byte) 0x60, (byte) 0xF0);
+		tessellator.setColor(0x50, 0x60, 0xF0);
 		tessellator.addVertex(1D, 0D, 0D);
-		tessellator.setColor(0.5F, 0.25F, 1F);
+		tessellator.setColor(0.5F, 0.25F, 1F, 1F);
 		tessellator.addVertex(1D, 1D, 0D);
 		tessellator.setColor(0F, 1F, 0.5F, 0.5F);
 		tessellator.addVertex(0D, 1D, 0D);
@@ -319,21 +319,6 @@ public class TessellatorTest {
 		tessellator.setColor(300, -5, 128, 999);
 		TessellatorTest.triangle(tessellator);
 		Assert.assertArrayEquals(new byte[] {(byte) 255, 0, (byte) 128, (byte) 255}, TessellatorTest.bytes(this.single().getColor(0)));
-	}
-
-	@Test
-	public void ignoresTheColorOnceDisabled() {
-		final Tessellator tessellator = Tessellator.inst();
-		tessellator.start(DrawMode.TRIANGLES);
-		tessellator.disableColor();
-		tessellator.setColor(255, 0, 0, 255);
-		TessellatorTest.triangle(tessellator);
-		Assert.assertFalse(this.single().isColor());
-
-		tessellator.start(DrawMode.TRIANGLES);
-		tessellator.setColor(255, 0, 0, 255);
-		TessellatorTest.triangle(tessellator);
-		Assert.assertTrue(this.render.getLast().isColor());
 	}
 
 	@Test
@@ -384,48 +369,13 @@ public class TessellatorTest {
 	}
 
 	@Test
-	public void offsetsTheFollowingVertices() {
-		final Tessellator tessellator = Tessellator.inst().copy();
-		tessellator.start(DrawMode.TRIANGLES);
-		tessellator.translate(10F, 20F, 30F);
-		tessellator.translate(1F, 2F, 3F);
-		TessellatorTest.triangle(tessellator);
-
-		final Capture capture = this.single();
-		Assert.assertEquals(11F, capture.getX(0), 0F);
-		Assert.assertEquals(22F, capture.getY(0), 0F);
-		Assert.assertEquals(33F, capture.getZ(0), 0F);
-		Assert.assertEquals(12F, capture.getX(1), 0F);
-		Assert.assertEquals(11D, tessellator.getXOffset(), 0D);
-	}
-
-	@Test
-	public void forgetsItsOffsetAtTheNextStart() {
-		final Tessellator tessellator = Tessellator.inst().copy();
-		tessellator.start(DrawMode.TRIANGLES);
-		tessellator.translate(10F, 20F, 30F);
-		TessellatorTest.triangle(tessellator);
-		tessellator.start(DrawMode.TRIANGLES);
-		Assert.assertEquals(0D, tessellator.getXOffset(), 0D);
-		Assert.assertEquals(0D, tessellator.getYOffset(), 0D);
-		Assert.assertEquals(0D, tessellator.getZOffset(), 0D);
-		TessellatorTest.triangle(tessellator);
-
-		final Capture capture = this.render.getLast();
-		Assert.assertEquals(0F, capture.getX(0), 0F);
-		Assert.assertEquals(0F, capture.getY(0), 0F);
-		Assert.assertEquals(0F, capture.getZ(0), 0F);
-		Assert.assertEquals(1F, capture.getX(1), 0F);
-	}
-
-	@Test
 	public void growsWithALargeDraw() {
-		final Tessellator tessellator = Tessellator.inst().copy();
+		final Tessellator tessellator = Tessellator.create();
 		tessellator.start(DrawMode.TRIANGLES);
 		for (int i = 0; i < 9999; i++) {
 			tessellator.addVertex(i, 0D, 0D);
 		}
-		Assert.assertEquals(0x20000, tessellator.getRawBufferSize());
+		Assert.assertEquals(0x20000, TessellatorAccess.rawBufferSize(tessellator));
 		tessellator.draw();
 
 		final Capture capture = this.single();
@@ -435,16 +385,16 @@ public class TessellatorTest {
 
 	@Test
 	public void releasesAHugeBufferAfterItsDraw() {
-		final Tessellator tessellator = Tessellator.inst().copy();
-		tessellator.quads();
+		final Tessellator tessellator = Tessellator.create();
+		tessellator.start(DrawMode.QUADS);
 		for (int i = 0; i < 20000; i++) {
 			tessellator.addVertex(i, 0D, 0D);
 		}
-		Assert.assertEquals(0x40000, tessellator.getRawBufferSize());
+		Assert.assertEquals(0x40000, TessellatorAccess.rawBufferSize(tessellator));
 		tessellator.draw();
 		Assert.assertEquals(30000, this.single().getCount());
-		Assert.assertEquals(0x10000, tessellator.getRawBufferSize());
-		Assert.assertEquals(0x10000, tessellator.getRawBuffer().length);
+		Assert.assertEquals(0x10000, TessellatorAccess.rawBufferSize(tessellator));
+		Assert.assertEquals(0x10000, TessellatorAccess.rawBuffer(tessellator).length);
 	}
 
 	private Capture lines(final DrawMode mode, final int count) {

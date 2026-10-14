@@ -6,6 +6,10 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.color.ColorGradient;
+import dev.joid.lib.utils.point.Point;
 import lombok.NonNull;
 
 public abstract class ShaderProgram {
@@ -69,6 +73,36 @@ public abstract class ShaderProgram {
 	public boolean isAvailable() {
 		final IShader current = this.getShader();
 		return current != null && current.isActive();
+	}
+
+	protected final void use(final @NonNull Runnable bind, final @NonNull Runnable body) {
+		if (!this.canDraw()) {
+			return;
+		}
+
+		final RenderState state = BridgeHandler.RENDER.get().getState();
+		final IShader previous = state.getShader();
+		bind.run();
+		try {
+			body.run();
+		} finally {
+			this.unbind();
+			state.shader(previous);
+		}
+	}
+
+	public static void uniformGradient(final @NonNull IShader shader, final @NonNull ColorGradient gradient, final float x1, final float y1, final float x2, final float y2) {
+		shader.uniform("u_HasGradient", 1);
+		ShaderProgram.uniformGradient(shader, gradient.getStartPoint(), gradient.getEndPoint(), gradient.getStartColor(), gradient.getEndColor(), x1, y1, x2, y2);
+	}
+
+	public static void uniformGradient(final @NonNull IShader shader, final @NonNull Point startPoint, final @NonNull Point endPoint, final @NonNull Color startColor, final @NonNull Color endColor, final float x1, final float y1, final float x2, final float y2) {
+		shader
+		.uniform("u_GradientStart", startColor.getRedF(), startColor.getGreenF(), startColor.getBlueF(), startColor.getAlphaF())
+		.uniform("u_GradientEnd", endColor.getRedF(), endColor.getGreenF(), endColor.getBlueF(), endColor.getAlphaF())
+		.uniform("u_GradientStartPos", (float) startPoint.getX(), (float) startPoint.getY())
+		.uniform("u_GradientEndPos", (float) endPoint.getX(), (float) endPoint.getY())
+		.uniform("u_GradientCanvas", x1, y1, x2, y2);
 	}
 
 }

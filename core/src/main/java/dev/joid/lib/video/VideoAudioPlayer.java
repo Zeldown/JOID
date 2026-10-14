@@ -11,34 +11,39 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import dev.joid.lib.utils.point.Point;
 import lombok.NonNull;
+import lombok.Setter;
 
 public final class VideoAudioPlayer {
 
+	@Setter
 	private static AudioListenerPosition audioListenerPosition;
 
-	private final String name;
-	private final int channels;
-	private final int sampleRate;
+	private final String                      name;
+	private final int                         channels;
+	private final int                         sampleRate;
 	private final ArrayBlockingQueue<short[]> sampleQueue = new ArrayBlockingQueue<>(128);
 
-	private volatile float volume = 1F;
 	private volatile Object group;
 
-	private boolean playing;
+	@Setter
+	private volatile float volume = 1F;
+
+	private boolean      playing;
 	private IAudioSource source;
-	private boolean initialized;
-	private boolean buffersQueued;
+	private boolean      initialized;
+	private boolean      buffersQueued;
 
-	private int pendingOffset;
-	private boolean needsFlush = true;
+	private int     pendingOffset;
 	private short[] pendingSamples;
+	private boolean needsFlush = true;
 
-	private float posX;
-	private float posY;
-	private float posZ;
-	private float maxDistance = 50F;
+	private float   posX;
+	private float   posY;
+	private float   posZ;
 	private boolean positional;
-	private float referenceDistance = 5F;
+
+	@Setter private float maxDistance       = 50F;
+	@Setter private float referenceDistance = 5F;
 
 	public VideoAudioPlayer(final String name, final int sampleRate, final int channels) {
 		this.name = name;
@@ -140,10 +145,6 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	public void pushSamples(final @NonNull Buffer[] samples) {
-		this.pushSamples(samples, 0);
-	}
-
 	public void pushSamples(final @NonNull Buffer[] samples, final int skip) {
 		if (samples.length == 0 || samples[0] == null) {
 			return;
@@ -185,14 +186,6 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	public int getQueueSize() {
-		return this.sampleQueue.size();
-	}
-
-	public static AudioListenerPosition getAudioListenerPosition() {
-		return VideoAudioPlayer.audioListenerPosition;
-	}
-
 	public void setGroup(final Object group) {
 		this.group = group;
 		if (this.source != null) {
@@ -200,27 +193,11 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	public void setVolume(final float volume) {
-		this.volume = volume;
-	}
-
-	public void setMaxDistance(final float distance) {
-		this.maxDistance = distance;
-	}
-
-	public void setReferenceDistance(final float distance) {
-		this.referenceDistance = distance;
-	}
-
 	public void setLocation(final float x, final float y, final float z) {
 		this.posX = x;
 		this.posY = y;
 		this.posZ = z;
 		this.positional = true;
-	}
-
-	public static void setAudioListenerPosition(final AudioListenerPosition audioListenerPosition) {
-		VideoAudioPlayer.audioListenerPosition = audioListenerPosition;
 	}
 
 	public void cleanup() {

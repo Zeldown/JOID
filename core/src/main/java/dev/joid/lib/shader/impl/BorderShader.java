@@ -3,7 +3,6 @@ package dev.joid.lib.shader.impl;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.color.ColorGradient;
 import lombok.NonNull;
 
 public class BorderShader extends ShaderProgram {
@@ -30,17 +29,9 @@ public class BorderShader extends ShaderProgram {
 		.uniform("u_Rect", rectX1, rectY1, rectX2, rectY2);
 
 		if (borderColor.isGradient()) {
-			final ColorGradient gradient = borderColor.getGradient();
-
-			BorderShader.INSTANCE.getShader()
-			.uniform("u_HasGradient", 1)
-			.uniform("u_GradientStart", gradient.getStartColor().getRedF(), gradient.getStartColor().getGreenF(), gradient.getStartColor().getBlueF(), gradient.getStartColor().getAlphaF())
-			.uniform("u_GradientEnd", gradient.getEndColor().getRedF(), gradient.getEndColor().getGreenF(), gradient.getEndColor().getBlueF(), gradient.getEndColor().getAlphaF())
-			.uniform("u_GradientStartPos", (float) gradient.getStartPoint().getX(), (float) gradient.getStartPoint().getY())
-			.uniform("u_GradientEndPos", (float) gradient.getEndPoint().getX(), (float) gradient.getEndPoint().getY())
-			.uniform("u_GradientCanvas", rectX1, rectY1, rectX2, rectY2);
+			ShaderProgram.uniformGradient(this.getShader(), borderColor.getGradient(), rectX1, rectY1, rectX2, rectY2);
 		} else {
-			BorderShader.INSTANCE.getShader().uniform("u_HasGradient", 0);
+			this.getShader().uniform("u_HasGradient", 0);
 		}
 	}
 

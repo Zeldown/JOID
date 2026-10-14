@@ -68,7 +68,7 @@ public class FileCacheTest {
 			FileCache.area("conflict").retention(Duration.ofDays(14L));
 			Assert.fail("The area must not be declared again");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The cache area conflict is already declared with a retention of 7 days (by FileCacheTest), it cannot be declared again with 14 days (by FileCacheTest): give one of them another name", expected.getMessage());
+			Assert.assertEquals("The cache area conflict is already declared with a retention of 7 days, it cannot be declared again with 14 days: give one of them another name", expected.getMessage());
 		}
 		Assert.assertEquals(Duration.ofDays(7L), FileCache.area("conflict").getRetention());
 	}

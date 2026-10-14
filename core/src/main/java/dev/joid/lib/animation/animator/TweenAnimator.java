@@ -104,7 +104,7 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull Tween tween(final float duration) {
-		return Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration);
+		return Tween.to(this::peek, this::writeValue, duration);
 	}
 
 	public @NonNull TweenAnimator push(final float duration, final float value) {
@@ -114,7 +114,7 @@ public class TweenAnimator extends Signal<Float> {
 
 	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
 		this.requireTimeline();
-		this.timeline.push(Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration).target(value).ease(equation));
+		this.timeline.push(this.tween(duration).target(value).ease(equation));
 		return this;
 	}
 

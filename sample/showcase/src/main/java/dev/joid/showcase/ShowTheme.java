@@ -93,7 +93,7 @@ public class ShowTheme extends ShowUI {
 		.create(x, y, width, height)
 		.color(() -> this.tone("#FFFFFF", "#17162C"))
 		.effect(RoundedNodeEffect.create(28F))
-		.effect(ShadowNodeEffect.create(Color.BLACK, 40F, 0D, 14D).color(() -> Color.BLACK.withAlpha(0.07F + 0.33F * (float) this.level)));
+		.effect(ShadowNodeEffect.create(Color.BLACK, 40F).offsetY(14D).color(() -> Color.BLACK.withAlpha(0.07F + 0.33F * (float) this.level)));
 	}
 
 	private void chart(final double x, final double y, final double width, final double height) {

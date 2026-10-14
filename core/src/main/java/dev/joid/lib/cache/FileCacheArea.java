@@ -32,11 +32,11 @@ public class FileCacheArea {
 
 	private static final Pattern NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
 
-	@Getter private final String name;
+	@Getter private final String      name;
 	private final Map<String, Object> lockMap;
 
+	private boolean          declared;
 	@Getter private Duration retention;
-	private String declarer;
 
 	protected FileCacheArea(final String name) {
 		this.name = name;
@@ -49,15 +49,12 @@ public class FileCacheArea {
 			throw new IllegalArgumentException("The retention " + retention + " of the cache area " + this.name + " is not positive, pass a duration above 0");
 		}
 
-		final String declarer = FileCacheArea.locateDeclarer();
-		if (this.declarer != null && !this.retention.equals(retention)) {
-			throw new IllegalStateException("The cache area " + this.name + " is already declared with a retention of " + FileCacheArea.describe(this.retention) + " (by " + this.declarer + "), it cannot be declared again with " + FileCacheArea.describe(retention) + " (by " + declarer + "): give one of them another name");
+		if (this.declared && !this.retention.equals(retention)) {
+			throw new IllegalStateException("The cache area " + this.name + " is already declared with a retention of " + FileCacheArea.describe(this.retention) + ", it cannot be declared again with " + FileCacheArea.describe(retention) + ": give one of them another name");
 		}
 
-		if (this.declarer == null) {
-			this.declarer = declarer;
-			this.retention = retention;
-		}
+		this.declared = true;
+		this.retention = retention;
 
 		if (this.getDirectory().isDirectory()) {
 			try {
@@ -129,7 +126,7 @@ public class FileCacheArea {
 			return 0L;
 		}
 
-		final long retention = (this.declarer != null ? this.retention : FileCacheArea.readRetention(this.getDirectory())).toMillis();
+		final long retention = FileCacheArea.readRetention(this.getDirectory()).toMillis();
 		long freed = 0L;
 		for (final File entry : entries) {
 			if (entry.getName().equals(FileCacheArea.MARKER)) {
@@ -237,8 +234,8 @@ public class FileCacheArea {
 
 	private void mark() throws IOException {
 		final File marker = new File(this.getDirectory(), FileCacheArea.MARKER);
-		final String content = this.declarer != null ? this.retention.toString() : "";
-		if (!marker.isFile() || (this.declarer != null && !content.equals(new String(Files.readAllBytes(marker.toPath()), StandardCharsets.UTF_8)))) {
+		final String content = this.declared ? this.retention.toString() : "";
+		if (!marker.isFile() || (this.declared && !content.equals(new String(Files.readAllBytes(marker.toPath()), StandardCharsets.UTF_8)))) {
 			Files.write(marker.toPath(), content.getBytes(StandardCharsets.UTF_8));
 		}
 	}
@@ -258,7 +255,7 @@ public class FileCacheArea {
 		return name;
 	}
 
-	protected static @NonNull Duration readRetention(final File directory) {
+	private static @NonNull Duration readRetention(final File directory) {
 		try {
 			final Duration retention = Duration.parse(new String(Files.readAllBytes(new File(directory, FileCacheArea.MARKER).toPath()), StandardCharsets.UTF_8).trim());
 			return retention.isNegative() || retention.isZero() ? Duration.ofDays(30L) : retention;
@@ -305,16 +302,6 @@ public class FileCacheArea {
 			return duration.toMinutes() + (duration.toMinutes() == 1L ? " minute" : " minutes");
 		}
 		return duration.toMillis() + " ms";
-	}
-
-	private static @NonNull String locateDeclarer() {
-		for (final StackTraceElement element : Thread.currentThread().getStackTrace()) {
-			final String name = element.getClassName();
-			if (!name.equals(Thread.class.getName()) && !name.equals(FileCache.class.getName()) && !name.equals(FileCacheArea.class.getName())) {
-				return name.substring(name.lastIndexOf('.') + 1);
-			}
-		}
-		return "unknown";
 	}
 
 }

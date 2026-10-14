@@ -33,8 +33,8 @@ import dev.joid.lib.utils.point.Point;
 
 public class ShowHero extends ShowUI {
 
-	private final IntegerSignal plays    = new IntegerSignal(12480);
 	private final DoubleSignal  progress = new DoubleSignal(0D);
+	private final IntegerSignal plays    = new IntegerSignal(12480);
 
 	@Override
 	protected void scene() {
@@ -122,7 +122,7 @@ public class ShowHero extends ShowUI {
 		.create(x, 858, 84, 84)
 		.color(ShowUI.diagonal(from, to))
 		.effect(RoundedNodeEffect.create(18F))
-		.effect(ShadowNodeEffect.create(from.withAlpha(0.45F), 18F, 0D, 6D))
+		.effect(ShadowNodeEffect.create(from.withAlpha(0.45F), 18F).offsetY(6D))
 		.body(art -> {
 			TextNode.create(42, 42).text(Text.create(name.substring(0, 1), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 40F, Color.WHITE))).anchor(Align.CENTER).attach(art);
 		})
@@ -137,7 +137,7 @@ public class ShowHero extends ShowUI {
 		.create(1010, 96, 620, 400)
 		.color(ShowUI.NIGHT)
 		.<RectNode>y(() -> 96D + this.wave(6D, 0.1D) * 8D)
-		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.55F), 60F, 0D, 30D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.55F), 60F).offsetY(30D))
 		.effect(RoundedNodeEffect.create(30F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
 			ResourcePlayerNode
@@ -182,7 +182,7 @@ public class ShowHero extends ShowUI {
 		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.10F), Color.WHITE.withAlpha(0.04F)))
 		.<RectNode>y(() -> 560D + this.wave(6D, 0.45D) * 7D)
 		.effect(RoundedNodeEffect.create(28F))
-		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F, 0D, 24D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F).offsetY(24D))
 		.body(card -> {
 			TextNode.create(32, 34).text(Text.create("Plays this week", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(card);
 			TextNode.create(30, 70).text(Text.create(String.format(Locale.US, "%,d", this.plays.get()), ShowUI.font(FontWeight.BLACK, 64F, ShowUI.TEXT))).attach(card);
@@ -230,7 +230,7 @@ public class ShowHero extends ShowUI {
 		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.12F), Color.WHITE.withAlpha(0.04F)))
 		.<RectNode>y(() -> 560D + this.wave(6D, 0.7D) * 9D)
 		.effect(RoundedNodeEffect.create(28F))
-		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F, 0D, 24D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F).offsetY(24D))
 		.body(card -> {
 			CircleNode.create(40, 20, 220).color(ShowUI.VIOLET.withAlpha(0.7F)).effect(BlurNodeEffect.create(40F)).attach(card);
 			ModelNode.create(30, 10, 240, 240).zoom(0.92D).rotationPitch(-18D).rotationYaw(() -> this.t() * 60D).model(model).attach(card);
@@ -246,7 +246,7 @@ public class ShowHero extends ShowUI {
 		.color(Color.decode("#1E1B3A").withAlpha(0.92F))
 		.<RectNode>x(() -> 1290D + 700D * (1D - this.ease(TweenEquations.BACK_OUT, 1D, 1.8D)) + 700D * this.ease(TweenEquations.QUAD_IN, 5.2D, 5.8D))
 		.effect(RoundedNodeEffect.create(24F))
-		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.5F), 40F, 0D, 18D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.5F), 40F).offsetY(18D))
 		.body(toast -> {
 			RectNode
 			.create(22, 22, 56, 56)

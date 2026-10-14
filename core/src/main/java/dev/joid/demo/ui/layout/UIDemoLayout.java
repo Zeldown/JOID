@@ -44,7 +44,7 @@ public class UIDemoLayout extends UIDemo {
 				RectNode.create(0, 0, 160, 40).color(UIDemoLayout.INK).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Vertical flex", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Vertical flex", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -62,7 +62,7 @@ public class UIDemoLayout extends UIDemo {
 				RectNode.create(0, 0, 90, 60).color(UIDemoLayout.INK).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Horizontal flex", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Horizontal flex", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -118,7 +118,7 @@ public class UIDemoLayout extends UIDemo {
 				.attach(box);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Column align", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Column align", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -174,7 +174,7 @@ public class UIDemoLayout extends UIDemo {
 				.attach(box);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Row align", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Row align", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -201,7 +201,7 @@ public class UIDemoLayout extends UIDemo {
 				RectNode.create(0, 0, 50, 50).color(Color.WHITE).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Margin", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Margin", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -224,10 +224,10 @@ public class UIDemoLayout extends UIDemo {
 			.color(UIDemoLayout.INK)
 			.onClick(event -> shown.toggle())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hidden child", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hidden child", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -245,7 +245,7 @@ public class UIDemoLayout extends UIDemo {
 				}
 			})
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -253,10 +253,10 @@ public class UIDemoLayout extends UIDemo {
 			.color(UIDemoLayout.INK)
 			.onClick(event -> list.clearChildren())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Clear", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Clear", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Add and clear", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Add and clear", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -280,10 +280,10 @@ public class UIDemoLayout extends UIDemo {
 			.color(UIDemoLayout.INK)
 			.onClick(event -> row.toggle())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Switch", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Switch", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Direction", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Direction", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -321,7 +321,7 @@ public class UIDemoLayout extends UIDemo {
 				.attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Nested flex", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Nested flex", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -338,7 +338,7 @@ public class UIDemoLayout extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Grid", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Grid", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -361,7 +361,7 @@ public class UIDemoLayout extends UIDemo {
 				RectNode.create(0, 0, 60, 40).color(Color.WHITE).attach(grid);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Grid margins", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Grid margins", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -378,7 +378,7 @@ public class UIDemoLayout extends UIDemo {
 			.attach(rect);
 			RectNode.create(180, 50, 80, 80).color(Color.WHITE).borderColor(UIDemoLayout.INK).borderStroke(4D).zindex(1).attach(rect);
 			RectNode.create(210, 80, 80, 80).color(UIDemoLayout.INK).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Z-index", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Z-index", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -390,7 +390,7 @@ public class UIDemoLayout extends UIDemo {
 			RectNode.create(200, 40, 0, 160).color(UIDemoLayout.INK).aspectRatio(0.5D).attach(rect);
 			TextNode.create(20, 140).text(Text.create("2 : 1", small)).attach(rect);
 			TextNode.create(200, 210).text(Text.create("1 : 2", small)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Aspect ratio", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Aspect ratio", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -408,7 +408,7 @@ public class UIDemoLayout extends UIDemo {
 				TextNode.create(100, 140).text(Text.create("Absolute", small)).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Position", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Position", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -425,10 +425,10 @@ public class UIDemoLayout extends UIDemo {
 			.color(UIDemoLayout.INK)
 			.onClick(event -> grown.toggle())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Grow", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Grow", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Anchors", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Anchors", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

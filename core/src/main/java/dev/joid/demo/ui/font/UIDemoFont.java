@@ -45,7 +45,7 @@ public class UIDemoFont extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Montserrat", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Montserrat", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -61,7 +61,7 @@ public class UIDemoFont extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pacifico", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Pacifico", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -77,7 +77,7 @@ public class UIDemoFont extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Playfair Display", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Playfair Display", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -95,7 +95,7 @@ public class UIDemoFont extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("LT Ty Yo Va", montserrat.copy().fontSize(40F))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Kerning", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Kerning", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -111,7 +111,7 @@ public class UIDemoFont extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Weights", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Weights", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -127,7 +127,7 @@ public class UIDemoFont extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Italic weights", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Italic weights", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -143,7 +143,7 @@ public class UIDemoFont extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Nearest weight", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Nearest weight", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -162,7 +162,7 @@ public class UIDemoFont extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("Size 48", montserrat.copy().fontSize(48F))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Sizes", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Sizes", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -179,7 +179,7 @@ public class UIDemoFont extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("Playfair italic", playfair.copy().fontSize(28F).italic(true))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Italic", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Italic", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -199,7 +199,7 @@ public class UIDemoFont extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", pacifico.copy().fontSize(10F))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Small sizes", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Small sizes", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -207,8 +207,8 @@ public class UIDemoFont extends UIDemo {
 		.create(80, 720, 320, 260)
 		.color(UIDemoFont.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(160, 130).text(Text.create("Ag", montserrat.copy().fontSize(160F), Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Large size", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 130).text(Text.create("Ag", montserrat.copy().fontSize(160F)).align(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Large size", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -226,7 +226,7 @@ public class UIDemoFont extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("Black text", montserrat.copy().fontSize(28F).color(Color.BLACK))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Colors", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Colors", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -244,7 +244,7 @@ public class UIDemoFont extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("!?.,;:'\"()[]{}+-*/=%&@#", pixel)).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pixel font", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Pixel font", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -263,7 +263,7 @@ public class UIDemoFont extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("Size 32", pixel.copy().fontSize(32F))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pixel sizes", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Pixel sizes", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -281,7 +281,7 @@ public class UIDemoFont extends UIDemo {
 				TextNode.create(0, 0).text(Text.create("A wave of pixels", pixel.copy().effects(DemoWaveTextEffect.inst()))).attach(flex);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pixel effects", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Pixel effects", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

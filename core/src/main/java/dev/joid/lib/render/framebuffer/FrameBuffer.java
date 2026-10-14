@@ -1,7 +1,6 @@
 package dev.joid.lib.render.framebuffer;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
@@ -17,7 +16,6 @@ public class FrameBuffer {
 	private final IFrameBuffer  handle;
 	private final TextureFilter filter;
 
-	private boolean bound;
 	private boolean filled;
 
 	protected FrameBuffer(final @NonNull IFrameBuffer handle, final @NonNull TextureFilter filter) {
@@ -29,45 +27,19 @@ public class FrameBuffer {
 		return new FrameBuffer(BridgeHandler.RENDER.get().createFrameBuffer(width, height), filter);
 	}
 
-	public @NonNull FrameBuffer bind() {
-		if (this.bound) {
-			throw new IllegalStateException("The framebuffer is already bound, call unbind() first");
-		}
-
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		render.getState().frameBuffer(this.handle);
-		this.bound = true;
-		return this;
-	}
-
-	public @NonNull FrameBuffer unbind() {
-		if (!this.bound) {
-			throw new IllegalStateException("The framebuffer is not bound, call bind() first");
-		}
-
-		this.bound = false;
-		BridgeHandler.RENDER.get().popState();
-		return this;
-	}
-
 	public @NonNull FrameBuffer fill(final @NonNull Runnable runnable) {
 		return this.fill(0D, 0D, this.getWidth(), this.getHeight(), runnable);
 	}
 
 	public @NonNull FrameBuffer fill(final double x, final double y, final double width, final double height, final @NonNull Runnable runnable) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		this.bind();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> {
+			render.getState().frameBuffer(this.handle).viewport(0, 0, this.getWidth(), this.getHeight());
 			render.getProjection().with(projection -> render.getModelView().with(modelView -> {
-				render.getState().viewport(0, 0, this.getWidth(), this.getHeight());
 				projection.ortho(x, x + width, y + height, y, -1000D, 1000D);
 				modelView.identity();
 				runnable.run();
 			}));
-		} finally {
-			this.unbind();
-		}
+		});
 
 		this.filled = true;
 		return this;

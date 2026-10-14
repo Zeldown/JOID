@@ -5,8 +5,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.render.transform.Rotation;
-import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.render.transform.operation.RotateTransformOperation;
+import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
@@ -64,9 +63,9 @@ public class ShowEffects extends ShowUI {
 		.create(1035, 355, 600, 370)
 		.color(() -> ShowUI.diagonal(Color.decode("#2A2A3C").to(ShowUI.VIOLET, this.level(1)), Color.decode("#2A2A3C").to(ShowUI.PINK, this.level(1))))
 		.effect(RoundedNodeEffect.create(() -> 2F + 34F * this.level(0)).scope(NodeEffectScope.CHILDREN))
-		.effect(BorderNodeEffect.create(Color.WHITE, 2F, BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.45F * this.level(2))))
+		.effect(BorderNodeEffect.create(Color.WHITE, 2F).mode(BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.45F * this.level(2))))
 		.effect(ShadowNodeEffect.create(Color.BLACK, 40F).color(this::shadow).blur(() -> 6F + 54F * Math.max(this.level(3), this.level(4)) + 20F * this.level(4)).offsetY(() -> 34D * this.level(3) * (1D - this.level(4))))
-		.effect(TransformNodeEffect.create(new RotateTransformOperation(() -> this.level(6) * (-7D + 2D * this.wave(4D, 0D)), Rotation.ROLL, Vector.create(1335D, 540D))))
+		.effect(TransformNodeEffect.create(Transformation.create().rotate(() -> this.level(6) * (-7D + 2D * this.wave(4D, 0D)), Rotation.ROLL)))
 		.body(card -> {
 			CircleNode.create(330, -160, 420).color(() -> ShowUI.AMBER.withAlpha(0.85F * this.level(1))).effect(BlurNodeEffect.create(1F).radius(() -> 1F + 60F * this.level(5))).attach(card);
 			CircleNode.create(-120, 160, 380).color(() -> ShowUI.CYAN.withAlpha(0.7F * this.level(1))).effect(BlurNodeEffect.create(1F).radius(() -> 1F + 60F * this.level(5))).attach(card);

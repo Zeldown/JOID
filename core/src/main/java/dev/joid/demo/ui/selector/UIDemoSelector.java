@@ -46,7 +46,7 @@ public class UIDemoSelector extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 200).text(Text.create("Value: " + down.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Down", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Down", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -60,7 +60,7 @@ public class UIDemoSelector extends UIDemo {
 			.values("First", "Second", "Third")
 			.onChange(event -> System.out.println("[UIDemoSelector] up selector value: " + event.getValue()))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Up", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Up", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -69,7 +69,7 @@ public class UIDemoSelector extends UIDemo {
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
 			DemoSelectorNode.create(40, 30, 320, 50).values("First", "Second", "Third").value("Second").active(true).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Open", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Open", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -80,7 +80,7 @@ public class UIDemoSelector extends UIDemo {
 			DemoSelectorNode.create(40, 30, 220, 50).values("First", "Second", "Third").active(open).onOpen(event -> opens.increment()).attach(rect);
 			DemoCheckboxNode.create(300, 30, 50, 50).checked(open).attach(rect);
 			TextNode.create(40, 200).text(Text.create("Opened: " + opens.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Bound open", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Bound open", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -91,7 +91,7 @@ public class UIDemoSelector extends UIDemo {
 			DemoSelectorNode.create(40, 30, 150, 50).values("First", "Second", "Third").value(shared).attach(rect);
 			DemoSelectorNode.create(210, 30, 150, 50).values("First", "Second", "Third").value(shared).attach(rect);
 			TextNode.create(40, 200).text(Text.create("Value: " + shared.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Shared signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Shared signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -110,7 +110,7 @@ public class UIDemoSelector extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 200).text(Text.create("Refused: " + refused.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Refused", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Refused", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -131,11 +131,11 @@ public class UIDemoSelector extends UIDemo {
 			.color(UIDemoSelector.INK)
 			.onClick(event -> locked.active(true))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Code", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Code", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(40, 200).text(Text.create("Refused: " + refusedOpens.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Refused open", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Refused open", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -144,7 +144,7 @@ public class UIDemoSelector extends UIDemo {
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
 			DemoSelectorNode.create(40, 30, 320, 50).values("First", "Second", "Third").value("Second").enabled(false).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Disabled", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Disabled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

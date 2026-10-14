@@ -19,15 +19,15 @@ public final class Resource {
 
 	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().linear();
 
-	private final ResourceData data;
+	private final ResourceData    data;
 	private final ResourceBuilder builder;
 
 	private boolean            blocking;
 	private ResourceProperties properties;
 
+	private long restTime;
 	private int  requestedWidth;
 	private int  requestedHeight;
-	private long restTime;
 
 	protected Resource(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
 		this.builder    = builder;
@@ -142,19 +142,19 @@ public final class Resource {
 	}
 
 	public final int[] getData() {
-		return this.data.getData() == null || this.data.getData().length == 0 ? null : this.data.getData()[0];
+		return this.data.getData(0);
 	}
 
 	public final int[] getData(final int index) {
-		return this.data.getData() == null || this.data.getData().length <= index ? null : this.data.getData()[index];
+		return this.data.getData(index);
 	}
 
 	public final ITexture getTexture() {
-		return this.data.getTextures() == null || this.data.getTextures().length == 0 ? null : this.data.getTextures()[0];
+		return this.data.getTexture(0);
 	}
 
 	public final ITexture getTexture(final int index) {
-		return this.data.getTextures() == null || this.data.getTextures().length <= index ? null : this.data.getTextures()[index];
+		return this.data.getTexture(index);
 	}
 
 	public final IResourceDecoder getDecoder() {
@@ -272,9 +272,9 @@ public final class Resource {
 			this.data.await();
 		}
 
-		if (Boolean.TRUE.equals(this.properties.getMipmap()) && this.isMipmappable() && this.data.getTextures() != null) {
-			for (final ITexture texture : this.data.getTextures()) {
-				texture.mipmap(true);
+		if (Boolean.TRUE.equals(this.properties.getMipmap()) && this.isMipmappable()) {
+			for (int i = 0; i < this.data.getTextureCount(); i++) {
+				this.data.getTexture(i).mipmap(true);
 			}
 		}
 

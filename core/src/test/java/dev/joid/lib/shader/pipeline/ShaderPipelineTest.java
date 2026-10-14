@@ -264,7 +264,7 @@ public class ShaderPipelineTest {
 		final RectNode node = RectNode.create(10D, 20D, 100D, 50D);
 		final RecordingPass array = new RecordingPass("array", 0F, this.log);
 		final RecordingPass texture = new RecordingPass("texture", 0F, this.log);
-		ShaderPipeline.render(node, this::drawBox, array);
+		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), this::drawBox, array);
 		ShaderPipeline.render(node, new ArrayList<>(Arrays.asList(texture)), this::drawBox);
 		Assert.assertEquals(10D, array.getContext().getX(), 0D);
 		Assert.assertEquals(20D, array.getContext().getY(), 0D);

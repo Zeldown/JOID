@@ -1,24 +1,14 @@
 package dev.joid.lib.animation.tween;
 
-
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class TweenManager {
 
-	private final Object lock = new Object();
-	private final ArrayList<BaseTween<?>> objects = new ArrayList<>(20);
-	private boolean isPaused = false;
+	private final Object             lock    = new Object();
+	private final List<BaseTween<?>> objects = new ArrayList<>();
 
-	public static void setAutoStart(final BaseTween<?> object, final boolean value) {
-		object.isAutoStartEnabled = value;
-	}
-
-	public static void setAutoRemove(final BaseTween<?> object, final boolean value) {
-		object.isAutoRemoveEnabled = value;
-	}
+	private boolean isPaused;
 
 	public TweenManager add(final BaseTween<?> object) {
 		synchronized (this.lock) {
@@ -27,64 +17,15 @@ public class TweenManager {
 			}
 		}
 
-		if (object.isAutoStartEnabled) {
-			object.start();
-		}
-
+		object.start();
 		return this;
-	}
-
-	public boolean containsTarget(final Object target) {
-		synchronized (this.lock) {
-			for (final BaseTween<?> obj : this.objects) {
-				if (obj.containsTarget(target)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
-
-	public boolean containsTarget(final Object target, final int tweenType) {
-		synchronized (this.lock) {
-			for (final BaseTween<?> obj : this.objects) {
-				if (obj.containsTarget(target, tweenType)) {
-					return true;
-				}
-			}
-		}
-
-		return false;
 	}
 
 	public void killAll() {
 		synchronized (this.lock) {
-			for (final BaseTween<?> obj : this.objects) {
-				obj.kill();
+			for (final BaseTween<?> object : this.objects) {
+				object.kill();
 			}
-		}
-	}
-
-	public void killTarget(final Object target) {
-		synchronized (this.lock) {
-			for (final BaseTween<?> obj : this.objects) {
-				obj.killTarget(target);
-			}
-		}
-	}
-
-	public void killTarget(final Object target, final int tweenType) {
-		synchronized (this.lock) {
-			for (final BaseTween<?> obj : this.objects) {
-				obj.killTarget(target, tweenType);
-			}
-		}
-	}
-
-	public void ensureCapacity(final int minCapacity) {
-		synchronized (this.lock) {
-			this.objects.ensureCapacity(minCapacity);
 		}
 	}
 
@@ -98,18 +39,12 @@ public class TweenManager {
 
 	public void update(final float delta) {
 		synchronized (this.lock) {
-			for (int i = this.objects.size() - 1; i >= 0; i--) {
-				final BaseTween<?> obj = this.objects.get(i);
-				if (obj.isFinished() && obj.isAutoRemoveEnabled) {
-					this.objects.remove(i);
-					obj.free();
-				}
-			}
+			this.objects.removeIf(BaseTween::isFinished);
 
 			if (!this.isPaused) {
 				if (delta >= 0) {
-					for (final BaseTween<?> element : this.objects) {
-						element.update(delta);
+					for (final BaseTween<?> object : this.objects) {
+						object.update(delta);
 					}
 				} else {
 					for (int i = this.objects.size() - 1; i >= 0; i--) {
@@ -124,47 +59,6 @@ public class TweenManager {
 		synchronized (this.lock) {
 			return this.objects.size();
 		}
-	}
-
-	public int getRunningTweensCount() {
-		synchronized (this.lock) {
-			return TweenManager.getTweensCount(this.objects);
-		}
-	}
-
-	public int getRunningTimelinesCount() {
-		synchronized (this.lock) {
-			return TweenManager.getTimelinesCount(this.objects);
-		}
-	}
-
-	public List<BaseTween<?>> getObjects() {
-		synchronized (this.lock) {
-			return Collections.unmodifiableList(new ArrayList<>(this.objects));
-		}
-	}
-
-	private static int getTweensCount(final List<BaseTween<?>> objs) {
-		int cnt = 0;
-		for (final BaseTween<?> obj : objs) {
-			if (obj instanceof Tween) {
-				cnt += 1;
-			} else {
-				cnt += TweenManager.getTweensCount(((Timeline) obj).getChildren());
-			}
-		}
-
-		return cnt;
-	}
-
-	private static int getTimelinesCount(final List<BaseTween<?>> objs) {
-		int cnt = 0;
-		for (final BaseTween<?> obj : objs) {
-			if (obj instanceof Timeline) {
-				cnt += 1 + TweenManager.getTimelinesCount(((Timeline) obj).getChildren());
-			}
-		}
-		return cnt;
 	}
 
 }

@@ -8,8 +8,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.transform.Rotation;
-import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.render.transform.operation.RotateTransformOperation;
+import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
@@ -75,7 +74,7 @@ public class UIDemoAnimation extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(linear).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Linear", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Linear", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -90,7 +89,7 @@ public class UIDemoAnimation extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(quad).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Quad in out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Quad in out", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -105,7 +104,7 @@ public class UIDemoAnimation extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(bounce).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Bounce out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Bounce out", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -120,7 +119,7 @@ public class UIDemoAnimation extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(elastic).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Elastic out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Elastic out", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -135,7 +134,7 @@ public class UIDemoAnimation extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(repeat).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Repeat", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Repeat", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -150,7 +149,7 @@ public class UIDemoAnimation extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(delay).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Yoyo with delay", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Yoyo with delay", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -165,7 +164,7 @@ public class UIDemoAnimation extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(sequence).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Sequence", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Sequence", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -180,7 +179,7 @@ public class UIDemoAnimation extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(slow).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Half speed", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Half speed", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -189,7 +188,7 @@ public class UIDemoAnimation extends UIDemo {
 		.color(UIDemoAnimation.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(140, 70, 120, 120).color(() -> UIDemoAnimation.INK.to(Color.WHITE, color.get())).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Color", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Color", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -198,7 +197,7 @@ public class UIDemoAnimation extends UIDemo {
 		.color(UIDemoAnimation.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(40, 100, 60, 60).color(UIDemoAnimation.INK).width(60D + 260D * size.get()).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Size", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Size", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -209,9 +208,9 @@ public class UIDemoAnimation extends UIDemo {
 			RectNode
 			.create(150, 80, 100, 100)
 			.color(UIDemoAnimation.INK)
-			.self(square -> square.effect(TransformNodeEffect.create(new RotateTransformOperation(() -> rotation.get() * 360D, Rotation.ROLL, Vector.create(() -> square.getX() + 50D, () -> square.getY() + 50D)))))
+			.effect(TransformNodeEffect.create(Transformation.create().rotate(() -> rotation.get() * 360D, Rotation.ROLL)))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Rotation", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Rotation", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -231,7 +230,7 @@ public class UIDemoAnimation extends UIDemo {
 			.color(UIDemoAnimation.INK)
 			.onClick(event -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).onComplete(tween -> plays.increment()).start())
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Play", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Play", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			RectNode
@@ -239,11 +238,11 @@ public class UIDemoAnimation extends UIDemo {
 			.color(UIDemoAnimation.INK)
 			.onClick(event -> once.value(0F))
 			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Stop", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Stop", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
 			.attach(rect);
 			TextNode.create(280, 162).text(Text.create("Ends: " + plays.get(), caption)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Play and stop", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Play and stop", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

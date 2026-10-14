@@ -63,8 +63,8 @@ public class ShowNeonKit implements IShowKit {
 		.create(x, y, width, height)
 		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.10F), Color.WHITE.withAlpha(0.04F)))
 		.effect(RoundedNodeEffect.create(36F))
-		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.14F), 1.5F, BorderMode.IN))
-		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F, 0D, 24D));
+		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.14F), 1.5F).mode(BorderMode.IN))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F).offsetY(24D));
 	}
 
 	@Override

@@ -173,19 +173,19 @@ public class RectNodeTest {
 		Assert.assertEquals(100D, draws.get(0).getLeft(), 1E-3D);
 		Assert.assertEquals(250D, draws.get(0).getBottom(), 1E-3D);
 		final Map<String, Object> values = shader.getValues();
-		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) values.get("startColor"), 0F);
-		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 0.5F}, (float[]) values.get("endColor"), 0F);
-		Assert.assertArrayEquals(new float[] {0F, 0F}, (float[]) values.get("startPos"), 0F);
-		Assert.assertArrayEquals(new float[] {1F, 0F}, (float[]) values.get("endPos"), 0F);
-		Assert.assertArrayEquals(new float[] {100F, 200F, 300F, 250F}, (float[]) values.get("canvas"), 1E-3F);
+		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) values.get("u_GradientStart"), 0F);
+		Assert.assertArrayEquals(new float[] {0.6F, 0.4F, 0.2F, 0.5F}, (float[]) values.get("u_GradientEnd"), 0F);
+		Assert.assertArrayEquals(new float[] {0F, 0F}, (float[]) values.get("u_GradientStartPos"), 0F);
+		Assert.assertArrayEquals(new float[] {1F, 0F}, (float[]) values.get("u_GradientEndPos"), 0F);
+		Assert.assertArrayEquals(new float[] {100F, 200F, 300F, 250F}, (float[]) values.get("u_GradientCanvas"), 1E-3F);
 	}
 
 	@Test
 	public void drawsAGradientInItsDirection() {
 		final RecordingShader shader = (RecordingShader) GradientShader.inst().getShader();
 		this.bridges.open(new NodeUI(RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.6F, 0.4F, 0.2F, 1F), Point.create(0D, 0D), Point.create(0D, 1D))))).frame();
-		Assert.assertArrayEquals(new float[] {0F, 0F}, (float[]) shader.getValues().get("startPos"), 0F);
-		Assert.assertArrayEquals(new float[] {0F, 1F}, (float[]) shader.getValues().get("endPos"), 0F);
+		Assert.assertArrayEquals(new float[] {0F, 0F}, (float[]) shader.getValues().get("u_GradientStartPos"), 0F);
+		Assert.assertArrayEquals(new float[] {0F, 1F}, (float[]) shader.getValues().get("u_GradientEndPos"), 0F);
 	}
 
 	@Test

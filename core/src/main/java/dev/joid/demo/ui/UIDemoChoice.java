@@ -127,7 +127,7 @@ public class UIDemoChoice extends UI {
 				.color(() -> entry.isActive() ? UIDemoChoice.ACTIVE : UIDemoChoice.INK)
 				.hoveredColor(UIDemoChoice.HOVERED)
 				.body(container -> {
-					TextNode.create(container.dw(2), container.dh(2)).text(Text.create(entry::getText, label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+					TextNode.create(container.dw(2), container.dh(2)).text(Text.create(entry::getText, label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 				})
 				.onClick(event -> entry.getAction().run())
 				.hover(entry::getHover)

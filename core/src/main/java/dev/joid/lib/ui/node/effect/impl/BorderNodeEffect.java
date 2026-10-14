@@ -21,20 +21,16 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 	private Supplier<BorderMode>  modeSupplier;
 	private Function<Node, Color> colorFunction;
 
-	protected BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
+	protected BorderNodeEffect(final @NonNull Color color, final float width) {
 		super(200);
 		this.fillSupplier  = () -> true;
-		this.modeSupplier  = () -> mode;
+		this.modeSupplier  = () -> BorderMode.OUT;
 		this.colorFunction = node -> color;
 		this.widthSupplier = () -> width;
 	}
 
 	public static @NonNull BorderNodeEffect create(final @NonNull Color color, final float width) {
-		return new BorderNodeEffect(color, width, BorderMode.OUT);
-	}
-
-	public static @NonNull BorderNodeEffect create(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
-		return new BorderNodeEffect(color, width, mode);
+		return new BorderNodeEffect(color, width);
 	}
 
 	public boolean isFill() {

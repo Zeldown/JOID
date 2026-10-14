@@ -198,14 +198,12 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
-	public void killsAndFreesItsTimelineWhenItClears() {
+	public void killsItsTimelineWhenItClears() {
 		final List<BaseTween<?>> ends = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).onComplete(event -> ends.add(event.getTween())).start();
 		final TweenManager manager = TweenAnimatorTest.manager(animator);
-		final int pooled = Timeline.getPoolSize();
 		animator.clear();
 		Assert.assertEquals(0, manager.size());
-		Assert.assertEquals(pooled + 1, Timeline.getPoolSize());
 		animator.update(2F);
 		Assert.assertTrue(ends.isEmpty());
 	}
@@ -234,7 +232,6 @@ public class TweenAnimatorTest {
 	public void tweensItsOwnValueLinearly() {
 		final TweenAnimator animator = TweenAnimator.create(2F);
 		final Tween tween = animator.tween(10F).target(6F);
-		Assert.assertSame(animator, tween.getTarget());
 		animator.timeline(Timeline.createSequence().push(tween)).start();
 		animator.update(5F);
 		Assert.assertEquals(4F, animator.get(), 0F);

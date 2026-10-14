@@ -27,6 +27,7 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
+import dev.joid.lib.render.tessellator.TessellatorAccess;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.overlay.interaction.UIDataOverlayInteraction;
@@ -410,7 +411,7 @@ public class UIBridgeTest {
 		Assert.assertEquals(0, render.getStateDepth());
 		Assert.assertEquals(0, render.getModelView().getDepth());
 		Assert.assertEquals(0, render.getProjection().getDepth());
-		Assert.assertFalse(Tessellator.inst().isDrawing());
+		Assert.assertFalse(TessellatorAccess.isDrawing(Tessellator.inst()));
 	}
 
 	@Test

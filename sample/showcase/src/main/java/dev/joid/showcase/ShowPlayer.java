@@ -43,7 +43,7 @@ public class ShowPlayer extends ShowUI {
 		RectNode
 		.create(240, 96, 1440, 810)
 		.color(ShowUI.NIGHT)
-		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.6F), 70F, 0D, 34D))
+		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.6F), 70F).offsetY(34D))
 		.effect(RoundedNodeEffect.create(34F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
 			this.player = ResourcePlayerNode

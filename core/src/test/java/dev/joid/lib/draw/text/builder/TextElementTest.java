@@ -6,9 +6,7 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.draw.text.builder.modifier.TextModifier;
-import dev.joid.lib.font.FontUsage;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.ITextConverter;
 import dev.joid.lib.font.converter.TextConverter;
@@ -18,55 +16,6 @@ import lombok.NonNull;
 public class TextElementTest {
 
 	private static final TextInfo INFO = TextInfo.create(() -> null, 10F);
-
-	@Test
-	public void remembersWhereItWasCreatedInDevMode() {
-		final boolean previous = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
-			final TextElement element = Text.create("text", TextElementTest.INFO).getElementList().get(0);
-			Assert.assertEquals(TextElementTest.class.getName(), element.getOrigin()[0].getClassName());
-			Assert.assertEquals("remembersWhereItWasCreatedInDevMode", element.getOrigin()[0].getMethodName());
-			Assert.assertSame(element.getOrigin(), element.copyWithText("other").getOrigin());
-			Assert.assertSame(element.getOrigin(), element.copy().getOrigin());
-		} finally {
-			JOIDEnv.devMode(previous);
-		}
-	}
-
-	@Test
-	public void remembersNothingOutsideDevMode() {
-		final boolean previous = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(false);
-		try {
-			Assert.assertNull(TextElement.create("text", TextElementTest.INFO).getOrigin());
-		} finally {
-			JOIDEnv.devMode(previous);
-		}
-	}
-
-	@Test
-	public void exposesTheOriginOnlyDuringItsUsage() {
-		final StackTraceElement[] origin = {new StackTraceElement("com.example.Screen", "init", "Screen.java", 42)};
-		Assert.assertEquals(1D, FontUsage.trace(origin, () -> FontUsage.getOrigin() == origin ? 1D : 0D), 0D);
-		Assert.assertNull(FontUsage.getOrigin());
-		Assert.assertEquals(2D, FontUsage.trace(null, () -> FontUsage.getOrigin() != null ? 0D : 2D), 0D);
-	}
-
-	@Test
-	public void keepsItsOriginInEveryCopy() {
-		final boolean previous = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
-			final TextElement element = TextElement.create("text", TextElementTest.INFO);
-			Assert.assertNotNull(element.getOrigin());
-			Assert.assertSame(element.getOrigin(), element.copyWithText(() -> "other").getOrigin());
-			Assert.assertSame(element.getOrigin(), element.copyWithInfo(TextElementTest.INFO).getOrigin());
-			Assert.assertSame(element.getOrigin(), element.copyWithModifier(TextModifier.UPPER_CASE).getOrigin());
-		} finally {
-			JOIDEnv.devMode(previous);
-		}
-	}
 
 	@Test
 	public void writesEveryPrimitiveAsText() {
@@ -156,26 +105,6 @@ public class TextElementTest {
 		Assert.assertEquals("SUPPLIED", supplier.getText());
 		Assert.assertSame(TextElementTest.INFO, supplier.getInfo());
 		Assert.assertEquals("TEXT", element.getText());
-	}
-
-	@Test
-	public void copiesWithAnotherInfo() {
-		final TextInfo info = TextInfo.create(() -> null, 20F);
-		final TextElement element = TextElement.create("text", TextElementTest.INFO).modifier(TextModifier.UPPER_CASE);
-		final TextElement copy = element.copyWithInfo(info);
-		Assert.assertSame(info, copy.getInfo());
-		Assert.assertEquals("TEXT", copy.getText());
-		Assert.assertSame(TextElementTest.INFO, element.getInfo());
-	}
-
-	@Test
-	public void copiesWithAnotherModifier() {
-		final TextElement element = TextElement.create("Text", TextElementTest.INFO).modifier(TextModifier.UPPER_CASE);
-		final TextElement copy = element.copyWithModifier(TextModifier.LOWER_CASE);
-		Assert.assertEquals("text", copy.getText());
-		Assert.assertSame(TextElementTest.INFO, copy.getInfo());
-		Assert.assertEquals("TEXT", element.getText());
-		Assert.assertNull(element.copyWithModifier(null).getModifier());
 	}
 
 	@Test

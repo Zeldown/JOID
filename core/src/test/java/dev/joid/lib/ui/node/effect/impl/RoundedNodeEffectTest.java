@@ -45,7 +45,7 @@ public class RoundedNodeEffectTest {
 
 	@Test
 	public void roundsOnlyTheChosenSides() {
-		final RoundedNodeEffect effect = RoundedNodeEffect.create(6F, true, false, false, true);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(6F).top(false).right(false);
 		Assert.assertTrue(effect.isLeft());
 		Assert.assertFalse(effect.isRight());
 		Assert.assertFalse(effect.isTop());
@@ -54,9 +54,9 @@ public class RoundedNodeEffectTest {
 
 	@Test
 	public void takesItsSidesInTheOrderOfDrawRoundedRect() {
-		final RoundedNodeEffect left = RoundedNodeEffect.create(6F, true, false, false, false);
-		final RoundedNodeEffect top = RoundedNodeEffect.create(6F, false, true, false, false);
-		final RoundedNodeEffect right = RoundedNodeEffect.create(() -> 6F, () -> false, () -> false, () -> true, () -> false);
+		final RoundedNodeEffect left = RoundedNodeEffect.create(6F).top(false).right(false).bottom(false);
+		final RoundedNodeEffect top = RoundedNodeEffect.create(6F).left(false).right(false).bottom(false);
+		final RoundedNodeEffect right = RoundedNodeEffect.create(() -> 6F).left(() -> false).top(() -> false).bottom(() -> false);
 		Assert.assertTrue(left.isLeft() && !left.isTop() && !left.isRight() && !left.isBottom());
 		Assert.assertTrue(top.isTop() && !top.isLeft() && !top.isRight() && !top.isBottom());
 		Assert.assertTrue(right.isRight() && !right.isLeft() && !right.isTop() && !right.isBottom());
@@ -74,7 +74,7 @@ public class RoundedNodeEffectTest {
 	@Test
 	public void readsItsSuppliedSides() {
 		final boolean[] sides = {true};
-		final RoundedNodeEffect effect = RoundedNodeEffect.create(() -> 4F, () -> sides[0], () -> sides[0], () -> !sides[0], () -> !sides[0]);
+		final RoundedNodeEffect effect = RoundedNodeEffect.create(() -> 4F).left(() -> sides[0]).top(() -> sides[0]).right(() -> !sides[0]).bottom(() -> !sides[0]);
 		Assert.assertTrue(effect.isLeft());
 		Assert.assertFalse(effect.isRight());
 		sides[0] = false;

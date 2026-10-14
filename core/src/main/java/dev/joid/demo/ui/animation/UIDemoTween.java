@@ -8,7 +8,6 @@ import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.animation.tween.TweenPaths;
-import dev.joid.lib.animation.tween.primitive.MutableFloat;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
@@ -25,10 +24,10 @@ public class UIDemoTween extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
-	private final MutableFloat value   = new MutableFloat(0F);
 	private final TweenManager manager = new TweenManager();
 
-	private long lastUpdate;
+	private float value;
+	private long  lastUpdate;
 
 	@Override
 	public void init() {
@@ -65,8 +64,8 @@ public class UIDemoTween extends UIDemo {
 		events.getTimeline().repeatYoyo(-1, 0F).onStart(event -> starts.increment()).onIterationEnd(event -> laps.increment());
 		events.start();
 		this.manager.killAll();
-		this.value.setValue(0F);
-		Tween.to(this.value, 0, 1000F).target(1F).ease(TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(this.manager);
+		this.value = 0F;
+		Tween.to(() -> this.value, value -> this.value = value, 1000F).target(1F).ease(TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(this.manager);
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		RectNode
@@ -80,7 +79,7 @@ public class UIDemoTween extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(back).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Back in out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Back in out", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -95,7 +94,7 @@ public class UIDemoTween extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(circ).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Circ in out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Circ in out", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -110,7 +109,7 @@ public class UIDemoTween extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(expo).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Expo out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Expo out", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -125,7 +124,7 @@ public class UIDemoTween extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(quint).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Quint in out", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Quint in out", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -140,7 +139,7 @@ public class UIDemoTween extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(260D * horizontal.get()).y(120D * vertical.get()).attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Two animators", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Two animators", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -155,7 +154,7 @@ public class UIDemoTween extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(paused).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Timeline pause", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Timeline pause", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -167,10 +166,10 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * this.value.floatValue()).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * this.value).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Tween manager", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Tween manager", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -185,7 +184,7 @@ public class UIDemoTween extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(waypoints).attach(line);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Waypoints", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Waypoints", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -201,7 +200,7 @@ public class UIDemoTween extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 162).text(Text.create("Starts: " + starts.get() + ", laps: " + laps.get(), caption)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Tween events", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Tween events", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

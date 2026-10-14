@@ -90,7 +90,7 @@ public class ShowPaperKit implements IShowKit {
 				DrawUtils.SHAPE.drawRect(x + 8D, y + 8D, 180D, 64D, ShowPaperKit.INK);
 			}
 			ShowPaperKit.box(x, y, 180D, 64D, on ? ShowPaperKit.TOMATO : ShowPaperKit.CARD, 3D);
-			DrawUtils.TEXT.drawText(x + 90D, y + 32D, Text.create(label.toUpperCase(), ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.14F), Align.CENTER, Align.CENTER));
+			DrawUtils.TEXT.drawText(x + 90D, y + 32D, Text.create(label.toUpperCase(), ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.14F)).align(Align.CENTER));
 		});
 	}
 
@@ -103,7 +103,7 @@ public class ShowPaperKit implements IShowKit {
 			final double push = button.hoverValue(4F);
 			DrawUtils.SHAPE.drawRect(x + 10D, y + 10D, width, 72D, ShowPaperKit.INK);
 			ShowPaperKit.box(x + push, y + push, width, 72D, primary ? ShowPaperKit.TOMATO : ShowPaperKit.CARD, 3D);
-			DrawUtils.TEXT.drawText(x + push + width / 2D, y + push + 36D, Text.create(label.get().toUpperCase(), ShowUI.font(FontWeight.BOLD, 21F, ShowPaperKit.INK).letterSpacing(0.14F), Align.CENTER, Align.CENTER));
+			DrawUtils.TEXT.drawText(x + push + width / 2D, y + push + 36D, Text.create(label.get().toUpperCase(), ShowUI.font(FontWeight.BOLD, 21F, ShowPaperKit.INK).letterSpacing(0.14F)).align(Align.CENTER));
 		}))
 		.hoverDuration(120L);
 	}

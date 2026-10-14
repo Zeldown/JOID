@@ -50,7 +50,7 @@ public class UIDemoAudio extends UIDemo {
 		.color(UIDemoAudio.INK)
 		.onClick(event -> volume.set(Math.max(0F, volume.get() - 0.25F)))
 		.body(container -> {
-			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-", button).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
 		.attach(this);
 		RectNode
@@ -58,11 +58,11 @@ public class UIDemoAudio extends UIDemo {
 		.color(UIDemoAudio.INK)
 		.onClick(event -> volume.set(Math.min(1F, volume.get() + 0.25F)))
 		.body(container -> {
-			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+", button).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
 		.attach(this);
 		TextNode.create(300, 576).text(() -> Text.create(Math.round(volume.get() * 100F) + " %", label)).attach(this);
-		TextNode.create(240, 625).text(Text.create("Volume", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(240, 625).text(Text.create("Volume", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(440, 380, 320, 180)
@@ -83,7 +83,7 @@ public class UIDemoAudio extends UIDemo {
 		.color(UIDemoAudio.INK)
 		.onClick(event -> far.set(false))
 		.body(container -> {
-			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Near", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Near", button).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
 		.attach(this);
 		RectNode
@@ -91,11 +91,11 @@ public class UIDemoAudio extends UIDemo {
 		.color(UIDemoAudio.INK)
 		.onClick(event -> far.set(true))
 		.body(container -> {
-			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Far", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Far", button).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
 		.attach(this);
 		TextNode.create(660, 576).text(() -> Text.create("z: " + (far.get() ? 30 : 0), label)).attach(this);
-		TextNode.create(600, 625).text(Text.create("Distance", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(600, 625).text(Text.create("Distance", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(800, 380, 320, 180)
@@ -113,7 +113,7 @@ public class UIDemoAudio extends UIDemo {
 		})
 		.attach(this);
 		TextNode.create(800, 576).text(Text.create("z: 30, full up to 40", label)).attach(this);
-		TextNode.create(960, 625).text(Text.create("Reference distance", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(960, 625).text(Text.create("Reference distance", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(1160, 380, 320, 180)
@@ -131,7 +131,7 @@ public class UIDemoAudio extends UIDemo {
 		})
 		.attach(this);
 		TextNode.create(1160, 576).text(Text.create("z: 30, silent from 20", label)).attach(this);
-		TextNode.create(1320, 625).text(Text.create("Max distance", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1320, 625).text(Text.create("Max distance", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(1520, 380, 320, 180)
@@ -152,7 +152,7 @@ public class UIDemoAudio extends UIDemo {
 		.color(UIDemoAudio.INK)
 		.onClick(event -> away.set(false))
 		.body(container -> {
-			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Here", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Here", button).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
 		.attach(this);
 		RectNode
@@ -160,11 +160,11 @@ public class UIDemoAudio extends UIDemo {
 		.color(UIDemoAudio.INK)
 		.onClick(event -> away.set(true))
 		.body(container -> {
-			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Away", button, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Away", button).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
 		})
 		.attach(this);
 		TextNode.create(1740, 576).text(() -> Text.create("z: " + (away.get() ? 30 : 0), label)).attach(this);
-		TextNode.create(1680, 625).text(Text.create("Listener", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1680, 625).text(Text.create("Listener", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 	}
 
 }

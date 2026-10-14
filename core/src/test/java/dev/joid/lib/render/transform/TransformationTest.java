@@ -6,8 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.render.transform.operation.ScaleTransformOperation;
-import dev.joid.lib.render.transform.operation.TranslateTransformOperation;
 
 public class TransformationTest {
 
@@ -60,8 +58,7 @@ public class TransformationTest {
 
 	@Test
 	public void appliesItsOperationsInOrder() {
-		final Transformation transformation = Transformation.create(new TranslateTransformOperation(Vector.create(10D, 0D))).add(new ScaleTransformOperation(Scale.create(2D, 2D, 1D), Vector.create()));
-		Assert.assertEquals(2, transformation.getOperations().size());
+		final Transformation transformation = Transformation.create().translate(Vector.create(10D, 0D)).scale(Scale.create(2D, 2D, 1D), Vector.create());
 		transformation.apply();
 		try {
 			final float[] matrix = this.bridges.getRender().getModelView().getMatrix();
@@ -98,7 +95,6 @@ public class TransformationTest {
 	public void forgetsItsOperationsOnceCleared() {
 		final Transformation transformation = Transformation.create().translate(Vector.create(50D, 0D));
 		transformation.clear();
-		Assert.assertTrue(transformation.getOperations().isEmpty());
 		transformation.apply();
 		try {
 			Assert.assertEquals(0F, this.bridges.getRender().getModelView().getMatrix()[12], 0F);
@@ -108,8 +104,8 @@ public class TransformationTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void refusesAMissingOperation() {
-		Transformation.create().add(null);
+	public void refusesAMissingVector() {
+		Transformation.create().translate(null);
 	}
 
 }

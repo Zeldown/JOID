@@ -1,44 +1,26 @@
 package dev.joid.lib.shader.pipeline.pass;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
-import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import lombok.NonNull;
 
 public class RoundedShaderPass implements IShaderPass {
 
-	private final Node node;
-	private final RoundedNodeEffect effect;
-
-	private final float fixedX1;
-	private final float fixedY1;
-	private final float fixedX2;
-	private final float fixedY2;
-	private final float fixedRadius;
-
-	public RoundedShaderPass(final @NonNull RoundedNodeEffect effect, final @NonNull Node node) {
-		this.effect = effect;
-		this.node = node;
-		this.fixedRadius = -1F;
-		this.fixedX1 = 0F;
-		this.fixedY1 = 0F;
-		this.fixedX2 = 0F;
-		this.fixedY2 = 0F;
-	}
+	private final float x1;
+	private final float y1;
+	private final float x2;
+	private final float y2;
+	private final float radius;
 
 	public RoundedShaderPass(final float radius, final float x1, final float y1, final float x2, final float y2) {
-		this.effect = null;
-		this.node = null;
-		this.fixedRadius = radius;
-		this.fixedX1 = x1;
-		this.fixedY1 = y1;
-		this.fixedX2 = x2;
-		this.fixedY2 = y2;
+		this.x1     = x1;
+		this.y1     = y1;
+		this.x2     = x2;
+		this.y2     = y2;
+		this.radius = radius;
 	}
 
 	@Override
@@ -52,20 +34,8 @@ public class RoundedShaderPass implements IShaderPass {
 			return;
 		}
 
-		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
-		if (this.effect == null) {
-			RoundedShader.inst().bind(this.fixedRadius, this.fixedX1, this.fixedY1, this.fixedX2, this.fixedY2, RoundedShaderType.TEXTURE);
-			RoundedShader.inst().aligned(grid.isAligned());
-			return;
-		}
-
-		final float radius = this.effect.getRadius();
-		final float x1 = (float) (grid.snapX(this.node.getX()) + (this.effect.isLeft() ? radius : 0));
-		final float y1 = (float) (grid.snapY(this.node.getY()) + (this.effect.isTop() ? radius : 0));
-		final float x2 = (float) (grid.snapRight(this.node.getX(), this.node.getX() + this.node.getWidth()) - (this.effect.isRight() ? radius : 0));
-		final float y2 = (float) (grid.snapBottom(this.node.getY(), this.node.getY() + this.node.getHeight()) - (this.effect.isBottom() ? radius : 0));
-		RoundedShader.inst().bind(radius, x1, y1, x2, y2, RoundedShaderType.TEXTURE);
-		RoundedShader.inst().aligned(grid.isAligned());
+		RoundedShader.inst().bind(this.radius, this.x1, this.y1, this.x2, this.y2, RoundedShaderType.TEXTURE);
+		RoundedShader.inst().aligned(BridgeHandler.RENDER.get().getPixelGrid().isAligned());
 	}
 
 }

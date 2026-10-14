@@ -57,7 +57,7 @@ public class CircleShaderTest {
 
 	@Test
 	public void bindsAndReleasesWithoutDraw() {
-		CircleShader.use(8F, 1F, 2F, null);
+		CircleShader.use(8F, 1F, 2F, () -> {});
 		Assert.assertArrayEquals(new float[] {1F, 2F}, (float[]) this.shader.getValues().get("center"), 0F);
 		Assert.assertFalse(this.shader.isBound());
 	}
