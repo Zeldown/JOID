@@ -270,6 +270,29 @@ public class IndexedConcurrentListTest {
 		new IndexedConcurrentList<Element>().reversed().add(new Element(0));
 	}
 
+	@Test
+	public void ordersItselfAgainWhenAnIndexChangesAfterInsertion() {
+		final Element first = new Element(0);
+		final Element second = new Element(1);
+		final Element third = new Element(2);
+		final IndexedConcurrentList<Element> list = new IndexedConcurrentList<>();
+		list.add(first);
+		list.add(second);
+		list.add(third);
+		first.index = 5;
+		Assert.assertEquals(Arrays.asList(second, third, first), list.ordered());
+		third.index = -1;
+		final List<Element> iterated = new ArrayList<>();
+		list.forEach(iterated::add);
+		Assert.assertEquals(Arrays.asList(third, second, first), iterated);
+		second.index = 9;
+		Assert.assertSame(third, list.getFirst());
+		Assert.assertSame(second, list.getLast());
+		Assert.assertSame(first, list.get(1));
+		third.index = 10;
+		Assert.assertEquals(Arrays.asList(third, second, first), list.reversed());
+	}
+
 	@Getter
 	@AllArgsConstructor
 	private static final class Element implements IndexedElement {

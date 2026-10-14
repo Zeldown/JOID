@@ -30,6 +30,7 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IIndexed
 
 	@Override
 	public void add(final E element) {
+		this.sort();
 		final int position = this.orderedList.indexOf(element);
 		if (position >= 0 && this.isInPlace(position)) {
 			return;
@@ -91,6 +92,7 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IIndexed
 
 	@Override
 	public E getLast() {
+		this.sort();
 		if (this.isEmpty()) {
 			return null;
 		}
@@ -100,6 +102,7 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IIndexed
 
 	@Override
 	public E getFirst() {
+		this.sort();
 		if (this.isEmpty()) {
 			return null;
 		}
@@ -109,21 +112,25 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IIndexed
 
 	@Override
 	public E get(final int index) {
+		this.sort();
 		return this.orderedList.get(index);
 	}
 
 	@Override
 	public @NonNull List<E> ordered() {
+		this.sort();
 		return this.orderedView;
 	}
 
 	@Override
 	public @NonNull List<E> reversed() {
+		this.sort();
 		return this.reversedList;
 	}
 
 	@Override
 	public Iterator<E> iterator() {
+		this.sort();
 		return this.orderedList.iterator();
 	}
 

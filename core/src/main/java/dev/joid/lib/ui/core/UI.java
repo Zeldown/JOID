@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -101,9 +100,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private static UI current;
 
 	@NonNull private final EventBus                             eventBus;
-	@NonNull private final List<@NonNull Task>                  taskList;
 	@NonNull private final Stack<MaskRegion>                    stencilStack;
-	@NonNull private final List<@NonNull Shortcut>              shortcutList;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
 	private final UIView       view;
@@ -174,8 +171,6 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.stencilStack = new Stack<>();
 		this.eventBus = EventBus.create(() -> UI.nameOf(this.getClass()));
-		this.taskList = new CopyOnWriteArrayList<>();
-		this.shortcutList = new CopyOnWriteArrayList<>();
 		this.nodeList = new IndexedConcurrentList<>();
 		this.storeMap = new HashMap<>();
 
@@ -205,7 +200,7 @@ public abstract class UI implements IUI, IndexedElement {
 			UIPropertyHook.load(this);
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
-			this.shortcutList.forEach(Shortcut::detach);
+			this.getShortcutList().forEach(Shortcut::detach);
 			if (!this.loaded) {
 				this.eventBus.keep();
 				this.loaded = true;
@@ -218,7 +213,7 @@ public abstract class UI implements IUI, IndexedElement {
 							node.fireDetach();
 						}
 					}
-					this.taskList.forEach(Task::detach);
+					this.getTaskList().forEach(Task::detach);
 				}
 				this.nodeList.clear();
 
@@ -500,7 +495,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final @NonNull List<@NonNull Task> getTaskList() {
-		return Collections.unmodifiableList(this.taskList);
+		return Task.getTaskList(this);
 	}
 
 	public final @NonNull List<@NonNull Node> getNodeList() {
@@ -508,7 +503,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final @NonNull List<@NonNull Shortcut> getShortcutList() {
-		return Collections.unmodifiableList(this.shortcutList);
+		return Shortcut.getShortcutList(this);
 	}
 
 	@Override
@@ -593,7 +588,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void dispose() {
 		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
-		this.taskList.forEach(Task::detach);
+		this.getTaskList().forEach(Task::detach);
 		this.closed = true;
 		this.initialized = false;
 
@@ -782,44 +777,6 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	public final void reorder(final @NonNull Node node) {
-		if (this.nodeList.contains(node)) {
-			this.nodeList.add(node);
-		}
-	}
-
-	public final void addTask(final @NonNull Task task) {
-		if (task.getUi() != this) {
-			task.attach(this);
-		} else if (!this.taskList.contains(task)) {
-			this.taskList.add(task);
-		}
-	}
-
-	public final void removeTask(final @NonNull Task task) {
-		if (task.getUi() == this) {
-			task.detach();
-		} else {
-			this.taskList.remove(task);
-		}
-	}
-
-	public final void addShortcut(final @NonNull Shortcut shortcut) {
-		if (shortcut.getUi() != this) {
-			shortcut.attach(this);
-		} else if (!this.shortcutList.contains(shortcut)) {
-			this.shortcutList.add(shortcut);
-		}
-	}
-
-	public final void removeShortcut(final @NonNull Shortcut shortcut) {
-		if (shortcut.getUi() == this) {
-			shortcut.detach();
-		} else {
-			this.shortcutList.remove(shortcut);
-		}
-	}
-
 	public final void setDepthLevel(final double level) {
 		this.depthLevel = level;
 	}
@@ -952,7 +909,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
 
-		final List<Task> taskList = new ArrayList<>(this.taskList);
+		final List<Task> taskList = new ArrayList<>(this.getTaskList());
 		this.nodeList.forEach(node -> UI.collectTasks(node, taskList));
 		for (final Task task : taskList) {
 			if (task.isDue()) {
@@ -1077,7 +1034,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final List<Shortcut> shortcutList = new ArrayList<>();
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> UI.collectShortcuts(node, shortcutList)));
-		shortcutList.addAll(this.shortcutList);
+		shortcutList.addAll(this.getShortcutList());
 		for (final Shortcut shortcut : shortcutList) {
 			if (shortcut.isOverrideFocus() == overrideFocus && shortcut.isTriggeredBy(key)) {
 				this.traced(() -> shortcut.fireTrigger(key));

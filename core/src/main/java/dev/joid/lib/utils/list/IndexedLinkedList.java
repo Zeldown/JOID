@@ -30,6 +30,7 @@ public class IndexedLinkedList<E extends IndexedElement> implements IIndexedList
 
 	@Override
 	public void add(final E element) {
+		this.sort();
 		final int position = this.orderedList.indexOf(element);
 		if (position >= 0 && this.isInPlace(position)) {
 			return;
@@ -91,31 +92,37 @@ public class IndexedLinkedList<E extends IndexedElement> implements IIndexedList
 
 	@Override
 	public E getLast() {
+		this.sort();
 		return this.orderedList.isEmpty() ? null : this.orderedList.getLast();
 	}
 
 	@Override
 	public E getFirst() {
+		this.sort();
 		return this.orderedList.isEmpty() ? null : this.orderedList.getFirst();
 	}
 
 	@Override
 	public E get(final int index) {
+		this.sort();
 		return this.orderedList.get(index);
 	}
 
 	@Override
 	public @NonNull List<E> ordered() {
+		this.sort();
 		return this.orderedView;
 	}
 
 	@Override
 	public @NonNull List<E> reversed() {
+		this.sort();
 		return this.reversedList;
 	}
 
 	@Override
 	public Iterator<E> iterator() {
+		this.sort();
 		return this.orderedList.iterator();
 	}
 

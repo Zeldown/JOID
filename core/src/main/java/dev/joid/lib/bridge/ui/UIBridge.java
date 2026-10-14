@@ -326,7 +326,6 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	private List<UI> getLayerList() {
-		this.uiList.sort();
 		final List<UI> belowList = new ArrayList<>();
 		final List<UI> screenList = new ArrayList<>();
 		final List<UI> aboveList = new ArrayList<>();

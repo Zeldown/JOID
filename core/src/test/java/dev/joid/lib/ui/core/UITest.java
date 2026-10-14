@@ -231,7 +231,7 @@ public class UITest {
 	}
 
 	@Test
-	public void keepsItsNodesBehindAReadOnlyListInZIndexOrder() {
+	public void keepsItsNodesBehindAReadOnlyListInZIndexOrderWhenAnIndexChanges() {
 		final RectNode below = RectNode.create(0D, 0D, 10D, 10D);
 		final RectNode above = RectNode.create(0D, 0D, 10D, 10D);
 		final TraceUI ui = new TraceUI(this.trace, below, above);
@@ -239,6 +239,11 @@ public class UITest {
 		Assert.assertEquals(Arrays.asList(below, above), ui.getNodeList());
 		below.zindex(1);
 		Assert.assertEquals(Arrays.asList(above, below), ui.getNodeList());
+		final RectNode back = RectNode.create(0D, 0D, 5D, 5D);
+		final RectNode front = RectNode.create(0D, 0D, 5D, 5D);
+		above.append(back, front);
+		back.zindex(2);
+		Assert.assertEquals(Arrays.asList(front, back), above.getDrawList());
 		try {
 			ui.getNodeList().clear();
 			Assert.fail("The nodes of a UI must not change from outside");

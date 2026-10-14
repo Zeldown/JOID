@@ -165,25 +165,21 @@ public class TaskTest {
 	}
 
 	@Test
-	public void keepsItsUiAndItsListInStepFromBothSides() {
+	public void keepsTheListOfItsOwnerInStep() {
 		final TaskUI ui = this.open();
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final Task task = Task.create(0L);
-		ui.addTask(task);
+		final Task task = Task.create(0L).attach(ui);
 		Assert.assertSame(ui, task.getUi());
 		Assert.assertEquals(Collections.singletonList(task), ui.getTaskList());
-		Assert.assertSame(node, node.addTask(task));
+		Assert.assertEquals(Collections.singletonList(task), Task.getTaskList(ui));
+		task.attach(node);
 		Assert.assertNull(task.getUi());
 		Assert.assertTrue(ui.getTaskList().isEmpty());
 		Assert.assertSame(node, task.getNode());
 		Assert.assertEquals(Collections.singletonList(task), node.getTaskList());
-		node.removeTask(task);
+		task.detach();
 		Assert.assertFalse(task.isAttached());
 		Assert.assertTrue(node.getTaskList().isEmpty());
-		task.attach(ui);
-		ui.removeTask(task);
-		Assert.assertFalse(task.isAttached());
-		Assert.assertTrue(ui.getTaskList().isEmpty());
 	}
 
 	@Test

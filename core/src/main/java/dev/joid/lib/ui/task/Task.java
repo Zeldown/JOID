@@ -1,5 +1,13 @@
 package dev.joid.lib.ui.task;
 
+import java.lang.ref.WeakReference;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.google.common.collect.MapMaker;
+
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventBus;
@@ -15,19 +23,29 @@ public final class Task {
 
 	private static final EventType<TaskEvent> RUN = EventType.create("onRun");
 
+	private static final Map<Object, List<Task>> OWNER_MAP = new MapMaker().weakKeys().makeMap();
+
 	private final long     delay;
 	private final EventBus eventBus;
 
 	private long period;
 	private long nextRun;
 
-	private UI   ui;
-	private Node node;
+	private WeakReference<UI>   ui;
+	private WeakReference<Node> node;
 
 	private Task(final long delay) {
 		this.delay = delay;
 		this.period = -1L;
 		this.eventBus = EventBus.create(() -> "Task");
+	}
+
+	public static @NonNull List<@NonNull Task> getTaskList(final @NonNull UI ui) {
+		return Task.list(ui);
+	}
+
+	public static @NonNull List<@NonNull Task> getTaskList(final @NonNull Node node) {
+		return Task.list(node);
 	}
 
 	public static @NonNull Task create(final long delay) {
@@ -62,32 +80,25 @@ public final class Task {
 
 	public @NonNull Task attach(final @NonNull UI ui) {
 		this.detach();
-		this.ui = ui;
+		this.ui = new WeakReference<>(ui);
 		this.nextRun = BridgeHandler.CLOCK.get().currentTimeMillis() + this.delay;
-		ui.addTask(this);
+		Task.register(ui, this);
 		return this;
 	}
 
 	public @NonNull Task attach(final @NonNull Node node) {
 		this.detach();
-		this.node = node;
+		this.node = new WeakReference<>(node);
 		this.nextRun = BridgeHandler.CLOCK.get().currentTimeMillis() + this.delay;
-		node.addTask(this);
+		Task.register(node, this);
 		return this;
 	}
 
 	public @NonNull Task detach() {
-		if (this.ui != null) {
-			final UI attachedUi = this.ui;
-			this.ui = null;
-			attachedUi.removeTask(this);
-		}
-
-		if (this.node != null) {
-			final Node attachedNode = this.node;
-			this.node = null;
-			attachedNode.removeTask(this);
-		}
+		Task.unregister(this.getUi(), this);
+		Task.unregister(this.getNode(), this);
+		this.ui = null;
+		this.node = null;
 		return this;
 	}
 
@@ -96,7 +107,31 @@ public final class Task {
 	}
 
 	public boolean isAttached() {
-		return this.ui != null || this.node != null;
+		return this.getUi() != null || this.getNode() != null;
+	}
+
+	public UI getUi() {
+		return this.ui != null ? this.ui.get() : null;
+	}
+
+	public Node getNode() {
+		return this.node != null ? this.node.get() : null;
+	}
+
+	private static List<Task> list(final Object owner) {
+		final List<Task> list = Task.OWNER_MAP.get(owner);
+		return list != null ? Collections.unmodifiableList(list) : Collections.emptyList();
+	}
+
+	private static void register(final Object owner, final Task element) {
+		Task.OWNER_MAP.computeIfAbsent(owner, key -> new CopyOnWriteArrayList<>()).add(element);
+	}
+
+	private static void unregister(final Object owner, final Task element) {
+		final List<Task> list = owner != null ? Task.OWNER_MAP.get(owner) : null;
+		if (list != null) {
+			list.remove(element);
+		}
 	}
 
 }

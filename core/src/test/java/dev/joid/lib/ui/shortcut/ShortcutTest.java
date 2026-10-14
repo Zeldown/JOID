@@ -188,23 +188,17 @@ public class ShortcutTest {
 	}
 
 	@Test
-	public void keepsItsTargetAndItsListInStepFromBothSides() {
+	public void keepsTheListOfItsOwnerInStep() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
 		final ShortcutUI ui = this.open(node);
-		final Shortcut shortcut = Shortcut.create(Key.S);
-		ui.addShortcut(shortcut);
-		Assert.assertSame(ui, shortcut.getUi());
-		Assert.assertEquals(Collections.singletonList(shortcut), ui.getShortcutList());
-		Assert.assertSame(node, node.addShortcut(shortcut));
+		final Shortcut shortcut = Shortcut.create(Key.S).attach(ui);
+		Assert.assertEquals(Collections.singletonList(shortcut), Shortcut.getShortcutList(ui));
+		shortcut.attach(node);
 		Assert.assertTrue(ui.getShortcutList().isEmpty());
 		Assert.assertEquals(Collections.singletonList(shortcut), node.getShortcutList());
-		node.removeShortcut(shortcut);
+		shortcut.detach();
 		Assert.assertNull(shortcut.getNode());
 		Assert.assertTrue(node.getShortcutList().isEmpty());
-		shortcut.attach(ui);
-		ui.removeShortcut(shortcut);
-		Assert.assertNull(shortcut.getUi());
-		Assert.assertTrue(ui.getShortcutList().isEmpty());
 	}
 
 	@Test(expected = UnsupportedOperationException.class)

@@ -150,9 +150,6 @@ public abstract class Node implements INode {
 	private final transient TweenAnimator             hoverAnimator;
 	private final transient Map<TweenAnimator, Float> animatorMap;
 
-	private final transient List<Task>     taskList;
-	private final transient List<Shortcut> shortcutList;
-
 	private final List<Node>                      children;
 	private final LinkedList<INodeLayer>          layerList;
 	private final IndexedConcurrentList<Node>     drawList;
@@ -261,9 +258,6 @@ public abstract class Node implements INode {
 
 		this.animatorMap   = new HashMap<>();
 		this.hoverAnimator = TweenAnimator.create();
-
-		this.taskList     = new CopyOnWriteArrayList<>();
-		this.shortcutList = new CopyOnWriteArrayList<>();
 
 		this.children  = new CopyOnWriteArrayList<>();
 		this.drawList  = new IndexedConcurrentList<>();
@@ -1026,7 +1020,7 @@ public abstract class Node implements INode {
 		final boolean attached = this.attached;
 		this.attached = false;
 		this.unsubscribe();
-		this.taskList.forEach(Task::detach);
+		this.getTaskList().forEach(Task::detach);
 		this.endInteraction();
 		if (attached) {
 			this.effectMap.values().forEach(effect -> effect.detach(this));
@@ -1084,42 +1078,6 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T attach(final @NonNull Node node) {
 		node.append(this);
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T addTask(final @NonNull Task task) {
-		if (task.getNode() != this) {
-			task.attach(this);
-		} else if (!this.taskList.contains(task)) {
-			this.taskList.add(task);
-		}
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T removeTask(final @NonNull Task task) {
-		if (task.getNode() == this) {
-			task.detach();
-		} else {
-			this.taskList.remove(task);
-		}
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T addShortcut(final @NonNull Shortcut shortcut) {
-		if (shortcut.getNode() != this) {
-			shortcut.attach(this);
-		} else if (!this.shortcutList.contains(shortcut)) {
-			this.shortcutList.add(shortcut);
-		}
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T removeShortcut(final @NonNull Shortcut shortcut) {
-		if (shortcut.getNode() == this) {
-			shortcut.detach();
-		} else {
-			this.shortcutList.remove(shortcut);
-		}
 		return (T) this;
 	}
 
@@ -1479,11 +1437,11 @@ public abstract class Node implements INode {
 	}
 
 	public final @NonNull List<@NonNull Task> getTaskList() {
-		return Collections.unmodifiableList(this.taskList);
+		return Task.getTaskList(this);
 	}
 
 	public final @NonNull List<@NonNull Shortcut> getShortcutList() {
-		return Collections.unmodifiableList(this.shortcutList);
+		return Shortcut.getShortcutList(this);
 	}
 
 	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
@@ -2262,14 +2220,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T zindex(final @NonNull Supplier<Integer> zindex) {
-		return this.follow("zindex", zindex, (node, value) -> {
-			node.zindex = value;
-			if (node.parent != null && node.parent.drawList.contains(node)) {
-				node.parent.drawList.add(node);
-			} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
-				node.ui.reorder(node);
-			}
-		});
+		return this.follow("zindex", zindex, (node, value) -> node.zindex = value);
 	}
 
 	public final <T extends Node> @NonNull T zlevel(final double zlevel) {
