@@ -588,28 +588,6 @@ public abstract class UI implements IUI, IndexedElement {
 		}, drawing);
 	}
 
-	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
-		this.startMask(() -> DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED));
-	}
-
-	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
-		this.startMask(() -> {
-			BridgeHandler.RENDER.get().getState().alphaCutoff(0.5F);
-			DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
-		});
-	}
-
-	public final void stopMask() {
-		this.maskDepth--;
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (this.maskDepth == 0) {
-			render.getState().stencil(StencilState.DISABLED);
-			render.clearStencil();
-		} else {
-			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
-		}
-	}
-
 	public final void reload() {
 		this.scoped(() -> {
 			if (this.devNode != null) {
@@ -803,6 +781,17 @@ public abstract class UI implements IUI, IndexedElement {
 			shape.draw();
 		});
 		BridgeHandler.RENDER.get().getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+	}
+
+	private void stopMask() {
+		this.maskDepth--;
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (this.maskDepth == 0) {
+			render.getState().stencil(StencilState.DISABLED);
+			render.clearStencil();
+		} else {
+			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		}
 	}
 
 	private void drawFrame(final double mouseX, final double mouseY) {

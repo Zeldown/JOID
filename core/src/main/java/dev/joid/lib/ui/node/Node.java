@@ -554,8 +554,6 @@ public abstract class Node implements INode {
 					final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
 					final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
 
-					otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
-
 					final Drawing content = () -> {
 						if (this.overflow != OverflowProperty.NONE) {
 							this.drawList.forEach(child -> child.overflowArea = this);
@@ -611,18 +609,27 @@ public abstract class Node implements INode {
 						}
 					};
 
-					try {
+					Drawing effectDraw = () -> {
 						if (!subtreeShaderEffects.isEmpty()) {
 							final List<IShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
 							ShaderPipeline.render(this, subtreePasses, maskDraw);
 						} else {
 							maskDraw.run();
 						}
-					} finally {
-						for (int i = otherEffects.size() - 1; i >= 0; i--) {
-							otherEffects.get(i).post(this, mouseX, mouseY);
-						}
+					};
+					for (int i = otherEffects.size() - 1; i >= 0; i--) {
+						final NodeEffect<Node> effect = otherEffects.get(i);
+						final Drawing body = effectDraw;
+						effectDraw = () -> {
+							effect.pre(this, mouseX, mouseY);
+							try {
+								effect.draw(this, body);
+							} finally {
+								effect.post(this, mouseX, mouseY);
+							}
+						};
 					}
+					effectDraw.draw();
 
 					if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
 						this.scrollbar.render(mouseX, mouseY);

@@ -1379,13 +1379,13 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.bridges.getRender().getDraws().clear();
-		ui.startMask(0D, 0D, 100D, 100D);
-		ui.startMask(10D, 10D, 50D, 50D);
-		Assert.assertEquals(2, UITest.maskDepth(ui));
-		Assert.assertEquals("EQUAL 2", UITest.stencil(this.bridges));
-		ui.stopMask();
-		Assert.assertEquals("EQUAL 1", UITest.stencil(this.bridges));
-		ui.stopMask();
+		final List<String> stencils = new ArrayList<>();
+		ui.mask(0D, 0D, 100D, 100D, () -> {
+			ui.mask(10D, 10D, 50D, 50D, () -> stencils.add(UITest.stencil(this.bridges)));
+			stencils.add(UITest.stencil(this.bridges));
+		});
+		Assert.assertEquals(Arrays.asList("EQUAL 2", "EQUAL 1"), stencils);
+		Assert.assertEquals(0, UITest.maskDepth(ui));
 		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
 		Assert.assertEquals(2, this.bridges.getRender().getDraws(1F, 0F, 0F).size());
 	}
@@ -1395,12 +1395,12 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		final Resource resource = Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png"));
 		this.bridges.open(ui);
-		ui.startMask(0D, 0D, 100D, 100D);
-		ui.startMask(resource, 10D, 10D, 50D, 50D);
-		Assert.assertEquals("EQUAL 2", UITest.stencil(this.bridges));
-		ui.stopMask();
-		Assert.assertEquals("EQUAL 1", UITest.stencil(this.bridges));
-		ui.stopMask();
+		final List<String> stencils = new ArrayList<>();
+		ui.mask(0D, 0D, 100D, 100D, () -> {
+			ui.mask(resource, 10D, 10D, 50D, 50D, () -> stencils.add(UITest.stencil(this.bridges)));
+			stencils.add(UITest.stencil(this.bridges));
+		});
+		Assert.assertEquals(Arrays.asList("EQUAL 2", "EQUAL 1"), stencils);
 		Assert.assertEquals("off", UITest.stencil(this.bridges));
 	}
 

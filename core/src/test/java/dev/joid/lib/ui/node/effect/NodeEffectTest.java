@@ -12,6 +12,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.render.Drawing;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.core.UI;
@@ -140,6 +141,17 @@ public class NodeEffectTest {
 	}
 
 	@Test
+	public void wrapsTheDrawOfTheNextEffectsByPriority() {
+		final TraceNode node = new TraceNode("node", this.trace);
+		node.effect(new WrapEffect("inner", this.trace).priority(2));
+		node.effect(new TraceEffect("outer", this.trace, true).priority(1));
+		this.bridges.open(new NodeUI(node));
+		this.trace.clear();
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList("pre outer 0.0 0.0", "pre inner 0.0 0.0", "open inner", "draw node", "close inner", "post inner 0.0 0.0", "post outer 0.0 0.0"), this.trace);
+	}
+
+	@Test
 	public void composesItsShaderOverItsNodeOnly() {
 		final TraceNode node = new TraceNode("parent", this.trace);
 		new TraceNode("child", this.trace).attach(node);
@@ -247,6 +259,21 @@ public class NodeEffectTest {
 
 		private OtherTraceEffect(final String name, final List<String> trace) {
 			super(name, trace, true);
+		}
+
+	}
+
+	public static final class WrapEffect extends TraceEffect {
+
+		private WrapEffect(final String name, final List<String> trace) {
+			super(name, trace, true);
+		}
+
+		@Override
+		public void draw(final @NonNull Node node, final @NonNull Drawing body) {
+			super.trace.add("open " + super.name);
+			body.draw();
+			super.trace.add("close " + super.name);
 		}
 
 	}

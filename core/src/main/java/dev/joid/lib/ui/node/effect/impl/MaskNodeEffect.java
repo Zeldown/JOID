@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.function.Supplier;
 
+import dev.joid.lib.render.Drawing;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
@@ -43,22 +44,17 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
+	public void draw(final @NonNull Node node, final @NonNull Drawing body) {
 		final Resource resource = this.resourceSupplier.get();
 		final double x = node.getX() + this.xSupplier.get();
 		final double y = node.getY() + this.ySupplier.get();
 		this.width = this.widthSupplier != null ? this.widthSupplier.get() : node.getWidth();
 		this.height = this.heightSupplier != null ? this.heightSupplier.get() : node.getHeight();
 		if (resource != null) {
-			node.getUi().startMask(resource, x, y, this.width, this.height);
+			node.getUi().mask(resource, x, y, this.width, this.height, body);
 		} else {
-			node.getUi().startMask(x, y, this.width, this.height);
+			node.getUi().mask(x, y, this.width, this.height, body);
 		}
-	}
-
-	@Override
-	public void post(final @NonNull Node node, final double mouseX, final double mouseY) {
-		node.getUi().stopMask();
 	}
 
 	public final <E extends MaskNodeEffect> @NonNull E x(final double x) {

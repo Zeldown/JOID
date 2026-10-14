@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+import dev.joid.lib.render.Drawing;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
@@ -31,6 +32,10 @@ public abstract class NodeEffect<T extends Node> implements Cloneable {
 	public void pre(final @NonNull T node, final double mouseX, final double mouseY) {}
 
 	public void post(final @NonNull T node, final double mouseX, final double mouseY) {}
+
+	public void draw(final @NonNull T node, final @NonNull Drawing body) {
+		body.draw();
+	}
 
 	public boolean shouldApply(final @NonNull T node) {
 		return true;
