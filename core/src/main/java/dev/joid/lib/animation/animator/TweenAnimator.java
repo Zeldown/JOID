@@ -200,11 +200,6 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	@Override
-	public @NonNull TweenAnimator silent() {
-		throw new IllegalStateException(this.refuse("silenced"));
-	}
-
-	@Override
 	public @NonNull TweenAnimator onChange(final @NonNull ISignalListener<? super Float> listener) {
 		super.onChange(listener);
 		return this;

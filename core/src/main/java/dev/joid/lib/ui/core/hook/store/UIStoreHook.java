@@ -1,14 +1,10 @@
 package dev.joid.lib.ui.core.hook.store;
 
 import java.io.File;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import com.google.gson.JsonObject;
 
@@ -26,13 +22,13 @@ public final class UIStoreHook {
 
 	private static final Map<Class<? extends UIStore>, UIStore> GLOBAL_CACHE = new ConcurrentHashMap<>();
 
-	public static <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
+	public static <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final @NonNull Supplier<T> factory) {
 		if (UIStoreHook.GLOBAL_CACHE.containsKey(clazz)) {
 			return (T) UIStoreHook.GLOBAL_CACHE.get(clazz);
 		}
 
 		final UIStoreData data = UIStoreHook.getData(clazz);
-		final T store = UIStoreHook.createStoreInstance(clazz, args);
+		final T store = factory.get();
 		store.init();
 
 		if (data.scope() == StoreScope.PERMANENT) {
@@ -91,46 +87,6 @@ public final class UIStoreHook {
 			throw new IllegalStateException("The store " + clazz.getName() + " has no @UIStoreData annotation, add it to the class");
 		}
 		return data;
-	}
-
-	private static <T extends UIStore> T createStoreInstance(final @NonNull Class<T> clazz, final Object... args) {
-		final List<Constructor<?>> constructors = new ArrayList<>();
-		for (final Constructor<?> constructor : clazz.getConstructors()) {
-			if (UIStoreHook.accepts(constructor, args)) {
-				constructors.add(constructor);
-			}
-		}
-
-		if (constructors.isEmpty()) {
-			throw new IllegalArgumentException("No public constructor of " + clazz.getName() + " accepts the arguments " + Arrays.toString(args) + ", add such a constructor or pass the arguments of an existing one");
-		}
-
-		if (constructors.size() > 1) {
-			throw new IllegalArgumentException("Several public constructors of " + clazz.getName() + " accept the arguments " + Arrays.toString(args) + " (" + constructors + "), cast the null arguments to their type to pick one");
-		}
-
-		try {
-			return (T) constructors.get(0).newInstance(args);
-		} catch (final InvocationTargetException e) {
-			throw new IllegalStateException("The constructor of the store " + clazz.getName() + " failed (" + e.getCause() + "), fix the constructor from this error", e.getCause());
-		} catch (final ReflectiveOperationException e) {
-			throw new IllegalArgumentException("The store " + clazz.getName() + " cannot be created (" + e + "), make it a public class that is not abstract", e);
-		}
-	}
-
-	private static boolean accepts(final Constructor<?> constructor, final Object... args) {
-		final Class<?>[] types = constructor.getParameterTypes();
-		if (types.length != args.length) {
-			return false;
-		}
-
-		for (int i = 0; i < types.length; i++) {
-			if (args[i] == null ? types[i].isPrimitive() : !MethodType.methodType(types[i]).wrap().returnType().isInstance(args[i])) {
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	private static @NonNull String getId(final @NonNull UIStore store) {

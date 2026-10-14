@@ -28,7 +28,7 @@ public abstract class StackUIBridge extends UIBridge {
 				}
 
 				final boolean result = current.fireClose();
-				if (current.getTransition() != null && current.getTransition().getOut() != null && current.getTransition().getOut().isRunning()) {
+				if (current.getTransition() != null && current.getTransition().getOut().isRunning()) {
 					this.deferred = true;
 					current.getTransition().getOut().getAnimator().onComplete(tween -> {
 						try {

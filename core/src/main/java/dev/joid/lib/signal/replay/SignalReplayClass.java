@@ -8,7 +8,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -60,10 +59,6 @@ public final class SignalReplayClass {
 				throw new SignalReplayException(SignalReplayFailure.CLASS_NOT_FOUND, this.node.name.replace('/', '.'));
 			}
 		});
-	}
-
-	public Map<MethodNode, SignalReplayMethod> getMethodMap() {
-		return Collections.unmodifiableMap(this.methodMap);
 	}
 
 	private static SignalReplayClass read(final String name, final String path, final ClassLoader loader) {

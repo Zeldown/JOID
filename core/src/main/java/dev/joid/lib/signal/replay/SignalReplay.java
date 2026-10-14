@@ -21,9 +21,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SignalReplay {
 
-	private static final ThreadLocal<State>       STATE    = ThreadLocal.withInitial(State::new);
-	private static final Map<String, SignalReplaySite>  SITES    = new ConcurrentHashMap<>();
-	private static final Map<String, SignalReplayClass> CLASSES  = new ConcurrentHashMap<>();
+	private static final ThreadLocal<State>             STATE   = ThreadLocal.withInitial(State::new);
+	private static final Map<String, SignalReplaySite>  SITES   = new ConcurrentHashMap<>();
+	private static final Map<String, SignalReplayClass> CLASSES = new ConcurrentHashMap<>();
 
 	public static <T> Supplier<T> replay(final T value) {
 		final SignalContext context = SignalContext.current();
@@ -56,28 +56,12 @@ public final class SignalReplay {
 		}
 	}
 
-	public static void enter(final Object owner) {
-		SignalReplay.enter(owner, null);
-	}
-
-	public static void enter(final Object owner, final Object parent) {
-		final State state = SignalReplay.STATE.get();
-		if (state.ownerList.isEmpty()) {
-			state.clear();
-		}
-
-		state.ownerList.add(owner);
-		state.ownerList.add(parent);
-		state.tracingList.add(SignalContext.current().tracing(true));
-	}
-
-	public static void exit() {
-		final State state = SignalReplay.STATE.get();
-		state.ownerList.remove(state.ownerList.size() - 1);
-		state.ownerList.remove(state.ownerList.size() - 1);
-		SignalContext.current().tracing(state.tracingList.remove(state.tracingList.size() - 1));
-		if (state.ownerList.isEmpty()) {
-			state.clear();
+	public static void run(final Object owner, final Object parent, final Runnable runnable) {
+		SignalReplay.enter(owner, parent);
+		try {
+			runnable.run();
+		} finally {
+			SignalReplay.exit();
 		}
 	}
 
@@ -91,8 +75,29 @@ public final class SignalReplay {
 		SignalReplay.SITES.clear();
 	}
 
-	protected static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
+	public static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
 		JOIDLog.devWarnOnce("SignalReplay." + call.getKey(), () -> call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());
+	}
+
+	private static void enter(final Object owner, final Object parent) {
+		final State state = SignalReplay.STATE.get();
+		if (state.ownerList.isEmpty()) {
+			state.clear();
+		}
+
+		state.ownerList.add(owner);
+		state.ownerList.add(parent);
+		state.tracingList.add(SignalContext.current().tracing(true));
+	}
+
+	private static void exit() {
+		final State state = SignalReplay.STATE.get();
+		state.ownerList.remove(state.ownerList.size() - 1);
+		state.ownerList.remove(state.ownerList.size() - 1);
+		SignalContext.current().tracing(state.tracingList.remove(state.tracingList.size() - 1));
+		if (state.ownerList.isEmpty()) {
+			state.clear();
+		}
 	}
 
 	private static <T> Supplier<T> resolve(final T value, final List<Signal<?>> readList, final SignalReplayCall call, final State state, final int stale) {
@@ -324,8 +329,8 @@ public final class SignalReplay {
 
 	private static final class State {
 
-		private final List<Object>                  ownerList   = new ArrayList<>();
-		private final List<Boolean>                 tracingList = new ArrayList<>();
+		private final List<Object>                        ownerList   = new ArrayList<>();
+		private final List<Boolean>                       tracingList = new ArrayList<>();
 		private final Map<String, Set<SignalReplaySlice>> usedMap     = new HashMap<>();
 
 		private int     staleCount;

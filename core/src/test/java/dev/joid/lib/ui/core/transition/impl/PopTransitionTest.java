@@ -11,9 +11,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.transition.Transition.TransitionState;
-import dev.joid.lib.ui.core.transition.impl.PopTransition.PopInTransition;
-import dev.joid.lib.ui.core.transition.impl.PopTransition.PopOutTransition;
+import dev.joid.lib.ui.core.transition.TransitionStep;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import lombok.AllArgsConstructor;
@@ -24,17 +22,11 @@ public class PopTransitionTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void popsInThenOut() {
-		final PopTransition transition = new PopTransition();
-		Assert.assertTrue(transition.getIn() instanceof PopInTransition);
-		Assert.assertTrue(transition.getOut() instanceof PopOutTransition);
-	}
-
-	@Test
 	public void growsFromThreeQuartersOfTheUi() {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
-		final PopInTransition in = new PopInTransition();
+		final TransitionStep in = new PopTransition().getIn();
 		in.init(ui);
+		in.start();
 		Assert.assertEquals(0F, in.getAnimator().get(), 0F);
 		this.assertScale(ui, in, 0.75D);
 	}
@@ -42,36 +34,31 @@ public class PopTransitionTest {
 	@Test
 	public void reachesItsFullSizeIn130Milliseconds() {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
-		final PopInTransition in = new PopInTransition();
+		final TransitionStep in = new PopTransition().getIn();
 		in.start();
 		Assert.assertTrue(in.isRunning());
-		in.update();
-		in.endFrame();
+		in.render(ui, () -> {});
 		this.bridges.getClock().advance(65L);
-		in.update();
+		in.render(ui, () -> {});
 		Assert.assertTrue(in.getAnimator().get() > 0.5F && in.getAnimator().get() < 1F);
 		this.bridges.getClock().advance(100L);
-		in.update();
-		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
 		this.assertScale(ui, in, 1D);
+		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
 	}
 
 	@Test
 	public void shrinksBackToThreeQuartersOfTheUi() {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
-		final PopOutTransition out = new PopOutTransition();
+		final TransitionStep out = new PopTransition().getOut();
 		out.init(ui);
-		this.assertScale(ui, out, 1D);
 		out.start();
-		out.update();
-		out.endFrame();
+		this.assertScale(ui, out, 1D);
 		this.bridges.getClock().advance(65L);
-		out.update();
+		out.render(ui, () -> {});
 		Assert.assertTrue(out.getAnimator().get() > 0F && out.getAnimator().get() < 1F);
 		this.bridges.getClock().advance(100L);
-		out.update();
-		Assert.assertEquals(0F, out.getAnimator().get(), 0F);
 		this.assertScale(ui, out, 0.75D);
+		Assert.assertEquals(1F, out.getAnimator().get(), 0F);
 	}
 
 	@Test
@@ -113,18 +100,14 @@ public class PopTransitionTest {
 		Assert.assertFalse(this.bridges.getUi().getUiList().contains(ui));
 	}
 
-	private void assertScale(final UI ui, final TransitionState state, final double scale) {
+	private void assertScale(final UI ui, final TransitionStep step, final double scale) {
 		final float[] before = this.bridges.getRender().getModelView().getMatrix().clone();
 		final double anchorX = ui.getData().getAnchorPositionX();
-		state.pre(ui, 0D, 0D);
-		try {
+		step.render(ui, () -> {
 			final PixelGrid grid = this.bridges.getRender().getPixelGrid();
 			Assert.assertEquals(anchorX, grid.toScreenX(anchorX), 1E-3D);
 			Assert.assertEquals(anchorX + 100D * scale, grid.toScreenX(anchorX + 100D), 1E-3D);
-		} finally {
-			state.post(ui, 0D, 0D);
-		}
-
+		});
 		Assert.assertArrayEquals(before, this.bridges.getRender().getModelView().getMatrix(), 0F);
 	}
 

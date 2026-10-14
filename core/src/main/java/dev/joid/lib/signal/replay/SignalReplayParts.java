@@ -1,7 +1,6 @@
 package dev.joid.lib.signal.replay;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,13 +13,13 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SignalReplayParts {
 
 	private final List<Object> partList = new ArrayList<>();
 
+	@Getter
+	@Setter
 	private boolean live;
 
 	public static SignalReplayParts create() {
@@ -86,10 +85,6 @@ public final class SignalReplayParts {
 			holeMap.putIfAbsent(keyList.get(index), matcher.group(index + 1));
 		}
 		return holeMap;
-	}
-
-	public List<Object> getPartList() {
-		return Collections.unmodifiableList(this.partList);
 	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)

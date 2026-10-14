@@ -415,7 +415,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	private IntBuffer writeUniforms(final MemoryStack stack, final RenderState state, final VulkanShader shader, final VertexBuffer buffer) {
-		shader.builtins(state, buffer, DepthRange.toZeroToOne(super.getProjection().getMatrix()), super.getModelView()).pack();
+		shader.builtins(state, buffer, DepthRange.toZeroToOne(super.getProjection().getRawMatrix()), super.getModelView()).pack();
 
 		final long previousBuffer = this.uniformAllocator.getBuffer().getBuffer();
 		final IntBuffer offsets = this.uploadBlock(stack, shader);

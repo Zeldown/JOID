@@ -42,7 +42,7 @@ public final class GlShader extends Shader {
 
 	public void use(final @NonNull RenderState state, final @NonNull VertexBuffer buffer) {
 		this.binding.useProgram(this.program);
-		super.builtins(state, buffer, super.getBridge().getProjection().getMatrix(), super.getBridge().getModelView()).upload(this::upload);
+		super.builtins(state, buffer, super.getBridge().getProjection().getRawMatrix(), super.getBridge().getModelView()).upload(this::upload);
 	}
 
 	public int getLocation(final @NonNull String name) {

@@ -292,7 +292,7 @@ public class ComputedSignalTest {
 		final Signal<String> name = new Signal<>("joid").onChange(received::add);
 		final ComputedSignal<String> upper = name.map(String::toUpperCase);
 		Assert.assertEquals("JOID", upper.get());
-		name.silent().set("ui");
+		name.silent(signal -> signal.set("ui"));
 		Assert.assertEquals("UI", upper.get());
 		Assert.assertTrue(received.isEmpty());
 	}
@@ -355,12 +355,6 @@ public class ComputedSignalTest {
 			Assert.fail("A computed signal cannot be reset");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The ComputedSignal{4} is computed from other signals and cannot be reset, set the signals it reads instead", expected.getMessage());
-		}
-		try {
-			doubled.silent();
-			Assert.fail("A computed signal cannot be silenced");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The ComputedSignal{4} is computed from other signals and cannot be silenced, set the signals it reads instead", expected.getMessage());
 		}
 		Assert.assertEquals(4, doubled.peek().intValue());
 	}

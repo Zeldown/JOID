@@ -28,7 +28,6 @@ import org.objectweb.asm.tree.VarInsnNode;
 import dev.joid.lib.signal.SignalContext;
 import lombok.Getter;
 
-@Getter
 public final class SignalReplayFrame {
 
 	private static final Map<Integer, String> OPCODE_MAP = new HashMap<>();
@@ -59,8 +58,10 @@ public final class SignalReplayFrame {
 	private final boolean[] localStates;
 
 	private int     top;
-	private boolean lastLive;
 	private boolean controlLive;
+
+	@Getter
+	private boolean lastLive;
 
 	private SignalReplayFrame(final SignalReplayRun run, final SignalReplaySlice slice, final int depth) {
 		this.run         = run;

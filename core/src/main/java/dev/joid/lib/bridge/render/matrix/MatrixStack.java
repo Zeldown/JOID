@@ -118,6 +118,10 @@ public final class MatrixStack {
 		return this.matrix.clone();
 	}
 
+	public float[] getRawMatrix() {
+		return this.matrix;
+	}
+
 	public float[] getNormalMatrix() {
 		final float[] m = this.matrix;
 		final float c00 = m[5] * m[10] - m[9] * m[6];

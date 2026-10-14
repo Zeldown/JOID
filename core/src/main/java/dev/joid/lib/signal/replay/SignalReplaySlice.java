@@ -1,7 +1,6 @@
 package dev.joid.lib.signal.replay;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -127,10 +126,6 @@ public final class SignalReplaySlice {
 			default:
 				return value;
 		}
-	}
-
-	public List<String> getSignalNameList() {
-		return Collections.unmodifiableList(this.signalNameList);
 	}
 
 	private String describe() {

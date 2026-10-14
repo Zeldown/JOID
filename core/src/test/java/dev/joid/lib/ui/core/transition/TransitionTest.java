@@ -1,212 +1,192 @@
 package dev.joid.lib.ui.core.transition;
 
-import org.junit.After;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.lib.animation.tween.Timeline;
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.animation.tween.TweenEquations;
+import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
-
-import lombok.NonNull;
 
 public class TransitionTest {
 
-	private final ManualClockBridge clock = ManualClockBridge.create(0L);
+	@Rule
+	public final HeadlessBridges bridges = new HeadlessBridges();
 
-	@Before
-	public void useAManualClock() {
-		BridgeHandler.CLOCK.register(this.clock);
-	}
-
-	@After
-	public void restoreTheClock() {
-		BridgeHandler.CLOCK.unregister(this.clock);
-	}
+	private final UI ui = new EmptyUI();
 
 	@Test
-	public void keepsItsTwoStates() {
-		final FadeIn in = new FadeIn();
-		final FadeOut out = new FadeOut();
+	public void keepsItsTwoSteps() {
+		final TransitionStep in = TransitionTest.step();
+		final TransitionStep out = TransitionTest.step();
 		final FadeTransition transition = new FadeTransition(in, out);
 		Assert.assertSame(in, transition.getIn());
 		Assert.assertSame(out, transition.getOut());
 	}
 
+	@Test(expected = NullPointerException.class)
+	public void refusesAMissingStep() {
+		new FadeTransition(TransitionTest.step(), null);
+	}
+
 	@Test
-	public void startsAnInStateHiddenAndAnOutStateShown() {
-		Assert.assertEquals(0F, new FadeIn().getAnimator().get(), 0F);
-		Assert.assertEquals(1F, new FadeOut().getAnimator().get(), 0F);
+	public void startsFromNoProgress() {
+		Assert.assertEquals(0F, TransitionTest.step().getAnimator().get(), 0F);
 	}
 
 	@Test
 	public void waitsEnabledBeforeItsStart() {
-		final FadeIn in = new FadeIn();
-		Assert.assertTrue(in.isEnabled());
-		Assert.assertFalse(in.isRunning());
+		final TransitionStep step = TransitionTest.step();
+		Assert.assertTrue(step.isEnabled());
+		Assert.assertFalse(step.isRunning());
 	}
 
 	@Test
 	public void playsItsTimelineOnceStarted() {
-		final FadeIn in = new FadeIn();
-		in.start();
-		Assert.assertTrue(in.isRunning());
-		in.update();
-		in.endFrame();
-		this.clock.advance(50L);
-		in.update();
-		Assert.assertEquals(0.5F, in.getAnimator().get(), 0.0001F);
-		this.clock.advance(50L);
-		in.update();
-		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
+		final TransitionStep step = TransitionTest.step();
+		step.start();
+		Assert.assertTrue(step.isRunning());
+		this.frame(step);
+		this.bridges.getClock().advance(50L);
+		this.frame(step);
+		Assert.assertEquals(0.5F, step.getAnimator().get(), 0.0001F);
+		this.bridges.getClock().advance(50L);
+		this.frame(step);
+		Assert.assertEquals(1F, step.getAnimator().get(), 0F);
 	}
 
 	@Test
 	public void waitsItsFirstDrawnFrameBeforeItsClockRuns() {
-		final FadeIn in = new FadeIn();
-		in.start();
-		this.clock.advance(500L);
-		in.update();
-		Assert.assertEquals(0F, in.getAnimator().get(), 0F);
-		Assert.assertTrue(in.isRunning());
-		this.clock.advance(500L);
-		in.endFrame();
-		this.clock.advance(50L);
-		in.update();
-		Assert.assertEquals(0.5F, in.getAnimator().get(), 0.0001F);
+		final TransitionStep step = TransitionTest.step();
+		step.start();
+		this.bridges.getClock().advance(500L);
+		Assert.assertEquals(0F, step.getAnimator().get(), 0F);
+		Assert.assertTrue(step.isRunning());
+		this.frame(step);
+		this.bridges.getClock().advance(50L);
+		this.frame(step);
+		Assert.assertEquals(0.5F, step.getAnimator().get(), 0.0001F);
 	}
 
 	@Test
 	public void countsTheDrawOfTheFramesAfterItsFirst() {
-		final FadeIn in = new FadeIn();
-		in.start();
-		in.update();
-		in.endFrame();
-		this.clock.advance(30L);
-		in.update();
-		this.clock.advance(20L);
-		in.endFrame();
-		in.update();
-		Assert.assertEquals(0.5F, in.getAnimator().get(), 0.0001F);
+		final TransitionStep step = TransitionTest.step();
+		step.start();
+		this.frame(step);
+		this.bridges.getClock().advance(30L);
+		this.frame(step);
+		this.bridges.getClock().advance(20L);
+		this.frame(step);
+		Assert.assertEquals(0.5F, step.getAnimator().get(), 0.0001F);
 	}
 
 	@Test
-	public void ignoresItsUpdatesBeforeItsStart() {
-		final FadeOut out = new FadeOut();
-		out.getAnimator().sequence(100F, 0F).start();
-		this.clock.advance(50L);
-		out.update();
-		Assert.assertEquals(1F, out.getAnimator().get(), 0F);
+	public void ignoresItsFramesBeforeItsStart() {
+		final TransitionStep step = TransitionTest.step();
+		step.getAnimator().sequence(100F, 1F).start();
+		this.bridges.getClock().advance(50L);
+		this.frame(step);
+		Assert.assertEquals(0F, step.getAnimator().get(), 0F);
 	}
 
 	@Test
 	public void ignoresItsStartOnceDisabled() {
-		final FadeOut out = new FadeOut();
-		out.disable();
-		out.start();
-		this.clock.advance(50L);
-		out.update();
-		Assert.assertFalse(out.isEnabled());
-		Assert.assertFalse(out.isRunning());
-		Assert.assertEquals(1F, out.getAnimator().get(), 0F);
+		final TransitionStep step = TransitionTest.step();
+		step.disable();
+		step.start();
+		this.bridges.getClock().advance(50L);
+		this.frame(step);
+		Assert.assertFalse(step.isEnabled());
+		Assert.assertFalse(step.isRunning());
+		Assert.assertEquals(0F, step.getAnimator().get(), 0F);
 	}
 
 	@Test
 	public void startsAgainOnceEnabled() {
-		final FadeOut out = new FadeOut();
-		out.disable();
-		out.enable();
-		out.start();
-		out.update();
-		out.endFrame();
-		this.clock.advance(100L);
-		out.update();
-		Assert.assertTrue(out.isEnabled());
-		Assert.assertTrue(out.isRunning());
-		Assert.assertEquals(0F, out.getAnimator().get(), 0F);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void refusesToStartWithoutTimeline() {
-		new FadeIn().start(null);
+		final TransitionStep step = TransitionTest.step();
+		step.disable();
+		step.enable();
+		step.start();
+		this.frame(step);
+		this.bridges.getClock().advance(100L);
+		this.frame(step);
+		Assert.assertTrue(step.isEnabled());
+		Assert.assertEquals(1F, step.getAnimator().get(), 0F);
 	}
 
 	@Test
 	public void stopsRunningOnceItsTweenEnds() {
-		final FadeIn in = new FadeIn();
-		in.start();
-		in.update();
-		in.endFrame();
-		this.clock.advance(200L);
-		in.update();
-		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
-		Assert.assertFalse(in.isRunning());
+		final TransitionStep step = TransitionTest.step();
+		step.start();
+		this.frame(step);
+		this.bridges.getClock().advance(200L);
+		this.frame(step);
+		Assert.assertEquals(1F, step.getAnimator().get(), 0F);
+		Assert.assertFalse(step.isRunning());
 	}
 
 	@Test
-	public void replaysFromItsStartValueWhenStartedAgain() {
-		final FadeIn in = new FadeIn();
-		in.start();
-		in.update();
-		in.endFrame();
-		this.clock.advance(200L);
-		in.update();
-		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
-		in.start();
-		Assert.assertEquals(0F, in.getAnimator().get(), 0F);
-		in.update();
-		in.endFrame();
-		this.clock.advance(50L);
-		in.update();
-		Assert.assertEquals(0.5F, in.getAnimator().get(), 0.0001F);
+	public void replaysFromItsStartWhenStartedAgain() {
+		final TransitionStep step = TransitionTest.step();
+		step.start();
+		this.frame(step);
+		this.bridges.getClock().advance(200L);
+		this.frame(step);
+		Assert.assertEquals(1F, step.getAnimator().get(), 0F);
+		step.start();
+		Assert.assertEquals(0F, step.getAnimator().get(), 0F);
+		this.frame(step);
+		this.bridges.getClock().advance(50L);
+		this.frame(step);
+		Assert.assertEquals(0.5F, step.getAnimator().get(), 0.0001F);
+	}
+
+	@Test
+	public void drawsTheBodyOfARunningStepThroughItsDrawing() {
+		final List<String> trace = new ArrayList<>();
+		final TransitionStep step = TransitionTest.step().draw((ui, progress, body) -> {
+			trace.add("before " + progress);
+			body.draw();
+			trace.add("after");
+		});
+		step.render(this.ui, () -> trace.add("body"));
+		Assert.assertEquals(Collections.singletonList("body"), trace);
+		trace.clear();
+		step.start();
+		step.render(this.ui, () -> trace.add("body"));
+		Assert.assertEquals(Arrays.asList("before 0.0", "body", "after"), trace);
+	}
+
+	@Test
+	public void drawsItsBodyAsItIsByDefault() {
+		final List<String> trace = new ArrayList<>();
+		final TransitionStep step = TransitionTest.step();
+		step.start();
+		step.render(this.ui, () -> trace.add("body"));
+		Assert.assertEquals(Collections.singletonList("body"), trace);
+	}
+
+	private void frame(final TransitionStep step) {
+		step.render(this.ui, () -> {});
+	}
+
+	private static TransitionStep step() {
+		return TransitionStep.create(100F, TweenEquations.LINEAR);
 	}
 
 	public static final class FadeTransition extends Transition {
 
-		public FadeTransition(final In in, final Out out) {
+		public FadeTransition(final TransitionStep in, final TransitionStep out) {
 			super(in, out);
 		}
 
 	}
 
-	public static final class FadeIn extends Transition.In {
-
-		@Override
-		protected void startTimeline() {
-			final Timeline timeline = super.getAnimator().sequence(100F, 1F).getTimeline();
-			super.start(timeline);
-		}
-
-		@Override
-		public void init(final @NonNull UI ui) {}
-
-		@Override
-		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {}
-
-		@Override
-		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {}
-
-	}
-
-	public static final class FadeOut extends Transition.Out {
-
-		@Override
-		protected void startTimeline() {
-			final Timeline timeline = super.getAnimator().sequence(100F, 0F).getTimeline();
-			super.start(timeline);
-		}
-
-		@Override
-		public void init(final @NonNull UI ui) {}
-
-		@Override
-		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {}
-
-		@Override
-		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {}
-
-	}
+	public static final class EmptyUI extends UI {}
 
 }

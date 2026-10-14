@@ -15,9 +15,12 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
 import dev.joid.lib.utils.thread.ThreadUtils;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JOID {
 
 	public static final String VERSION = JOID.readVersion(JOID.class, "joid.properties");
@@ -26,14 +29,10 @@ public final class JOID {
 
 	private static JOID instance;
 
-	private final List<Runnable> readyList;
+	private final List<Runnable> readyList = new ArrayList<>();
 
 	@Getter
 	private boolean ready;
-
-	protected JOID() {
-		this.readyList = new ArrayList<>();
-	}
 
 	public static @NonNull JOID inst() {
 		if (JOID.instance == null) {
@@ -134,12 +133,7 @@ public final class JOID {
 		});
 	}
 
-	public static void close(final @NonNull UI ui, final boolean force) {
-		if (!force) {
-			JOID.close(ui);
-			return;
-		}
-
+	public static void forceClose(final @NonNull UI ui) {
 		final IUIBridge bridge = BridgeHandler.UI.get(ui);
 		if (bridge == null) {
 			return;
@@ -159,11 +153,7 @@ public final class JOID {
 		return bridge;
 	}
 
-	public static @NonNull IUIBridge open(final @NonNull UI ui, final boolean force) {
-		if (!force) {
-			return JOID.open(ui);
-		}
-
+	public static @NonNull IUIBridge forceOpen(final @NonNull UI ui) {
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
 		ThreadUtils.runOnRenderThread(() -> {
 			for (final UI currentUi : new ArrayList<>(bridge.getUiList())) {

@@ -237,10 +237,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(200, 40, 140, 50)
 			.color(UIDemoWatch.INK)
-			.onClick(event -> {
-				quiet.silent();
-				quiet.increment();
-			})
+			.onClick(event -> quiet.silent(IntegerSignal::increment))
 			.label(Text.create("Silent +1", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + quiet.get(), info)).attach(rect);

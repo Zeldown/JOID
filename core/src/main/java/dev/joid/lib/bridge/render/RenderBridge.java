@@ -99,7 +99,7 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	@Override
 	public final @NonNull PixelGrid getPixelGrid() {
-		return PixelGrid.of(this.projection.getMatrix(), this.modelView.getMatrix(), this.state.getViewportWidth(), this.state.getViewportHeight());
+		return PixelGrid.of(this.projection.getRawMatrix(), this.modelView.getRawMatrix(), this.state.getViewportWidth(), this.state.getViewportHeight());
 	}
 
 	@Override

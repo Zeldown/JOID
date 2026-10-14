@@ -36,18 +36,19 @@ import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
 import dev.joid.lib.signal.Signal;
 import lombok.Getter;
 
-@Getter
 public final class SignalReplayMethod {
 
-	private final boolean              isStatic;
-	private final MethodNode           method;
-	private final Frame<SourceValue>[] frames;
-	private final SignalReplayClass    replayClass;
-	private final AbstractInsnNode[]   instructions;
+	@Getter private final boolean              isStatic;
+	@Getter private final MethodNode           method;
+	@Getter private final Frame<SourceValue>[] frames;
+	@Getter private final AbstractInsnNode[]   instructions;
 
-	private final Map<String, Class<?>>                    classMap;
-	private final Map<AbstractInsnNode, Object>            memberMap;
+	@Getter
 	private final Map<AbstractInsnNode, SignalReplaySlice> definitionMap;
+
+	private final SignalReplayClass             replayClass;
+	private final Map<String, Class<?>>         classMap;
+	private final Map<AbstractInsnNode, Object> memberMap;
 
 	private SignalReplayMethod(final SignalReplayClass replayClass, final MethodNode method) throws AnalyzerException {
 		this.replayClass   = replayClass;
@@ -209,18 +210,6 @@ public final class SignalReplayMethod {
 			default:
 				return this.load(type.getInternalName());
 		}
-	}
-
-	public Map<String, Class<?>> getClassMap() {
-		return Collections.unmodifiableMap(this.classMap);
-	}
-
-	public Map<AbstractInsnNode, Object> getMemberMap() {
-		return Collections.unmodifiableMap(this.memberMap);
-	}
-
-	public Map<AbstractInsnNode, SignalReplaySlice> getDefinitionMap() {
-		return Collections.unmodifiableMap(this.definitionMap);
 	}
 
 	private Class<?> load(final String internalName) {

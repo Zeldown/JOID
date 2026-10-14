@@ -458,12 +458,6 @@ public class TweenAnimatorTest {
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The TweenAnimator{0.5} is animated and cannot be reset, use value(...) or start a tween", expected.getMessage());
 		}
-		try {
-			animator.silent();
-			Assert.fail("An animator cannot be silenced");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The TweenAnimator{0.5} is animated and cannot be silenced, use value(...) or start a tween", expected.getMessage());
-		}
 		Assert.assertSame(animator, animator.value(0.5F).clear());
 		Assert.assertEquals(0F, animator.get(), 0F);
 	}

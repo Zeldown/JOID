@@ -230,9 +230,9 @@ public class GlslShaderTranslatorTest {
 
 	@Test
 	public void declaresTheStencilUniformsOfThePassItTranslates() {
-		final String translated = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.LOOSE).translateFragment(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment(), StencilEmulation.Pass.WRITE);
+		final String translated = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.LOOSE).stencil(StencilEmulation.Pass.WRITE).translateFragment(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment());
 		Assert.assertTrue(translated, translated.contains("uniform int joid_StencilPass;\n"));
-		Assert.assertFalse(GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.LOOSE).stencil(StencilEmulation.Pass.TEST).translateFragment(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment(), StencilEmulation.Pass.NONE).contains("joid_StencilPass"));
+		Assert.assertFalse(GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.LOOSE).translateFragment(GlslShaderTranslatorTest.smoothVertex(), GlslShaderTranslatorTest.smoothFragment()).contains("joid_StencilPass"));
 	}
 
 	@Test

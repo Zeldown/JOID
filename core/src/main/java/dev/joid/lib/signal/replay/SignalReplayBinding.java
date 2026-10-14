@@ -1,6 +1,5 @@
 package dev.joid.lib.signal.replay;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -8,10 +7,8 @@ import java.util.function.Supplier;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SignalReplayBinding<T> implements Supplier<T> {
 
@@ -56,18 +53,6 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 			SignalReplay.warn(this.call, this.slice.getSignalNameList(), this.readList.size(), exception.getFailure() == SignalReplayFailure.REPLAY_FAILED ? exception : new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getMessage()), this.value);
 		}
 		return this.value;
-	}
-
-	public Map<String, String> getHoleMap() {
-		return this.holeMap != null ? Collections.unmodifiableMap(this.holeMap) : null;
-	}
-
-	public Map<Object, Signal<?>> getPositionalMap() {
-		return Collections.unmodifiableMap(this.positionalMap);
-	}
-
-	public List<Signal<?>> getReadList() {
-		return Collections.unmodifiableList(this.readList);
 	}
 
 }

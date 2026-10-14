@@ -40,6 +40,7 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.render.Drawing;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.signal.Signal;
@@ -555,54 +556,59 @@ public abstract class Node implements INode {
 
 					otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
 
-					final Runnable maskDraw = () -> {
-						this.ui.mask(this.x, this.y, this.width, this.height, () -> {
-							if (this.overflow != OverflowProperty.NONE) {
-								this.drawList.forEach(child -> child.overflowArea = this);
-							} else if (this.overflowArea != null) {
-								this.drawList.forEach(child -> child.overflowArea = this.overflowArea);
-							}
+					final Drawing content = () -> {
+						if (this.overflow != OverflowProperty.NONE) {
+							this.drawList.forEach(child -> child.overflowArea = this);
+						} else if (this.overflowArea != null) {
+							this.drawList.forEach(child -> child.overflowArea = this.overflowArea);
+						}
 
-							if (this.skeleton != null && !this.mounted) {
-								this.skeleton.render(mouseX, mouseY);
-								this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-								return;
-							}
-
-							this.drawList.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-							final Runnable selfDraw = () -> {
-								if (this.mounted) {
-									this.draw(mouseX, mouseY);
-								} else {
-									this.drawSkeleton(mouseX, mouseY);
-								}
-							};
-							if (selfShaderEffects.isEmpty()) {
-								selfDraw.run();
-							} else {
-								final List<IShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-								ShaderPipeline.render(this, selfPasses, selfDraw);
-							}
-							this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-							if (this.mounted && this.label != null && !this.label.isEmpty()) {
-								DrawUtils.TEXT.drawText(this.x + (this.width - this.label.getWidth()) / 2D, this.y + (this.height - this.label.getHeight()) / 2D, this.label.getWidth(), this.label.getHeight(), this.label, TextMode.NORMAL);
-							}
-
-							this.drawList.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
-							if (!this.layerList.isEmpty()) {
-								final double localX = mouseX - this.getAbsoluteX();
-								final double localY = mouseY - this.getAbsoluteY();
-								matrix.with(layerMatrix -> {
-									layerMatrix.translate(this.x, this.y, 0D);
-									this.layerList.forEach(layer -> layer.draw(this, localX, localY));
-								});
-							}
-
-							if (this.draggedNode != null) {
-								this.renderDraggedNode(mouseX, mouseY);
-							}
+						if (this.skeleton != null && !this.mounted) {
+							this.skeleton.render(mouseX, mouseY);
 							this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-						}, this.overflow != OverflowProperty.NONE);
+							return;
+						}
+
+						this.drawList.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
+						final Runnable selfDraw = () -> {
+							if (this.mounted) {
+								this.draw(mouseX, mouseY);
+							} else {
+								this.drawSkeleton(mouseX, mouseY);
+							}
+						};
+						if (selfShaderEffects.isEmpty()) {
+							selfDraw.run();
+						} else {
+							final List<IShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+							ShaderPipeline.render(this, selfPasses, selfDraw);
+						}
+						this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+						if (this.mounted && this.label != null && !this.label.isEmpty()) {
+							DrawUtils.TEXT.drawText(this.x + (this.width - this.label.getWidth()) / 2D, this.y + (this.height - this.label.getHeight()) / 2D, this.label.getWidth(), this.label.getHeight(), this.label, TextMode.NORMAL);
+						}
+
+						this.drawList.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
+						if (!this.layerList.isEmpty()) {
+							final double localX = mouseX - this.getAbsoluteX();
+							final double localY = mouseY - this.getAbsoluteY();
+							matrix.with(layerMatrix -> {
+								layerMatrix.translate(this.x, this.y, 0D);
+								this.layerList.forEach(layer -> layer.draw(this, localX, localY));
+							});
+						}
+
+						if (this.draggedNode != null) {
+							this.renderDraggedNode(mouseX, mouseY);
+						}
+						this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+					};
+					final Runnable maskDraw = () -> {
+						if (this.overflow != OverflowProperty.NONE) {
+							this.ui.mask(this.x, this.y, this.width, this.height, content);
+						} else {
+							content.draw();
+						}
 					};
 
 					try {
@@ -908,22 +914,12 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T body(final @NonNull Consumer<@NonNull T> consumer) {
 		this.bodyConsumer = (Consumer<Node>) consumer;
-		SignalReplay.enter(this, this.ui);
-		try {
-			this.bodyConsumer.accept(this);
-		} finally {
-			SignalReplay.exit();
-		}
+		SignalReplay.run(this, this.ui, () -> this.bodyConsumer.accept(this));
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T self(final @NonNull Consumer<@NonNull T> consumer) {
-		SignalReplay.enter(this, this.ui);
-		try {
-			consumer.accept((T) this);
-		} finally {
-			SignalReplay.exit();
-		}
+		SignalReplay.run(this, this.ui, () -> consumer.accept((T) this));
 		return (T) this;
 	}
 
@@ -942,8 +938,8 @@ public abstract class Node implements INode {
 		return (T) this.duplicate(true);
 	}
 
-	public final <T extends UIStore> T useStore(final @NonNull Class<T> clazz) {
-		return this.getUi().useStore(clazz);
+	public final <T extends UIStore> T useStore(final @NonNull Class<T> clazz, final @NonNull Supplier<T> factory) {
+		return this.getUi().useStore(clazz, factory);
 	}
 
 	public final <T extends Node> @NonNull T addTask(final @NonNull Task task) {
@@ -2017,12 +2013,7 @@ public abstract class Node implements INode {
 	}
 
 	private void replay(final Runnable runnable) {
-		SignalReplay.enter(this, this.getUi());
-		try {
-			runnable.run();
-		} finally {
-			SignalReplay.exit();
-		}
+		SignalReplay.run(this, this.getUi(), runnable);
 	}
 
 	private String describe() {

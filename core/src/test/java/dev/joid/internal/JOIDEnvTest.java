@@ -3,10 +3,10 @@ package dev.joid.internal;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
@@ -78,24 +78,24 @@ public class JOIDEnvTest {
 	}
 
 	@Test
-	public void storesTheDataInAJoidFolderByDefault() {
-		Assert.assertEquals(new File("joid"), JOIDEnvTest.locate("joid.data", null, JOIDEnv::locateDataDir));
+	public void storesTheDataInAJoidFolderByDefault() throws ReflectiveOperationException {
+		Assert.assertEquals(new File("joid"), JOIDEnvTest.locate("joid.data", null, "locateDataDir"));
 	}
 
 	@Test
-	public void readsTheDataFolderFromTheJoidDataProperty() {
-		Assert.assertEquals(new File("run/data"), JOIDEnvTest.locate("joid.data", "run/data", JOIDEnv::locateDataDir));
+	public void readsTheDataFolderFromTheJoidDataProperty() throws ReflectiveOperationException {
+		Assert.assertEquals(new File("run/data"), JOIDEnvTest.locate("joid.data", "run/data", "locateDataDir"));
 	}
 
 	@Test
-	public void cachesInTheCacheFolderOfTheSystemByDefault() {
+	public void cachesInTheCacheFolderOfTheSystemByDefault() throws ReflectiveOperationException {
 		final File cache = Platform.current().getCacheDir(System.getProperty("user.home"), System::getenv);
-		Assert.assertEquals(new File(cache, "joid"), JOIDEnvTest.locate("joid.cache", null, JOIDEnv::locateCacheDir));
+		Assert.assertEquals(new File(cache, "joid"), JOIDEnvTest.locate("joid.cache", null, "locateCacheDir"));
 	}
 
 	@Test
-	public void readsTheCacheFolderFromTheJoidCacheProperty() {
-		Assert.assertEquals(new File("run/cache"), JOIDEnvTest.locate("joid.cache", "run/cache", JOIDEnv::locateCacheDir));
+	public void readsTheCacheFolderFromTheJoidCacheProperty() throws ReflectiveOperationException {
+		Assert.assertEquals(new File("run/cache"), JOIDEnvTest.locate("joid.cache", "run/cache", "locateCacheDir"));
 	}
 
 	@Test
@@ -116,10 +116,12 @@ public class JOIDEnvTest {
 		JOIDEnv.cacheDir(null);
 	}
 
-	private static File locate(final String property, final String value, final Supplier<File> locator) {
+	private static File locate(final String property, final String value, final String locator) throws ReflectiveOperationException {
+		final Method method = JOIDEnv.class.getDeclaredMethod(locator);
+		method.setAccessible(true);
 		final String previous = value != null ? System.setProperty(property, value) : System.clearProperty(property);
 		try {
-			return locator.get();
+			return (File) method.invoke(null);
 		} finally {
 			if (previous == null) {
 				System.clearProperty(property);

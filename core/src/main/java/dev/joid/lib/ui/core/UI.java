@@ -1,36 +1,22 @@
 package dev.joid.lib.ui.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.security.CodeSource;
-import java.security.ProtectionDomain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
 
+import dev.joid.internal.HotReload;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -74,6 +60,7 @@ import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.ui.UIChangeEvent;
 import dev.joid.lib.ui.event.impl.ui.UICharEvent;
 import dev.joid.lib.ui.event.impl.ui.UICloseEvent;
+import dev.joid.lib.ui.event.impl.ui.UIInputEvent;
 import dev.joid.lib.ui.event.impl.ui.UIKeyEvent;
 import dev.joid.lib.ui.event.impl.ui.UIMouseEvent;
 import dev.joid.lib.ui.event.impl.ui.UIMouseScrollEvent;
@@ -85,18 +72,10 @@ import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.annotation.AnnotationValues;
 import dev.joid.lib.utils.list.IndexedElement;
 import dev.joid.lib.utils.list.IndexedList;
-import dev.joid.lib.utils.thread.ThreadUtils;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class UI implements IUI, IndexedElement {
-
-	private static final Map<File, Set<UI>>               WATCHER_MAP      = new HashMap<>();
-	private static final Map<File, FileAlterationMonitor> MONITOR_MAP      = new HashMap<>();
-	private static final Set<FileAlterationMonitor>       RUNNING_SET      = new HashSet<>();
-	private static final ExecutorService                  MONITOR_EXECUTOR = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("UI/monitor"));
 
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
 	private static final EventType<UICharEvent<UI>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
@@ -115,50 +94,56 @@ public abstract class UI implements IUI, IndexedElement {
 	private static UI current;
 
 	@NonNull private final EventBus                   eventBus;
-	@NonNull private final Stack<MaskRegion>          stencilStack;
 	@NonNull private final IndexedList<@NonNull Node> nodeList;
 
-	@Getter(AccessLevel.NONE) private final List<Task>               taskList;
-	@Getter(AccessLevel.NONE) private final NodeBindings             bindings;
-	@Getter(AccessLevel.NONE) private final List<Shortcut>           shortcutList;
-	@Getter(AccessLevel.NONE) private final InteractiveValue<Double> zoomValue;
+	private final List<Task>               taskList;
+	private final NodeBindings             bindings;
+	private final List<Shortcut>           shortcutList;
+	private final InteractiveValue<Double> zoomValue;
 
+	@Getter
 	private final UIView view;
 
-	@NonNull private final UIDataObject        data;
-	@NonNull private final UIDataDebugObject   debug;
-	@NonNull private final UIDataPopupObject   popup;
-	@NonNull private final UIDataScaleObject   scale;
-	@NonNull private final UIDataOverlayObject overlay;
+	@Getter private final UIDataObject        data;
+	@Getter private final UIDataDebugObject   debug;
+	@Getter private final UIDataPopupObject   popup;
+	@Getter private final UIDataScaleObject   scale;
+	@Getter private final UIDataOverlayObject overlay;
 
-	private transient File                                         watchedLocation;
-	private transient Transition                                   transition;
+	@Getter
+	private transient Transition transition;
+
 	private transient PopupTransition                              popupTransition;
 	private transient Map<Class<? extends UIStore>, UIStore>       storeMap;
 	private transient Map<Class<? extends Annotation>, Annotation> annotationMap;
 
 	private double zoom;
 
-	private boolean closed;
-	private boolean loaded;
-	private boolean monitored;
-	private boolean initialized;
-	private boolean customTransition;
+	@Getter private boolean closed;
+	@Getter private boolean initialized;
+
+	private int              maskDepth;
+	private boolean          loaded;
+	private boolean          watched;
+	private boolean          customTransition;
 	private volatile boolean reloadPending;
 
-	private double fps;
-	private long   lastFrame;
-	private long   fpsCounter;
-	private long   renderTime;
-	private long   frameCount;
-	private double frameTime;
-	private long   lastFpsUpdate;
+	@Getter private double fps;
+	@Getter private long   renderTime;
+	@Getter private double frameTime;
 
-	private double  mouseX;
-	private double  mouseY;
-	private boolean onTop;
-	private double  depthLevel;
+	private long lastFrame;
+	private long fpsCounter;
+	private long frameCount;
+	private long lastFpsUpdate;
 
+	private double mouseX;
+	private double mouseY;
+
+	@Getter private boolean onTop;
+	@Getter private double  depthLevel;
+
+	@Getter
 	private Node devNode;
 
 	private List<Node> hoveredPath;
@@ -178,7 +163,6 @@ public abstract class UI implements IUI, IndexedElement {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
 		}
 
-		this.stencilStack = new Stack<>();
 		this.eventBus = EventBus.create(() -> UI.nameOf(this.getClass()));
 		this.nodeList = IndexedList.concurrent();
 		this.storeMap = new HashMap<>();
@@ -234,22 +218,17 @@ public abstract class UI implements IUI, IndexedElement {
 				this.nodeList.clear();
 
 				SignalReplay.reset();
-				SignalReplay.enter(this);
-				try {
-					this.init();
-				} finally {
-					SignalReplay.exit();
-				}
+				SignalReplay.run(this, null, this::init);
 			});
 			this.initialized = true;
 
 			if (this.transition != null) {
-				if (this.transition.getIn() != null && this.transition.getIn().isEnabled()) {
+				if (this.transition.getIn().isEnabled()) {
 					this.transition.getIn().init(this);
 					this.transition.getIn().start();
 				}
 
-				if (this.transition.getOut() != null && this.transition.getOut().isEnabled()) {
+				if (this.transition.getOut().isEnabled()) {
 					this.transition.getOut().init(this);
 				}
 			}
@@ -269,7 +248,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		this.closed = false;
-		this.refreshMonitor();
+		this.refreshWatch();
 	}
 
 	public final <T extends UI> @NonNull T handleMouseScroll(final @NonNull EventListener<UIMouseScrollEvent<T>> listener) {
@@ -283,18 +262,13 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
-
 		final UIMouseScrollEvent<UI> event = UIMouseScrollEvent.create(this, mx, my, notchesX, notchesY);
-		this.dispatch("mouseScroll", () -> this.nodeList.reversed().forEach(node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event)));
-		this.fireListeners(UI.HANDLE_MOUSE_SCROLL, event);
-
-		if (!event.isConsumed() && JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
-			this.zoomValue.change(this.zoom + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
-			event.consume();
-		}
-
-		this.fireMonitor(UI.HANDLE_MOUSE_SCROLL, event);
-		return event.isConsumed();
+		return this.fireInput(UI.HANDLE_MOUSE_SCROLL, "mouseScroll", event, node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event), () -> {
+			if (!event.isConsumed() && JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
+				this.zoomValue.change(this.zoom + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
+				event.consume();
+			}
+		});
 	}
 
 	public final <T extends UI> @NonNull T handleMousePressed(final @NonNull EventListener<UIMouseEvent<T>> listener) {
@@ -308,12 +282,8 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
-
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
-		this.dispatch("mousePressed", () -> this.nodeList.reversed().forEach(node -> node.fireMousePressed(mx, my, button, event)));
-		this.fireListeners(UI.HANDLE_MOUSE_PRESSED, event);
-		this.fireMonitor(UI.HANDLE_MOUSE_PRESSED, event);
-		return event.isConsumed();
+		return this.fireInput(UI.HANDLE_MOUSE_PRESSED, "mousePressed", event, node -> node.fireMousePressed(mx, my, button, event), () -> {});
 	}
 
 	public final <T extends UI> @NonNull T handleMouseReleased(final @NonNull EventListener<UIMouseEvent<T>> listener) {
@@ -327,12 +297,8 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
-
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
-		this.dispatch("mouseReleased", () -> this.nodeList.reversed().forEach(node -> node.fireMouseReleased(mx, my, button, event)));
-		this.fireListeners(UI.HANDLE_MOUSE_RELEASED, event);
-		this.fireMonitor(UI.HANDLE_MOUSE_RELEASED, event);
-		return event.isConsumed();
+		return this.fireInput(UI.HANDLE_MOUSE_RELEASED, "mouseReleased", event, node -> node.fireMouseReleased(mx, my, button, event), () -> {});
 	}
 
 	public final <T extends UI> @NonNull T handleMouseDragged(final @NonNull EventListener<UIMouseEvent<T>> listener) {
@@ -346,12 +312,8 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
-
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, deltaTime);
-		this.dispatch("mouseDragged", () -> this.nodeList.reversed().forEach(node -> node.fireMouseDragged(mx, my, button, deltaTime, event)));
-		this.fireListeners(UI.HANDLE_MOUSE_DRAGGED, event);
-		this.fireMonitor(UI.HANDLE_MOUSE_DRAGGED, event);
-		return event.isConsumed();
+		return this.fireInput(UI.HANDLE_MOUSE_DRAGGED, "mouseDragged", event, node -> node.fireMouseDragged(mx, my, button, deltaTime, event), () -> {});
 	}
 
 	public final <T extends UI> @NonNull T handleCharTyped(final @NonNull EventListener<UICharEvent<T>> listener) {
@@ -364,10 +326,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		final UICharEvent<UI> event = UICharEvent.create(this, codepoint);
-		this.dispatch("charTyped", () -> this.nodeList.reversed().forEach(node -> node.fireCharTyped(codepoint, event)));
-		this.fireListeners(UI.HANDLE_CHAR_TYPED, event);
-		this.fireMonitor(UI.HANDLE_CHAR_TYPED, event);
-		return event.isConsumed();
+		return this.fireInput(UI.HANDLE_CHAR_TYPED, "charTyped", event, node -> node.fireCharTyped(codepoint, event), () -> {});
 	}
 
 	public final <T extends UI> @NonNull T handleKeyPressed(final @NonNull EventListener<UIKeyEvent<T>> listener) {
@@ -381,48 +340,42 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final UIKeyEvent<UI> event = UIKeyEvent.create(this, key);
 		this.fireShortcuts(key, true, event);
-		if (!event.isConsumed()) {
-			this.dispatch("keyPressed", () -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(key, event)));
-		}
-		this.fireListeners(UI.HANDLE_KEY_PRESSED, event);
-		this.fireShortcuts(key, false, event);
+		return this.fireInput(UI.HANDLE_KEY_PRESSED, "keyPressed", event, node -> node.fireKeyPressed(key, event), () -> {
+			this.fireShortcuts(key, false, event);
+			if (this.data.zoomable() && !event.isConsumed()) {
+				final double zoom = this.zoom;
+				if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom + 0.1D) && this.zoom != zoom) {
+					event.consume();
+				}
 
-		if (this.data.zoomable() && !event.isConsumed()) {
-			final double zoom = this.zoom;
-			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom + 0.1D) && this.zoom != zoom) {
-				event.consume();
+				if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom - 0.1D) && this.zoom != zoom) {
+					event.consume();
+				}
 			}
 
-			if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom - 0.1D) && this.zoom != zoom) {
-				event.consume();
-			}
-		}
-
-		if (JOIDEnv.isDevMode() && !event.isConsumed()) {
-			if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
-				if (!Key.LEFT_SHIFT.isDown()) {
-					this.reload();
-				} else {
-					try {
-						this.renew();
-					} catch (final IllegalStateException exception) {
-						JOIDLog.warn(exception.getMessage());
+			if (JOIDEnv.isDevMode() && !event.isConsumed()) {
+				if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
+					if (!Key.LEFT_SHIFT.isDown()) {
+						this.reload();
+					} else {
+						try {
+							this.renew();
+						} catch (final IllegalStateException exception) {
+							JOIDLog.warn(exception.getMessage());
+						}
 					}
+					event.consume();
+				} else if (key == Key.F3 && this.devNode != null) {
+					final boolean enabled = this.nodeList.contains(this.devNode);
+					if (enabled) {
+						this.nodeList.remove(this.devNode);
+					} else {
+						this.scoped(() -> this.devNode.attach(this));
+					}
+					event.consume();
 				}
-				event.consume();
-			} else if (key == Key.F3 && this.devNode != null) {
-				final boolean enabled = this.nodeList.contains(this.devNode);
-				if (enabled) {
-					this.nodeList.remove(this.devNode);
-				} else {
-					this.scoped(() -> this.devNode.attach(this));
-				}
-				event.consume();
 			}
-		}
-
-		this.fireMonitor(UI.HANDLE_KEY_PRESSED, event);
-		return event.isConsumed();
+		});
 	}
 
 	public final void fireUpdate() {
@@ -441,7 +394,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final boolean fireClose() {
-		if (this.transition != null && this.transition.getOut() != null && this.transition.getOut().isRunning()) {
+		if (this.transition != null && this.transition.getOut().isRunning()) {
 			return false;
 		}
 
@@ -450,7 +403,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		if (this.transition != null && this.transition.getOut() != null && this.transition.getOut().isEnabled()) {
+		if (this.transition != null && this.transition.getOut().isEnabled()) {
 			this.transition.getOut().start();
 			this.transition.getOut().getAnimator().onComplete(tween -> {
 				this.dispose();
@@ -486,14 +439,6 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final <T extends UI> @NonNull T onZoom(final @NonNull EventListener<UIChangeEvent.Post<T, Double>> listener) {
 		return this.zoomValue.on(listener);
-	}
-
-	public final @NonNull List<MaskRegion> getStencilStack() {
-		return Collections.unmodifiableList(this.stencilStack);
-	}
-
-	public final @NonNull Map<Class<? extends UIStore>, UIStore> getStoreMap() {
-		return Collections.unmodifiableMap(this.storeMap);
 	}
 
 	public final @NonNull List<@NonNull Task> getTaskList() {
@@ -599,7 +544,10 @@ public abstract class UI implements IUI, IndexedElement {
 		this.closed = true;
 		this.initialized = false;
 
-		this.stopMonitor();
+		if (this.watched) {
+			this.watched = false;
+			HotReload.unwatch(this);
+		}
 
 		UIStoreHook.saveAll();
 		for (final Entry<Class<? extends UIStore>, UIStore> storeEntry : this.storeMap.entrySet()) {
@@ -630,82 +578,36 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
-		this.mask(maskX, maskY, maskWidth, maskHeight, drawing, true);
-	}
-
-	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
-		if (enabled) {
-			this.startMask(maskX, maskY, maskWidth, maskHeight);
-			try {
-				drawing.draw();
-			} finally {
-				this.stopMask();
-			}
-		} else {
-			drawing.draw();
-		}
+		this.mask(() -> DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED), drawing);
 	}
 
 	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
-		this.mask(resource, maskX, maskY, maskWidth, maskHeight, drawing, true);
-	}
-
-	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing, final boolean enabled) {
-		if (enabled) {
-			this.startMask(resource, maskX, maskY, maskWidth, maskHeight);
-			try {
-				drawing.draw();
-			} finally {
-				this.stopMask();
-			}
-		} else {
-			drawing.draw();
-		}
-	}
-
-	public final void stopMask() {
-		this.stencilStack.pop();
-		final int stencilValue = this.stencilStack.size();
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (stencilValue == 0) {
-			render.getState().stencil(StencilState.DISABLED);
-			render.clearStencil();
-		} else {
-			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
-		}
+		this.mask(() -> {
+			BridgeHandler.RENDER.get().getState().alphaCutoff(0.5F);
+			DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
+		}, drawing);
 	}
 
 	public final void startMask(final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
-		final int stencilValue = this.stencilStack.size() + 1;
-		this.stencilStack.push(new MaskRegion(stencilValue, maskX, maskY, maskWidth, maskHeight));
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (stencilValue == 1) {
-			render.clearStencil();
-		}
-
-		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
-
-		render.getState().colorWrite(false);
-		DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED);
-		render.getState().colorWrite(true);
-
-		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		this.startMask(() -> DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED));
 	}
 
 	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
-		final int stencilValue = this.stencilStack.size() + 1;
-		this.stencilStack.push(new MaskRegion(stencilValue, maskX, maskY, maskWidth, maskHeight));
-		BridgeHandler.RENDER.get().withState(render -> {
-			if (stencilValue == 1) {
-				render.clearStencil();
-			}
-
-			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
-			render.getState().colorWrite(false).alphaCutoff(0.5F);
+		this.startMask(() -> {
+			BridgeHandler.RENDER.get().getState().alphaCutoff(0.5F);
 			DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
 		});
+	}
 
-		BridgeHandler.RENDER.get().getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+	public final void stopMask() {
+		this.maskDepth--;
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (this.maskDepth == 0) {
+			render.getState().stencil(StencilState.DISABLED);
+			render.clearStencil();
+		} else {
+			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		}
 	}
 
 	public final void reload() {
@@ -821,12 +723,12 @@ public abstract class UI implements IUI, IndexedElement {
 		return this;
 	}
 
-	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
+	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final @NonNull Supplier<T> factory) {
 		if (this.storeMap.containsKey(clazz)) {
 			return (T) this.storeMap.get(clazz);
 		}
 
-		final T store = UIStoreHook.useStore(clazz, args);
+		final T store = UIStoreHook.useStore(clazz, factory);
 		if (store.getData().scope().isLocal()) {
 			this.storeMap.put(clazz, store);
 		}
@@ -866,34 +768,42 @@ public abstract class UI implements IUI, IndexedElement {
 		this.transition = UI.createPopupTransition(popupTransition);
 	}
 
-	private void refreshMonitor() {
-		this.monitored = this.debug.hotreload();
-		if (!this.monitored) {
-			this.stopMonitor();
-		}
-
-		if (JOIDEnv.isDevMode() && this.debug.hotreload() && this.watchedLocation == null) {
-			final File location = UI.locate(this.getClass());
-			if (location == null) {
-				JOIDLog.warnOnce("UI.hotReload", "Hot reload is off for " + this.getClass().getSimpleName() + ": its classes are not loaded from a folder or a jar file, run it from one of them to reload it");
-				return;
-			}
-
-			this.watchedLocation = location;
-			UI.watch(location, this);
-			JOIDLog.info("Hot reload is on for " + this.getClass().getSimpleName() + ", it reloads when its classes change");
-		}
-	}
-
-	private void stopMonitor() {
-		if (this.watchedLocation == null) {
+	private void refreshWatch() {
+		final boolean watch = JOIDEnv.isDevMode() && this.debug.hotreload();
+		if (watch == this.watched) {
 			return;
 		}
 
-		this.watchedLocation = null;
-		UI.unwatch(UI.locate(this.getClass()), this);
+		this.watched = watch;
+		if (watch) {
+			HotReload.watch(this, () -> this.reloadPending = true);
+		} else {
+			HotReload.unwatch(this);
+		}
 	}
 
+	private void mask(final Drawing shape, final Drawing drawing) {
+		this.startMask(shape);
+		try {
+			drawing.draw();
+		} finally {
+			this.stopMask();
+		}
+	}
+
+	private void startMask(final Drawing shape) {
+		this.maskDepth++;
+		BridgeHandler.RENDER.get().withState(render -> {
+			if (this.maskDepth == 1) {
+				render.clearStencil();
+			}
+
+			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
+			render.getState().colorWrite(false);
+			shape.draw();
+		});
+		BridgeHandler.RENDER.get().getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+	}
 
 	private void drawFrame(final double mouseX, final double mouseY) {
 		final long start = BridgeHandler.CLOCK.get().nanoTime();
@@ -908,8 +818,8 @@ public abstract class UI implements IUI, IndexedElement {
 		this.mouseY = mouseY;
 		this.view.anchorX(this.data.getAnchorPositionX()).anchorY(this.data.getAnchorPositionY());
 		this.refreshTransition();
-		if (this.monitored != this.debug.hotreload()) {
-			this.refreshMonitor();
+		if (!this.closed) {
+			this.refreshWatch();
 		}
 		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
 
@@ -931,58 +841,41 @@ public abstract class UI implements IUI, IndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
+		final Transition transition = this.transition;
 		if (this.data.background()) {
 			float opacity = this.data.getBackgroundColor().getAlpha() / 255F;
-			if (this.transition != null) {
-				if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
-					opacity = Math.min(1F, Math.max(0F, this.transition.getIn().getAnimator().get())) * (this.data.getBackgroundColor().getAlpha() / 255F);
+			if (transition != null) {
+				if (transition.getIn().isRunning()) {
+					opacity = Math.min(1F, Math.max(0F, transition.getIn().getAnimator().peek())) * (this.data.getBackgroundColor().getAlpha() / 255F);
 				}
 
-				if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
-					opacity = Math.min(1F, Math.max(0F, this.transition.getOut().getAnimator().get())) * (this.data.getBackgroundColor().getAlpha() / 255F);
+				if (transition.getOut().isRunning()) {
+					opacity = Math.min(1F, Math.max(0F, 1F - transition.getOut().getAnimator().peek())) * (this.data.getBackgroundColor().getAlpha() / 255F);
 				}
 			}
 			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().withAlpha(opacity));
 		}
 
-		final boolean transitionIn = this.transition != null && this.transition.getIn() != null && this.transition.getIn().isRunning();
-		final boolean transitionOut = this.transition != null && this.transition.getOut() != null && this.transition.getOut().isRunning();
-		if (transitionIn) {
-			this.transition.getIn().update();
-			this.transition.getIn().pre(this, mx, my);
-		}
-
-		if (transitionOut) {
-			this.transition.getOut().update();
-			this.transition.getOut().pre(this, mx, my);
-		}
-
 		render.getState().alphaCutoff(0F);
-		try {
-			this.view.render(render, this.data.projection(), () -> {
-				this.depthLevel = 0;
-				final AtomicDouble lastDepthLevel = new AtomicDouble(this.depthLevel);
+		final Drawing body = () -> this.view.render(render, this.data.projection(), () -> {
+			this.depthLevel = 0;
+			final AtomicDouble lastDepthLevel = new AtomicDouble(this.depthLevel);
 
-				this.nodeList.ordered().forEach(node -> {
-					render.getModelView().translate(0, 0, this.depthLevel - lastDepthLevel.get());
-					lastDepthLevel.set(this.depthLevel);
-					node.render(mx, my);
-				});
-
-				if (this.getHoveredNode() != null) {
-					this.renderHoveredNode(mx, my);
-				}
+			this.nodeList.ordered().forEach(node -> {
+				render.getModelView().translate(0, 0, this.depthLevel - lastDepthLevel.get());
+				lastDepthLevel.set(this.depthLevel);
+				node.render(mx, my);
 			});
-		} finally {
-			if (transitionIn) {
-				this.transition.getIn().post(this, mx, my);
-				this.transition.getIn().endFrame();
-			}
 
-			if (transitionOut) {
-				this.transition.getOut().post(this, mx, my);
-				this.transition.getOut().endFrame();
+			if (this.getHoveredNode() != null) {
+				this.renderHoveredNode(mx, my);
 			}
+		});
+
+		if (transition != null) {
+			transition.getIn().render(this, () -> transition.getOut().render(this, body));
+		} else {
+			body.draw();
 		}
 
 		final long end = BridgeHandler.CLOCK.get().nanoTime();
@@ -1052,6 +945,16 @@ public abstract class UI implements IUI, IndexedElement {
 		return fired;
 	}
 
+	private <E extends UIInputEvent<UI>> boolean fireInput(final EventType<?> type, final String input, final E event, final Consumer<Node> dispatch, final Runnable builtin) {
+		if (!event.isConsumed()) {
+			this.dispatch(input, () -> this.nodeList.reversed().forEach(dispatch));
+		}
+		this.fireListeners(type, event);
+		builtin.run();
+		this.fireMonitor(type, event);
+		return event.isConsumed();
+	}
+
 	private void fireListeners(final EventType<?> type, final Event event) {
 		if (this.eventBus.has(type)) {
 			this.traced(() -> this.eventBus.fireListeners(type, event));
@@ -1065,12 +968,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	private void traced(final Runnable runnable) {
-		SignalReplay.enter(this);
-		try {
-			this.scoped(runnable);
-		} finally {
-			SignalReplay.exit();
-		}
+		SignalReplay.run(this, null, () -> this.scoped(runnable));
 	}
 
 	private void dispatch(final String input, final Runnable runnable) {
@@ -1130,164 +1028,6 @@ public abstract class UI implements IUI, IndexedElement {
 
 		Lists.reverse(node.getChildren()).forEach(child -> UI.collectShortcuts(child, shortcutList));
 		shortcutList.addAll(node.getShortcutList());
-	}
-
-	private static void watch(final File location, final UI ui) {
-		synchronized (UI.WATCHER_MAP) {
-			UI.WATCHER_MAP.computeIfAbsent(location, key -> new HashSet<>()).add(ui);
-			if (UI.MONITOR_MAP.containsKey(location)) {
-				return;
-			}
-
-			final FileAlterationMonitor monitor = UI.createMonitor(location);
-			UI.MONITOR_MAP.put(location, monitor);
-			UI.MONITOR_EXECUTOR.execute(() -> UI.openMonitor(location, monitor));
-		}
-	}
-
-	private static void unwatch(final File location, final UI ui) {
-		synchronized (UI.WATCHER_MAP) {
-			final Set<UI> watchers = UI.WATCHER_MAP.get(location);
-			if (watchers == null || !watchers.remove(ui) || !watchers.isEmpty()) {
-				return;
-			}
-
-			UI.WATCHER_MAP.remove(location);
-			final FileAlterationMonitor monitor = UI.MONITOR_MAP.remove(location);
-			UI.MONITOR_EXECUTOR.execute(() -> UI.closeMonitor(monitor));
-		}
-	}
-
-	private static void openMonitor(final File location, final FileAlterationMonitor monitor) {
-		synchronized (UI.WATCHER_MAP) {
-			if (UI.MONITOR_MAP.get(location) != monitor) {
-				return;
-			}
-		}
-
-		try {
-			monitor.start();
-			UI.RUNNING_SET.add(monitor);
-		} catch (final Exception e) {
-			JOIDLog.warn("The hot reload of " + location.getAbsolutePath() + " cannot start (" + e + "), the UI no longer reloads: check that the folder can be watched", e);
-		}
-	}
-
-	private static void closeMonitor(final FileAlterationMonitor monitor) {
-		if (!UI.RUNNING_SET.remove(monitor)) {
-			return;
-		}
-
-		try {
-			monitor.stop();
-		} catch (final Exception e) {
-			JOIDLog.warn("A hot reload watcher cannot stop (" + e + "), it stops with the JVM", e);
-		}
-	}
-
-	private static FileAlterationMonitor createMonitor(final File location) {
-		final FileAlterationObserver observer;
-		try {
-			observer = FileAlterationObserver.builder().setFile(location.isDirectory() ? location : location.getParentFile()).get();
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
-		}
-
-		observer.addListener(new FileAlterationListener() {
-
-			private File change;
-
-			@Override
-			public void onFileChange(final @NonNull File file) {
-				this.track(file);
-			}
-
-			@Override
-			public void onStop(final @NonNull FileAlterationObserver observer) {
-				if (this.change == null) {
-					return;
-				}
-
-				try {
-					Thread.sleep(1000L);
-				} catch (final Exception e) {}
-
-				JOIDLog.info(this.change.getName() + " changed, the UIs that use it reload");
-				this.change = null;
-				synchronized (UI.WATCHER_MAP) {
-					final Set<UI> watchers = UI.WATCHER_MAP.get(location);
-					if (watchers != null) {
-						watchers.forEach(watcher -> watcher.reloadPending = true);
-					}
-				}
-			}
-
-			@Override
-			public void onStart(final @NonNull FileAlterationObserver observer) {}
-
-			@Override
-			public void onFileDelete(final @NonNull File file) {}
-
-			@Override
-			public void onFileCreate(final @NonNull File file) {
-				this.track(file);
-			}
-
-			@Override
-			public void onDirectoryDelete(final @NonNull File file) {}
-
-			@Override
-			public void onDirectoryCreate(final @NonNull File file) {}
-
-			@Override
-			public void onDirectoryChange(final @NonNull File file) {}
-
-			private void track(final File file) {
-				if (location.isDirectory() ? file.getName().endsWith(".class") : file.equals(location)) {
-					this.change = file;
-				}
-			}
-
-		});
-
-		final FileAlterationMonitor monitor = new FileAlterationMonitor(500);
-		monitor.setThreadFactory(ThreadUtils.daemonFactory("UI/" + location.getName() + "/monitor"));
-		monitor.addObserver(observer);
-		return monitor;
-	}
-
-	private static File locate(final Class<?> type) {
-		final ProtectionDomain domain = type.getProtectionDomain();
-		final CodeSource source = domain != null ? domain.getCodeSource() : null;
-		final URL location = source != null ? source.getLocation() : null;
-		if (location == null || !"file".equals(location.getProtocol())) {
-			return null;
-		}
-
-		try {
-			return new File(location.toURI());
-		} catch (final URISyntaxException | IllegalArgumentException exception) {
-			return null;
-		}
-	}
-
-	@Getter
-	private class MaskRegion {
-
-		public final double x;
-		public final double y;
-		public final int value;
-		public final double width;
-		public final double height;
-
-		public MaskRegion(final int value, final double x, final double y, final double width, final double height) {
-			this.value = value;
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
-		}
-
 	}
 
 }

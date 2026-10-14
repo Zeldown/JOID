@@ -1,67 +1,22 @@
 package dev.joid.demo.ui.core.transition.impl;
 
-import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.TweenEquations;
-import dev.joid.lib.render.transform.Transformation;
-import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.render.Drawing;
 import dev.joid.lib.ui.core.transition.Transition;
-import lombok.NonNull;
+import dev.joid.lib.ui.core.transition.TransitionStep;
 
 public class DemoPushTransition extends Transition {
 
 	public DemoPushTransition() {
-		super(new PushInTransition(), new PushOutTransition());
+		super(TransitionStep.create(1000F, TweenEquations.QUART_OUT).draw((ui, progress, body) -> DemoPushTransition.push(1920D * (1F - progress), body)), TransitionStep.create(1000F, TweenEquations.QUART_IN).draw((ui, progress, body) -> DemoPushTransition.push(-1920D * progress, body)));
 	}
 
-	public static class PushInTransition extends Transition.In {
-
-		private final Transformation transformation = Transformation.create().translate(Vector.X(() -> 1920D * (1F - super.getAnimator().get())));
-
-		@Override
-		public void init(final @NonNull UI ui) {}
-
-		@Override
-		protected void startTimeline() {
-			final Timeline timeline = super.getAnimator().sequence(1000F, 1F, TweenEquations.QUART_OUT).getTimeline();
-			super.start(timeline);
-		}
-
-		@Override
-		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			this.transformation.apply();
-		}
-
-		@Override
-		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			this.transformation.reset();
-		}
-
-	}
-
-	public static class PushOutTransition extends Transition.Out {
-
-		private final Transformation transformation = Transformation.create().translate(Vector.X(() -> -1920D * (1F - super.getAnimator().get())));
-
-		@Override
-		public void init(final @NonNull UI ui) {}
-
-		@Override
-		protected void startTimeline() {
-			final Timeline timeline = super.getAnimator().sequence(1000F, 0F, TweenEquations.QUART_IN).getTimeline();
-			super.start(timeline);
-		}
-
-		@Override
-		public void pre(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			this.transformation.apply();
-		}
-
-		@Override
-		public void post(final @NonNull UI ui, final double mouseX, final double mouseY) {
-			this.transformation.reset();
-		}
-
+	private static void push(final double x, final Drawing body) {
+		BridgeHandler.RENDER.get().getModelView().with(matrix -> {
+			matrix.translate(x, 0D, 0D);
+			body.draw();
+		});
 	}
 
 }

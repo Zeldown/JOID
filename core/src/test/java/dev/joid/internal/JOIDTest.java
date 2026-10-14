@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -72,7 +73,7 @@ public class JOIDTest {
 
 	@Test
 	public void printsItsSettingsOnLoad() {
-		final JOID joid = new JOID();
+		final JOID joid = JOIDTest.create();
 		final PrintStream previous = System.out;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setOut(new PrintStream(output, true));
@@ -92,7 +93,7 @@ public class JOIDTest {
 		try {
 			JOIDEnv.devMode(false);
 			JOIDEnv.demoMode(false);
-			JOIDTest.quietly(new JOID());
+			JOIDTest.quietly(JOIDTest.create());
 			Assert.assertNull(DevFont.MONTSERRAT);
 			Assert.assertNull(DemoFont.MONTSERRAT);
 		} finally {
@@ -106,7 +107,7 @@ public class JOIDTest {
 		DevFont.MONTSERRAT = null;
 		try {
 			JOIDEnv.demoMode(false);
-			JOIDTest.quietly(new JOID());
+			JOIDTest.quietly(JOIDTest.create());
 			Assert.assertNotNull(DevFont.MONTSERRAT);
 			Assert.assertNull(DemoFont.MONTSERRAT);
 		} finally {
@@ -119,7 +120,7 @@ public class JOIDTest {
 		final MsdfFont previous = DevFont.MONTSERRAT;
 		try {
 			JOIDEnv.devMode(false);
-			JOIDTest.quietly(new JOID());
+			JOIDTest.quietly(JOIDTest.create());
 			Assert.assertTrue(DemoFont.isLoaded());
 			Assert.assertSame(DevFont.MONTSERRAT, DemoFont.MONTSERRAT);
 		} finally {
@@ -135,7 +136,7 @@ public class JOIDTest {
 		JOIDEnv.dataDir(this.folder.getRoot());
 		final SettingsUI settings = new SettingsUI();
 		this.bridges.open(settings);
-		final ExitStore store = UIStoreHook.useStore(ExitStore.class);
+		final ExitStore store = UIStoreHook.useStore(ExitStore.class, ExitStore::new);
 		settings.volume = 3;
 		store.value = "kept";
 
@@ -228,7 +229,7 @@ public class JOIDTest {
 		final MenuUI first = new MenuUI();
 		final MenuUI second = new MenuUI();
 		JOID.open(first);
-		JOID.open(second, false);
+		JOID.open(second);
 		Assert.assertEquals(1, first.closes);
 		Assert.assertEquals(Collections.singletonList(second), this.bridges.getUi().getUiList());
 	}
@@ -250,7 +251,7 @@ public class JOIDTest {
 		JOID.open(menu);
 		JOID.open(next);
 		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList());
-		Assert.assertSame(this.bridges.getUi(), JOID.open(next, true));
+		Assert.assertSame(this.bridges.getUi(), JOID.forceOpen(next));
 		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
 		Assert.assertEquals(1, menu.detaches);
 	}
@@ -260,7 +261,7 @@ public class JOIDTest {
 		BridgeHandler.UI.unregister(this.bridges.getUi());
 		try {
 			JOIDTest.assertNoBridge(() -> JOID.open(new MenuUI()));
-			JOIDTest.assertNoBridge(() -> JOID.open(new MenuUI(), true));
+			JOIDTest.assertNoBridge(() -> JOID.forceOpen(new MenuUI()));
 		} finally {
 			BridgeHandler.UI.register(this.bridges.getUi());
 		}
@@ -281,7 +282,7 @@ public class JOIDTest {
 	public void closesNothingWhenTheUiIsNotOpen() {
 		final MenuUI menu = new MenuUI();
 		JOID.close(menu);
-		JOID.close(menu, true);
+		JOID.forceClose(menu);
 		Assert.assertEquals(0, menu.closes);
 		Assert.assertEquals(0, menu.detaches);
 		Assert.assertFalse(menu.isClosed());
@@ -301,7 +302,7 @@ public class JOIDTest {
 		final MenuUI menu = new MenuUI();
 		menu.closeable = false;
 		JOID.open(menu);
-		JOID.close(menu, false);
+		JOID.close(menu);
 		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
 		Assert.assertEquals(0, menu.detaches);
 	}
@@ -311,7 +312,7 @@ public class JOIDTest {
 		final MenuUI menu = new MenuUI();
 		menu.closeable = false;
 		JOID.open(menu);
-		JOID.close(menu, true);
+		JOID.forceClose(menu);
 		Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 		Assert.assertEquals(0, menu.closes);
 		Assert.assertEquals(1, menu.detaches);
@@ -332,8 +333,8 @@ public class JOIDTest {
 			thread.run();
 			Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 			Assert.assertEquals(1, menu.closes);
-			JOID.open(menu, true);
-			JOID.close(menu, true);
+			JOID.forceOpen(menu);
+			JOID.forceClose(menu);
 			thread.run();
 			Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 		} finally {
@@ -407,7 +408,7 @@ public class JOIDTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToForceAMissingUiOpen() {
-		JOID.open(null, true);
+		JOID.forceOpen(null);
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -417,20 +418,20 @@ public class JOIDTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToForceAMissingUiClosed() {
-		JOID.close(null, true);
+		JOID.forceClose(null);
 	}
 
 	@Test
 	public void createsNoDataFolderOnLoad() {
 		final File data = new File(this.folder.getRoot(), "joid");
 		JOIDEnv.dataDir(data);
-		JOIDTest.quietly(new JOID());
+		JOIDTest.quietly(JOIDTest.create());
 		Assert.assertFalse(data.exists());
 	}
 
 	@Test
 	public void loadsOnce() {
-		final JOID joid = new JOID();
+		final JOID joid = JOIDTest.create();
 		JOIDTest.quietly(joid);
 		final PrintStream previous = System.out;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -450,7 +451,7 @@ public class JOIDTest {
 		this.bridges.open(menu);
 		BridgeHandler.UI.unregister(this.bridges.getUi());
 		try {
-			JOID.close(menu, true);
+			JOID.forceClose(menu);
 		} finally {
 			BridgeHandler.UI.register(this.bridges.getUi());
 		}
@@ -463,8 +464,18 @@ public class JOIDTest {
 		final StubbornUI hud = new StubbornUI();
 		final StubbornUI next = new StubbornUI();
 		this.bridges.open(menu).open(hud);
-		JOID.open(next, true);
+		JOID.forceOpen(next);
 		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
+	}
+
+	private static JOID create() {
+		try {
+			final Constructor<JOID> constructor = JOID.class.getDeclaredConstructor();
+			constructor.setAccessible(true);
+			return constructor.newInstance();
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException(exception);
+		}
 	}
 
 	private static void quietly(final JOID joid) {

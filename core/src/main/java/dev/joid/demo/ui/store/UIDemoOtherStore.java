@@ -23,9 +23,10 @@ public class UIDemoOtherStore extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOtherStore.INK);
-		final DemoLocalStore local = super.useStore(DemoLocalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
-		final DemoGlobalStore global = super.useStore(DemoGlobalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
-		final DemoPermanentStore permanent = super.useStore(DemoPermanentStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final DemoLocalStore local = super.useStore(DemoLocalStore.class, () -> new DemoLocalStore(now));
+		final DemoGlobalStore global = super.useStore(DemoGlobalStore.class, () -> new DemoGlobalStore(now));
+		final DemoPermanentStore permanent = super.useStore(DemoPermanentStore.class, () -> new DemoPermanentStore(now));
 
 		RectNode
 		.create(300, 400, 400, 200)

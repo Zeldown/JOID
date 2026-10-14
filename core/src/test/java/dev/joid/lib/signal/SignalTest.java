@@ -104,9 +104,9 @@ public class SignalTest {
 	}
 
 	@Test
-	public void silencesOnlyTheNextPublish() {
+	public void silencesTheWritesOfItsScope() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> signal = new Signal<String>().onChange(received::add).silent().set("a");
+		final Signal<String> signal = new Signal<String>().onChange(received::add).silent(current -> current.set("a"));
 		Assert.assertEquals("a", signal.get());
 		Assert.assertTrue(received.isEmpty());
 		signal.set("b");
@@ -116,8 +116,24 @@ public class SignalTest {
 	@Test
 	public void silencesAManualPublish() {
 		final List<String> received = new ArrayList<>();
-		new Signal<>("joid").onChange(received::add).silent().fireChange().fireChange();
+		new Signal<>("joid").onChange(received::add).silent(signal -> signal.fireChange()).fireChange();
 		Assert.assertEquals(Collections.singletonList("joid"), received);
+	}
+
+	@Test
+	public void silencesEveryWriteOfAScope() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> first = new Signal<>("a").onChange(received::add);
+		final Signal<String> second = new Signal<>("b").onChange(received::add);
+		Signal.silent(() -> {
+			first.set("c");
+			second.set("d");
+		});
+		Assert.assertEquals("c", first.peek());
+		Assert.assertEquals("d", second.peek());
+		Assert.assertTrue(received.isEmpty());
+		first.set("e");
+		Assert.assertEquals(Collections.singletonList("e"), received);
 	}
 
 	@Test
@@ -295,10 +311,10 @@ public class SignalTest {
 	}
 
 	@Test
-	public void disarmsItsSilenceOnAnUnchangedValue() {
+	public void notifiesAgainAfterItsSilentScope() {
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<String>().set("a").onChange(received::add);
-		signal.silent().set("a");
+		signal.silent(current -> current.set("a"));
 		signal.set("b");
 		Assert.assertEquals(Collections.singletonList("b"), received);
 	}
@@ -351,13 +367,13 @@ public class SignalTest {
 	}
 
 	@Test
-	public void carriesItsSilenceWithADeferredWrite() throws InterruptedException {
+	public void carriesItsSilenceToADeferredWrite() throws InterruptedException {
 		final FrameThreadBridge thread = FrameThreadBridge.create();
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("joid").onChange(received::add);
 		BridgeHandler.THREAD.register(thread);
 		try {
-			SignalTest.fromWorker(() -> signal.silent().set("quiet"));
+			SignalTest.fromWorker(() -> signal.silent(current -> current.set("quiet")));
 			signal.set("loud");
 			thread.runTasks();
 			Assert.assertEquals("quiet", signal.peek());

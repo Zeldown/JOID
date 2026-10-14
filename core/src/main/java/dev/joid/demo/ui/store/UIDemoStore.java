@@ -41,9 +41,10 @@ public class UIDemoStore extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoStore.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final DemoLocalStore local = super.useStore(DemoLocalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
-		final DemoGlobalStore global = super.useStore(DemoGlobalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
-		final DemoPermanentStore permanent = super.useStore(DemoPermanentStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final DemoLocalStore local = super.useStore(DemoLocalStore.class, () -> new DemoLocalStore(now));
+		final DemoGlobalStore global = super.useStore(DemoGlobalStore.class, () -> new DemoGlobalStore(now));
+		final DemoPermanentStore permanent = super.useStore(DemoPermanentStore.class, () -> new DemoPermanentStore(now));
 		this.cache = "Not cached";
 
 		RectNode

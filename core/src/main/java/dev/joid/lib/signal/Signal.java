@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -17,15 +18,14 @@ import lombok.NonNull;
 public class Signal<T> implements Supplier<T> {
 
 	private final transient Set<@NonNull ISignalListener<? super T>> listenerSet;
-	private final transient List<@NonNull ComputedSignal<?>>          observerList;
+	private final transient List<@NonNull ComputedSignal<?>>         observerList;
 
 	private final transient T defaultValue;
 
 	private volatile T value;
 
-	private transient int     version;
-	private transient T       sealedValue;
-	private transient boolean nextSilent = false;
+	private transient int version;
+	private transient T   sealedValue;
 
 	public Signal() {
 		this(null);
@@ -58,6 +58,16 @@ public class Signal<T> implements Supplier<T> {
 		}
 	}
 
+	public static void silent(final @NonNull Runnable runnable) {
+		final SignalContext context = SignalContext.current();
+		final boolean silent = context.silent(true);
+		try {
+			runnable.run();
+		} finally {
+			context.silent(silent);
+		}
+	}
+
 	public @NonNull Signal<T> reset() {
 		this.set(this.defaultValue);
 		return this;
@@ -81,9 +91,9 @@ public class Signal<T> implements Supplier<T> {
 		return this;
 	}
 
-	public @NonNull Signal<T> silent() {
-		this.nextSilent = true;
-		return this;
+	public final <S extends Signal<T>> @NonNull S silent(final Consumer<@NonNull S> action) {
+		Signal.silent(() -> action.accept((S) this));
+		return (S) this;
 	}
 
 	public @NonNull Signal<T> fireChange() {
@@ -150,20 +160,9 @@ public class Signal<T> implements Supplier<T> {
 	protected final @NonNull Signal<T> write(final @NonNull Runnable task) {
 		if (BridgeHandler.THREAD.get().isRenderThread()) {
 			task.run();
-			return this;
+		} else {
+			SignalContext.current().defer(task);
 		}
-
-		final boolean silent = this.nextSilent;
-		this.nextSilent = false;
-		SignalContext.current().defer(() -> {
-			final boolean previous = this.nextSilent;
-			this.nextSilent = silent;
-			try {
-				task.run();
-			} finally {
-				this.nextSilent = previous;
-			}
-		});
 		return this;
 	}
 
@@ -213,7 +212,6 @@ public class Signal<T> implements Supplier<T> {
 		this.value = this.seal(value);
 		this.sealedValue = this.value;
 		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
-			this.nextSilent = false;
 			return;
 		}
 
@@ -229,9 +227,7 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	private void fire() {
-		final boolean silent = this.nextSilent;
-		this.nextSilent = false;
-		this.propagate(!silent);
+		this.propagate(!SignalContext.current().isSilent());
 	}
 
 	private void notifyListeners(final T value) {

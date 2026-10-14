@@ -2192,7 +2192,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D);
 		final NodeUI ui = new NodeUI(node);
 		this.bridges.open(ui);
-		Assert.assertSame(ui.useStore(CountStore.class), node.useStore(CountStore.class));
+		Assert.assertSame(ui.useStore(CountStore.class, CountStore::new), node.useStore(CountStore.class, CountStore::new));
 	}
 
 	@Test

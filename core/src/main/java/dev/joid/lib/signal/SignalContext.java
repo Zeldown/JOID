@@ -24,12 +24,13 @@ public final class SignalContext {
 
 	private final Signal<?>[]      reads        = new Signal<?>[64];
 	private final Set<Signal<?>>   pendingSet   = Collections.newSetFromMap(new IdentityHashMap<>());
+	private final List<Runnable>   deferredList = new ArrayList<>();
 	private final Deque<Signal<?>> pendingQueue = new ArrayDeque<>();
-	private final List<Runnable>       deferredList = new ArrayList<>();
 
 	private int               depth;
 	private int               readIndex;
 	private int               readCount;
+	private boolean           silent;
 	private boolean           tracing;
 	private boolean           flushing;
 	private ComputedSignal<?> observer;
@@ -45,15 +46,15 @@ public final class SignalContext {
 		return SignalContext.EPOCH.get();
 	}
 
-	protected static long nextEpoch() {
+	public static long nextEpoch() {
 		return SignalContext.EPOCH.incrementAndGet();
 	}
 
-	protected void open() {
+	public void open() {
 		this.depth++;
 	}
 
-	protected void close() {
+	public void close() {
 		this.depth--;
 		if (this.depth == 0 && !this.deferredList.isEmpty()) {
 			final List<Runnable> taskList = new ArrayList<>(this.deferredList);
@@ -63,11 +64,12 @@ public final class SignalContext {
 		this.flush();
 	}
 
-	protected void defer(final @NonNull Runnable task) {
+	public void defer(final @NonNull Runnable task) {
+		final Runnable deferred = this.silent ? () -> Signal.silent(task) : task;
 		if (this.depth > 0) {
-			this.deferredList.add(task);
+			this.deferredList.add(deferred);
 		} else {
-			ThreadUtils.runOnRenderThread(task);
+			ThreadUtils.runOnRenderThread(deferred);
 		}
 	}
 
@@ -78,6 +80,16 @@ public final class SignalContext {
 		} else if (this.tracing) {
 			this.record(signal);
 		}
+	}
+
+	public boolean silent(final boolean silent) {
+		final boolean previous = this.silent;
+		this.silent = silent;
+		return previous;
+	}
+
+	public boolean isSilent() {
+		return this.silent;
 	}
 
 	public boolean tracing(final boolean tracing) {
@@ -103,7 +115,7 @@ public final class SignalContext {
 		return previous;
 	}
 
-	protected void schedule(final Signal<?> signal) {
+	public void schedule(final Signal<?> signal) {
 		if (this.pendingSet.add(signal)) {
 			this.pendingQueue.add(signal);
 		}

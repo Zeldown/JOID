@@ -77,12 +77,8 @@ public abstract class UIBridge implements IUIBridge {
 
 		final MouseButton button = this.pressed;
 		final long deltaTime = BridgeHandler.CLOCK.get().currentTimeMillis() - this.pressTime;
-		for (final UI ui : this.getInputList()) {
-			if (ui.fireMouseDragged(button, deltaTime) || ui.getPopup().active()) {
-				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
-			}
-		}
-		return false;
+		final UI ui = this.dispatch(current -> current.fireMouseDragged(button, deltaTime));
+		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 	}
 
 	public final boolean mousePressed(final @NonNull MouseButton button) {
@@ -90,16 +86,12 @@ public abstract class UIBridge implements IUIBridge {
 		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.pressedNode = this.getHoveredNode();
 		this.consumedButtonSet.remove(button);
-		for (final UI ui : this.getInputList()) {
-			if (ui.fireMousePressed(button) || ui.getPopup().active()) {
-				final boolean consumed = UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
-				if (consumed) {
-					this.consumedButtonSet.add(button);
-				}
-				return consumed;
-			}
+		final UI ui = this.dispatch(current -> current.fireMousePressed(button));
+		final boolean consumed = ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
+		if (consumed) {
+			this.consumedButtonSet.add(button);
 		}
-		return false;
+		return consumed;
 	}
 
 	public final boolean mouseReleased(final @NonNull MouseButton button) {
@@ -109,12 +101,8 @@ public abstract class UIBridge implements IUIBridge {
 			this.pressedNode = null;
 		}
 
-		for (final UI ui : this.getInputList()) {
-			if (ui.fireMouseReleased(button) || ui.getPopup().active()) {
-				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick()) || consumed;
-			}
-		}
-		return consumed;
+		final UI ui = this.dispatch(current -> current.fireMouseReleased(button));
+		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick()) || consumed;
 	}
 
 	public final boolean mouseScroll(final double notchesX, final double notchesY) {
@@ -122,12 +110,8 @@ public abstract class UIBridge implements IUIBridge {
 			return false;
 		}
 
-		for (final UI ui : this.getInputList()) {
-			if (ui.fireMouseScroll(notchesX, notchesY) || ui.getPopup().active()) {
-				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelScroll());
-			}
-		}
-		return false;
+		final UI ui = this.dispatch(current -> current.fireMouseScroll(notchesX, notchesY));
+		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelScroll());
 	}
 
 	public final boolean charTyped(final int codepoint) {
@@ -135,34 +119,26 @@ public abstract class UIBridge implements IUIBridge {
 			return false;
 		}
 
-		for (final UI ui : this.getInputList()) {
-			if (ui.fireCharTyped(codepoint) || ui.getPopup().active()) {
-				return UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
-			}
-		}
-		return false;
+		final UI ui = this.dispatch(current -> current.fireCharTyped(codepoint));
+		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
 	}
 
 	public final boolean keyPressed(final @NonNull Key key) {
 		this.consumedKeySet.remove(key);
-		for (final UI ui : this.getInputList()) {
-			if (key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active()) {
-				this.consumedKeySet.add(key);
-				if (!ui.fireKeyPressed(key) && ui.fireClose()) {
-					this.close(ui);
-				}
-				return true;
+		final UI ui = this.dispatch(current -> UIBridge.isClosedBy(current, key) || current.fireKeyPressed(key));
+		if (ui != null && UIBridge.isClosedBy(ui, key)) {
+			this.consumedKeySet.add(key);
+			if (!ui.fireKeyPressed(key) && ui.fireClose()) {
+				this.close(ui);
 			}
-
-			if (ui.fireKeyPressed(key) || ui.getPopup().active()) {
-				final boolean consumed = UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
-				if (consumed) {
-					this.consumedKeySet.add(key);
-				}
-				return consumed;
-			}
+			return true;
 		}
-		return false;
+
+		final boolean consumed = ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
+		if (consumed) {
+			this.consumedKeySet.add(key);
+		}
+		return consumed;
 	}
 
 	public final boolean keyReleased(final @NonNull Key key) {
@@ -240,10 +216,6 @@ public abstract class UIBridge implements IUIBridge {
 		return this.uiList.contains(ui);
 	}
 
-	public boolean isScreenOpen() {
-		return this.hasScreen();
-	}
-
 	public boolean isOverlayHidden() {
 		return false;
 	}
@@ -312,6 +284,15 @@ public abstract class UIBridge implements IUIBridge {
 		}
 	}
 
+	private UI dispatch(final Predicate<UI> input) {
+		for (final UI ui : this.getInputList()) {
+			if (input.test(ui) || ui.getPopup().active()) {
+				return ui;
+			}
+		}
+		return null;
+	}
+
 	private Node getHoveredNode() {
 		for (final UI ui : this.getInputList()) {
 			final Node hovered = ui.getHoveredNode();
@@ -354,6 +335,10 @@ public abstract class UIBridge implements IUIBridge {
 
 	private static boolean isConsumed(final UI ui, final boolean cancel) {
 		return !ui.getOverlay().active() || cancel;
+	}
+
+	private static boolean isClosedBy(final UI ui, final Key key) {
+		return key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active();
 	}
 
 }

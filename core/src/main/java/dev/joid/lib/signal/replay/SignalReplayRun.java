@@ -1,7 +1,6 @@
 package dev.joid.lib.signal.replay;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -14,21 +13,24 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
 public final class SignalReplayRun {
 
-	private final Object                 self;
-	private final boolean                matching;
-	private final boolean                definitions;
-	private final Map<String, String>    holeMap;
-	private final List<Signal<?>>        positionalList;
-	private final Map<Object, Signal<?>> positionalMap;
+	@Getter private final Object                 self;
+	@Getter private final boolean                definitions;
+	@Getter private final Map<String, String>    holeMap;
+	@Getter private final Map<Object, Signal<?>> positionalMap;
 
-	private final List<Group>                      groupList;
-	private final List<Signal<?>>                  directList;
-	private final Map<SignalReplaySlice, Object[]> definitionCache;
+	private final boolean         matching;
+	private final List<Signal<?>> positionalList;
 
-	private boolean         positionalNeeded;
+	@Getter private final List<Signal<?>>                  directList;
+	@Getter private final Map<SignalReplaySlice, Object[]> definitionCache;
+
+	private final List<Group> groupList;
+
+	@Getter
+	private boolean positionalNeeded;
+
 	private List<Signal<?>> currentList;
 
 	private SignalReplayRun(final Object self, final boolean definitions, final boolean matching, final Map<String, String> holeMap, final List<Signal<?>> positionalList, final Map<Object, Signal<?>> positionalMap) {
@@ -123,34 +125,6 @@ public final class SignalReplayRun {
 			readList.addAll(group.readList);
 		}
 		return readList;
-	}
-
-	public Map<String, String> getHoleMap() {
-		return this.holeMap != null ? Collections.unmodifiableMap(this.holeMap) : null;
-	}
-
-	public List<Signal<?>> getPositionalList() {
-		return this.positionalList != null ? Collections.unmodifiableList(this.positionalList) : null;
-	}
-
-	public Map<Object, Signal<?>> getPositionalMap() {
-		return Collections.unmodifiableMap(this.positionalMap);
-	}
-
-	public List<Group> getGroupList() {
-		return Collections.unmodifiableList(this.groupList);
-	}
-
-	public List<Signal<?>> getDirectList() {
-		return Collections.unmodifiableList(this.directList);
-	}
-
-	public Map<SignalReplaySlice, Object[]> getDefinitionCache() {
-		return Collections.unmodifiableMap(this.definitionCache);
-	}
-
-	public List<Signal<?>> getCurrentList() {
-		return Collections.unmodifiableList(this.currentList);
 	}
 
 	private void flush() {

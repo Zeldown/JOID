@@ -96,31 +96,6 @@ public class GlslShaderTranslator {
 		return this.translateFragment(vertex, fragment, this.stencil);
 	}
 
-	public final @NonNull String translateFragment(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull StencilEmulation.Pass stencil) {
-		final Set<ShaderFeature> featureSet = EnumSet.noneOf(ShaderFeature.class);
-		featureSet.addAll(fragment.getFeatures());
-		if (stencil != StencilEmulation.Pass.NONE) {
-			featureSet.addAll(EnumSet.of(ShaderFeature.BITWISE_OPERATORS, ShaderFeature.SWITCH, ShaderFeature.TEXEL_FETCH));
-		}
-		this.require(featureSet);
-
-		final StringBuilder builder = this.createHeader(vertex, fragment, fragment, stencil).append(this.declareOutput());
-		this.appendSamplers(builder, vertex, fragment, fragment);
-		builder.append(this.getBorderFunctions(true));
-		final List<String> varyings = GlslShaderTranslator.getVaryings(vertex, fragment);
-		for (final ShaderVariable input : fragment.getInputs()) {
-			builder.append(this.declareVarying(input, varyings.indexOf(input.getName()), false));
-		}
-
-		if (!vertex.isLine()) {
-			return builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain(stencil)).toString();
-		}
-
-		this.appendLineVaryings(builder, varyings.size(), false);
-		builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
-		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(joid_LineAlong + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain(stencil)).toString();
-	}
-
 	public final @NonNull ShaderTranslation translate(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
 		final String stencilFragment = this.stencil == StencilEmulation.Pass.NONE ? null : this.translateFragment(vertex, fragment, StencilEmulation.Pass.WRITE);
 		return ShaderTranslation.of(this.dialect, this.translateVertex(vertex, fragment), this.translateFragment(vertex, fragment), stencilFragment);
@@ -132,25 +107,6 @@ public class GlslShaderTranslator {
 
 	public final @NonNull List<@NonNull ShaderVariable> getUniforms(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
 		return this.getUniforms(vertex, fragment, this.stencil);
-	}
-
-	public final @NonNull List<@NonNull ShaderVariable> getUniforms(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull StencilEmulation.Pass stencil) {
-		final List<ShaderVariable> uniformList = new ArrayList<>();
-		for (final ShaderBuiltin builtin : ShaderBuiltin.values()) {
-			if (builtin.getKind() == ShaderBuiltin.Kind.UNIFORM && this.isUniform(builtin) && (vertex.getBuiltins().contains(builtin) || fragment.getBuiltins().contains(builtin))) {
-				uniformList.add(ShaderVariable.create(builtin.getType(), builtin.getIdentifier(), "", false));
-			}
-		}
-
-		uniformList.addAll(this.getInternals(vertex, fragment, stencil));
-		for (final ShaderSource source : new ShaderSource[] {vertex, fragment}) {
-			for (final ShaderVariable uniform : source.getUniforms()) {
-				if (uniformList.stream().noneMatch(variable -> variable.getName().equals(uniform.getName()))) {
-					uniformList.add(uniform);
-				}
-			}
-		}
-		return uniformList;
 	}
 
 	public final @NonNull List<@NonNull ShaderVariable> getSamplers(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
@@ -177,7 +133,72 @@ public class GlslShaderTranslator {
 		return "std140";
 	}
 
-	protected @NonNull String getMain(final @NonNull StencilEmulation.Pass stencil) {
+	protected @NonNull String declareBuiltin(final @NonNull ShaderBuiltin builtin) {
+		return "";
+	}
+
+	protected @NonNull String declareSampler(final @NonNull ShaderVariable sampler, final int unit) {
+		return "uniform " + sampler.getDeclaration() + ";\n";
+	}
+
+	protected @NonNull String declareAttribute(final @NonNull ShaderBuiltin builtin, final int location) {
+		final String declaration = builtin.getType() + " " + builtin.getIdentifier() + ";\n";
+		if (this.dialect.hasExplicitLocations()) {
+			return "layout(location = " + location + ") in " + declaration;
+		}
+		return (this.dialect.hasInputOutputs() ? "in " : "attribute ") + declaration;
+	}
+
+	protected @NonNull String declareVarying(final @NonNull ShaderVariable varying, final int location, final boolean output) {
+		final String qualifier = this.dialect.hasInputOutputs() ? output ? "out " : "in " : "varying ";
+		return (varying.isFlat() ? "flat " : "") + qualifier + varying.getDeclaration() + ";\n";
+	}
+
+	private String translateFragment(final ShaderSource vertex, final ShaderSource fragment, final StencilEmulation.Pass stencil) {
+		final Set<ShaderFeature> featureSet = EnumSet.noneOf(ShaderFeature.class);
+		featureSet.addAll(fragment.getFeatures());
+		if (stencil != StencilEmulation.Pass.NONE) {
+			featureSet.addAll(EnumSet.of(ShaderFeature.BITWISE_OPERATORS, ShaderFeature.SWITCH, ShaderFeature.TEXEL_FETCH));
+		}
+		this.require(featureSet);
+
+		final StringBuilder builder = this.createHeader(vertex, fragment, fragment, stencil).append(this.declareOutput());
+		this.appendSamplers(builder, vertex, fragment, fragment);
+		builder.append(this.getBorderFunctions(true));
+		final List<String> varyings = GlslShaderTranslator.getVaryings(vertex, fragment);
+		for (final ShaderVariable input : fragment.getInputs()) {
+			builder.append(this.declareVarying(input, varyings.indexOf(input.getName()), false));
+		}
+
+		if (!vertex.isLine()) {
+			return builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_main()")).append(this.getMain(stencil)).toString();
+		}
+
+		this.appendLineVaryings(builder, varyings.size(), false);
+		builder.append(this.dialect.getLineDirective()).append(this.adapt(fragment.getBody(), vertex, fragment).replaceFirst("void\\s+main\\s*\\(\\s*\\)", "void joid_body()"));
+		return builder.append("\nvoid joid_main() {\n\tjoid_body();\n\tfloat joid_across = clamp(joid_LineWidth * 0.5 + 0.5 - abs(joid_LineAcross), 0.0, 1.0);\n\tfloat joid_along = clamp(joid_LineAlong + 0.5, 0.0, 1.0);\n\tfragColor = vec4(fragColor.rgb, fragColor.a * joid_across * joid_along);\n}\n").append(this.getMain(stencil)).toString();
+	}
+
+	private List<ShaderVariable> getUniforms(final ShaderSource vertex, final ShaderSource fragment, final StencilEmulation.Pass stencil) {
+		final List<ShaderVariable> uniformList = new ArrayList<>();
+		for (final ShaderBuiltin builtin : ShaderBuiltin.values()) {
+			if (builtin.getKind() == ShaderBuiltin.Kind.UNIFORM && this.isUniform(builtin) && (vertex.getBuiltins().contains(builtin) || fragment.getBuiltins().contains(builtin))) {
+				uniformList.add(ShaderVariable.create(builtin.getType(), builtin.getIdentifier(), "", false));
+			}
+		}
+
+		uniformList.addAll(this.getInternals(vertex, fragment, stencil));
+		for (final ShaderSource source : new ShaderSource[] {vertex, fragment}) {
+			for (final ShaderVariable uniform : source.getUniforms()) {
+				if (uniformList.stream().noneMatch(variable -> variable.getName().equals(uniform.getName()))) {
+					uniformList.add(uniform);
+				}
+			}
+		}
+		return uniformList;
+	}
+
+	private String getMain(final StencilEmulation.Pass stencil) {
 		if (stencil == StencilEmulation.Pass.NONE) {
 			return "\nvoid main() {\n\tjoid_main();\n\tif (joid_AlphaTest != 0 && fragColor.a <= joid_AlphaThreshold) {\n\t\tdiscard;\n\t}\n}\n";
 		}
@@ -190,7 +211,7 @@ public class GlslShaderTranslator {
 		+ (stencil == StencilEmulation.Pass.WRITE ? "\tint value = joid_stencilValue();\n\tvalue = joid_stencilApply(joid_stencilCompare(value) ? joid_StencilPass : joid_StencilFail, value);\n\tfragColor = vec4(float(value) / 255.0, 0.0, 0.0, 1.0);\n}\n" : "\tif (joid_StencilTest != 0 && !joid_stencilCompare(joid_stencilValue())) {\n\t\tdiscard;\n\t}\n}\n");
 	}
 
-	protected @NonNull List<@NonNull ShaderVariable> getInternals(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull StencilEmulation.Pass stencil) {
+	private List<ShaderVariable> getInternals(final ShaderSource vertex, final ShaderSource fragment, final StencilEmulation.Pass stencil) {
 		final List<ShaderVariable> internalList = new ArrayList<>();
 		internalList.add(ShaderVariable.create("int", GlslShaderTranslator.ALPHA_TEST, "", false));
 		internalList.add(ShaderVariable.create("float", GlslShaderTranslator.ALPHA_THRESHOLD, "", false));
@@ -213,27 +234,6 @@ public class GlslShaderTranslator {
 			internalList.add(ShaderVariable.create("int", GlslShaderTranslator.VERTEX_COLOR, "", false));
 		}
 		return internalList;
-	}
-
-	protected @NonNull String declareBuiltin(final @NonNull ShaderBuiltin builtin) {
-		return "";
-	}
-
-	protected @NonNull String declareSampler(final @NonNull ShaderVariable sampler, final int unit) {
-		return "uniform " + sampler.getDeclaration() + ";\n";
-	}
-
-	protected @NonNull String declareAttribute(final @NonNull ShaderBuiltin builtin, final int location) {
-		final String declaration = builtin.getType() + " " + builtin.getIdentifier() + ";\n";
-		if (this.dialect.hasExplicitLocations()) {
-			return "layout(location = " + location + ") in " + declaration;
-		}
-		return (this.dialect.hasInputOutputs() ? "in " : "attribute ") + declaration;
-	}
-
-	protected @NonNull String declareVarying(final @NonNull ShaderVariable varying, final int location, final boolean output) {
-		final String qualifier = this.dialect.hasInputOutputs() ? output ? "out " : "in " : "varying ";
-		return (varying.isFlat() ? "flat " : "") + qualifier + varying.getDeclaration() + ";\n";
 	}
 
 	private String declareOutput() {

@@ -149,26 +149,14 @@ public class ListSignalTest {
 	}
 
 	@Test
-	public void keepsItsSilenceForTheFirstMutationOfItsDefault() {
+	public void silencesTheMutationsOfItsScope() {
 		final List<List<String>> received = new ArrayList<>();
 		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Collections.singletonList("a")));
 		signal.onChange(received::add);
-		signal.silent();
-		signal.add("b");
+		signal.<ListSignal<String>>silent(list -> list.add("b").add("c"));
 		Assert.assertTrue(received.isEmpty());
-		signal.add("c");
-		Assert.assertEquals(Collections.singletonList(Arrays.asList("a", "b", "c")), received);
-	}
-
-	@Test
-	public void disarmsItsSilenceOnAMutationThatChangesNothing() {
-		final List<List<String>> received = new ArrayList<>();
-		final ListSignal<String> signal = new ListSignal<>(new ArrayList<>(Arrays.asList("a")));
-		signal.onChange(received::add);
-		signal.silent();
-		signal.remove("b");
-		signal.add("c");
-		Assert.assertEquals(Collections.singletonList(Arrays.asList("a", "c")), received);
+		signal.add("d");
+		Assert.assertEquals(Collections.singletonList(Arrays.asList("a", "b", "c", "d")), received);
 	}
 
 

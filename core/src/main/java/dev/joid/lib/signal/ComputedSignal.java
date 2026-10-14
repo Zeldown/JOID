@@ -61,11 +61,6 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public @NonNull ComputedSignal<T> silent() {
-		throw new IllegalStateException(this.refuse("silenced"));
-	}
-
-	@Override
 	public @NonNull ComputedSignal<T> onChange(final @NonNull ISignalListener<? super T> listener) {
 		final boolean listened = super.hasListeners();
 		super.onChange(listener);

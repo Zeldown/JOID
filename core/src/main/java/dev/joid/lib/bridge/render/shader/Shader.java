@@ -173,7 +173,7 @@ public abstract class Shader implements IShader {
 		}
 
 		this.builtin(ShaderBuiltin.PROJECTION_MATRIX.getIdentifier(), projection);
-		this.builtin(ShaderBuiltin.MODEL_VIEW_MATRIX.getIdentifier(), modelView.getMatrix());
+		this.builtin(ShaderBuiltin.MODEL_VIEW_MATRIX.getIdentifier(), modelView.getRawMatrix());
 		this.builtin(ShaderBuiltin.NORMAL_MATRIX.getIdentifier(), modelView.getNormalMatrix());
 		this.builtin(ShaderBuiltin.LIGHTING.getIdentifier(), state.isLighting());
 		this.builtin(GlslShaderTranslator.ALPHA_TEST, state.getAlphaCutoff() > 0F);
