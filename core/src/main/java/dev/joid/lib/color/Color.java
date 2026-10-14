@@ -10,13 +10,14 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.lock.LockableValue;
 import dev.joid.lib.utils.point.Point;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
-@EqualsAndHashCode
-public final class Color {
+@EqualsAndHashCode(callSuper = false)
+public final class Color extends LockableValue<Color> {
 
 	public static final Color RED         = new Color(1F, 0F, 0F, 1F).constant("RED");
 	public static final Color BLUE        = new Color(0F, 0F, 1F, 1F).constant("BLUE");
@@ -47,10 +48,6 @@ public final class Color {
 	@Getter
 	@EqualsAndHashCode.Exclude
 	private ColorGradient gradient;
-
-	@Getter
-	@EqualsAndHashCode.Exclude
-	private boolean frozen;
 
 	@EqualsAndHashCode.Exclude
 	private String constant;
@@ -452,19 +449,19 @@ public final class Color {
 	}
 
 	public @NonNull Color red(final float red) {
-		return this.assign(this.withRed(red), "withRed");
+		return this.mutate("withRed", () -> this.assign(this.withRed(red)));
 	}
 
 	public @NonNull Color blue(final float blue) {
-		return this.assign(this.withBlue(blue), "withBlue");
+		return this.mutate("withBlue", () -> this.assign(this.withBlue(blue)));
 	}
 
 	public @NonNull Color alpha(final float alpha) {
-		return this.assign(this.withAlpha(alpha), "withAlpha");
+		return this.mutate("withAlpha", () -> this.assign(this.withAlpha(alpha)));
 	}
 
 	public @NonNull Color green(final float green) {
-		return this.assign(this.withGreen(green), "withGreen");
+		return this.mutate("withGreen", () -> this.assign(this.withGreen(green)));
 	}
 
 	public @NonNull Color withRed(final float red) {
@@ -489,13 +486,9 @@ public final class Color {
 		return this.derive(this.r, green, this.b, this.a, color -> color.withGreen(green));
 	}
 
+	@Override
 	public @NonNull Color copy() {
 		return new Color(this);
-	}
-
-	public @NonNull Color freeze() {
-		this.frozen = true;
-		return this;
 	}
 
 	public @NonNull Color update() {
@@ -512,21 +505,16 @@ public final class Color {
 
 	private @NonNull Color constant(final @NonNull String name) {
 		this.constant = name;
-		return this.freeze();
+		return this.lock();
 	}
 
-	private @NonNull Color assign(final @NonNull Color color, final @NonNull String copy) {
-		if (this.frozen) {
-			throw new IllegalStateException((this.constant != null ? "Color." + this.constant + " is a constant" : "This color is frozen") + ", use " + copy + "(...) to get a modified copy");
-		}
-
+	private void assign(final @NonNull Color color) {
 		this.r = color.r;
 		this.g = color.g;
 		this.b = color.b;
 		this.a = color.a;
 		this.update = color.update;
 		this.gradient = color.gradient;
-		return this;
 	}
 
 	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform) {
@@ -573,6 +561,11 @@ public final class Color {
 			}
 		}
 		throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
+	}
+
+	@Override
+	protected @NonNull String describeLocked() {
+		return this.constant != null ? "Color." + this.constant + " is a constant" : super.describeLocked();
 	}
 
 	@Override

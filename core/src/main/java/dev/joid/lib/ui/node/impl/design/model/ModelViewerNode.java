@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
@@ -212,35 +211,19 @@ public class ModelViewerNode extends BaseModelNode {
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, Double>> listener) {
-		return this.beforeChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ModelViewerNode> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Double>> listener) {
-		return super.listen(ModelViewerNode.BEFORE_CHANGE, priority, listener);
+		return super.listen(ModelViewerNode.BEFORE_CHANGE, listener);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, Double>> listener) {
-		return this.onChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ModelViewerNode> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Double>> listener) {
-		return super.listen(ModelViewerNode.CHANGE, priority, listener);
+		return super.listen(ModelViewerNode.CHANGE, listener);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T beforeRotate(final @NonNull EventListener<NodeChangeEvent.Pre<T, Point>> listener) {
-		return this.beforeRotate(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ModelViewerNode> @NonNull T beforeRotate(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Point>> listener) {
-		return super.listen(ModelViewerNode.BEFORE_ROTATE, priority, listener);
+		return super.listen(ModelViewerNode.BEFORE_ROTATE, listener);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T onRotate(final @NonNull EventListener<NodeChangeEvent.Post<T, Point>> listener) {
-		return this.onRotate(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ModelViewerNode> @NonNull T onRotate(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Point>> listener) {
-		return super.listen(ModelViewerNode.ROTATE, priority, listener);
+		return super.listen(ModelViewerNode.ROTATE, listener);
 	}
 
 	private void settle() {

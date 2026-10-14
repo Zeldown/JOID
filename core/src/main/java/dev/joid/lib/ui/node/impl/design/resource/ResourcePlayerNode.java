@@ -9,7 +9,6 @@ import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeProgressEvent;
@@ -217,43 +216,23 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T onPlay(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onPlay(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T onPlay(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.PLAY, priority, listener);
+		return super.listen(ResourcePlayerNode.PLAY, listener);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onPause(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.PAUSE, priority, listener);
+		return super.listen(ResourcePlayerNode.PAUSE, listener);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T onStop(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onStop(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T onStop(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.STOP, priority, listener);
+		return super.listen(ResourcePlayerNode.STOP, listener);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T onEnd(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onEnd(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T onEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.END, priority, listener);
+		return super.listen(ResourcePlayerNode.END, listener);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T onProgress(final @NonNull EventListener<NodeProgressEvent<T>> listener) {
-		return this.onProgress(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T onProgress(final @NonNull EventPriority priority, final @NonNull EventListener<NodeProgressEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.PROGRESS, priority, listener);
+		return super.listen(ResourcePlayerNode.PROGRESS, listener);
 	}
 
 	@Override

@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
@@ -216,19 +215,11 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, V>> listener) {
-		return this.beforeChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, V>> listener) {
-		return super.listen(SelectorNode.BEFORE_CHANGE, priority, listener);
+		return super.listen(SelectorNode.BEFORE_CHANGE, listener);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, V>> listener) {
-		return this.onChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, V>> listener) {
-		return super.listen(SelectorNode.CHANGE, priority, listener);
+		return super.listen(SelectorNode.CHANGE, listener);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T open() {
@@ -242,35 +233,19 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T beforeOpen(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return this.beforeOpen(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T beforeOpen(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return super.listen(SelectorNode.BEFORE_OPEN, priority, listener);
+		return super.listen(SelectorNode.BEFORE_OPEN, listener);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T onOpen(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return this.onOpen(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T onOpen(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return super.listen(SelectorNode.OPEN, priority, listener);
+		return super.listen(SelectorNode.OPEN, listener);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T beforeClose(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return this.beforeClose(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T beforeClose(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return super.listen(SelectorNode.BEFORE_CLOSE, priority, listener);
+		return super.listen(SelectorNode.BEFORE_CLOSE, listener);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T onClose(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return this.onClose(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T onClose(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return super.listen(SelectorNode.CLOSE, priority, listener);
+		return super.listen(SelectorNode.CLOSE, listener);
 	}
 
 	private @NonNull Node find(final V value) {

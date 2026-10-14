@@ -1,5 +1,7 @@
 package dev.joid.lib.bridge.render;
 
+import java.util.function.Consumer;
+
 import dev.joid.lib.bridge.IBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
@@ -36,6 +38,15 @@ public interface IRenderBridge extends IBridge {
 
 	public void popState();
 	public void pushState();
+
+	public default void withState(final @NonNull Consumer<IRenderBridge> body) {
+		this.pushState();
+		try {
+			body.accept(this);
+		} finally {
+			this.popState();
+		}
+	}
 
 	public int getStateDepth();
 

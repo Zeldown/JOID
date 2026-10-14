@@ -11,7 +11,7 @@ public class UIDemo extends UI {
 				return;
 			}
 
-			super.getData().setActive(false);
+			super.getData().active(false);
 			JOID.open(new UIDemoChoice());
 			event.cancel();
 		});

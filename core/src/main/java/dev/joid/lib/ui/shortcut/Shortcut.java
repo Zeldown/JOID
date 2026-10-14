@@ -14,7 +14,6 @@ import dev.joid.lib.input.key.resolver.KeyResolver;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
@@ -80,11 +79,7 @@ public final class Shortcut {
 	}
 
 	public @NonNull Shortcut onTrigger(final @NonNull EventListener<ShortcutEvent> listener) {
-		return this.onTrigger(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull Shortcut onTrigger(final @NonNull EventPriority priority, final @NonNull EventListener<ShortcutEvent> listener) {
-		this.eventBus.listen(Shortcut.TRIGGER, priority, listener);
+		this.eventBus.listen(Shortcut.TRIGGER, listener);
 		return this;
 	}
 

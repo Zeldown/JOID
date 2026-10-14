@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
@@ -73,19 +72,11 @@ public abstract class ToggleNode<F, S> extends Node {
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return this.beforeChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ToggleNode<F, S>> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return super.listen(ToggleNode.BEFORE_CHANGE, priority, listener);
+		return super.listen(ToggleNode.BEFORE_CHANGE, listener);
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return this.onChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ToggleNode<F, S>> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return super.listen(ToggleNode.CHANGE, priority, listener);
+		return super.listen(ToggleNode.CHANGE, listener);
 	}
 
 	private void change(final boolean toggle, final boolean refusable) {

@@ -3,6 +3,9 @@ package dev.joid.lib.ui.core.data.overlay.interaction;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
+import dev.joid.lib.utils.annotation.AnnotationValues;
+
 public class UIDataOverlayInteractionObjectTest {
 
 	@Test
@@ -17,7 +20,7 @@ public class UIDataOverlayInteractionObjectTest {
 	@Test
 	public void changesEveryValue() {
 		final UIDataOverlayInteractionObject data = new UIDataOverlayInteractionObject();
-		Assert.assertSame(data, data.setActive(true).setCancelClick(false).setCancelScroll(false).setCancelKeyboard(false));
+		Assert.assertSame(data, data.active(true).cancelClick(false).cancelScroll(false).cancelKeyboard(false));
 		Assert.assertTrue(data.active());
 		Assert.assertFalse(data.cancelClick());
 		Assert.assertFalse(data.cancelScroll());
@@ -26,18 +29,19 @@ public class UIDataOverlayInteractionObjectTest {
 
 	@Test
 	public void takesOnlyTheValuesChangedInTheAnnotation() {
-		final UIDataOverlayInteractionObject previous = new UIDataOverlayInteractionObject();
-		final UIDataOverlayInteractionObject next = new UIDataOverlayInteractionObject().setCancelScroll(false);
-		final UIDataOverlayInteractionObject data = new UIDataOverlayInteractionObject().setActive(true);
-		Assert.assertSame(data, data.update(previous, next));
+		final UIDataOverlayInteraction previous = DefaultUI.class.getAnnotation(UIDataOverlay.class).interaction();
+		final UIDataOverlayInteraction next = ScrollUI.class.getAnnotation(UIDataOverlay.class).interaction();
+		final UIDataOverlayInteractionObject data = new UIDataOverlayInteractionObject().active(true);
+		Assert.assertSame(data, AnnotationValues.merge(data, previous, next));
 		Assert.assertTrue(data.active());
 		Assert.assertFalse(data.cancelScroll());
 		Assert.assertTrue(data.cancelClick());
 	}
 
-	@Test
-	public void standsForAUIDataOverlayInteraction() {
-		Assert.assertSame(UIDataOverlayInteraction.class, new UIDataOverlayInteractionObject().annotationType());
-	}
+	@UIDataOverlay
+	public static class DefaultUI {}
+
+	@UIDataOverlay(interaction = @UIDataOverlayInteraction(cancelScroll = false))
+	public static class ScrollUI {}
 
 }

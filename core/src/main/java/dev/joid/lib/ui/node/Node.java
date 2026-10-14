@@ -57,7 +57,6 @@ import dev.joid.lib.ui.event.ConsumableEvent;
 import dev.joid.lib.ui.event.Event;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeAnimateEvent;
@@ -91,7 +90,7 @@ import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.list.IndexedConcurrentList;
+import dev.joid.lib.utils.list.IndexedList;
 import dev.joid.lib.utils.point.Point;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -156,8 +155,8 @@ public abstract class Node implements INode {
 	private final transient Map<TweenAnimator, Float> animatorMap;
 
 	private final List<Node>                      children;
+	private final IndexedList<Node>               drawList;
 	private final LinkedList<INodeLayer>          layerList;
-	private final IndexedConcurrentList<Node>     drawList;
 	private final Map<Class<?>, NodeEffect<Node>> effectMap;
 
 	private final List<IHoverElement>          hoverElementList;
@@ -265,7 +264,7 @@ public abstract class Node implements INode {
 		this.hoverAnimator = TweenAnimator.create();
 
 		this.children  = new CopyOnWriteArrayList<>();
-		this.drawList  = new IndexedConcurrentList<>();
+		this.drawList  = IndexedList.concurrent();
 		this.layerList = new LinkedList<>();
 		this.effectMap = new LinkedHashMap<>();
 
@@ -330,310 +329,297 @@ public abstract class Node implements INode {
 	public final void render(final double mouseX, final double mouseY) {
 		final long now = BridgeHandler.CLOCK.get().nanoTime();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().push();
 		try {
-			Color.reset();
-			this.pull();
-			if (this.parent != null) {
-				render.getModelView().translate(this.parent.x, this.parent.y, 0D);
-				if (this.position == PositionProperty.ABSOLUTE) {
-					render.getModelView().translate(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
-				}
-			}
-
-			render.getModelView().translate(0D, 0D, this.zlevel);
-
-			if (this.isVisible()) {
-				if (this.aspectRatio > 0D) {
-					if (this.width != 0) {
-						this.height = this.width / this.aspectRatio;
-					} else if (this.height != 0) {
-						this.width = this.height * this.aspectRatio;
+			render.getModelView().with(matrix -> {
+				Color.reset();
+				this.pull();
+				if (this.parent != null) {
+					matrix.translate(this.parent.x, this.parent.y, 0D);
+					if (this.position == PositionProperty.ABSOLUTE) {
+						matrix.translate(-this.parent.getAbsoluteX(), -this.parent.getAbsoluteY(), 0D);
 					}
 				}
 
-				this.place();
+				matrix.translate(0D, 0D, this.zlevel);
 
-				final boolean wasHovered = this.hovered;
-				this.hovered = this.computeHovered();
-				final boolean hoverShown = this.hovered && this.isEnabled();
-				if (hoverShown != this.hoverShown) {
-					this.hoverShown = hoverShown;
-					this.hoverAnimator.sequence(this.hoverDuration, hoverShown ? 1F : 0F, this.hoverEquation).start();
-				}
-
-				if (!wasHovered && this.hovered) {
-					this.fire(Node.HOVER_START, () -> NodeHoverEvent.create(this, mouseX, mouseY));
-				}
-
-				if (wasHovered && !this.hovered) {
-					this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, mouseX, mouseY));
-				}
-
-				if (this.hovered) {
-					this.fire(Node.HOVER, () -> NodeHoverEvent.create(this, mouseX, mouseY));
-				}
-
-				boolean scrollsX = false;
-				boolean scrollsY = false;
-				if (this.overflow == OverflowProperty.SCROLL) {
-					this.maxScrollX = 0;
-					double scrollOffsetX = Double.MIN_VALUE;
-					for (final Node child : this.drawList) {
-						if (child.position == PositionProperty.ABSOLUTE) {
-							continue;
-						}
-
-						this.maxScrollX = Math.max(this.maxScrollX, child.getPlacedX() + child.getContentWidth() - this.width);
-						if (scrollOffsetX == Double.MIN_VALUE) {
-							scrollOffsetX = child.getPlacedX();
-						} else {
-							scrollOffsetX = Math.min(scrollOffsetX, child.getPlacedX());
+				if (this.isVisible()) {
+					if (this.aspectRatio > 0D) {
+						if (this.width != 0) {
+							this.height = this.width / this.aspectRatio;
+						} else if (this.height != 0) {
+							this.width = this.height * this.aspectRatio;
 						}
 					}
 
-					if (this.hasOverflowX()) {
-						this.maxScrollX += scrollOffsetX;
-						scrollsX = true;
+					this.place();
+
+					final boolean wasHovered = this.hovered;
+					this.hovered = this.computeHovered();
+					final boolean hoverShown = this.hovered && this.isEnabled();
+					if (hoverShown != this.hoverShown) {
+						this.hoverShown = hoverShown;
+						this.hoverAnimator.sequence(this.hoverDuration, hoverShown ? 1F : 0F, this.hoverEquation).start();
 					}
 
-					this.maxScrollY = 0;
-					double scrollOffsetY = Double.MIN_VALUE;
-					for (final Node child : this.drawList) {
-						if (child.position == PositionProperty.ABSOLUTE) {
-							continue;
-						}
-
-						this.maxScrollY = Math.max(this.maxScrollY, child.getPlacedY() + child.getContentHeight() - this.height);
-						if (scrollOffsetY == Double.MIN_VALUE) {
-							scrollOffsetY = child.getPlacedY();
-						} else {
-							scrollOffsetY = Math.min(scrollOffsetY, child.getPlacedY());
-						}
+					if (!wasHovered && this.hovered) {
+						this.fire(Node.HOVER_START, () -> NodeHoverEvent.create(this, mouseX, mouseY));
 					}
 
-					if (this.hasOverflowY()) {
-						this.maxScrollY += scrollOffsetY;
-						scrollsY = true;
-					}
-				}
-
-				this.scroll(ScrollAxis.HORIZONTAL, Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0), false);
-				this.scroll(ScrollAxis.VERTICAL, Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0), false);
-				this.scrollEndX = this.scrollEndX && this.targetScrollX == -this.maxScrollX;
-				this.scrollEndY = this.scrollEndY && this.targetScrollY == -this.maxScrollY;
-
-				if (this.targetScrollX != this.scrollX) {
-					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-					this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed, speed, true);
-				}
-
-				if (this.targetScrollY != this.scrollY) {
-					final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-					this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
-				}
-
-				if (this.scrollEndX && this.scrollX == this.targetScrollX) {
-					this.scrollEndX = false;
-					this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, ScrollAxis.HORIZONTAL, this.scrollX, this.scrollX));
-				}
-
-				if (this.scrollEndY && this.scrollY == this.targetScrollY) {
-					this.scrollEndY = false;
-					this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, ScrollAxis.VERTICAL, this.scrollY, this.scrollY));
-				}
-
-				if (this.overflow == OverflowProperty.SCROLL) {
-					final PixelGrid grid = render.getPixelGrid();
-					final double offsetX = scrollsX ? grid.quantizeX(this.scrollX) : 0D;
-					final double offsetY = scrollsY ? grid.quantizeY(this.scrollY) : 0D;
-					for (final Node child : this.drawList) {
-						if (child.position != PositionProperty.ABSOLUTE) {
-							child.shiftX = offsetX;
-							child.shiftY = offsetY;
-							child.place();
-						}
-					}
-				}
-
-				if (this.scrollbar != null) {
-					if (this.scrollbar.isHorizontal() && this.hasOverflowX()) {
-						final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollX / this.maxScrollX)));
-						this.layoutPosition(this.scrollbar, this.scrollbar.getScrollWidth() * percent, 0D);
+					if (wasHovered && !this.hovered) {
+						this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, mouseX, mouseY));
 					}
 
-					if (!this.scrollbar.isHorizontal() && this.hasOverflowY()) {
-						final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollY / this.maxScrollY)));
-						this.layoutPosition(this.scrollbar, 0D, this.scrollbar.getScrollHeight() * percent);
-					}
-				}
-
-				if (this.dragging && BridgeHandler.WINDOW.get().isMouseGrabbed()) {
-					this.stopDragging();
-				}
-
-				if (this.draggable != null && this.draggable.isEnabled(this)) {
-					if (!this.dragging && !this.dragged) {
-						this.targetDragX = this.getAbsoluteX();
-						this.targetDragY = this.getAbsoluteY();
+					if (this.hovered) {
+						this.fire(Node.HOVER, () -> NodeHoverEvent.create(this, mouseX, mouseY));
 					}
 
-					if (this.draggable.getAreaType() != DraggableAreaType.FREE && (this.draggable.getAreaType() != DraggableAreaType.PARENT || this.parent != null) && (this.dragging || this.draggable.getType() == DraggableType.MOVE)) {
-						final double[] bounds = this.draggable.getBounds(this);
-						final double boundX = bounds[0];
-						final double boundY = bounds[1];
-						final double boundWidth = bounds[2];
-						final double boundHeight = bounds[3];
-
-						final double targetX = this.targetDragX;
-						final double targetY = this.targetDragY;
-						if (this.targetDragX < boundX) {
-							this.targetDragX = boundX;
-						} else if (this.targetDragX + this.width > boundX + boundWidth) {
-							this.targetDragX = boundX + boundWidth - this.width;
-						}
-
-						if (this.targetDragY < boundY) {
-							this.targetDragY = boundY;
-						} else if (this.targetDragY + this.height > boundY + boundHeight) {
-							this.targetDragY = boundY + boundHeight - this.height;
-						}
-
-						if (this.targetDragX != targetX || this.targetDragY != targetY) {
-							this.dragged = true;
-						}
-					}
-
-					if (this.dragged) {
-						if (this.draggable.getType() == DraggableType.MOVE) {
-							final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteX(), this.targetDragX);
-							final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteY(), this.targetDragY);
-							final double diffX = this.getAbsoluteX() - this.x;
-							final double diffY = this.getAbsoluteY() - this.y;
-
-							if (!this.dragTo(newAbsoluteX - diffX, newAbsoluteY - diffY)) {
-								this.targetDragX = this.getAbsoluteX();
-								this.targetDragY = this.getAbsoluteY();
+					boolean scrollsX = false;
+					boolean scrollsY = false;
+					if (this.overflow == OverflowProperty.SCROLL) {
+						this.maxScrollX = 0;
+						double scrollOffsetX = Double.MIN_VALUE;
+						for (final Node child : this.drawList) {
+							if (child.position == PositionProperty.ABSOLUTE) {
+								continue;
 							}
-						} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
-							final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteX(), this.targetDragX);
-							final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteY(), this.targetDragY);
-							this.draggedNode.moveTo(newAbsoluteX, newAbsoluteY);
+
+							this.maxScrollX = Math.max(this.maxScrollX, child.getPlacedX() + child.getContentWidth() - this.width);
+							if (scrollOffsetX == Double.MIN_VALUE) {
+								scrollOffsetX = child.getPlacedX();
+							} else {
+								scrollOffsetX = Math.min(scrollOffsetX, child.getPlacedX());
+							}
 						}
 
-						if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
-							this.dragged = false;
+						if (this.hasOverflowX()) {
+							this.maxScrollX += scrollOffsetX;
+							scrollsX = true;
+						}
+
+						this.maxScrollY = 0;
+						double scrollOffsetY = Double.MIN_VALUE;
+						for (final Node child : this.drawList) {
+							if (child.position == PositionProperty.ABSOLUTE) {
+								continue;
+							}
+
+							this.maxScrollY = Math.max(this.maxScrollY, child.getPlacedY() + child.getContentHeight() - this.height);
+							if (scrollOffsetY == Double.MIN_VALUE) {
+								scrollOffsetY = child.getPlacedY();
+							} else {
+								scrollOffsetY = Math.min(scrollOffsetY, child.getPlacedY());
+							}
+						}
+
+						if (this.hasOverflowY()) {
+							this.maxScrollY += scrollOffsetY;
+							scrollsY = true;
 						}
 					}
-				}
 
-				if (this.x != this.drawnX || this.y != this.drawnY) {
-					if (!this.moving) {
-						this.restX = this.drawnX;
-						this.restY = this.drawnY;
-						this.moving = true;
+					this.scroll(ScrollAxis.HORIZONTAL, Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0), false);
+					this.scroll(ScrollAxis.VERTICAL, Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0), false);
+					this.scrollEndX = this.scrollEndX && this.targetScrollX == -this.maxScrollX;
+					this.scrollEndY = this.scrollEndY && this.targetScrollY == -this.maxScrollY;
+
+					if (this.targetScrollX != this.scrollX) {
+						final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
+						this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed, speed, true);
+					}
+
+					if (this.targetScrollY != this.scrollY) {
+						final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
+						this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
+					}
+
+					if (this.scrollEndX && this.scrollX == this.targetScrollX) {
+						this.scrollEndX = false;
+						this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, ScrollAxis.HORIZONTAL, this.scrollX, this.scrollX));
+					}
+
+					if (this.scrollEndY && this.scrollY == this.targetScrollY) {
+						this.scrollEndY = false;
+						this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, ScrollAxis.VERTICAL, this.scrollY, this.scrollY));
+					}
+
+					if (this.overflow == OverflowProperty.SCROLL) {
+						final PixelGrid grid = render.getPixelGrid();
+						final double offsetX = scrollsX ? grid.quantizeX(this.scrollX) : 0D;
+						final double offsetY = scrollsY ? grid.quantizeY(this.scrollY) : 0D;
+						for (final Node child : this.drawList) {
+							if (child.position != PositionProperty.ABSOLUTE) {
+								child.shiftX = offsetX;
+								child.shiftY = offsetY;
+								child.place();
+							}
+						}
+					}
+
+					if (this.scrollbar != null) {
+						if (this.scrollbar.isHorizontal() && this.hasOverflowX()) {
+							final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollX / this.maxScrollX)));
+							this.layoutPosition(this.scrollbar, this.scrollbar.getScrollWidth() * percent, 0D);
+						}
+
+						if (!this.scrollbar.isHorizontal() && this.hasOverflowY()) {
+							final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollY / this.maxScrollY)));
+							this.layoutPosition(this.scrollbar, 0D, this.scrollbar.getScrollHeight() * percent);
+						}
+					}
+
+					if (this.dragging && BridgeHandler.WINDOW.get().isMouseGrabbed()) {
+						this.stopDragging();
+					}
+
+					if (this.draggable != null && this.draggable.isEnabled(this)) {
+						if (!this.dragging && !this.dragged) {
+							this.targetDragX = this.getAbsoluteX();
+							this.targetDragY = this.getAbsoluteY();
+						}
+
+						if (this.draggable.getAreaType() != DraggableAreaType.FREE && (this.draggable.getAreaType() != DraggableAreaType.PARENT || this.parent != null) && (this.dragging || this.draggable.getType() == DraggableType.MOVE)) {
+							final double[] bounds = this.draggable.getBounds(this);
+							final double boundX = bounds[0];
+							final double boundY = bounds[1];
+							final double boundWidth = bounds[2];
+							final double boundHeight = bounds[3];
+
+							final double targetX = this.targetDragX;
+							final double targetY = this.targetDragY;
+							if (this.targetDragX < boundX) {
+								this.targetDragX = boundX;
+							} else if (this.targetDragX + this.width > boundX + boundWidth) {
+								this.targetDragX = boundX + boundWidth - this.width;
+							}
+
+							if (this.targetDragY < boundY) {
+								this.targetDragY = boundY;
+							} else if (this.targetDragY + this.height > boundY + boundHeight) {
+								this.targetDragY = boundY + boundHeight - this.height;
+							}
+
+							if (this.targetDragX != targetX || this.targetDragY != targetY) {
+								this.dragged = true;
+							}
+						}
+
+						if (this.dragged) {
+							if (this.draggable.getType() == DraggableType.MOVE) {
+								final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteX(), this.targetDragX);
+								final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteY(), this.targetDragY);
+								final double diffX = this.getAbsoluteX() - this.x;
+								final double diffY = this.getAbsoluteY() - this.y;
+
+								if (!this.dragTo(newAbsoluteX - diffX, newAbsoluteY - diffY)) {
+									this.targetDragX = this.getAbsoluteX();
+									this.targetDragY = this.getAbsoluteY();
+								}
+							} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
+								final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteX(), this.targetDragX);
+								final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteY(), this.targetDragY);
+								this.draggedNode.moveTo(newAbsoluteX, newAbsoluteY);
+							}
+
+							if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
+								this.dragged = false;
+							}
+						}
+					}
+
+					if (this.x != this.drawnX || this.y != this.drawnY) {
+						if (!this.moving) {
+							this.restX = this.drawnX;
+							this.restY = this.drawnY;
+							this.moving = true;
+						}
+					} else {
+						this.moving = false;
+					}
+
+					this.drawnX = this.x;
+					this.drawnY = this.y;
+					if (this.moving) {
+						render.quantize(this.x - this.restX, this.y - this.restY);
+					}
+
+					final boolean wasMounted = this.mounted;
+					this.mounted = this.isMounted();
+
+					if (!wasMounted && this.mounted) {
+						this.fire(Node.MOUNT, () -> NodeEvent.create(this));
+					}
+
+					final List<NodeEffect<Node>> effects = this.getAppliedEffects();
+					final List<NodeEffect<Node>> shaderEffects = effects.stream().filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
+					final List<NodeEffect<Node>> otherEffects = effects.stream().filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
+
+					final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
+					final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
+
+					otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
+
+					final Runnable maskDraw = () -> {
+						this.ui.mask(this.x, this.y, this.width, this.height, () -> {
+							if (this.overflow != OverflowProperty.NONE) {
+								this.drawList.forEach(child -> child.overflowArea = this);
+							} else if (this.overflowArea != null) {
+								this.drawList.forEach(child -> child.overflowArea = this.overflowArea);
+							}
+
+							if (this.skeleton != null && !this.mounted) {
+								this.skeleton.render(mouseX, mouseY);
+								this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+								return;
+							}
+
+							this.drawList.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
+							final Runnable selfDraw = () -> {
+								if (this.mounted) {
+									this.draw(mouseX, mouseY);
+								} else {
+									this.drawSkeleton(mouseX, mouseY);
+								}
+							};
+							if (selfShaderEffects.isEmpty()) {
+								selfDraw.run();
+							} else {
+								final List<IShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+								ShaderPipeline.render(this, selfPasses, selfDraw);
+							}
+							this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+
+							this.drawList.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
+							this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
+
+							if (this.draggedNode != null) {
+								this.renderDraggedNode(mouseX, mouseY);
+							}
+							this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+						}, this.overflow != OverflowProperty.NONE);
+					};
+
+					try {
+						if (!subtreeShaderEffects.isEmpty()) {
+							final List<IShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
+							ShaderPipeline.render(this, subtreePasses, maskDraw);
+						} else {
+							maskDraw.run();
+						}
+					} finally {
+						for (int i = otherEffects.size() - 1; i >= 0; i--) {
+							otherEffects.get(i).post(this, mouseX, mouseY);
+						}
+					}
+
+					if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
+						this.scrollbar.render(mouseX, mouseY);
 					}
 				} else {
-					this.moving = false;
+					this.endHover(true);
 				}
-
-				this.drawnX = this.x;
-				this.drawnY = this.y;
-				if (this.moving) {
-					render.quantize(this.x - this.restX, this.y - this.restY);
-				}
-
-				final boolean wasMounted = this.mounted;
-				this.mounted = this.isMounted();
-
-				if (!wasMounted && this.mounted) {
-					this.fire(Node.MOUNT, () -> NodeEvent.create(this));
-				}
-
-				final List<NodeEffect<Node>> effects = this.getAppliedEffects();
-				final List<NodeEffect<Node>> shaderEffects = effects.stream().filter(NodeEffect::isShaderEffect).collect(Collectors.toList());
-				final List<NodeEffect<Node>> otherEffects = effects.stream().filter(e -> !e.isShaderEffect()).collect(Collectors.toList());
-
-				final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
-				final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
-
-				otherEffects.forEach(effect -> effect.pre(this, mouseX, mouseY));
-
-				final Runnable maskDraw = () -> {
-					this.ui.mask(this.x, this.y, this.width, this.height, () -> {
-						if (this.overflow != OverflowProperty.NONE) {
-							this.drawList.forEach(child -> child.overflowArea = this);
-						} else if (this.overflowArea != null) {
-							this.drawList.forEach(child -> child.overflowArea = this.overflowArea);
-						}
-
-						if (this.skeleton != null && !this.mounted) {
-							this.skeleton.render(mouseX, mouseY);
-							this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-							return;
-						}
-
-						this.drawList.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-						final Runnable selfDraw = () -> {
-							if (this.mounted) {
-								this.draw(mouseX, mouseY);
-							} else {
-								this.drawSkeleton(mouseX, mouseY);
-							}
-						};
-						if (selfShaderEffects.isEmpty()) {
-							selfDraw.run();
-						} else {
-							final List<IShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-							ShaderPipeline.render(this, selfPasses, selfDraw);
-						}
-						this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-
-						this.drawList.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
-						this.layerList.forEach(layer -> layer.draw(mouseX, mouseY));
-
-						if (this.draggedNode != null) {
-							render.pushState();
-							render.getModelView().push();
-							try {
-								render.getState().stencil(StencilState.DISABLED);
-
-								if (this.parent != null) {
-									render.getModelView().translate(-this.parent.x, -this.parent.y, 0D);
-								}
-
-								this.draggedNode.render(mouseX, mouseY);
-							} finally {
-								render.getModelView().pop();
-								render.popState();
-							}
-						}
-						this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-					}, this.overflow != OverflowProperty.NONE);
-				};
-
-				try {
-					if (!subtreeShaderEffects.isEmpty()) {
-						final List<IShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-						ShaderPipeline.render(this, subtreePasses, maskDraw);
-					} else {
-						maskDraw.run();
-					}
-				} finally {
-					for (int i = otherEffects.size() - 1; i >= 0; i--) {
-						otherEffects.get(i).post(this, mouseX, mouseY);
-					}
-				}
-
-				if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
-					this.scrollbar.render(mouseX, mouseY);
-				}
-			} else {
-				this.endHover(true);
-			}
+			});
 		} finally {
 			Color.reset();
-			render.getModelView().pop();
 		}
 		this.renderTime = BridgeHandler.CLOCK.get().nanoTime() - now;
 	}
@@ -653,6 +639,18 @@ public abstract class Node implements INode {
 
 		hoverList.forEach(element -> element.render(this, mouseX, mouseY));
 		return !hoverList.isEmpty();
+	}
+
+	private void renderDraggedNode(final double mouseX, final double mouseY) {
+		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
+			render.getState().stencil(StencilState.DISABLED);
+
+			if (this.parent != null) {
+				matrix.translate(-this.parent.x, -this.parent.y, 0D);
+			}
+
+			this.draggedNode.render(mouseX, mouseY);
+		}));
 	}
 
 	private double getContentWidth() {
@@ -704,19 +702,11 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T onUpdate(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onUpdate(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onUpdate(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.listen(Node.UPDATE, priority, listener);
+		return this.listen(Node.UPDATE, listener);
 	}
 
 	public final <T extends Node> @NonNull T handleMouseScroll(final @NonNull EventListener<NodeMouseScrollEvent<T>> listener) {
-		return this.handleMouseScroll(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T handleMouseScroll(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseScrollEvent<T>> listener) {
-		return this.listen(Node.HANDLE_MOUSE_SCROLL, priority, listener);
+		return this.listen(Node.HANDLE_MOUSE_SCROLL, listener);
 	}
 
 	public final boolean fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY) {
@@ -772,11 +762,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T handleMouseDragged(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.handleMouseDragged(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T handleMouseDragged(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.listen(Node.HANDLE_MOUSE_DRAGGED, priority, listener);
+		return this.listen(Node.HANDLE_MOUSE_DRAGGED, listener);
 	}
 
 	public final boolean fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime) {
@@ -824,11 +810,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T handleMousePressed(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.handleMousePressed(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T handleMousePressed(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.listen(Node.HANDLE_MOUSE_PRESSED, priority, listener);
+		return this.listen(Node.HANDLE_MOUSE_PRESSED, listener);
 	}
 
 	public final boolean fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button) {
@@ -880,11 +862,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T handleMouseReleased(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.handleMouseReleased(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T handleMouseReleased(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.listen(Node.HANDLE_MOUSE_RELEASED, priority, listener);
+		return this.listen(Node.HANDLE_MOUSE_RELEASED, listener);
 	}
 
 	public final boolean fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button) {
@@ -926,11 +904,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T handleCharTyped(final @NonNull EventListener<NodeCharEvent<T>> listener) {
-		return this.handleCharTyped(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T handleCharTyped(final @NonNull EventPriority priority, final @NonNull EventListener<NodeCharEvent<T>> listener) {
-		return this.listen(Node.HANDLE_CHAR_TYPED, priority, listener);
+		return this.listen(Node.HANDLE_CHAR_TYPED, listener);
 	}
 
 	public final boolean fireCharTyped(final int codepoint) {
@@ -970,11 +944,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T handleKeyPressed(final @NonNull EventListener<NodeKeyEvent<T>> listener) {
-		return this.handleKeyPressed(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T handleKeyPressed(final @NonNull EventPriority priority, final @NonNull EventListener<NodeKeyEvent<T>> listener) {
-		return this.listen(Node.HANDLE_KEY_PRESSED, priority, listener);
+		return this.listen(Node.HANDLE_KEY_PRESSED, listener);
 	}
 
 	public final boolean fireKeyPressed(final @NonNull Key key) {
@@ -1038,11 +1008,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T onDetach(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onDetach(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onDetach(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.listen(Node.DETACH, priority, listener);
+		return this.listen(Node.DETACH, listener);
 	}
 
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {
@@ -1236,8 +1202,8 @@ public abstract class Node implements INode {
 		return true;
 	}
 
-	protected final <T extends Node> @NonNull T listen(final @NonNull EventType<?> type, final @NonNull EventPriority priority, final @NonNull EventListener<?> listener) {
-		this.eventBus.listen(type, priority, listener);
+	protected final <T extends Node> @NonNull T listen(final @NonNull EventType<?> type, final @NonNull EventListener<?> listener) {
+		this.eventBus.listen(type, listener);
 		return (T) this;
 	}
 
@@ -2413,187 +2379,95 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T onClick(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.onClick(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onClick(final @NonNull EventPriority priority, final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.listen(Node.CLICK, priority, listener);
+		return this.listen(Node.CLICK, listener);
 	}
 
 	public final <T extends Node> @NonNull T onInit(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onInit(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onInit(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.listen(Node.INIT, priority, listener);
+		return this.listen(Node.INIT, listener);
 	}
 
 	public final <T extends Node> @NonNull T onRender(final @NonNull EventListener<NodeDrawEvent<T>> listener) {
-		return this.onRender(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onRender(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDrawEvent<T>> listener) {
-		return this.listen(Node.RENDER, priority, listener);
+		return this.listen(Node.RENDER, listener);
 	}
 
 	public final <T extends Node> @NonNull T onDraw(final @NonNull EventListener<NodeDrawEvent<T>> listener) {
-		return this.onDraw(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onDraw(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDrawEvent<T>> listener) {
-		return this.listen(Node.DRAW, priority, listener);
+		return this.listen(Node.DRAW, listener);
 	}
 
 	public final <T extends Node> @NonNull T onChildAppend(final @NonNull EventListener<NodeChildEvent<T>> listener) {
-		return this.onChildAppend(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onChildAppend(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChildEvent<T>> listener) {
-		return this.listen(Node.CHILD_APPEND, priority, listener);
+		return this.listen(Node.CHILD_APPEND, listener);
 	}
 
 	public final <T extends Node> @NonNull T onMount(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onMount(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onMount(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.listen(Node.MOUNT, priority, listener);
+		return this.listen(Node.MOUNT, listener);
 	}
 
 	public final <T extends Node> @NonNull T onWatch(final @NonNull EventListener<NodeWatchEvent<T>> listener) {
-		return this.onWatch(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onWatch(final @NonNull EventPriority priority, final @NonNull EventListener<NodeWatchEvent<T>> listener) {
-		return this.listen(Node.WATCH, priority, listener);
+		return this.listen(Node.WATCH, listener);
 	}
 
 	public final <T extends Node> @NonNull T onAnimate(final @NonNull EventListener<NodeAnimateEvent<T>> listener) {
-		return this.onAnimate(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onAnimate(final @NonNull EventPriority priority, final @NonNull EventListener<NodeAnimateEvent<T>> listener) {
-		return this.listen(Node.ANIMATE, priority, listener);
+		return this.listen(Node.ANIMATE, listener);
 	}
 
 	public final <T extends Node> @NonNull T beforeScroll(final @NonNull EventListener<NodeScrollEvent.Pre<T>> listener) {
-		return this.beforeScroll(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T beforeScroll(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent.Pre<T>> listener) {
-		return this.listen(Node.BEFORE_SCROLL, priority, listener);
+		return this.listen(Node.BEFORE_SCROLL, listener);
 	}
 
 	public final <T extends Node> @NonNull T onScroll(final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
-		return this.onScroll(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onScroll(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
-		return this.listen(Node.SCROLL, priority, listener);
+		return this.listen(Node.SCROLL, listener);
 	}
 
 	public final <T extends Node> @NonNull T onScrollToEnd(final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
-		return this.onScrollToEnd(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onScrollToEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
-		return this.listen(Node.SCROLL_TO_END, priority, listener);
+		return this.listen(Node.SCROLL_TO_END, listener);
 	}
 
 	public final <T extends Node> @NonNull T onScrollAtEnd(final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
-		return this.onScrollAtEnd(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onScrollAtEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
-		return this.listen(Node.SCROLL_AT_END, priority, listener);
+		return this.listen(Node.SCROLL_AT_END, listener);
 	}
 
 	public final <T extends Node> @NonNull T beforeMove(final @NonNull EventListener<NodeChangeEvent.Pre<T, Point>> listener) {
-		return this.beforeMove(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T beforeMove(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Point>> listener) {
-		return this.listen(Node.BEFORE_MOVE, priority, listener);
+		return this.listen(Node.BEFORE_MOVE, listener);
 	}
 
 	public final <T extends Node> @NonNull T onMove(final @NonNull EventListener<NodeChangeEvent.Post<T, Point>> listener) {
-		return this.onMove(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onMove(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Point>> listener) {
-		return this.listen(Node.MOVE, priority, listener);
+		return this.listen(Node.MOVE, listener);
 	}
 
 	public final <T extends Node> @NonNull T beforeDragStart(final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
-		return this.beforeDragStart(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T beforeDragStart(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
-		return this.listen(Node.BEFORE_DRAG_START, priority, listener);
+		return this.listen(Node.BEFORE_DRAG_START, listener);
 	}
 
 	public final <T extends Node> @NonNull T onDragStart(final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
-		return this.onDragStart(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onDragStart(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
-		return this.listen(Node.DRAG_START, priority, listener);
+		return this.listen(Node.DRAG_START, listener);
 	}
 
 	public final <T extends Node> @NonNull T onDrag(final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
-		return this.onDrag(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onDrag(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
-		return this.listen(Node.DRAG, priority, listener);
+		return this.listen(Node.DRAG, listener);
 	}
 
 	public final <T extends Node> @NonNull T beforeDragDrop(final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
-		return this.beforeDragDrop(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T beforeDragDrop(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
-		return this.listen(Node.BEFORE_DRAG_DROP, priority, listener);
+		return this.listen(Node.BEFORE_DRAG_DROP, listener);
 	}
 
 	public final <T extends Node> @NonNull T onDragDrop(final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
-		return this.onDragDrop(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onDragDrop(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
-		return this.listen(Node.DRAG_DROP, priority, listener);
+		return this.listen(Node.DRAG_DROP, listener);
 	}
 
 	public final <T extends Node> @NonNull T onDragSnap(final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
-		return this.onDragSnap(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onDragSnap(final @NonNull EventPriority priority, final @NonNull EventListener<NodeDragEvent.Post<T>> listener) {
-		return this.listen(Node.DRAG_SNAP, priority, listener);
+		return this.listen(Node.DRAG_SNAP, listener);
 	}
 
 	public final <T extends Node> @NonNull T onHover(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
-		return this.onHover(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onHover(final @NonNull EventPriority priority, final @NonNull EventListener<NodeHoverEvent<T>> listener) {
-		return this.listen(Node.HOVER, priority, listener);
+		return this.listen(Node.HOVER, listener);
 	}
 
 	public final <T extends Node> @NonNull T onHoverStart(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
-		return this.onHoverStart(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onHoverStart(final @NonNull EventPriority priority, final @NonNull EventListener<NodeHoverEvent<T>> listener) {
-		return this.listen(Node.HOVER_START, priority, listener);
+		return this.listen(Node.HOVER_START, listener);
 	}
 
 	public final <T extends Node> @NonNull T onHoverEnd(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
-		return this.onHoverEnd(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends Node> @NonNull T onHoverEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeHoverEvent<T>> listener) {
-		return this.listen(Node.HOVER_END, priority, listener);
+		return this.listen(Node.HOVER_END, listener);
 	}
 
 	public @NonNull String toJson() {

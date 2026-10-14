@@ -38,21 +38,7 @@ public final class ExternalRaster {
 		final int pixelHeight = Math.min(4096, grid.toPixelHeight(Math.abs(bottom - top)));
 		final IFrameBuffer target = this.allocate(render, pixelWidth, pixelHeight);
 
-		render.pushState();
-		render.getProjection().push();
-		render.getModelView().push();
-		try {
-			render.getState().frameBuffer(target).viewport(0, 0, pixelWidth, pixelHeight);
-			render.getProjection().ortho(0D, pixelWidth, pixelHeight, 0D, -1000D, 1000D);
-			render.getModelView().identity();
-			render.clearColor(0F, 0F, 0F, 0F);
-			render.clearDepth();
-			render.raster(target, pixelWidth, pixelHeight, () -> drawable.draw(pixelWidth, pixelHeight));
-		} finally {
-			render.getModelView().pop();
-			render.getProjection().pop();
-			render.popState();
-		}
+		ExternalRaster.fill(target, pixelWidth, pixelHeight, drawable);
 
 		final double u = (double) pixelWidth / target.getWidth();
 		final double v = (double) pixelHeight / target.getHeight();
@@ -74,6 +60,17 @@ public final class ExternalRaster {
 		this.bridge = render;
 		this.target = render.createFrameBuffer(targetWidth, targetHeight);
 		return this.target;
+	}
+
+	private static void fill(final IFrameBuffer target, final int width, final int height, final IExternalRasterDrawable drawable) {
+		BridgeHandler.RENDER.get().withState(render -> render.getProjection().with(projection -> render.getModelView().with(modelView -> {
+			render.getState().frameBuffer(target).viewport(0, 0, width, height);
+			projection.ortho(0D, width, height, 0D, -1000D, 1000D);
+			modelView.identity();
+			render.clearColor(0F, 0F, 0F, 0F);
+			render.clearDepth();
+			render.raster(target, width, height, () -> drawable.draw(width, height));
+		})));
 	}
 
 	private static int capacity(final int current, final int required) {

@@ -21,6 +21,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -51,7 +52,7 @@ public class ShortcutTest {
 	@Test
 	public void runsItsTriggerListenersByPriority() {
 		final ShortcutUI ui = this.open();
-		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("normal")).onTrigger(EventPriority.HIGHEST, event -> this.trace.add("highest " + event.getKey())).onTrigger(EventPriority.MONITOR, event -> this.trace.add("monitor")).attach(ui);
+		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("normal")).onTrigger(EventListener.priority(EventPriority.HIGHEST, event -> this.trace.add("highest " + event.getKey()))).onTrigger(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("monitor"))).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S));
 		Assert.assertEquals(Arrays.asList("highest S", "normal", "monitor"), this.trace);
 	}

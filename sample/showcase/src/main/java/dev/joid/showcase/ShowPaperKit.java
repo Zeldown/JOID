@@ -21,13 +21,13 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowPaperKit implements IShowKit {
 
-	public static final Color INK    = Color.decode("#151413").freeze();
-	public static final Color CARD   = Color.decode("#FFFCF4").freeze();
-	public static final Color RULE   = Color.decode("#E2D9C6").freeze();
-	public static final Color MUTE   = Color.decode("#6F685C").freeze();
-	public static final Color PAPER  = Color.decode("#F2ECDF").freeze();
-	public static final Color TOMATO = Color.decode("#FF5533").freeze();
-	public static final Color BUTTER = Color.decode("#FFD24D").freeze();
+	public static final Color INK    = Color.decode("#151413").lock();
+	public static final Color CARD   = Color.decode("#FFFCF4").lock();
+	public static final Color RULE   = Color.decode("#E2D9C6").lock();
+	public static final Color MUTE   = Color.decode("#6F685C").lock();
+	public static final Color PAPER  = Color.decode("#F2ECDF").lock();
+	public static final Color TOMATO = Color.decode("#FF5533").lock();
+	public static final Color BUTTER = Color.decode("#FFD24D").lock();
 
 	@Override
 	public void backdrop(final Node layer) {

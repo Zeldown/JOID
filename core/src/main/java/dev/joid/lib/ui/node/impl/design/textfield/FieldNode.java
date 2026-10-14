@@ -15,7 +15,6 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
@@ -369,19 +368,11 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeFieldChangeEvent.Pre<T, V>> listener) {
-		return this.beforeChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeFieldChangeEvent.Pre<T, V>> listener) {
-		return super.listen(FieldNode.BEFORE_CHANGE, priority, listener);
+		return super.listen(FieldNode.BEFORE_CHANGE, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull EventListener<NodeFieldChangeEvent.Post<T, V>> listener) {
-		return this.onChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeFieldChangeEvent.Post<T, V>> listener) {
-		return super.listen(FieldNode.CHANGE, priority, listener);
+		return super.listen(FieldNode.CHANGE, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focus() {
@@ -395,35 +386,19 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T beforeFocus(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return this.beforeFocus(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T beforeFocus(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return super.listen(FieldNode.BEFORE_FOCUS, priority, listener);
+		return super.listen(FieldNode.BEFORE_FOCUS, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return this.onFocus(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return super.listen(FieldNode.FOCUS, priority, listener);
+		return super.listen(FieldNode.FOCUS, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T beforeBlur(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return this.beforeBlur(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T beforeBlur(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return super.listen(FieldNode.BEFORE_BLUR, priority, listener);
+		return super.listen(FieldNode.BEFORE_BLUR, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onBlur(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return this.onBlur(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T onBlur(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return super.listen(FieldNode.BLUR, priority, listener);
+		return super.listen(FieldNode.BLUR, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T moveCursor(final int position) {
@@ -432,19 +407,11 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T beforeCursorMove(final @NonNull EventListener<NodeChangeEvent.Pre<T, Integer>> listener) {
-		return this.beforeCursorMove(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T beforeCursorMove(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Integer>> listener) {
-		return super.listen(FieldNode.BEFORE_CURSOR_MOVE, priority, listener);
+		return super.listen(FieldNode.BEFORE_CURSOR_MOVE, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onCursorMove(final @NonNull EventListener<NodeChangeEvent.Post<T, Integer>> listener) {
-		return this.onCursorMove(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T onCursorMove(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Integer>> listener) {
-		return super.listen(FieldNode.CURSOR_MOVE, priority, listener);
+		return super.listen(FieldNode.CURSOR_MOVE, listener);
 	}
 
 	protected final void fallback(final V fallback) {

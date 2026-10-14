@@ -61,12 +61,10 @@ public class Transformation {
 	}
 
 	public void apply(final @NonNull Drawing drawing) {
-		this.apply();
-		try {
+		BridgeHandler.RENDER.get().getModelView().with(matrix -> {
+			this.operations.forEach(ITransformOperation::transform);
 			drawing.draw();
-		} finally {
-			this.reset();
-		}
+		});
 	}
 
 	public void reset() {

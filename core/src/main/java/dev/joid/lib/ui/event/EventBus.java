@@ -28,21 +28,21 @@ public final class EventBus {
 		return new EventBus(owner);
 	}
 
-	public @NonNull EventBus listen(final @NonNull EventType<?> type, final @NonNull EventPriority priority, final @NonNull EventListener<?> listener) {
+	public @NonNull EventBus listen(final @NonNull EventType<?> type, final @NonNull EventListener<?> listener) {
 		final List<EventRegistration> registrationList = this.listenerMap.computeIfAbsent(type, key -> new ArrayList<>());
 		int index = registrationList.size();
-		while (index > 0 && registrationList.get(index - 1).priority.ordinal() > priority.ordinal()) {
+		while (index > 0 && registrationList.get(index - 1).listener.getPriority().ordinal() > listener.getPriority().ordinal()) {
 			index--;
 		}
 
-		registrationList.add(index, new EventRegistration(priority, listener));
+		registrationList.add(index, new EventRegistration(listener));
 		return this;
 	}
 
 	public @NonNull EventBus addAll(final @NonNull EventBus bus) {
 		for (final Entry<EventType<?>, List<EventRegistration>> entry : bus.listenerMap.entrySet()) {
 			for (final EventRegistration registration : entry.getValue()) {
-				this.listen(entry.getKey(), registration.priority, registration.listener);
+				this.listen(entry.getKey(), registration.listener);
 			}
 		}
 		return this;
@@ -71,7 +71,7 @@ public final class EventBus {
 
 	public void fireListeners(final @NonNull EventType<?> type, final @NonNull Event event) {
 		for (final EventRegistration registration : this.getRegistrationList(type)) {
-			if (registration.priority.isMonitor() || EventBus.isStopped(event)) {
+			if (registration.listener.getPriority().isMonitor() || EventBus.isStopped(event)) {
 				return;
 			}
 
@@ -81,7 +81,7 @@ public final class EventBus {
 
 	public void fireMonitor(final @NonNull EventType<?> type, final @NonNull Event event) {
 		for (final EventRegistration registration : this.getRegistrationList(type)) {
-			if (!registration.priority.isMonitor()) {
+			if (!registration.listener.getPriority().isMonitor()) {
 				continue;
 			}
 
@@ -137,7 +137,6 @@ public final class EventBus {
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class EventRegistration {
 
-		private final EventPriority    priority;
 		private final EventListener<?> listener;
 
 		private boolean kept;

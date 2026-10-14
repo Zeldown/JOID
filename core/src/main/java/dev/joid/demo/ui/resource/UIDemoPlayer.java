@@ -24,7 +24,7 @@ import dev.joid.lib.video.VideoNatives;
 @UIData(background = true)
 public class UIDemoPlayer extends UIDemo {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	@Override
 	public void init() {

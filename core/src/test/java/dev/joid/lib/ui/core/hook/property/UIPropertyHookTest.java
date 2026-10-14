@@ -97,7 +97,7 @@ public class UIPropertyHookTest {
 		Assert.assertEquals(1D, loaded.zoom, 0D);
 		Assert.assertFalse(file.exists());
 		Assert.assertEquals("{ broken", new String(Files.readAllBytes(new File(file.getPath() + ".corrupt").toPath()), StandardCharsets.UTF_8));
-		Assert.assertTrue(error, error.startsWith("[JOID] The property file " + file.getAbsolutePath() + " cannot be read (com.google.gson."));
+		Assert.assertTrue(error, error.startsWith("[JOID] The file " + file.getAbsolutePath() + " cannot be read (com.google.gson."));
 		Assert.assertTrue(error, error.endsWith("), it is kept as " + file.getAbsolutePath() + ".corrupt and the properties of PropertyUI keep their default values" + System.lineSeparator()));
 	}
 

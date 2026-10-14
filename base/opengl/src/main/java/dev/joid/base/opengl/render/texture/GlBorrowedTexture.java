@@ -65,12 +65,7 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 
 	@Override
 	protected boolean isValid(final @NonNull Integer texture) {
-		this.bridge.getGuard().enter();
-		try {
-			return this.bridge.getBinding().getTextureBinding().isTexture(texture);
-		} finally {
-			this.bridge.getGuard().exit();
-		}
+		return this.bridge.getGuard().call(() -> this.bridge.getBinding().getTextureBinding().isTexture(texture));
 	}
 
 	@Override
@@ -79,8 +74,7 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 	}
 
 	private int read(final int texture, final ToIntFunction<IGlTextureBinding> query) {
-		this.bridge.getGuard().enter();
-		try {
+		return this.bridge.getGuard().call(() -> {
 			final IGlTextureBinding textures = this.bridge.getBinding().getTextureBinding();
 			if (!textures.isTexture(texture)) {
 				return 0;
@@ -93,9 +87,7 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 			} finally {
 				textures.bindTexture(GlConstants.TEXTURE_2D, previous);
 			}
-		} finally {
-			this.bridge.getGuard().exit();
-		}
+		});
 	}
 
 	private static @NonNull GlRenderBridge findBridge() {

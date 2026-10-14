@@ -32,7 +32,7 @@ import dev.joid.lib.utils.align.Align;
 @UIData(background = true)
 public class UIDemoEffect extends UIDemo {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	@Override
 	public void init() {

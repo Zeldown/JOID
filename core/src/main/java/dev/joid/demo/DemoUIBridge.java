@@ -11,7 +11,7 @@ import lombok.NonNull;
 
 public class DemoUIBridge extends WindowUIBridge {
 
-	private static final Color BACKGROUND = new Color(50, 50, 50).freeze();
+	private static final Color BACKGROUND = new Color(50, 50, 50).lock();
 
 	private double interfaceScale;
 

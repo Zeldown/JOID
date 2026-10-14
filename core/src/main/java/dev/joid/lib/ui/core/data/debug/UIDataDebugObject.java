@@ -1,74 +1,17 @@
 package dev.joid.lib.ui.core.data.debug;
 
-import java.lang.annotation.Annotation;
-
-import dev.joid.lib.ui.core.UI;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
+@Getter
+@Setter
 @ToString
-@NoArgsConstructor
-public final class UIDataDebugObject implements UIDataDebug {
+@Accessors(fluent = true, chain = true)
+public final class UIDataDebugObject {
 
-	private boolean profiler = true;
+	private boolean profiler  = true;
 	private boolean hotreload = true;
-
-	public UIDataDebugObject(final @NonNull UIDataDebug data) {
-		this.profiler = data.profiler();
-		this.hotreload = data.hotreload();
-	}
-
-	public static @NonNull UIDataDebugObject getOrDefault(final @NonNull Class<? extends UI> clazz) {
-		final UIDataDebugObject data = UIDataDebugObject.get(clazz);
-		return data != null ? data : new UIDataDebugObject();
-	}
-
-	protected static UIDataDebugObject get(final @NonNull Class<? extends UI> clazz) {
-		Class<?> currentClass = clazz;
-		UIDataDebug data = currentClass.getAnnotation(UIDataDebug.class);
-		while (data == null && currentClass.getSuperclass() != null) {
-			currentClass = currentClass.getSuperclass();
-			data = currentClass.getAnnotation(UIDataDebug.class);
-		}
-		return data != null ? new UIDataDebugObject(data) : null;
-	}
-
-	@Override
-	public Class<? extends Annotation> annotationType() {
-		return UIDataDebug.class;
-	}
-
-	@Override
-	public boolean profiler() {
-		return this.profiler;
-	}
-
-	@Override
-	public boolean hotreload() {
-		return this.hotreload;
-	}
-
-	public @NonNull UIDataDebugObject setProfiler(final boolean profiler) {
-		this.profiler = profiler;
-		return this;
-	}
-
-	public @NonNull UIDataDebugObject setHotreload(final boolean hotreload) {
-		this.hotreload = hotreload;
-		return this;
-	}
-
-	public @NonNull UIDataDebugObject update(final @NonNull UIDataDebug previous, final @NonNull UIDataDebug next) {
-		if (previous.profiler() != next.profiler()) {
-			this.setProfiler(next.profiler());
-		}
-
-		if (previous.hotreload() != next.hotreload()) {
-			this.setHotreload(next.hotreload());
-		}
-
-		return this;
-	}
 
 }

@@ -24,6 +24,22 @@ public class MatrixStackTest {
 	}
 
 	@Test
+	public void restoresItsMatrixAfterABodyThatFails() {
+		final MatrixStack stack = new MatrixStack();
+		try {
+			stack.with(matrix -> {
+				matrix.translate(5D, 0D, 0D);
+				throw new IllegalStateException("failed");
+			});
+			Assert.fail("The failure of the body must reach the caller");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("failed", expected.getMessage());
+		}
+		Assert.assertEquals(0F, stack.getMatrix()[12], 0F);
+		Assert.assertEquals(0, stack.getDepth());
+	}
+
+	@Test
 	public void popsBackToADepth() {
 		final MatrixStack stack = new MatrixStack();
 		stack.translate(1D, 0D, 0D);

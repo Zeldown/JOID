@@ -12,7 +12,6 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
@@ -58,11 +57,7 @@ public final class Task {
 	}
 
 	public @NonNull Task onRun(final @NonNull EventListener<TaskEvent> listener) {
-		return this.onRun(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull Task onRun(final @NonNull EventPriority priority, final @NonNull EventListener<TaskEvent> listener) {
-		this.eventBus.listen(Task.RUN, priority, listener);
+		this.eventBus.listen(Task.RUN, listener);
 		return this;
 	}
 

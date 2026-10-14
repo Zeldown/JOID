@@ -107,9 +107,7 @@ public final class ShaderPipeline {
 		}
 
 		final FrameBuffer[] fbos = ShaderPipeline.getOrCreateFBOs(context.getTextureWidth(), context.getTextureHeight()).frameBuffers;
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> {
 			ShaderPipeline.drawInto(fbos[0], context, () -> {
 				render.getState().blend(BlendState.NORMAL);
 				baseDraw.run();
@@ -126,9 +124,7 @@ public final class ShaderPipeline {
 			}
 
 			ShaderPipeline.drawPass(passes.get(passes.size() - 1), context, src);
-		} finally {
-			render.popState();
-		}
+		});
 	}
 
 	private static void drawInto(final @NonNull FrameBuffer target, final @NonNull ShaderPassContext context, final @NonNull Runnable draw) {

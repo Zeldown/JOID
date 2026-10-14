@@ -4,7 +4,6 @@ package dev.joid.lib.animation.tween;
 
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import lombok.NonNull;
 
@@ -123,67 +122,35 @@ public abstract class BaseTween<T> {
 	}
 
 	public T onStart(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onStart(EventPriority.NORMAL, listener);
-	}
-
-	public T onStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
-		return this.listen(BaseTween.START, priority, listener);
+		return this.listen(BaseTween.START, listener);
 	}
 
 	public T onIterationStart(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onIterationStart(EventPriority.NORMAL, listener);
-	}
-
-	public T onIterationStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
-		return this.listen(BaseTween.ITERATION_START, priority, listener);
+		return this.listen(BaseTween.ITERATION_START, listener);
 	}
 
 	public T onIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onIterationEnd(EventPriority.NORMAL, listener);
-	}
-
-	public T onIterationEnd(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
-		return this.listen(BaseTween.ITERATION_END, priority, listener);
+		return this.listen(BaseTween.ITERATION_END, listener);
 	}
 
 	public T onComplete(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onComplete(EventPriority.NORMAL, listener);
-	}
-
-	public T onComplete(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
-		return this.listen(BaseTween.COMPLETE, priority, listener);
+		return this.listen(BaseTween.COMPLETE, listener);
 	}
 
 	public T onReverseStart(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onReverseStart(EventPriority.NORMAL, listener);
-	}
-
-	public T onReverseStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
-		return this.listen(BaseTween.REVERSE_START, priority, listener);
+		return this.listen(BaseTween.REVERSE_START, listener);
 	}
 
 	public T onReverseIterationStart(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onReverseIterationStart(EventPriority.NORMAL, listener);
-	}
-
-	public T onReverseIterationStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
-		return this.listen(BaseTween.REVERSE_ITERATION_START, priority, listener);
+		return this.listen(BaseTween.REVERSE_ITERATION_START, listener);
 	}
 
 	public T onReverseIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onReverseIterationEnd(EventPriority.NORMAL, listener);
-	}
-
-	public T onReverseIterationEnd(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
-		return this.listen(BaseTween.REVERSE_ITERATION_END, priority, listener);
+		return this.listen(BaseTween.REVERSE_ITERATION_END, listener);
 	}
 
 	public T onReverseComplete(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onReverseComplete(EventPriority.NORMAL, listener);
-	}
-
-	public T onReverseComplete(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
-		return this.listen(BaseTween.REVERSE_COMPLETE, priority, listener);
+		return this.listen(BaseTween.REVERSE_COMPLETE, listener);
 	}
 
 	public int getStep() {
@@ -433,8 +400,8 @@ public abstract class BaseTween<T> {
 		this.isFinished = this.repeatCnt >= 0 && (this.step > this.repeatCnt * 2 || this.step < 0);
 	}
 
-	private T listen(final EventType<TweenEvent> type, final EventPriority priority, final EventListener<TweenEvent> listener) {
-		this.eventBus.listen(type, priority, listener);
+	private T listen(final EventType<TweenEvent> type, final EventListener<TweenEvent> listener) {
+		this.eventBus.listen(type, listener);
 		return (T) this;
 	}
 

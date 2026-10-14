@@ -309,26 +309,26 @@ public class TextInfoTest {
 	}
 
 	@Test
-	public void refusesChangesOnceFrozen() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).freeze();
-		Assert.assertTrue(info.isFrozen());
+	public void refusesChangesOnceLocked() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).lock();
+		Assert.assertTrue(info.isLocked());
 		try {
 			info.fontSize(40F);
-			Assert.fail("A frozen TextInfo must refuse a change");
+			Assert.fail("A locked TextInfo must refuse a change");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("This TextInfo is frozen, use withFontSize(...) to get a modified copy", expected.getMessage());
+			Assert.assertEquals("This TextInfo is locked, use withFontSize(...) to get a modified copy", expected.getMessage());
 		}
 		Assert.assertEquals(20F, info.getFontSize(), 0F);
 	}
 
 	@Test
-	public void unfreezesItsCopies() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).freeze();
+	public void unlocksItsCopies() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).lock();
 		final TextInfo copy = info.withFontSize(40F).italic(true);
-		Assert.assertFalse(copy.isFrozen());
+		Assert.assertFalse(copy.isLocked());
 		Assert.assertTrue(copy.isItalic());
 		Assert.assertEquals(40F, copy.getFontSize(), 0F);
-		Assert.assertFalse(info.copy().isFrozen());
+		Assert.assertFalse(info.copy().isLocked());
 	}
 
 	@Test

@@ -10,7 +10,6 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.node.Node;
@@ -98,19 +97,11 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, String>> listener) {
-		return this.beforeChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SwitchNode> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, String>> listener) {
-		return super.listen(SwitchNode.BEFORE_CHANGE, priority, listener);
+		return super.listen(SwitchNode.BEFORE_CHANGE, listener);
 	}
 
 	public final <T extends SwitchNode> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, String>> listener) {
-		return this.onChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SwitchNode> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, String>> listener) {
-		return super.listen(SwitchNode.CHANGE, priority, listener);
+		return super.listen(SwitchNode.CHANGE, listener);
 	}
 
 	private void choose(final String state, final boolean refusable) {

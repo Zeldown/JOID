@@ -22,19 +22,19 @@ import dev.joid.lib.utils.point.Point;
 
 public abstract class ShowUI extends UI {
 
-	public static final Color SKY     = Color.decode("#38BDF8").freeze();
-	public static final Color DUSK    = Color.decode("#170A33").freeze();
-	public static final Color PINK    = Color.decode("#F472B6").freeze();
-	public static final Color CYAN    = Color.decode("#22D3EE").freeze();
-	public static final Color TEXT    = Color.decode("#F8FAFC").freeze();
-	public static final Color NIGHT   = Color.decode("#07071A").freeze();
-	public static final Color AMBER   = Color.decode("#FBBF24").freeze();
-	public static final Color MUTED   = Color.decode("#A1A1AA").freeze();
-	public static final Color FAINT   = Color.decode("#71717A").freeze();
-	public static final Color VIOLET  = Color.decode("#8B5CF6").freeze();
-	public static final Color ORANGE  = Color.decode("#FB923C").freeze();
-	public static final Color FUCHSIA = Color.decode("#E879F9").freeze();
-	public static final Color EMERALD = Color.decode("#34D399").freeze();
+	public static final Color SKY     = Color.decode("#38BDF8").lock();
+	public static final Color DUSK    = Color.decode("#170A33").lock();
+	public static final Color PINK    = Color.decode("#F472B6").lock();
+	public static final Color CYAN    = Color.decode("#22D3EE").lock();
+	public static final Color TEXT    = Color.decode("#F8FAFC").lock();
+	public static final Color NIGHT   = Color.decode("#07071A").lock();
+	public static final Color AMBER   = Color.decode("#FBBF24").lock();
+	public static final Color MUTED   = Color.decode("#A1A1AA").lock();
+	public static final Color FAINT   = Color.decode("#71717A").lock();
+	public static final Color VIOLET  = Color.decode("#8B5CF6").lock();
+	public static final Color ORANGE  = Color.decode("#FB923C").lock();
+	public static final Color FUCHSIA = Color.decode("#E879F9").lock();
+	public static final Color EMERALD = Color.decode("#34D399").lock();
 
 	private long start;
 

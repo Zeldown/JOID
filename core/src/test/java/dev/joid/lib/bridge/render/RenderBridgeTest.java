@@ -129,6 +129,23 @@ public class RenderBridgeTest {
 	}
 
 	@Test
+	public void restoresItsStateAfterABodyThatFails() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		try {
+			render.withState(bridge -> {
+				Assert.assertSame(render, bridge);
+				bridge.getState().lineWidth(3F);
+				throw new IllegalStateException("failed");
+			});
+			Assert.fail("The failure of the body must reach the caller");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("failed", expected.getMessage());
+		}
+		Assert.assertEquals(1F, render.getState().getLineWidth(), 0F);
+		Assert.assertEquals(0, render.getStateDepth());
+	}
+
+	@Test
 	public void restoresThePushedStateIntoTheSameInstance() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		final RenderState state = render.getState();

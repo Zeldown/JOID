@@ -10,7 +10,7 @@ import lombok.NonNull;
 
 public class DemoFrameBufferNode extends Node {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	private FrameBuffer frameBuffer;
 

@@ -19,7 +19,7 @@ import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlayObject;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.list.IndexedLinkedList;
+import dev.joid.lib.utils.list.IndexedList;
 import lombok.NonNull;
 
 public abstract class UIBridge implements IUIBridge {
@@ -28,7 +28,7 @@ public abstract class UIBridge implements IUIBridge {
 	private static IWindowBridge cursorWindow;
 
 	@NonNull
-	private final IndexedLinkedList<@NonNull UI> uiList;
+	private final IndexedList<@NonNull UI> uiList;
 
 	private final Set<Key>         consumedKeySet;
 	private final Set<MouseButton> consumedButtonSet;
@@ -40,7 +40,7 @@ public abstract class UIBridge implements IUIBridge {
 	private Cursor hoveredCursor;
 
 	protected UIBridge() {
-		this.uiList = new IndexedLinkedList<>();
+		this.uiList = IndexedList.linked();
 		this.consumedKeySet = EnumSet.noneOf(Key.class);
 		this.consumedButtonSet = EnumSet.noneOf(MouseButton.class);
 	}
@@ -272,24 +272,21 @@ public abstract class UIBridge implements IUIBridge {
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 
-		double depthLevel = 0D;
-		render.getModelView().push();
-		try {
-			render.getModelView().translate(0D, 0D, -2000D);
+		render.getModelView().with(matrix -> {
+			double depthLevel = 0D;
+			matrix.translate(0D, 0D, -2000D);
 			for (final UI ui : this.getLayerList()) {
 				if (!ui.getData().visible() || !this.isShown(ui) || !filter.test(ui)) {
 					continue;
 				}
 
 				depthLevel += ui.getData().zlevel();
-				render.getModelView().translate(0D, 0D, depthLevel);
+				matrix.translate(0D, 0D, depthLevel);
 				ui.draw(window.getMouseX(), window.getMouseY());
 				depthLevel = ui.getDepthLevel() + 10D;
 			}
-			render.getModelView().translate(0D, 0D, -depthLevel);
-		} finally {
-			render.getModelView().pop();
-		}
+			matrix.translate(0D, 0D, -depthLevel);
+		});
 	}
 
 	private void updateCursor() {

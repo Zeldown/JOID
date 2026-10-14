@@ -8,7 +8,7 @@ import lombok.NonNull;
 
 public class DemoScrollbarNode extends ScrollbarNode {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	protected DemoScrollbarNode(final double x, final double y, final double width, final double height, final @NonNull BoundingBox scroll) {
 		super(x, y, width, height, scroll);

@@ -3,7 +3,6 @@ package dev.joid.lib.ui.node.impl.design.model;
 import java.util.function.Supplier;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.model.IDrawableModel;
 import dev.joid.lib.signal.Signal;
@@ -43,18 +42,14 @@ public abstract class BaseModelNode extends Node {
 		final double drawY = super.getY() + super.getHeight() / 2D;
 		final double drawZ = modelDepth / 2D * scale;
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().push();
-		try {
-			render.getModelView().translate(drawX, drawY, drawZ);
-			render.getModelView().rotate(rotationYaw, 0D, 1D, 0D);
-			render.getModelView().rotate(rotationPitch, 1D, 0D, 0D);
-			render.getModelView().translate(-drawX, -drawY, -drawZ);
-			render.getModelView().translate(0D, 0D, drawZ);
+		BridgeHandler.RENDER.get().getModelView().with(matrix -> {
+			matrix.translate(drawX, drawY, drawZ);
+			matrix.rotate(rotationYaw, 0D, 1D, 0D);
+			matrix.rotate(rotationPitch, 1D, 0D, 0D);
+			matrix.translate(-drawX, -drawY, -drawZ);
+			matrix.translate(0D, 0D, drawZ);
 			DrawUtils.MODEL.drawModel(drawX, drawY, scale, this.model);
-		} finally {
-			render.getModelView().pop();
-		}
+		});
 	}
 
 }

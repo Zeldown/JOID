@@ -1,12 +1,10 @@
 package dev.joid.lib.resource.resolver;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.resolver.impl.BufferedImageResourceResolver;
 import dev.joid.lib.resource.resolver.impl.TextureResourceResolver;
+import dev.joid.lib.utils.registry.Registry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -14,7 +12,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResourceResolver {
 
-	private static final List<IResourceResolver> RESOLVERS = new LinkedList<>();
+	private static final Registry<IResourceResolver> RESOLVERS = Registry.create();
 
 	static {
 		ResourceResolver.register(new TextureResourceResolver());
@@ -22,30 +20,24 @@ public class ResourceResolver {
 	}
 
 	public static void register(final @NonNull IResourceResolver resolver) {
-		ResourceResolver.RESOLVERS.remove(resolver);
-		ResourceResolver.RESOLVERS.add(0, resolver);
+		ResourceResolver.RESOLVERS.register(resolver);
 	}
 
 	public static void unregister(final @NonNull IResourceResolver resolver) {
-		ResourceResolver.RESOLVERS.remove(resolver);
+		ResourceResolver.RESOLVERS.unregister(resolver);
 	}
 
 	public static boolean supports(final @NonNull Object input) {
-		for (final IResourceResolver resolver : ResourceResolver.RESOLVERS) {
-			if (resolver.supports(input)) {
-				return true;
-			}
-		}
-		return false;
+		return ResourceResolver.RESOLVERS.find(resolver -> resolver.supports(input)) != null;
 	}
 
 	public static @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
-		for (final IResourceResolver resolver : ResourceResolver.RESOLVERS) {
-			if (resolver.supports(input)) {
-				return resolver.resolve(builder, input);
-			}
+		final IResourceResolver resolver = ResourceResolver.RESOLVERS.find(candidate -> candidate.supports(input));
+		if (resolver == null) {
+			throw new IllegalArgumentException("No resource resolver knows the input " + input + " of type " + input.getClass().getName() + ", register an IResourceResolver that supports it with ResourceResolver.register(...)");
 		}
-		throw new IllegalArgumentException("No resource resolver knows the input " + input + " of type " + input.getClass().getName() + ", register an IResourceResolver that supports it with ResourceResolver.register(...)");
+
+		return resolver.resolve(builder, input);
 	}
 
 }

@@ -11,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.animation.tween.primitive.MutableFloat;
+import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 
 public class BaseTweenTest {
@@ -301,7 +302,7 @@ public class BaseTweenTest {
 	@Test
 	public void runsItsListenersInTheOrderOfTheirPriority() {
 		final List<String> calls = new ArrayList<>();
-		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).onComplete(event -> calls.add("first")).onComplete(event -> calls.add("second")).onComplete(EventPriority.HIGH, event -> calls.add("high")).start();
+		final Tween tween = BaseTweenTest.tween(new MutableFloat(0F)).onComplete(event -> calls.add("first")).onComplete(event -> calls.add("second")).onComplete(EventListener.priority(EventPriority.HIGH, event -> calls.add("high"))).start();
 		tween.update(2F);
 		Assert.assertEquals(Arrays.asList("high", "first", "second"), calls);
 	}

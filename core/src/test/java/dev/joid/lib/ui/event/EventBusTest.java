@@ -26,13 +26,13 @@ public class EventBusTest {
 
 	@Test
 	public void runsItsListenersByPriorityThenByOrder() {
-		this.bus.listen(EventBusTest.KEY, EventPriority.LOW, event -> this.trace.add("low"));
-		this.bus.listen(EventBusTest.KEY, EventPriority.MONITOR, event -> this.trace.add("monitor"));
-		this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, event -> this.trace.add("first normal"));
-		this.bus.listen(EventBusTest.KEY, EventPriority.HIGHEST, event -> this.trace.add("highest"));
-		this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, event -> this.trace.add("second normal"));
-		this.bus.listen(EventBusTest.KEY, EventPriority.LOWEST, event -> this.trace.add("lowest"));
-		this.bus.listen(EventBusTest.KEY, EventPriority.HIGH, event -> this.trace.add("high"));
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.LOW, event -> this.trace.add("low")));
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("monitor")));
+		this.bus.listen(EventBusTest.KEY, event -> this.trace.add("first normal"));
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.HIGHEST, event -> this.trace.add("highest")));
+		this.bus.listen(EventBusTest.KEY, event -> this.trace.add("second normal"));
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.LOWEST, event -> this.trace.add("lowest")));
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.HIGH, event -> this.trace.add("high")));
 		this.bus.fire(EventBusTest.KEY, this.key());
 		Assert.assertEquals(Arrays.asList("highest", "high", "first normal", "second normal", "low", "lowest", "monitor"), this.trace);
 	}
@@ -44,9 +44,9 @@ public class EventBusTest {
 			input.consume();
 		};
 		final EventListener<NodeKeyEvent<RectNode>> monitor = input -> this.trace.add("monitor " + input.isConsumed());
-		this.bus.listen(EventBusTest.KEY, EventPriority.HIGH, consume);
-		this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, input -> this.trace.add("normal"));
-		this.bus.listen(EventBusTest.KEY, EventPriority.MONITOR, monitor);
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.HIGH, consume));
+		this.bus.listen(EventBusTest.KEY, input -> this.trace.add("normal"));
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.MONITOR, monitor));
 		this.bus.fire(EventBusTest.KEY, this.key());
 		Assert.assertEquals(Arrays.asList("high", "monitor true"), this.trace);
 	}
@@ -59,9 +59,9 @@ public class EventBusTest {
 			change.cancel();
 		};
 		final EventListener<NodeChangeEvent.Pre<RectNode, Integer>> monitor = change -> this.trace.add("monitor " + change.isCancelled());
-		this.bus.listen(EventBusTest.CHANGE, EventPriority.NORMAL, change -> this.trace.add("normal"));
-		this.bus.listen(EventBusTest.CHANGE, EventPriority.HIGH, cancel);
-		this.bus.listen(EventBusTest.CHANGE, EventPriority.MONITOR, monitor);
+		this.bus.listen(EventBusTest.CHANGE, change -> this.trace.add("normal"));
+		this.bus.listen(EventBusTest.CHANGE, EventListener.priority(EventPriority.HIGH, cancel));
+		this.bus.listen(EventBusTest.CHANGE, EventListener.priority(EventPriority.MONITOR, monitor));
 		this.bus.fire(EventBusTest.CHANGE, event);
 		Assert.assertEquals(Arrays.asList("high", "monitor true"), this.trace);
 		Assert.assertTrue(event.isCancelled());
@@ -73,8 +73,8 @@ public class EventBusTest {
 		final NodeChangeEvent.Pre<RectNode, Integer> change = NodeChangeEvent.Pre.create(RectNode.create(0D, 0D, 10D, 10D), 1, 2);
 		final EventListener<NodeKeyEvent<RectNode>> consume = event -> event.consume();
 		final EventListener<NodeChangeEvent.Pre<RectNode, Integer>> cancel = event -> event.cancel();
-		this.bus.listen(EventBusTest.KEY, EventPriority.MONITOR, consume);
-		this.bus.listen(EventBusTest.CHANGE, EventPriority.MONITOR, cancel);
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.MONITOR, consume));
+		this.bus.listen(EventBusTest.CHANGE, EventListener.priority(EventPriority.MONITOR, cancel));
 		final String printed = EventBusTest.capture(() -> {
 			this.bus.fire(EventBusTest.KEY, key);
 			this.bus.fire(EventBusTest.CHANGE, change);
@@ -88,7 +88,7 @@ public class EventBusTest {
 	@Test
 	public void letsTheEventBeConsumedAgainOnceItsMonitorsRan() {
 		final NodeKeyEvent<RectNode> key = this.key();
-		this.bus.listen(EventBusTest.KEY, EventPriority.MONITOR, event -> this.trace.add("monitor"));
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("monitor")));
 		this.bus.fire(EventBusTest.KEY, key);
 		key.consume();
 		Assert.assertTrue(key.isConsumed());
@@ -96,10 +96,10 @@ public class EventBusTest {
 
 	@Test
 	public void keepsRunningItsListenersAfterAFailure() {
-		this.bus.listen(EventBusTest.KEY, EventPriority.HIGH, event -> {
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.HIGH, event -> {
 			throw new IllegalArgumentException("broken");
-		});
-		this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, event -> this.trace.add("next"));
+		}));
+		this.bus.listen(EventBusTest.KEY, event -> this.trace.add("next"));
 		final String printed = EventBusTest.capture(() -> this.bus.fire(EventBusTest.KEY, this.key()));
 		Assert.assertEquals(Collections.singletonList("next"), this.trace);
 		Assert.assertTrue(printed, printed.startsWith("[JOID] The handleKeyPressed listener of RectNode in TestUI failed (java.lang.IllegalArgumentException: broken"));
@@ -107,7 +107,7 @@ public class EventBusTest {
 
 	@Test
 	public void reportsTheSameFailureOfAListenerOnce() {
-		this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, event -> {
+		this.bus.listen(EventBusTest.KEY, event -> {
 			throw new IllegalArgumentException("broken");
 		});
 		final String printed = EventBusTest.capture(() -> {
@@ -120,7 +120,7 @@ public class EventBusTest {
 	@Test
 	public void doesNotCancelAChangeWhenABeforeListenerFails() {
 		final NodeChangeEvent.Pre<RectNode, Integer> change = NodeChangeEvent.Pre.create(RectNode.create(0D, 0D, 10D, 10D), 1, 2);
-		this.bus.listen(EventBusTest.CHANGE, EventPriority.NORMAL, event -> {
+		this.bus.listen(EventBusTest.CHANGE, event -> {
 			throw new IllegalStateException("broken");
 		});
 		EventBusTest.capture(() -> this.bus.fire(EventBusTest.CHANGE, change));
@@ -129,9 +129,9 @@ public class EventBusTest {
 
 	@Test
 	public void runsTheListenersFromACopyOfItsList() {
-		this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, event -> {
+		this.bus.listen(EventBusTest.KEY, event -> {
 			this.trace.add("first");
-			this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, added -> this.trace.add("added"));
+			this.bus.listen(EventBusTest.KEY, added -> this.trace.add("added"));
 		});
 		this.bus.fire(EventBusTest.KEY, this.key());
 		Assert.assertEquals(Collections.singletonList("first"), this.trace);
@@ -140,10 +140,10 @@ public class EventBusTest {
 
 	@Test
 	public void keepsItsKeptListenersOnReset() {
-		this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, event -> this.trace.add("kept"));
+		this.bus.listen(EventBusTest.KEY, event -> this.trace.add("kept"));
 		this.bus.keep();
-		this.bus.listen(EventBusTest.KEY, EventPriority.HIGH, event -> this.trace.add("dropped"));
-		this.bus.listen(EventBusTest.CHANGE, EventPriority.NORMAL, event -> this.trace.add("dropped"));
+		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.HIGH, event -> this.trace.add("dropped")));
+		this.bus.listen(EventBusTest.CHANGE, event -> this.trace.add("dropped"));
 		this.bus.reset();
 		this.bus.fire(EventBusTest.KEY, this.key());
 		Assert.assertEquals(Collections.singletonList("kept"), this.trace);
@@ -154,7 +154,7 @@ public class EventBusTest {
 	@Test
 	public void copiesTheListenersOfAnotherBus() {
 		final EventBus other = EventBus.create(() -> "other");
-		other.listen(EventBusTest.KEY, EventPriority.NORMAL, event -> this.trace.add("copied"));
+		other.listen(EventBusTest.KEY, event -> this.trace.add("copied"));
 		this.bus.addAll(other);
 		this.bus.fire(EventBusTest.KEY, this.key());
 		Assert.assertEquals(Collections.singletonList("copied"), this.trace);

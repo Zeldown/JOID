@@ -1,53 +1,37 @@
 package dev.joid.lib.ui.core.data;
 
-import java.lang.annotation.Annotation;
-
 import dev.joid.lib.color.Color;
-import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.utils.align.Align;
-import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
+@Getter
+@Setter
 @ToString
-@NoArgsConstructor
-public final class UIDataObject implements UIData {
+@Accessors(fluent = true, chain = true)
+public final class UIDataObject {
 
-	private int     zindex          = 0;
-	private double  zlevel          = 0D;
-	private Align   anchorX         = Align.CENTER;
-	private Align   anchorY         = Align.CENTER;
-	private boolean active          = true;
-	private boolean visible         = true;
-	private boolean zoomable        = true;
-	private boolean closeable       = true;
-	private boolean projection      = true;
-	private boolean background      = false;
-	private String  backgroundColor = "#101010C0";
+	private int     zindex     = 0;
+	private double  zlevel     = 0D;
+	private boolean active     = true;
+	private boolean visible    = true;
+	private boolean zoomable   = true;
+	private boolean closeable  = true;
+	private boolean projection = true;
+	private boolean background = false;
 
+	@NonNull private Align  anchorX         = Align.CENTER;
+	@NonNull private Align  anchorY         = Align.CENTER;
+	@NonNull private String backgroundColor = "#101010C0";
+
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	private Color backgroundColorCache = Color.decode(this.backgroundColor);
-
-	public UIDataObject(final @NonNull UIData data) {
-		this.active          = data.active();
-		this.visible         = data.visible();
-		this.closeable       = data.closeable();
-		this.zoomable        = data.zoomable();
-		this.projection      = data.projection();
-		this.background      = data.background();
-		this.backgroundColor = data.backgroundColor();
-		this.zindex          = data.zindex();
-		this.zlevel          = data.zlevel();
-		this.anchorX         = data.anchorX();
-		this.anchorY         = data.anchorY();
-
-		this.backgroundColorCache = Color.decode(this.backgroundColor);
-	}
-
-	public static @NonNull UIDataObject getOrDefault(final @NonNull Class<? extends UI> clazz) {
-		final UIDataObject data = UIDataObject.get(clazz);
-		return data != null ? data : new UIDataObject();
-	}
 
 	public double getAnchorPositionX() {
 		switch (this.anchorX) {
@@ -73,181 +57,13 @@ public final class UIDataObject implements UIData {
 		}
 	}
 
-	public final @NonNull Color getBackgroundColor() {
+	public @NonNull Color getBackgroundColor() {
 		return this.backgroundColorCache;
 	}
 
-	protected static UIDataObject get(final @NonNull Class<? extends UI> clazz) {
-		Class<?> currentClass = clazz;
-		UIData data = currentClass.getAnnotation(UIData.class);
-		while (data == null && currentClass.getSuperclass() != null) {
-			currentClass = currentClass.getSuperclass();
-			data = currentClass.getAnnotation(UIData.class);
-		}
-		return data != null ? new UIDataObject(data) : null;
-	}
-
-	@Override
-	public Class<? extends Annotation> annotationType() {
-		return UIData.class;
-	}
-
-	@Override
-	public boolean active() {
-		return this.active;
-	}
-
-	@Override
-	public boolean visible() {
-		return this.visible;
-	}
-
-	@Override
-	public boolean closeable() {
-		return this.closeable;
-	}
-
-	@Override
-	public boolean projection() {
-		return this.projection;
-	}
-
-	@Override
-	public boolean background() {
-		return this.background;
-	}
-
-	@Override
-	public String backgroundColor() {
-		return this.backgroundColor;
-	}
-
-	@Override
-	public boolean zoomable() {
-		return this.zoomable;
-	}
-
-	@Override
-	public int zindex() {
-		return this.zindex;
-	}
-
-	@Override
-	public double zlevel() {
-		return this.zlevel;
-	}
-
-	@Override
-	public Align anchorX() {
-		return this.anchorX;
-	}
-
-	@Override
-	public Align anchorY() {
-		return this.anchorY;
-	}
-
-	public final @NonNull UIDataObject setZindex(final int zindex) {
-		this.zindex = zindex;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setZlevel(final double zlevel) {
-		this.zlevel = zlevel;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setActive(final boolean active) {
-		this.active = active;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setVisible(final boolean visible) {
-		this.visible = visible;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setZoomable(final boolean zoomable) {
-		this.zoomable = zoomable;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setCloseable(final boolean closeable) {
-		this.closeable = closeable;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setBackground(final boolean background) {
-		this.background = background;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setProjection(final boolean projection) {
-		this.projection = projection;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setAnchorX(final @NonNull Align anchorX) {
-		this.anchorX = anchorX;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setAnchorY(final @NonNull Align anchorY) {
-		this.anchorY = anchorY;
-		return this;
-	}
-
-	public final @NonNull UIDataObject setBackgroundColor(final @NonNull String color) {
-		this.backgroundColor = color;
-		this.backgroundColorCache = Color.decode(color);
-		return this;
-	}
-
-	public final @NonNull UIDataObject update(final @NonNull UIData previous, final @NonNull UIData next) {
-		if (previous.zindex() != next.zindex()) {
-			this.setZindex(next.zindex());
-		}
-
-		if (previous.zlevel() != next.zlevel()) {
-			this.setZlevel(next.zlevel());
-		}
-
-		if (previous.active() != next.active()) {
-			this.setActive(next.active());
-		}
-
-		if (previous.visible() != next.visible()) {
-			this.setVisible(next.visible());
-		}
-
-		if (previous.zoomable() != next.zoomable()) {
-			this.setZoomable(next.zoomable());
-		}
-
-		if (previous.closeable() != next.closeable()) {
-			this.setCloseable(next.closeable());
-		}
-
-		if (previous.background() != next.background()) {
-			this.setBackground(next.background());
-		}
-
-		if (previous.projection() != next.projection()) {
-			this.setProjection(next.projection());
-		}
-
-		if (previous.anchorX() != next.anchorX()) {
-			this.setAnchorX(next.anchorX());
-		}
-
-		if (previous.anchorY() != next.anchorY()) {
-			this.setAnchorY(next.anchorY());
-		}
-
-		if (!previous.backgroundColor().equals(next.backgroundColor())) {
-			this.setBackgroundColor(next.backgroundColor());
-		}
-
+	public @NonNull UIDataObject backgroundColor(final @NonNull String backgroundColor) {
+		this.backgroundColorCache = Color.decode(backgroundColor);
+		this.backgroundColor = backgroundColor;
 		return this;
 	}
 

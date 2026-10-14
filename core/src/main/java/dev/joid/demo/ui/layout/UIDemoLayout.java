@@ -18,8 +18,8 @@ import dev.joid.lib.utils.align.Align;
 @UIData(background = true)
 public class UIDemoLayout extends UIDemo {
 
-	private static final Color INK         = new Color(153, 153, 153).freeze();
-	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
+	private static final Color INK         = new Color(153, 153, 153).lock();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
 	@Override
 	public void init() {

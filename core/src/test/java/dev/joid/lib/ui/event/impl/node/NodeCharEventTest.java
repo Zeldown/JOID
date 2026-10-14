@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -28,7 +29,7 @@ public class NodeCharEventTest {
 			received.add("child");
 			event.consume();
 		});
-		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleCharTyped(event -> received.add("sibling")).handleCharTyped(EventPriority.MONITOR, event -> received.add("sibling monitor"));
+		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleCharTyped(event -> received.add("sibling")).handleCharTyped(EventListener.priority(EventPriority.MONITOR, event -> received.add("sibling monitor")));
 		parent.append(child);
 		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
 		Assert.assertTrue(this.bridges.getUi().charTyped('a'));

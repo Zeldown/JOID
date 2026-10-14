@@ -35,6 +35,7 @@ import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -124,8 +125,8 @@ public class UIBridgeTest {
 	public void skipsTheInactiveAndHiddenUisOnAPress() {
 		final TraceUI inactive = new TraceUI("inactive", this.trace);
 		final TraceUI hidden = new TraceUI("hidden", this.trace);
-		inactive.getData().setActive(false);
-		hidden.getData().setVisible(false);
+		inactive.getData().active(false);
+		hidden.getData().visible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(inactive).open(hidden);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -158,8 +159,8 @@ public class UIBridgeTest {
 	public void keepsTheDragInsideAPopup() {
 		final TraceUI inactive = new TraceUI("inactive", this.trace);
 		final TraceUI hidden = new TraceUI("hidden", this.trace);
-		inactive.getData().setActive(false);
-		hidden.getData().setVisible(false);
+		inactive.getData().active(false);
+		hidden.getData().visible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.trace.clear();
@@ -183,8 +184,8 @@ public class UIBridgeTest {
 	public void keepsTheReleaseInsideAPopup() {
 		final TraceUI inactive = new TraceUI("inactive", this.trace);
 		final TraceUI hidden = new TraceUI("hidden", this.trace);
-		inactive.getData().setActive(false);
-		hidden.getData().setVisible(false);
+		inactive.getData().active(false);
+		hidden.getData().visible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
 		this.trace.clear();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
@@ -214,8 +215,8 @@ public class UIBridgeTest {
 	public void keepsTheScrollInsideAPopup() {
 		final TraceUI inactive = new TraceUI("inactive", this.trace);
 		final TraceUI hidden = new TraceUI("hidden", this.trace);
-		inactive.getData().setActive(false);
-		hidden.getData().setVisible(false);
+		inactive.getData().active(false);
+		hidden.getData().visible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
 		this.trace.clear();
 		this.bridges.scroll(1D);
@@ -287,8 +288,8 @@ public class UIBridgeTest {
 	public void skipsTheInactiveAndHiddenUisOnAKey() {
 		final TraceUI inactive = new TraceUI("inactive", this.trace);
 		final TraceUI hidden = new TraceUI("hidden", this.trace);
-		inactive.getData().setActive(false);
-		hidden.getData().setVisible(false);
+		inactive.getData().active(false);
+		hidden.getData().visible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(new PopupUI("popup", this.trace)).open(inactive).open(hidden);
 		this.trace.clear();
 		this.bridges.getUi().keyPressed(Key.A);
@@ -323,7 +324,7 @@ public class UIBridgeTest {
 	@Test
 	public void typesEscapeInAUiThatCannotBeClosed() {
 		final TraceUI hud = new TraceUI("hud", this.trace);
-		hud.getData().setCloseable(false);
+		hud.getData().closeable(false);
 		this.bridges.open(hud);
 		this.trace.clear();
 		this.bridges.getUi().keyPressed(Key.ESCAPE);
@@ -347,7 +348,7 @@ public class UIBridgeTest {
 	@Test
 	public void drawsTheVisibleUisInTheirOpeningOrder() {
 		final TraceUI hidden = new TraceUI("hidden", this.trace);
-		hidden.getData().setVisible(false);
+		hidden.getData().visible(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hidden).open(new TraceUI("hud", this.trace));
 		this.trace.clear();
 		this.bridges.draw();
@@ -359,7 +360,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		menu.level = 40D;
-		hud.getData().setZlevel(5D);
+		hud.getData().zlevel(5D);
 		this.bridges.open(menu).open(hud);
 		this.trace.clear();
 		this.bridges.draw();
@@ -500,7 +501,7 @@ public class UIBridgeTest {
 	public void keepsUpdatingAndDrawingAnInactiveUi() {
 		final DepthUI menu = new DepthUI("menu", this.trace);
 		this.bridges.open(menu);
-		menu.getData().setActive(false);
+		menu.getData().active(false);
 		this.trace.clear();
 		this.bridges.frame();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -511,7 +512,7 @@ public class UIBridgeTest {
 	public void letsTheMouseThroughAnInactivePopup() {
 		final PopupUI popup = new PopupUI("popup", this.trace);
 		this.bridges.open(new DepthUI("menu", this.trace)).open(popup);
-		popup.getData().setActive(false);
+		popup.getData().active(false);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Collections.singletonList("pressed menu"), this.trace);
@@ -541,7 +542,7 @@ public class UIBridgeTest {
 	public void drawsTheUiOfHigherZindexOnTop() {
 		final DepthUI menu = new DepthUI("menu", this.trace);
 		final DepthUI hud = new DepthUI("hud", this.trace);
-		menu.getData().setZindex(10);
+		menu.getData().zindex(10);
 		this.bridges.open(menu).open(hud);
 		Assert.assertTrue(menu.depth + " behind " + hud.depth, menu.depth > hud.depth);
 	}
@@ -551,7 +552,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(menu).open(hud);
-		menu.getData().setZindex(10);
+		menu.getData().zindex(10);
 		this.trace.clear();
 		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList(hud, menu), this.bridges.getUi().getUiList());
@@ -564,7 +565,7 @@ public class UIBridgeTest {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		final TraceUI chat = new TraceUI("chat", this.trace);
 		this.bridges.open(menu).open(hud).open(chat);
-		chat.getData().setZindex(-1);
+		chat.getData().zindex(-1);
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(chat, menu, hud), this.bridges.getUi().getUiList());
 	}
@@ -583,7 +584,7 @@ public class UIBridgeTest {
 	@Test
 	public void putsTheUiOfHighestZindexOnTop() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
-		menu.getData().setZindex(10);
+		menu.getData().zindex(10);
 		this.bridges.open(menu).open(new TraceUI("hud", this.trace));
 		Assert.assertTrue(this.bridges.getUi().isOnTop(menu));
 		Assert.assertTrue(menu.isOnTop());
@@ -594,7 +595,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(menu).open(hud);
-		menu.getData().setZindex(5);
+		menu.getData().zindex(5);
 		this.bridges.frame();
 		Assert.assertTrue(menu.isOnTop());
 		Assert.assertFalse(hud.isOnTop());
@@ -605,8 +606,8 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final TraceUI inactive = new TraceUI("inactive", this.trace);
 		final TraceUI hidden = new TraceUI("hidden", this.trace);
-		inactive.getData().setActive(false);
-		hidden.getData().setVisible(false);
+		inactive.getData().active(false);
+		hidden.getData().visible(false);
 		this.bridges.open(menu).open(inactive).open(hidden);
 		Assert.assertTrue(this.bridges.getUi().isOnTop(menu));
 		Assert.assertFalse(this.bridges.getUi().isOnTop(inactive));
@@ -643,7 +644,7 @@ public class UIBridgeTest {
 	@Test
 	public void letsTheInputThroughAnOverlayWithoutInteraction() {
 		final PassiveOverlayUI overlay = new PassiveOverlayUI("overlay", this.trace);
-		overlay.getOverlay().render().setAboveScreens(true);
+		overlay.getOverlay().render().aboveScreens(true);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -743,7 +744,7 @@ public class UIBridgeTest {
 	public void leavesUnconsumedTheEventsAnOverlayDoesNotCancel() {
 		final TraceUI overlay = new OverlayUI("overlay", this.trace);
 		overlay.cancel = true;
-		overlay.getOverlay().interaction().setCancelClick(false).setCancelScroll(false).setCancelKeyboard(false);
+		overlay.getOverlay().interaction().cancelClick(false).cancelScroll(false).cancelKeyboard(false);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
 		this.trace.clear();
 		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
@@ -760,7 +761,7 @@ public class UIBridgeTest {
 	public void cancelsEachKindOfEventWithItsOwnFlag() {
 		final TraceUI overlay = new OverlayUI("overlay", this.trace);
 		overlay.cancel = true;
-		overlay.getOverlay().interaction().setCancelClick(false).setCancelKeyboard(false);
+		overlay.getOverlay().interaction().cancelClick(false).cancelKeyboard(false);
 		this.bridges.open(overlay);
 		Assert.assertFalse(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertTrue(this.bridges.getUi().mouseScroll(0D, -1D));
@@ -784,8 +785,8 @@ public class UIBridgeTest {
 	public void drawsTheOverlaysAboveTheScreensByZindex() {
 		final OverlayUI high = new OverlayUI("high", this.trace);
 		final OverlayUI low = new OverlayUI("low", this.trace);
-		high.getData().setZindex(2);
-		low.getData().setZindex(1);
+		high.getData().zindex(2);
+		low.getData().zindex(1);
 		this.bridges.open(high).open(low).open(new TraceUI("menu", this.trace));
 		this.trace.clear();
 		this.bridges.draw();
@@ -802,7 +803,7 @@ public class UIBridgeTest {
 		this.trace.clear();
 		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList("draw overlay -2000.0", "draw menu -1990.0"), this.trace);
-		overlay.getOverlay().render().setAboveScreens(true);
+		overlay.getOverlay().render().aboveScreens(true);
 		this.trace.clear();
 		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw overlay -1990.0"), this.trace);
@@ -812,8 +813,8 @@ public class UIBridgeTest {
 	public void sortsTheOverlaysBelowTheScreensByZindex() {
 		final PassiveOverlayUI high = new PassiveOverlayUI("high", this.trace);
 		final PassiveOverlayUI low = new PassiveOverlayUI("low", this.trace);
-		high.getData().setZindex(2);
-		low.getData().setZindex(1);
+		high.getData().zindex(2);
+		low.getData().zindex(1);
 		this.bridges.open(high).open(low).open(new TraceUI("menu", this.trace));
 		this.trace.clear();
 		this.bridges.draw();
@@ -830,7 +831,7 @@ public class UIBridgeTest {
 		this.bridges.draw(bridge);
 		bridge.mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(this.trace.isEmpty());
-		overlay.getOverlay().render().setAlways(true);
+		overlay.getOverlay().render().always(true);
 		this.bridges.draw(bridge);
 		bridge.mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("draw overlay -2000.0", "pressed overlay LEFT"), this.trace);
@@ -843,7 +844,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
 		final PassiveOverlayUI passive = new PassiveOverlayUI("passive", this.trace);
-		passive.getOverlay().render().setAboveScreens(true);
+		passive.getOverlay().render().aboveScreens(true);
 		this.bridges.open(menu).open(overlay).open(passive);
 		Assert.assertTrue(this.bridges.getUi().isOnTop(menu));
 		Assert.assertTrue(this.bridges.getUi().isOnTop(overlay));
@@ -1124,9 +1125,9 @@ public class UIBridgeTest {
 				this.cancel(event);
 			});
 			super.handleKeyPressed(event -> this.cancel(event));
-			super.handleKeyPressed(EventPriority.MONITOR, event -> this.trace.add("key " + this.name + " " + event.getKey()));
+			super.handleKeyPressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("key " + this.name + " " + event.getKey())));
 			super.handleCharTyped(event -> this.cancel(event));
-			super.handleCharTyped(EventPriority.MONITOR, event -> this.trace.add("char " + this.name + " " + new String(Character.toChars(event.getCodepoint()))));
+			super.handleCharTyped(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("char " + this.name + " " + new String(Character.toChars(event.getCodepoint())))));
 		}
 
 		@Override

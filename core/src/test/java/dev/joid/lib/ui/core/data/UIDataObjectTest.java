@@ -6,6 +6,7 @@ import org.junit.Test;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.annotation.AnnotationValues;
 
 public class UIDataObjectTest {
 
@@ -27,7 +28,7 @@ public class UIDataObjectTest {
 
 	@Test
 	public void readsTheDefaultsOfTheAnnotation() {
-		final UIDataObject data = UIDataObject.get(DefaultUI.class);
+		final UIDataObject data = AnnotationValues.read(DefaultUI.class.getAnnotation(UIData.class), new UIDataObject());
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.visible());
 		Assert.assertTrue(data.closeable());
@@ -43,7 +44,7 @@ public class UIDataObjectTest {
 
 	@Test
 	public void copiesEveryValueOfTheAnnotation() {
-		final UIDataObject data = UIDataObject.get(CustomUI.class);
+		final UIDataObject data = AnnotationValues.read(CustomUI.class.getAnnotation(UIData.class), new UIDataObject());
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.visible());
 		Assert.assertFalse(data.closeable());
@@ -60,40 +61,35 @@ public class UIDataObjectTest {
 
 	@Test
 	public void inheritsTheAnnotationOfAParent() {
-		final UIDataObject data = UIDataObject.get(ChildUI.class);
+		final UIDataObject data = AnnotationValues.read(ChildUI.class.getAnnotation(UIData.class), new UIDataObject());
 		Assert.assertEquals(2.5D, data.zlevel(), 0D);
 	}
 
 	@Test
-	public void findsNothingWithoutAnnotation() {
-		Assert.assertNull(UIDataObject.get(PlainUI.class));
-	}
-
-	@Test
-	public void fallsBackOnTheDefaults() {
-		Assert.assertTrue(UIDataObject.getOrDefault(PlainUI.class).active());
-		Assert.assertFalse(UIDataObject.getOrDefault(CustomUI.class).active());
+	public void keepsItsDefaultsWithoutAnnotation() {
+		Assert.assertTrue(AnnotationValues.read(PlainUI.class.getAnnotation(UIData.class), new UIDataObject()).active());
+		Assert.assertFalse(AnnotationValues.read(CustomUI.class.getAnnotation(UIData.class), new UIDataObject()).active());
 	}
 
 	@Test
 	public void placesItsHorizontalAnchor() {
 		final UIDataObject data = new UIDataObject();
-		Assert.assertEquals(0D, data.setAnchorX(Align.START).getAnchorPositionX(), 0D);
-		Assert.assertEquals(960D, data.setAnchorX(Align.CENTER).getAnchorPositionX(), 0D);
-		Assert.assertEquals(1920D, data.setAnchorX(Align.END).getAnchorPositionX(), 0D);
+		Assert.assertEquals(0D, data.anchorX(Align.START).getAnchorPositionX(), 0D);
+		Assert.assertEquals(960D, data.anchorX(Align.CENTER).getAnchorPositionX(), 0D);
+		Assert.assertEquals(1920D, data.anchorX(Align.END).getAnchorPositionX(), 0D);
 	}
 
 	@Test
 	public void placesItsVerticalAnchor() {
 		final UIDataObject data = new UIDataObject();
-		Assert.assertEquals(0D, data.setAnchorY(Align.START).getAnchorPositionY(), 0D);
-		Assert.assertEquals(540D, data.setAnchorY(Align.CENTER).getAnchorPositionY(), 0D);
-		Assert.assertEquals(1080D, data.setAnchorY(Align.END).getAnchorPositionY(), 0D);
+		Assert.assertEquals(0D, data.anchorY(Align.START).getAnchorPositionY(), 0D);
+		Assert.assertEquals(540D, data.anchorY(Align.CENTER).getAnchorPositionY(), 0D);
+		Assert.assertEquals(1080D, data.anchorY(Align.END).getAnchorPositionY(), 0D);
 	}
 
 	@Test
 	public void decodesItsBackgroundColor() {
-		final UIDataObject data = new UIDataObject().setBackgroundColor("#00FF00");
+		final UIDataObject data = new UIDataObject().backgroundColor("#00FF00");
 		Assert.assertEquals("#00FF00", data.backgroundColor());
 		Assert.assertEquals(new Color(0, 255, 0, 255), data.getBackgroundColor());
 	}
@@ -101,7 +97,7 @@ public class UIDataObjectTest {
 	@Test
 	public void changesEveryValue() {
 		final UIDataObject data = new UIDataObject();
-		Assert.assertSame(data, data.setActive(false).setVisible(false).setCloseable(false).setZoomable(false).setBackground(true).setProjection(false).setZindex(7).setZlevel(4D));
+		Assert.assertSame(data, data.active(false).visible(false).closeable(false).zoomable(false).background(true).projection(false).zindex(7).zlevel(4D));
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.visible());
 		Assert.assertFalse(data.closeable());
@@ -114,8 +110,8 @@ public class UIDataObjectTest {
 
 	@Test
 	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
-		final UIDataObject data = new UIDataObject().setZlevel(4D).setVisible(false).setAnchorX(Align.END).setBackgroundColor("#00FF00");
-		Assert.assertSame(data, data.update(UIDataObject.get(DefaultUI.class), UIDataObject.get(DefaultUI.class)));
+		final UIDataObject data = new UIDataObject().zlevel(4D).visible(false).anchorX(Align.END).backgroundColor("#00FF00");
+		Assert.assertSame(data, AnnotationValues.merge(data, DefaultUI.class.getAnnotation(UIData.class), DefaultUI.class.getAnnotation(UIData.class)));
 		Assert.assertEquals(4D, data.zlevel(), 0D);
 		Assert.assertFalse(data.visible());
 		Assert.assertSame(Align.END, data.anchorX());
@@ -124,8 +120,8 @@ public class UIDataObjectTest {
 
 	@Test
 	public void takesEveryValueChangedInTheAnnotation() {
-		final UIDataObject data = new UIDataObject().setZlevel(4D).setAnchorY(Align.START);
-		data.update(UIDataObject.get(DefaultUI.class), UIDataObject.get(CustomUI.class));
+		final UIDataObject data = new UIDataObject().zlevel(4D).anchorY(Align.START);
+		AnnotationValues.merge(data, DefaultUI.class.getAnnotation(UIData.class), CustomUI.class.getAnnotation(UIData.class));
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.visible());
 		Assert.assertFalse(data.closeable());
@@ -140,13 +136,8 @@ public class UIDataObjectTest {
 	}
 
 	@Test
-	public void standsForAUIData() {
-		Assert.assertSame(UIData.class, new UIDataObject().annotationType());
-	}
-
-	@Test
 	public void describesItself() {
-		final String text = new UIDataObject().setAnchorX(Align.START).setZlevel(3D).toString();
+		final String text = new UIDataObject().anchorX(Align.START).zlevel(3D).toString();
 		Assert.assertTrue(text, text.startsWith("UIDataObject("));
 		Assert.assertTrue(text, text.contains("anchorX=START"));
 		Assert.assertTrue(text, text.contains("zlevel=3.0"));
@@ -154,12 +145,12 @@ public class UIDataObjectTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullAnchor() {
-		new UIDataObject().setAnchorX(null);
+		new UIDataObject().anchorX(null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullBackgroundColor() {
-		new UIDataObject().setBackgroundColor(null);
+		new UIDataObject().backgroundColor(null);
 	}
 
 	@UIData

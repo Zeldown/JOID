@@ -7,7 +7,7 @@ import lombok.NonNull;
 
 public class DemoToggleNode extends ToggleNode<String, String> {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	protected DemoToggleNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

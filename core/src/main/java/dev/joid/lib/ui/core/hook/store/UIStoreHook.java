@@ -1,31 +1,22 @@
 package dev.joid.lib.ui.core.hook.store;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
+import dev.joid.lib.utils.json.JsonFiles;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -33,7 +24,6 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIStoreHook {
 
-	private static final Gson GSON = new GsonBuilder().create();
 	private static final Map<Class<? extends UIStore>, UIStore> GLOBAL_CACHE = new ConcurrentHashMap<>();
 
 	public static <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
@@ -45,11 +35,10 @@ public final class UIStoreHook {
 		final T store = UIStoreHook.createStoreInstance(clazz, args);
 		store.init();
 
-		final File file = UIStoreHook.getFile(UIStoreHook.getId(store));
-		if (data.scope() == StoreScope.PERMANENT && file.exists()) {
-			final String json = UIStoreHook.loadFile(file);
+		if (data.scope() == StoreScope.PERMANENT) {
+			final JsonObject json = JsonFiles.read(UIStoreHook.getFile(store), "the store starts from init()");
 			if (json != null) {
-				store.fromJson(json);
+				store.fromJson(json.toString());
 			}
 		}
 
@@ -75,7 +64,7 @@ public final class UIStoreHook {
 			return;
 		}
 
-		UIStoreHook.saveFile(UIStoreHook.getId(store), store.toJson());
+		JsonFiles.write(UIStoreHook.getFile(store), store.toJson());
 	}
 
 	public static void saveAll() {
@@ -149,59 +138,8 @@ public final class UIStoreHook {
 		return id.isEmpty() ? store.getClass().getName() : id;
 	}
 
-	private static @NonNull File getFile(final @NonNull String id) {
-		final File parent = new File(JOIDEnv.getDataDir(), "store");
-		return new File(parent, id + ".store");
-	}
-
-	private static String loadFile(final @NonNull File file) {
-		final String json;
-		try {
-			json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		} catch (final IOException e) {
-			JOIDLog.warn("The store file " + file.getAbsolutePath() + " cannot be read (" + e + "), it is left untouched and the store starts from init()");
-			return null;
-		}
-
-		String failure = "it holds no JSON object";
-		try {
-			if (UIStoreHook.GSON.fromJson(json, JsonObject.class) != null) {
-				return json;
-			}
-		} catch (final JsonParseException e) {
-			failure = e.toString();
-		}
-
-		final File corrupt = new File(file.getPath() + ".corrupt");
-		try {
-			Files.move(file.toPath(), corrupt.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			JOIDLog.warn("The store file " + file.getAbsolutePath() + " cannot be read (" + failure + "), it is kept as " + corrupt.getAbsolutePath() + " and the store starts from init()");
-		} catch (final IOException e) {
-			JOIDLog.warn("The store file " + file.getAbsolutePath() + " cannot be read (" + failure + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + e + "), it is left untouched and the store starts from init()");
-		}
-		return null;
-	}
-
-	private static void saveFile(final @NonNull String id, final @NonNull String json) {
-		try {
-			final File file = UIStoreHook.getFile(id);
-			if (!file.exists()) {
-				final File parent = file.getParentFile();
-				if (!parent.exists()) {
-					parent.mkdirs();
-				}
-
-				if (!file.createNewFile()) {
-					JOIDLog.warn("The store file " + file.getAbsolutePath() + " cannot be created, check that the data folder can be written");
-				}
-			}
-
-			try (final Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
-				writer.write(json);
-			}
-		} catch (final Exception e) {
-			JOIDLog.warn("The store " + id + " cannot be saved into " + UIStoreHook.getFile(id).getAbsolutePath() + " (" + e + "), check that the data folder can be written");
-		}
+	private static @NonNull File getFile(final @NonNull UIStore store) {
+		return new File(new File(JOIDEnv.getDataDir(), "store"), UIStoreHook.getId(store) + ".store");
 	}
 
 }

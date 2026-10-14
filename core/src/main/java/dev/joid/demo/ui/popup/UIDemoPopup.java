@@ -17,7 +17,7 @@ import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 @UIDataPopup(active = true)
 public class UIDemoPopup extends UI {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	@Override
 	public void init() {

@@ -298,7 +298,7 @@ public class UIStoreHookTest {
 		this.write("{ broken");
 		final List<PermanentStore> stores = new ArrayList<>();
 		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class)));
-		Assert.assertTrue(error, error.startsWith("[JOID] The store file " + this.file().getAbsolutePath() + " cannot be read (com.google.gson.JsonSyntaxException: "));
+		Assert.assertTrue(error, error.startsWith("[JOID] The file " + this.file().getAbsolutePath() + " cannot be read (com.google.gson.JsonSyntaxException: "));
 		Assert.assertTrue(error, error.endsWith("), it is kept as " + this.file().getAbsolutePath() + ".corrupt and the store starts from init()" + System.lineSeparator()));
 		Assert.assertTrue(stores.get(0).initialized);
 		Assert.assertEquals("default", stores.get(0).value);
@@ -309,7 +309,7 @@ public class UIStoreHookTest {
 		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
 		Assert.assertTrue(this.file().mkdirs());
 		final String error = UIStoreHookTest.capture(() -> UIStoreHook.saveStore(store));
-		Assert.assertTrue(error, error.startsWith("[JOID] The store permanent cannot be saved into " + this.file().getAbsolutePath() + " ("));
+		Assert.assertTrue(error, error.startsWith("[JOID] The file " + this.file().getAbsolutePath() + " cannot be saved ("));
 		Assert.assertTrue(error, error.endsWith("), check that the data folder can be written" + System.lineSeparator()));
 	}
 
@@ -329,7 +329,7 @@ public class UIStoreHookTest {
 		Assert.assertTrue(this.file().mkdirs());
 		final List<PermanentStore> stores = new ArrayList<>();
 		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class)));
-		Assert.assertTrue(error, error.startsWith("[JOID] The store file " + this.file().getAbsolutePath() + " cannot be read ("));
+		Assert.assertTrue(error, error.startsWith("[JOID] The file " + this.file().getAbsolutePath() + " cannot be read ("));
 		Assert.assertTrue(error, error.endsWith("), it is left untouched and the store starts from init()" + System.lineSeparator()));
 		Assert.assertTrue(stores.get(0).initialized);
 		Assert.assertTrue(this.file().isDirectory());

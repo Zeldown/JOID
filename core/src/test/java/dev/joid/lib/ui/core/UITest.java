@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -16,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EmptyStackException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +70,7 @@ import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
@@ -272,9 +275,9 @@ public class UITest {
 	public void keepsItsValuesChangedAtRuntimeOnReload() {
 		final PopupUI ui = new PopupUI(this.trace);
 		this.bridges.open(ui);
-		ui.getData().setZlevel(4D).setAnchorX(Align.START);
-		ui.getDebug().setProfiler(true);
-		ui.getPopup().setActive(false);
+		ui.getData().zlevel(4D).anchorX(Align.START);
+		ui.getDebug().profiler(true);
+		ui.getPopup().active(false);
 		ui.reload();
 		this.bridges.frame();
 		Assert.assertEquals(4D, ui.getData().zlevel(), 0D);
@@ -285,23 +288,27 @@ public class UITest {
 	}
 
 	@Test
-	public void appliesOnReloadOnlyTheAnnotationValuesChangedSinceTheirLastRead() {
+	public void appliesOnReloadOnlyTheAnnotationValuesChangedSinceTheirLastRead() throws Exception {
 		final AnnotatedUI ui = new AnnotatedUI(this.trace);
 		this.bridges.open(ui);
-		ui.getData().setZlevel(4D).setAnchorX(Align.START);
-		ui.getPopup().setActive(true);
+		ui.getData().zlevel(4D).anchorX(Align.START);
+		ui.getPopup().active(true);
 		this.bridges.frame();
 		Assert.assertTrue(ui.getTransition() instanceof PopTransition);
-		ui.getAnnotatedData().setZlevel(2D);
-		ui.getAnnotatedPopup().setActive(true);
+		final Field field = UI.class.getDeclaredField("annotationMap");
+		field.setAccessible(true);
+		final Map<Class<?>, Annotation> previous = new HashMap<>();
+		previous.put(UIData.class, PreviousAnnotations.class.getAnnotation(UIData.class));
+		previous.put(UIDataPopup.class, PreviousAnnotations.class.getAnnotation(UIDataPopup.class));
+		field.set(ui, previous);
 		ui.reload();
 		this.bridges.frame();
 		Assert.assertEquals(1D, ui.getData().zlevel(), 0D);
 		Assert.assertSame(Align.START, ui.getData().anchorX());
 		Assert.assertFalse(ui.getPopup().active());
 		Assert.assertNull(ui.getTransition());
-		Assert.assertEquals(1D, ui.getAnnotatedData().zlevel(), 0D);
-		ui.getData().setZlevel(5D);
+		Assert.assertSame(AnnotatedUI.class.getAnnotation(UIData.class), ui.getAnnotationMap().get(UIData.class));
+		ui.getData().zlevel(5D);
 		ui.reload();
 		Assert.assertEquals(5D, ui.getData().zlevel(), 0D);
 	}
@@ -311,10 +318,10 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui).frame();
 		Assert.assertNull(ui.getTransition());
-		ui.getPopup().setActive(true);
+		ui.getPopup().active(true);
 		this.bridges.frame();
 		Assert.assertTrue(ui.getTransition() instanceof PopTransition);
-		ui.getPopup().setTransition(PopupTransition.NONE);
+		ui.getPopup().transition(PopupTransition.NONE);
 		this.bridges.frame();
 		Assert.assertNull(ui.getTransition());
 	}
@@ -323,14 +330,14 @@ public class UITest {
 	public void watchesItsClassesFromTheFrameAfterItsHotReloadChanges() throws Exception {
 		final UI ui = UITest.hotReloaded(this.folder.newFolder("classes"), new AtomicInteger());
 		JOIDEnv.devMode(true);
-		ui.getDebug().setHotreload(false);
+		ui.getDebug().hotreload(false);
 		UITest.out(() -> ui.load(1920D, 1080D));
 		try {
 			Assert.assertNull(ui.getWatchedLocation());
-			ui.getDebug().setHotreload(true);
+			ui.getDebug().hotreload(true);
 			UITest.out(() -> ui.draw(0D, 0D));
 			Assert.assertNotNull(ui.getWatchedLocation());
-			ui.getDebug().setHotreload(false);
+			ui.getDebug().hotreload(false);
 			UITest.out(() -> ui.draw(0D, 0D));
 			Assert.assertNull(ui.getWatchedLocation());
 		} finally {
@@ -343,7 +350,7 @@ public class UITest {
 		final PopupUI ui = new PopupUI(this.trace);
 		final RecordingTransition transition = new RecordingTransition(this.trace);
 		ui.setTransition(transition);
-		ui.getPopup().setTransition(PopupTransition.NONE);
+		ui.getPopup().transition(PopupTransition.NONE);
 		this.bridges.open(ui).frame();
 		Assert.assertSame(transition, ui.getTransition());
 	}
@@ -416,7 +423,7 @@ public class UITest {
 		this.bridges.move(960D, 540D).frame();
 		Assert.assertEquals(960D, ui.getMouseX(), 0D);
 		Assert.assertEquals(540D, ui.getMouseY(), 0D);
-		ui.getData().setAnchorX(Align.START).setAnchorY(Align.END);
+		ui.getData().anchorX(Align.START).anchorY(Align.END);
 		this.bridges.frame();
 		Assert.assertEquals(0D, ui.getView().getAnchorX(), 0D);
 		Assert.assertEquals(1080D, ui.getView().getAnchorY(), 0D);
@@ -986,7 +993,7 @@ public class UITest {
 	@Test
 	public void drawsItsBackgroundOverTheWholeWindow() {
 		final TraceUI ui = new TraceUI(this.trace);
-		ui.getData().setBackground(true);
+		ui.getData().background(true);
 		this.bridges.resize(1366, 768).open(ui);
 		final Draw background = UITest.background(this.bridges);
 		Assert.assertSame(background, this.bridges.getRender().getDraws().get(0));
@@ -1006,7 +1013,7 @@ public class UITest {
 	@Test
 	public void fadesItsBackgroundWithItsTransitions() {
 		final PopupUI ui = new PopupUI(this.trace);
-		ui.getData().setBackground(true);
+		ui.getData().background(true);
 		this.bridges.open(ui);
 		Assert.assertEquals(0F, UITest.background(this.bridges).getAlpha(), 0F);
 		this.bridges.frames(20);
@@ -1266,7 +1273,7 @@ public class UITest {
 		final HoverBridge bridge = new HoverBridge();
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D));
 		bridge.interfaceScale = 0.5D;
-		ui.getScale().setActive(false);
+		ui.getScale().active(false);
 		BridgeHandler.UI.register(bridge);
 		try {
 			bridge.add(ui);
@@ -1275,7 +1282,7 @@ public class UITest {
 			Assert.assertEquals(1D, ui.getView().getInterfaceScale(), 0D);
 			Assert.assertEquals(1920D, ui.getViewWidth(), 0D);
 			Assert.assertEquals(0, bridge.scaleQueries);
-			ui.getScale().setActive(true);
+			ui.getScale().active(true);
 			this.bridges.draw(bridge);
 			Assert.assertEquals(0.5D, ui.getView().getInterfaceScale(), 0D);
 			Assert.assertEquals(1, bridge.scaleQueries);
@@ -1298,7 +1305,7 @@ public class UITest {
 			bridge.interfaceScale = 0.5D;
 			this.bridges.draw(bridge);
 			Assert.assertEquals(0.5D, ui.getView().getInterfaceScale(), 0D);
-			ui.getScale().setLimited(false);
+			ui.getScale().limited(false);
 			bridge.interfaceScale = 2D;
 			this.bridges.draw(bridge);
 			Assert.assertEquals(2D, ui.getView().getInterfaceScale(), 0D);
@@ -1963,9 +1970,9 @@ public class UITest {
 				this.consume(event);
 			});
 			super.handleKeyPressed(event -> this.consume(event));
-			super.handleKeyPressed(EventPriority.MONITOR, event -> this.trace.add("key " + event.getKey() + (event.isConsumed() ? " cancelled" : "")));
+			super.handleKeyPressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("key " + event.getKey() + (event.isConsumed() ? " cancelled" : ""))));
 			super.handleCharTyped(event -> this.consume(event));
-			super.handleCharTyped(EventPriority.MONITOR, event -> this.trace.add("char " + new String(Character.toChars(event.getCodepoint())) + (event.isConsumed() ? " cancelled" : "")));
+			super.handleCharTyped(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("char " + new String(Character.toChars(event.getCodepoint())) + (event.isConsumed() ? " cancelled" : ""))));
 		}
 
 		@Override
@@ -2022,6 +2029,10 @@ public class UITest {
 		}
 
 	}
+
+	@UIData(zlevel = 2D)
+	@UIDataPopup(active = true)
+	private static final class PreviousAnnotations {}
 
 	@UIDataPopup(active = true, transition = PopupTransition.IN)
 	public static final class InPopupUI extends TraceUI {

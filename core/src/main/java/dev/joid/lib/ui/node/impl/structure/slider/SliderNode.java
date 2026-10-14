@@ -8,7 +8,6 @@ import java.util.Set;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
@@ -121,19 +120,11 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, O>> listener) {
-		return this.beforeChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SliderNode<O>> @NonNull T beforeChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, O>> listener) {
-		return super.listen(SliderNode.BEFORE_CHANGE, priority, listener);
+		return super.listen(SliderNode.BEFORE_CHANGE, listener);
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, O>> listener) {
-		return this.onChange(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, O>> listener) {
-		return super.listen(SliderNode.CHANGE, priority, listener);
+		return super.listen(SliderNode.CHANGE, listener);
 	}
 
 	protected final void release() {

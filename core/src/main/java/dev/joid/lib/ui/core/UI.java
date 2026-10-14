@@ -3,6 +3,7 @@ package dev.joid.lib.ui.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -46,10 +47,16 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.replay.SignalReplay;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.UIDataObject;
+import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.core.data.debug.UIDataDebugObject;
+import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlayObject;
+import dev.joid.lib.ui.core.data.popup.UIDataPopup;
+import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.data.popup.UIDataPopupObject;
+import dev.joid.lib.ui.core.data.scale.UIDataScale;
 import dev.joid.lib.ui.core.data.scale.UIDataScaleObject;
 import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
 import dev.joid.lib.ui.core.hook.store.UIStore;
@@ -60,7 +67,6 @@ import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.event.Event;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.ui.UIChangeEvent;
 import dev.joid.lib.ui.event.impl.ui.UICharEvent;
@@ -73,8 +79,9 @@ import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.ui.task.Task;
-import dev.joid.lib.utils.list.IndexedConcurrentList;
+import dev.joid.lib.utils.annotation.AnnotationValues;
 import dev.joid.lib.utils.list.IndexedElement;
+import dev.joid.lib.utils.list.IndexedList;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
@@ -103,9 +110,9 @@ public abstract class UI implements IUI, IndexedElement {
 	@Getter
 	private static UI current;
 
-	@NonNull private final EventBus                             eventBus;
-	@NonNull private final Stack<MaskRegion>                    stencilStack;
-	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
+	@NonNull private final EventBus                   eventBus;
+	@NonNull private final Stack<MaskRegion>          stencilStack;
+	@NonNull private final IndexedList<@NonNull Node> nodeList;
 
 	private final UIView view;
 
@@ -115,16 +122,11 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private final UIDataScaleObject   scale;
 	@NonNull private final UIDataOverlayObject overlay;
 
-	@NonNull private UIDataObject        annotatedData;
-	@NonNull private UIDataDebugObject   annotatedDebug;
-	@NonNull private UIDataPopupObject   annotatedPopup;
-	@NonNull private UIDataScaleObject   annotatedScale;
-	@NonNull private UIDataPopupObject   transitionPopup;
-	@NonNull private UIDataOverlayObject annotatedOverlay;
-
-	private transient File                                   watchedLocation;
-	private transient Transition                             transition;
-	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
+	private transient File                                         watchedLocation;
+	private transient Transition                                   transition;
+	private transient PopupTransition                              popupTransition;
+	private transient Map<Class<? extends UIStore>, UIStore>       storeMap;
+	private transient Map<Class<? extends Annotation>, Annotation> annotationMap;
 
 	private transient Double         zoomValue;
 	private transient Signal<Double> zoomSource;
@@ -157,17 +159,12 @@ public abstract class UI implements IUI, IndexedElement {
 	private long       lastHoveredFrame;
 
 	protected UI() {
-		this.annotatedData    = UIDataObject.getOrDefault(this.getClass());
-		this.annotatedDebug   = UIDataDebugObject.getOrDefault(this.getClass());
-		this.annotatedPopup   = UIDataPopupObject.getOrDefault(this.getClass());
-		this.annotatedScale   = UIDataScaleObject.getOrDefault(this.getClass());
-		this.annotatedOverlay = UIDataOverlayObject.getOrDefault(this.getClass());
-		this.data             = new UIDataObject(this.annotatedData);
-		this.debug            = new UIDataDebugObject(this.annotatedDebug);
-		this.popup            = new UIDataPopupObject(this.annotatedPopup);
-		this.scale            = new UIDataScaleObject(this.annotatedScale);
-		this.overlay          = new UIDataOverlayObject(this.annotatedOverlay);
-		this.transitionPopup  = new UIDataPopupObject(this.popup);
+		this.annotationMap = UI.annotations(this.getClass());
+		this.data          = AnnotationValues.read(this.annotationMap.get(UIData.class), new UIDataObject());
+		this.debug         = AnnotationValues.read(this.annotationMap.get(UIDataDebug.class), new UIDataDebugObject());
+		this.popup         = AnnotationValues.read(this.annotationMap.get(UIDataPopup.class), new UIDataPopupObject());
+		this.scale         = AnnotationValues.read(this.annotationMap.get(UIDataScale.class), new UIDataScaleObject());
+		this.overlay       = AnnotationValues.read(this.annotationMap.get(UIDataOverlay.class), new UIDataOverlayObject());
 
 		if (this.popup.active() && this.overlay.active()) {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
@@ -175,10 +172,10 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.stencilStack = new Stack<>();
 		this.eventBus = EventBus.create(() -> UI.nameOf(this.getClass()));
-		this.nodeList = new IndexedConcurrentList<>();
+		this.nodeList = IndexedList.concurrent();
 		this.storeMap = new HashMap<>();
 
-		this.transition = this.createPopupTransition();
+		this.refreshTransition();
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
 
@@ -259,11 +256,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleMouseScroll(final @NonNull EventListener<UIMouseScrollEvent<T>> listener) {
-		return this.handleMouseScroll(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T handleMouseScroll(final @NonNull EventPriority priority, final @NonNull EventListener<UIMouseScrollEvent<T>> listener) {
-		return this.listen(UI.HANDLE_MOUSE_SCROLL, priority, listener);
+		return this.listen(UI.HANDLE_MOUSE_SCROLL, listener);
 	}
 
 	public final boolean fireMouseScroll(final double notchesX, final double notchesY) {
@@ -288,11 +281,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleMousePressed(final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.handleMousePressed(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T handleMousePressed(final @NonNull EventPriority priority, final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.listen(UI.HANDLE_MOUSE_PRESSED, priority, listener);
+		return this.listen(UI.HANDLE_MOUSE_PRESSED, listener);
 	}
 
 	public final boolean fireMousePressed(final @NonNull MouseButton button) {
@@ -311,11 +300,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleMouseReleased(final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.handleMouseReleased(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T handleMouseReleased(final @NonNull EventPriority priority, final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.listen(UI.HANDLE_MOUSE_RELEASED, priority, listener);
+		return this.listen(UI.HANDLE_MOUSE_RELEASED, listener);
 	}
 
 	public final boolean fireMouseReleased(final @NonNull MouseButton button) {
@@ -334,11 +319,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleMouseDragged(final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.handleMouseDragged(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T handleMouseDragged(final @NonNull EventPriority priority, final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.listen(UI.HANDLE_MOUSE_DRAGGED, priority, listener);
+		return this.listen(UI.HANDLE_MOUSE_DRAGGED, listener);
 	}
 
 	public final boolean fireMouseDragged(final @NonNull MouseButton button, final long deltaTime) {
@@ -357,11 +338,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleCharTyped(final @NonNull EventListener<UICharEvent<T>> listener) {
-		return this.handleCharTyped(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T handleCharTyped(final @NonNull EventPriority priority, final @NonNull EventListener<UICharEvent<T>> listener) {
-		return this.listen(UI.HANDLE_CHAR_TYPED, priority, listener);
+		return this.listen(UI.HANDLE_CHAR_TYPED, listener);
 	}
 
 	public final boolean fireCharTyped(final int codepoint) {
@@ -377,11 +354,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleKeyPressed(final @NonNull EventListener<UIKeyEvent<T>> listener) {
-		return this.handleKeyPressed(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T handleKeyPressed(final @NonNull EventPriority priority, final @NonNull EventListener<UIKeyEvent<T>> listener) {
-		return this.listen(UI.HANDLE_KEY_PRESSED, priority, listener);
+		return this.listen(UI.HANDLE_KEY_PRESSED, listener);
 	}
 
 	public final boolean fireKeyPressed(final @NonNull Key key) {
@@ -442,19 +415,11 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T beforeClose(final @NonNull EventListener<UICloseEvent.Pre<T>> listener) {
-		return this.beforeClose(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T beforeClose(final @NonNull EventPriority priority, final @NonNull EventListener<UICloseEvent.Pre<T>> listener) {
-		return this.listen(UI.BEFORE_CLOSE, priority, listener);
+		return this.listen(UI.BEFORE_CLOSE, listener);
 	}
 
 	public final <T extends UI> @NonNull T onClose(final @NonNull EventListener<UICloseEvent.Post<T>> listener) {
-		return this.onClose(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T onClose(final @NonNull EventPriority priority, final @NonNull EventListener<UICloseEvent.Post<T>> listener) {
-		return this.listen(UI.CLOSE, priority, listener);
+		return this.listen(UI.CLOSE, listener);
 	}
 
 	public final boolean fireClose() {
@@ -506,19 +471,11 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T beforeZoom(final @NonNull EventListener<UIChangeEvent.Pre<T, Double>> listener) {
-		return this.beforeZoom(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T beforeZoom(final @NonNull EventPriority priority, final @NonNull EventListener<UIChangeEvent.Pre<T, Double>> listener) {
-		return this.listen(UI.BEFORE_ZOOM, priority, listener);
+		return this.listen(UI.BEFORE_ZOOM, listener);
 	}
 
 	public final <T extends UI> @NonNull T onZoom(final @NonNull EventListener<UIChangeEvent.Post<T, Double>> listener) {
-		return this.onZoom(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends UI> @NonNull T onZoom(final @NonNull EventPriority priority, final @NonNull EventListener<UIChangeEvent.Post<T, Double>> listener) {
-		return this.listen(UI.ZOOM, priority, listener);
+		return this.listen(UI.ZOOM, listener);
 	}
 
 	public final @NonNull List<MaskRegion> getStencilStack() {
@@ -727,22 +684,17 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void startMask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight) {
 		final int stencilValue = this.stencilStack.size() + 1;
 		this.stencilStack.push(new MaskRegion(stencilValue, maskX, maskY, maskWidth, maskHeight));
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (stencilValue == 1) {
-			render.clearStencil();
-		}
+		BridgeHandler.RENDER.get().withState(render -> {
+			if (stencilValue == 1) {
+				render.clearStencil();
+			}
 
-		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
-
-		render.pushState();
-		try {
+			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
 			render.getState().colorWrite(false).alphaCutoff(0.5F);
 			DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
-		} finally {
-			render.popState();
-		}
+		});
 
-		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		BridgeHandler.RENDER.get().getState().stencil(StencilState.create(StencilFunction.EQUAL, stencilValue, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
 
 	public final void reload() {
@@ -756,7 +708,13 @@ public abstract class UI implements IUI, IndexedElement {
 			UIPropertyHook.save(this);
 			SignalReplay.clear();
 
-			this.readData();
+			final Map<Class<? extends Annotation>, Annotation> annotations = UI.annotations(this.getClass());
+			AnnotationValues.merge(this.data, this.annotationMap.get(UIData.class), annotations.get(UIData.class));
+			AnnotationValues.merge(this.debug, this.annotationMap.get(UIDataDebug.class), annotations.get(UIDataDebug.class));
+			AnnotationValues.merge(this.popup, this.annotationMap.get(UIDataPopup.class), annotations.get(UIDataPopup.class));
+			AnnotationValues.merge(this.scale, this.annotationMap.get(UIDataScale.class), annotations.get(UIDataScale.class));
+			AnnotationValues.merge(this.overlay, this.annotationMap.get(UIDataOverlay.class), annotations.get(UIDataOverlay.class));
+			this.annotationMap = annotations;
 			this.refreshTransition();
 
 			this.initialized = false;
@@ -851,24 +809,6 @@ public abstract class UI implements IUI, IndexedElement {
 		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
 	}
 
-	private void readData() {
-		final UIDataObject data = UIDataObject.getOrDefault(this.getClass());
-		final UIDataDebugObject debug = UIDataDebugObject.getOrDefault(this.getClass());
-		final UIDataPopupObject popup = UIDataPopupObject.getOrDefault(this.getClass());
-		final UIDataScaleObject scale = UIDataScaleObject.getOrDefault(this.getClass());
-		final UIDataOverlayObject overlay = UIDataOverlayObject.getOrDefault(this.getClass());
-		this.data.update(this.annotatedData, data);
-		this.debug.update(this.annotatedDebug, debug);
-		this.popup.update(this.annotatedPopup, popup);
-		this.scale.update(this.annotatedScale, scale);
-		this.overlay.update(this.annotatedOverlay, overlay);
-		this.annotatedData    = data;
-		this.annotatedDebug   = debug;
-		this.annotatedPopup   = popup;
-		this.annotatedScale   = scale;
-		this.annotatedOverlay = overlay;
-	}
-
 	private Double getZoomValue() {
 		return this.zoomValue;
 	}
@@ -918,13 +858,24 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
+	private void renderHoveredNode(final double mouseX, final double mouseY) {
+		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
+			render.getState().depthTest(false).depthWrite(false);
+			Node hovered = this.getHoveredNode();
+			while (hovered != null && !hovered.renderHover(mouseX, mouseY)) {
+				hovered = hovered.getParent();
+			}
+		}));
+	}
+
 	private void refreshTransition() {
-		if (this.customTransition || this.popup.active() == this.transitionPopup.active() && this.popup.transition() == this.transitionPopup.transition()) {
+		final PopupTransition popupTransition = this.popup.active() ? this.popup.transition() : PopupTransition.NONE;
+		if (this.customTransition || popupTransition == this.popupTransition) {
 			return;
 		}
 
-		this.transitionPopup = new UIDataPopupObject(this.popup);
-		this.transition = this.createPopupTransition();
+		this.popupTransition = popupTransition;
+		this.transition = UI.createPopupTransition(popupTransition);
 	}
 
 	private void refreshMonitor() {
@@ -955,21 +906,6 @@ public abstract class UI implements IUI, IndexedElement {
 		UI.unwatch(UI.locate(this.getClass()), this);
 	}
 
-	private Transition createPopupTransition() {
-		if (!this.popup.active() || !this.popup.transition().isActive()) {
-			return null;
-		}
-
-		final Transition transition = new PopTransition();
-		if (!this.popup.transition().isIn()) {
-			transition.getIn().disable();
-		}
-
-		if (!this.popup.transition().isOut()) {
-			transition.getOut().disable();
-		}
-		return transition;
-	}
 
 	private void drawFrame(final double mouseX, final double mouseY) {
 		final long start = BridgeHandler.CLOCK.get().nanoTime();
@@ -1047,19 +983,8 @@ public abstract class UI implements IUI, IndexedElement {
 					node.render(mx, my);
 				});
 
-				Node hovered = this.getHoveredNode();
-				if (hovered != null) {
-					render.getModelView().push();
-					render.pushState();
-					try {
-						render.getState().depthTest(false).depthWrite(false);
-						while (hovered != null && !hovered.renderHover(mx, my)) {
-							hovered = hovered.getParent();
-						}
-					} finally {
-						render.popState();
-						render.getModelView().pop();
-					}
+				if (this.getHoveredNode() != null) {
+					this.renderHoveredNode(mx, my);
 				}
 			});
 		} finally {
@@ -1126,8 +1051,8 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	private <T extends UI> T listen(final EventType<?> type, final EventPriority priority, final EventListener<?> listener) {
-		this.eventBus.listen(type, priority, listener);
+	private <T extends UI> T listen(final EventType<?> type, final EventListener<?> listener) {
+		this.eventBus.listen(type, listener);
 		return (T) this;
 	}
 
@@ -1181,6 +1106,30 @@ public abstract class UI implements IUI, IndexedElement {
 
 	private static String nameOf(final Class<?> type) {
 		return type.getSimpleName().isEmpty() ? type.getName() : type.getSimpleName();
+	}
+
+	private static Map<Class<? extends Annotation>, Annotation> annotations(final Class<?> type) {
+		final Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
+		for (final Annotation annotation : type.getAnnotations()) {
+			annotationMap.put(annotation.annotationType(), annotation);
+		}
+		return Collections.unmodifiableMap(annotationMap);
+	}
+
+	private static Transition createPopupTransition(final PopupTransition popupTransition) {
+		if (!popupTransition.isActive()) {
+			return null;
+		}
+
+		final Transition transition = new PopTransition();
+		if (!popupTransition.isIn()) {
+			transition.getIn().disable();
+		}
+
+		if (!popupTransition.isOut()) {
+			transition.getOut().disable();
+		}
+		return transition;
 	}
 
 	private static void collectTasks(final Node node, final List<Task> taskList) {

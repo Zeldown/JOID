@@ -2,6 +2,7 @@ package dev.joid.lib.bridge.render.matrix;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.function.Consumer;
 
 import lombok.NonNull;
 
@@ -28,6 +29,15 @@ public final class MatrixStack {
 
 	public void push() {
 		this.stack.push(this.matrix.clone());
+	}
+
+	public void with(final @NonNull Consumer<MatrixStack> body) {
+		this.push();
+		try {
+			body.accept(this);
+		} finally {
+			this.pop();
+		}
 	}
 
 	public void identity() {

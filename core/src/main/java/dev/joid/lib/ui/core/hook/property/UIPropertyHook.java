@@ -1,18 +1,8 @@
 package dev.joid.lib.ui.core.hook.property;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,13 +10,12 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.utils.json.JsonFiles;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -44,7 +33,7 @@ public final class UIPropertyHook {
 			return;
 		}
 
-		final JsonObject json = UIPropertyHook.loadFile(ui);
+		final JsonObject json = UIPropertyHook.read(ui);
 		if (json == null) {
 			return;
 		}
@@ -69,7 +58,7 @@ public final class UIPropertyHook {
 			return;
 		}
 
-		final JsonObject loaded = UIPropertyHook.loadFile(ui);
+		final JsonObject loaded = UIPropertyHook.read(ui);
 		final JsonObject json = loaded != null ? loaded : new JsonObject();
 		for (final Field field : fields) {
 			final String key = UIPropertyHook.getKey(field);
@@ -86,7 +75,7 @@ public final class UIPropertyHook {
 			}
 		}
 
-		UIPropertyHook.saveFile(ui, json);
+		JsonFiles.write(UIPropertyHook.getFile(ui), UIPropertyHook.GSON.toJson(json));
 	}
 
 	private static @NonNull File getFile(final @NonNull UI ui) {
@@ -127,42 +116,8 @@ public final class UIPropertyHook {
 		return fields;
 	}
 
-	private static JsonObject loadFile(final @NonNull UI ui) {
-		final File file = UIPropertyHook.getFile(ui);
-		if (!file.exists()) {
-			return null;
-		}
-
-		try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
-			return UIPropertyHook.GSON.fromJson(reader, JsonObject.class);
-		} catch (final JsonIOException | IOException e) {
-			JOIDLog.warn("The property file " + file.getAbsolutePath() + " cannot be read (" + e + "), it is left untouched and the properties of " + ui.getClass().getSimpleName() + " keep their default values");
-			return null;
-		} catch (final JsonParseException e) {
-			final File corrupt = new File(file.getPath() + ".corrupt");
-			try {
-				Files.move(file.toPath(), corrupt.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				JOIDLog.warn("The property file " + file.getAbsolutePath() + " cannot be read (" + e + "), it is kept as " + corrupt.getAbsolutePath() + " and the properties of " + ui.getClass().getSimpleName() + " keep their default values");
-			} catch (final IOException move) {
-				JOIDLog.warn("The property file " + file.getAbsolutePath() + " cannot be read (" + e + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + move + "), it is left untouched and the properties of " + ui.getClass().getSimpleName() + " keep their default values");
-			}
-			return null;
-		}
-	}
-
-	private static void saveFile(final @NonNull UI ui, final @NonNull JsonObject json) {
-		final File file = UIPropertyHook.getFile(ui);
-		final File parent = file.getParentFile();
-		if (!parent.exists() && !parent.mkdirs()) {
-			JOIDLog.warn("The property folder " + parent.getAbsolutePath() + " cannot be created, the properties of " + ui.getClass().getSimpleName() + " are not saved: check that the data folder can be written");
-			return;
-		}
-
-		try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8)) {
-			UIPropertyHook.GSON.toJson(json, writer);
-		} catch (final Exception e) {
-			JOIDLog.warn("The property file " + file.getAbsolutePath() + " cannot be saved (" + e + "), check that the data folder can be written");
-		}
+	private static JsonObject read(final @NonNull UI ui) {
+		return JsonFiles.read(UIPropertyHook.getFile(ui), "the properties of " + ui.getClass().getSimpleName() + " keep their default values");
 	}
 
 }

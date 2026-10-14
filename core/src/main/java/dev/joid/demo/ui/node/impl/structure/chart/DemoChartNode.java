@@ -14,8 +14,8 @@ import lombok.NonNull;
 
 public class DemoChartNode extends ChartNode {
 
-	private static final Color   INK    = new Color(153, 153, 153).freeze();
-	private static final Color[] SERIES = {new Color(153, 153, 153).freeze(), new Color(85, 85, 85).freeze()};
+	private static final Color   INK    = new Color(153, 153, 153).lock();
+	private static final Color[] SERIES = {new Color(153, 153, 153).lock(), new Color(85, 85, 85).lock()};
 
 	private boolean smooth = true;
 

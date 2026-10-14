@@ -120,25 +120,17 @@ public final class DrawShape {
 	}
 
 	public void drawLine(final @NonNull Color color, final @NonNull Point @NonNull... points) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().lineSmooth(true);
 			this.drawShape(DrawMode.LINE_STRIP, color, points);
-		} finally {
-			render.popState();
-		}
+		});
 	}
 
 	public void drawLine(final @NonNull Color color, final float stroke, final @NonNull Point @NonNull... points) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().lineWidth(stroke);
 			this.drawLine(color, points);
-		} finally {
-			render.popState();
-		}
+		});
 	}
 
 	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Point @NonNull... points) {
@@ -159,14 +151,10 @@ public final class DrawShape {
 			return;
 		}
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().lineWidth(stroke).lineSmooth(true);
 			this.drawShape(DrawMode.LINES, color, dashes.toArray(new Point[0]));
-		} finally {
-			render.popState();
-		}
+		});
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point control, final @NonNull Point end) {
@@ -180,14 +168,10 @@ public final class DrawShape {
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point control, final @NonNull Point end) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().lineWidth(stroke);
 			this.drawCurvedLine(color, start, control, end);
-		} finally {
-			render.popState();
-		}
+		});
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point endControl, final @NonNull Point end) {
@@ -201,14 +185,10 @@ public final class DrawShape {
 	}
 
 	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point endControl, final @NonNull Point end) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().lineWidth(stroke);
 			this.drawCurvedLine(color, start, startControl, endControl, end);
-		} finally {
-			render.popState();
-		}
+		});
 	}
 
 	public void drawShape(final @NonNull DrawMode mode, final @NonNull Color color, final @NonNull Point @NonNull... points) {
@@ -217,14 +197,11 @@ public final class DrawShape {
 	}
 
 	public void drawRawRect(final double x, final double y, final double width, final double height) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final Tessellator tessellator = Tessellator.inst();
-		final PixelGrid grid = render.getPixelGrid();
-		final Span horizontal = grid.spanX(x, width);
-		final Span vertical = grid.spanY(y, height);
-		render.getModelView().push();
-		render.pushState();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
+			final Tessellator tessellator = Tessellator.inst();
+			final PixelGrid grid = render.getPixelGrid();
+			final Span horizontal = grid.spanX(x, width);
+			final Span vertical = grid.spanY(y, height);
 			render.getState().blend(BlendState.NORMAL).texture(null);
 			tessellator.start(DrawMode.POLYGON);
 			tessellator.addVertex(horizontal.getStart(), vertical.getEnd(), 0D);
@@ -232,10 +209,7 @@ public final class DrawShape {
 			tessellator.addVertex(horizontal.getEnd(), vertical.getStart(), 0D);
 			tessellator.addVertex(horizontal.getStart(), vertical.getStart(), 0D);
 			tessellator.draw();
-		} finally {
-			render.popState();
-			render.getModelView().pop();
-		}
+		}));
 	}
 
 	private void drawRounded(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom, final double stroke) {
@@ -315,11 +289,9 @@ public final class DrawShape {
 			maxY = Math.max(maxY, point.getY());
 		}
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final Tessellator tessellator = Tessellator.inst();
-		render.getModelView().push();
-		render.pushState();
-		try {
+		final BoundingBox box = BoundingBox.create(minX, minY, maxX - minX, maxY - minY);
+		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
 			render.getState().blend(BlendState.NORMAL).texture(null);
 			color.bind(() -> {
 				if (smooth) {
@@ -333,11 +305,8 @@ public final class DrawShape {
 					tessellator.addVertex(point.getX(), point.getY(), 0D);
 				}
 				tessellator.draw();
-			}, BoundingBox.create(minX, minY, maxX - minX, maxY - minY));
-		} finally {
-			render.popState();
-			render.getModelView().pop();
-		}
+			}, box);
+		}));
 	}
 
 	private static boolean isSlanted(final @NonNull Point @NonNull... points) {

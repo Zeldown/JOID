@@ -9,7 +9,6 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.utils.align.Align;
@@ -178,11 +177,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T onSubmit(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return this.onSubmit(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends LineFieldNode<V>> @NonNull T onSubmit(final @NonNull EventPriority priority, final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(LineFieldNode.SUBMIT, priority, listener);
+		return super.listen(LineFieldNode.SUBMIT, listener);
 	}
 
 	private final boolean isScrolling(final @NonNull String shown) {

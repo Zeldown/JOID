@@ -50,12 +50,7 @@ public class GlRenderBridge extends RenderBridge {
 		this.binding            = this.guard.getBinding();
 		this.mipmapBuilder      = this.strategies.createMipmapBuilder();
 		this.frameBufferBinding = this.binding.getFrameBufferBinding(this.strategies.getFrameBufferFamily());
-		this.guard.enter();
-		try {
-			this.vertexInput = this.strategies.createVertexInput(this.binding);
-		} finally {
-			this.guard.exit();
-		}
+		this.vertexInput        = this.guard.call(() -> this.strategies.createVertexInput(this.binding));
 	}
 
 	public static @NonNull GlRenderBridge create(final @NonNull IGlBinding binding) {
@@ -96,47 +91,37 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
-		this.guard.enter();
-		try {
+		this.guard.run(() -> {
 			final RenderState state = super.getState();
 			this.applyTarget(state);
 			this.binding.getStateBinding().colorMask(true, true, true, true);
 			this.binding.getStateBinding().clearColor(red, green, blue, alpha);
 			this.binding.clear(GlConstants.COLOR_BUFFER_BIT);
-		} finally {
-			this.guard.exit();
-		}
+		});
 	}
 
 	@Override
 	protected void clearDepthBuffer() {
-		this.guard.enter();
-		try {
+		this.guard.run(() -> {
 			this.applyTarget(super.getState());
 			this.binding.getStateBinding().depthMask(true);
 			this.binding.clear(GlConstants.DEPTH_BUFFER_BIT);
 			this.binding.getStateBinding().depthMask(super.getState().isDepthWrite());
-		} finally {
-			this.guard.exit();
-		}
+		});
 	}
 
 	@Override
 	protected void clearStencilBuffer() {
-		this.guard.enter();
-		try {
+		this.guard.run(() -> {
 			this.applyTarget(super.getState());
 			this.binding.getStateBinding().stencilMask(0xFF);
 			this.binding.clear(GlConstants.STENCIL_BUFFER_BIT);
-		} finally {
-			this.guard.exit();
-		}
+		});
 	}
 
 	@Override
 	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader current) {
-		this.guard.enter();
-		try {
+		this.guard.run(() -> {
 			final RenderState state = super.getState();
 			this.applyTarget(state);
 			this.applyPipeline(state);
@@ -161,9 +146,7 @@ public class GlRenderBridge extends RenderBridge {
 			vertices.vertexAttrib2f(VertexAttribute.TEXTURE_COORDINATE.getLocation(), 0F, 0F);
 			vertices.vertexAttrib3f(VertexAttribute.NORMAL.getLocation(), 0F, 0F, 1F);
 			vertices.drawArrays(GlEnums.mode(primitive), 0, buffer.getCount());
-		} finally {
-			this.guard.exit();
-		}
+		});
 	}
 
 	@Override
@@ -173,22 +156,12 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
-		this.guard.enter();
-		try {
-			return GlFrameBuffer.create(this, width, height);
-		} finally {
-			this.guard.exit();
-		}
+		return this.guard.call(() -> GlFrameBuffer.create(this, width, height));
 	}
 
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
-		this.guard.enter();
-		try {
-			return GlShader.create(this, vertex, fragment, blend);
-		} finally {
-			this.guard.exit();
-		}
+		return this.guard.call(() -> GlShader.create(this, vertex, fragment, blend));
 	}
 
 	private void bindTexture(final int unit, final SamplerBinding resolved) {

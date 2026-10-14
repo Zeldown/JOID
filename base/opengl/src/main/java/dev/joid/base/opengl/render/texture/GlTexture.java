@@ -58,44 +58,35 @@ public final class GlTexture extends Texture implements IGlTexture {
 			throw new IllegalArgumentException("A texture of " + chain.getWidth() + "x" + chain.getHeight() + " exceeds the maximum size " + maxSize + " of " + this.bridge.getCapabilities().getName() + ", downscale the image");
 		}
 
-		this.bridge.getGuard().enter();
-		try {
+		this.bridge.getGuard().run(() -> {
 			final IGlTextureBinding texture = this.bridge.getBinding().getTextureBinding();
 			texture.bindTexture(GlConstants.TEXTURE_2D, this.id);
 			texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlConstants.NEAREST);
 			texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlConstants.NEAREST);
 			this.sampling = null;
 			this.allocateLevels(chain, 0);
-		} finally {
-			this.bridge.getGuard().exit();
-		}
+		});
 	}
 
 	@Override
 	protected void uploadPixels(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
-		this.bridge.getGuard().enter();
-		try {
+		this.bridge.getGuard().run(() -> {
 			final IGlTextureBinding texture = this.bridge.getBinding().getTextureBinding();
 			texture.bindTexture(GlConstants.TEXTURE_2D, this.id);
 			texture.texSubImage2D(GlConstants.TEXTURE_2D, 0, 0, 0, chain.getWidth(), chain.getHeight(), GlConstants.BGRA, GlConstants.UNSIGNED_INT_8_8_8_8_REV, pixels);
 			this.buildLevels(chain);
-		} finally {
-			this.bridge.getGuard().exit();
-		}
+		});
 	}
 
 	@Override
 	protected void generateMipmapLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
-		this.bridge.getGuard().enter();
-		try {
+		this.bridge.getGuard().run(() -> {
 			this.bridge.getBinding().getTextureBinding().bindTexture(GlConstants.TEXTURE_2D, this.id);
 			if (allocatedLevels != chain.getLevels()) {
 				this.allocateLevels(chain, 1);
 			}
 			this.buildLevels(chain);
-		} finally {
-			this.bridge.getGuard().exit();
-		}
+		});
 	}
 
 	@Override

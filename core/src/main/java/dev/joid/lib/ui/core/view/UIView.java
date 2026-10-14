@@ -112,26 +112,23 @@ public final class UIView {
 
 	public void render(final @NonNull IRenderBridge render, final boolean projection, final @NonNull Runnable draw) {
 		if (projection) {
-			render.getProjection().push();
-			render.getProjection().ortho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
+			render.getProjection().with(matrix -> {
+				matrix.ortho(0D, this.viewportWidth, this.viewportHeight, 0D, 0D, 10000D);
+				this.render(render, false, draw);
+			});
+			return;
 		}
 
-		render.getModelView().push();
-		try {
-			render.getModelView().translate(this.getOffsetX(), this.getOffsetY(), 0D);
+		render.getModelView().with(matrix -> {
+			matrix.translate(this.getOffsetX(), this.getOffsetY(), 0D);
 			if (this.getScale() != 1D) {
-				render.getModelView().translate(this.anchorX, this.anchorY, 0D);
-				render.getModelView().scale(this.getScale(), this.getScale(), 1D);
-				render.getModelView().translate(-this.anchorX, -this.anchorY, 0D);
+				matrix.translate(this.anchorX, this.anchorY, 0D);
+				matrix.scale(this.getScale(), this.getScale(), 1D);
+				matrix.translate(-this.anchorX, -this.anchorY, 0D);
 			}
 
 			draw.run();
-		} finally {
-			render.getModelView().pop();
-			if (projection) {
-				render.getProjection().pop();
-			}
-		}
+		});
 	}
 
 	private double getMaxZoom() {

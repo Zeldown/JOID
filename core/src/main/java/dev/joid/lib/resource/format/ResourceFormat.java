@@ -1,8 +1,5 @@
 package dev.joid.lib.resource.format;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
@@ -12,6 +9,7 @@ import dev.joid.lib.resource.format.impl.HeifResourceFormat;
 import dev.joid.lib.resource.format.impl.SvgResourceFormat;
 import dev.joid.lib.resource.format.impl.VideoResourceFormat;
 import dev.joid.lib.resource.format.impl.WebpResourceFormat;
+import dev.joid.lib.utils.registry.Registry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -19,7 +17,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResourceFormat {
 
-	private static final List<IResourceFormat> FORMATS = new LinkedList<>();
+	private static final Registry<IResourceFormat> FORMATS = Registry.create();
 
 	static {
 		ResourceFormat.register(new GifResourceFormat());
@@ -31,22 +29,17 @@ public class ResourceFormat {
 	}
 
 	public static void register(final @NonNull IResourceFormat format) {
-		ResourceFormat.FORMATS.remove(format);
-		ResourceFormat.FORMATS.add(0, format);
+		ResourceFormat.FORMATS.register(format);
 	}
 
 	public static void unregister(final @NonNull IResourceFormat format) {
-		ResourceFormat.FORMATS.remove(format);
+		ResourceFormat.FORMATS.unregister(format);
 	}
 
 	public static @NonNull IResourceDecoder decoder(final @NonNull Asset asset) {
 		final byte[] header = asset.peek(512);
-		for (final IResourceFormat format : ResourceFormat.FORMATS) {
-			if (format.supports(header)) {
-				return format.decoder(asset, header);
-			}
-		}
-		return new RasterResourceDecoder(asset);
+		final IResourceFormat format = ResourceFormat.FORMATS.find(candidate -> candidate.supports(header));
+		return format == null ? new RasterResourceDecoder(asset) : format.decoder(asset, header);
 	}
 
 }

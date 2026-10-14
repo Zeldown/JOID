@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeReorderEvent;
@@ -182,35 +181,19 @@ public class ReorderableFlexNode extends Node {
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T beforeReorder(final @NonNull EventListener<NodeReorderEvent.Pre<T>> listener) {
-		return this.beforeReorder(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T beforeReorder(final @NonNull EventPriority priority, final @NonNull EventListener<NodeReorderEvent.Pre<T>> listener) {
-		return super.listen(ReorderableFlexNode.BEFORE_REORDER, priority, listener);
+		return super.listen(ReorderableFlexNode.BEFORE_REORDER, listener);
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T onReorder(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
-		return this.onReorder(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T onReorder(final @NonNull EventPriority priority, final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
-		return super.listen(ReorderableFlexNode.REORDER, priority, listener);
+		return super.listen(ReorderableFlexNode.REORDER, listener);
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T onReorderStart(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
-		return this.onReorderStart(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T onReorderStart(final @NonNull EventPriority priority, final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
-		return super.listen(ReorderableFlexNode.REORDER_START, priority, listener);
+		return super.listen(ReorderableFlexNode.REORDER_START, listener);
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T onReorderEnd(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
-		return this.onReorderEnd(EventPriority.NORMAL, listener);
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T onReorderEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
-		return super.listen(ReorderableFlexNode.REORDER_END, priority, listener);
+		return super.listen(ReorderableFlexNode.REORDER_END, listener);
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T direction(final @NonNull FlexDirection direction) {

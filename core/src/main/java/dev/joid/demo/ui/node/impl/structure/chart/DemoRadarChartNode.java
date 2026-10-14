@@ -2,7 +2,6 @@ package dev.joid.demo.ui.node.impl.structure.chart;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.TextInfo;
@@ -15,7 +14,7 @@ import lombok.NonNull;
 
 public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	protected DemoRadarChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -29,13 +28,13 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 	public void draw(final double mouseX, final double mouseY) {
 		final int size = super.getDataList().size();
 
-		Point[] points = new Point[size];
+		final Point[] outline = new Point[size];
 		for (int i = 0; i < size; i++) {
-			points[i] = this.getPoint(i, super.dh(2));
+			outline[i] = this.getPoint(i, super.dh(2));
 		}
-		DrawUtils.SHAPE.drawPolygon(Color.WHITE, points);
+		DrawUtils.SHAPE.drawPolygon(Color.WHITE, outline);
 
-		points = new Point[size];
+		final Point[] points = new Point[size];
 		for (int i = 0; i < size; i++) {
 			final Number value = super.getDataList().get(i).getValue();
 			final double p = value.doubleValue() / super.getMax().doubleValue();
@@ -44,11 +43,10 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 
 		DrawUtils.SHAPE.drawPolygon(DemoRadarChartNode.INK.withAlpha(0.5F), points);
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		render.getState().lineSmooth(true).lineWidth(3F);
-		DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, DemoRadarChartNode.INK, points);
-		render.popState();
+		BridgeHandler.RENDER.get().withState(render -> {
+			render.getState().lineSmooth(true).lineWidth(3F);
+			DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, DemoRadarChartNode.INK, points);
+		});
 
 		for (int i = 0; i < size; i++) {
 			final Point point = this.getPoint(i, super.dh(2) + 12D);

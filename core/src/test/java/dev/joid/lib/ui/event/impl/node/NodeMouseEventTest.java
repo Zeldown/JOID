@@ -12,6 +12,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -26,7 +27,7 @@ public class NodeMouseEventTest {
 		final List<Object> received = new ArrayList<>();
 		final RectNode parent = RectNode.create(100D, 100D, 200D, 100D).handleMousePressed(event -> received.add("parent"));
 		final RectNode child = RectNode.create(10D, 10D, 20D, 20D).onClick(event -> received.add("child"));
-		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleMousePressed(event -> received.add("sibling")).handleMousePressed(EventPriority.MONITOR, event -> received.add("sibling monitor"));
+		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleMousePressed(event -> received.add("sibling")).handleMousePressed(EventListener.priority(EventPriority.MONITOR, event -> received.add("sibling monitor")));
 		parent.append(child);
 		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
 		this.bridges.move(120D, 120D).frames(2);
@@ -125,7 +126,7 @@ public class NodeMouseEventTest {
 			received.add("child");
 			event.consume();
 		});
-		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleMouseReleased(event -> received.add("sibling")).handleMouseReleased(EventPriority.MONITOR, event -> received.add("sibling monitor"));
+		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleMouseReleased(event -> received.add("sibling")).handleMouseReleased(EventListener.priority(EventPriority.MONITOR, event -> received.add("sibling monitor")));
 		parent.append(child);
 		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
 		this.bridges.move(120D, 120D).frames(2);
@@ -154,7 +155,7 @@ public class NodeMouseEventTest {
 			received.add("child");
 			event.consume();
 		});
-		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleMouseDragged(event -> received.add("sibling")).handleMouseDragged(EventPriority.MONITOR, event -> received.add("sibling monitor"));
+		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleMouseDragged(event -> received.add("sibling")).handleMouseDragged(EventListener.priority(EventPriority.MONITOR, event -> received.add("sibling monitor")));
 		parent.append(child);
 		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
 		this.bridges.move(120D, 120D).getUi().mousePressed(MouseButton.LEFT);

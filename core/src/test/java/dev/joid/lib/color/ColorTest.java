@@ -350,8 +350,8 @@ public class ColorTest {
 	public void decodesTheAnimatedColors() {
 		Assert.assertEquals(Color.RAINBOW, Color.decode("#Rainbow"));
 		Assert.assertEquals(Color.LOADING, Color.decode("LOADING"));
-		Assert.assertFalse(Color.decode("#Rainbow").isFrozen());
-		Assert.assertFalse(Color.decode("LOADING").isFrozen());
+		Assert.assertFalse(Color.decode("#Rainbow").isLocked());
+		Assert.assertFalse(Color.decode("LOADING").isLocked());
 		ColorTest.assertRainbow(Color.decode("#Rainbow").update());
 		ColorTest.assertLoading(Color.decode("LOADING").update());
 	}
@@ -395,8 +395,8 @@ public class ColorTest {
 	public void keepsTheEndsOfATransition() {
 		Assert.assertEquals(Color.RED, Color.transition(Color.RED, Color.BLUE, 0F));
 		Assert.assertEquals(Color.BLUE, Color.transition(Color.RED, Color.BLUE, 1F));
-		Assert.assertFalse(Color.transition(Color.RED, Color.BLUE, 0F).isFrozen());
-		Assert.assertFalse(Color.transition(Color.RED, Color.BLUE, 1F).isFrozen());
+		Assert.assertFalse(Color.transition(Color.RED, Color.BLUE, 0F).isLocked());
+		Assert.assertFalse(Color.transition(Color.RED, Color.BLUE, 1F).isLocked());
 	}
 
 	@Test
@@ -538,9 +538,9 @@ public class ColorTest {
 	}
 
 	@Test
-	public void freezesItsConstants() {
+	public void locksItsConstants() {
 		for (final Color color : new Color[] {Color.RED, Color.BLUE, Color.GRAY, Color.CYAN, Color.PINK, Color.WHITE, Color.GREEN, Color.BLACK, Color.YELLOW, Color.ORANGE, Color.MAGENTA, Color.DARKGRAY, Color.LIGHTGRAY, Color.TRANSPARENT, Color.RAINBOW, Color.LOADING}) {
-			Assert.assertTrue(color.toString(), color.isFrozen());
+			Assert.assertTrue(color.toString(), color.isLocked());
 		}
 	}
 
@@ -556,23 +556,23 @@ public class ColorTest {
 	}
 
 	@Test
-	public void refusesChangesOnceFrozen() {
+	public void refusesChangesOnceLocked() {
 		final Color color = new Color(0.25F, 0.5F, 0.75F, 1F);
-		Assert.assertSame(color, color.freeze());
+		Assert.assertSame(color, color.lock());
 		try {
 			color.green(1F);
-			Assert.fail("A frozen color must refuse a change");
+			Assert.fail("A locked color must refuse a change");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("This color is frozen, use withGreen(...) to get a modified copy", expected.getMessage());
+			Assert.assertEquals("This Color is locked, use withGreen(...) to get a modified copy", expected.getMessage());
 		}
 		Assert.assertEquals(new Color(0.25F, 0.5F, 0.75F, 1F), color);
 	}
 
 	@Test
-	public void unfreezesItsCopies() {
-		Assert.assertFalse(Color.RED.copy().isFrozen());
-		Assert.assertFalse(Color.RED.withAlpha(0.5F).isFrozen());
-		Assert.assertFalse(Color.RED.darker().isFrozen());
+	public void unlocksItsCopies() {
+		Assert.assertFalse(Color.RED.copy().isLocked());
+		Assert.assertFalse(Color.RED.withAlpha(0.5F).isLocked());
+		Assert.assertFalse(Color.RED.darker().isLocked());
 		Assert.assertEquals(new Color(1F, 0F, 0F, 0.5F), Color.RED.copy().alpha(0.5F));
 	}
 

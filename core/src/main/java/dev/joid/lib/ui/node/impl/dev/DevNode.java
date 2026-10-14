@@ -45,13 +45,13 @@ import lombok.NonNull;
 @Getter
 public final class DevNode extends Node {
 
-	private static final Color RED         = new Color(239, 57, 38).freeze();
-	private static final Color ACTION      = new Color(57, 120, 255).freeze();
+	private static final Color RED         = new Color(239, 57, 38).lock();
+	private static final Color ACTION      = new Color(57, 120, 255).lock();
 
-	private static final Color BLACK       = new Color(23, 23, 25).freeze();
-	private static final Color WHITE       = new Color(250, 250, 250).freeze();
-	private static final Color LIGHT_BLACK = new Color(56, 56, 62).freeze();
-	private static final Color LIGHT_WHITE = new Color(161, 161, 170).freeze();
+	private static final Color BLACK       = new Color(23, 23, 25).lock();
+	private static final Color WHITE       = new Color(250, 250, 250).lock();
+	private static final Color LIGHT_BLACK = new Color(56, 56, 62).lock();
+	private static final Color LIGHT_WHITE = new Color(161, 161, 170).lock();
 
 	private static final Color[] GRID_COLORS = {DevNode.ACTION, DevNode.RED};
 

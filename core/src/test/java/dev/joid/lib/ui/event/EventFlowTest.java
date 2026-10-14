@@ -63,7 +63,7 @@ public class EventFlowTest {
 
 	@Test
 	public void ordersTheListenersOfOneStepByPriority() {
-		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).onClick(event -> this.trace.add("normal")).onClick(EventPriority.LOWEST, event -> this.trace.add("lowest")).onClick(EventPriority.HIGHEST, event -> this.trace.add("highest"));
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).onClick(event -> this.trace.add("normal")).onClick(EventListener.priority(EventPriority.LOWEST, event -> this.trace.add("lowest"))).onClick(EventListener.priority(EventPriority.HIGHEST, event -> this.trace.add("highest")));
 		this.bridges.open(new FlowUI(node)).move(150D, 150D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("highest", "normal", "lowest"), this.trace);
@@ -72,7 +72,7 @@ public class EventFlowTest {
 	@Test
 	public void keepsTheClickOfAButtonInsideACard() {
 		final RectNode button = RectNode.create(10D, 10D, 20D, 20D).onClick(event -> this.trace.add("button"));
-		final RectNode card = RectNode.create(100D, 100D, 100D, 100D).onClick(event -> this.trace.add("card")).handleMousePressed(EventPriority.MONITOR, event -> this.trace.add("card monitor " + event.isConsumed())).append(button);
+		final RectNode card = RectNode.create(100D, 100D, 100D, 100D).onClick(event -> this.trace.add("card")).handleMousePressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("card monitor " + event.isConsumed()))).append(button);
 		this.bridges.open(new FlowUI(card)).move(115D, 115D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("button", "card monitor true"), this.trace);
@@ -101,7 +101,7 @@ public class EventFlowTest {
 		final FlowUI ui = new FlowUI(node);
 		this.bridges.open(ui);
 		ui.handleKeyPressed(event -> this.trace.add("ui"));
-		ui.handleKeyPressed(EventPriority.MONITOR, event -> this.trace.add("monitor " + event.isConsumed()));
+		ui.handleKeyPressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("monitor " + event.isConsumed())));
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Shortcut.create(Key.F).overrideFocus(true).onTrigger(event -> this.trace.add("forced")).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S));
@@ -215,7 +215,7 @@ public class EventFlowTest {
 	@Test
 	public void skipsTheChangeListenersOfARefusedToggle() {
 		final List<Object> changes = new ArrayList<>();
-		final Toggle toggle = new Toggle().state("on", 1).beforeChange(EventPriority.HIGH, event -> event.cancel()).beforeChange(event -> changes.add("normal")).onChange(event -> changes.add("changed"));
+		final Toggle toggle = new Toggle().state("on", 1).beforeChange(EventListener.priority(EventPriority.HIGH, event -> event.cancel())).beforeChange(event -> changes.add("normal")).onChange(event -> changes.add("changed"));
 		this.bridges.open(new FlowUI(toggle)).move(110D, 110D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertFalse(toggle.isToggle());
@@ -278,7 +278,7 @@ public class EventFlowTest {
 			this.name = name;
 			this.trace = trace;
 			super.handleMousePressed(event -> this.trace.add(this.name + " handle"));
-			super.handleMousePressed(EventPriority.MONITOR, event -> this.trace.add(this.name + " monitor"));
+			super.handleMousePressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add(this.name + " monitor")));
 		}
 
 		@Override

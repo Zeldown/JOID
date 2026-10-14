@@ -6,8 +6,6 @@ import dev.joid.demo.shader.pipeline.pass.DemoInvertShaderPass;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.DemoFrameBufferNode;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.BlendState.Equation;
@@ -33,8 +31,8 @@ import dev.joid.lib.utils.point.Point;
 @UIData(background = true)
 public class UIDemoRender extends UIDemo {
 
-	private static final Color INK         = new Color(153, 153, 153).freeze();
-	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
+	private static final Color INK         = new Color(153, 153, 153).lock();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
 	private static final BlendState MULTIPLY = BlendState.create(Equation.ADD, Factor.DST_COLOR, Factor.ZERO);
 
@@ -51,10 +49,8 @@ public class UIDemoRender extends UIDemo {
 			ContainerNode
 			.create(60, 30, 200, 200)
 			.self(node -> node.layer((mouseX, mouseY) -> {
-				final IRenderBridge render = BridgeHandler.RENDER.get();
 				final Tessellator tessellator = Tessellator.inst();
-				render.pushState();
-				try {
+				BridgeHandler.RENDER.get().withState(render -> {
 					render.getState().blend(BlendState.NORMAL).texture(null);
 					tessellator.start(DrawMode.TRIANGLES);
 					tessellator.setColor(255, 255, 255);
@@ -64,9 +60,7 @@ public class UIDemoRender extends UIDemo {
 					tessellator.setColor(102, 102, 102);
 					tessellator.addVertex(node.getX(), node.getY() + 200D, 0D);
 					tessellator.draw();
-				} finally {
-					render.popState();
-				}
+				});
 			}))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Tessellator", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -80,15 +74,11 @@ public class UIDemoRender extends UIDemo {
 			ContainerNode
 			.create(60, 30, 200, 200)
 			.self(node -> node.layer((mouseX, mouseY) -> {
-				final MatrixStack matrix = BridgeHandler.RENDER.get().getModelView();
-				matrix.push();
-				try {
+				BridgeHandler.RENDER.get().getModelView().with(matrix -> {
 					matrix.translate(node.getX() + 100D, node.getY() + 100D, 0D);
 					matrix.rotate(30D, 0D, 0D, 1D);
 					DrawUtils.SHAPE.drawRect(-60D, -40D, 120D, 80D, UIDemoRender.INK);
-				} finally {
-					matrix.pop();
-				}
+				});
 			}))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Matrix stack", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -102,10 +92,8 @@ public class UIDemoRender extends UIDemo {
 			ContainerNode
 			.create(60, 30, 200, 200)
 			.self(node -> node.layer((mouseX, mouseY) -> {
-				final IRenderBridge render = BridgeHandler.RENDER.get();
 				final Tessellator tessellator = Tessellator.inst();
-				render.pushState();
-				try {
+				BridgeHandler.RENDER.get().withState(render -> {
 					render.getState().blend(UIDemoRender.MULTIPLY).texture(null).color(0.6F, 0.6F, 0.6F, 1F);
 					tessellator.start(DrawMode.QUADS);
 					tessellator.addVertex(node.getX() + 20D, node.getY() + 140D, 0D);
@@ -117,9 +105,7 @@ public class UIDemoRender extends UIDemo {
 					tessellator.addVertex(node.getX() + 180D, node.getY() + 60D, 0D);
 					tessellator.addVertex(node.getX() + 60D, node.getY() + 60D, 0D);
 					tessellator.draw();
-				} finally {
-					render.popState();
-				}
+				});
 			}))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Multiply blend", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -133,14 +119,10 @@ public class UIDemoRender extends UIDemo {
 			ContainerNode
 			.create(60, 30, 200, 200)
 			.self(node -> node.layer((mouseX, mouseY) -> {
-				final IRenderBridge render = BridgeHandler.RENDER.get();
-				render.pushState();
-				try {
+				BridgeHandler.RENDER.get().withState(render -> {
 					render.getState().color(0.6F, 0.6F, 0.6F, 1F);
 					DrawUtils.SHAPE.drawRawRect(node.getX() + 40D, node.getY() + 40D, 120D, 120D);
-				} finally {
-					render.popState();
-				}
+				});
 			}))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Raw rect", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);

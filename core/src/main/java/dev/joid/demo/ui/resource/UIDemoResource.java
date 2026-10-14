@@ -30,7 +30,7 @@ import dev.joid.lib.utils.align.Align;
 @UIData(background = true)
 public class UIDemoResource extends UIDemo {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	private static final ResourceBuilder PIXELATED = ResourceBuilder.create().nearest().textureCoords(160D, 165D, 35D, 35D);
 

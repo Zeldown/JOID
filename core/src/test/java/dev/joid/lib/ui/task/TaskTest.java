@@ -19,6 +19,7 @@ import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -53,10 +54,10 @@ public class TaskTest {
 	public void runsItsListenersByPriorityAndPastAFailure() {
 		final List<String> trace = new ArrayList<>();
 		final TaskUI ui = this.open();
-		Task.create(0L).onRun(event -> trace.add("normal")).onRun(EventPriority.HIGH, event -> {
+		Task.create(0L).onRun(event -> trace.add("normal")).onRun(EventListener.priority(EventPriority.HIGH, event -> {
 			trace.add("high");
 			throw new IllegalStateException("broken");
-		}).onRun(EventPriority.MONITOR, event -> trace.add("monitor " + event.getTask().isAttached())).attach(ui);
+		})).onRun(EventListener.priority(EventPriority.MONITOR, event -> trace.add("monitor " + event.getTask().isAttached()))).attach(ui);
 		final PrintStream error = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try {

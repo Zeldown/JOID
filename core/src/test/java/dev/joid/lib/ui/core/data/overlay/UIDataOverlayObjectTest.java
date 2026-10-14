@@ -6,6 +6,7 @@ import org.junit.Test;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.interaction.UIDataOverlayInteraction;
 import dev.joid.lib.ui.core.data.overlay.render.UIDataOverlayRender;
+import dev.joid.lib.utils.annotation.AnnotationValues;
 
 public class UIDataOverlayObjectTest {
 
@@ -20,7 +21,7 @@ public class UIDataOverlayObjectTest {
 
 	@Test
 	public void readsTheDefaultsOfTheAnnotation() {
-		final UIDataOverlayObject data = UIDataOverlayObject.get(DefaultUI.class);
+		final UIDataOverlayObject data = AnnotationValues.read(DefaultUI.class.getAnnotation(UIDataOverlay.class), new UIDataOverlayObject());
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.interaction().active());
 		Assert.assertTrue(data.interaction().cancelKeyboard());
@@ -30,7 +31,7 @@ public class UIDataOverlayObjectTest {
 
 	@Test
 	public void copiesEveryValueOfTheAnnotation() {
-		final UIDataOverlayObject data = UIDataOverlayObject.get(OverlayUI.class);
+		final UIDataOverlayObject data = AnnotationValues.read(OverlayUI.class.getAnnotation(UIDataOverlay.class), new UIDataOverlayObject());
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.interaction().active());
 		Assert.assertFalse(data.interaction().cancelClick());
@@ -42,26 +43,21 @@ public class UIDataOverlayObjectTest {
 
 	@Test
 	public void inheritsTheAnnotationOfAParent() {
-		Assert.assertTrue(UIDataOverlayObject.get(ChildUI.class).active());
+		Assert.assertTrue(AnnotationValues.read(ChildUI.class.getAnnotation(UIDataOverlay.class), new UIDataOverlayObject()).active());
 	}
 
 	@Test
-	public void findsNothingWithoutAnnotation() {
-		Assert.assertNull(UIDataOverlayObject.get(PlainUI.class));
-	}
-
-	@Test
-	public void fallsBackOnTheDefaults() {
-		Assert.assertFalse(UIDataOverlayObject.getOrDefault(PlainUI.class).active());
-		Assert.assertTrue(UIDataOverlayObject.getOrDefault(OverlayUI.class).active());
+	public void keepsItsDefaultsWithoutAnnotation() {
+		Assert.assertFalse(AnnotationValues.read(PlainUI.class.getAnnotation(UIDataOverlay.class), new UIDataOverlayObject()).active());
+		Assert.assertTrue(AnnotationValues.read(OverlayUI.class.getAnnotation(UIDataOverlay.class), new UIDataOverlayObject()).active());
 	}
 
 	@Test
 	public void changesEveryValue() {
 		final UIDataOverlayObject data = new UIDataOverlayObject();
-		Assert.assertSame(data, data.setActive(true));
-		data.interaction().setActive(true);
-		data.render().setAboveScreens(true);
+		Assert.assertSame(data, data.active(true));
+		data.interaction().active(true);
+		data.render().aboveScreens(true);
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.interaction().active());
 		Assert.assertTrue(data.render().aboveScreens());
@@ -69,16 +65,16 @@ public class UIDataOverlayObjectTest {
 
 	@Test
 	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
-		final UIDataOverlayObject data = new UIDataOverlayObject().setActive(true);
-		data.render().setAboveScreens(true);
-		Assert.assertSame(data, data.update(UIDataOverlayObject.get(DefaultUI.class), UIDataOverlayObject.get(DefaultUI.class)));
+		final UIDataOverlayObject data = new UIDataOverlayObject().active(true);
+		data.render().aboveScreens(true);
+		Assert.assertSame(data, AnnotationValues.merge(data, DefaultUI.class.getAnnotation(UIDataOverlay.class), DefaultUI.class.getAnnotation(UIDataOverlay.class)));
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.render().aboveScreens());
 	}
 
 	@Test
 	public void takesEveryValueChangedInTheAnnotation() {
-		final UIDataOverlayObject data = new UIDataOverlayObject().update(UIDataOverlayObject.get(DefaultUI.class), UIDataOverlayObject.get(OverlayUI.class));
+		final UIDataOverlayObject data = AnnotationValues.merge(new UIDataOverlayObject(), DefaultUI.class.getAnnotation(UIDataOverlay.class), OverlayUI.class.getAnnotation(UIDataOverlay.class));
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.interaction().active());
 		Assert.assertFalse(data.interaction().cancelScroll());
@@ -86,13 +82,8 @@ public class UIDataOverlayObjectTest {
 	}
 
 	@Test
-	public void standsForAUIDataOverlay() {
-		Assert.assertSame(UIDataOverlay.class, new UIDataOverlayObject().annotationType());
-	}
-
-	@Test
 	public void describesItself() {
-		Assert.assertEquals("UIDataOverlayObject(render=UIDataOverlayRenderObject(always=false, aboveScreens=false), interaction=UIDataOverlayInteractionObject(active=false, cancelClick=true, cancelScroll=true, cancelKeyboard=true), active=true)", new UIDataOverlayObject().setActive(true).toString());
+		Assert.assertEquals("UIDataOverlayObject(render=UIDataOverlayRenderObject(always=false, aboveScreens=false), interaction=UIDataOverlayInteractionObject(active=false, cancelClick=true, cancelScroll=true, cancelKeyboard=true), active=true)", new UIDataOverlayObject().active(true).toString());
 	}
 
 	@UIDataOverlay

@@ -19,7 +19,7 @@ import dev.joid.lib.video.VideoAudioPlayer;
 @UIData(background = true)
 public class UIDemoAudio extends UIDemo {
 
-	private static final Color INK = new Color(153, 153, 153).freeze();
+	private static final Color INK = new Color(153, 153, 153).lock();
 
 	@Override
 	public void init() {

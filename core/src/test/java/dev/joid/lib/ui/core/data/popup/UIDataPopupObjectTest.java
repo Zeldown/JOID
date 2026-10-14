@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
+import dev.joid.lib.utils.annotation.AnnotationValues;
 
 public class UIDataPopupObjectTest {
 
@@ -17,70 +18,60 @@ public class UIDataPopupObjectTest {
 
 	@Test
 	public void readsTheDefaultsOfTheAnnotation() {
-		final UIDataPopupObject data = UIDataPopupObject.get(DefaultUI.class);
+		final UIDataPopupObject data = AnnotationValues.read(DefaultUI.class.getAnnotation(UIDataPopup.class), new UIDataPopupObject());
 		Assert.assertFalse(data.active());
 		Assert.assertSame(PopupTransition.IN_OUT, data.transition());
 	}
 
 	@Test
 	public void copiesEveryValueOfTheAnnotation() {
-		final UIDataPopupObject data = UIDataPopupObject.get(PopupUI.class);
+		final UIDataPopupObject data = AnnotationValues.read(PopupUI.class.getAnnotation(UIDataPopup.class), new UIDataPopupObject());
 		Assert.assertTrue(data.active());
 		Assert.assertSame(PopupTransition.IN, data.transition());
 	}
 
 	@Test
 	public void inheritsTheAnnotationOfAParent() {
-		Assert.assertTrue(UIDataPopupObject.get(ChildUI.class).active());
+		Assert.assertTrue(AnnotationValues.read(ChildUI.class.getAnnotation(UIDataPopup.class), new UIDataPopupObject()).active());
 	}
 
 	@Test
-	public void findsNothingWithoutAnnotation() {
-		Assert.assertNull(UIDataPopupObject.get(PlainUI.class));
-	}
-
-	@Test
-	public void fallsBackOnTheDefaults() {
-		Assert.assertFalse(UIDataPopupObject.getOrDefault(PlainUI.class).active());
-		Assert.assertTrue(UIDataPopupObject.getOrDefault(PopupUI.class).active());
+	public void keepsItsDefaultsWithoutAnnotation() {
+		Assert.assertFalse(AnnotationValues.read(PlainUI.class.getAnnotation(UIDataPopup.class), new UIDataPopupObject()).active());
+		Assert.assertTrue(AnnotationValues.read(PopupUI.class.getAnnotation(UIDataPopup.class), new UIDataPopupObject()).active());
 	}
 
 	@Test
 	public void changesEveryValue() {
 		final UIDataPopupObject data = new UIDataPopupObject();
-		Assert.assertSame(data, data.setActive(true).setTransition(PopupTransition.OUT));
+		Assert.assertSame(data, data.active(true).transition(PopupTransition.OUT));
 		Assert.assertTrue(data.active());
 		Assert.assertSame(PopupTransition.OUT, data.transition());
 	}
 
 	@Test
 	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
-		final UIDataPopupObject data = new UIDataPopupObject().setActive(true);
-		Assert.assertSame(data, data.update(UIDataPopupObject.get(DefaultUI.class), UIDataPopupObject.get(DefaultUI.class)));
+		final UIDataPopupObject data = new UIDataPopupObject().active(true);
+		Assert.assertSame(data, AnnotationValues.merge(data, DefaultUI.class.getAnnotation(UIDataPopup.class), DefaultUI.class.getAnnotation(UIDataPopup.class)));
 		Assert.assertTrue(data.active());
 		Assert.assertSame(PopupTransition.IN_OUT, data.transition());
 	}
 
 	@Test
 	public void takesEveryValueChangedInTheAnnotation() {
-		final UIDataPopupObject data = new UIDataPopupObject().update(UIDataPopupObject.get(DefaultUI.class), UIDataPopupObject.get(PopupUI.class));
+		final UIDataPopupObject data = AnnotationValues.merge(new UIDataPopupObject(), DefaultUI.class.getAnnotation(UIDataPopup.class), PopupUI.class.getAnnotation(UIDataPopup.class));
 		Assert.assertTrue(data.active());
 		Assert.assertSame(PopupTransition.IN, data.transition());
 	}
 
 	@Test
-	public void standsForAUIDataPopup() {
-		Assert.assertSame(UIDataPopup.class, new UIDataPopupObject().annotationType());
-	}
-
-	@Test
 	public void describesItself() {
-		Assert.assertEquals("UIDataPopupObject(active=true, transition=NONE)", new UIDataPopupObject().setActive(true).setTransition(PopupTransition.NONE).toString());
+		Assert.assertEquals("UIDataPopupObject(active=true, transition=NONE)", new UIDataPopupObject().active(true).transition(PopupTransition.NONE).toString());
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullTransition() {
-		new UIDataPopupObject().setTransition(null);
+		new UIDataPopupObject().transition(null);
 	}
 
 	@UIDataPopup

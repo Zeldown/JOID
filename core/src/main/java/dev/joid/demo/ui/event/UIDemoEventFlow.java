@@ -12,6 +12,7 @@ import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
@@ -24,8 +25,8 @@ import dev.joid.lib.utils.align.Align;
 @UIData(background = true)
 public class UIDemoEventFlow extends UIDemo {
 
-	private static final Color INK         = new Color(153, 153, 153).freeze();
-	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
+	private static final Color INK         = new Color(153, 153, 153).lock();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
 	@Override
 	public void init() {
@@ -46,12 +47,12 @@ public class UIDemoEventFlow extends UIDemo {
 		final IntegerSignal cursor = new IntegerSignal(0);
 
 		super.handleKeyPressed(event -> key.set(event.getKey().name()));
-		super.beforeClose(EventPriority.HIGH, event -> {
+		super.beforeClose(EventListener.priority(EventPriority.HIGH, event -> {
 			if (locked.peek()) {
 				kept.increment();
 				event.cancel();
 			}
-		});
+		}));
 
 		RectNode
 		.create(80, 40, 320, 260)
@@ -61,7 +62,7 @@ public class UIDemoEventFlow extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoEventFlow.INK)
 			.onClick(event -> order.set(order.peek() + ", normal"))
-			.onClick(EventPriority.HIGH, event -> order.set("high"))
+			.onClick(EventListener.priority(EventPriority.HIGH, event -> order.set("high")))
 			.body(container -> {
 				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Click", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
 			})
@@ -78,7 +79,7 @@ public class UIDemoEventFlow extends UIDemo {
 			ContainerNode
 			.create(0, 0, 320, 260)
 			.handleMousePressed(event -> heard.increment())
-			.handleMousePressed(EventPriority.MONITOR, event -> monitored.increment())
+			.handleMousePressed(EventListener.priority(EventPriority.MONITOR, event -> monitored.increment()))
 			.body(container -> {
 				RectNode
 				.create(40, 40, 120, 50)

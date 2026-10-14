@@ -290,7 +290,7 @@ public class JOIDTest {
 	@Test
 	public void closesAUiThatEscapeCannotClose() {
 		final MenuUI menu = new MenuUI();
-		menu.getData().setCloseable(false);
+		menu.getData().closeable(false);
 		JOID.open(menu);
 		JOID.close(menu);
 		Assert.assertFalse(this.bridges.getUi().isOpen(menu));

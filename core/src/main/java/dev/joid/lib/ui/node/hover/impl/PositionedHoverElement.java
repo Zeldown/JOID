@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.node.hover.impl;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.hover.IHoverElement;
@@ -54,14 +53,12 @@ public abstract class PositionedHoverElement implements IHoverElement {
 			y = Math.max(top, Math.min(y, bottom - elementHeight));
 		}
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().push();
-		try {
-			render.getModelView().translate(x, y, 0);
+		final double elementX = x;
+		final double elementY = y;
+		BridgeHandler.RENDER.get().getModelView().with(matrix -> {
+			matrix.translate(elementX, elementY, 0);
 			this.element.render(node, mouseX, mouseY);
-		} finally {
-			render.getModelView().pop();
-		}
+		});
 	}
 
 	public enum HoverElementPosition {

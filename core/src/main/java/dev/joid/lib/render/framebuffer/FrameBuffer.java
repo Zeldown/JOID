@@ -58,16 +58,14 @@ public class FrameBuffer {
 	public @NonNull FrameBuffer fill(final double x, final double y, final double width, final double height, final @NonNull Runnable runnable) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		this.bind();
-		render.getProjection().push();
-		render.getModelView().push();
 		try {
-			render.getState().viewport(0, 0, this.getWidth(), this.getHeight());
-			render.getProjection().ortho(x, x + width, y + height, y, -1000D, 1000D);
-			render.getModelView().identity();
-			runnable.run();
+			render.getProjection().with(projection -> render.getModelView().with(modelView -> {
+				render.getState().viewport(0, 0, this.getWidth(), this.getHeight());
+				projection.ortho(x, x + width, y + height, y, -1000D, 1000D);
+				modelView.identity();
+				runnable.run();
+			}));
 		} finally {
-			render.getModelView().pop();
-			render.getProjection().pop();
 			this.unbind();
 		}
 
@@ -80,9 +78,7 @@ public class FrameBuffer {
 			throw new IllegalStateException("The framebuffer of " + this.getWidth() + "x" + this.getHeight() + " is empty, call fill(...) before draw(...)");
 		}
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
-		try {
+		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().blend(BlendState.NORMAL);
 			render.getState().texture(this.handle.getTexture()).textureFilter(this.filter).textureWrap(TextureWrap.CLAMP_TO_BORDER);
 
@@ -93,9 +89,7 @@ public class FrameBuffer {
 			tess.addVertexWithUV(x + width, y, 0D, 1D, 1D);
 			tess.addVertexWithUV(x, y, 0D, 0D, 1D);
 			tess.draw();
-		} finally {
-			render.popState();
-		}
+		});
 		return this;
 	}
 

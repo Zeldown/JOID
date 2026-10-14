@@ -18,7 +18,6 @@ import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventPriority;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -120,82 +119,50 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator onStart(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onStart(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull TweenAnimator onStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.onStart(priority, listener);
+		this.timeline.onStart(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onIterationStart(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onIterationStart(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull TweenAnimator onIterationStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.onIterationStart(priority, listener);
+		this.timeline.onIterationStart(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onIterationEnd(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull TweenAnimator onIterationEnd(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.onIterationEnd(priority, listener);
+		this.timeline.onIterationEnd(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onComplete(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onComplete(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull TweenAnimator onComplete(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.onComplete(priority, listener);
+		this.timeline.onComplete(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onReverseStart(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onReverseStart(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull TweenAnimator onReverseStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.onReverseStart(priority, listener);
+		this.timeline.onReverseStart(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onReverseIterationStart(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onReverseIterationStart(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull TweenAnimator onReverseIterationStart(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.onReverseIterationStart(priority, listener);
+		this.timeline.onReverseIterationStart(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onReverseIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onReverseIterationEnd(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull TweenAnimator onReverseIterationEnd(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.onReverseIterationEnd(priority, listener);
+		this.timeline.onReverseIterationEnd(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onReverseComplete(final @NonNull EventListener<TweenEvent> listener) {
-		return this.onReverseComplete(EventPriority.NORMAL, listener);
-	}
-
-	public @NonNull TweenAnimator onReverseComplete(final @NonNull EventPriority priority, final @NonNull EventListener<TweenEvent> listener) {
 		this.requireTimeline();
-		this.timeline.onReverseComplete(priority, listener);
+		this.timeline.onReverseComplete(listener);
 		return this;
 	}
 
