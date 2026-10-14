@@ -127,7 +127,7 @@ public final class DrawText {
 				}
 
 				this.drawText(ox, oy, overflowText);
-				return new FontBounds(width, overflowText.getHeight());
+				return FontBounds.create(width, overflowText.getHeight());
 			}
 
 			return this.drawText(ox, oy, text);
@@ -171,7 +171,7 @@ public final class DrawText {
 			heightSum += line.getHeight();
 		}
 
-		return new FontBounds(width, heightSum);
+		return FontBounds.create(width, heightSum);
 	}
 
 	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align horizontalAlign, final @NonNull Align verticalAlign) {

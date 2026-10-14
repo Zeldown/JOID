@@ -56,7 +56,7 @@ public class ShowForm extends ShowUI {
 		.attach(this);
 
 		TextNode.create(160, 580).text(Text.create("Bio, with markup", ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.MUTED))).attach(this);
-		ShowFieldNode.create(158, 612, 654, ShowUI.PINK).info(input.copy().markups(DemoTextMarkup.inst())).marginHorizontal(24D).markup(true).signal(this.bio).attach(this);
+		ShowFieldNode.create(158, 612, 654, ShowUI.PINK).info(input.markups(DemoTextMarkup.inst())).marginHorizontal(24D).markup(true).signal(this.bio).attach(this);
 
 		RectNode
 		.create(158, 770, 654, 76)

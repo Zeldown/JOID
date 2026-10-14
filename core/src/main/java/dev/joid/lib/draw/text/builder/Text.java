@@ -118,8 +118,7 @@ public final class Text {
 			return "";
 		}
 
-		final String text = this.elementList.stream().map(TextElement::getText).reduce("", (a, b) -> a + b);
-		return this.modifier != null ? this.modifier.modify(text) : text;
+		return this.elementList.stream().map(this::getText).reduce("", (a, b) -> a + b);
 	}
 
 	public final @NonNull String getText(final @NonNull TextElement element) {
@@ -127,18 +126,19 @@ public final class Text {
 			return element.getText();
 		}
 
+		final TextInfo info = element.getInfo();
 		final StringBuilder before = new StringBuilder();
 		for (final TextElement previous : this.elementList) {
 			if (previous == element) {
-				final String start = this.modifier.modify(before.toString());
-				final String text = this.modifier.modify(before.append(element.getText()).toString());
-				return text.startsWith(start) ? text.substring(start.length()) : this.modifier.modify(element.getText());
+				final String start = this.modifier.modify(before.toString(), info);
+				final String text = this.modifier.modify(before.append(element.getText()).toString(), info);
+				return text.startsWith(start) ? text.substring(start.length()) : this.modifier.modify(element.getText(), info);
 			}
 
 			before.append(previous.getText());
 		}
 
-		return this.modifier.modify(element.getText());
+		return this.modifier.modify(element.getText(), info);
 	}
 
 	public final @NonNull String getRawText() {
@@ -150,7 +150,7 @@ public final class Text {
 	}
 
 	public final @NonNull FontBounds getBounds() {
-		return new FontBounds(this.getWidth(), this.getHeight());
+		return FontBounds.create(this.getWidth(), this.getHeight());
 	}
 
 	public @NonNull TextElement get(final int index) {
@@ -303,16 +303,10 @@ public final class Text {
 		final List<Object> key = new ArrayList<>();
 		key.add(this.modifier);
 		for (final TextElement element : this.elementList) {
-			final TextInfo info = element.getInfo();
 			key.add(element.getRawText());
 			key.add(element.getModifier());
-			key.add(info.getFont());
-			key.add(info.getFontSize());
-			key.add(info.getWeight());
-			key.add(info.isItalic());
-			key.add(info.getLetterSpacing());
-			key.add(info.getLineHeight());
-			key.add(new ArrayList<>(info.getMarkups()));
+			key.add(element.getInfo());
+			key.add(new ArrayList<>(element.getInfo().getMarkups()));
 		}
 		return key;
 	}

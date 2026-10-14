@@ -18,8 +18,8 @@ public class DemoRainbowTextEffectTest {
 		final TextGlyph<DemoFace> glyph = TextGlyph.create(SingleFaceFont.of(face), face, 7, 'A', TextStyle.create(FontWeight.REGULAR, false, base), 0D, 0D, 40D, 20D, base);
 		DemoRainbowTextEffect.inst().apply(glyph);
 		Assert.assertNotSame(base, glyph.getColor());
-		Assert.assertEquals(0.5F, glyph.getColor().a, 0F);
-		Assert.assertFalse(glyph.getColor().r == 1F && glyph.getColor().g == 1F && glyph.getColor().b == 1F);
+		Assert.assertEquals(0.5F, glyph.getColor().getAlphaF(), 0F);
+		Assert.assertFalse(glyph.getColor().getRedF() == 1F && glyph.getColor().getGreenF() == 1F && glyph.getColor().getBlueF() == 1F);
 	}
 
 }

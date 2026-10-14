@@ -108,7 +108,7 @@ public class WindowUIBridge extends StackUIBridge {
 	@Override
 	protected void drawBackground() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.clearColor(this.background.r, this.background.g, this.background.b, this.background.a);
+		render.clearColor(this.background.getRedF(), this.background.getGreenF(), this.background.getBlueF(), this.background.getAlphaF());
 		render.clearDepth();
 		render.clearStencil();
 	}

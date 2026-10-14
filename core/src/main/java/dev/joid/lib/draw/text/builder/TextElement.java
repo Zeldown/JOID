@@ -81,7 +81,7 @@ public class TextElement {
 
 	public final @NonNull String getText() {
 		final String rawText = this.getRawText();
-		return this.modifier == null ? rawText : this.modifier.modify(rawText);
+		return this.modifier == null ? rawText : this.modifier.modify(rawText, this.info);
 	}
 
 	public final @NonNull String getRawText() {

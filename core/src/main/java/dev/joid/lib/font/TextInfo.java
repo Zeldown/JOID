@@ -8,30 +8,33 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.With;
 
 @Getter
-@AllArgsConstructor
+@With(AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextInfo {
 
-	private IFont      font;
-	private float      fontSize;
-	private FontWeight weight;
-	private float      letterSpacing;
-	private float      lineHeight;
-	private Color      color;
-	private boolean    colored;
-	private boolean    italic;
+	private final IFont      font;
+	private final float      fontSize;
+	private final FontWeight weight;
+	private final float      letterSpacing;
+	private final float      lineHeight;
+	private final Color      color;
+	private final boolean    colored;
+	private final boolean    italic;
 
-	private Color shadowColor;
-	private Float shadowX;
-	private Float shadowY;
-	private Float shadowTint;
+	private final Color shadowColor;
+	private final Float shadowX;
+	private final Float shadowY;
+	private final Float shadowTint;
 
-	private ITextMarkup[] markups;
-	private ITextEffect[] effects;
+	private final ITextMarkup[] markups;
+	private final ITextEffect[] effects;
 
 	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
 		return new TextInfo(font, FontWeight.REGULAR, fontSize, Color.BLACK);
@@ -86,7 +89,7 @@ public final class TextInfo {
 	}
 
 	public final @NonNull FontBounds getBounds(final @NonNull String text) {
-		return new FontBounds(this.getWidth(text), this.getHeight(text));
+		return FontBounds.create(this.getWidth(text), this.getHeight(text));
 	}
 
 	public final double dw(final @NonNull String text, final double value) {
@@ -114,78 +117,59 @@ public final class TextInfo {
 	}
 
 	public final @NonNull TextInfo font(final IFont font) {
-		this.font = font;
-		return this;
+		return this.withFont(font);
 	}
 
 	public final @NonNull TextInfo fontSize(final float fontSize) {
-		this.fontSize = fontSize;
-		return this;
+		return this.withFontSize(fontSize);
 	}
 
 	public final @NonNull TextInfo weight(final @NonNull FontWeight weight) {
-		this.weight = weight;
-		return this;
+		return this.withWeight(weight);
 	}
 
 	public final @NonNull TextInfo letterSpacing(final float letterSpacing) {
-		this.letterSpacing = letterSpacing;
-		return this;
+		return this.withLetterSpacing(letterSpacing);
 	}
 
 	public final @NonNull TextInfo lineHeight(final float lineHeight) {
-		this.lineHeight = lineHeight;
-		return this;
+		return this.withLineHeight(lineHeight);
 	}
 
 	public final @NonNull TextInfo color(final @NonNull Color color) {
-		this.color = color;
-		return this;
+		return this.withColor(color);
 	}
 
 	public final @NonNull TextInfo colored(final boolean colored) {
-		this.colored = colored;
-		return this;
+		return this.withColored(colored);
 	}
 
 	public final @NonNull TextInfo italic(final boolean italic) {
-		this.italic = italic;
-		return this;
+		return this.withItalic(italic);
 	}
 
 	public final @NonNull TextInfo markups(final @NonNull ITextMarkup @NonNull... markups) {
-		this.markups = markups;
-		return this;
+		return this.withMarkups(markups.clone());
 	}
 
 	public final @NonNull TextInfo effects(final @NonNull ITextEffect @NonNull... effects) {
-		this.effects = effects;
-		return this;
+		return this.withEffects(effects.clone());
 	}
 
 	public final @NonNull TextInfo shadow() {
-		this.shadowColor = this.color.darker(0.3F);
-		return this;
+		return this.withShadowColor(this.color.darker(0.3F));
 	}
 
 	public final @NonNull TextInfo shadow(final Color color) {
-		this.shadowColor = color;
-		return this;
+		return this.withShadowColor(color);
 	}
 
 	public final @NonNull TextInfo shadow(final float x, final float y) {
-		this.shadowX = x;
-		this.shadowY = y;
-		return this;
+		return this.withShadowX(x).withShadowY(y);
 	}
 
 	public final @NonNull TextInfo shadowTint(final Float shadowTint) {
-		this.shadowTint = shadowTint;
-		return this;
-	}
-
-	public final @NonNull TextInfo copy() {
-		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.shadowTint, this.markups, this.effects);
+		return this.withShadowTint(shadowTint);
 	}
 
 	@Override

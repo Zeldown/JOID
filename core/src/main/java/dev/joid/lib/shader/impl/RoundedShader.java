@@ -66,8 +66,8 @@ public class RoundedShader extends ShaderProgram {
 		.uniform("u_Gradient", 1)
 		.uniform("u_StartPos", (float) gradient.getStartPoint().getX(), (float) gradient.getStartPoint().getY())
 		.uniform("u_EndPos", (float) gradient.getEndPoint().getX(), (float) gradient.getEndPoint().getY())
-		.uniform("u_StartColor", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
-		.uniform("u_EndColor", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
+		.uniform("u_StartColor", gradient.getStartColor().getRedF(), gradient.getStartColor().getGreenF(), gradient.getStartColor().getBlueF(), gradient.getStartColor().getAlphaF())
+		.uniform("u_EndColor", gradient.getEndColor().getRedF(), gradient.getEndColor().getGreenF(), gradient.getEndColor().getBlueF(), gradient.getEndColor().getAlphaF())
 		.uniform("u_Canvas", (float) canvas.getMinX(), (float) canvas.getMinY(), (float) canvas.getMaxX(), (float) canvas.getMaxY());
 	}
 

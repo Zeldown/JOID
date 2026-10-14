@@ -64,7 +64,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY() + super.getMarginTop(), maxWidth, this.getRawHeight(), () -> {
 			if (text.isEmpty() && !super.isFocused()) {
-				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), super.getPlaceholder(), super.getShownInfo().copy().color(new Color(info.getColor().r, info.getColor().g, info.getColor().b, 0.5F)), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
+				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), super.getPlaceholder(), super.getShownInfo().color(new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), 0.5F)), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
 			}
 
 			for (int i = 0; i < lines.size(); i++) {
@@ -77,7 +77,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 				final double cursorX = textX + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPos()));
 				final double cursorY = textY + lineHeight * cursorLineCol[0];
 				final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1) / 2F);
-				final Color cursorColor = new Color(info.getColor().r, info.getColor().g, info.getColor().b, cursorOpacity);
+				final Color cursorColor = new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), cursorOpacity);
 				DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
 			}
 

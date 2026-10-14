@@ -396,7 +396,7 @@ public class ResourcePlayerNodeTest {
 
 	private Draw skeleton() {
 		final Color loading = Color.LOADING();
-		final List<Draw> draws = this.bridges.getRender().getDraws(loading.r, loading.g, loading.b);
+		final List<Draw> draws = this.bridges.getRender().getDraws(loading.getRedF(), loading.getGreenF(), loading.getBlueF());
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0);
 	}

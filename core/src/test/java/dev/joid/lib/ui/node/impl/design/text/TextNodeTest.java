@@ -221,7 +221,7 @@ public class TextNodeTest {
 		Assert.assertEquals(20D, node.getHeight(), 0D);
 		Assert.assertTrue(this.font.getDrawn().isEmpty());
 		final Color loading = Color.LOADING();
-		final Draw skeleton = this.bridges.getRender().getDraws(loading.r, loading.g, loading.b).get(0);
+		final Draw skeleton = this.bridges.getRender().getDraws(loading.getRedF(), loading.getGreenF(), loading.getBlueF()).get(0);
 		Assert.assertEquals(10D, skeleton.getLeft(), 0.001D);
 		Assert.assertEquals(60D, skeleton.getRight(), 0.001D);
 		Assert.assertEquals(20D, skeleton.getTop(), 0.001D);
@@ -284,7 +284,7 @@ public class TextNodeTest {
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
 			this.drawn.add(new Drawn(text, x, y));
-			return new FontBounds(this.getWidth(text, info), this.getHeight(text, info));
+			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
 		}
 
 		@Override

@@ -26,7 +26,7 @@ public class UIDemoTextField extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoTextField.INK);
-		final TextInfo markup = info.copy().markups(DemoTextMarkup.inst());
+		final TextInfo markup = info.markups(DemoTextMarkup.inst());
 		final StringSignal typed = StringSignal.of("");
 		final StringSignal key = StringSignal.of("-");
 		final StringSignal character = StringSignal.of("-");

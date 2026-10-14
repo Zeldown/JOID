@@ -139,10 +139,10 @@ public class UIDemoText extends UIDemo {
 			.vertical(20, 30, 360)
 			.margin(20D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("Spacing 0.3", caption.copy().letterSpacing(0.3F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Spacing 0.1", caption.copy().letterSpacing(0.1F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Spacing 0.3", caption.letterSpacing(0.3F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Spacing 0.1", caption.letterSpacing(0.1F))).attach(flex);
 				TextNode.create(0, 0).text(Text.create("Spacing 0", caption)).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Spacing -0.05", caption.copy().letterSpacing(-0.05F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Spacing -0.05", caption.letterSpacing(-0.05F))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Letter spacing", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -153,8 +153,8 @@ public class UIDemoText extends UIDemo {
 		.create(980, 380, 400, 260)
 		.color(UIDemoText.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(20, 20, 360, 0).text(Text.create("A line height of 1 keeps the lines of a paragraph close", info.copy().lineHeight(1F))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(20, 110, 360, 0).text(Text.create("A line height of 1.8 opens the lines of a paragraph", info.copy().lineHeight(1.8F))).mode(TextMode.SPLIT).attach(rect);
+			TextNode.create(20, 20, 360, 0).text(Text.create("A line height of 1 keeps the lines of a paragraph close", info.lineHeight(1F))).mode(TextMode.SPLIT).attach(rect);
+			TextNode.create(20, 110, 360, 0).text(Text.create("A line height of 1.8 opens the lines of a paragraph", info.lineHeight(1.8F))).mode(TextMode.SPLIT).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Line height", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -167,11 +167,11 @@ public class UIDemoText extends UIDemo {
 			.vertical(20, 30, 360)
 			.margin(20D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("Default shadow", caption.copy().shadow())).attach(flex);
-				TextNode.create(0, 0).text(Text.create("White shadow", caption.copy().shadow(Color.WHITE))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Offset shadow", caption.copy().shadow(Color.BLACK.copyAlpha(0.4F)).shadow(4F, 4F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Rainbow shadow", caption.copy().shadow(Color.RAINBOW))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("<c=cc3333>Tinted</c> <c=3355cc>shadow</c>", caption.copy().markups(DemoTextMarkup.inst()).shadowTint(0.25F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Default shadow", caption.shadow())).attach(flex);
+				TextNode.create(0, 0).text(Text.create("White shadow", caption.shadow(Color.WHITE))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Offset shadow", caption.shadow(Color.BLACK.copyAlpha(0.4F)).shadow(4F, 4F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Rainbow shadow", caption.shadow(Color.RAINBOW))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("<c=cc3333>Tinted</c> <c=3355cc>shadow</c>", caption.markups(DemoTextMarkup.inst()).shadowTint(0.25F))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Shadow", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -187,6 +187,7 @@ public class UIDemoText extends UIDemo {
 			.margin(4D)
 			.body(flex -> {
 				TextNode.create(0, 0).text(Text.create("hello joid world", info).modifier(TextModifier.UPPER_CASE)).attach(flex);
+				TextNode.create(0, 0).text(Text.create("<c=cc3333>hello</c> <b>joid</b> world", info.markups(DemoTextMarkup.inst())).modifier(TextModifier.UPPER_CASE)).attach(flex);
 				TextNode.create(0, 0).text(Text.create("HELLO JOID WORLD", info).modifier(TextModifier.LOWER_CASE)).attach(flex);
 				TextNode.create(0, 0).text(Text.create("hello joid world", info).modifier(TextModifier.CAPITALIZE)).attach(flex);
 				TextNode.create(0, 0).text(Text.create("hello joid world", info).modifier(TextModifier.WORD_CAPITALIZE)).attach(flex);
@@ -206,11 +207,11 @@ public class UIDemoText extends UIDemo {
 		.body(rect -> {
 			TextNode
 			.create(20, 40)
-			.text(Text.create(TextElement.create("Several ", caption), TextElement.create("elements ", caption.copy().weight(FontWeight.BOLD)), TextElement.create("in one ", caption.copy().font(DemoFont.PLAYFAIR_DISPLAY)), TextElement.create("text", caption.copy().color(Color.WHITE))))
+			.text(Text.create(TextElement.create("Several ", caption), TextElement.create("elements ", caption.weight(FontWeight.BOLD)), TextElement.create("in one ", caption.font(DemoFont.PLAYFAIR_DISPLAY)), TextElement.create("text", caption.color(Color.WHITE))))
 			.attach(rect);
 			TextNode
 			.create(20, 110, 360, 0)
-			.text(Text.create(TextElement.create("They wrap ", info), TextElement.create("together ", info.copy().weight(FontWeight.BOLD)), TextElement.create("on the width of the node, ", info.copy().italic(true)), TextElement.create("element after element.", info)))
+			.text(Text.create(TextElement.create("They wrap ", info), TextElement.create("together ", info.weight(FontWeight.BOLD)), TextElement.create("on the width of the node, ", info.italic(true)), TextElement.create("element after element.", info)))
 			.mode(TextMode.SPLIT)
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Text elements", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -228,7 +229,7 @@ public class UIDemoText extends UIDemo {
 			.attach(rect);
 			TextNode
 			.create(20, 100)
-			.text(Text.create("A longer text", caption.copy().fontSize(36F)))
+			.text(Text.create("A longer text", caption.fontSize(36F)))
 			.self(text -> text.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(text.getX(), text.getY(), text.getX() + text.getWidth(), text.getY() + text.getHeight(), UIDemoText.INK, 1D)))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Size from text", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);

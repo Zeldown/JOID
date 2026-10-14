@@ -19,7 +19,7 @@ public final class DemoRainbowTextEffect implements ITextEffect {
 
 	@Override
 	public void apply(final @NonNull ITextGlyph glyph) {
-		glyph.color(Color.RAINBOW(BridgeHandler.CLOCK.get().currentTimeMillis() + glyph.getIndex() * 120L).copyAlpha(glyph.getColor().a));
+		glyph.color(Color.RAINBOW(BridgeHandler.CLOCK.get().currentTimeMillis() + glyph.getIndex() * 120L).copyAlpha(glyph.getColor().getAlphaF()));
 	}
 
 }

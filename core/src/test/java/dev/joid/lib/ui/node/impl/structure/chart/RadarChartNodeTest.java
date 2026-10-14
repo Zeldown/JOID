@@ -137,7 +137,7 @@ public class RadarChartNodeTest {
 		chart.data(RadarChartData.create("speed", 3)).data(RadarChartData.create("power", 5)).data(RadarChartData.create("range", 4));
 		this.bridges.open(new NodeUI(chart)).frame();
 		final Color loading = Color.LOADING();
-		final List<Draw> draws = this.bridges.getRender().getDraws(loading.r, loading.g, loading.b);
+		final List<Draw> draws = this.bridges.getRender().getDraws(loading.getRedF(), loading.getGreenF(), loading.getBlueF());
 		Assert.assertEquals(1, draws.size());
 		Assert.assertEquals(100D, draws.get(0).getLeft(), 1E-3D);
 		Assert.assertEquals(100D, draws.get(0).getTop(), 1E-3D);

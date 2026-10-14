@@ -28,7 +28,7 @@ public class ShowDecodeTextEffect implements ITextEffect {
 		final double reveal = this.start + glyph.getIndex() * this.stagger;
 		if (now >= reveal) {
 			final float flash = (float) Math.max(0D, 1D - (now - reveal) / 400D);
-			glyph.color(glyph.getColor().to(Color.WHITE.copyAlpha(glyph.getColor().a), flash));
+			glyph.color(glyph.getColor().to(Color.WHITE.copyAlpha(glyph.getColor().getAlphaF()), flash));
 			return;
 		}
 		final long seed = (now / 60L) * 31L + glyph.getIndex() * 17L;
@@ -40,7 +40,7 @@ public class ShowDecodeTextEffect implements ITextEffect {
 				break;
 			}
 		}
-		glyph.color(this.accent.copyAlpha(glyph.getColor().a * (now < this.start ? 0F : 0.85F)));
+		glyph.color(this.accent.copyAlpha(glyph.getColor().getAlphaF() * (now < this.start ? 0F : 0.85F)));
 	}
 
 }

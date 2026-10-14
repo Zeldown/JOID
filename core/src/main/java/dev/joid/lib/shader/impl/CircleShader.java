@@ -58,8 +58,8 @@ public class CircleShader extends ShaderProgram {
 		.uniform("gradient", 1)
 		.uniform("startPos", (float) gradient.getStartPoint().getX(), (float) gradient.getStartPoint().getY())
 		.uniform("endPos", (float) gradient.getEndPoint().getX(), (float) gradient.getEndPoint().getY())
-		.uniform("startColor", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
-		.uniform("endColor", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
+		.uniform("startColor", gradient.getStartColor().getRedF(), gradient.getStartColor().getGreenF(), gradient.getStartColor().getBlueF(), gradient.getStartColor().getAlphaF())
+		.uniform("endColor", gradient.getEndColor().getRedF(), gradient.getEndColor().getGreenF(), gradient.getEndColor().getBlueF(), gradient.getEndColor().getAlphaF())
 		.uniform("canvas", (float) canvas.getMinX(), (float) canvas.getMinY(), (float) canvas.getMaxX(), (float) canvas.getMaxY());
 	}
 

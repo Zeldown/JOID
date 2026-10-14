@@ -89,10 +89,10 @@ public class UIDemoFont extends UIDemo {
 			.vertical(20, 20, 280)
 			.margin(6D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", montserrat.copy().fontSize(24F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", pacifico.copy().fontSize(24F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", playfair.copy().fontSize(24F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("LT Ty Yo Va", montserrat.copy().fontSize(40F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", montserrat.fontSize(24F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", pacifico.fontSize(24F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("AVATAR Tower WAVE", playfair.fontSize(24F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("LT Ty Yo Va", montserrat.fontSize(40F))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Kerning", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -155,11 +155,11 @@ public class UIDemoFont extends UIDemo {
 			.vertical(20, 20, 280)
 			.margin(4D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("Size 12", montserrat.copy().fontSize(12F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 16", montserrat.copy().fontSize(16F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 24", montserrat.copy().fontSize(24F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 32", montserrat.copy().fontSize(32F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 48", montserrat.copy().fontSize(48F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 12", montserrat.fontSize(12F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 16", montserrat.fontSize(16F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 24", montserrat.fontSize(24F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 32", montserrat.fontSize(32F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 48", montserrat.fontSize(48F))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Sizes", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -174,9 +174,9 @@ public class UIDemoFont extends UIDemo {
 			.vertical(20, 20, 280)
 			.margin(10D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("Montserrat italic", montserrat.copy().fontSize(28F).italic(true))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Pacifico italic", pacifico.copy().fontSize(28F).italic(true))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Playfair italic", playfair.copy().fontSize(28F).italic(true))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Montserrat italic", montserrat.fontSize(28F).italic(true))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Pacifico italic", pacifico.fontSize(28F).italic(true))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Playfair italic", playfair.fontSize(28F).italic(true))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Italic", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -191,12 +191,12 @@ public class UIDemoFont extends UIDemo {
 			.vertical(20, 20, 280)
 			.margin(6D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("Size 8: the quick brown fox jumps", montserrat.copy().fontSize(8F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 9: the quick brown fox jumps", montserrat.copy().fontSize(9F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", montserrat.copy().fontSize(10F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 11: the quick brown fox jumps", montserrat.copy().fontSize(11F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", playfair.copy().fontSize(10F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", pacifico.copy().fontSize(10F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 8: the quick brown fox jumps", montserrat.fontSize(8F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 9: the quick brown fox jumps", montserrat.fontSize(9F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", montserrat.fontSize(10F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 11: the quick brown fox jumps", montserrat.fontSize(11F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", playfair.fontSize(10F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 10: the quick brown fox jumps", pacifico.fontSize(10F))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Small sizes", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -207,7 +207,7 @@ public class UIDemoFont extends UIDemo {
 		.create(80, 720, 320, 260)
 		.color(UIDemoFont.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(160, 130).text(Text.create("Ag", montserrat.copy().fontSize(160F), Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect);
+			TextNode.create(160, 130).text(Text.create("Ag", montserrat.fontSize(160F), Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Large size", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -220,10 +220,10 @@ public class UIDemoFont extends UIDemo {
 			.vertical(20, 20, 280)
 			.margin(10D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("White text", montserrat.copy().fontSize(28F).color(Color.WHITE))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Ink text", montserrat.copy().fontSize(28F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Half transparent", montserrat.copy().fontSize(28F).color(Color.BLACK.copyAlpha(0.5F)))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Black text", montserrat.copy().fontSize(28F).color(Color.BLACK))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("White text", montserrat.fontSize(28F).color(Color.WHITE))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Ink text", montserrat.fontSize(28F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Half transparent", montserrat.fontSize(28F).color(Color.BLACK.copyAlpha(0.5F)))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Black text", montserrat.fontSize(28F).color(Color.BLACK))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Colors", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -256,11 +256,11 @@ public class UIDemoFont extends UIDemo {
 			.vertical(20, 20, 280)
 			.margin(4D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("Size 8", pixel.copy().fontSize(8F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 12", pixel.copy().fontSize(12F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 16", pixel.copy().fontSize(16F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 20", pixel.copy().fontSize(20F))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Size 32", pixel.copy().fontSize(32F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 8", pixel.fontSize(8F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 12", pixel.fontSize(12F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 16", pixel.fontSize(16F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 20", pixel.fontSize(20F))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Size 32", pixel.fontSize(32F))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Pixel sizes", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -275,10 +275,10 @@ public class UIDemoFont extends UIDemo {
 			.vertical(20, 20, 280)
 			.margin(10D)
 			.body(flex -> {
-				TextNode.create(0, 0).text(Text.create("Shadow", pixel.copy().color(Color.WHITE).shadow(Color.BLACK))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("Underline", pixel.copy().effects(DemoUnderlineTextEffect.inst()))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("<c=cc3333>red</c> <c=3355cc>blue</c> ink", pixel.copy().markups(DemoTextMarkup.inst()))).attach(flex);
-				TextNode.create(0, 0).text(Text.create("A wave of pixels", pixel.copy().effects(DemoWaveTextEffect.inst()))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Shadow", pixel.color(Color.WHITE).shadow(Color.BLACK))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("Underline", pixel.effects(DemoUnderlineTextEffect.inst()))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("<c=cc3333>red</c> <c=3355cc>blue</c> ink", pixel.markups(DemoTextMarkup.inst()))).attach(flex);
+				TextNode.create(0, 0).text(Text.create("A wave of pixels", pixel.effects(DemoWaveTextEffect.inst()))).attach(flex);
 			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Pixel effects", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);

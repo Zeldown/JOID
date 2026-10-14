@@ -1044,7 +1044,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 40D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).wait(rect -> false);
 		this.bridges.open(new NodeUI(node));
 		final Color loading = Color.LOADING();
-		final Draw placeholder = this.draw(loading.r, loading.g, loading.b);
+		final Draw placeholder = this.draw(loading.getRedF(), loading.getGreenF(), loading.getBlueF());
 		Assert.assertEquals(100D, placeholder.getLeft(), 1E-3D);
 		Assert.assertEquals(100D, placeholder.getTop(), 1E-3D);
 		Assert.assertEquals(150D, placeholder.getRight(), 1E-3D);

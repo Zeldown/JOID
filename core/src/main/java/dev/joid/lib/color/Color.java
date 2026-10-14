@@ -12,6 +12,7 @@ import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.point.Point;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NonNull;
 
 @EqualsAndHashCode
@@ -26,7 +27,7 @@ public final class Color {
 	public static final Color GREEN       = new Color(0F, 1F, 0F, 1F);
 	public static final Color BLACK       = new Color(0F, 0F, 0F, 1F);
 	public static final Color YELLOW      = new Color(1F, 1F, 0F, 1F);
-	public static final Color ORANGE      = new Color(1F, 0.8F, 0F, 1F);
+	public static final Color ORANGE      = new Color(1F, 0.5F, 0F, 1F);
 	public static final Color MAGENTA     = new Color(1F, 0F, 1F, 1F);
 	public static final Color DARKGRAY    = new Color(0.3F, 0.3F, 0.3F, 1F);
 	public static final Color LIGHTGRAY   = new Color(0.7F, 0.7F, 0.7F, 1F);
@@ -35,20 +36,20 @@ public final class Color {
 	public static final Color RAINBOW = new Color(1F, 1F, 1F, 1F, color -> Color.RAINBOW().copyAlpha(color.a));
 	public static final Color LOADING = new Color(1F, 1F, 1F, 1F, color -> Color.LOADING().copyAlpha(color.a));
 
-	public final float r;
-	public final float g;
-	public final float b;
-	public final float a;
+	private final float r;
+	private final float g;
+	private final float b;
+	private final float a;
 
-	@EqualsAndHashCode.Exclude public final UnaryOperator<Color> update;
-	@EqualsAndHashCode.Exclude public final ColorGradient        gradient;
+	@EqualsAndHashCode.Exclude
+	private final UnaryOperator<Color> update;
 
-	public Color(final int value) {
-		this((value >> 16 & 0xFF) / 255F, (value >> 8 & 0xFF) / 255F, (value & 0xFF) / 255F, (value >>> 24) / 255F);
-	}
+	@Getter
+	@EqualsAndHashCode.Exclude
+	private final ColorGradient gradient;
 
 	public Color(final Color color) {
-		this(color.r, color.g, color.b, color.a);
+		this(color.r, color.g, color.b, color.a, color.update, color.isGradient() ? new ColorGradient(color.gradient.getStartColor().copy(), color.gradient.getEndColor().copy(), color.gradient.getStartPoint(), color.gradient.getEndPoint()) : null);
 	}
 
 	public Color(final FloatBuffer buffer) {
@@ -93,6 +94,14 @@ public final class Color {
 		this.gradient = gradient;
 	}
 
+	public static @NonNull Color rgb(final int value) {
+		return new Color((value >> 16 & 0xFF) / 255F, (value >> 8 & 0xFF) / 255F, (value & 0xFF) / 255F, 1F);
+	}
+
+	public static @NonNull Color argb(final int value) {
+		return new Color((value >> 16 & 0xFF) / 255F, (value >> 8 & 0xFF) / 255F, (value & 0xFF) / 255F, (value >>> 24) / 255F);
+	}
+
 	public static @NonNull Color decode(final @NonNull String nm) {
 		final String text = nm.trim();
 		final String lower = text.toLowerCase(Locale.ROOT);
@@ -124,7 +133,7 @@ public final class Color {
 
 		final String hex = text.startsWith("#") ? text : "#" + text;
 		if (hex.length() == 7) {
-			return new Color(0xFF000000 | Integer.parseUnsignedInt(hex.substring(1), 16));
+			return Color.rgb(Integer.parseUnsignedInt(hex.substring(1), 16));
 		}
 
 		if (hex.length() == 9) {
@@ -205,11 +214,11 @@ public final class Color {
 	}
 
 	public static @NonNull Color RAINBOW() {
-		return new Color(java.awt.Color.HSBtoRGB(BridgeHandler.CLOCK.get().currentTimeMillis() % 3000L / 3000F, 0.8F, 0.8F));
+		return Color.rgb(java.awt.Color.HSBtoRGB(BridgeHandler.CLOCK.get().currentTimeMillis() % 3000L / 3000F, 0.8F, 0.8F));
 	}
 
 	public static @NonNull Color RAINBOW(final long time) {
-		return new Color(java.awt.Color.HSBtoRGB(time % 3000L / 3000F, 0.8F, 0.8F));
+		return Color.rgb(java.awt.Color.HSBtoRGB(time % 3000L / 3000F, 0.8F, 0.8F));
 	}
 
 	public static @NonNull Color LOADING() {
@@ -285,13 +294,29 @@ public final class Color {
 		return (int) (this.g * 255F);
 	}
 
+	public float getRedF() {
+		return this.r;
+	}
+
+	public float getBlueF() {
+		return this.b;
+	}
+
+	public float getAlphaF() {
+		return this.a;
+	}
+
+	public float getGreenF() {
+		return this.g;
+	}
+
 	public @NonNull Color darker() {
 		return this.darker(0.5F);
 	}
 
 	public @NonNull Color darker(final float scale) {
 		final float factor = 1 - scale;
-		return new Color(this.r * factor, this.g * factor, this.b * factor, this.a);
+		return this.derive(this.r * factor, this.g * factor, this.b * factor, this.a, color -> color.darker(scale));
 	}
 
 	public @NonNull Color brighter() {
@@ -300,11 +325,11 @@ public final class Color {
 
 	public @NonNull Color brighter(final float scale) {
 		final float factor = scale + 1F;
-		return new Color(this.r * factor, this.g * factor, this.b * factor, this.a);
+		return this.derive(this.r * factor, this.g * factor, this.b * factor, this.a, color -> color.brighter(scale));
 	}
 
 	public @NonNull Color multiply(final @NonNull Color c) {
-		return new Color(this.r * c.r, this.g * c.g, this.b * c.b, this.a * c.a);
+		return this.derive(this.r * c.r, this.g * c.g, this.b * c.b, this.a * c.a, color -> color.multiply(c));
 	}
 
 	public @NonNull Color addToCopy(final @NonNull Color c) {
@@ -420,10 +445,7 @@ public final class Color {
 	}
 
 	public @NonNull Color copy() {
-		if (this.isGradient()) {
-			return new Color(this.r, this.g, this.b, this.a, this.update, new ColorGradient(this.gradient.getStartColor().copy(), this.gradient.getEndColor().copy(), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
-		}
-		return new Color(this.r, this.g, this.b, this.a, this.update);
+		return new Color(this);
 	}
 
 	public @NonNull Color copyAlpha(final float alpha) {
@@ -437,15 +459,15 @@ public final class Color {
 	}
 
 	public @NonNull Color copyRed(final float red) {
-		return new Color(red, this.g, this.b, this.a, this.update);
+		return this.derive(red, this.g, this.b, this.a, color -> color.copyRed(red));
 	}
 
 	public @NonNull Color copyGreen(final float green) {
-		return new Color(this.r, green, this.b, this.a, this.update);
+		return this.derive(this.r, green, this.b, this.a, color -> color.copyGreen(green));
 	}
 
 	public @NonNull Color copyBlue(final float blue) {
-		return new Color(this.r, this.g, blue, this.a, this.update);
+		return this.derive(this.r, this.g, blue, this.a, color -> color.copyBlue(blue));
 	}
 
 	public @NonNull Color update() {
@@ -458,6 +480,12 @@ public final class Color {
 
 	public static void reset() {
 		BridgeHandler.RENDER.get().getState().color(1F, 1F, 1F, 1F);
+	}
+
+	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform) {
+		final UnaryOperator<Color> update = this.update == null ? null : color -> transform.apply(this.update.apply(color));
+		final ColorGradient gradient = this.isGradient() ? new ColorGradient(transform.apply(this.gradient.getStartColor()), transform.apply(this.gradient.getEndColor()), this.gradient.getStartPoint(), this.gradient.getEndPoint()) : null;
+		return new Color(r, g, b, a, update, gradient);
 	}
 
 	private @NonNull String padZero(final @NonNull String str) {

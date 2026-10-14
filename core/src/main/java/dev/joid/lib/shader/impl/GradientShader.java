@@ -38,8 +38,8 @@ public class GradientShader extends ShaderProgram {
 		GradientShader.INSTANCE.getShader()
 		.uniform("startPos", (float) startPoint.getX(), (float) startPoint.getY())
 		.uniform("endPos", (float) endPoint.getX(), (float) endPoint.getY())
-		.uniform("startColor", startColor.r, startColor.g, startColor.b, startColor.a)
-		.uniform("endColor", endColor.r, endColor.g, endColor.b, endColor.a)
+		.uniform("startColor", startColor.getRedF(), startColor.getGreenF(), startColor.getBlueF(), startColor.getAlphaF())
+		.uniform("endColor", endColor.getRedF(), endColor.getGreenF(), endColor.getBlueF(), endColor.getAlphaF())
 		.uniform("hasTexture", hasTexture ? 1 : 0)
 		.uniform("canvas", (float) canvas.getMinX(), (float) canvas.getMinY(), (float) canvas.getMaxX(), (float) canvas.getMaxY());
 

@@ -23,10 +23,10 @@ public class ColorTest {
 		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color copy = gradient.copy();
 		Assert.assertTrue(copy.isGradient());
-		Assert.assertNotSame(gradient.gradient, copy.gradient);
-		Assert.assertNotSame(gradient.gradient.getStartColor(), copy.gradient.getStartColor());
-		Assert.assertEquals(0.5F, copy.gradient.getEndColor().a, 0F);
-		Assert.assertEquals(1D, copy.gradient.getEndPoint().getX(), 0D);
+		Assert.assertNotSame(gradient.getGradient(), copy.getGradient());
+		Assert.assertNotSame(gradient.getGradient().getStartColor(), copy.getGradient().getStartColor());
+		Assert.assertEquals(0.5F, copy.getGradient().getEndColor().getAlphaF(), 0F);
+		Assert.assertEquals(1D, copy.getGradient().getEndPoint().getX(), 0D);
 	}
 
 	@Test
@@ -34,34 +34,34 @@ public class ColorTest {
 		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color faded = gradient.copyAlpha(0.4F);
 		Assert.assertTrue(faded.isGradient());
-		Assert.assertEquals(0.4F, faded.a, 0F);
-		Assert.assertEquals(0.4F, faded.gradient.getStartColor().a, 1E-6F);
-		Assert.assertEquals(0.2F, faded.gradient.getEndColor().a, 1E-6F);
-		Assert.assertEquals(1F, faded.gradient.getStartColor().r, 0F);
-		Assert.assertEquals(1F, faded.gradient.getEndColor().b, 0F);
-		Assert.assertEquals(1F, gradient.gradient.getStartColor().a, 0F);
+		Assert.assertEquals(0.4F, faded.getAlphaF(), 0F);
+		Assert.assertEquals(0.4F, faded.getGradient().getStartColor().getAlphaF(), 1E-6F);
+		Assert.assertEquals(0.2F, faded.getGradient().getEndColor().getAlphaF(), 1E-6F);
+		Assert.assertEquals(1F, faded.getGradient().getStartColor().getRedF(), 0F);
+		Assert.assertEquals(1F, faded.getGradient().getEndColor().getBlueF(), 0F);
+		Assert.assertEquals(1F, gradient.getGradient().getStartColor().getAlphaF(), 0F);
 	}
 
 	@Test
 	public void fadesAGradientThatStartsTransparent() {
 		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 0F), new Color(0F, 0F, 1F, 1F), Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color faded = gradient.copyAlpha(0.5F);
-		Assert.assertEquals(0.5F, faded.gradient.getStartColor().a, 0F);
-		Assert.assertEquals(0.5F, faded.gradient.getEndColor().a, 0F);
+		Assert.assertEquals(0.5F, faded.getGradient().getStartColor().getAlphaF(), 0F);
+		Assert.assertEquals(0.5F, faded.getGradient().getEndColor().getAlphaF(), 0F);
 	}
 
 	@Test
 	public void keepsAPlainColorPlain() {
 		final Color faded = new Color(1F, 0.5F, 0.25F, 1F).copyAlpha(0.3F);
 		Assert.assertFalse(faded.isGradient());
-		Assert.assertEquals(0.3F, faded.a, 0F);
-		Assert.assertEquals(0.5F, faded.g, 0F);
+		Assert.assertEquals(0.3F, faded.getAlphaF(), 0F);
+		Assert.assertEquals(0.5F, faded.getGreenF(), 0F);
 		Assert.assertFalse(new Color(1F, 0.5F, 0.25F, 1F).copy().isGradient());
 	}
 
 	@Test
 	public void readsAnRgbInteger() {
-		final Color color = new Color(0xFF336699);
+		final Color color = Color.argb(0xFF336699);
 		Assert.assertEquals(51, color.getRed());
 		Assert.assertEquals(102, color.getGreen());
 		Assert.assertEquals(153, color.getBlue());
@@ -70,20 +70,27 @@ public class ColorTest {
 
 	@Test
 	public void readsTheAlphaOfAnArgbInteger() {
-		Assert.assertEquals(128, new Color(0x80336699).getAlpha());
-		Assert.assertEquals(1F, new Color(0xFF336699).a, 0F);
+		Assert.assertEquals(128, Color.argb(0x80336699).getAlpha());
+		Assert.assertEquals(1F, Color.argb(0xFF336699).getAlphaF(), 0F);
+	}
+
+	@Test
+	public void readsAnOpaqueRgbInteger() {
+		Assert.assertEquals(new Color(51, 102, 153), Color.rgb(0x336699));
+		Assert.assertEquals(new Color(51, 102, 153), Color.rgb(0x00336699));
+		Assert.assertEquals(1F, Color.rgb(0x80336699).getAlphaF(), 0F);
 	}
 
 	@Test
 	public void writesBackItsArgbInteger() {
-		Assert.assertEquals(0x80336699, new Color(0x80336699).getRGB());
+		Assert.assertEquals(0x80336699, Color.argb(0x80336699).getRGB());
 		Assert.assertEquals(0xFFFF0000, Color.RED.getRGB());
 	}
 
 	@Test
 	public void keepsTheZeroAlphaOfAnInteger() {
-		final Color color = new Color(0x336699);
-		Assert.assertEquals(0F, color.a, 0F);
+		final Color color = Color.argb(0x336699);
+		Assert.assertEquals(0F, color.getAlphaF(), 0F);
 		Assert.assertEquals(51, color.getRed());
 		Assert.assertEquals(0x00336699, color.getRGB());
 	}
@@ -93,6 +100,70 @@ public class ColorTest {
 		final Color color = new Color(Color.ORANGE);
 		Assert.assertNotSame(Color.ORANGE, color);
 		Assert.assertEquals(Color.ORANGE, color);
+	}
+
+	@Test
+	public void copiesTheGradientAndTheUpdateOfAnotherColor() {
+		final Color gradient = new Color(Color.gradient(Color.RED, Color.BLUE, Point.create(0D, 0D), Point.create(1D, 0D)));
+		Assert.assertTrue(gradient.isGradient());
+		Assert.assertEquals(Color.BLUE, gradient.getGradient().getEndColor());
+		Assert.assertEquals(new Color(1F, 0F, 0F, 0.5F), new Color(new Color(0F, 0F, 0F, 0.5F, color -> new Color(1F, 0F, 0F, color.getAlphaF()))).update());
+	}
+
+	@Test
+	public void isAPureOrange() {
+		Assert.assertEquals(new Color(1F, 0.5F, 0F, 1F), Color.ORANGE);
+	}
+
+	@Test
+	public void readsItsComponentsAsFloats() {
+		final Color color = new Color(0.25F, 0.5F, 0.75F, 0.125F);
+		Assert.assertEquals(0.25F, color.getRedF(), 0F);
+		Assert.assertEquals(0.5F, color.getGreenF(), 0F);
+		Assert.assertEquals(0.75F, color.getBlueF(), 0F);
+		Assert.assertEquals(0.125F, color.getAlphaF(), 0F);
+		Assert.assertNull(color.getGradient());
+	}
+
+	@Test
+	public void darkensAndBrightensAGradient() {
+		final Color gradient = Color.gradient(new Color(1F, 0.5F, 0F, 1F), new Color(0F, 0.5F, 1F, 0.5F), Point.create(0D, 0D), Point.create(1D, 0D));
+		final Color darker = gradient.darker(0.5F);
+		Assert.assertTrue(darker.isGradient());
+		Assert.assertEquals(new Color(0.5F, 0.25F, 0F, 1F), darker.getGradient().getStartColor());
+		Assert.assertEquals(new Color(0F, 0.25F, 0.5F, 0.5F), darker.getGradient().getEndColor());
+		Assert.assertEquals(Point.create(1D, 0D), darker.getGradient().getEndPoint());
+		Assert.assertEquals(new Color(1F, 0.75F, 0F, 1F), gradient.brighter(0.5F).getGradient().getStartColor());
+	}
+
+	@Test
+	public void multipliesAGradient() {
+		final Color gradient = Color.gradient(Color.WHITE, Color.GRAY, Point.create(0D, 0D), Point.create(1D, 0D));
+		final Color multiplied = gradient.multiply(new Color(1F, 0.5F, 0F, 1F));
+		Assert.assertEquals(new Color(1F, 0.5F, 0F, 1F), multiplied.getGradient().getStartColor());
+		Assert.assertEquals(new Color(0.5F, 0.25F, 0F, 1F), multiplied.getGradient().getEndColor());
+	}
+
+	@Test
+	public void replacesOneComponentOfAGradient() {
+		final Color gradient = Color.gradient(Color.BLACK, Color.WHITE, Point.create(0D, 0D), Point.create(1D, 0D));
+		Assert.assertEquals(new Color(1F, 0F, 0F, 1F), gradient.copyRed(1F).getGradient().getStartColor());
+		Assert.assertEquals(new Color(1F, 0F, 1F, 1F), gradient.copyGreen(0F).getGradient().getEndColor());
+		Assert.assertEquals(new Color(1F, 1F, 0F, 1F), gradient.copyBlue(0F).getGradient().getEndColor());
+	}
+
+	@Test
+	public void darkensTheFrameOfItsUpdate() {
+		final Color animated = new Color(0F, 0F, 0F, 0.5F, color -> new Color(1F, 1F, 0F, color.getAlphaF()));
+		Assert.assertEquals(new Color(0.5F, 0.5F, 0F, 0.5F), animated.darker(0.5F).update());
+		Assert.assertEquals(new Color(1F, 1F, 0F, 0.5F), animated.brighter(0.5F).update());
+		Assert.assertEquals(new Color(0.5F, 0F, 0F, 0.5F), animated.multiply(new Color(0.5F, 0F, 1F, 1F)).update());
+		Assert.assertEquals(new Color(1F, 1F, 0F, 0.5F), animated.update());
+	}
+
+	@Test
+	public void keepsTheRainbowAnimatedWhenDarkened() {
+		Assert.assertNotEquals(Color.RAINBOW.darker(), Color.RAINBOW.darker().update());
 	}
 
 	@Test
@@ -111,7 +182,7 @@ public class ColorTest {
 	public void takesTheStartOfAGradient() {
 		final ColorGradient gradient = new ColorGradient(Color.RED, Color.BLUE, Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color color = new Color(gradient);
-		Assert.assertSame(gradient, color.gradient);
+		Assert.assertSame(gradient, color.getGradient());
 		Assert.assertEquals(Color.RED, color);
 	}
 
@@ -123,7 +194,7 @@ public class ColorTest {
 
 	@Test
 	public void startsOpaqueWithoutAlpha() {
-		Assert.assertEquals(1F, new Color(0.25F, 0.5F, 0.75F).a, 0F);
+		Assert.assertEquals(1F, new Color(0.25F, 0.5F, 0.75F).getAlphaF(), 0F);
 	}
 
 	@Test
@@ -146,10 +217,10 @@ public class ColorTest {
 		Assert.assertEquals(Color.TRANSPARENT, color.scaleCopy(-1F));
 		Assert.assertEquals(new Color(1F, 1F, 0.5F, 1F), color.addToCopy(new Color(0.75F, 0.75F, 0.25F, 0.75F)));
 		Assert.assertEquals(new Color(0F, 0F, 0F, 0.5F), color.darker(2F));
-		Assert.assertEquals(1F, color.copyAlpha(2F).a, 0F);
-		Assert.assertEquals(0F, color.copyRed(-1F).r, 0F);
-		Assert.assertEquals(1F, color.copyGreen(2F).g, 0F);
-		Assert.assertEquals(0F, color.copyBlue(-1F).b, 0F);
+		Assert.assertEquals(1F, color.copyAlpha(2F).getAlphaF(), 0F);
+		Assert.assertEquals(0F, color.copyRed(-1F).getRedF(), 0F);
+		Assert.assertEquals(1F, color.copyGreen(2F).getGreenF(), 0F);
+		Assert.assertEquals(0F, color.copyBlue(-1F).getBlueF(), 0F);
 		Assert.assertEquals(Color.RED, Color.RED.to(Color.BLUE, -1F));
 		Assert.assertEquals(Color.BLUE, Color.RED.to(Color.BLUE, 2F));
 	}
@@ -162,16 +233,16 @@ public class ColorTest {
 
 	@Test
 	public void decodesAHexCode() {
-		Assert.assertEquals(new Color(0xFF336699), Color.decode("#336699"));
-		Assert.assertEquals(new Color(0xFF336699), Color.decode("336699"));
-		Assert.assertEquals(new Color(0xFFFFAA00), Color.decode("#ffaa00"));
+		Assert.assertEquals(Color.rgb(0x336699), Color.decode("#336699"));
+		Assert.assertEquals(Color.rgb(0x336699), Color.decode("336699"));
+		Assert.assertEquals(Color.rgb(0xFFAA00), Color.decode("#ffaa00"));
 	}
 
 	@Test
 	public void decodesAStringSurroundedByWhitespace() {
-		Assert.assertEquals(new Color(0xFF336699), Color.decode("  #336699\t"));
+		Assert.assertEquals(Color.rgb(0x336699), Color.decode("  #336699\t"));
 		Assert.assertEquals(new Color(255, 128, 0), Color.decode(" rgb(255, 128, 0) "));
-		Assert.assertEquals(Color.BLUE, Color.decode("\ngradient(#FF0000, #0000FF) ").gradient.getEndColor());
+		Assert.assertEquals(Color.BLUE, Color.decode("\ngradient(#FF0000, #0000FF) ").getGradient().getEndColor());
 		Assert.assertSame(Color.RAINBOW, Color.decode(" rainbow "));
 	}
 
@@ -203,17 +274,17 @@ public class ColorTest {
 
 	@Test
 	public void readsTheAlphaOfRgbaAsAFraction() {
-		Assert.assertEquals(0.5F, Color.decode("rgba(0, 0, 0, 0.5)").a, 0F);
-		Assert.assertEquals(1F, Color.decode("rgba(0, 0, 0, 1)").a, 0F);
-		Assert.assertEquals(0F, Color.decode("rgba(0, 0, 0, 0)").a, 0F);
-		Assert.assertEquals(1F, Color.decode("rgba(0, 0, 0, 64)").a, 0F);
+		Assert.assertEquals(0.5F, Color.decode("rgba(0, 0, 0, 0.5)").getAlphaF(), 0F);
+		Assert.assertEquals(1F, Color.decode("rgba(0, 0, 0, 1)").getAlphaF(), 0F);
+		Assert.assertEquals(0F, Color.decode("rgba(0, 0, 0, 0)").getAlphaF(), 0F);
+		Assert.assertEquals(1F, Color.decode("rgba(0, 0, 0, 64)").getAlphaF(), 0F);
 	}
 
 	@Test
 	public void decodesFunctionsWhateverTheCaseOfTheirName() {
 		Assert.assertEquals(new Color(255, 128, 0), Color.decode("RGB(255, 128, 0)"));
 		Assert.assertEquals(new Color(1F, 128 / 255F, 0F, 0.5F), Color.decode("Rgba(255, 128, 0, 0.5)"));
-		Assert.assertEquals(Color.BLUE, Color.decode("GRADIENT(#FF0000, #0000FF)").gradient.getEndColor());
+		Assert.assertEquals(Color.BLUE, Color.decode("GRADIENT(#FF0000, #0000FF)").getGradient().getEndColor());
 	}
 
 	@Test(expected = NumberFormatException.class)
@@ -230,32 +301,32 @@ public class ColorTest {
 	public void decodesAGradient() {
 		final Color color = Color.decode("gradient(#FF0000, #0000FF)");
 		Assert.assertTrue(color.isGradient());
-		Assert.assertEquals(Color.RED, color.gradient.getStartColor());
-		Assert.assertEquals(Color.BLUE, color.gradient.getEndColor());
-		Assert.assertEquals(Point.create(0D, 0D), color.gradient.getStartPoint());
-		Assert.assertEquals(Point.create(1D, 0D), color.gradient.getEndPoint());
+		Assert.assertEquals(Color.RED, color.getGradient().getStartColor());
+		Assert.assertEquals(Color.BLUE, color.getGradient().getEndColor());
+		Assert.assertEquals(Point.create(0D, 0D), color.getGradient().getStartPoint());
+		Assert.assertEquals(Point.create(1D, 0D), color.getGradient().getEndPoint());
 	}
 
 	@Test
 	public void decodesTheDirectionOfAGradient() {
-		Assert.assertEquals(Point.create(1D, 0D), Color.decode("gradient(#FF0000, #0000FF, 1, 0, 0.5, 1)").gradient.getStartPoint());
-		Assert.assertEquals(Point.create(0.5D, 1D), Color.decode("gradient(#FF0000, #0000FF, 1, 0, 0.5, 1)").gradient.getEndPoint());
+		Assert.assertEquals(Point.create(1D, 0D), Color.decode("gradient(#FF0000, #0000FF, 1, 0, 0.5, 1)").getGradient().getStartPoint());
+		Assert.assertEquals(Point.create(0.5D, 1D), Color.decode("gradient(#FF0000, #0000FF, 1, 0, 0.5, 1)").getGradient().getEndPoint());
 	}
 
 	@Test
 	public void decodesAGradientBetweenFunctions() {
 		final Color color = Color.decode("gradient(rgb(255, 0, 0), rgba(0, 0, 255, 0.5), 0, 0, 0, 1)");
-		Assert.assertEquals(Color.RED, color.gradient.getStartColor());
-		Assert.assertEquals(new Color(0F, 0F, 1F, 0.5F), color.gradient.getEndColor());
-		Assert.assertEquals(Point.create(0D, 0D), color.gradient.getStartPoint());
-		Assert.assertEquals(Point.create(0D, 1D), color.gradient.getEndPoint());
+		Assert.assertEquals(Color.RED, color.getGradient().getStartColor());
+		Assert.assertEquals(new Color(0F, 0F, 1F, 0.5F), color.getGradient().getEndColor());
+		Assert.assertEquals(Point.create(0D, 0D), color.getGradient().getStartPoint());
+		Assert.assertEquals(Point.create(0D, 1D), color.getGradient().getEndPoint());
 	}
 
 	@Test
 	public void decodesANestedGradient() {
 		final Color color = Color.decode("gradient(gradient(#FF0000, #00FF00), #0000FF)");
-		Assert.assertTrue(color.gradient.getStartColor().isGradient());
-		Assert.assertEquals(Color.GREEN, color.gradient.getStartColor().gradient.getEndColor());
+		Assert.assertTrue(color.getGradient().getStartColor().isGradient());
+		Assert.assertEquals(Color.GREEN, color.getGradient().getStartColor().getGradient().getEndColor());
 	}
 
 	@Test(expected = NumberFormatException.class)
@@ -282,8 +353,8 @@ public class ColorTest {
 
 	@Test
 	public void keepsTheAlphaOfAFadedRainbow() {
-		Assert.assertEquals(0.5F, Color.RAINBOW.copyAlpha(0.5F).update().a, 0F);
-		Assert.assertEquals(0.5F, Color.LOADING.copyAlpha(0.5F).update().a, 0F);
+		Assert.assertEquals(0.5F, Color.RAINBOW.copyAlpha(0.5F).update().getAlphaF(), 0F);
+		Assert.assertEquals(0.5F, Color.LOADING.copyAlpha(0.5F).update().getAlphaF(), 0F);
 	}
 
 	@Test
@@ -324,8 +395,8 @@ public class ColorTest {
 		final UnaryOperator<Color> second = color -> color.copyBlue(1F);
 		final Color from = new Color(1F, 0F, 0F, 1F, first);
 		final Color to = new Color(0F, 0F, 1F, 1F, second);
-		Assert.assertSame(first, Color.transition(from, to, 0.5F).update);
-		Assert.assertSame(second, Color.transition(from, to, 0.75F).update);
+		Assert.assertEquals(new Color(1F, 0F, 0.5F, 1F), Color.transition(from, to, 0.5F).update());
+		Assert.assertEquals(new Color(0.25F, 0F, 1F, 1F), Color.transition(from, to, 0.75F).update());
 	}
 
 	@Test
@@ -333,10 +404,10 @@ public class ColorTest {
 		final Color from = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(1D, 0D));
 		final Color to = Color.gradient(new Color(0F, 0F, 1F, 1F), new Color(1F, 1F, 1F, 0F), Point.create(1D, 0D), Point.create(0D, 1D));
 		final Color color = Color.transition(from, to, 0.5F);
-		Assert.assertEquals(new Color(0.5F, 0F, 0.5F, 1F), color.gradient.getStartColor());
-		Assert.assertEquals(new Color(0.5F, 1F, 0.5F, 0.5F), color.gradient.getEndColor());
-		Assert.assertEquals(Point.create(0.5D, 0D), color.gradient.getStartPoint());
-		Assert.assertEquals(Point.create(0.5D, 0.5D), color.gradient.getEndPoint());
+		Assert.assertEquals(new Color(0.5F, 0F, 0.5F, 1F), color.getGradient().getStartColor());
+		Assert.assertEquals(new Color(0.5F, 1F, 0.5F, 0.5F), color.getGradient().getEndColor());
+		Assert.assertEquals(Point.create(0.5D, 0D), color.getGradient().getStartPoint());
+		Assert.assertEquals(Point.create(0.5D, 0.5D), color.getGradient().getEndPoint());
 	}
 
 	@Test
@@ -344,10 +415,10 @@ public class ColorTest {
 		final Point startPoint = Point.create(0D, 0D);
 		final Point endPoint = Point.create(1D, 0D);
 		final Color color = Color.transition(Color.gradient(Color.RED, Color.BLUE, startPoint, endPoint), Color.WHITE, 0.5F);
-		Assert.assertEquals(new Color(1F, 0.5F, 0.5F, 1F), color.gradient.getStartColor());
-		Assert.assertEquals(new Color(0.5F, 0.5F, 1F, 1F), color.gradient.getEndColor());
-		Assert.assertSame(startPoint, color.gradient.getStartPoint());
-		Assert.assertSame(endPoint, color.gradient.getEndPoint());
+		Assert.assertEquals(new Color(1F, 0.5F, 0.5F, 1F), color.getGradient().getStartColor());
+		Assert.assertEquals(new Color(0.5F, 0.5F, 1F, 1F), color.getGradient().getEndColor());
+		Assert.assertSame(startPoint, color.getGradient().getStartPoint());
+		Assert.assertSame(endPoint, color.getGradient().getEndPoint());
 	}
 
 	@Test
@@ -355,10 +426,10 @@ public class ColorTest {
 		final Point startPoint = Point.create(0D, 0D);
 		final Point endPoint = Point.create(1D, 0D);
 		final Color color = Color.transition(Color.WHITE, Color.gradient(Color.RED, Color.BLUE, startPoint, endPoint), 0.5F);
-		Assert.assertEquals(new Color(1F, 0.5F, 0.5F, 1F), color.gradient.getStartColor());
-		Assert.assertEquals(new Color(0.5F, 0.5F, 1F, 1F), color.gradient.getEndColor());
-		Assert.assertSame(startPoint, color.gradient.getStartPoint());
-		Assert.assertSame(endPoint, color.gradient.getEndPoint());
+		Assert.assertEquals(new Color(1F, 0.5F, 0.5F, 1F), color.getGradient().getStartColor());
+		Assert.assertEquals(new Color(0.5F, 0.5F, 1F, 1F), color.getGradient().getEndColor());
+		Assert.assertSame(startPoint, color.getGradient().getStartPoint());
+		Assert.assertSame(endPoint, color.getGradient().getEndPoint());
 	}
 
 	@Test
@@ -368,21 +439,21 @@ public class ColorTest {
 		final Color gradient = Color.gradient(Color.RED, Color.BLUE, startPoint, endPoint);
 		Assert.assertTrue(gradient.isGradient());
 		Assert.assertEquals(Color.RED, gradient);
-		Assert.assertSame(Color.RED, gradient.gradient.getStartColor());
-		Assert.assertSame(Color.BLUE, gradient.gradient.getEndColor());
-		Assert.assertSame(startPoint, gradient.gradient.getStartPoint());
-		Assert.assertSame(endPoint, gradient.gradient.getEndPoint());
+		Assert.assertSame(Color.RED, gradient.getGradient().getStartColor());
+		Assert.assertSame(Color.BLUE, gradient.getGradient().getEndColor());
+		Assert.assertSame(startPoint, gradient.getGradient().getStartPoint());
+		Assert.assertSame(endPoint, gradient.getGradient().getEndPoint());
 	}
 
 	@Test
 	public void turnsIntoAGradient() {
 		final Point startPoint = Point.create(1D, 0D);
 		final Point endPoint = Point.create(0D, 1D);
-		Assert.assertSame(Color.BLUE, Color.RED.toGradient(Color.BLUE).gradient.getEndColor());
-		Assert.assertEquals(Point.create(0D, 0D), Color.RED.toGradient(Color.BLUE).gradient.getStartPoint());
-		Assert.assertEquals(Point.create(1D, 0D), Color.RED.toGradient(Color.BLUE).gradient.getEndPoint());
-		Assert.assertSame(startPoint, Color.RED.toGradient(Color.BLUE, startPoint, endPoint).gradient.getStartPoint());
-		Assert.assertSame(endPoint, Color.RED.toGradient(Color.BLUE, startPoint, endPoint).gradient.getEndPoint());
+		Assert.assertSame(Color.BLUE, Color.RED.toGradient(Color.BLUE).getGradient().getEndColor());
+		Assert.assertEquals(Point.create(0D, 0D), Color.RED.toGradient(Color.BLUE).getGradient().getStartPoint());
+		Assert.assertEquals(Point.create(1D, 0D), Color.RED.toGradient(Color.BLUE).getGradient().getEndPoint());
+		Assert.assertSame(startPoint, Color.RED.toGradient(Color.BLUE, startPoint, endPoint).getGradient().getStartPoint());
+		Assert.assertSame(endPoint, Color.RED.toGradient(Color.BLUE, startPoint, endPoint).getGradient().getEndPoint());
 	}
 
 	@Test
@@ -404,19 +475,19 @@ public class ColorTest {
 	@Test
 	public void darkensByAFraction() {
 		final Color color = new Color(0.8F, 0.4F, 0.2F, 0.5F).darker(0.25F);
-		Assert.assertEquals(0.6F, color.r, 0.0001F);
-		Assert.assertEquals(0.3F, color.g, 0.0001F);
-		Assert.assertEquals(0.15F, color.b, 0.0001F);
-		Assert.assertEquals(0.5F, color.a, 0F);
+		Assert.assertEquals(0.6F, color.getRedF(), 0.0001F);
+		Assert.assertEquals(0.3F, color.getGreenF(), 0.0001F);
+		Assert.assertEquals(0.15F, color.getBlueF(), 0.0001F);
+		Assert.assertEquals(0.5F, color.getAlphaF(), 0F);
 	}
 
 	@Test
 	public void brightensByAFifthByDefault() {
 		final Color color = new Color(0.5F, 0.25F, 0.9F, 0.5F).brighter();
-		Assert.assertEquals(0.6F, color.r, 0.0001F);
-		Assert.assertEquals(0.3F, color.g, 0.0001F);
-		Assert.assertEquals(1F, color.b, 0F);
-		Assert.assertEquals(0.5F, color.a, 0F);
+		Assert.assertEquals(0.6F, color.getRedF(), 0.0001F);
+		Assert.assertEquals(0.3F, color.getGreenF(), 0.0001F);
+		Assert.assertEquals(1F, color.getBlueF(), 0F);
+		Assert.assertEquals(0.5F, color.getAlphaF(), 0F);
 	}
 
 	@Test
@@ -432,7 +503,8 @@ public class ColorTest {
 	@Test
 	public void cannotBeModified() throws ReflectiveOperationException {
 		for (final String field : new String[] {"r", "g", "b", "a", "update", "gradient"}) {
-			Assert.assertTrue(field, Modifier.isFinal(Color.class.getField(field).getModifiers()));
+			Assert.assertTrue(field, Modifier.isFinal(Color.class.getDeclaredField(field).getModifiers()));
+			Assert.assertTrue(field, Modifier.isPrivate(Color.class.getDeclaredField(field).getModifiers()));
 		}
 	}
 
@@ -454,7 +526,7 @@ public class ColorTest {
 		final Color color = new Color(0.25F, 0.5F, 0F, 0.5F, update);
 		final Color sum = color.addToCopy(new Color(0.5F, 0.25F, 0.25F, 0.5F));
 		Assert.assertEquals(new Color(0.75F, 0.75F, 0.25F, 1F), sum);
-		Assert.assertSame(update, sum.update);
+		Assert.assertEquals(new Color(1F, 0.75F, 0.25F, 1F), sum.update());
 		Assert.assertEquals(new Color(0.25F, 0.5F, 0F, 0.5F), color);
 	}
 
@@ -464,7 +536,7 @@ public class ColorTest {
 		final Color color = new Color(0.5F, 1F, 0.25F, 1F, update);
 		final Color scaled = color.scaleCopy(0.5F);
 		Assert.assertEquals(new Color(0.25F, 0.5F, 0.125F, 0.5F), scaled);
-		Assert.assertSame(update, scaled.update);
+		Assert.assertEquals(new Color(1F, 0.5F, 0.125F, 0.5F), scaled.update());
 		Assert.assertEquals(new Color(0.5F, 1F, 0.25F, 1F), color);
 	}
 
@@ -508,7 +580,7 @@ public class ColorTest {
 		final Color copy = color.copy();
 		Assert.assertNotSame(color, copy);
 		Assert.assertEquals(color, copy);
-		Assert.assertSame(update, copy.update);
+		Assert.assertEquals(new Color(1F, 0.5F, 0.75F, 0.5F), copy.update());
 	}
 
 	@Test
@@ -518,17 +590,17 @@ public class ColorTest {
 		Assert.assertEquals(new Color(1F, 0.5F, 0.75F, 0.5F), color.copyRed(1F));
 		Assert.assertEquals(new Color(0.25F, 0F, 0.75F, 0.5F), color.copyGreen(0F));
 		Assert.assertEquals(new Color(0.25F, 0.5F, 0.125F, 0.5F), color.copyBlue(0.125F));
-		Assert.assertSame(update, color.copyRed(1F).update);
-		Assert.assertSame(update, color.copyGreen(0F).update);
-		Assert.assertSame(update, color.copyBlue(0.125F).update);
+		Assert.assertEquals(new Color(1F, 0.5F, 0.75F, 0.5F), color.copyRed(1F).update());
+		Assert.assertEquals(new Color(1F, 0F, 0.75F, 0.5F), color.copyGreen(0F).update());
+		Assert.assertEquals(new Color(1F, 0.5F, 0.125F, 0.5F), color.copyBlue(0.125F).update());
 		Assert.assertEquals(new Color(0.25F, 0.5F, 0.75F, 0.5F), color);
 	}
 
 	@Test
 	public void returnsTheFrameOfItsUpdate() {
-		final Color animated = new Color(0F, 0F, 0F, 0.5F, color -> new Color(1F, 0F, 0F, color.a));
+		final Color animated = new Color(0F, 0F, 0F, 0.5F, color -> new Color(1F, 0F, 0F, color.getAlphaF()));
 		Assert.assertEquals(new Color(1F, 0F, 0F, 0.5F), animated.update());
-		Assert.assertEquals(0F, animated.r, 0F);
+		Assert.assertEquals(0F, animated.getRedF(), 0F);
 	}
 
 	@Test
@@ -569,14 +641,14 @@ public class ColorTest {
 		final float[] hsb = color.RGBtoHSB(null);
 		Assert.assertEquals(0.8F, hsb[1], 0.01F);
 		Assert.assertEquals(0.8F, hsb[2], 0.01F);
-		Assert.assertEquals(1F, color.a, 0F);
+		Assert.assertEquals(1F, color.getAlphaF(), 0F);
 	}
 
 	private static void assertLoading(final Color color) {
-		Assert.assertEquals(color.r, color.g, 0F);
-		Assert.assertEquals(color.r, color.b, 0F);
-		Assert.assertEquals(0.17F, color.r, 0.0201F);
-		Assert.assertEquals(1F, color.a, 0F);
+		Assert.assertEquals(color.getRedF(), color.getGreenF(), 0F);
+		Assert.assertEquals(color.getRedF(), color.getBlueF(), 0F);
+		Assert.assertEquals(0.17F, color.getRedF(), 0.0201F);
+		Assert.assertEquals(1F, color.getAlphaF(), 0F);
 	}
 
 	@Test

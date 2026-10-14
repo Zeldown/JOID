@@ -33,8 +33,8 @@ public class DemoTextMarkupTest {
 	public void switchesTheColor() {
 		final TextStyle style = DemoTextMarkupTest.style();
 		Assert.assertEquals(10, DemoTextMarkup.inst().parse("<c=ff0000>", 0, style));
-		Assert.assertEquals(1F, style.getColor().r, 0F);
-		Assert.assertEquals(0F, style.getColor().g, 0F);
+		Assert.assertEquals(1F, style.getColor().getRedF(), 0F);
+		Assert.assertEquals(0F, style.getColor().getGreenF(), 0F);
 		Assert.assertEquals(4, DemoTextMarkup.inst().parse("</c>", 0, style));
 		Assert.assertSame(Color.WHITE, style.getColor());
 	}

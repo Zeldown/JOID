@@ -111,17 +111,17 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 
 	protected final void uniformColor(final @NonNull IShader shader, final @NonNull Color color) {
 		final Color current = color.update();
-		shader.uniform("color", current.r, current.g, current.b, current.a);
+		shader.uniform("color", current.getRedF(), current.getGreenF(), current.getBlueF(), current.getAlphaF());
 		if (!current.isGradient()) {
 			shader.uniform("u_HasGradient", 0);
 			return;
 		}
 
-		final ColorGradient gradient = current.gradient;
+		final ColorGradient gradient = current.getGradient();
 		shader
 		.uniform("u_HasGradient", 1)
-		.uniform("u_GradientStart", gradient.getStartColor().r, gradient.getStartColor().g, gradient.getStartColor().b, gradient.getStartColor().a)
-		.uniform("u_GradientEnd", gradient.getEndColor().r, gradient.getEndColor().g, gradient.getEndColor().b, gradient.getEndColor().a)
+		.uniform("u_GradientStart", gradient.getStartColor().getRedF(), gradient.getStartColor().getGreenF(), gradient.getStartColor().getBlueF(), gradient.getStartColor().getAlphaF())
+		.uniform("u_GradientEnd", gradient.getEndColor().getRedF(), gradient.getEndColor().getGreenF(), gradient.getEndColor().getBlueF(), gradient.getEndColor().getAlphaF())
 		.uniform("u_GradientStartPos", (float) gradient.getStartPoint().getX(), (float) gradient.getStartPoint().getY())
 		.uniform("u_GradientEndPos", (float) gradient.getEndPoint().getX(), (float) gradient.getEndPoint().getY())
 		.uniform("u_GradientCanvas", (float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
@@ -180,7 +180,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		this.render(glyphs, runX, runY, runWidth, runHeight);
-		return new FontBounds(layout.getWidth(), this.getLineHeight(info));
+		return FontBounds.create(layout.getWidth(), this.getLineHeight(info));
 	}
 
 	private @NonNull List<TextGlyph<F>> glyphs(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final PixelGrid grid) {
@@ -239,7 +239,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 
 	private static @NonNull Color tint(final @NonNull Color color, final float tint) {
 		final Color current = color.update();
-		return new Color(current.r * tint, current.g * tint, current.b * tint, current.a);
+		return new Color(current.getRedF() * tint, current.getGreenF() * tint, current.getBlueF() * tint, current.getAlphaF());
 	}
 
 	private static @NonNull Color color(final @NonNull TextStyle style, final @NonNull TextInfo info) {
@@ -248,7 +248,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		final Color color = style.getColor();
-		return color.a == info.getColor().a ? color : color.copyAlpha(info.getColor().a);
+		return color.getAlphaF() == info.getColor().getAlphaF() ? color : color.copyAlpha(info.getColor().getAlphaF());
 	}
 
 }

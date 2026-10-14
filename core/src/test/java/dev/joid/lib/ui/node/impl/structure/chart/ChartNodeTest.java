@@ -217,7 +217,7 @@ public class ChartNodeTest {
 		chart.xAxis(ChartAxis.x("weekday", "Mon")).yAxis(ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 50));
 		this.bridges.open(new NodeUI(chart)).frame();
 		final Color loading = Color.LOADING();
-		final List<Draw> draws = this.bridges.getRender().getDraws(loading.r, loading.g, loading.b);
+		final List<Draw> draws = this.bridges.getRender().getDraws(loading.getRedF(), loading.getGreenF(), loading.getBlueF());
 		Assert.assertEquals(1, draws.size());
 		ChartNodeTest.assertBox(draws.get(0), 100D, 100D, 400D, 300D);
 	}

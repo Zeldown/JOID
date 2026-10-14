@@ -429,7 +429,7 @@ public class DevNodeTest {
 		x.set(250D);
 		ui.reload();
 		this.bridges.frames(2);
-		Assert.assertTrue(this.bridges.getRender().getDraws(DevNodeTest.RED.r, DevNodeTest.RED.g, DevNodeTest.RED.b).isEmpty());
+		Assert.assertTrue(this.bridges.getRender().getDraws(DevNodeTest.RED.getRedF(), DevNodeTest.RED.getGreenF(), DevNodeTest.RED.getBlueF()).isEmpty());
 	}
 
 	@Test
@@ -574,7 +574,7 @@ public class DevNodeTest {
 	}
 
 	private static List<Draw> draws(final HeadlessBridges bridges, final Color color, final float alpha) {
-		return bridges.getRender().getDraws(color.r, color.g, color.b).stream().filter(draw -> Math.abs(draw.getAlpha() - alpha) < 0.0001F).collect(Collectors.toList());
+		return bridges.getRender().getDraws(color.getRedF(), color.getGreenF(), color.getBlueF()).stream().filter(draw -> Math.abs(draw.getAlpha() - alpha) < 0.0001F).collect(Collectors.toList());
 	}
 
 	private static List<Double> bounds(final Draw draw) {

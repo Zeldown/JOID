@@ -18,17 +18,20 @@ import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
+import dev.joid.lib.font.markup.ITextMarkup;
+import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.utils.align.Align;
 
 public class TextTest {
 
-	private static final IFont FONT = () -> TextTest.RENDERER;
+	private static final IFont       FONT = () -> TextTest.RENDERER;
+	private static final ITextMarkup TAG  = (text, index, style) -> text.startsWith("<b>", index) ? 3 : text.startsWith("</b>", index) ? 4 : 0;
 
 	private static final ITextRenderer RENDERER = new ITextRenderer() {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
-			return new FontBounds(this.getWidth(text, info), this.getHeight(text, info));
+			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
 		}
 
 		@Override
@@ -269,11 +272,11 @@ public class TextTest {
 	}
 
 	@Test
-	public void remeasuresOnceItsInfoChangesInPlace() {
+	public void remeasuresOnceAnElementTakesAnotherInfo() {
 		final TextInfo info = TextTest.info();
 		final Text text = Text.create("ab", info);
 		Assert.assertEquals(20D, text.getWidth(), 0D);
-		info.fontSize(20F);
+		text.get(0).info(info.fontSize(20F));
 		Assert.assertEquals(40D, text.getWidth(), 0D);
 		Assert.assertEquals(40D, text.getHeight(), 0D);
 	}
@@ -287,12 +290,17 @@ public class TextTest {
 	}
 
 	@Test
-	public void remeasuresOnceItsMarkupChanges() {
+	public void remeasuresOnceTheRegisteredMarkupsChange() {
+		final ITextMarkup markup = (value, index, style) -> value.charAt(index) == '*' ? 1 : 0;
 		final TextInfo info = TextTest.montserrat();
 		final Text text = Text.create("*ab", info);
 		Assert.assertEquals(info.getWidth("*ab"), text.getWidth(), 0D);
-		info.markups((value, index, style) -> value.charAt(index) == '*' ? 1 : 0);
-		Assert.assertEquals(info.getWidth("ab"), text.getWidth(), 0D);
+		TextMarkup.register(markup);
+		try {
+			Assert.assertEquals(info.getWidth("ab"), text.getWidth(), 0D);
+		} finally {
+			TextMarkup.unregister(markup);
+		}
 	}
 
 	@Test
@@ -424,6 +432,21 @@ public class TextTest {
 		final Text text = Text.create("*a*b*", info);
 		Assert.assertEquals(Text.create("ab", info).getWidth(), text.getWidth(), 0D);
 		Assert.assertEquals("*a*b*", text.getText());
+	}
+
+	@Test
+	public void modifiesTheTextAroundItsMarkup() {
+		final TextInfo info = TextTest.info().markups(TextTest.TAG);
+		final TextElement element = TextElement.create("<b>ab</b> cd", info).modifier(TextModifier.UPPER_CASE);
+		Assert.assertEquals("<b>AB</b> CD", Text.create("<b>ab</b> cd", info).modifier(TextModifier.UPPER_CASE).getText());
+		Assert.assertEquals("<b>ab</b>cd", Text.create("<b>ab</b> cd", info).modifier(TextModifier.CAMEL_CASE).getText());
+		Assert.assertEquals("<b>AB</b> CD", Text.create(element).getText());
+	}
+
+	@Test
+	public void measuresTheModifiedTextWithoutItsMarkup() {
+		final TextInfo info = TextTest.montserrat().markups(TextTest.TAG);
+		Assert.assertEquals(Text.create("AB", info).getWidth(), Text.create("<b>ab</b>", info).modifier(TextModifier.UPPER_CASE).getWidth(), 0D);
 	}
 
 	@Test

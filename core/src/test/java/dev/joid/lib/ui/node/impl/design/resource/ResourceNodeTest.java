@@ -241,7 +241,7 @@ public class ResourceNodeTest {
 
 	private Draw skeleton() {
 		final Color loading = Color.LOADING();
-		final List<Draw> draws = this.bridges.getRender().getDraws(loading.r, loading.g, loading.b);
+		final List<Draw> draws = this.bridges.getRender().getDraws(loading.getRedF(), loading.getGreenF(), loading.getBlueF());
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0);
 	}
@@ -253,7 +253,7 @@ public class ResourceNodeTest {
 	}
 
 	private List<Draw> draws(final Color color) {
-		return this.bridges.getRender().getDraws(color.r, color.g, color.b);
+		return this.bridges.getRender().getDraws(color.getRedF(), color.getGreenF(), color.getBlueF());
 	}
 
 	private void assertBounds(final Draw draw, final double left, final double top, final double right, final double bottom) {

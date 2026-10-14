@@ -178,8 +178,8 @@ public class GlyphTextRendererTest {
 		final TextGlyph<Face> white = GlyphTextRendererTest.RENDERER.drawn.get(0);
 		final TextGlyph<Face> red = GlyphTextRendererTest.RENDERER.drawn.get(1);
 		Assert.assertTrue(white.isShadow());
-		Assert.assertArrayEquals(new float[] {0.25F, 0.25F, 0.25F, 1F}, new float[] {white.getColor().r, white.getColor().g, white.getColor().b, white.getColor().a}, 1E-6F);
-		Assert.assertArrayEquals(new float[] {0.25F, 0F, 0F, 1F}, new float[] {red.getColor().r, red.getColor().g, red.getColor().b, red.getColor().a}, 1E-6F);
+		Assert.assertArrayEquals(new float[] {0.25F, 0.25F, 0.25F, 1F}, new float[] {white.getColor().getRedF(), white.getColor().getGreenF(), white.getColor().getBlueF(), white.getColor().getAlphaF()}, 1E-6F);
+		Assert.assertArrayEquals(new float[] {0.25F, 0F, 0F, 1F}, new float[] {red.getColor().getRedF(), red.getColor().getGreenF(), red.getColor().getBlueF(), red.getColor().getAlphaF()}, 1E-6F);
 		Assert.assertSame(Color.RED, GlyphTextRendererTest.RENDERER.drawn.get(3).getColor());
 	}
 
@@ -259,9 +259,9 @@ public class GlyphTextRendererTest {
 	@Test
 	public void colorsTheGlyphsThroughMarkup() {
 		GlyphTextRendererTest.draw("A~A", GlyphTextRendererTest.info().color(Color.WHITE.copyAlpha(0.5F)));
-		Assert.assertEquals(0.5F, GlyphTextRendererTest.RENDERER.drawn.get(0).getColor().a, 0F);
-		Assert.assertEquals(Color.RED.r, GlyphTextRendererTest.RENDERER.drawn.get(1).getColor().r, 0F);
-		Assert.assertEquals(0.5F, GlyphTextRendererTest.RENDERER.drawn.get(1).getColor().a, 0F);
+		Assert.assertEquals(0.5F, GlyphTextRendererTest.RENDERER.drawn.get(0).getColor().getAlphaF(), 0F);
+		Assert.assertEquals(Color.RED.getRedF(), GlyphTextRendererTest.RENDERER.drawn.get(1).getColor().getRedF(), 0F);
+		Assert.assertEquals(0.5F, GlyphTextRendererTest.RENDERER.drawn.get(1).getColor().getAlphaF(), 0F);
 	}
 
 	@Test

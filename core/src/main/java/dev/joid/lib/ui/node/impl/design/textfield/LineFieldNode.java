@@ -69,12 +69,12 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		final double textY = tmpTextY;
 		final int[] tags = FieldNode.tags(text, super.getShownInfo());
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY(), super.getWidth() - super.getMarginLeft() - super.getMarginRight(), super.getHeight(), () -> {
-			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getShownInfo().copy().color(new Color(info.getColor().r, info.getColor().g, info.getColor().b, 0.5F)) : super.getShownInfo(), Align.START, Align.START);
+			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getShownInfo().color(new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), 0.5F)) : super.getShownInfo(), Align.START, Align.START);
 
 			if (super.isFocused()) {
 				final double cursorX = textX + this.getX(text, tags, super.getCursorPos());
 				final float cursorOpacity = (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F);
-				final Color cursorColor = new Color(info.getColor().r, info.getColor().g, info.getColor().b, cursorOpacity);
+				final Color cursorColor = new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), cursorOpacity);
 				DrawUtils.SHAPE.drawRect(cursorX, textY, 2D, info.getHeight(), cursorColor);
 			}
 

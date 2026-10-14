@@ -1,5 +1,8 @@
 package dev.joid.lib.font;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 
 import org.junit.Assert;
@@ -20,7 +23,7 @@ public class TextInfoTest {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
-			return new FontBounds(this.getWidth(text, info), this.getHeight(text, info));
+			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
 		}
 
 		@Override
@@ -46,11 +49,11 @@ public class TextInfoTest {
 	}
 
 	@Test
-	public void copiesEveryStyle() {
-		final TextInfo copy = TextInfo.create(TextInfoTest.FONT, 20F).weight(FontWeight.LIGHT).markups(TextInfoTest.MARKUP).effects(TextInfoTest.EFFECT).copy();
-		Assert.assertSame(FontWeight.LIGHT, copy.getWeight());
-		Assert.assertEquals(Collections.singletonList(TextInfoTest.MARKUP), copy.getMarkups());
-		Assert.assertEquals(Collections.singletonList(TextInfoTest.EFFECT), copy.getEffects());
+	public void keepsEveryStyleAlongTheChain() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).weight(FontWeight.LIGHT).markups(TextInfoTest.MARKUP).effects(TextInfoTest.EFFECT);
+		Assert.assertSame(FontWeight.LIGHT, info.getWeight());
+		Assert.assertEquals(Collections.singletonList(TextInfoTest.MARKUP), info.getMarkups());
+		Assert.assertEquals(Collections.singletonList(TextInfoTest.EFFECT), info.getEffects());
 	}
 
 	@Test
@@ -59,20 +62,21 @@ public class TextInfoTest {
 		Assert.assertNull(info.getShadowColor());
 		Assert.assertEquals(2F, info.getShadowX(), 0F);
 		Assert.assertEquals(2F, info.getShadowY(), 0F);
-		Assert.assertEquals(Color.WHITE.darker(0.3F).r, info.shadow().getShadowColor().r, 0F);
-		info.shadow(Color.RED).shadow(4F, 5F);
-		Assert.assertSame(Color.RED, info.getShadowColor());
-		Assert.assertEquals(4F, info.getShadowX(), 0F);
-		Assert.assertEquals(5F, info.getShadowY(), 0F);
+		Assert.assertEquals(Color.WHITE.darker(0.3F).getRedF(), info.shadow().getShadowColor().getRedF(), 0F);
+		final TextInfo shadowed = info.shadow(Color.RED).shadow(4F, 5F);
+		Assert.assertSame(Color.RED, shadowed.getShadowColor());
+		Assert.assertEquals(4F, shadowed.getShadowX(), 0F);
+		Assert.assertEquals(5F, shadowed.getShadowY(), 0F);
+		Assert.assertNull(info.getShadowColor());
 	}
 
 	@Test
 	public void derivesItsShadowOffsetFromItsCurrentSize() {
 		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 27F).shadow(Color.BLACK);
-		info.fontSize(54F);
-		Assert.assertEquals(4F, info.getShadowX(), 0F);
-		Assert.assertEquals(4F, info.getShadowY(), 0F);
-		Assert.assertEquals(2F, info.copy().fontSize(27F).getShadowX(), 0F);
+		final TextInfo larger = info.fontSize(54F);
+		Assert.assertEquals(4F, larger.getShadowX(), 0F);
+		Assert.assertEquals(4F, larger.getShadowY(), 0F);
+		Assert.assertEquals(2F, larger.fontSize(27F).getShadowX(), 0F);
 	}
 
 	@Test
@@ -199,26 +203,28 @@ public class TextInfoTest {
 	}
 
 	@Test
-	public void copiesEveryProperty() {
-		final TextInfo copy = TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F, Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).shadow(Color.BLUE).shadow(3F, 4F).shadowTint(0.25F).copy();
-		Assert.assertSame(TextInfoTest.FONT, copy.getFont());
-		Assert.assertEquals(20F, copy.getFontSize(), 0F);
-		Assert.assertSame(FontWeight.BOLD, copy.getWeight());
-		Assert.assertEquals(0.1F, copy.getLetterSpacing(), 0F);
-		Assert.assertEquals(1.5F, copy.getLineHeight(), 0F);
-		Assert.assertSame(Color.RED, copy.getColor());
-		Assert.assertFalse(copy.isColored());
-		Assert.assertTrue(copy.isItalic());
-		Assert.assertSame(Color.BLUE, copy.getShadowColor());
-		Assert.assertEquals(3F, copy.getShadowX(), 0F);
-		Assert.assertEquals(4F, copy.getShadowY(), 0F);
-		Assert.assertEquals(0.25F, copy.getShadowTint(), 0F);
+	public void keepsEveryPropertyAlongTheChain() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F, Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).shadow(Color.BLUE).shadow(3F, 4F).shadowTint(0.25F);
+		Assert.assertSame(TextInfoTest.FONT, info.getFont());
+		Assert.assertEquals(20F, info.getFontSize(), 0F);
+		Assert.assertSame(FontWeight.BOLD, info.getWeight());
+		Assert.assertEquals(0.1F, info.getLetterSpacing(), 0F);
+		Assert.assertEquals(1.5F, info.getLineHeight(), 0F);
+		Assert.assertSame(Color.RED, info.getColor());
+		Assert.assertFalse(info.isColored());
+		Assert.assertTrue(info.isItalic());
+		Assert.assertSame(Color.BLUE, info.getShadowColor());
+		Assert.assertEquals(3F, info.getShadowX(), 0F);
+		Assert.assertEquals(4F, info.getShadowY(), 0F);
+		Assert.assertEquals(0.25F, info.getShadowTint(), 0F);
 	}
 
 	@Test
-	public void leavesTheOriginalUntouchedByItsCopy() {
+	public void leavesTheOriginalUntouchedByItsSetters() {
 		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F, Color.RED);
-		info.copy().fontSize(40F).weight(FontWeight.BOLD).color(Color.WHITE).italic(true).shadow(Color.BLUE);
+		final TextInfo changed = info.fontSize(40F).weight(FontWeight.BOLD).color(Color.WHITE).italic(true).shadow(Color.BLUE);
+		Assert.assertNotSame(info, changed);
+		Assert.assertEquals(40F, changed.getFontSize(), 0F);
 		Assert.assertEquals(20F, info.getFontSize(), 0F);
 		Assert.assertSame(FontWeight.REGULAR, info.getWeight());
 		Assert.assertSame(Color.RED, info.getColor());
@@ -227,13 +233,34 @@ public class TextInfoTest {
 	}
 
 	@Test
-	public void keepsFollowingTheRegisteredMarkupsInACopy() {
-		final TextInfo copy = TextInfo.create(TextInfoTest.FONT, 20F).copy();
+	public void keepsFollowingTheRegisteredMarkupsAfterASetter() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).fontSize(30F);
 		TextMarkup.register(TextInfoTest.MARKUP);
 		try {
-			Assert.assertTrue(copy.getMarkups().contains(TextInfoTest.MARKUP));
+			Assert.assertTrue(info.getMarkups().contains(TextInfoTest.MARKUP));
 		} finally {
 			TextMarkup.unregister(TextInfoTest.MARKUP);
+		}
+	}
+
+	@Test
+	public void copiesTheMarkupsAndEffectsItIsGiven() {
+		final ITextMarkup[] markups = {TextInfoTest.MARKUP};
+		final ITextEffect[] effects = {TextInfoTest.EFFECT};
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).markups(markups).effects(effects);
+		markups[0] = (text, index, style) -> 1;
+		effects[0] = new ITextEffect() {};
+		Assert.assertEquals(Collections.singletonList(TextInfoTest.MARKUP), info.getMarkups());
+		Assert.assertEquals(Collections.singletonList(TextInfoTest.EFFECT), info.getEffects());
+	}
+
+	@Test
+	public void cannotBeModified() {
+		for (final Field field : TextInfo.class.getDeclaredFields()) {
+			Assert.assertTrue(field.getName(), field.isSynthetic() || Modifier.isFinal(field.getModifiers()));
+		}
+		for (final Constructor<?> constructor : TextInfo.class.getDeclaredConstructors()) {
+			Assert.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
 		}
 	}
 
