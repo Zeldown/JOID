@@ -52,6 +52,7 @@ public class ResourcePlayerNode extends Node {
 	protected ResourcePlayerNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		super.<ResourcePlayerNode>wait(node -> node.isReady());
+		super.<ResourcePlayerNode>require("resource", "call resource(...) before attaching it", node -> node.resource != null);
 	}
 
 	public static @NonNull ResourcePlayerNode create(final double x, final double y) {
@@ -418,15 +419,11 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	private boolean isReady() {
-		if (this.fork == null && this.resource != null) {
+		if (this.fork == null) {
 			if (this.resource.isBlocking()) {
 				this.resource.getResourceData().await();
 			}
 			this.fork = ResourcePlayerNode.fork(this.resource);
-		}
-
-		if (this.fork == null) {
-			return false;
 		}
 
 		this.fork.prepareBind();

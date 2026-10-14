@@ -12,6 +12,7 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
+import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -85,6 +86,7 @@ public abstract class FieldNode<V> extends Node {
 		this.selectionStart = -1;
 
 		super.cursor(Cursor.TEXT);
+		super.<FieldNode<V>>require("info", "call info(...) before attaching it", node -> node.info != null);
 	}
 
 	protected abstract void drawField();
@@ -139,14 +141,14 @@ public abstract class FieldNode<V> extends Node {
 					return;
 				}
 
-				this.edit(this.text.substring(0, this.cursorPos) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1));
+				this.edit(this.text.substring(0, this.cursorPos) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.nextIndex(this.cursorPos)));
 			} else if (this.inputType == Key.BACKSPACE) {
 				if (this.cursorPos <= 0) {
 					this.inputting = false;
 					return;
 				}
 
-				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
+				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.previousIndex(this.cursorPos);
 				if (this.edit(this.text.substring(0, backStart) + this.text.substring(this.cursorPos))) {
 					this.decreaseCursor(this.cursorPos - backStart);
 				}
@@ -219,7 +221,7 @@ public abstract class FieldNode<V> extends Node {
 	@Override
 	public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
 		if (this.selecting) {
-			this.select(this.getPositionAt(event.getMouseX(), event.getMouseY()));
+			this.select(this.snap(this.getPositionAt(event.getMouseX(), event.getMouseY()), false));
 		}
 	}
 
@@ -249,11 +251,17 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull String text) {
-		return this.text(Signal.from(text));
+		final ComputedSignal<String> source = Signal.from(text);
+		final boolean refusable = source.isConstant();
+		return super.follow("text", source, (final FieldNode<V> node, final String value) -> node.replace(value, refusable));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull Supplier<@NonNull String> text) {
-		return super.follow("text", text, (final FieldNode<V> node, final String value) -> node.replace(value));
+		return super.follow("text", text, (final FieldNode<V> node, final String value) -> node.replace(value, false));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T forceText(final @NonNull String text) {
+		return super.follow("text", Signal.from(text), (final FieldNode<V> node, final String value) -> node.replace(value, false));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T placeholder(final @NonNull String placeholder) {
@@ -389,14 +397,14 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final @NonNull Supplier<Integer> cursorPosition) {
-		return super.follow("cursorPosition", cursorPosition, (final FieldNode<V> node, final Integer value) -> node.cursorPos = Math.min(Math.max(0, value), node.text.length()));
+		return super.follow("cursorPosition", cursorPosition, (final FieldNode<V> node, final Integer value) -> node.cursorPos = node.snap(Math.min(Math.max(0, value), node.text.length()), false));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = super.writable(signal);
 		return super.bind("signal", signal, (final FieldNode<V> node, final V value) -> {
 			if (!value.equals(node.getValue())) {
-				node.write(value);
+				node.write(value, false);
 			}
 		});
 	}
@@ -429,8 +437,13 @@ public abstract class FieldNode<V> extends Node {
 		this.fallback = fallback;
 	}
 
-	protected final void write(final @NonNull V value) {
-		this.write(value, false);
+	protected final void write(final @NonNull V value, final boolean refusable) {
+		final String text = this.limit(this.format(this.correct(value)));
+		if (!text.equals(this.text)) {
+			this.rewrite(text, refusable);
+		}
+
+		this.commit();
 	}
 
 	protected final void revalidate() {
@@ -452,7 +465,7 @@ public abstract class FieldNode<V> extends Node {
 		final int start = this.selectionStart == -1 ? this.cursorPos : Math.min(this.selectionStart, this.cursorPos);
 		final int end = this.selectionStart == -1 ? this.cursorPos : Math.max(this.selectionStart, this.cursorPos);
 		if (this.maxTextLength >= 0) {
-			textToAdd = textToAdd.substring(0, Math.min(textToAdd.length(), Math.max(0, this.maxTextLength - this.text.length() + end - start)));
+			textToAdd = FieldNode.cut(textToAdd, Math.max(0, this.maxTextLength - this.text.codePointCount(0, this.text.length()) + this.text.codePointCount(start, end)));
 			if (textToAdd.isEmpty()) {
 				return false;
 			}
@@ -477,20 +490,12 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final void decreaseCursor(final int value) {
-		this.cursorPos -= value;
-		if (this.cursorPos < 0) {
-			this.cursorPos = 0;
-		}
-
+		this.cursorPos = this.snap(Math.max(0, this.cursorPos - value), false);
 		this.followCursorBackward();
 	}
 
 	protected final void increaseCursor(final int value) {
-		this.cursorPos += value;
-		if (this.cursorPos > this.text.length()) {
-			this.cursorPos = this.text.length();
-		}
-
+		this.cursorPos = this.snap(Math.min(this.text.length(), this.cursorPos + value), true);
 		this.followCursorForward();
 	}
 
@@ -544,7 +549,7 @@ public abstract class FieldNode<V> extends Node {
 			}
 
 			this.holdInput(key);
-			final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.cursorPos - 1;
+			final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.previousIndex(this.cursorPos);
 			if (this.edit(this.text.substring(0, backStart) + this.text.substring(this.cursorPos))) {
 				this.decreaseCursor(this.cursorPos - backStart);
 			}
@@ -557,7 +562,7 @@ public abstract class FieldNode<V> extends Node {
 			}
 
 			this.holdInput(key);
-			final int deleteEnd = this.isWordKeyDown() ? this.nextWordIndex() : this.cursorPos + 1;
+			final int deleteEnd = this.isWordKeyDown() ? this.nextWordIndex() : this.nextIndex(this.cursorPos);
 			this.edit(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
 			return;
 		}
@@ -619,10 +624,10 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	private final void replace(final String newText) {
+	private final void replace(final String newText, final boolean refusable) {
 		final String text = this.limit(newText == null ? "" : newText);
 		if (!text.equals(this.text)) {
-			this.rewrite(text, false);
+			this.rewrite(text, refusable);
 		}
 
 		if (!this.focused) {
@@ -638,23 +643,21 @@ public abstract class FieldNode<V> extends Node {
 		return this.change(newText, true);
 	}
 
-	private final void write(final @NonNull V value, final boolean user) {
-		final String text = this.limit(this.format(this.correct(value)));
-		if (!text.equals(this.text)) {
-			this.rewrite(text, user);
+
+	private final boolean change(final @NonNull String newText, final boolean refusable) {
+		if (!super.hasUi()) {
+			this.text = newText;
+			this.sync();
+			return true;
 		}
 
-		this.commit();
-	}
-
-	private final boolean change(final @NonNull String newText, final boolean user) {
 		final String previous = this.text;
 		this.text = newText;
 		final V value = this.getValue();
 		final boolean valid = this.isValid();
 		this.text = previous;
 
-		if (user) {
+		if (refusable) {
 			final NodeFieldChangeEvent.Pre<FieldNode<V>, V> event = super.fire(FieldNode.BEFORE_CHANGE, () -> NodeFieldChangeEvent.Pre.create(this, previous, newText, value, valid));
 			if (event != null && event.isCancelled()) {
 				return false;
@@ -678,16 +681,16 @@ public abstract class FieldNode<V> extends Node {
 		this.sync();
 	}
 
-	private final void rewrite(final @NonNull String newText, final boolean user) {
+	private final void rewrite(final @NonNull String newText, final boolean refusable) {
 		final int cursorFromEnd = this.text.length() - this.cursorPos;
 		final int selectionFromEnd = this.text.length() - this.selectionStart;
-		if (!this.change(newText, user) || !this.focused) {
+		if (!this.change(newText, refusable) || !this.focused) {
 			return;
 		}
 
-		this.cursorPos = Math.max(0, this.text.length() - cursorFromEnd);
+		this.cursorPos = this.snap(Math.max(0, this.text.length() - cursorFromEnd), false);
 		if (this.selectionStart != -1) {
-			this.selectionStart = Math.max(0, this.text.length() - selectionFromEnd);
+			this.selectionStart = this.snap(Math.max(0, this.text.length() - selectionFromEnd), false);
 		}
 	}
 
@@ -723,17 +726,16 @@ public abstract class FieldNode<V> extends Node {
 
 	private final @NonNull String limit(final @NonNull String text) {
 		final String cleaned = this.clean(text);
-		return this.maxTextLength >= 0 && cleaned.length() > this.maxTextLength ? cleaned.substring(0, this.maxTextLength) : cleaned;
+		return this.maxTextLength >= 0 ? FieldNode.cut(cleaned, this.maxTextLength) : cleaned;
 	}
 
 	private final @NonNull String clean(final @NonNull String text) {
 		final StringBuilder builder = new StringBuilder();
-		for (final char c : text.replace("\r\n", "\n").replace("\r", "\n").toCharArray()) {
-			if (c == '\n' && this.isMultiline() || c != 167 && c >= 32 && c != 127 && c <= 563) {
-				builder.append(c);
+		text.replace("\r\n", "\n").replace("\r", "\n").codePoints().forEach(codepoint -> {
+			if (codepoint == '\n' ? this.isMultiline() : !Character.isISOControl(codepoint)) {
+				builder.appendCodePoint(codepoint);
 			}
-		}
-
+		});
 		return builder.toString();
 	}
 
@@ -753,7 +755,7 @@ public abstract class FieldNode<V> extends Node {
 		this.lastPressY = mouseY;
 		this.selecting  = left;
 
-		final int position = this.getPositionAt(mouseX, mouseY);
+		final int position = this.snap(this.getPositionAt(mouseX, mouseY), false);
 		if (this.pressCount == 1) {
 			this.updateSelection();
 			this.anchorStart = this.selectionStart == -1 ? position : this.selectionStart;
@@ -845,6 +847,22 @@ public abstract class FieldNode<V> extends Node {
 		return true;
 	}
 
+	private final int snap(final int index, final boolean forward) {
+		if (index <= 0 || index >= this.text.length() || !Character.isHighSurrogate(this.text.charAt(index - 1)) || !Character.isLowSurrogate(this.text.charAt(index))) {
+			return index;
+		}
+
+		return forward ? index + 1 : index - 1;
+	}
+
+	private final int nextIndex(final int index) {
+		return Character.offsetByCodePoints(this.text, index, 1);
+	}
+
+	private final int previousIndex(final int index) {
+		return Character.offsetByCodePoints(this.text, index, -1);
+	}
+
 	private final int nextWordIndex() {
 		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
 		int index = this.cursorPos;
@@ -921,6 +939,10 @@ public abstract class FieldNode<V> extends Node {
 			}
 		}
 		return opened.toString();
+	}
+
+	private static @NonNull String cut(final @NonNull String text, final int codepoints) {
+		return text.codePointCount(0, text.length()) <= codepoints ? text : text.substring(0, text.offsetByCodePoints(0, codepoints));
 	}
 
 }

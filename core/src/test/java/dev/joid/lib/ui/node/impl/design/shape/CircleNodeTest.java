@@ -28,9 +28,9 @@ public class CircleNodeTest {
 	}
 
 	@Test
-	public void startsWhiteWithoutHoveredColor() {
+	public void startsTransparentWithoutHoveredColor() {
 		final CircleNode circle = CircleNode.create(100D, 200D, 50D);
-		Assert.assertSame(Color.WHITE, circle.getColor());
+		Assert.assertSame(Color.TRANSPARENT, circle.getColor());
 		Assert.assertNull(circle.getHoveredColor());
 	}
 

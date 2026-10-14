@@ -42,11 +42,40 @@ public class SliderNodeTest {
 	}
 
 	@Test
-	public void startsOnItsFirstOption() {
+	public void startsOnItsFirstOptionWithoutReportingIt() {
 		final List<Integer> changes = new ArrayList<>();
-		final Slider slider = new Slider().onChange(event -> changes.add(event.getValue())).values(3, 6, 9);
+		final Slider slider = new Slider().onChange(event -> changes.add(event.getValue())).values(3, 6, 9).thumb(new Thumb());
+		this.bridges.open(new NodeUI(slider));
 		Assert.assertEquals(3, slider.getValue().intValue());
-		Assert.assertEquals(Arrays.asList(3), changes);
+		Assert.assertTrue(changes.isEmpty());
+	}
+
+	@Test
+	public void takesAValueGivenBeforeItsOptions() {
+		Assert.assertEquals(7, new Slider().value(7).values(SliderNodeTest.digits()).getValue().intValue());
+	}
+
+	@Test
+	public void takesTheValueOfItsSignalWhenItsOptionsArrive() {
+		final Signal<Integer> volume = new Signal<>(7);
+		final Slider slider = new Slider().signal(volume).values(SliderNodeTest.digits());
+		Assert.assertEquals(7, slider.getValue().intValue());
+		Assert.assertEquals(7, volume.get().intValue());
+	}
+
+	@Test
+	public void letsItsListenersRefuseASetterButNeitherAForcedValueNorItsSignal() {
+		final List<Integer> changes = new ArrayList<>();
+		final Signal<Integer> volume = new Signal<>(5);
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).signal(volume).thumb(new Thumb()).<Slider>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
+		this.bridges.open(new NodeUI(slider)).frame();
+		slider.value(9);
+		Assert.assertEquals(5, slider.getValue().intValue());
+		slider.forceValue(9);
+		Assert.assertEquals(9, slider.getValue().intValue());
+		volume.set(2);
+		Assert.assertEquals(2, slider.getValue().intValue());
+		Assert.assertEquals(Arrays.asList(9, 2), changes);
 	}
 
 	@Test
@@ -61,7 +90,8 @@ public class SliderNodeTest {
 	@Test
 	public void selectsItsFirstOptionWhenItsValueIsGone() {
 		final List<Integer> changes = new ArrayList<>();
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(9).onChange(event -> changes.add(event.getValue()));
+		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(9).thumb(new Thumb()).onChange(event -> changes.add(event.getValue()));
+		this.bridges.open(new NodeUI(slider));
 		slider.values(1, 2);
 		Assert.assertEquals(1, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(1), changes);
@@ -102,17 +132,23 @@ public class SliderNodeTest {
 	}
 
 	@Test
-	public void drawsNothingWithoutValues() {
-		this.bridges.open(new NodeUI(new Slider().thumb(new Thumb()))).frame();
-		Assert.assertTrue(this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).isEmpty());
+	public void refusesToBeAttachedWithoutValues() {
+		try {
+			this.bridges.open(new NodeUI(new Slider().thumb(new Thumb())));
+			Assert.fail("A slider without values cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Slider has no values, call values(...) or range(...) before attaching it", expected.getMessage());
+		}
 	}
 
 	@Test
-	public void drawsNothingWithoutThumb() {
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5);
-		this.bridges.open(new NodeUI(slider)).frame();
-		Assert.assertTrue(this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).isEmpty());
-		Assert.assertEquals(5, slider.getValue().intValue());
+	public void refusesToBeAttachedWithoutThumb() {
+		try {
+			this.bridges.open(new NodeUI(new Slider().values(SliderNodeTest.digits())));
+			Assert.fail("A slider without thumb cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Slider has no thumb, call thumb(...) before attaching it", expected.getMessage());
+		}
 	}
 
 	@Test

@@ -25,13 +25,13 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 	public final Number getMax() {
 		final double min = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
 		final double max = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
-		return max == 0 ? 1 : min == max ? max * 2 : max;
+		return ChartNode.scaleMax(min, max);
 	}
 
 	public final Number getMin() {
 		final double min = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0);
 		final double max = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0);
-		return min == max ? 0 : min;
+		return ChartNode.scaleMin(min, max);
 	}
 
 	public final Number getAverage() {

@@ -26,7 +26,7 @@ public class UIDemoSlider extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSlider.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal integer = IntegerSignal.of(5);
+		final IntegerSignal integer = IntegerSignal.of(4);
 		final IntegerSignal percent = IntegerSignal.of(25);
 		final DoubleSignal ratio = DoubleSignal.of(0.5D);
 		final StringSignal level = StringSignal.of("Medium");
@@ -42,15 +42,15 @@ public class UIDemoSlider extends UIDemo {
 		.body(rect -> {
 			DemoIntegerSliderNode
 			.create(40, 40, 240, 40)
-			.range(0, 10)
-			.value(5)
+			.range(0, 10, 2)
+			.value(4)
 			.onChange(event -> {
 				System.out.println("[UIDemoSlider] slider value: " + event.getValue());
 				integer.set(event.getValue());
 			})
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + integer.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Integer range", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Integer step", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

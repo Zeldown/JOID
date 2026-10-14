@@ -144,9 +144,13 @@ public class ScrollbarNodeTest {
 	}
 
 	@Test
-	public void drawsNothingWithoutScrolledNode() {
-		this.bridges.open(new NodeUI(new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D)))).frame();
-		Assert.assertTrue(this.bridges.getRender().getDraws(0.6F, 0.4F, 0.2F).isEmpty());
+	public void refusesToBeAttachedWithoutScrolledNode() {
+		try {
+			this.bridges.open(new NodeUI(new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D))));
+			Assert.fail("A scrollbar without scrolled node cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Bar has no scrolled node, pass it to node.scrollbar(...) instead of attaching it", expected.getMessage());
+		}
 	}
 
 	@Test

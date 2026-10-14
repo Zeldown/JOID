@@ -80,6 +80,15 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void refusesAMinusInFrontOfANumberWhileNegativeValuesAreNotAllowed() {
+		final IntegerFieldNode positive = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(9));
+		this.type(positive, "5");
+		positive.cursorPosition(0);
+		this.type(positive, "-");
+		Assert.assertEquals("5", positive.getText());
+	}
+
+	@Test
 	public void neverMovesItsCursorOnARefusedKey() {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(42)).cursorPosition(1);
 		this.type(field, "x");
@@ -241,7 +250,7 @@ public class IntegerFieldNodeTest {
 		Assert.assertEquals(10, (int) signal.get());
 		field.value(3);
 		Assert.assertEquals(3, (int) signal.get());
-		Assert.assertEquals(Arrays.asList("7", "10", "3"), changes);
+		Assert.assertEquals(Arrays.asList("10", "3"), changes);
 	}
 
 	@Test

@@ -73,9 +73,25 @@ public class SelectorNodeTest {
 	public void opensUpwards() {
 		Assert.assertSame(this.selector, this.selector.direction(SelectorDirection.UP).active(true));
 		this.bridges.open(new NodeUI(this.selector)).frames(2);
-		Assert.assertEquals(40D, this.selector.getHeight(), 0D);
+		Assert.assertEquals(120D, this.selector.getHeight(), 0D);
+		Assert.assertEquals(20D, this.selector.getY(), 0D);
+		this.assertDrawn(0.1F, 0.3F, 0.5F, 100D, 140D);
 		this.assertDrawn(0.3F, 0.5F, 0.7F, 60D, 100D);
 		this.assertDrawn(0.5F, 0.7F, 0.9F, 20D, 60D);
+	}
+
+	@Test
+	public void picksAnOptionAboveItWhenItOpensUpwards() {
+		this.bridges.open(new NodeUI(this.selector.direction(SelectorDirection.UP))).frame();
+		this.click(150D, 120D);
+		Assert.assertTrue(this.selector.isActive());
+		Assert.assertEquals(20D, this.selector.getY(), 0D);
+		this.click(150D, 40D);
+		Assert.assertEquals("third", this.selector.getValue());
+		Assert.assertFalse(this.selector.isActive());
+		Assert.assertEquals(100D, this.selector.getY(), 0D);
+		Assert.assertEquals(40D, this.selector.getHeight(), 0D);
+		Assert.assertEquals(Arrays.asList("third"), this.changes);
 	}
 
 	@Test
@@ -168,21 +184,63 @@ public class SelectorNodeTest {
 	}
 
 	@Test
-	public void drawsNothingWithoutOptions() {
-		final Selector empty = new Selector();
-		this.bridges.open(new NodeUI(empty)).frame();
-		this.click(150D, 120D);
-		Assert.assertNull(empty.getSelected());
-		Assert.assertNull(empty.getValue());
-		Assert.assertFalse(empty.isActive());
-		Assert.assertTrue(this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).isEmpty());
+	public void refusesToBeAttachedWithoutValues() {
+		try {
+			this.bridges.open(new NodeUI(new Selector()));
+			Assert.fail("A selector without values cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Selector has no values, call values(...) before attaching it", expected.getMessage());
+		}
 	}
 
 	@Test
-	public void reportsItsFirstSelection() {
+	public void refusesToGiveAValueWithoutValues() {
+		try {
+			new Selector().getValue();
+			Assert.fail("A selector without values has no value");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Selector has no values, call values(...) before getValue()", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void reportsNoChangeForItsStartingValue() {
 		final List<String> selections = new ArrayList<>();
-		new Selector().onChange(event -> selections.add(event.getValue())).values("first", "second");
-		Assert.assertEquals(Arrays.asList("first"), selections);
+		final Selector selector = new Selector().onChange(event -> selections.add(event.getValue())).values("first", "second").value("second");
+		this.bridges.open(new NodeUI(selector));
+		Assert.assertEquals("second", selector.getValue());
+		Assert.assertTrue(selections.isEmpty());
+	}
+
+	@Test
+	public void takesAValueGivenBeforeItsOptions() {
+		Assert.assertEquals("second", new Selector().value("second").values("first", "second", "third").getValue());
+	}
+
+	@Test
+	public void takesTheValueOfItsSignalWhenItsOptionsArrive() {
+		final Signal<String> language = new Signal<>("third");
+		final Selector selector = new Selector().signal(language).values("first", "second", "third");
+		Assert.assertEquals("third", selector.getValue());
+		Assert.assertEquals("third", language.get());
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAValueGivenBeforeItsOptionsThatIsNoOption() {
+		new Selector().value("fourth").values("first", "second");
+	}
+
+	@Test
+	public void letsItsListenersRefuseASetterButNeitherAForcedValueNorItsSignal() {
+		final Signal<String> language = new Signal<>("first");
+		this.bridges.open(new NodeUI(this.selector.signal(language).<Selector>beforeChange(event -> event.cancel())));
+		this.selector.value("second");
+		Assert.assertEquals("first", this.selector.getValue());
+		this.selector.forceValue("second");
+		Assert.assertEquals("second", this.selector.getValue());
+		language.set("third");
+		Assert.assertEquals("third", this.selector.getValue());
+		Assert.assertEquals(Arrays.asList("second", "third"), this.changes);
 	}
 
 	@Test
@@ -195,9 +253,11 @@ public class SelectorNodeTest {
 	@Test
 	public void selectsTheGivenValue() {
 		final List<String> selections = new ArrayList<>();
-		final Selector selector = new Selector().onChange(event -> selections.add(event.getValue())).values("easy", "normal", "hard").value("normal");
+		final Selector selector = new Selector().onChange(event -> selections.add(event.getValue())).values("easy", "normal", "hard");
+		this.bridges.open(new NodeUI(selector));
+		selector.value("normal");
 		Assert.assertEquals("normal", selector.getValue());
-		Assert.assertEquals(Arrays.asList("easy", "normal"), selections);
+		Assert.assertEquals(Arrays.asList("normal"), selections);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -207,6 +267,7 @@ public class SelectorNodeTest {
 
 	@Test
 	public void selectsItsFirstOptionWhenItsValueIsGone() {
+		this.bridges.open(new NodeUI(this.selector));
 		this.selector.value("third");
 		this.changes.clear();
 		this.selector.values("first", "second");
@@ -254,7 +315,7 @@ public class SelectorNodeTest {
 		this.bridges.frame();
 		Assert.assertSame(this.third, this.selector.getSelected());
 		this.assertDrawn(0.5F, 0.7F, 0.9F, 100D, 140D);
-		Assert.assertEquals(Arrays.asList("second", "third"), this.changes);
+		Assert.assertEquals(Arrays.asList("third"), this.changes);
 	}
 
 	@Test
@@ -292,7 +353,8 @@ public class SelectorNodeTest {
 	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final Signal<String> language = new Signal<>("first");
-		this.selector.signal(language).value("third").value("third");
+		this.bridges.open(new NodeUI(this.selector.signal(language)));
+		this.selector.value("third").value("third");
 		Assert.assertEquals("third", language.get());
 		Assert.assertEquals(Arrays.asList("third"), this.changes);
 	}

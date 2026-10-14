@@ -145,6 +145,7 @@ public abstract class Node implements INode {
 	private final transient List<NodeLink<?>>          linkList;
 	private final transient List<Predicate<Node>>      waitingList;
 	private final transient Map<String, NodeSource<?>> sourceMap;
+	private final transient List<NodeRequirement>      requirementList;
 
 	private final transient TweenAnimator             hoverAnimator;
 	private final transient Map<TweenAnimator, Float> animatorMap;
@@ -255,6 +256,7 @@ public abstract class Node implements INode {
 		this.linkList = new ArrayList<>();
 		this.waitingList = new ArrayList<>();
 		this.sourceMap = new LinkedHashMap<>();
+		this.requirementList = new ArrayList<>();
 		this.eventBus = EventBus.create(this::describe);
 
 		this.animatorMap   = new HashMap<>();
@@ -293,6 +295,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void load(final @NonNull UI ui) {
+		this.checkRequirements();
 		final SignalContext context = SignalContext.current();
 		final List<Signal<?>> readList = context.takeReads();
 		try {
@@ -1192,8 +1195,8 @@ public abstract class Node implements INode {
 			final Node target = snapping ? this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this) : null;
 			final boolean dropped = this.fireDragDrop(target, () -> {
 				if (target != null) {
-					this.targetDragX = target.getAbsoluteX();
-					this.targetDragY = target.getAbsoluteY();
+					this.targetDragX = target.getAbsoluteX() + (target.width - this.width) / 2D;
+					this.targetDragY = target.getAbsoluteY() + (target.height - this.height) / 2D;
 					this.fire(Node.DRAG_SNAP, () -> NodeDragEvent.Post.create(this, target));
 				} else if (snapping) {
 					this.targetDragX = this.startDragX;
@@ -1285,8 +1288,13 @@ public abstract class Node implements INode {
 		return fired;
 	}
 
-	protected final <N extends Node, V> boolean change(final @NonNull EventType<? super NodeChangeEvent.Pre<N, V>> before, final @NonNull EventType<? super NodeChangeEvent.Post<N, V>> after, final V previous, final V value, final boolean user, final @NonNull Runnable apply) {
-		if (user) {
+	protected final <N extends Node, V> boolean change(final @NonNull EventType<? super NodeChangeEvent.Pre<N, V>> before, final @NonNull EventType<? super NodeChangeEvent.Post<N, V>> after, final V previous, final V value, final boolean refusable, final @NonNull Runnable apply) {
+		if (this.ui == null) {
+			apply.run();
+			return true;
+		}
+
+		if (refusable) {
 			final NodeChangeEvent.Pre<N, V> event = this.fire(before, () -> NodeChangeEvent.Pre.create((N) this, previous, value));
 			if (event != null && event.isCancelled()) {
 				return false;
@@ -2041,6 +2049,18 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
+	protected final <N extends Node> void require(final @NonNull String setting, final @NonNull String advice, final @NonNull Predicate<@NonNull N> present) {
+		this.requirementList.add(new NodeRequirement(advice, setting, (Predicate<Node>) present));
+	}
+
+	private void checkRequirements() {
+		for (final NodeRequirement requirement : this.requirementList) {
+			if (!requirement.present.test(this)) {
+				throw new IllegalStateException("The " + Node.nameOf(this.getClass()) + " has no " + requirement.setting + ", " + requirement.advice);
+			}
+		}
+	}
+
 	private <T extends Node> T addWatch(final Signal<?> signal, final Predicate<Node> condition, final WatchProperty[] properties) {
 		this.listen(new NodeLink<>(this, null, (Signal<Object>) signal, condition, false, (node, value) -> node.applyWatch(signal, properties)));
 		return (T) this;
@@ -2693,6 +2713,15 @@ public abstract class Node implements INode {
 		}
 
 		return this.toJson();
+	}
+
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class NodeRequirement {
+
+		private final String          advice;
+		private final String          setting;
+		private final Predicate<Node> present;
+
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)

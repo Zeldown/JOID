@@ -140,11 +140,19 @@ public class ChartNodeTest {
 	}
 
 	@Test
-	public void needsAYAxisToLoad() {
-		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 120));
-		Assert.assertFalse(chart.isMounted());
-		chart.yAxis(ChartAxis.y("requests"));
-		Assert.assertTrue(chart.isMounted());
+	public void refusesToBeAttachedWithoutAxes() {
+		try {
+			this.bridges.open(new NodeUI(new BarChartNode(0D, 0D, 300D, 200D).yAxis(ChartAxis.y("requests"))));
+			Assert.fail("A chart without X axis cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The BarChartNode has no X axis, call xAxis(...) before attaching it", expected.getMessage());
+		}
+		try {
+			this.bridges.open(new NodeUI(new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon"))));
+			Assert.fail("A chart without Y axis cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The BarChartNode has no Y axis, call yAxis(...) before attaching it", expected.getMessage());
+		}
 	}
 
 	@Test
@@ -177,10 +185,23 @@ public class ChartNodeTest {
 	@Test
 	public void spreadsTheScaleOfAFlatSeries() {
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon", "Tue")).data("api", ChartData.create().add("Mon", 4).add("Tue", 4));
-		Assert.assertEquals(8D, chart.getMax().doubleValue(), 0D);
+		Assert.assertEquals(4D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getMin().doubleValue(), 0D);
-		Assert.assertEquals(8D, chart.getMax("api").doubleValue(), 0D);
+		Assert.assertEquals(4D, chart.getMax("api").doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getMin("api").doubleValue(), 0D);
+	}
+
+	@Test
+	public void spreadsTheScaleOfAFlatNegativeSeriesUpToZero() {
+		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon", "Tue")).data("api", ChartData.create().add("Mon", -4).add("Tue", -4));
+		Assert.assertEquals(0D, chart.getMax().doubleValue(), 0D);
+		Assert.assertEquals(-4D, chart.getMin().doubleValue(), 0D);
+	}
+
+	@Test
+	public void keepsTheOrderOfItsLabels() {
+		final ChartData data = ChartData.create().add("Wed", 3).add("Mon", 1).add("Tue", 2);
+		Assert.assertEquals(Arrays.asList("Wed", "Mon", "Tue"), new ArrayList<>(data.getDataMap().keySet()));
 	}
 
 	@Test

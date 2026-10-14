@@ -39,9 +39,13 @@ public class ResourceNodeTest {
 	}
 
 	@Test
-	public void drawsASkeletonWithoutResource() {
-		this.bridges.open(new NodeUI(ResourceNode.create(300D, 300D, 50D, 40D)));
-		this.assertBounds(this.skeleton(), 300D, 300D, 350D, 340D);
+	public void refusesToBeAttachedWithoutResource() {
+		try {
+			this.bridges.open(new NodeUI(ResourceNode.create(300D, 300D, 50D, 40D).hoveredResource(ResourceNodeTest.resource(20, 10))));
+			Assert.fail("A resource node without resource cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ResourceNode has no resource, call resource(...) before attaching it", expected.getMessage());
+		}
 	}
 
 	@Test
@@ -172,11 +176,11 @@ public class ResourceNodeTest {
 	}
 
 	@Test
-	public void preparesItsHoveredResourceWithoutMainOne() {
+	public void preparesItsHoveredResourceWhileItsResourceLoads() {
 		final Resource hovered = ResourceNodeTest.resource(20, 10);
-		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).hoveredResource(hovered);
+		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).resource(pending).hoveredResource(hovered);
 		this.bridges.open(new NodeUI(node));
-		Assert.assertNull(node.getResource());
 		Assert.assertTrue(hovered.isGenerated());
 		this.assertBounds(this.skeleton(), 100D, 100D, 120D, 110D);
 	}

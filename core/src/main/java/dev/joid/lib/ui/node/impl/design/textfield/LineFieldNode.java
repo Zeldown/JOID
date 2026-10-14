@@ -42,7 +42,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	protected void drawField() {
 		final String text = super.getText();
 		final TextInfo info = super.getInfo();
-		if (super.getHeight() == 0 && info != null) {
+		if (super.getHeight() == 0) {
 			super.height(info.ah(super.getMarginTop() + super.getMarginBottom()));
 		}
 

@@ -25,6 +25,7 @@ public class UIDemoControl extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoControl.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final IntegerSignal checkboxChanges = IntegerSignal.of(0);
 		final BooleanSignal sharedCheck = BooleanSignal.of(true);
 		final IntegerSignal refusedChecks = IntegerSignal.of(0);
@@ -199,7 +200,7 @@ public class UIDemoControl extends UIDemo {
 		.create(1160, 720, 320, 260)
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
-			DemoSwitchNode
+			final DemoSwitchNode refused = DemoSwitchNode
 			.create(40, 40, 240, 50)
 			.states("One", "Two", "Three")
 			.beforeChange(event -> {
@@ -209,7 +210,23 @@ public class UIDemoControl extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(40, 140).text(Text.create("Refused: " + refusedStates.get(), info)).attach(rect);
+			RectNode
+			.create(40, 110, 110, 40)
+			.color(UIDemoControl.INK)
+			.onClick(event -> refused.state("Three"))
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("State", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			RectNode
+			.create(170, 110, 110, 40)
+			.color(UIDemoControl.INK)
+			.onClick(event -> refused.forceState("Three"))
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Force", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(40, 180).text(Text.create("Refused: " + refusedStates.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Refused", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

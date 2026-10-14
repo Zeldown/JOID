@@ -12,6 +12,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
+import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 
@@ -82,7 +83,8 @@ public class ResourcePlayerNodeEventTest {
 	@Test
 	public void firesNothingWithoutPlayback() {
 		final List<Object> received = new ArrayList<>();
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).onPause(event -> received.add(event.getNode()));
+		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(pending).onPause(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(player));
 		player.pause();
 		Assert.assertTrue(received.isEmpty());

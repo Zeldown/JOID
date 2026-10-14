@@ -1,10 +1,12 @@
 package dev.joid.lib.ui.node.impl.structure.slider;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -16,23 +18,27 @@ import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 @SuppressWarnings("unchecked")
 public abstract class SliderNode<O> extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	private O      value;
-	private Set<O> valueSet;
+	@Getter private O value;
+	private Set<O>    valueSet;
 
-	private Signal<O>       signal;
-	private SliderThumbNode thumb;
+	@Getter private Signal<O>       signal;
+	@Getter private SliderThumbNode thumb;
+
+	private O pendingValue;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
 		this.valueSet = new LinkedHashSet<>();
+
+		super.<SliderNode<O>>require("thumb", "call thumb(...) before attaching it", node -> node.thumb != null);
+		super.<SliderNode<O>>require("values", "call values(...) or range(...) before attaching it", node -> !node.valueSet.isEmpty());
 	}
 
 	@Override
@@ -42,10 +48,6 @@ public abstract class SliderNode<O> extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.value == null || this.valueSet.isEmpty() || this.thumb == null) {
-			return;
-		}
-
 		super.layoutPosition(this.thumb, this.thumb.getLayoutX(), (super.getHeight() - this.thumb.getHeight()) / 2D);
 		this.pick();
 
@@ -64,6 +66,10 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	public abstract void drawSlider(final double mouseX, final double mouseY);
+
+	public final @NonNull Set<O> getValueSet() {
+		return Collections.unmodifiableSet(this.valueSet);
+	}
 
 	public final float getProgress() {
 		if (this.thumb == null || super.getWidth() <= this.thumb.getWidth()) {
@@ -89,33 +95,39 @@ public abstract class SliderNode<O> extends Node {
 		}
 
 		this.valueSet = new LinkedHashSet<>(Arrays.asList(values));
-		if (!this.valueSet.contains(this.value)) {
-			this.change(values[0]);
-		} else if (super.getUi() != null) {
+		final O pending = this.pendingValue;
+		this.pendingValue = null;
+		if (pending != null) {
+			this.choose(pending, false);
+		} else if (this.value == null && this.signal != null && this.valueSet.contains(this.signal.peek())) {
+			this.change(this.signal.peek(), false);
+		} else if (!this.valueSet.contains(this.value)) {
+			this.change(values[0], false);
+		} else if (super.hasUi()) {
 			this.place();
 		}
 		return (T) this;
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull O value) {
-		return this.value(Signal.from(value));
+		final ComputedSignal<O> source = Signal.from(value);
+		final boolean refusable = source.isConstant();
+		return super.follow("value", source, (final SliderNode<O> node, final O option) -> node.choose(option, refusable));
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Supplier<@NonNull O> value) {
-		return super.follow("value", value, (final SliderNode<O> node, final O option) -> {
-			if (!node.valueSet.contains(option)) {
-				throw new IllegalArgumentException("The value " + option + " is not an option of the slider " + node.valueSet + ", pass one of them or add it with values(...)");
-			}
+		return super.follow("value", value, (final SliderNode<O> node, final O option) -> node.choose(option, false));
+	}
 
-			node.change(option);
-		});
+	public final <T extends SliderNode<O>> @NonNull T forceValue(final @NonNull O value) {
+		return super.follow("value", Signal.from(value), (final SliderNode<O> node, final O option) -> node.choose(option, false));
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
 		this.signal = super.writable(signal);
 		return super.bind("signal", signal, (final SliderNode<O> node, final O value) -> {
 			if (node.valueSet.contains(value)) {
-				node.change(value);
+				node.change(value, false);
 			}
 		});
 	}
@@ -137,26 +149,36 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	protected final void release() {
-		if (this.value == null || this.valueSet.isEmpty() || this.thumb == null) {
-			return;
-		}
-
 		this.pick();
 		this.place();
 	}
 
-	private void change(final O value) {
+	private void choose(final O value, final boolean refusable) {
+		if (this.valueSet.isEmpty()) {
+			this.pendingValue = value;
+			return;
+		}
+
+		if (!this.valueSet.contains(value)) {
+			throw new IllegalArgumentException("The value " + value + " is not an option of the slider " + this.valueSet + ", pass one of them or add it with values(...)");
+		}
+
+		this.change(value, refusable);
+	}
+
+	private void change(final O value, final boolean refusable) {
 		if (value.equals(this.value)) {
 			return;
 		}
 
-		super.change(SliderNode.BEFORE_CHANGE, SliderNode.CHANGE, this.value, value, false, () -> {
+		super.change(SliderNode.BEFORE_CHANGE, SliderNode.CHANGE, this.value, value, refusable, () -> {
 			this.value = value;
 			super.sync(this.signal, value);
-			if (super.getUi() != null) {
-				this.place();
-			}
 		});
+
+		if (super.hasUi()) {
+			this.place();
+		}
 	}
 
 	private void pick() {
@@ -177,10 +199,6 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	private void place() {
-		if (this.value == null || this.valueSet.isEmpty() || this.thumb == null) {
-			return;
-		}
-
 		if (this.valueSet.size() == 1) {
 			super.layoutPosition(this.thumb, 0D, this.thumb.getLayoutY());
 			return;

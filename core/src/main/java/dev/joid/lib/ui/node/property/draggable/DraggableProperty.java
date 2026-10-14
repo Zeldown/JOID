@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.property.draggable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -32,19 +33,19 @@ public class DraggableProperty {
 		this.snapNodes  = null;
 	}
 
-	public static final DraggableProperty free() { return new DraggableProperty(); }
+	public static @NonNull DraggableProperty free() { return new DraggableProperty(); }
 
-	public static final DraggableProperty custom(final double x, final double y, final double width, final double height) { return new DraggableProperty().area(DraggableAreaType.CUSTOM, new double[] {x, y, width, height}); }
+	public static @NonNull DraggableProperty custom(final double x, final double y, final double width, final double height) { return new DraggableProperty().area(DraggableAreaType.CUSTOM, new double[] {x, y, width, height}); }
 
-	public static final DraggableProperty parent() { return new DraggableProperty().area(DraggableAreaType.PARENT); }
+	public static @NonNull DraggableProperty parent() { return new DraggableProperty().area(DraggableAreaType.PARENT); }
 
-	public static final DraggableProperty node(final @NonNull Node node) { return new DraggableProperty().area(DraggableAreaType.NODE, node); }
+	public static @NonNull DraggableProperty node(final @NonNull Node node) { return new DraggableProperty().area(DraggableAreaType.NODE, node); }
 
-	public static final DraggableProperty ui() { return new DraggableProperty().area(DraggableAreaType.UI); }
+	public static @NonNull DraggableProperty ui() { return new DraggableProperty().area(DraggableAreaType.UI); }
 
-	public static final DraggableProperty screen() { return new DraggableProperty().area(DraggableAreaType.SCREEN); }
+	public static @NonNull DraggableProperty screen() { return new DraggableProperty().area(DraggableAreaType.SCREEN); }
 
-	public static final DraggableProperty disabled() { return new DraggableProperty().enabled(node -> false); }
+	public static @NonNull DraggableProperty disabled() { return new DraggableProperty().enabled(node -> false); }
 
 	public Node getSnapping(final @NonNull Node node) {
 		if (!this.hasSnapping()) {
@@ -173,8 +174,8 @@ public class DraggableProperty {
 			throw new IllegalArgumentException("DraggableAreaType.NODE needs the Node that bounds the drag, got " + area);
 		}
 
-		if (areaType == DraggableAreaType.CUSTOM && !(area instanceof double[])) {
-			throw new IllegalArgumentException("DraggableAreaType.CUSTOM needs a double[] {x, y, width, height} that bounds the drag, got " + area);
+		if (areaType == DraggableAreaType.CUSTOM && (!(area instanceof double[]) || ((double[]) area).length != 4)) {
+			throw new IllegalArgumentException("DraggableAreaType.CUSTOM needs a double[] {x, y, width, height} that bounds the drag, got " + (area instanceof double[] ? Arrays.toString((double[]) area) : area));
 		}
 
 		return this;
@@ -182,25 +183,24 @@ public class DraggableProperty {
 
 	public final @NonNull DraggableProperty snap(final @NonNull Node @NonNull... snapNodes) {
 		if (this.snapNodes == null) {
-			this.snapNodes = new ArrayList<>(Arrays.asList(snapNodes));
-		} else {
-			this.snapNodes.addAll(new ArrayList<>(Arrays.asList(snapNodes)));
+			this.snapNodes = new ArrayList<>();
 		}
+
+		this.snapNodes.addAll(Arrays.asList(snapNodes));
 		return this;
 	}
 
-	public final @NonNull DraggableProperty snap(final @NonNull DraggableSnapType snapType, final Node... snapNodes) {
+	public final @NonNull DraggableProperty snap(final @NonNull DraggableSnapType snapType, final @NonNull Node @NonNull... snapNodes) {
 		this.snapType = snapType;
-		if (snapNodes != null && snapNodes.length > 0) {
-			this.snapNodes = new ArrayList<>(Arrays.asList(snapNodes));
-		} else {
-			this.snapNodes = null;
-		}
-		return this;
+		return this.snap(snapNodes);
 	}
 
 	public final boolean isEnabled(final @NonNull Node node) {
 		return this.enabled.test(node);
+	}
+
+	public final List<Node> getSnapNodes() {
+		return this.snapNodes == null ? null : Collections.unmodifiableList(this.snapNodes);
 	}
 
 	public final boolean hasSnapping() {
@@ -208,7 +208,8 @@ public class DraggableProperty {
 	}
 
 	public final @NonNull DraggableProperty copy() {
-		return new DraggableProperty().type(this.type).enabled(this.enabled).area(this.areaType, this.areaObject).snap(this.snapType, this.snapNodes == null ? null : this.snapNodes.toArray(new Node[0]));
+		final DraggableProperty copy = new DraggableProperty().type(this.type).enabled(this.enabled).area(this.areaType, this.areaObject instanceof double[] ? ((double[]) this.areaObject).clone() : this.areaObject);
+		return copy.snap(this.snapType, this.snapNodes == null ? new Node[0] : this.snapNodes.toArray(new Node[0]));
 	}
 
 	public enum DraggableType {

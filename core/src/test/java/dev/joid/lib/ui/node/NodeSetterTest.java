@@ -119,6 +119,28 @@ public class NodeSetterTest {
 	}
 
 	@Test
+	public void neverRefusesASetterReplayedByItsSignals() {
+		final SetterUI ui = new SetterUI();
+		this.bridges.open(ui);
+		ui.getCheckbox().beforeChange(event -> event.cancel());
+		ui.getToggle().beforeChange(event -> event.cancel());
+		ui.getNamed().beforeChange(event -> event.cancel());
+		ui.getIndexed().beforeChange(event -> event.cancel());
+		ui.getSelector().beforeChange(event -> event.cancel());
+		ui.getSlider().beforeChange(event -> event.cancel());
+		ui.getField().beforeChange(event -> event.cancel());
+		ui.getStep().set(1);
+		this.bridges.frame();
+		Assert.assertTrue(ui.getCheckbox().isChecked());
+		Assert.assertTrue(ui.getToggle().isToggle());
+		Assert.assertEquals("high", ui.getNamed().getState());
+		Assert.assertEquals("medium", ui.getIndexed().getState());
+		Assert.assertEquals("second", ui.getSelector().getValue());
+		Assert.assertEquals(2, ui.getSlider().getValue().intValue());
+		Assert.assertEquals("Name 1", ui.getField().getText());
+	}
+
+	@Test
 	public void keepsAPlainValueWithoutPollingIt() {
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).x(5D).width(30D).zlevel(2D);
 		Assert.assertEquals(5D, rect.getX(), 0D);
@@ -144,9 +166,10 @@ public class NodeSetterTest {
 		color[0] = Color.GREEN;
 		progress[0] = 0.5F;
 		checked[0] = true;
-		Assert.assertSame(Color.GREEN, rect.getColor());
+		Assert.assertSame(Color.GRAY, rect.getColor());
 		Assert.assertEquals(10D, rect.getWidth(), 0D);
 		this.bridges.frame();
+		Assert.assertSame(Color.GREEN, rect.getColor());
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
 		Assert.assertEquals(0.5F, bar.getProgress(), 0F);
 		Assert.assertTrue(checkbox.isChecked());

@@ -27,19 +27,19 @@ public class TransformNodeEffect extends NodeEffect<Node> {
 		this.transformationSupplier = () -> transformation;
 	}
 
-	public static TransformNodeEffect create(final @NonNull ScaleTransformOperation scale) {
+	public static @NonNull TransformNodeEffect create(final @NonNull ScaleTransformOperation scale) {
 		return new TransformNodeEffect(Transformation.create(scale));
 	}
 
-	public static TransformNodeEffect create(final @NonNull RotateTransformOperation rotation) {
+	public static @NonNull TransformNodeEffect create(final @NonNull RotateTransformOperation rotation) {
 		return new TransformNodeEffect(Transformation.create(rotation));
 	}
 
-	public static TransformNodeEffect create(final @NonNull TranslateTransformOperation translate) {
+	public static @NonNull TransformNodeEffect create(final @NonNull TranslateTransformOperation translate) {
 		return new TransformNodeEffect(Transformation.create(translate));
 	}
 
-	public static TransformNodeEffect create(final @NonNull Transformation transformation) {
+	public static @NonNull TransformNodeEffect create(final @NonNull Transformation transformation) {
 		return new TransformNodeEffect(transformation);
 	}
 

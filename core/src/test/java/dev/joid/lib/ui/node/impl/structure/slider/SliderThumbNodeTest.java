@@ -69,6 +69,24 @@ public class SliderThumbNodeTest {
 	}
 
 	@Test
+	public void refusesToBeAttachedOutsideASlider() {
+		try {
+			this.bridges.open(new NodeUI(new Thumb()));
+			Assert.fail("A thumb is given to its slider, not attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Thumb has no slider, pass it to slider.thumb(...) instead of attaching it", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void keepsItsDragOnTheReleaseOfAnotherButton() {
+		this.bridges.move(110D, 125D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
+		Assert.assertTrue(this.thumb.isDragging());
+	}
+
+	@Test
 	public void staysHoveredWhileDragged() {
 		this.bridges.move(110D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);

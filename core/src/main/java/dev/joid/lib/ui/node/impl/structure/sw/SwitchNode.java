@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -17,17 +18,17 @@ import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 @SuppressWarnings("unchecked")
 public abstract class SwitchNode extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, String>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, String>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	private final IntegerSignal      stateIndex;
-	private final ListSignal<String> stateList;
+	@Getter private final IntegerSignal      stateIndex;
+	@Getter private final ListSignal<String> stateList;
 
-	private Signal<String> signal;
+	@Getter private Signal<String> signal;
+	private String                 pendingState;
 
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -36,6 +37,7 @@ public abstract class SwitchNode extends Node {
 		this.stateIndex = new IntegerSignal(0);
 
 		super.watch(this.stateList, WatchProperty.CLEAR_CHILDREN, WatchProperty.custom((node, signal) -> node.init(node.getUi())));
+		super.<SwitchNode>require("states", "call states(...) before attaching it", node -> !node.stateList.peek().isEmpty());
 	}
 
 	public final <T extends SwitchNode> @NonNull T states(final @NonNull String @NonNull... states) {
@@ -53,7 +55,9 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final int index) {
-		return this.index(Signal.from(index));
+		final ComputedSignal<Integer> source = Signal.from(index);
+		final boolean refusable = source.isConstant();
+		return super.follow("index", source, (final SwitchNode node, final Integer value) -> node.select(value, refusable));
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final @NonNull Supplier<Integer> index) {
@@ -61,17 +65,17 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull String state) {
-		return this.state(Signal.from(state));
+		final ComputedSignal<String> source = Signal.from(state);
+		final boolean refusable = source.isConstant();
+		return super.follow("state", source, (final SwitchNode node, final String value) -> node.choose(value, refusable));
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull Supplier<@NonNull String> state) {
-		return super.follow("state", state, (final SwitchNode node, final String value) -> {
-			if (node.stateList.peek() == null || !node.stateList.peek().contains(value)) {
-				throw new IllegalArgumentException("The state " + value + " is not in the state list " + node.stateList.peek());
-			}
+		return super.follow("state", state, (final SwitchNode node, final String value) -> node.choose(value, false));
+	}
 
-			node.select(node.stateList.peek().indexOf(value), false);
-		});
+	public final <T extends SwitchNode> @NonNull T forceState(final @NonNull String state) {
+		return super.follow("state", Signal.from(state), (final SwitchNode node, final String value) -> node.choose(value, false));
 	}
 
 	public final @NonNull String getState() {
@@ -81,7 +85,7 @@ public abstract class SwitchNode extends Node {
 	public final <T extends SwitchNode> @NonNull T signal(final @NonNull Signal<String> signal) {
 		this.signal = super.writable(signal);
 		return super.bind("signal", signal, (final SwitchNode node, final String value) -> {
-			if (node.stateList.peek() != null && node.stateList.peek().contains(value)) {
+			if (node.stateList.peek().contains(value)) {
 				node.select(node.stateList.peek().indexOf(value), false);
 			}
 		});
@@ -103,28 +107,57 @@ public abstract class SwitchNode extends Node {
 		return super.listen(SwitchNode.CHANGE, priority, listener);
 	}
 
-	protected final void chooseState(final @NonNull String state) {
-		if (this.stateList.peek() == null || !this.stateList.peek().contains(state)) {
-			throw new IllegalArgumentException("The state " + state + " is not in the state list " + this.stateList.peek());
+	private void choose(final String state, final boolean refusable) {
+		if (this.stateList.peek().isEmpty()) {
+			this.pendingState = state;
+			return;
 		}
 
-		this.select(this.stateList.peek().indexOf(state), true);
+		this.select(this.indexOf(this.stateList.peek(), state), refusable);
 	}
 
-	private void select(final int index, final boolean user) {
-		if (this.stateList.peek() == null || index < 0 || index >= this.stateList.peek().size()) {
-			throw new IllegalArgumentException("The index " + index + " is out of the state list " + this.stateList.peek());
+	private void select(final int index, final boolean refusable) {
+		if (this.stateList.peek().isEmpty()) {
+			this.pendingState = null;
+			this.stateIndex.set(index);
+			return;
 		}
 
-		this.change(this.stateList.peek(), index, this.stateList.peek().get(this.stateIndex.peek()), user);
+		this.change(this.stateList.peek(), this.checkIndex(this.stateList.peek(), index), this.stateList.peek().get(this.stateIndex.peek()), refusable);
 	}
 
 	private void configure(final List<String> stateList) {
-		final String previous = this.stateList.peek() == null || this.stateList.peek().isEmpty() ? null : this.stateList.peek().get(this.stateIndex.peek());
-		this.change(stateList, Math.max(0, stateList.indexOf(previous)), previous, false);
+		final String previous = this.stateList.peek().isEmpty() ? null : this.stateList.peek().get(this.stateIndex.peek());
+		final String pending = this.pendingState;
+		this.pendingState = null;
+		if (pending != null) {
+			this.change(stateList, this.indexOf(stateList, pending), previous, false);
+		} else if (previous == null && this.signal != null && stateList.contains(this.signal.peek())) {
+			this.change(stateList, stateList.indexOf(this.signal.peek()), null, false);
+		} else if (previous == null) {
+			this.change(stateList, this.checkIndex(stateList, this.stateIndex.peek()), null, false);
+		} else {
+			this.change(stateList, Math.max(0, stateList.indexOf(previous)), previous, false);
+		}
 	}
 
-	private void change(final List<String> stateList, final int index, final String previous, final boolean user) {
+	private int checkIndex(final List<String> stateList, final int index) {
+		if (index < 0 || index >= stateList.size()) {
+			throw new IllegalArgumentException("The index " + index + " is out of the state list " + stateList + ", pass an index from 0 to " + (stateList.size() - 1));
+		}
+
+		return index;
+	}
+
+	private int indexOf(final List<String> stateList, final String state) {
+		if (!stateList.contains(state)) {
+			throw new IllegalArgumentException("The state " + state + " is not in the state list " + stateList + ", pass one of them or add it with states(...)");
+		}
+
+		return stateList.indexOf(state);
+	}
+
+	private void change(final List<String> stateList, final int index, final String previous, final boolean refusable) {
 		final String state = stateList.get(index);
 		if (state.equals(previous)) {
 			this.stateIndex.set(index);
@@ -132,7 +165,7 @@ public abstract class SwitchNode extends Node {
 			return;
 		}
 
-		super.change(SwitchNode.BEFORE_CHANGE, SwitchNode.CHANGE, previous, state, user, () -> {
+		super.change(SwitchNode.BEFORE_CHANGE, SwitchNode.CHANGE, previous, state, refusable, () -> {
 			this.stateIndex.set(index);
 			this.stateList.set(stateList);
 			super.sync(this.signal, state);

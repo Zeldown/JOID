@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node.impl.structure.checkbox;
 
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
@@ -37,11 +38,17 @@ public abstract class CheckboxNode extends Node {
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
-		return this.checked(Signal.from(checked));
+		final ComputedSignal<Boolean> source = Signal.from(checked);
+		final boolean refusable = source.isConstant();
+		return super.follow("checked", source, (final CheckboxNode node, final Boolean value) -> node.change(value, refusable));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final @NonNull Supplier<Boolean> checked) {
 		return super.follow("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
+	}
+
+	public final <T extends CheckboxNode> @NonNull T forceChecked(final boolean checked) {
+		return super.follow("checked", Signal.from(checked), (final CheckboxNode node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
@@ -65,12 +72,12 @@ public abstract class CheckboxNode extends Node {
 		return super.listen(CheckboxNode.CHANGE, priority, listener);
 	}
 
-	private void change(final boolean checked, final boolean user) {
+	private void change(final boolean checked, final boolean refusable) {
 		if (this.checked == checked) {
 			return;
 		}
 
-		super.change(CheckboxNode.BEFORE_CHANGE, CheckboxNode.CHANGE, this.checked, checked, user, () -> {
+		super.change(CheckboxNode.BEFORE_CHANGE, CheckboxNode.CHANGE, this.checked, checked, refusable, () -> {
 			this.checked = checked;
 			super.sync(this.signal, checked);
 		});

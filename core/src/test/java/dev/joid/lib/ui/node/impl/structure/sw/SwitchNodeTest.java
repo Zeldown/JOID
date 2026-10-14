@@ -184,9 +184,61 @@ public class SwitchNodeTest {
 		this.open().state("eco");
 	}
 
+	@Test
+	public void takesAnIndexGivenBeforeItsStates() {
+		Assert.assertEquals("on", new Switch().index(1).states("off", "on").getState());
+	}
+
+	@Test
+	public void takesAStateGivenBeforeItsStates() {
+		Assert.assertEquals("eco", new Switch().state("eco").states("off", "on", "eco").getState());
+	}
+
+	@Test
+	public void takesTheStateOfItsSignalWhenItsStatesArrive() {
+		final Signal<String> quality = new Signal<>("high");
+		Assert.assertEquals("high", new Switch().signal(quality).states("low", "medium", "high").getState());
+		Assert.assertEquals("high", quality.get());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
-	public void refusesToJumpWithoutStates() {
-		new Switch().index(0);
+	public void refusesAnIndexGivenBeforeItsStatesThatIsOutOfThem() {
+		new Switch().index(2).states("off", "on");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesAStateGivenBeforeItsStatesThatIsOutOfThem() {
+		new Switch().state("eco").states("off", "on");
+	}
+
+	@Test
+	public void refusesToBeAttachedWithoutStates() {
+		try {
+			this.bridges.open(new SingleUI(new Switch()));
+			Assert.fail("A switch without states cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Switch has no states, call states(...) before attaching it", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void reportsNoChangeForItsStartingState() {
+		final Switch node = new Switch().onChange(event -> this.changes.add(event.getValue())).states("off", "on").state("on");
+		this.bridges.open(new SingleUI(node));
+		Assert.assertEquals("on", node.getState());
+		Assert.assertTrue(this.changes.isEmpty());
+	}
+
+	@Test
+	public void letsItsListenersRefuseASetterButNotAForcedState() {
+		final Switch node = this.open();
+		node.beforeChange(event -> event.cancel());
+		node.state("high");
+		node.index(1);
+		Assert.assertEquals("low", node.getState());
+		node.forceState("high");
+		Assert.assertEquals("high", node.getState());
+		Assert.assertEquals(Arrays.asList("high"), this.changes);
 	}
 
 	@Test
@@ -201,6 +253,18 @@ public class SwitchNodeTest {
 		final SwitchUI ui = new SwitchUI(this.changes);
 		this.bridges.open(ui).frame();
 		return ui.node;
+	}
+
+	@RequiredArgsConstructor
+	public static final class SingleUI extends UI {
+
+		private final Switch node;
+
+		@Override
+		public void init() {
+			super.add(this.node);
+		}
+
 	}
 
 	@RequiredArgsConstructor

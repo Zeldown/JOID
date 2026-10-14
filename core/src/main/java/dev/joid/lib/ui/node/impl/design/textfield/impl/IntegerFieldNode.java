@@ -3,6 +3,7 @@ package dev.joid.lib.ui.node.impl.design.textfield.impl;
 import java.math.BigInteger;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.impl.design.textfield.LineFieldNode;
 import lombok.NonNull;
@@ -61,7 +62,7 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 
 	@Override
 	protected final boolean accepts(final @NonNull String text) {
-		return text.equals("-") ? this.minValue < 0 : text.matches("-?[0-9]*");
+		return text.matches(this.minValue < 0 ? "-?[0-9]*" : "[0-9]*");
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T max(final int maxValue) {
@@ -95,11 +96,17 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final int value) {
-		return this.value(Signal.from(value));
+		final ComputedSignal<Integer> source = Signal.from(value);
+		final boolean refusable = source.isConstant();
+		return super.follow("value", source, (final IntegerFieldNode node, final Integer number) -> node.write(number, refusable));
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final @NonNull Supplier<Integer> value) {
-		return super.follow("value", value, (final IntegerFieldNode node, final Integer number) -> node.write(number));
+		return super.follow("value", value, (final IntegerFieldNode node, final Integer number) -> node.write(number, false));
+	}
+
+	public final <T extends IntegerFieldNode> @NonNull T forceValue(final int value) {
+		return super.follow("value", Signal.from(value), (final IntegerFieldNode node, final Integer number) -> node.write(number, false));
 	}
 
 }

@@ -135,12 +135,31 @@ public class DraggablePropertyTest {
 	}
 
 	@Test
-	public void forgetsItsSnapsWithoutNodes() {
-		final DraggableProperty draggable = DraggableProperty.free().snap(RectNode.create(0D, 0D, 10D, 10D)).snap(DraggableSnapType.NEAREST);
-		Assert.assertFalse(draggable.hasSnapping());
-		Assert.assertNull(draggable.getSnapping(RectNode.create(0D, 0D, 10D, 10D)));
-		Assert.assertFalse(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, (Node[]) null).hasSnapping());
+	public void addsItsSnapsWithOrWithoutAType() {
+		final RectNode left = RectNode.create(0D, 0D, 10D, 10D);
+		final RectNode right = RectNode.create(100D, 0D, 10D, 10D);
+		final DraggableProperty draggable = DraggableProperty.free().snap(left).snap(DraggableSnapType.OVERLAP, right).snap(DraggableSnapType.NEAREST);
+		Assert.assertSame(DraggableSnapType.NEAREST, draggable.getSnapType());
+		Assert.assertEquals(Arrays.asList(left, right), draggable.getSnapNodes());
 		Assert.assertFalse(DraggableProperty.free().snap().hasSnapping());
+	}
+
+	@Test
+	public void refusesACustomAreaWithoutFourBounds() {
+		try {
+			DraggableProperty.free().area(DraggableAreaType.CUSTOM, new double[] {0D, 0D, 10D});
+			Assert.fail("A custom area needs x, y, width and height");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("DraggableAreaType.CUSTOM needs a double[] {x, y, width, height} that bounds the drag, got [0.0, 0.0, 10.0]", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void copiesItsCustomArea() {
+		final double[] area = {10D, 20D, 300D, 200D};
+		final DraggableProperty copy = DraggableProperty.free().area(DraggableAreaType.CUSTOM, area).copy();
+		area[0] = 50D;
+		Assert.assertArrayEquals(new double[] {10D, 20D, 300D, 200D}, copy.getBounds(RectNode.create(0D, 0D, 10D, 10D)), 0D);
 	}
 
 	@Test
@@ -187,6 +206,17 @@ public class DraggablePropertyTest {
 		this.bridges.frames(100);
 		Assert.assertEquals(250D, node.getX(), 0D);
 		Assert.assertEquals(150D, node.getY(), 0D);
+	}
+
+	@Test
+	public void centersADroppedNodeOnASnapOfAnotherSize() {
+		final RectNode target = RectNode.create(400D, 400D, 100D, 80D);
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snap(target));
+		this.drag(node, 310D, 310D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(100);
+		Assert.assertEquals(425D, node.getX(), 0D);
+		Assert.assertEquals(415D, node.getY(), 0D);
 	}
 
 	@Test

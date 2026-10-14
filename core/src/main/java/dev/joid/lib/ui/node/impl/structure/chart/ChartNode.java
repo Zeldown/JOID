@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.node.impl.structure.chart;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -24,37 +23,39 @@ public abstract class ChartNode extends Node {
 
 	protected ChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.<ChartNode>wait(node -> node.xAxis != null && node.yAxis != null && !node.getDataMap().isEmpty() && node.getDataMap().values().stream().noneMatch(ChartData::isEmpty));
+		super.<ChartNode>wait(node -> !node.getDataMap().isEmpty() && node.getDataMap().values().stream().noneMatch(ChartData::isEmpty));
+		super.<ChartNode>require("X axis", "call xAxis(...) before attaching it", node -> node.xAxis != null);
+		super.<ChartNode>require("Y axis", "call yAxis(...) before attaching it", node -> node.yAxis != null);
 	}
 
 	public final Number getMax() {
 		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0);
 		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0);
-		return min == max ? max == 0 ? 1 : max * 2 : max;
+		return ChartNode.scaleMax(min, max);
 	}
 
 	public final Number getMax(final String data) {
 		final ChartData series = this.getData(data);
 		final double min = series == null ? 0D : series.getMin().doubleValue();
 		final double max = series == null ? 0D : series.getMax().doubleValue();
-		return min == max ? max == 0 ? 1 : max * 2 : max;
+		return ChartNode.scaleMax(min, max);
 	}
 
 	public final Number getMin() {
 		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0);
 		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0);
-		return min == max ? 0 : min;
+		return ChartNode.scaleMin(min, max);
 	}
 
 	public final Number getMin(final String data) {
 		final ChartData series = this.getData(data);
 		final double min = series == null ? 0D : series.getMin().doubleValue();
 		final double max = series == null ? 0D : series.getMax().doubleValue();
-		return min == max ? 0 : min;
+		return ChartNode.scaleMin(min, max);
 	}
 
 	public final Number getAverage() {
-		return this.getDataMap().values().stream().mapToDouble(daya -> daya.getAverage().doubleValue()).average().orElse(0);
+		return this.getDataMap().values().stream().mapToDouble(data -> data.getAverage().doubleValue()).average().orElse(0);
 	}
 
 	public final Number getAverage(final String data) {
@@ -106,6 +107,14 @@ public abstract class ChartNode extends Node {
 
 		this.xAxis.remove(data);
 		return (T) this;
+	}
+
+	protected static double scaleMin(final double min, final double max) {
+		return min == max ? Math.min(0D, min) : min;
+	}
+
+	protected static double scaleMax(final double min, final double max) {
+		return min == max ? max == 0D ? 1D : Math.max(0D, max) : max;
 	}
 
 	public static class ChartAxis {
@@ -204,7 +213,7 @@ public abstract class ChartNode extends Node {
 		private Map<String, Number> dataMap;
 
 		protected ChartData() {
-			this(new HashMap<>());
+			this(new LinkedHashMap<>());
 		}
 
 		protected ChartData(final Map<@NonNull String, @NonNull Number> dataMap) {

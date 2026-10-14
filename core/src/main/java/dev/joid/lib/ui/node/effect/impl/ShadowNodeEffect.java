@@ -20,19 +20,27 @@ public class ShadowNodeEffect extends NodeEffect<Node> {
 	private Supplier<Double> offsetXSupplier;
 	private Supplier<Double> offsetYSupplier;
 
-	protected ShadowNodeEffect(final @NonNull Color color, final float blur, final double offsetX, final double offsetY) {
-		this.blurSupplier    = () -> blur;
-		this.colorSupplier   = () -> color;
-		this.offsetXSupplier = () -> offsetX;
-		this.offsetYSupplier = () -> offsetY;
+	protected ShadowNodeEffect(final @NonNull Supplier<@NonNull Color> colorSupplier, final @NonNull Supplier<Float> blurSupplier, final @NonNull Supplier<Double> offsetXSupplier, final @NonNull Supplier<Double> offsetYSupplier) {
+		this.blurSupplier    = blurSupplier;
+		this.colorSupplier   = colorSupplier;
+		this.offsetXSupplier = offsetXSupplier;
+		this.offsetYSupplier = offsetYSupplier;
 	}
 
 	public static @NonNull ShadowNodeEffect create(final @NonNull Color color, final float blur) {
-		return new ShadowNodeEffect(color, blur, 0D, 0D);
+		return ShadowNodeEffect.create(color, blur, 0D, 0D);
+	}
+
+	public static @NonNull ShadowNodeEffect create(final @NonNull Supplier<@NonNull Color> colorSupplier, final @NonNull Supplier<Float> blurSupplier) {
+		return ShadowNodeEffect.create(colorSupplier, blurSupplier, () -> 0D, () -> 0D);
 	}
 
 	public static @NonNull ShadowNodeEffect create(final @NonNull Color color, final float blur, final double offsetX, final double offsetY) {
-		return new ShadowNodeEffect(color, blur, offsetX, offsetY);
+		return new ShadowNodeEffect(() -> color, () -> blur, () -> offsetX, () -> offsetY);
+	}
+
+	public static @NonNull ShadowNodeEffect create(final @NonNull Supplier<@NonNull Color> colorSupplier, final @NonNull Supplier<Float> blurSupplier, final @NonNull Supplier<Double> offsetXSupplier, final @NonNull Supplier<Double> offsetYSupplier) {
+		return new ShadowNodeEffect(colorSupplier, blurSupplier, offsetXSupplier, offsetYSupplier);
 	}
 
 	public float getBlur() {

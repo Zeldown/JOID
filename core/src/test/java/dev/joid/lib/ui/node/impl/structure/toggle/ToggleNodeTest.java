@@ -102,10 +102,39 @@ public class ToggleNodeTest {
 		final List<Object> changes = new ArrayList<>();
 		final BooleanSignal music = new BooleanSignal(false);
 		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange(event -> changes.add(event.getValue()));
+		this.bridges.open(new NodeUI(toggle));
 		toggle.toggle(true);
 		toggle.toggle(true);
 		Assert.assertTrue(music.get());
 		Assert.assertEquals(Arrays.asList(true), changes);
+	}
+
+	@Test
+	public void letsItsListenersRefuseASetterButNotAForcedSide() {
+		final Toggle toggle = new Toggle().state("on", 0).beforeChange(event -> event.cancel());
+		this.bridges.open(new NodeUI(toggle));
+		toggle.toggle(true);
+		Assert.assertFalse(toggle.isToggle());
+		toggle.forceToggle(true);
+		Assert.assertTrue(toggle.isToggle());
+	}
+
+	@Test
+	public void readsItsSideAsItsValueWithoutStateWhenItHoldsBooleans() {
+		final BooleanToggle toggle = new BooleanToggle();
+		Assert.assertFalse(toggle.<Boolean>getValue());
+		toggle.toggle(true);
+		Assert.assertTrue(toggle.<Boolean>getValue());
+	}
+
+	@Test
+	public void refusesToReadAValueWithoutState() {
+		try {
+			new Toggle().getValue();
+			Assert.fail("A toggle without state has no value");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Toggle has no state, call state(toggle, back) before getValue()", expected.getMessage());
+		}
 	}
 
 	@Test
@@ -149,6 +178,14 @@ public class ToggleNodeTest {
 	public static final class Toggle extends ToggleNode<String, Integer> {
 
 		public Toggle() {
+			super(100D, 100D, 100D, 40D);
+		}
+
+	}
+
+	public static final class BooleanToggle extends ToggleNode<Boolean, Boolean> {
+
+		public BooleanToggle() {
 			super(100D, 100D, 100D, 40D);
 		}
 

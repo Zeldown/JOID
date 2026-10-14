@@ -91,12 +91,13 @@ public class RectNodeTest {
 		final Signal<Color> color = Signal.of(new Color(0.2F, 0.4F, 0.6F, 1F));
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(color);
 		final RectNode mapped = RectNode.create(100D, 300D, 200D, 50D).color(clicks.map(value -> value >= 3 ? Color.GREEN : Color.GRAY));
+		this.bridges.open(new NodeUI(rect, mapped)).frame();
 		color.set(new Color(0.6F, 0.4F, 0.2F, 1F));
-		Assert.assertSame(color.peek(), rect.getColor());
 		Assert.assertSame(Color.GRAY, mapped.getColor());
 		clicks.set(3);
+		this.bridges.frame();
+		Assert.assertSame(color.peek(), rect.getColor());
 		Assert.assertSame(Color.GREEN, mapped.getColor());
-		this.bridges.open(new NodeUI(rect)).frame();
 		this.single(0.6F, 0.4F, 0.2F);
 	}
 
@@ -207,6 +208,19 @@ public class RectNodeTest {
 		Assert.assertEquals(195D, quad.getTop(), 1E-3D);
 		Assert.assertEquals(305D, quad.getRight(), 1E-3D);
 		Assert.assertEquals(255D, quad.getBottom(), 1E-3D);
+	}
+
+	@Test
+	public void writesItsBorderIntoTheBorderEffectItAlreadyHas() {
+		final BorderNodeEffect effect = BorderNodeEffect.create(Color.RED, 2F);
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).<RectNode>effect(effect).borderStroke(5D).borderFill(false);
+		Assert.assertSame(effect, rect.getEffect(BorderNodeEffect.class));
+		Assert.assertEquals(5D, rect.getBorderStroke(), 0D);
+		Assert.assertFalse(rect.isBorderFill());
+		Assert.assertSame(Color.RED, effect.getColorSupplier().get());
+		rect.borderColor(Color.GREEN);
+		Assert.assertSame(effect, rect.getEffect(BorderNodeEffect.class));
+		Assert.assertSame(Color.GREEN, effect.getColorSupplier().get());
 	}
 
 	@Test

@@ -26,6 +26,8 @@ public class ModelNode extends Node {
 		this.size          = 1D;
 		this.rotationYaw   = 0D;
 		this.rotationPitch = 0D;
+
+		super.<ModelNode>require("model", "call model(...) before attaching it", node -> node.model != null);
 	}
 
 	public static @NonNull ModelNode create(final double x, final double y, final double width, final double height) {
@@ -34,7 +36,7 @@ public class ModelNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.model == null || this.size == 0D) {
+		if (this.size == 0D) {
 			return;
 		}
 

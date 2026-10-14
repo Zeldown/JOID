@@ -35,6 +35,7 @@ public class ResourceNode extends Node {
 	protected ResourceNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		super.<ResourceNode>wait(node -> node.isReady());
+		super.<ResourceNode>require("resource", "call resource(...) before attaching it", node -> node.resource != null);
 	}
 
 	public static @NonNull ResourceNode create(final double x, final double y) {
@@ -47,10 +48,6 @@ public class ResourceNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.resource == null) {
-			return;
-		}
-
 		this.resource.prepareBind();
 		if (this.hoveredResource != null) {
 			this.hoveredResource.prepareBind();
@@ -159,10 +156,6 @@ public class ResourceNode extends Node {
 	private boolean isReady() {
 		if (this.hoveredResource != null) {
 			this.hoveredResource.prepareBind();
-		}
-
-		if (this.resource == null) {
-			return false;
 		}
 
 		this.resource.prepareBind();

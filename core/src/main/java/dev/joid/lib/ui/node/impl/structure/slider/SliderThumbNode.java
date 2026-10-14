@@ -14,6 +14,7 @@ public abstract class SliderThumbNode extends Node {
 
 	protected SliderThumbNode(final double width, final double height) {
 		super(0, 0, width, height);
+		super.<SliderThumbNode>require("slider", "pass it to slider.thumb(...) instead of attaching it", node -> node.slider != null);
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public abstract class SliderThumbNode extends Node {
 
 	@Override
 	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
-		if (!this.dragging) {
+		if (!this.dragging || !event.getButton().isLeft()) {
 			return;
 		}
 

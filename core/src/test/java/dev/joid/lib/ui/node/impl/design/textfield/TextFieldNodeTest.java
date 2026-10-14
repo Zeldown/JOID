@@ -151,7 +151,8 @@ public class TextFieldNodeTest {
 	@Test
 	public void reportsEachChangeOfItsText() {
 		final List<Object> changes = new ArrayList<>();
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).onChange(event -> changes.addAll(Arrays.asList(event.getNode(), event.getText(), event.getValue(), event.isValid())));
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).onChange(event -> changes.addAll(Arrays.asList(event.getNode(), event.getText(), event.getValue(), event.isValid())));
+		this.bridges.open(new NodeUI(field));
 		field.text("ab").text("ab");
 		Assert.assertEquals(Arrays.asList(field, "ab", "ab", true), changes);
 		Assert.assertEquals("ab", field.getText());
@@ -159,8 +160,9 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void typesItsCallbacksByTheTypeInferredFromTheContext() {
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).onChange(event -> event.getNode().horizontalAlign(Align.END));
-		final MultilineTextFieldNode notes = MultilineTextFieldNode.create(100D, 100D, 200D, 100D).placeholder("Notes").onFocus(event -> event.getNode().text("focused"));
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).onChange(event -> event.getNode().horizontalAlign(Align.END));
+		final MultilineTextFieldNode notes = MultilineTextFieldNode.create(100D, 100D, 200D, 100D).info(this.info()).placeholder("Notes").onFocus(event -> event.getNode().text("focused"));
+		this.bridges.open(new NodeUI(field, notes));
 		field.text("ab");
 		notes.focused(true);
 		Assert.assertSame(Align.END, field.getHorizontalAlignment());
@@ -320,10 +322,59 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void consumesACharacterOutsideTheBasicPlaneItCannotShow() {
+	public void movesAndErasesAnEmojiAsOneCharacter() {
+		final TextFieldNode field = this.field("a\uD83D\uDE00b").cursorPosition(2);
+		Assert.assertEquals(1, field.getCursorPos());
+		this.press(field, Key.RIGHT);
+		Assert.assertEquals(3, field.getCursorPos());
+		this.press(field, Key.LEFT);
+		Assert.assertEquals(1, field.getCursorPos());
+		this.press(field, Key.DELETE);
+		Assert.assertEquals("ab", field.getText());
+		final TextFieldNode other = this.field("a\uD83D\uDE00b").cursorPosition(3);
+		this.press(other, Key.BACKSPACE);
+		Assert.assertEquals("ab", other.getText());
+		Assert.assertEquals(1, other.getCursorPos());
+	}
+
+	@Test
+	public void countsAnEmojiAsOneCharacterOfItsMaximumLength() {
+		Assert.assertEquals("a\uD83D\uDE00", TextFieldNode.create(100D, 100D, 200D).maxTextLength(2).text("a\uD83D\uDE00b").getText());
+		Assert.assertEquals("a", TextFieldNode.create(100D, 100D, 200D).maxTextLength(1).text("a\uD83D\uDE00").getText());
+		final TextFieldNode field = this.field("a").maxTextLength(2).cursorPosition(1);
+		Assert.assertTrue(this.bridges.getUi().charTyped(0x1F600));
+		Assert.assertTrue(this.bridges.getUi().charTyped(0x1F600));
+		Assert.assertEquals("a\uD83D\uDE00", field.getText());
+	}
+
+	@Test
+	public void selectsAnEmojiWholeWithShiftAndArrows() {
+		final TextFieldNode field = this.field("\uD83D\uDE00b").cursorPosition(0);
+		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
+		this.press(field, Key.RIGHT);
+		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
+		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(2, field.getCursorPos());
+		this.type(field, "x");
+		Assert.assertEquals("xb", field.getText());
+	}
+
+	@Test
+	public void refusesToBeAttachedWithoutInfo() {
+		try {
+			this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D)));
+			Assert.fail("A field without info cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The TextFieldNode has no info, call info(...) before attaching it", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void insertsACharacterOutsideTheBasicPlane() {
 		final TextFieldNode field = this.field("ab").cursorPosition(2);
 		Assert.assertTrue(this.bridges.getUi().charTyped(0x1F600));
-		Assert.assertEquals("ab", field.getText());
+		Assert.assertEquals("ab\uD83D\uDE00", field.getText());
+		Assert.assertEquals(4, field.getCursorPos());
 	}
 
 	@Test
@@ -411,14 +462,14 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void dropsTheCharactersItCannotShow() {
+	public void dropsTheControlCharacters() {
 		final List<String> changes = new ArrayList<>();
 		final TextFieldNode field = this.field("ab").onChange(event -> changes.add(event.getText()));
-		this.type(field, "\u0007\u001b\u007f€");
+		this.type(field, "\u0007\u001b\u007f");
 		Assert.assertEquals("ab", field.getText());
 		Assert.assertTrue(changes.isEmpty());
-		this.type(field, "é");
-		Assert.assertEquals("éab", field.getText());
+		this.type(field, "€");
+		Assert.assertEquals("€ab", field.getText());
 	}
 
 	@Test
@@ -1128,10 +1179,10 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void dropsTheCharactersItCannotShowFromEveryText() {
+	public void dropsTheControlCharactersOfEveryText() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).text("a\u00a7b\tc\u20ac\nd");
-		Assert.assertEquals("abcd", field.getText());
-		Assert.assertEquals("xy", field.format(text -> "x\ty\u20ac").text("z").getText());
+		Assert.assertEquals("a\u00a7bc\u20acd", field.getText());
+		Assert.assertEquals("xy\u20ac", field.format(text -> "x\ty\u20ac").text("z").getText());
 	}
 
 	@Test

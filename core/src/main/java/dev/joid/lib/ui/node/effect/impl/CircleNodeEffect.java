@@ -14,7 +14,7 @@ public class CircleNodeEffect extends NodeEffect<Node> {
 		super(100);
 	}
 
-	public static CircleNodeEffect create() {
+	public static @NonNull CircleNodeEffect create() {
 		return new CircleNodeEffect();
 	}
 

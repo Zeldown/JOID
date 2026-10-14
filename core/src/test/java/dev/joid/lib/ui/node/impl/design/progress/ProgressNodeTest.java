@@ -42,6 +42,14 @@ public class ProgressNodeTest {
 	}
 
 	@Test
+	public void fillsNoMoreThanItsBox() {
+		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D).progress(1.5F);
+		this.open(progress);
+		this.assertFill(100D, 100D, 300D, 150D);
+		Assert.assertEquals(1.5F, progress.getProgress(), 0F);
+	}
+
+	@Test
 	public void fillsFromTheRight() {
 		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.25F).direction(ProgressDirection.RIGHT_TO_LEFT));
 		this.assertFill(250D, 100D, 300D, 150D);
@@ -80,10 +88,23 @@ public class ProgressNodeTest {
 	}
 
 	@Test
-	public void needsBothResourcesToDrawThem() {
-		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.5F).backgroundResource(ProgressNodeTest.resource()).background(new Color(0.2F, 0.4F, 0.6F, 1F)).foreground(new Color(0.6F, 0.4F, 0.2F, 1F)));
-		Assert.assertEquals(200D, this.single(0.2F, 0.4F, 0.6F).getRight() - this.single(0.2F, 0.4F, 0.6F).getLeft(), 1E-3D);
-		Assert.assertEquals(100D, this.single(0.6F, 0.4F, 0.2F).getRight() - this.single(0.6F, 0.4F, 0.2F).getLeft(), 1E-3D);
+	public void refusesABackgroundResourceWithoutForegroundResource() {
+		try {
+			this.open(ProgressNode.create(100D, 100D, 200D, 50D).backgroundResource(ProgressNodeTest.resource()));
+			Assert.fail("The resources of a progress bar go by pair");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ProgressNode has no foreground resource, call foregroundResource(...) to go with its background resource before attaching it", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void refusesAForegroundResourceWithoutBackgroundResource() {
+		try {
+			this.open(ProgressNode.create(100D, 100D, 200D, 50D).foregroundResource(ProgressNodeTest.resource()));
+			Assert.fail("The resources of a progress bar go by pair");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ProgressNode has no background resource, call backgroundResource(...) to go with its foreground resource before attaching it", expected.getMessage());
+		}
 	}
 
 	@Test

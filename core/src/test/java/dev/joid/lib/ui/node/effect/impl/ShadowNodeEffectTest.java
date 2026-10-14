@@ -130,6 +130,18 @@ public class ShadowNodeEffectTest {
 		Assert.assertEquals(160D, shadow.getBottom(), 1E-3D);
 	}
 
+	@Test
+	public void startsFromSuppliedValues() {
+		final double[] offset = {1D};
+		final ShadowNodeEffect effect = ShadowNodeEffect.create(() -> Color.GREEN, () -> 4F, () -> offset[0], () -> -offset[0]);
+		offset[0] = 3D;
+		Assert.assertSame(Color.GREEN, effect.getColor());
+		Assert.assertEquals(4F, effect.getBlur(), 0F);
+		Assert.assertEquals(3D, effect.getOffsetX(), 0D);
+		Assert.assertEquals(-3D, effect.getOffsetY(), 0D);
+		Assert.assertEquals(0D, ShadowNodeEffect.create(() -> Color.GREEN, () -> 4F).getOffsetX(), 0D);
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingColor() {
 		ShadowNodeEffect.create(null, 8F);

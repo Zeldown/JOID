@@ -47,7 +47,7 @@ public class DemoSwitchNode extends SwitchNode {
 					.attach(rect);
 				})
 				.onClick(event -> {
-					super.chooseState(state);
+					super.state(state);
 				})
 				.attach(flex);
 			}

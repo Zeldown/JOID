@@ -72,6 +72,19 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void zoomsInsideASuppliedSizeRange() {
+		final double[] max = {3D};
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D);
+		Assert.assertSame(viewer, viewer.sizeRange(() -> 0.5D, () -> max[0]));
+		max[0] = 4D;
+		Assert.assertEquals(4D, viewer.zoom(5D).getTargetSize(), 0D);
+		Assert.assertEquals(0.5D, viewer.zoom(0D).getTargetSize(), 0D);
+		Assert.assertSame(viewer, viewer.rotationYawRange(() -> -5D, () -> 5D).rotationPitchRange(() -> -2D, () -> 2D));
+		Assert.assertEquals(5D, viewer.getMaxRotationYaw(), 0D);
+		Assert.assertEquals(-2D, viewer.getMinRotationPitch(), 0D);
+	}
+
+	@Test
 	public void easesItsSizeTowardsTheZoom() {
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
@@ -156,10 +169,13 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
-	public void staysStillWithoutModel() {
-		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D));
-		this.bridges.move(250D, 180D).frame();
-		Assert.assertEquals(0D, viewer.getTargetRotationYaw(), 0D);
+	public void refusesToBeAttachedWithoutModel() {
+		try {
+			this.bridges.open(new NodeUI(ModelViewerNode.create(100D, 100D, 200D, 200D)));
+			Assert.fail("A model viewer without model cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ModelViewerNode has no model, call model(...) before attaching it", expected.getMessage());
+		}
 	}
 
 	private ModelViewerNode drag(final ModelViewerNode viewer) {

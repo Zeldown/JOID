@@ -6,19 +6,19 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
+import lombok.Getter;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
+@Getter
 public class CircleNode extends Node {
 
-	private Supplier<Color> color;
-	private Supplier<Color> hoveredColor;
+	private Color color;
+	private Color hoveredColor;
 
 	protected CircleNode(final double x, final double y, final double diameter) {
 		super(x, y, diameter, diameter);
 
-		this.color = () -> Color.WHITE;
-		this.hoveredColor = () -> null;
+		this.color = Color.TRANSPARENT;
 	}
 
 	public static @NonNull CircleNode create(final double x, final double y, final double diameter) {
@@ -27,8 +27,7 @@ public class CircleNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final Color hoveredColor = this.hoveredColor.get();
-		final Color color = hoveredColor != null ? this.color.get().to(hoveredColor, super.hoverValue(1F)) : this.color.get();
+		final Color color = this.hoveredColor != null ? this.color.to(this.hoveredColor, super.hoverValue(1F)) : this.color;
 		DrawUtils.SHAPE.drawCircle(super.getX() + super.dw(2D), super.getY() + super.dh(2D), color, Math.min(super.getWidth(), super.getHeight()) / 2D);
 	}
 
@@ -42,21 +41,12 @@ public class CircleNode extends Node {
 				);
 	}
 
-	public final Color getHoveredColor() {
-		return this.hoveredColor.get();
-	}
-
-	public final @NonNull Color getColor() {
-		return this.color.get();
-	}
-
 	public final <T extends CircleNode> @NonNull T color(final @NonNull Color color) {
 		return this.color(Signal.from(color));
 	}
 
 	public final <T extends CircleNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color) {
-		this.color = color;
-		return (T) this;
+		return super.follow("color", color, (final CircleNode node, final Color value) -> node.color = value);
 	}
 
 	public final <T extends CircleNode> @NonNull T hoveredColor(final Color hoveredColor) {
@@ -64,8 +54,7 @@ public class CircleNode extends Node {
 	}
 
 	public final <T extends CircleNode> @NonNull T hoveredColor(final @NonNull Supplier<Color> hoveredColor) {
-		this.hoveredColor = hoveredColor;
-		return (T) this;
+		return super.follow("hoveredColor", hoveredColor, (final CircleNode node, final Color value) -> node.hoveredColor = value);
 	}
 
 }

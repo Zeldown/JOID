@@ -60,10 +60,6 @@ public class ModelViewerNode extends ModelNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (super.getModel() == null) {
-			return;
-		}
-
 		this.sync();
 
 		if(this.dragged) {
@@ -160,20 +156,32 @@ public class ModelViewerNode extends ModelNode {
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYawRange(final double min, final double max) {
-		this.maxRotationYaw = Signal.from(max);
-		this.minRotationYaw = Signal.from(min);
+		return this.rotationYawRange(Signal.from(min), Signal.from(max));
+	}
+
+	public final <T extends ModelViewerNode> @NonNull T rotationYawRange(final @NonNull Supplier<Double> min, final @NonNull Supplier<Double> max) {
+		this.minRotationYaw = min;
+		this.maxRotationYaw = max;
 		return (T) this;
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitchRange(final double min, final double max) {
-		this.maxRotationPitch = Signal.from(max);
-		this.minRotationPitch = Signal.from(min);
+		return this.rotationPitchRange(Signal.from(min), Signal.from(max));
+	}
+
+	public final <T extends ModelViewerNode> @NonNull T rotationPitchRange(final @NonNull Supplier<Double> min, final @NonNull Supplier<Double> max) {
+		this.minRotationPitch = min;
+		this.maxRotationPitch = max;
 		return (T) this;
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T sizeRange(final double min, final double max) {
-		this.maxSize = Signal.from(max);
-		this.minSize = Signal.from(min);
+		return this.sizeRange(Signal.from(min), Signal.from(max));
+	}
+
+	public final <T extends ModelViewerNode> @NonNull T sizeRange(final @NonNull Supplier<Double> min, final @NonNull Supplier<Double> max) {
+		this.minSize = min;
+		this.maxSize = max;
 		return (T) this;
 	}
 

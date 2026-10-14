@@ -16,6 +16,23 @@ public class IntegerSliderNodeTest {
 	}
 
 	@Test
+	public void spansARangeByItsStep() {
+		final Slider slider = new Slider().range(0, 10, 4);
+		Assert.assertEquals(Arrays.asList(0, 4, 8), new ArrayList<>(slider.getValueSet()));
+		Assert.assertEquals(0, slider.getValue().intValue());
+	}
+
+	@Test
+	public void refusesAStepThatIsNotPositive() {
+		try {
+			new Slider().range(0, 10, 0);
+			Assert.fail("A step of 0 never reaches the end of the range");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The step 0 of the slider range must be positive, pass a step of 1 or more", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void keepsTheOrderOfItsValues() {
 		final Slider slider = new Slider().values(30, 10, 20).value(20);
 		Assert.assertEquals(Arrays.asList(30, 10, 20), new ArrayList<>(slider.getValueSet()));

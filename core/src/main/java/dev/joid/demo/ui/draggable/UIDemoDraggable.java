@@ -115,9 +115,9 @@ public class UIDemoDraggable extends UIDemo {
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
 			final DraggableProperty nearest = DraggableProperty.free();
-			nearest.snap(RectNode.create(40, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
-			nearest.snap(RectNode.create(160, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
-			nearest.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
+			nearest.snap(RectNode.create(20, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
+			nearest.snap(RectNode.create(150, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
+			nearest.snap(RectNode.create(280, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
 			RectNode
 			.create(160, 150, 80, 80)
 			.color(UIDemoDraggable.INK)

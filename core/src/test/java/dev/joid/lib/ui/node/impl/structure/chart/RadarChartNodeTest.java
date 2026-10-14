@@ -92,7 +92,7 @@ public class RadarChartNodeTest {
 	@Test
 	public void spreadsTheScaleOfFlatValues() {
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(RadarChartData.create("speed", 4)).data(RadarChartData.create("power", 4));
-		Assert.assertEquals(8D, chart.getMax().doubleValue(), 0D);
+		Assert.assertEquals(4D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(0D, chart.getMin().doubleValue(), 0D);
 	}
 
@@ -104,9 +104,9 @@ public class RadarChartNodeTest {
 	}
 
 	@Test
-	public void givesAUnitScaleToValuesUpToZero() {
+	public void endsTheScaleOfValuesUpToZeroAtZero() {
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(RadarChartData.create("speed", -4)).data(RadarChartData.create("power", 0));
-		Assert.assertEquals(1D, chart.getMax().doubleValue(), 0D);
+		Assert.assertEquals(0D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(-4D, chart.getMin().doubleValue(), 0D);
 	}
 

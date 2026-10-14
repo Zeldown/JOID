@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
@@ -16,7 +17,6 @@ import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 @SuppressWarnings("unchecked")
 public abstract class SelectorNode<V> extends Node {
 
@@ -25,11 +25,15 @@ public abstract class SelectorNode<V> extends Node {
 
 	private final Map<Node, V> optionMap;
 
-	private Signal<V>         signal;
-	private SelectorDirection direction;
+	@Getter private Signal<V>         signal;
+	@Getter private SelectorDirection direction;
 
-	private Node    selected;
-	private boolean active;
+	@Getter private Node    selected;
+	@Getter private boolean active;
+
+	private V      pendingValue;
+	private double raise;
+	private double raisedLayoutY;
 
 	protected SelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -38,6 +42,8 @@ public abstract class SelectorNode<V> extends Node {
 		this.direction = SelectorDirection.DOWN;
 		this.active    = false;
 		this.selected  = null;
+
+		super.<SelectorNode<V>>require("values", "call values(...) before attaching it", node -> !node.optionMap.isEmpty());
 	}
 
 	protected abstract @NonNull Node option(final @NonNull V value);
@@ -46,10 +52,6 @@ public abstract class SelectorNode<V> extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (super.getChildren().isEmpty()) {
-			return;
-		}
-
 		for (final Node child : super.getChildren()) {
 			if (!this.optionMap.containsKey(child)) {
 				super.remove(child);
@@ -57,34 +59,38 @@ public abstract class SelectorNode<V> extends Node {
 			}
 		}
 
-		if (this.selected == null) {
-			this.selected = super.getChildren().get(0);
-		}
+		final double size = super.getDefaultHeight();
+		final double height = this.active ? size * this.optionMap.size() : size;
+		final double raise = this.direction.isDown() ? 0D : height - size;
+		final double layoutY = super.getLayoutY() == this.raisedLayoutY ? super.getLayoutY() + this.raise : super.getLayoutY();
+		this.raise = raise;
+		this.raisedLayoutY = layoutY - raise;
+		super.layoutPosition(this, super.getLayoutX(), this.raisedLayoutY);
 
-		this.selected.y(0);
+		this.selected.y(raise);
 
-		double oy = super.getDefaultHeight();
+		double oy = this.direction.isDown() ? size : raise - size;
 		for (final Node child : super.getChildren()) {
 			child.x(0);
 			child.width(super.getDefaultWidth());
-			child.height(super.getDefaultHeight());
+			child.height(size);
 
 			if (this.isSelected(child)) {
 				continue;
 			}
 
-			child.y(this.direction.isDown() ? oy : -oy);
+			child.y(oy);
 			child.visible(node -> this.active || this.isSelected(node));
-			oy += super.getDefaultHeight();
+			oy += this.direction.isDown() ? size : -size;
 		}
 
-		super.height(this.active && this.direction.isDown() ? oy : super.getDefaultHeight());
+		super.height(height);
 		this.drawBackground(mouseX, mouseY);
 	}
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (this.selected == null || !event.getButton().isLeft()) {
+		if (!event.getButton().isLeft()) {
 			return;
 		}
 
@@ -129,7 +135,11 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final V getValue() {
-		return this.selected == null ? null : this.optionMap.get(this.selected);
+		if (this.optionMap.isEmpty()) {
+			throw new IllegalStateException("The " + this.getClass().getSimpleName() + " has no values, call values(...) before getValue()");
+		}
+
+		return this.optionMap.get(this.selected);
 	}
 
 	public final @NonNull Map<Node, V> getOptionMap() {
@@ -142,7 +152,9 @@ public abstract class SelectorNode<V> extends Node {
 			throw new IllegalArgumentException("A selector needs at least one option");
 		}
 
-		final V previous = this.getValue();
+		final V previous = this.optionMap.get(this.selected);
+		final V pending = this.pendingValue;
+		this.pendingValue = null;
 		super.clearChildren();
 		this.optionMap.clear();
 		for (final V option : values) {
@@ -151,20 +163,37 @@ public abstract class SelectorNode<V> extends Node {
 			super.append(node);
 		}
 
-		if (this.optionMap.containsValue(previous)) {
-			this.selected = this.find(previous);
+		final V value;
+		if (pending != null) {
+			value = pending;
+		} else if (previous == null && this.signal != null && this.optionMap.containsValue(this.signal.peek())) {
+			value = this.signal.peek();
+		} else if (this.optionMap.containsValue(previous)) {
+			value = previous;
 		} else {
-			this.select(this.find(values[0]), false);
+			value = values[0];
+		}
+
+		if (Objects.equals(value, previous)) {
+			this.selected = this.find(value);
+		} else {
+			this.change(this.find(value), previous, false);
 		}
 		return (T) this;
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull V value) {
-		return this.value(Signal.from(value));
+		final ComputedSignal<V> source = Signal.from(value);
+		final boolean refusable = source.isConstant();
+		return super.follow("value", source, (final SelectorNode<V> node, final V option) -> node.choose(option, refusable));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Supplier<@NonNull V> value) {
-		return super.follow("value", value, (final SelectorNode<V> node, final V option) -> node.select(node.find(option), false));
+		return super.follow("value", value, (final SelectorNode<V> node, final V option) -> node.choose(option, false));
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T forceValue(final @NonNull V value) {
+		return super.follow("value", Signal.from(value), (final SelectorNode<V> node, final V option) -> node.choose(option, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
@@ -214,16 +243,27 @@ public abstract class SelectorNode<V> extends Node {
 				return entry.getKey();
 			}
 		}
-		throw new IllegalArgumentException("The value " + value + " is not an option of the selector");
+		throw new IllegalArgumentException("The value " + value + " is not an option of the " + this.getClass().getSimpleName() + " " + this.optionMap.values() + ", pass one of them or add it with values(...)");
 	}
 
-	private void select(final Node option, final boolean user) {
-		if (option == this.selected) {
+	private void choose(final V value, final boolean refusable) {
+		if (this.optionMap.isEmpty()) {
+			this.pendingValue = value;
 			return;
 		}
 
+		this.select(this.find(value), refusable);
+	}
+
+	private void select(final Node option, final boolean refusable) {
+		if (option != this.selected) {
+			this.change(option, this.optionMap.get(this.selected), refusable);
+		}
+	}
+
+	private void change(final Node option, final V previous, final boolean refusable) {
 		final V value = this.optionMap.get(option);
-		super.change(SelectorNode.BEFORE_CHANGE, SelectorNode.CHANGE, this.getValue(), value, user, () -> {
+		super.change(SelectorNode.BEFORE_CHANGE, SelectorNode.CHANGE, previous, value, refusable, () -> {
 			this.selected = option;
 			this.active   = false;
 			super.sync(this.signal, value);

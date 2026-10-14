@@ -64,8 +64,9 @@ public class FieldNodeEventTest {
 	}
 
 	@Test
-	public void refusesOnlyTheChangesOfTheUser() {
+	public void refusesTheUserAndTheSettersButNeitherTheForcedTextNorTheSuppliers() {
 		final List<String> proposals = new ArrayList<>();
+		final StringSignal text = new StringSignal("supplied");
 		final TextFieldNode field = this.field().beforeChange(event -> {
 			proposals.add(event.getText());
 			event.cancel();
@@ -74,8 +75,12 @@ public class FieldNodeEventTest {
 		field.charTyped(NodeCharEvent.create(field, 'c', null));
 		Assert.assertEquals("ab", field.getText());
 		field.text("xyz");
+		Assert.assertEquals("ab", field.getText());
+		field.forceText("xyz");
 		Assert.assertEquals("xyz", field.getText());
-		Assert.assertEquals(Collections.singletonList("abc"), proposals);
+		field.text(text);
+		Assert.assertEquals("supplied", field.getText());
+		Assert.assertEquals(Arrays.asList("abc", "xyz"), proposals);
 	}
 
 	@Test

@@ -119,10 +119,35 @@ public class CheckboxNodeTest {
 		final List<Boolean> changes = new ArrayList<>();
 		final BooleanSignal subtitles = new BooleanSignal(false);
 		final Checkbox checkbox = new Checkbox().signal(subtitles).onChange(event -> changes.add(event.getValue()));
+		this.bridges.open(new NodeUI(checkbox));
 		checkbox.checked(true);
 		checkbox.checked(true);
 		Assert.assertTrue(subtitles.get());
 		Assert.assertEquals(Arrays.asList(true), changes);
+	}
+
+	@Test
+	public void reportsNoChangeForItsStartingState() {
+		final List<Boolean> changes = new ArrayList<>();
+		final Checkbox checkbox = new Checkbox().onChange(event -> changes.add(event.getValue())).checked(true).beforeChange(event -> event.cancel());
+		this.bridges.open(new NodeUI(checkbox));
+		Assert.assertTrue(checkbox.isChecked());
+		Assert.assertTrue(changes.isEmpty());
+	}
+
+	@Test
+	public void letsItsListenersRefuseASetterButNeitherAForcedStateNorASupplier() {
+		final List<Boolean> changes = new ArrayList<>();
+		final BooleanSignal subtitles = new BooleanSignal(false);
+		final Checkbox checkbox = new Checkbox().<Checkbox>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
+		this.bridges.open(new NodeUI(checkbox));
+		checkbox.checked(true);
+		Assert.assertFalse(checkbox.isChecked());
+		checkbox.forceChecked(true);
+		Assert.assertTrue(checkbox.isChecked());
+		checkbox.checked(subtitles);
+		Assert.assertFalse(checkbox.isChecked());
+		Assert.assertEquals(Arrays.asList(true, false), changes);
 	}
 
 	@Test

@@ -14,6 +14,10 @@ public abstract class DoubleSliderNode extends SliderNode<Double> {
 	}
 
 	public final <T extends DoubleSliderNode> @NonNull T range(final double min, final double max, final double step) {
+		if (step <= 0D) {
+			throw new IllegalArgumentException("The step " + step + " of the slider range must be positive, pass a step above 0");
+		}
+
 		final List<Double> values = new ArrayList<>();
 		for (BigDecimal i = BigDecimal.valueOf(min); i.doubleValue() <= max; i = i.add(BigDecimal.valueOf(step))) {
 			values.add(i.doubleValue());

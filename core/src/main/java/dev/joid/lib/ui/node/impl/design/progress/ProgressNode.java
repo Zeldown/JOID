@@ -29,6 +29,9 @@ public class ProgressNode extends Node {
 		this.direction  = ProgressDirection.LEFT_TO_RIGHT;
 		this.background = Color.BLACK;
 		this.foreground = Color.WHITE;
+
+		super.<ProgressNode>require("foreground resource", "call foregroundResource(...) to go with its background resource before attaching it", node -> node.backgroundResource == null || node.foregroundResource != null);
+		super.<ProgressNode>require("background resource", "call backgroundResource(...) to go with its foreground resource before attaching it", node -> node.foregroundResource == null || node.backgroundResource != null);
 	}
 
 	public static @NonNull ProgressNode create(final double x, final double y, final double width, final double height) {
@@ -96,10 +99,14 @@ public class ProgressNode extends Node {
 		return super.follow("foregroundResource", foregroundResource, (final ProgressNode node, final Resource value) -> node.foregroundResource = value);
 	}
 
+	private float getShownProgress() {
+		return Math.min(1F, Math.max(0F, this.progress));
+	}
+
 	private double getProgressX() {
 		switch (this.direction) {
 		case RIGHT_TO_LEFT:
-			return super.getX() + super.getWidth() * (1 - this.progress);
+			return super.getX() + super.getWidth() * (1 - this.getShownProgress());
 		default:
 			return super.getX();
 		}
@@ -108,7 +115,7 @@ public class ProgressNode extends Node {
 	private double getProgressY() {
 		switch (this.direction) {
 		case BOTTOM_TO_TOP:
-			return super.getY() + super.getHeight() * (1 - this.progress);
+			return super.getY() + super.getHeight() * (1 - this.getShownProgress());
 		default:
 			return super.getY();
 		}
@@ -117,9 +124,9 @@ public class ProgressNode extends Node {
 	private double getProgressWidth() {
 		switch (this.direction) {
 		case LEFT_TO_RIGHT:
-			return super.getWidth() * this.progress;
+			return super.getWidth() * this.getShownProgress();
 		case RIGHT_TO_LEFT:
-			return super.getWidth() * this.progress;
+			return super.getWidth() * this.getShownProgress();
 		default:
 			return super.getWidth();
 		}
@@ -128,9 +135,9 @@ public class ProgressNode extends Node {
 	private double getProgressHeight() {
 		switch (this.direction) {
 		case TOP_TO_BOTTOM:
-			return super.getHeight() * this.progress;
+			return super.getHeight() * this.getShownProgress();
 		case BOTTOM_TO_TOP:
-			return super.getHeight() * this.progress;
+			return super.getHeight() * this.getShownProgress();
 		default:
 			return super.getHeight();
 		}

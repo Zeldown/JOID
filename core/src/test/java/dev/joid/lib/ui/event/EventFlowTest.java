@@ -26,6 +26,7 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNodeTest.Selector;
 import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.Slider;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.Thumb;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNodeTest.Toggle;
 import dev.joid.lib.ui.shortcut.Shortcut;
@@ -158,7 +159,7 @@ public class EventFlowTest {
 	}
 
 	@Test
-	public void refusesOnlyTheChangesOfTheUser() {
+	public void refusesTheUserAndTheSettersButNeitherTheSignalsNorTheForcedValues() {
 		final BooleanSignal checked = new BooleanSignal(false);
 		final List<Object> changes = new ArrayList<>();
 		final Checkbox checkbox = new Checkbox();
@@ -172,8 +173,11 @@ public class EventFlowTest {
 		checked.set(true);
 		Assert.assertTrue(checkbox.isChecked());
 		checkbox.checked(false);
+		Assert.assertTrue(checkbox.isChecked());
+		checkbox.forceChecked(false);
 		Assert.assertFalse(checkbox.isChecked());
-		Assert.assertEquals(Arrays.asList("refused true", "changed false true", "changed true false"), changes);
+		Assert.assertFalse(checked.get());
+		Assert.assertEquals(Arrays.asList("refused true", "changed false true", "refused false", "changed true false"), changes);
 	}
 
 	@Test
@@ -187,19 +191,20 @@ public class EventFlowTest {
 	}
 
 	@Test
-	public void followsTheSignalsAndSettersOfEveryControlWhateverTheirRefusals() {
+	public void followsTheSignalsAndForcedValuesOfEveryControlWhateverTheirRefusals() {
 		final StringSignal state = new StringSignal("one");
 		final StringSignal option = new StringSignal("first");
 		final IntegerSignal number = new IntegerSignal(1);
 		final List<Object> changes = new ArrayList<>();
 		final Switch control = new Switch().states("one", "two").signal(state).<Switch>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
 		final Selector selector = new Selector().values("first", "second").signal(option).<Selector>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
-		final Slider slider = new Slider().values(1, 2, 3).signal(number).<Slider>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
+		final Slider slider = new Slider().values(1, 2, 3).thumb(new Thumb()).signal(number).<Slider>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new FlowUI(control, selector, slider));
 		state.set("two");
 		option.set("second");
 		number.set(3);
-		slider.value(2);
+		slider.value(1);
+		slider.forceValue(2);
 		Assert.assertEquals("two", control.getState());
 		Assert.assertEquals("second", selector.getValue());
 		Assert.assertEquals(2, slider.getValue().intValue());

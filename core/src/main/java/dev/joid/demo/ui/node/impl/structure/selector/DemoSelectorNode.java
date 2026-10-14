@@ -43,7 +43,7 @@ public class DemoSelectorNode extends SelectorNode<String> {
 	@Override
 	public void drawBackground(final double mouseX, final double mouseY) {
 		if (super.isActive()) {
-			DrawUtils.SHAPE.drawRect(super.getX() - 2D, super.getY() - (super.getDirection().isDown() ? 2D : super.getHeight() * (super.getOptionMap().size() - 1) + 2D), super.getWidth() + 4D, super.getDefaultHeight() * super.getOptionMap().size() + 4D, DemoSelectorNode.INK);
+			DrawUtils.SHAPE.drawRect(super.getX() - 2D, super.getY() - 2D, super.getWidth() + 4D, super.getHeight() + 4D, DemoSelectorNode.INK);
 		}
 	}
 

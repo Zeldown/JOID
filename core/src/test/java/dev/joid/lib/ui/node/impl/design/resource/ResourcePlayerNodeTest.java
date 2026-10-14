@@ -51,9 +51,13 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
-	public void drawsASkeletonWithoutResource() {
-		this.bridges.open(new NodeUI(ResourcePlayerNode.create(300D, 300D, 50D, 40D)));
-		this.assertBounds(this.skeleton(), 300D, 300D, 350D, 340D);
+	public void refusesToBeAttachedWithoutResource() {
+		try {
+			this.bridges.open(new NodeUI(ResourcePlayerNode.create(300D, 300D, 50D, 40D)));
+			Assert.fail("A player without resource cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ResourcePlayerNode has no resource, call resource(...) before attaching it", expected.getMessage());
+		}
 	}
 
 	@Test

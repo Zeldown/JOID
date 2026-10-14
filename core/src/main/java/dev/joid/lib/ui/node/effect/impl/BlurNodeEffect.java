@@ -19,13 +19,17 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Float> radiusSupplier;
 
-	protected BlurNodeEffect(final float radius) {
+	protected BlurNodeEffect(final @NonNull Supplier<Float> radiusSupplier) {
 		super(150);
-		this.radiusSupplier = () -> radius;
+		this.radiusSupplier = radiusSupplier;
 	}
 
 	public static @NonNull BlurNodeEffect create(final float radius) {
-		return new BlurNodeEffect(radius);
+		return new BlurNodeEffect(() -> radius);
+	}
+
+	public static @NonNull BlurNodeEffect create(final @NonNull Supplier<Float> radiusSupplier) {
+		return new BlurNodeEffect(radiusSupplier);
 	}
 
 	@Override

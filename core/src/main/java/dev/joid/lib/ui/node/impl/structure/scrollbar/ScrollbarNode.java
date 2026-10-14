@@ -21,14 +21,12 @@ public abstract class ScrollbarNode extends Node {
 	protected ScrollbarNode(final double x, final double y, final double width, final double height, final @NonNull BoundingBox scroll) {
 		super(x, y, width, height);
 		this.scroll = scroll;
+
+		super.<ScrollbarNode>require("scrolled node", "pass it to node.scrollbar(...) instead of attaching it", node -> node.scrollNode != null);
 	}
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.scrollNode == null) {
-			return;
-		}
-
 		if (this.dragging) {
 			if (this.isHorizontal() && this.scrollNode.hasOverflowX()) {
 				final double newX = Math.min(Math.max(super.getDefaultX(), mouseX - super.getAbsoluteDefaultX() + super.getDefaultX() - super.dw(2D)), super.getDefaultX() + this.getScrollWidth());

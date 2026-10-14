@@ -56,9 +56,13 @@ public class ModelNodeTest {
 	}
 
 	@Test
-	public void drawsNothingWithoutModel() {
-		this.bridges.open(new NodeUI(ModelNode.create(100D, 100D, 200D, 200D))).frame();
-		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
+	public void refusesToBeAttachedWithoutModel() {
+		try {
+			this.bridges.open(new NodeUI(ModelNode.create(100D, 100D, 200D, 200D)));
+			Assert.fail("A model node without model cannot be attached");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ModelNode has no model, call model(...) before attaching it", expected.getMessage());
+		}
 	}
 
 	@Test
@@ -140,7 +144,7 @@ public class ModelNodeTest {
 	}
 
 	@RequiredArgsConstructor
-	private static final class RecordingModel implements IDrawableModel {
+	public static final class RecordingModel implements IDrawableModel {
 
 		private final double width;
 		private final double height;

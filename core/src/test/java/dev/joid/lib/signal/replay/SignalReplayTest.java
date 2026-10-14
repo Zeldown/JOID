@@ -60,6 +60,7 @@ public class SignalReplayTest {
 		Assert.assertEquals("Frame 0, clicks 5", SignalReplayTest.node(ui, 13).getText().get());
 		Assert.assertEquals(50D, SignalReplayTest.node(ui, 14).getSizeX().get(), 0D);
 		Assert.assertEquals(5D, SignalReplayTest.node(ui, 14).getSizeY().get(), 0D);
+		this.bridges.frame();
 		Assert.assertSame(Color.GREEN, ((RectNode) ui.getNodeList().get(15)).getColor());
 		ui.getOther().set(7);
 		Assert.assertEquals("B 7", SignalReplayTest.node(ui, 9).getText().get());

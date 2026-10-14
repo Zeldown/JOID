@@ -177,7 +177,8 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void reportsEachChangeOfItsText() {
 		final List<Object> changes = new ArrayList<>();
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).onChange(event -> changes.addAll(Arrays.asList(event.getNode(), event.getText(), event.getValue(), event.isValid())));
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldNodeTest.INK)).onChange(event -> changes.addAll(Arrays.asList(event.getNode(), event.getText(), event.getValue(), event.isValid())));
+		this.bridges.open(new NodeUI(field));
 		field.text("a\nb").text("a\nb");
 		Assert.assertEquals(Arrays.asList(field, "a\nb", "a\nb", true), changes);
 	}
@@ -254,7 +255,7 @@ public class MultilineTextFieldNodeTest {
 	public void turnsATypedCarriageReturnIntoALineBreak() {
 		final MultilineTextFieldNode field = this.field("");
 		this.type(field, "a\rb\tc\u0007\u007f€");
-		Assert.assertEquals("a\nbc", field.getText());
+		Assert.assertEquals("a\nbc€", field.getText());
 	}
 
 	@Test
@@ -1157,9 +1158,9 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void dropsTheCharactersItCannotShowFromEveryText() {
+	public void dropsTheControlCharactersOfEveryText() {
 		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).text("a\u00a7b\tc\u20ac\nd");
-		Assert.assertEquals("abc\nd", field.getText());
+		Assert.assertEquals("a\u00a7bc\u20ac\nd", field.getText());
 		Assert.assertEquals("x\ny", field.format(text -> "x\r\ny\t").text("z").getText());
 	}
 

@@ -33,19 +33,19 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 		this.bottomSupplier = bottomSupplier;
 	}
 
-	public static RoundedNodeEffect create(final float radius) {
+	public static @NonNull RoundedNodeEffect create(final float radius) {
 		return new RoundedNodeEffect(radius, true, true, true, true);
 	}
 
-	public static RoundedNodeEffect create(final @NonNull Supplier<Float> radiusSupplier) {
+	public static @NonNull RoundedNodeEffect create(final @NonNull Supplier<Float> radiusSupplier) {
 		return RoundedNodeEffect.create(radiusSupplier, () -> true, () -> true, () -> true, () -> true);
 	}
 
-	public static RoundedNodeEffect create(final float radius, final boolean left, final boolean top, final boolean right, final boolean bottom) {
+	public static @NonNull RoundedNodeEffect create(final float radius, final boolean left, final boolean top, final boolean right, final boolean bottom) {
 		return new RoundedNodeEffect(radius, left, top, right, bottom);
 	}
 
-	public static RoundedNodeEffect create(final @NonNull Supplier<Float> radiusSupplier, final @NonNull Supplier<Boolean> leftSupplier, final @NonNull Supplier<Boolean> topSupplier, final @NonNull Supplier<Boolean> rightSupplier, final @NonNull Supplier<Boolean> bottomSupplier) {
+	public static @NonNull RoundedNodeEffect create(final @NonNull Supplier<Float> radiusSupplier, final @NonNull Supplier<Boolean> leftSupplier, final @NonNull Supplier<Boolean> topSupplier, final @NonNull Supplier<Boolean> rightSupplier, final @NonNull Supplier<Boolean> bottomSupplier) {
 		return new RoundedNodeEffect(radiusSupplier, leftSupplier, topSupplier, rightSupplier, bottomSupplier);
 	}
 

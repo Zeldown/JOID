@@ -1,9 +1,11 @@
 package dev.joid.demo.replay;
 
+import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
@@ -11,6 +13,7 @@ import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.design.model.ModelNode;
+import dev.joid.lib.ui.node.impl.design.model.ModelNodeTest.RecordingModel;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode.ProgressDirection;
 import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
@@ -99,9 +102,11 @@ public class SetterUI extends UI {
 		.volume(1F - this.step.get() / 10F)
 		.loop(this.step.get() > 0)
 		.location(Point.create(this.step.get(), 0D, 1D))
+		.resource(ResourceBuilder.create().cache(null).of(new RecordingTexture().allocate(4, 4)))
 		.attach(this);
 		this.model = ModelNode
 		.create(0D, 0D, 10D, 10D)
+		.model(new RecordingModel(2D, 2D, 2D))
 		.size(1D + this.step.get())
 		.rotationYaw(this.step.get() * 90D)
 		.attach(this);
