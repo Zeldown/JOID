@@ -46,11 +46,9 @@ public final class MsdfOpenTypeSource extends MsdfSource {
 	@Override
 	protected @NonNull MsdfFontFace parse() throws IOException {
 		final byte[] font = this.asset.read();
-		this.file = MsdfFontCache.locate(font);
-		this.generated = !this.file.isFile();
-		if (this.generated) {
-			MsdfFontCache.generate(font, this.file);
-		}
+		final File cached = MsdfFontCache.find(font);
+		this.generated = cached == null;
+		this.file = this.generated ? MsdfFontCache.resolve(font) : cached;
 
 		try {
 			return MsdfBinarySource.of(this.file).read();
@@ -60,7 +58,7 @@ public final class MsdfOpenTypeSource extends MsdfSource {
 			}
 
 			this.generated = true;
-			MsdfFontCache.generate(font, this.file);
+			this.file = MsdfFontCache.regenerate(font);
 			return MsdfBinarySource.of(this.file).read();
 		}
 	}

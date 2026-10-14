@@ -59,7 +59,7 @@ public final class SnapshotRunner {
 		this.window    = new SnapshotWindowBridge();
 		this.bridge    = new SnapshotUIBridge();
 		this.backend   = backend;
-		this.locator   = new SnapshotUrlAssetLocator(SnapshotSettings.getCache());
+		this.locator   = new SnapshotUrlAssetLocator();
 		this.devMode   = JOIDEnv.isDevMode();
 		this.restorers = Arrays.asList(SnapshotRunner.restorer(BridgeHandler.UI), SnapshotRunner.restorer(BridgeHandler.AUDIO), SnapshotRunner.restorer(BridgeHandler.CLOCK), SnapshotRunner.restorer(BridgeHandler.WINDOW), SnapshotRunner.restorer(BridgeHandler.RENDER), SnapshotRunner.restorer(BridgeHandler.THREAD), SnapshotRunner.restorer(BridgeHandler.SIGNAL_REPLAY));
 	}

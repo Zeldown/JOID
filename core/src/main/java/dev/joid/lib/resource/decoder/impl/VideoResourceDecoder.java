@@ -1,12 +1,12 @@
 package dev.joid.lib.resource.decoder.impl;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,13 +18,14 @@ import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegLogCallback;
 import org.bytedeco.javacv.Frame;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.FileAsset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.cache.FileCache;
+import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
@@ -36,6 +37,8 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 public final class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback {
+
+	private static final FileCacheArea AREA = FileCache.area("video").retention(Duration.ofDays(7L));
 
 	private final Asset asset;
 	private final Object grabberLock = new Object();
@@ -51,7 +54,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private File    shared;
 	private int     readers;
 	private boolean closed;
-	private boolean copied;
 
 	private Thread decodeThread;
 	private FFmpegFrameGrabber grabber;
@@ -498,7 +500,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		if (this.shared == null) {
 			final File file = this.asset.getFile();
 			this.shared = file != null ? file : VideoResourceDecoder.extract(this.asset);
-			this.copied = file == null;
 		}
 
 		this.readers++;
@@ -508,25 +509,19 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private synchronized void unshare() {
 		this.readers--;
 		if (this.closed) {
-			this.deleteCopy();
+			this.forgetCopy();
 		}
 	}
 
 	private synchronized void close() {
 		this.closed = true;
-		this.deleteCopy();
+		this.forgetCopy();
 	}
 
-	private void deleteCopy() {
-		if (this.readers > 0 || this.shared == null) {
-			return;
+	private void forgetCopy() {
+		if (this.readers == 0) {
+			this.shared = null;
 		}
-
-		if (this.copied) {
-			this.shared.delete();
-		}
-		this.shared = null;
-		this.copied = false;
 	}
 
 	private void seekGrabber(final long microseconds) throws Exception {
@@ -753,20 +748,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	}
 
 	private static @NonNull File extract(final @NonNull Asset asset) throws IOException {
-		final File directory = new File(JOIDEnv.getCacheDir(), "video");
-		Files.createDirectories(directory.toPath());
-
-		final File target = File.createTempFile("joid-video-", ".mp4", directory);
-		target.deleteOnExit();
-
-		try (InputStream stream = asset.open(); FileOutputStream output = new FileOutputStream(target)) {
-			final byte[] buffer = new byte[8192];
-			int read;
-			while ((read = stream.read(buffer)) != -1) {
-				output.write(buffer, 0, read);
+		return VideoResourceDecoder.AREA.store(file -> {
+			try (InputStream stream = asset.open()) {
+				Files.copy(stream, file.toPath());
 			}
-		}
-		return target;
+		});
 	}
 
 	@Getter

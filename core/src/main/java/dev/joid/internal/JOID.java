@@ -10,10 +10,14 @@ import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.IUIBridge;
+import dev.joid.lib.cache.FileCache;
+import dev.joid.lib.font.impl.msdf.MsdfFontCache;
+import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
 import dev.joid.lib.utils.thread.ThreadUtils;
+import dev.joid.lib.video.VideoNatives;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -65,6 +69,9 @@ public final class JOID {
 		System.out.println(" - Version: " + JOID.VERSION);
 		System.out.println("");
 		System.out.println("=================================");
+
+		JOID.initialize(MsdfFontCache.class, VideoNatives.class, VideoResourceDecoder.class);
+		ThreadUtils.daemonThread(FileCache::clean, "FileCache").start();
 
 		if (JOIDEnv.isDevMode() || JOIDEnv.isDemoMode()) {
 			DevFont.load();
@@ -196,6 +203,16 @@ public final class JOID {
 			throw new IllegalStateException("No IUIBridge can open " + ui.getClass().getSimpleName() + ": register one whose canHandle accepts it");
 		}
 		return bridge;
+	}
+
+	private static void initialize(final Class<?>... classes) {
+		for (final Class<?> clazz : classes) {
+			try {
+				Class.forName(clazz.getName(), true, clazz.getClassLoader());
+			} catch (final ClassNotFoundException exception) {
+				throw new IllegalStateException("The class " + clazz.getName() + " of JOID cannot be loaded, check that the JOID jar is complete", exception);
+			}
+		}
 	}
 
 	private static void checkVersion(final String version, final String loaded) {

@@ -4,17 +4,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.Arrays;
 
-import org.apache.commons.io.IOUtils;
-
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.cache.FileCache;
+import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.utils.platform.Platform;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2Natives {
+
+	private static final FileCacheArea AREA = FileCache.area("lwjgl").retention(Duration.ofDays(30L));
 
 	private static boolean installed;
 
@@ -30,25 +32,22 @@ public final class Lwjgl2Natives {
 			return;
 		}
 
-		final File directory = new File(new File(JOIDEnv.getCacheDir(), "lwjgl-2.9.1"), platform);
-		if (!directory.isDirectory() && !directory.mkdirs()) {
-			throw new IllegalStateException("Unable to create the LWJGL 2 natives folder " + directory.getAbsolutePath());
-		}
+		final File directory;
+		try {
+			directory = Lwjgl2Natives.AREA.compute("2.9.1-" + platform, folder -> {
+				Files.createDirectories(folder.toPath());
+				for (final String library : libraries) {
+					try (InputStream stream = Lwjgl2Natives.class.getResourceAsStream("/dev/joid/backend/lwjgl2/natives/" + platform + "/" + library)) {
+						if (stream == null) {
+							throw new IllegalStateException("The LWJGL 2 native " + library + " is missing from the backend");
+						}
 
-		for (final String library : libraries) {
-			final File target = new File(directory, library);
-			try (InputStream stream = Lwjgl2Natives.class.getResourceAsStream("/dev/joid/backend/lwjgl2/natives/" + platform + "/" + library)) {
-				if (stream == null) {
-					throw new IllegalStateException("The LWJGL 2 native " + library + " is missing from the backend");
+						Files.copy(stream, new File(folder, library).toPath());
+					}
 				}
-
-				final byte[] bytes = IOUtils.toByteArray(stream);
-				if (!target.isFile() || target.length() != bytes.length) {
-					Files.write(target.toPath(), bytes);
-				}
-			} catch (final IOException exception) {
-				throw new IllegalStateException("Unable to extract the LWJGL 2 native " + library, exception);
-			}
+			});
+		} catch (final IOException exception) {
+			throw new IllegalStateException("Unable to extract the LWJGL 2 natives into " + Lwjgl2Natives.AREA.getDirectory().getAbsolutePath() + ", check that the cache folder can be written", exception);
 		}
 		System.setProperty("org.lwjgl.librarypath", directory.getAbsolutePath());
 	}

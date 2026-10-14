@@ -1,11 +1,20 @@
 package dev.joid.demo.ui.store;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.time.Duration;
+
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.core.hook.store.DemoGlobalStore;
 import dev.joid.demo.ui.core.hook.store.DemoLocalStore;
 import dev.joid.demo.ui.core.hook.store.DemoPermanentStore;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.cache.FileCache;
+import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -21,8 +30,12 @@ public class UIDemoStore extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153);
 	private static final Color PLACEHOLDER = new Color(221, 221, 221);
 
+	private static final FileCacheArea CACHE = FileCache.area("demo").retention(Duration.ofDays(1L));
+
 	@UIProperty
 	private int clicks;
+
+	private String cache;
 
 	@Override
 	public void init() {
@@ -31,6 +44,7 @@ public class UIDemoStore extends UIDemo {
 		final DemoLocalStore local = super.useStore(DemoLocalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
 		final DemoGlobalStore global = super.useStore(DemoGlobalStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
 		final DemoPermanentStore permanent = super.useStore(DemoPermanentStore.class, BridgeHandler.CLOCK.get().currentTimeMillis());
+		this.cache = "Not cached";
 
 		RectNode
 		.create(300, 400, 400, 200)
@@ -73,6 +87,31 @@ public class UIDemoStore extends UIDemo {
 			.attach(rect);
 			TextNode.create(190, 100).text(() -> Text.create("Clicks: " + this.clicks, info, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(rect);
 			TextNode.create(200, 215).text(Text.create("Remembered field", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1220, 680, 400, 200)
+		.color(UIDemoStore.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 75, 120, 50)
+			.color(UIDemoStore.INK)
+			.onClick(event -> {
+				final String time = String.valueOf(BridgeHandler.CLOCK.get().currentTimeMillis());
+				try {
+					final File file = UIDemoStore.CACHE.compute("time", entry -> Files.write(entry.toPath(), time.getBytes(StandardCharsets.UTF_8)));
+					this.cache = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8).equals(time) ? "Created" : "Reused";
+				} catch (final IOException exception) {
+					throw new UncheckedIOException(exception);
+				}
+			})
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Cache", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(190, 100).text(() -> Text.create(this.cache, info, Align.START, Align.CENTER)).anchorY(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("File cache", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

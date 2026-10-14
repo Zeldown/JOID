@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.commons.io.FileUtils;
 import org.bytedeco.javacpp.Loader;
 
 import com.google.common.hash.Hasher;
@@ -25,6 +24,8 @@ import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.cache.FileCache;
+import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -35,6 +36,8 @@ import lombok.NonNull;
 public final class VideoNatives {
 
 	public static final String VERSION = "6.0-1.5.9";
+
+	private static final FileCacheArea AREA = FileCache.area("ffmpeg").retention(Duration.ofDays(30L));
 
 	private static final boolean             CLASSPATH = VideoNatives.class.getResource("/org/bytedeco/ffmpeg/" + Loader.getPlatform() + "/" + System.mapLibraryName("jniavutil")) != null;
 	private static final Map<String, String> CHECKSUMS = new HashMap<>();
@@ -69,7 +72,7 @@ public final class VideoNatives {
 
 		ThreadUtils.daemonThread(() -> {
 			try {
-				VideoNatives.register(VideoNatives.download(Loader.getPlatform(), JOIDEnv.getCacheDir()));
+				VideoNatives.register(VideoNatives.download(Loader.getPlatform()));
 				installation.complete(null);
 			} catch (final RuntimeException exception) {
 				JOIDLog.warn(exception.getMessage() + (exception.getCause() != null ? " (" + exception.getCause() + ")" : ""));
@@ -79,45 +82,27 @@ public final class VideoNatives {
 		return installation;
 	}
 
-	private static File download(final String platform, final File cacheDir) {
+	private static File download(final String platform) {
 		final String checksum = VideoNatives.CHECKSUMS.get(platform);
 		if (checksum == null) {
 			throw new VideoNativesException("FFmpeg has no natives for the platform " + platform + ", videos play on windows-x86_64, linux-x86_64, macosx-x86_64 and macosx-arm64");
 		}
 
-		final File directory = new File(new File(cacheDir, "ffmpeg-" + VideoNatives.VERSION), platform);
-		if (new File(directory, ".complete").isFile()) {
-			return directory;
-		}
-
-		final File parent = directory.getParentFile();
 		final String url = VideoNatives.repository + "/org/bytedeco/ffmpeg/" + VideoNatives.VERSION + "/ffmpeg-" + VideoNatives.VERSION + "-" + platform + ".jar";
-		File jar = null;
-		File extraction = null;
 		try {
-			FileUtils.deleteDirectory(directory);
-			Files.createDirectories(parent.toPath());
-			jar = File.createTempFile(platform + "-", ".jar.part", parent);
-			if (JOIDEnv.isDevMode()) {
-				JOIDLog.info("Downloading the FFmpeg natives of " + platform + " from " + url);
-			}
-
-			VideoNatives.fetch(url, jar, platform, checksum);
-			extraction = Files.createTempDirectory(parent.toPath(), platform + ".tmp").toFile();
-			VideoNatives.extract(jar, extraction, platform);
-			try {
-				Files.move(extraction.toPath(), directory.toPath(), StandardCopyOption.ATOMIC_MOVE);
-			} catch (final IOException exception) {
-				if (!new File(directory, ".complete").isFile()) {
-					throw exception;
+			return VideoNatives.AREA.compute(VideoNatives.VERSION + "-" + platform, directory -> {
+				Files.createDirectories(directory.toPath());
+				final File jar = new File(directory, platform + ".jar");
+				if (JOIDEnv.isDevMode()) {
+					JOIDLog.info("Downloading the FFmpeg natives of " + platform + " from " + url);
 				}
-			}
-			return directory;
+
+				VideoNatives.fetch(url, jar, platform, checksum);
+				VideoNatives.extract(jar, directory, platform);
+				Files.delete(jar.toPath());
+			});
 		} catch (final IOException exception) {
-			throw new VideoNativesException("The FFmpeg natives of " + platform + " cannot be written into " + parent.getAbsolutePath() + ", check that the cache folder can be written", exception);
-		} finally {
-			FileUtils.deleteQuietly(jar);
-			FileUtils.deleteQuietly(extraction);
+			throw new VideoNativesException("The FFmpeg natives of " + platform + " cannot be written into " + VideoNatives.AREA.getDirectory().getAbsolutePath() + ", check that the cache folder can be written", exception);
 		}
 	}
 
@@ -164,8 +149,6 @@ public final class VideoNatives {
 				}
 			}
 		}
-
-		Files.createFile(new File(extraction, ".complete").toPath());
 	}
 
 	private static void register(final File directory) {

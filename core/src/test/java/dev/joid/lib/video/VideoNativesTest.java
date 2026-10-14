@@ -19,21 +19,29 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import dev.joid.internal.JOIDEnv;
+
 public class VideoNativesTest {
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
 	private String repository;
+	private File   previous;
+	private File   cache;
 
 	@Before
-	public void rememberTheRepository() {
+	public void rememberTheRepository() throws IOException {
 		this.repository = VideoNatives.getRepository();
+		this.previous = JOIDEnv.getCacheDir();
+		this.cache = this.folder.newFolder("cache");
+		JOIDEnv.cacheDir(this.cache);
 	}
 
 	@After
 	public void restoreTheRepository() {
 		VideoNatives.repository(this.repository);
+		JOIDEnv.cacheDir(this.previous);
 	}
 
 	@Test
@@ -53,78 +61,74 @@ public class VideoNativesTest {
 	@Test(timeout = 120000L)
 	public void installsTheNativesOfThePlatformIntoTheCache() throws IOException, URISyntaxException {
 		final String platform = Loader.getPlatform();
-		final File cache = this.folder.newFolder("cache");
-		final File directory = new File(new File(cache, "ffmpeg-" + VideoNatives.VERSION), platform);
-		Files.createDirectories(directory.toPath());
-		Files.write(new File(directory, "stale").toPath(), new byte[] {1});
+		final File directory = new File(new File(this.cache, "ffmpeg"), VideoNatives.VERSION + "-" + platform);
 		final File jar = this.publish(platform, Files.readAllBytes(VideoNativesTest.nativesJar(platform).toPath()));
 
-		Assert.assertEquals(directory, VideoNativesTest.download(platform, cache));
-		Assert.assertTrue(new File(directory, ".complete").isFile());
+		Assert.assertEquals(directory, VideoNativesTest.download(platform));
 		Assert.assertTrue(new File(directory, System.mapLibraryName("jniavutil")).isFile());
-		Assert.assertFalse(new File(directory, "stale").exists());
+		Assert.assertFalse(new File(directory, platform + ".jar").exists());
 		for (final String name : directory.list()) {
 			Assert.assertFalse(name, name.startsWith("ffmpeg") || name.startsWith("ffprobe"));
 		}
-		Assert.assertArrayEquals(new String[] {platform}, directory.getParentFile().list());
+		Assert.assertArrayEquals(new String[] {directory.getName()}, this.entries());
 
 		Files.delete(jar.toPath());
-		Assert.assertEquals(directory, VideoNativesTest.download(platform, cache));
+		Assert.assertEquals(directory, VideoNativesTest.download(platform));
 	}
 
 	@Test
-	public void keepsACompleteFolderWithoutDownloading() throws IOException {
-		final File cache = this.folder.newFolder("cache");
-		final File directory = new File(new File(cache, "ffmpeg-" + VideoNatives.VERSION), "linux-x86_64");
+	public void keepsAnInstalledFolderWithoutDownloading() throws IOException {
+		final File directory = new File(new File(this.cache, "ffmpeg"), VideoNatives.VERSION + "-linux-x86_64");
 		Files.createDirectories(directory.toPath());
-		Files.createFile(new File(directory, ".complete").toPath());
 		VideoNatives.repository("https://joid.invalid");
-		Assert.assertEquals(directory, VideoNativesTest.download("linux-x86_64", cache));
+		Assert.assertEquals(directory, VideoNativesTest.download("linux-x86_64"));
 	}
 
 	@Test
 	public void refusesAJarThatDoesNotMatchItsChecksum() throws IOException {
-		final File cache = this.folder.newFolder("cache");
 		this.publish("linux-x86_64", "not the natives".getBytes(StandardCharsets.UTF_8));
 		try {
-			VideoNativesTest.download("linux-x86_64", cache);
+			VideoNativesTest.download("linux-x86_64");
 			Assert.fail("The natives must not install");
 		} catch (final VideoNativesException expected) {
 			Assert.assertEquals("The FFmpeg natives downloaded from " + VideoNatives.getRepository() + "/org/bytedeco/ffmpeg/6.0-1.5.9/ffmpeg-6.0-1.5.9-linux-x86_64.jar do not match their SHA-256, check the repository", expected.getMessage());
 		}
-		Assert.assertArrayEquals(new String[0], new File(cache, "ffmpeg-" + VideoNatives.VERSION).list());
+		Assert.assertArrayEquals(new String[0], this.entries());
 	}
 
 	@Test
 	public void reportsARepositoryWithoutTheNatives() throws IOException {
-		final File cache = this.folder.newFolder("cache");
 		VideoNatives.repository(this.folder.newFolder("empty").toURI().toString().replaceAll("/$", ""));
 		try {
-			VideoNativesTest.download("linux-x86_64", cache);
+			VideoNativesTest.download("linux-x86_64");
 			Assert.fail("The natives must not install");
 		} catch (final VideoNativesException expected) {
 			Assert.assertEquals("The FFmpeg natives of linux-x86_64 cannot be downloaded from " + VideoNatives.getRepository() + "/org/bytedeco/ffmpeg/6.0-1.5.9/ffmpeg-6.0-1.5.9-linux-x86_64.jar, check the connection and the repository, or put org.bytedeco:ffmpeg:6.0-1.5.9:linux-x86_64 on the classpath", expected.getMessage());
 			Assert.assertTrue(String.valueOf(expected.getCause()), expected.getCause() instanceof FileNotFoundException);
 		}
-		Assert.assertArrayEquals(new String[0], new File(cache, "ffmpeg-" + VideoNatives.VERSION).list());
+		Assert.assertArrayEquals(new String[0], this.entries());
 	}
 
 	@Test
 	public void refusesAPlatformWithoutNatives() {
 		try {
-			VideoNativesTest.download("linux-arm64", this.folder.getRoot());
+			VideoNativesTest.download("linux-arm64");
 			Assert.fail("The natives must not install");
 		} catch (final VideoNativesException expected) {
 			Assert.assertEquals("FFmpeg has no natives for the platform linux-arm64, videos play on windows-x86_64, linux-x86_64, macosx-x86_64 and macosx-arm64", expected.getMessage());
 		}
-		Assert.assertArrayEquals(new String[0], this.folder.getRoot().list());
+		Assert.assertArrayEquals(new String[0], this.cache.list());
 	}
 
-	private static File download(final String platform, final File cacheDir) {
+	private String[] entries() {
+		return new File(this.cache, "ffmpeg").list((parent, name) -> !name.startsWith("."));
+	}
+
+	private static File download(final String platform) {
 		try {
-			final Method download = VideoNatives.class.getDeclaredMethod("download", String.class, File.class);
+			final Method download = VideoNatives.class.getDeclaredMethod("download", String.class);
 			download.setAccessible(true);
-			return (File) download.invoke(null, platform, cacheDir);
+			return (File) download.invoke(null, platform);
 		} catch (final InvocationTargetException exception) {
 			throw (RuntimeException) exception.getCause();
 		} catch (final ReflectiveOperationException exception) {

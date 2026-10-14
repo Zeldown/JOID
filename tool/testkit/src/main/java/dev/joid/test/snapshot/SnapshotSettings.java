@@ -13,10 +13,6 @@ public final class SnapshotSettings {
 		return Boolean.getBoolean("joid.snapshot.update");
 	}
 
-	public static @NonNull File getCache() {
-		return new File(System.getProperty("joid.snapshot.cache", ".snapshots/cache"));
-	}
-
 	public static @NonNull File getOutput() {
 		return new File(System.getProperty("joid.snapshot.output", "build/snapshots/renders"));
 	}

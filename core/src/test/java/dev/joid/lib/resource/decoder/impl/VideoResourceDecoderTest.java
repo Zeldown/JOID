@@ -6,13 +6,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -106,14 +110,15 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
-	public void copiesItsAssetIntoATemporaryFile() throws IOException {
+	public void copiesItsAssetIntoTheCacheUnderTheHashOfItsContent() throws IOException, NoSuchAlgorithmException {
 		final VideoResourceDecoder decoder = this.frames();
 		Assert.assertNull(decoder.getFile());
 		decoder.decode(new ResourceData("frames.mkv", null));
 		final File file = decoder.getFile();
-		Assert.assertTrue(file.getName(), file.getName().startsWith("joid-video-"));
-		Assert.assertTrue(file.getName(), file.getName().endsWith(".mp4"));
-		Assert.assertArrayEquals(VideoResourceDecoderTest.bytes("frames.mkv"), Files.readAllBytes(file.toPath()));
+		final byte[] bytes = VideoResourceDecoderTest.bytes("frames.mkv");
+		Assert.assertEquals(String.format(Locale.ROOT, "%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(bytes))), file.getName());
+		Assert.assertEquals("video", file.getParentFile().getName());
+		Assert.assertArrayEquals(bytes, Files.readAllBytes(file.toPath()));
 	}
 
 	@Test
@@ -141,7 +146,7 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
-	public void sharesItsCopyWithItsForksUntilTheLastClear() {
+	public void sharesItsCopyWithItsForksAndKeepsItInTheCache() {
 		final File previous = JOIDEnv.getCacheDir();
 		JOIDEnv.cacheDir(this.folder.getRoot());
 		try {
@@ -158,7 +163,7 @@ public class VideoResourceDecoderTest {
 			decoder.clear(data);
 			Assert.assertTrue(copy.isFile());
 			fork.clear(forked);
-			Assert.assertFalse(copy.exists());
+			Assert.assertTrue(copy.isFile());
 		} finally {
 			JOIDEnv.cacheDir(previous);
 		}
@@ -519,19 +524,22 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
-	public void copiesAStreamedVideoIntoTheCacheFolderUntilCleared() {
+	public void reusesTheCachedCopyOfTheSameContent() {
 		final File previous = JOIDEnv.getCacheDir();
 		JOIDEnv.cacheDir(this.folder.getRoot());
 		try {
 			final File directory = new File(this.folder.getRoot(), "video");
-			final VideoResourceDecoder decoder = new VideoResourceDecoder(Asset.of(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp9.webm")));
-			this.decoders.add(decoder);
+			final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp9.webm"));
+			final VideoResourceDecoder other = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp9.webm"));
 			Assert.assertFalse(directory.exists());
 			final ResourceData data = new ResourceData("alpha-vp9.webm", null);
+			final ResourceData copy = new ResourceData("alpha-vp9.webm", null);
 			decoder.decode(data);
-			Assert.assertEquals(1, directory.list().length);
+			other.decode(copy);
+			Assert.assertEquals(decoder.getFile(), other.getFile());
 			decoder.clear(data);
-			Assert.assertEquals(0, directory.list().length);
+			other.clear(copy);
+			Assert.assertEquals(1, directory.list((parent, name) -> !name.startsWith(".")).length);
 		} finally {
 			JOIDEnv.cacheDir(previous);
 		}

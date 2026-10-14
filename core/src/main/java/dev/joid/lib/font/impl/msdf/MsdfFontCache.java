@@ -3,13 +3,13 @@ package dev.joid.lib.font.impl.msdf;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.time.Duration;
 
 import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.cache.FileCache;
+import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.tool.msdf.MsdfGenerator;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
 import lombok.AccessLevel;
@@ -19,45 +19,31 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfFontCache {
 
-	public static @NonNull File getDirectory() {
-		return new File(JOIDEnv.getCacheDir(), "msdf");
-	}
+	private static final FileCacheArea AREA = FileCache.area("msdf").retention(Duration.ofDays(30L));
 
-	public static @NonNull File locate(final @NonNull byte[] font) {
-		return new File(MsdfFontCache.getDirectory(), Hashing.sha256().newHasher().putString(JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT, StandardCharsets.UTF_8).putBytes(font).hash() + ".msdf");
+	public static File find(final @NonNull byte[] font) {
+		return MsdfFontCache.AREA.entry(MsdfFontCache.key(font));
 	}
 
 	public static @NonNull File resolve(final @NonNull byte[] font) throws IOException {
-		final File file = MsdfFontCache.locate(font);
-		if (!file.isFile()) {
-			MsdfFontCache.generate(font, file);
-		}
-		return file;
+		return MsdfFontCache.AREA.compute(MsdfFontCache.key(font), file -> MsdfFontCache.generate(font, file));
 	}
 
-	public static void generate(final @NonNull byte[] font, final @NonNull File file) throws IOException {
-		final File directory = file.getAbsoluteFile().getParentFile();
-		try {
-			Files.createDirectories(directory.toPath());
-		} catch (final IOException exception) {
-			throw new IOException("Unable to create the msdf cache " + directory.getAbsolutePath(), exception);
-		}
+	public static @NonNull File regenerate(final @NonNull byte[] font) throws IOException {
+		MsdfFontCache.AREA.remove(MsdfFontCache.key(font));
+		return MsdfFontCache.resolve(font);
+	}
 
-		final File temporary = File.createTempFile("msdf-", ".tmp", directory);
+	private static void generate(final byte[] font, final File file) throws IOException {
 		try {
-			MsdfGenerator.generate(font, temporary, MsdfGenerator.codepoints(MsdfGenerator.CHARSET), MsdfGenerator.WIDTH, MsdfGenerator.HEIGHT, MsdfGenerator.RANGE, 0D);
-			try {
-				Files.move(temporary.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-			} catch (final IOException exception) {
-				if (!file.isFile()) {
-					throw exception;
-				}
-			}
+			MsdfGenerator.generate(font, file, MsdfGenerator.codepoints(MsdfGenerator.CHARSET), MsdfGenerator.WIDTH, MsdfGenerator.HEIGHT, MsdfGenerator.RANGE, 0D);
 		} catch (final Exception exception) {
-			throw new IOException("Unable to generate the msdf atlas of the font in " + directory.getAbsolutePath(), exception);
-		} finally {
-			Files.deleteIfExists(temporary.toPath());
+			throw new IOException("Unable to generate the msdf atlas of the font in " + file.getParentFile().getAbsolutePath(), exception);
 		}
+	}
+
+	private static @NonNull String key(final byte[] font) {
+		return Hashing.sha256().newHasher().putString(JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT, StandardCharsets.UTF_8).putBytes(font).hash() + ".msdf";
 	}
 
 }

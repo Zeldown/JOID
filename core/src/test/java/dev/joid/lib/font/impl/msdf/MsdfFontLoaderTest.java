@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -51,7 +52,7 @@ public class MsdfFontLoaderTest {
 	@BeforeClass
 	public static void generateAnAtlas() throws IOException {
 		MsdfFontLoaderTest.atlas = MsdfFontLoaderTest.FOLDER.newFile("font.msdf");
-		MsdfFontCache.generate(Asset.of(MsdfFontLoaderTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).read(), MsdfFontLoaderTest.atlas);
+		Files.copy(MsdfFontCache.resolve(Asset.of(MsdfFontLoaderTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).read()).toPath(), MsdfFontLoaderTest.atlas.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	@Test(timeout = 30000L)

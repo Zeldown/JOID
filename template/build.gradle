@@ -94,7 +94,6 @@ def snapshots = { Test testTask, String name ->
     testTask.outputs.dir output
     testTask.systemProperty 'joid.snapshot.references', file('.snapshots/references').absolutePath
     testTask.systemProperty 'joid.snapshot.output', output.absolutePath
-    testTask.systemProperty 'joid.snapshot.cache', file('.snapshots/cache').absolutePath
     testTask.testLogging.exceptionFormat = 'full'
     testTask.testLogging.events 'failed'
     if (macOs) {
@@ -145,7 +144,6 @@ task renderBaseline(type: JavaExec) {
     main = 'dev.joid.test.snapshot.SnapshotBaseline'
     classpath = configurations.baseline + files("libs/joid-tool-testkit-${joidVersion}.jar")
     workingDir = file("$buildDir/snapshot/lwjgl3")
-    systemProperty 'joid.snapshot.cache', file('.snapshots/cache').absolutePath
     args 'dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
     if (macOs) {
         jvmArgs '-XstartOnFirstThread'
