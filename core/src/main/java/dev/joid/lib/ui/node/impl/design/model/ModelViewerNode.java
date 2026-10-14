@@ -148,27 +148,27 @@ public class ModelViewerNode extends BaseModelNode {
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoom(final double zoom) {
-		return super.userProperty("zoom", zoom, (final ModelViewerNode node, final Double value) -> node.zoom(value, false));
+		return super.bind("zoom", zoom, (final ModelViewerNode node, final Double value) -> node.zoom(value, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoom(final @NonNull Signal<Double> zoom) {
-		return super.userProperty("zoom", zoom, (final ModelViewerNode node, final Double value) -> node.zoom(value, false));
+		return super.bind("zoom", zoom, (final ModelViewerNode node, final Double value) -> node.zoom(value, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYaw(final double rotationYaw) {
-		return super.userProperty("rotationYaw", rotationYaw, (final ModelViewerNode node, final Double value) -> node.rotate(value, node.rotationPitch, false));
+		return super.bind("rotationYaw", rotationYaw, (final ModelViewerNode node, final Double value) -> node.rotate(value, node.rotationPitch, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYaw(final @NonNull Signal<Double> rotationYaw) {
-		return super.userProperty("rotationYaw", rotationYaw, (final ModelViewerNode node, final Double value) -> node.rotate(value, node.rotationPitch, false));
+		return super.bind("rotationYaw", rotationYaw, (final ModelViewerNode node, final Double value) -> node.rotate(value, node.rotationPitch, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitch(final double rotationPitch) {
-		return super.userProperty("rotationPitch", rotationPitch, (final ModelViewerNode node, final Double value) -> node.rotate(node.rotationYaw, value, false));
+		return super.bind("rotationPitch", rotationPitch, (final ModelViewerNode node, final Double value) -> node.rotate(node.rotationYaw, value, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitch(final @NonNull Signal<Double> rotationPitch) {
-		return super.userProperty("rotationPitch", rotationPitch, (final ModelViewerNode node, final Double value) -> node.rotate(node.rotationYaw, value, false));
+		return super.bind("rotationPitch", rotationPitch, (final ModelViewerNode node, final Double value) -> node.rotate(node.rotationYaw, value, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoomRange(final double min, final double max) {

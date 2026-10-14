@@ -1115,19 +1115,19 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T scrollX(final double scrollX) {
-		return this.userProperty("scrollX", scrollX, (final Node node, final Double value) -> node.scroll(ScrollAxis.HORIZONTAL, value, false));
+		return this.bind("scrollX", scrollX, (final Node node, final Double value) -> node.scroll(ScrollAxis.HORIZONTAL, value, false));
 	}
 
 	public final <T extends Node> @NonNull T scrollX(final @NonNull Signal<Double> scrollX) {
-		return this.userProperty("scrollX", scrollX, (final Node node, final Double value) -> node.scroll(ScrollAxis.HORIZONTAL, value, false));
+		return this.bind("scrollX", scrollX, (final Node node, final Double value) -> node.scroll(ScrollAxis.HORIZONTAL, value, false));
 	}
 
 	public final <T extends Node> @NonNull T scrollY(final double scrollY) {
-		return this.userProperty("scrollY", scrollY, (final Node node, final Double value) -> node.scroll(ScrollAxis.VERTICAL, value, false));
+		return this.bind("scrollY", scrollY, (final Node node, final Double value) -> node.scroll(ScrollAxis.VERTICAL, value, false));
 	}
 
 	public final <T extends Node> @NonNull T scrollY(final @NonNull Signal<Double> scrollY) {
-		return this.userProperty("scrollY", scrollY, (final Node node, final Double value) -> node.scroll(ScrollAxis.VERTICAL, value, false));
+		return this.bind("scrollY", scrollY, (final Node node, final Double value) -> node.scroll(ScrollAxis.VERTICAL, value, false));
 	}
 
 	public final <T extends Node> @NonNull T scrollTo(final double x, final double y) {
@@ -1680,7 +1680,11 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T x(final @NonNull Signal<Double> x) {
-		this.bind("x", x, (final Node node, final Double value) -> node.move(value, node.defaultY, false), (final Node node, final Double value) -> value);
+		if (x.isWritable()) {
+			this.bind("x", x, (final Node node, final Double value) -> node.move(value, node.defaultY, false));
+		} else {
+			this.follow("x", x, (final Node node, final Double value) -> node.move(value, node.defaultY, false));
+		}
 		this.checkMovable(this.draggable);
 		return (T) this;
 	}
@@ -1696,7 +1700,11 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T y(final @NonNull Signal<Double> y) {
-		this.bind("y", y, (final Node node, final Double value) -> node.move(node.defaultX, value, false), (final Node node, final Double value) -> value);
+		if (y.isWritable()) {
+			this.bind("y", y, (final Node node, final Double value) -> node.move(node.defaultX, value, false));
+		} else {
+			this.follow("y", y, (final Node node, final Double value) -> node.move(node.defaultX, value, false));
+		}
 		this.checkMovable(this.draggable);
 		return (T) this;
 	}
@@ -2043,7 +2051,7 @@ public abstract class Node implements INode {
 		return this.addWatch(signal, node -> condition.get(), properties);
 	}
 
-	protected final <T extends Node, N extends Node, V> @NonNull T userProperty(final @NonNull String property, final V value, final @NonNull BiConsumer<@NonNull N, V> applier) {
+	protected final <T extends Node, N extends Node, V> @NonNull T bind(final @NonNull String property, final V value, final @NonNull BiConsumer<@NonNull N, V> applier) {
 		Node.checkApplier(this, property, applier);
 		this.cancelLinks(property);
 		this.sourceMap.remove(property);
@@ -2051,16 +2059,26 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	protected final <T extends Node, N extends Node, V> @NonNull T userProperty(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier) {
-		return this.userProperty(property, signal, applier, (final N node, final V value) -> value);
+	protected final <T extends Node, N extends Node, V> @NonNull T bind(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier) {
+		return this.bind(property, signal, applier, (final N node, final V value) -> value);
 	}
 
-	protected final <T extends Node, N extends Node, V, M> @NonNull T userProperty(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier, final @NonNull BiFunction<@NonNull N, @NonNull M, V> writer) {
+	protected final <T extends Node, N extends Node, V, M> @NonNull T bind(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier, final @NonNull BiFunction<@NonNull N, @NonNull M, V> writer) {
 		if (!signal.isWritable()) {
 			throw new IllegalArgumentException("The " + property + " of " + Node.nameOf(this.getClass()) + " is changed by the user, so it cannot follow " + signal + ", which cannot be written: pass a writable Signal, or its value as a start value");
 		}
 
-		return this.bind(property, signal, applier, writer);
+		Node.checkApplier(this, property, applier);
+		final BiConsumer<Node, Object> nullSafe = (node, value) -> {
+			if (value != null) {
+				applier.accept((N) node, (V) value);
+			}
+		};
+		final V current = signal.peek();
+		this.listen(new NodeLink<>(this, property, (Signal<Object>) signal, node -> true, true, nullSafe));
+		this.sourceMap.put(property, new NodeSource<>((Signal<Object>) signal, nullSafe, (BiFunction<Node, Object, Object>) writer, current));
+		nullSafe.accept(this, current);
+		return (T) this;
 	}
 
 	protected final <M> void sync(final @NonNull String property, final @NonNull M value) {
@@ -2104,24 +2122,6 @@ public abstract class Node implements INode {
 				throw new IllegalStateException("The " + Node.nameOf(this.getClass()) + " has no " + requirement.setting + ", " + requirement.advice);
 			}
 		}
-	}
-
-	private <T extends Node, N extends Node, V, M> T bind(final String property, final Signal<V> signal, final BiConsumer<N, V> applier, final BiFunction<N, M, V> writer) {
-		if (!signal.isWritable()) {
-			return this.follow(property, signal, applier);
-		}
-
-		Node.checkApplier(this, property, applier);
-		final BiConsumer<Node, Object> nullSafe = (node, value) -> {
-			if (value != null) {
-				applier.accept((N) node, (V) value);
-			}
-		};
-		final V current = signal.peek();
-		this.listen(new NodeLink<>(this, property, (Signal<Object>) signal, node -> true, true, nullSafe));
-		this.sourceMap.put(property, new NodeSource<>((Signal<Object>) signal, nullSafe, (BiFunction<Node, Object, Object>) writer, current));
-		nullSafe.accept(this, current);
-		return (T) this;
 	}
 
 	private void checkMovable(final DraggableProperty draggable) {

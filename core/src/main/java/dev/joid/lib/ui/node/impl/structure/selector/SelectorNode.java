@@ -183,11 +183,11 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull V value) {
-		return super.userProperty("value", value, (final SelectorNode<V> node, final V option) -> node.choose(option, false));
+		return super.bind("value", value, (final SelectorNode<V> node, final V option) -> node.choose(option, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Signal<V> value) {
-		return super.userProperty("value", value, (final SelectorNode<V> node, final V option) -> {
+		return super.bind("value", value, (final SelectorNode<V> node, final V option) -> {
 			if (node.optionMap.isEmpty() || node.optionMap.containsValue(option)) {
 				node.choose(option, false);
 			}
@@ -203,11 +203,11 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final boolean active) {
-		return super.userProperty("active", active, (final SelectorNode<V> node, final Boolean value) -> node.activate(value, false));
+		return super.bind("active", active, (final SelectorNode<V> node, final Boolean value) -> node.activate(value, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final @NonNull Signal<Boolean> active) {
-		return super.userProperty("active", active, (final SelectorNode<V> node, final Boolean value) -> node.activate(value, false));
+		return super.bind("active", active, (final SelectorNode<V> node, final Boolean value) -> node.activate(value, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T change(final @NonNull V value) {

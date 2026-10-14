@@ -3435,7 +3435,7 @@ public class NodeTest {
 		}
 
 		public <V> BindingNode link(final String property, final Signal<V> signal, final List<Object> values) {
-			return super.userProperty(property, signal, (final BindingNode node, final V value) -> values.add(value));
+			return super.bind(property, signal, (final BindingNode node, final V value) -> values.add(value));
 		}
 
 	}

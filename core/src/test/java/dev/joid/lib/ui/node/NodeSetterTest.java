@@ -138,6 +138,16 @@ public class NodeSetterTest {
 	}
 
 	@Test
+	public void followsABoundSignalButNotAStartValue() {
+		final BooleanSignal checked = new BooleanSignal(true);
+		final Checkbox checkbox = new Checkbox().checked(checked);
+		Assert.assertTrue(NodeSetterTest.isFollowed(checkbox, "checked"));
+		checkbox.checked(false);
+		Assert.assertFalse(NodeSetterTest.isFollowed(checkbox, "checked"));
+		Assert.assertTrue(NodeSetterTest.isFollowed(RectNode.create(0D, 0D, 10D, 10D).width(checked.map(value -> value ? 20D : 10D)), "width"));
+	}
+
+	@Test
 	public void keepsTheStartValueOfAValueTheUserChanges() {
 		final SetterUI ui = new SetterUI();
 		this.bridges.open(ui);

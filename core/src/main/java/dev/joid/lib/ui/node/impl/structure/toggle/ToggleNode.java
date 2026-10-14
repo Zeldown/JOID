@@ -43,11 +43,11 @@ public abstract class ToggleNode<F, S> extends Node {
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final boolean toggle) {
-		return super.userProperty("toggle", toggle, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
+		return super.bind("toggle", toggle, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final @NonNull Signal<Boolean> toggle) {
-		return super.userProperty("toggle", toggle, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
+		return super.bind("toggle", toggle, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T state(final F toggle, final S back) {

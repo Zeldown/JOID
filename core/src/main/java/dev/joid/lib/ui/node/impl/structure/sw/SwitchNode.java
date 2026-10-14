@@ -52,11 +52,11 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final int index) {
-		return super.userProperty("state", index, (final SwitchNode node, final Integer value) -> node.select(value, false));
+		return super.bind("state", index, (final SwitchNode node, final Integer value) -> node.select(value, false));
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final @NonNull Signal<Integer> index) {
-		return super.userProperty("state", index, (final SwitchNode node, final Integer value) -> {
+		return super.bind("state", index, (final SwitchNode node, final Integer value) -> {
 			if (node.stateList.peek().isEmpty() || value >= 0 && value < node.stateList.peek().size()) {
 				node.select(value, false);
 			}
@@ -64,11 +64,11 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull String state) {
-		return super.userProperty("state", state, (final SwitchNode node, final String value) -> node.choose(value, false));
+		return super.bind("state", state, (final SwitchNode node, final String value) -> node.choose(value, false));
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull Signal<String> state) {
-		return super.userProperty("state", state, (final SwitchNode node, final String value) -> {
+		return super.bind("state", state, (final SwitchNode node, final String value) -> {
 			if (node.stateList.peek().isEmpty() || node.stateList.peek().contains(value)) {
 				node.choose(value, false);
 			}

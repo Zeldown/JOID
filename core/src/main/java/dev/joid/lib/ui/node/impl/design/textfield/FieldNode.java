@@ -226,11 +226,11 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull String text) {
-		return super.userProperty("text", text, (final FieldNode<V> node, final String value) -> node.replace(value, false));
+		return super.bind("text", text, (final FieldNode<V> node, final String value) -> node.replace(value, false));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull Signal<String> text) {
-		return super.userProperty("text", text, (final FieldNode<V> node, final String value) -> node.replace(value, false));
+		return super.bind("text", text, (final FieldNode<V> node, final String value) -> node.replace(value, false));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T placeholder(final @NonNull String placeholder) {
@@ -250,11 +250,11 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focused(final boolean focused) {
-		return super.userProperty("focused", focused, (final FieldNode<V> node, final Boolean value) -> node.focus(value, false));
+		return super.bind("focused", focused, (final FieldNode<V> node, final Boolean value) -> node.focus(value, false));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focused(final @NonNull Signal<Boolean> focused) {
-		return super.userProperty("focused", focused, (final FieldNode<V> node, final Boolean value) -> node.focus(value, false));
+		return super.bind("focused", focused, (final FieldNode<V> node, final Boolean value) -> node.focus(value, false));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T accept(final @NonNull Predicate<@NonNull String> accept) {
@@ -356,11 +356,11 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final int cursorPosition) {
-		return super.userProperty("cursorPosition", cursorPosition, (final FieldNode<V> node, final Integer value) -> node.moveCursor(value, false));
+		return super.bind("cursorPosition", cursorPosition, (final FieldNode<V> node, final Integer value) -> node.moveCursor(value, false));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final @NonNull Signal<Integer> cursorPosition) {
-		return super.userProperty("cursorPosition", cursorPosition, (final FieldNode<V> node, final Integer value) -> node.moveCursor(value, false));
+		return super.bind("cursorPosition", cursorPosition, (final FieldNode<V> node, final Integer value) -> node.moveCursor(value, false));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T change(final @NonNull String text) {
@@ -452,11 +452,11 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final <T extends FieldNode<V>> @NonNull T startValue(final V value) {
-		return super.userProperty("text", value, (final FieldNode<V> node, final V current) -> node.trackCursor(false, () -> node.write(current, false)));
+		return super.bind("text", value, (final FieldNode<V> node, final V current) -> node.trackCursor(false, () -> node.write(current, false)));
 	}
 
 	protected final <T extends FieldNode<V>> @NonNull T bindValue(final @NonNull Signal<V> value) {
-		return super.userProperty("text", value, (final FieldNode<V> node, final V current) -> {
+		return super.bind("text", value, (final FieldNode<V> node, final V current) -> {
 			if (!current.equals(node.getValue())) {
 				node.trackCursor(false, () -> node.write(current, false));
 			}

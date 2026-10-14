@@ -104,11 +104,11 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull O value) {
-		return super.userProperty("value", value, (final SliderNode<O> node, final O option) -> node.choose(option, false));
+		return super.bind("value", value, (final SliderNode<O> node, final O option) -> node.choose(option, false));
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Signal<O> value) {
-		return super.userProperty("value", value, (final SliderNode<O> node, final O option) -> {
+		return super.bind("value", value, (final SliderNode<O> node, final O option) -> {
 			if (node.valueSet.isEmpty() || node.valueSet.contains(option)) {
 				node.choose(option, false);
 			}
