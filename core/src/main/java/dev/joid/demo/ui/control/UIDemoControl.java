@@ -26,15 +26,15 @@ public class UIDemoControl extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoControl.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal checkboxChanges = IntegerSignal.of(0);
-		final BooleanSignal sharedCheck = BooleanSignal.of(true);
-		final IntegerSignal refusedChecks = IntegerSignal.of(0);
-		final StringSignal toggleValue = StringSignal.of("Off");
-		final BooleanSignal sharedToggle = BooleanSignal.of(true);
-		final IntegerSignal refusedToggles = IntegerSignal.of(0);
-		final StringSignal switchState = StringSignal.of("One");
-		final StringSignal sharedState = StringSignal.of("Two");
-		final IntegerSignal refusedStates = IntegerSignal.of(0);
+		final IntegerSignal checkboxChanges = new IntegerSignal(0);
+		final BooleanSignal sharedCheck = new BooleanSignal(true);
+		final IntegerSignal refusedChecks = new IntegerSignal(0);
+		final StringSignal toggleValue = new StringSignal("Off");
+		final BooleanSignal sharedToggle = new BooleanSignal(true);
+		final IntegerSignal refusedToggles = new IntegerSignal(0);
+		final StringSignal switchState = new StringSignal("One");
+		final StringSignal sharedState = new StringSignal("Two");
+		final IntegerSignal refusedStates = new IntegerSignal(0);
 
 		RectNode
 		.create(80, 40, 320, 260)

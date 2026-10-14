@@ -15,8 +15,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReplayScenarioUI extends UI {
 
-	private final IntegerSignal clicks = IntegerSignal.of(0);
-	private final IntegerSignal other  = IntegerSignal.of(0);
+	private final IntegerSignal clicks = new IntegerSignal(0);
+	private final IntegerSignal other  = new IntegerSignal(0);
 	private final List<String>  names  = Collections.singletonList("Ada");
 
 	private final String scenario;

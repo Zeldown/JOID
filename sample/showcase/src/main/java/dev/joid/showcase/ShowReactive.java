@@ -21,10 +21,10 @@ import dev.joid.lib.utils.point.Point;
 
 public class ShowReactive extends ShowUI {
 
-	private final DoubleSignal  space  = DoubleSignal.of(0.3D);
-	private final BooleanSignal halo   = BooleanSignal.of(false);
-	private final DoubleSignal  energy = DoubleSignal.of(0.35D);
-	private final DoubleSignal  warmth = DoubleSignal.of(0.2D);
+	private final DoubleSignal  space  = new DoubleSignal(0.3D);
+	private final BooleanSignal halo   = new BooleanSignal(false);
+	private final DoubleSignal  energy = new DoubleSignal(0.35D);
+	private final DoubleSignal  warmth = new DoubleSignal(0.2D);
 
 	@Override
 	protected void scene() {

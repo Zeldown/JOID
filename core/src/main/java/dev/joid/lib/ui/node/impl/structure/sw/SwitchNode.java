@@ -33,8 +33,8 @@ public abstract class SwitchNode extends Node {
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.stateList = ListSignal.of();
-		this.stateIndex = IntegerSignal.of(0);
+		this.stateList = new ListSignal<>();
+		this.stateIndex = new IntegerSignal(0);
 
 		super.watch(this.stateList, WatchProperty.CLEAR_CHILDREN, WatchProperty.custom((node, signal) -> node.init(node.getUi())));
 		super.<SwitchNode>require("states", "call states(...) before attaching it", node -> !node.stateList.peek().isEmpty());

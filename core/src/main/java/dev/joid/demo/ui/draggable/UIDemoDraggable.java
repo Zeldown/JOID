@@ -26,11 +26,11 @@ public class UIDemoDraggable extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153).freeze();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
 
-	private final IntegerSignal ends   = IntegerSignal.of(0);
-	private final IntegerSignal drags  = IntegerSignal.of(0);
-	private final IntegerSignal snaps  = IntegerSignal.of(0);
-	private final IntegerSignal moves  = IntegerSignal.of(0);
-	private final IntegerSignal starts = IntegerSignal.of(0);
+	private final IntegerSignal ends   = new IntegerSignal(0);
+	private final IntegerSignal drags  = new IntegerSignal(0);
+	private final IntegerSignal snaps  = new IntegerSignal(0);
+	private final IntegerSignal moves  = new IntegerSignal(0);
+	private final IntegerSignal starts = new IntegerSignal(0);
 
 	@Override
 	public void init() {

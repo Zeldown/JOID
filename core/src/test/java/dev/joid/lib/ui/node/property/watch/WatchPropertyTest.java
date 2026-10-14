@@ -25,7 +25,7 @@ public class WatchPropertyTest {
 	public void runsACustomAction() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D));
-		final Signal<Integer> signal = Signal.of(2);
+		final Signal<Integer> signal = new Signal<>(2);
 		WatchProperty.custom((target, source) -> received.addAll(Arrays.asList(target, source))).apply(node, signal);
 		Assert.assertEquals(Arrays.asList(node, signal), received);
 		Assert.assertEquals(1, node.getChildren().size());
@@ -35,7 +35,7 @@ public class WatchPropertyTest {
 	public void detachesEveryChild() {
 		final int[] detached = {0};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D).onDetach(event -> detached[0]++), RectNode.create(5D, 5D, 5D, 5D));
-		WatchProperty.CLEAR_CHILDREN.apply(node, Signal.of(1));
+		WatchProperty.CLEAR_CHILDREN.apply(node, new Signal<>(1));
 		Assert.assertTrue(node.getChildren().isEmpty());
 		Assert.assertEquals(1, detached[0]);
 	}
@@ -44,20 +44,20 @@ public class WatchPropertyTest {
 	public void runsTheBodyAgain() {
 		final int[] runs = {0};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).body(() -> runs[0]++);
-		WatchProperty.BODY.apply(node, Signal.of(1));
+		WatchProperty.BODY.apply(node, new Signal<>(1));
 		Assert.assertEquals(2, runs[0]);
 	}
 
 	@Test
 	public void runsNoBodyWithoutOne() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D));
-		WatchProperty.BODY.apply(node, Signal.of(1));
+		WatchProperty.BODY.apply(node, new Signal<>(1));
 		Assert.assertEquals(1, node.getChildren().size());
 	}
 
 	@Test
 	public void rebuildsAWatchingNodeOnEveryChange() {
-		final Signal<Integer> count = Signal.of(1);
+		final Signal<Integer> count = new Signal<>(1);
 		final WatchUI ui = new WatchUI(count);
 		this.bridges.open(ui).frame();
 		Assert.assertEquals(1, ui.node.getChildren().size());
@@ -67,7 +67,7 @@ public class WatchPropertyTest {
 
 	@Test
 	public void leavesTheOldChildrenWithoutParentOnARebuild() {
-		final Signal<Integer> count = Signal.of(1);
+		final Signal<Integer> count = new Signal<>(1);
 		final WatchUI ui = new WatchUI(count);
 		this.bridges.open(ui).frame();
 		final Node old = ui.node.getChildren().get(0);

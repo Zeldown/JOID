@@ -23,9 +23,9 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowDrag extends ShowUI {
 
-	private final StringSignal  title  = StringSignal.of("");
-	private final StringSignal  artist = StringSignal.of("");
-	private final Signal<Color> accent = Signal.of(ShowUI.VIOLET);
+	private final StringSignal  title  = new StringSignal("");
+	private final StringSignal  artist = new StringSignal("");
+	private final Signal<Color> accent = new Signal<>(ShowUI.VIOLET);
 
 	@Override
 	protected void scene() {

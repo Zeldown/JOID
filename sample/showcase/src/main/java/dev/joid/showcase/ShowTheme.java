@@ -19,7 +19,7 @@ import dev.joid.lib.utils.point.Point;
 
 public class ShowTheme extends ShowUI {
 
-	private final BooleanSignal dark = BooleanSignal.of(false);
+	private final BooleanSignal dark = new BooleanSignal(false);
 
 	private long   last;
 	private double level;

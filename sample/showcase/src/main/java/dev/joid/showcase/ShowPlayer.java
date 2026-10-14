@@ -26,9 +26,9 @@ import dev.joid.lib.utils.point.Point;
 
 public class ShowPlayer extends ShowUI {
 
-	private final DoubleSignal  scrub    = DoubleSignal.of(-1D);
-	private final DoubleSignal  progress = DoubleSignal.of(0D);
-	private final BooleanSignal playing  = BooleanSignal.of(true);
+	private final DoubleSignal  scrub    = new DoubleSignal(-1D);
+	private final DoubleSignal  progress = new DoubleSignal(0D);
+	private final BooleanSignal playing  = new BooleanSignal(true);
 
 	private ResourcePlayerNode player;
 

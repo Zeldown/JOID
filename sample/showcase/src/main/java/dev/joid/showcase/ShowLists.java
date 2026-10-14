@@ -25,7 +25,7 @@ public class ShowLists extends ShowUI {
 	private static final String[] TITLES  = {"Golden Hour", "Neon Tide", "Velvet", "Aurora", "Midnight", "Paper Planes", "Low Tide", "Saffron", "Glasshouse", "Cinder", "Blue Hour", "Driftwood"};
 	private static final String[] ARTISTS = {"Amber Lane", "The Shallows", "Rosa Mendes", "North Lights", "Lo & Behold", "Kite Club", "The Shallows", "Amber Lane", "Mira Sol", "Ash & Oak", "North Lights", "Kite Club"};
 
-	private final StringSignal next  = StringSignal.of(ShowLists.TITLES[0]);
+	private final StringSignal next  = new StringSignal(ShowLists.TITLES[0]);
 	private final List<String> order = new ArrayList<>();
 
 	@Override

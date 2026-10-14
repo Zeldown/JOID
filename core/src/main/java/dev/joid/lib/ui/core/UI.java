@@ -177,9 +177,9 @@ public abstract class UI implements IUI, IndexedElement {
 		this.transition = this.createPopupTransition();
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
-		this.zoomLevel = DoubleSignal.of(1D);
-		this.scaledWidth = DoubleSignal.of(UIView.DESIGN_WIDTH);
-		this.scaledHeight = DoubleSignal.of(UIView.DESIGN_HEIGHT);
+		this.zoomLevel = new DoubleSignal(1D);
+		this.scaledWidth = new DoubleSignal(UIView.DESIGN_WIDTH);
+		this.scaledHeight = new DoubleSignal(UIView.DESIGN_HEIGHT);
 
 		this.devNode = null;
 		this.lastHoveredFrame = -1L;

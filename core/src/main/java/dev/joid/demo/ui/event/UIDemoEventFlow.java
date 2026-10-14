@@ -27,15 +27,15 @@ public class UIDemoEventFlow extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoEventFlow.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final StringSignal order = StringSignal.of("none");
-		final IntegerSignal clicks = IntegerSignal.of(0);
-		final IntegerSignal heard = IntegerSignal.of(0);
-		final IntegerSignal monitored = IntegerSignal.of(0);
-		final BooleanSignal guarded = BooleanSignal.of(false);
-		final IntegerSignal refused = IntegerSignal.of(0);
-		final StringSignal key = StringSignal.of("none");
-		final BooleanSignal locked = BooleanSignal.of(true);
-		final IntegerSignal kept = IntegerSignal.of(0);
+		final StringSignal order = new StringSignal("none");
+		final IntegerSignal clicks = new IntegerSignal(0);
+		final IntegerSignal heard = new IntegerSignal(0);
+		final IntegerSignal monitored = new IntegerSignal(0);
+		final BooleanSignal guarded = new BooleanSignal(false);
+		final IntegerSignal refused = new IntegerSignal(0);
+		final StringSignal key = new StringSignal("none");
+		final BooleanSignal locked = new BooleanSignal(true);
+		final IntegerSignal kept = new IntegerSignal(0);
 
 		super.handleKeyPressed(event -> key.set(event.getKey().name()));
 		super.beforeClose(EventPriority.HIGH, event -> {

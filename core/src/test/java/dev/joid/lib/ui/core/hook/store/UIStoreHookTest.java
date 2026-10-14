@@ -415,7 +415,7 @@ public class UIStoreHookTest {
 
 		private static final Gson GSON = new GsonBuilder().create();
 
-		private IntegerSignal count = IntegerSignal.of(3);
+		private IntegerSignal count = new IntegerSignal(3);
 
 		@Override
 		public void fromJson(final @NonNull String json) {

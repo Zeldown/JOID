@@ -55,7 +55,7 @@ public class ToggleNodeTest {
 	@Test
 	public void staysInSyncWithItsSignal() {
 		final List<Object> changes = new ArrayList<>();
-		final BooleanSignal music = BooleanSignal.of(true);
+		final BooleanSignal music = new BooleanSignal(true);
 		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange(event -> changes.add(event.getValue()));
 		Assert.assertTrue(toggle.isToggle());
 		Assert.assertSame(music, toggle.getSignal());
@@ -69,8 +69,8 @@ public class ToggleNodeTest {
 
 	@Test
 	public void followsOnlyItsLastSignal() {
-		final BooleanSignal music = BooleanSignal.of(false);
-		final BooleanSignal sounds = BooleanSignal.of(false);
+		final BooleanSignal music = new BooleanSignal(false);
+		final BooleanSignal sounds = new BooleanSignal(false);
 		final Toggle toggle = new Toggle().state("on", 0).signal(music).signal(sounds);
 		this.bridges.open(new NodeUI(toggle)).frame();
 		toggle.toggle(true);
@@ -86,7 +86,7 @@ public class ToggleNodeTest {
 
 	@Test
 	public void refusesAComputedSignal() {
-		final BooleanSignal music = BooleanSignal.of(false);
+		final BooleanSignal music = new BooleanSignal(false);
 		final Toggle toggle = new Toggle().state("on", 0).signal(music);
 		try {
 			toggle.signal(music.map(value -> !value));
@@ -103,7 +103,7 @@ public class ToggleNodeTest {
 	@Test
 	public void writesAChosenSideIntoItsSignal() {
 		final List<Object> changes = new ArrayList<>();
-		final BooleanSignal music = BooleanSignal.of(false);
+		final BooleanSignal music = new BooleanSignal(false);
 		final Toggle toggle = new Toggle().state("on", 0).signal(music).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(toggle));
 		toggle.toggle(true);

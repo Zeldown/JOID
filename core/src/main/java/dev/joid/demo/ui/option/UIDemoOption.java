@@ -34,7 +34,7 @@ public class UIDemoOption extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOption.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal ticks = IntegerSignal.of(0);
+		final IntegerSignal ticks = new IntegerSignal(0);
 		Task.create(1000L).every(1000L).onRun(event -> ticks.increment()).attach(this);
 
 		RectNode

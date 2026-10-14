@@ -23,6 +23,7 @@ import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.thread.ThreadUtils;
 
 @UIData(background = true)
 public class UIDemoWatch extends UIDemo {
@@ -34,29 +35,29 @@ public class UIDemoWatch extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoWatch.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal ticks = IntegerSignal.of(0);
-		final IntegerSignal watched = IntegerSignal.of(0);
-		final BooleanSignal live = BooleanSignal.of(true);
-		final IntegerSignal squares = IntegerSignal.of(2);
-		final IntegerSignal grown = IntegerSignal.of(0);
-		final IntegerSignal mounts = IntegerSignal.of(0);
+		final IntegerSignal ticks = new IntegerSignal(0);
+		final IntegerSignal watched = new IntegerSignal(0);
+		final BooleanSignal live = new BooleanSignal(true);
+		final IntegerSignal squares = new IntegerSignal(2);
+		final IntegerSignal grown = new IntegerSignal(0);
+		final IntegerSignal mounts = new IntegerSignal(0);
 		final long shownAt = BridgeHandler.CLOCK.get().currentTimeMillis() + 2000L;
-		final BooleanSignal ready = BooleanSignal.of(false);
+		final BooleanSignal ready = new BooleanSignal(false);
 		final CompletableFuture<String> future = new CompletableFuture<>();
-		final Signal<String> result = Signal.of(future);
-		final IntegerSignal left = IntegerSignal.of(0);
-		final IntegerSignal right = IntegerSignal.of(0);
+		final Signal<String> result = new Signal<>();
+		final IntegerSignal left = new IntegerSignal(0);
+		final IntegerSignal right = new IntegerSignal(0);
 		final ComputedSignal<Integer> sum = Signal.from(() -> left.get() + right.get());
-		final IntegerSignal updates = IntegerSignal.of(0);
-		final IntegerSignal quiet = IntegerSignal.of(0);
-		final IntegerSignal notified = IntegerSignal.of(0);
-		final IntegerSignal read = IntegerSignal.of(0);
-		final IntegerSignal reset = IntegerSignal.of(5);
-		final MapSignal<String, Integer> counts = MapSignal.of();
-		final SetSignal<String> keys = SetSignal.of();
-		final IntegerSignal sent = IntegerSignal.of(0);
-		final IntegerSignal received = IntegerSignal.of(0);
-		final BooleanSignal listening = BooleanSignal.of(true);
+		final IntegerSignal updates = new IntegerSignal(0);
+		final IntegerSignal quiet = new IntegerSignal(0);
+		final IntegerSignal notified = new IntegerSignal(0);
+		final IntegerSignal read = new IntegerSignal(0);
+		final IntegerSignal reset = new IntegerSignal(5);
+		final MapSignal<String, Integer> counts = new MapSignal<>();
+		final SetSignal<String> keys = new SetSignal<>();
+		final IntegerSignal sent = new IntegerSignal(0);
+		final IntegerSignal received = new IntegerSignal(0);
+		final BooleanSignal listening = new BooleanSignal(true);
 		final ISignalSubscriber<Integer> listener = value -> {
 			received.increment();
 			return true;
@@ -71,6 +72,7 @@ public class UIDemoWatch extends UIDemo {
 			return true;
 		});
 		sent.subscribe(listener);
+		future.thenAccept(value -> ThreadUtils.runOnRenderThread(() -> result.set(value)));
 
 		RectNode
 		.create(100, 40, 400, 260)

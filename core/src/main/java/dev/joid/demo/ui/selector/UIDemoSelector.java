@@ -23,9 +23,9 @@ public class UIDemoSelector extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSelector.INK);
-		final StringSignal down = StringSignal.of("First");
-		final StringSignal shared = StringSignal.of("Second");
-		final IntegerSignal refused = IntegerSignal.of(0);
+		final StringSignal down = new StringSignal("First");
+		final StringSignal shared = new StringSignal("Second");
+		final IntegerSignal refused = new IntegerSignal(0);
 
 		RectNode
 		.create(320, 210, 400, 260)

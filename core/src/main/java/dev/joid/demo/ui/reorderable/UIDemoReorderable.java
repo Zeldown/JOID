@@ -25,10 +25,10 @@ public class UIDemoReorderable extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoReorderable.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 18, Color.WHITE);
-		final IntegerSignal starts = IntegerSignal.of(0);
-		final IntegerSignal moves = IntegerSignal.of(0);
-		final StringSignal last = StringSignal.of("none");
-		final IntegerSignal refused = IntegerSignal.of(0);
+		final IntegerSignal starts = new IntegerSignal(0);
+		final IntegerSignal moves = new IntegerSignal(0);
+		final StringSignal last = new StringSignal("none");
+		final IntegerSignal refused = new IntegerSignal(0);
 
 		RectNode
 		.create(100, 40, 400, 260)

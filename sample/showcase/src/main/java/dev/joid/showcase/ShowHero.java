@@ -33,8 +33,8 @@ import dev.joid.lib.utils.point.Point;
 
 public class ShowHero extends ShowUI {
 
-	private final IntegerSignal plays    = IntegerSignal.of(12480);
-	private final DoubleSignal  progress = DoubleSignal.of(0D);
+	private final IntegerSignal plays    = new IntegerSignal(12480);
+	private final DoubleSignal  progress = new DoubleSignal(0D);
 
 	@Override
 	protected void scene() {

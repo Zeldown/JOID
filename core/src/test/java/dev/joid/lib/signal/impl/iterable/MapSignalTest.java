@@ -19,7 +19,7 @@ public class MapSignalTest {
 
 	@Test
 	public void startsWithAnEmptyMapWithoutDefault() {
-		final MapSignal<String, Integer> signal = MapSignal.of();
+		final MapSignal<String, Integer> signal = new MapSignal<>();
 		Assert.assertEquals(Collections.emptyMap(), signal.get());
 		Assert.assertTrue(signal.isEmpty());
 		Assert.assertNull(signal.get("a"));
@@ -28,14 +28,14 @@ public class MapSignalTest {
 	@Test
 	public void startsWithTheGivenMap() {
 		final Map<String, Integer> map = new HashMap<>();
-		final MapSignal<String, Integer> signal = MapSignal.of(map);
+		final MapSignal<String, Integer> signal = new MapSignal<>(map);
 		Assert.assertEquals(map, signal.get());
 		Assert.assertNotSame(map, signal.get());
 	}
 
 	@Test
 	public void resetsToTheGivenMap() {
-		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>(Collections.singletonMap("a", 1)));
+		final MapSignal<String, Integer> signal = new MapSignal<>(new HashMap<>(Collections.singletonMap("a", 1)));
 		signal.put("b", 2);
 		signal.reset();
 		Assert.assertEquals(Collections.singletonMap("a", 1), signal.get());
@@ -46,7 +46,7 @@ public class MapSignalTest {
 		final Map<String, Integer> map = new LinkedHashMap<>();
 		map.put("a", 1);
 		map.put("b", 2);
-		final MapSignal<String, Integer> signal = MapSignal.of(map);
+		final MapSignal<String, Integer> signal = new MapSignal<>(map);
 		Assert.assertEquals(2, signal.size());
 		Assert.assertFalse(signal.isEmpty());
 		Assert.assertEquals(Integer.valueOf(2), signal.get("b"));
@@ -60,7 +60,7 @@ public class MapSignalTest {
 
 	@Test
 	public void putsAndRemovesEntries() {
-		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>());
+		final MapSignal<String, Integer> signal = new MapSignal<>(new HashMap<>());
 		Assert.assertNull(signal.put("a", 1));
 		Assert.assertEquals(Integer.valueOf(1), signal.put("a", 2));
 		Assert.assertEquals(Integer.valueOf(2), signal.remove("a"));
@@ -70,7 +70,7 @@ public class MapSignalTest {
 
 	@Test
 	public void clearsItsMap() {
-		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>(Collections.singletonMap("a", 1)));
+		final MapSignal<String, Integer> signal = new MapSignal<>(new HashMap<>(Collections.singletonMap("a", 1)));
 		Assert.assertSame(signal, signal.clear());
 		Assert.assertTrue(signal.isEmpty());
 		Assert.assertEquals(0, signal.size());
@@ -79,7 +79,7 @@ public class MapSignalTest {
 	@Test
 	public void notifiesEveryMutation() {
 		final List<Map<String, Integer>> received = new ArrayList<>();
-		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>());
+		final MapSignal<String, Integer> signal = new MapSignal<>(new HashMap<>());
 		signal.subscribe(value -> received.add(new HashMap<>(value)));
 		signal.put("a", 1);
 		signal.put("a", 2);
@@ -91,14 +91,14 @@ public class MapSignalTest {
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("MapSignal{{a=1}}", MapSignal.of(Collections.singletonMap("a", 1)).toString());
+		Assert.assertEquals("MapSignal{{a=1}}", new MapSignal<>(Collections.singletonMap("a", 1)).toString());
 		Assert.assertEquals("MapSignal{{}}", new MapSignal<String, Integer>().toString());
 	}
 
 	@Test
 	public void notifiesTheMutatedMapWhenBuiltWithADefault() {
 		final List<Map<String, Integer>> received = new ArrayList<>();
-		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>());
+		final MapSignal<String, Integer> signal = new MapSignal<>(new HashMap<>());
 		signal.subscribe(received::add);
 		signal.put("a", 1);
 		Assert.assertEquals(Collections.singletonList(Collections.singletonMap("a", 1)), received);
@@ -107,7 +107,7 @@ public class MapSignalTest {
 	@Test
 	public void ignoresAMutationThatChangesNothing() {
 		final List<Map<String, Integer>> received = new ArrayList<>();
-		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>(Collections.singletonMap("a", 1)));
+		final MapSignal<String, Integer> signal = new MapSignal<>(new HashMap<>(Collections.singletonMap("a", 1)));
 		signal.subscribe(received::add);
 		Assert.assertEquals(Integer.valueOf(1), signal.put("a", 1));
 		Assert.assertNull(signal.remove("b"));
@@ -119,7 +119,7 @@ public class MapSignalTest {
 	@Test
 	public void notifiesANullValuePutUnderANewKey() {
 		final List<Map<String, Integer>> received = new ArrayList<>();
-		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>());
+		final MapSignal<String, Integer> signal = new MapSignal<>(new HashMap<>());
 		signal.subscribe(value -> received.add(new HashMap<>(value)));
 		signal.put("a", null);
 		signal.put("a", null);
@@ -130,7 +130,7 @@ public class MapSignalTest {
 	@Test
 	public void notifiesAValueDerivedFromItsMapAtEveryMutation() {
 		final List<Map<String, Integer>> received = new ArrayList<>();
-		final MapSignal<String, Integer> signal = MapSignal.of();
+		final MapSignal<String, Integer> signal = new MapSignal<>();
 		final ComputedSignal<Map<String, Integer>> derived = Signal.from(() -> signal.get()).subscribe(received::add);
 		signal.put("a", 1);
 		signal.put("a", 2);
@@ -141,7 +141,7 @@ public class MapSignalTest {
 	@Test
 	public void resetsWithoutTheMapOfTheCaller() {
 		final Map<String, Integer> map = new HashMap<>(Collections.singletonMap("a", 1));
-		final MapSignal<String, Integer> signal = MapSignal.of(map);
+		final MapSignal<String, Integer> signal = new MapSignal<>(map);
 		map.put("x", 0);
 		signal.put("b", 2);
 		signal.reset();
@@ -150,16 +150,16 @@ public class MapSignalTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void exposesReadOnlyEntries() {
-		MapSignal.of(Collections.singletonMap("a", 1)).entrySet().clear();
+		new MapSignal<>(Collections.singletonMap("a", 1)).entrySet().clear();
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void exposesReadOnlyKeys() {
-		MapSignal.of(Collections.singletonMap("a", 1)).keySet().remove("a");
+		new MapSignal<>(Collections.singletonMap("a", 1)).keySet().remove("a");
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void exposesReadOnlyValues() {
-		MapSignal.of(Collections.singletonMap("a", 1)).values().clear();
+		new MapSignal<>(Collections.singletonMap("a", 1)).values().clear();
 	}
 }

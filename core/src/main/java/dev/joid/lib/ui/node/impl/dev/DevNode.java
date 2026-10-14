@@ -79,11 +79,11 @@ public final class DevNode extends Node {
 		super(x, y, 275, 53);
 		super.anchor(Align.END);
 
-		this.inspectSignal = BooleanSignal.of(true);
-		this.gridSignal = BooleanSignal.of(false);
+		this.inspectSignal = new BooleanSignal(true);
+		this.gridSignal = new BooleanSignal(false);
 
-		this.inspectedNode = Signal.of((Node) null);
-		this.inspectedNodeLocked = BooleanSignal.of();
+		this.inspectedNode = new Signal<>();
+		this.inspectedNodeLocked = new BooleanSignal();
 		this.lockedNode = Signal.from(() -> this.inspectedNodeLocked.get() ? this.inspectedNode.get() : null);
 
 		this.reloadAnimator = TweenAnimator.create(0F);

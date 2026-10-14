@@ -35,19 +35,19 @@ public class UIDemoSignal extends UIDemo {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSignal.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final long opened = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final IntegerSignal clicks = IntegerSignal.of(0);
-		final IntegerSignal mapped = IntegerSignal.of(0);
-		final IntegerSignal left = IntegerSignal.of(0);
-		final IntegerSignal right = IntegerSignal.of(0);
-		final IntegerSignal volume = IntegerSignal.of(5);
-		final BooleanSignal muted = BooleanSignal.of(false);
-		final Signal<String> name = Signal.of("Ada");
-		final BooleanSignal shown = BooleanSignal.of(false);
-		final IntegerSignal heat = IntegerSignal.of(0);
-		final ListSignal<String> items = ListSignal.of(Arrays.asList("First item", "Second item"));
-		final ListSignal<String> cards = ListSignal.of();
-		final IntegerSignal sent = IntegerSignal.of(0);
-		final IntegerSignal saved = IntegerSignal.of(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
+		final IntegerSignal mapped = new IntegerSignal(0);
+		final IntegerSignal left = new IntegerSignal(0);
+		final IntegerSignal right = new IntegerSignal(0);
+		final IntegerSignal volume = new IntegerSignal(5);
+		final BooleanSignal muted = new BooleanSignal(false);
+		final Signal<String> name = new Signal<>("Ada");
+		final BooleanSignal shown = new BooleanSignal(false);
+		final IntegerSignal heat = new IntegerSignal(0);
+		final ListSignal<String> items = new ListSignal<>(Arrays.asList("First item", "Second item"));
+		final ListSignal<String> cards = new ListSignal<>();
+		final IntegerSignal sent = new IntegerSignal(0);
+		final IntegerSignal saved = new IntegerSignal(0);
 
 		sent.subscribe(value -> {
 			saved.set(value);

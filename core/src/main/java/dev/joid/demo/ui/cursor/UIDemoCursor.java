@@ -25,10 +25,10 @@ public class UIDemoCursor extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoCursor.INK);
 		final TextInfo small = TextInfo.create(DemoFont.MONTSERRAT, 18, UIDemoCursor.INK);
-		final BooleanSignal locked = BooleanSignal.of(false);
-		final IntegerSignal through = IntegerSignal.of(0);
-		final IntegerSignal blocked = IntegerSignal.of(0);
-		final IntegerSignal bubbled = IntegerSignal.of(0);
+		final BooleanSignal locked = new BooleanSignal(false);
+		final IntegerSignal through = new IntegerSignal(0);
+		final IntegerSignal blocked = new IntegerSignal(0);
+		final IntegerSignal bubbled = new IntegerSignal(0);
 		final String[] captions = {"Default", "Pointer", "Text", "Crosshair", "Move", "Not allowed", "Resize EW", "Resize NS", "Resize NWSE", "Resize NESW"};
 		final Cursor[] cursors = Cursor.values();
 

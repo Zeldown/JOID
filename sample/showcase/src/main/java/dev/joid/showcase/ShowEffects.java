@@ -48,7 +48,7 @@ public class ShowEffects extends ShowUI {
 		TextNode.create(158, 226).text(Text.create("Stack them on any node, animate any value.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 		final Color[] dots = {ShowUI.VIOLET, ShowUI.PINK, ShowUI.SKY, ShowUI.AMBER, ShowUI.FUCHSIA, ShowUI.CYAN, ShowUI.EMERALD};
 		for (int i = 0; i < ShowEffects.NAMES.length; i++) {
-			this.switches[i] = BooleanSignal.of(false);
+			this.switches[i] = new BooleanSignal(false);
 			final double y = 300D + i * 88D;
 			final BooleanSignal on = this.switches[i];
 			final Color dot = dots[i];

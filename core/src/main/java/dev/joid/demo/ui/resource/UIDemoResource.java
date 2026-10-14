@@ -45,8 +45,8 @@ public class UIDemoResource extends UIDemo {
 		final Resource vector = Resource.of("assets/demo/textures/vector/placeholder.svg");
 		final Resource square = Resource.of("https://placehold.co/100x100.png");
 		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-image").onError((resource, error) -> System.out.println("[UIDemoResource] failed resource: " + error.getMessage()));
-		final BooleanSignal second = BooleanSignal.of(false);
-		final StringSignal natural = StringSignal.of("");
+		final BooleanSignal second = new BooleanSignal(false);
+		final StringSignal natural = new StringSignal("");
 		final BufferedImage disc = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
 		for (int x = 0; x < 100; x++) {
 			for (int y = 0; y < 100; y++) {

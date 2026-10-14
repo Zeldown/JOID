@@ -35,20 +35,20 @@ public class UIDemoEvent extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoEvent.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal pressed = IntegerSignal.of(0);
-		final IntegerSignal released = IntegerSignal.of(0);
-		final DoubleSignal knob = DoubleSignal.of(0D);
-		final IntegerSignal scrolled = IntegerSignal.of(0);
-		final DoubleSignal hoverX = DoubleSignal.of(120D);
-		final DoubleSignal hoverY = DoubleSignal.of(90D);
-		final IntegerSignal inits = IntegerSignal.of(0);
-		final IntegerSignal appended = IntegerSignal.of(0);
-		final IntegerSignal detached = IntegerSignal.of(0);
-		final IntegerSignal clicks = IntegerSignal.of(0);
-		final IntegerSignal shortcuts = IntegerSignal.of(0);
-		final IntegerSignal forced = IntegerSignal.of(0);
-		final IntegerSignal seconds = IntegerSignal.of(0);
-		final BooleanSignal running = BooleanSignal.of(true);
+		final IntegerSignal pressed = new IntegerSignal(0);
+		final IntegerSignal released = new IntegerSignal(0);
+		final DoubleSignal knob = new DoubleSignal(0D);
+		final IntegerSignal scrolled = new IntegerSignal(0);
+		final DoubleSignal hoverX = new DoubleSignal(120D);
+		final DoubleSignal hoverY = new DoubleSignal(90D);
+		final IntegerSignal inits = new IntegerSignal(0);
+		final IntegerSignal appended = new IntegerSignal(0);
+		final IntegerSignal detached = new IntegerSignal(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
+		final IntegerSignal shortcuts = new IntegerSignal(0);
+		final IntegerSignal forced = new IntegerSignal(0);
+		final IntegerSignal seconds = new IntegerSignal(0);
+		final BooleanSignal running = new BooleanSignal(true);
 		final Task timer = Task.create(1000L).every(1000L).onRun(event -> seconds.increment());
 
 		RectNode

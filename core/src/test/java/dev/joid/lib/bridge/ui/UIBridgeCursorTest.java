@@ -95,7 +95,7 @@ public class UIBridgeCursorTest {
 
 	@Test
 	public void followsAReactiveCursor() {
-		final Signal<Boolean> busy = Signal.of(false);
+		final Signal<Boolean> busy = new Signal<>(false);
 		this.bridges.open(new NodeUI(RectNode.create(100, 100, 200, 200).cursor(() -> busy.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER))).move(150D, 150D).frame();
 		busy.set(true);
 		this.bridges.frame();
@@ -104,7 +104,7 @@ public class UIBridgeCursorTest {
 
 	@Test
 	public void inheritsWhenAReactiveCursorGivesNull() {
-		final Signal<Boolean> own = Signal.of(true);
+		final Signal<Boolean> own = new Signal<>(true);
 		final RectNode parent = RectNode.create(100, 100, 400, 400).cursor(Cursor.CROSSHAIR);
 		RectNode.create(50, 50, 100, 100).cursor(() -> own.get() ? Cursor.RESIZE_EW : null).attach(parent);
 		this.bridges.open(new NodeUI(parent)).move(200D, 200D).frame();

@@ -301,7 +301,7 @@ public class ResourcePlayerNodeTest {
 		this.bridges.open(new NodeUI(player));
 		Assert.assertEquals("music", player.getAudioGroup());
 		Assert.assertEquals("music", video.getAudioGroup());
-		final Signal<String> group = Signal.of("voice");
+		final Signal<String> group = new Signal<>("voice");
 		Assert.assertSame(player, player.audioGroup(group));
 		Assert.assertEquals("voice", video.getAudioGroup());
 		group.set("ambient");

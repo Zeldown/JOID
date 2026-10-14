@@ -3,13 +3,10 @@ package dev.joid.lib.signal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOIDLog;
 import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
@@ -30,33 +27,15 @@ public class Signal<T> implements ISignal<T> {
 	@Getter(AccessLevel.PROTECTED)
 	private transient int version;
 
-	protected Signal() {
+	public Signal() {
 		this(null);
 	}
 
-	protected Signal(final T value) {
+	public Signal(final T value) {
 		this.value = value;
 		this.defaultValue = value;
 		this.eventSet = new HashSet<>();
 		this.observerList = new CopyOnWriteArrayList<>();
-	}
-
-	public static <T> @NonNull Signal<T> of(final T value) {
-		return new Signal<>(value);
-	}
-
-	public static <T> @NonNull Signal<T> of(final @NonNull CompletionStage<T> future) {
-		final Signal<T> instance = new Signal<>();
-		future.whenComplete((value, exception) -> {
-			if (exception == null) {
-				ThreadUtils.runOnRenderThread(() -> instance.set(value));
-				return;
-			}
-
-			final Throwable cause = exception instanceof CompletionException && exception.getCause() != null ? exception.getCause() : exception;
-			JOIDLog.warn("The future given to Signal.of(...) failed (" + cause + "), the signal stays empty: handle the failure on the future, with exceptionally(...) for example");
-		});
-		return instance;
 	}
 
 	public static <T> @NonNull ComputedSignal<T> from(final T value) {

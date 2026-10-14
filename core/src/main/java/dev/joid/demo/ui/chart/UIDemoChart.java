@@ -26,7 +26,7 @@ public class UIDemoChart extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoChart.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal week = IntegerSignal.of(0);
+		final IntegerSignal week = new IntegerSignal(0);
 
 		RectNode
 		.create(100, 210, 400, 260)

@@ -20,9 +20,9 @@ import dev.joid.lib.utils.point.Point;
 
 public class ShowForm extends ShowUI {
 
-	private final StringSignal bio   = StringSignal.of("I write <b>the first</b> <c=f472b6>programs</c>");
-	private final StringSignal name  = StringSignal.of("");
-	private final StringSignal email = StringSignal.of("");
+	private final StringSignal bio   = new StringSignal("I write <b>the first</b> <c=f472b6>programs</c>");
+	private final StringSignal name  = new StringSignal("");
+	private final StringSignal email = new StringSignal("");
 
 	@Override
 	protected void scene() {
