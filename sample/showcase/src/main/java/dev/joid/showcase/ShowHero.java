@@ -233,7 +233,7 @@ public class ShowHero extends ShowUI {
 		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F, 0D, 24D))
 		.body(card -> {
 			CircleNode.create(40, 20, 220).color(ShowUI.VIOLET.withAlpha(0.7F)).effect(BlurNodeEffect.create(40F)).attach(card);
-			ModelNode.create(30, 10, 240, 240).model(model).size(0.92D).rotationPitch(-18D).rotationYaw(() -> this.t() * 60D).attach(card);
+			ModelNode.create(30, 10, 240, 240).zoom(0.92D).rotationPitch(-18D).rotationYaw(() -> this.t() * 60D).model(model).attach(card);
 			TextNode.create(30, 252).text(Text.create("teapot.obj", ShowUI.font(FontWeight.BOLD, 26F, ShowUI.TEXT))).attach(card);
 			TextNode.create(30, 292).text(Text.create("Lit, textured, smooth", ShowUI.font(FontWeight.MEDIUM, 18F, ShowUI.MUTED))).attach(card);
 		})

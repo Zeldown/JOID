@@ -22,9 +22,9 @@ public final class SignalContext {
 	private static final AtomicLong                 EPOCH   = new AtomicLong();
 	private static final ThreadLocal<SignalContext> CURRENT = ThreadLocal.withInitial(SignalContext::new);
 
-	private final BaseSignal<?>[]      reads        = new BaseSignal<?>[64];
-	private final Set<BaseSignal<?>>   pendingSet   = Collections.newSetFromMap(new IdentityHashMap<>());
-	private final Deque<BaseSignal<?>> pendingQueue = new ArrayDeque<>();
+	private final Signal<?>[]      reads        = new Signal<?>[64];
+	private final Set<Signal<?>>   pendingSet   = Collections.newSetFromMap(new IdentityHashMap<>());
+	private final Deque<Signal<?>> pendingQueue = new ArrayDeque<>();
 	private final List<Runnable>       deferredList = new ArrayList<>();
 
 	private int               depth;
@@ -71,7 +71,7 @@ public final class SignalContext {
 		}
 	}
 
-	public void read(final BaseSignal<?> signal) {
+	public void read(final Signal<?> signal) {
 		this.readTotal++;
 		if (this.observer != null) {
 			this.observer.depend(signal);
@@ -103,14 +103,14 @@ public final class SignalContext {
 		return previous;
 	}
 
-	protected void schedule(final BaseSignal<?> signal) {
+	protected void schedule(final Signal<?> signal) {
 		if (this.pendingSet.add(signal)) {
 			this.pendingQueue.add(signal);
 		}
 	}
 
-	public @NonNull List<BaseSignal<?>> takeReads() {
-		final List<BaseSignal<?>> readList = new ArrayList<>(this.readCount);
+	public @NonNull List<Signal<?>> takeReads() {
+		final List<Signal<?>> readList = new ArrayList<>(this.readCount);
 		for (int index = this.readCount; index > 0; index--) {
 			final int position = this.readIndex - index & this.reads.length - 1;
 			readList.add(this.reads[position]);
@@ -120,8 +120,8 @@ public final class SignalContext {
 		return readList;
 	}
 
-	public void putBackReads(final List<BaseSignal<?>> readList) {
-		final List<BaseSignal<?>> recentList = this.takeReads();
+	public void putBackReads(final List<Signal<?>> readList) {
+		final List<Signal<?>> recentList = this.takeReads();
 		readList.forEach(this::record);
 		recentList.forEach(this::record);
 	}
@@ -137,7 +137,7 @@ public final class SignalContext {
 		return this.readCount > 0;
 	}
 
-	private void record(final BaseSignal<?> signal) {
+	private void record(final Signal<?> signal) {
 		this.reads[this.readIndex] = signal;
 		this.readIndex = this.readIndex + 1 & this.reads.length - 1;
 		if (this.readCount < this.reads.length) {
@@ -154,7 +154,7 @@ public final class SignalContext {
 		this.flushing = true;
 		try {
 			while (!this.pendingQueue.isEmpty()) {
-				final BaseSignal<?> signal = this.pendingQueue.poll();
+				final Signal<?> signal = this.pendingQueue.poll();
 				this.pendingSet.remove(signal);
 				try {
 					signal.dispatch();

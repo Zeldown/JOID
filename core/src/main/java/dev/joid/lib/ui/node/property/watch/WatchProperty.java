@@ -2,7 +2,7 @@ package dev.joid.lib.ui.node.property.watch;
 
 import java.util.function.BiConsumer;
 
-import dev.joid.lib.signal.ISignal;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -18,13 +18,13 @@ public final class WatchProperty {
 	});
 	public static final WatchProperty CLEAR_CHILDREN = new WatchProperty((node, signal) -> node.clearChildren());
 
-	private final @NonNull BiConsumer<@NonNull Node, @NonNull ISignal<?>> action;
+	private final @NonNull BiConsumer<@NonNull Node, @NonNull Signal<?>> action;
 
-	public static @NonNull WatchProperty custom(final @NonNull BiConsumer<@NonNull Node, @NonNull ISignal<?>> action) {
+	public static @NonNull WatchProperty custom(final @NonNull BiConsumer<@NonNull Node, @NonNull Signal<?>> action) {
 		return new WatchProperty(action);
 	}
 
-	public void apply(final @NonNull Node node, final @NonNull ISignal<?> signal) {
+	public void apply(final @NonNull Node node, final @NonNull Signal<?> signal) {
 		this.action.accept(node, signal);
 	}
 

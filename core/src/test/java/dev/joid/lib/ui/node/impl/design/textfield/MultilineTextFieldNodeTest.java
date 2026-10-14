@@ -219,7 +219,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void reportsOnlyARealChangeOfFocus() {
 		final List<Boolean> focuses = new ArrayList<>();
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).onFocus(event -> focuses.add(event.getNode().isFocused()));
+		final MultilineTextFieldNode field = this.field("").focused(false).onFocus(event -> focuses.add(event.getNode().isFocused())).onBlur(event -> focuses.add(event.getNode().isFocused()));
 		field.focused(true).focused(true).focused(false);
 		Assert.assertEquals(Arrays.asList(true, false), focuses);
 	}

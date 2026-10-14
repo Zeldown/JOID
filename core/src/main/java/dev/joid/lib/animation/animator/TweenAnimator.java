@@ -14,7 +14,6 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenEvent;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
@@ -24,7 +23,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-public class TweenAnimator extends BaseSignal<Float> {
+public class TweenAnimator extends Signal<Float> {
 
 	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
@@ -224,6 +223,21 @@ public class TweenAnimator extends BaseSignal<Float> {
 	}
 
 	@Override
+	public @NonNull TweenAnimator set(final Float value) {
+		throw new IllegalStateException(this.refuse("set to " + value));
+	}
+
+	@Override
+	public @NonNull TweenAnimator reset() {
+		throw new IllegalStateException(this.refuse("reset"));
+	}
+
+	@Override
+	public @NonNull TweenAnimator silent() {
+		throw new IllegalStateException(this.refuse("silenced"));
+	}
+
+	@Override
 	public @NonNull TweenAnimator onChange(final @NonNull ISignalListener<? super Float> listener) {
 		super.onChange(listener);
 		return this;
@@ -240,6 +254,11 @@ public class TweenAnimator extends BaseSignal<Float> {
 		return this.value;
 	}
 
+	@Override
+	public boolean isWritable() {
+		return false;
+	}
+
 	protected void writeValue(final float value) {
 		super.write(() -> {
 			if (Float.compare(this.value, value) != 0) {
@@ -247,6 +266,10 @@ public class TweenAnimator extends BaseSignal<Float> {
 				super.propagate(true);
 			}
 		});
+	}
+
+	private String refuse(final String action) {
+		return "The " + this + " is animated and cannot be " + action + ", use value(...) or start a tween";
 	}
 
 	private void release() {

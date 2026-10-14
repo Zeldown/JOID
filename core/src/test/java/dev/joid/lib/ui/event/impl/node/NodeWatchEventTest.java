@@ -23,14 +23,14 @@ public class NodeWatchEventTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void receivesTheSignalAndItsProperties() {
+	public void receivesTheValueAndItsProperties() {
 		final List<Object> received = new ArrayList<>();
 		final Signal<Integer> signal = new Signal<>(1);
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).watch(signal, () -> true, WatchProperty.CLEAR_CHILDREN).onWatch(event -> received.addAll(Arrays.asList(event.getNode(), event.getSignal(), event.getProperties())));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).watch(signal, () -> true, WatchProperty.CLEAR_CHILDREN).onWatch(event -> received.addAll(Arrays.asList(event.getNode(), event.getValue(), event.getProperties())));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		Assert.assertTrue(received.isEmpty());
 		signal.set(2);
-		Assert.assertEquals(Arrays.asList(rect, signal, Collections.singletonList(WatchProperty.CLEAR_CHILDREN)), received);
+		Assert.assertEquals(Arrays.asList(rect, 2, Collections.singletonList(WatchProperty.CLEAR_CHILDREN)), received);
 	}
 
 	@Test

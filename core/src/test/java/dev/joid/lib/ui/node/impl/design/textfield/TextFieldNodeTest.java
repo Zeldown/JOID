@@ -21,7 +21,6 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
@@ -231,7 +230,8 @@ public class TextFieldNodeTest {
 	@Test
 	public void reportsOnlyARealChangeOfFocus() {
 		final List<Boolean> focuses = new ArrayList<>();
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).onFocus(event -> focuses.add(event.getNode().isFocused()));
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).onFocus(event -> focuses.add(event.getNode().isFocused())).onBlur(event -> focuses.add(event.getNode().isFocused()));
+		this.bridges.open(new NodeUI(field));
 		field.focused(true).focused(true).focused(false);
 		Assert.assertEquals(Arrays.asList(true, false), focuses);
 	}
@@ -239,13 +239,83 @@ public class TextFieldNodeTest {
 	@Test
 	public void losesItsFocusWhenDetached() {
 		final List<Boolean> focuses = new ArrayList<>();
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).onFocus(event -> focuses.add(event.getNode().isFocused()));
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).onFocus(event -> focuses.add(event.getNode().isFocused())).onBlur(event -> focuses.add(event.getNode().isFocused()));
 		this.bridges.open(new NodeUI(field));
 		field.focused(true);
 		field.fireDetach();
 		Assert.assertFalse(field.isFocused());
 		Assert.assertFalse(field.isInputting());
 		Assert.assertEquals(Arrays.asList(true, false), focuses);
+	}
+
+	@Test
+	public void writesItsFocusIntoItsSignal() {
+		final Signal<Boolean> focused = new Signal<>(false);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(focused);
+		this.bridges.open(new NodeUI(field));
+		this.click(124D, 120D);
+		Assert.assertTrue(focused.get());
+		this.press(field, Key.ESCAPE);
+		Assert.assertFalse(focused.get());
+		this.click(124D, 120D);
+		this.click(500D, 500D);
+		Assert.assertFalse(focused.get());
+		focused.set(true);
+		Assert.assertTrue(field.isFocused());
+	}
+
+	@Test
+	public void forgetsItsFocusSignalOnceGivenAValue() {
+		final Signal<Boolean> focused = new Signal<>(false);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(focused).focused(true);
+		this.bridges.open(new NodeUI(field));
+		Assert.assertTrue(field.isFocused());
+		this.press(field, Key.ESCAPE);
+		focused.set(true);
+		Assert.assertFalse(field.isFocused());
+		Assert.assertTrue(TextFieldNodeTest.subscribers(focused).isEmpty());
+	}
+
+	@Test
+	public void focusesLikeAClickThroughItsGestures() {
+		final List<String> events = new ArrayList<>();
+		final TextFieldNode field = TextFieldNode
+		.create(100D, 100D, 200D)
+		.info(this.info())
+		.beforeFocus(event -> events.add("before focus"))
+		.onFocus(event -> events.add("focus"))
+		.beforeBlur(event -> events.add("before blur"))
+		.onBlur(event -> events.add("blur"));
+		this.bridges.open(new NodeUI(field));
+		Assert.assertSame(field, field.focus());
+		Assert.assertSame(field, field.blur());
+		field.focused(true);
+		Assert.assertEquals(Arrays.asList("before focus", "focus", "before blur", "blur", "focus"), events);
+	}
+
+	@Test
+	public void staysUnfocusedWhenItsFocusIsRefused() {
+		final Signal<Boolean> focused = new Signal<>(false);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(focused).beforeFocus(event -> event.cancel());
+		this.bridges.open(new NodeUI(field));
+		this.click(124D, 120D);
+		field.focus();
+		Assert.assertFalse(field.isFocused());
+		Assert.assertFalse(focused.get());
+		Assert.assertEquals(0, field.getCursorPos());
+		focused.set(true);
+		Assert.assertTrue(field.isFocused());
+	}
+
+	@Test
+	public void staysFocusedWhenItsBlurIsRefused() {
+		final TextFieldNode field = this.field("hello").beforeBlur(event -> event.cancel());
+		this.press(field, Key.ESCAPE);
+		this.click(500D, 500D);
+		field.blur();
+		Assert.assertTrue(field.isFocused());
+		field.focused(false);
+		Assert.assertFalse(field.isFocused());
 	}
 
 	@Test
@@ -512,6 +582,40 @@ public class TextFieldNodeTest {
 			this.press(field, Key.LEFT);
 		}
 		Assert.assertEquals(0, field.getCursorPos());
+	}
+
+	@Test
+	public void writesItsCursorMovesIntoItsSignal() {
+		final Signal<Integer> cursor = new Signal<>(1);
+		final TextFieldNode field = this.field("abc").cursorPosition(cursor);
+		this.press(field, Key.RIGHT);
+		Assert.assertEquals(2, cursor.get().intValue());
+		this.type(field, "x");
+		Assert.assertEquals(3, cursor.get().intValue());
+		cursor.set(0);
+		Assert.assertEquals(0, field.getCursorPos());
+		cursor.set(99);
+		Assert.assertEquals(4, field.getCursorPos());
+		Assert.assertEquals(4, cursor.get().intValue());
+	}
+
+	@Test
+	public void movesItsCursorLikeTheArrowsThroughItsGesture() {
+		final List<String> events = new ArrayList<>();
+		final TextFieldNode field = this.field("abc").beforeCursorMove(event -> events.add("before " + event.getValue())).onCursorMove(event -> events.add("after " + event.getPrevious() + " " + event.getValue()));
+		Assert.assertSame(field, field.moveCursor(1));
+		field.cursorPosition(3);
+		Assert.assertEquals(Arrays.asList("before 1", "after 0 1", "after 1 3"), events);
+	}
+
+	@Test
+	public void keepsItsCursorWhenItsMoveIsRefused() {
+		final TextFieldNode field = this.field("abc").cursorPosition(1).beforeCursorMove(event -> event.cancel());
+		this.press(field, Key.RIGHT);
+		field.moveCursor(3);
+		Assert.assertEquals(1, field.getCursorPos());
+		field.cursorPosition(2);
+		Assert.assertEquals(2, field.getCursorPos());
 	}
 
 	@Test
@@ -1282,15 +1386,9 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(1, TextFieldNodeTest.subscribers(nickname).size());
 	}
 
-	@Test
-	public void followsAComputedSignalWithoutWritingIt() {
-		final Signal<String> name = new Signal<>("Alex");
-		final TextFieldNode field = this.field("").text(name.map(String::toUpperCase));
-		Assert.assertEquals("ALEX", field.getText());
-		name.set("Max");
-		this.bridges.frame();
-		Assert.assertEquals("MAX", field.getText());
-		Assert.assertEquals("Max", name.get());
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesASignalItCannotWrite() {
+		TextFieldNode.create(100D, 100D, 200D).text(new Signal<>("Alex").map(String::toUpperCase));
 	}
 
 	@Test
@@ -1361,7 +1459,7 @@ public class TextFieldNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+			final Field field = Signal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

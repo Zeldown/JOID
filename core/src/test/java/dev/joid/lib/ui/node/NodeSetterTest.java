@@ -3,10 +3,11 @@ package dev.joid.lib.ui.node;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
+import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -24,14 +25,22 @@ import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
+import dev.joid.lib.ui.node.impl.design.model.ModelViewerNode;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.design.progress.ProgressNode.ProgressDirection;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.design.textfield.FieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
+import dev.joid.lib.ui.node.impl.design.textfield.impl.IntegerFieldNode;
+import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
+import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderNode;
+import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
+import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.point.Point;
 
@@ -69,18 +78,11 @@ public class NodeSetterTest {
 		Assert.assertEquals(0.9F, ui.getPlayer().getVolume(), 1E-6F);
 		Assert.assertTrue(ui.getPlayer().isLoop());
 		Assert.assertEquals(Point.create(1D, 0D, 1D), ui.getPlayer().getLocation());
-		Assert.assertEquals(2D, ui.getModel().getSize(), 0D);
+		Assert.assertEquals(2D, ui.getModel().getZoom(), 0D);
 		Assert.assertEquals(90D, ui.getModel().getRotationYaw(), 0D);
-		Assert.assertEquals("Name 1", ui.getField().getText());
 		Assert.assertEquals("Type 1", ui.getField().getPlaceholder());
 		Assert.assertEquals(11, ui.getField().getMaxTextLength());
 		Assert.assertEquals(2D, ui.getField().getMarginLeft(), 0D);
-		Assert.assertTrue(ui.getCheckbox().isChecked());
-		Assert.assertTrue(ui.getToggle().isToggle());
-		Assert.assertEquals("medium", ui.getIndexed().getState());
-		Assert.assertEquals("high", ui.getNamed().getState());
-		Assert.assertEquals("second", ui.getSelector().getValue());
-		Assert.assertEquals(2, ui.getSlider().getValue().intValue());
 		Assert.assertEquals(5D, ui.getFlex().getMargin(), 0D);
 		Assert.assertSame(Align.CENTER, ui.getFlex().getAlign());
 		Assert.assertEquals(2F, ui.getBorder().getWidthSupplier().get(), 0F);
@@ -94,7 +96,6 @@ public class NodeSetterTest {
 		this.bridges.frame();
 		Assert.assertFalse(ui.getRect().isEnabled());
 		Assert.assertTrue(ui.getRect().isVisible());
-		Assert.assertTrue(ui.getSelector().isActive());
 		ui.getStep().set(5);
 		this.bridges.frame();
 		Assert.assertFalse(ui.getRect().isVisible());
@@ -122,25 +123,36 @@ public class NodeSetterTest {
 	}
 
 	@Test
-	public void neverRefusesASetterReplayedByItsSignals() {
+	public void offersAStartValueOrAWritableSignalToAValueTheUserChanges() {
+		final Object[][] setters = {{Node.class, "scrollX"}, {Node.class, "scrollY"}, {CheckboxNode.class, "checked"}, {ToggleNode.class, "toggle"}, {SwitchNode.class, "state"}, {SwitchNode.class, "index"}, {SelectorNode.class, "value"}, {SelectorNode.class, "active"}, {SliderNode.class, "value"}, {FieldNode.class, "text"}, {FieldNode.class, "focused"}, {FieldNode.class, "cursorPosition"}, {IntegerFieldNode.class, "value"}, {ModelViewerNode.class, "zoom"}, {ModelViewerNode.class, "rotationYaw"}, {ModelViewerNode.class, "rotationPitch"}, {UI.class, "zoom"}};
+		for (final Object[] setter : setters) {
+			int forms = 0;
+			for (final Method method : ((Class<?>) setter[0]).getDeclaredMethods()) {
+				if (method.getName().equals(setter[1]) && Modifier.isPublic(method.getModifiers())) {
+					Assert.assertNotSame(setter[1] + " of " + setter[0], Supplier.class, method.getParameterTypes()[0]);
+					forms++;
+				}
+			}
+			Assert.assertEquals(setter[1] + " of " + setter[0], 2, forms);
+		}
+	}
+
+	@Test
+	public void keepsTheStartValueOfAValueTheUserChanges() {
 		final SetterUI ui = new SetterUI();
 		this.bridges.open(ui);
-		ui.getCheckbox().beforeChange(event -> event.cancel());
-		ui.getToggle().beforeChange(event -> event.cancel());
-		ui.getNamed().beforeChange(event -> event.cancel());
-		ui.getIndexed().beforeChange(event -> event.cancel());
-		ui.getSelector().beforeChange(event -> event.cancel());
-		ui.getSlider().beforeChange(event -> event.cancel());
-		ui.getField().beforeChange(event -> event.cancel());
 		ui.getStep().set(1);
 		this.bridges.frame();
-		Assert.assertTrue(ui.getCheckbox().isChecked());
-		Assert.assertTrue(ui.getToggle().isToggle());
-		Assert.assertEquals("high", ui.getNamed().getState());
-		Assert.assertEquals("medium", ui.getIndexed().getState());
-		Assert.assertEquals("second", ui.getSelector().getValue());
-		Assert.assertEquals(2, ui.getSlider().getValue().intValue());
-		Assert.assertEquals("Name 1", ui.getField().getText());
+		Assert.assertEquals("Name 0", ui.getField().getText());
+		Assert.assertFalse(ui.getCheckbox().isChecked());
+		Assert.assertFalse(ui.getToggle().isToggle());
+		Assert.assertEquals("low", ui.getIndexed().getState());
+		Assert.assertEquals("low", ui.getNamed().getState());
+		Assert.assertEquals("first", ui.getSelector().getValue());
+		Assert.assertEquals(1, ui.getSlider().getValue().intValue());
+		ui.getStep().set(4);
+		this.bridges.frame();
+		Assert.assertFalse(ui.getSelector().isActive());
 	}
 
 	@Test
@@ -161,26 +173,18 @@ public class NodeSetterTest {
 		final double[] width = {10D};
 		final Color[] color = {Color.GRAY};
 		final float[] progress = {0F};
-		final boolean[] checked = {false};
-		final List<Boolean> changes = new ArrayList<>();
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).color(() -> color[0]).width(() -> width[0]);
 		final ProgressNode bar = ProgressNode.create(0D, 0D, 100D, 10D).progress(() -> progress[0]);
-		final Checkbox checkbox = new Checkbox().checked(() -> checked[0]).onChange(event -> changes.add(event.getValue()));
-		this.bridges.open(new NodeUI(rect, bar, checkbox));
+		this.bridges.open(new NodeUI(rect, bar));
 		width[0] = 30D;
 		color[0] = Color.GREEN;
 		progress[0] = 0.5F;
-		checked[0] = true;
 		Assert.assertSame(Color.GRAY, rect.getColor());
 		Assert.assertEquals(10D, rect.getWidth(), 0D);
 		this.bridges.frame();
 		Assert.assertSame(Color.GREEN, rect.getColor());
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
 		Assert.assertEquals(0.5F, bar.getProgress(), 0F);
-		Assert.assertTrue(checkbox.isChecked());
-		Assert.assertEquals(Arrays.asList(true), changes);
-		this.bridges.frames(3);
-		Assert.assertEquals(Arrays.asList(true), changes);
 	}
 
 	@Test
@@ -234,7 +238,7 @@ public class NodeSetterTest {
 	public void keepsDrawingWhenAFollowedValueIsRefused() {
 		final IntegerSignal index = new IntegerSignal(0);
 		final DoubleSignal width = new DoubleSignal(10D);
-		final Switch node = new Switch().states("low", "high").index(index.map(value -> value));
+		final Switch node = new Switch().states(index.map(value -> value == 0 ? Arrays.asList("low", "high") : Collections.<String>emptyList()));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).width(width);
 		this.bridges.open(new NodeUI(node, rect));
 		final PrintStream error = System.err;
@@ -249,7 +253,7 @@ public class NodeSetterTest {
 		}
 		Assert.assertEquals("low", node.getState());
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
-		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The state of Switch cannot take its new value (java.lang.IllegalArgumentException: The index 5 is out of the state list [low, high]"));
+		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The states of Switch cannot take its new value (java.lang.IllegalArgumentException: A switch needs at least one state"));
 	}
 
 	@Test

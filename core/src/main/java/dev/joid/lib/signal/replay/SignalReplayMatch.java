@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import dev.joid.lib.signal.BaseSignal;
+import dev.joid.lib.signal.Signal;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,15 +18,15 @@ public final class SignalReplayMatch {
 	private final Object                 self;
 	private final boolean                definitions;
 	private final Map<String, String>    holeMap;
-	private final Map<Object, BaseSignal<?>> positionalMap;
+	private final Map<Object, Signal<?>> positionalMap;
 	private final boolean[]              consumed;
 
 	public static SignalReplayMatch create(final SignalReplaySlice slice, final SignalReplayRun run, final Map<String, String> holeMap, final boolean[] consumed) {
 		return new SignalReplayMatch(slice, run.getSelf(), run.isDefinitions(), holeMap, run.getPositionalMap(), consumed);
 	}
 
-	public List<BaseSignal<?>> getReadList(final List<BaseSignal<?>> readList) {
-		final List<BaseSignal<?>> consumedList = new ArrayList<>();
+	public List<Signal<?>> getReadList(final List<Signal<?>> readList) {
+		final List<Signal<?>> consumedList = new ArrayList<>();
 		for (int index = 0; index < readList.size(); index++) {
 			if (this.consumed[index]) {
 				consumedList.add(readList.get(index));
@@ -35,8 +35,8 @@ public final class SignalReplayMatch {
 		return consumedList;
 	}
 
-	public List<BaseSignal<?>> getRemainingList(final List<BaseSignal<?>> readList) {
-		final List<BaseSignal<?>> remainingList = new ArrayList<>();
+	public List<Signal<?>> getRemainingList(final List<Signal<?>> readList) {
+		final List<Signal<?>> remainingList = new ArrayList<>();
 		for (int index = 0; index < readList.size(); index++) {
 			if (!this.consumed[index]) {
 				remainingList.add(readList.get(index));
@@ -49,7 +49,7 @@ public final class SignalReplayMatch {
 		return this.holeMap != null ? Collections.unmodifiableMap(this.holeMap) : null;
 	}
 
-	public Map<Object, BaseSignal<?>> getPositionalMap() {
+	public Map<Object, Signal<?>> getPositionalMap() {
 		return Collections.unmodifiableMap(this.positionalMap);
 	}
 

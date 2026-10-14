@@ -1,24 +1,56 @@
 package dev.joid.lib.ui.event.impl.node;
 
+import dev.joid.lib.ui.event.CancellableEvent;
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class NodeScrollEvent<N extends Node> extends NodeEvent<N> {
+public abstract class NodeScrollEvent<N extends Node> extends NodeEvent<N> {
 
 	private final double     offset;
+	private final double     previous;
 	private final ScrollAxis axis;
 
-	private NodeScrollEvent(final N node, final ScrollAxis axis, final double offset) {
+	private NodeScrollEvent(final N node, final ScrollAxis axis, final double previous, final double offset) {
 		super(node);
 		this.axis = axis;
+		this.previous = previous;
 		this.offset = offset;
 	}
 
-	public static <N extends Node> @NonNull NodeScrollEvent<N> create(final @NonNull N node, final @NonNull ScrollAxis axis, final double offset) {
-		return new NodeScrollEvent<>(node, axis, offset);
+	@Getter
+	public static final class Pre<N extends Node> extends NodeScrollEvent<N> implements CancellableEvent {
+
+		private boolean cancelled;
+
+		private Pre(final N node, final ScrollAxis axis, final double previous, final double offset) {
+			super(node, axis, previous, offset);
+		}
+
+		public static <N extends Node> @NonNull Pre<N> create(final @NonNull N node, final @NonNull ScrollAxis axis, final double previous, final double offset) {
+			return new Pre<>(node, axis, previous, offset);
+		}
+
+		@Override
+		public void cancel() {
+			super.checkWritable("cancel");
+			this.cancelled = true;
+		}
+
+	}
+
+	public static final class Post<N extends Node> extends NodeScrollEvent<N> {
+
+		private Post(final N node, final ScrollAxis axis, final double previous, final double offset) {
+			super(node, axis, previous, offset);
+		}
+
+		public static <N extends Node> @NonNull Post<N> create(final @NonNull N node, final @NonNull ScrollAxis axis, final double previous, final double offset) {
+			return new Post<>(node, axis, previous, offset);
+		}
+
 	}
 
 	public static enum ScrollAxis {

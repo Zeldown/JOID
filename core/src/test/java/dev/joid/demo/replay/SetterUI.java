@@ -106,9 +106,9 @@ public class SetterUI extends UI {
 		.attach(this);
 		this.model = ModelNode
 		.create(0D, 0D, 10D, 10D)
-		.model(new RecordingModel(2D, 2D, 2D))
-		.size(1D + this.step.get())
+		.zoom(1D + this.step.get())
 		.rotationYaw(this.step.get() * 90D)
+		.model(new RecordingModel(2D, 2D, 2D))
 		.attach(this);
 		this.field = TextFieldNode
 		.create(0D, 0D, 100D)

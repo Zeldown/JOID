@@ -1,6 +1,5 @@
 package dev.joid.lib.ui.node.impl.structure.checkbox;
 
-import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
@@ -35,15 +34,11 @@ public abstract class CheckboxNode extends Node {
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
-		return this.checked(Signal.from(checked));
+		return super.userProperty("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final @NonNull Signal<Boolean> checked) {
-		return super.bind("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
-	}
-
-	public final <T extends CheckboxNode> @NonNull T checked(final @NonNull Supplier<Boolean> checked) {
-		return super.follow("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
+		return super.userProperty("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T change(final boolean checked) {

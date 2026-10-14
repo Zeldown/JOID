@@ -3,7 +3,6 @@ package dev.joid.lib.signal;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -340,11 +339,30 @@ public class ComputedSignalTest {
 	}
 
 	@Test
-	public void isReadOnly() {
-		Assert.assertFalse(Signal.class.isAssignableFrom(ComputedSignal.class));
-		for (final Method method : ComputedSignal.class.getMethods()) {
-			Assert.assertFalse(method.getName(), Arrays.asList("set", "reset", "silent", "fireChange").contains(method.getName()));
+	public void refusesToBeWrittenLikeAPlainSignal() {
+		final Signal<Integer> source = new Signal<>(2);
+		final ComputedSignal<Integer> doubled = source.map(value -> value * 2);
+		Assert.assertFalse(doubled.isWritable());
+		Assert.assertTrue(source.isWritable());
+		try {
+			doubled.set(5);
+			Assert.fail("A computed signal cannot be set");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ComputedSignal{4} is computed from other signals and cannot be set to 5, set the signals it reads instead", expected.getMessage());
 		}
+		try {
+			doubled.reset();
+			Assert.fail("A computed signal cannot be reset");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ComputedSignal{4} is computed from other signals and cannot be reset, set the signals it reads instead", expected.getMessage());
+		}
+		try {
+			doubled.silent();
+			Assert.fail("A computed signal cannot be silenced");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ComputedSignal{4} is computed from other signals and cannot be silenced, set the signals it reads instead", expected.getMessage());
+		}
+		Assert.assertEquals(4, doubled.peek().intValue());
 	}
 
 	@Test

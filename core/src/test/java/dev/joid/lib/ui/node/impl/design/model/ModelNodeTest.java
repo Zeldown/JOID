@@ -31,7 +31,7 @@ public class ModelNodeTest {
 	public void startsAtItsNaturalSize() {
 		final ModelNode node = ModelNode.create(100D, 100D, 200D, 200D);
 		Assert.assertNull(node.getModel());
-		Assert.assertEquals(1D, node.getSize(), 0D);
+		Assert.assertEquals(1D, node.getZoom(), 0D);
 		Assert.assertEquals(0D, node.getRotationYaw(), 0D);
 		Assert.assertEquals(0D, node.getRotationPitch(), 0D);
 	}
@@ -48,7 +48,7 @@ public class ModelNodeTest {
 
 	@Test
 	public void scalesItsModelAroundItsCenter() {
-		this.bridges.open(new NodeUI(ModelNode.create(100D, 100D, 200D, 200D).model(ModelNodeTest.cube()).size(0.5D))).frame();
+		this.bridges.open(new NodeUI(ModelNode.create(100D, 100D, 200D, 200D).zoom(0.5D).model(ModelNodeTest.cube()))).frame();
 		final Draw draw = this.model();
 		Assert.assertEquals(150D, draw.getLeft(), 1E-3D);
 		Assert.assertEquals(250D, draw.getRight(), 1E-3D);
@@ -68,7 +68,7 @@ public class ModelNodeTest {
 	@Test
 	public void drawsNothingAtANullSize() {
 		final RecordingModel model = new RecordingModel(2D, 2D, 2D);
-		this.bridges.open(new NodeUI(ModelNode.create(100D, 100D, 200D, 200D).model(model).size(0D))).frame();
+		this.bridges.open(new NodeUI(ModelNode.create(100D, 100D, 200D, 200D).zoom(0D).model(model))).frame();
 		Assert.assertNull(model.grid);
 	}
 

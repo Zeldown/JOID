@@ -148,7 +148,7 @@ public class FlexNodeTest {
 		this.bridges.open(new NodeUI(flex)).frames(2);
 		Assert.assertEquals(100D, flex.getHeight(), 0D);
 		Assert.assertEquals(130D, flex.getMaxScrollY(), 0D);
-		flex.scrollOffsetY(-130D).updateScroll();
+		flex.scrollY(-130D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(180D, last.getLayoutY(), 0D);
 		Assert.assertEquals(50D, last.getY(), 1E-3D);

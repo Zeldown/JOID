@@ -31,14 +31,14 @@ public abstract class ScrollbarNode extends Node {
 				final double newX = Math.min(Math.max(super.getDefaultX(), mouseX - super.getAbsoluteDefaultX() + super.getDefaultX() - super.dw(2D)), super.getDefaultX() + this.getScrollWidth());
 				super.layoutPosition(this, newX - super.getDefaultX(), 0D);
 
-				final float percent = (float) ((newX - super.getDefaultX()) / this.getScrollWidth());
-				this.scrollNode.scrollRatioX(percent);
+				final double percent = (newX - super.getDefaultX()) / this.getScrollWidth();
+				this.scrollNode.scrollTo(-this.scrollNode.getMaxScrollX() * percent, this.scrollNode.getTargetScrollY());
 			} else if (!this.isHorizontal() && this.scrollNode.hasOverflowY()) {
 				final double newY = Math.min(Math.max(super.getDefaultY(), mouseY - super.getAbsoluteDefaultY() + super.getDefaultY() - super.dh(2D)), super.getDefaultY() + this.getScrollHeight());
 				super.layoutPosition(this, 0D, newY - super.getDefaultY());
 
-				final float percent = (float) ((newY - super.getDefaultY()) / this.getScrollHeight());
-				this.scrollNode.scrollRatioY(percent);
+				final double percent = (newY - super.getDefaultY()) / this.getScrollHeight();
+				this.scrollNode.scrollTo(this.scrollNode.getTargetScrollX(), -this.scrollNode.getMaxScrollY() * percent);
 			}
 		}
 

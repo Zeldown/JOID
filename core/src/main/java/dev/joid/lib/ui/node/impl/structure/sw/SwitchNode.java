@@ -1,11 +1,11 @@
 package dev.joid.lib.ui.node.impl.structure.sw;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ISignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -52,35 +52,27 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final int index) {
-		return this.index(Signal.from(index));
+		return super.userProperty("state", index, (final SwitchNode node, final Integer value) -> node.select(value, false));
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final @NonNull Signal<Integer> index) {
-		return super.bind("state", index, (final SwitchNode node, final Integer value) -> {
+		return super.userProperty("state", index, (final SwitchNode node, final Integer value) -> {
 			if (node.stateList.peek().isEmpty() || value >= 0 && value < node.stateList.peek().size()) {
 				node.select(value, false);
 			}
 		}, (final SwitchNode node, final String state) -> node.stateList.peek().indexOf(state));
 	}
 
-	public final <T extends SwitchNode> @NonNull T index(final @NonNull Supplier<Integer> index) {
-		return super.follow("state", index, (final SwitchNode node, final Integer value) -> node.select(value, false));
-	}
-
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull String state) {
-		return this.state(Signal.from(state));
+		return super.userProperty("state", state, (final SwitchNode node, final String value) -> node.choose(value, false));
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull Signal<String> state) {
-		return super.bind("state", state, (final SwitchNode node, final String value) -> {
+		return super.userProperty("state", state, (final SwitchNode node, final String value) -> {
 			if (node.stateList.peek().isEmpty() || node.stateList.peek().contains(value)) {
 				node.choose(value, false);
 			}
 		});
-	}
-
-	public final <T extends SwitchNode> @NonNull T state(final @NonNull Supplier<@NonNull String> state) {
-		return super.follow("state", state, (final SwitchNode node, final String value) -> node.choose(value, false));
 	}
 
 	public final @NonNull String getState() {
@@ -92,12 +84,12 @@ public abstract class SwitchNode extends Node {
 		return stateList.get(this.stateIndex.get());
 	}
 
-	public final @NonNull ISignal<Integer> getStateIndex() {
-		return this.stateIndex;
+	public final int getStateIndex() {
+		return this.stateIndex.get();
 	}
 
-	public final @NonNull ISignal<List<String>> getStateList() {
-		return this.stateList;
+	public final @NonNull List<@NonNull String> getStateList() {
+		return Collections.unmodifiableList(this.stateList.get());
 	}
 
 	public final <T extends SwitchNode> @NonNull T change(final @NonNull String state) {

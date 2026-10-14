@@ -31,11 +31,11 @@ public class ShowModel extends ShowUI {
 		final ModelViewerNode viewer = ModelViewerNode
 		.create(170, 150, 960, 780)
 		.zoom(0.78D)
-		.sizeRange(0.45D, 1D)
+		.zoomRange(0.45D, 1D)
 		.rotationPitchRange(-55D, 20D)
-		.model(model)
 		.rotationYaw(-28D)
 		.rotationPitch(-16D)
+		.model(model)
 		.attach(this);
 
 		TextNode.create(1250, 190).text(Text.create("3D MODEL", ShowUI.font(FontWeight.BOLD, 18F, ShowUI.FAINT).letterSpacing(0.25F))).attach(this);
@@ -45,9 +45,9 @@ public class ShowModel extends ShowUI {
 
 		this.stat(0, "Vertices", () -> "2,989", ShowUI.TEXT);
 		this.stat(1, "Triangles", () -> "5,632", ShowUI.TEXT);
-		this.stat(2, "Yaw", () -> String.format(Locale.US, "%.0f°", viewer.getRotationYaw()), ShowUI.PINK);
-		this.stat(3, "Pitch", () -> String.format(Locale.US, "%.0f°", viewer.getRotationPitch()), ShowUI.SKY);
-		this.stat(4, "Zoom", () -> String.format(Locale.US, "%.0f %%", viewer.getSize() * 100D), ShowUI.AMBER);
+		this.stat(2, "Yaw", () -> String.format(Locale.US, "%.0f°", viewer.getDrawnRotationYaw()), ShowUI.PINK);
+		this.stat(3, "Pitch", () -> String.format(Locale.US, "%.0f°", viewer.getDrawnRotationPitch()), ShowUI.SKY);
+		this.stat(4, "Zoom", () -> String.format(Locale.US, "%.0f %%", viewer.getDrawnZoom() * 100D), ShowUI.AMBER);
 
 		this.hint(1250, 800, "Drag to turn");
 		this.hint(1470, 800, "Scroll to zoom");

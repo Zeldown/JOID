@@ -101,7 +101,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 			return false;
 		}
 
-		super.focus(false);
+		super.blur();
 		super.fire(LineFieldNode.SUBMIT, () -> NodeEvent.create(this));
 		return true;
 	}

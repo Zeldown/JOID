@@ -15,7 +15,6 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -207,16 +206,9 @@ public class SliderNodeTest {
 		Assert.assertEquals(1, SliderNodeTest.subscribers(balance).size());
 	}
 
-	@Test
-	public void followsAComputedSignalWithoutWritingIt() {
-		final Signal<Integer> volume = new Signal<>(5);
-		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).value(volume.map(value -> value + 1));
-		Assert.assertEquals(6, slider.getValue().intValue());
-		this.bridges.open(new NodeUI(slider)).frame();
-		volume.set(2);
-		this.bridges.frame();
-		Assert.assertEquals(3, slider.getValue().intValue());
-		Assert.assertEquals(2, volume.get().intValue());
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesASignalItCannotWrite() {
+		new Slider().values(SliderNodeTest.digits()).value(new Signal<>(5).map(value -> value + 1));
 	}
 
 	@Test
@@ -372,7 +364,7 @@ public class SliderNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+			final Field field = Signal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

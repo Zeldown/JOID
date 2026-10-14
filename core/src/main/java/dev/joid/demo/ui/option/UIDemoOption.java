@@ -3,6 +3,7 @@ package dev.joid.demo.ui.option;
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.node.impl.structure.checkbox.DemoCheckboxNode;
 import dev.joid.demo.ui.option.popup.UIDemoCornerPopup;
 import dev.joid.demo.ui.option.popup.UIDemoDebugOffPopup;
 import dev.joid.demo.ui.option.popup.UIDemoFixedScalePopup;
@@ -17,6 +18,8 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -35,7 +38,17 @@ public class UIDemoOption extends UIDemo {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOption.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final IntegerSignal ticks = new IntegerSignal(0);
+		final DoubleSignal zoom = new DoubleSignal(1D);
+		final BooleanSignal locked = new BooleanSignal(false);
+		final IntegerSignal refusedZooms = new IntegerSignal(0);
 		Task.create(1000L).every(1000L).onRun(event -> ticks.increment()).attach(this);
+		super.zoom(zoom);
+		super.beforeZoom(event -> {
+			if (locked.peek()) {
+				refusedZooms.increment();
+				event.cancel();
+			}
+		});
 
 		RectNode
 		.create(80, 40, 320, 260)
@@ -226,6 +239,50 @@ public class UIDemoOption extends UIDemo {
 		.body(rect -> {
 			TextNode.create(160, 130).text(Text.create("Ticks: " + ticks.get(), info, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Periodic task", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(800, 720, 320, 260)
+		.color(UIDemoOption.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 40, 70, 50)
+			.color(UIDemoOption.INK)
+			.onClick(event -> super.zoomBy(-0.1D))
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("-", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			RectNode
+			.create(125, 40, 70, 50)
+			.color(UIDemoOption.INK)
+			.onClick(event -> super.zoomBy(0.1D))
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			RectNode
+			.create(210, 40, 70, 50)
+			.color(UIDemoOption.INK)
+			.onClick(event -> zoom.set(1D))
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("1:1", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(40, 130).text(() -> Text.create("Zoom: " + Math.round(zoom.get() * 100D) + " %", info)).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Zoom signal", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1160, 720, 320, 260)
+		.color(UIDemoOption.PLACEHOLDER)
+		.body(rect -> {
+			DemoCheckboxNode.create(40, 40, 60, 60).checked(locked).attach(rect);
+			TextNode.create(120, 55).text(Text.create("Locked", info)).attach(rect);
+			TextNode.create(40, 140).text(Text.create("Refused: " + refusedZooms.get(), info)).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Before zoom", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

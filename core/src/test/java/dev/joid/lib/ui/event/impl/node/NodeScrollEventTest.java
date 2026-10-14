@@ -27,8 +27,8 @@ public class NodeScrollEventTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEventTest.box(1000D).onScroll(event -> received.addAll(Arrays.asList(event.getNode(), event.getOffset(), event.getNode().getTargetScrollY())));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.scrollOffsetY(-200D);
-		box.scrollRatioY(0.5F);
+		box.scrollY(-200D);
+		box.scrollY(-350D);
 		Assert.assertEquals(Arrays.asList(box, -200D, -200D, box, -350D, -350D), received);
 	}
 
@@ -48,8 +48,8 @@ public class NodeScrollEventTest {
 		final ContainerNode box = ContainerNode.create(500D, 100D, 300D, 300D).overflow(OverflowProperty.SCROLL).onScroll(event -> received.addAll(Arrays.asList(event.getAxis(), event.getOffset())));
 		RectNode.create(0D, 0D, 1000D, 1000D).attach(box);
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.scrollOffsetX(-100D);
-		box.scrollOffsetY(-200D);
+		box.scrollX(-100D);
+		box.scrollY(-200D);
 		Assert.assertEquals(Arrays.asList(ScrollAxis.HORIZONTAL, -100D, ScrollAxis.VERTICAL, -200D), received);
 	}
 
@@ -58,9 +58,9 @@ public class NodeScrollEventTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEventTest.box(1000D).onScroll(event -> received.add(event.getOffset()));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.scrollOffsetY(-200D);
-		box.scrollOffsetY(-200D);
-		box.scrollOffsetX(-50D);
+		box.scrollY(-200D);
+		box.scrollY(-200D);
+		box.scrollX(-50D);
 		Assert.assertEquals(Collections.singletonList(-200D), received);
 	}
 
@@ -69,9 +69,9 @@ public class NodeScrollEventTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollToEnd(event -> received.addAll(Arrays.asList(event.getAxis(), event.getOffset())));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.scrollOffsetY(-200D);
-		box.scrollOffsetY(-900D);
-		box.scrollOffsetY(-1000D);
+		box.scrollY(-200D);
+		box.scrollY(-900D);
+		box.scrollY(-1000D);
 		Assert.assertEquals(Arrays.asList(ScrollAxis.VERTICAL, -700D), received);
 	}
 
@@ -80,11 +80,11 @@ public class NodeScrollEventTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollAtEnd(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.scrollOffsetY(-200D);
+		box.scrollY(-200D);
 		this.bridges.frames(200);
 		Assert.assertTrue(received.isEmpty());
-		box.scrollOffsetY(-700D);
-		box.scrollOffsetY(-900D);
+		box.scrollY(-700D);
+		box.scrollY(-900D);
 		Assert.assertTrue(received.isEmpty());
 		this.bridges.frames(200);
 		Assert.assertEquals(Collections.singletonList(box), received);
@@ -107,8 +107,8 @@ public class NodeScrollEventTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollAtEnd(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.scrollOffsetY(-200D);
-		box.scrollOffsetY(0D);
+		box.scrollY(-200D);
+		box.scrollY(0D);
 		this.bridges.frames(200);
 		Assert.assertTrue(received.isEmpty());
 	}
@@ -118,9 +118,9 @@ public class NodeScrollEventTest {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollAtEnd(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.scrollOffsetY(-900D);
+		box.scrollY(-900D);
 		this.bridges.frames(5);
-		box.scrollOffsetY(-100D);
+		box.scrollY(-100D);
 		this.bridges.frames(200);
 		Assert.assertTrue(received.isEmpty());
 	}
@@ -131,7 +131,7 @@ public class NodeScrollEventTest {
 		final ContainerNode box = ContainerNode.create(500D, 100D, 300D, 300D).overflow(OverflowProperty.SCROLL).onScrollAtEnd(event -> received.add(event.getNode().getScrollY()));
 		RectNode.create(0D, 0D, 100D, 1000D).attach(box);
 		this.bridges.open(new NodeUI(box)).frames(30);
-		box.scrollOffsetY(-700D);
+		box.scrollY(-700D);
 		this.bridges.frames(200);
 		Assert.assertEquals(1, received.size());
 		Assert.assertEquals(box.getScrollY(), received.get(0), 0D);

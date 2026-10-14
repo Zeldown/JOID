@@ -40,7 +40,7 @@ public class SignalTest {
 
 	@Test
 	public void readsItsValueWithGetOrPeekOnly() {
-		for (final Method method : ISignal.class.getMethods()) {
+		for (final Method method : Signal.class.getMethods()) {
 			Assert.assertNotEquals("getOrDefault", method.getName());
 		}
 	}
@@ -404,8 +404,8 @@ public class SignalTest {
 		}
 	}
 
-	private static Set<?> listeners(final BaseSignal<?> signal) throws ReflectiveOperationException {
-		final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+	private static Set<?> listeners(final Signal<?> signal) throws ReflectiveOperationException {
+		final Field field = Signal.class.getDeclaredField("listenerSet");
 		field.setAccessible(true);
 		return (Set<?>) field.get(signal);
 	}

@@ -34,7 +34,6 @@ import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
@@ -68,6 +67,7 @@ import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.point.Point;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -1182,7 +1182,7 @@ public class NodeTest {
 		Assert.assertEquals(-60D, area.getTargetScrollY(), 0D);
 		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
 		this.bridges.getWindow().getKeys().clear();
-		area.scrollOffsetX(-30D).updateScroll();
+		area.scrollX(-30D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(-30D, area.getChildren().get(0).getX(), 1E-3D);
 		Assert.assertEquals(-60D, area.getChildren().get(0).getY(), 1E-3D);
@@ -1230,7 +1230,7 @@ public class NodeTest {
 		final ContainerNode area = NodeTest.column();
 		RectNode.create(0D, 0D, 700D, 10D).attach(area);
 		this.bridges.open(new NodeUI(area)).move(300D, 150D).frames(2);
-		area.scrollRatioY(1F);
+		area.scrollY(-area.getMaxScrollY());
 		final boolean context = area.fireMouseScroll(300D, 150D, 0D, -1D);
 		Assert.assertFalse(context);
 		Assert.assertEquals(-200D, area.getTargetScrollY(), 0D);
@@ -1241,7 +1241,7 @@ public class NodeTest {
 	public void forgetsItsScrollOnceItStopsScrolling() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		column.scrollOffsetY(-100D).updateScroll();
+		column.scrollY(-100D).updateScroll();
 		this.bridges.frame();
 		Assert.assertSame(column, column.overflow(OverflowProperty.HIDDEN));
 		Assert.assertFalse(column.hasOverflowY());
@@ -1279,7 +1279,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		final boolean up = column.fireMouseScroll(300D, 150D, 0D, 1D);
 		Assert.assertFalse(up);
-		column.scrollRatioY(1F);
+		column.scrollY(-column.getMaxScrollY());
 		final boolean down = column.fireMouseScroll(300D, 150D, 0D, -1D);
 		Assert.assertFalse(down);
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
@@ -1315,7 +1315,7 @@ public class NodeTest {
 		this.bridges.scroll(-1D);
 		Assert.assertEquals(-30D, inner.getTargetScrollY(), 0D);
 		Assert.assertEquals(0D, outer.getTargetScrollY(), 0D);
-		inner.scrollRatioY(1F);
+		inner.scrollY(-inner.getMaxScrollY());
 		this.bridges.scroll(-1D);
 		Assert.assertEquals(-200D, inner.getTargetScrollY(), 0D);
 		Assert.assertEquals(-30D, outer.getTargetScrollY(), 0D);
@@ -1328,7 +1328,7 @@ public class NodeTest {
 	public void easesTowardsItsScrollTarget() {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
-		row.scrollOffsetX(-300D);
+		row.scrollX(-300D);
 		this.bridges.frame();
 		Assert.assertEquals(-19.2D, row.getScrollX(), 1E-9D);
 		Assert.assertEquals(381D, row.getChildren().get(1).getX(), 1E-4D);
@@ -1339,7 +1339,7 @@ public class NodeTest {
 		final List<Double> ends = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollAtEnd(event -> ends.add(event.getNode().getScrollX()));
 		this.bridges.open(new NodeUI(row));
-		row.scrollOffsetX(-1000D);
+		row.scrollX(-1000D);
 		Assert.assertEquals(-300D, row.getTargetScrollX(), 0D);
 		Assert.assertTrue(row.isScrollEndX());
 		this.bridges.frame();
@@ -1354,7 +1354,7 @@ public class NodeTest {
 		final List<Double> ends = new ArrayList<>();
 		final ContainerNode column = NodeTest.column().onScrollAtEnd(event -> ends.add(event.getNode().getScrollY()));
 		this.bridges.open(new NodeUI(column));
-		column.scrollOffsetY(-1000D);
+		column.scrollY(-1000D);
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
 		Assert.assertTrue(column.isScrollEndY());
 		this.bridges.frames(200);
@@ -1367,9 +1367,9 @@ public class NodeTest {
 		final List<Double> ends = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollAtEnd(event -> ends.add(event.getNode().getScrollX()));
 		this.bridges.open(new NodeUI(row));
-		row.scrollOffsetX(-1000D);
+		row.scrollX(-1000D);
 		this.bridges.frame();
-		row.scrollOffsetX(-100D);
+		row.scrollX(-100D);
 		this.bridges.frames(200);
 		Assert.assertFalse(row.isScrollEndX());
 		Assert.assertTrue(ends.isEmpty());
@@ -1380,9 +1380,9 @@ public class NodeTest {
 		final List<String> events = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollToEnd(event -> events.add("ending " + event.getNode().getTargetScrollX())).onScrollAtEnd(event -> events.add("end " + event.getNode().getScrollX()));
 		this.bridges.open(new NodeUI(row));
-		row.scrollOffsetX(-1000D);
+		row.scrollX(-1000D);
 		Assert.assertEquals(Arrays.asList("ending -300.0"), events);
-		row.scrollOffsetX(-2000D);
+		row.scrollX(-2000D);
 		this.bridges.frames(200);
 		Assert.assertEquals(Arrays.asList("ending -300.0", "end -300.0"), events);
 	}
@@ -1392,7 +1392,7 @@ public class NodeTest {
 		final List<Double> endings = new ArrayList<>();
 		final ContainerNode column = NodeTest.column().onScrollToEnd(event -> endings.add(event.getNode().getTargetScrollY()));
 		this.bridges.open(new NodeUI(column));
-		column.scrollOffsetY(-1000D);
+		column.scrollY(-1000D);
 		Assert.assertEquals(Arrays.asList(-200D), endings);
 		Assert.assertEquals(0D, column.getScrollY(), 0D);
 	}
@@ -1402,9 +1402,9 @@ public class NodeTest {
 		final List<Double> endings = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScrollToEnd(event -> endings.add(event.getNode().getTargetScrollX()));
 		this.bridges.open(new NodeUI(row));
-		row.scrollOffsetX(-1000D);
-		row.scrollOffsetX(-100D);
-		row.scrollOffsetX(-1000D);
+		row.scrollX(-1000D);
+		row.scrollX(-100D);
+		row.scrollX(-1000D);
 		Assert.assertEquals(Arrays.asList(-300D, -300D), endings);
 	}
 
@@ -1417,37 +1417,82 @@ public class NodeTest {
 			}
 		}).onScrollAtEnd(event -> ends.add(event.getNode().getScrollX()));
 		this.bridges.open(new NodeUI(row));
-		row.scrollOffsetX(-1000D);
+		row.scrollX(-1000D);
 		this.bridges.frames(200);
 		Assert.assertEquals(-300D, row.getScrollX(), 0D);
 		Assert.assertTrue(ends.isEmpty());
-		row.scrollOffsetX(-1000D);
+		row.scrollX(-1000D);
 		this.bridges.frames(200);
 		Assert.assertEquals(Arrays.asList(-600D), ends);
 	}
 
 	@Test
-	public void scrollsToAShareOfItsOverflow() {
+	public void scrollsToAPositionInsideItsOverflow() {
 		final ContainerNode row = NodeTest.row();
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 1920D, 1080D).append(row, column)));
-		row.scrollRatioX(0.5F);
+		Assert.assertSame(row, row.scrollTo(-150D, -40D));
 		Assert.assertEquals(-150D, row.getTargetScrollX(), 0D);
-		row.scrollRatioX(2F);
+		Assert.assertEquals(0D, row.getTargetScrollY(), 0D);
+		row.scrollTo(-600D, 0D);
 		Assert.assertEquals(-300D, row.getTargetScrollX(), 0D);
-		column.scrollRatioY(0.25F);
+		column.scrollTo(30D, -50D);
+		Assert.assertEquals(0D, column.getTargetScrollX(), 0D);
 		Assert.assertEquals(-50D, column.getTargetScrollY(), 0D);
 	}
 
 	@Test
-	public void scrollsByAWeightedStep() {
-		final ContainerNode row = NodeTest.row();
-		final ContainerNode column = NodeTest.column();
-		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 1920D, 1080D).append(row, column)));
-		row.scrollX(-10D, 3D).scrollX(-10D, 3D);
-		Assert.assertEquals(-60D, row.getTargetScrollX(), 0D);
-		column.scrollY(-20D, 2D);
-		Assert.assertEquals(-40D, column.getTargetScrollY(), 0D);
+	public void writesTheWheelIntoItsScrollSignal() {
+		final DoubleSignal scroll = new DoubleSignal(0D);
+		final ContainerNode column = NodeTest.column().scrollY(scroll);
+		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
+		this.bridges.scroll(-1D);
+		Assert.assertEquals(-30D, scroll.peek(), 0D);
+		scroll.set(-150D);
+		Assert.assertEquals(-150D, column.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void writesItsScrollLimitBackIntoItsSignal() {
+		final DoubleSignal scroll = new DoubleSignal(-1000D);
+		final ContainerNode column = NodeTest.column().scrollY(scroll);
+		this.bridges.open(new NodeUI(column)).frames(2);
+		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
+		Assert.assertEquals(-200D, scroll.peek(), 0D);
+	}
+
+	@Test
+	public void forgetsItsScrollSignalOnceGivenAValue() {
+		final DoubleSignal scroll = new DoubleSignal(-100D);
+		final ContainerNode column = NodeTest.column().scrollY(scroll).scrollY(-50D);
+		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
+		scroll.set(-150D);
+		this.bridges.scroll(-1D);
+		Assert.assertEquals(-80D, column.getTargetScrollY(), 0D);
+		Assert.assertEquals(-150D, scroll.peek(), 0D);
+	}
+
+	@Test
+	public void scrollsLikeTheWheelThroughItsGesture() {
+		final List<String> events = new ArrayList<>();
+		final ContainerNode column = NodeTest.column().beforeScroll(event -> events.add("before " + event.getAxis() + " " + event.getOffset())).onScroll(event -> events.add("after " + event.getPrevious() + " " + event.getOffset()));
+		this.bridges.open(new NodeUI(column)).frames(2);
+		Assert.assertSame(column, column.scrollTo(0D, -120D));
+		column.scrollY(-60D);
+		Assert.assertEquals(Arrays.asList("before VERTICAL -120.0", "after 0.0 -120.0", "after -120.0 -60.0"), events);
+	}
+
+	@Test
+	public void keepsItsScrollWhenItsGestureIsRefused() {
+		final DoubleSignal scroll = new DoubleSignal(0D);
+		final ContainerNode column = NodeTest.column().scrollY(scroll).beforeScroll(event -> event.cancel());
+		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
+		column.scrollTo(0D, -120D);
+		this.bridges.scroll(-1D);
+		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
+		Assert.assertEquals(0D, scroll.peek(), 0D);
+		scroll.set(-60D);
+		Assert.assertEquals(-60D, column.getTargetScrollY(), 0D);
 	}
 
 	@Test
@@ -1455,7 +1500,7 @@ public class NodeTest {
 		final List<Double> values = new ArrayList<>();
 		final ContainerNode row = NodeTest.row().onScroll(event -> values.add(event.getOffset()));
 		this.bridges.open(new NodeUI(row));
-		row.scrollOffsetX(-50D);
+		row.scrollX(-50D);
 		this.bridges.move(300D, 150D).frames(2).scroll(-1D);
 		Assert.assertEquals(Arrays.asList(-50D, -80D), values);
 	}
@@ -1465,11 +1510,11 @@ public class NodeTest {
 		final ContainerNode row = NodeTest.row();
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 1920D, 1080D).append(row, column)));
-		row.scrollOffsetX(-100D).updateScrollX();
+		row.scrollX(-100D).updateScrollX();
 		Assert.assertEquals(-100D, row.getScrollX(), 0D);
-		column.scrollOffsetY(-50D).updateScrollY();
+		column.scrollY(-50D).updateScrollY();
 		Assert.assertEquals(-50D, column.getScrollY(), 0D);
-		row.scrollOffsetX(-200D).updateScroll();
+		row.scrollX(-200D).updateScroll();
 		Assert.assertEquals(-200D, row.getScrollX(), 0D);
 	}
 
@@ -1481,7 +1526,7 @@ public class NodeTest {
 		Assert.assertSame(bar, row.getScrollbar());
 		Assert.assertSame(row, bar.getScrollNode());
 		Assert.assertSame(row, bar.getParent());
-		row.scrollOffsetX(-150D).updateScroll();
+		row.scrollX(-150D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(180D, bar.getX(), 1E-9D);
 		Assert.assertEquals(280D, this.draw(0.6F, 0.4F, 0.2F).getLeft(), 1E-3D);
@@ -1492,7 +1537,7 @@ public class NodeTest {
 		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
 		final ContainerNode column = NodeTest.column().scrollbar(bar);
 		this.bridges.open(new NodeUI(column));
-		column.scrollOffsetY(-100D).updateScroll();
+		column.scrollY(-100D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(40D, bar.getY(), 1E-9D);
 		Assert.assertEquals(140D, this.draw(0.6F, 0.4F, 0.2F).getTop(), 1E-3D);
@@ -1790,6 +1835,96 @@ public class NodeTest {
 	}
 
 	@Test
+	public void writesItsDragIntoItsPositionSignals() {
+		final DoubleSignal x = new DoubleSignal(100D);
+		final DoubleSignal y = new DoubleSignal(100D);
+		final RectNode node = RectNode.create(0D, 0D, 50D, 50D).x(x).y(y).draggable(DraggableProperty.free());
+		this.press(node, 110D, 110D);
+		this.drop(310D, 210D);
+		Assert.assertEquals(300D, x.peek(), 0D);
+		Assert.assertEquals(200D, y.peek(), 0D);
+		x.set(50D);
+		Assert.assertEquals(50D, node.getX(), 0D);
+		Assert.assertEquals(200D, node.getY(), 0D);
+	}
+
+	@Test
+	public void refusesToMoveAComputedPosition() {
+		final double[] x = {100D};
+		try {
+			RectNode.create(0D, 100D, 50D, 50D).x(() -> x[0]).draggable(DraggableProperty.free());
+			Assert.fail("A MOVE drag cannot move a computed position");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The RectNode is dragged with DraggableType.MOVE but its x is computed (a lambda or a signal that cannot be written), so a drag cannot move it: give x(...) a value or a writable Signal, or drag a copy with DraggableType.COPY", expected.getMessage());
+		}
+		try {
+			RectNode.create(0D, 100D, 50D, 50D).draggable(DraggableProperty.free()).y(new DoubleSignal(5D).map(value -> value * 2D));
+			Assert.fail("A computed position cannot be given to a node dragged with MOVE");
+		} catch (final IllegalStateException expected) {
+			Assert.assertTrue(expected.getMessage().contains("its y is computed"));
+		}
+		Assert.assertSame(PositionProperty.ABSOLUTE, RectNode.create(0D, 0D, 50D, 50D).x(() -> x[0]).draggable(DraggableProperty.free().type(DraggableType.COPY)).position(PositionProperty.ABSOLUTE).getPosition());
+	}
+
+	@Test
+	public void forgetsItsPositionSignalOnceGivenAValue() {
+		final DoubleSignal x = new DoubleSignal(100D);
+		final RectNode node = RectNode.create(0D, 100D, 50D, 50D).x(x).x(60D).draggable(DraggableProperty.free());
+		this.press(node, 70D, 110D);
+		this.drop(270D, 110D);
+		Assert.assertEquals(260D, node.getX(), 0D);
+		Assert.assertEquals(100D, x.peek(), 0D);
+		x.set(10D);
+		Assert.assertEquals(260D, node.getX(), 0D);
+	}
+
+	@Test
+	public void movesLikeADragThroughItsGesture() {
+		final List<Object> events = new ArrayList<>();
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).beforeMove(event -> events.add(event.getValue())).onMove(event -> events.add(event.getPrevious()));
+		this.bridges.open(new NodeUI(node));
+		Assert.assertSame(node, node.move(200D, 150D));
+		node.x(250D);
+		Assert.assertEquals(Arrays.asList(Point.create(200D, 150D), Point.create(100D, 100D), Point.create(200D, 150D)), events);
+		Assert.assertEquals(250D, node.getX(), 0D);
+		Assert.assertEquals(150D, node.getY(), 0D);
+	}
+
+	@Test
+	public void reportsTheMovesOfItsDrag() {
+		final List<Object> moves = new ArrayList<>();
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free()).beforeMove(event -> moves.add("before")).onMove(event -> moves.add(event.getValue()));
+		this.press(node, 110D, 110D);
+		this.drop(310D, 110D);
+		Assert.assertEquals("before", moves.get(0));
+		Assert.assertEquals(Point.create(300D, 100D), moves.get(moves.size() - 1));
+	}
+
+	@Test
+	public void keepsItsPlaceWhenItsMoveIsRefused() {
+		final DoubleSignal x = new DoubleSignal(100D);
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).x(x).draggable(DraggableProperty.free()).beforeMove(event -> event.cancel());
+		this.press(node, 110D, 110D);
+		this.drop(310D, 210D);
+		node.move(20D, 20D);
+		Assert.assertEquals(100D, node.getX(), 0D);
+		Assert.assertEquals(100D, node.getY(), 0D);
+		Assert.assertEquals(100D, x.peek(), 0D);
+		x.set(40D);
+		Assert.assertEquals(40D, node.getX(), 0D);
+	}
+
+	@Test
+	public void movesOnlyTheGhostOfACopyDrag() {
+		final List<Object> moves = new ArrayList<>();
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().type(DraggableType.COPY)).onMove(event -> moves.add(event.getValue()));
+		this.press(node, 110D, 110D);
+		this.drop(310D, 210D);
+		Assert.assertTrue(moves.isEmpty());
+		Assert.assertEquals(100D, node.getX(), 0D);
+	}
+
+	@Test
 	public void refusesToStartADragWithoutDraggableProperty() {
 		try {
 			RectNode.create(100D, 100D, 50D, 50D).startDragging(110D, 110D);
@@ -1826,7 +1961,7 @@ public class NodeTest {
 		this.drop(120D, 220D);
 		Assert.assertEquals(110D, child.getY(), 0D);
 		Assert.assertEquals(110D, child.getDefaultY(), 0D);
-		list.scrollOffsetY(-50D).updateScroll();
+		list.scrollY(-50D).updateScroll();
 		this.bridges.frames(2);
 		Assert.assertEquals(60D, child.getY(), 1E-5D);
 	}
@@ -2311,7 +2446,7 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column().append(absolute);
 		this.bridges.open(new NodeUI(column)).frames(2);
 		Assert.assertEquals(200D, column.getMaxScrollY(), 0D);
-		column.scrollOffsetY(-200D).updateScroll();
+		column.scrollY(-200D).updateScroll();
 		this.bridges.frame();
 		Assert.assertEquals(900D, absolute.getY(), 0D);
 		Assert.assertEquals(-200D, column.getChild(2, RectNode.class).getShiftY(), 1E-3D);
@@ -3155,7 +3290,7 @@ public class NodeTest {
 
 	private static <T> Set<ISignalListener<T>> subscribers(final Signal<T> signal) {
 		try {
-			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+			final Field field = Signal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<ISignalListener<T>>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {
@@ -3300,7 +3435,7 @@ public class NodeTest {
 		}
 
 		public <V> BindingNode link(final String property, final Signal<V> signal, final List<Object> values) {
-			return super.bind(property, signal, (final BindingNode node, final V value) -> values.add(value));
+			return super.userProperty(property, signal, (final BindingNode node, final V value) -> values.add(value));
 		}
 
 	}

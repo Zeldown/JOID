@@ -46,9 +46,7 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.ComputedSignal;
-import dev.joid.lib.signal.ISignal;
 import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
@@ -94,6 +92,7 @@ import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.list.IndexedConcurrentList;
+import dev.joid.lib.utils.point.Point;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -128,9 +127,13 @@ public abstract class Node implements INode {
 	private static final EventType<NodeWatchEvent<Node>>   WATCH   = EventType.create("onWatch");
 	private static final EventType<NodeAnimateEvent<Node>> ANIMATE = EventType.create("onAnimate");
 
-	private static final EventType<NodeScrollEvent<Node>> SCROLL        = EventType.create("onScroll");
-	private static final EventType<NodeScrollEvent<Node>> SCROLL_AT_END = EventType.create("onScrollAtEnd");
-	private static final EventType<NodeScrollEvent<Node>> SCROLL_TO_END = EventType.create("onScrollToEnd");
+	private static final EventType<NodeScrollEvent.Post<Node>> SCROLL        = EventType.create("onScroll");
+	private static final EventType<NodeScrollEvent.Pre<Node>>  BEFORE_SCROLL = EventType.create("beforeScroll");
+	private static final EventType<NodeScrollEvent.Post<Node>> SCROLL_AT_END = EventType.create("onScrollAtEnd");
+	private static final EventType<NodeScrollEvent.Post<Node>> SCROLL_TO_END = EventType.create("onScrollToEnd");
+
+	private static final EventType<NodeChangeEvent.Post<Node, Point>> MOVE        = EventType.create("onMove");
+	private static final EventType<NodeChangeEvent.Pre<Node, Point>>  BEFORE_MOVE = EventType.create("beforeMove");
 
 	private static final EventType<NodeDragEvent.Post<Node>> DRAG              = EventType.create("onDrag");
 	private static final EventType<NodeDragEvent.Post<Node>> DRAG_DROP         = EventType.create("onDragDrop");
@@ -293,7 +296,7 @@ public abstract class Node implements INode {
 	public final void load(final @NonNull UI ui) {
 		this.checkRequirements();
 		final SignalContext context = SignalContext.current();
-		final List<BaseSignal<?>> readList = context.takeReads();
+		final List<Signal<?>> readList = context.takeReads();
 		try {
 			this.ui = ui;
 			this.attached = true;
@@ -415,8 +418,8 @@ public abstract class Node implements INode {
 					}
 				}
 
-				this.targetScrollX = Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0);
-				this.targetScrollY = Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0);
+				this.scroll(ScrollAxis.HORIZONTAL, Math.min(Math.max(this.targetScrollX, -this.maxScrollX), 0), false);
+				this.scroll(ScrollAxis.VERTICAL, Math.min(Math.max(this.targetScrollY, -this.maxScrollY), 0), false);
 				this.scrollEndX = this.scrollEndX && this.targetScrollX == -this.maxScrollX;
 				this.scrollEndY = this.scrollEndY && this.targetScrollY == -this.maxScrollY;
 
@@ -432,12 +435,12 @@ public abstract class Node implements INode {
 
 				if (this.scrollEndX && this.scrollX == this.targetScrollX) {
 					this.scrollEndX = false;
-					this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.create(this, ScrollAxis.HORIZONTAL, this.scrollX));
+					this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, ScrollAxis.HORIZONTAL, this.scrollX, this.scrollX));
 				}
 
 				if (this.scrollEndY && this.scrollY == this.targetScrollY) {
 					this.scrollEndY = false;
-					this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.create(this, ScrollAxis.VERTICAL, this.scrollY));
+					this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, ScrollAxis.VERTICAL, this.scrollY, this.scrollY));
 				}
 
 				if (this.overflow == OverflowProperty.SCROLL) {
@@ -508,7 +511,10 @@ public abstract class Node implements INode {
 							final double diffX = this.getAbsoluteX() - this.x;
 							final double diffY = this.getAbsoluteY() - this.y;
 
-							this.moveTo(newAbsoluteX - diffX, newAbsoluteY - diffY);
+							if (!this.dragTo(newAbsoluteX - diffX, newAbsoluteY - diffY)) {
+								this.targetDragX = this.getAbsoluteX();
+								this.targetDragY = this.getAbsoluteY();
+							}
 						} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
 							final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteX(), this.targetDragX);
 							final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteY(), this.targetDragY);
@@ -742,16 +748,16 @@ public abstract class Node implements INode {
 				final double mappedScrollSpeed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
 				if (notchesY != 0D && this.hasOverflowY()) {
 					if (this.canScrollY(notchesY)) {
-						this.scrollY(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
+						this.scroll(ScrollAxis.VERTICAL, this.targetScrollY + (notchesY > 0D ? 30 : -30) * mappedScrollSpeed, true);
 						event.consume();
 					}
 				} else if (notchesY != 0D && this.canScrollX(notchesY)) {
-					this.scrollX(notchesY > 0D ? 30 : -30, mappedScrollSpeed);
+					this.scroll(ScrollAxis.HORIZONTAL, this.targetScrollX + (notchesY > 0D ? 30 : -30) * mappedScrollSpeed, true);
 					event.consume();
 				}
 
 				if (notchesX != 0D && this.canScrollX(notchesX)) {
-					this.scrollX(notchesX > 0D ? 30 : -30, mappedScrollSpeed);
+					this.scroll(ScrollAxis.HORIZONTAL, this.targetScrollX + (notchesX > 0D ? 30 : -30) * mappedScrollSpeed, true);
 					event.consume();
 				}
 			}
@@ -1108,63 +1114,25 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T scrollX(final double value, final double speed) {
-		this.scrollOffsetX(this.targetScrollX + value * speed);
-		return (T) this;
+	public final <T extends Node> @NonNull T scrollX(final double scrollX) {
+		return this.userProperty("scrollX", scrollX, (final Node node, final Double value) -> node.scroll(ScrollAxis.HORIZONTAL, value, false));
 	}
 
-	public final <T extends Node> @NonNull T scrollY(final double value, final double speed) {
-		this.scrollOffsetY(this.targetScrollY + value * speed);
-		return (T) this;
+	public final <T extends Node> @NonNull T scrollX(final @NonNull Signal<Double> scrollX) {
+		return this.userProperty("scrollX", scrollX, (final Node node, final Double value) -> node.scroll(ScrollAxis.HORIZONTAL, value, false));
 	}
 
-	public final <T extends Node> @NonNull T scrollRatioX(final float ratio) {
-		this.scrollOffsetX(-this.maxScrollX * ratio);
-		return (T) this;
+	public final <T extends Node> @NonNull T scrollY(final double scrollY) {
+		return this.userProperty("scrollY", scrollY, (final Node node, final Double value) -> node.scroll(ScrollAxis.VERTICAL, value, false));
 	}
 
-	public final <T extends Node> @NonNull T scrollOffsetX(final double value) {
-		final double oldValue = this.targetScrollX;
-		this.targetScrollX = Math.min(value, 0);
-		final boolean end = this.targetScrollX <= -this.maxScrollX;
-		if (end) {
-			this.targetScrollX = -this.maxScrollX;
-		}
-
-		this.scrollEndX = end && (oldValue != this.targetScrollX || this.scrollEndX);
-		if (oldValue == this.targetScrollX) {
-			return (T) this;
-		}
-
-		this.fire(Node.SCROLL, () -> NodeScrollEvent.create(this, ScrollAxis.HORIZONTAL, this.targetScrollX));
-		if (end) {
-			this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.create(this, ScrollAxis.HORIZONTAL, this.targetScrollX));
-		}
-		return (T) this;
+	public final <T extends Node> @NonNull T scrollY(final @NonNull Signal<Double> scrollY) {
+		return this.userProperty("scrollY", scrollY, (final Node node, final Double value) -> node.scroll(ScrollAxis.VERTICAL, value, false));
 	}
 
-	public final <T extends Node> @NonNull T scrollRatioY(final float ratio) {
-		this.scrollOffsetY(-this.maxScrollY * ratio);
-		return (T) this;
-	}
-
-	public final <T extends Node> @NonNull T scrollOffsetY(final double value) {
-		final double oldValue = this.targetScrollY;
-		this.targetScrollY = Math.min(value, 0);
-		final boolean end = this.targetScrollY <= -this.maxScrollY;
-		if (end) {
-			this.targetScrollY = -this.maxScrollY;
-		}
-
-		this.scrollEndY = end && (oldValue != this.targetScrollY || this.scrollEndY);
-		if (oldValue == this.targetScrollY) {
-			return (T) this;
-		}
-
-		this.fire(Node.SCROLL, () -> NodeScrollEvent.create(this, ScrollAxis.VERTICAL, this.targetScrollY));
-		if (end) {
-			this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.create(this, ScrollAxis.VERTICAL, this.targetScrollY));
-		}
+	public final <T extends Node> @NonNull T scrollTo(final double x, final double y) {
+		this.scroll(ScrollAxis.HORIZONTAL, x, true);
+		this.scroll(ScrollAxis.VERTICAL, y, true);
 		return (T) this;
 	}
 
@@ -1711,22 +1679,37 @@ public abstract class Node implements INode {
 		return this.x(Signal.from(x));
 	}
 
+	public final <T extends Node> @NonNull T x(final @NonNull Signal<Double> x) {
+		this.bind("x", x, (final Node node, final Double value) -> node.move(value, node.defaultY, false), (final Node node, final Double value) -> value);
+		this.checkMovable(this.draggable);
+		return (T) this;
+	}
+
 	public final <T extends Node> @NonNull T x(final @NonNull Supplier<Double> x) {
-		return this.follow("x", x, (node, value) -> {
-			node.defaultX = value;
-			node.place();
-		});
+		this.follow("x", x, (final Node node, final Double value) -> node.move(value, node.defaultY, false));
+		this.checkMovable(this.draggable);
+		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T y(final double y) {
 		return this.y(Signal.from(y));
 	}
 
+	public final <T extends Node> @NonNull T y(final @NonNull Signal<Double> y) {
+		this.bind("y", y, (final Node node, final Double value) -> node.move(node.defaultX, value, false), (final Node node, final Double value) -> value);
+		this.checkMovable(this.draggable);
+		return (T) this;
+	}
+
 	public final <T extends Node> @NonNull T y(final @NonNull Supplier<Double> y) {
-		return this.follow("y", y, (node, value) -> {
-			node.defaultY = value;
-			node.place();
-		});
+		this.follow("y", y, (final Node node, final Double value) -> node.move(node.defaultX, value, false));
+		this.checkMovable(this.draggable);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T move(final double x, final double y) {
+		this.move(x, y, true);
+		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T width(final double width) {
@@ -1798,6 +1781,7 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T draggable(final @NonNull Supplier<@NonNull DraggableProperty> draggable) {
 		return this.follow("draggable", draggable, (node, value) -> {
+			node.checkMovable(value);
 			node.draggable = value;
 			node.dragging  = false;
 			node.dragged   = false;
@@ -1836,8 +1820,9 @@ public abstract class Node implements INode {
 			}
 
 			this.maxScrollX = this.maxScrollY = 0D;
-			this.scrollX = this.targetScrollX = 0D;
-			this.scrollY = this.targetScrollY = 0D;
+			this.scroll(ScrollAxis.HORIZONTAL, 0D, false);
+			this.scroll(ScrollAxis.VERTICAL, 0D, false);
+			this.scrollX = this.scrollY = 0D;
 			this.scrollEndX = this.scrollEndY = false;
 		}
 
@@ -1905,7 +1890,7 @@ public abstract class Node implements INode {
 		}
 
 		if (this.dragged && this.draggable != null && this.draggable.getType() == DraggableType.MOVE) {
-			this.moveTo(this.x + (this.targetDragX - this.getAbsoluteX()), this.y + (this.targetDragY - this.getAbsoluteY()));
+			this.dragTo(this.x + (this.targetDragX - this.getAbsoluteX()), this.y + (this.targetDragY - this.getAbsoluteY()));
 		}
 
 		this.dragged = false;
@@ -1944,6 +1929,59 @@ public abstract class Node implements INode {
 		this.defaultX = x - this.layoutX - this.shiftX + this.getPivotX();
 		this.defaultY = y - this.layoutY - this.shiftY + this.getPivotY();
 		this.place();
+	}
+
+	private boolean dragTo(final double x, final double y) {
+		return this.move(x - this.layoutX - this.shiftX + this.getPivotX(), y - this.layoutY - this.shiftY + this.getPivotY(), true);
+	}
+
+	private boolean move(final double x, final double y, final boolean refusable) {
+		if (this.defaultX == x && this.defaultY == y) {
+			return true;
+		}
+
+		return this.change(Node.BEFORE_MOVE, Node.MOVE, Point.create(this.defaultX, this.defaultY), Point.create(x, y), refusable, () -> {
+			this.defaultX = x;
+			this.defaultY = y;
+			this.place();
+			this.sync("x", x);
+			this.sync("y", y);
+		});
+	}
+
+	private boolean scroll(final ScrollAxis axis, final double offset, final boolean refusable) {
+		final boolean horizontal = axis.isHorizontal();
+		final double max = horizontal ? this.maxScrollX : this.maxScrollY;
+		final double previous = horizontal ? this.targetScrollX : this.targetScrollY;
+		final double target = refusable || this.ui != null ? Math.max(-max, Math.min(offset, 0D)) : Math.min(offset, 0D);
+		if (target == previous) {
+			return false;
+		}
+
+		if (refusable && this.ui != null) {
+			final NodeScrollEvent.Pre<Node> event = this.fire(Node.BEFORE_SCROLL, () -> NodeScrollEvent.Pre.create(this, axis, previous, target));
+			if (event != null && event.isCancelled()) {
+				return false;
+			}
+		}
+
+		final boolean end = max > 0D && target <= -max;
+		if (horizontal) {
+			this.targetScrollX = target;
+			this.scrollEndX = end;
+		} else {
+			this.targetScrollY = target;
+			this.scrollEndY = end;
+		}
+
+		this.sync(horizontal ? "scrollX" : "scrollY", target);
+		if (this.ui != null) {
+			this.fire(Node.SCROLL, () -> NodeScrollEvent.Post.create(this, axis, previous, target));
+			if (end) {
+				this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, axis, previous, target));
+			}
+		}
+		return true;
 	}
 
 	private void place() {
@@ -1993,39 +2031,41 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T watch(final @NonNull ISignal<?> signal) {
+	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal) {
 		return this.watch(signal, new WatchProperty[0]);
 	}
 
-	public final <T extends Node> @NonNull T watch(final @NonNull ISignal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
+	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
 		return this.addWatch(signal, node -> true, properties);
 	}
 
-	public final <T extends Node> @NonNull T watch(final @NonNull ISignal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
+	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull Supplier<Boolean> condition, final @NonNull WatchProperty @NonNull... properties) {
 		return this.addWatch(signal, node -> condition.get(), properties);
 	}
 
-	protected final <T extends Node, N extends Node, V> @NonNull T bind(final @NonNull String property, final @NonNull ISignal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier) {
-		return this.bind(property, signal, applier, (final N node, final V value) -> value);
+	protected final <T extends Node, N extends Node, V> @NonNull T userProperty(final @NonNull String property, final V value, final @NonNull BiConsumer<@NonNull N, V> applier) {
+		Node.checkApplier(this, property, applier);
+		this.cancelLinks(property);
+		this.sourceMap.remove(property);
+		applier.accept((N) this, value);
+		return (T) this;
 	}
 
-	protected final <T extends Node, N extends Node, V, M> @NonNull T bind(final @NonNull String property, final @NonNull ISignal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier, final @NonNull BiFunction<@NonNull N, @NonNull M, V> writer) {
-		Node.checkApplier(this, property, applier);
-		final BiConsumer<Node, Object> nullSafe = (node, value) -> {
-			if (value != null) {
-				applier.accept((N) node, (V) value);
-			}
-		};
-		final V current = signal.peek();
-		this.listen(new NodeLink<>(this, property, (ISignal<Object>) signal, node -> true, true, nullSafe));
-		this.sourceMap.put(property, new NodeSource<>((ISignal<Object>) signal, nullSafe, (BiFunction<Node, Object, Object>) writer, current));
-		nullSafe.accept(this, current);
-		return (T) this;
+	protected final <T extends Node, N extends Node, V> @NonNull T userProperty(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier) {
+		return this.userProperty(property, signal, applier, (final N node, final V value) -> value);
+	}
+
+	protected final <T extends Node, N extends Node, V, M> @NonNull T userProperty(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull BiConsumer<@NonNull N, @NonNull V> applier, final @NonNull BiFunction<@NonNull N, @NonNull M, V> writer) {
+		if (!signal.isWritable()) {
+			throw new IllegalArgumentException("The " + property + " of " + Node.nameOf(this.getClass()) + " is changed by the user, so it cannot follow " + signal + ", which cannot be written: pass a writable Signal, or its value as a start value");
+		}
+
+		return this.bind(property, signal, applier, writer);
 	}
 
 	protected final <M> void sync(final @NonNull String property, final @NonNull M value) {
 		final NodeSource<?> source = this.sourceMap.get(property);
-		if (source == null || source.writer == null || !(source.supplier instanceof Signal)) {
+		if (source == null || source.writer == null) {
 			return;
 		}
 
@@ -2066,6 +2106,37 @@ public abstract class Node implements INode {
 		}
 	}
 
+	private <T extends Node, N extends Node, V, M> T bind(final String property, final Signal<V> signal, final BiConsumer<N, V> applier, final BiFunction<N, M, V> writer) {
+		if (!signal.isWritable()) {
+			return this.follow(property, signal, applier);
+		}
+
+		Node.checkApplier(this, property, applier);
+		final BiConsumer<Node, Object> nullSafe = (node, value) -> {
+			if (value != null) {
+				applier.accept((N) node, (V) value);
+			}
+		};
+		final V current = signal.peek();
+		this.listen(new NodeLink<>(this, property, (Signal<Object>) signal, node -> true, true, nullSafe));
+		this.sourceMap.put(property, new NodeSource<>((Signal<Object>) signal, nullSafe, (BiFunction<Node, Object, Object>) writer, current));
+		nullSafe.accept(this, current);
+		return (T) this;
+	}
+
+	private void checkMovable(final DraggableProperty draggable) {
+		if (draggable == null || draggable.getType() != DraggableType.MOVE) {
+			return;
+		}
+
+		for (final String axis : new String[] {"x", "y"}) {
+			final NodeSource<?> source = this.sourceMap.get(axis);
+			if (source != null && source.writer == null) {
+				throw new IllegalStateException("The " + Node.nameOf(this.getClass()) + " is dragged with DraggableType.MOVE but its " + axis + " is computed (a lambda or a signal that cannot be written), so a drag cannot move it: give " + axis + "(...) a value or a writable Signal, or drag a copy with DraggableType.COPY");
+			}
+		}
+	}
+
 	private List<NodeLink<?>> getLinkList() {
 		return this.linkList;
 	}
@@ -2078,12 +2149,12 @@ public abstract class Node implements INode {
 		return this.requirementList;
 	}
 
-	private <T extends Node> T addWatch(final ISignal<?> signal, final Predicate<Node> condition, final WatchProperty[] properties) {
-		this.listen(new NodeLink<>(this, null, (ISignal<Object>) signal, condition, false, (node, value) -> node.applyWatch(signal, properties)));
+	private <T extends Node> T addWatch(final Signal<?> signal, final Predicate<Node> condition, final WatchProperty[] properties) {
+		this.listen(new NodeLink<>(this, null, (Signal<Object>) signal, condition, false, (node, value) -> node.applyWatch(signal, properties)));
 		return (T) this;
 	}
 
-	private void applyWatch(final ISignal<?> signal, final WatchProperty[] properties) {
+	private void applyWatch(final Signal<?> signal, final WatchProperty[] properties) {
 		if (this.ui == null) {
 			return;
 		}
@@ -2100,7 +2171,7 @@ public abstract class Node implements INode {
 		} finally {
 			SignalReplay.exit();
 		}
-		this.fire(Node.WATCH, () -> NodeWatchEvent.create(this, signal, properties));
+		this.fire(Node.WATCH, () -> NodeWatchEvent.create(this, signal.peek(), properties));
 	}
 
 	private <V> void listen(final NodeLink<V> link) {
@@ -2405,28 +2476,52 @@ public abstract class Node implements INode {
 		return this.listen(Node.ANIMATE, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScroll(final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+	public final <T extends Node> @NonNull T beforeScroll(final @NonNull EventListener<NodeScrollEvent.Pre<T>> listener) {
+		return this.beforeScroll(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T beforeScroll(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent.Pre<T>> listener) {
+		return this.listen(Node.BEFORE_SCROLL, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onScroll(final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
 		return this.onScroll(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScroll(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+	public final <T extends Node> @NonNull T onScroll(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
 		return this.listen(Node.SCROLL, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScrollToEnd(final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+	public final <T extends Node> @NonNull T onScrollToEnd(final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
 		return this.onScrollToEnd(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScrollToEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+	public final <T extends Node> @NonNull T onScrollToEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
 		return this.listen(Node.SCROLL_TO_END, priority, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScrollAtEnd(final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+	public final <T extends Node> @NonNull T onScrollAtEnd(final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
 		return this.onScrollAtEnd(EventPriority.NORMAL, listener);
 	}
 
-	public final <T extends Node> @NonNull T onScrollAtEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent<T>> listener) {
+	public final <T extends Node> @NonNull T onScrollAtEnd(final @NonNull EventPriority priority, final @NonNull EventListener<NodeScrollEvent.Post<T>> listener) {
 		return this.listen(Node.SCROLL_AT_END, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T beforeMove(final @NonNull EventListener<NodeChangeEvent.Pre<T, Point>> listener) {
+		return this.beforeMove(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T beforeMove(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Point>> listener) {
+		return this.listen(Node.BEFORE_MOVE, priority, listener);
+	}
+
+	public final <T extends Node> @NonNull T onMove(final @NonNull EventListener<NodeChangeEvent.Post<T, Point>> listener) {
+		return this.onMove(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends Node> @NonNull T onMove(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Point>> listener) {
+		return this.listen(Node.MOVE, priority, listener);
 	}
 
 	public final <T extends Node> @NonNull T beforeDragStart(final @NonNull EventListener<NodeDragEvent.Pre<T>> listener) {
@@ -2767,7 +2862,7 @@ public abstract class Node implements INode {
 
 		private final Node                node;
 		private final String              property;
-		private final ISignal<V>          signal;
+		private final Signal<V>           signal;
 		private final Predicate<Node>     condition;
 		private final boolean             bound;
 		private final BiConsumer<Node, V> applier;

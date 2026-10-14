@@ -18,7 +18,6 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -336,15 +335,9 @@ public class SelectorNodeTest {
 		Assert.assertEquals(1, SelectorNodeTest.subscribers(subtitles).size());
 	}
 
-	@Test
-	public void followsAComputedSignalWithoutWritingIt() {
-		final Signal<String> language = new Signal<>("second");
-		this.selector.value(language.map(value -> value));
-		this.bridges.open(new NodeUI(this.selector)).frame();
-		Assert.assertEquals("second", this.selector.getValue());
-		language.set("third");
-		this.bridges.frame();
-		Assert.assertEquals("third", this.selector.getValue());
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesASignalItCannotWrite() {
+		this.selector.value(new Signal<>("second").map(value -> value));
 	}
 
 	@Test
@@ -360,6 +353,52 @@ public class SelectorNodeTest {
 		Assert.assertEquals("third", this.selector.getValue());
 		Assert.assertTrue(SelectorNodeTest.subscribers(language).isEmpty());
 		Assert.assertEquals(Arrays.asList("second", "third"), this.changes);
+	}
+
+	@Test
+	public void writesItsOpeningIntoItsSignal() {
+		final Signal<Boolean> open = new Signal<>(false);
+		this.bridges.open(new NodeUI(this.selector.active(open))).frame();
+		this.click(150D, 120D);
+		Assert.assertTrue(open.get());
+		this.click(150D, 200D);
+		Assert.assertFalse(open.get());
+		open.set(true);
+		Assert.assertTrue(this.selector.isActive());
+	}
+
+	@Test
+	public void forgetsItsOpeningSignalOnceGivenAValue() {
+		final Signal<Boolean> open = new Signal<>(false);
+		this.bridges.open(new NodeUI(this.selector.active(open).active(true))).frame();
+		Assert.assertTrue(this.selector.isActive());
+		this.click(150D, 120D);
+		open.set(true);
+		Assert.assertFalse(this.selector.isActive());
+		Assert.assertTrue(SelectorNodeTest.subscribers(open).isEmpty());
+	}
+
+	@Test
+	public void opensLikeAClickThroughItsGestures() {
+		final List<String> events = new ArrayList<>();
+		this.selector.beforeOpen(event -> events.add("before open")).onOpen(event -> events.add("open")).beforeClose(event -> events.add("before close")).onClose(event -> events.add("close"));
+		this.bridges.open(new NodeUI(this.selector)).frame();
+		Assert.assertSame(this.selector, this.selector.open());
+		Assert.assertSame(this.selector, this.selector.close());
+		this.selector.active(true);
+		Assert.assertEquals(Arrays.asList("before open", "open", "before close", "close", "open"), events);
+	}
+
+	@Test
+	public void staysClosedWhenItsOpeningIsRefused() {
+		final Signal<Boolean> open = new Signal<>(false);
+		this.bridges.open(new NodeUI(this.selector.active(open).beforeOpen(event -> event.cancel()))).frame();
+		this.click(150D, 120D);
+		this.selector.open();
+		Assert.assertFalse(this.selector.isActive());
+		Assert.assertFalse(open.get());
+		open.set(true);
+		Assert.assertTrue(this.selector.isActive());
 	}
 
 	@Test
@@ -385,7 +424,7 @@ public class SelectorNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+			final Field field = Signal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

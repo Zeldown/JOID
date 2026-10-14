@@ -166,7 +166,7 @@ public class UIDemoDraggable extends UIDemo {
 				.draggable(DraggableProperty.parent())
 				.attach(container);
 			})
-			.onMount(event -> event.getNode().scrollOffsetY(-40D))
+			.onMount(event -> event.getNode().scrollY(-40D))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Scrolled parent", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

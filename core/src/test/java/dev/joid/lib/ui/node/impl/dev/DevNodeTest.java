@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.dev;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
@@ -71,10 +73,10 @@ public class DevNodeTest {
 		Assert.assertEquals(53D, panel.getHeight(), 0D);
 		Assert.assertSame(Align.END, panel.getAnchorX());
 		Assert.assertSame(Align.END, panel.getAnchorY());
-		Assert.assertTrue(panel.getInspectSignal().get());
-		Assert.assertFalse(panel.getGridSignal().get());
-		Assert.assertFalse(panel.getInspectedNodeLocked().get());
-		Assert.assertNull(panel.getInspectedNode().get());
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectSignal"));
+		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
+		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertEquals(0F, panel.getReloadAnimator().get(), 0F);
 		Assert.assertEquals(0, panel.getGridColorIndex());
 	}
@@ -130,7 +132,7 @@ public class DevNodeTest {
 		final RectNode rect = RectNode.create(200D, 200D, 300D, 150D);
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(rect));
 		this.bridges.move(250D, 250D).frames(60);
-		Assert.assertSame(rect, panel.getInspectedNode().get());
+		Assert.assertSame(rect, DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertEquals(200D, panel.getInspectX(), 0D);
 		Assert.assertEquals(200D, panel.getInspectY(), 0D);
 		Assert.assertEquals(300D, panel.getInspectWidth(), 0D);
@@ -159,17 +161,17 @@ public class DevNodeTest {
 		final RectNode rect = RectNode.create(100D, 100D, 300D, 150D).attach(container);
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(container));
 		this.bridges.move(250D, 250D).frame();
-		Assert.assertSame(rect, panel.getInspectedNode().get());
+		Assert.assertSame(rect, DevNodeTest.peek(panel, "inspectedNode"));
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		this.bridges.frame();
-		Assert.assertSame(container, panel.getInspectedNode().get());
+		Assert.assertSame(container, DevNodeTest.peek(panel, "inspectedNode"));
 	}
 
 	@Test
 	public void inspectsNothingAwayFromTheNodes() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(10D, 10D).frames(2);
-		Assert.assertNull(panel.getInspectedNode().get());
+		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertTrue(DevNodeTest.draws(this.bridges, DevNodeTest.ACTION, 0.3F).isEmpty());
 	}
 
@@ -177,7 +179,7 @@ public class DevNodeTest {
 	public void neverInspectsItself() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.move(1652D, 1034D).frames(2);
-		Assert.assertNull(panel.getInspectedNode().get());
+		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertTrue(DevNodeTest.draws(this.bridges, DevNodeTest.ACTION, 0.3F).isEmpty());
 	}
 
@@ -207,13 +209,13 @@ public class DevNodeTest {
 		this.bridges.move(250D, 250D).frame();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frames(2);
-		Assert.assertTrue(panel.getInspectedNodeLocked().get());
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 		Assert.assertEquals(1425D, panel.getX(), 0D);
 		Assert.assertEquals(787D, panel.getY(), 0D);
 		Assert.assertEquals(475D, panel.getWidth(), 0D);
 		Assert.assertEquals(273D, panel.getHeight(), 0D);
 		this.bridges.move(10D, 10D).frames(2);
-		Assert.assertSame(rect, panel.getInspectedNode().get());
+		Assert.assertSame(rect, DevNodeTest.peek(panel, "inspectedNode"));
 	}
 
 	@Test
@@ -256,7 +258,7 @@ public class DevNodeTest {
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		this.bridges.frames(2);
-		Assert.assertFalse(panel.getInspectedNodeLocked().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 		Assert.assertEquals(1625D, panel.getX(), 0D);
 		Assert.assertEquals(1007D, panel.getY(), 0D);
 		Assert.assertEquals(275D, panel.getWidth(), 0D);
@@ -269,8 +271,8 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
 		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
-		Assert.assertFalse(panel.getInspectedNodeLocked().get());
-		Assert.assertNotNull(panel.getInspectedNode().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
+		Assert.assertNotNull(DevNodeTest.peek(panel, "inspectedNode"));
 	}
 
 	@Test
@@ -278,7 +280,7 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		Assert.assertTrue(panel.getInspectedNodeLocked().get());
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 	}
 
 	@Test
@@ -287,12 +289,12 @@ public class DevNodeTest {
 		final RectNode rect = RectNode.create(100D, 100D, 300D, 150D).attach(container);
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(container));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
-		Assert.assertSame(rect, panel.getInspectedNode().get());
+		Assert.assertSame(rect, DevNodeTest.peek(panel, "inspectedNode"));
 		this.bridges.getUi().keyPressed(Key.ENTER);
-		Assert.assertSame(container, panel.getInspectedNode().get());
-		Assert.assertTrue(panel.getInspectedNodeLocked().get());
+		Assert.assertSame(container, DevNodeTest.peek(panel, "inspectedNode"));
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 		this.bridges.getUi().keyPressed(Key.NUMPAD_ENTER);
-		Assert.assertSame(container, panel.getInspectedNode().get());
+		Assert.assertSame(container, DevNodeTest.peek(panel, "inspectedNode"));
 	}
 
 	@Test
@@ -312,8 +314,8 @@ public class DevNodeTest {
 	public void ignoresEnterWithoutInspectedNode() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.getUi().keyPressed(Key.ENTER);
-		Assert.assertNull(panel.getInspectedNode().get());
-		Assert.assertFalse(panel.getInspectedNodeLocked().get());
+		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 	}
 
 	@Test
@@ -323,10 +325,10 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(container));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		DevNodeTest.click(this.bridges, DevNodeTest.text(panel, "hierarchy: ContainerNode - RectNode"));
-		Assert.assertSame(container, panel.getInspectedNode().get());
-		Assert.assertTrue(panel.getInspectedNodeLocked().get());
+		Assert.assertSame(container, DevNodeTest.peek(panel, "inspectedNode"));
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 		DevNodeTest.click(this.bridges, DevNodeTest.text(panel, "hierarchy: ContainerNode"));
-		Assert.assertSame(container, panel.getInspectedNode().get());
+		Assert.assertSame(container, DevNodeTest.peek(panel, "inspectedNode"));
 	}
 
 	@Test
@@ -335,13 +337,13 @@ public class DevNodeTest {
 		final RectNode rect = RectNode.create(500D, 300D, 50D, 50D).attach(container);
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(container));
 		DevNodeTest.lock(this.bridges, 150D, 150D);
-		Assert.assertSame(container, panel.getInspectedNode().get());
+		Assert.assertSame(container, DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertTrue(DevNodeTest.texts(panel).contains("children: 1"));
 		this.bridges.move(1600D, 900D).frame();
 		this.bridges.scroll(-1D).frames(10).scroll(-1D).frames(60);
 		DevNodeTest.click(this.bridges, DevNodeTest.text(panel, "RectNode"));
-		Assert.assertSame(rect, panel.getInspectedNode().get());
-		Assert.assertTrue(panel.getInspectedNodeLocked().get());
+		Assert.assertSame(rect, DevNodeTest.peek(panel, "inspectedNode"));
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 	}
 
 	@Test
@@ -350,13 +352,13 @@ public class DevNodeTest {
 		final ResourceNode button = DevNodeTest.buttons(panel).get(0);
 		Assert.assertEquals(DevNodeTest.ACTION.getRGB(), button.getColor().getRGB());
 		DevNodeTest.click(this.bridges, button);
-		Assert.assertFalse(panel.getInspectSignal().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectSignal"));
 		Assert.assertEquals(new Color(250, 250, 250).getRGB(), DevNodeTest.buttons(panel).get(0).getColor().getRGB());
 		this.bridges.move(250D, 250D).frames(2);
-		Assert.assertNull(panel.getInspectedNode().get());
+		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertTrue(DevNodeTest.draws(this.bridges, DevNodeTest.ACTION, 0.3F).isEmpty());
 		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(0));
-		Assert.assertTrue(panel.getInspectSignal().get());
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectSignal"));
 	}
 
 	@Test
@@ -365,12 +367,12 @@ public class DevNodeTest {
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		this.bridges.getUi().keyPressed(Key.I);
 		this.bridges.getUi().charTyped('i');
-		Assert.assertFalse(panel.getInspectSignal().get());
-		Assert.assertFalse(panel.getInspectedNodeLocked().get());
-		Assert.assertNull(panel.getInspectedNode().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectSignal"));
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
+		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
 		this.bridges.getUi().keyPressed(Key.I);
 		this.bridges.getUi().charTyped('i');
-		Assert.assertTrue(panel.getInspectSignal().get());
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectSignal"));
 	}
 
 	@Test
@@ -437,7 +439,7 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.getUi().keyPressed(Key.G);
 		this.bridges.getUi().charTyped('g');
-		Assert.assertTrue(panel.getGridSignal().get());
+		Assert.assertTrue(DevNodeTest.peek(panel, "gridSignal"));
 		this.bridges.move(400D, 300D).frame();
 		final List<Draw> rulers = DevNodeTest.draws(this.bridges, DevNodeTest.ACTION, 1F).stream().filter(draw -> draw.getShader() == null && draw.getTop() < 1000D).collect(Collectors.toList());
 		Assert.assertEquals(4, rulers.size());
@@ -454,7 +456,7 @@ public class DevNodeTest {
 		this.bridges.getUi().charTyped('g');
 		this.bridges.getUi().keyPressed(Key.G);
 		this.bridges.getUi().charTyped('g');
-		Assert.assertFalse(panel.getGridSignal().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
 	}
 
 	@Test
@@ -484,9 +486,9 @@ public class DevNodeTest {
 	public void togglesTheGridWithItsButton() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(2));
-		Assert.assertTrue(panel.getGridSignal().get());
+		Assert.assertTrue(DevNodeTest.peek(panel, "gridSignal"));
 		DevNodeTest.click(this.bridges, DevNodeTest.buttons(panel).get(2));
-		Assert.assertFalse(panel.getGridSignal().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
 	}
 
 	@Test
@@ -494,7 +496,7 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.open(new DevUI());
 		panel.fireKeyPressed(Key.G);
-		Assert.assertFalse(panel.getGridSignal().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
 	}
 
 	@Test
@@ -507,8 +509,8 @@ public class DevNodeTest {
 		final NodeMouseEvent<?> consumedPress = NodeMouseEvent.create(panel, 250D, 250D, MouseButton.LEFT, 0L, null);
 		consumedPress.consume();
 		panel.fireMousePressed(250D, 250D, MouseButton.LEFT, consumedPress);
-		Assert.assertFalse(panel.getGridSignal().get());
-		Assert.assertFalse(panel.getInspectedNodeLocked().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 	}
 
 	@Test
@@ -517,12 +519,22 @@ public class DevNodeTest {
 		this.bridges.move(250D, 250D).frame();
 		this.bridges.open(new DevUI());
 		panel.fireMousePressed(250D, 250D, MouseButton.LEFT);
-		Assert.assertFalse(panel.getInspectedNodeLocked().get());
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAClickWithoutButton() {
 		DevNode.create(0D, 0D).mousePressed(null);
+	}
+
+	private static <T> T peek(final DevNode panel, final String name) {
+		try {
+			final Field field = DevNode.class.getDeclaredField(name);
+			field.setAccessible(true);
+			return (T) ((Signal<?>) field.get(panel)).peek();
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException(exception);
+		}
 	}
 
 	private static DevNode open(final HeadlessBridges bridges, final DevUI ui) {

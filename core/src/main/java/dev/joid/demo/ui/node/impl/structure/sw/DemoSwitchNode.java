@@ -32,11 +32,11 @@ public class DemoSwitchNode extends SwitchNode {
 		.color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F))
 		.attach(this);
 
-		final double stateWidth = super.getWidth() / super.getStateList().get().size();
+		final double stateWidth = super.getWidth() / super.getStateList().size();
 		FlexNode
 		.horizontal(0, 0, super.getHeight())
 		.body(flex -> {
-			for (final String state : super.getStateList().get()) {
+			for (final String state : super.getStateList()) {
 				RectNode
 				.create(0, 0, stateWidth, super.getHeight())
 				.color(() -> (super.getState().equals(state) ? DemoSwitchNode.INK : Color.WHITE).withAlpha(super.isEnabled() ? 1F : 0.4F))

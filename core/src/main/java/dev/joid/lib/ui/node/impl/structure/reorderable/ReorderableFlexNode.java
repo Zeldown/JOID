@@ -567,20 +567,20 @@ public class ReorderableFlexNode extends Node {
 					final double parentBottom = parentTop + parent.getHeight();
 					if (mouseY < parentTop + ReorderableFlexNode.SCROLL_HOT_ZONE) {
 						final double depth = Math.min(1D, (parentTop + ReorderableFlexNode.SCROLL_HOT_ZONE - mouseY) / ReorderableFlexNode.SCROLL_HOT_ZONE);
-						parent.scrollY(ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth, 1D);
+						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() + ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth);
 					} else if (mouseY > parentBottom - ReorderableFlexNode.SCROLL_HOT_ZONE) {
 						final double depth = Math.min(1D, (mouseY - (parentBottom - ReorderableFlexNode.SCROLL_HOT_ZONE)) / ReorderableFlexNode.SCROLL_HOT_ZONE);
-						parent.scrollY(-ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth, 1D);
+						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() - ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth);
 					}
 				} else if (this.direction == FlexDirection.ROW && parent.hasOverflowX()) {
 					final double parentLeft = parent.getAbsoluteX();
 					final double parentRight = parentLeft + parent.getWidth();
 					if (mouseX < parentLeft + ReorderableFlexNode.SCROLL_HOT_ZONE) {
 						final double depth = Math.min(1D, (parentLeft + ReorderableFlexNode.SCROLL_HOT_ZONE - mouseX) / ReorderableFlexNode.SCROLL_HOT_ZONE);
-						parent.scrollX(ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth, 1D);
+						parent.scrollTo(parent.getTargetScrollX() + ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth, parent.getTargetScrollY());
 					} else if (mouseX > parentRight - ReorderableFlexNode.SCROLL_HOT_ZONE) {
 						final double depth = Math.min(1D, (mouseX - (parentRight - ReorderableFlexNode.SCROLL_HOT_ZONE)) / ReorderableFlexNode.SCROLL_HOT_ZONE);
-						parent.scrollX(-ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth, 1D);
+						parent.scrollTo(parent.getTargetScrollX() - ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth, parent.getTargetScrollY());
 					}
 				}
 				return;

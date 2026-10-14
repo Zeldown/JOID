@@ -3,7 +3,6 @@ package dev.joid.lib.animation.animator;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,7 +22,6 @@ import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
-import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 
@@ -448,12 +446,27 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
-	public void isAReadOnlySignal() {
-		Assert.assertFalse(Signal.class.isAssignableFrom(TweenAnimator.class));
-		for (final Method method : TweenAnimator.class.getMethods()) {
-			Assert.assertFalse(method.getName(), Arrays.asList("set", "reset", "silent", "fireChange", "setValue").contains(method.getName()));
+	public void refusesToBeWrittenLikeAPlainSignal() {
+		final TweenAnimator animator = TweenAnimator.create(0.5F);
+		Assert.assertFalse(animator.isWritable());
+		try {
+			animator.set(1F);
+			Assert.fail("An animator cannot be set");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The TweenAnimator{0.5} is animated and cannot be set to 1.0, use value(...) or start a tween", expected.getMessage());
 		}
-		final TweenAnimator animator = TweenAnimator.create();
+		try {
+			animator.reset();
+			Assert.fail("An animator cannot be reset");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The TweenAnimator{0.5} is animated and cannot be reset, use value(...) or start a tween", expected.getMessage());
+		}
+		try {
+			animator.silent();
+			Assert.fail("An animator cannot be silenced");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The TweenAnimator{0.5} is animated and cannot be silenced, use value(...) or start a tween", expected.getMessage());
+		}
 		Assert.assertSame(animator, animator.value(0.5F).clear());
 		Assert.assertEquals(0F, animator.get(), 0F);
 	}

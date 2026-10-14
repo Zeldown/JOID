@@ -105,7 +105,7 @@ public class GridNodeTest {
 		this.bridges.open(new NodeUI(grid)).frames(2);
 		Assert.assertEquals(60D, grid.getHeight(), 0D);
 		Assert.assertEquals(45D, grid.getMaxScrollY(), 0D);
-		grid.scrollOffsetY(-45D).updateScroll();
+		grid.scrollY(-45D).updateScroll();
 		this.bridges.frame();
 		final Node last = grid.getChildren().get(2);
 		Assert.assertEquals(55D, last.getLayoutY(), 0D);

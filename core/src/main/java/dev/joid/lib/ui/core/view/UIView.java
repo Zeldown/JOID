@@ -87,8 +87,12 @@ public final class UIView {
 		return this;
 	}
 
+	public double clampZoom(final double zoom) {
+		return Math.max(0.1D, Math.min(this.getMaxZoom(), zoom));
+	}
+
 	public @NonNull UIView zoom(final double zoom) {
-		this.zoom = Math.max(0.1D, Math.min(this.getMaxZoom(), zoom));
+		this.zoom = this.clampZoom(zoom);
 		return this;
 	}
 

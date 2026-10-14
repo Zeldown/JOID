@@ -2,10 +2,12 @@ package dev.joid.demo.ui.selector;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.node.impl.structure.checkbox.DemoCheckboxNode;
 import dev.joid.demo.ui.node.impl.structure.selector.DemoSelectorNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
@@ -23,12 +25,16 @@ public class UIDemoSelector extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSelector.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final StringSignal down = new StringSignal("First");
 		final StringSignal shared = new StringSignal("Second");
 		final IntegerSignal refused = new IntegerSignal(0);
+		final BooleanSignal open = new BooleanSignal(false);
+		final IntegerSignal opens = new IntegerSignal(0);
+		final IntegerSignal refusedOpens = new IntegerSignal(0);
 
 		RectNode
-		.create(320, 210, 400, 260)
+		.create(100, 210, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
 			DemoSelectorNode
@@ -45,7 +51,7 @@ public class UIDemoSelector extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(760, 210, 400, 260)
+		.create(540, 210, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
 			DemoSelectorNode
@@ -59,7 +65,7 @@ public class UIDemoSelector extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(1200, 210, 400, 260)
+		.create(980, 210, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
 			DemoSelectorNode.create(40, 30, 320, 50).values("First", "Second", "Third").value("Second").active(true).attach(rect);
@@ -68,7 +74,18 @@ public class UIDemoSelector extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(320, 550, 400, 260)
+		.create(1420, 210, 400, 260)
+		.color(UIDemoSelector.PLACEHOLDER)
+		.body(rect -> {
+			DemoSelectorNode.create(40, 30, 220, 50).values("First", "Second", "Third").active(open).onOpen(event -> opens.increment()).attach(rect);
+			DemoCheckboxNode.create(300, 30, 50, 50).checked(open).attach(rect);
+			TextNode.create(40, 200).text(Text.create("Opened: " + opens.get(), info)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Bound open", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(100, 550, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
 			DemoSelectorNode.create(40, 30, 150, 50).values("First", "Second", "Third").value(shared).attach(rect);
@@ -79,7 +96,7 @@ public class UIDemoSelector extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(760, 550, 400, 260)
+		.create(540, 550, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
 			DemoSelectorNode
@@ -98,7 +115,32 @@ public class UIDemoSelector extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(1200, 550, 400, 260)
+		.create(980, 550, 400, 260)
+		.color(UIDemoSelector.PLACEHOLDER)
+		.body(rect -> {
+			final DemoSelectorNode locked = DemoSelectorNode
+			.create(40, 30, 220, 50)
+			.values("First", "Second", "Third")
+			.beforeOpen(event -> {
+				refusedOpens.increment();
+				event.cancel();
+			})
+			.attach(rect);
+			RectNode
+			.create(280, 30, 90, 50)
+			.color(UIDemoSelector.INK)
+			.onClick(event -> locked.active(true))
+			.body(container -> {
+				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Code", label, Align.CENTER, Align.CENTER)).anchor(Align.CENTER).attach(container);
+			})
+			.attach(rect);
+			TextNode.create(40, 200).text(Text.create("Refused: " + refusedOpens.get(), info)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Refused open", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1420, 550, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
 			DemoSelectorNode.create(40, 30, 320, 50).values("First", "Second", "Third").value("Second").enabled(false).attach(rect);

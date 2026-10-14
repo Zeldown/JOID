@@ -43,8 +43,8 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.render.Drawing;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
-import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.ui.core.data.UIDataObject;
 import dev.joid.lib.ui.core.data.debug.UIDataDebugObject;
@@ -62,6 +62,7 @@ import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.impl.ui.UIChangeEvent;
 import dev.joid.lib.ui.event.impl.ui.UICharEvent;
 import dev.joid.lib.ui.event.impl.ui.UICloseEvent;
 import dev.joid.lib.ui.event.impl.ui.UIKeyEvent;
@@ -96,6 +97,9 @@ public abstract class UI implements IUI, IndexedElement {
 	private static final EventType<UICloseEvent.Post<UI>> CLOSE        = EventType.create("onClose");
 	private static final EventType<UICloseEvent.Pre<UI>>  BEFORE_CLOSE = EventType.create("beforeClose");
 
+	private static final EventType<UIChangeEvent.Post<UI, Double>> ZOOM        = EventType.create("onZoom");
+	private static final EventType<UIChangeEvent.Pre<UI, Double>>  BEFORE_ZOOM = EventType.create("beforeZoom");
+
 	@Getter
 	private static UI current;
 
@@ -103,10 +107,7 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private final Stack<MaskRegion>                    stencilStack;
 	@NonNull private final IndexedConcurrentList<@NonNull Node> nodeList;
 
-	private final UIView       view;
-	private final DoubleSignal zoomLevel;
-	private final DoubleSignal scaledWidth;
-	private final DoubleSignal scaledHeight;
+	private final UIView view;
 
 	@NonNull private final UIDataObject        data;
 	@NonNull private final UIDataDebugObject   debug;
@@ -124,6 +125,9 @@ public abstract class UI implements IUI, IndexedElement {
 	private transient File                                   watchedLocation;
 	private transient Transition                             transition;
 	private transient Map<Class<? extends UIStore>, UIStore> storeMap;
+
+	private transient Double         zoomValue;
+	private transient Signal<Double> zoomSource;
 
 	private boolean closed;
 	private boolean loaded;
@@ -177,9 +181,6 @@ public abstract class UI implements IUI, IndexedElement {
 		this.transition = this.createPopupTransition();
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
-		this.zoomLevel = new DoubleSignal(1D);
-		this.scaledWidth = new DoubleSignal(UIView.DESIGN_WIDTH);
-		this.scaledHeight = new DoubleSignal(UIView.DESIGN_HEIGHT);
 
 		this.devNode = null;
 		this.lastHoveredFrame = -1L;
@@ -187,14 +188,15 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void load(final double finalWidth, final double finalHeight) {
-		this.load(finalWidth, finalHeight, 1D);
+		this.load(finalWidth, finalHeight, this.view.getZoom());
 	}
 
 	public final void load(final double finalWidth, final double finalHeight, final double zoomLevel) {
 		final long start = System.nanoTime();
 
+		final double zoom = this.view.getZoom();
 		this.view.resize(finalWidth, finalHeight).zoom(zoomLevel);
-		this.refreshView();
+		this.zoomed(zoom);
 
 		if (!this.initialized) {
 			UIPropertyHook.load(this);
@@ -277,7 +279,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.fireListeners(UI.HANDLE_MOUSE_SCROLL, event);
 
 		if (!event.isConsumed() && JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
-			this.view.zoom(this.view.getZoom() + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
+			this.zoom(this.view.getZoom() + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D), true);
 			event.consume();
 		}
 
@@ -396,20 +398,12 @@ public abstract class UI implements IUI, IndexedElement {
 		this.fireShortcuts(key, false, event);
 
 		if (this.data.zoomable() && !event.isConsumed()) {
-			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
-				final double previous = this.view.getZoom();
-				this.view.zoom(previous + 0.1D);
-				if (this.view.getZoom() != previous) {
-					event.consume();
-				}
+			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoom(this.view.getZoom() + 0.1D, true)) {
+				event.consume();
 			}
 
-			if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
-				final double previous = this.view.getZoom();
-				this.view.zoom(previous - 0.1D);
-				if (this.view.getZoom() != previous) {
-					event.consume();
-				}
+			if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoom(this.view.getZoom() - 0.1D, true)) {
+				event.consume();
 			}
 		}
 
@@ -486,6 +480,47 @@ public abstract class UI implements IUI, IndexedElement {
 		return true;
 	}
 
+	public final <T extends UI> @NonNull T zoom(final double zoom) {
+		this.zoomSource = null;
+		this.zoomValue = null;
+		this.zoom(zoom, false);
+		return (T) this;
+	}
+
+	public final <T extends UI> @NonNull T zoom(final @NonNull Signal<Double> zoom) {
+		if (!zoom.isWritable()) {
+			throw new IllegalArgumentException("The zoom of " + UI.nameOf(this.getClass()) + " is changed by the user, so it cannot follow " + zoom + ", which cannot be written: pass a writable Signal, or its value as a start value");
+		}
+
+		this.zoomSource = zoom;
+		this.zoomValue = zoom.peek();
+		if (this.zoomValue != null) {
+			this.zoom(this.zoomValue, false);
+		}
+		return (T) this;
+	}
+
+	public final <T extends UI> @NonNull T zoomBy(final double delta) {
+		this.zoom(this.view.getZoom() + delta, true);
+		return (T) this;
+	}
+
+	public final <T extends UI> @NonNull T beforeZoom(final @NonNull EventListener<UIChangeEvent.Pre<T, Double>> listener) {
+		return this.beforeZoom(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T beforeZoom(final @NonNull EventPriority priority, final @NonNull EventListener<UIChangeEvent.Pre<T, Double>> listener) {
+		return this.listen(UI.BEFORE_ZOOM, priority, listener);
+	}
+
+	public final <T extends UI> @NonNull T onZoom(final @NonNull EventListener<UIChangeEvent.Post<T, Double>> listener) {
+		return this.onZoom(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends UI> @NonNull T onZoom(final @NonNull EventPriority priority, final @NonNull EventListener<UIChangeEvent.Post<T, Double>> listener) {
+		return this.listen(UI.ZOOM, priority, listener);
+	}
+
 	public final @NonNull List<MaskRegion> getStencilStack() {
 		return Collections.unmodifiableList(this.stencilStack);
 	}
@@ -509,6 +544,10 @@ public abstract class UI implements IUI, IndexedElement {
 	@Override
 	public int getIndex() {
 		return this.data.zindex();
+	}
+
+	public final double getZoom() {
+		return this.view.getZoom();
 	}
 
 	public final double getWindowWidth() {
@@ -830,10 +869,53 @@ public abstract class UI implements IUI, IndexedElement {
 		this.annotatedOverlay = overlay;
 	}
 
-	private void refreshView() {
-		this.zoomLevel.set(this.view.getZoom());
-		this.scaledWidth.set(this.view.getVisibleWidth());
-		this.scaledHeight.set(this.view.getVisibleHeight());
+	private Double getZoomValue() {
+		return this.zoomValue;
+	}
+
+	private Signal<Double> getZoomSource() {
+		return this.zoomSource;
+	}
+
+	private void pullZoom() {
+		final Signal<Double> source = this.getZoomSource();
+		if (source == null) {
+			return;
+		}
+
+		final Double zoom = source.peek();
+		if (zoom != null && !zoom.equals(this.getZoomValue())) {
+			this.zoomValue = zoom;
+			this.zoom(zoom, false);
+		}
+	}
+
+	private boolean zoom(final double zoom, final boolean refusable) {
+		final double previous = this.view.getZoom();
+		final double value = this.view.clampZoom(zoom);
+		if (refusable && value != previous) {
+			final UIChangeEvent.Pre<UI, Double> event = this.fire(UI.BEFORE_ZOOM, () -> UIChangeEvent.Pre.create(this, previous, value));
+			if (event != null && event.isCancelled()) {
+				return false;
+			}
+		}
+
+		this.view.zoom(value);
+		this.zoomed(previous);
+		return value != previous;
+	}
+
+	private void zoomed(final double previous) {
+		final double zoom = this.view.getZoom();
+		final Signal<Double> source = this.getZoomSource();
+		if (source != null && !Double.valueOf(zoom).equals(source.peek())) {
+			this.zoomValue = zoom;
+			source.set(zoom);
+		}
+
+		if (zoom != previous) {
+			this.fire(UI.ZOOM, () -> UIChangeEvent.Post.create(this, previous, zoom));
+		}
 	}
 
 	private void refreshTransition() {
@@ -901,7 +983,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		this.view.anchorX(this.data.getAnchorPositionX()).anchorY(this.data.getAnchorPositionY());
-		this.refreshView();
+		this.pullZoom();
 		this.refreshTransition();
 		if (this.monitored != this.debug.hotreload()) {
 			this.refreshMonitor();
@@ -919,8 +1001,9 @@ public abstract class UI implements IUI, IndexedElement {
 		final IUIBridge bridge = this.getBridge();
 		final double interfaceScale = bridge == null || !this.scale.active() ? 1D : this.scale.apply(bridge.getInterfaceScale(this));
 		if (interfaceScale != this.view.getInterfaceScale()) {
+			final double zoom = this.view.getZoom();
 			this.view.interfaceScale(interfaceScale);
-			this.refreshView();
+			this.zoomed(zoom);
 		}
 
 		final double mx = this.getMouseX();

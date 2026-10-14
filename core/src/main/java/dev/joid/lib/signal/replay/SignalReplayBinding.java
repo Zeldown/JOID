@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.BaseSignal;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,14 +20,14 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 	private final Object                 self;
 	private final boolean                definitions;
 	private final Map<String, String>    holeMap;
-	private final Map<Object, BaseSignal<?>> positionalMap;
-	private final List<BaseSignal<?>>        readList;
+	private final Map<Object, Signal<?>> positionalMap;
+	private final List<Signal<?>>        readList;
 	private final long                   epoch;
 
 	private T       value;
 	private boolean started;
 
-	public static <T> SignalReplayBinding<T> create(final SignalReplayCall call, final SignalReplayMatch match, final List<BaseSignal<?>> readList, final T value) {
+	public static <T> SignalReplayBinding<T> create(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> readList, final T value) {
 		final SignalReplayBinding<T> binding = new SignalReplayBinding<>(call, match.getSlice(), match.getSelf(), match.isDefinitions(), match.getHoleMap(), match.getPositionalMap(), match.getReadList(readList), SignalContext.getEpoch());
 		binding.value = value;
 		return binding;
@@ -39,7 +39,7 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 			this.started = true;
 			if (this.epoch == SignalContext.getEpoch()) {
 				final SignalContext context = SignalContext.current();
-				for (final BaseSignal<?> signal : this.readList) {
+				for (final Signal<?> signal : this.readList) {
 					context.read(signal);
 				}
 				return this.value;
@@ -62,11 +62,11 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 		return this.holeMap != null ? Collections.unmodifiableMap(this.holeMap) : null;
 	}
 
-	public Map<Object, BaseSignal<?>> getPositionalMap() {
+	public Map<Object, Signal<?>> getPositionalMap() {
 		return Collections.unmodifiableMap(this.positionalMap);
 	}
 
-	public List<BaseSignal<?>> getReadList() {
+	public List<Signal<?>> getReadList() {
 		return Collections.unmodifiableList(this.readList);
 	}
 

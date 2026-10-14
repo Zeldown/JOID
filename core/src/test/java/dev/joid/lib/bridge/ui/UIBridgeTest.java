@@ -86,10 +86,10 @@ public class UIBridgeTest {
 	public void keepsTheZoomOfEveryUiOnAResize() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
-		menu.getView().zoom(0.5D);
+		menu.zoom(0.5D);
 		this.bridges.resize(1366, 768);
 		Assert.assertEquals(0.5D, menu.getView().getZoom(), 0D);
-		Assert.assertEquals(0.5D, menu.getZoomLevel().get(), 0D);
+		Assert.assertEquals(0.5D, menu.getZoom(), 0D);
 		Assert.assertEquals(1366D, menu.getWindowWidth(), 0D);
 		Assert.assertEquals(1, menu.inits);
 	}

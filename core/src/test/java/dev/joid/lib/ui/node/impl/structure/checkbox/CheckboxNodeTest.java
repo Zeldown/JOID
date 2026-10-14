@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
@@ -101,16 +100,14 @@ public class CheckboxNodeTest {
 	}
 
 	@Test
-	public void followsAComputedSignalWithoutWritingIt() {
+	public void refusesASignalItCannotWrite() {
 		final BooleanSignal subtitles = new BooleanSignal(true);
-		final Checkbox checkbox = new Checkbox().checked(subtitles.map(value -> !value));
-		Assert.assertFalse(checkbox.isChecked());
-		this.bridges.open(new NodeUI(checkbox)).frame();
-		subtitles.set(false);
-		this.bridges.frame();
-		Assert.assertTrue(checkbox.isChecked());
-		this.click(110D, 110D);
-		Assert.assertFalse(subtitles.get());
+		try {
+			new Checkbox().checked(subtitles.map(value -> !value));
+			Assert.fail("A computed signal cannot drive a value the user changes");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The checked of Checkbox is changed by the user, so it cannot follow ComputedSignal{false}, which cannot be written: pass a writable Signal, or its value as a start value", expected.getMessage());
+		}
 	}
 
 	@Test
@@ -128,7 +125,7 @@ public class CheckboxNodeTest {
 		Assert.assertTrue(CheckboxNodeTest.subscribers(subtitles).isEmpty());
 		checkbox.checked(subtitles).checked(true);
 		Assert.assertFalse(subtitles.get());
-		checkbox.checked(subtitles).checked(() -> true);
+		checkbox.checked(subtitles).checked(true);
 		Assert.assertTrue(CheckboxNodeTest.subscribers(subtitles).isEmpty());
 		Assert.assertEquals(Arrays.asList(true, false, true, false, true), changes);
 	}
@@ -182,7 +179,7 @@ public class CheckboxNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+			final Field field = Signal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

@@ -8,7 +8,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
-import dev.joid.lib.signal.BaseSignal;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,17 +21,17 @@ public final class SignalReplayRun {
 	private final boolean                matching;
 	private final boolean                definitions;
 	private final Map<String, String>    holeMap;
-	private final List<BaseSignal<?>>        positionalList;
-	private final Map<Object, BaseSignal<?>> positionalMap;
+	private final List<Signal<?>>        positionalList;
+	private final Map<Object, Signal<?>> positionalMap;
 
 	private final List<Group>                      groupList;
-	private final List<BaseSignal<?>>                  directList;
+	private final List<Signal<?>>                  directList;
 	private final Map<SignalReplaySlice, Object[]> definitionCache;
 
 	private boolean         positionalNeeded;
-	private List<BaseSignal<?>> currentList;
+	private List<Signal<?>> currentList;
 
-	private SignalReplayRun(final Object self, final boolean definitions, final boolean matching, final Map<String, String> holeMap, final List<BaseSignal<?>> positionalList, final Map<Object, BaseSignal<?>> positionalMap) {
+	private SignalReplayRun(final Object self, final boolean definitions, final boolean matching, final Map<String, String> holeMap, final List<Signal<?>> positionalList, final Map<Object, Signal<?>> positionalMap) {
 		this.self            = self;
 		this.definitions     = definitions;
 		this.matching        = matching;
@@ -44,11 +44,11 @@ public final class SignalReplayRun {
 		this.currentList     = this.directList;
 	}
 
-	public static SignalReplayRun match(final Object self, final boolean definitions, final List<BaseSignal<?>> positionalList) {
+	public static SignalReplayRun match(final Object self, final boolean definitions, final List<Signal<?>> positionalList) {
 		return new SignalReplayRun(self, definitions, true, null, positionalList, new HashMap<>());
 	}
 
-	public static SignalReplayRun replay(final Object self, final boolean definitions, final Map<String, String> holeMap, final Map<Object, BaseSignal<?>> positionalMap) {
+	public static SignalReplayRun replay(final Object self, final boolean definitions, final Map<String, String> holeMap, final Map<Object, Signal<?>> positionalMap) {
 		return new SignalReplayRun(self, definitions, false, holeMap, null, positionalMap);
 	}
 
@@ -64,8 +64,8 @@ public final class SignalReplayRun {
 		}
 
 		this.flush();
-		final List<BaseSignal<?>> previousList = this.currentList;
-		final List<BaseSignal<?>> readList = new ArrayList<>();
+		final List<Signal<?>> previousList = this.currentList;
+		final List<Signal<?>> readList = new ArrayList<>();
 		this.currentList = readList;
 		Object[] result;
 		try {
@@ -87,9 +87,9 @@ public final class SignalReplayRun {
 		return result;
 	}
 
-	public BaseSignal<?> position(final Object key, final Class<?> owner) {
+	public Signal<?> position(final Object key, final Class<?> owner) {
 		if (!this.matching) {
-			final BaseSignal<?> signal = this.positionalMap.get(key);
+			final Signal<?> signal = this.positionalMap.get(key);
 			if (signal == null) {
 				throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 			}
@@ -107,18 +107,18 @@ public final class SignalReplayRun {
 			throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 		}
 
-		final BaseSignal<?> signal = this.positionalList.get(position);
-		final BaseSignal<?> previous = this.positionalMap.put(key, signal);
+		final Signal<?> signal = this.positionalList.get(position);
+		final Signal<?> previous = this.positionalMap.put(key, signal);
 		if (previous != null && previous != signal) {
 			throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 		}
 		return signal;
 	}
 
-	public List<BaseSignal<?>> getDefinitionList() {
+	public List<Signal<?>> getDefinitionList() {
 		final List<Group> sortedList = new ArrayList<>(this.groupList);
 		sortedList.sort(Comparator.comparingInt(group -> group.store));
-		final List<BaseSignal<?>> readList = new ArrayList<>();
+		final List<Signal<?>> readList = new ArrayList<>();
 		for (final Group group : sortedList) {
 			readList.addAll(group.readList);
 		}
@@ -129,11 +129,11 @@ public final class SignalReplayRun {
 		return this.holeMap != null ? Collections.unmodifiableMap(this.holeMap) : null;
 	}
 
-	public List<BaseSignal<?>> getPositionalList() {
+	public List<Signal<?>> getPositionalList() {
 		return this.positionalList != null ? Collections.unmodifiableList(this.positionalList) : null;
 	}
 
-	public Map<Object, BaseSignal<?>> getPositionalMap() {
+	public Map<Object, Signal<?>> getPositionalMap() {
 		return Collections.unmodifiableMap(this.positionalMap);
 	}
 
@@ -141,7 +141,7 @@ public final class SignalReplayRun {
 		return Collections.unmodifiableList(this.groupList);
 	}
 
-	public List<BaseSignal<?>> getDirectList() {
+	public List<Signal<?>> getDirectList() {
 		return Collections.unmodifiableList(this.directList);
 	}
 
@@ -149,7 +149,7 @@ public final class SignalReplayRun {
 		return Collections.unmodifiableMap(this.definitionCache);
 	}
 
-	public List<BaseSignal<?>> getCurrentList() {
+	public List<Signal<?>> getCurrentList() {
 		return Collections.unmodifiableList(this.currentList);
 	}
 
@@ -163,7 +163,7 @@ public final class SignalReplayRun {
 	private static final class Group {
 
 		private final int             store;
-		private final List<BaseSignal<?>> readList;
+		private final List<Signal<?>> readList;
 
 	}
 

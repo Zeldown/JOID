@@ -233,13 +233,8 @@ public class UIDemoTextField extends UIDemo {
 			.marginHorizontal(12D)
 			.placeholder("Press Enter")
 			.focused(true)
-			.onFocus(event -> {
-				if (event.getNode().isFocused()) {
-					focuses.increment();
-				} else {
-					blurs.increment();
-				}
-			})
+			.onFocus(event -> focuses.increment())
+			.onBlur(event -> blurs.increment())
 			.attach(rect);
 			TextNode.create(40, 115).text(Text.create("Focus: " + focuses.get(), info)).attach(rect);
 			TextNode.create(40, 155).text(Text.create("Blur: " + blurs.get(), info)).attach(rect);

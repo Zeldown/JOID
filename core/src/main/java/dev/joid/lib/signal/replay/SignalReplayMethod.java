@@ -33,7 +33,7 @@ import org.objectweb.asm.tree.analysis.SourceValue;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
-import dev.joid.lib.signal.ISignal;
+import dev.joid.lib.signal.Signal;
 import lombok.Getter;
 
 @Getter
@@ -161,7 +161,7 @@ public final class SignalReplayMethod {
 
 	public boolean isSignal(final String owner) {
 		try {
-			return ISignal.class.isAssignableFrom(this.type(Type.getObjectType(owner)));
+			return Signal.class.isAssignableFrom(this.type(Type.getObjectType(owner)));
 		} catch (final SignalReplayException exception) {
 			return false;
 		}

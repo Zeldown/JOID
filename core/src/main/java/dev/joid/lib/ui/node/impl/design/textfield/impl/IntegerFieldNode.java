@@ -95,15 +95,11 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final int value) {
-		return this.value(Signal.from(value));
+		return super.startValue(value);
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final @NonNull Signal<Integer> value) {
 		return super.bindValue(value);
-	}
-
-	public final <T extends IntegerFieldNode> @NonNull T value(final @NonNull Supplier<Integer> value) {
-		return super.followValue(value);
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T change(final int value) {

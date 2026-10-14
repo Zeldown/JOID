@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
@@ -83,16 +82,9 @@ public class ToggleNodeTest {
 		Assert.assertEquals(1, ToggleNodeTest.subscribers(sounds).size());
 	}
 
-	@Test
-	public void followsAComputedSignalWithoutWritingIt() {
-		final BooleanSignal music = new BooleanSignal(false);
-		final Toggle toggle = new Toggle().state("on", 0).toggle(music.map(value -> !value));
-		Assert.assertTrue(toggle.isToggle());
-		this.bridges.open(new NodeUI(toggle)).frame();
-		music.set(true);
-		this.bridges.frame();
-		Assert.assertFalse(toggle.isToggle());
-		Assert.assertTrue(music.get());
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesASignalItCannotWrite() {
+		new Toggle().state("on", 0).toggle(new BooleanSignal(false).map(value -> !value));
 	}
 
 	@Test
@@ -166,7 +158,7 @@ public class ToggleNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+			final Field field = Signal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

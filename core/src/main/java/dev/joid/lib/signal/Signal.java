@@ -1,18 +1,29 @@
 package dev.joid.lib.signal;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.signal.replay.SignalReplay;
+import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.NonNull;
 
-public class Signal<T> extends BaseSignal<T> {
+public class Signal<T> implements Supplier<T> {
+
+	private final transient Set<@NonNull ISignalListener<? super T>> listenerSet;
+	private final transient List<@NonNull ComputedSignal<?>>          observerList;
 
 	private final transient T defaultValue;
 
 	private volatile T value;
 
+	private transient int     version;
 	private transient T       sealedValue;
 	private transient boolean nextSilent = false;
 
@@ -21,6 +32,8 @@ public class Signal<T> extends BaseSignal<T> {
 	}
 
 	public Signal(final T value) {
+		this.listenerSet = new LinkedHashSet<>();
+		this.observerList = new CopyOnWriteArrayList<>();
 		this.value = this.seal(value);
 		this.sealedValue = this.value;
 		this.defaultValue = this.value;
@@ -54,15 +67,17 @@ public class Signal<T> extends BaseSignal<T> {
 		return this.write(() -> this.store(value));
 	}
 
-	@Override
 	public @NonNull Signal<T> onChange(final @NonNull ISignalListener<? super T> listener) {
-		super.onChange(listener);
+		synchronized (this.listenerSet) {
+			this.listenerSet.add(listener);
+		}
 		return this;
 	}
 
-	@Override
 	public @NonNull Signal<T> removeOnChange(final @NonNull ISignalListener<? super T> listener) {
-		super.removeOnChange(listener);
+		synchronized (this.listenerSet) {
+			this.listenerSet.remove(listener);
+		}
 		return this;
 	}
 
@@ -75,13 +90,63 @@ public class Signal<T> extends BaseSignal<T> {
 		return this.write(this::fire);
 	}
 
+	public <R> @NonNull ComputedSignal<R> map(final @NonNull Function<? super T, ? extends R> function) {
+		return Signal.from(() -> function.apply(this.get()));
+	}
+
 	@Override
+	public T get() {
+		final T current = this.peek();
+		SignalContext.current().read(this);
+		return current;
+	}
+
 	public T peek() {
 		final T current = this.value;
 		return current == this.sealedValue ? current : this.reseal(current);
 	}
 
-	@Override
+	public boolean isWritable() {
+		return true;
+	}
+
+	protected T seal(final T value) {
+		return value;
+	}
+
+	protected void refresh() {}
+
+	protected void dispatch() {
+		this.emit(this.peek());
+	}
+
+	protected final int getVersion() {
+		return this.version;
+	}
+
+	protected boolean isObserved() {
+		return !this.observerList.isEmpty() || this.hasListeners();
+	}
+
+	protected synchronized void addObserver(final ComputedSignal<?> observer) {
+		for (final ComputedSignal<?> current : this.observerList) {
+			if (current == observer) {
+				return;
+			}
+		}
+
+		this.observerList.add(observer);
+	}
+
+	protected synchronized void removeObserver(final ComputedSignal<?> observer) {
+		for (int index = 0; index < this.observerList.size(); index++) {
+			if (this.observerList.get(index) == observer) {
+				this.observerList.remove(index);
+				return;
+			}
+		}
+	}
+
 	protected final @NonNull Signal<T> write(final @NonNull Runnable task) {
 		if (BridgeHandler.THREAD.get().isRenderThread()) {
 			task.run();
@@ -90,7 +155,7 @@ public class Signal<T> extends BaseSignal<T> {
 
 		final boolean silent = this.nextSilent;
 		this.nextSilent = false;
-		super.write(() -> {
+		SignalContext.current().defer(() -> {
 			final boolean previous = this.nextSilent;
 			this.nextSilent = silent;
 			try {
@@ -102,12 +167,45 @@ public class Signal<T> extends BaseSignal<T> {
 		return this;
 	}
 
-	protected T seal(final T value) {
-		return value;
-	}
-
 	protected final @NonNull Signal<T> transform(final @NonNull UnaryOperator<T> operator) {
 		return this.write(() -> this.store(operator.apply(this.peek())));
+	}
+
+	protected final boolean hasListeners() {
+		synchronized (this.listenerSet) {
+			return !this.listenerSet.isEmpty();
+		}
+	}
+
+	protected final void invalidate(final SignalContext context) {
+		for (final ComputedSignal<?> observer : this.observerList) {
+			observer.markStale(context);
+		}
+	}
+
+	protected final void nextVersion() {
+		this.version++;
+	}
+
+	protected final void propagate(final boolean notify) {
+		final SignalContext context = SignalContext.current();
+		this.version++;
+		SignalContext.nextEpoch();
+		context.open();
+		try {
+			if (notify && this.hasListeners()) {
+				context.schedule(this);
+			}
+			this.invalidate(context);
+		} finally {
+			context.close();
+		}
+	}
+
+	protected final void emit(final T value) {
+		if (this.hasListeners()) {
+			ThreadUtils.runOnRenderThread(() -> this.notifyListeners(value));
+		}
 	}
 
 	private void store(final T value) {
@@ -133,7 +231,36 @@ public class Signal<T> extends BaseSignal<T> {
 	private void fire() {
 		final boolean silent = this.nextSilent;
 		this.nextSilent = false;
-		super.propagate(!silent);
+		this.propagate(!silent);
+	}
+
+	private void notifyListeners(final T value) {
+		final List<ISignalListener<? super T>> listenerList;
+		synchronized (this.listenerSet) {
+			listenerList = new ArrayList<>(this.listenerSet);
+		}
+
+		RuntimeException failure = null;
+		for (final ISignalListener<? super T> listener : listenerList) {
+			try {
+				listener.onChange(value);
+			} catch (final RuntimeException exception) {
+				if (failure == null) {
+					failure = exception;
+				} else {
+					failure.addSuppressed(exception);
+				}
+			}
+		}
+
+		if (failure != null) {
+			throw failure;
+		}
+	}
+
+	@Override
+	public String toString() {
+		return this.getClass().getSimpleName() + "{" + this.peek() + "}";
 	}
 
 }

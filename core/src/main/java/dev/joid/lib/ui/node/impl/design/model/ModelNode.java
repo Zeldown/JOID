@@ -2,32 +2,23 @@ package dev.joid.lib.ui.node.impl.design.model;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.draw.model.IDrawableModel;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class ModelNode extends Node {
+public class ModelNode extends BaseModelNode {
 
-	private IDrawableModel model;
-
-	private double  size;
-	private double  rotationYaw;
-	private double  rotationPitch;
+	private double zoom;
+	private double rotationYaw;
+	private double rotationPitch;
 
 	protected ModelNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.size          = 1D;
+		this.zoom          = 1D;
 		this.rotationYaw   = 0D;
 		this.rotationPitch = 0D;
-
-		super.<ModelNode>require("model", "call model(...) before attaching it", node -> node.model != null);
 	}
 
 	public static @NonNull ModelNode create(final double x, final double y, final double width, final double height) {
@@ -36,47 +27,15 @@ public class ModelNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.size == 0D) {
-			return;
-		}
-
-		final double modelWidth = this.model.getWidth() == 0 ? 1 : this.model.getWidth();
-		final double modelDepth = this.model.getDepth() == 0 ? 1 : this.model.getDepth();
-
-		final double scale = super.dw(modelWidth) * this.size;
-
-		final double drawX = super.getX() + super.getWidth() / 2D;
-		final double drawY = super.getY() + super.getHeight() / 2D;
-		final double drawZ = modelDepth / 2D * scale;
-
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().push();
-		try {
-			render.getModelView().translate(drawX, drawY, drawZ);
-			render.getModelView().rotate(this.rotationYaw, 0D, 1D, 0D);
-			render.getModelView().rotate(this.rotationPitch, 1D, 0D, 0D);
-			render.getModelView().translate(-drawX, -drawY, -drawZ);
-			render.getModelView().translate(0D, 0D, drawZ);
-			DrawUtils.MODEL.drawModel(drawX, drawY, scale, this.model);
-		} finally {
-			render.getModelView().pop();
-		}
+		super.drawModel(this.zoom, this.rotationYaw, this.rotationPitch);
 	}
 
-	public final <T extends ModelNode> @NonNull T model(final @NonNull IDrawableModel model) {
-		return this.model(Signal.from(model));
+	public final <T extends ModelNode> @NonNull T zoom(final double zoom) {
+		return this.zoom(Signal.from(zoom));
 	}
 
-	public final <T extends ModelNode> @NonNull T model(final @NonNull Supplier<@NonNull IDrawableModel> model) {
-		return super.follow("model", model, (final ModelNode node, final IDrawableModel value) -> node.model = value);
-	}
-
-	public final <T extends ModelNode> @NonNull T size(final double size) {
-		return this.size(Signal.from(size));
-	}
-
-	public final <T extends ModelNode> @NonNull T size(final @NonNull Supplier<Double> size) {
-		return super.follow("size", size, (final ModelNode node, final Double value) -> node.size = value);
+	public final <T extends ModelNode> @NonNull T zoom(final @NonNull Supplier<Double> zoom) {
+		return super.follow("zoom", zoom, (final ModelNode node, final Double value) -> node.zoom = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
@@ -93,12 +52,6 @@ public class ModelNode extends Node {
 
 	public final <T extends ModelNode> @NonNull T rotationPitch(final @NonNull Supplier<Double> rotationPitch) {
 		return super.follow("rotationPitch", rotationPitch, (final ModelNode node, final Double value) -> node.rotationPitch = value);
-	}
-
-	protected final void transform(final double size, final double rotationYaw, final double rotationPitch) {
-		this.size          = size;
-		this.rotationYaw   = rotationYaw;
-		this.rotationPitch = rotationPitch;
 	}
 
 }

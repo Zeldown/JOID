@@ -11,6 +11,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
@@ -36,7 +37,7 @@ public class ScrollbarNodeTest {
 		final RectNode content = ScrollbarNodeTest.column(bar);
 		this.bridges.open(new NodeUI(content)).frame();
 		Assert.assertSame(content, bar.getScrollNode());
-		content.scrollOffsetY(-100D).updateScroll();
+		content.scrollY(-100D).updateScroll();
 		this.bridges.frame();
 		final Draw thumb = this.thumb();
 		Assert.assertEquals(140D, thumb.getTop(), 1E-3D);
@@ -71,6 +72,25 @@ public class ScrollbarNodeTest {
 		this.bridges.move(0D, 215D).frame();
 		Assert.assertEquals(0D, bar.getX(), 1E-9D);
 		Assert.assertEquals(0D, content.getTargetScrollX(), 1E-6D);
+	}
+
+	@Test
+	public void writesItsDragIntoTheScrollSignalOfItsContent() {
+		final DoubleSignal scroll = new DoubleSignal(0D);
+		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
+		final RectNode content = ScrollbarNodeTest.column(bar).scrollY(scroll);
+		this.press(content, 515D, 110D);
+		this.bridges.move(515D, 150D).frame();
+		Assert.assertEquals(-100D, scroll.peek(), 1E-6D);
+	}
+
+	@Test
+	public void leavesItsContentWhenItsScrollIsRefused() {
+		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
+		final RectNode content = ScrollbarNodeTest.column(bar).beforeScroll(event -> event.cancel());
+		this.press(content, 515D, 110D);
+		this.bridges.move(515D, 150D).frame();
+		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
 	}
 
 	@Test

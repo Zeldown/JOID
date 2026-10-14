@@ -8,18 +8,18 @@ import java.util.function.Supplier;
 import dev.joid.internal.JOIDLog;
 import lombok.NonNull;
 
-public class ComputedSignal<T> extends BaseSignal<T> {
+public class ComputedSignal<T> extends Signal<T> {
 
 	private final transient boolean               constant;
 	private final transient Supplier<? extends T> supplier;
 
-	private transient int[]           versions;
-	private transient int             dependencyCount;
-	private transient BaseSignal<?>[] dependencies;
+	private transient int[]       versions;
+	private transient int         dependencyCount;
+	private transient Signal<?>[] dependencies;
 
-	private transient int             collectedCount;
-	private transient int[]           collectedVersions;
-	private transient BaseSignal<?>[] collectedDependencies;
+	private transient int         collectedCount;
+	private transient int[]       collectedVersions;
+	private transient Signal<?>[] collectedDependencies;
 
 	private transient long             epoch;
 	private transient boolean          linked;
@@ -34,8 +34,8 @@ public class ComputedSignal<T> extends BaseSignal<T> {
 		this.supplier = supplier;
 		this.versions = new int[4];
 		this.collectedVersions = new int[4];
-		this.dependencies = new BaseSignal<?>[4];
-		this.collectedDependencies = new BaseSignal<?>[4];
+		this.dependencies = new Signal<?>[4];
+		this.collectedDependencies = new Signal<?>[4];
 	}
 
 	private ComputedSignal(final T value) {
@@ -48,6 +48,21 @@ public class ComputedSignal<T> extends BaseSignal<T> {
 
 	protected static <T> @NonNull ComputedSignal<T> constant(final T value) {
 		return new ComputedSignal<>(value);
+	}
+
+	@Override
+	public @NonNull ComputedSignal<T> set(final T value) {
+		throw new IllegalStateException(this.refuse("set to " + value));
+	}
+
+	@Override
+	public @NonNull ComputedSignal<T> reset() {
+		throw new IllegalStateException(this.refuse("reset"));
+	}
+
+	@Override
+	public @NonNull ComputedSignal<T> silent() {
+		throw new IllegalStateException(this.refuse("silenced"));
 	}
 
 	@Override
@@ -85,6 +100,11 @@ public class ComputedSignal<T> extends BaseSignal<T> {
 			this.refresh();
 		}
 		return this.value;
+	}
+
+	@Override
+	public boolean isWritable() {
+		return false;
 	}
 
 	public boolean isConstant() {
@@ -160,7 +180,7 @@ public class ComputedSignal<T> extends BaseSignal<T> {
 		}
 	}
 
-	protected void depend(final BaseSignal<?> signal) {
+	protected void depend(final Signal<?> signal) {
 		for (int index = 0; index < this.collectedCount; index++) {
 			if (this.collectedDependencies[index] == signal) {
 				return;
@@ -178,7 +198,7 @@ public class ComputedSignal<T> extends BaseSignal<T> {
 
 	private boolean isOutdated() {
 		for (int index = 0; index < this.dependencyCount; index++) {
-			final BaseSignal<?> dependency = this.dependencies[index];
+			final Signal<?> dependency = this.dependencies[index];
 			dependency.refresh();
 			if (dependency.getVersion() != this.versions[index]) {
 				return true;
@@ -217,7 +237,7 @@ public class ComputedSignal<T> extends BaseSignal<T> {
 			}
 		}
 
-		final BaseSignal<?>[] previousDependencies = this.dependencies;
+		final Signal<?>[] previousDependencies = this.dependencies;
 		final int[] previousVersions = this.versions;
 		final int previousCount = this.dependencyCount;
 		this.dependencies = this.collectedDependencies;
@@ -233,6 +253,10 @@ public class ComputedSignal<T> extends BaseSignal<T> {
 			super.nextVersion();
 		}
 		this.computed = true;
+	}
+
+	private String refuse(final String action) {
+		return "The " + this + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
 	}
 
 	private synchronized void follow() {
@@ -259,7 +283,7 @@ public class ComputedSignal<T> extends BaseSignal<T> {
 		return owner.substring(owner.lastIndexOf('.') + 1);
 	}
 
-	private static boolean contains(final BaseSignal<?>[] signals, final int count, final BaseSignal<?> signal) {
+	private static boolean contains(final Signal<?>[] signals, final int count, final Signal<?> signal) {
 		for (int index = 0; index < count; index++) {
 			if (signals[index] == signal) {
 				return true;

@@ -11,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.signal.BaseSignal;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
@@ -31,8 +30,8 @@ public class SwitchNodeTest {
 	public void startsOnItsFirstState() {
 		final Switch node = this.open();
 		Assert.assertEquals("low", node.getState());
-		Assert.assertEquals(0, node.getStateIndex().get().intValue());
-		Assert.assertEquals(Arrays.asList("low", "medium", "high"), node.getStateList().get());
+		Assert.assertEquals(0, node.getStateIndex());
+		Assert.assertEquals(Arrays.asList("low", "medium", "high"), node.getStateList());
 	}
 
 	@Test
@@ -40,7 +39,7 @@ public class SwitchNodeTest {
 		final Switch node = this.open();
 		Assert.assertSame(node, node.state("high"));
 		Assert.assertEquals("high", node.getState());
-		Assert.assertEquals(2, node.getStateIndex().get().intValue());
+		Assert.assertEquals(2, node.getStateIndex());
 		Assert.assertEquals(Arrays.asList("high"), this.changes);
 	}
 
@@ -88,7 +87,7 @@ public class SwitchNodeTest {
 		Assert.assertEquals("high", node.getState());
 		level.set(1);
 		Assert.assertEquals("medium", node.getState());
-		Assert.assertEquals(1, node.getStateIndex().get().intValue());
+		Assert.assertEquals(1, node.getStateIndex());
 		node.state(quality);
 		Assert.assertEquals("low", node.getState());
 		level.set(2);
@@ -118,15 +117,9 @@ public class SwitchNodeTest {
 		Assert.assertEquals(1, SwitchNodeTest.subscribers(shadows).size());
 	}
 
-	@Test
-	public void followsAComputedSignalWithoutWritingIt() {
-		final Switch node = this.open();
-		final Signal<String> quality = new Signal<>("high");
-		node.state(quality.map(value -> value));
-		Assert.assertEquals("high", node.getState());
-		quality.set("low");
-		this.bridges.frame();
-		Assert.assertEquals("low", node.getState());
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesASignalItCannotWrite() {
+		new Switch().states("low", "high").state(new Signal<>("high").map(value -> value));
 	}
 
 	@Test
@@ -141,7 +134,7 @@ public class SwitchNodeTest {
 		final Switch node = this.open();
 		Assert.assertSame(node, node.states("off", "eco", "on").state("eco"));
 		Assert.assertEquals("eco", node.getState());
-		Assert.assertEquals(1, node.getStateIndex().get().intValue());
+		Assert.assertEquals(1, node.getStateIndex());
 	}
 
 	@Test
@@ -159,7 +152,7 @@ public class SwitchNodeTest {
 		this.changes.clear();
 		node.states("medium", "high");
 		Assert.assertEquals("medium", node.getState());
-		Assert.assertEquals(0, node.getStateIndex().get().intValue());
+		Assert.assertEquals(0, node.getStateIndex());
 		Assert.assertTrue(this.changes.isEmpty());
 	}
 
@@ -191,8 +184,8 @@ public class SwitchNodeTest {
 		final List<String> states = new ArrayList<>(Arrays.asList("off", "on"));
 		node.states(() -> states);
 		states.add("eco");
-		Assert.assertEquals(Arrays.asList("off", "on"), node.getStateList().get());
-		Assert.assertNotSame(states, node.getStateList().get());
+		Assert.assertEquals(Arrays.asList("off", "on"), node.getStateList());
+		Assert.assertNotSame(states, node.getStateList());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -303,7 +296,7 @@ public class SwitchNodeTest {
 
 	private static Set<?> subscribers(final Signal<?> signal) {
 		try {
-			final Field field = BaseSignal.class.getDeclaredField("listenerSet");
+			final Field field = Signal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
 			return (Set<?>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {

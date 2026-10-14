@@ -21,6 +21,11 @@ public abstract class SelectorNode<V> extends Node {
 	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
+	private static final EventType<NodeChangeEvent.Post<?, Boolean>> OPEN         = EventType.create("onOpen");
+	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CLOSE        = EventType.create("onClose");
+	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_OPEN  = EventType.create("beforeOpen");
+	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CLOSE = EventType.create("beforeClose");
+
 	private final Map<Node, V> optionMap;
 
 	@Getter private SelectorDirection direction;
@@ -101,12 +106,12 @@ public abstract class SelectorNode<V> extends Node {
 			}
 
 			if (event.isConsumed() || clicked == null && !super.isHovered()) {
-				this.active = false;
+				this.activate(false, true);
 				return;
 			}
 
 			if (clicked == null || clicked == this.selected) {
-				this.active = false;
+				this.activate(false, true);
 				event.consume();
 				return;
 			}
@@ -117,14 +122,14 @@ public abstract class SelectorNode<V> extends Node {
 		}
 
 		if (this.selected.isHovered()) {
-			this.active = true;
+			this.activate(true, true);
 			event.consume();
 		}
 	}
 
 	@Override
 	public void detach() {
-		this.active = false;
+		this.activate(false, false);
 	}
 
 	public final boolean isSelected(final @NonNull Node node) {
@@ -178,19 +183,15 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull V value) {
-		return this.value(Signal.from(value));
+		return super.userProperty("value", value, (final SelectorNode<V> node, final V option) -> node.choose(option, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Signal<V> value) {
-		return super.bind("value", value, (final SelectorNode<V> node, final V option) -> {
+		return super.userProperty("value", value, (final SelectorNode<V> node, final V option) -> {
 			if (node.optionMap.isEmpty() || node.optionMap.containsValue(option)) {
 				node.choose(option, false);
 			}
 		});
-	}
-
-	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Supplier<@NonNull V> value) {
-		return super.follow("value", value, (final SelectorNode<V> node, final V option) -> node.choose(option, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T direction(final @NonNull SelectorDirection direction) {
@@ -202,11 +203,11 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final boolean active) {
-		return this.active(Signal.from(active));
+		return super.userProperty("active", active, (final SelectorNode<V> node, final Boolean value) -> node.activate(value, false));
 	}
 
-	public final <T extends SelectorNode<V>> @NonNull T active(final @NonNull Supplier<Boolean> active) {
-		return super.follow("active", active, (final SelectorNode<V> node, final Boolean value) -> node.active = value);
+	public final <T extends SelectorNode<V>> @NonNull T active(final @NonNull Signal<Boolean> active) {
+		return super.userProperty("active", active, (final SelectorNode<V> node, final Boolean value) -> node.activate(value, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T change(final @NonNull V value) {
@@ -228,6 +229,48 @@ public abstract class SelectorNode<V> extends Node {
 
 	public final <T extends SelectorNode<V>> @NonNull T onChange(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, V>> listener) {
 		return super.listen(SelectorNode.CHANGE, priority, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T open() {
+		this.activate(true, true);
+		return (T) this;
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T close() {
+		this.activate(false, true);
+		return (T) this;
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T beforeOpen(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
+		return this.beforeOpen(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T beforeOpen(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
+		return super.listen(SelectorNode.BEFORE_OPEN, priority, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T onOpen(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
+		return this.onOpen(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T onOpen(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
+		return super.listen(SelectorNode.OPEN, priority, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T beforeClose(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
+		return this.beforeClose(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T beforeClose(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
+		return super.listen(SelectorNode.BEFORE_CLOSE, priority, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T onClose(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
+		return this.onClose(EventPriority.NORMAL, listener);
+	}
+
+	public final <T extends SelectorNode<V>> @NonNull T onClose(final @NonNull EventPriority priority, final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
+		return super.listen(SelectorNode.CLOSE, priority, listener);
 	}
 
 	private @NonNull Node find(final V value) {
@@ -258,8 +301,19 @@ public abstract class SelectorNode<V> extends Node {
 		final V value = this.optionMap.get(option);
 		super.change(SelectorNode.BEFORE_CHANGE, SelectorNode.CHANGE, previous, value, refusable, () -> {
 			this.selected = option;
-			this.active   = false;
 			super.sync("value", value);
+			this.activate(false, false);
+		});
+	}
+
+	private void activate(final boolean active, final boolean refusable) {
+		if (this.active == active) {
+			return;
+		}
+
+		super.change(active ? SelectorNode.BEFORE_OPEN : SelectorNode.BEFORE_CLOSE, active ? SelectorNode.OPEN : SelectorNode.CLOSE, this.active, active, refusable, () -> {
+			this.active = active;
+			super.sync("active", active);
 		});
 	}
 

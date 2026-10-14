@@ -339,7 +339,7 @@ public final class DevNode extends Node {
 			})
 			.attach(node);
 		})
-		.watch(this.lockedNode, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+		.watch(this.getLockedNode(), WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
 		.visible(this.inspectedNodeLocked)
 		.attach(this);
 
@@ -352,9 +352,9 @@ public final class DevNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.inspectSignal.peek()) {
-			if (!this.inspectedNodeLocked.peek()) {
-				this.inspectedNode.set(null);
+		if (this.getInspectSignal().peek()) {
+			if (!this.getInspectedNodeLocked().peek()) {
+				this.getInspectedNode().set(null);
 				final List<Node> nodeList = super.getUi().getNodeListAt(mouseX, mouseY);
 				if (UI.isCtrlKeyDown()) {
 					Collections.reverse(nodeList);
@@ -397,7 +397,7 @@ public final class DevNode extends Node {
 			this.init(super.getUi());
 		}
 
-		if (this.gridSignal.peek()) {
+		if (this.getGridSignal().peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(UIView.DESIGN_WIDTH / 2D - 1D, 0), Point.create(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.create(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
@@ -470,6 +470,26 @@ public final class DevNode extends Node {
 
 		this.inspectedNode.set(this.inspectedNode.peek().getParent());
 		this.inspectedNodeLocked.set(true);
+	}
+
+	private BooleanSignal getGridSignal() {
+		return this.gridSignal;
+	}
+
+	private BooleanSignal getInspectSignal() {
+		return this.inspectSignal;
+	}
+
+	private Signal<Node> getInspectedNode() {
+		return this.inspectedNode;
+	}
+
+	private ComputedSignal<Node> getLockedNode() {
+		return this.lockedNode;
+	}
+
+	private BooleanSignal getInspectedNodeLocked() {
+		return this.inspectedNodeLocked;
 	}
 
 	private boolean isAncestorOf(final Node node) {

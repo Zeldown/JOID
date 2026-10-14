@@ -115,8 +115,9 @@ public class FieldNodeEventTest {
 	@Test
 	public void seesTheNewFocusOfAField() {
 		final List<Boolean> focuses = new ArrayList<>();
-		final TextFieldNode field = TextFieldNode.create(0D, 0D, 100D).onFocus(event -> focuses.add(event.getNode().isFocused()));
-		final MultilineTextFieldNode multiline = MultilineTextFieldNode.create(0D, 0D, 100D, 100D).onFocus(event -> focuses.add(event.getNode().isFocused()));
+		final TextFieldNode field = this.field().focused(false).onFocus(event -> focuses.add(event.getNode().isFocused())).onBlur(event -> focuses.add(event.getNode().isFocused()));
+		final MultilineTextFieldNode multiline = this.multiline().focused(false).onFocus(event -> focuses.add(event.getNode().isFocused())).onBlur(event -> focuses.add(event.getNode().isFocused()));
+		this.bridges.open(new NodeUI(field, multiline));
 		field.focused(true).focused(false);
 		multiline.focused(true).focused(false);
 		Assert.assertEquals(Arrays.asList(true, false, true, false), focuses);
@@ -125,7 +126,8 @@ public class FieldNodeEventTest {
 	@Test
 	public void runsEveryFocusListenerOfAField() {
 		final List<String> received = new ArrayList<>();
-		final TextFieldNode field = TextFieldNode.create(0D, 0D, 100D).onFocus(event -> received.add("first")).onFocus(event -> received.add("second"));
+		final TextFieldNode field = this.field().focused(false).onFocus(event -> received.add("first")).onFocus(event -> received.add("second"));
+		this.bridges.open(new NodeUI(field));
 		field.focused(true);
 		Assert.assertEquals(Arrays.asList("first", "second"), received);
 	}
