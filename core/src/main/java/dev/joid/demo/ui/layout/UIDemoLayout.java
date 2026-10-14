@@ -417,9 +417,9 @@ public class UIDemoLayout extends UIDemo {
 		.color(UIDemoLayout.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(159, 20, 2, 160).color(Color.WHITE).attach(rect);
-			RectNode.create(160, 30, 0, 40).color(UIDemoLayout.INK).width(grown.map(value -> value ? 140D : 60D)).anchorX(Align.START).attach(rect);
-			RectNode.create(160, 80, 0, 40).color(UIDemoLayout.INK).width(grown.map(value -> value ? 140D : 60D)).anchorX(Align.CENTER).attach(rect);
-			RectNode.create(160, 130, 0, 40).color(UIDemoLayout.INK).width(grown.map(value -> value ? 140D : 60D)).anchorX(Align.END).attach(rect);
+			RectNode.create(160, 30, 140, 40).color(UIDemoLayout.INK).width(grown.map(value -> value ? 140D : 60D)).anchorX(Align.START).attach(rect);
+			RectNode.create(160, 80, 140, 40).color(UIDemoLayout.INK).width(grown.map(value -> value ? 140D : 60D)).anchorX(Align.CENTER).attach(rect);
+			RectNode.create(160, 130, 140, 40).color(UIDemoLayout.INK).width(grown.map(value -> value ? 140D : 60D)).anchorX(Align.END).attach(rect);
 			RectNode
 			.create(100, 195, 120, 50)
 			.color(UIDemoLayout.INK)

@@ -32,13 +32,13 @@ public abstract class ScrollbarNode extends Node {
 		if (this.dragging) {
 			if (this.isHorizontal() && this.scrollNode.hasOverflowX()) {
 				final double newX = Math.min(Math.max(super.getDefaultX(), mouseX - super.getAbsoluteDefaultX() + super.getDefaultX() - super.dw(2D)), super.getDefaultX() + this.getScrollWidth());
-				super.x(newX);
+				super.layoutPosition(this, newX - super.getDefaultX(), 0D);
 
 				final float percent = (float) ((newX - super.getDefaultX()) / this.getScrollWidth());
 				this.scrollNode.scrollRatioX(percent);
 			} else if (!this.isHorizontal() && this.scrollNode.hasOverflowY()) {
 				final double newY = Math.min(Math.max(super.getDefaultY(), mouseY - super.getAbsoluteDefaultY() + super.getDefaultY() - super.dh(2D)), super.getDefaultY() + this.getScrollHeight());
-				super.y(newY);
+				super.layoutPosition(this, 0D, newY - super.getDefaultY());
 
 				final float percent = (float) ((newY - super.getDefaultY()) / this.getScrollHeight());
 				this.scrollNode.scrollRatioY(percent);
@@ -55,7 +55,7 @@ public abstract class ScrollbarNode extends Node {
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (this.dragging || !super.isHovered()) {
+		if (this.dragging || !event.getButton().isLeft() || !super.isHovered()) {
 			return;
 		}
 

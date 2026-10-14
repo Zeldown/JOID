@@ -34,6 +34,7 @@ public class ResourceNode extends Node {
 
 	protected ResourceNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+		super.<ResourceNode>wait(node -> node.isReady());
 	}
 
 	public static @NonNull ResourceNode create(final double x, final double y) {
@@ -46,32 +47,24 @@ public class ResourceNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.resource != null) {
-			this.resource.prepareBind();
+		if (this.resource == null) {
+			return;
 		}
 
+		this.resource.prepareBind();
 		if (this.hoveredResource != null) {
 			this.hoveredResource.prepareBind();
 		}
 
-		if (this.resource != null && this.resource.isFailed()) {
+		if (this.resource.isFailed()) {
 			Color.WHITE.bind();
 			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
-			return;
-		}
-
-		if (this.resource == null || !this.resource.isLoaded()) {
-			final double skeletonWidth = super.getWidth();
-			final double skeletonHeight = super.getHeight();
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), skeletonWidth, skeletonHeight, Color.LOADING());
 			return;
 		}
 
 		final double resourceWidth = this.resource.getWidth();
 		final double resourceHeight = this.resource.getHeight();
 		if (resourceWidth == 0 || resourceHeight == 0) {
-			DrawUtils.RESOURCE.drawResource(0, 0, 0, 0, this.resource);
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.LOADING());
 			return;
 		}
 
@@ -106,9 +99,9 @@ public class ResourceNode extends Node {
 	}
 
 	public final <T extends ResourceNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
-		return super.follow("resource", resource, value -> {
-			this.resource = value;
-			this.filteredResource = this.filter(value);
+		return super.follow("resource", resource, (final ResourceNode node, final Resource value) -> {
+			node.resource = value;
+			node.filteredResource = node.filter(value);
 		});
 	}
 
@@ -117,9 +110,9 @@ public class ResourceNode extends Node {
 	}
 
 	public final <T extends ResourceNode> @NonNull T hoveredResource(final @NonNull Supplier<Resource> hoveredResource) {
-		return super.follow("hoveredResource", hoveredResource, value -> {
-			this.hoveredResource = value;
-			this.filteredHoveredResource = this.filter(value);
+		return super.follow("hoveredResource", hoveredResource, (final ResourceNode node, final Resource value) -> {
+			node.hoveredResource = value;
+			node.filteredHoveredResource = node.filter(value);
 		});
 	}
 
@@ -128,7 +121,7 @@ public class ResourceNode extends Node {
 	}
 
 	public final <T extends ResourceNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color) {
-		return super.follow("color", color, value -> this.color = value);
+		return super.follow("color", color, (final ResourceNode node, final Color value) -> node.color = value);
 	}
 
 	public final <T extends ResourceNode> @NonNull T hoveredColor(final Color hoveredColor) {
@@ -136,7 +129,7 @@ public class ResourceNode extends Node {
 	}
 
 	public final <T extends ResourceNode> @NonNull T hoveredColor(final @NonNull Supplier<Color> hoveredColor) {
-		return super.follow("hoveredColor", hoveredColor, value -> this.hoveredColor = value);
+		return super.follow("hoveredColor", hoveredColor, (final ResourceNode node, final Color value) -> node.hoveredColor = value);
 	}
 
 	public final <T extends ResourceNode> @NonNull T linear(final boolean linear) {
@@ -144,10 +137,10 @@ public class ResourceNode extends Node {
 	}
 
 	public final <T extends ResourceNode> @NonNull T linear(final @NonNull Supplier<Boolean> linear) {
-		return super.follow("linear", linear, value -> {
-			this.linear = value;
-			this.filteredResource = this.filter(this.resource);
-			this.filteredHoveredResource = this.filter(this.hoveredResource);
+		return super.follow("linear", linear, (final ResourceNode node, final Boolean value) -> {
+			node.linear = value;
+			node.filteredResource = node.filter(node.resource);
+			node.filteredHoveredResource = node.filter(node.hoveredResource);
 		});
 	}
 
@@ -156,11 +149,31 @@ public class ResourceNode extends Node {
 	}
 
 	public final <T extends ResourceNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretchType) {
-		return super.follow("stretchType", stretchType, value -> this.stretchType = value);
+		return super.follow("stretchType", stretchType, (final ResourceNode node, final StretchType value) -> node.stretchType = value);
 	}
 
 	private void drawResource(final @NonNull Resource resource) {
 		this.stretchType.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
+	}
+
+	private boolean isReady() {
+		if (this.hoveredResource != null) {
+			this.hoveredResource.prepareBind();
+		}
+
+		if (this.resource == null) {
+			return false;
+		}
+
+		this.resource.prepareBind();
+		if (this.resource.isFailed()) {
+			return true;
+		}
+
+		if (this.resource.isLoaded() && (this.resource.getWidth() == 0 || this.resource.getHeight() == 0)) {
+			DrawUtils.RESOURCE.drawResource(0, 0, 0, 0, this.resource);
+		}
+		return this.resource.isLoaded() && this.resource.getWidth() != 0 && this.resource.getHeight() != 0;
 	}
 
 	private Resource filter(final Resource resource) {

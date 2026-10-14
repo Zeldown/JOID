@@ -5,10 +5,10 @@ import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
-import dev.joid.lib.utils.list.RecursiveIndexedElement;
+import dev.joid.lib.utils.list.IndexedElement;
 import lombok.NonNull;
 
-public interface INode extends RecursiveIndexedElement, Cloneable {
+public interface INode extends IndexedElement, Cloneable {
 
 	default public void update() {}
 	default public void detach() {}

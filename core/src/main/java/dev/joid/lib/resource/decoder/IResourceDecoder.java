@@ -12,7 +12,7 @@ public interface IResourceDecoder {
 	public void upload(final @NonNull ResourceData resource);
 	public void prepare(final @NonNull ResourceData resource);
 
-	public default void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async) {}
+	public default void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {}
 
 	public default IResourceDecoder fork() {
 		return null;

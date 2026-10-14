@@ -25,10 +25,15 @@ public final class Resource {
 	private boolean            blocking;
 	private ResourceProperties properties;
 
+	private int  requestedWidth;
+	private int  requestedHeight;
+	private long restTime;
+
 	protected Resource(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
 		this.builder    = builder;
 		this.properties = builder.getProperties();
 		this.data       = data;
+		this.restTime   = Long.MIN_VALUE;
 	}
 
 	public static @NonNull Resource of(final @NonNull Object input) {
@@ -215,9 +220,18 @@ public final class Resource {
 
 	public final void request(final int width, final int height) {
 		final IResourceDecoder decoder = this.data.getDecoder();
-		if (decoder != null && width > 0 && height > 0) {
-			decoder.request(this.data, width, height, !this.blocking);
+		if (decoder == null || width <= 0 || height <= 0) {
+			return;
 		}
+
+		final long now = BridgeHandler.CLOCK.get().nanoTime();
+		if (this.requestedWidth != 0 && (width != this.requestedWidth || height != this.requestedHeight)) {
+			this.restTime = now + 200000000L;
+		}
+
+		this.requestedWidth = width;
+		this.requestedHeight = height;
+		decoder.request(this.data, width, height, !this.blocking, now < this.restTime);
 	}
 
 	public final void bindTextureOnly(final @NonNull TextureWrap wrap) {

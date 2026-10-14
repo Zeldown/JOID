@@ -25,7 +25,7 @@ public class RadarChartNodeTest {
 	public void startsWithoutData() {
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D);
 		Assert.assertTrue(chart.getDataList().isEmpty());
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 	}
 
 	@Test
@@ -57,18 +57,18 @@ public class RadarChartNodeTest {
 	@Test
 	public void loadsWithThreeValues() {
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(RadarChartData.create("speed", 3)).data(RadarChartData.create("power", 5));
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 		chart.data(RadarChartData.create("range", 4));
-		Assert.assertTrue(chart.isLoaded());
+		Assert.assertTrue(chart.isMounted());
 	}
 
 	@Test
 	public void waitsForEveryValue() {
 		final RadarChartData range = RadarChartData.create("range");
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(RadarChartData.create("speed", 3)).data(RadarChartData.create("power", 5)).data(range);
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 		range.value(4);
-		Assert.assertTrue(chart.isLoaded());
+		Assert.assertTrue(chart.isMounted());
 	}
 
 	@Test
@@ -76,9 +76,9 @@ public class RadarChartNodeTest {
 		final boolean[] ready = {false};
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).wait(node -> ready[0]);
 		chart.data(RadarChartData.create("speed", 3)).data(RadarChartData.create("power", 5)).data(RadarChartData.create("range", 4));
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 		ready[0] = true;
-		Assert.assertTrue(chart.isLoaded());
+		Assert.assertTrue(chart.isMounted());
 	}
 
 	@Test
@@ -210,7 +210,7 @@ public class RadarChartNodeTest {
 
 		@Override
 		public void draw(final double mouseX, final double mouseY) {
-			if (!super.isLoaded()) {
+			if (!super.isMounted()) {
 				return;
 			}
 

@@ -12,20 +12,20 @@ public class Rotation {
 	public static final Rotation ROLL  = new Rotation(0, 0, 1);
 	public static final Rotation PITCH = new Rotation(0, 1, 0);
 
-	private final Supplier<Double> rawXSupplier;
-	private final Supplier<Double> rawYSupplier;
-	private final Supplier<Double> rawZSupplier;
+	private final Supplier<Double> yawSupplier;
+	private final Supplier<Double> rollSupplier;
+	private final Supplier<Double> pitchSupplier;
 
 	private Rotation(final double yaw, final double pitch, final double roll) {
-		this.rawXSupplier = () -> pitch;
-		this.rawYSupplier = () -> yaw;
-		this.rawZSupplier = () -> roll;
+		this.yawSupplier = () -> yaw;
+		this.rollSupplier = () -> roll;
+		this.pitchSupplier = () -> pitch;
 	}
 
 	private Rotation(final Supplier<Double> yawSupplier, final Supplier<Double> pitchSupplier, final Supplier<Double> rollSupplier) {
-		this.rawXSupplier = pitchSupplier;
-		this.rawYSupplier = yawSupplier;
-		this.rawZSupplier = rollSupplier;
+		this.yawSupplier = yawSupplier;
+		this.rollSupplier = rollSupplier;
+		this.pitchSupplier = pitchSupplier;
 	}
 
 	public static @NonNull Rotation create() {
@@ -40,16 +40,16 @@ public class Rotation {
 		return new Rotation(yawSupplier, pitchSupplier, rollSupplier);
 	}
 
-	public double getRawX() {
-		return this.rawXSupplier.get();
+	public double getYaw() {
+		return this.yawSupplier.get();
 	}
 
-	public double getRawY() {
-		return this.rawYSupplier.get();
+	public double getRoll() {
+		return this.rollSupplier.get();
 	}
 
-	public double getRawZ() {
-		return this.rawZSupplier.get();
+	public double getPitch() {
+		return this.pitchSupplier.get();
 	}
 
 }

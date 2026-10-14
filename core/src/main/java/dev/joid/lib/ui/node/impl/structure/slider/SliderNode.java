@@ -5,7 +5,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -27,9 +26,8 @@ public abstract class SliderNode<O> extends Node {
 	private O      value;
 	private Set<O> valueSet;
 
-	private Signal<O>            signal;
-	private SliderThumbNode      thumb;
-	private ISignalSubscriber<O> subscription;
+	private Signal<O>       signal;
+	private SliderThumbNode thumb;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -48,7 +46,7 @@ public abstract class SliderNode<O> extends Node {
 			return;
 		}
 
-		this.thumb.y((super.getHeight() - this.thumb.getHeight()) / 2D);
+		super.layoutPosition(this.thumb, this.thumb.getLayoutX(), (super.getHeight() - this.thumb.getHeight()) / 2D);
 		this.pick();
 
 		this.drawSlider(mouseX, mouseY);
@@ -56,11 +54,11 @@ public abstract class SliderNode<O> extends Node {
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (event.isConsumed() || !super.isHovered()) {
+		if (event.isConsumed() || !event.getButton().isLeft() || !super.isHovered()) {
 			return;
 		}
 
-		this.thumb.x(event.getMouseX() - super.getAbsoluteX() - this.thumb.getWidth() / 2);
+		super.layoutPosition(this.thumb, event.getMouseX() - super.getAbsoluteX() - this.thumb.getWidth() / 2, this.thumb.getLayoutY());
 		this.thumb.dragging(true);
 		event.consume();
 	}
@@ -77,7 +75,7 @@ public abstract class SliderNode<O> extends Node {
 
 	public final <T extends SliderNode<O>> @NonNull T thumb(final @NonNull SliderThumbNode thumb) {
 		if (this.thumb != null) {
-			this.getChildren().remove(this.thumb);
+			super.remove(this.thumb);
 		}
 
 		this.thumb = thumb.slider(this).attach(this);
@@ -104,23 +102,22 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Supplier<@NonNull O> value) {
-		return super.follow("value", value, option -> {
-			if (!this.valueSet.contains(option)) {
-				throw new IllegalArgumentException("The value " + option + " is not an option of the slider " + this.valueSet + ", pass one of them or add it with values(...)");
+		return super.follow("value", value, (final SliderNode<O> node, final O option) -> {
+			if (!node.valueSet.contains(option)) {
+				throw new IllegalArgumentException("The value " + option + " is not an option of the slider " + node.valueSet + ", pass one of them or add it with values(...)");
 			}
 
-			this.change(option);
+			node.change(option);
 		});
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T signal(final @NonNull Signal<O> signal) {
 		this.signal = super.writable(signal);
-		this.subscription = super.rebind(this.subscription, signal, value -> {
-			if (this.valueSet.contains(value)) {
-				this.change(value);
+		return super.bind("signal", signal, (final SliderNode<O> node, final O value) -> {
+			if (node.valueSet.contains(value)) {
+				node.change(value);
 			}
 		});
-		return (T) this;
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, O>> listener) {
@@ -185,7 +182,7 @@ public abstract class SliderNode<O> extends Node {
 		}
 
 		if (this.valueSet.size() == 1) {
-			this.thumb.x(0);
+			super.layoutPosition(this.thumb, 0D, this.thumb.getLayoutY());
 			return;
 		}
 
@@ -198,7 +195,7 @@ public abstract class SliderNode<O> extends Node {
 			index++;
 		}
 
-		this.thumb.x((super.getWidth() - this.thumb.getWidth()) * ((double) index / (double) (this.valueSet.size() - 1)));
+		super.layoutPosition(this.thumb, (super.getWidth() - this.thumb.getWidth()) * ((double) index / (double) (this.valueSet.size() - 1)), this.thumb.getLayoutY());
 	}
 
 }

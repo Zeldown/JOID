@@ -98,12 +98,6 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	@Override
 	protected final boolean handleKey(final @NonNull Key key) {
-		if (key == Key.ESCAPE) {
-			super.restore();
-			super.focus(false);
-			return true;
-		}
-
 		if (key != Key.ENTER && key != Key.NUMPAD_ENTER) {
 			return false;
 		}
@@ -173,7 +167,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T verticalAlign(final @NonNull Supplier<@NonNull Align> verticalAlignment) {
-		return super.follow("verticalAlignment", verticalAlignment, value -> this.verticalAlignment = value);
+		return super.follow("verticalAlignment", verticalAlignment, (final LineFieldNode<V> node, final Align value) -> node.verticalAlignment = value);
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T horizontalAlign(final @NonNull Align horizontalAlignment) {
@@ -181,7 +175,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T horizontalAlign(final @NonNull Supplier<@NonNull Align> horizontalAlignment) {
-		return super.follow("horizontalAlignment", horizontalAlignment, value -> this.horizontalAlignment = value);
+		return super.follow("horizontalAlignment", horizontalAlignment, (final LineFieldNode<V> node, final Align value) -> node.horizontalAlignment = value);
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T onSubmit(final @NonNull EventListener<NodeEvent<T>> listener) {

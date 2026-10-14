@@ -10,10 +10,13 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
+import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 
@@ -76,14 +79,14 @@ public class FlexNodeTest {
 	}
 
 	@Test
-	public void givesNoRoomToAHiddenChild() {
+	public void neitherPlacesNorCountsAHiddenChild() {
 		final boolean[] shown = {false};
 		final RectNode first = RectNode.create(0D, 0D, 100D, 50D);
 		final RectNode hidden = RectNode.create(0D, 0D, 100D, 30D).visible(node -> shown[0]);
 		final RectNode third = RectNode.create(0D, 0D, 100D, 40D);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).margin(10D).append(first, hidden, third);
 		this.bridges.open(new NodeUI(flex));
-		Assert.assertEquals(60D, hidden.getY(), 0D);
+		Assert.assertEquals(0D, hidden.getY(), 0D);
 		Assert.assertEquals(60D, third.getY(), 0D);
 		Assert.assertEquals(100D, flex.getHeight(), 0D);
 	}
@@ -100,6 +103,55 @@ public class FlexNodeTest {
 		this.bridges.frame();
 		Assert.assertEquals(100D, last.getX(), 0D);
 		Assert.assertEquals(140D, flex.getWidth(), 0D);
+	}
+
+	@Test
+	public void placesAChildShownAgainBeforeDrawingIt() {
+		final boolean[] shown = {false};
+		final RectNode hidden = RectNode.create(0D, 0D, 100D, 30D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).visible(node -> shown[0]);
+		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(RectNode.create(0D, 0D, 100D, 50D), hidden);
+		this.bridges.open(new NodeUI(flex));
+		shown[0] = true;
+		this.bridges.frame();
+		Assert.assertEquals(50D, this.single(0.2F, 0.4F, 0.6F).getTop(), 0.001D);
+	}
+
+	@Test
+	public void leavesItsAbsoluteChildrenWhereTheyAre() {
+		final RectNode absolute = RectNode.create(300D, 400D, 10D, 10D).position(PositionProperty.ABSOLUTE);
+		final RectNode last = RectNode.create(0D, 0D, 10D, 10D);
+		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(RectNode.create(0D, 0D, 10D, 10D), absolute, last);
+		this.bridges.open(new NodeUI(flex));
+		Assert.assertEquals(400D, absolute.getY(), 0D);
+		Assert.assertEquals(10D, last.getY(), 0D);
+		Assert.assertEquals(20D, flex.getHeight(), 0D);
+	}
+
+	@Test
+	public void keepsTheOwnPositionGivenToAChild() {
+		final DoubleSignal offset = new DoubleSignal(5D);
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).x(offset);
+		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(RectNode.create(0D, 0D, 10D, 20D), child);
+		this.bridges.open(new NodeUI(flex));
+		Assert.assertEquals(5D, child.getX(), 0D);
+		Assert.assertEquals(20D, child.getY(), 0D);
+		offset.set(8D);
+		this.bridges.frame();
+		Assert.assertEquals(8D, child.getX(), 0D);
+		Assert.assertEquals(20D, child.getLayoutY(), 0D);
+	}
+
+	@Test
+	public void scrollsItsOwnChildren() {
+		final RectNode last = RectNode.create(0D, 0D, 100D, 50D);
+		final FlexNode flex = FlexNode.vertical(0D, 0D, 100D).margin(10D).append(RectNode.create(0D, 0D, 100D, 50D), RectNode.create(0D, 0D, 100D, 50D), RectNode.create(0D, 0D, 100D, 50D), last).height(100D).overflow(OverflowProperty.SCROLL);
+		this.bridges.open(new NodeUI(flex)).frames(2);
+		Assert.assertEquals(100D, flex.getHeight(), 0D);
+		Assert.assertEquals(130D, flex.getMaxScrollY(), 0D);
+		flex.scrollOffsetY(-130D).updateScroll();
+		this.bridges.frame();
+		Assert.assertEquals(180D, last.getLayoutY(), 0D);
+		Assert.assertEquals(50D, last.getY(), 1E-3D);
 	}
 
 	@Test
@@ -161,7 +213,7 @@ public class FlexNodeTest {
 		final RectNode second = RectNode.create(0D, 0D, 100D, 30D);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).margin(10D).append(first, second);
 		this.bridges.open(new NodeUI(flex));
-		flex.getChildren().remove(first);
+		flex.remove(first);
 		this.bridges.frame();
 		Assert.assertEquals(0D, second.getY(), 0D);
 		Assert.assertEquals(30D, flex.getHeight(), 0D);

@@ -94,12 +94,11 @@ public final class JOID {
 		ThreadUtils.runOnRenderThread(callback);
 	}
 
-	public static boolean checkVersion(final @NonNull String version) {
-		final boolean compatible = version.split("[.]")[0].equals(JOID.VERSION.split("[.]")[0]);
-		if (!compatible) {
-			JOIDLog.warn("This backend targets JOID " + version + " but JOID " + JOID.VERSION + " is loaded, use a backend built for JOID " + JOID.VERSION.split("[.]")[0] + ".x");
+	public static void checkVersion(final @NonNull String version) {
+		final String major = version.split("[.]")[0];
+		if (!major.equals(JOID.VERSION.split("[.]")[0])) {
+			throw new IllegalStateException("The backend was built for JOID " + major + ".x, but JOID " + JOID.VERSION + " is loaded: update the backend");
 		}
-		return compatible;
 	}
 
 	public static boolean isOpen(final @NonNull UI ui) {
@@ -132,7 +131,7 @@ public final class JOID {
 		}
 
 		ThreadUtils.runOnRenderThread(() -> {
-			if (ui.fireClose()) {
+			if (bridge.isOpen(ui) && ui.fireClose()) {
 				bridge.close(ui);
 			}
 		});
@@ -150,8 +149,10 @@ public final class JOID {
 		}
 
 		ThreadUtils.runOnRenderThread(() -> {
-			ui.dispose();
-			bridge.close(ui);
+			if (bridge.isOpen(ui)) {
+				ui.dispose();
+				bridge.close(ui);
+			}
 		});
 	}
 

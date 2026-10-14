@@ -52,8 +52,8 @@ public abstract class PositionedHoverElement implements IHoverElement {
 		if (ui != null && elementWidth > 0 && elementHeight > 0) {
 			final double left = ui.getView().toUiX(0D);
 			final double top = ui.getView().toUiY(0D);
-			final double right = ui.getView().toUiX(ui.getWidth());
-			final double bottom = ui.getView().toUiY(ui.getHeight());
+			final double right = ui.getView().toUiX(ui.getWindowWidth());
+			final double bottom = ui.getView().toUiY(ui.getWindowHeight());
 			x = Math.max(left, Math.min(x, right - elementWidth));
 			y = Math.max(top, Math.min(y, bottom - elementHeight));
 		}

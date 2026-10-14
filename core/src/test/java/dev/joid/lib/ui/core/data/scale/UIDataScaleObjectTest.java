@@ -69,6 +69,11 @@ public class UIDataScaleObjectTest {
 	}
 
 	@Test
+	public void keepsTheScaleAtOneWhileInactive() {
+		Assert.assertEquals(1D, new UIDataScaleObject().setActive(false).setLimited(true).setLimit(0.5D).apply(2D), 0D);
+	}
+
+	@Test
 	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
 		final UIDataScaleObject data = new UIDataScaleObject().setActive(false);
 		Assert.assertSame(data, data.update(UIDataScaleObject.get(DefaultUI.class), UIDataScaleObject.get(DefaultUI.class)));

@@ -51,6 +51,7 @@ public class ResourcePlayerNode extends Node {
 
 	protected ResourcePlayerNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+		super.<ResourcePlayerNode>wait(node -> node.isReady());
 	}
 
 	public static @NonNull ResourcePlayerNode create(final double x, final double y) {
@@ -76,34 +77,14 @@ public class ResourcePlayerNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.fork == null && this.resource != null) {
-			if (this.resource.isBlocking()) {
-				this.resource.getResourceData().await();
-			}
-			this.fork = ResourcePlayerNode.fork(this.resource);
-		}
-
-		if (this.fork != null) {
-			this.fork.prepareBind();
-		}
-
-		if (this.fork != null && this.fork.isFailed()) {
+		if (this.fork.isFailed()) {
 			Color.WHITE.bind();
 			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
 			return;
 		}
 
-		if (this.fork == null || !this.fork.isLoaded()) {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.LOADING());
-			return;
-		}
-
 		final double videoWidth = this.fork.getWidth();
 		final double videoHeight = this.fork.getHeight();
-		if (videoWidth == 0 || videoHeight == 0) {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.LOADING());
-			return;
-		}
 
 		if (super.getWidth() == 0 && super.getHeight() == 0) {
 			super.width(videoWidth);
@@ -288,15 +269,15 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
-		return super.follow("resource", resource, value -> {
-			this.release();
-			if (this.fork != null && this.fork != this.resource) {
-				this.fork.clear();
+		return super.follow("resource", resource, (final ResourcePlayerNode node, final Resource value) -> {
+			node.release();
+			if (node.fork != null && node.fork != node.resource) {
+				node.fork.clear();
 			}
 
-			this.resource = value;
-			this.fork = ResourcePlayerNode.fork(value);
-			this.resourceStarted = false;
+			node.resource = value;
+			node.fork = ResourcePlayerNode.fork(value);
+			node.resourceStarted = false;
 		});
 	}
 
@@ -305,7 +286,7 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretchType) {
-		return super.follow("stretchType", stretchType, value -> this.stretchType = value);
+		return super.follow("stretchType", stretchType, (final ResourcePlayerNode node, final StretchType value) -> node.stretchType = value);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T autoplay(final boolean autoplay) {
@@ -313,7 +294,7 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T autoplay(final @NonNull Supplier<Boolean> autoplay) {
-		return super.follow("autoplay", autoplay, value -> this.autoplay = value);
+		return super.follow("autoplay", autoplay, (final ResourcePlayerNode node, final Boolean value) -> node.autoplay = value);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T loop(final boolean loop) {
@@ -321,9 +302,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T loop(final @NonNull Supplier<Boolean> loop) {
-		return super.follow("loop", loop, value -> {
-			this.loop = value;
-			final IResourcePlayback playback = this.getPlayback();
+		return super.follow("loop", loop, (final ResourcePlayerNode node, final Boolean value) -> {
+			node.loop = value;
+			final IResourcePlayback playback = node.getPlayback();
 			if (playback != null) {
 				playback.loop(value);
 			}
@@ -335,9 +316,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T volume(final @NonNull Supplier<Float> volume) {
-		return super.follow("volume", volume, value -> {
-			this.volume = value;
-			final VideoResourceDecoder video = this.getVideo();
+		return super.follow("volume", volume, (final ResourcePlayerNode node, final Float value) -> {
+			node.volume = value;
+			final VideoResourceDecoder video = node.getVideo();
 			if (video != null) {
 				video.volume(value);
 			}
@@ -349,9 +330,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T audioGroup(final @NonNull Supplier<?> audioGroup) {
-		return super.follow("audioGroup", audioGroup, value -> {
-			this.audioGroup = value;
-			final VideoResourceDecoder video = this.getVideo();
+		return super.follow("audioGroup", (Supplier<Object>) audioGroup, (final ResourcePlayerNode node, final Object value) -> {
+			node.audioGroup = value;
+			final VideoResourceDecoder video = node.getVideo();
 			if (video != null) {
 				video.audioGroup(value);
 			}
@@ -363,9 +344,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Supplier<@NonNull Point> location) {
-		return super.follow("location", location, value -> {
-			this.location = value;
-			final VideoResourceDecoder video = this.getVideo();
+		return super.follow("location", location, (final ResourcePlayerNode node, final Point value) -> {
+			node.location = value;
+			final VideoResourceDecoder video = node.getVideo();
 			if (video != null) {
 				video.location((float) value.getX(), (float) value.getY(), (float) value.getZ());
 			}
@@ -377,9 +358,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T referenceDistance(final @NonNull Supplier<Float> referenceDistance) {
-		return super.follow("referenceDistance", referenceDistance, value -> {
-			this.referenceDistance = value;
-			final VideoResourceDecoder video = this.getVideo();
+		return super.follow("referenceDistance", referenceDistance, (final ResourcePlayerNode node, final Float value) -> {
+			node.referenceDistance = value;
+			final VideoResourceDecoder video = node.getVideo();
 			if (video != null) {
 				video.referenceDistance(value);
 			}
@@ -391,9 +372,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T maxDistance(final @NonNull Supplier<Float> maxDistance) {
-		return super.follow("maxDistance", maxDistance, value -> {
-			this.maxDistance = value;
-			final VideoResourceDecoder video = this.getVideo();
+		return super.follow("maxDistance", maxDistance, (final ResourcePlayerNode node, final Float value) -> {
+			node.maxDistance = value;
+			final VideoResourceDecoder video = node.getVideo();
 			if (video != null) {
 				video.maxDistance(value);
 			}
@@ -434,6 +415,22 @@ public class ResourcePlayerNode extends Node {
 			throw new IllegalStateException("The resource " + this.fork.getUniqueId() + " of this ResourcePlayerNode has no playback: give it a video or an animated image, or show a still image with a ResourceNode");
 		}
 		return playback;
+	}
+
+	private boolean isReady() {
+		if (this.fork == null && this.resource != null) {
+			if (this.resource.isBlocking()) {
+				this.resource.getResourceData().await();
+			}
+			this.fork = ResourcePlayerNode.fork(this.resource);
+		}
+
+		if (this.fork == null) {
+			return false;
+		}
+
+		this.fork.prepareBind();
+		return this.fork.isFailed() || this.fork.isLoaded() && this.fork.getWidth() != 0 && this.fork.getHeight() != 0;
 	}
 
 	private void release() {

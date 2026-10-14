@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.Timeline;
+import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -209,18 +210,33 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
-	public void exposesItsState() {
-		final TweenAnimator animator = TweenAnimator.create();
-		final Timeline timeline = Timeline.createSequence();
-		final TweenManager manager = new TweenManager();
-		animator.setValue(3F);
-		animator.setLastUpdate(42L);
-		animator.setTimeline(timeline);
-		animator.setManager(manager);
-		Assert.assertEquals(3F, animator.get(), 0F);
-		Assert.assertEquals(42L, animator.getLastUpdate());
+	public void takesATimelineInPlaceOfTheRunningOne() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(10F, 1F).start();
+		final Timeline running = animator.getTimeline();
+		final Timeline timeline = Timeline.createSequence().push(animator.tween(10F).target(4F));
+		animator.timeline(timeline).start();
 		Assert.assertSame(timeline, animator.getTimeline());
-		Assert.assertSame(manager, animator.getManager());
+		Assert.assertNotSame(running, animator.getTimeline());
+		animator.update(10F);
+		Assert.assertEquals(4F, animator.get(), 0F);
+	}
+
+	@Test
+	public void keepsItsTimelineWhenGivenAgain() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(10F, 1F);
+		animator.timeline(animator.getTimeline()).start();
+		animator.update(10F);
+		Assert.assertEquals(1F, animator.get(), 0F);
+	}
+
+	@Test
+	public void tweensItsOwnValueLinearly() {
+		final TweenAnimator animator = TweenAnimator.create(2F);
+		final Tween tween = animator.tween(10F).target(6F);
+		Assert.assertSame(animator, tween.getTarget());
+		animator.timeline(Timeline.createSequence().push(tween)).start();
+		animator.update(5F);
+		Assert.assertEquals(4F, animator.get(), 0F);
 	}
 
 	@Test

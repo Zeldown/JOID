@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
@@ -26,9 +25,8 @@ public abstract class SelectorNode<V> extends Node {
 
 	private final Map<Node, V> optionMap;
 
-	private Signal<V>            signal;
-	private SelectorDirection    direction;
-	private ISignalSubscriber<V> subscription;
+	private Signal<V>         signal;
+	private SelectorDirection direction;
 
 	private Node    selected;
 	private boolean active;
@@ -52,15 +50,15 @@ public abstract class SelectorNode<V> extends Node {
 			return;
 		}
 
-		for (final Node child : super.getChildren().ordered()) {
+		for (final Node child : super.getChildren()) {
 			if (!this.optionMap.containsKey(child)) {
-				super.getChildren().remove(child);
+				super.remove(child);
 				throw new IllegalStateException("The node " + child.getClass().getSimpleName() + " is not an option of the selector, add the options with values(...)");
 			}
 		}
 
 		if (this.selected == null) {
-			this.selected = super.getChildren().ordered().get(0);
+			this.selected = super.getChildren().get(0);
 		}
 
 		this.selected.y(0);
@@ -86,7 +84,7 @@ public abstract class SelectorNode<V> extends Node {
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (this.selected == null) {
+		if (this.selected == null || !event.getButton().isLeft()) {
 			return;
 		}
 
@@ -166,17 +164,16 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Supplier<@NonNull V> value) {
-		return super.follow("value", value, option -> this.select(this.find(option), false));
+		return super.follow("value", value, (final SelectorNode<V> node, final V option) -> node.select(node.find(option), false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = super.writable(signal);
-		this.subscription = super.rebind(this.subscription, signal, value -> {
-			if (this.optionMap.containsValue(value)) {
-				this.select(this.find(value), false);
+		return super.bind("signal", signal, (final SelectorNode<V> node, final V value) -> {
+			if (node.optionMap.containsValue(value)) {
+				node.select(node.find(value), false);
 			}
 		});
-		return (T) this;
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T direction(final @NonNull SelectorDirection direction) {
@@ -184,7 +181,7 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T direction(final @NonNull Supplier<@NonNull SelectorDirection> direction) {
-		return super.follow("direction", direction, value -> this.direction = value);
+		return super.follow("direction", direction, (final SelectorNode<V> node, final SelectorDirection value) -> node.direction = value);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final boolean active) {
@@ -192,7 +189,7 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final @NonNull Supplier<Boolean> active) {
-		return super.follow("active", active, value -> this.active = value);
+		return super.follow("active", active, (final SelectorNode<V> node, final Boolean value) -> node.active = value);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, V>> listener) {

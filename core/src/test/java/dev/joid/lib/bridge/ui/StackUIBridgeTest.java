@@ -10,11 +10,13 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
+import dev.joid.lib.ui.core.transition.impl.PopTransition;
 import lombok.NonNull;
 
 public class StackUIBridgeTest {
@@ -62,8 +64,8 @@ public class StackUIBridgeTest {
 		final ScreenUI menu = new ScreenUI("menu", this.trace);
 		this.bridges.resize(1366, 768);
 		this.bridge.add(menu);
-		Assert.assertEquals(1366D, menu.getWidth(), 0D);
-		Assert.assertEquals(768D, menu.getHeight(), 0D);
+		Assert.assertEquals(1366D, menu.getWindowWidth(), 0D);
+		Assert.assertEquals(768D, menu.getWindowHeight(), 0D);
 		Assert.assertTrue(this.trace.contains("init menu"));
 	}
 
@@ -102,6 +104,30 @@ public class StackUIBridgeTest {
 		this.bridge.open(new ScreenUI("settings", this.trace));
 		this.bridge.close(this.bridge.getUiList().getLast());
 		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void keepsTheScreenCallbacksQuietWhileTheReplacedScreenPlaysItsExit() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		menu.setTransition(new PopTransition());
+		BridgeHandler.UI.register(this.bridge);
+		try {
+			this.bridge.open(menu);
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+
+			this.bridge.open(settings);
+			Assert.assertTrue(menu.getTransition().getOut().isRunning());
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+		} finally {
+			BridgeHandler.UI.unregister(this.bridge);
+		}
+		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList("first screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
 	}
 
 	@Test

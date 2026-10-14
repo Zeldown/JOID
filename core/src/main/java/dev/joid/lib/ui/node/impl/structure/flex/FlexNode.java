@@ -5,6 +5,8 @@ import java.util.function.Supplier;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 import lombok.NonNull;
@@ -58,7 +60,7 @@ public final class FlexNode extends Node {
 	}
 
 	public final @NonNull FlexNode direction(final @NonNull Supplier<@NonNull FlexDirection> direction) {
-		return super.follow("direction", direction, this::changeDirection);
+		return super.follow("direction", direction, (final FlexNode node, final FlexDirection value) -> node.changeDirection(value));
 	}
 
 	public final @NonNull FlexNode align(final Align align) {
@@ -66,7 +68,7 @@ public final class FlexNode extends Node {
 	}
 
 	public final @NonNull FlexNode align(final @NonNull Supplier<Align> align) {
-		return super.follow("align", align, value -> this.align = value);
+		return super.follow("align", align, (final FlexNode node, final Align value) -> node.align = value);
 	}
 
 	public final @NonNull FlexNode margin(final double margin) {
@@ -74,14 +76,13 @@ public final class FlexNode extends Node {
 	}
 
 	public final @NonNull FlexNode margin(final @NonNull Supplier<Double> margin) {
-		return super.follow("margin", margin, value -> this.margin = value);
+		return super.follow("margin", margin, (final FlexNode node, final Double value) -> node.margin = value);
 	}
 
 	private final void changeDirection(final FlexDirection direction) {
 		if (this.direction != direction) {
 			for (final Node child : super.getChildren()) {
-				child.x(child.getDefaultX());
-				child.y(child.getDefaultY());
+				super.layoutPosition(child, 0D, 0D);
 			}
 		}
 
@@ -89,47 +90,38 @@ public final class FlexNode extends Node {
 	}
 
 	private final void updateFlex() {
-		if (this.direction == FlexDirection.COLUMN) {
-			double offsetY = 0D;
-			for (final Node child : super.getChildren()) {
-				child.y(child.getDefaultY() + offsetY);
-				if (child.isVisibleProperty()) {
-					offsetY += child.getHeight() + this.margin;
-				}
-
-				if (this.align != null) {
-					if (this.align.isStart()) {
-						child.x(0);
-					} else if (this.align.isCenter()) {
-						child.x(super.dw(2) - child.dw(2));
-					} else if (this.align.isEnd()) {
-						child.x(super.aw(-child.getWidth()));
-					}
-				}
+		double offset = 0D;
+		for (final Node child : super.getChildren()) {
+			if (child.getPosition() == PositionProperty.ABSOLUTE || !child.isVisibleProperty()) {
+				continue;
 			}
 
-			super.height(Math.max(0, offsetY - this.margin));
-		} else if (this.direction == FlexDirection.ROW) {
-			double offsetX = 0D;
-			for (final Node child : super.getChildren()) {
-				child.x(child.getDefaultX() + offsetX);
-				if (child.isVisibleProperty()) {
-					offsetX += child.getWidth() + this.margin;
-				}
-
-				if (this.align != null) {
-					if (this.align.isStart()) {
-						child.y(0);
-					} else if (this.align.isCenter()) {
-						child.y(super.dh(2) - child.dh(2));
-					} else if (this.align.isEnd()) {
-						child.y(super.ah(-child.getHeight()));
-					}
-				}
+			if (this.direction == FlexDirection.COLUMN) {
+				super.layoutPosition(child, this.align == null ? 0D : this.getCrossX(child) - child.getDefaultX(), offset);
+				offset += child.getHeight() + this.margin;
+			} else {
+				super.layoutPosition(child, offset, this.align == null ? 0D : this.getCrossY(child) - child.getDefaultY());
+				offset += child.getWidth() + this.margin;
 			}
-
-			super.width(Math.max(0, offsetX - this.margin));
 		}
+
+		if (super.getOverflow() != OverflowProperty.NONE) {
+			return;
+		}
+
+		if (this.direction == FlexDirection.COLUMN) {
+			super.height(Math.max(0, offset - this.margin));
+		} else {
+			super.width(Math.max(0, offset - this.margin));
+		}
+	}
+
+	private final double getCrossX(final Node child) {
+		return this.align.isCenter() ? super.dw(2) - child.dw(2) : this.align.isEnd() ? super.aw(-child.getWidth()) : 0D;
+	}
+
+	private final double getCrossY(final Node child) {
+		return this.align.isCenter() ? super.dh(2) - child.dh(2) : this.align.isEnd() ? super.ah(-child.getHeight()) : 0D;
 	}
 
 	public static enum FlexDirection {

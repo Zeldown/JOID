@@ -141,7 +141,7 @@ public class UIBridgeRegistryTest {
 		final int clears = render.getColorClears();
 		registry.frame();
 		Assert.assertEquals(Arrays.asList("update low", "update high", "draw low", "draw high"), this.trace);
-		Assert.assertEquals(Color.BLUE, render.getClearedColor());
+		Assert.assertEquals(Color.RED, render.getClearedColor());
 		Assert.assertEquals(clears + 1, render.getColorClears());
 	}
 

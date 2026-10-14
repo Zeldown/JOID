@@ -25,6 +25,4 @@ public interface IIndexedList<E extends IndexedElement> extends Iterable<E> {
 	public @NonNull List<E> ordered();
 	public @NonNull List<E> reversed();
 
-	public @NonNull IIndexedList<E> recursive();
-
 }

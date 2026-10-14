@@ -13,7 +13,7 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.utils.align.Align;
 
-@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(screens = true))
+@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(aboveScreens = true))
 public class UIDemoOverlay extends UI {
 
 	private static final Color INK         = new Color(153, 153, 153);
@@ -29,9 +29,29 @@ public class UIDemoOverlay extends UI {
 		.draggable(DraggableProperty.screen())
 		.body(rect -> {
 			RectNode.create(100, 50, 120, 120).color(UIDemoOverlay.INK).hoveredColor(Color.WHITE).attach(rect);
-			TextNode.create(160, 210).text(Text.create("Overlay", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 210).text(Text.create("Above screens", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
+	}
+
+	@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true))
+	public static class BelowOverlay extends UI {
+
+		@Override
+		public void init() {
+			final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOverlay.INK);
+
+			RectNode
+			.create(100, 500, 320, 260)
+			.color(UIDemoOverlay.PLACEHOLDER)
+			.draggable(DraggableProperty.screen())
+			.body(rect -> {
+				RectNode.create(100, 50, 120, 120).color(UIDemoOverlay.INK).hoveredColor(Color.WHITE).attach(rect);
+				TextNode.create(160, 210).text(Text.create("Below screens", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			})
+			.attach(this);
+		}
+
 	}
 
 }

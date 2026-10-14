@@ -1,8 +1,8 @@
 package dev.joid.lib.utils.list;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -13,16 +13,19 @@ import lombok.NonNull;
 public class IndexedConcurrentList<E extends IndexedElement> implements IIndexedList<E> {
 
 	private final List<E> orderedList;
+	private final List<E> orderedView;
 	private final List<E> reversedList;
 
 	public IndexedConcurrentList() {
 		this.orderedList = new CopyOnWriteArrayList<>();
-		this.reversedList = Lists.reverse(this.orderedList);
+		this.orderedView = Collections.unmodifiableList(this.orderedList);
+		this.reversedList = Collections.unmodifiableList(Lists.reverse(this.orderedList));
 	}
 
 	public IndexedConcurrentList(final List<E> list) {
 		this.orderedList = new CopyOnWriteArrayList<>(list);
-		this.reversedList = Lists.reverse(this.orderedList);
+		this.orderedView = Collections.unmodifiableList(this.orderedList);
+		this.reversedList = Collections.unmodifiableList(Lists.reverse(this.orderedList));
 	}
 
 	@Override
@@ -111,31 +114,12 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IIndexed
 
 	@Override
 	public @NonNull List<E> ordered() {
-		return this.orderedList;
+		return this.orderedView;
 	}
 
 	@Override
 	public @NonNull List<E> reversed() {
 		return this.reversedList;
-	}
-
-	@Override
-	public @NonNull IndexedConcurrentList<E> recursive() {
-		if (this.isEmpty()) {
-			return this;
-		}
-
-		final E first = this.orderedList.get(0);
-		if (!(first instanceof RecursiveIndexedElement)) {
-			return this;
-		}
-
-		final IndexedConcurrentList<E> list = new IndexedConcurrentList<>();
-		for (final E element : this) {
-			list.orderedList.addAll(this.recursive((RecursiveIndexedElement) element));
-		}
-
-		return list;
 	}
 
 	@Override
@@ -146,18 +130,6 @@ public class IndexedConcurrentList<E extends IndexedElement> implements IIndexed
 	private boolean isInPlace(final int position) {
 		final int index = this.orderedList.get(position).getIndex();
 		return (position == 0 || this.orderedList.get(position - 1).getIndex() <= index) && (position == this.orderedList.size() - 1 || this.orderedList.get(position + 1).getIndex() >= index);
-	}
-
-	@SuppressWarnings("unchecked")
-	private @NonNull List<E> recursive(final RecursiveIndexedElement element) {
-		final List<E> list = new LinkedList<>();
-		list.add((E) element);
-
-		for (final RecursiveIndexedElement child : element.getChildren()) {
-			list.addAll(this.recursive(child));
-		}
-
-		return list;
 	}
 
 }

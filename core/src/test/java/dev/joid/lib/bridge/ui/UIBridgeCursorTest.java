@@ -212,7 +212,7 @@ public class UIBridgeCursorTest {
 
 	}
 
-	@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(screens = true))
+	@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(aboveScreens = true))
 	public static final class OverlayUI extends NodeUI {
 
 		public OverlayUI(final Node... nodes) {
@@ -221,7 +221,7 @@ public class UIBridgeCursorTest {
 
 	}
 
-	@UIDataOverlay(active = true, render = @UIDataOverlayRender(screens = true))
+	@UIDataOverlay(active = true, render = @UIDataOverlayRender(aboveScreens = true))
 	public static final class PassiveOverlayUI extends NodeUI {
 
 		public PassiveOverlayUI(final Node... nodes) {

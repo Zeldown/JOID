@@ -109,7 +109,7 @@ public class TextNode extends Node {
 	}
 
 	public final <T extends TextNode> @NonNull T text(final @NonNull Supplier<Text> text) {
-		return super.follow("text", text, value -> this.text = value);
+		return super.follow("text", text, (final TextNode node, final Text value) -> node.text = value);
 	}
 
 	public final <T extends TextNode> @NonNull T mode(final @NonNull TextMode mode) {
@@ -117,7 +117,7 @@ public class TextNode extends Node {
 	}
 
 	public final <T extends TextNode> @NonNull T mode(final @NonNull Supplier<@NonNull TextMode> mode) {
-		return super.follow("mode", mode, value -> this.mode = value);
+		return super.follow("mode", mode, (final TextNode node, final TextMode value) -> node.mode = value);
 	}
 
 	public final <T extends TextNode> @NonNull T reset() {

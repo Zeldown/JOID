@@ -704,15 +704,15 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void restoresTheTextItHadBeforeItsFocusOnEscape() {
+	public void keepsItsTypedTextOnEscape() {
 		final Signal<String> signal = new Signal<>("hello");
 		final TextFieldNode field = this.field("").signal(signal).cursorPosition(5);
 		field.focused(false).focused(true);
 		this.type(field, " world");
 		Assert.assertEquals("hello world", signal.get());
 		this.press(field, Key.ESCAPE);
-		Assert.assertEquals("hello", field.getText());
-		Assert.assertEquals("hello", signal.get());
+		Assert.assertEquals("hello world", field.getText());
+		Assert.assertEquals("hello world", signal.get());
 		Assert.assertFalse(field.isFocused());
 	}
 
@@ -727,14 +727,14 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void cancelsItsEditOnEscapeBeforeItsUiCloses() {
+	public void validatesItsEditOnEscapeBeforeItsUiCloses() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(true);
 		final NodeUI ui = new NodeUI(field);
 		this.bridges.open(ui);
 		this.type(field, "!");
 		this.bridges.getUi().keyPressed(Key.ESCAPE);
 		Assert.assertFalse(field.isFocused());
-		Assert.assertEquals("hello", field.getText());
+		Assert.assertEquals("!hello", field.getText());
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		this.bridges.getUi().keyPressed(Key.ESCAPE);
 		Assert.assertFalse(this.bridges.getUi().isOpen(ui));

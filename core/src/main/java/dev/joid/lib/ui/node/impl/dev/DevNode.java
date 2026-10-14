@@ -361,7 +361,7 @@ public final class DevNode extends Node {
 				}
 
 				for (final Node node : nodeList) {
-					if (node instanceof DevNode || this.getChildren().recursive().contains(node)) {
+					if (node instanceof DevNode || this.isAncestorOf(node)) {
 						continue;
 					}
 
@@ -470,6 +470,15 @@ public final class DevNode extends Node {
 
 		this.inspectedNode.set(this.inspectedNode.peek().getParent());
 		this.inspectedNodeLocked.set(true);
+	}
+
+	private boolean isAncestorOf(final Node node) {
+		for (Node parent = node.getParent(); parent != null; parent = parent.getParent()) {
+			if (parent == this) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {

@@ -64,7 +64,7 @@ public class DevNodeTest {
 
 	@Test
 	public void startsInspecting() {
-		final DevNode panel = DevNode.create(1625D, 1007D);
+		final DevNode panel = DevNode.create(1900D, 1060D);
 		Assert.assertEquals(1625D, panel.getX(), 0D);
 		Assert.assertEquals(1007D, panel.getY(), 0D);
 		Assert.assertEquals(275D, panel.getWidth(), 0D);
@@ -544,9 +544,18 @@ public class DevNodeTest {
 		bridges.frames(2);
 	}
 
+	private static List<Node> descendants(final Node node) {
+		final List<Node> nodes = new ArrayList<>();
+		for (final Node child : node.getChildren()) {
+			nodes.add(child);
+			nodes.addAll(DevNodeTest.descendants(child));
+		}
+		return nodes;
+	}
+
 	private static List<ResourceNode> buttons(final DevNode panel) {
 		final List<ResourceNode> buttons = new ArrayList<>();
-		for (final Node node : panel.getChildren().recursive()) {
+		for (final Node node : DevNodeTest.descendants(panel)) {
 			if (node instanceof ResourceNode) {
 				buttons.add((ResourceNode) node);
 			}
@@ -556,7 +565,7 @@ public class DevNodeTest {
 
 	private static List<String> texts(final DevNode panel) {
 		final List<String> texts = new ArrayList<>();
-		for (final Node node : panel.getChildren().recursive()) {
+		for (final Node node : DevNodeTest.descendants(panel)) {
 			if (node instanceof TextNode) {
 				texts.add(((TextNode) node).getText().getText());
 			}
@@ -565,7 +574,7 @@ public class DevNodeTest {
 	}
 
 	private static TextNode text(final DevNode panel, final String text) {
-		for (final Node node : panel.getChildren().recursive()) {
+		for (final Node node : DevNodeTest.descendants(panel)) {
 			if (node instanceof TextNode && ((TextNode) node).getText().getText().equals(text)) {
 				return (TextNode) node;
 			}

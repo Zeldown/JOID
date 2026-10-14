@@ -12,7 +12,6 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
-import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -43,15 +42,13 @@ public abstract class FieldNode<V> extends Node {
 
 	private boolean focused;
 	private int     maxTextLength;
-	private String  focusedText;
 
 	private V                 fallback;
 	private boolean           allowEmpty;
 	private Predicate<String> accept;
 
-	private boolean              markup;
-	private Signal<V>            signal;
-	private ISignalSubscriber<V> subscription;
+	private boolean   markup;
+	private Signal<V> signal;
 
 	private int cursorPos;
 	private int selectionStart;
@@ -182,6 +179,11 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		event.consume();
+		if (event.getKey() == Key.ESCAPE) {
+			this.focus(false);
+			return;
+		}
+
 		this.pressKey(event.getKey());
 	}
 
@@ -251,7 +253,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull Supplier<@NonNull String> text) {
-		return super.follow("text", text, this::replace);
+		return super.follow("text", text, (final FieldNode<V> node, final String value) -> node.replace(value));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T placeholder(final @NonNull String placeholder) {
@@ -259,7 +261,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T placeholder(final @NonNull Supplier<@NonNull String> placeholder) {
-		return super.follow("placeholder", placeholder, value -> this.placeholder = value);
+		return super.follow("placeholder", placeholder, (final FieldNode<V> node, final String value) -> node.placeholder = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T info(final @NonNull TextInfo info) {
@@ -267,7 +269,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T info(final @NonNull Supplier<@NonNull TextInfo> info) {
-		return super.follow("info", info, value -> this.info = value);
+		return super.follow("info", info, (final FieldNode<V> node, final TextInfo value) -> node.info = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focused(final boolean focused) {
@@ -275,7 +277,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focused(final @NonNull Supplier<Boolean> focused) {
-		return super.follow("focused", focused, this::focus);
+		return super.follow("focused", focused, (final FieldNode<V> node, final Boolean value) -> node.focus(value));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T accept(final @NonNull Predicate<@NonNull String> accept) {
@@ -288,7 +290,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T allowEmpty(final @NonNull Supplier<Boolean> allowEmpty) {
-		return super.follow("allowEmpty", allowEmpty, value -> this.allowEmpty = value);
+		return super.follow("allowEmpty", allowEmpty, (final FieldNode<V> node, final Boolean value) -> node.allowEmpty = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T maxTextLength(final int maxTextLength) {
@@ -296,7 +298,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T maxTextLength(final @NonNull Supplier<Integer> maxTextLength) {
-		return super.follow("maxTextLength", maxTextLength, value -> this.maxTextLength = value);
+		return super.follow("maxTextLength", maxTextLength, (final FieldNode<V> node, final Integer value) -> node.maxTextLength = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T markup(final boolean markup) {
@@ -304,7 +306,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T markup(final @NonNull Supplier<Boolean> markup) {
-		return super.follow("markup", markup, value -> this.markup = value);
+		return super.follow("markup", markup, (final FieldNode<V> node, final Boolean value) -> node.markup = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T margin(final double margin) {
@@ -312,11 +314,11 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T margin(final @NonNull Supplier<Double> margin) {
-		return super.follow("margin", margin, value -> {
-			this.marginLeft   = value;
-			this.marginRight  = value;
-			this.marginTop    = value;
-			this.marginBottom = value;
+		return super.follow("margin", margin, (final FieldNode<V> node, final Double value) -> {
+			node.marginLeft   = value;
+			node.marginRight  = value;
+			node.marginTop    = value;
+			node.marginBottom = value;
 		});
 	}
 
@@ -325,7 +327,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginTop(final @NonNull Supplier<Double> marginTop) {
-		return super.follow("marginTop", marginTop, value -> this.marginTop = value);
+		return super.follow("marginTop", marginTop, (final FieldNode<V> node, final Double value) -> node.marginTop = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginLeft(final double marginLeft) {
@@ -333,7 +335,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginLeft(final @NonNull Supplier<Double> marginLeft) {
-		return super.follow("marginLeft", marginLeft, value -> this.marginLeft = value);
+		return super.follow("marginLeft", marginLeft, (final FieldNode<V> node, final Double value) -> node.marginLeft = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginVertical(final double marginVertical) {
@@ -341,9 +343,9 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginVertical(final @NonNull Supplier<Double> marginVertical) {
-		return super.follow("marginVertical", marginVertical, value -> {
-			this.marginTop    = value;
-			this.marginBottom = value;
+		return super.follow("marginVertical", marginVertical, (final FieldNode<V> node, final Double value) -> {
+			node.marginTop    = value;
+			node.marginBottom = value;
 		});
 	}
 
@@ -352,9 +354,9 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginHorizontal(final @NonNull Supplier<Double> marginHorizontal) {
-		return super.follow("marginHorizontal", marginHorizontal, value -> {
-			this.marginLeft  = value;
-			this.marginRight = value;
+		return super.follow("marginHorizontal", marginHorizontal, (final FieldNode<V> node, final Double value) -> {
+			node.marginLeft  = value;
+			node.marginRight = value;
 		});
 	}
 
@@ -363,7 +365,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginRight(final @NonNull Supplier<Double> marginRight) {
-		return super.follow("marginRight", marginRight, value -> this.marginRight = value);
+		return super.follow("marginRight", marginRight, (final FieldNode<V> node, final Double value) -> node.marginRight = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginBottom(final double marginBottom) {
@@ -371,7 +373,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginBottom(final @NonNull Supplier<Double> marginBottom) {
-		return super.follow("marginBottom", marginBottom, value -> this.marginBottom = value);
+		return super.follow("marginBottom", marginBottom, (final FieldNode<V> node, final Double value) -> node.marginBottom = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorMargin(final double cursorMargin) {
@@ -379,7 +381,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorMargin(final @NonNull Supplier<Double> cursorMargin) {
-		return super.follow("cursorMargin", cursorMargin, value -> this.cursorMargin = value);
+		return super.follow("cursorMargin", cursorMargin, (final FieldNode<V> node, final Double value) -> node.cursorMargin = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final int cursorPosition) {
@@ -387,17 +389,16 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final @NonNull Supplier<Integer> cursorPosition) {
-		return super.follow("cursorPosition", cursorPosition, value -> this.cursorPos = Math.min(Math.max(0, value), this.text.length()));
+		return super.follow("cursorPosition", cursorPosition, (final FieldNode<V> node, final Integer value) -> node.cursorPos = Math.min(Math.max(0, value), node.text.length()));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T signal(final @NonNull Signal<V> signal) {
 		this.signal = super.writable(signal);
-		this.subscription = super.rebind(this.subscription, signal, value -> {
-			if (!value.equals(this.getValue())) {
-				this.write(value);
+		return super.bind("signal", signal, (final FieldNode<V> node, final V value) -> {
+			if (!value.equals(node.getValue())) {
+				node.write(value);
 			}
 		});
-		return (T) this;
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull EventListener<NodeEvent<T>> listener) {
@@ -467,12 +468,6 @@ public abstract class FieldNode<V> extends Node {
 		return true;
 	}
 
-	protected final void restore() {
-		if (this.focusedText != null && !this.focusedText.equals(this.text)) {
-			this.change(this.focusedText, true);
-		}
-	}
-
 	protected final void updateSelection() {
 		if (!UI.isShiftKeyDown()) {
 			this.selectionStart = -1;
@@ -513,7 +508,6 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		this.focused = focused;
-		this.focusedText = focused ? this.text : null;
 		if (!focused) {
 			this.selectionStart = -1;
 		}

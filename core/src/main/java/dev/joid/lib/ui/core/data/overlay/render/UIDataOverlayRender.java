@@ -8,8 +8,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface UIDataOverlayRender {
 
-	public int     zindex()  default 0;
-	public boolean always()  default false;
-	public boolean screens() default false;
+	public boolean always()       default false;
+	public boolean aboveScreens() default false;
 
 }

@@ -232,7 +232,8 @@ public class SliderNodeTest {
 	public void picksTheValueUnderItsThumbOnRelease() {
 		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb());
 		this.bridges.open(new NodeUI(slider)).frame();
-		slider.getThumb().dragging(true).x(300D);
+		slider.getThumb().dragging(true);
+		this.bridges.move(425D, 125D).frame();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(8, slider.getValue().intValue());
 		Assert.assertEquals(306.25D, slider.getThumb().getX(), 1E-9D);

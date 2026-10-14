@@ -66,7 +66,7 @@ public class ModelNode extends Node {
 	}
 
 	public final <T extends ModelNode> @NonNull T model(final @NonNull Supplier<@NonNull IDrawableModel> model) {
-		return super.follow("model", model, value -> this.model = value);
+		return super.follow("model", model, (final ModelNode node, final IDrawableModel value) -> node.model = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T size(final double size) {
@@ -74,7 +74,7 @@ public class ModelNode extends Node {
 	}
 
 	public final <T extends ModelNode> @NonNull T size(final @NonNull Supplier<Double> size) {
-		return super.follow("size", size, value -> this.size = value);
+		return super.follow("size", size, (final ModelNode node, final Double value) -> node.size = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
@@ -82,7 +82,7 @@ public class ModelNode extends Node {
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationYaw(final @NonNull Supplier<Double> rotationYaw) {
-		return super.follow("rotationYaw", rotationYaw, value -> this.rotationYaw = value);
+		return super.follow("rotationYaw", rotationYaw, (final ModelNode node, final Double value) -> node.rotationYaw = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationPitch(final double rotationPitch) {
@@ -90,7 +90,7 @@ public class ModelNode extends Node {
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationPitch(final @NonNull Supplier<Double> rotationPitch) {
-		return super.follow("rotationPitch", rotationPitch, value -> this.rotationPitch = value);
+		return super.follow("rotationPitch", rotationPitch, (final ModelNode node, final Double value) -> node.rotationPitch = value);
 	}
 
 	protected final void transform(final double size, final double rotationYaw, final double rotationPitch) {

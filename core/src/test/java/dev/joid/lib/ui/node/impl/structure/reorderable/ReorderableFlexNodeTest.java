@@ -68,12 +68,12 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
-	public void givesNoRoomToAHiddenChild() {
+	public void neitherPlacesNorCountsAHiddenChild() {
 		final RectNode hidden = ReorderableFlexNodeTest.item().visible(node -> false);
 		final RectNode third = ReorderableFlexNodeTest.item();
 		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item(), hidden, third);
 		this.bridges.open(new NodeUI(flex));
-		Assert.assertEquals(60D, hidden.getY(), 0D);
+		Assert.assertEquals(0D, hidden.getY(), 0D);
 		Assert.assertEquals(60D, third.getY(), 0D);
 		Assert.assertEquals(110D, flex.getHeight(), 0D);
 	}
@@ -338,11 +338,40 @@ public class ReorderableFlexNodeTest {
 		this.bridges.frames(60);
 		Assert.assertFalse(flex.isReleasing());
 		Assert.assertNull(flex.getReorderedNode());
-		Assert.assertEquals(Arrays.asList(second, first, third), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(second, first, third), flex.getChildren());
 		Assert.assertEquals(60D, first.getY(), 0D);
 		Assert.assertEquals(1, flex.getChildIndex(first));
 		Assert.assertTrue(flex.getLogicalOrder().isEmpty());
 		Assert.assertTrue(flex.getChildCurrent().isEmpty());
+	}
+
+	@Test
+	public void givesTheLogicalIndexOfAChildDuringADrag() {
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final RectNode second = ReorderableFlexNodeTest.item();
+		final RectNode third = ReorderableFlexNodeTest.item();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third);
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 120D);
+		this.bridges.move(150D, 150D).frames(60);
+		Assert.assertTrue(flex.isDragging(first));
+		Assert.assertEquals(1, flex.getChildIndex(first));
+		Assert.assertEquals(0, flex.getChildIndex(second));
+		Assert.assertEquals(2, flex.getChildIndex(third));
+		Assert.assertEquals(Arrays.asList(first, second, third), flex.getChildren());
+	}
+
+	@Test
+	public void keepsTheOwnOffsetOfAChildDuringADrag() {
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final RectNode shifted = RectNode.create(0D, 5D, 200D, 50D);
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, shifted);
+		this.bridges.open(new NodeUI(flex));
+		Assert.assertEquals(65D, shifted.getY(), 0D);
+		this.press(150D, 120D);
+		this.bridges.frames(5);
+		Assert.assertTrue(flex.isDragging(first));
+		Assert.assertEquals(65D, shifted.getY(), 0D);
 	}
 
 	@Test
@@ -358,12 +387,12 @@ public class ReorderableFlexNodeTest {
 		flex.fireDetach();
 		Assert.assertNull(flex.getReorderedNode());
 		Assert.assertFalse(flex.isReleasing());
-		Assert.assertEquals(Arrays.asList(second, first, third), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(second, first, third), flex.getChildren());
 		Assert.assertEquals(Arrays.asList(0, 1), ends);
 	}
 
 	@Test
-	public void endsTheReorderOfARemovedChild() {
+	public void abandonsTheReorderOfARemovedChildWithoutEvent() {
 		final List<Integer> ends = new ArrayList<>();
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();
@@ -376,9 +405,9 @@ public class ReorderableFlexNodeTest {
 		this.bridges.frame();
 		Assert.assertNull(flex.getReorderedNode());
 		Assert.assertTrue(flex.getLogicalOrder().isEmpty());
-		Assert.assertEquals(Arrays.asList(second), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(second), flex.getChildren());
 		Assert.assertEquals(zindex, first.getZindex());
-		Assert.assertEquals(Arrays.asList(0, -1), ends);
+		Assert.assertTrue(ends.isEmpty());
 	}
 
 	@Test
@@ -391,7 +420,7 @@ public class ReorderableFlexNodeTest {
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(10);
 		Assert.assertNull(flex.getReorderedNode());
-		Assert.assertEquals(Arrays.asList(first, second), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(first, second), flex.getChildren());
 		Assert.assertEquals(0D, first.getY(), 0D);
 		Assert.assertEquals(60D, second.getY(), 0D);
 	}
@@ -428,7 +457,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(0D, second.getX(), 0D);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
-		Assert.assertEquals(Arrays.asList(second, first, third), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(second, first, third), flex.getChildren());
 		Assert.assertEquals(90D, first.getX(), 0D);
 	}
 
@@ -446,7 +475,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(60D, first.getY(), 0D);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
-		Assert.assertEquals(Arrays.asList(third, first, hidden), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(third, first, hidden), flex.getChildren());
 		Assert.assertEquals(0D, third.getY(), 0D);
 		Assert.assertEquals(110D, flex.getHeight(), 0D);
 	}
@@ -464,7 +493,7 @@ public class ReorderableFlexNodeTest {
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
 		Assert.assertNull(flex.getReorderedNode());
-		Assert.assertEquals(Arrays.asList(hidden, first, second), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(hidden, first, second), flex.getChildren());
 		Assert.assertEquals(60D, second.getY(), 0D);
 	}
 
@@ -497,7 +526,7 @@ public class ReorderableFlexNodeTest {
 		this.bridges.move(150D, 240D).frames(60);
 		Assert.assertSame(flex, flex.endDrag());
 		this.bridges.frames(60);
-		Assert.assertEquals(Arrays.asList(first, third, second), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(first, third, second), flex.getChildren());
 	}
 
 	@Test
@@ -572,7 +601,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(Arrays.asList(first, third, second), flex.getLogicalOrder());
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
-		Assert.assertEquals(Arrays.asList(first, third, second), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(first, third, second), flex.getChildren());
 		Assert.assertEquals(0D, first.getY(), 0D);
 		Assert.assertEquals(60D, third.getY(), 0D);
 		Assert.assertEquals(120D, second.getY(), 0D);
@@ -594,7 +623,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(Arrays.asList(third, second, first), flex.getLogicalOrder());
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
-		Assert.assertEquals(Arrays.asList(third, second, first), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(third, second, first), flex.getChildren());
 		Assert.assertEquals(60D, second.getY(), 0D);
 	}
 
@@ -613,7 +642,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(Arrays.asList(first, fourth, third, second), flex.getLogicalOrder());
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
-		Assert.assertEquals(Arrays.asList(first, fourth, third, second), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(first, fourth, third, second), flex.getChildren());
 		Assert.assertEquals(0D, first.getX(), 0D);
 		Assert.assertEquals(120D, third.getX(), 0D);
 	}
@@ -783,7 +812,7 @@ public class ReorderableFlexNodeTest {
 		this.bridges.frames(5);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
-		Assert.assertEquals(Arrays.asList(first, hidden, third), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(first, hidden, third), flex.getChildren());
 	}
 
 	@Test
@@ -832,7 +861,7 @@ public class ReorderableFlexNodeTest {
 		this.bridges.move(150D, 150D).frames(60);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
-		Assert.assertEquals(Arrays.asList(second, first, added), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(second, first, added), flex.getChildren());
 		Assert.assertEquals(120D, added.getY(), 0D);
 	}
 

@@ -68,10 +68,17 @@ public class UIDemoChoice extends UI {
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOption.class));
 		UIDemoChoice.LIST.add(DemoEntry.create("UIDemoOverlay", () -> {
 			final UIDemoOverlay overlay = JOID.getUi(UIDemoOverlay.class);
+			final UIDemoOverlay.BelowOverlay below = JOID.getUi(UIDemoOverlay.BelowOverlay.class);
 			if (overlay != null) {
 				JOID.close(overlay);
 			} else {
 				JOID.open(new UIDemoOverlay());
+			}
+
+			if (below != null) {
+				JOID.close(below);
+			} else {
+				JOID.open(new UIDemoOverlay.BelowOverlay());
 			}
 		}).state(() -> JOID.isOpen(UIDemoOverlay.class)));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoLayout.class));

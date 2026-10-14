@@ -13,6 +13,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.ui.node.property.position.PositionProperty;
 
 public class GridNodeTest {
 
@@ -90,6 +91,38 @@ public class GridNodeTest {
 	}
 
 	@Test
+	public void growsWithItsRowsWhenCreatedWithoutHeight() {
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 0D).verticalMargin(5D).overflow(OverflowProperty.SCROLL);
+		GridNodeTest.cells(grid, 3);
+		this.bridges.open(new NodeUI(grid));
+		Assert.assertEquals(105D, grid.getHeight(), 0D);
+	}
+
+	@Test
+	public void scrollsItsOwnRows() {
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).verticalMargin(5D).overflow(OverflowProperty.SCROLL);
+		GridNodeTest.cells(grid, 3);
+		this.bridges.open(new NodeUI(grid)).frames(2);
+		Assert.assertEquals(60D, grid.getHeight(), 0D);
+		Assert.assertEquals(45D, grid.getMaxScrollY(), 0D);
+		grid.scrollOffsetY(-45D).updateScroll();
+		this.bridges.frame();
+		final Node last = grid.getChildren().get(2);
+		Assert.assertEquals(55D, last.getLayoutY(), 0D);
+		Assert.assertEquals(10D, last.getY(), 1E-3D);
+	}
+
+	@Test
+	public void leavesItsAbsoluteChildrenOutOfItsCells() {
+		final RectNode absolute = RectNode.create(300D, 400D, 100D, 50D).position(PositionProperty.ABSOLUTE);
+		final RectNode last = RectNode.create(0D, 0D, 100D, 50D);
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 50D).append(RectNode.create(0D, 0D, 100D, 50D), absolute, last);
+		this.bridges.open(new NodeUI(grid));
+		GridNodeTest.assertPlaced(last, 100D, 0D);
+		Assert.assertEquals(400D, absolute.getY(), 0D);
+	}
+
+	@Test
 	public void leavesAnEmptyGridAlone() {
 		final GridNode grid = GridNode.create(10D, 20D, 250D, 60D);
 		this.bridges.open(new NodeUI(grid));
@@ -115,7 +148,7 @@ public class GridNodeTest {
 		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D);
 		final RectNode[] cells = GridNodeTest.cells(grid, 3);
 		this.bridges.open(new NodeUI(grid));
-		grid.getChildren().remove(cells[0]);
+		grid.remove(cells[0]);
 		this.bridges.frame();
 		GridNodeTest.assertPlaced(cells[1], 0D, 0D);
 		GridNodeTest.assertPlaced(cells[2], 100D, 0D);
@@ -177,7 +210,7 @@ public class GridNodeTest {
 		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).append(RectNode.create(0D, 0D, 100D, 50D), RectNode.create(0D, 0D, 100D, 50D), third);
 		this.bridges.open(new NodeUI(grid));
 		Assert.assertEquals(100D, grid.getHeight(), 0D);
-		grid.getChildren().remove(third);
+		grid.remove(third);
 		this.bridges.frame();
 		Assert.assertEquals(60D, grid.getHeight(), 0D);
 	}

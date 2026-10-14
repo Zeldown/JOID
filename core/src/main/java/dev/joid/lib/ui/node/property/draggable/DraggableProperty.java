@@ -130,8 +130,8 @@ public class DraggableProperty {
 			final UI ui = node.getUi();
 			boundX = ui.getView().toUiX(0D);
 			boundY = ui.getView().toUiY(0D);
-			boundWidth = ui.getView().toUiX(ui.getWidth()) - boundX;
-			boundHeight = ui.getView().toUiY(ui.getHeight()) - boundY;
+			boundWidth = ui.getView().toUiX(ui.getWindowWidth()) - boundX;
+			boundHeight = ui.getView().toUiY(ui.getWindowHeight()) - boundY;
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid DraggableAreaType: " + this.areaType);

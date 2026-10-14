@@ -2,7 +2,6 @@ package dev.joid.lib.ui.node.impl.structure.checkbox;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
@@ -20,9 +19,8 @@ public abstract class CheckboxNode extends Node {
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	private boolean                    checked;
-	private Signal<Boolean>            signal;
-	private ISignalSubscriber<Boolean> subscription;
+	private boolean         checked;
+	private Signal<Boolean> signal;
 
 	protected CheckboxNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -30,7 +28,7 @@ public abstract class CheckboxNode extends Node {
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (event.isConsumed() || !super.isHovered()) {
+		if (event.isConsumed() || !event.getButton().isLeft() || !super.isHovered()) {
 			return;
 		}
 
@@ -43,13 +41,12 @@ public abstract class CheckboxNode extends Node {
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final @NonNull Supplier<Boolean> checked) {
-		return super.follow("checked", checked, value -> this.change(value, false));
+		return super.follow("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
 		this.signal = super.writable(signal);
-		this.subscription = super.rebind(this.subscription, signal, value -> this.change(value, false));
-		return (T) this;
+		return super.bind("signal", signal, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {

@@ -14,6 +14,8 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.resource.Resource;
+import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
 import lombok.NonNull;
 
@@ -62,26 +64,23 @@ public class VectorResourceDecoderTest {
 	public void ignoresRequestsBeforeItsUpload() {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = new ResourceData("icon.svg", decoder);
-		decoder.request(data, 48, 48, false);
+		decoder.request(data, 48, 48, false, false);
 		Assert.assertNull(data.getTextures());
 		decoder.prepare(data);
 		decoder.decode(data);
-		decoder.request(data, 48, 48, false);
+		decoder.request(data, 48, 48, false, false);
 		Assert.assertEquals(1, data.getTextures()[0].getWidth());
-		Assert.assertEquals(0, decoder.getRequestedWidth());
 	}
 
 	@Test
 	public void rendersTheRequestedSizeWhenBlocking() {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
-		decoder.request(data, 48, 32, false);
+		decoder.request(data, 48, 32, false, false);
 		final RecordingTexture texture = (RecordingTexture) data.getTextures()[0];
 		Assert.assertEquals(48, texture.getWidth());
 		Assert.assertEquals(32, texture.getHeight());
 		Assert.assertEquals(48 * 32, texture.getPixels().length);
-		Assert.assertEquals(48, decoder.getRequestedWidth());
-		Assert.assertEquals(32, decoder.getRequestedHeight());
 		Assert.assertEquals(2, decoder.getTextures().size());
 	}
 
@@ -90,8 +89,8 @@ public class VectorResourceDecoderTest {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
 		final ITexture intrinsic = data.getTextures()[0];
-		decoder.request(data, 48, 48, false);
-		decoder.request(data, 24, 24, false);
+		decoder.request(data, 48, 48, false, false);
+		decoder.request(data, 24, 24, false, false);
 		Assert.assertSame(intrinsic, data.getTextures()[0]);
 		Assert.assertSame(intrinsic, decoder.getTexture());
 		Assert.assertEquals(2, decoder.getTextures().size());
@@ -101,7 +100,7 @@ public class VectorResourceDecoderTest {
 	public void clampsTheSizeToTheLargestTexture() {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
-		decoder.request(data, 8192, 512, false);
+		decoder.request(data, 8192, 512, false, false);
 		Assert.assertEquals(4096, data.getTextures()[0].getWidth());
 		Assert.assertEquals(256, data.getTextures()[0].getHeight());
 	}
@@ -110,7 +109,7 @@ public class VectorResourceDecoderTest {
 	public void rendersInTheBackgroundWhenAsync() throws InterruptedException {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
-		decoder.request(data, 48, 48, true);
+		decoder.request(data, 48, 48, true, false);
 		VectorResourceDecoderTest.awaitRaster(decoder);
 		Assert.assertFalse(decoder.isSettled());
 		Assert.assertEquals(24, data.getTextures()[0].getWidth());
@@ -124,12 +123,11 @@ public class VectorResourceDecoderTest {
 	public void keepsACloseTextureWhileTheSizeChanges() throws InterruptedException {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
-		decoder.request(data, 48, 48, true);
+		decoder.request(data, 48, 48, true, false);
 		VectorResourceDecoderTest.awaitRaster(decoder);
 		decoder.update(data);
-		decoder.request(data, 40, 40, true);
+		decoder.request(data, 40, 40, true, true);
 		Assert.assertFalse(decoder.isRendering());
-		Assert.assertEquals(40, decoder.getRequestedWidth());
 		Assert.assertEquals(48, data.getTextures()[0].getWidth());
 	}
 
@@ -137,10 +135,10 @@ public class VectorResourceDecoderTest {
 	public void rendersTheNextStepWhileTheSizeGrows() throws InterruptedException {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
-		decoder.request(data, 48, 48, true);
+		decoder.request(data, 48, 48, true, false);
 		VectorResourceDecoderTest.awaitRaster(decoder);
 		decoder.update(data);
-		decoder.request(data, 60, 60, true);
+		decoder.request(data, 60, 60, true, true);
 		VectorResourceDecoderTest.awaitRaster(decoder);
 		decoder.update(data);
 		Assert.assertEquals(75, data.getTextures()[0].getWidth());
@@ -151,11 +149,11 @@ public class VectorResourceDecoderTest {
 	public void showsACachedStepWhileTheSizeGrows() {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
-		decoder.request(data, 30, 30, false);
-		decoder.request(data, 75, 75, false);
+		decoder.request(data, 30, 30, false, false);
+		decoder.request(data, 75, 75, false, false);
 		final ITexture step = data.getTextures()[0];
-		decoder.request(data, 30, 30, false);
-		decoder.request(data, 60, 60, true);
+		decoder.request(data, 30, 30, false, false);
+		decoder.request(data, 60, 60, true, true);
 		Assert.assertFalse(decoder.isRendering());
 		Assert.assertSame(step, data.getTextures()[0]);
 	}
@@ -164,14 +162,13 @@ public class VectorResourceDecoderTest {
 	public void rendersTheExactSizeOnceTheSizeRests() throws InterruptedException {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
-		decoder.request(data, 48, 48, true);
+		decoder.request(data, 48, 48, true, false);
 		VectorResourceDecoderTest.awaitRaster(decoder);
 		decoder.update(data);
-		decoder.request(data, 60, 60, true);
+		decoder.request(data, 60, 60, true, true);
 		VectorResourceDecoderTest.awaitRaster(decoder);
 		decoder.update(data);
-		this.bridges.getClock().advance(200L);
-		decoder.request(data, 60, 60, true);
+		decoder.request(data, 60, 60, true, false);
 		VectorResourceDecoderTest.awaitRaster(decoder);
 		decoder.update(data);
 		Assert.assertEquals(60, data.getTextures()[0].getWidth());
@@ -181,13 +178,18 @@ public class VectorResourceDecoderTest {
 	public void waitsForItsPendingRasterBeforeAnother() throws InterruptedException {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
-		decoder.request(data, 48, 48, true);
+		decoder.request(data, 48, 48, true, false);
 		VectorResourceDecoderTest.awaitRaster(decoder);
-		this.bridges.getClock().advance(300L);
-		decoder.request(data, 100, 100, true);
+		decoder.request(data, 100, 100, true, false);
 		Assert.assertFalse(decoder.isRendering());
 		decoder.update(data);
 		Assert.assertEquals(48, data.getTextures()[0].getWidth());
+	}
+
+	@Test
+	public void rastersEverySizeWhicheverDrawComesFirst() throws InterruptedException {
+		Assert.assertArrayEquals(new int[] {48, 20}, VectorResourceDecoderTest.draw(48, 20));
+		Assert.assertArrayEquals(new int[] {20, 48}, VectorResourceDecoderTest.draw(20, 48));
 	}
 
 	@Test
@@ -196,11 +198,11 @@ public class VectorResourceDecoderTest {
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
 		final RecordingTexture intrinsic = (RecordingTexture) data.getTextures()[0];
 		for (int size = 10; size < 17; size++) {
-			decoder.request(data, size, size, false);
+			decoder.request(data, size, size, false, false);
 		}
 		Assert.assertEquals(8, decoder.getTextures().size());
 		Assert.assertFalse(intrinsic.isDeleted());
-		decoder.request(data, 17, 17, false);
+		decoder.request(data, 17, 17, false, false);
 		Assert.assertEquals(8, decoder.getTextures().size());
 		Assert.assertTrue(intrinsic.isDeleted());
 	}
@@ -210,14 +212,14 @@ public class VectorResourceDecoderTest {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = VectorResourceDecoderTest.load(decoder);
 		final RecordingTexture intrinsic = (RecordingTexture) data.getTextures()[0];
-		decoder.request(data, 48, 48, false);
+		decoder.request(data, 48, 48, false, false);
 		final RecordingTexture larger = (RecordingTexture) data.getTextures()[0];
 		decoder.clear(data);
 		Assert.assertTrue(intrinsic.isDeleted());
 		Assert.assertTrue(larger.isDeleted());
 		Assert.assertTrue(decoder.getTextures().isEmpty());
 		Assert.assertNull(decoder.getDocument());
-		decoder.request(data, 64, 64, false);
+		decoder.request(data, 64, 64, false, false);
 		Assert.assertSame(larger, data.getTextures()[0]);
 	}
 
@@ -281,6 +283,27 @@ public class VectorResourceDecoderTest {
 		decoder.decode(data);
 		decoder.upload(data);
 		return data;
+	}
+
+	private static int[] draw(final int... sizes) throws InterruptedException {
+		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
+		final ResourceData data = VectorResourceDecoderTest.load(decoder);
+		final Resource resource = ResourceBuilder.create().cache(null).compute("icon.svg", () -> data);
+		final Resource[] consumers = new Resource[sizes.length];
+		for (int index = 0; index < sizes.length; index++) {
+			consumers[index] = resource.copy();
+		}
+
+		final int[] widths = new int[sizes.length];
+		for (int frame = 0; frame < 8; frame++) {
+			for (int index = 0; index < sizes.length; index++) {
+				consumers[index].request(sizes[index], sizes[index]);
+				decoder.update(data);
+				widths[index] = data.getTextures()[0].getWidth();
+			}
+			VectorResourceDecoderTest.awaitRaster(decoder);
+		}
+		return widths;
 	}
 
 	private static int[] size(final String document) {

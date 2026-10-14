@@ -34,7 +34,7 @@ public class ChartNodeTest {
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D);
 		Assert.assertNull(chart.getXAxis());
 		Assert.assertNull(chart.getYAxis());
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 	}
 
 	@Test
@@ -130,21 +130,21 @@ public class ChartNodeTest {
 	@Test
 	public void loadsOnceEverySeriesIsFilled() {
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).yAxis(ChartAxis.y("requests"));
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 		chart.data("api", ChartData.create().add("Mon", 120));
-		Assert.assertTrue(chart.isLoaded());
+		Assert.assertTrue(chart.isMounted());
 		chart.data("web", ChartData.create());
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 		chart.getData("web").add("Mon", 80);
-		Assert.assertTrue(chart.isLoaded());
+		Assert.assertTrue(chart.isMounted());
 	}
 
 	@Test
 	public void needsAYAxisToLoad() {
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 120));
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 		chart.yAxis(ChartAxis.y("requests"));
-		Assert.assertTrue(chart.isLoaded());
+		Assert.assertTrue(chart.isMounted());
 	}
 
 	@Test
@@ -152,9 +152,9 @@ public class ChartNodeTest {
 		final boolean[] ready = {false};
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).wait(node -> ready[0]);
 		chart.xAxis(ChartAxis.x("weekday", "Mon")).yAxis(ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 120));
-		Assert.assertFalse(chart.isLoaded());
+		Assert.assertFalse(chart.isMounted());
 		ready[0] = true;
-		Assert.assertTrue(chart.isLoaded());
+		Assert.assertTrue(chart.isMounted());
 	}
 
 	@Test
@@ -378,7 +378,7 @@ public class ChartNodeTest {
 
 		@Override
 		public void draw(final double mouseX, final double mouseY) {
-			if (!super.isLoaded()) {
+			if (!super.isMounted()) {
 				return;
 			}
 

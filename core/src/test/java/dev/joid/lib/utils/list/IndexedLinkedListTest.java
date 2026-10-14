@@ -85,7 +85,7 @@ public class IndexedLinkedListTest {
 		final IndexedLinkedList<Element> list = new IndexedLinkedList<>();
 		Assert.assertSame(list.ordered(), list.ordered());
 		list.add(element);
-		Assert.assertSame(element, list.ordered().getFirst());
+		Assert.assertSame(element, list.ordered().get(0));
 	}
 
 	@Test
@@ -186,30 +186,6 @@ public class IndexedLinkedListTest {
 	}
 
 	@Test
-	public void flattensATreeDepthFirst() {
-		final Branch leaf = new Branch(0);
-		final Branch left = new Branch(0, leaf);
-		final Branch right = new Branch(1);
-		final Branch root = new Branch(0, left, right);
-		final Branch other = new Branch(1);
-		final IndexedLinkedList<Branch> list = new IndexedLinkedList<>();
-		list.add(other);
-		list.add(root);
-		final IndexedLinkedList<Branch> flat = list.recursive();
-		Assert.assertNotSame(list, flat);
-		Assert.assertEquals(Arrays.asList(root, left, leaf, right, other), flat.ordered());
-		Assert.assertEquals(Arrays.asList(root, other), list.ordered());
-	}
-
-	@Test
-	public void staysFlatWithoutRecursiveElements() {
-		final IndexedLinkedList<Element> list = new IndexedLinkedList<>();
-		Assert.assertSame(list, list.recursive());
-		list.add(new Element(0));
-		Assert.assertSame(list, list.recursive());
-	}
-
-	@Test
 	public void keepsThePlaceOfAnElementAddedAgainWithTheSameIndex() {
 		final Element first = new Element(1);
 		final Element second = new Element(1);
@@ -244,24 +220,21 @@ public class IndexedLinkedListTest {
 		Assert.assertEquals(Arrays.asList(first, second), list.ordered());
 	}
 
+	@Test(expected = UnsupportedOperationException.class)
+	public void refusesAChangeThroughItsOrder() {
+		new IndexedLinkedList<Element>().ordered().add(new Element(0));
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void refusesAChangeThroughItsReversedOrder() {
+		new IndexedLinkedList<Element>().reversed().add(new Element(0));
+	}
+
 	@Getter
 	@AllArgsConstructor
 	private static final class Element implements IndexedElement {
 
 		private int index;
-
-	}
-
-	@Getter
-	private static final class Branch implements RecursiveIndexedElement {
-
-		private final int                       index;
-		private final IndexedLinkedList<Branch> children;
-
-		private Branch(final int index, final Branch... children) {
-			this.index    = index;
-			this.children = new IndexedLinkedList<>(Arrays.asList(children));
-		}
 
 	}
 

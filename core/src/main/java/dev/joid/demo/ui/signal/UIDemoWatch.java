@@ -1,11 +1,11 @@
 package dev.joid.demo.ui.signal;
 
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.impl.structure.checkbox.DemoCheckboxNode;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -40,6 +40,7 @@ public class UIDemoWatch extends UIDemo {
 		final IntegerSignal squares = IntegerSignal.of(2);
 		final IntegerSignal grown = IntegerSignal.of(0);
 		final IntegerSignal mounts = IntegerSignal.of(0);
+		final long shownAt = BridgeHandler.CLOCK.get().currentTimeMillis() + 2000L;
 		final BooleanSignal ready = BooleanSignal.of(false);
 		final CompletableFuture<String> future = new CompletableFuture<>();
 		final Signal<String> result = Signal.of(future);
@@ -151,8 +152,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 320, 100)
 			.color(Color.WHITE)
-			.wait(2L, TimeUnit.SECONDS)
-			.skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.LOADING))
+			.wait(container -> BridgeHandler.CLOCK.get().currentTimeMillis() >= shownAt)
 			.onMount(event -> mounts.increment())
 			.body(container -> {
 				TextNode.create(20, 35).text(Text.create("Shown after 2 s", info)).attach(container);
@@ -178,8 +178,10 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 120, 320, 80)
 			.color(Color.WHITE)
-			.wait(node -> ready.get())
-			.skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.LOADING))
+			.wait(container -> ready.get())
+			.skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(UIDemoWatch.PLACEHOLDER).body(skeleton -> {
+				TextNode.create(20, 25).text(Text.create("Press Ready", info)).attach(skeleton);
+			}))
 			.body(container -> {
 				TextNode.create(20, 25).text(Text.create("Shown when ready", info)).attach(container);
 			})
@@ -195,8 +197,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 320, 100)
 			.color(Color.WHITE)
-			.wait(result)
-			.skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.LOADING))
+			.wait(container -> result.get() != null)
 			.body(container -> {
 				TextNode.create(20, 35).text(Text.create("Result: " + result.get(), info)).attach(container);
 			})

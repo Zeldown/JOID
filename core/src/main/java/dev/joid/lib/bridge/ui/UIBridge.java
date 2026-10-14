@@ -1,7 +1,6 @@
 package dev.joid.lib.bridge.ui;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
@@ -252,7 +251,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	private boolean isShown(final UI ui) {
 		final UIDataOverlayObject overlay = ui.getOverlay();
-		return !overlay.active() || (overlay.render().always() || !this.isOverlayHidden()) && (overlay.render().screens() || !this.isScreenOpen());
+		return !overlay.active() || overlay.render().always() || !this.isOverlayHidden();
 	}
 
 	private void drawLayers(final Predicate<UI> filter) {
@@ -318,14 +317,20 @@ public abstract class UIBridge implements IUIBridge {
 
 	private List<UI> getLayerList() {
 		this.uiList.sort();
-		final List<UI> layerList = new ArrayList<>();
-		final List<UI> overlayList = new ArrayList<>();
+		final List<UI> belowList = new ArrayList<>();
+		final List<UI> screenList = new ArrayList<>();
+		final List<UI> aboveList = new ArrayList<>();
 		for (final UI ui : this.uiList.ordered()) {
-			(ui.getOverlay().active() ? overlayList : layerList).add(ui);
+			if (!ui.getOverlay().active()) {
+				screenList.add(ui);
+			} else {
+				(ui.getOverlay().render().aboveScreens() ? aboveList : belowList).add(ui);
+			}
 		}
 
-		overlayList.sort(Comparator.comparingInt(ui -> ui.getOverlay().render().zindex()));
-		layerList.addAll(overlayList);
+		final List<UI> layerList = new ArrayList<>(belowList);
+		layerList.addAll(screenList);
+		layerList.addAll(aboveList);
 		return layerList;
 	}
 

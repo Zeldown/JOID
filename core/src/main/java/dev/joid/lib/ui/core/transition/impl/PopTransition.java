@@ -21,7 +21,7 @@ public class PopTransition extends Transition {
 		public void init(final @NonNull UI ui) {}
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			final Timeline timeline = super.getAnimator().sequence(130F, 1F, TweenEquations.QUART_OUT).getTimeline();
 			super.start(timeline);
 		}
@@ -54,7 +54,7 @@ public class PopTransition extends Transition {
 		public void init(final @NonNull UI ui) {}
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			final Timeline timeline = super.getAnimator().sequence(130F, 0F, TweenEquations.QUART_IN).getTimeline();
 			super.start(timeline);
 		}

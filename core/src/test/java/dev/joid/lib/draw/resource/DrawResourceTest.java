@@ -416,7 +416,7 @@ public class DrawResourceTest {
 		}
 
 		@Override
-		public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async) {
+		public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {
 			this.width = width;
 			this.height = height;
 		}

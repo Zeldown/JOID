@@ -2,7 +2,6 @@ package dev.joid.lib.ui.node.impl.structure.toggle;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
@@ -20,10 +19,9 @@ public abstract class ToggleNode<F, S> extends Node {
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	private boolean                    toggle;
-	private Signal<Boolean>            signal;
-	private ToggleState<F, S>          state;
-	private ISignalSubscriber<Boolean> subscription;
+	private boolean           toggle;
+	private Signal<Boolean>   signal;
+	private ToggleState<F, S> state;
 
 	protected ToggleNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -31,7 +29,7 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (event.isConsumed() || !super.isHovered()) {
+		if (event.isConsumed() || !event.getButton().isLeft() || !super.isHovered()) {
 			return;
 		}
 
@@ -44,7 +42,7 @@ public abstract class ToggleNode<F, S> extends Node {
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T toggle(final @NonNull Supplier<Boolean> toggle) {
-		return super.follow("toggle", toggle, value -> this.change(value, false));
+		return super.follow("toggle", toggle, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T state(final F toggle, final S back) {
@@ -58,8 +56,7 @@ public abstract class ToggleNode<F, S> extends Node {
 
 	public final <T extends ToggleNode<F, S>> @NonNull T signal(final @NonNull Signal<Boolean> signal) {
 		this.signal = super.writable(signal);
-		this.subscription = super.rebind(this.subscription, signal, value -> this.change(value, false));
-		return (T) this;
+		return super.bind("signal", signal, (final ToggleNode<F, S> node, final Boolean value) -> node.change(value, false));
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {

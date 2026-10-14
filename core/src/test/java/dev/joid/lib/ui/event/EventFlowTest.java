@@ -82,7 +82,7 @@ public class EventFlowTest {
 		final BooleanSignal ready = new BooleanSignal(false);
 		final FlowNode skeleton = new FlowNode("skeleton", this.trace);
 		final FlowNode child = new FlowNode("child", this.trace);
-		final FlowNode node = new FlowNode("node", this.trace).append(child).wait(ready).skeleton(waiting -> skeleton);
+		final FlowNode node = new FlowNode("node", this.trace).append(child).wait(waiting -> ready.get()).skeleton(waiting -> skeleton);
 		this.bridges.open(new FlowUI(node)).move(150D, 150D).frames(2);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);

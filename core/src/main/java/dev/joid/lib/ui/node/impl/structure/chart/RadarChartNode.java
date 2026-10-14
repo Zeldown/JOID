@@ -19,10 +19,7 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 	protected RadarChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		this.dataList = new LinkedList<>();
-	}
-
-	public final boolean isLoaded() {
-		return this.isMounted() && this.dataList.size() >= 3 && !this.dataList.stream().anyMatch(DATA::isEmpty);
+		super.<RadarChartNode<DATA>>wait(node -> node.dataList.size() >= 3 && node.dataList.stream().noneMatch(RadarChartData::isEmpty));
 	}
 
 	public final Number getMax() {

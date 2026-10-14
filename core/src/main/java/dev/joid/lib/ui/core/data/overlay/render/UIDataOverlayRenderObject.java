@@ -10,14 +10,12 @@ import lombok.ToString;
 @NoArgsConstructor
 public final class UIDataOverlayRenderObject implements UIDataOverlayRender {
 
-	private boolean always  = false;
-	private boolean screens = false;
-	private int     zindex  = 0;
+	private boolean always       = false;
+	private boolean aboveScreens = false;
 
 	public UIDataOverlayRenderObject(final @NonNull UIDataOverlayRender data) {
-		this.always  = data.always();
-		this.screens = data.screens();
-		this.zindex  = data.zindex();
+		this.always       = data.always();
+		this.aboveScreens = data.aboveScreens();
 	}
 
 	@Override
@@ -31,18 +29,8 @@ public final class UIDataOverlayRenderObject implements UIDataOverlayRender {
 	}
 
 	@Override
-	public boolean screens() {
-		return this.screens;
-	}
-
-	@Override
-	public int zindex() {
-		return this.zindex;
-	}
-
-	public @NonNull UIDataOverlayRenderObject setZindex(final int zindex) {
-		this.zindex = zindex;
-		return this;
+	public boolean aboveScreens() {
+		return this.aboveScreens;
 	}
 
 	public @NonNull UIDataOverlayRenderObject setAlways(final boolean always) {
@@ -50,8 +38,8 @@ public final class UIDataOverlayRenderObject implements UIDataOverlayRender {
 		return this;
 	}
 
-	public @NonNull UIDataOverlayRenderObject setScreens(final boolean screens) {
-		this.screens = screens;
+	public @NonNull UIDataOverlayRenderObject setAboveScreens(final boolean aboveScreens) {
+		this.aboveScreens = aboveScreens;
 		return this;
 	}
 
@@ -60,12 +48,8 @@ public final class UIDataOverlayRenderObject implements UIDataOverlayRender {
 			this.setAlways(next.always());
 		}
 
-		if (previous.screens() != next.screens()) {
-			this.setScreens(next.screens());
-		}
-
-		if (previous.zindex() != next.zindex()) {
-			this.setZindex(next.zindex());
+		if (previous.aboveScreens() != next.aboveScreens()) {
+			this.setAboveScreens(next.aboveScreens());
 		}
 
 		return this;

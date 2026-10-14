@@ -82,10 +82,10 @@ public class WindowUIBridge extends StackUIBridge {
 
 		final double left = ui.getView().toUiX(0D) + 4D;
 		final double top = ui.getView().toUiY(0D) + 4D;
-		if (x + width > ui.getView().toUiX(ui.getWidth()) - 4D) {
+		if (x + width > ui.getView().toUiX(ui.getWindowWidth()) - 4D) {
 			x = mouseX - width - 14D;
 		}
-		if (y + height > ui.getView().toUiY(ui.getHeight()) - 4D) {
+		if (y + height > ui.getView().toUiY(ui.getWindowHeight()) - 4D) {
 			y = mouseY - height - 14D;
 		}
 		if (x < left) {

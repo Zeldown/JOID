@@ -39,9 +39,9 @@ public class SelectorNodeTest {
 	@Before
 	public void createAnOptionList() {
 		this.selector = new Selector().onChange(event -> this.changes.add(event.getValue())).values("first", "second", "third");
-		this.first = (RectNode) this.selector.getChildren().ordered().get(0);
-		this.second = (RectNode) this.selector.getChildren().ordered().get(1);
-		this.third = (RectNode) this.selector.getChildren().ordered().get(2);
+		this.first = (RectNode) this.selector.getChildren().get(0);
+		this.second = (RectNode) this.selector.getChildren().get(1);
+		this.third = (RectNode) this.selector.getChildren().get(2);
 		this.changes.clear();
 	}
 

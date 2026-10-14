@@ -57,6 +57,10 @@ public final class UIDataScaleObject implements UIDataScale {
 	}
 
 	public double apply(final double interfaceScale) {
+		if (!this.active) {
+			return 1D;
+		}
+
 		return this.limited ? Math.min(interfaceScale, this.limit) : interfaceScale;
 	}
 

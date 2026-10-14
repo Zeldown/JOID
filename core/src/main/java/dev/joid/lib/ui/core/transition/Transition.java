@@ -17,28 +17,36 @@ public abstract class Transition {
 	@Getter
 	public static abstract class TransitionState {
 
+		private final float         defaultValue;
 		private final TweenAnimator animator;
 		private boolean drawn;
 		private boolean running;
 		private boolean enabled;
 
 		public TransitionState(final float defaultValue) {
+			this.defaultValue = defaultValue;
 			this.animator = TweenAnimator.create(defaultValue);
 			this.running = false;
 			this.enabled = true;
 		}
 
-		public void start(final @NonNull Timeline timeline) {
+		public final void start() {
+			this.animator.setValue(this.defaultValue);
+			this.startTimeline();
+		}
+
+		protected final void start(final @NonNull Timeline timeline) {
 			if (!this.enabled) {
 				return;
 			}
 
 			this.drawn = false;
 			this.running = true;
-			this.animator.setTimeline(timeline);
+			this.animator.timeline(timeline);
 		}
 
-		public abstract void start();
+		protected abstract void startTimeline();
+
 		public abstract void init(final @NonNull UI ui);
 		public abstract void pre(final @NonNull UI ui, final double mouseX, final double mouseY);
 		public abstract void post(final @NonNull UI ui, final double mouseX, final double mouseY);

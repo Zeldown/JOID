@@ -1,8 +1,6 @@
 package dev.joid.lib.bridge.backend;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -208,18 +206,15 @@ public class BackendTest {
 	}
 
 	@Test
-	public void warnsAboutAnotherMajorVersionAndRegisters() {
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
+	public void refusesAnotherMajorVersionBeforeRegistering() {
+		this.backend = TraceBackend.create(this.trace, "6.0.0");
 		try {
-			this.backend = TraceBackend.create(this.trace, "6.0.0").register();
-		} finally {
-			System.setErr(previous);
+			this.backend.register();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The backend was built for JOID 6.x, but JOID " + JOID.VERSION + " is loaded: update the backend", exception.getMessage());
 		}
-		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] This backend targets JOID 6.0.0 but JOID " + JOID.VERSION + " is loaded"));
-		Assert.assertEquals("6.0.0", this.backend.getVersion());
-		Assert.assertTrue(this.trace.contains("input"));
+		Assert.assertTrue(this.trace.isEmpty());
 	}
 
 	@Test
@@ -229,7 +224,7 @@ public class BackendTest {
 		backend.window.setWidth(64);
 		backend.window.setHeight(32);
 		backend.frame();
-		Assert.assertEquals(Color.RED, backend.render.getClearedColor());
+		Assert.assertEquals(Color.BLACK, backend.render.getClearedColor());
 		Assert.assertEquals(64, backend.render.getState().getViewportWidth());
 		Assert.assertEquals(32, backend.render.getState().getViewportHeight());
 	}

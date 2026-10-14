@@ -8,7 +8,6 @@ import java.util.Map;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.animator.TweenAnimatorAccessor;
-import dev.joid.lib.animation.tween.equation.Quad;
 import dev.joid.lib.ui.event.EventListener;
 import lombok.NonNull;
 
@@ -69,7 +68,7 @@ public final class Tween extends BaseTween<Tween> {
 	public static Tween to(final Object target, final int tweenType, final float duration) {
 		final Tween tween = Tween.pool.get();
 		tween.setup(target, tweenType, duration);
-		tween.ease(Quad.INOUT);
+		tween.ease(TweenEquations.LINEAR);
 		tween.path(TweenPaths.catmullRom);
 		return tween;
 	}
@@ -77,7 +76,7 @@ public final class Tween extends BaseTween<Tween> {
 	public static Tween from(final Object target, final int tweenType, final float duration) {
 		final Tween tween = Tween.pool.get();
 		tween.setup(target, tweenType, duration);
-		tween.ease(Quad.INOUT);
+		tween.ease(TweenEquations.LINEAR);
 		tween.path(TweenPaths.catmullRom);
 		tween.isFrom = true;
 		return tween;
@@ -86,7 +85,7 @@ public final class Tween extends BaseTween<Tween> {
 	public static Tween set(final Object target, final int tweenType) {
 		final Tween tween = Tween.pool.get();
 		tween.setup(target, tweenType, 0);
-		tween.ease(Quad.INOUT);
+		tween.ease(TweenEquations.LINEAR);
 		return tween;
 	}
 

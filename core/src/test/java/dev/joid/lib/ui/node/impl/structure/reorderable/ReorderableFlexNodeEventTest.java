@@ -200,7 +200,7 @@ public class ReorderableFlexNodeEventTest {
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(60);
 		Assert.assertEquals(Arrays.asList(0, 0), received);
-		Assert.assertEquals(Arrays.asList(first, second), flex.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(first, second), flex.getChildren());
 	}
 
 	public static final class NodeUI extends UI {

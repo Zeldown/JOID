@@ -24,10 +24,7 @@ public abstract class ChartNode extends Node {
 
 	protected ChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-	}
-
-	public final boolean isLoaded() {
-		return this.isMounted() && this.xAxis != null && this.yAxis != null && !this.getDataMap().isEmpty() && !this.getDataMap().values().stream().anyMatch(ChartData::isEmpty);
+		super.<ChartNode>wait(node -> node.xAxis != null && node.yAxis != null && !node.getDataMap().isEmpty() && node.getDataMap().values().stream().noneMatch(ChartData::isEmpty));
 	}
 
 	public final Number getMax() {
@@ -82,7 +79,7 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final <T extends ChartNode> @NonNull T xAxis(final @NonNull Supplier<@NonNull XChartAxis> xAxis) {
-		return super.follow("xAxis", xAxis, value -> this.xAxis = value);
+		return super.follow("xAxis", xAxis, (final ChartNode node, final XChartAxis value) -> node.xAxis = value);
 	}
 
 	public final <T extends ChartNode> @NonNull T yAxis(final @NonNull YChartAxis yAxis) {
@@ -90,7 +87,7 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final <T extends ChartNode> @NonNull T yAxis(final @NonNull Supplier<@NonNull YChartAxis> yAxis) {
-		return super.follow("yAxis", yAxis, value -> this.yAxis = value);
+		return super.follow("yAxis", yAxis, (final ChartNode node, final YChartAxis value) -> node.yAxis = value);
 	}
 
 	public final <T extends ChartNode> @NonNull T data(final @NonNull String dataName, final @NonNull ChartData data) {

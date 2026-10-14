@@ -27,6 +27,7 @@ import org.apache.commons.io.monitor.FileAlterationListener;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
 
 import dev.joid.internal.JOIDEnv;
@@ -134,6 +135,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private boolean loaded;
 	private boolean monitored;
 	private boolean initialized;
+	private boolean customTransition;
 	private volatile boolean reloadPending;
 
 	private double fps;
@@ -213,13 +215,15 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 			this.eventBus.reset();
 			this.scoped(() -> {
-				for (final Node node : this.nodeList) {
-					if (node != this.devNode) {
-						node.fireDetach();
+				if (!this.closed) {
+					for (final Node node : this.nodeList) {
+						if (node != this.devNode) {
+							node.fireDetach();
+						}
 					}
+					this.taskList.forEach(Task::detach);
 				}
 				this.nodeList.clear();
-				this.taskList.forEach(Task::detach);
 
 				SignalReplay.reset();
 				SignalReplay.enter(this);
@@ -246,7 +250,7 @@ public abstract class UI implements IUI, IndexedElement {
 				if (devNodeEnabled) {
 					this.scoped(() -> this.devNode.attach(this));
 				} else {
-					this.devNode = DevNode.create(1625, 1007).visible(node -> node.getUi().isOnTop()).enabled(node -> node.getUi().isOnTop()).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
+					this.devNode = DevNode.create(1900, 1060).visible(node -> node.getUi().isOnTop()).enabled(node -> node.getUi().isOnTop()).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
 				}
 			}
 
@@ -254,8 +258,6 @@ public abstract class UI implements IUI, IndexedElement {
 				final long end = System.nanoTime();
 				JOIDLog.info(this.getClass().getSimpleName() + " loaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
 			}
-		} else if (this.closed) {
-			this.scoped(() -> this.nodeList.forEach(node -> node.load(this)));
 		}
 
 		this.closed = false;
@@ -279,11 +281,11 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		final UIMouseScrollEvent<UI> event = UIMouseScrollEvent.create(this, mx, my, notchesX, notchesY);
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event)));
+		this.dispatch("mouseScroll", () -> this.nodeList.reversed().forEach(node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event)));
 		this.fireListeners(UI.HANDLE_MOUSE_SCROLL, event);
 
 		if (!event.isConsumed() && JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
-			this.zoom(this.view.getZoom() + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
+			this.view.zoom(this.view.getZoom() + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
 			event.consume();
 		}
 
@@ -308,7 +310,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMousePressed(mx, my, button, event)));
+		this.dispatch("mousePressed", () -> this.nodeList.reversed().forEach(node -> node.fireMousePressed(mx, my, button, event)));
 		this.fireListeners(UI.HANDLE_MOUSE_PRESSED, event);
 		this.fireMonitor(UI.HANDLE_MOUSE_PRESSED, event);
 		return event.isConsumed();
@@ -331,7 +333,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseReleased(mx, my, button, event)));
+		this.dispatch("mouseReleased", () -> this.nodeList.reversed().forEach(node -> node.fireMouseReleased(mx, my, button, event)));
 		this.fireListeners(UI.HANDLE_MOUSE_RELEASED, event);
 		this.fireMonitor(UI.HANDLE_MOUSE_RELEASED, event);
 		return event.isConsumed();
@@ -354,7 +356,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, deltaTime);
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireMouseDragged(mx, my, button, deltaTime, event)));
+		this.dispatch("mouseDragged", () -> this.nodeList.reversed().forEach(node -> node.fireMouseDragged(mx, my, button, deltaTime, event)));
 		this.fireListeners(UI.HANDLE_MOUSE_DRAGGED, event);
 		this.fireMonitor(UI.HANDLE_MOUSE_DRAGGED, event);
 		return event.isConsumed();
@@ -374,7 +376,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		final UICharEvent<UI> event = UICharEvent.create(this, codepoint);
-		this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireCharTyped(codepoint, event)));
+		this.dispatch("charTyped", () -> this.nodeList.reversed().forEach(node -> node.fireCharTyped(codepoint, event)));
 		this.fireListeners(UI.HANDLE_CHAR_TYPED, event);
 		this.fireMonitor(UI.HANDLE_CHAR_TYPED, event);
 		return event.isConsumed();
@@ -396,7 +398,7 @@ public abstract class UI implements IUI, IndexedElement {
 		final UIKeyEvent<UI> event = UIKeyEvent.create(this, key);
 		this.fireShortcuts(key, true, event);
 		if (!event.isConsumed()) {
-			this.untraced(() -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(key, event)));
+			this.dispatch("keyPressed", () -> this.nodeList.reversed().forEach(node -> node.fireKeyPressed(key, event)));
 		}
 		this.fireListeners(UI.HANDLE_KEY_PRESSED, event);
 		this.fireShortcuts(key, false, event);
@@ -404,7 +406,7 @@ public abstract class UI implements IUI, IndexedElement {
 		if (this.data.zoomable() && !event.isConsumed()) {
 			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
 				final double previous = this.view.getZoom();
-				this.zoom(previous + 0.1D);
+				this.view.zoom(previous + 0.1D);
 				if (this.view.getZoom() != previous) {
 					event.consume();
 				}
@@ -412,7 +414,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 			if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown())) {
 				final double previous = this.view.getZoom();
-				this.zoom(previous - 0.1D);
+				this.view.zoom(previous - 0.1D);
 				if (this.view.getZoom() != previous) {
 					event.consume();
 				}
@@ -447,7 +449,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void fireUpdate() {
-		this.untraced(() -> {
+		this.dispatch("update", () -> {
 			this.nodeList.forEach(Node::fireUpdate);
 			this.update();
 		});
@@ -497,11 +499,11 @@ public abstract class UI implements IUI, IndexedElement {
 		return this.data.zindex();
 	}
 
-	public final double getWidth() {
+	public final double getWindowWidth() {
 		return this.view.getWidth();
 	}
 
-	public final double getHeight() {
+	public final double getWindowHeight() {
 		return this.view.getHeight();
 	}
 
@@ -576,6 +578,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
 		this.taskList.forEach(Task::detach);
 		this.closed = true;
+		this.initialized = false;
 
 		this.stopMonitor();
 
@@ -759,6 +762,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final @NonNull UI setTransition(final Transition transition) {
 		this.transition = transition;
+		this.customTransition = true;
 		return this;
 	}
 
@@ -788,11 +792,6 @@ public abstract class UI implements IUI, IndexedElement {
 		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
 	}
 
-	public final void zoom(final double zoom) {
-		this.view.zoom(zoom);
-		this.refreshView();
-	}
-
 	private void readData() {
 		final UIDataObject data = UIDataObject.getOrDefault(this.getClass());
 		final UIDataDebugObject debug = UIDataDebugObject.getOrDefault(this.getClass());
@@ -818,7 +817,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	private void refreshTransition() {
-		if (this.popup.active() == this.transitionPopup.active() && this.popup.transition() == this.transitionPopup.transition()) {
+		if (this.customTransition || this.popup.active() == this.transitionPopup.active() && this.popup.transition() == this.transitionPopup.transition()) {
 			return;
 		}
 
@@ -882,6 +881,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		this.view.anchorX(this.data.getAnchorPositionX()).anchorY(this.data.getAnchorPositionY());
+		this.refreshView();
 		this.refreshTransition();
 		if (this.monitored != this.debug.hotreload()) {
 			this.refreshMonitor();
@@ -910,11 +910,11 @@ public abstract class UI implements IUI, IndexedElement {
 			float opacity = this.data.getBackgroundColor().getAlpha() / 255F;
 			if (this.transition != null) {
 				if (this.transition.getIn() != null && this.transition.getIn().isRunning()) {
-					opacity = this.transition.getIn().getAnimator().get() * (this.data.getBackgroundColor().getAlpha() / 255F);
+					opacity = Math.min(1F, Math.max(0F, this.transition.getIn().getAnimator().get())) * (this.data.getBackgroundColor().getAlpha() / 255F);
 				}
 
 				if (this.transition.getOut() != null && this.transition.getOut().isRunning()) {
-					opacity = this.transition.getOut().getAnimator().get() * (this.data.getBackgroundColor().getAlpha() / 255F);
+					opacity = Math.min(1F, Math.max(0F, this.transition.getOut().getAnimator().get())) * (this.data.getBackgroundColor().getAlpha() / 255F);
 				}
 			}
 			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().copyAlpha(opacity));
@@ -1060,6 +1060,14 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
+	private void dispatch(final String input, final Runnable runnable) {
+		try {
+			this.untraced(runnable);
+		} catch (final RuntimeException exception) {
+			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + exception, "The " + input + " of " + UI.nameOf(this.getClass()) + " failed: " + exception, exception);
+		}
+	}
+
 	private void untraced(final Runnable runnable) {
 		final boolean tracing = SignalContext.current().tracing(false);
 		try {
@@ -1083,7 +1091,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return;
 		}
 
-		node.getChildren().reversed().forEach(child -> UI.collectShortcuts(child, shortcutList));
+		Lists.reverse(node.getChildren()).forEach(child -> UI.collectShortcuts(child, shortcutList));
 		shortcutList.addAll(node.getShortcutList());
 	}
 

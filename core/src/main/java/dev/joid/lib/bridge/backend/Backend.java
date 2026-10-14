@@ -48,6 +48,7 @@ public abstract class Backend<T extends Backend<T>> {
 			throw new IllegalStateException(this.getClass().getSimpleName() + " is already registered");
 		}
 
+		JOID.checkVersion(this.version);
 		this.registered = true;
 		if (this.dataDir != null) {
 			JOIDEnv.dataDir(this.dataDir);
@@ -56,8 +57,6 @@ public abstract class Backend<T extends Backend<T>> {
 		if (this.cacheDir != null) {
 			JOIDEnv.cacheDir(this.cacheDir);
 		}
-
-		JOID.checkVersion(this.version);
 
 		final IAudioBridge audio = this.audio ? this.createAudioBridge() : null;
 		if (audio != null) {

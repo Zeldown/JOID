@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.junit.Assert;
@@ -54,8 +53,11 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.hover.IHoverElement;
+import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
+import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
+import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
 import dev.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapType;
@@ -149,7 +151,7 @@ public class NodeTest {
 	}
 
 	@Test
-	public void movesWithoutForgettingItsDefaultBounds() {
+	public void movesWithoutForgettingItsDefaultSize() {
 		final RectNode node = RectNode.create(10D, 20D, 30D, 40D);
 		Assert.assertSame(node, node.x(1D).y(2D));
 		Assert.assertEquals(1D, node.getX(), 0D);
@@ -164,8 +166,8 @@ public class NodeTest {
 		Assert.assertEquals(8D, node.getY(), 0D);
 		Assert.assertEquals(11D, node.getWidth(), 0D);
 		Assert.assertEquals(12D, node.getHeight(), 0D);
-		Assert.assertEquals(10D, node.getDefaultX(), 0D);
-		Assert.assertEquals(20D, node.getDefaultY(), 0D);
+		Assert.assertEquals(7D, node.getDefaultX(), 0D);
+		Assert.assertEquals(8D, node.getDefaultY(), 0D);
 		Assert.assertEquals(30D, node.getDefaultWidth(), 0D);
 		Assert.assertEquals(40D, node.getDefaultHeight(), 0D);
 	}
@@ -194,7 +196,7 @@ public class NodeTest {
 		Assert.assertSame(middle, leaf.getParent());
 		Assert.assertEquals(115D, leaf.getAbsoluteX(), 0D);
 		Assert.assertEquals(72D, leaf.getAbsoluteY(), 0D);
-		Assert.assertEquals(111D, leaf.getAbsoluteDefaultX(), 0D);
+		Assert.assertEquals(115D, leaf.getAbsoluteDefaultX(), 0D);
 		Assert.assertEquals(72D, leaf.getAbsoluteDefaultY(), 0D);
 		Assert.assertEquals(100D, root.getAbsoluteDefaultX(), 0D);
 		Assert.assertEquals(50D, root.getAbsoluteDefaultY(), 0D);
@@ -214,44 +216,50 @@ public class NodeTest {
 	}
 
 	@Test
-	public void keepsItsCenterWhenResizedAroundACenterAnchor() {
+	public void placesItsCenterOnItsPositionWithACenterAnchor() {
 		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchor(Align.CENTER);
 		this.bridges.open(new NodeUI(node)).frame();
-		node.width(100D).height(50D);
-		this.bridges.frame();
 		Assert.assertSame(Align.CENTER, node.getAnchorX());
 		Assert.assertSame(Align.CENTER, node.getAnchorY());
-		Assert.assertEquals(150D, node.getX(), 0D);
-		Assert.assertEquals(125D, node.getY(), 0D);
-	}
-
-	@Test
-	public void keepsItsFarEdgesWhenResizedAroundEndAnchors() {
-		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchorX(Align.END).anchorY(Align.END);
-		this.bridges.open(new NodeUI(node)).frame();
-		node.width(150D).height(40D);
-		this.bridges.frame();
-		Assert.assertEquals(150D, node.getX(), 0D);
-		Assert.assertEquals(160D, node.getY(), 0D);
-		node.width(200D).height(100D);
-		this.bridges.frame();
-		Assert.assertEquals(100D, node.getX(), 0D);
-		Assert.assertEquals(100D, node.getY(), 0D);
-	}
-
-	@Test
-	public void keepsItsOriginWhenResizedAroundAStartAnchor() {
-		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchorX(Align.START).anchorY(Align.CENTER);
-		this.bridges.open(new NodeUI(node)).frame();
+		Assert.assertEquals(0D, node.getX(), 0D);
+		Assert.assertEquals(50D, node.getY(), 0D);
 		node.width(100D).height(50D);
 		this.bridges.frame();
-		Assert.assertSame(Align.START, node.getAnchorX());
-		Assert.assertSame(Align.CENTER, node.getAnchorY());
+		Assert.assertEquals(50D, node.getX(), 0D);
+		Assert.assertEquals(75D, node.getY(), 0D);
+	}
+
+	@Test
+	public void placesItsFarEdgesOnItsPositionWithEndAnchors() {
+		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchorX(Align.END).anchorY(Align.END);
+		this.bridges.open(new NodeUI(node)).frame();
+		Assert.assertEquals(-100D, node.getX(), 0D);
+		Assert.assertEquals(0D, node.getY(), 0D);
+		node.width(150D).height(40D);
+		this.bridges.frame();
+		Assert.assertEquals(-50D, node.getX(), 0D);
+		Assert.assertEquals(60D, node.getY(), 0D);
+		node.width(200D).height(100D);
+		this.bridges.frame();
+		Assert.assertEquals(-100D, node.getX(), 0D);
+		Assert.assertEquals(0D, node.getY(), 0D);
+	}
+
+	@Test
+	public void movesItsPivotWithItsAnchor() {
+		final RectNode node = RectNode.create(100D, 100D, 200D, 100D).anchorX(Align.START).anchorY(Align.CENTER);
+		this.bridges.open(new NodeUI(node)).frame();
 		Assert.assertEquals(100D, node.getX(), 0D);
-		Assert.assertEquals(125D, node.getY(), 0D);
+		Assert.assertEquals(50D, node.getY(), 0D);
+		node.height(50D);
+		this.bridges.frame();
+		Assert.assertEquals(75D, node.getY(), 0D);
 		node.anchorY(Align.START).height(100D);
 		this.bridges.frame();
-		Assert.assertEquals(125D, node.getY(), 0D);
+		Assert.assertEquals(100D, node.getY(), 0D);
+		node.x(300D);
+		Assert.assertEquals(300D, node.getX(), 0D);
+		Assert.assertEquals(300D, node.getDefaultX(), 0D);
 	}
 
 	@Test
@@ -858,7 +866,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(effect);
 		this.bridges.open(new NodeUI(node)).frame();
 		Assert.assertFalse(node.shouldApplyEffect(effect));
-		Assert.assertTrue(events.isEmpty());
+		Assert.assertEquals(Arrays.asList("skipped init"), events);
 	}
 
 	@Test
@@ -902,7 +910,8 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).append(top, middle, bottom);
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(2, top.getIndex());
-		Assert.assertEquals(Arrays.asList(bottom, middle, top), node.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(bottom, middle, top), node.getDrawList());
+		Assert.assertEquals(Arrays.asList(top, middle, bottom), node.getChildren());
 		Assert.assertTrue(this.order(0.5F, 0.7F, 0.9F) < this.order(0.2F, 0.4F, 0.6F));
 		Assert.assertTrue(this.order(0.2F, 0.4F, 0.6F) < this.order(0.3F, 0.5F, 0.7F));
 		Assert.assertTrue(this.order(0.3F, 0.5F, 0.7F) < this.order(0.1F, 0.3F, 0.5F));
@@ -1111,25 +1120,6 @@ public class NodeTest {
 		first[0] = true;
 		Assert.assertFalse(node.isMounted());
 		second[0] = true;
-		Assert.assertTrue(node.isMounted());
-	}
-
-	@Test
-	public void waitsForItsSignalToHoldAValue() {
-		final Signal<String> signal = new Signal<>("default");
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).wait(signal);
-		Assert.assertFalse(node.isMounted());
-		signal.set("loaded");
-		Assert.assertTrue(node.isMounted());
-	}
-
-	@Test
-	public void waitsForItsDelay() {
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).wait(500L, TimeUnit.MILLISECONDS);
-		Assert.assertFalse(node.isMounted());
-		this.bridges.getClock().advance(499L);
-		Assert.assertFalse(node.isMounted());
-		this.bridges.getClock().advance(1L);
 		Assert.assertTrue(node.isMounted());
 	}
 
@@ -1833,12 +1823,9 @@ public class NodeTest {
 	@Test
 	public void refusesToDragATopLevelNodeInsideItsParent() {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.parent());
-		try {
-			this.press(node, 110D, 110D);
-			Assert.fail("A top level node has no parent to be dragged inside");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The node RectNode is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()", expected.getMessage());
-		}
+		final String output = NodeTest.capture(() -> this.press(node, 110D, 110D));
+		Assert.assertTrue(output, output.contains("The node RectNode is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()"));
+		Assert.assertFalse(node.isDragging());
 		Assert.assertFalse(node.isDragging());
 		this.bridges.frames(2);
 		Assert.assertEquals(100D, node.getX(), 0D);
@@ -1873,7 +1860,7 @@ public class NodeTest {
 		final RectNode second = RectNode.create(10D, 0D, 10D, 10D);
 		Assert.assertSame(parent, parent.append(first, second));
 		Assert.assertEquals(Arrays.asList(first, second), appended);
-		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren());
 		Assert.assertSame(parent, second.getParent());
 		Assert.assertFalse(first.hasUi());
 	}
@@ -1911,7 +1898,7 @@ public class NodeTest {
 		final RectNode stranger = RectNode.create(0D, 0D, 10D, 10D);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(first, kept, second);
 		Assert.assertSame(parent, parent.remove(first, second, stranger));
-		Assert.assertEquals(Arrays.asList(kept), parent.getChildren().ordered());
+		Assert.assertEquals(Arrays.asList(kept), parent.getChildren());
 		Assert.assertEquals(Arrays.asList("first detach", "callback", "second detach"), events);
 		Assert.assertNull(first.getParent());
 	}
@@ -1963,7 +1950,7 @@ public class NodeTest {
 		Assert.assertSame(second, parent.getChild(1, RectNode.class));
 		Assert.assertSame(box, parent.getChild(0, ContainerNode.class));
 		Assert.assertNull(parent.getChild(2, RectNode.class));
-		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren(RectNode.class).ordered());
+		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren(RectNode.class));
 		Assert.assertEquals(3, parent.getChildren(Node.class).size());
 	}
 
@@ -2082,8 +2069,9 @@ public class NodeTest {
 		node.x(15D);
 		final RectNode copy = node.copy();
 		Assert.assertNotSame(node, copy);
-		Assert.assertEquals(15D, copy.getX(), 0D);
-		Assert.assertEquals(20D, copy.getY(), 0D);
+		Assert.assertEquals(15D, copy.getDefaultX(), 0D);
+		Assert.assertEquals(node.getX(), copy.getX(), 0D);
+		Assert.assertEquals(node.getY(), copy.getY(), 0D);
 		Assert.assertEquals(30D, copy.getWidth(), 0D);
 		Assert.assertEquals(40D, copy.getHeight(), 0D);
 		Assert.assertSame(PositionProperty.ABSOLUTE, copy.getPosition());
@@ -2147,8 +2135,8 @@ public class NodeTest {
 			new NamedNode("label").copy();
 			Assert.fail("A node without known constructor cannot be copied");
 		} catch (final IllegalStateException expected) {
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The node NamedNode cannot be copied: none of its constructors (x, y, width, height), (x, y) or () can be called (java.lang.NoSuchMethodException: "));
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith("), declare one of them"));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The node NamedNode cannot be copied: no constructor with numbers, booleans or enums only can be called (java.lang.NoSuchMethodException: "));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith("), declare a constructor (x, y, width, height)"));
 			Assert.assertTrue(expected.getCause() instanceof NoSuchMethodException);
 		}
 	}
@@ -2159,6 +2147,230 @@ public class NodeTest {
 		final RectNode copy = RectNode.create(100D, 100D, 50D, 50D).onClick(event -> clicks[0]++).copy();
 		this.press(copy, 110D, 110D);
 		Assert.assertEquals(1, clicks[0]);
+	}
+
+	@Test
+	public void copiesANodeBuiltFromOtherSimpleArguments() {
+		final CircleNode circle = CircleNode.create(10D, 20D, 30D);
+		final CircleNode circleCopy = circle.copy();
+		Assert.assertEquals(30D, circleCopy.getWidth(), 0D);
+		Assert.assertEquals(10D, circleCopy.getX(), 0D);
+		final FlexNode flex = FlexNode.horizontal(1D, 2D, 3D);
+		final FlexNode flexCopy = flex.copy();
+		Assert.assertSame(FlexDirection.ROW, flexCopy.getDirection());
+		Assert.assertEquals(3D, flexCopy.getHeight(), 0D);
+	}
+
+	@Test
+	public void copiesWithoutParent() {
+		final RectNode child = RectNode.create(1D, 2D, 3D, 4D);
+		ContainerNode.create(100D, 100D, 10D, 10D).append(child);
+		Assert.assertNull(child.copy().getParent());
+	}
+
+	@Test
+	public void keepsFollowingTheSuppliersOfTheOriginalInItsCopy() {
+		final DoubleSignal width = new DoubleSignal(10D);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).width(width);
+		final RectNode copy = node.copy();
+		this.bridges.open(new NodeUI(copy)).frame();
+		width.set(25D);
+		this.bridges.frame();
+		Assert.assertEquals(25D, copy.getWidth(), 0D);
+		Assert.assertEquals(10D, node.getWidth(), 0D);
+	}
+
+	@Test
+	public void bindsItsCopyToTheSameSignal() {
+		final Signal<Integer> signal = new Signal<>(1);
+		final List<Object> values = new ArrayList<>();
+		final BindingNode copy = new BindingNode().link("value", signal, values).copy();
+		this.bridges.open(new NodeUI(copy));
+		signal.set(2);
+		Assert.assertEquals(Arrays.asList(1, 2), values);
+		Assert.assertEquals(1, signal.getEventSet().size());
+	}
+
+	@Test
+	public void watchesInItsCopyWithoutRunningTheWatchFirst() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final int[] watches = {0};
+		final RectNode copy = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> watches[0]++).copy();
+		this.bridges.open(new NodeUI(copy));
+		Assert.assertEquals(0, watches[0]);
+		signal.set(1);
+		Assert.assertEquals(1, watches[0]);
+	}
+
+	@Test
+	public void warnsInDevModeAboutAnApplierReadingItsOwnNode() {
+		final boolean devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(true);
+		try {
+			final String output = NodeTest.capture(() -> new CapturingNode().size(5D));
+			Assert.assertTrue(output, output.contains("[JOID] The size applier of CapturingNode reads the node it is written in"));
+			Assert.assertEquals("", NodeTest.capture(() -> new BindingNode().link("value", new Signal<>(1), new ArrayList<>())));
+		} finally {
+			JOIDEnv.devMode(devMode);
+		}
+	}
+
+	@Test
+	public void linksTheGhostOfACopyDragUntilItsDrop() {
+		final Signal<Integer> signal = new Signal<>(1);
+		final List<Object> values = new ArrayList<>();
+		final BindingNode node = new BindingNode().link("value", signal, values).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.press(node, 5D, 5D);
+		Assert.assertNotNull(node.getDraggedNode());
+		Assert.assertTrue(node.getDraggedNode().getEventBus().isEmpty());
+		Assert.assertEquals(2, signal.getEventSet().size());
+		signal.set(2);
+		this.drop(300D, 300D);
+		Assert.assertNull(node.getDraggedNode());
+		Assert.assertEquals(1, signal.getEventSet().size());
+		signal.set(3);
+		Assert.assertEquals(Arrays.asList(1, 2, 2, 3), values);
+	}
+
+	@Test
+	public void givesTheGhostOfACopyDragTheParentOfTheOriginal() {
+		final DoubleSignal width = new DoubleSignal(50D);
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).width(width).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		final ContainerNode parent = ContainerNode.create(100D, 100D, 300D, 300D).append(node);
+		this.press(parent, 120D, 120D);
+		final Node ghost = node.getDraggedNode();
+		Assert.assertSame(parent, ghost.getParent());
+		Assert.assertEquals(110D, ghost.getX(), 0D);
+		width.set(70D);
+		this.bridges.frame();
+		Assert.assertEquals(70D, ghost.getWidth(), 0D);
+	}
+
+	@Test
+	public void pairsTheInitAndDetachOfItsEffectsWhileAttached() {
+		final List<String> events = new ArrayList<>();
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new SkippedEffect(events));
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
+		this.bridges.open(new NodeUI(parent));
+		node.effect(new RecordingEffect("first", events));
+		node.effect(new RecordingEffect("second", events));
+		node.effect(new OtherEffect("other", events));
+		node.removeEffect(OtherEffect.class);
+		node.clearEffects();
+		parent.remove(node);
+		node.effect(new RecordingEffect("detached", events));
+		node.removeEffect(RecordingEffect.class);
+		Assert.assertEquals(Arrays.asList("skipped init", "first init", "first detach", "second init", "other init", "other detach", "skipped detach", "second detach"), events);
+	}
+
+	@Test
+	public void detachesTheScrollbarAndTheSkeletonItReplaces() {
+		final List<String> events = new ArrayList<>();
+		final Bar first = new Bar(90D, 0D, 10D, 20D, BoundingBox.create(0D, 0D, 10D, 100D));
+		final Bar second = new Bar(90D, 0D, 10D, 20D, BoundingBox.create(0D, 0D, 10D, 100D));
+		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).overflow(OverflowProperty.SCROLL).scrollbar(first).skeleton(rect -> new RecordingNode("old", events, 0D, 0D, 10D, 10D));
+		this.bridges.open(new NodeUI(node));
+		events.clear();
+		node.scrollbar(second).skeleton(rect -> new RecordingNode("new", events, 0D, 0D, 10D, 10D));
+		Assert.assertFalse(first.isAttached());
+		Assert.assertTrue(second.isAttached());
+		Assert.assertEquals(Arrays.asList("old detach", "new init"), events);
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void showsItsChildrenReadOnly() {
+		ContainerNode.create(0D, 0D, 10D, 10D).getChildren().add(RectNode.create(0D, 0D, 1D, 1D));
+	}
+
+	@Test
+	public void listsItsChildrenInTheirOrderOfAddition() {
+		final RectNode first = RectNode.create(0D, 0D, 1D, 1D).zindex(5);
+		final RectNode second = RectNode.create(0D, 0D, 1D, 1D);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 10D, 10D).append(first, second);
+		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren());
+		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren(RectNode.class));
+		Assert.assertSame(first, parent.getChild(0, RectNode.class));
+		Assert.assertEquals(Arrays.asList(second, first), parent.getDrawList());
+	}
+
+	@Test
+	public void endsTheHoverOfANodeHiddenUnderTheMouse() {
+		final List<String> events = new ArrayList<>();
+		final BooleanSignal shown = new BooleanSignal(true);
+		final RectNode child = RectNode.create(10D, 10D, 50D, 50D).onHoverEnd(event -> events.add("child end"));
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).visible(shown).append(child).onHoverEnd(event -> events.add("node end"));
+		this.bridges.open(new NodeUI(node)).move(120D, 120D).frames(20);
+		Assert.assertTrue(child.isHovered());
+		Assert.assertTrue(child.hoverValue(1F) > 0F);
+		shown.set(false);
+		this.bridges.frame();
+		Assert.assertFalse(node.isHovered());
+		Assert.assertFalse(child.isHovered());
+		Assert.assertEquals(Arrays.asList("node end", "child end"), events);
+		Assert.assertEquals(0F, child.hoverValue(1F), 0F);
+	}
+
+	@Test
+	public void keepsItsHoverValueWithinZeroAndOne() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).hoverDuration(200L).hoverEquation(TweenEquations.BACK_OUT);
+		this.bridges.open(new NodeUI(node)).move(120D, 120D).frame();
+		float raw = 0F;
+		float shown = 0F;
+		for (int frame = 0; frame < 20; frame++) {
+			this.bridges.frame();
+			raw = Math.max(raw, node.getHoverAnimator().get());
+			shown = Math.max(shown, node.hoverValue(1F));
+		}
+
+		Assert.assertTrue(raw > 1F);
+		Assert.assertEquals(1F, shown, 0F);
+	}
+
+	@Test
+	public void leavesItsAbsoluteChildrenOutOfItsScroll() {
+		final RectNode absolute = RectNode.create(10D, 900D, 20D, 20D).position(PositionProperty.ABSOLUTE);
+		final ContainerNode column = NodeTest.column().append(absolute);
+		this.bridges.open(new NodeUI(column)).frames(2);
+		Assert.assertEquals(200D, column.getMaxScrollY(), 0D);
+		column.scrollOffsetY(-200D).updateScroll();
+		this.bridges.frame();
+		Assert.assertEquals(900D, absolute.getY(), 0D);
+		Assert.assertEquals(-200D, column.getChild(2, RectNode.class).getShiftY(), 1E-3D);
+	}
+
+	@Test
+	public void keepsUpdatingTheOtherNodesWhenAnUpdateFails() {
+		final List<String> events = new ArrayList<>();
+		final RecordingNode after = new RecordingNode("after", events, 0D, 0D, 10D, 10D);
+		final String output = NodeTest.capture(() -> {
+			this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 100D, 100D).append(new FailingNode(), after)));
+			events.clear();
+			this.bridges.frames(2);
+		});
+		Assert.assertEquals(Arrays.asList("after update", "after update"), events);
+		Assert.assertEquals(1, output.split("The update of FailingNode in NodeUI failed", -1).length - 1);
+	}
+
+	@Test
+	public void keepsTheFrameGoingWhenAnInputFails() {
+		final String output = NodeTest.capture(() -> {
+			this.bridges.open(new NodeUI(new FailingNode())).move(5D, 5D).frames(2);
+			this.bridges.getUi().mousePressed(MouseButton.LEFT);
+			this.bridges.getUi().mousePressed(MouseButton.LEFT);
+			this.bridges.frame();
+		});
+		Assert.assertEquals(1, output.split("The mousePressed of NodeUI failed", -1).length - 1);
+	}
+
+	@Test
+	public void clicksOnlyWithTheLeftButton() {
+		final List<MouseButton> clicks = new ArrayList<>();
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).onClick(event -> clicks.add(event.getButton()));
+		this.bridges.open(new NodeUI(node)).move(110D, 110D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList(MouseButton.LEFT), clicks);
 	}
 
 	@Test
@@ -2369,52 +2581,37 @@ public class NodeTest {
 	}
 
 	@Test
-	public void keepsSeveralBindingsActiveAtOnce() {
+	public void keepsOneBindingPerProperty() {
 		final Signal<String> title = new Signal<>("first");
 		final Signal<Integer> count = new Signal<>(1);
+		final Signal<String> other = new Signal<>("other");
 		final List<Object> values = new ArrayList<>();
-		final BindingNode node = new BindingNode();
-		final ISignalSubscriber<String> titleSubscription = node.follow(title, values::add);
-		final ISignalSubscriber<Integer> countSubscription = node.follow(count, values::add);
+		final BindingNode node = new BindingNode().link("title", title, values).link("count", count, values);
 		this.bridges.open(new NodeUI(node));
 		title.set("second");
 		count.set(2);
 		Assert.assertEquals(Arrays.asList("first", 1, "second", 2), values);
-		Assert.assertNotSame(titleSubscription, countSubscription);
-		Assert.assertEquals(2, node.getSubscriptionList().size());
-		node.forget(titleSubscription);
+		Assert.assertEquals(2, node.getLinkList().size());
+		node.link("title", other, values);
 		title.set("third");
 		count.set(3);
-		Assert.assertEquals(Arrays.asList("first", 1, "second", 2, 3), values);
+		Assert.assertEquals(Arrays.asList("first", 1, "second", 2, "other", 3), values);
+		Assert.assertEquals(2, node.getLinkList().size());
 		Assert.assertTrue(title.getEventSet().isEmpty());
+		Assert.assertEquals(1, other.getEventSet().size());
 		Assert.assertEquals(1, count.getEventSet().size());
-	}
-
-	@Test
-	public void ignoresAMissingBindingInUnbind() {
-		final Signal<Integer> signal = new Signal<>(0);
-		final List<Integer> values = new ArrayList<>();
-		final BindingNode node = new BindingNode();
-		node.follow(signal, values::add);
-		this.bridges.open(new NodeUI(node));
-		node.forget(null);
-		node.forget(new BindingNode().follow(signal, value -> {}));
-		signal.set(1);
-		Assert.assertEquals(Arrays.asList(0, 1), values);
-		Assert.assertEquals(1, node.getSubscriptionList().size());
 	}
 
 	@Test
 	public void rebindsOnceAcrossADetach() {
 		final Signal<Integer> first = new Signal<>(0);
 		final Signal<Integer> second = new Signal<>(10);
-		final List<Integer> values = new ArrayList<>();
-		final BindingNode node = new BindingNode();
-		final ISignalSubscriber<Integer> previous = node.follow(first, values::add);
+		final List<Object> values = new ArrayList<>();
+		final BindingNode node = new BindingNode().link("value", first, values);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
 		this.bridges.open(new NodeUI(parent));
 		parent.remove(node);
-		node.refollow(previous, second, values::add);
+		node.link("value", second, values);
 		Assert.assertTrue(first.getEventSet().isEmpty());
 		Assert.assertTrue(second.getEventSet().isEmpty());
 		parent.append(node);
@@ -2422,7 +2619,7 @@ public class NodeTest {
 		parent.append(node);
 		Assert.assertTrue(first.getEventSet().isEmpty());
 		Assert.assertEquals(1, second.getEventSet().size());
-		Assert.assertEquals(1, node.getSubscriptionList().size());
+		Assert.assertEquals(1, node.getLinkList().size());
 		first.set(1);
 		second.set(11);
 		Assert.assertEquals(Arrays.asList(0, 10, 11), values);
@@ -2522,7 +2719,7 @@ public class NodeTest {
 	public void waitsForItsConditionsAcrossADetach() {
 		final Signal<String> title = new Signal<>();
 		final int[] mounts = {0};
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).wait(title).onMount(event -> mounts[0]++);
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).wait(rect -> title.get() != null).onMount(event -> mounts[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
 		this.bridges.open(new NodeUI(parent)).frame();
 		parent.remove(node);
@@ -2721,7 +2918,7 @@ public class NodeTest {
 		Assert.assertEquals("N/A", json.get("mappedIndex").getAsString());
 		Assert.assertEquals("RectNode", json.get("name").getAsString());
 		Assert.assertEquals(RectNode.class.getName(), json.get("class").getAsString());
-		Assert.assertEquals(10D, json.get("defaultX").getAsDouble(), 0D);
+		Assert.assertEquals(15D, json.get("defaultX").getAsDouble(), 0D);
 		Assert.assertEquals(20D, json.get("defaultY").getAsDouble(), 0D);
 		Assert.assertEquals("15.0 / 15.0", json.getAsJsonObject("bounding").get("x").getAsString());
 		Assert.assertEquals("20.0 / 20.0", json.getAsJsonObject("bounding").get("y").getAsString());
@@ -2863,7 +3060,7 @@ public class NodeTest {
 	public void findsAChildByClassLikeItsChildren() {
 		final ShadedRect child = new ShadedRect();
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
-		Assert.assertEquals(Arrays.asList(child), parent.getChildren(RectNode.class).ordered());
+		Assert.assertEquals(Arrays.asList(child), parent.getChildren(RectNode.class));
 		Assert.assertSame(child, parent.getChild(0, RectNode.class));
 	}
 
@@ -3069,16 +3266,38 @@ public class NodeTest {
 			super(0D, 0D, 10D, 10D);
 		}
 
-		public <V> ISignalSubscriber<V> follow(final Signal<V> signal, final Consumer<V> consumer) {
-			return super.bind(signal, consumer);
+		public <V> BindingNode link(final String property, final Signal<V> signal, final List<Object> values) {
+			return super.bind(property, signal, (final BindingNode node, final V value) -> values.add(value));
 		}
 
-		public void forget(final ISignalSubscriber<?> subscriber) {
-			super.unbind(subscriber);
+	}
+
+	public static final class CapturingNode extends Node {
+
+		public CapturingNode() {
+			super(0D, 0D, 10D, 10D);
 		}
 
-		public <V> ISignalSubscriber<V> refollow(final ISignalSubscriber<?> previous, final Signal<V> signal, final Consumer<V> consumer) {
-			return super.rebind(previous, signal, consumer);
+		public CapturingNode size(final double size) {
+			return super.follow("size", Signal.from(size), (final CapturingNode node, final Double value) -> this.width(value));
+		}
+
+	}
+
+	public static final class FailingNode extends Node {
+
+		public FailingNode() {
+			super(0D, 0D, 10D, 10D);
+		}
+
+		@Override
+		public void update() {
+			throw new IllegalStateException("The update of this node fails on purpose");
+		}
+
+		@Override
+		public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
+			throw new IllegalStateException("The press on this node fails on purpose");
 		}
 
 	}

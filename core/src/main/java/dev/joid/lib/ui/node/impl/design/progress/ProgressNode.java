@@ -53,7 +53,7 @@ public class ProgressNode extends Node {
 	}
 
 	public final <T extends ProgressNode> @NonNull T progress(final @NonNull Supplier<Float> progress) {
-		return super.follow("progress", progress, value -> this.progress = value);
+		return super.follow("progress", progress, (final ProgressNode node, final Float value) -> node.progress = value);
 	}
 
 	public final <T extends ProgressNode> @NonNull T direction(final @NonNull ProgressDirection direction) {
@@ -61,7 +61,7 @@ public class ProgressNode extends Node {
 	}
 
 	public final <T extends ProgressNode> @NonNull T direction(final @NonNull Supplier<@NonNull ProgressDirection> direction) {
-		return super.follow("direction", direction, value -> this.direction = value);
+		return super.follow("direction", direction, (final ProgressNode node, final ProgressDirection value) -> node.direction = value);
 	}
 
 	public final <T extends ProgressNode> @NonNull T background(final @NonNull Color background) {
@@ -69,7 +69,7 @@ public class ProgressNode extends Node {
 	}
 
 	public final <T extends ProgressNode> @NonNull T background(final @NonNull Supplier<@NonNull Color> background) {
-		return super.follow("background", background, value -> this.background = value);
+		return super.follow("background", background, (final ProgressNode node, final Color value) -> node.background = value);
 	}
 
 	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Color foreground) {
@@ -77,7 +77,7 @@ public class ProgressNode extends Node {
 	}
 
 	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Supplier<@NonNull Color> foreground) {
-		return super.follow("foreground", foreground, value -> this.foreground = value);
+		return super.follow("foreground", foreground, (final ProgressNode node, final Color value) -> node.foreground = value);
 	}
 
 	public final <T extends ProgressNode> @NonNull T backgroundResource(final Resource backgroundResource) {
@@ -85,7 +85,7 @@ public class ProgressNode extends Node {
 	}
 
 	public final <T extends ProgressNode> @NonNull T backgroundResource(final @NonNull Supplier<Resource> backgroundResource) {
-		return super.follow("backgroundResource", backgroundResource, value -> this.backgroundResource = value);
+		return super.follow("backgroundResource", backgroundResource, (final ProgressNode node, final Resource value) -> node.backgroundResource = value);
 	}
 
 	public final <T extends ProgressNode> @NonNull T foregroundResource(final Resource foregroundResource) {
@@ -93,7 +93,7 @@ public class ProgressNode extends Node {
 	}
 
 	public final <T extends ProgressNode> @NonNull T foregroundResource(final @NonNull Supplier<Resource> foregroundResource) {
-		return super.follow("foregroundResource", foregroundResource, value -> this.foregroundResource = value);
+		return super.follow("foregroundResource", foregroundResource, (final ProgressNode node, final Resource value) -> node.foregroundResource = value);
 	}
 
 	private double getProgressX() {

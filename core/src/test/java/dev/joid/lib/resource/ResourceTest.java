@@ -316,8 +316,33 @@ public class ResourceTest {
 		resource.request(10, 0);
 		resource.request(30, 20);
 		resource.blocking().request(40, 50);
-		Assert.assertEquals(Arrays.asList("init", "request 30x20 async", "request 40x50 blocking"), decoder.calls);
+		Assert.assertEquals(Arrays.asList("init", "request 30x20 async", "request 40x50 blocking resizing"), decoder.calls);
 		ResourceTest.resource(null).request(30, 20);
+	}
+
+	@Test
+	public void resizesUntilItsDrawnSizeRests() {
+		final Decoder decoder = new Decoder(true);
+		final Resource resource = ResourceBuilder.create().cache(null).compute("image", () -> new ResourceData("image", decoder));
+		resource.request(30, 20);
+		resource.request(40, 50);
+		this.bridges.getClock().advance(199L);
+		resource.request(40, 50);
+		this.bridges.getClock().advance(1L);
+		resource.request(40, 50);
+		Assert.assertEquals(Arrays.asList("init", "request 30x20 async", "request 40x50 async resizing", "request 40x50 async resizing", "request 40x50 async"), decoder.calls);
+	}
+
+	@Test
+	public void restsAtTheSizeOfEachOfItsCopies() {
+		final Decoder decoder = new Decoder(true);
+		final Resource large = ResourceBuilder.create().cache(null).compute("image", () -> new ResourceData("image", decoder));
+		final Resource small = large.copy();
+		large.request(100, 100);
+		small.request(24, 24);
+		large.request(100, 100);
+		small.request(24, 24);
+		Assert.assertEquals(Arrays.asList("init", "request 100x100 async", "request 24x24 async", "request 100x100 async", "request 24x24 async"), decoder.calls);
 	}
 
 	@Test
@@ -501,8 +526,8 @@ public class ResourceTest {
 		}
 
 		@Override
-		public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async) {
-			this.calls.add("request " + width + "x" + height + (async ? " async" : " blocking"));
+		public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {
+			this.calls.add("request " + width + "x" + height + (async ? " async" : " blocking") + (resizing ? " resizing" : ""));
 		}
 
 		@Override

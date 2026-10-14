@@ -174,8 +174,8 @@ public class UIDemoPlayer extends UIDemo {
 		Shortcut
 		.create(Key.F)
 		.onTrigger(event -> {
-			if (video.getWidth() < this.getWidth()) {
-				video.x(0).y(0).width(this.getWidth()).height(this.getHeight());
+			if (video.getWidth() < this.getWindowWidth()) {
+				video.x(0).y(0).width(this.getWindowWidth()).height(this.getWindowHeight());
 			} else {
 				video.x(80).y(40).width(320).height(180);
 			}

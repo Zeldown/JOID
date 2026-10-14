@@ -70,7 +70,7 @@ public class WatchPropertyTest {
 		final Signal<Integer> count = new Signal<>(1);
 		final WatchUI ui = new WatchUI(count);
 		this.bridges.open(ui).frame();
-		final Node old = ui.node.getChildren().ordered().get(0);
+		final Node old = ui.node.getChildren().get(0);
 		count.set(2);
 		this.bridges.frame();
 		Assert.assertNull(old.getParent());

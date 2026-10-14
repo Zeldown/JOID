@@ -26,9 +26,9 @@ public class RotateTransformOperation implements ITransformOperation {
 
 	@Override
 	public void transform() {
-		final double x = this.rotation.getRawX();
-		final double y = this.rotation.getRawY();
-		final double z = this.rotation.getRawZ();
+		final double x = this.rotation.getPitch();
+		final double y = this.rotation.getYaw();
+		final double z = this.rotation.getRoll();
 		final double pivotX = this.pivot.getX();
 		final double pivotY = this.pivot.getY();
 		final double pivotZ = this.pivot.getZ();

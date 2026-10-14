@@ -430,14 +430,14 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
-	public void restoresItsValueFromBeforeItsFocusOnEscape() {
+	public void keepsItsTypedValueOnEscape() {
 		final IntegerSignal signal = new IntegerSignal(4);
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).signal(signal)).cursorPosition(1);
 		this.type(field, "21");
 		Assert.assertEquals(421, (int) signal.get());
 		this.press(field, Key.ESCAPE);
-		Assert.assertEquals("4", field.getText());
-		Assert.assertEquals(4, (int) signal.get());
+		Assert.assertEquals("421", field.getText());
+		Assert.assertEquals(421, (int) signal.get());
 		Assert.assertFalse(field.isFocused());
 	}
 

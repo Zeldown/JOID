@@ -200,11 +200,11 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void restoresTheTextItHadBeforeItsFocusOnEscape() {
+	public void keepsItsTypedTextOnEscape() {
 		final MultilineTextFieldNode field = this.field("ab").cursorPosition(2);
 		this.type(field, "cd");
 		this.press(field, Key.ESCAPE);
-		Assert.assertEquals("ab", field.getText());
+		Assert.assertEquals("abcd", field.getText());
 		Assert.assertFalse(field.isFocused());
 	}
 

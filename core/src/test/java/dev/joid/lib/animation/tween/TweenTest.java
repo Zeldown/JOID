@@ -35,7 +35,7 @@ public class TweenTest {
 		Assert.assertSame(value, tween.getTarget());
 		Assert.assertEquals(4, tween.getType());
 		Assert.assertEquals(2F, tween.getDuration(), 0F);
-		Assert.assertSame(TweenEquations.QUAD_INOUT, tween.getEasing());
+		Assert.assertSame(TweenEquations.LINEAR, tween.getEasing());
 		Assert.assertSame(MutableFloat.class, tween.getTargetClass());
 	}
 
@@ -53,8 +53,34 @@ public class TweenTest {
 	@Test
 	public void easesWithItsEquation() {
 		final MutableFloat value = new MutableFloat(0F);
-		Tween.to(value, 0, 1F).target(10F).start().update(0.25F);
+		Tween.to(value, 0, 1F).target(10F).ease(TweenEquations.QUAD_INOUT).start().update(0.25F);
 		Assert.assertEquals(1.25F, value.floatValue(), 0F);
+	}
+
+	@Test
+	public void movesLinearlyByDefault() {
+		final MutableFloat to = new MutableFloat(0F);
+		final MutableFloat from = new MutableFloat(10F);
+		final MutableFloat set = new MutableFloat(0F);
+		Tween.to(to, 0, 1F).target(10F).start().update(0.25F);
+		Tween.from(from, 0, 1F).target(0F).start().update(0.25F);
+		Assert.assertEquals(2.5F, to.floatValue(), 0F);
+		Assert.assertEquals(2.5F, from.floatValue(), 0F);
+		Assert.assertSame(TweenEquations.LINEAR, Tween.set(set, 0).getEasing());
+	}
+
+	@Test
+	public void replaysFromTheStartWhenStartedAgain() {
+		final MutableFloat value = new MutableFloat(0F);
+		final Tween tween = Tween.to(value, 0, 1F).target(10F).start();
+		tween.update(2F);
+		Assert.assertTrue(tween.isFinished());
+		value.setValue(4F);
+		tween.start();
+		Assert.assertFalse(tween.isFinished());
+		Assert.assertEquals(-2, tween.getStep());
+		tween.update(0.5F);
+		Assert.assertEquals(7F, value.floatValue(), 0F);
 	}
 
 	@Test

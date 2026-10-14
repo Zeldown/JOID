@@ -6,30 +6,28 @@ import org.junit.Test;
 public class UIDataOverlayRenderObjectTest {
 
 	@Test
-	public void startsHiddenBehindScreensAtZindexZero() {
+	public void startsHiddenAndBelowTheScreens() {
 		final UIDataOverlayRenderObject data = new UIDataOverlayRenderObject();
 		Assert.assertFalse(data.always());
-		Assert.assertFalse(data.screens());
-		Assert.assertEquals(0, data.zindex());
+		Assert.assertFalse(data.aboveScreens());
 	}
 
 	@Test
 	public void changesEveryValue() {
 		final UIDataOverlayRenderObject data = new UIDataOverlayRenderObject();
-		Assert.assertSame(data, data.setAlways(true).setScreens(true).setZindex(-2));
+		Assert.assertSame(data, data.setAlways(true).setAboveScreens(true));
 		Assert.assertTrue(data.always());
-		Assert.assertTrue(data.screens());
-		Assert.assertEquals(-2, data.zindex());
+		Assert.assertTrue(data.aboveScreens());
 	}
 
 	@Test
 	public void takesOnlyTheValuesChangedInTheAnnotation() {
 		final UIDataOverlayRenderObject previous = new UIDataOverlayRenderObject();
-		final UIDataOverlayRenderObject next = new UIDataOverlayRenderObject().setZindex(7);
-		final UIDataOverlayRenderObject data = new UIDataOverlayRenderObject().setScreens(true);
+		final UIDataOverlayRenderObject next = new UIDataOverlayRenderObject().setAlways(true);
+		final UIDataOverlayRenderObject data = new UIDataOverlayRenderObject().setAboveScreens(true);
 		Assert.assertSame(data, data.update(previous, next));
-		Assert.assertTrue(data.screens());
-		Assert.assertEquals(7, data.zindex());
+		Assert.assertTrue(data.always());
+		Assert.assertTrue(data.aboveScreens());
 	}
 
 	@Test

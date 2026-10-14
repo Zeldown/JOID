@@ -22,7 +22,7 @@ public class DemoPushTransition extends Transition {
 		public void init(final @NonNull UI ui) {}
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			final Timeline timeline = super.getAnimator().sequence(1000F, 1F, TweenEquations.QUART_OUT).getTimeline();
 			super.start(timeline);
 		}
@@ -47,7 +47,7 @@ public class DemoPushTransition extends Transition {
 		public void init(final @NonNull UI ui) {}
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			final Timeline timeline = super.getAnimator().sequence(1000F, 0F, TweenEquations.QUART_IN).getTimeline();
 			super.start(timeline);
 		}

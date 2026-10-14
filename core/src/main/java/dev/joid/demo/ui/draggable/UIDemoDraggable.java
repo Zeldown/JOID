@@ -29,6 +29,7 @@ public class UIDemoDraggable extends UIDemo {
 	private final IntegerSignal ends   = IntegerSignal.of(0);
 	private final IntegerSignal drags  = IntegerSignal.of(0);
 	private final IntegerSignal snaps  = IntegerSignal.of(0);
+	private final IntegerSignal moves  = IntegerSignal.of(0);
 	private final IntegerSignal starts = IntegerSignal.of(0);
 
 	@Override
@@ -137,9 +138,10 @@ public class UIDemoDraggable extends UIDemo {
 			overlap.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
 			RectNode
 			.create(160, 150, 80, 80)
-			.color(UIDemoDraggable.INK)
+			.color(() -> this.moves.get() / 10 % 2 == 0 ? UIDemoDraggable.INK : UIDemoDraggable.PLACEHOLDER)
 			.body(grip)
 			.draggable(overlap)
+			.onDrag(event -> this.moves.increment())
 			.onDragSnap(event -> RectNode.create(0, 0, 80, 80).color(UIDemoDraggable.INK).attach(event.getTarget()))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Copy", caption, Align.CENTER)).anchorX(Align.CENTER).attach(rect);

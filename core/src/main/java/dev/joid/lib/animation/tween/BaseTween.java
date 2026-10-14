@@ -45,8 +45,12 @@ public abstract class BaseTween<T> {
 
 	public T start() {
 		this.build();
+		this.step = -2;
 		this.currentTime = 0;
 		this.isStarted = true;
+		this.isFinished = false;
+		this.isInitialized = false;
+		this.isIterationStep = false;
 		return (T) this;
 	}
 

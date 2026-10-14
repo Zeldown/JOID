@@ -13,9 +13,6 @@ import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.utils.list.IIndexedList;
-import dev.joid.lib.utils.list.IndexedLinkedList;
-import dev.joid.lib.utils.list.RecursiveIndexedElement;
 
 public class INodeTest {
 
@@ -52,11 +49,6 @@ public class INodeTest {
 		@Override
 		public int getIndex() {
 			return 0;
-		}
-
-		@Override
-		public IIndexedList<? extends RecursiveIndexedElement> getChildren() {
-			return new IndexedLinkedList<>();
 		}
 
 	}

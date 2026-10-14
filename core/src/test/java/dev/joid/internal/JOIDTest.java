@@ -156,24 +156,19 @@ public class JOIDTest {
 	@Test
 	public void acceptsABackendOfTheSameMajorVersion() {
 		final String major = JOID.VERSION.split("[.]")[0];
-		Assert.assertTrue(JOID.checkVersion(JOID.VERSION));
-		Assert.assertTrue(JOID.checkVersion(major + ".99.3"));
-		Assert.assertTrue(JOID.checkVersion(major));
+		JOID.checkVersion(JOID.VERSION);
+		JOID.checkVersion(major + ".99.3");
+		JOID.checkVersion(major);
 	}
 
 	@Test
-	public void warnsAboutABackendOfAnotherMajorVersion() {
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
+	public void refusesABackendOfAnotherMajorVersion() {
 		try {
-			Assert.assertFalse(JOID.checkVersion("6.2.1"));
-			Assert.assertFalse(JOID.checkVersion("70.0.1"));
-		} finally {
-			System.setErr(previous);
+			JOID.checkVersion("70.0.1");
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The backend was built for JOID 70.x, but JOID " + JOID.VERSION + " is loaded: update the backend", exception.getMessage());
 		}
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] This backend targets JOID 6.2.1 but JOID " + JOID.VERSION + " is loaded"));
-		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] This backend targets JOID 70.0.1 but JOID " + JOID.VERSION + " is loaded"));
 	}
 
 	@Test
@@ -260,6 +255,16 @@ public class JOIDTest {
 		Assert.assertTrue(this.bridges.getUi().getUiList().isEmpty());
 		Assert.assertEquals(1, menu.closes);
 		Assert.assertEquals(1, menu.detaches);
+	}
+
+	@Test
+	public void closesNothingWhenTheUiIsNotOpen() {
+		final MenuUI menu = new MenuUI();
+		JOID.close(menu);
+		JOID.close(menu, true);
+		Assert.assertEquals(0, menu.closes);
+		Assert.assertEquals(0, menu.detaches);
+		Assert.assertFalse(menu.isClosed());
 	}
 
 	@Test

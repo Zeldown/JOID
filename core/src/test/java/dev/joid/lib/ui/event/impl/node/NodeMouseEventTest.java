@@ -78,7 +78,9 @@ public class NodeMouseEventTest {
 		Assert.assertTrue(received.isEmpty());
 		this.bridges.move(150D, 160D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.MIDDLE);
-		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, MouseButton.MIDDLE), received);
+		Assert.assertTrue(received.isEmpty());
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, MouseButton.LEFT), received);
 	}
 
 	@Test

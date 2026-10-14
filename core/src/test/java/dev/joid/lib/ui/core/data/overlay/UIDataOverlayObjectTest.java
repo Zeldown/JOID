@@ -15,7 +15,7 @@ public class UIDataOverlayObjectTest {
 		Assert.assertFalse(data.active());
 		Assert.assertFalse(data.interaction().active());
 		Assert.assertTrue(data.interaction().cancelClick());
-		Assert.assertFalse(data.render().screens());
+		Assert.assertFalse(data.render().aboveScreens());
 	}
 
 	@Test
@@ -25,7 +25,7 @@ public class UIDataOverlayObjectTest {
 		Assert.assertFalse(data.interaction().active());
 		Assert.assertTrue(data.interaction().cancelKeyboard());
 		Assert.assertFalse(data.render().always());
-		Assert.assertEquals(0, data.render().zindex());
+		Assert.assertFalse(data.render().aboveScreens());
 	}
 
 	@Test
@@ -37,8 +37,7 @@ public class UIDataOverlayObjectTest {
 		Assert.assertFalse(data.interaction().cancelScroll());
 		Assert.assertFalse(data.interaction().cancelKeyboard());
 		Assert.assertTrue(data.render().always());
-		Assert.assertTrue(data.render().screens());
-		Assert.assertEquals(3, data.render().zindex());
+		Assert.assertTrue(data.render().aboveScreens());
 	}
 
 	@Test
@@ -62,19 +61,19 @@ public class UIDataOverlayObjectTest {
 		final UIDataOverlayObject data = new UIDataOverlayObject();
 		Assert.assertSame(data, data.setActive(true));
 		data.interaction().setActive(true);
-		data.render().setZindex(5);
+		data.render().setAboveScreens(true);
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.interaction().active());
-		Assert.assertEquals(5, data.render().zindex());
+		Assert.assertTrue(data.render().aboveScreens());
 	}
 
 	@Test
 	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
 		final UIDataOverlayObject data = new UIDataOverlayObject().setActive(true);
-		data.render().setZindex(4);
+		data.render().setAboveScreens(true);
 		Assert.assertSame(data, data.update(UIDataOverlayObject.get(DefaultUI.class), UIDataOverlayObject.get(DefaultUI.class)));
 		Assert.assertTrue(data.active());
-		Assert.assertEquals(4, data.render().zindex());
+		Assert.assertTrue(data.render().aboveScreens());
 	}
 
 	@Test
@@ -83,8 +82,7 @@ public class UIDataOverlayObjectTest {
 		Assert.assertTrue(data.active());
 		Assert.assertTrue(data.interaction().active());
 		Assert.assertFalse(data.interaction().cancelScroll());
-		Assert.assertTrue(data.render().screens());
-		Assert.assertEquals(3, data.render().zindex());
+		Assert.assertTrue(data.render().aboveScreens());
 	}
 
 	@Test
@@ -94,13 +92,13 @@ public class UIDataOverlayObjectTest {
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("UIDataOverlayObject(render=UIDataOverlayRenderObject(always=false, screens=false, zindex=0), interaction=UIDataOverlayInteractionObject(active=false, cancelClick=true, cancelScroll=true, cancelKeyboard=true), active=true)", new UIDataOverlayObject().setActive(true).toString());
+		Assert.assertEquals("UIDataOverlayObject(render=UIDataOverlayRenderObject(always=false, aboveScreens=false), interaction=UIDataOverlayInteractionObject(active=false, cancelClick=true, cancelScroll=true, cancelKeyboard=true), active=true)", new UIDataOverlayObject().setActive(true).toString());
 	}
 
 	@UIDataOverlay
 	public static class DefaultUI extends UI {}
 
-	@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true, cancelClick = false, cancelScroll = false, cancelKeyboard = false), render = @UIDataOverlayRender(always = true, screens = true, zindex = 3))
+	@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true, cancelClick = false, cancelScroll = false, cancelKeyboard = false), render = @UIDataOverlayRender(always = true, aboveScreens = true))
 	public static class OverlayUI extends UI {}
 
 	public static class ChildUI extends OverlayUI {}

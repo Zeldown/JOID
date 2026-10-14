@@ -44,10 +44,6 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	private ITexture    texture;
 	private SVGDocument document;
 
-	private long changeTime;
-	private int  requestedWidth;
-	private int  requestedHeight;
-
 	private volatile boolean rendering;
 
 	public VectorResourceDecoder(final @NonNull Asset asset) {
@@ -90,7 +86,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	}
 
 	@Override
-	public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async) {
+	public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {
 		if (this.document == null || this.texture == null || this.textures.isEmpty()) {
 			return;
 		}
@@ -98,20 +94,14 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		final double fit = Math.min(1D, 4096D / Math.max(width, height));
 		final int exactWidth = Math.max(1, (int) Math.round(width * fit));
 		final int exactHeight = Math.max(1, (int) Math.round(height * fit));
-		final long now = BridgeHandler.CLOCK.get().nanoTime();
-		final boolean first = this.requestedWidth == 0;
-		if (exactWidth != this.requestedWidth || exactHeight != this.requestedHeight) {
-			this.requestedWidth = exactWidth;
-			this.requestedHeight = exactHeight;
-			this.changeTime = now;
-		}
-
 		if (this.show(resource, exactWidth, exactHeight)) {
 			return;
 		}
 
-		if (!first && async && now - this.changeTime < 200000000L) {
-			if (this.texture.getWidth() >= exactWidth && this.texture.getHeight() >= exactHeight && this.texture.getWidth() <= exactWidth * VectorResourceDecoder.BUCKET * VectorResourceDecoder.BUCKET) {
+		if (async && resizing) {
+			final ITexture closest = this.closest(exactWidth, exactHeight);
+			if (closest != null) {
+				this.show(resource, closest.getWidth(), closest.getHeight());
 				return;
 			}
 
@@ -168,6 +158,16 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		this.texture = cached;
 		resource.texture(cached);
 		return true;
+	}
+
+	private ITexture closest(final int width, final int height) {
+		ITexture closest = null;
+		for (final ITexture cached : this.textures.values()) {
+			if (cached.getWidth() >= width && cached.getHeight() >= height && cached.getWidth() <= width * VectorResourceDecoder.BUCKET * VectorResourceDecoder.BUCKET && (closest == null || cached.getWidth() < closest.getWidth() || cached.getWidth() == closest.getWidth() && cached.getHeight() < closest.getHeight())) {
+				closest = cached;
+			}
+		}
+		return closest;
 	}
 
 	private void store(final ResourceData resource, final ITexture texture) {

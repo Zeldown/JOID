@@ -176,7 +176,7 @@ public class NodeSetterTest {
 	}
 
 	@Test
-	public void letsTheLayoutTakeOverAFollowedPosition() {
+	public void keepsAFollowedPositionUnderTheLayout() {
 		final DoubleSignal x = new DoubleSignal(10D);
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).x(x);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 100D).align(Align.START);
@@ -185,7 +185,8 @@ public class NodeSetterTest {
 		flex.append(rect);
 		this.bridges.frame();
 		Assert.assertEquals(0D, rect.getX(), 0D);
-		Assert.assertFalse(rect.getSourceMap().containsKey("x"));
+		Assert.assertEquals(-10D, rect.getLayoutX(), 0D);
+		Assert.assertTrue(rect.getSourceMap().containsKey("x"));
 	}
 
 	@Test

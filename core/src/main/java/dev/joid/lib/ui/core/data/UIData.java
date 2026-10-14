@@ -17,7 +17,7 @@ public @interface UIData {
 	public boolean zoomable()        default true;
 	public boolean background()      default false;
 	public boolean projection()      default true;
-	public String  backgroundColor() default "#101010c0";
+	public String  backgroundColor() default "#101010C0";
 
 	public int    zindex()           default 0;
 	public double zlevel()           default 0D;

@@ -136,12 +136,6 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			return true;
 		}
 
-		if (key == Key.ESCAPE) {
-			super.restore();
-			super.focus(false);
-			return true;
-		}
-
 		if (key == Key.ENTER || key == Key.NUMPAD_ENTER) {
 			super.insert("\n");
 			return true;

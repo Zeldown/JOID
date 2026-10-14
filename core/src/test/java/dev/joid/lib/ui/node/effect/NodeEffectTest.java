@@ -125,7 +125,7 @@ public class NodeEffectTest {
 	@Test
 	public void skipsANodeItDoesNotApplyTo() {
 		this.bridges.open(new NodeUI(new TraceNode("node", this.trace).effect(new TraceEffect("effect", this.trace, false)))).frame();
-		Assert.assertEquals(Arrays.asList("draw node", "draw node"), this.trace);
+		Assert.assertEquals(Arrays.asList("init effect", "draw node", "draw node"), this.trace);
 	}
 
 	@Test

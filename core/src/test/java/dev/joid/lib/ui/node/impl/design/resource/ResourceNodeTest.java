@@ -53,6 +53,20 @@ public class ResourceNodeTest {
 	}
 
 	@Test
+	public void mountsOnceItsResourceLoads() {
+		final int[] mounts = {0};
+		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		final ResourceNode node = ResourceNode.create(300D, 300D, 50D, 40D).resource(pending).onMount(event -> mounts[0]++);
+		this.bridges.open(new NodeUI(node)).frame();
+		Assert.assertFalse(node.isMounted());
+		Assert.assertEquals(0, mounts[0]);
+		node.resource(ResourceNodeTest.resource(20, 10));
+		this.bridges.frame();
+		Assert.assertTrue(node.isMounted());
+		Assert.assertEquals(1, mounts[0]);
+	}
+
+	@Test
 	public void drawsAnEmptyResourceAsASkeleton() {
 		this.bridges.open(new NodeUI(ResourceNode.create(300D, 300D, 50D, 40D).resource(ResourceNodeTest.resource(0, 0)).color(ResourceNodeTest.TINT))).frame();
 		this.assertBounds(this.skeleton(), 300D, 300D, 350D, 340D);

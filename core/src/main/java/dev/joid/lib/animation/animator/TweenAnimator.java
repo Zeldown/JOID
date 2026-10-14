@@ -36,9 +36,9 @@ public class TweenAnimator extends Signal<Float> {
 	@Setter
 	private float speed;
 
-	@Setter private long         lastUpdate;
-	@Setter private Timeline     timeline;
-	@Setter private TweenManager manager;
+	private long         lastUpdate;
+	private Timeline     timeline;
+	private TweenManager manager;
 
 	private TweenAnimator(final float value) {
 		super(value);
@@ -86,6 +86,19 @@ public class TweenAnimator extends Signal<Float> {
 		this.timeline = Timeline.createSequence();
 		this.push(duration, value, equation);
 		return this;
+	}
+
+	public @NonNull TweenAnimator timeline(final @NonNull Timeline timeline) {
+		if (this.timeline != timeline) {
+			this.killTimeline();
+		}
+
+		this.timeline = timeline;
+		return this;
+	}
+
+	public @NonNull Tween tween(final float duration) {
+		return Tween.to(this, TweenAnimatorAccessor.ANIMATION_VALUE, duration);
 	}
 
 	public @NonNull TweenAnimator push(final float duration, final float value) {

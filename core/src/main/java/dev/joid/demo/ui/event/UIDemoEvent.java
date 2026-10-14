@@ -174,7 +174,7 @@ public class UIDemoEvent extends UIDemo {
 			.color(UIDemoEvent.INK)
 			.onClick(event -> {
 				if (!list.getChildren().isEmpty()) {
-					list.remove(list.getChildren().getLast());
+					list.remove(list.getChildren().get(list.getChildren().size() - 1));
 				}
 			})
 			.body(container -> {

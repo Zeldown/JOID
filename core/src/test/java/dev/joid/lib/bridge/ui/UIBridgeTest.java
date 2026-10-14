@@ -70,10 +70,10 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(menu).open(hud).resize(1366, 768);
-		Assert.assertEquals(1366D, menu.getWidth(), 0D);
-		Assert.assertEquals(768D, menu.getHeight(), 0D);
-		Assert.assertEquals(1366D, hud.getWidth(), 0D);
-		Assert.assertEquals(768D, hud.getHeight(), 0D);
+		Assert.assertEquals(1366D, menu.getWindowWidth(), 0D);
+		Assert.assertEquals(768D, menu.getWindowHeight(), 0D);
+		Assert.assertEquals(1366D, hud.getWindowWidth(), 0D);
+		Assert.assertEquals(768D, hud.getWindowHeight(), 0D);
 		Assert.assertEquals(1, menu.inits);
 	}
 
@@ -81,11 +81,11 @@ public class UIBridgeTest {
 	public void keepsTheZoomOfEveryUiOnAResize() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
-		menu.zoom(0.5D);
+		menu.getView().zoom(0.5D);
 		this.bridges.resize(1366, 768);
 		Assert.assertEquals(0.5D, menu.getView().getZoom(), 0D);
 		Assert.assertEquals(0.5D, menu.getZoomLevel().get(), 0D);
-		Assert.assertEquals(1366D, menu.getWidth(), 0D);
+		Assert.assertEquals(1366D, menu.getWindowWidth(), 0D);
 		Assert.assertEquals(1, menu.inits);
 	}
 
@@ -638,7 +638,7 @@ public class UIBridgeTest {
 	@Test
 	public void letsTheInputThroughAnOverlayWithoutInteraction() {
 		final PassiveOverlayUI overlay = new PassiveOverlayUI("overlay", this.trace);
-		overlay.getOverlay().render().setScreens(true);
+		overlay.getOverlay().render().setAboveScreens(true);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(overlay);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -779,8 +779,8 @@ public class UIBridgeTest {
 	public void drawsTheOverlaysAboveTheScreensByZindex() {
 		final OverlayUI high = new OverlayUI("high", this.trace);
 		final OverlayUI low = new OverlayUI("low", this.trace);
-		high.getOverlay().render().setZindex(2);
-		low.getOverlay().render().setZindex(1);
+		high.getData().setZindex(2);
+		low.getData().setZindex(1);
 		this.bridges.open(high).open(low).open(new TraceUI("menu", this.trace));
 		this.trace.clear();
 		this.bridges.draw();
@@ -791,20 +791,28 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void hidesAnOverlayWhileAScreenIsOpenUnlessItAllowsScreens() {
+	public void drawsAnOverlayBelowTheScreensUnlessAbove() {
 		final PassiveOverlayUI overlay = new PassiveOverlayUI("overlay", this.trace);
-		this.bridges.open(overlay);
+		this.bridges.open(overlay).open(new TraceUI("menu", this.trace));
 		this.trace.clear();
 		this.bridges.draw();
-		Assert.assertEquals(Collections.singletonList("draw overlay -2000.0"), this.trace);
-		this.bridges.open(new TraceUI("menu", this.trace));
-		this.trace.clear();
-		this.bridges.draw();
-		Assert.assertEquals(Collections.singletonList("draw menu -2000.0"), this.trace);
-		overlay.getOverlay().render().setScreens(true);
+		Assert.assertEquals(Arrays.asList("draw overlay -2000.0", "draw menu -1990.0"), this.trace);
+		overlay.getOverlay().render().setAboveScreens(true);
 		this.trace.clear();
 		this.bridges.draw();
 		Assert.assertEquals(Arrays.asList("draw menu -2000.0", "draw overlay -1990.0"), this.trace);
+	}
+
+	@Test
+	public void sortsTheOverlaysBelowTheScreensByZindex() {
+		final PassiveOverlayUI high = new PassiveOverlayUI("high", this.trace);
+		final PassiveOverlayUI low = new PassiveOverlayUI("low", this.trace);
+		high.getData().setZindex(2);
+		low.getData().setZindex(1);
+		this.bridges.open(high).open(low).open(new TraceUI("menu", this.trace));
+		this.trace.clear();
+		this.bridges.draw();
+		Assert.assertEquals(Arrays.asList("draw low -2000.0", "draw high -1990.0", "draw menu -1980.0"), this.trace);
 	}
 
 	@Test
@@ -830,7 +838,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
 		final PassiveOverlayUI passive = new PassiveOverlayUI("passive", this.trace);
-		passive.getOverlay().render().setScreens(true);
+		passive.getOverlay().render().setAboveScreens(true);
 		this.bridges.open(menu).open(overlay).open(passive);
 		Assert.assertTrue(this.bridges.getUi().isOnTop(menu));
 		Assert.assertTrue(this.bridges.getUi().isOnTop(overlay));
@@ -1146,7 +1154,7 @@ public class UIBridgeTest {
 
 	}
 
-	@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(screens = true))
+	@UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(aboveScreens = true))
 	public static final class OverlayUI extends TraceUI {
 
 		public OverlayUI(final String name, final List<String> trace) {

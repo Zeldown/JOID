@@ -145,9 +145,11 @@ public class UIDemoSimple extends UIDemo {
 			.color(UIDemoSimple.INK)
 			.onClick(event -> {
 				System.out.println("[UIDemoSimple] button clicked: " + event.getButton());
-				if (event.getButton().isLeft()) {
-					left.increment();
-				} else {
+				left.increment();
+			})
+			.handleMousePressed(event -> {
+				if (!event.getButton().isLeft() && event.getNode().isHovered()) {
+					System.out.println("[UIDemoSimple] button clicked: " + event.getButton());
 					right.increment();
 				}
 			})

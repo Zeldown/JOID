@@ -22,7 +22,7 @@ public class DemoSlideTransition extends Transition {
 		public void init(final @NonNull UI ui) {}
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			final Timeline timeline = super.getAnimator().sequence(500F, 1F, TweenEquations.BACK_OUT).getTimeline();
 			super.start(timeline);
 		}
@@ -47,7 +47,7 @@ public class DemoSlideTransition extends Transition {
 		public void init(final @NonNull UI ui) {}
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			final Timeline timeline = super.getAnimator().sequence(400F, 0F, TweenEquations.QUART_IN).getTimeline();
 			super.start(timeline);
 		}

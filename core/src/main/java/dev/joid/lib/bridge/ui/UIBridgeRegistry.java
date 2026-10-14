@@ -53,7 +53,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 		render.beginFrame();
 		try {
 			if (!bridgeList.isEmpty()) {
-				bridgeList.get(bridgeList.size() - 1).drawBackground();
+				bridgeList.get(0).drawBackground();
 			}
 
 			bridgeList.forEach(UIBridge::draw);

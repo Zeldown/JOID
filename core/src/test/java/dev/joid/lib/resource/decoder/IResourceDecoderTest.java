@@ -18,7 +18,7 @@ public class IResourceDecoderTest {
 	@Test
 	public void ignoresTheRequestedSizeByDefault() {
 		final ResourceData data = new ResourceData("image", null).width(4).height(2);
-		new Decoder().request(data, 64, 32, true);
+		new Decoder().request(data, 64, 32, true, false);
 		Assert.assertEquals(4, data.getWidth());
 		Assert.assertEquals(2, data.getHeight());
 		Assert.assertNull(data.getTextures());

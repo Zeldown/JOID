@@ -32,11 +32,6 @@ public class DemoChartNode extends ChartNode {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 14, DemoChartNode.INK);
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
 
-		if (!super.isLoaded()) {
-			DrawUtils.TEXT.drawText(super.getX() + super.dw(2), super.getY() + super.dh(2), "No data", TextInfo.create(DemoFont.MONTSERRAT, 24, DemoChartNode.INK), Align.CENTER, Align.CENTER);
-			return;
-		}
-
 		final double min = super.getMin().doubleValue();
 		final double max = super.getMax().doubleValue();
 		final double left = super.getX() + 50D;

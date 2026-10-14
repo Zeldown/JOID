@@ -1,10 +1,9 @@
 package dev.joid.demo.ui.overflow;
 
-import java.util.concurrent.TimeUnit;
-
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.impl.structure.scrollbar.DemoScrollbarNode;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -36,20 +35,16 @@ public class UIDemoOverflow extends UIDemo {
 		.create(100, 40, 400, 260)
 		.color(UIDemoOverflow.PLACEHOLDER)
 		.body(rect -> {
-			RectNode
-			.create(20, 20, 360, 200)
-			.color(Color.WHITE)
+			RectNode.create(20, 20, 360, 200).color(Color.WHITE).attach(rect);
+			FlexNode
+			.vertical(20, 20, 360)
+			.margin(10D)
+			.height(200)
 			.overflow(OverflowProperty.SCROLL)
-			.body(area -> {
-				FlexNode
-				.vertical(10, 10, 340)
-				.margin(10D)
-				.body(flex -> {
-					for (int i = 0; i < 8; i++) {
-						RectNode.create(0, 0, 340, 40).color(UIDemoOverflow.INK).attach(flex);
-					}
-				})
-				.attach(area);
+			.body(flex -> {
+				for (int i = 0; i < 8; i++) {
+					RectNode.create(10, 10, 340, 40).color(UIDemoOverflow.INK).attach(flex);
+				}
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Vertical scroll", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -60,20 +55,16 @@ public class UIDemoOverflow extends UIDemo {
 		.create(540, 40, 400, 260)
 		.color(UIDemoOverflow.PLACEHOLDER)
 		.body(rect -> {
-			RectNode
-			.create(20, 20, 360, 200)
-			.color(Color.WHITE)
+			RectNode.create(20, 20, 360, 200).color(Color.WHITE).attach(rect);
+			FlexNode
+			.horizontal(20, 20, 200)
+			.margin(10D)
+			.width(360)
 			.overflow(OverflowProperty.SCROLL)
-			.body(area -> {
-				FlexNode
-				.horizontal(10, 10, 180)
-				.margin(10D)
-				.body(flex -> {
-					for (int i = 0; i < 8; i++) {
-						RectNode.create(0, 0, 80, 180).color(UIDemoOverflow.INK).attach(flex);
-					}
-				})
-				.attach(area);
+			.body(flex -> {
+				for (int i = 0; i < 8; i++) {
+					RectNode.create(10, 10, 80, 180).color(UIDemoOverflow.INK).attach(flex);
+				}
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Horizontal scroll", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -133,24 +124,19 @@ public class UIDemoOverflow extends UIDemo {
 		.create(100, 380, 400, 260)
 		.color(UIDemoOverflow.PLACEHOLDER)
 		.body(rect -> {
-			RectNode
+			RectNode.create(20, 20, 340, 200).color(Color.WHITE).attach(rect);
+			GridNode
 			.create(20, 20, 340, 200)
-			.color(Color.WHITE)
+			.margin(10D)
 			.overflow(OverflowProperty.SCROLL)
 			.scrollbar(DemoScrollbarNode.create(348, 0, 12, 40, BoundingBox.create(348, 0, 12, 200)))
-			.body(area -> {
-				FlexNode
-				.vertical(10, 10, 320)
-				.margin(10D)
-				.body(flex -> {
-					for (int i = 0; i < 8; i++) {
-						RectNode.create(0, 0, 320, 40).color(UIDemoOverflow.INK).attach(flex);
-					}
-				})
-				.attach(area);
+			.body(grid -> {
+				for (int i = 0; i < 25; i++) {
+					RectNode.create(10, 10, 56, 56).color(UIDemoOverflow.INK).attach(grid);
+				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Vertical scrollbar", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Grid with scrollbar", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -361,11 +347,11 @@ public class UIDemoOverflow extends UIDemo {
 				.margin(10D)
 				.body(flex -> {
 					for (int i = 0; i < 8; i++) {
+						final long shownAt = BridgeHandler.CLOCK.get().currentTimeMillis() + 1000L + i * 500L;
 						RectNode
 						.create(0, 0, 340, 40)
 						.color(UIDemoOverflow.INK)
-						.wait(1000L + i * 500L, TimeUnit.MILLISECONDS)
-						.skeleton(node -> RectNode.create(0, 0, node.getWidth(), node.getHeight()).color(Color.LOADING))
+						.wait(node -> BridgeHandler.CLOCK.get().currentTimeMillis() >= shownAt)
 						.attach(flex);
 					}
 				})

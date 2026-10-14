@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
 
-import dev.joid.lib.signal.ISignalSubscriber;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -28,8 +27,7 @@ public abstract class SwitchNode extends Node {
 	private final IntegerSignal      stateIndex;
 	private final ListSignal<String> stateList;
 
-	private Signal<String>            signal;
-	private ISignalSubscriber<String> subscription;
+	private Signal<String> signal;
 
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -45,12 +43,12 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T states(final @NonNull Supplier<@NonNull List<String>> states) {
-		return super.follow("states", states, value -> {
+		return super.follow("states", states, (final SwitchNode node, final List<String> value) -> {
 			if (value.isEmpty()) {
 				throw new IllegalArgumentException("A switch needs at least one state, pass them to states(...)");
 			}
 
-			this.configure(new LinkedList<>(value));
+			node.configure(new LinkedList<>(value));
 		});
 	}
 
@@ -59,7 +57,7 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final @NonNull Supplier<Integer> index) {
-		return super.follow("index", index, value -> this.select(value, false));
+		return super.follow("index", index, (final SwitchNode node, final Integer value) -> node.select(value, false));
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull String state) {
@@ -67,12 +65,12 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull Supplier<@NonNull String> state) {
-		return super.follow("state", state, value -> {
-			if (this.stateList.peek() == null || !this.stateList.peek().contains(value)) {
-				throw new IllegalArgumentException("The state " + value + " is not in the state list " + this.stateList.peek());
+		return super.follow("state", state, (final SwitchNode node, final String value) -> {
+			if (node.stateList.peek() == null || !node.stateList.peek().contains(value)) {
+				throw new IllegalArgumentException("The state " + value + " is not in the state list " + node.stateList.peek());
 			}
 
-			this.select(this.stateList.peek().indexOf(value), false);
+			node.select(node.stateList.peek().indexOf(value), false);
 		});
 	}
 
@@ -82,12 +80,11 @@ public abstract class SwitchNode extends Node {
 
 	public final <T extends SwitchNode> @NonNull T signal(final @NonNull Signal<String> signal) {
 		this.signal = super.writable(signal);
-		this.subscription = super.rebind(this.subscription, signal, value -> {
-			if (this.stateList.peek() != null && this.stateList.peek().contains(value)) {
-				this.select(this.stateList.peek().indexOf(value), false);
+		return super.bind("signal", signal, (final SwitchNode node, final String value) -> {
+			if (node.stateList.peek() != null && node.stateList.peek().contains(value)) {
+				node.select(node.stateList.peek().indexOf(value), false);
 			}
 		});
-		return (T) this;
 	}
 
 	public final <T extends SwitchNode> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, String>> listener) {

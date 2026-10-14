@@ -145,6 +145,24 @@ public class TransitionTest {
 		Assert.assertFalse(in.isRunning());
 	}
 
+	@Test
+	public void replaysFromItsStartValueWhenStartedAgain() {
+		final FadeIn in = new FadeIn();
+		in.start();
+		in.update();
+		in.endFrame();
+		this.clock.advance(200L);
+		in.update();
+		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
+		in.start();
+		Assert.assertEquals(0F, in.getAnimator().get(), 0F);
+		in.update();
+		in.endFrame();
+		this.clock.advance(50L);
+		in.update();
+		Assert.assertEquals(0.5F, in.getAnimator().get(), 0.0001F);
+	}
+
 	public static final class FadeTransition extends Transition {
 
 		public FadeTransition(final In in, final Out out) {
@@ -156,7 +174,7 @@ public class TransitionTest {
 	public static final class FadeIn extends Transition.In {
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			final Timeline timeline = super.getAnimator().sequence(100F, 1F).getTimeline();
 			super.start(timeline);
 		}
@@ -175,7 +193,7 @@ public class TransitionTest {
 	public static final class FadeOut extends Transition.Out {
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			final Timeline timeline = super.getAnimator().sequence(100F, 0F).getTimeline();
 			super.start(timeline);
 		}

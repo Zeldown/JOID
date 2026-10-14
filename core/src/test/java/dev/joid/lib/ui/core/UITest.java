@@ -183,13 +183,13 @@ public class UITest {
 		ui.load(1366D, 768D);
 		Assert.assertTrue(ui.isInitialized());
 		Assert.assertEquals(1, ui.inits);
-		Assert.assertEquals(1366D, ui.getWidth(), 0D);
-		Assert.assertEquals(768D, ui.getHeight(), 0D);
+		Assert.assertEquals(1366D, ui.getWindowWidth(), 0D);
+		Assert.assertEquals(768D, ui.getWindowHeight(), 0D);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
 		ui.load(1920D, 1080D, 0.5D);
 		Assert.assertEquals(1, ui.inits);
-		Assert.assertEquals(1920D, ui.getWidth(), 0D);
-		Assert.assertEquals(1080D, ui.getHeight(), 0D);
+		Assert.assertEquals(1920D, ui.getWindowWidth(), 0D);
+		Assert.assertEquals(1080D, ui.getWindowHeight(), 0D);
 		Assert.assertEquals(0.5D, ui.getView().getZoom(), 0D);
 		Assert.assertEquals(0.5D, ui.getZoomLevel().get(), 0D);
 	}
@@ -313,6 +313,28 @@ public class UITest {
 	}
 
 	@Test
+	public void keepsAGivenTransitionWhenItsPopupChanges() {
+		final PopupUI ui = new PopupUI(this.trace);
+		final RecordingTransition transition = new RecordingTransition(this.trace);
+		ui.setTransition(transition);
+		ui.getPopup().setTransition(PopupTransition.NONE);
+		this.bridges.open(ui).frame();
+		Assert.assertSame(transition, ui.getTransition());
+	}
+
+	@Test
+	public void buildsItsNodesAgainOnceReopened() {
+		final TraceUI ui = new TraceUI(this.trace, RectNode.create(0D, 0D, 10D, 10D));
+		this.bridges.open(ui);
+		JOID.close(ui);
+		Assert.assertFalse(ui.isInitialized());
+		this.bridges.open(ui);
+		Assert.assertEquals(2, ui.inits);
+		Assert.assertEquals(1, ui.getNodeList().size());
+		Assert.assertTrue(ui.getNodeList().get(0).isAttached());
+	}
+
+	@Test
 	public void keepsItsTransitionAcrossAReloadThatLeavesItsPopupUnchanged() {
 		final PopupUI ui = new PopupUI(this.trace);
 		final Transition transition = new PopTransition();
@@ -351,7 +373,7 @@ public class UITest {
 	public void receivesTheMouseThroughItsZoom() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		ui.zoom(0.5D);
+		ui.getView().zoom(0.5D);
 		this.bridges.move(0D, 0D).frame();
 		Assert.assertEquals(-960D, ui.getMouseX(), 0D);
 		Assert.assertEquals(-540D, ui.getMouseY(), 0D);
@@ -364,7 +386,7 @@ public class UITest {
 	public void followsItsAnchorChangedAfterItsOpening() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		ui.zoom(0.5D);
+		ui.getView().zoom(0.5D);
 		this.bridges.move(960D, 540D).frame();
 		Assert.assertEquals(960D, ui.getMouseX(), 0D);
 		Assert.assertEquals(540D, ui.getMouseY(), 0D);
@@ -523,7 +545,7 @@ public class UITest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		this.bridges.getUi().keyPressed(Key.EQUAL);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
-		ui.zoom(0.1D);
+		ui.getView().zoom(0.1D);
 		this.bridges.getUi().keyPressed(Key.MINUS);
 		Assert.assertEquals(0.1D, ui.getView().getZoom(), 0D);
 		Assert.assertEquals(Arrays.asList("key EQUAL", "key MINUS"), this.trace);
@@ -547,18 +569,21 @@ public class UITest {
 	}
 
 	@Test
-	public void zoomsWithinItsBounds() {
+	public void zoomsWithinItsBoundsAndShowsItAtTheNextFrame() {
 		final TraceUI ui = new TraceUI(this.trace);
-		ui.load(1920D, 1080D);
-		ui.zoom(0.5D);
+		this.bridges.open(ui);
+		ui.getView().zoom(0.5D);
 		Assert.assertEquals(0.5D, ui.getView().getZoom(), 0D);
+		Assert.assertEquals(1D, ui.getZoomLevel().get(), 0D);
+		this.bridges.frame();
 		Assert.assertEquals(0.5D, ui.getZoomLevel().get(), 0D);
 		Assert.assertEquals(3840D, ui.getScaledWidth().get(), 0D);
 		Assert.assertEquals(2160D, ui.getScaledHeight().get(), 0D);
-		ui.zoom(0.01D);
+		ui.getView().zoom(0.01D);
 		Assert.assertEquals(0.1D, ui.getView().getZoom(), 0D);
-		ui.zoom(3D);
+		ui.getView().zoom(3D);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
+		this.bridges.frame();
 		Assert.assertEquals(1920D, ui.getScaledWidth().get(), 0D);
 		Assert.assertEquals(1080D, ui.getScaledHeight().get(), 0D);
 	}
@@ -597,7 +622,7 @@ public class UITest {
 		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		ui.zoom(0.5D);
+		ui.getView().zoom(0.5D);
 		this.bridges.getUi().keyPressed(Key.F5);
 		Assert.assertEquals(2, ui.inits);
 		Assert.assertEquals(0.5D, ui.getView().getZoom(), 0D);
@@ -609,7 +634,7 @@ public class UITest {
 		final RenewUI ui = new RenewUI();
 		this.bridges.open(ui);
 		ui.clicks++;
-		ui.zoom(0.5D);
+		ui.getView().zoom(0.5D);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
 		this.bridges.getUi().keyPressed(Key.R);
 		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
@@ -926,7 +951,7 @@ public class UITest {
 		Assert.assertEquals(0D, ui.getViewY(), 1E-9D);
 		Assert.assertEquals(2560D, ui.getViewWidth(), 1E-9D);
 		Assert.assertEquals(1080D, ui.getViewHeight(), 1E-9D);
-		ui.zoom(0.5D);
+		ui.getView().zoom(0.5D);
 		Assert.assertEquals(-1600D, ui.getViewX(), 1E-9D);
 		Assert.assertEquals(-540D, ui.getViewY(), 1E-9D);
 		Assert.assertEquals(5120D, ui.getViewWidth(), 1E-9D);
@@ -1142,8 +1167,10 @@ public class UITest {
 			Assert.assertEquals(515D, draw.getTop(), 0.001D);
 			Assert.assertEquals(1010D, draw.getRight(), 0.001D);
 			Assert.assertEquals(565D, draw.getBottom(), 0.001D);
-			ui.zoom(3D);
+			ui.getView().zoom(3D);
 			Assert.assertEquals(2D, ui.getView().getZoom(), 0D);
+			this.bridges.frame();
+			this.bridges.draw(bridge);
 			Assert.assertEquals(1920D, ui.getScaledWidth().get(), 0D);
 		} finally {
 			BridgeHandler.UI.unregister(bridge);
@@ -2221,7 +2248,7 @@ public class UITest {
 		private final List<String> trace;
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			this.trace.add("in start");
 			super.start(super.getAnimator().sequence(100F, 1F).getTimeline());
 		}
@@ -2249,7 +2276,7 @@ public class UITest {
 		private final List<String> trace;
 
 		@Override
-		public void start() {
+		protected void startTimeline() {
 			this.trace.add("out start");
 			super.start(super.getAnimator().sequence(100F, 0F).getTimeline());
 		}

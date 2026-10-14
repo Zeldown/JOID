@@ -2,7 +2,6 @@ package dev.joid.lib.bridge.ui;
 
 import java.util.ArrayList;
 
-import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -11,6 +10,7 @@ import lombok.NonNull;
 
 public abstract class StackUIBridge extends UIBridge {
 
+	private boolean deferred;
 	private boolean replacing;
 
 	@Override
@@ -29,7 +29,14 @@ public abstract class StackUIBridge extends UIBridge {
 
 				final boolean result = current.fireClose();
 				if (current.getTransition() != null && current.getTransition().getOut() != null && current.getTransition().getOut().isRunning()) {
-					current.getTransition().getOut().getAnimator().onComplete(tween -> JOID.open(ui));
+					this.deferred = true;
+					current.getTransition().getOut().getAnimator().onComplete(tween -> {
+						try {
+							this.open(ui);
+						} finally {
+							this.deferred = false;
+						}
+					});
 					return;
 				}
 
@@ -59,7 +66,7 @@ public abstract class StackUIBridge extends UIBridge {
 		final boolean screen = !ui.getOverlay().active() && !super.hasScreen();
 		super.getUiList().add(ui);
 		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
-		if (screen && !this.replacing) {
+		if (screen && !this.replacing && !this.deferred) {
 			this.attachScreen();
 		}
 	}
@@ -68,7 +75,7 @@ public abstract class StackUIBridge extends UIBridge {
 	public void remove(final @NonNull UI ui) {
 		final boolean screen = super.getUiList().contains(ui) && !ui.getOverlay().active();
 		super.getUiList().remove(ui);
-		if (screen && !super.hasScreen() && !this.replacing) {
+		if (screen && !super.hasScreen() && !this.replacing && !this.deferred) {
 			this.detachScreen();
 		}
 	}

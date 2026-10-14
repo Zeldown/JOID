@@ -69,9 +69,9 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T max(final @NonNull Supplier<Integer> maxValue) {
-		return super.follow("maxValue", maxValue, value -> {
-			this.maxValue = value;
-			super.revalidate();
+		return super.follow("maxValue", maxValue, (final IntegerFieldNode node, final Integer value) -> {
+			node.maxValue = value;
+			node.revalidate();
 		});
 	}
 
@@ -80,9 +80,9 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T min(final @NonNull Supplier<Integer> minValue) {
-		return super.follow("minValue", minValue, value -> {
-			this.minValue = value;
-			super.revalidate();
+		return super.follow("minValue", minValue, (final IntegerFieldNode node, final Integer value) -> {
+			node.minValue = value;
+			node.revalidate();
 		});
 	}
 
@@ -91,7 +91,7 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T step(final @NonNull Supplier<Integer> step) {
-		return super.follow("step", step, value -> this.step = value);
+		return super.follow("step", step, (final IntegerFieldNode node, final Integer value) -> node.step = value);
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final int value) {
@@ -99,7 +99,7 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final @NonNull Supplier<Integer> value) {
-		return super.follow("value", value, number -> super.write(number));
+		return super.follow("value", value, (final IntegerFieldNode node, final Integer number) -> node.write(number));
 	}
 
 }

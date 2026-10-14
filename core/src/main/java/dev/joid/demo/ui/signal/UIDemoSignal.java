@@ -258,8 +258,7 @@ public class UIDemoSignal extends UIDemo {
 			RectNode
 			.create(40, 40, 320, 180)
 			.color(Color.WHITE)
-			.wait(cards)
-			.skeleton(container -> RectNode.create(0, 0, container.getWidth(), container.getHeight()).color(Color.LOADING))
+			.wait(container -> !cards.isEmpty())
 			.body(container -> {
 				TextNode.create(20, 20).text(Text.create(cards.isEmpty() ? "" : cards.get(0), info)).attach(container);
 				TextNode.create(20, 70).text(Text.create(cards.isEmpty() ? "" : cards.get(1), info)).attach(container);
