@@ -82,7 +82,7 @@ public class FlexNodeTest {
 	public void neitherPlacesNorCountsAHiddenChild() {
 		final boolean[] shown = {false};
 		final RectNode first = RectNode.create(0D, 0D, 100D, 50D);
-		final RectNode hidden = RectNode.create(0D, 0D, 100D, 30D).visible(node -> shown[0]);
+		final RectNode hidden = RectNode.create(0D, 0D, 100D, 30D).visible(() -> shown[0]);
 		final RectNode third = RectNode.create(0D, 0D, 100D, 40D);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).margin(10D).append(first, hidden, third);
 		this.bridges.open(new NodeUI(flex));
@@ -94,7 +94,7 @@ public class FlexNodeTest {
 	@Test
 	public void makesRoomForAChildShownAgain() {
 		final boolean[] shown = {false};
-		final RectNode hidden = RectNode.create(0D, 0D, 30D, 100D).visible(node -> shown[0]);
+		final RectNode hidden = RectNode.create(0D, 0D, 30D, 100D).visible(() -> shown[0]);
 		final RectNode last = RectNode.create(0D, 0D, 40D, 100D);
 		final FlexNode flex = FlexNode.horizontal(0D, 0D, 100D).margin(10D).append(RectNode.create(0D, 0D, 50D, 100D), hidden, last);
 		this.bridges.open(new NodeUI(flex));
@@ -108,7 +108,7 @@ public class FlexNodeTest {
 	@Test
 	public void placesAChildShownAgainBeforeDrawingIt() {
 		final boolean[] shown = {false};
-		final RectNode hidden = RectNode.create(0D, 0D, 100D, 30D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).visible(node -> shown[0]);
+		final RectNode hidden = RectNode.create(0D, 0D, 100D, 30D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).visible(() -> shown[0]);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(RectNode.create(0D, 0D, 100D, 50D), hidden);
 		this.bridges.open(new NodeUI(flex));
 		shown[0] = true;

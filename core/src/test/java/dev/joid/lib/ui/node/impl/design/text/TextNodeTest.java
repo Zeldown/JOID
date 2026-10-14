@@ -37,7 +37,6 @@ public class TextNodeTest {
 		final TextNode node = TextNode.create(10D, 20D);
 		Assert.assertNull(node.getText());
 		Assert.assertSame(TextMode.NORMAL, node.getMode());
-		Assert.assertFalse(node.isInitialized());
 		Assert.assertEquals(10D, node.getX(), 0D);
 		Assert.assertEquals(20D, node.getY(), 0D);
 		Assert.assertEquals(0D, node.getWidth(), 0D);
@@ -59,7 +58,6 @@ public class TextNodeTest {
 	public void sizesItselfToItsTextOnceAttached() {
 		final TextNode node = TextNode.create(10D, 20D).text(this.text("hello"));
 		this.bridges.getUi().add(new NodeUI(node));
-		Assert.assertTrue(node.isInitialized());
 		Assert.assertEquals(50D, node.getWidth(), 0D);
 		Assert.assertEquals(20D, node.getHeight(), 0D);
 	}
@@ -70,8 +68,8 @@ public class TextNodeTest {
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(200D, node.getWidth(), 0D);
 		Assert.assertEquals(40D, node.getHeight(), 0D);
-		Assert.assertEquals(200D, node.getInitialWidth(), 0D);
-		Assert.assertEquals(40D, node.getInitialHeight(), 0D);
+		Assert.assertEquals(200D, node.getDefaultWidth(), 0D);
+		Assert.assertEquals(40D, node.getDefaultHeight(), 0D);
 	}
 
 	@Test
@@ -191,24 +189,16 @@ public class TextNodeTest {
 	}
 
 	@Test
-	public void keepsItsSizeOnceReset() {
+	public void keepsTheSizeItIsGivenOnceOpen() {
 		final AtomicReference<String> value = new AtomicReference<>("ab");
 		final TextNode node = TextNode.create(0D, 0D).text(Text.create(value::get, this.info()));
 		this.bridges.open(new NodeUI(node));
-		Assert.assertSame(node, node.reset());
-		Assert.assertEquals(20D, node.getInitialWidth(), 0D);
-		Assert.assertEquals(20D, node.getInitialHeight(), 0D);
+		Assert.assertSame(node, node.width(20D).height(20D));
+		Assert.assertEquals(20D, node.getDefaultWidth(), 0D);
+		Assert.assertEquals(20D, node.getDefaultHeight(), 0D);
 		value.set("abcd");
 		this.bridges.frame();
 		Assert.assertEquals(20D, node.getWidth(), 0D);
-	}
-
-	@Test
-	public void takesItsCurrentSizeAsItsInitialSizeOnReset() {
-		final TextNode node = TextNode.create(0D, 0D, 30D, 40D).reset();
-		Assert.assertTrue(node.isInitialized());
-		Assert.assertEquals(30D, node.getInitialWidth(), 0D);
-		Assert.assertEquals(40D, node.getInitialHeight(), 0D);
 	}
 
 	@Test

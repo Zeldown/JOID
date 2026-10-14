@@ -147,27 +147,27 @@ public class ModelViewerNode extends BaseModelNode {
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoom(final double zoom) {
-		return super.bind("zoom", zoom, (final ModelViewerNode node, final Double value) -> node.zoom(value, false));
+		return super.start("zoom", zoom, value -> this.zoom(value, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoom(final @NonNull Signal<Double> zoom) {
-		return super.bind("zoom", zoom, (final ModelViewerNode node, final Double value) -> node.zoom(value, false));
+		return super.bind("zoom", zoom, value -> this.zoom(value, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYaw(final double rotationYaw) {
-		return super.bind("rotationYaw", rotationYaw, (final ModelViewerNode node, final Double value) -> node.rotate(value, node.rotationPitch, false));
+		return super.start("rotationYaw", rotationYaw, value -> this.rotate(value, this.rotationPitch, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYaw(final @NonNull Signal<Double> rotationYaw) {
-		return super.bind("rotationYaw", rotationYaw, (final ModelViewerNode node, final Double value) -> node.rotate(value, node.rotationPitch, false));
+		return super.bind("rotationYaw", rotationYaw, value -> this.rotate(value, this.rotationPitch, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitch(final double rotationPitch) {
-		return super.bind("rotationPitch", rotationPitch, (final ModelViewerNode node, final Double value) -> node.rotate(node.rotationYaw, value, false));
+		return super.start("rotationPitch", rotationPitch, value -> this.rotate(this.rotationYaw, value, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitch(final @NonNull Signal<Double> rotationPitch) {
-		return super.bind("rotationPitch", rotationPitch, (final ModelViewerNode node, final Double value) -> node.rotate(node.rotationYaw, value, false));
+		return super.bind("rotationPitch", rotationPitch, value -> this.rotate(this.rotationYaw, value, false));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoomRange(final double min, final double max) {

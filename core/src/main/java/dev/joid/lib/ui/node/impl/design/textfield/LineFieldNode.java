@@ -174,7 +174,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T alignX(final @NonNull Supplier<@NonNull Align> alignX) {
-		return super.follow("alignX", alignX, (final LineFieldNode<V> node, final Align value) -> node.alignX = value);
+		return super.follow("alignX", alignX, value -> this.alignX = value);
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T alignY(final @NonNull Align alignY) {
@@ -182,7 +182,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T alignY(final @NonNull Supplier<@NonNull Align> alignY) {
-		return super.follow("alignY", alignY, (final LineFieldNode<V> node, final Align value) -> node.alignY = value);
+		return super.follow("alignY", alignY, value -> this.alignY = value);
 	}
 
 	public final <T extends LineFieldNode<V>> @NonNull T onSubmit(final @NonNull EventListener<NodeEvent<T>> listener) {

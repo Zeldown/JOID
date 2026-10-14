@@ -85,21 +85,8 @@ public class ResourcePlayerNode extends Node {
 		final double videoWidth = this.fork.getWidth();
 		final double videoHeight = this.fork.getHeight();
 
-		if (super.getWidth() == 0 && super.getHeight() == 0) {
-			super.width(videoWidth);
-			super.height(videoHeight);
-			return;
-		}
-
-		if (super.getWidth() == 0) {
-			super.width(videoWidth * super.getHeight() / videoHeight);
-			return;
-		}
-
-		if (super.getHeight() == 0) {
-			super.height(videoHeight * super.getWidth() / videoWidth);
-			return;
-		}
+		final double scale = super.getDefaultWidth() != 0D ? super.getWidth() / videoWidth : super.getDefaultHeight() != 0D ? super.getHeight() / videoHeight : 1D;
+		super.fit(videoWidth * scale, videoHeight * scale);
 
 		if (!this.resourceStarted) {
 			this.resourceStarted = true;
@@ -248,15 +235,15 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
-		return super.follow("resource", resource, (final ResourcePlayerNode node, final Resource value) -> {
-			node.release();
-			if (node.fork != null && node.fork != node.resource) {
-				node.fork.clear();
+		return super.follow("resource", resource, value -> {
+			this.release();
+			if (this.fork != null && this.fork != this.resource) {
+				this.fork.clear();
 			}
 
-			node.resource = value;
-			node.fork = ResourcePlayerNode.fork(value);
-			node.resourceStarted = false;
+			this.resource = value;
+			this.fork = ResourcePlayerNode.fork(value);
+			this.resourceStarted = false;
 		});
 	}
 
@@ -265,7 +252,7 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretchType) {
-		return super.follow("stretchType", stretchType, (final ResourcePlayerNode node, final StretchType value) -> node.stretchType = value);
+		return super.follow("stretchType", stretchType, value -> this.stretchType = value);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T autoplay(final boolean autoplay) {
@@ -273,7 +260,7 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T autoplay(final @NonNull Supplier<Boolean> autoplay) {
-		return super.follow("autoplay", autoplay, (final ResourcePlayerNode node, final Boolean value) -> node.autoplay = value);
+		return super.follow("autoplay", autoplay, value -> this.autoplay = value);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T loop(final boolean loop) {
@@ -281,9 +268,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T loop(final @NonNull Supplier<Boolean> loop) {
-		return super.follow("loop", loop, (final ResourcePlayerNode node, final Boolean value) -> {
-			node.loop = value;
-			final IResourcePlayback playback = node.getPlayback();
+		return super.follow("loop", loop, value -> {
+			this.loop = value;
+			final IResourcePlayback playback = this.getPlayback();
 			if (playback != null) {
 				playback.loop(value);
 			}
@@ -295,9 +282,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T volume(final @NonNull Supplier<Float> volume) {
-		return super.follow("volume", volume, (final ResourcePlayerNode node, final Float value) -> {
-			node.volume = value;
-			final VideoResourceDecoder video = node.getVideo();
+		return super.follow("volume", volume, value -> {
+			this.volume = value;
+			final VideoResourceDecoder video = this.getVideo();
 			if (video != null) {
 				video.volume(value);
 			}
@@ -309,9 +296,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T audioGroup(final @NonNull Supplier<?> audioGroup) {
-		return super.follow("audioGroup", (Supplier<Object>) audioGroup, (final ResourcePlayerNode node, final Object value) -> {
-			node.audioGroup = value;
-			final VideoResourceDecoder video = node.getVideo();
+		return super.follow("audioGroup", (Supplier<Object>) audioGroup, value -> {
+			this.audioGroup = value;
+			final VideoResourceDecoder video = this.getVideo();
 			if (video != null) {
 				video.audioGroup(value);
 			}
@@ -323,9 +310,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Supplier<@NonNull Point> location) {
-		return super.follow("location", location, (final ResourcePlayerNode node, final Point value) -> {
-			node.location = value;
-			final VideoResourceDecoder video = node.getVideo();
+		return super.follow("location", location, value -> {
+			this.location = value;
+			final VideoResourceDecoder video = this.getVideo();
 			if (video != null) {
 				video.location((float) value.getX(), (float) value.getY(), (float) value.getZ());
 			}
@@ -337,9 +324,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T referenceDistance(final @NonNull Supplier<Float> referenceDistance) {
-		return super.follow("referenceDistance", referenceDistance, (final ResourcePlayerNode node, final Float value) -> {
-			node.referenceDistance = value;
-			final VideoResourceDecoder video = node.getVideo();
+		return super.follow("referenceDistance", referenceDistance, value -> {
+			this.referenceDistance = value;
+			final VideoResourceDecoder video = this.getVideo();
 			if (video != null) {
 				video.referenceDistance(value);
 			}
@@ -351,9 +338,9 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T maxDistance(final @NonNull Supplier<Float> maxDistance) {
-		return super.follow("maxDistance", maxDistance, (final ResourcePlayerNode node, final Float value) -> {
-			node.maxDistance = value;
-			final VideoResourceDecoder video = node.getVideo();
+		return super.follow("maxDistance", maxDistance, value -> {
+			this.maxDistance = value;
+			final VideoResourceDecoder video = this.getVideo();
 			if (video != null) {
 				video.maxDistance(value);
 			}

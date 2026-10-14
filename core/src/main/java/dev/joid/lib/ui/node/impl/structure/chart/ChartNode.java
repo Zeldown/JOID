@@ -79,7 +79,7 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final <T extends ChartNode> @NonNull T xAxis(final @NonNull Supplier<@NonNull XChartAxis> xAxis) {
-		return super.follow("xAxis", xAxis, (final ChartNode node, final XChartAxis value) -> node.xAxis = value);
+		return super.follow("xAxis", xAxis, value -> this.xAxis = value);
 	}
 
 	public final <T extends ChartNode> @NonNull T yAxis(final @NonNull YChartAxis yAxis) {
@@ -87,7 +87,7 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final <T extends ChartNode> @NonNull T yAxis(final @NonNull Supplier<@NonNull YChartAxis> yAxis) {
-		return super.follow("yAxis", yAxis, (final ChartNode node, final YChartAxis value) -> node.yAxis = value);
+		return super.follow("yAxis", yAxis, value -> this.yAxis = value);
 	}
 
 	public final <T extends ChartNode> @NonNull T data(final @NonNull String dataName, final @NonNull ChartData data) {

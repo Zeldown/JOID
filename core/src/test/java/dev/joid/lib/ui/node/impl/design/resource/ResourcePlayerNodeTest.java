@@ -82,7 +82,6 @@ public class ResourcePlayerNodeTest {
 		this.bridges.open(new NodeUI(player));
 		Assert.assertEquals(8D, player.getWidth(), 0D);
 		Assert.assertEquals(8D, player.getHeight(), 0D);
-		Assert.assertTrue(this.bridges.getRender().getDraws(1F, 1F, 1F).isEmpty());
 		this.bridges.frame();
 		this.assertBounds(this.white(), 100D, 100D, 108D, 108D);
 	}

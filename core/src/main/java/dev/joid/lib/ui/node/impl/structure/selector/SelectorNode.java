@@ -66,26 +66,21 @@ public abstract class SelectorNode<V> extends Node {
 		final double layoutY = super.getLayoutY() == this.raisedLayoutY ? super.getLayoutY() + this.raise : super.getLayoutY();
 		this.raise = raise;
 		this.raisedLayoutY = layoutY - raise;
-		super.layoutPosition(this, super.getLayoutX(), this.raisedLayoutY);
-
-		this.selected.y(raise);
+		super.layoutPosition(super.getLayoutX(), this.raisedLayoutY);
 
 		double oy = this.direction.isDown() ? size : raise - size;
 		for (final Node child : super.getChildren()) {
-			child.x(0);
-			child.width(super.getDefaultWidth());
-			child.height(size);
-
+			child.layoutSize(super.getDefaultWidth(), size);
 			if (this.isSelected(child)) {
+				child.layoutPosition(-child.getDefaultX(), raise - child.getDefaultY());
 				continue;
 			}
 
-			child.y(oy);
-			child.visible(node -> this.active || this.isSelected(node));
+			child.layoutPosition(-child.getDefaultX(), oy - child.getDefaultY());
 			oy += this.direction.isDown() ? size : -size;
 		}
 
-		super.height(height);
+		super.layoutSize(super.getWidth(), height);
 		this.drawBackground(mouseX, mouseY);
 	}
 
@@ -161,7 +156,7 @@ public abstract class SelectorNode<V> extends Node {
 		for (final V option : values) {
 			final Node node = this.option(option);
 			this.optionMap.put(node, option);
-			super.append(node);
+			super.append(node.visible(() -> this.active || this.isSelected(node)));
 		}
 
 		final V value;
@@ -182,13 +177,13 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull V value) {
-		return super.bind("value", value, (final SelectorNode<V> node, final V option) -> node.choose(option, false));
+		return super.start("value", value, option -> this.choose(option, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T value(final @NonNull Signal<V> value) {
-		return super.bind("value", value, (final SelectorNode<V> node, final V option) -> {
-			if (node.optionMap.isEmpty() || node.optionMap.containsValue(option)) {
-				node.choose(option, false);
+		return super.bind("value", value, option -> {
+			if (this.optionMap.isEmpty() || this.optionMap.containsValue(option)) {
+				this.choose(option, false);
 			}
 		});
 	}
@@ -198,15 +193,15 @@ public abstract class SelectorNode<V> extends Node {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T direction(final @NonNull Supplier<@NonNull SelectorDirection> direction) {
-		return super.follow("direction", direction, (final SelectorNode<V> node, final SelectorDirection value) -> node.direction = value);
+		return super.follow("direction", direction, value -> this.direction = value);
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final boolean active) {
-		return super.bind("active", active, (final SelectorNode<V> node, final Boolean value) -> node.activate(value, false));
+		return super.start("active", active, value -> this.activate(value, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T active(final @NonNull Signal<Boolean> active) {
-		return super.bind("active", active, (final SelectorNode<V> node, final Boolean value) -> node.activate(value, false));
+		return super.bind("active", active, value -> this.activate(value, false));
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T change(final @NonNull V value) {

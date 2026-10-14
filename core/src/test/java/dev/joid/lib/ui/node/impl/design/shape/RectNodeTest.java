@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.design.shape;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,7 @@ public class RectNodeTest {
 		Assert.assertSame(Color.TRANSPARENT, rect.getBorderColor());
 		Assert.assertEquals(0D, rect.getBorderStroke(), 0D);
 		Assert.assertTrue(rect.isBorderFill());
-		Assert.assertTrue(rect.getEffectMap().isEmpty());
+		Assert.assertTrue(RectNodeTest.<Map<Class<?>, NodeEffect<Node>>>effects(rect).isEmpty());
 		this.bridges.open(new NodeUI(rect)).frame();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(1, draws.size());
@@ -312,9 +313,9 @@ public class RectNodeTest {
 	@Test
 	public void dropsTheBorderWithoutStroke() {
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(3D);
-		Assert.assertEquals(1, rect.getEffectMap().size());
+		Assert.assertEquals(1, RectNodeTest.<Map<Class<?>, NodeEffect<Node>>>effects(rect).size());
 		rect.borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(0D);
-		Assert.assertFalse(rect.getEffectMap().values().iterator().next().shouldApply(rect));
+		Assert.assertFalse(RectNodeTest.<Map<Class<?>, NodeEffect<Node>>>effects(rect).values().iterator().next().shouldApply(rect));
 		this.bridges.open(new NodeUI(rect)).frame();
 		Assert.assertTrue(this.border.getValues().isEmpty());
 	}
@@ -322,8 +323,8 @@ public class RectNodeTest {
 	@Test
 	public void keepsASingleBorder() {
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(3D).borderColor(new Color(0.4F, 0.6F, 0.2F, 1F)).borderStroke(5D);
-		Assert.assertEquals(1, rect.getEffectMap().size());
-		final NodeEffect<Node> effect = rect.getEffectMap().values().iterator().next();
+		Assert.assertEquals(1, RectNodeTest.<Map<Class<?>, NodeEffect<Node>>>effects(rect).size());
+		final NodeEffect<Node> effect = RectNodeTest.<Map<Class<?>, NodeEffect<Node>>>effects(rect).values().iterator().next();
 		Assert.assertTrue(effect instanceof BorderNodeEffect);
 		this.bridges.open(new NodeUI(rect)).frame();
 		Assert.assertEquals(5F, (Float) this.border.getValues().get("u_BorderWidth"), 1E-4F);
@@ -391,6 +392,16 @@ public class RectNodeTest {
 			super.add(this.nodes);
 		}
 
+	}
+
+	private static <T> T effects(final Node node) {
+		try {
+			final Field field = Node.class.getDeclaredField("effectMap");
+			field.setAccessible(true);
+			return (T) field.get(node);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 }

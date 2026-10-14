@@ -166,9 +166,9 @@ public class ShowHero extends ShowUI {
 			.create(536, 300, 64)
 			.color(Color.WHITE)
 			.effect(ShadowNodeEffect.create(ShowUI.AMBER.withAlpha(0.9F), 26F))
-			.layer((mouseX, mouseY) -> {
-				final double cx = 571D;
-				final double cy = 332D;
+			.layer((node, mouseX, mouseY) -> {
+				final double cx = 35D;
+				final double cy = 32D;
 				DrawUtils.SHAPE.drawPolygon(ShowUI.NIGHT, Point.create(cx - 7D, cy - 12D), Point.create(cx - 7D, cy + 12D), Point.create(cx + 13D, cy));
 			})
 			.attach(card);
@@ -196,7 +196,7 @@ public class ShowHero extends ShowUI {
 			.attach(card);
 			RectNode
 			.create(30, 170, 440, 140)
-			.layer((mouseX, mouseY) -> this.chart(30D, 170D, 440D, 140D))
+			.layer((node, mouseX, mouseY) -> this.chart(0D, 0D, 440D, 140D))
 			.attach(card);
 		})
 		.attach(this);

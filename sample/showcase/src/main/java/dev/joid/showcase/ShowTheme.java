@@ -61,7 +61,7 @@ public class ShowTheme extends ShowUI {
 		this.card(360, 430, 960, 590).attach(this);
 		TextNode.create(400, 470).text(() -> Text.create("Weekly plays", ShowUI.font(FontWeight.BOLD, 26F, this.text()))).attach(this);
 		TextNode.create(400, 508).text(() -> Text.create("Last 12 weeks", ShowUI.font(FontWeight.MEDIUM, 18F, this.muted()))).attach(this);
-		RectNode.create(400, 560, 880, 420).layer((mouseX, mouseY) -> this.chart(400D, 560D, 880D, 420D)).attach(this);
+		RectNode.create(400, 560, 880, 420).layer((node, mouseX, mouseY) -> this.chart(0D, 0D, 880D, 420D)).attach(this);
 
 		this.card(1360, 430, 500, 590).attach(this);
 		TextNode.create(1400, 470).text(() -> Text.create("Top artists", ShowUI.font(FontWeight.BOLD, 26F, this.text()))).attach(this);

@@ -41,12 +41,17 @@ public class CircleNode extends Node {
 				);
 	}
 
+	@Override
+	protected @NonNull Node instantiate() {
+		return new CircleNode(super.getX(), super.getY(), super.getWidth());
+	}
+
 	public final <T extends CircleNode> @NonNull T color(final @NonNull Color color) {
 		return this.color(Signal.from(color));
 	}
 
 	public final <T extends CircleNode> @NonNull T color(final @NonNull Supplier<@NonNull Color> color) {
-		return super.follow("color", color, (final CircleNode node, final Color value) -> node.color = value);
+		return super.follow("color", color, value -> this.color = value);
 	}
 
 	public final <T extends CircleNode> @NonNull T hoveredColor(final Color hoveredColor) {
@@ -54,7 +59,7 @@ public class CircleNode extends Node {
 	}
 
 	public final <T extends CircleNode> @NonNull T hoveredColor(final @NonNull Supplier<Color> hoveredColor) {
-		return super.follow("hoveredColor", hoveredColor, (final CircleNode node, final Color value) -> node.hoveredColor = value);
+		return super.follow("hoveredColor", hoveredColor, value -> this.hoveredColor = value);
 	}
 
 }

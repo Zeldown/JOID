@@ -52,7 +52,7 @@ public class ShowForm extends ShowUI {
 		.visible(() -> this.isValid())
 		.interactive(false)
 		.effect(ShadowNodeEffect.create(ShowUI.EMERALD, 14F))
-		.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(ShowUI.NIGHT, 3.5F, Point.create(762D, 506D), Point.create(768D, 512D), Point.create(779D, 499D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(ShowUI.NIGHT, 3.5F, Point.create(10D, 18D), Point.create(16D, 24D), Point.create(27D, 11D)))
 		.attach(this);
 
 		TextNode.create(160, 580).text(Text.create("Bio, with markup", ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.MUTED))).attach(this);

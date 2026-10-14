@@ -10,7 +10,7 @@ import lombok.NonNull;
 @Getter
 public class LabelNode extends SignalReplayNode {
 
-	private Supplier<String> label;
+	private Supplier<String> name;
 
 	protected LabelNode() {
 		super(0D, 0D);
@@ -20,17 +20,17 @@ public class LabelNode extends SignalReplayNode {
 		return new LabelNode();
 	}
 
-	public final <T extends LabelNode> @NonNull T label(final String label) {
-		return this.label(Signal.from(label));
+	public final <T extends LabelNode> @NonNull T name(final String name) {
+		return this.name(Signal.from(name));
 	}
 
-	public final <T extends LabelNode> @NonNull T label(final @NonNull Supplier<String> label) {
-		this.label = label;
+	public final <T extends LabelNode> @NonNull T name(final @NonNull Supplier<String> name) {
+		this.name = name;
 		return (T) this;
 	}
 
 	public final <T extends LabelNode> @NonNull T title(final String title) {
-		return this.label(title);
+		return this.name(title);
 	}
 
 	public final <T extends LabelNode> @NonNull T caption(final String caption) {

@@ -31,7 +31,7 @@ public class ShowPaperKit implements IShowKit {
 
 	@Override
 	public void backdrop(final Node layer) {
-		RectNode.create(0, 0, 1920, 1080).color(ShowPaperKit.PAPER).layer((mouseX, mouseY) -> {
+		RectNode.create(0, 0, 1920, 1080).color(ShowPaperKit.PAPER).layer((node, mouseX, mouseY) -> {
 			for (int y = 54; y < 1080; y += 54) {
 				DrawUtils.SHAPE.drawRect(0D, y, 1920D, 2D, ShowPaperKit.RULE);
 			}
@@ -68,9 +68,9 @@ public class ShowPaperKit implements IShowKit {
 
 	@Override
 	public RectNode panel(final double x, final double y, final double width, final double height) {
-		return RectNode.create(x, y, width, height).color(Color.TRANSPARENT).layer((mouseX, mouseY) -> {
-			DrawUtils.SHAPE.drawRect(x + 16D, y + 16D, width, height, ShowPaperKit.INK);
-			ShowPaperKit.box(x, y, width, height, ShowPaperKit.CARD, 4D);
+		return RectNode.create(x, y, width, height).color(Color.TRANSPARENT).layer((node, mouseX, mouseY) -> {
+			DrawUtils.SHAPE.drawRect(16D, 16D, width, height, ShowPaperKit.INK);
+			ShowPaperKit.box(0D, 0D, width, height, ShowPaperKit.CARD, 4D);
 		});
 	}
 
@@ -84,13 +84,13 @@ public class ShowPaperKit implements IShowKit {
 		return RectNode
 		.create(x, y, 180, 64)
 		.color(Color.TRANSPARENT)
-		.layer((mouseX, mouseY) -> {
+		.layer((node, mouseX, mouseY) -> {
 			final boolean on = selected.getAsBoolean();
 			if (on) {
-				DrawUtils.SHAPE.drawRect(x + 8D, y + 8D, 180D, 64D, ShowPaperKit.INK);
+				DrawUtils.SHAPE.drawRect(8D, 8D, 180D, 64D, ShowPaperKit.INK);
 			}
-			ShowPaperKit.box(x, y, 180D, 64D, on ? ShowPaperKit.TOMATO : ShowPaperKit.CARD, 3D);
-			DrawUtils.TEXT.drawText(x + 90D, y + 32D, Text.create(label.toUpperCase(), ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.14F)).align(Align.CENTER));
+			ShowPaperKit.box(0D, 0D, 180D, 64D, on ? ShowPaperKit.TOMATO : ShowPaperKit.CARD, 3D);
+			DrawUtils.TEXT.drawText(90D, 32D, Text.create(label.toUpperCase(), ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.14F)).align(Align.CENTER));
 		});
 	}
 
@@ -99,12 +99,12 @@ public class ShowPaperKit implements IShowKit {
 		return RectNode
 		.create(x, y, width, 72)
 		.color(Color.TRANSPARENT)
-		.<RectNode>self(button -> button.layer((mouseX, mouseY) -> {
+		.layer((button, mouseX, mouseY) -> {
 			final double push = button.hoverValue(4F);
-			DrawUtils.SHAPE.drawRect(x + 10D, y + 10D, width, 72D, ShowPaperKit.INK);
-			ShowPaperKit.box(x + push, y + push, width, 72D, primary ? ShowPaperKit.TOMATO : ShowPaperKit.CARD, 3D);
-			DrawUtils.TEXT.drawText(x + push + width / 2D, y + push + 36D, Text.create(label.get().toUpperCase(), ShowUI.font(FontWeight.BOLD, 21F, ShowPaperKit.INK).letterSpacing(0.14F)).align(Align.CENTER));
-		}))
+			DrawUtils.SHAPE.drawRect(10D, 10D, width, 72D, ShowPaperKit.INK);
+			ShowPaperKit.box(push, push, width, 72D, primary ? ShowPaperKit.TOMATO : ShowPaperKit.CARD, 3D);
+			DrawUtils.TEXT.drawText(push + width / 2D, push + 36D, Text.create(label.get().toUpperCase(), ShowUI.font(FontWeight.BOLD, 21F, ShowPaperKit.INK).letterSpacing(0.14F)).align(Align.CENTER));
+		})
 		.hoverDuration(120L);
 	}
 

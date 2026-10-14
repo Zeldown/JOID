@@ -49,7 +49,7 @@ public final class GridNode extends Node {
 	}
 
 	public final @NonNull GridNode verticalMargin(final @NonNull Supplier<Double> verticalMargin) {
-		return super.follow("verticalMargin", verticalMargin, (final GridNode node, final Double value) -> node.verticalMargin = value);
+		return super.follow("verticalMargin", verticalMargin, value -> this.verticalMargin = value);
 	}
 
 	public final @NonNull GridNode horizontalMargin(final double horizontalMargin) {
@@ -57,7 +57,7 @@ public final class GridNode extends Node {
 	}
 
 	public final @NonNull GridNode horizontalMargin(final @NonNull Supplier<Double> horizontalMargin) {
-		return super.follow("horizontalMargin", horizontalMargin, (final GridNode node, final Double value) -> node.horizontalMargin = value);
+		return super.follow("horizontalMargin", horizontalMargin, value -> this.horizontalMargin = value);
 	}
 
 	public final @NonNull GridNode margin(final double margin) {
@@ -84,7 +84,7 @@ public final class GridNode extends Node {
 				rowHeight = 0D;
 			}
 
-			super.layoutPosition(child, ox, oy);
+			child.layoutPosition(ox, oy);
 
 			ox += child.getWidth() + this.horizontalMargin;
 			rowHeight = Math.max(rowHeight, child.getHeight());
@@ -93,9 +93,9 @@ public final class GridNode extends Node {
 		oy += rowHeight;
 
 		if (super.getDefaultHeight() == 0D) {
-			super.height(oy);
+			super.layoutSize(super.getWidth(), oy);
 		} else if (super.getOverflow() == OverflowProperty.NONE) {
-			super.height(Math.max(oy, super.getDefaultHeight()));
+			super.layoutSize(super.getWidth(), Math.max(oy, super.getDefaultHeight()));
 		}
 	}
 

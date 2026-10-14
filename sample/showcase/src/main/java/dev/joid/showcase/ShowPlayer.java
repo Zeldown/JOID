@@ -80,7 +80,7 @@ public class ShowPlayer extends ShowUI {
 				this.player.resume();
 			}
 		})
-		.layer((mouseX, mouseY) -> this.icon(98D, 732D, card.hoverValue(1F)))
+		.layer((node, mouseX, mouseY) -> this.icon(42D, 42D, card.hoverValue(1F)))
 		.attach(card);
 		RectNode
 		.create(176, 712, 1060, 40)
@@ -97,7 +97,7 @@ public class ShowPlayer extends ShowUI {
 				this.scrub.set(-1D);
 			}
 		})
-		.layer((mouseX, mouseY) -> this.bar(176D, 732D, 1060D, card.hoverValue(1F)))
+		.layer((node, mouseX, mouseY) -> this.bar(0D, 20D, 1060D, card.hoverValue(1F)))
 		.attach(card);
 		TextNode.create(1384, 732).text(() -> Text.create(ShowPlayer.clock(this.shown() * Math.max(1D, this.player.getDuration())) + " / " + ShowPlayer.clock(this.player.getDuration()), ShowUI.font(FontWeight.SEMI_BOLD, 22F, ShowUI.TEXT.withAlpha(0.4F + 0.6F * card.hoverValue(1F))))).anchorX(Align.END).anchorY(Align.CENTER).attach(card);
 	}

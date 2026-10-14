@@ -229,17 +229,13 @@ public class UIDemoAnimation extends UIDemo {
 			.create(40, 150, 100, 50)
 			.color(UIDemoAnimation.INK)
 			.onClick(event -> once.sequence(1000F, once.get() < 0.5F ? 1F : 0F, TweenEquations.CUBIC_INOUT).onComplete(tween -> plays.increment()).start())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Play", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Play", label))
 			.attach(rect);
 			RectNode
 			.create(160, 150, 100, 50)
 			.color(UIDemoAnimation.INK)
 			.onClick(event -> once.value(0F))
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Stop", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Stop", label))
 			.attach(rect);
 			TextNode.create(280, 162).text(Text.create("Ends: " + plays.get(), caption)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Play and stop", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);

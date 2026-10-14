@@ -130,9 +130,7 @@ public class UIDemoSelector extends UIDemo {
 			.create(280, 30, 90, 50)
 			.color(UIDemoSelector.INK)
 			.onClick(event -> locked.active(true))
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Code", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Code", label))
 			.attach(rect);
 			TextNode.create(40, 200).text(Text.create("Refused: " + refusedOpens.get(), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Refused open", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);

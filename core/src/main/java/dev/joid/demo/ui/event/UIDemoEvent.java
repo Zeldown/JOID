@@ -165,9 +165,7 @@ public class UIDemoEvent extends UIDemo {
 					RectNode.create(0, 0, 40, 50).color(UIDemoEvent.INK).onDetach(removed -> detached.increment()).attach(list);
 				}
 			})
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Add", label))
 			.attach(rect);
 			RectNode
 			.create(160, 90, 120, 50)
@@ -177,9 +175,7 @@ public class UIDemoEvent extends UIDemo {
 					list.remove(list.getChildren().get(list.getChildren().size() - 1));
 				}
 			})
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Remove", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Remove", label))
 			.attach(rect);
 			TextNode.create(20, 160).text(Text.create("Appended: " + appended.get(), info)).attach(rect);
 			TextNode.create(20, 200).text(Text.create("Detached: " + detached.get(), info)).attach(rect);
@@ -195,9 +191,7 @@ public class UIDemoEvent extends UIDemo {
 			.create(100, 50, 120, 120)
 			.color(UIDemoEvent.INK)
 			.hoveredColor(Color.WHITE)
-			.hover(NodeHoverElement.follow(RectNode.create(16, -50, 140, 50).color(UIDemoEvent.INK).body(tooltip -> {
-				TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("A node", label).align(Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
-			})))
+			.hover(NodeHoverElement.follow(RectNode.create(16, -50, 140, 50).color(UIDemoEvent.INK).label(Text.create("A node", label))))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Node tooltip", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -225,9 +219,7 @@ public class UIDemoEvent extends UIDemo {
 			.create(100, 90, 120, 120)
 			.color(UIDemoEvent.INK)
 			.hoveredColor(Color.WHITE)
-			.hover(NodeHoverElement.fixed(RectNode.create(120, 745, 240, 50).color(UIDemoEvent.INK).body(tooltip -> {
-				TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("Always here", label).align(Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
-			})))
+			.hover(NodeHoverElement.fixed(RectNode.create(120, 745, 240, 50).color(UIDemoEvent.INK).label(Text.create("Always here", label))))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Fixed tooltip", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -241,9 +233,7 @@ public class UIDemoEvent extends UIDemo {
 			.create(100, 50, 120, 120)
 			.color(UIDemoEvent.INK)
 			.hoveredColor(Color.WHITE)
-			.hover(NodeHoverElement.relative(RectNode.create(0, -48, 120, 40).color(Color.WHITE).body(tooltip -> {
-				TextNode.create(tooltip.dw(2), tooltip.dh(2)).text(Text.create("Above", info).align(Align.CENTER)).anchor(Align.CENTER).attach(tooltip);
-			})))
+			.hover(NodeHoverElement.relative(RectNode.create(0, -48, 120, 40).color(Color.WHITE).label(Text.create("Above", info))))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Relative tooltip", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -257,9 +247,7 @@ public class UIDemoEvent extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoEvent.INK)
 			.onClick(event -> clicks.set(clicks.get() + (UI.isShiftKeyDown() ? 10 : 1)))
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Click", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Click", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Count: " + clicks.get(), info)).attach(rect);
 			TextNode.create(40, 165).text(Text.create("Shift adds 10", info)).attach(rect);
@@ -296,9 +284,7 @@ public class UIDemoEvent extends UIDemo {
 				}
 				running.set(timer.isAttached());
 			})
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create(running.get() ? "Stop" : "Start", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create(running.get() ? "Stop" : "Start", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Seconds: " + seconds.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Task", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);

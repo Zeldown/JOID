@@ -76,6 +76,15 @@ public class NodeScrollEventTest {
 	}
 
 	@Test
+	public void firesTheScrollBeforeTheEnd() {
+		final List<String> received = new ArrayList<>();
+		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollToEnd(event -> received.add("end")).onScroll(event -> received.add("scroll"));
+		this.bridges.open(new NodeUI(box)).frames(30);
+		box.scrollY(-1000D);
+		Assert.assertEquals(Arrays.asList("scroll", "end"), received);
+	}
+
+	@Test
 	public void firesOnceTheScrollReachesTheEnd() {
 		final List<Object> received = new ArrayList<>();
 		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollAtEnd(event -> received.add(event.getNode()));

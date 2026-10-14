@@ -54,7 +54,7 @@ public class ShowMotion extends ShowUI {
 		.create(420, y - 42D, 150, 84)
 		.color(Color.BLACK.withAlpha(0.22F))
 		.effect(RoundedNodeEffect.create(14F))
-		.layer((mouseX, mouseY) -> this.curve(434D, y - 30D, 122D, 60D, equation, clock.get(), from, to))
+		.layer((node, mouseX, mouseY) -> this.curve(14D, 12D, 122D, 60D, equation, clock.get(), from, to))
 		.attach(this);
 
 		RectNode.create(640, y - 4D, 856, 8).color(Color.WHITE.withAlpha(0.08F)).effect(RoundedNodeEffect.create(4F)).attach(this);

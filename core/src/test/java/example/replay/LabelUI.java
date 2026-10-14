@@ -13,12 +13,12 @@ public class LabelUI extends UI {
 
 	@Override
 	public void init() {
-		LabelNode.create().label("Label " + this.clicks.get()).attach(this);
+		LabelNode.create().name("Label " + this.clicks.get()).attach(this);
 		LabelNode.create().title("Title " + this.clicks.get()).attach(this);
 		LabelNode.create().caption("Caption " + this.clicks.get()).attach(this);
 		SignalReplayNode.titled("Titled " + this.clicks.get()).attach(this);
 		SignalReplayNode.create().prefixed("Prefixed " + this.clicks.get()).attach(this);
-		LabelNode.create().label(Signal.from("Direct " + this.clicks.get())).attach(this);
+		LabelNode.create().name(Signal.from("Direct " + this.clicks.get())).attach(this);
 	}
 
 }

@@ -388,12 +388,10 @@ public final class DevNode extends Node {
 		}
 
 		if (super.getHeight() == super.getDefaultHeight() && this.inspectedNodeLocked.peek()) {
-			super.width(super.getDefaultWidth() + 200);
-			super.height(super.getDefaultHeight() + 220);
+			super.layoutSize(super.getDefaultWidth() + 200, super.getDefaultHeight() + 220);
 			this.init(super.getUi());
 		} else if (super.getHeight() != super.getDefaultHeight() && !this.inspectedNodeLocked.peek()) {
-			super.width(super.getDefaultWidth());
-			super.height(super.getDefaultHeight());
+			super.layoutSize(super.getDefaultWidth(), super.getDefaultHeight());
 			this.init(super.getUi());
 		}
 

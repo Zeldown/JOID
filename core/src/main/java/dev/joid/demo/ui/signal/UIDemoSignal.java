@@ -61,9 +61,7 @@ public class UIDemoSignal extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> clicks.increment())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("+1", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Clicks: " + clicks.get(), info)).attach(rect);
 			RectNode.create(40, 180, 20, 20).color(UIDemoSignal.INK).width(Math.min(320D, 20D + clicks.get() * 40D)).attach(rect);
@@ -79,9 +77,7 @@ public class UIDemoSignal extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> mapped.increment())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("+1", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create(mapped.map(value -> "Doubled: " + value * 2), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("map", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -96,17 +92,13 @@ public class UIDemoSignal extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> left.increment())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("A +1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("A +1", label))
 			.attach(rect);
 			RectNode
 			.create(180, 40, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> right.increment())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("B +1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("B +1", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create(Signal.from(() -> "A + B = " + (left.get() + right.get())), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Signal.from", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -142,9 +134,7 @@ public class UIDemoSignal extends UIDemo {
 			.create(40, 160, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> volume.set(0))
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Reset", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Reset", label))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Two-way slider", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -178,9 +168,7 @@ public class UIDemoSignal extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> shown.toggle())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Toggle", label))
 			.attach(rect);
 			RectNode.create(40, 120, 80, 80).color(UIDemoSignal.INK).visible(shown).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Visibility", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -195,9 +183,7 @@ public class UIDemoSignal extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> heat.increment())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("+1", label))
 			.attach(rect);
 			RectNode.create(40, 120, 80, 80).color(heat.get() >= 3 ? UIDemoSignal.INK : Color.WHITE).attach(rect);
 			TextNode.create(140, 145).text(Text.create(heat.get() >= 3 ? "3 clicks or more" : "Under 3 clicks", info)).attach(rect);
@@ -217,18 +203,14 @@ public class UIDemoSignal extends UIDemo {
 					items.add("Item " + (items.size() + 1));
 				}
 			})
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Add", label))
 			.attach(rect);
 			RectNode
 			.create(180, 40, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> items.remove(items.size() - 1))
 			.visible(!items.isEmpty())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Remove", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Remove", label))
 			.attach(rect);
 			FlexNode
 			.vertical(40, 110, 320)
@@ -276,9 +258,7 @@ public class UIDemoSignal extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoSignal.INK)
 			.onClick(event -> sent.increment())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Send", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Send", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Saved: " + saved.get(), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("subscribe", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);

@@ -117,17 +117,13 @@ public class UIDemoPlayer extends UIDemo {
 		.create(1160, 570, 100, 36)
 		.color(UIDemoPlayer.INK)
 		.onClick(event -> seeked.seek(1D))
-		.body(container -> {
-			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1 s", button).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-		})
+		.label(Text.create("+1 s", button))
 		.attach(this);
 		RectNode
 		.create(1270, 570, 100, 36)
 		.color(UIDemoPlayer.INK)
 		.onClick(event -> seeked.restart())
-		.body(container -> {
-			TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Restart", button).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-		})
+		.label(Text.create("Restart", button))
 		.attach(this);
 		TextNode.create(1320, 625).text(Text.create("Seek and restart", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 

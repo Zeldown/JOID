@@ -55,12 +55,17 @@ public final class FlexNode extends Node {
 		this.updateFlex();
 	}
 
+	@Override
+	public @NonNull Node instantiate() {
+		return new FlexNode(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.direction);
+	}
+
 	public final @NonNull FlexNode direction(final @NonNull FlexDirection direction) {
 		return this.direction(Signal.from(direction));
 	}
 
 	public final @NonNull FlexNode direction(final @NonNull Supplier<@NonNull FlexDirection> direction) {
-		return super.follow("direction", direction, (final FlexNode node, final FlexDirection value) -> node.changeDirection(value));
+		return super.follow("direction", direction, value -> this.changeDirection(value));
 	}
 
 	public final @NonNull FlexNode align(final Align align) {
@@ -68,7 +73,7 @@ public final class FlexNode extends Node {
 	}
 
 	public final @NonNull FlexNode align(final @NonNull Supplier<Align> align) {
-		return super.follow("align", align, (final FlexNode node, final Align value) -> node.align = value);
+		return super.follow("align", align, value -> this.align = value);
 	}
 
 	public final @NonNull FlexNode margin(final double margin) {
@@ -76,13 +81,13 @@ public final class FlexNode extends Node {
 	}
 
 	public final @NonNull FlexNode margin(final @NonNull Supplier<Double> margin) {
-		return super.follow("margin", margin, (final FlexNode node, final Double value) -> node.margin = value);
+		return super.follow("margin", margin, value -> this.margin = value);
 	}
 
 	private final void changeDirection(final FlexDirection direction) {
 		if (this.direction != direction) {
 			for (final Node child : super.getChildren()) {
-				super.layoutPosition(child, 0D, 0D);
+				child.layoutPosition(0D, 0D);
 			}
 		}
 
@@ -97,10 +102,10 @@ public final class FlexNode extends Node {
 			}
 
 			if (this.direction == FlexDirection.COLUMN) {
-				super.layoutPosition(child, this.align == null ? 0D : this.getCrossX(child) - child.getDefaultX(), offset);
+				child.layoutPosition(this.align == null ? 0D : this.getCrossX(child) - child.getDefaultX(), offset);
 				offset += child.getHeight() + this.margin;
 			} else {
-				super.layoutPosition(child, offset, this.align == null ? 0D : this.getCrossY(child) - child.getDefaultY());
+				child.layoutPosition(offset, this.align == null ? 0D : this.getCrossY(child) - child.getDefaultY());
 				offset += child.getWidth() + this.margin;
 			}
 		}
@@ -110,9 +115,9 @@ public final class FlexNode extends Node {
 		}
 
 		if (this.direction == FlexDirection.COLUMN) {
-			super.height(Math.max(0, offset - this.margin));
+			super.layoutSize(super.getWidth(), Math.max(0, offset - this.margin));
 		} else {
-			super.width(Math.max(0, offset - this.margin));
+			super.layoutSize(Math.max(0, offset - this.margin), super.getHeight());
 		}
 	}
 

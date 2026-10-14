@@ -324,11 +324,11 @@ public class SignalReplayTest {
 		final LabelUI ui = new LabelUI();
 		Assert.assertEquals("", this.open(ui));
 		ui.getClicks().set(3);
-		Assert.assertEquals("Label 3", ((LabelNode) ui.getNodeList().get(0)).getLabel().get());
-		Assert.assertEquals("Title 3", ((LabelNode) ui.getNodeList().get(1)).getLabel().get());
+		Assert.assertEquals("Label 3", ((LabelNode) ui.getNodeList().get(0)).getName().get());
+		Assert.assertEquals("Title 3", ((LabelNode) ui.getNodeList().get(1)).getName().get());
 		Assert.assertEquals("Caption 3", SignalReplayTest.node(ui, 2).getText().get());
 		Assert.assertEquals("Titled 3", SignalReplayTest.node(ui, 3).getText().get());
-		Assert.assertEquals("Direct 3", ((LabelNode) ui.getNodeList().get(5)).getLabel().get());
+		Assert.assertEquals("Direct 3", ((LabelNode) ui.getNodeList().get(5)).getName().get());
 	}
 
 	@Test

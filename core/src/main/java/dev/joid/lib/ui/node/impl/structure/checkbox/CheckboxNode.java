@@ -33,11 +33,11 @@ public abstract class CheckboxNode extends Node {
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final boolean checked) {
-		return super.bind("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
+		return super.start("checked", checked, value -> this.change(value, false));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T checked(final @NonNull Signal<Boolean> checked) {
-		return super.bind("checked", checked, (final CheckboxNode node, final Boolean value) -> node.change(value, false));
+		return super.bind("checked", checked, value -> this.change(value, false));
 	}
 
 	public final <T extends CheckboxNode> @NonNull T change(final boolean checked) {

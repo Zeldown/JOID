@@ -71,8 +71,8 @@ public class NodeKeyEventTest {
 	@Test
 	public void ignoresAKeyOnAHiddenOrDisabledNode() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(rect -> false).handleKeyPressed(event -> received.add(event.getNode()));
-		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(rect -> false).handleKeyPressed(event -> received.add(event.getNode()));
+		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(() -> false).handleKeyPressed(event -> received.add(event.getNode()));
+		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(() -> false).handleKeyPressed(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
 		this.bridges.getUi().keyPressed(Key.A);
 		Assert.assertTrue(received.isEmpty());

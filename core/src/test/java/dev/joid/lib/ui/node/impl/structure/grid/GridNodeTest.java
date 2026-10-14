@@ -225,7 +225,7 @@ public class GridNodeTest {
 
 	@Test
 	public void givesNoCellToAHiddenChild() {
-		final RectNode hidden = RectNode.create(0D, 0D, 100D, 50D).visible(node -> false);
+		final RectNode hidden = RectNode.create(0D, 0D, 100D, 50D).visible(() -> false);
 		final RectNode third = RectNode.create(0D, 0D, 100D, 50D);
 		final GridNode grid = GridNode.create(0D, 0D, 250D, 50D).append(RectNode.create(0D, 0D, 100D, 50D), hidden, third);
 		this.bridges.open(new NodeUI(grid));

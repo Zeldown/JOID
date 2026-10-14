@@ -78,7 +78,7 @@ public class UIDemoSimple extends UIDemo {
 			RectNode
 			.create(100, 50, 120, 120)
 			.color(Color.WHITE)
-			.self(square -> square.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(square.getX() + square.dw(2), square.getY() + square.dh(2), UIDemoSimple.INK, 40D)))
+			.layer((square, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(square.dw(2), square.dh(2), UIDemoSimple.INK, 40D))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Layer", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -153,9 +153,7 @@ public class UIDemoSimple extends UIDemo {
 					right.increment();
 				}
 			})
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Click", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Click", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Left: " + left.get(), info)).attach(rect);
 			TextNode.create(40, 165).text(Text.create("Other: " + right.get(), info)).attach(rect);

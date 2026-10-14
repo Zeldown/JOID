@@ -61,91 +61,91 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(55, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE, 20F)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 20F))
 		.attach(this);
 		TextNode.create(155, 375).text(Text.create("Rounded rect", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(285, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE, 30F, true, true, false, false)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 30F, true, true, false, false))
 		.attach(this);
 		TextNode.create(385, 375).text(Text.create("Some corners", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(515, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE, 20F, 3D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 20F, 3D))
 		.attach(this);
 		TextNode.create(615, 375).text(Text.create("Rounded stroke", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(745, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.ORANGE, 30F, 1D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.ORANGE, 30F, 1D))
 		.attach(this);
 		TextNode.create(845, 375).text(Text.create("Thin stroke", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(975, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(node.getX(), node.getY(), node.getX() + node.getWidth(), node.getY() + node.getHeight(), Color.WHITE, 3D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 3D))
 		.attach(this);
 		TextNode.create(1075, 375).text(Text.create("Border", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1205, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(node.getX(), node.getY(), node.getX() + node.getWidth(), node.getY() + node.getHeight(), Color.WHITE, 6D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 6D))
 		.attach(this);
 		TextNode.create(1305, 375).text(Text.create("Filled border", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1435, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(node.getX() + 100D, node.getY() + 60D, Color.MAGENTA, 60D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(100D, 60D, Color.MAGENTA, 60D))
 		.attach(this);
 		TextNode.create(1535, 375).text(Text.create("Circle", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1665, 240, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, Point.create(node.getX() + 100D, node.getY()), Point.create(node.getX() + 200D, node.getY() + 120D), Point.create(node.getX(), node.getY() + 120D))))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, Point.create(100D, 0D), Point.create(200D, 120D), Point.create(0D, 120D)))
 		.attach(this);
 		TextNode.create(1765, 375).text(Text.create("Polygon", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(55, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 110D), Point.create(node.getX() + 200D, node.getY() + 10D))))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.create(0D, 110D), Point.create(200D, 10D)))
 		.attach(this);
 		TextNode.create(155, 575).text(Text.create("Line", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(285, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 100D), Point.create(node.getX() + 50D, node.getY() + 20D), Point.create(node.getX() + 100D, node.getY() + 100D), Point.create(node.getX() + 150D, node.getY() + 20D), Point.create(node.getX() + 200D, node.getY() + 100D))))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.create(0D, 100D), Point.create(50D, 20D), Point.create(100D, 100D), Point.create(150D, 20D), Point.create(200D, 100D)))
 		.attach(this);
 		TextNode.create(385, 575).text(Text.create("Polyline", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(515, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 110D), Point.create(node.getX() + 100D, node.getY() - 90D), Point.create(node.getX() + 200D, node.getY() + 110D))))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(0D, 110D), Point.create(100D, -90D), Point.create(200D, 110D)))
 		.attach(this);
 		TextNode.create(615, 575).text(Text.create("Curve", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(745, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 60D), Point.create(node.getX() + 70D, node.getY() - 60D), Point.create(node.getX() + 130D, node.getY() + 180D), Point.create(node.getX() + 200D, node.getY() + 60D))))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(0D, 60D), Point.create(70D, -60D), Point.create(130D, 180D), Point.create(200D, 60D)))
 		.attach(this);
 		TextNode.create(845, 575).text(Text.create("Bezier", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(975, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.CYAN, Point.create(node.getX() + 100D, node.getY()), Point.create(node.getX() + 200D, node.getY() + 60D), Point.create(node.getX() + 100D, node.getY() + 120D), Point.create(node.getX(), node.getY() + 60D))))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.CYAN, Point.create(100D, 0D), Point.create(200D, 60D), Point.create(100D, 120D), Point.create(0D, 60D)))
 		.attach(this);
 		TextNode.create(1075, 575).text(Text.create("Line loop", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1205, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, Color.ORANGE, Point.create(node.getX(), node.getY()), Point.create(node.getX() + 90D, node.getY() + 120D), Point.create(node.getX(), node.getY() + 120D), Point.create(node.getX() + 110D, node.getY()), Point.create(node.getX() + 200D, node.getY()), Point.create(node.getX() + 200D, node.getY() + 120D))))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, Color.ORANGE, Point.create(0D, 0D), Point.create(90D, 120D), Point.create(0D, 120D), Point.create(110D, 0D), Point.create(200D, 0D), Point.create(200D, 120D)))
 		.attach(this);
 		TextNode.create(1305, 575).text(Text.create("Triangles", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1435, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(node.getX(), node.getY(), node.getWidth(), node.getHeight()))))
+		.layer((node, mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(0D, 0D, node.getWidth(), node.getHeight())))
 		.attach(this);
 		TextNode.create(1535, 575).text(Text.create("Shader bound", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
@@ -168,14 +168,14 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(535, 660, 160, 80)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE, 20F)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 20F))
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(10D, Rotation.ROLL)))
 		.attach(this);
 		TextNode.create(615, 775).text(Text.create("Rotated rounded", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(765, 660, 160, 80)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.CYAN, 20F, 3D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.CYAN, 20F, 3D))
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(-10D, Rotation.ROLL)))
 		.attach(this);
 		TextNode.create(845, 775).text(Text.create("Rotated stroke", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
@@ -183,14 +183,14 @@ public class UIDemoShader extends UIDemo {
 		RectNode
 		.create(995, 660, 160, 80)
 		.color(Color.BLUE)
-		.self(rect -> rect.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(rect.getX(), rect.getY(), rect.getX() + rect.getWidth(), rect.getY() + rect.getHeight(), Color.WHITE, 3D)))
+		.layer((rect, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, rect.getWidth(), rect.getHeight(), Color.WHITE, 3D))
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(6D, Rotation.ROLL)))
 		.attach(this);
 		TextNode.create(1075, 775).text(Text.create("Rotated border", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1225, 660, 160, 80)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, Point.create(node.getX(), node.getY() + 80D), Point.create(node.getX() + 160D, node.getY() + 80D), Point.create(node.getX() + 110D, node.getY()), Point.create(node.getX() + 30D, node.getY()))))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, Point.create(0D, 80D), Point.create(160D, 80D), Point.create(110D, 0D), Point.create(30D, 0D)))
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(12D, Rotation.ROLL)))
 		.attach(this);
 		TextNode.create(1305, 775).text(Text.create("Rotated polygon", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
@@ -204,7 +204,7 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(1685, 660, 160, 80)
-		.self(node -> node.layer((mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(node.getX(), node.getY(), node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(node.getX(), node.getY(), node.getWidth(), node.getHeight()))))
+		.layer((node, mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(0D, 0D, node.getWidth(), node.getHeight())))
 		.effect(TransformNodeEffect.create(Transformation.create().rotate(8D, Rotation.ROLL)))
 		.attach(this);
 		TextNode.create(1765, 775).text(Text.create("Rotated shader", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);

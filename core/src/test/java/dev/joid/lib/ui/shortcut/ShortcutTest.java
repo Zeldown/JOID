@@ -127,7 +127,7 @@ public class ShortcutTest {
 	public void runsAShortcutOfANodeOnlyWhileItsNodeIsAttachedVisibleAndEnabled() {
 		final AtomicBoolean shown = new AtomicBoolean(true);
 		final AtomicBoolean enabled = new AtomicBoolean(true);
-		final RectNode node = RectNode.create(0, 0, 100, 100).visible(rect -> shown.get()).enabled(rect -> enabled.get());
+		final RectNode node = RectNode.create(0, 0, 100, 100).visible(() -> shown.get()).enabled(() -> enabled.get());
 		final RectNode parent = RectNode.create(0, 0, 200, 200).append(node);
 		final ShortcutUI ui = this.open(parent);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(node);
@@ -149,7 +149,7 @@ public class ShortcutTest {
 	public void skipsAShortcutOfANodeHiddenWithItsParent() {
 		final AtomicBoolean shown = new AtomicBoolean(true);
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final ShortcutUI ui = this.open(RectNode.create(0, 0, 200, 200).visible(rect -> shown.get()).append(node));
+		final ShortcutUI ui = this.open(RectNode.create(0, 0, 200, 200).visible(() -> shown.get()).append(node));
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(node);
 		shown.set(false);
 		Assert.assertFalse(ui.fireKeyPressed(Key.S));
@@ -193,13 +193,17 @@ public class ShortcutTest {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
 		final ShortcutUI ui = this.open(node);
 		final Shortcut shortcut = Shortcut.create(Key.S).attach(ui);
-		Assert.assertEquals(Collections.singletonList(shortcut), Shortcut.getShortcutList(ui));
+		Assert.assertEquals(Collections.singletonList(shortcut), ui.getShortcutList());
 		shortcut.attach(node);
 		Assert.assertTrue(ui.getShortcutList().isEmpty());
 		Assert.assertEquals(Collections.singletonList(shortcut), node.getShortcutList());
 		shortcut.detach();
 		Assert.assertNull(shortcut.getNode());
 		Assert.assertTrue(node.getShortcutList().isEmpty());
+		Assert.assertSame(node, node.addShortcut(shortcut));
+		Assert.assertSame(node, shortcut.getNode());
+		Assert.assertSame(node, node.removeShortcut(shortcut));
+		Assert.assertFalse(shortcut.isAttached());
 	}
 
 	@Test(expected = UnsupportedOperationException.class)

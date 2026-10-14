@@ -43,7 +43,7 @@ public abstract class SliderNode<O> extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		super.layoutPosition(this.thumb, this.thumb.getLayoutX(), (super.getHeight() - this.thumb.getHeight()) / 2D);
+		this.thumb.layoutPosition(this.thumb.getLayoutX(), (super.getHeight() - this.thumb.getHeight()) / 2D);
 		this.pick();
 
 		this.drawSlider(mouseX, mouseY);
@@ -55,7 +55,7 @@ public abstract class SliderNode<O> extends Node {
 			return;
 		}
 
-		super.layoutPosition(this.thumb, event.getMouseX() - super.getAbsoluteX() - this.thumb.getWidth() / 2, this.thumb.getLayoutY());
+		this.thumb.layoutPosition(event.getMouseX() - super.getAbsoluteX() - this.thumb.getWidth() / 2, this.thumb.getLayoutY());
 		this.thumb.dragging(true);
 		event.consume();
 	}
@@ -103,13 +103,13 @@ public abstract class SliderNode<O> extends Node {
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull O value) {
-		return super.bind("value", value, (final SliderNode<O> node, final O option) -> node.choose(option, false));
+		return super.start("value", value, option -> this.choose(option, false));
 	}
 
 	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Signal<O> value) {
-		return super.bind("value", value, (final SliderNode<O> node, final O option) -> {
-			if (node.valueSet.isEmpty() || node.valueSet.contains(option)) {
-				node.choose(option, false);
+		return super.bind("value", value, option -> {
+			if (this.valueSet.isEmpty() || this.valueSet.contains(option)) {
+				this.choose(option, false);
 			}
 		});
 	}
@@ -179,7 +179,7 @@ public abstract class SliderNode<O> extends Node {
 
 	private void place() {
 		if (this.valueSet.size() == 1) {
-			super.layoutPosition(this.thumb, 0D, this.thumb.getLayoutY());
+			this.thumb.layoutPosition(0D, this.thumb.getLayoutY());
 			return;
 		}
 
@@ -192,7 +192,7 @@ public abstract class SliderNode<O> extends Node {
 			index++;
 		}
 
-		super.layoutPosition(this.thumb, (super.getWidth() - this.thumb.getWidth()) * ((double) index / (double) (this.valueSet.size() - 1)), this.thumb.getLayoutY());
+		this.thumb.layoutPosition((super.getWidth() - this.thumb.getWidth()) * ((double) index / (double) (this.valueSet.size() - 1)), this.thumb.getLayoutY());
 	}
 
 }

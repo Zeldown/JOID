@@ -48,10 +48,10 @@ public class NodeMouseEventTest {
 	@Test
 	public void ignoresAPressOnAHiddenOrDisabledNode() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(rect -> false).handleMousePressed(event -> received.add(event.getNode()));
+		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(() -> false).handleMousePressed(event -> received.add(event.getNode()));
 		final RectNode child = RectNode.create(0D, 0D, 20D, 20D).handleMousePressed(event -> received.add(event.getNode()));
 		hidden.append(child);
-		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(rect -> false).handleMousePressed(event -> received.add(event.getNode()));
+		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(() -> false).handleMousePressed(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(received.isEmpty());

@@ -144,9 +144,7 @@ public class UIDemoChart extends UIDemo {
 				week.increment();
 				chart.data("Week", ChartData.create().add("Mon", 1 + week.get() % 3).add("Tue", 3 - week.get() % 3).add("Wed", 2 + week.get() % 2).add("Thu", 4 - week.get() % 4));
 			})
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Next", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Next", label))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("New data", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

@@ -25,7 +25,7 @@ public abstract class BaseModelNode extends Node {
 	}
 
 	public final <T extends BaseModelNode> @NonNull T model(final @NonNull Supplier<@NonNull IDrawableModel> model) {
-		return super.follow("model", model, (final BaseModelNode node, final IDrawableModel value) -> node.model = value);
+		return super.follow("model", model, value -> this.model = value);
 	}
 
 	protected final void drawModel(final double zoom, final double rotationYaw, final double rotationPitch) {

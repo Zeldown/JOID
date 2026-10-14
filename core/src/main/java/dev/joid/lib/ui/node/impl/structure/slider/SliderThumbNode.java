@@ -20,7 +20,7 @@ public abstract class SliderThumbNode extends Node {
 	public void draw(final double mouseX, final double mouseY) {
 		if (this.dragging) {
 			final double newX = Math.min(Math.max(super.getDefaultX(), mouseX - super.getAbsoluteDefaultX() + super.getDefaultX() - super.dw(2D)), super.getDefaultX() + this.slider.getWidth() - super.getWidth());
-			super.layoutPosition(this, newX - super.getDefaultX(), super.getLayoutY());
+			super.layoutPosition(newX - super.getDefaultX(), super.getLayoutY());
 		}
 
 		this.drawThumb(mouseX, mouseY);

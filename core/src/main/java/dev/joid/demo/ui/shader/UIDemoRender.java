@@ -48,20 +48,20 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> {
+			.layer((node, mouseX, mouseY) -> {
 				final Tessellator tessellator = Tessellator.inst();
 				BridgeHandler.RENDER.get().withState(render -> {
 					render.getState().blend(BlendState.NORMAL).texture(null);
 					tessellator.start(DrawMode.TRIANGLES);
 					tessellator.setColor(255, 255, 255);
-					tessellator.addVertex(node.getX() + 100D, node.getY(), 0D);
+					tessellator.addVertex(100D, 0D, 0D);
 					tessellator.setColor(153, 153, 153);
-					tessellator.addVertex(node.getX() + 200D, node.getY() + 200D, 0D);
+					tessellator.addVertex(200D, 200D, 0D);
 					tessellator.setColor(102, 102, 102);
-					tessellator.addVertex(node.getX(), node.getY() + 200D, 0D);
+					tessellator.addVertex(0D, 200D, 0D);
 					tessellator.draw();
 				});
-			}))
+			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Tessellator", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -73,13 +73,13 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> {
+			.layer((node, mouseX, mouseY) -> {
 				BridgeHandler.RENDER.get().getModelView().with(matrix -> {
-					matrix.translate(node.getX() + 100D, node.getY() + 100D, 0D);
+					matrix.translate(100D, 100D, 0D);
 					matrix.rotate(30D, 0D, 0D, 1D);
 					DrawUtils.SHAPE.drawRect(-60D, -40D, 120D, 80D, UIDemoRender.INK);
 				});
-			}))
+			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Matrix stack", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -91,22 +91,22 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> {
+			.layer((node, mouseX, mouseY) -> {
 				final Tessellator tessellator = Tessellator.inst();
 				BridgeHandler.RENDER.get().withState(render -> {
 					render.getState().blend(UIDemoRender.MULTIPLY).texture(null).color(0.6F, 0.6F, 0.6F, 1F);
 					tessellator.start(DrawMode.QUADS);
-					tessellator.addVertex(node.getX() + 20D, node.getY() + 140D, 0D);
-					tessellator.addVertex(node.getX() + 140D, node.getY() + 140D, 0D);
-					tessellator.addVertex(node.getX() + 140D, node.getY() + 20D, 0D);
-					tessellator.addVertex(node.getX() + 20D, node.getY() + 20D, 0D);
-					tessellator.addVertex(node.getX() + 60D, node.getY() + 180D, 0D);
-					tessellator.addVertex(node.getX() + 180D, node.getY() + 180D, 0D);
-					tessellator.addVertex(node.getX() + 180D, node.getY() + 60D, 0D);
-					tessellator.addVertex(node.getX() + 60D, node.getY() + 60D, 0D);
+					tessellator.addVertex(20D, 140D, 0D);
+					tessellator.addVertex(140D, 140D, 0D);
+					tessellator.addVertex(140D, 20D, 0D);
+					tessellator.addVertex(20D, 20D, 0D);
+					tessellator.addVertex(60D, 180D, 0D);
+					tessellator.addVertex(180D, 180D, 0D);
+					tessellator.addVertex(180D, 60D, 0D);
+					tessellator.addVertex(60D, 60D, 0D);
 					tessellator.draw();
 				});
-			}))
+			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Multiply blend", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -118,12 +118,12 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> {
+			.layer((node, mouseX, mouseY) -> {
 				BridgeHandler.RENDER.get().withState(render -> {
 					render.getState().color(0.6F, 0.6F, 0.6F, 1F);
-					DrawUtils.SHAPE.drawRawRect(node.getX() + 40D, node.getY() + 40D, 120D, 120D);
+					DrawUtils.SHAPE.drawRawRect(40D, 40D, 120D, 120D);
 				});
-			}))
+			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Raw rect", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -135,7 +135,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.TEXT.drawText(node.getX() + 100D, node.getY() + 100D, "Drawn", large, Align.CENTER, Align.CENTER)))
+			.layer((node, mouseX, mouseY) -> DrawUtils.TEXT.drawText(100D, 100D, "Drawn", large, Align.CENTER, Align.CENTER))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Draw text", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -147,7 +147,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawDashedLine(UIDemoRender.INK, 12, 4F, Point.create(node.getX(), node.getY() + 160D), Point.create(node.getX() + 100D, node.getY() + 40D), Point.create(node.getX() + 200D, node.getY() + 160D))))
+			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawDashedLine(UIDemoRender.INK, 12, 4F, Point.create(0D, 160D), Point.create(100D, 40D), Point.create(200D, 160D)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Dashed line", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -159,10 +159,10 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> {
-				DrawUtils.SHAPE.drawShadow(node.getX() + 20D, node.getY() + 50D, 160D, 100D, UIDemoRender.INK, 16F, 20F);
-				DrawUtils.SHAPE.drawRoundedRect(node.getX() + 20D, node.getY() + 50D, 160D, 100D, Color.WHITE, 16F);
-			}))
+			.layer((node, mouseX, mouseY) -> {
+				DrawUtils.SHAPE.drawShadow(20D, 50D, 160D, 100D, UIDemoRender.INK, 16F, 20F);
+				DrawUtils.SHAPE.drawRoundedRect(20D, 50D, 160D, 100D, Color.WHITE, 16F);
+			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Shadow", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -174,7 +174,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.RESOURCE.drawResource(node.getX(), node.getY(), 200D, 200D, image)))
+			.layer((node, mouseX, mouseY) -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Draw resource", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -195,7 +195,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(node.getX(), node.getY(), 200D, 200D, image), new RoundedShaderPass(40F, (float) node.getX() + 40F, (float) node.getY() + 40F, (float) node.getX() + 160F, (float) node.getY() + 160F), new BorderShaderPass(4F, UIDemoRender.INK))))
+			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), new RoundedShaderPass(40F, 40F, 40F, 160F, 160F), new BorderShaderPass(4F, UIDemoRender.INK)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Pipeline", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -207,7 +207,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(node.getX(), node.getY(), 200D, 200D, image), new BlurShaderPass(12F, true))))
+			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), new BlurShaderPass(12F, true)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Horizontal blur", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -219,7 +219,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(node.getX(), node.getY(), 200D, 200D, image), new DemoInvertShaderPass(1F))))
+			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), new DemoInvertShaderPass(1F)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Custom pass", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -231,7 +231,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> {
+			.layer((node, mouseX, mouseY) -> {
 				if (!DemoInvertShader.inst().canDraw()) {
 					return;
 				}
@@ -239,12 +239,12 @@ public class UIDemoRender extends UIDemo {
 				final IShader previous = BridgeHandler.RENDER.get().getState().getShader();
 				DemoInvertShader.inst().bind(1F);
 				try {
-					DrawUtils.RESOURCE.drawResource(node.getX(), node.getY(), 200D, 200D, image);
+					DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image);
 				} finally {
 					DemoInvertShader.inst().unbind();
 					BridgeHandler.RENDER.get().getState().shader(previous);
 				}
-			}))
+			})
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Custom shader", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -256,7 +256,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(UIDemoRender.INK, 14F, Point.create(node.getX() + 10D, node.getY() + 180D), Point.create(node.getX() + 100D, node.getY() + 20D), Point.create(node.getX() + 60D, node.getY() + 180D), Point.create(node.getX() + 190D, node.getY() + 120D))))
+			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(UIDemoRender.INK, 14F, Point.create(10D, 180D), Point.create(100D, 20D), Point.create(60D, 180D), Point.create(190D, 120D)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Line joins", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -268,7 +268,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE.toGradient(UIDemoRender.INK), 10F, Point.create(node.getX() + 10D, node.getY() + 180D), Point.create(node.getX() + 100D, node.getY() - 100D), Point.create(node.getX() + 190D, node.getY() + 180D))))
+			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE.toGradient(UIDemoRender.INK), 10F, Point.create(10D, 180D), Point.create(100D, -100D), Point.create(190D, 180D)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Gradient curve", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

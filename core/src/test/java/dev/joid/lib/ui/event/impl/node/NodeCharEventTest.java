@@ -71,8 +71,8 @@ public class NodeCharEventTest {
 	@Test
 	public void ignoresACharacterOnAHiddenOrDisabledNode() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(rect -> false).handleCharTyped(event -> received.add(event.getNode()));
-		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(rect -> false).handleCharTyped(event -> received.add(event.getNode()));
+		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(() -> false).handleCharTyped(event -> received.add(event.getNode()));
+		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(() -> false).handleCharTyped(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
 		this.bridges.getUi().charTyped('a');
 		Assert.assertTrue(received.isEmpty());

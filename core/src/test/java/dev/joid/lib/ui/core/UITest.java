@@ -82,6 +82,7 @@ import dev.joid.lib.ui.node.impl.dev.DevNode;
 import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.list.IndexedList;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -235,7 +236,7 @@ public class UITest {
 	}
 
 	@Test
-	public void keepsItsNodesBehindAReadOnlyListInZIndexOrderWhenAnIndexChanges() {
+	public void keepsItsNodesBehindAReadOnlyListInZIndexOrderWhenAnIndexChanges() throws ReflectiveOperationException {
 		final RectNode below = RectNode.create(0D, 0D, 10D, 10D);
 		final RectNode above = RectNode.create(0D, 0D, 10D, 10D);
 		final TraceUI ui = new TraceUI(this.trace, below, above);
@@ -247,7 +248,9 @@ public class UITest {
 		final RectNode front = RectNode.create(0D, 0D, 5D, 5D);
 		above.append(back, front);
 		back.zindex(2);
-		Assert.assertEquals(Arrays.asList(front, back), above.getDrawList());
+		final Field drawList = Node.class.getDeclaredField("drawList");
+		drawList.setAccessible(true);
+		Assert.assertEquals(Arrays.asList(front, back), ((IndexedList<Node>) drawList.get(above)).ordered());
 		try {
 			ui.getNodeList().clear();
 			Assert.fail("The nodes of a UI must not change from outside");
@@ -652,6 +655,21 @@ public class UITest {
 		ui.zoomBy(-0.1D);
 		Assert.assertEquals(0.7D, ui.getZoom(), 1E-9D);
 		Assert.assertEquals(0.3D, zoom.peek(), 0D);
+	}
+
+	@Test
+	public void zoomsToAValueAsAGestureItsListenersCanRefuse() {
+		final List<Double> zooms = new ArrayList<>();
+		final TraceUI ui = new TraceUI(this.trace).beforeZoom(event -> {
+			if (event.getValue() > 0.8D) {
+				event.cancel();
+			}
+		}).onZoom(event -> zooms.add(event.getValue()));
+		this.bridges.open(ui);
+		Assert.assertSame(ui, ui.zoomTo(0.6D));
+		ui.zoomTo(0.9D);
+		Assert.assertEquals(0.6D, ui.getZoom(), 0D);
+		Assert.assertEquals(Arrays.asList(0.6D), zooms);
 	}
 
 	@Test
@@ -2121,7 +2139,7 @@ public class UITest {
 
 		@Override
 		public void init() {
-			RectNode.create(0D, 0D, 10D, 10D).layer((mouseX, mouseY) -> this.currentList.add(UI.getCurrent())).attach(this);
+			RectNode.create(0D, 0D, 10D, 10D).layer((rect, mouseX, mouseY) -> this.currentList.add(UI.getCurrent())).attach(this);
 			super.handleKeyPressed(event -> this.currentList.add(UI.getCurrent()));
 		}
 

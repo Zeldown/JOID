@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -30,6 +31,7 @@ import dev.joid.lib.bridge.ui.UIBridgeTest.PopupUI;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
@@ -66,6 +68,7 @@ import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.list.IndexedList;
 import dev.joid.lib.utils.point.Point;
 
 import lombok.AllArgsConstructor;
@@ -168,8 +171,37 @@ public class NodeTest {
 		Assert.assertEquals(12D, node.getHeight(), 0D);
 		Assert.assertEquals(7D, node.getDefaultX(), 0D);
 		Assert.assertEquals(8D, node.getDefaultY(), 0D);
+		Assert.assertEquals(11D, node.getDefaultWidth(), 0D);
+		Assert.assertEquals(12D, node.getDefaultHeight(), 0D);
+	}
+
+	@Test
+	public void fitsOnlyTheSidesItWasNotGiven() {
+		final RectNode node = RectNode.create(0D, 0D, 30D, 0D);
+		Assert.assertSame(node, node.fit(50D, 60D));
+		Assert.assertEquals(30D, node.getWidth(), 0D);
+		Assert.assertEquals(60D, node.getHeight(), 0D);
+		Assert.assertEquals(0D, node.getDefaultHeight(), 0D);
+		Assert.assertSame(node, node.layoutSize(70D, 80D));
+		Assert.assertEquals(70D, node.getWidth(), 0D);
 		Assert.assertEquals(30D, node.getDefaultWidth(), 0D);
-		Assert.assertEquals(40D, node.getDefaultHeight(), 0D);
+	}
+
+	@Test
+	public void placesItselfFromItsLayoutPosition() {
+		final RectNode node = RectNode.create(10D, 20D, 30D, 40D);
+		Assert.assertSame(node, node.layoutPosition(5D, 6D));
+		Assert.assertEquals(15D, node.getX(), 0D);
+		Assert.assertEquals(26D, node.getY(), 0D);
+		Assert.assertEquals(10D, node.getDefaultX(), 0D);
+	}
+
+	@Test
+	public void takesALabel() {
+		final Text label = Text.create();
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D);
+		Assert.assertSame(node, node.label(label));
+		Assert.assertSame(label, node.getLabel());
 	}
 
 	@Test
@@ -277,7 +309,7 @@ public class NodeTest {
 	public void hidesItsWholeTreeWhileInvisible() {
 		final boolean[] shown = {false};
 		final RectNode child = RectNode.create(10D, 10D, 20D, 20D).color(new Color(0.6F, 0.4F, 0.2F, 1F));
-		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).append(child).visible(rect -> shown[0]);
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).append(child).visible(() -> shown[0]);
 		this.bridges.open(new NodeUI(parent)).frame();
 		Assert.assertFalse(parent.isVisible());
 		Assert.assertFalse(child.isVisible());
@@ -317,7 +349,7 @@ public class NodeTest {
 	public void ignoresTheMouseWhileDisabled() {
 		final int[] clicks = {0};
 		final boolean[] enabled = {false};
-		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).enabled(rect -> enabled[0]).onClick(event -> clicks[0]++);
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).enabled(() -> enabled[0]).onClick(event -> clicks[0]++);
 		this.bridges.open(new NodeUI(node));
 		this.bridges.move(150D, 150D).frames(2);
 		Assert.assertFalse(node.isEnabled());
@@ -337,7 +369,7 @@ public class NodeTest {
 		final boolean[] interactive = {false};
 		final RectNode below = RectNode.create(100D, 100D, 100D, 100D).onClick(event -> clicks.add("below"));
 		final RectNode child = RectNode.create(0D, 0D, 50D, 50D);
-		final RectNode above = RectNode.create(100D, 100D, 100D, 100D).zindex(1).interactive(rect -> interactive[0]).onClick(event -> clicks.add("above")).append(child);
+		final RectNode above = RectNode.create(100D, 100D, 100D, 100D).zindex(1).interactive(() -> interactive[0]).onClick(event -> clicks.add("above")).append(child);
 		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(below, above)));
 		this.bridges.move(150D, 150D).frames(2);
 		Assert.assertFalse(above.isInteractive());
@@ -573,7 +605,7 @@ public class NodeTest {
 
 	@Test
 	public void staysVisibleBesideAnAreaWithoutOverflow() {
-		final RectNode node = RectNode.create(500D, 500D, 10D, 10D).overflowArea(ContainerNode.create(0D, 0D, 10D, 10D));
+		final RectNode node = NodeTest.assign(RectNode.create(500D, 500D, 10D, 10D), "overflowArea", ContainerNode.create(0D, 0D, 10D, 10D));
 		Assert.assertNotNull(node.getOverflowArea());
 		Assert.assertTrue(node.isVisible());
 	}
@@ -706,15 +738,15 @@ public class NodeTest {
 
 	@Test
 	public void replacesItsTooltipLines() {
-		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).hover(() -> "Old").hoverLines(() -> "New");
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).hover(() -> "Old").clearHover().hover(() -> "New");
 		final HoverUI ui = new HoverUI(node);
 		this.bridges.open(ui);
 		this.bridges.move(150D, 150D).frame();
 		Assert.assertEquals(Arrays.asList("New"), ui.tooltips.get(0));
-		node.hoverLines(() -> Arrays.asList("First", "Second"));
+		node.clearHover().hover(() -> Arrays.asList("First", "Second"));
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("First", "Second"), ui.tooltips.get(1));
-		node.clearHoverLines();
+		node.clearHover();
 		this.bridges.frame();
 		Assert.assertEquals(2, ui.tooltips.size());
 	}
@@ -722,25 +754,23 @@ public class NodeTest {
 	@Test
 	public void rendersItsHoverElements() {
 		final List<String> rendered = new ArrayList<>();
-		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).hover((rect, mouseX, mouseY) -> rendered.add("first")).hover(() -> "Line");
+		final IHoverElement first = (rect, mouseX, mouseY) -> rendered.add("first");
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).hover(first).hover(() -> "Line");
 		final HoverUI ui = new HoverUI(node);
 		this.bridges.open(ui);
 		this.bridges.move(150D, 150D).frame();
 		Assert.assertEquals(Arrays.asList("first"), rendered);
 		Assert.assertEquals(1, ui.tooltips.size());
-		node.hoverElements((rect, mouseX, mouseY) -> rendered.add("second"));
+		node.removeHover(first).hover((rect, mouseX, mouseY) -> rendered.add("second"));
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("first", "second"), rendered);
-		node.clearHoverElements();
-		this.bridges.frame();
-		Assert.assertEquals(2, rendered.size());
-		Assert.assertEquals(3, ui.tooltips.size());
+		Assert.assertEquals(2, ui.tooltips.size());
 		node.hover((rect, mouseX, mouseY) -> rendered.add("third")).clearHover();
 		this.bridges.frame();
 		Assert.assertEquals(2, rendered.size());
-		Assert.assertEquals(3, ui.tooltips.size());
-		Assert.assertTrue(node.getHoverElementList().isEmpty());
-		Assert.assertTrue(node.getHoverSupplierList().isEmpty());
+		Assert.assertEquals(2, ui.tooltips.size());
+		Assert.assertTrue(NodeTest.<List<?>>field(node, "hoverElementList").isEmpty());
+		Assert.assertTrue(NodeTest.<List<?>>field(node, "hoverSupplierList").isEmpty());
 	}
 
 	@Test
@@ -779,7 +809,7 @@ public class NodeTest {
 		final List<String> events = new ArrayList<>();
 		final RecordingEffect second = new RecordingEffect("second", events);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", events)).effect(second);
-		Assert.assertEquals(1, node.getEffectMap().size());
+		Assert.assertEquals(1, NodeTest.<Map<?, ?>>field(node, "effectMap").size());
 		Assert.assertSame(second, node.getEffect(RecordingEffect.class));
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(Arrays.asList("second init", "second pre", "second post"), events);
@@ -885,21 +915,21 @@ public class NodeTest {
 	public void drawsItsLayersOverItsChildren() {
 		final List<String> drawn = new ArrayList<>();
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).onDraw(event -> drawn.add("child"));
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).append(child).layer((mouseX, mouseY) -> drawn.add("second")).layer(0, (mouseX, mouseY) -> drawn.add("first"));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).append(child).layer((rect, mouseX, mouseY) -> drawn.add("second")).layer(0, (rect, mouseX, mouseY) -> drawn.add("first"));
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(Arrays.asList("child", "first", "second"), drawn);
 		Assert.assertSame(node, node.clearLayers());
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("child", "first", "second", "child"), drawn);
-		Assert.assertTrue(node.getLayerList().isEmpty());
+		Assert.assertTrue(NodeTest.<List<?>>field(node, "layerList").isEmpty());
 	}
 
 	@Test
 	public void drawsItsLayersOnItsPosition() {
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawRect(10D, 10D, 20D, 20D, new Color(0.2F, 0.4F, 0.6F, 1F)));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).layer((rect, mouseX, mouseY) -> DrawUtils.SHAPE.drawRect(10D, 10D, 20D, 20D, new Color(0.2F, 0.4F, 0.6F, 1F)));
 		this.bridges.open(new NodeUI(ContainerNode.create(300D, 200D, 500D, 500D).append(node)));
-		Assert.assertEquals(310D, this.draw(0.2F, 0.4F, 0.6F).getLeft(), 1E-3D);
-		Assert.assertEquals(210D, this.draw(0.2F, 0.4F, 0.6F).getTop(), 1E-3D);
+		Assert.assertEquals(410D, this.draw(0.2F, 0.4F, 0.6F).getLeft(), 1E-3D);
+		Assert.assertEquals(310D, this.draw(0.2F, 0.4F, 0.6F).getTop(), 1E-3D);
 	}
 
 	@Test
@@ -910,7 +940,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).append(top, middle, bottom);
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(2, top.getIndex());
-		Assert.assertEquals(Arrays.asList(bottom, middle, top), node.getDrawList());
+		Assert.assertEquals(Arrays.asList(bottom, middle, top), NodeTest.<IndexedList<Node>>field(node, "drawList").ordered());
 		Assert.assertEquals(Arrays.asList(top, middle, bottom), node.getChildren());
 		Assert.assertTrue(this.order(0.5F, 0.7F, 0.9F) < this.order(0.2F, 0.4F, 0.6F));
 		Assert.assertTrue(this.order(0.2F, 0.4F, 0.6F) < this.order(0.3F, 0.5F, 0.7F));
@@ -2021,7 +2051,7 @@ public class NodeTest {
 		final int[] clicks = {0};
 		final boolean[] enabled = {false};
 		final RectNode child = RectNode.create(0D, 0D, 50D, 50D).onClick(event -> clicks[0]++);
-		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).enabled(rect -> enabled[0]).append(child);
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).enabled(() -> enabled[0]).append(child);
 		this.bridges.open(new NodeUI(parent));
 		this.bridges.move(110D, 110D).frames(2);
 		Assert.assertFalse(child.isEnabled());
@@ -2082,7 +2112,7 @@ public class NodeTest {
 	public void clearsTheParentOfItsChildrenWhenCleared() {
 		final RectNode grandchild = RectNode.create(0D, 0D, 5D, 5D);
 		final RectNode child = RectNode.create(10D, 20D, 10D, 10D).append(grandchild);
-		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).append(child).visible(node -> false).enabled(node -> false);
+		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).append(child).visible(() -> false).enabled(() -> false);
 		final List<Node> parents = new ArrayList<>();
 		child.onDetach(event -> parents.add(event.getNode().getParent()));
 		Assert.assertFalse(child.isVisible());
@@ -2168,7 +2198,7 @@ public class NodeTest {
 	@Test
 	public void takesTheUiItIsGiven() {
 		final NodeUI ui = new NodeUI(ContainerNode.create(0D, 0D, 10D, 10D));
-		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).ui(ui);
+		final RectNode node = NodeTest.assign(RectNode.create(0D, 0D, 10D, 10D), "ui", ui);
 		Assert.assertTrue(node.hasUi());
 		Assert.assertSame(ui, node.getUi());
 	}
@@ -2214,7 +2244,7 @@ public class NodeTest {
 		Assert.assertSame(TweenEquations.QUAD_IN, copy.getHoverEquation());
 		Assert.assertEquals(2D, copy.getScrollSpeed(), 0D);
 		Assert.assertFalse(copy.isMounted());
-		Assert.assertTrue(copy.getAnimatorMap().containsKey(animator));
+		Assert.assertTrue(NodeTest.<Map<?, ?>>field(copy, "animatorMap").containsKey(animator));
 		Assert.assertNotSame(bar, copy.getScrollbar());
 		Assert.assertSame(Bar.class, copy.getScrollbar().getClass());
 		Assert.assertSame(copy, copy.getScrollbar().getScrollNode());
@@ -2248,8 +2278,8 @@ public class NodeTest {
 			new NamedNode("label").copy();
 			Assert.fail("A node without known constructor cannot be copied");
 		} catch (final IllegalStateException expected) {
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The node NamedNode cannot be copied: no constructor with numbers, booleans or enums only can be called (java.lang.NoSuchMethodException: "));
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith("), declare a constructor (x, y, width, height)"));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The node NamedNode cannot be copied (java.lang.NoSuchMethodException: "));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith("): declare a constructor (x, y, width, height) or override instantiate()"));
 			Assert.assertTrue(expected.getCause() instanceof NoSuchMethodException);
 		}
 	}
@@ -2282,67 +2312,53 @@ public class NodeTest {
 	}
 
 	@Test
-	public void keepsFollowingTheSuppliersOfTheOriginalInItsCopy() {
+	public void copiesTheCurrentValuesWithoutTheirSources() {
 		final DoubleSignal width = new DoubleSignal(10D);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).width(width);
 		final RectNode copy = node.copy();
-		this.bridges.open(new NodeUI(copy)).frame();
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 100D, 100D).append(node, copy))).frame();
 		width.set(25D);
 		this.bridges.frame();
-		Assert.assertEquals(25D, copy.getWidth(), 0D);
-		Assert.assertEquals(10D, node.getWidth(), 0D);
+		Assert.assertEquals(25D, node.getWidth(), 0D);
+		Assert.assertEquals(10D, copy.getWidth(), 0D);
 	}
 
 	@Test
-	public void bindsItsCopyToTheSameSignal() {
+	public void leavesTheSignalsOfTheOriginalOutOfItsCopy() {
 		final Signal<Integer> signal = new Signal<>(1);
 		final List<Object> values = new ArrayList<>();
 		final BindingNode copy = new BindingNode().link("value", signal, values).copy();
 		this.bridges.open(new NodeUI(copy));
 		signal.set(2);
-		Assert.assertEquals(Arrays.asList(1, 2), values);
-		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
+		Assert.assertEquals(Arrays.asList(1), values);
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 	}
 
 	@Test
-	public void watchesInItsCopyWithoutRunningTheWatchFirst() {
+	public void leavesTheWatchesOfTheOriginalOutOfItsCopy() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final int[] watches = {0};
 		final RectNode copy = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> watches[0]++).copy();
 		this.bridges.open(new NodeUI(copy));
-		Assert.assertEquals(0, watches[0]);
 		signal.set(1);
-		Assert.assertEquals(1, watches[0]);
+		Assert.assertEquals(0, watches[0]);
 	}
 
 	@Test
-	public void warnsInDevModeAboutAnApplierReadingItsOwnNode() {
-		final boolean devMode = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
-			final String output = NodeTest.capture(() -> new CapturingNode().size(5D));
-			Assert.assertTrue(output, output.contains("[JOID] The size applier of CapturingNode reads the node it is written in"));
-			Assert.assertEquals("", NodeTest.capture(() -> new BindingNode().link("value", new Signal<>(1), new ArrayList<>())));
-		} finally {
-			JOIDEnv.devMode(devMode);
-		}
-	}
-
-	@Test
-	public void linksTheGhostOfACopyDragUntilItsDrop() {
+	public void keepsTheGhostOfACopyDragOutOfTheSignals() {
 		final Signal<Integer> signal = new Signal<>(1);
 		final List<Object> values = new ArrayList<>();
 		final BindingNode node = new BindingNode().link("value", signal, values).draggable(DraggableProperty.free().type(DraggableType.COPY));
 		this.press(node, 5D, 5D);
 		Assert.assertNotNull(node.getDraggedNode());
 		Assert.assertTrue(node.getDraggedNode().getEventBus().isEmpty());
-		Assert.assertEquals(2, NodeTest.subscribers(signal).size());
+		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		signal.set(2);
 		this.drop(300D, 300D);
 		Assert.assertNull(node.getDraggedNode());
 		Assert.assertEquals(1, NodeTest.subscribers(signal).size());
 		signal.set(3);
-		Assert.assertEquals(Arrays.asList(1, 2, 2, 3), values);
+		Assert.assertEquals(Arrays.asList(1, 2, 3), values);
 	}
 
 	@Test
@@ -2356,7 +2372,7 @@ public class NodeTest {
 		Assert.assertEquals(110D, ghost.getX(), 0D);
 		width.set(70D);
 		this.bridges.frame();
-		Assert.assertEquals(70D, ghost.getWidth(), 0D);
+		Assert.assertEquals(50D, ghost.getWidth(), 0D);
 	}
 
 	@Test
@@ -2403,7 +2419,7 @@ public class NodeTest {
 		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren());
 		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren(RectNode.class));
 		Assert.assertSame(first, parent.getChild(0, RectNode.class));
-		Assert.assertEquals(Arrays.asList(second, first), parent.getDrawList());
+		Assert.assertEquals(Arrays.asList(second, first), NodeTest.<IndexedList<Node>>field(parent, "drawList").ordered());
 	}
 
 	@Test
@@ -2704,12 +2720,12 @@ public class NodeTest {
 		title.set("second");
 		count.set(2);
 		Assert.assertEquals(Arrays.asList("first", 1, "second", 2), values);
-		Assert.assertEquals(2, NodeTest.links(node).size());
+		Assert.assertEquals(2, NodeTest.links(node));
 		node.link("title", other, values);
 		title.set("third");
 		count.set(3);
 		Assert.assertEquals(Arrays.asList("first", 1, "second", 2, "other", 3), values);
-		Assert.assertEquals(2, NodeTest.links(node).size());
+		Assert.assertEquals(2, NodeTest.links(node));
 		Assert.assertTrue(NodeTest.subscribers(title).isEmpty());
 		Assert.assertEquals(1, NodeTest.subscribers(other).size());
 		Assert.assertEquals(1, NodeTest.subscribers(count).size());
@@ -2732,7 +2748,7 @@ public class NodeTest {
 		parent.append(node);
 		Assert.assertTrue(NodeTest.subscribers(first).isEmpty());
 		Assert.assertEquals(1, NodeTest.subscribers(second).size());
-		Assert.assertEquals(1, NodeTest.links(node).size());
+		Assert.assertEquals(1, NodeTest.links(node));
 		first.set(1);
 		second.set(11);
 		Assert.assertEquals(Arrays.asList(0, 10, 11), values);
@@ -2748,8 +2764,8 @@ public class NodeTest {
 		Assert.assertEquals(2, NodeTest.subscribers(signal).size());
 		parent.remove(node);
 		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
-		Assert.assertFalse(bar.isSubscribed());
-		Assert.assertFalse(node.getSkeleton().isSubscribed());
+		Assert.assertFalse(NodeTest.subscribed(bar));
+		Assert.assertFalse(NodeTest.subscribed(node.getSkeleton()));
 		parent.append(node);
 		parent.remove(node);
 		parent.append(node);
@@ -2914,7 +2930,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).animate(animator).onAnimate(event -> values.add(event.getValue()));
 		this.bridges.open(new NodeUI(node)).frame();
 		Assert.assertSame(node, node.removeAnimator(animator));
-		Assert.assertTrue(node.getAnimatorMap().isEmpty());
+		Assert.assertTrue(NodeTest.<Map<?, ?>>field(node, "animatorMap").isEmpty());
 		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frames(3);
 		Assert.assertTrue(values.isEmpty());
@@ -2933,12 +2949,7 @@ public class NodeTest {
 		new AnimatorUI(animator).load(1920D, 1080D);
 		this.bridges.frames(3);
 		Assert.assertEquals(Arrays.asList(0.5F), values);
-		Assert.assertEquals(1, node.getAnimatorMap().size());
-	}
-
-	@Test(expected = UnsupportedOperationException.class)
-	public void exposesItsAnimatorsReadOnly() {
-		RectNode.create(0D, 0D, 10D, 10D).getAnimatorMap().put(TweenAnimator.create(), 0F);
+		Assert.assertEquals(1, NodeTest.<Map<?, ?>>field(node, "animatorMap").size());
 	}
 
 	@Test
@@ -3132,7 +3143,7 @@ public class NodeTest {
 		Assert.assertSame(child, child.removeHover(silent));
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(Arrays.asList("Parent")), ui.tooltips);
-		Assert.assertTrue(child.getHoverElementList().isEmpty());
+		Assert.assertTrue(NodeTest.<List<?>>field(child, "hoverElementList").isEmpty());
 	}
 
 	@Test
@@ -3169,7 +3180,7 @@ public class NodeTest {
 	@Test
 	public void copiesTheEffectsOfTheNode() {
 		final RectNode node = RectNode.create(0D, 0D, 50D, 50D).effect(RoundedNodeEffect.create(6F));
-		Assert.assertEquals(1, node.copy().getEffectMap().size());
+		Assert.assertEquals(1, NodeTest.<Map<?, ?>>field(node.copy(), "effectMap").size());
 	}
 
 	@Test
@@ -3217,15 +3228,10 @@ public class NodeTest {
 		Assert.assertTrue(this.order(0.6F, 0.4F, 0.2F) < this.order(0.2F, 0.4F, 0.6F));
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
-	public void exposesReadOnlyEffects() {
-		RectNode.create(0D, 0D, 10D, 10D).getEffectMap().clear();
-	}
-
 	@Test
 	public void hidesItsSourcesAndLinks() {
 		for (final Method method : Node.class.getMethods()) {
-			Assert.assertFalse(method.getName(), Arrays.asList("getSourceMap", "getLinkList", "getRequirementList", "isFollowed").contains(method.getName()));
+			Assert.assertFalse(method.getName(), Arrays.asList("getBindings", "getSourceMap", "getLinkList", "getRequirementList", "isFollowed").contains(method.getName()));
 		}
 	}
 
@@ -3277,11 +3283,37 @@ public class NodeTest {
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
-	private static List<?> links(final Node node) {
+	private static int links(final Node node) {
+		final Object bindings = NodeTest.field(node, "bindings");
+		return NodeTest.<Map<?, ?>>field(bindings, "bindingMap").size() + NodeTest.<List<?>>field(bindings, "watchList").size();
+	}
+
+	private static boolean subscribed(final Node node) {
+		return NodeTest.<Boolean>field(NodeTest.field(node, "bindings"), "subscribed");
+	}
+
+	private static <N extends Node> N assign(final N node, final String name, final Object value) {
 		try {
-			final Field field = Node.class.getDeclaredField("linkList");
+			final Field field = Node.class.getDeclaredField(name);
 			field.setAccessible(true);
-			return (List<?>) field.get(node);
+			field.set(node, value);
+			return node;
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
+	}
+
+	private static <T> T field(final Object target, final String name) {
+		try {
+			for (Class<?> type = target.getClass(); type != null; type = type.getSuperclass()) {
+				for (final Field field : type.getDeclaredFields()) {
+					if (field.getName().equals(name)) {
+						field.setAccessible(true);
+						return (T) field.get(target);
+					}
+				}
+			}
+			throw new AssertionError("No field " + name + " in " + target.getClass().getSimpleName());
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}
@@ -3434,19 +3466,7 @@ public class NodeTest {
 		}
 
 		public <V> BindingNode link(final String property, final Signal<V> signal, final List<Object> values) {
-			return super.bind(property, signal, (final BindingNode node, final V value) -> values.add(value));
-		}
-
-	}
-
-	public static final class CapturingNode extends Node {
-
-		public CapturingNode() {
-			super(0D, 0D, 10D, 10D);
-		}
-
-		public CapturingNode size(final double size) {
-			return super.follow("size", Signal.from(size), (final CapturingNode node, final Double value) -> this.width(value));
+			return super.bind(property, signal, value -> values.add(value));
 		}
 
 	}

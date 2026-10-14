@@ -172,7 +172,10 @@ public class TaskTest {
 		final Task task = Task.create(0L).attach(ui);
 		Assert.assertSame(ui, task.getUi());
 		Assert.assertEquals(Collections.singletonList(task), ui.getTaskList());
-		Assert.assertEquals(Collections.singletonList(task), Task.getTaskList(ui));
+		Assert.assertSame(ui, ui.removeTask(task));
+		Assert.assertFalse(task.isAttached());
+		Assert.assertSame(ui, ui.addTask(task));
+		Assert.assertSame(ui, task.getUi());
 		task.attach(node);
 		Assert.assertNull(task.getUi());
 		Assert.assertTrue(ui.getTaskList().isEmpty());

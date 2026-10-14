@@ -14,6 +14,7 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
+import dev.joid.lib.ui.node.layer.INodeLayer;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableType;
@@ -41,9 +42,7 @@ public class UIDemoDraggable extends UIDemo {
 			RectNode.create(22, 38, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 			RectNode.create(22, 48, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 		};
-		final Consumer<Node> outline = node -> node.layer((mouseX, mouseY) -> {
-			DrawUtils.SHAPE.drawBorder(node.getX(), node.getY(), node.getX() + node.getWidth(), node.getY() + node.getHeight(), UIDemoDraggable.INK, 2D);
-		});
+		final INodeLayer outline = (node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), UIDemoDraggable.INK, 2D);
 
 		RectNode
 		.create(100, 40, 400, 260)
@@ -74,7 +73,7 @@ public class UIDemoDraggable extends UIDemo {
 				.draggable(DraggableProperty.parent())
 				.attach(container);
 			})
-			.self(outline)
+			.layer(outline)
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Parent area", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -84,7 +83,7 @@ public class UIDemoDraggable extends UIDemo {
 		.create(980, 40, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			final RectNode area = RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect);
+			final RectNode area = RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect);
 			RectNode
 			.create(60, 60, 80, 80)
 			.color(UIDemoDraggable.INK)
@@ -99,7 +98,7 @@ public class UIDemoDraggable extends UIDemo {
 		.create(1420, 40, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect);
+			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect);
 			RectNode
 			.create(60, 60, 80, 80)
 			.color(UIDemoDraggable.INK)
@@ -115,9 +114,9 @@ public class UIDemoDraggable extends UIDemo {
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
 			final DraggableProperty nearest = DraggableProperty.free();
-			nearest.snap(RectNode.create(20, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
-			nearest.snap(RectNode.create(150, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
-			nearest.snap(RectNode.create(280, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
+			nearest.snap(RectNode.create(20, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
+			nearest.snap(RectNode.create(150, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
+			nearest.snap(RectNode.create(280, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
 			RectNode
 			.create(160, 150, 80, 80)
 			.color(UIDemoDraggable.INK)
@@ -133,9 +132,9 @@ public class UIDemoDraggable extends UIDemo {
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
 			final DraggableProperty overlap = DraggableProperty.free().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP);
-			overlap.snap(RectNode.create(40, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
-			overlap.snap(RectNode.create(160, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
-			overlap.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
+			overlap.snap(RectNode.create(40, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
+			overlap.snap(RectNode.create(160, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
+			overlap.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
 			RectNode
 			.create(160, 150, 80, 80)
 			.color(() -> this.moves.get() / 10 % 2 == 0 ? UIDemoDraggable.INK : UIDemoDraggable.PLACEHOLDER)
@@ -152,7 +151,7 @@ public class UIDemoDraggable extends UIDemo {
 		.create(980, 380, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect);
+			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect);
 			RectNode
 			.create(40, 40, 320, 180)
 			.color(UIDemoDraggable.PLACEHOLDER)
@@ -236,8 +235,8 @@ public class UIDemoDraggable extends UIDemo {
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
 			final DraggableProperty slots = DraggableProperty.free();
-			slots.snap(RectNode.create(40, 30, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
-			slots.snap(RectNode.create(40, 150, 80, 80).color(UIDemoDraggable.PLACEHOLDER).self(outline).attach(rect));
+			slots.snap(RectNode.create(40, 30, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
+			slots.snap(RectNode.create(40, 150, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
 			RectNode
 			.create(40, 30, 80, 80)
 			.color(UIDemoDraggable.INK)

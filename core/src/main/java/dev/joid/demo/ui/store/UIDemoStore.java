@@ -81,9 +81,7 @@ public class UIDemoStore extends UIDemo {
 			.create(40, 75, 120, 50)
 			.color(UIDemoStore.INK)
 			.onClick(event -> this.clicks++)
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("+1", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("+1", label))
 			.attach(rect);
 			TextNode.create(190, 100).text(() -> Text.create("Clicks: " + this.clicks, info).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(rect);
 			TextNode.create(200, 215).text(Text.create("Remembered field", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -106,9 +104,7 @@ public class UIDemoStore extends UIDemo {
 					throw new UncheckedIOException(exception);
 				}
 			})
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Cache", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Cache", label))
 			.attach(rect);
 			TextNode.create(190, 100).text(() -> Text.create(this.cache, info).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(rect);
 			TextNode.create(200, 215).text(Text.create("File cache", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);

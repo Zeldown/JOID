@@ -2,11 +2,13 @@ package dev.joid.lib.ui.node;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import org.junit.Assert;
@@ -22,6 +24,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.ui.binding.NodeBindings;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
@@ -306,9 +309,11 @@ public class NodeSetterTest {
 
 	private static boolean isFollowed(final Node node, final String property) {
 		try {
-			final Method method = Node.class.getDeclaredMethod("isFollowed", String.class);
-			method.setAccessible(true);
-			return (boolean) method.invoke(node, property);
+			final Field bindings = Node.class.getDeclaredField("bindings");
+			bindings.setAccessible(true);
+			final Field bindingMap = NodeBindings.class.getDeclaredField("bindingMap");
+			bindingMap.setAccessible(true);
+			return ((Map<?, ?>) bindingMap.get(bindings.get(node))).containsKey(property);
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}

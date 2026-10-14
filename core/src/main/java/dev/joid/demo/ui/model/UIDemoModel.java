@@ -118,9 +118,7 @@ public class UIDemoModel extends UIDemo {
 			.create(240, 150, 120, 50)
 			.color(UIDemoModel.INK)
 			.onClick(event -> yaw.set(0D))
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Face", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Face", label))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Bound", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

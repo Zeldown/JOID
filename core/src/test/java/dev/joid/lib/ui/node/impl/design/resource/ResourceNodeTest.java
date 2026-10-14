@@ -83,7 +83,6 @@ public class ResourceNodeTest {
 		this.bridges.open(new NodeUI(node));
 		Assert.assertEquals(20D, node.getWidth(), 0D);
 		Assert.assertEquals(10D, node.getHeight(), 0D);
-		Assert.assertTrue(this.draws(ResourceNodeTest.TINT).isEmpty());
 		this.bridges.frame();
 		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 100D, 120D, 110D);
 	}

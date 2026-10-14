@@ -69,7 +69,7 @@ public class ReorderableFlexNodeTest {
 
 	@Test
 	public void neitherPlacesNorCountsAHiddenChild() {
-		final RectNode hidden = ReorderableFlexNodeTest.item().visible(node -> false);
+		final RectNode hidden = ReorderableFlexNodeTest.item().visible(() -> false);
 		final RectNode third = ReorderableFlexNodeTest.item();
 		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item(), hidden, third);
 		this.bridges.open(new NodeUI(flex));
@@ -196,7 +196,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertFalse(flex.isReleasing());
 		Assert.assertEquals(150D, flex.getDragStartMouseX(), 0D);
 		Assert.assertEquals(120D, flex.getDragStartMouseY(), 0D);
-		Assert.assertEquals(Integer.MAX_VALUE, first.getZindex());
+		Assert.assertEquals(Integer.MAX_VALUE, first.getIndex());
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class ReorderableFlexNodeTest {
 
 	@Test
 	public void ignoresPressesWhileDisabled() {
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item()).enabled(node -> false);
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item()).enabled(() -> false);
 		this.bridges.open(new NodeUI(flex));
 		this.press(150D, 120D);
 		Assert.assertNull(flex.getReorderedNode());
@@ -464,7 +464,7 @@ public class ReorderableFlexNodeTest {
 	@Test
 	public void skipsTheHiddenChildrenWhileDragging() {
 		final RectNode first = ReorderableFlexNodeTest.item();
-		final RectNode hidden = ReorderableFlexNodeTest.item().visible(node -> false);
+		final RectNode hidden = ReorderableFlexNodeTest.item().visible(() -> false);
 		final RectNode third = ReorderableFlexNodeTest.item();
 		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, hidden, third);
 		this.bridges.open(new NodeUI(flex));
@@ -482,7 +482,7 @@ public class ReorderableFlexNodeTest {
 
 	@Test
 	public void putsTheChildBackBehindAHiddenOne() {
-		final RectNode hidden = ReorderableFlexNodeTest.item().visible(node -> false);
+		final RectNode hidden = ReorderableFlexNodeTest.item().visible(() -> false);
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();
 		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, hidden, first, second);
@@ -804,7 +804,7 @@ public class ReorderableFlexNodeTest {
 	@Test
 	public void keepsTheOrderWhenTheChildAfterAHiddenOneIsClicked() {
 		final RectNode first = ReorderableFlexNodeTest.item();
-		final RectNode hidden = ReorderableFlexNodeTest.item().visible(node -> false);
+		final RectNode hidden = ReorderableFlexNodeTest.item().visible(() -> false);
 		final RectNode third = ReorderableFlexNodeTest.item();
 		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, hidden, third);
 		this.bridges.open(new NodeUI(flex));

@@ -39,7 +39,7 @@ public class NodeHoverEventTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onHover(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 160D).frames(2);
-		rect.visible(node -> false);
+		rect.visible(() -> false);
 		this.bridges.frames(3);
 		Assert.assertEquals(2, received.size());
 	}
@@ -68,7 +68,7 @@ public class NodeHoverEventTest {
 	@Test
 	public void hoversADisabledNodeWithoutItsHoverColor() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).enabled(node -> false).cursor(Cursor.NOT_ALLOWED).onHoverStart(event -> received.add(event.getNode()));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).enabled(() -> false).cursor(Cursor.NOT_ALLOWED).onHoverStart(event -> received.add(event.getNode()));
 		final NodeUI ui = new NodeUI(rect);
 		this.bridges.open(ui).frames(30);
 		this.bridges.move(150D, 160D).frames(30);
@@ -104,7 +104,7 @@ public class NodeHoverEventTest {
 	public void keepsTheHoverOfANodeDisabledUnderTheMouse() {
 		final List<Object> received = new ArrayList<>();
 		final AtomicBoolean enabled = new AtomicBoolean(true);
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).enabled(node -> enabled.get()).onHoverEnd(event -> received.add(event.getNode()));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).enabled(() -> enabled.get()).onHoverEnd(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 160D).frames(30);
 		Assert.assertEquals(1F, rect.hoverValue(1F), 0F);

@@ -41,35 +41,35 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final <T extends SwitchNode> @NonNull T states(final @NonNull Supplier<@NonNull List<String>> states) {
-		return super.follow("states", states, (final SwitchNode node, final List<String> value) -> {
+		return super.follow("states", states, value -> {
 			if (value.isEmpty()) {
 				throw new IllegalArgumentException("A switch needs at least one state, pass them to states(...)");
 			}
 
-			node.configure(new LinkedList<>(value));
+			this.configure(new LinkedList<>(value));
 		});
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final int index) {
-		return super.bind("state", index, (final SwitchNode node, final Integer value) -> node.select(value, false));
+		return super.start("state", index, value -> this.select(value, false));
 	}
 
 	public final <T extends SwitchNode> @NonNull T index(final @NonNull Signal<Integer> index) {
-		return super.bind("state", index, (final SwitchNode node, final Integer value) -> {
-			if (node.stateList.peek().isEmpty() || value >= 0 && value < node.stateList.peek().size()) {
-				node.select(value, false);
+		return super.bind("state", index, value -> {
+			if (this.stateList.peek().isEmpty() || value >= 0 && value < this.stateList.peek().size()) {
+				this.select(value, false);
 			}
-		}, (final SwitchNode node, final String state) -> node.stateList.peek().indexOf(state));
+		}, (final String state) -> this.stateList.peek().indexOf(state));
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull String state) {
-		return super.bind("state", state, (final SwitchNode node, final String value) -> node.choose(value, false));
+		return super.start("state", state, value -> this.choose(value, false));
 	}
 
 	public final <T extends SwitchNode> @NonNull T state(final @NonNull Signal<String> state) {
-		return super.bind("state", state, (final SwitchNode node, final String value) -> {
-			if (node.stateList.peek().isEmpty() || node.stateList.peek().contains(value)) {
-				node.choose(value, false);
+		return super.bind("state", state, value -> {
+			if (this.stateList.peek().isEmpty() || this.stateList.peek().contains(value)) {
+				this.choose(value, false);
 			}
 		});
 	}

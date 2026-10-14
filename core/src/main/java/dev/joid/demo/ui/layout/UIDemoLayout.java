@@ -223,9 +223,7 @@ public class UIDemoLayout extends UIDemo {
 			.create(20, 150, 120, 50)
 			.color(UIDemoLayout.INK)
 			.onClick(event -> shown.toggle())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Toggle", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Toggle", label))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Hidden child", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -244,17 +242,13 @@ public class UIDemoLayout extends UIDemo {
 					RectNode.create(0, 0, 40, 50).color(UIDemoLayout.INK).attach(list);
 				}
 			})
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Add", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Add", label))
 			.attach(rect);
 			RectNode
 			.create(160, 150, 120, 50)
 			.color(UIDemoLayout.INK)
 			.onClick(event -> list.clearChildren())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Clear", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Clear", label))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Add and clear", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -279,9 +273,7 @@ public class UIDemoLayout extends UIDemo {
 			.create(180, 150, 120, 50)
 			.color(UIDemoLayout.INK)
 			.onClick(event -> row.toggle())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Switch", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Switch", label))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Direction", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -424,9 +416,7 @@ public class UIDemoLayout extends UIDemo {
 			.create(100, 195, 120, 50)
 			.color(UIDemoLayout.INK)
 			.onClick(event -> grown.toggle())
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Grow", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Grow", label))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Anchors", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

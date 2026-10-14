@@ -214,9 +214,7 @@ public class UIDemoControl extends UIDemo {
 			.create(40, 110, 110, 40)
 			.color(UIDemoControl.INK)
 			.onClick(event -> refused.change("Three"))
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Change", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Change", label))
 			.attach(rect);
 			TextNode.create(40, 180).text(Text.create("Refused: " + refusedStates.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Refused", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);

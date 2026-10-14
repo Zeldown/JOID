@@ -214,17 +214,13 @@ public class UIDemoOverflow extends UIDemo {
 			.create(260, 20, 120, 50)
 			.color(UIDemoOverflow.INK)
 			.onClick(event -> area.scrollTo(area.getTargetScrollX(), 0D))
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Top", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Top", label))
 			.attach(rect);
 			RectNode
 			.create(260, 90, 120, 50)
 			.color(UIDemoOverflow.INK)
 			.onClick(event -> area.scrollTo(area.getTargetScrollX(), -area.getMaxScrollY()))
-			.body(container -> {
-				TextNode.create(container.dw(2), container.dh(2)).text(Text.create("Bottom", label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-			})
+			.label(Text.create("Bottom", label))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Scroll from code", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

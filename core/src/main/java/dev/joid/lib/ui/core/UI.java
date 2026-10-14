@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Supplier;
@@ -47,6 +48,8 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.replay.SignalReplay;
+import dev.joid.lib.ui.binding.InteractiveValue;
+import dev.joid.lib.ui.binding.NodeBindings;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.UIDataObject;
 import dev.joid.lib.ui.core.data.debug.UIDataDebug;
@@ -83,6 +86,7 @@ import dev.joid.lib.utils.annotation.AnnotationValues;
 import dev.joid.lib.utils.list.IndexedElement;
 import dev.joid.lib.utils.list.IndexedList;
 import dev.joid.lib.utils.thread.ThreadUtils;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -114,6 +118,11 @@ public abstract class UI implements IUI, IndexedElement {
 	@NonNull private final Stack<MaskRegion>          stencilStack;
 	@NonNull private final IndexedList<@NonNull Node> nodeList;
 
+	@Getter(AccessLevel.NONE) private final List<Task>               taskList;
+	@Getter(AccessLevel.NONE) private final NodeBindings             bindings;
+	@Getter(AccessLevel.NONE) private final List<Shortcut>           shortcutList;
+	@Getter(AccessLevel.NONE) private final InteractiveValue<Double> zoomValue;
+
 	private final UIView view;
 
 	@NonNull private final UIDataObject        data;
@@ -128,8 +137,7 @@ public abstract class UI implements IUI, IndexedElement {
 	private transient Map<Class<? extends UIStore>, UIStore>       storeMap;
 	private transient Map<Class<? extends Annotation>, Annotation> annotationMap;
 
-	private transient Double         zoomValue;
-	private transient Signal<Double> zoomSource;
+	private double zoom;
 
 	private boolean closed;
 	private boolean loaded;
@@ -179,6 +187,15 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
 
+		this.bindings     = NodeBindings.create(this, this.eventBus, () -> UI.nameOf(this.getClass()), this::traced);
+		this.taskList     = new CopyOnWriteArrayList<>();
+		this.shortcutList = new CopyOnWriteArrayList<>();
+		this.zoomValue    = InteractiveValue.create(this.bindings, "zoom", () -> this.zoom, (final Double zoom) -> {
+			this.zoom = zoom;
+			this.view.zoom(zoom);
+		}).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
+
+		this.zoom = 1D;
 		this.devNode = null;
 		this.lastHoveredFrame = -1L;
 		this.hoveredPath = Collections.emptyList();
@@ -191,15 +208,15 @@ public abstract class UI implements IUI, IndexedElement {
 	public final void load(final double finalWidth, final double finalHeight, final double zoomLevel) {
 		final long start = System.nanoTime();
 
-		final double zoom = this.view.getZoom();
-		this.view.resize(finalWidth, finalHeight).zoom(zoomLevel);
-		this.zoomed(zoom);
+		this.bindings.subscribe(this.loaded);
+		this.view.resize(finalWidth, finalHeight);
+		this.zoomValue.update(zoomLevel);
 
 		if (!this.initialized) {
 			UIPropertyHook.load(this);
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
-			this.getShortcutList().forEach(Shortcut::detach);
+			this.shortcutList.forEach(Shortcut::detach);
 			if (!this.loaded) {
 				this.eventBus.keep();
 				this.loaded = true;
@@ -212,7 +229,7 @@ public abstract class UI implements IUI, IndexedElement {
 							node.fireDetach();
 						}
 					}
-					this.getTaskList().forEach(Task::detach);
+					this.taskList.forEach(Task::detach);
 				}
 				this.nodeList.clear();
 
@@ -241,7 +258,7 @@ public abstract class UI implements IUI, IndexedElement {
 				if (devNodeEnabled) {
 					this.scoped(() -> this.devNode.attach(this));
 				} else {
-					this.devNode = DevNode.create(1900, 1060).visible(node -> node.getUi().isOnTop()).enabled(node -> node.getUi().isOnTop()).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
+					this.devNode = DevNode.create(1900, 1060).visible(this::isOnTop).enabled(this::isOnTop).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
 				}
 			}
 
@@ -272,7 +289,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.fireListeners(UI.HANDLE_MOUSE_SCROLL, event);
 
 		if (!event.isConsumed() && JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
-			this.zoom(this.view.getZoom() + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D), true);
+			this.zoomValue.change(this.zoom + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
 			event.consume();
 		}
 
@@ -371,11 +388,12 @@ public abstract class UI implements IUI, IndexedElement {
 		this.fireShortcuts(key, false, event);
 
 		if (this.data.zoomable() && !event.isConsumed()) {
-			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoom(this.view.getZoom() + 0.1D, true)) {
+			final double zoom = this.zoom;
+			if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom + 0.1D) && this.zoom != zoom) {
 				event.consume();
 			}
 
-			if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoom(this.view.getZoom() - 0.1D, true)) {
+			if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom - 0.1D) && this.zoom != zoom) {
 				event.consume();
 			}
 		}
@@ -446,36 +464,28 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T zoom(final double zoom) {
-		this.zoomSource = null;
-		this.zoomValue = null;
-		this.zoom(zoom, false);
-		return (T) this;
+		return this.zoomValue.start(zoom);
 	}
 
 	public final <T extends UI> @NonNull T zoom(final @NonNull Signal<Double> zoom) {
-		if (!zoom.isWritable()) {
-			throw new IllegalArgumentException("The zoom of " + UI.nameOf(this.getClass()) + " is changed by the user, so it cannot follow " + zoom + ", which cannot be written: pass a writable Signal, or its value as a start value");
-		}
+		return this.zoomValue.bind(zoom);
+	}
 
-		this.zoomSource = zoom;
-		this.zoomValue = zoom.peek();
-		if (this.zoomValue != null) {
-			this.zoom(this.zoomValue, false);
-		}
+	public final <T extends UI> @NonNull T zoomTo(final double zoom) {
+		this.zoomValue.change(zoom);
 		return (T) this;
 	}
 
 	public final <T extends UI> @NonNull T zoomBy(final double delta) {
-		this.zoom(this.view.getZoom() + delta, true);
-		return (T) this;
+		return this.zoomTo(this.zoom + delta);
 	}
 
 	public final <T extends UI> @NonNull T beforeZoom(final @NonNull EventListener<UIChangeEvent.Pre<T, Double>> listener) {
-		return this.listen(UI.BEFORE_ZOOM, listener);
+		return this.zoomValue.before(listener);
 	}
 
 	public final <T extends UI> @NonNull T onZoom(final @NonNull EventListener<UIChangeEvent.Post<T, Double>> listener) {
-		return this.listen(UI.ZOOM, listener);
+		return this.zoomValue.on(listener);
 	}
 
 	public final @NonNull List<MaskRegion> getStencilStack() {
@@ -487,7 +497,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final @NonNull List<@NonNull Task> getTaskList() {
-		return Task.getTaskList(this);
+		return Collections.unmodifiableList(this.taskList);
 	}
 
 	public final @NonNull List<@NonNull Node> getNodeList() {
@@ -495,7 +505,7 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final @NonNull List<@NonNull Shortcut> getShortcutList() {
-		return Shortcut.getShortcutList(this);
+		return Collections.unmodifiableList(this.shortcutList);
 	}
 
 	@Override
@@ -584,7 +594,8 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void dispose() {
 		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
-		this.getTaskList().forEach(Task::detach);
+		this.taskList.forEach(Task::detach);
+		this.bindings.unsubscribe();
 		this.closed = true;
 		this.initialized = false;
 
@@ -774,6 +785,32 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
+	public final <T extends UI> @NonNull T addTask(final @NonNull Task task) {
+		task.detach();
+		this.taskList.add(task.owner(this, null));
+		return (T) this;
+	}
+
+	public final <T extends UI> @NonNull T removeTask(final @NonNull Task task) {
+		if (this.taskList.remove(task)) {
+			task.owner(null, null);
+		}
+		return (T) this;
+	}
+
+	public final <T extends UI> @NonNull T addShortcut(final @NonNull Shortcut shortcut) {
+		shortcut.detach();
+		this.shortcutList.add(shortcut.owner(this, null));
+		return (T) this;
+	}
+
+	public final <T extends UI> @NonNull T removeShortcut(final @NonNull Shortcut shortcut) {
+		if (this.shortcutList.remove(shortcut)) {
+			shortcut.owner(null, null);
+		}
+		return (T) this;
+	}
+
 	public final void setDepthLevel(final double level) {
 		this.depthLevel = level;
 	}
@@ -807,55 +844,6 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public static boolean isShiftKeyDown() {
 		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
-	}
-
-	private Double getZoomValue() {
-		return this.zoomValue;
-	}
-
-	private Signal<Double> getZoomSource() {
-		return this.zoomSource;
-	}
-
-	private void pullZoom() {
-		final Signal<Double> source = this.getZoomSource();
-		if (source == null) {
-			return;
-		}
-
-		final Double zoom = source.peek();
-		if (zoom != null && !zoom.equals(this.getZoomValue())) {
-			this.zoomValue = zoom;
-			this.zoom(zoom, false);
-		}
-	}
-
-	private boolean zoom(final double zoom, final boolean refusable) {
-		final double previous = this.view.getZoom();
-		final double value = this.view.clampZoom(zoom);
-		if (refusable && value != previous) {
-			final UIChangeEvent.Pre<UI, Double> event = this.fire(UI.BEFORE_ZOOM, () -> UIChangeEvent.Pre.create(this, previous, value));
-			if (event != null && event.isCancelled()) {
-				return false;
-			}
-		}
-
-		this.view.zoom(value);
-		this.zoomed(previous);
-		return value != previous;
-	}
-
-	private void zoomed(final double previous) {
-		final double zoom = this.view.getZoom();
-		final Signal<Double> source = this.getZoomSource();
-		if (source != null && !Double.valueOf(zoom).equals(source.peek())) {
-			this.zoomValue = zoom;
-			source.set(zoom);
-		}
-
-		if (zoom != previous) {
-			this.fire(UI.ZOOM, () -> UIChangeEvent.Post.create(this, previous, zoom));
-		}
 	}
 
 	private void renderHoveredNode(final double mouseX, final double mouseY) {
@@ -919,14 +907,13 @@ public abstract class UI implements IUI, IndexedElement {
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 		this.view.anchorX(this.data.getAnchorPositionX()).anchorY(this.data.getAnchorPositionY());
-		this.pullZoom();
 		this.refreshTransition();
 		if (this.monitored != this.debug.hotreload()) {
 			this.refreshMonitor();
 		}
 		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
 
-		final List<Task> taskList = new ArrayList<>(this.getTaskList());
+		final List<Task> taskList = new ArrayList<>(this.taskList);
 		this.nodeList.forEach(node -> UI.collectTasks(node, taskList));
 		for (final Task task : taskList) {
 			if (task.isDue()) {
@@ -937,9 +924,8 @@ public abstract class UI implements IUI, IndexedElement {
 		final IUIBridge bridge = this.getBridge();
 		final double interfaceScale = bridge == null || !this.scale.active() ? 1D : this.scale.apply(bridge.getInterfaceScale(this));
 		if (interfaceScale != this.view.getInterfaceScale()) {
-			final double zoom = this.view.getZoom();
 			this.view.interfaceScale(interfaceScale);
-			this.zoomed(zoom);
+			this.zoomValue.update(this.zoom);
 		}
 
 		final double mx = this.getMouseX();
@@ -1041,7 +1027,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final List<Shortcut> shortcutList = new ArrayList<>();
 		this.untraced(() -> this.nodeList.reversed().forEach(node -> UI.collectShortcuts(node, shortcutList)));
-		shortcutList.addAll(this.getShortcutList());
+		shortcutList.addAll(this.shortcutList);
 		for (final Shortcut shortcut : shortcutList) {
 			if (shortcut.isOverrideFocus() == overrideFocus && shortcut.isTriggeredBy(key)) {
 				this.traced(() -> shortcut.fireTrigger(key));

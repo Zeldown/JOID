@@ -45,11 +45,9 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
-import dev.joid.lib.utils.align.Align;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
@@ -126,9 +124,7 @@ public class UIDemoChoice extends UI {
 				.create(0, 0, 420, 70)
 				.color(() -> entry.isActive() ? UIDemoChoice.ACTIVE : UIDemoChoice.INK)
 				.hoveredColor(UIDemoChoice.HOVERED)
-				.body(container -> {
-					TextNode.create(container.dw(2), container.dh(2)).text(Text.create(entry::getText, label).align(Align.CENTER)).anchor(Align.CENTER).attach(container);
-				})
+				.label(Text.create(entry::getText, label))
 				.onClick(event -> entry.getAction().run())
 				.hover(entry::getHover)
 				.attach(grid);

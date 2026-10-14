@@ -35,7 +35,7 @@ public class ModelNode extends BaseModelNode {
 	}
 
 	public final <T extends ModelNode> @NonNull T zoom(final @NonNull Supplier<Double> zoom) {
-		return super.follow("zoom", zoom, (final ModelNode node, final Double value) -> node.zoom = value);
+		return super.follow("zoom", zoom, value -> this.zoom = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationYaw(final double rotationYaw) {
@@ -43,7 +43,7 @@ public class ModelNode extends BaseModelNode {
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationYaw(final @NonNull Supplier<Double> rotationYaw) {
-		return super.follow("rotationYaw", rotationYaw, (final ModelNode node, final Double value) -> node.rotationYaw = value);
+		return super.follow("rotationYaw", rotationYaw, value -> this.rotationYaw = value);
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationPitch(final double rotationPitch) {
@@ -51,7 +51,7 @@ public class ModelNode extends BaseModelNode {
 	}
 
 	public final <T extends ModelNode> @NonNull T rotationPitch(final @NonNull Supplier<Double> rotationPitch) {
-		return super.follow("rotationPitch", rotationPitch, (final ModelNode node, final Double value) -> node.rotationPitch = value);
+		return super.follow("rotationPitch", rotationPitch, value -> this.rotationPitch = value);
 	}
 
 }

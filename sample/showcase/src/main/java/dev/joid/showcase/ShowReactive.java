@@ -84,7 +84,7 @@ public class ShowReactive extends ShowUI {
 
 		RectNode
 		.create(0, 0, 0, 0)
-		.layer((mouseX, mouseY) -> this.rings())
+		.layer((node, mouseX, mouseY) -> this.rings())
 		.attach(this);
 
 		RectNode
