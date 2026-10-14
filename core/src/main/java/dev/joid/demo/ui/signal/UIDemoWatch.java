@@ -1,6 +1,5 @@
 package dev.joid.demo.ui.signal;
 
-import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -52,8 +51,8 @@ public class UIDemoWatch extends UIDemo {
 		final IntegerSignal notified = IntegerSignal.of(0);
 		final IntegerSignal read = IntegerSignal.of(0);
 		final IntegerSignal reset = IntegerSignal.of(5);
-		final MapSignal<String, Integer> counts = new MapSignal<>(Collections.emptyMap());
-		final SetSignal<String> keys = new SetSignal<>(Collections.emptySet());
+		final MapSignal<String, Integer> counts = new MapSignal<>();
+		final SetSignal<String> keys = new SetSignal<>();
 		final IntegerSignal sent = IntegerSignal.of(0);
 		final IntegerSignal received = IntegerSignal.of(0);
 		final BooleanSignal listening = BooleanSignal.of(true);

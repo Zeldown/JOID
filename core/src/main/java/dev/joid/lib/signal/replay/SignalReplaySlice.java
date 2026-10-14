@@ -16,6 +16,8 @@ import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.analysis.Frame;
+import org.objectweb.asm.tree.analysis.SourceValue;
 
 import lombok.Getter;
 
@@ -42,6 +44,46 @@ public final class SignalReplaySlice {
 
 	public static SignalReplaySlice create(final SignalReplayMethod method, final int start, final int end, final Type type) {
 		return new SignalReplaySlice(method, start, end, type);
+	}
+
+	public boolean hasLambda() {
+		final AbstractInsnNode[] instructions = this.method.getInstructions();
+		for (int index = this.start; index < this.end; index++) {
+			if (instructions[index] instanceof InvokeDynamicInsnNode && ((InvokeDynamicInsnNode) instructions[index]).bsm.getOwner().equals("java/lang/invoke/LambdaMetafactory")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isEnclosed() {
+		final AbstractInsnNode[] instructions = this.method.getInstructions();
+		for (int index = this.end + 1; index < instructions.length; index++) {
+			final Frame<SourceValue> frame = this.method.getFrames()[index];
+			if (frame == null) {
+				continue;
+			}
+
+			if (frame.getStackSize() == 0) {
+				return false;
+			}
+
+			if (!(instructions[index] instanceof MethodInsnNode)) {
+				continue;
+			}
+
+			final int argumentCount = Type.getArgumentTypes(((MethodInsnNode) instructions[index]).desc).length;
+			int end = index;
+			for (int argument = argumentCount - 1; argument >= 0; argument--) {
+				final SourceValue value = frame.getStack(frame.getStackSize() - argumentCount + argument);
+				final int start = this.method.expressionStart(value.insns, end);
+				if (start <= this.start && this.end < end && this.readsSignal(start, this.start)) {
+					return true;
+				}
+				end = start;
+			}
+		}
+		return false;
 	}
 
 	public boolean isParameter() {
@@ -126,6 +168,16 @@ public final class SignalReplaySlice {
 			builder.append(';');
 		}
 		return builder.toString();
+	}
+
+	private boolean readsSignal(final int start, final int end) {
+		final AbstractInsnNode[] instructions = this.method.getInstructions();
+		for (int index = start; index < end; index++) {
+			if (instructions[index] instanceof MethodInsnNode && this.method.isSignal(((MethodInsnNode) instructions[index]).owner)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

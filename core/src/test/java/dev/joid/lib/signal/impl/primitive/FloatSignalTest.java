@@ -71,9 +71,11 @@ public class FloatSignalTest {
 		Assert.assertEquals(15F, signal.get(), 0F);
 	}
 
-	@Test(expected = ArithmeticException.class)
-	public void refusesADivisionByZero() {
-		FloatSignal.of(1F).divide(0F);
+	@Test
+	public void dividesByZeroLikeJava() {
+		Assert.assertEquals(Float.POSITIVE_INFINITY, FloatSignal.of(1F).divide(0F).get(), 0F);
+		Assert.assertEquals(Float.NEGATIVE_INFINITY, FloatSignal.of(-1F).divide(0F).get(), 0F);
+		Assert.assertTrue(Float.isNaN(FloatSignal.of(0F).divide(0F).get()));
 	}
 
 	@Test
@@ -86,6 +88,13 @@ public class FloatSignalTest {
 		signal.multiply(1F);
 		signal.add(0F);
 		Assert.assertEquals(Arrays.asList(1F, 4F), received);
+	}
+
+	@Test
+	public void chainsItsOperations() {
+		final FloatSignal signal = FloatSignal.of(1F);
+		Assert.assertSame(signal, signal.increment().add(2F).multiply(3F).subtract(1F).divide(2F).decrement());
+		Assert.assertEquals(4.5F, signal.get(), 0F);
 	}
 
 	@Test

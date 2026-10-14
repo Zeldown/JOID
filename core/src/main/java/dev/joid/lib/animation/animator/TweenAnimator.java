@@ -255,14 +255,4 @@ public class TweenAnimator extends Signal<Float> {
 		}
 	}
 
-	@Override
-	public int hashCode() {
-		return System.identityHashCode(this);
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		return this == obj;
-	}
-
 }

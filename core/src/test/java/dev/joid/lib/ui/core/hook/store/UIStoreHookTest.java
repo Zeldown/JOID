@@ -124,9 +124,14 @@ public class UIStoreHookTest {
 		}
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void refusesAStoreWithoutAnnotation() {
-		UIStoreHook.useStore(BareStore.class);
+	@Test
+	public void refusesAStoreWithoutAnnotationBeforeBuildingIt() {
+		try {
+			UIStoreHook.useStore(BareStore.class);
+			Assert.fail("A store without annotation must be refused");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The store " + BareStore.class.getName() + " has no @UIStoreData annotation, add it to the class", expected.getMessage());
+		}
 	}
 
 	@Test
@@ -141,8 +146,7 @@ public class UIStoreHookTest {
 	public void restoresAPermanentStoreFromItsFile() throws IOException {
 		this.write("{\"value\":\"saved\"}");
 		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class);
-		Assert.assertTrue(store.loaded);
-		Assert.assertFalse(store.initialized);
+		Assert.assertEquals("init fromJson", store.order);
 		Assert.assertEquals("saved", store.value);
 	}
 
@@ -188,6 +192,31 @@ public class UIStoreHookTest {
 		UIStoreHook.useStore(PermanentStore.class).value = "all";
 		UIStoreHook.saveAll();
 		Assert.assertEquals("{\"value\":\"all\"}", this.read());
+	}
+
+	@Test
+	public void savesAndDestroysTheSharedStoresAtShutdown() throws IOException {
+		final GlobalStore global = UIStoreHook.useStore(GlobalStore.class);
+		final PermanentStore permanent = UIStoreHook.useStore(PermanentStore.class);
+		final LocalStore local = UIStoreHook.useStore(LocalStore.class);
+		permanent.value = "exit";
+		UIStoreHook.shutdown();
+		UIStoreHook.shutdown();
+		Assert.assertEquals("{\"value\":\"exit\"}", this.read());
+		Assert.assertEquals(1, global.destroys);
+		Assert.assertTrue(permanent.destroyed);
+		Assert.assertEquals(0, local.destroys);
+		Assert.assertNotSame(global, UIStoreHook.useStore(GlobalStore.class));
+	}
+
+	@Test
+	public void destroysEveryStoreAtShutdownWhenOneFails() {
+		final BrokenStore broken = UIStoreHook.useStore(BrokenStore.class);
+		final GlobalStore global = UIStoreHook.useStore(GlobalStore.class);
+		final String error = UIStoreHookTest.capture(UIStoreHook::shutdown);
+		Assert.assertEquals("[JOID] The store broken failed in destroy() at shutdown (java.lang.IllegalStateException: broken destroy), the other stores are still destroyed" + System.lineSeparator(), error);
+		Assert.assertTrue(broken.destroyed);
+		Assert.assertEquals(1, global.destroys);
 	}
 
 	@Test
@@ -332,6 +361,7 @@ public class UIStoreHookTest {
 	public static class PermanentStore extends UIStore {
 
 		private String value = "default";
+		private String order = "";
 
 		private boolean initialized;
 		private boolean loaded;
@@ -340,6 +370,7 @@ public class UIStoreHookTest {
 		@Override
 		public void init() {
 			this.initialized = true;
+			this.order = (this.order + " init").trim();
 		}
 
 		@Override
@@ -350,6 +381,7 @@ public class UIStoreHookTest {
 		@Override
 		public void fromJson(final @NonNull String json) {
 			this.loaded = true;
+			this.order = (this.order + " fromJson").trim();
 			this.value = JsonParser.parseString(json).getAsJsonObject().get("value").getAsString();
 		}
 
@@ -380,7 +412,26 @@ public class UIStoreHookTest {
 
 	}
 
-	public static class BareStore extends UIStore {}
+	public static class BareStore extends UIStore {
+
+		public BareStore() {
+			throw new IllegalStateException("built without annotation");
+		}
+
+	}
+
+	@UIStoreData(id = "broken", scope = StoreScope.GLOBAL)
+	public static class BrokenStore extends UIStore {
+
+		private boolean destroyed;
+
+		@Override
+		public void destroy() {
+			this.destroyed = true;
+			throw new IllegalStateException("broken destroy");
+		}
+
+	}
 
 	@UIStoreData(scope = StoreScope.PERMANENT)
 	public static class UnnamedStore extends UIStore {}

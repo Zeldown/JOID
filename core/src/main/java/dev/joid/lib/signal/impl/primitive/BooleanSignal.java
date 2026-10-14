@@ -1,6 +1,7 @@
 package dev.joid.lib.signal.impl.primitive;
 
 import dev.joid.lib.signal.Signal;
+import lombok.NonNull;
 
 public class BooleanSignal extends Signal<Boolean> {
 
@@ -12,14 +13,15 @@ public class BooleanSignal extends Signal<Boolean> {
 		super(value);
 	}
 
-	public static BooleanSignal of(final boolean defaultValue) {
+	public static @NonNull BooleanSignal of(final boolean defaultValue) {
 		final BooleanSignal instance = new BooleanSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}
 
-	public void toggle() {
+	public @NonNull BooleanSignal toggle() {
 		this.set(!this.peek());
+		return this;
 	}
 
 	@Override

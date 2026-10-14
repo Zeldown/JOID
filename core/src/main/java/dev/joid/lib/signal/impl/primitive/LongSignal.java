@@ -1,6 +1,7 @@
 package dev.joid.lib.signal.impl.primitive;
 
 import dev.joid.lib.signal.Signal;
+import lombok.NonNull;
 
 public class LongSignal extends Signal<Long> {
 
@@ -12,50 +13,56 @@ public class LongSignal extends Signal<Long> {
 		super(value);
 	}
 
-	public static LongSignal of(final long defaultValue) {
+	public static @NonNull LongSignal of(final long defaultValue) {
 		final LongSignal instance = new LongSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}
 
-	public void decrement() {
+	public @NonNull LongSignal decrement() {
 		final long updatedValue = this.peek() - 1;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void increment() {
+	public @NonNull LongSignal increment() {
 		final long updatedValue = this.peek() + 1;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void add(final long value) {
+	public @NonNull LongSignal add(final long value) {
 		final long updatedValue = this.peek() + value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void subtract(final long value) {
+	public @NonNull LongSignal subtract(final long value) {
 		final long updatedValue = this.peek() - value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void multiply(final long value) {
+	public @NonNull LongSignal multiply(final long value) {
 		final long updatedValue = this.peek() * value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void divide(final long value) {
+	public @NonNull LongSignal divide(final long value) {
 		if (value == 0) {
 			throw new ArithmeticException("Division by zero");
 		}
 
 		final long updatedValue = this.peek() / value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void power(final int exponent) {
+	public @NonNull LongSignal power(final int exponent) {
 		if (exponent < 0) {
 			this.set((long) Math.pow(this.peek(), exponent));
-			return;
+			return this;
 		}
 
 		long result = 1L;
@@ -67,6 +74,7 @@ public class LongSignal extends Signal<Long> {
 			base *= base;
 		}
 		this.set(result);
+		return this;
 	}
 
 	@Override

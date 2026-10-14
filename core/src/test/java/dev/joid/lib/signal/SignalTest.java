@@ -1,6 +1,9 @@
 package dev.joid.lib.signal;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -269,8 +272,16 @@ public class SignalTest {
 	public void staysEmptyWhenTheStageFails() {
 		final CompletableFuture<String> future = new CompletableFuture<>();
 		final Signal<String> signal = Signal.of(future);
-		future.completeExceptionally(new IllegalStateException());
+		final PrintStream error = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setErr(new PrintStream(output, true));
+			future.completeExceptionally(new IllegalStateException("offline"));
+		} finally {
+			System.setErr(error);
+		}
 		Assert.assertFalse(signal.isPresent());
+		Assert.assertEquals("[JOID] The future given to Signal.of(...) failed (java.lang.IllegalStateException: offline), the signal stays empty: handle the failure on the future, with exceptionally(...) for example" + System.lineSeparator(), new String(output.toByteArray(), StandardCharsets.UTF_8));
 	}
 
 	@Test(expected = NullPointerException.class)
@@ -279,28 +290,13 @@ public class SignalTest {
 	}
 
 	@Test
-	public void equalsASignalHoldingTheSameValue() {
-		Assert.assertEquals(Signal.of("joid"), Signal.of("joid"));
-		Assert.assertEquals(Signal.of("joid").hashCode(), Signal.of("joid").hashCode());
-		Assert.assertEquals(new Signal<String>(), new Signal<String>());
-		Assert.assertEquals(new Signal<String>().hashCode(), new Signal<String>().hashCode());
-	}
-
-	@Test
-	public void comparesTheValueItWouldGive() {
-		Assert.assertEquals(new Signal<>("joid"), Signal.of("joid"));
-		Assert.assertEquals(new Signal<>("joid").hashCode(), Signal.of("joid").hashCode());
-		Assert.assertNotEquals(new Signal<>("joid"), new Signal<>("ui"));
-	}
-
-	@Test
-	public void differsFromAnotherValueOrAnotherKind() {
+	public void equalsOnlyItself() {
 		final Signal<String> signal = Signal.of("joid");
 		Assert.assertEquals(signal, signal);
-		Assert.assertNotEquals(Signal.of("ui"), signal);
-		Assert.assertNotEquals(new Signal<String>(), signal);
-		Assert.assertNotEquals(StringSignal.of("joid"), signal);
-		Assert.assertNotEquals(signal, null);
+		Assert.assertNotEquals(Signal.of("joid"), signal);
+		Assert.assertNotEquals(new Signal<String>(), new Signal<String>());
+		Assert.assertNotEquals(StringSignal.of("joid"), StringSignal.of("joid"));
+		Assert.assertEquals(System.identityHashCode(signal), signal.hashCode());
 	}
 
 	@Test

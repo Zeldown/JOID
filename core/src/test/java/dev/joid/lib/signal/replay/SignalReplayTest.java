@@ -124,6 +124,21 @@ public class SignalReplayTest {
 	}
 
 	@Test
+	public void warnsOnASignalReadOnlyInsideALambdaOfTheExpression() {
+		final ReplayScenarioUI ui = new ReplayScenarioUI("hidden");
+		Assert.assertEquals("[JOID] ReplayScenarioUI.java:N text(...) reads a signal but cannot follow it: the expression contains a lambda. The value stays \"h0\". Move the lambda out of the expression or use Signal.from(() -> ...).\n", this.open(ui));
+		ui.getClicks().set(3);
+		Assert.assertEquals("h0", SignalReplayTest.node(ui, 0).getText().get());
+	}
+
+	@Test
+	public void leavesTheReadsOfAnEnclosingCallToIt() {
+		final ReplayScenarioUI ui = new ReplayScenarioUI("enclosed");
+		Assert.assertEquals("", this.open(ui));
+		Assert.assertEquals("o0t1", SignalReplayTest.node(ui, 0).getText().get());
+	}
+
+	@Test
 	public void warnsOnALocalVariableCombinedWithASignal() {
 		final ReplayScenarioUI ui = new ReplayScenarioUI("combined");
 		Assert.assertEquals("[JOID] ReplayScenarioUI.java:N text(...) reads clicks but cannot follow it: the local variable index is combined with a signal. The value stays \"Row 0\". Use a field, map(...) or a lambda.\n", this.open(ui));

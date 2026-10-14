@@ -2,13 +2,14 @@ package dev.joid.lib.signal;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
@@ -48,7 +49,15 @@ public class Signal<T> implements ISignal<T> {
 
 	public static <T> @NonNull Signal<T> of(final @NonNull CompletionStage<T> future) {
 		final Signal<T> instance = new Signal<>();
-		future.thenAccept(instance::set);
+		future.whenComplete((value, exception) -> {
+			if (exception == null) {
+				instance.set(value);
+				return;
+			}
+
+			final Throwable cause = exception instanceof CompletionException && exception.getCause() != null ? exception.getCause() : exception;
+			JOIDLog.warn("The future given to Signal.of(...) failed (" + cause + "), the signal stays empty: handle the failure on the future, with exceptionally(...) for example");
+		});
 		return instance;
 	}
 
@@ -225,25 +234,6 @@ public class Signal<T> implements ISignal<T> {
 		for (final ISignalSubscriber<T> subscriber : outdatedSet) {
 			this.unsubscribe(subscriber);
 		}
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.peek());
-	}
-
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-
-		if (obj == null || this.getClass() != obj.getClass()) {
-			return false;
-		}
-
-		final Signal<?> other = (Signal<?>) obj;
-		return Objects.equals(this.peek(), other.peek());
 	}
 
 }

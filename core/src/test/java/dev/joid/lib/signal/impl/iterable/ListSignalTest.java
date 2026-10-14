@@ -10,21 +10,28 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.signal.ComputedSignal;
+import dev.joid.lib.signal.Signal;
+
 public class ListSignalTest {
 
 	@Test
-	public void startsEmptyWithoutDefault() {
+	public void startsWithAnEmptyListWithoutDefault() {
 		final ListSignal<String> signal = new ListSignal<>();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.get());
+		Assert.assertEquals(Collections.emptyList(), signal.get());
+		Assert.assertTrue(signal.isEmpty());
+		Assert.assertEquals(0, signal.size());
+		Assert.assertFalse(signal.contains("a"));
 	}
 
 	@Test
-	public void fallsBackOnTheGivenList() {
+	public void fallsBackOnACopyOfTheGivenList() {
 		final List<String> list = new ArrayList<>(Arrays.asList("a", "b"));
 		final ListSignal<String> signal = new ListSignal<>(list);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertSame(list, signal.get());
+		Assert.assertEquals(list, signal.get());
+		Assert.assertNotSame(list, signal.get());
 	}
 
 	@Test
@@ -41,7 +48,8 @@ public class ListSignalTest {
 		final List<String> list = new ArrayList<>(Arrays.asList("a", "b"));
 		final ListSignal<String> signal = ListSignal.of(list);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertSame(list, signal.get());
+		Assert.assertEquals(list, signal.get());
+		Assert.assertNotSame(list, signal.get());
 	}
 
 	@Test
@@ -112,7 +120,7 @@ public class ListSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("ListSignal{[a, b]}", ListSignal.of(Arrays.asList("a", "b")).toString());
-		Assert.assertEquals("ListSignal{null}", new ListSignal<String>().toString());
+		Assert.assertEquals("ListSignal{[]}", new ListSignal<String>().toString());
 	}
 
 	@Test
@@ -159,4 +167,37 @@ public class ListSignalTest {
 		Assert.assertEquals(Collections.singletonList(Arrays.asList("a", "c")), received);
 	}
 
+
+	@Test
+	public void notifiesAValueDerivedFromItsListAtEveryMutation() {
+		final List<List<String>> received = new ArrayList<>();
+		final ListSignal<String> signal = ListSignal.of(Collections.singletonList("a"));
+		final ComputedSignal<List<String>> derived = Signal.from(() -> signal.get()).subscribe(received::add);
+		signal.add("b");
+		signal.add("c");
+		signal.remove(0);
+		Assert.assertEquals(Arrays.asList("b", "c"), derived.get());
+		Assert.assertEquals(Arrays.asList(Arrays.asList("a", "b"), Arrays.asList("a", "b", "c"), Arrays.asList("b", "c")), received);
+	}
+
+	@Test
+	public void keepsTheListItGaveBeforeAMutation() {
+		final ListSignal<String> signal = ListSignal.of(Collections.singletonList("a"));
+		final List<String> before = signal.get();
+		signal.add("b");
+		signal.set(0, "c");
+		Assert.assertEquals(Collections.singletonList("a"), before);
+		Assert.assertEquals(Arrays.asList("c", "b"), signal.get());
+	}
+
+	@Test
+	public void resetsWithoutTheListOfTheCaller() {
+		final List<String> list = new ArrayList<>(Collections.singletonList("a"));
+		final ListSignal<String> signal = ListSignal.of(list);
+		list.add("x");
+		signal.add("b");
+		signal.reset();
+		Assert.assertEquals(Collections.singletonList("a"), signal.get());
+		Assert.assertEquals(Arrays.asList("a", "x"), list);
+	}
 }

@@ -23,11 +23,7 @@ public abstract class UIStore {
 
 	public UIStoreData getData() {
 		if (this.data == null) {
-			if (!this.getClass().isAnnotationPresent(UIStoreData.class)) {
-				throw new IllegalStateException("StoreData annotation is missing on " + this.getClass().getName());
-			}
-
-			this.data = this.getClass().getAnnotation(UIStoreData.class);
+			this.data = UIStoreHook.getData(this.getClass());
 		}
 
 		return this.data;

@@ -1,7 +1,6 @@
 package dev.joid.demo.ui.signal;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
@@ -46,7 +45,7 @@ public class UIDemoSignal extends UIDemo {
 		final BooleanSignal shown = BooleanSignal.of(false);
 		final IntegerSignal heat = IntegerSignal.of(0);
 		final ListSignal<String> items = new ListSignal<>(Arrays.asList("First item", "Second item"));
-		final ListSignal<String> cards = new ListSignal<>(Collections.emptyList());
+		final ListSignal<String> cards = new ListSignal<>();
 		final IntegerSignal sent = IntegerSignal.of(0);
 		final IntegerSignal saved = IntegerSignal.of(0);
 

@@ -118,7 +118,7 @@ public final class SignalReplay {
 		}
 
 		if (matchList.isEmpty()) {
-			if (failedSlice.getSignalCount() == 0) {
+			if (failedSlice.getSignalCount() == 0 && (!failedSlice.hasLambda() || failedSlice.isEnclosed())) {
 				state.putBack(readList);
 			} else if (stale > 0) {
 				final List<Signal<?>> freshList = new ArrayList<>(readList.subList(stale, readList.size()));
@@ -126,7 +126,7 @@ public final class SignalReplay {
 				state.putBack(new ArrayList<>(readList.subList(0, stale)));
 				return supplier;
 			} else {
-				SignalReplay.warn(call, failedSlice.getSignalNameList(), readList.size(), failure, value);
+				SignalReplay.warn(call, failedSlice.getSignalNameList(), readList.size(), failedSlice.getSignalCount() == 0 ? new SignalReplayException(SignalReplayFailure.LAMBDA) : failure, value);
 			}
 			return null;
 		}

@@ -8,6 +8,8 @@ import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
+import dev.joid.lib.ui.core.hook.store.UIStoreHook;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
@@ -66,6 +68,8 @@ public final class JOID {
 		if (JOIDEnv.isDemoMode()) {
 			DemoFont.load();
 		}
+
+		Runtime.getRuntime().addShutdownHook(new Thread(JOID::shutdown, "JOID shutdown"));
 
 		final List<Runnable> readyList;
 		synchronized (this.readyList) {
@@ -172,6 +176,15 @@ public final class JOID {
 			bridge.open(ui);
 		});
 		return bridge;
+	}
+
+	private static void shutdown() {
+		for (final IUIBridge bridge : new ArrayList<>(BridgeHandler.UI.getBridgeList())) {
+			for (final UI ui : new ArrayList<>(bridge.getUiList().ordered())) {
+				UIPropertyHook.save(ui);
+			}
+		}
+		UIStoreHook.shutdown();
 	}
 
 	private static @NonNull IUIBridge getOpeningBridge(final @NonNull UI ui) {

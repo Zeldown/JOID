@@ -2,7 +2,11 @@ package dev.joid.internal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,7 +28,13 @@ import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
+import dev.joid.lib.ui.core.hook.property.UIProperty;
+import dev.joid.lib.ui.core.hook.store.UIStore;
+import dev.joid.lib.ui.core.hook.store.UIStoreHook;
+import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.ui.node.Node;
+import lombok.NonNull;
 
 public class JOIDTest {
 
@@ -120,6 +130,27 @@ public class JOIDTest {
 			DemoFont.PACIFICO = null;
 			DemoFont.PLAYFAIR_DISPLAY = null;
 		}
+	}
+
+	@Test
+	public void savesTheOpenedUisAndTheSharedStoresOnShutdown() throws ReflectiveOperationException, IOException {
+		JOIDEnv.dataDir(this.folder.getRoot());
+		final SettingsUI settings = new SettingsUI();
+		this.bridges.open(settings);
+		final ExitStore store = UIStoreHook.useStore(ExitStore.class);
+		settings.volume = 3;
+		store.value = "kept";
+
+		final Method shutdown = JOID.class.getDeclaredMethod("shutdown");
+		shutdown.setAccessible(true);
+		shutdown.invoke(null);
+
+		final File property = new File(new File(this.folder.getRoot(), "property"), SettingsUI.class.getName() + ".property");
+		final File saved = new File(new File(this.folder.getRoot(), "store"), "exit.store");
+		Assert.assertEquals("{\"volume\":3}", new String(Files.readAllBytes(property.toPath()), StandardCharsets.UTF_8));
+		Assert.assertEquals("kept", new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
+		Assert.assertTrue(store.destroyed);
+		Assert.assertTrue(this.bridges.getUi().isOpen(settings));
 	}
 
 	@Test
@@ -469,6 +500,31 @@ public class JOIDTest {
 		@Override
 		public void detach() {
 			this.menu.detaches++;
+		}
+
+	}
+
+	public static final class SettingsUI extends UI {
+
+		@UIProperty
+		private int volume = 1;
+
+	}
+
+	@UIStoreData(id = "exit", scope = StoreScope.PERMANENT)
+	public static final class ExitStore extends UIStore {
+
+		private String  value = "default";
+		private boolean destroyed;
+
+		@Override
+		public void destroy() {
+			this.destroyed = true;
+		}
+
+		@Override
+		public @NonNull String toJson() {
+			return this.value;
 		}
 
 	}

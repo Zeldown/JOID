@@ -9,6 +9,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GLContext;
 
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.binding.IGlBufferBinding;
@@ -65,6 +66,12 @@ public final class Lwjgl2GlBinding implements IGlBinding {
 
 	@Override
 	public String getString(final int name) {
+		try {
+			GLContext.getCapabilities();
+		} catch (final RuntimeException exception) {
+			return null;
+		}
+
 		return GL11.glGetString(name);
 	}
 

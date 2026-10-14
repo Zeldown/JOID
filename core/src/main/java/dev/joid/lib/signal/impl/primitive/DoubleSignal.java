@@ -1,6 +1,7 @@
 package dev.joid.lib.signal.impl.primitive;
 
 import dev.joid.lib.signal.Signal;
+import lombok.NonNull;
 
 public class DoubleSignal extends Signal<Double> {
 
@@ -12,43 +13,46 @@ public class DoubleSignal extends Signal<Double> {
 		super(value);
 	}
 
-	public static DoubleSignal of(final double defaultValue) {
+	public static @NonNull DoubleSignal of(final double defaultValue) {
 		final DoubleSignal instance = new DoubleSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}
 
-	public void add(final double value) {
+	public @NonNull DoubleSignal add(final double value) {
 		final double updatedValue = this.peek() + value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void subtract(final double value) {
+	public @NonNull DoubleSignal subtract(final double value) {
 		final double updatedValue = this.peek() - value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void multiply(final double value) {
+	public @NonNull DoubleSignal multiply(final double value) {
 		final double updatedValue = this.peek() * value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void divide(final double value) {
-		if (value == 0) {
-			throw new ArithmeticException("Division by zero");
-		}
+	public @NonNull DoubleSignal divide(final double value) {
 		final double updatedValue = this.peek() / value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void decrement() {
+	public @NonNull DoubleSignal decrement() {
 		final double updatedValue = this.peek() - 1;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void increment() {
+	public @NonNull DoubleSignal increment() {
 		final double updatedValue = this.peek() + 1;
 		this.set(updatedValue);
+		return this;
 	}
 
 	@Override

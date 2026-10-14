@@ -56,6 +56,13 @@ public class BooleanSignalTest {
 	}
 
 	@Test
+	public void chainsItsToggles() {
+		final BooleanSignal signal = BooleanSignal.of(false);
+		Assert.assertSame(signal, signal.toggle().toggle().toggle());
+		Assert.assertTrue(signal.get());
+	}
+
+	@Test
 	public void describesItself() {
 		Assert.assertEquals("BooleanSignal{true}", BooleanSignal.of(true).toString());
 		Assert.assertEquals("BooleanSignal{false}", new BooleanSignal().toString());

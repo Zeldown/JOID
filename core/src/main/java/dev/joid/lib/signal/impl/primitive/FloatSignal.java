@@ -1,6 +1,7 @@
 package dev.joid.lib.signal.impl.primitive;
 
 import dev.joid.lib.signal.Signal;
+import lombok.NonNull;
 
 public class FloatSignal extends Signal<Float> {
 
@@ -12,43 +13,46 @@ public class FloatSignal extends Signal<Float> {
 		super(value);
 	}
 
-	public static FloatSignal of(final float defaultValue) {
+	public static @NonNull FloatSignal of(final float defaultValue) {
 		final FloatSignal instance = new FloatSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}
 
-	public void add(final float value) {
+	public @NonNull FloatSignal add(final float value) {
 		final float updatedValue = this.peek() + value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void subtract(final float value) {
+	public @NonNull FloatSignal subtract(final float value) {
 		final float updatedValue = this.peek() - value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void multiply(final float value) {
+	public @NonNull FloatSignal multiply(final float value) {
 		final float updatedValue = this.peek() * value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void divide(final float value) {
-		if (value == 0F) {
-			throw new ArithmeticException("Division by zero");
-		}
+	public @NonNull FloatSignal divide(final float value) {
 		final float updatedValue = this.peek() / value;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void decrement() {
+	public @NonNull FloatSignal decrement() {
 		final float updatedValue = this.peek() - 1F;
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void increment() {
+	public @NonNull FloatSignal increment() {
 		final float updatedValue = this.peek() + 1F;
 		this.set(updatedValue);
+		return this;
 	}
 
 	@Override

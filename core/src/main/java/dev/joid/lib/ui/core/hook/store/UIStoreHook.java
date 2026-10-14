@@ -13,9 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,27 +35,26 @@ import lombok.NonNull;
 public final class UIStoreHook {
 
 	private static final Gson GSON = new GsonBuilder().create();
-	private static final Map<Class<? extends UIStore>, UIStore> GLOBAL_CACHE = new HashMap<>();
+	private static final Map<Class<? extends UIStore>, UIStore> GLOBAL_CACHE = new ConcurrentHashMap<>();
 
 	public static <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
 		if (UIStoreHook.GLOBAL_CACHE.containsKey(clazz)) {
 			return (T) UIStoreHook.GLOBAL_CACHE.get(clazz);
 		}
 
+		final UIStoreData data = UIStoreHook.getData(clazz);
 		final T store = UIStoreHook.createStoreInstance(clazz, args);
+		store.init();
+
 		final File file = UIStoreHook.getFile(UIStoreHook.getId(store));
-		if (store.getData().scope() == StoreScope.PERMANENT && file.exists()) {
+		if (data.scope() == StoreScope.PERMANENT && file.exists()) {
 			final String json = UIStoreHook.loadFile(file);
-			if (json == null) {
-				store.init();
-			} else {
+			if (json != null) {
 				store.fromJson(json);
 			}
-		} else {
-			store.init();
 		}
 
-		if (store.getData().scope().isGlobal()) {
+		if (data.scope().isGlobal()) {
 			UIStoreHook.GLOBAL_CACHE.put(clazz, store);
 		}
 
@@ -88,6 +87,26 @@ public final class UIStoreHook {
 		for (final UIStore store : UIStoreHook.GLOBAL_CACHE.values()) {
 			UIStoreHook.saveStore(store);
 		}
+	}
+
+	public static void shutdown() {
+		UIStoreHook.saveAll();
+		for (final UIStore store : new ArrayList<>(UIStoreHook.GLOBAL_CACHE.values())) {
+			UIStoreHook.GLOBAL_CACHE.remove(store.getClass());
+			try {
+				store.destroy();
+			} catch (final RuntimeException e) {
+				JOIDLog.warn("The store " + UIStoreHook.getId(store) + " failed in destroy() at shutdown (" + e + "), the other stores are still destroyed");
+			}
+		}
+	}
+
+	public static @NonNull UIStoreData getData(final @NonNull Class<? extends UIStore> clazz) {
+		final UIStoreData data = clazz.getAnnotation(UIStoreData.class);
+		if (data == null) {
+			throw new IllegalStateException("The store " + clazz.getName() + " has no @UIStoreData annotation, add it to the class");
+		}
+		return data;
 	}
 
 	private static <T extends UIStore> T createStoreInstance(final @NonNull Class<T> clazz, final Object... args) {

@@ -71,9 +71,11 @@ public class DoubleSignalTest {
 		Assert.assertEquals(15D, signal.get(), 0D);
 	}
 
-	@Test(expected = ArithmeticException.class)
-	public void refusesADivisionByZero() {
-		DoubleSignal.of(1D).divide(0D);
+	@Test
+	public void dividesByZeroLikeJava() {
+		Assert.assertEquals(Double.POSITIVE_INFINITY, DoubleSignal.of(1D).divide(0D).get(), 0D);
+		Assert.assertEquals(Double.NEGATIVE_INFINITY, DoubleSignal.of(-1D).divide(0D).get(), 0D);
+		Assert.assertTrue(Double.isNaN(DoubleSignal.of(0D).divide(0D).get()));
 	}
 
 	@Test
@@ -86,6 +88,13 @@ public class DoubleSignalTest {
 		signal.multiply(1D);
 		signal.add(0D);
 		Assert.assertEquals(Arrays.asList(1D, 4D), received);
+	}
+
+	@Test
+	public void chainsItsOperations() {
+		final DoubleSignal signal = DoubleSignal.of(1D);
+		Assert.assertSame(signal, signal.increment().add(2D).multiply(3D).subtract(1D).divide(2D).decrement());
+		Assert.assertEquals(4.5D, signal.get(), 0D);
 	}
 
 	@Test

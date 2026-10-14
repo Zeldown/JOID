@@ -2,6 +2,7 @@ package dev.joid.backend.lwjgl3.binding;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -38,6 +39,15 @@ public class Lwjgl3GlBindingTest {
 	public void sharesOneBindingPerDomain() {
 		Assert.assertSame(Lwjgl3GlBinding.inst(), Lwjgl3GlBinding.inst());
 		Assert.assertSame(Lwjgl3GlBinding.inst().getStateBinding(), Lwjgl3GlBinding.inst().getStateBinding());
+	}
+
+	@Test
+	public void readsNoStringWithoutACurrentContext() throws InterruptedException {
+		final AtomicReference<String> version = new AtomicReference<>("unread");
+		final Thread thread = new Thread(() -> version.set(Lwjgl3GlBinding.inst().getString(GlConstants.VERSION)));
+		thread.start();
+		thread.join();
+		Assert.assertNull(version.get());
 	}
 
 	private static int find(final String name) throws ReflectiveOperationException {

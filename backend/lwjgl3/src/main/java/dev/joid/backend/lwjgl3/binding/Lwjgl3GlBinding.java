@@ -2,6 +2,7 @@ package dev.joid.backend.lwjgl3.binding;
 
 import java.nio.ByteBuffer;
 
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL20C;
@@ -58,6 +59,12 @@ public final class Lwjgl3GlBinding implements IGlBinding {
 
 	@Override
 	public String getString(final int name) {
+		try {
+			GL.getCapabilities();
+		} catch (final IllegalStateException exception) {
+			return null;
+		}
+
 		return GL11C.glGetString(name);
 	}
 

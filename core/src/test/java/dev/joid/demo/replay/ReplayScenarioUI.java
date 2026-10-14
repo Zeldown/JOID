@@ -37,6 +37,12 @@ public class ReplayScenarioUI extends UI {
 			case "lambda":
 				SignalReplayNode.create().text("v" + this.apply(() -> 2) + this.clicks.get()).attach(this);
 				break;
+			case "hidden":
+				SignalReplayNode.create().text("h" + this.apply(() -> this.clicks.get())).attach(this);
+				break;
+			case "enclosed":
+				SignalReplayNode.create().text("o" + this.clicks.get() + SignalReplayNode.titled("t" + this.apply(() -> 1)).getText().get()).attach(this);
+				break;
 			case "combined":
 				for (int index = 0; index < 1; index++) {
 					SignalReplayNode.create().text("Row " + (this.clicks.get() + index)).attach(this);

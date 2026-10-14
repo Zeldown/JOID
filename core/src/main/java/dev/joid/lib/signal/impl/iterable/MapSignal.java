@@ -12,23 +12,23 @@ import lombok.NonNull;
 
 public class MapSignal<K, V> extends Signal<Map<K, V>> {
 
-	public MapSignal() {}
-
-	public MapSignal(final Map<K, V> value) {
-		super(value);
+	public MapSignal() {
+		super(new LinkedHashMap<>());
 	}
 
-	public static <K, V> MapSignal<K, V> of(final Map<K, V>defaultValue) {
+	public MapSignal(final @NonNull Map<K, V> value) {
+		super(new LinkedHashMap<>(value));
+	}
+
+	public static <K, V> @NonNull MapSignal<K, V> of(final @NonNull Map<K, V> defaultValue) {
 		final MapSignal<K, V> instance = new MapSignal<>(defaultValue);
-		instance.set(defaultValue);
+		instance.set(instance.getDefaultValue());
 		return instance;
 	}
 
 	public @NonNull MapSignal<K, V> clear() {
-		final Map<K, V> map = this.mutable();
-		final boolean changed = !map.isEmpty();
-		map.clear();
-		this.publishIf(changed);
+		final Map<K, V> map = new LinkedHashMap<>();
+		this.commit(map, !this.peek().isEmpty());
 		return this;
 	}
 
@@ -53,18 +53,18 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public V put(final K key, final V value) {
-		final Map<K, V> map = this.mutable();
+		final Map<K, V> map = this.copy();
 		final boolean changed = !map.containsKey(key) || !Objects.equals(map.get(key), value);
 		final V result = map.put(key, value);
-		this.publishIf(changed);
+		this.commit(map, changed);
 		return result;
 	}
 
 	public V remove(final K key) {
-		final Map<K, V> map = this.mutable();
+		final Map<K, V> map = this.copy();
 		final boolean changed = map.containsKey(key);
 		final V result = map.remove(key);
-		this.publishIf(changed);
+		this.commit(map, changed);
 		return result;
 	}
 
@@ -76,17 +76,21 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return this.get().values();
 	}
 
-	private Map<K, V> mutable() {
-		if (this.peek() == this.getDefaultValue()) {
-			this.assign(this.peek() == null ? new LinkedHashMap<>() : new LinkedHashMap<>(this.peek()));
-		}
+	private Map<K, V> copy() {
+		return new LinkedHashMap<>(this.peek());
+	}
 
-		return this.peek();
+	private void commit(final Map<K, V> map, final boolean changed) {
+		if (changed) {
+			this.set(map);
+		} else {
+			this.publishIf(false);
+		}
 	}
 
 	@Override
 	public String toString() {
-		return this.peek() == null ? "MapSignal{null}" : "MapSignal{" + this.peek().toString() + "}";
+		return "MapSignal{" + this.peek() + "}";
 	}
 
 }

@@ -1,7 +1,6 @@
 package dev.joid.lib.signal.impl.iterable;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -10,39 +9,37 @@ import lombok.NonNull;
 
 public class SetSignal<E> extends Signal<Set<E>> {
 
-	public SetSignal() {}
-
-	public SetSignal(final Set<E> value) {
-		super(value);
+	public SetSignal() {
+		super(new LinkedHashSet<>());
 	}
 
-	public SetSignal(final Collection<E> value) {
-		this(new HashSet<>(value));
+	public SetSignal(final @NonNull Collection<E> value) {
+		super(new LinkedHashSet<>(value));
 	}
 
-	public static <E> SetSignal<E> of(final Set<E> defaultValue) {
+	public static <E> @NonNull SetSignal<E> of(final @NonNull Collection<E> defaultValue) {
 		final SetSignal<E> instance = new SetSignal<>(defaultValue);
-		instance.set(defaultValue);
+		instance.set(instance.getDefaultValue());
 		return instance;
 	}
 
 	public @NonNull SetSignal<E> clear() {
-		final Set<E> set = this.mutable();
-		final boolean changed = !set.isEmpty();
-		set.clear();
-		this.publishIf(changed);
+		final Set<E> set = new LinkedHashSet<>();
+		this.commit(set, !this.peek().isEmpty());
 		return this;
 	}
 
 	public boolean add(final E e) {
-		final boolean success = this.mutable().add(e);
-		this.publishIf(success);
+		final Set<E> set = this.copy();
+		final boolean success = set.add(e);
+		this.commit(set, success);
 		return success;
 	}
 
 	public boolean remove(final E e) {
-		final boolean success = this.mutable().remove(e);
-		this.publishIf(success);
+		final Set<E> set = this.copy();
+		final boolean success = set.remove(e);
+		this.commit(set, success);
 		return success;
 	}
 
@@ -58,17 +55,21 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return this.get().size();
 	}
 
-	private Set<E> mutable() {
-		if (this.peek() == this.getDefaultValue()) {
-			this.assign(this.peek() == null ? new LinkedHashSet<>() : new LinkedHashSet<>(this.peek()));
-		}
+	private Set<E> copy() {
+		return new LinkedHashSet<>(this.peek());
+	}
 
-		return this.peek();
+	private void commit(final Set<E> set, final boolean changed) {
+		if (changed) {
+			this.set(set);
+		} else {
+			this.publishIf(false);
+		}
 	}
 
 	@Override
 	public String toString() {
-		return this.peek() == null ? "SetSignal{null}" : "SetSignal{" + this.peek().toString() + "}";
+		return "SetSignal{" + this.peek() + "}";
 	}
 
 }

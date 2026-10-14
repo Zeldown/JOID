@@ -12,13 +12,18 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.signal.ComputedSignal;
+import dev.joid.lib.signal.Signal;
+
 public class MapSignalTest {
 
 	@Test
-	public void startsEmptyWithoutDefault() {
+	public void startsWithAnEmptyMapWithoutDefault() {
 		final MapSignal<String, Integer> signal = new MapSignal<>();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.get());
+		Assert.assertEquals(Collections.emptyMap(), signal.get());
+		Assert.assertTrue(signal.isEmpty());
+		Assert.assertNull(signal.get("a"));
 	}
 
 	@Test
@@ -26,7 +31,8 @@ public class MapSignalTest {
 		final Map<String, Integer> map = new HashMap<>();
 		final MapSignal<String, Integer> signal = new MapSignal<>(map);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertSame(map, signal.get());
+		Assert.assertEquals(map, signal.get());
+		Assert.assertNotSame(map, signal.get());
 	}
 
 	@Test
@@ -34,7 +40,8 @@ public class MapSignalTest {
 		final Map<String, Integer> map = new HashMap<>();
 		final MapSignal<String, Integer> signal = MapSignal.of(map);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertSame(map, signal.get());
+		Assert.assertEquals(map, signal.get());
+		Assert.assertNotSame(map, signal.get());
 	}
 
 	@Test
@@ -96,7 +103,7 @@ public class MapSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("MapSignal{{a=1}}", MapSignal.of(Collections.singletonMap("a", 1)).toString());
-		Assert.assertEquals("MapSignal{null}", new MapSignal<String, Integer>().toString());
+		Assert.assertEquals("MapSignal{{}}", new MapSignal<String, Integer>().toString());
 	}
 
 	@Test
@@ -130,4 +137,25 @@ public class MapSignalTest {
 		Assert.assertEquals(Collections.singletonList(Collections.singletonMap("a", null)), received);
 	}
 
+
+	@Test
+	public void notifiesAValueDerivedFromItsMapAtEveryMutation() {
+		final List<Map<String, Integer>> received = new ArrayList<>();
+		final MapSignal<String, Integer> signal = new MapSignal<>();
+		final ComputedSignal<Map<String, Integer>> derived = Signal.from(() -> signal.get()).subscribe(received::add);
+		signal.put("a", 1);
+		signal.put("a", 2);
+		Assert.assertEquals(Collections.singletonMap("a", 2), derived.get());
+		Assert.assertEquals(Arrays.asList(Collections.singletonMap("a", 1), Collections.singletonMap("a", 2)), received);
+	}
+
+	@Test
+	public void resetsWithoutTheMapOfTheCaller() {
+		final Map<String, Integer> map = new HashMap<>(Collections.singletonMap("a", 1));
+		final MapSignal<String, Integer> signal = MapSignal.of(map);
+		map.put("x", 0);
+		signal.put("b", 2);
+		signal.reset();
+		Assert.assertEquals(Collections.singletonMap("a", 1), signal.get());
+	}
 }

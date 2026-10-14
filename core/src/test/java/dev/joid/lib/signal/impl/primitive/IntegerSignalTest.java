@@ -101,6 +101,13 @@ public class IntegerSignalTest {
 	}
 
 	@Test
+	public void chainsItsOperations() {
+		final IntegerSignal signal = IntegerSignal.of(1);
+		Assert.assertSame(signal, signal.increment().add(2).multiply(3).subtract(2).divide(2).power(2).decrement());
+		Assert.assertEquals(24, signal.get().intValue());
+	}
+
+	@Test
 	public void describesItself() {
 		Assert.assertEquals("IntegerSignal{5}", IntegerSignal.of(5).toString());
 		Assert.assertEquals("IntegerSignal{0}", new IntegerSignal().toString());

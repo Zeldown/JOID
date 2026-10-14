@@ -2,8 +2,10 @@ package dev.joid.backend.lwjgl2.binding;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -17,9 +19,15 @@ import org.lwjgl.opengl.GL31;
 import org.lwjgl.opengl.GL32;
 import org.lwjgl.opengl.GL33;
 
+import dev.joid.backend.lwjgl2.Lwjgl2Natives;
 import dev.joid.base.opengl.binding.GlConstants;
 
 public class Lwjgl2GlBindingTest {
+
+	@BeforeClass
+	public static void installTheNatives() {
+		Lwjgl2Natives.install();
+	}
 
 	@Test
 	public void namesTheOpenGlConstantsLikeLwjgl() throws ReflectiveOperationException {
@@ -36,6 +44,15 @@ public class Lwjgl2GlBindingTest {
 	public void sharesOneBindingPerDomain() {
 		Assert.assertSame(Lwjgl2GlBinding.inst(), Lwjgl2GlBinding.inst());
 		Assert.assertSame(Lwjgl2GlBinding.inst().getStateBinding(), Lwjgl2GlBinding.inst().getStateBinding());
+	}
+
+	@Test
+	public void readsNoStringWithoutACurrentContext() throws InterruptedException {
+		final AtomicReference<String> version = new AtomicReference<>("unread");
+		final Thread thread = new Thread(() -> version.set(Lwjgl2GlBinding.inst().getString(GlConstants.VERSION)));
+		thread.start();
+		thread.join();
+		Assert.assertNull(version.get());
 	}
 
 	private static int find(final String name) throws ReflectiveOperationException {

@@ -61,7 +61,7 @@ public class UIStoreTest {
 			new BareStore().getData();
 			Assert.fail("A store without annotation must be refused");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("StoreData annotation is missing on " + BareStore.class.getName(), expected.getMessage());
+			Assert.assertEquals("The store " + BareStore.class.getName() + " has no @UIStoreData annotation, add it to the class", expected.getMessage());
 		}
 	}
 

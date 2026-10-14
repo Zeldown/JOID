@@ -1,69 +1,82 @@
 package dev.joid.lib.signal.impl.primitive;
 
 import dev.joid.lib.signal.Signal;
+import lombok.NonNull;
 
 public class StringSignal extends Signal<String> {
 
-	public StringSignal() {}
+	public StringSignal() {
+		super("");
+	}
 
-	public StringSignal(final String value) {
+	public StringSignal(final @NonNull String value) {
 		super(value);
 	}
 
-	public static StringSignal of(final String defaultValue) {
+	public static @NonNull StringSignal of(final @NonNull String defaultValue) {
 		final StringSignal instance = new StringSignal(defaultValue);
 		instance.set(defaultValue);
 		return instance;
 	}
 
-	public void append(final String value) {
-		final String current = this.peek();
-		this.set(current == null ? value : current + value);
+	public @NonNull StringSignal append(final String value) {
+		final String updatedValue = this.peek() + value;
+		this.set(updatedValue);
+		return this;
 	}
 
-	public void concat(final String str) {
-		final String current = this.peek();
-		this.set(current == null ? str : current.concat(str));
+	public @NonNull StringSignal concat(final String str) {
+		final String updatedValue = this.peek().concat(str);
+		this.set(updatedValue);
+		return this;
 	}
 
-	public void replace(final char oldChar, final char newChar) {
+	public @NonNull StringSignal replace(final char oldChar, final char newChar) {
 		final String updatedValue = this.peek().replace(oldChar, newChar);
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void replace(final CharSequence target, final CharSequence replacement) {
+	public @NonNull StringSignal replace(final CharSequence target, final CharSequence replacement) {
 		final String updatedValue = this.peek().replace(target, replacement);
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void toLowerCase() {
+	public @NonNull StringSignal toLowerCase() {
 		final String updatedValue = this.peek().toLowerCase();
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void toUpperCase() {
+	public @NonNull StringSignal toUpperCase() {
 		final String updatedValue = this.peek().toUpperCase();
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void trim() {
+	public @NonNull StringSignal trim() {
 		final String updatedValue = this.peek().trim();
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void substring(final int beginIndex) {
+	public @NonNull StringSignal substring(final int beginIndex) {
 		final String updatedValue = this.peek().substring(beginIndex);
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void substring(final int beginIndex, final int endIndex) {
+	public @NonNull StringSignal substring(final int beginIndex, final int endIndex) {
 		final String updatedValue = this.peek().substring(beginIndex, endIndex);
 		this.set(updatedValue);
+		return this;
 	}
 
-	public void intern() {
+	public @NonNull StringSignal intern() {
 		final String updatedValue = this.peek().intern();
 		this.set(updatedValue);
+		return this;
 	}
 
 	@Override

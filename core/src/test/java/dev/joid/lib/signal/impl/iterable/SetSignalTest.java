@@ -10,21 +10,27 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.signal.ComputedSignal;
+import dev.joid.lib.signal.Signal;
+
 public class SetSignalTest {
 
 	@Test
-	public void startsEmptyWithoutDefault() {
+	public void startsWithAnEmptySetWithoutDefault() {
 		final SetSignal<String> signal = new SetSignal<>();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.get());
+		Assert.assertEquals(Collections.emptySet(), signal.get());
+		Assert.assertTrue(signal.isEmpty());
+		Assert.assertFalse(signal.contains("a"));
 	}
 
 	@Test
-	public void fallsBackOnTheGivenSet() {
+	public void fallsBackOnACopyOfTheGivenSet() {
 		final Set<String> set = new HashSet<>(Arrays.asList("a", "b"));
 		final SetSignal<String> signal = new SetSignal<>(set);
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertSame(set, signal.get());
+		Assert.assertEquals(set, signal.get());
+		Assert.assertNotSame(set, signal.get());
 	}
 
 	@Test
@@ -41,7 +47,8 @@ public class SetSignalTest {
 		final Set<String> set = new HashSet<>(Arrays.asList("a", "b"));
 		final SetSignal<String> signal = SetSignal.of(set);
 		Assert.assertTrue(signal.isPresent());
-		Assert.assertSame(set, signal.get());
+		Assert.assertEquals(set, signal.get());
+		Assert.assertNotSame(set, signal.get());
 	}
 
 	@Test
@@ -94,7 +101,7 @@ public class SetSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("SetSignal{[a]}", SetSignal.of(Collections.singleton("a")).toString());
-		Assert.assertEquals("SetSignal{null}", new SetSignal<String>().toString());
+		Assert.assertEquals("SetSignal{[]}", new SetSignal<String>().toString());
 	}
 
 	@Test
@@ -118,4 +125,25 @@ public class SetSignalTest {
 		Assert.assertEquals(Collections.singletonList(Collections.emptySet()), received);
 	}
 
+
+	@Test
+	public void notifiesAValueDerivedFromItsSetAtEveryMutation() {
+		final List<Set<String>> received = new ArrayList<>();
+		final SetSignal<String> signal = SetSignal.of(Collections.singleton("a"));
+		final ComputedSignal<Set<String>> derived = Signal.from(() -> signal.get()).subscribe(received::add);
+		signal.add("b");
+		signal.add("c");
+		Assert.assertEquals(new HashSet<>(Arrays.asList("a", "b", "c")), derived.get());
+		Assert.assertEquals(Arrays.asList(new HashSet<>(Arrays.asList("a", "b")), new HashSet<>(Arrays.asList("a", "b", "c"))), received);
+	}
+
+	@Test
+	public void resetsWithoutTheSetOfTheCaller() {
+		final Set<String> set = new HashSet<>(Collections.singleton("a"));
+		final SetSignal<String> signal = SetSignal.of(set);
+		set.add("x");
+		signal.add("b");
+		signal.reset();
+		Assert.assertEquals(Collections.singleton("a"), signal.get());
+	}
 }

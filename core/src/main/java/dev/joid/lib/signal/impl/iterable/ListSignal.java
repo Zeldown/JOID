@@ -10,45 +10,44 @@ import lombok.NonNull;
 
 public class ListSignal<E> extends Signal<List<E>> {
 
-	public ListSignal() {}
-
-	public ListSignal(final List<E> value) {
-		super(value);
+	public ListSignal() {
+		super(new ArrayList<>());
 	}
 
-	public ListSignal(final Collection<E> value) {
-		this(new ArrayList<>(value));
+	public ListSignal(final @NonNull Collection<E> value) {
+		super(new ArrayList<>(value));
 	}
 
-	public static <E> ListSignal<E> of(final List<E> defaultValue) {
+	public static <E> @NonNull ListSignal<E> of(final @NonNull Collection<E> defaultValue) {
 		final ListSignal<E> instance = new ListSignal<>(defaultValue);
-		instance.set(defaultValue);
+		instance.set(instance.getDefaultValue());
 		return instance;
 	}
 
 	public @NonNull ListSignal<E> clear() {
-		final List<E> list = this.mutable();
-		final boolean changed = !list.isEmpty();
-		list.clear();
-		this.publishIf(changed);
+		final List<E> list = new ArrayList<>();
+		this.commit(list, !this.peek().isEmpty());
 		return this;
 	}
 
 	public boolean add(final E e) {
-		final boolean success = this.mutable().add(e);
-		this.publishIf(success);
+		final List<E> list = this.copy();
+		final boolean success = list.add(e);
+		this.commit(list, success);
 		return success;
 	}
 
 	public boolean remove(final E e) {
-		final boolean success = this.mutable().remove(e);
-		this.publishIf(success);
+		final List<E> list = this.copy();
+		final boolean success = list.remove(e);
+		this.commit(list, success);
 		return success;
 	}
 
 	public E remove(final int index) {
-		final E result = this.mutable().remove(index);
-		this.publish();
+		final List<E> list = this.copy();
+		final E result = list.remove(index);
+		this.commit(list, true);
 		return result;
 	}
 
@@ -69,8 +68,9 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public E set(final int index, final E element) {
-		final E result = this.mutable().set(index, element);
-		this.publishIf(!Objects.equals(result, element));
+		final List<E> list = this.copy();
+		final E result = list.set(index, element);
+		this.commit(list, !Objects.equals(result, element));
 		return result;
 	}
 
@@ -78,17 +78,21 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return this.get().size();
 	}
 
-	private List<E> mutable() {
-		if (this.peek() == this.getDefaultValue()) {
-			this.assign(this.peek() == null ? new ArrayList<>() : new ArrayList<>(this.peek()));
-		}
+	private List<E> copy() {
+		return new ArrayList<>(this.peek());
+	}
 
-		return this.peek();
+	private void commit(final List<E> list, final boolean changed) {
+		if (changed) {
+			this.set(list);
+		} else {
+			this.publishIf(false);
+		}
 	}
 
 	@Override
 	public String toString() {
-		return this.peek() == null ? "ListSignal{null}" : "ListSignal{" + this.peek().toString() + "}";
+		return "ListSignal{" + this.peek() + "}";
 	}
 
 }

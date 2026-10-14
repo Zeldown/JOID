@@ -10,10 +10,11 @@ import org.junit.Test;
 public class StringSignalTest {
 
 	@Test
-	public void startsEmptyWithoutDefault() {
+	public void startsWithAnEmptyTextWithoutDefault() {
 		final StringSignal signal = new StringSignal();
 		Assert.assertFalse(signal.isPresent());
-		Assert.assertNull(signal.get());
+		Assert.assertEquals("", signal.get());
+		Assert.assertEquals("", signal.trim().toUpperCase().get());
 	}
 
 	@Test
@@ -121,7 +122,7 @@ public class StringSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("StringSignal{joid}", StringSignal.of("joid").toString());
-		Assert.assertEquals("StringSignal{null}", new StringSignal().toString());
+		Assert.assertEquals("StringSignal{}", new StringSignal().toString());
 	}
 
 	@Test
@@ -129,6 +130,13 @@ public class StringSignalTest {
 		final StringSignal signal = new StringSignal();
 		signal.append("joid");
 		Assert.assertEquals("joid", signal.get());
+	}
+
+	@Test
+	public void chainsItsOperations() {
+		final StringSignal signal = StringSignal.of(" jo ");
+		Assert.assertSame(signal, signal.trim().append("id").toUpperCase());
+		Assert.assertEquals("JOID", signal.get());
 	}
 
 }

@@ -101,6 +101,13 @@ public class LongSignalTest {
 	}
 
 	@Test
+	public void chainsItsOperations() {
+		final LongSignal signal = LongSignal.of(1L);
+		Assert.assertSame(signal, signal.increment().add(2L).multiply(3L).subtract(2L).divide(2L).power(2).decrement());
+		Assert.assertEquals(24L, signal.get().longValue());
+	}
+
+	@Test
 	public void describesItself() {
 		Assert.assertEquals("LongSignal{5}", LongSignal.of(5L).toString());
 		Assert.assertEquals("LongSignal{0}", new LongSignal().toString());
