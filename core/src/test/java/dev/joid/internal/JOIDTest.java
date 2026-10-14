@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -154,20 +155,30 @@ public class JOIDTest {
 	}
 
 	@Test
-	public void acceptsABackendOfTheSameMajorVersion() {
-		final String major = JOID.VERSION.split("[.]")[0];
-		JOID.checkVersion(JOID.VERSION);
-		JOID.checkVersion(major + ".99.3");
-		JOID.checkVersion(major);
+	public void runsInDevelopmentOutsideAJar() {
+		Assert.assertEquals("development", JOID.VERSION);
 	}
 
 	@Test
-	public void refusesABackendOfAnotherMajorVersion() {
+	public void comparesNothingInDevelopment() throws Throwable {
+		JOID.checkVersion("70.0.1");
+		JOIDTest.checkVersion("development", "8.0.0");
+	}
+
+	@Test
+	public void acceptsABackendOfTheSameMajorVersion() throws Throwable {
+		JOIDTest.checkVersion("8.0.0", "8.0.0");
+		JOIDTest.checkVersion("8.99.3", "8.0.0");
+		JOIDTest.checkVersion("8", "8.0.0");
+	}
+
+	@Test
+	public void refusesABackendOfAnotherMajorVersion() throws Throwable {
 		try {
-			JOID.checkVersion("70.0.1");
+			JOIDTest.checkVersion("70.0.1", "8.0.0");
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("The backend was built for JOID 70.x, but JOID " + JOID.VERSION + " is loaded: update the backend", exception.getMessage());
+			Assert.assertEquals("The backend was built for JOID 70.x, but JOID 8.0.0 is loaded: update the backend", exception.getMessage());
 		}
 	}
 
@@ -463,6 +474,16 @@ public class JOIDTest {
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
 			Assert.assertEquals("No IUIBridge can open MenuUI: register one whose canHandle accepts it", exception.getMessage());
+		}
+	}
+
+	private static void checkVersion(final String version, final String loaded) throws Throwable {
+		final Method check = JOID.class.getDeclaredMethod("checkVersion", String.class, String.class);
+		check.setAccessible(true);
+		try {
+			check.invoke(null, version, loaded);
+		} catch (final InvocationTargetException exception) {
+			throw exception.getCause();
 		}
 	}
 

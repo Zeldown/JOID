@@ -1,9 +1,7 @@
 package dev.joid.test.snapshot;
 
-import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import lombok.NonNull;
 
@@ -20,11 +18,6 @@ public final class SnapshotUIBridge extends WindowUIBridge {
 	@Override
 	public double getInterfaceScale(final @NonNull UI ui) {
 		return this.interfaceScale;
-	}
-
-	@Override
-	public TextInfo getHoverInfo() {
-		return DevFont.MONTSERRAT != null ? TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE) : null;
 	}
 
 	public @NonNull SnapshotUIBridge interfaceScale(final double interfaceScale) {

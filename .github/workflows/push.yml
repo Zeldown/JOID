@@ -5,8 +5,12 @@ on:
     branches:
       - main
 
+env:
+  LIBGL_ALWAYS_SOFTWARE: 1
+  GALLIUM_DRIVER: llvmpipe
+
 jobs:
-  pre_push:
+  build:
     name: Gradle Build
     runs-on: ubuntu-latest
     steps:
@@ -16,4 +20,17 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '8'
-          distribution: 'adopt'
+          distribution: 'temurin'
+      - name: Install Mesa, Lavapipe and Xvfb
+        run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0 mesa-vulkan-drivers libvulkan1 libxxf86vm1 libxrandr2
+      - name: Build and check the jars
+        run: chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew build checkJars testDemoJar testProdJar --continue
+      - name: Upload the reports
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            build/snapshots
+            **/build/reports/tests
+          retention-days: 7

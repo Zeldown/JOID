@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public final class SnapshotBaseline {
 
 	public static void main(final String[] arguments) throws ReflectiveOperationException {
-		final ISnapshotBackend backend = (ISnapshotBackend) Class.forName(arguments[0]).newInstance();
+		final ISnapshotBackend backend = (ISnapshotBackend) Class.forName(arguments[0]).getDeclaredConstructor().newInstance();
 		final File output = new File(arguments[1]);
 		final File[] previous = output.listFiles((directory, name) -> name.endsWith(".png"));
 		if (previous != null) {

@@ -3,6 +3,7 @@ package dev.joid.test.contract;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -11,6 +12,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
@@ -44,11 +46,15 @@ public abstract class BitmapFontContractSuite {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.pushState();
 		render.getModelView().identity();
 		render.getProjection().ortho(0D, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, 0D, 0D, 10000D);
-		render.getState().viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT).frameBuffer(null).shader(null);
-		render.getState().texture(null).blend(BlendState.NORMAL).depthTest(false).depthWrite(false).cull(false).color(1F, 1F, 1F, 1F);
-		render.getState().alphaCutoff(0F);
+		render.getState().load(new RenderState().viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT).blend(BlendState.NORMAL).depthWrite(false));
+	}
+
+	@After
+	public void restoreState() {
+		BridgeHandler.RENDER.get().popState();
 	}
 
 	@AfterClass

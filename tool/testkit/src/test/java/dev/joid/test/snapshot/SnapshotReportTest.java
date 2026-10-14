@@ -32,7 +32,7 @@ public class SnapshotReportTest {
 	public void writesTheImagesOfEachShotIntoAScript() throws IOException {
 		final File render = this.file("render.png", "render");
 		final File reference = this.file("reference.png", "reference");
-		SnapshotReport.write(new File(this.folder.getRoot(), "report.html"), "Snapshots", Arrays.asList(SnapshotEntry.create("a", SnapshotStatus.DIFFERENT, 3, reference, render), SnapshotEntry.create("b", SnapshotStatus.IDENTICAL, 0, reference, render)));
+		SnapshotReport.write(new File(this.folder.getRoot(), "report.html"), "Snapshots", Arrays.asList(SnapshotEntry.create("a", SnapshotStatus.DIFFERENT, 3, render, reference), SnapshotEntry.create("b", SnapshotStatus.IDENTICAL, 0, render, reference)));
 		Assert.assertEquals("joidShot(0, \"data:image/png;base64,cmVuZGVy\", \"data:image/png;base64,cmVmZXJlbmNl\");", SnapshotReportTest.text(new File(this.folder.getRoot(), "report/0.js")));
 		Assert.assertEquals("joidShot(1, \"data:image/png;base64,cmVuZGVy\", null);", SnapshotReportTest.text(new File(this.folder.getRoot(), "report/1.js")));
 	}

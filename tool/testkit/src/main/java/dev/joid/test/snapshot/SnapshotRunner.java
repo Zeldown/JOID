@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Constructor;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,11 +19,14 @@ import java.util.stream.Stream;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.BridgeRegistry;
 import dev.joid.lib.bridge.IBridge;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.color.Color;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
@@ -68,6 +72,9 @@ public final class SnapshotRunner {
 		BridgeHandler.WINDOW.register(runner.window);
 		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
 		AssetLocator.register(runner.locator);
+		if (DevFont.MONTSERRAT != null) {
+			runner.bridge.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE));
+		}
 		runner.resize(1920, 1080);
 
 		JOIDEnv.devMode(false);
@@ -129,15 +136,16 @@ public final class SnapshotRunner {
 				this.window.setMouseX(Double.parseDouble(arguments[1]));
 				this.window.setMouseY(Double.parseDouble(arguments[2]));
 				this.render(false);
+				this.bridge.mouseMoved();
 				break;
 			case "moveto":
 				this.moveTo(Double.parseDouble(arguments[1]), Double.parseDouble(arguments[2]), Long.parseLong(arguments[3]));
 				break;
 			case "press":
-				this.bridge.mousePressed(MouseButton.valueOf(arguments[1]));
+				this.bridge.mousePressed(arguments.length > 1 ? MouseButton.valueOf(arguments[1]) : MouseButton.LEFT);
 				break;
 			case "release":
-				this.bridge.mouseReleased(MouseButton.valueOf(arguments[1]));
+				this.bridge.mouseReleased(arguments.length > 1 ? MouseButton.valueOf(arguments[1]) : MouseButton.LEFT);
 				break;
 			case "scroll":
 				this.bridge.mouseScroll(arguments.length > 2 ? Double.parseDouble(arguments[1]) : 0D, Double.parseDouble(arguments[arguments.length > 2 ? 2 : 1]));
@@ -245,9 +253,11 @@ public final class SnapshotRunner {
 	private void show(final String type, final boolean open) {
 		final UI ui;
 		try {
-			ui = (UI) Class.forName(type).newInstance();
+			final Constructor<?> constructor = Class.forName(type).getDeclaredConstructor();
+			constructor.setAccessible(true);
+			ui = (UI) constructor.newInstance();
 		} catch (final ReflectiveOperationException e) {
-			throw new IllegalArgumentException("Unable to create the snapshot UI " + type, e);
+			throw new IllegalArgumentException("The snapshot UI " + type + " cannot be created: give it a constructor without arguments, of any visibility", e);
 		}
 
 		if (open) {

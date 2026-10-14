@@ -2,12 +2,12 @@
 
 A starting point to run [JOID](https://github.com/Zeldown/JOID) @JOID_VERSION@ on an engine of your choice, in your own repository, with only the JOID jars.
 
-A backend extends `Backend`, creates three bridges — `IRenderBridge`, `IWindowBridge` and `IAudioBridge` — and never modifies the JOID core. The template compiles as is: every method throws `UnsupportedOperationException` until you implement it.
+A backend extends `Backend`, creates three bridges — `IRenderBridge`, `IWindowBridge` and `IAudioBridge` — and never modifies the JOID core. The template compiles as is: `ExampleBackend` already registers the three bridges, whose methods throw `UnsupportedOperationException` until you implement them.
 
 ## Setup
 
 1. Put the JOID jars listed in [`libs/README.md`](libs/README.md) in `libs/`.
-2. Rename the `com.example.joid.backend` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group` and `archivesBaseName` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
+2. Rename the `com.example.joid.backend` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group`, `archivesBaseName` and the `main` class of `runDemo` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
 3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, add `joid-base-glfw` and `joid-base-openal` to the `embed` configuration instead of writing those bridges (on OpenGL, add `joid-base-opengl` too and implement its bindings instead of a render bridge):
 
 ```groovy
@@ -29,13 +29,13 @@ The JOID core needs no declaration: its jars embed its libraries (Gson, Guava, C
 | `demo/DemoWindow` | Opens the JOID demo UIs on your engine. It lives in `src/demo/java`, so only the demo jar contains it. |
 | `ExampleSnapshotBackend` (tests) | Creates an offscreen surface, runs a frame, captures its pixels and names the renderer. |
 
-The render bridge contract — vertex layout, projection conventions, textures, framebuffers, state stack, shaders — is described in [Writing a Backend](https://documentation.joid.dev/#/integration/writing-a-backend).
+The render bridge contract — vertex layout, projection conventions, textures, framebuffers, state stack, shaders — is described in [Writing a backend](https://documentation.joid.dev/build/writing-a-backend/).
 
 ## Tasks
 
 | Command | Result |
 |---|---|
-| `./gradlew test` | Runs `RenderBridgeContractTest`, which checks the render bridge contract in a few seconds, and `SnapshotTest`, which renders every JOID scenario and compares each shot pixel for pixel to the references of the machine, recorded in `.snapshots/references` on the first run. |
+| `./gradlew test` | Runs `RenderBridgeContractTest` and `BitmapFontContractTest`, which check the render bridge contract in a few seconds, and `SnapshotTest`, which renders every JOID scenario and compares each shot pixel for pixel to the references of the machine, recorded in `.snapshots/references` on the first run. |
 | `./gradlew updateSnapshots` | Replaces the references after an intended visual change. |
 | `./gradlew renderBaseline` | Renders the same scenarios with the official LWJGL 3 backend into `build/snapshots/lwjgl3`. |
 | `./gradlew crossBackendTest` | Runs the tests and the baseline, then compares your shots to the LWJGL 3 ones within one level per channel. |

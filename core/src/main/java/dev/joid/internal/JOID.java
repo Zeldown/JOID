@@ -16,7 +16,9 @@ import lombok.NonNull;
 
 public final class JOID {
 
-	public static final String VERSION = "8.0.0";
+	public static final String VERSION = JOID.readVersion();
+
+	private static final String DEVELOPMENT_VERSION = "development";
 
 	private static JOID instance;
 
@@ -95,10 +97,7 @@ public final class JOID {
 	}
 
 	public static void checkVersion(final @NonNull String version) {
-		final String major = version.split("[.]")[0];
-		if (!major.equals(JOID.VERSION.split("[.]")[0])) {
-			throw new IllegalStateException("The backend was built for JOID " + major + ".x, but JOID " + JOID.VERSION + " is loaded: update the backend");
-		}
+		JOID.checkVersion(version, JOID.VERSION);
 	}
 
 	public static boolean isOpen(final @NonNull UI ui) {
@@ -194,6 +193,22 @@ public final class JOID {
 			throw new IllegalStateException("No IUIBridge can open " + ui.getClass().getSimpleName() + ": register one whose canHandle accepts it");
 		}
 		return bridge;
+	}
+
+	private static void checkVersion(final String version, final String loaded) {
+		if (JOID.DEVELOPMENT_VERSION.equals(version) || JOID.DEVELOPMENT_VERSION.equals(loaded)) {
+			return;
+		}
+
+		final String major = version.split("[.]")[0];
+		if (!major.equals(loaded.split("[.]")[0])) {
+			throw new IllegalStateException("The backend was built for JOID " + major + ".x, but JOID " + loaded + " is loaded: update the backend");
+		}
+	}
+
+	private static String readVersion() {
+		final String version = JOID.class.getPackage().getImplementationVersion();
+		return version != null ? version : JOID.DEVELOPMENT_VERSION;
 	}
 
 }

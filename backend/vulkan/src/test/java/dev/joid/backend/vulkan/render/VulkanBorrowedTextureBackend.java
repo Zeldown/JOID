@@ -1,9 +1,9 @@
 package dev.joid.backend.vulkan.render;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Supplier;
 
 import dev.joid.backend.vulkan.render.texture.VulkanBorrowedTexture;
@@ -70,7 +70,13 @@ public final class VulkanBorrowedTextureBackend implements IBorrowedTextureBacke
 
 	@Override
 	public @NonNull Map<@NonNull String, @NonNull String> readBorrowableParameters(final @NonNull Object texture) {
-		return Collections.emptyMap();
+		final VulkanTexture borrowable = this.textures.get(texture);
+		final Map<String, String> parameters = new TreeMap<>();
+		parameters.put("IMAGE", Long.toString(borrowable.getImage()));
+		parameters.put("VIEW", Long.toString(borrowable.getView()));
+		parameters.put("LEVELS", Integer.toString(borrowable.getLevels()));
+		parameters.put("DELETED", Boolean.toString(borrowable.isDeleted()));
+		return parameters;
 	}
 
 }

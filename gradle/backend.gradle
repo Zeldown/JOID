@@ -33,9 +33,36 @@ rootProject.variants.each { variant ->
 }
 
 
+sourceSets {
+    jarCheck {
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+    }
+}
+
 dependencies {
     compileOnly project(':tool-testkit')
     testCompile project(':tool-testkit')
+}
+
+['demo', 'prod'].each { variant ->
+    task("test${variant.capitalize()}Jar", type: JavaExec) {
+        group = 'verification'
+        description = "Starts JOID from the ${variant} jar in a JVM of its own, on a hidden window, and draws a UI."
+        dependsOn "${variant}Jar", jarCheckClasses, ':tool-testkit:jar'
+        main = "dev.joid.backend.${project.name - 'backend-'}.jar.${(project.name - 'backend-').capitalize()}JarCheck"
+        classpath = files(tasks["${variant}Jar"].archivePath) + files({ project(':tool-testkit').jar.archivePath }) + sourceSets.jarCheck.output + configurations.runtime.filter { file -> !file.path.startsWith(rootDir.path) } - files(([project] + embeddedModules).collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null })
+        args variant
+        workingDir = file("$buildDir/jarCheck/$variant")
+        systemProperty 'java.awt.headless', true
+        systemProperty 'joid.data', file("$buildDir/jarCheck/$variant/data").absolutePath
+        if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+            jvmArgs '-XstartOnFirstThread'
+        }
+        doFirst {
+            delete workingDir
+            workingDir.mkdirs()
+        }
+    }
 }
 
 task updateSnapshots {

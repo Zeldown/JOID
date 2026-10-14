@@ -1,7 +1,5 @@
 package dev.joid.backend.lwjgl3;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,7 +9,6 @@ import org.junit.Test;
 
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.internal.JOID;
-import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.bridge.ui.StackUIBridge;
@@ -21,9 +18,8 @@ import dev.joid.lib.color.Color;
 public class Lwjgl3BackendTest {
 
 	@Test
-	public void keepsTheVersionOfJOIDItWasBuiltAgainst() throws IOException {
-		final String bytecode = new String(Asset.of(Lwjgl3Backend.class.getResourceAsStream("Lwjgl3Backend.class")).read(), StandardCharsets.ISO_8859_1);
-		Assert.assertTrue(bytecode.contains(JOID.VERSION));
+	public void registersWithTheVersionOfTheJOIDItEmbeds() {
+		Assert.assertEquals(JOID.VERSION, Lwjgl3Backend.create(0L).getVersion());
 	}
 
 	@Test

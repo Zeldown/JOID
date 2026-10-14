@@ -44,8 +44,6 @@ public final class ExampleBackend extends Backend<ExampleBackend> {
 	}
 
 	@Override
-	protected void attachInput() {
-		throw new UnsupportedOperationException();
-	}
+	protected void attachInput() {}
 
 }

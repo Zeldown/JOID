@@ -94,6 +94,10 @@ subprojects {
     }
 
     tasks.withType(Jar) {
+        manifest {
+            attributes(['Implementation-Version': project.version], 'dev/joid/internal/')
+        }
+
         from(rootProject.file('LICENSE')) {
             into 'META-INF'
         }
@@ -167,15 +171,25 @@ assemble.dependsOn collectArtifacts
 
 task checkJars {
     group = 'JOID'
-    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, and that the embedded libraries are relocated.'
+    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, and that NOTICE credits each of them.'
     dependsOn ':tool-testkit:jar'
     dependsOn variants.collectMany { variant -> [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { module -> "$module:${variant}Jar" } }
     doLast {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
         def demo = ['dev/joid/demo/DemoFont.class', 'assets/demo/']
-        def shaded = ['dev/joid/shaded/gson/', 'dev/joid/shaded/guava/', 'dev/joid/shaded/commons/io/', 'dev/joid/shaded/commons/lang3/']
-        def libraries = ['com/google/gson/', 'com/google/common/', 'com/google/thirdparty/', 'org/apache/commons/io/', 'org/apache/commons/lang3/', 'javax/vecmath/']
+        def shaded = ['dev/joid/shaded/asm/', 'dev/joid/shaded/gson/', 'dev/joid/shaded/guava/', 'dev/joid/shaded/commons/io/', 'dev/joid/shaded/commons/lang3/']
+        def libraries = ['org/objectweb/asm/', 'com/google/gson/', 'com/google/common/', 'com/google/thirdparty/', 'org/apache/commons/io/', 'org/apache/commons/lang3/', 'javax/vecmath/']
+        def credits = ['org.ow2.asm': 'ASM', 'com.google.guava': 'Guava', 'org.bytedeco': 'JavaCV and JavaCPP', 'net.java.dev.jna': 'JNA', 'com.github.weisj': 'JSVG', 'commons-io': 'Apache Commons IO', 'com.google.code.gson': 'Gson', 'com.twelvemonkeys': 'TwelveMonkeys ImageIO', 'org.apache.commons': 'Apache Commons Lang']
+        def notice = rootProject.file('NOTICE').readLines('UTF-8').collect { line -> line.trim() }
         def failures = []
+        subprojects.collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null }.collectMany { configuration -> configuration.resolvedConfiguration.resolvedArtifacts.collect { artifact -> artifact.moduleVersion.id } }.unique { id -> "${id.group}:${id.name}" }.each { id ->
+            def credit = credits.find { group, name -> id.group == group || id.group.startsWith(group + '.') }
+            if (credit == null) {
+                failures << "${id.group}:${id.name} is embedded but checkJars does not know its entry in NOTICE: credit it in NOTICE, then map its group in checkJars"
+            } else if (!notice.any { line -> line == credit.value || line.startsWith(credit.value + ' ') }) {
+                failures << "NOTICE does not credit ${credit.value}, embedded as ${id.group}:${id.name}: add its entry to NOTICE"
+            }
+        }
         def constants = { bytes ->
             def input = new DataInputStream(new ByteArrayInputStream(bytes))
             input.skipBytes(8)
@@ -208,6 +222,13 @@ task checkJars {
                 def snapshots = entries.any { entry -> entry ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*/ }
                 if (!holds('dev/joid/internal/JOID.class')) {
                     failures << "${jar.name} misses JOID"
+                }
+                def version = new java.util.jar.JarFile(jar).withCloseable { file -> file.manifest?.getAttributes('dev/joid/internal/')?.getValue('Implementation-Version') }
+                if (version != project.version.toString()) {
+                    failures << "${jar.name} gives JOID the version $version instead of ${project.version} in its manifest"
+                }
+                ['META-INF/LICENSE', 'META-INF/NOTICE'].findAll { name -> !entries.contains(name) }.each { name ->
+                    failures << "${jar.name} misses $name"
                 }
                 shaded.findAll { prefix -> !holds(prefix) }.each { prefix ->
                     failures << "${jar.name} misses $prefix"
@@ -249,6 +270,19 @@ task checkJars {
 }
 
 /* Tests */
+task updateSnapshots {
+    group = 'JOID'
+    description = 'Runs the snapshot tests of the LWJGL 2, LWJGL 3 and Vulkan backends one after the other and replaces their reference snapshots.'
+    dependsOn ':backend-lwjgl2:updateSnapshots', ':backend-lwjgl3:updateSnapshots', ':backend-vulkan:updateSnapshots'
+}
+
+gradle.projectsEvaluated {
+    if (gradle.startParameter.taskNames.any { name -> name in ['updateSnapshots', ':updateSnapshots'] }) {
+        project(':backend-lwjgl3').test.mustRunAfter ':backend-lwjgl2:test'
+        project(':backend-vulkan').test.mustRunAfter ':backend-lwjgl3:test'
+    }
+}
+
 task crossBackendTest(type: JavaExec) {
     group = 'JOID'
     description = 'Runs the snapshot tests of every backend, then compares the LWJGL 2 and Vulkan shots to LWJGL 3.'
@@ -302,11 +336,14 @@ gradle.buildFinished {
 /* Scripts */
 task installLocalGitHook(type: Copy){
 	group = 'JOID'
-	description = 'Installs the pre-commit and pre-push git hooks.'
+	description = 'Installs the pre-commit and pre-push git hooks, outside a continuous integration and only when they changed.'
 	from(new File(rootProject.rootDir, 'scripts')) {
 		include 'pre-push', 'pre-commit'
 	}
 	into new File(rootProject.rootDir, '.git/hooks')
+	onlyIf {
+		System.getenv('CI') == null && new File(rootProject.rootDir, '.git').isDirectory() && ['pre-push', 'pre-commit'].any { name -> !new File(rootProject.rootDir, ".git/hooks/$name").isFile() || new File(rootProject.rootDir, ".git/hooks/$name").bytes != new File(rootProject.rootDir, "scripts/$name").bytes }
+	}
 	
 	fileMode 0775
 }

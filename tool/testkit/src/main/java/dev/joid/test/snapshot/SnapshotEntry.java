@@ -17,7 +17,7 @@ public final class SnapshotEntry {
 	private final File           render;
 	private final File           reference;
 
-	public static @NonNull SnapshotEntry create(final @NonNull String name, final @NonNull SnapshotStatus status, final int pixels, final @NonNull File reference, final @NonNull File render) {
+	public static @NonNull SnapshotEntry create(final @NonNull String name, final @NonNull SnapshotStatus status, final int pixels, final @NonNull File render, final @NonNull File reference) {
 		return new SnapshotEntry(name, status, pixels, render, reference);
 	}
 

@@ -21,6 +21,9 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.bridge.render.state.StencilFunction;
+import dev.joid.lib.bridge.render.state.StencilOperation;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
@@ -88,6 +91,25 @@ public abstract class RenderBridgeContractSuite {
 			final IShader shader = BridgeHandler.RENDER.get().createShader(coreShader.read(ShaderStage.VERTEX), coreShader.read(ShaderStage.FRAGMENT), BlendState.NORMAL);
 			Assert.assertTrue("The " + coreShader.name() + " shader does not compile", shader.isActive());
 		}
+	}
+
+	@Test
+	public void skipsTheDrawsOfAShaderThatFailsToCompile() {
+		final IShader shader = RenderBridgeContractSuite.shader("void main() {\n    fragColor = undeclaredColor;\n}");
+		Assert.assertFalse("A shader that fails to compile must report isActive() == false", shader.isActive());
+
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			shader.bind();
+			try {
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+			} finally {
+				shader.unbind();
+			}
+
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+		});
+		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
+		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -186,11 +208,62 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void cullsTheBackFacesLikeOpenGl() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.getState().cull(true);
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE, 0F, -RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+		});
+		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
+		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+	}
+
+	@Test
+	public void cullsTheBackFacesInFrameBuffersLikeOpenGl() {
+		final IFrameBuffer frameBuffer = BridgeHandler.RENDER.get().createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.getState().frameBuffer(frameBuffer).cull(true);
+			bridge.clearColor(0F, 0F, 0F, 1F);
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE, 0F, -RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+			bridge.getState().frameBuffer(null).cull(false).color(1F, 1F, 1F, 1F);
+			bridge.getState().texture(frameBuffer.getTexture()).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
+		});
+		frameBuffer.delete();
+
+		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
+		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+	}
+
+	@Test
+	public void appliesTheStencilStateOfEachDraw() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.clearStencil();
+			bridge.getState().colorWrite(false).stencil(StencilState.create(StencilFunction.ALWAYS, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.RED));
+			bridge.getState().colorWrite(true).stencil(StencilState.create(StencilFunction.EQUAL, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+			bridge.getState().stencil(StencilState.DISABLED);
+		});
+		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.GREEN);
+		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.BLACK);
+	}
+
+	@Test
 	public void exposesTheLineState() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.getState().lineWidth(3F).lineSmooth(true);
 		Assert.assertEquals(3F, render.getState().getLineWidth(), 0F);
 		Assert.assertTrue(render.getState().isLineSmooth());
+	}
+
+	@Test
+	public void drawsLinesOnePixelWide() {
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> bridge.draw(Primitive.LINES, RenderBridgeContractSuite.line(8F, 32.5F, 56F, 32.5F, RenderBridgeContractSuite.WHITE)));
+		RenderBridgeContractSuite.assertPixel(image, 32, 31, RenderBridgeContractSuite.BLACK);
+		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.WHITE);
+		RenderBridgeContractSuite.assertPixel(image, 32, 33, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test
@@ -615,6 +688,21 @@ public abstract class RenderBridgeContractSuite {
 			buffer.put(offset + VertexAttribute.NORMAL.getOffset() + 2, (byte) 127);
 		}
 		return VertexBuffer.create(buffer, corners.length, texture, color != 0, normal);
+	}
+
+	private static VertexBuffer line(final float startX, final float startY, final float endX, final float endY, final int color) {
+		final float[][] points = {{startX, startY}, {endX, endY}};
+		final ByteBuffer buffer = ByteBuffer.allocateDirect(points.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
+		for (int i = 0; i < points.length; i++) {
+			final int offset = i * VertexBuffer.STRIDE;
+			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset(), points[i][0]);
+			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 4, points[i][1]);
+			buffer.put(offset + VertexAttribute.COLOR.getOffset(), (byte) (color >> 16));
+			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 1, (byte) (color >> 8));
+			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 2, (byte) color);
+			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 3, (byte) (color >> 24));
+		}
+		return VertexBuffer.create(buffer, points.length, false, true, false);
 	}
 
 }

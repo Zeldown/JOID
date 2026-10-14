@@ -60,7 +60,7 @@ public final class SnapshotUrlAssetLocator implements IAssetLocator {
 		try {
 			return String.format(Locale.ROOT, "%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(url.getBytes(StandardCharsets.UTF_8))));
 		} catch (final NoSuchAlgorithmException e) {
-			throw new IllegalStateException(e);
+			throw new IllegalStateException("The snapshot cache cannot name the download of " + url + ": this JVM has no SHA-1 digest, run the snapshots on a standard JVM", e);
 		}
 	}
 

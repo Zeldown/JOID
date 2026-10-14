@@ -49,6 +49,12 @@ The release jars embed the following software:
   Licensed under the Apache License, Version 2.0
   Relocated under dev.joid.shaded.commons.lang3.
 
+  ASM
+  https://asm.ow2.io
+  Copyright INRIA, France Telecom
+  Licensed under the BSD 3-Clause License
+  Relocated under dev.joid.shaded.asm.
+
   JavaCV and JavaCPP
   https://github.com/bytedeco
   Copyright Samuel Audet

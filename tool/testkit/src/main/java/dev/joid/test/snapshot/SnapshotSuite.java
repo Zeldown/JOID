@@ -16,11 +16,15 @@ import org.junit.Test;
 import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public abstract class SnapshotSuite {
 
@@ -102,6 +106,46 @@ public abstract class SnapshotSuite {
 	}
 
 	@Test
+	public void dragsWithMovesAndTheDefaultButton() {
+		this.getRunner().execute("ui " + TraceUI.class.getName(), "move 100 100", "press", "move 300 140", "release");
+		final TraceUI ui = JOID.getUi(TraceUI.class);
+		Assert.assertEquals(ui.getView().toUiX(300D), ui.getDragX(), 0D);
+		Assert.assertEquals(ui.getView().toUiY(140D), ui.getDragY(), 0D);
+	}
+
+	@Test
+	public void createsAUIWhateverTheVisibilityOfItsConstructor() {
+		this.getRunner().execute("ui " + PrivateUI.class.getName());
+		Assert.assertNotNull(JOID.getUi(PrivateUI.class));
+	}
+
+	@Test
+	public void namesTheUIThatCannotBeCreated() {
+		try {
+			this.getRunner().execute("ui " + ArgumentUI.class.getName());
+			Assert.fail();
+		} catch (final IllegalArgumentException exception) {
+			Assert.assertEquals("The snapshot UI " + ArgumentUI.class.getName() + " cannot be created: give it a constructor without arguments, of any visibility", exception.getMessage());
+		}
+	}
+
+	@Test
+	public void drawsTooltipsWithTheDevFont() {
+		this.getRunner().execute();
+		Assert.assertNotNull(BridgeHandler.UI.getBridge(SnapshotUIBridge.class).getHoverInfo());
+	}
+
+	@Test
+	public void playsTheOutTransitionOfAPopupClosedByEscape() {
+		this.getRunner().execute("ui " + TraceUI.class.getName(), "open " + PopupUI.class.getName(), "shot opening", "wait 60", "shot growing", "wait 300", "shot opened", "key ESCAPE", "shot closing", "wait 60", "shot shrinking");
+		final PopupUI ui = JOID.getUi(PopupUI.class);
+		Assert.assertNotNull(ui);
+		Assert.assertTrue(ui.getTransition().getOut().isRunning());
+		Assert.assertTrue(ui.getTransition().getOut().getAnimator().peek() > 0F);
+		Assert.assertTrue(ui.getTransition().getOut().getAnimator().peek() < 1F);
+	}
+
+	@Test
 	public void advancesTheClockByTheExactDuration() {
 		this.getRunner().execute();
 		final long start = BridgeHandler.CLOCK.get().currentTimeMillis();
@@ -144,17 +188,17 @@ public abstract class SnapshotSuite {
 			shot.getValue().write(render);
 			if (update || !reference.exists()) {
 				shot.getValue().write(reference);
-				SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), update ? SnapshotStatus.UPDATED : SnapshotStatus.RECORDED, 0, reference, render));
+				SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), update ? SnapshotStatus.UPDATED : SnapshotStatus.RECORDED, 0, render, reference));
 				continue;
 			}
 
 			final SnapshotDifference difference = shot.getValue().compare(SnapshotImage.read(reference), 0);
 			if (difference.getPixels() == 0) {
-				SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), SnapshotStatus.IDENTICAL, 0, reference, render));
+				SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), SnapshotStatus.IDENTICAL, 0, render, reference));
 				continue;
 			}
 
-			SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), SnapshotStatus.DIFFERENT, difference.getPixels(), reference, render));
+			SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), SnapshotStatus.DIFFERENT, difference.getPixels(), render, reference));
 			failures.add(shot.getKey() + ": " + difference.getPixels() + " pixels differ from the reference, maximum channel delta " + difference.getMaximum());
 		}
 
@@ -197,6 +241,36 @@ public abstract class SnapshotSuite {
 				this.dragX = event.getMouseX();
 				this.dragY = event.getMouseY();
 			});
+		}
+
+	}
+
+	public static final class PrivateUI extends UI {
+
+		private PrivateUI() {}
+
+		@Override
+		public void init() {}
+
+	}
+
+	@Getter
+	@RequiredArgsConstructor
+	public static final class ArgumentUI extends UI {
+
+		private final int argument;
+
+		@Override
+		public void init() {}
+
+	}
+
+	@UIDataPopup(active = true)
+	public static final class PopupUI extends UI {
+
+		@Override
+		public void init() {
+			RectNode.create(800, 430, 320, 220).color(Color.WHITE).attach(this);
 		}
 
 	}

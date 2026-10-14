@@ -37,11 +37,11 @@ public final class SnapshotComparison {
 				final SnapshotDifference difference = SnapshotImage.read(candidate).compare(SnapshotImage.read(shot), 1);
 				if (difference.getPixels() == 0) {
 					identical++;
-					entries.add(SnapshotEntry.create(name, SnapshotStatus.IDENTICAL, 0, shot, candidate));
+					entries.add(SnapshotEntry.create(name, SnapshotStatus.IDENTICAL, 0, candidate, shot));
 					continue;
 				}
 
-				entries.add(SnapshotEntry.create(name, SnapshotStatus.DIFFERENT, difference.getPixels(), shot, candidate));
+				entries.add(SnapshotEntry.create(name, SnapshotStatus.DIFFERENT, difference.getPixels(), candidate, shot));
 				failures.add(name + ": " + difference.getPixels() + " pixels differ from " + reference.getName() + ", maximum channel delta " + difference.getMaximum());
 			}
 			System.out.println(candidates.getName() + ": " + identical + "/" + shots.length + " snapshots identical to " + reference.getName());
