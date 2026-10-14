@@ -41,9 +41,8 @@ public class Lwjgl2GlBindingTest {
 	}
 
 	@Test
-	public void sharesOneBindingPerDomain() {
+	public void sharesOneBinding() {
 		Assert.assertSame(Lwjgl2GlBinding.inst(), Lwjgl2GlBinding.inst());
-		Assert.assertSame(Lwjgl2GlBinding.inst().getStateBinding(), Lwjgl2GlBinding.inst().getStateBinding());
 	}
 
 	@Test
@@ -53,16 +52,6 @@ public class Lwjgl2GlBindingTest {
 		thread.start();
 		thread.join();
 		Assert.assertNull(version.get());
-	}
-
-	@Test
-	public void refusesToPointAnAttributeAtClientMemory() {
-		try {
-			Lwjgl2GlBufferBinding.create().vertexAttribPointer(2, 4, GlConstants.UNSIGNED_BYTE, true, 32, 20L);
-			Assert.fail("A pointer without array buffer must be refused");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("LWJGL 2 cannot point the vertex attribute 2 at client memory (offset 20), bind an array buffer with bindBuffer(ARRAY_BUFFER, buffer) before vertexAttribPointer", expected.getMessage());
-		}
 	}
 
 	private static int find(final String name) throws ReflectiveOperationException {

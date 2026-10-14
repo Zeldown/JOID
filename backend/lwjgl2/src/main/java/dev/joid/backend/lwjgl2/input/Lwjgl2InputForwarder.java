@@ -24,16 +24,16 @@ public final class Lwjgl2InputForwarder {
 		while (Mouse.next()) {
 			final int button = Mouse.getEventButton();
 			if (button == -1) {
-				this.mouseMoved();
+				BridgeHandler.UI.mouseMoved();
 			} else if (Mouse.getEventButtonState()) {
-				this.mousePressed(button);
+				BridgeHandler.UI.mousePressed(MouseButton.from(button));
 			} else {
-				this.mouseReleased(button);
+				BridgeHandler.UI.mouseReleased(MouseButton.from(button));
 			}
 
 			final int wheel = Mouse.getEventDWheel();
 			if (wheel != 0) {
-				this.mouseScrolled(wheel);
+				BridgeHandler.UI.mouseScroll(0D, wheel / 120D);
 			}
 		}
 
@@ -45,47 +45,28 @@ public final class Lwjgl2InputForwarder {
 
 			this.keyPressed(Keyboard.getEventKey(), Keyboard.getEventCharacter());
 			if (Keyboard.getEventCharacter() != Keyboard.CHAR_NONE) {
-				this.charTyped(Keyboard.getEventCharacter());
+				BridgeHandler.UI.charTyped(Keyboard.getEventCharacter());
 			}
 		}
 	}
 
-	public boolean keyPressed(final int code, final char character) {
+	private void keyPressed(final int code, final char character) {
 		final Key key = Lwjgl2WindowBridge.getKey(code, character);
 		if (code >= 0 && code < this.pressedKeys.length) {
 			this.pressedKeys[code] = key;
 		}
-		return BridgeHandler.UI.keyPressed(key);
+		BridgeHandler.UI.keyPressed(key);
 	}
 
-	public boolean keyReleased(final int code) {
+	private void keyReleased(final int code) {
 		if (code < 0 || code >= this.pressedKeys.length || this.pressedKeys[code] == null) {
-			return BridgeHandler.UI.keyReleased(Lwjgl2WindowBridge.getKey(code));
+			BridgeHandler.UI.keyReleased(Lwjgl2WindowBridge.getKey(code));
+			return;
 		}
 
 		final Key key = this.pressedKeys[code];
 		this.pressedKeys[code] = null;
-		return BridgeHandler.UI.keyReleased(key);
-	}
-
-	public boolean charTyped(final int codepoint) {
-		return BridgeHandler.UI.charTyped(codepoint);
-	}
-
-	public boolean mouseMoved() {
-		return BridgeHandler.UI.mouseMoved();
-	}
-
-	public boolean mousePressed(final int button) {
-		return BridgeHandler.UI.mousePressed(MouseButton.from(button));
-	}
-
-	public boolean mouseReleased(final int button) {
-		return BridgeHandler.UI.mouseReleased(MouseButton.from(button));
-	}
-
-	public boolean mouseScrolled(final int wheel) {
-		return BridgeHandler.UI.mouseScroll(0D, wheel / 120D);
+		BridgeHandler.UI.keyReleased(key);
 	}
 
 }

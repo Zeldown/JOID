@@ -5,22 +5,16 @@ import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
 import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.opengl.render.GlRenderBridge;
-import dev.joid.internal.JOID;
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.backend.Backend;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.bridge.thread.FrameThreadBridge;
-import dev.joid.lib.bridge.thread.IThreadBridge;
-import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
-
-	private Lwjgl2Backend() {
-		super(JOID.VERSION);
-	}
 
 	public static @NonNull Lwjgl2Backend create() {
 		return new Lwjgl2Backend();
@@ -32,11 +26,6 @@ public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
 	}
 
 	@Override
-	protected @NonNull IThreadBridge createThreadBridge() {
-		return FrameThreadBridge.create();
-	}
-
-	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
 		Lwjgl2Natives.install();
 		return new Lwjgl2WindowBridge();
@@ -45,11 +34,6 @@ public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
 	@Override
 	protected @NonNull IRenderBridge createRenderBridge() {
 		return GlRenderBridge.create(Lwjgl2GlBinding.inst());
-	}
-
-	@Override
-	protected void registerDefaults() {
-		BridgeHandler.UI.registerDefault(WindowUIBridge.create());
 	}
 
 }

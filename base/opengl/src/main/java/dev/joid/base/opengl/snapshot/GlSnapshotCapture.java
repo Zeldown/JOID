@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import dev.joid.base.opengl.binding.GlConstants;
-import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.utils.image.PixelLayout;
 import dev.joid.test.snapshot.SnapshotImage;
@@ -23,10 +22,6 @@ public final class GlSnapshotCapture {
 			bridge.getBinding().readPixels(0, 0, width, height, GlConstants.RGBA, GlConstants.UNSIGNED_BYTE, pixels);
 		});
 		return SnapshotImage.fromBytes(pixels, width, height, true, PixelLayout.RGBA8);
-	}
-
-	public static @NonNull String getRenderer(final @NonNull IGlBinding binding) {
-		return binding.getString(GlConstants.RENDERER);
 	}
 
 }

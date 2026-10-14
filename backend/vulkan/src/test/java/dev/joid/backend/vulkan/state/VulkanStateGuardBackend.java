@@ -1,5 +1,6 @@
 package dev.joid.backend.vulkan.state;
 
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -86,7 +87,13 @@ public final class VulkanStateGuardBackend implements IStateGuardBackend {
 	@Override
 	public @NonNull Map<@NonNull String, @NonNull String> readState() {
 		final Map<String, String> state = new TreeMap<>();
-		state.put("RENDER_PASS", Boolean.toString(((VulkanRenderBridge) BridgeHandler.RENDER.get()).isPassActive()));
+		try {
+			final Field passActive = VulkanRenderBridge.class.getDeclaredField("passActive");
+			passActive.setAccessible(true);
+			state.put("RENDER_PASS", Boolean.toString(passActive.getBoolean(BridgeHandler.RENDER.get())));
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException(exception);
+		}
 		return state;
 	}
 

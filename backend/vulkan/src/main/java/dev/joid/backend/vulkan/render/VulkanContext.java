@@ -54,11 +54,9 @@ public final class VulkanContext {
 		this.device         = host.getDevice();
 		this.physicalDevice = host.getPhysicalDevice();
 
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final LongBuffer commandPool = stack.mallocLong(1);
-			VulkanContext.check(VK10.vkCreateCommandPool(this.device, VkCommandPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT).queueFamilyIndex(host.getQueueFamilyIndex()), null, commandPool), "vkCreateCommandPool");
-			this.commandPool = commandPool.get(0);
+		this.commandPool    = VulkanContext.createCommandPool(this.device, host.getQueueFamilyIndex());
 
+		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
 			VK10.vkGetPhysicalDeviceProperties(this.physicalDevice, properties);
 			this.uniformAlignment = properties.limits().minUniformBufferOffsetAlignment();
@@ -126,22 +124,11 @@ public final class VulkanContext {
 	}
 
 	public long createImageView(final long image, final int format, final int aspect) {
-		return this.createImageView(image, format, aspect, 1);
+		return VulkanContext.createImageView(this.device, image, format, aspect, 1);
 	}
 
 	public long createImageView(final long image, final int format, final int aspect, final int levels) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkImageViewCreateInfo info = VkImageViewCreateInfo.calloc(stack)
-					.sType$Default()
-					.image(image)
-					.viewType(VK10.VK_IMAGE_VIEW_TYPE_2D)
-					.format(format);
-			info.subresourceRange().aspectMask(aspect).baseMipLevel(0).levelCount(levels).baseArrayLayer(0).layerCount(1);
-
-			final LongBuffer view = stack.mallocLong(1);
-			VulkanContext.check(VK10.vkCreateImageView(this.device, info, null, view), "vkCreateImageView");
-			return view.get(0);
-		}
+		return VulkanContext.createImageView(this.device, image, format, aspect, levels);
 	}
 
 	public long[] createImage(final int width, final int height, final int format, final int usage) {
@@ -218,6 +205,29 @@ public final class VulkanContext {
 					.dstAccessMask(VulkanContext.getAccess(newLayout));
 			barrier.subresourceRange().aspectMask(aspect).baseMipLevel(baseLevel).levelCount(levels).baseArrayLayer(0).layerCount(1);
 			VK10.vkCmdPipelineBarrier(buffer, VK10.VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VK10.VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, 0, null, null, barrier);
+		}
+	}
+
+	public static long createCommandPool(final @NonNull VkDevice device, final int queueFamilyIndex) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final LongBuffer commandPool = stack.mallocLong(1);
+			VulkanContext.check(VK10.vkCreateCommandPool(device, VkCommandPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT).queueFamilyIndex(queueFamilyIndex), null, commandPool), "vkCreateCommandPool");
+			return commandPool.get(0);
+		}
+	}
+
+	public static long createImageView(final @NonNull VkDevice device, final long image, final int format, final int aspect, final int levels) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkImageViewCreateInfo info = VkImageViewCreateInfo.calloc(stack)
+					.sType$Default()
+					.image(image)
+					.viewType(VK10.VK_IMAGE_VIEW_TYPE_2D)
+					.format(format);
+			info.subresourceRange().aspectMask(aspect).baseMipLevel(0).levelCount(levels).baseArrayLayer(0).layerCount(1);
+
+			final LongBuffer view = stack.mallocLong(1);
+			VulkanContext.check(VK10.vkCreateImageView(device, info, null, view), "vkCreateImageView");
+			return view.get(0);
 		}
 	}
 

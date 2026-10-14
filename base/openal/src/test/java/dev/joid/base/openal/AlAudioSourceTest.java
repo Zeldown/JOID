@@ -1,5 +1,6 @@
 package dev.joid.base.openal;
 
+import java.lang.reflect.Field;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,6 +9,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -249,21 +251,23 @@ public class AlAudioSourceTest {
 	}
 
 	@Test
-	public void letsACustomAudioGainReplaceTheGroupVolumes() {
+	public void appliesTheGroupVolumesOnTopOfACustomAudioGain() {
 		final AlAudioBridge bridge = AlAudioBridge.create(this.binding).groupVolume("music", 0.25F);
 		final IAudioSource source = bridge.createSource(8000, 1);
 		source.group("music");
-		bridge.gain((gain, group) -> gain);
-		Assert.assertEquals("gain 1 1.0", this.binding.calls.get(this.binding.calls.size() - 1));
+		bridge.gain((gain, group) -> gain * 0.5F);
+		Assert.assertEquals("gain 1 0.125", this.binding.calls.get(this.binding.calls.size() - 1));
 	}
 
 	@Test
-	public void forgetsADeletedSource() {
+	public void forgetsADeletedSource() throws Exception {
 		final AlAudioBridge bridge = AlAudioBridge.create(this.binding);
 		final IAudioSource source = bridge.createSource(8000, 1);
 		source.gain(1F);
 		source.delete();
-		Assert.assertTrue(bridge.getSourceSet().isEmpty());
+		final Field sourceSet = AlAudioBridge.class.getDeclaredField("sourceSet");
+		sourceSet.setAccessible(true);
+		Assert.assertTrue(((Set<?>) sourceSet.get(bridge)).isEmpty());
 		this.binding.calls.clear();
 		bridge.gain((gain, group) -> 0F);
 		Assert.assertTrue(this.binding.calls.isEmpty());

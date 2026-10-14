@@ -17,7 +17,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class VulkanTexture extends Texture {
+public final class VulkanTexture extends Texture implements IVulkanTexture {
 
 	private final VulkanRenderBridge bridge;
 
@@ -32,11 +32,10 @@ public final class VulkanTexture extends Texture {
 	@Override
 	protected void allocateStorage(final @NonNull MipmapChain chain) {
 		this.release();
-		final VulkanContext context = this.bridge.getContext();
-		final long[] handles = context.createImage(chain.getWidth(), chain.getHeight(), VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_USAGE_SAMPLED_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK10.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, chain.getLevels());
-		this.image  = handles[0];
-		this.memory = handles[1];
-		this.view   = context.createImageView(this.image, VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_ASPECT_COLOR_BIT, chain.getLevels());
+		final long[] storage = this.createStorage(chain);
+		this.image  = storage[0];
+		this.memory = storage[1];
+		this.view   = storage[2];
 
 		final long image = this.image;
 		this.bridge.record(buffer -> VulkanContext.transition(buffer, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_UNDEFINED, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 0, chain.getLevels()));
@@ -78,11 +77,9 @@ public final class VulkanTexture extends Texture {
 			return;
 		}
 
-		final VulkanContext context = this.bridge.getContext();
-		final long[] handles = context.createImage(chain.getWidth(), chain.getHeight(), VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_USAGE_SAMPLED_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK10.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, chain.getLevels());
-		final long view = context.createImageView(handles[0], VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_ASPECT_COLOR_BIT, chain.getLevels());
+		final long[] storage = this.createStorage(chain);
 		final long source = this.image;
-		final long target = handles[0];
+		final long target = storage[0];
 		this.bridge.record(buffer -> {
 			try (MemoryStack stack = MemoryStack.stackPush()) {
 				VulkanContext.transition(buffer, source, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, 0, 1);
@@ -101,8 +98,8 @@ public final class VulkanTexture extends Texture {
 
 		this.release();
 		this.image  = target;
-		this.memory = handles[1];
-		this.view   = view;
+		this.memory = storage[1];
+		this.view   = storage[2];
 	}
 
 	@Override
@@ -129,6 +126,12 @@ public final class VulkanTexture extends Texture {
 		this.image  = VK10.VK_NULL_HANDLE;
 		this.memory = VK10.VK_NULL_HANDLE;
 		this.view   = VK10.VK_NULL_HANDLE;
+	}
+
+	private long[] createStorage(final MipmapChain chain) {
+		final VulkanContext context = this.bridge.getContext();
+		final long[] handles = context.createImage(chain.getWidth(), chain.getHeight(), VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_USAGE_SAMPLED_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK10.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, chain.getLevels());
+		return new long[] {handles[0], handles[1], context.createImageView(handles[0], VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_ASPECT_COLOR_BIT, chain.getLevels())};
 	}
 
 	private static void blitLevels(final VkCommandBuffer buffer, final MemoryStack stack, final long image, final int levels, final MipmapChain chain) {

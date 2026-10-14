@@ -17,14 +17,12 @@ import org.lwjgl.vulkan.VkClearColorValue;
 import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkCommandBufferAllocateInfo;
 import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
-import org.lwjgl.vulkan.VkCommandPoolCreateInfo;
 import org.lwjgl.vulkan.VkDevice;
 import org.lwjgl.vulkan.VkDeviceCreateInfo;
 import org.lwjgl.vulkan.VkDeviceQueueCreateInfo;
 import org.lwjgl.vulkan.VkExtensionProperties;
 import org.lwjgl.vulkan.VkFenceCreateInfo;
 import org.lwjgl.vulkan.VkImageSubresourceRange;
-import org.lwjgl.vulkan.VkImageViewCreateInfo;
 import org.lwjgl.vulkan.VkInstance;
 import org.lwjgl.vulkan.VkInstanceCreateInfo;
 import org.lwjgl.vulkan.VkPhysicalDevice;
@@ -100,9 +98,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 			this.colorFormat = selected.format();
 			this.colorSpace  = selected.colorSpace();
 
-			final LongBuffer commandPool = stack.mallocLong(1);
-			VulkanContext.check(VK10.vkCreateCommandPool(this.device, VkCommandPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT).queueFamilyIndex(this.queueFamilyIndex), null, commandPool), "vkCreateCommandPool");
-			this.commandPool = commandPool.get(0);
+			this.commandPool = VulkanContext.createCommandPool(this.device, this.queueFamilyIndex);
 
 			final PointerBuffer buffers = stack.mallocPointer(framesInFlight);
 			VulkanContext.check(VK10.vkAllocateCommandBuffers(this.device, VkCommandBufferAllocateInfo.calloc(stack).sType$Default().commandPool(this.commandPool).level(VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY).commandBufferCount(framesInFlight), buffers), "vkAllocateCommandBuffers");
@@ -307,23 +303,10 @@ public final class VulkanWindowHost implements IVulkanHost {
 			this.renderSemaphores = new long[count.get(0)];
 			for (int i = 0; i < this.images.length; i++) {
 				this.images[i] = images.get(i);
-				this.views[i] = this.createImageView(stack, this.images[i]);
+				this.views[i] = VulkanContext.createImageView(this.device, this.images[i], this.colorFormat, VK10.VK_IMAGE_ASPECT_COLOR_BIT, 1);
 				this.renderSemaphores[i] = VulkanWindowHost.createSemaphore(stack, this.device);
 			}
 		}
-	}
-
-	private long createImageView(final MemoryStack stack, final long image) {
-		final VkImageViewCreateInfo info = VkImageViewCreateInfo.calloc(stack)
-				.sType$Default()
-				.image(image)
-				.viewType(VK10.VK_IMAGE_VIEW_TYPE_2D)
-				.format(this.colorFormat);
-		info.subresourceRange().aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).baseMipLevel(0).levelCount(1).baseArrayLayer(0).layerCount(1);
-
-		final LongBuffer view = stack.mallocLong(1);
-		VulkanContext.check(VK10.vkCreateImageView(this.device, info, null, view), "vkCreateImageView");
-		return view.get(0);
 	}
 
 	private int selectPresentMode(final MemoryStack stack) {

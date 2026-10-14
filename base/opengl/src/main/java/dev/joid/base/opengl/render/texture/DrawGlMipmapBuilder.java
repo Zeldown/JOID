@@ -5,9 +5,7 @@ import java.nio.ByteOrder;
 
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
-import dev.joid.base.opengl.binding.IGlBufferBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
-import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.shader.GlShader;
 import dev.joid.internal.JOIDLog;
@@ -45,48 +43,46 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 		JOIDLog.devWarnOnce("DrawGlMipmapBuilder." + System.identityHashCode(this), () -> "This OpenGL context cannot blit framebuffers (" + bridge.getCapabilities().getName() + "): mipmaps are drawn, which may not give exactly the pixels of the other backends");
 
 		final IGlBinding binding = bridge.getBinding();
-		final IGlTextureBinding textures = binding.getTextureBinding();
 		final IGlFrameBufferBinding frameBuffer = bridge.getFrameBufferBinding();
 		final GlShader shader = this.getShader(bridge);
 		if (!shader.isActive()) {
 			throw new IllegalStateException("The shader that draws the mipmaps does not compile on " + bridge.getCapabilities().getName() + ", update the graphics driver");
 		}
 
-		binding.getProgramBinding().useProgram(shader.getProgram());
-		binding.getProgramBinding().uniform1i(shader.getLocation("tex"), 0);
+		binding.useProgram(shader.getProgram());
+		binding.uniform1i(shader.getLocation("tex"), 0);
 		binding.disable(GlConstants.BLEND);
 		binding.disable(GlConstants.CULL_FACE);
 		binding.disable(GlConstants.DEPTH_TEST);
 		binding.disable(GlConstants.STENCIL_TEST);
-		binding.getStateBinding().colorMask(true, true, true, true);
+		binding.colorMask(true, true, true, true);
 
-		textures.activeTexture(GlConstants.TEXTURE0);
-		textures.bindTexture(GlConstants.TEXTURE_2D, texture.getId());
-		textures.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlConstants.LINEAR);
-		textures.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlConstants.LINEAR);
-		textures.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_S, GlConstants.CLAMP_TO_EDGE);
-		textures.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_T, GlConstants.CLAMP_TO_EDGE);
+		binding.activeTexture(GlConstants.TEXTURE0);
+		binding.bindTexture(GlConstants.TEXTURE_2D, texture.getId());
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlConstants.LINEAR);
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlConstants.LINEAR);
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_S, GlConstants.CLAMP_TO_EDGE);
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_T, GlConstants.CLAMP_TO_EDGE);
 
-		final IGlBufferBinding vertices = binding.getBufferBinding();
 		bridge.getVertexInput().bind();
-		vertices.bufferData(GlConstants.ARRAY_BUFFER, this.quad, GlConstants.STREAM_DRAW);
-		vertices.enableVertexAttribArray(VertexAttribute.TEXTURE_COORDINATE.getLocation());
-		vertices.disableVertexAttribArray(VertexAttribute.COLOR.getLocation());
-		vertices.disableVertexAttribArray(VertexAttribute.NORMAL.getLocation());
+		binding.bufferData(GlConstants.ARRAY_BUFFER, this.quad, GlConstants.STREAM_DRAW);
+		binding.enableVertexAttribArray(VertexAttribute.TEXTURE_COORDINATE.getLocation());
+		binding.disableVertexAttribArray(VertexAttribute.COLOR.getLocation());
+		binding.disableVertexAttribArray(VertexAttribute.NORMAL.getLocation());
 
 		final int target = frameBuffer.genFramebuffer();
 		frameBuffer.bindFramebuffer(GlConstants.FRAMEBUFFER, target);
 		try {
 			chain.forEachStep((level, sourceWidth, sourceHeight, targetWidth, targetHeight) -> {
-				textures.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_BASE_LEVEL, level - 1);
-				textures.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAX_LEVEL, level - 1);
+				binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_BASE_LEVEL, level - 1);
+				binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAX_LEVEL, level - 1);
 				frameBuffer.framebufferTexture2D(GlConstants.FRAMEBUFFER, GlConstants.COLOR_ATTACHMENT0, GlConstants.TEXTURE_2D, texture.getId(), level);
-				binding.getStateBinding().viewport(0, 0, targetWidth, targetHeight);
-				vertices.drawArrays(GlConstants.TRIANGLES, 0, 6);
+				binding.viewport(0, 0, targetWidth, targetHeight);
+				binding.drawArrays(GlConstants.TRIANGLES, 0, 6);
 			});
 		} finally {
-			textures.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_BASE_LEVEL, 0);
-			textures.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAX_LEVEL, chain.getLevels() - 1);
+			binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_BASE_LEVEL, 0);
+			binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAX_LEVEL, chain.getLevels() - 1);
 			frameBuffer.bindFramebuffer(GlConstants.FRAMEBUFFER, 0);
 			frameBuffer.deleteFramebuffer(target);
 			texture.forgetSampling();

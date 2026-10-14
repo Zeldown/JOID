@@ -10,11 +10,7 @@ import org.junit.Test;
 
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
-import dev.joid.base.opengl.binding.IGlBufferBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
-import dev.joid.base.opengl.binding.IGlProgramBinding;
-import dev.joid.base.opengl.binding.IGlStateBinding;
-import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
 
@@ -33,30 +29,6 @@ public class DrawGlMipmapBuilderTest {
 	}
 
 	private IGlBinding binding() {
-		final IGlProgramBinding programs = DrawGlMipmapBuilderTest.fake(IGlProgramBinding.class, (method, args) -> {
-			if (method.getName().equals("useProgram")) {
-				this.calls.add("useProgram " + args[0]);
-			}
-
-			switch (method.getName()) {
-			case "createProgram":
-				return 7;
-			case "createShader":
-				return 3;
-			case "getUniformLocation":
-				return 1;
-			default:
-				return method.getReturnType() == int.class ? GlConstants.TRUE : null;
-			}
-		});
-		final IGlBufferBinding buffers = DrawGlMipmapBuilderTest.fake(IGlBufferBinding.class, (method, args) -> {
-			if (method.getName().equals("drawArrays")) {
-				this.calls.add("drawArrays");
-			}
-			return method.getName().equals("genBuffer") ? 5 : null;
-		});
-		final IGlStateBinding states = DrawGlMipmapBuilderTest.fake(IGlStateBinding.class, (method, args) -> null);
-		final IGlTextureBinding textures = DrawGlMipmapBuilderTest.fake(IGlTextureBinding.class, (method, args) -> method.getName().equals("genTexture") ? 9 : null);
 		final IGlFrameBufferBinding frameBuffers = DrawGlMipmapBuilderTest.fake(IGlFrameBufferBinding.class, (method, args) -> method.getName().equals("genFramebuffer") ? 11 : null);
 		return DrawGlMipmapBuilderTest.fake(IGlBinding.class, (method, args) -> {
 			switch (method.getName()) {
@@ -64,16 +36,27 @@ public class DrawGlMipmapBuilderTest {
 				return args.length > 1 ? null : args[0].equals(GlConstants.VERSION) ? "2.1" : args[0].equals(GlConstants.SHADING_LANGUAGE_VERSION) ? "1.20" : args[0].equals(GlConstants.EXTENSIONS) ? "GL_EXT_framebuffer_object" : "Fake";
 			case "getInteger":
 				return args[0].equals(GlConstants.MAX_TEXTURE_SIZE) ? 4096 : 0;
-			case "getStateBinding":
-				return states;
-			case "getProgramBinding":
-				return programs;
-			case "getTextureBinding":
-				return textures;
 			case "getFrameBufferBinding":
 				return frameBuffers;
-			case "getBufferBinding":
-				return buffers;
+			case "useProgram":
+				this.calls.add("useProgram " + args[0]);
+				return null;
+			case "drawArrays":
+				this.calls.add("drawArrays");
+				return null;
+			case "createProgram":
+				return 7;
+			case "createShader":
+				return 3;
+			case "getUniformLocation":
+				return 1;
+			case "getShaderi":
+			case "getProgrami":
+				return GlConstants.TRUE;
+			case "genBuffer":
+				return 5;
+			case "genTexture":
+				return 9;
 			default:
 				return null;
 			}

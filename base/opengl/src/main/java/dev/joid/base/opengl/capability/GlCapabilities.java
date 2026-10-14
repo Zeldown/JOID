@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
+import dev.joid.lib.bridge.render.shader.source.GlslDialect;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -55,6 +56,16 @@ public final class GlCapabilities {
 		return new GlCapabilities(version, GlCapabilities.parseVersion(binding.getString(GlConstants.SHADING_LANGUAGE_VERSION)), profile, binding.getString(GlConstants.RENDERER), Collections.unmodifiableSet(extensionSet), binding.getInteger(GlConstants.MAX_TEXTURE_SIZE));
 	}
 
+	public @NonNull GlCapabilities require() {
+		if (this.version < 210 || this.glslVersion < GlslDialect.GLSL_120.getVersion()) {
+			throw new IllegalStateException("JOID needs OpenGL 2.1 with GLSL 1.20, this context offers " + this.getName() + ": update the graphics driver or create a newer OpenGL context");
+		}
+		if (this.getFrameBufferFamily() == GlFrameBufferFamily.UNSUPPORTED) {
+			throw new IllegalStateException("JOID needs framebuffer objects (OpenGL 3.0, GL_ARB_framebuffer_object or GL_EXT_framebuffer_object), this context offers " + this.getName() + ": update the graphics driver or create a newer OpenGL context");
+		}
+		return this;
+	}
+
 	public boolean hasExtension(final @NonNull String name) {
 		return this.extensionSet.contains(name);
 	}
@@ -91,12 +102,18 @@ public final class GlCapabilities {
 		return this.getFrameBufferFamily() == GlFrameBufferFamily.CORE || this.hasExtension("GL_EXT_framebuffer_blit");
 	}
 
-	public final @NonNull Set<String> getExtensionSet() {
-		return Collections.unmodifiableSet(this.extensionSet);
-	}
-
 	public @NonNull String getName() {
 		return "OpenGL " + this.version / 100 + "." + this.version / 10 % 10 + " with GLSL " + this.glslVersion / 100 + "." + String.format(Locale.ROOT, "%02d", this.glslVersion % 100) + " (" + this.renderer + ")";
+	}
+
+	public @NonNull GlslDialect getDialect() {
+		GlslDialect dialect = GlslDialect.GLSL_120;
+		for (final GlslDialect candidate : GlslDialect.values()) {
+			if (!candidate.isEs() && candidate.getVersion() <= Math.min(this.glslVersion, GlslDialect.GLSL_330.getVersion()) && candidate.getVersion() > dialect.getVersion()) {
+				dialect = candidate;
+			}
+		}
+		return dialect;
 	}
 
 	public @NonNull GlFrameBufferFamily getFrameBufferFamily() {

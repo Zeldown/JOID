@@ -1,150 +1,51 @@
 package dev.joid.backend.lwjgl3.snapshot;
 
-import java.nio.ByteBuffer;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
-import dev.joid.base.opengl.binding.IGlBufferBinding;
-import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
-import dev.joid.base.opengl.binding.IGlProgramBinding;
-import dev.joid.base.opengl.binding.IGlStateBinding;
-import dev.joid.base.opengl.binding.IGlTextureBinding;
-import dev.joid.base.opengl.capability.GlFrameBufferFamily;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProfileGlBinding implements IGlBinding {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ProfileGlBinding {
 
-	private final IGlBinding      binding;
-	private final SnapshotProfile profile;
+	public static @NonNull IGlBinding create(final @NonNull IGlBinding binding, final @NonNull SnapshotProfile profile) {
+		return (IGlBinding) Proxy.newProxyInstance(IGlBinding.class.getClassLoader(), new Class<?>[] {IGlBinding.class}, (proxy, method, args) -> {
+			final Object name = args == null ? null : args[0];
+			if ("getInteger".equals(method.getName()) && Integer.valueOf(GlConstants.NUM_EXTENSIONS).equals(name)) {
+				return ProfileGlBinding.getExtensions(binding, profile).size();
+			}
+			if ("getString".equals(method.getName()) && Integer.valueOf(GlConstants.EXTENSIONS).equals(name)) {
+				return args.length == 2 ? ProfileGlBinding.getExtensions(binding, profile).get((int) args[1]) : String.join(" ", ProfileGlBinding.getExtensions(binding, profile));
+			}
+			if ("getString".equals(method.getName()) && Integer.valueOf(GlConstants.SHADING_LANGUAGE_VERSION).equals(name) && profile.getShadingLanguageVersion() != null) {
+				return profile.getShadingLanguageVersion();
+			}
 
-	public static @NonNull ProfileGlBinding create(final @NonNull IGlBinding binding, final @NonNull SnapshotProfile profile) {
-		return new ProfileGlBinding(binding, profile);
+			try {
+				return method.invoke(binding, args);
+			} catch (final InvocationTargetException exception) {
+				throw exception.getCause();
+			}
+		});
 	}
 
-	@Override
-	public void enable(final int capability) {
-		this.binding.enable(capability);
-	}
-
-	@Override
-	public void disable(final int capability) {
-		this.binding.disable(capability);
-	}
-
-	@Override
-	public boolean isEnabled(final int capability) {
-		return this.binding.isEnabled(capability);
-	}
-
-	@Override
-	public int getInteger(final int name) {
-		return name == GlConstants.NUM_EXTENSIONS ? this.getExtensions().size() : this.binding.getInteger(name);
-	}
-
-	@Override
-	public String getString(final int name) {
-		if (name == GlConstants.SHADING_LANGUAGE_VERSION && this.profile.getShadingLanguageVersion() != null) {
-			return this.profile.getShadingLanguageVersion();
-		}
-		return name == GlConstants.EXTENSIONS ? String.join(" ", this.getExtensions()) : this.binding.getString(name);
-	}
-
-	@Override
-	public String getString(final int name, final int index) {
-		return name == GlConstants.EXTENSIONS ? this.getExtensions().get(index) : this.binding.getString(name, index);
-	}
-
-	@Override
-	public void getFloats(final int name, final @NonNull float[] values) {
-		this.binding.getFloats(name, values);
-	}
-
-	@Override
-	public void getIntegers(final int name, final @NonNull int[] values) {
-		this.binding.getIntegers(name, values);
-	}
-
-	@Override
-	public int getVertexAttribi(final int index, final int name) {
-		return this.binding.getVertexAttribi(index, name);
-	}
-
-	@Override
-	public int getTexParameteri(final int target, final int name) {
-		return this.binding.getTexParameteri(target, name);
-	}
-
-	@Override
-	public long getVertexAttribPointer(final int index, final int name) {
-		return this.binding.getVertexAttribPointer(index, name);
-	}
-
-	@Override
-	public void getMaterialFloats(final int face, final int name, final @NonNull float[] values) {
-		this.binding.getMaterialFloats(face, name, values);
-	}
-
-	@Override
-	public void getVertexAttribFloats(final int index, final int name, final @NonNull float[] values) {
-		this.binding.getVertexAttribFloats(index, name, values);
-	}
-
-	@Override
-	public void clear(final int mask) {
-		this.binding.clear(mask);
-	}
-
-	@Override
-	public void readBuffer(final int buffer) {
-		this.binding.readBuffer(buffer);
-	}
-
-	@Override
-	public void readPixels(final int x, final int y, final int width, final int height, final int format, final int type, final @NonNull ByteBuffer pixels) {
-		this.binding.readPixels(x, y, width, height, format, type, pixels);
-	}
-
-	@Override
-	public @NonNull IGlStateBinding getStateBinding() {
-		return this.binding.getStateBinding();
-	}
-
-	@Override
-	public @NonNull IGlBufferBinding getBufferBinding() {
-		return this.binding.getBufferBinding();
-	}
-
-	@Override
-	public @NonNull IGlProgramBinding getProgramBinding() {
-		return this.binding.getProgramBinding();
-	}
-
-	@Override
-	public @NonNull IGlTextureBinding getTextureBinding() {
-		return this.binding.getTextureBinding();
-	}
-
-	@Override
-	public @NonNull IGlFrameBufferBinding getFrameBufferBinding(final @NonNull GlFrameBufferFamily family) {
-		return this.binding.getFrameBufferBinding(family);
-	}
-
-	private List<String> getExtensions() {
+	private static List<String> getExtensions(final IGlBinding binding, final SnapshotProfile profile) {
 		final List<String> extensionList = new ArrayList<>();
-		if (this.binding.getString(GlConstants.VERSION).matches("^[012]\\..*")) {
-			extensionList.addAll(Arrays.asList(this.binding.getString(GlConstants.EXTENSIONS).trim().split("\\s+")));
+		if (binding.getString(GlConstants.VERSION).matches("^[012]\\..*")) {
+			extensionList.addAll(Arrays.asList(binding.getString(GlConstants.EXTENSIONS).trim().split("\\s+")));
 		} else {
-			for (int i = 0; i < this.binding.getInteger(GlConstants.NUM_EXTENSIONS); i++) {
-				extensionList.add(this.binding.getString(GlConstants.EXTENSIONS, i));
+			for (int i = 0; i < binding.getInteger(GlConstants.NUM_EXTENSIONS); i++) {
+				extensionList.add(binding.getString(GlConstants.EXTENSIONS, i));
 			}
 		}
-		extensionList.removeAll(this.profile.getHiddenExtensionList());
+		extensionList.removeAll(profile.getHiddenExtensionList());
 		return extensionList;
 	}
 

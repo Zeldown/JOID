@@ -1,7 +1,7 @@
 package dev.joid.base.opengl.render.texture;
 
 import dev.joid.base.opengl.binding.GlConstants;
-import dev.joid.base.opengl.binding.IGlTextureBinding;
+import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.render.GlEnums;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
@@ -24,7 +24,7 @@ public final class GlTexture extends Texture implements IGlTexture {
 	}
 
 	public static @NonNull GlTexture create(final @NonNull GlRenderBridge bridge) {
-		return new GlTexture(bridge, bridge.getBinding().getTextureBinding().genTexture());
+		return new GlTexture(bridge, bridge.getBinding().genTexture());
 	}
 
 	@Override
@@ -33,16 +33,16 @@ public final class GlTexture extends Texture implements IGlTexture {
 			return;
 		}
 
-		final IGlTextureBinding texture = this.bridge.getBinding().getTextureBinding();
+		final IGlBinding binding = this.bridge.getBinding();
 		if (this.sampling == null || GlEnums.minFilter(sampling) != GlEnums.minFilter(this.sampling)) {
-			texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlEnums.minFilter(sampling));
+			binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlEnums.minFilter(sampling));
 		}
 		if (this.sampling == null || sampling.getFilter() != this.sampling.getFilter()) {
-			texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlEnums.magFilter(sampling));
+			binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlEnums.magFilter(sampling));
 		}
 		if (this.sampling == null || sampling.getWrap() != this.sampling.getWrap()) {
-			texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_S, GlEnums.wrap(sampling.getWrap()));
-			texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_T, GlEnums.wrap(sampling.getWrap()));
+			binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_S, GlEnums.wrap(sampling.getWrap()));
+			binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_T, GlEnums.wrap(sampling.getWrap()));
 		}
 		this.sampling = sampling;
 	}
@@ -59,10 +59,10 @@ public final class GlTexture extends Texture implements IGlTexture {
 		}
 
 		this.bridge.getGuard().run(() -> {
-			final IGlTextureBinding texture = this.bridge.getBinding().getTextureBinding();
-			texture.bindTexture(GlConstants.TEXTURE_2D, this.id);
-			texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlConstants.NEAREST);
-			texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlConstants.NEAREST);
+			final IGlBinding binding = this.bridge.getBinding();
+			binding.bindTexture(GlConstants.TEXTURE_2D, this.id);
+			binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlConstants.NEAREST);
+			binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlConstants.NEAREST);
 			this.sampling = null;
 			this.allocateLevels(chain, 0);
 		});
@@ -71,9 +71,9 @@ public final class GlTexture extends Texture implements IGlTexture {
 	@Override
 	protected void uploadPixels(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
 		this.bridge.getGuard().run(() -> {
-			final IGlTextureBinding texture = this.bridge.getBinding().getTextureBinding();
-			texture.bindTexture(GlConstants.TEXTURE_2D, this.id);
-			texture.texSubImage2D(GlConstants.TEXTURE_2D, 0, 0, 0, chain.getWidth(), chain.getHeight(), GlConstants.BGRA, GlConstants.UNSIGNED_INT_8_8_8_8_REV, pixels);
+			final IGlBinding binding = this.bridge.getBinding();
+			binding.bindTexture(GlConstants.TEXTURE_2D, this.id);
+			binding.texSubImage2D(GlConstants.TEXTURE_2D, 0, 0, 0, chain.getWidth(), chain.getHeight(), GlConstants.BGRA, GlConstants.UNSIGNED_INT_8_8_8_8_REV, pixels);
 			this.buildLevels(chain);
 		});
 	}
@@ -81,7 +81,7 @@ public final class GlTexture extends Texture implements IGlTexture {
 	@Override
 	protected void generateMipmapLevels(final @NonNull MipmapChain chain, final int allocatedLevels) {
 		this.bridge.getGuard().run(() -> {
-			this.bridge.getBinding().getTextureBinding().bindTexture(GlConstants.TEXTURE_2D, this.id);
+			this.bridge.getBinding().bindTexture(GlConstants.TEXTURE_2D, this.id);
 			if (allocatedLevels != chain.getLevels()) {
 				this.allocateLevels(chain, 1);
 			}
@@ -91,15 +91,15 @@ public final class GlTexture extends Texture implements IGlTexture {
 
 	@Override
 	protected void deleteStorage() {
-		this.bridge.getBinding().getTextureBinding().deleteTexture(this.id);
+		this.bridge.getBinding().deleteTexture(this.id);
 	}
 
 	private void allocateLevels(final MipmapChain chain, final int first) {
-		final IGlTextureBinding texture = this.bridge.getBinding().getTextureBinding();
+		final IGlBinding binding = this.bridge.getBinding();
 		for (int level = first; level < chain.getLevels(); level++) {
-			texture.texImage2D(GlConstants.TEXTURE_2D, level, GlConstants.RGBA8, chain.getWidth(level), chain.getHeight(level), GlConstants.BGRA, GlConstants.UNSIGNED_INT_8_8_8_8_REV);
+			binding.texImage2D(GlConstants.TEXTURE_2D, level, GlConstants.RGBA8, chain.getWidth(level), chain.getHeight(level), GlConstants.BGRA, GlConstants.UNSIGNED_INT_8_8_8_8_REV);
 		}
-		texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAX_LEVEL, chain.getLevels() - 1);
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAX_LEVEL, chain.getLevels() - 1);
 	}
 
 	private void buildLevels(final MipmapChain chain) {

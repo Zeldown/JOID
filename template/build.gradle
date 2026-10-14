@@ -36,6 +36,22 @@ configurations {
     demoRuntime.extendsFrom runtime
 }
 
+def backendResources = file("$buildDir/generated/backend")
+
+task backendProperties {
+    description = 'Writes the version of JOID the backend is built for into its backend.properties.'
+    inputs.property 'version', joidVersion
+    outputs.dir backendResources
+    doLast {
+        def properties = new File(backendResources, 'com/example/joid/backend/backend.properties')
+        properties.parentFile.mkdirs()
+        properties.text = "version=$joidVersion"
+    }
+}
+
+sourceSets.main.resources.srcDir backendResources
+processResources.dependsOn backendProperties
+
 dependencies {
     joidDemo files("libs/joid-core-${joidVersion}-demo.jar")
     joidDev files("libs/joid-core-${joidVersion}-dev.jar")
@@ -86,24 +102,7 @@ task prodJar(type: Jar) {
 assemble.dependsOn demoJar, devJar, prodJar
 
 /* Tests */
-def snapshots = { Test testTask, String name ->
-    def output = file("$buildDir/snapshots/$name")
-    testTask.workingDir = file("$buildDir/snapshot/$name")
-    testTask.forkEvery = 1
-    testTask.inputs.files fileTree('.snapshots/references')
-    testTask.outputs.dir output
-    testTask.systemProperty 'joid.snapshot.references', file('.snapshots/references').absolutePath
-    testTask.systemProperty 'joid.snapshot.output', output.absolutePath
-    testTask.testLogging.exceptionFormat = 'full'
-    testTask.testLogging.events 'failed'
-    if (macOs) {
-        testTask.jvmArgs '-XstartOnFirstThread'
-    }
-    testTask.doFirst {
-        delete testTask.workingDir, output
-        testTask.workingDir.mkdirs()
-    }
-}
+apply from: 'gradle/snapshots.gradle'
 
 task testDemoJar(type: Test) {
     group = 'verification'
@@ -122,21 +121,9 @@ task testProdJar(type: Test) {
     exclude '**/SnapshotTest.class'
 }
 
-snapshots(test, archivesBaseName)
-snapshots(testDemoJar, "${archivesBaseName}-demo")
-snapshots(testProdJar, "${archivesBaseName}-prod")
-
-task updateSnapshots {
-    group = 'JOID'
-    description = 'Runs the snapshot tests and replaces the reference snapshots.'
-    dependsOn test
-}
-
-gradle.taskGraph.whenReady { graph ->
-    def update = graph.hasTask(updateSnapshots)
-    test.inputs.property 'updateSnapshots', update
-    test.systemProperty 'joid.snapshot.update', update
-}
+snapshotTest(test, file('.snapshots/references'), file("$buildDir/snapshots/$archivesBaseName"))
+snapshotTest(testDemoJar, file('.snapshots/references'), file("$buildDir/snapshots/${archivesBaseName}-demo"))
+snapshotTest(testProdJar, file('.snapshots/references'), file("$buildDir/snapshots/${archivesBaseName}-prod"))
 
 task renderBaseline(type: JavaExec) {
     group = 'JOID'
@@ -145,9 +132,6 @@ task renderBaseline(type: JavaExec) {
     classpath = configurations.baseline + files("libs/joid-tool-testkit-${joidVersion}.jar")
     workingDir = file("$buildDir/snapshot/lwjgl3")
     args 'dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend', file("$buildDir/snapshots/lwjgl3").absolutePath
-    if (macOs) {
-        jvmArgs '-XstartOnFirstThread'
-    }
     doFirst {
         delete workingDir
         workingDir.mkdirs()
@@ -166,13 +150,6 @@ task crossBackendTest(type: JavaExec) {
 renderBaseline.mustRunAfter test
 
 gradle.buildFinished {
-    tasks.withType(Test).each { testTask ->
-        def report = new File(testTask.systemProperties['joid.snapshot.output'].toString(), 'report.html')
-        if (testTask.state.failure != null && report.exists()) {
-            println "Snapshot report of ${testTask.name}: ${report.toPath().toUri().toASCIIString()}"
-        }
-    }
-
     def report = file("$buildDir/snapshots/cross/report.html")
     if (crossBackendTest.state.failure != null && report.exists()) {
         println "Cross backend report: ${report.toPath().toUri().toASCIIString()}"
@@ -185,7 +162,10 @@ task runDemo(type: JavaExec) {
     description = 'Launches the demo window.'
     main = 'com.example.joid.backend.demo.DemoWindow'
     classpath = sourceSets.demo.runtimeClasspath
-    if (macOs) {
+}
+
+if (macOs) {
+    tasks.withType(JavaForkOptions) {
         jvmArgs '-XstartOnFirstThread'
     }
 }

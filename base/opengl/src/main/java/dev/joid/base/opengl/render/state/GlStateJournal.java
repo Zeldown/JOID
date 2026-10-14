@@ -8,10 +8,7 @@ import java.util.Set;
 
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
-import dev.joid.base.opengl.binding.IGlBufferBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
-import dev.joid.base.opengl.binding.IGlStateBinding;
-import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
 import dev.joid.base.opengl.capability.GlFrameBufferFamily;
 import dev.joid.base.opengl.capability.GlProfile;
@@ -227,9 +224,9 @@ public final class GlStateJournal {
 			ints[0] = gl.getInteger(GlConstants.TEXTURE_BINDING_2D);
 			break;
 		case SAMPLER:
-			gl.getTextureBinding().activeTexture(GlConstants.TEXTURE0 + entry.container);
+			gl.activeTexture(GlConstants.TEXTURE0 + entry.container);
 			ints[0] = gl.getInteger(GlConstants.SAMPLER_BINDING);
-			gl.getTextureBinding().activeTexture(GlConstants.TEXTURE0 + this.getActiveUnit());
+			gl.activeTexture(GlConstants.TEXTURE0 + this.getActiveUnit());
 			break;
 		case CURRENT_VERTEX_ATTRIBUTE:
 			gl.getVertexAttribFloats(entry.container, GlConstants.CURRENT_VERTEX_ATTRIB, entry.floats);
@@ -310,9 +307,6 @@ public final class GlStateJournal {
 	}
 
 	private void restore(final Entry entry) {
-		final IGlStateBinding state = this.binding.getStateBinding();
-		final IGlBufferBinding buffers = this.binding.getBufferBinding();
-		final IGlTextureBinding textures = this.binding.getTextureBinding();
 		final int[] ints = entry.ints;
 		switch (entry.key) {
 		case READ_BUFFER:
@@ -326,42 +320,42 @@ public final class GlStateJournal {
 			this.frameBufferBinding.bindRenderbuffer(GlConstants.RENDERBUFFER, ints[0]);
 			break;
 		case PROGRAM:
-			this.binding.getProgramBinding().useProgram(ints[0]);
+			this.binding.useProgram(ints[0]);
 			break;
 		case VERTEX_ATTRIBUTE:
 			if (this.capabilities.hasVertexArrays()) {
-				buffers.bindVertexArray(entry.container);
+				this.binding.bindVertexArray(entry.container);
 			}
-			if (ints[1] != 0 || this.capabilities.getProfile() == GlProfile.COMPATIBILITY && buffers.canPointClientMemory()) {
-				buffers.bindBuffer(GlConstants.ARRAY_BUFFER, ints[1]);
-				buffers.vertexAttribPointer(entry.index, ints[2], ints[3], ints[4] != 0, ints[5], entry.pointer);
+			if (ints[1] != 0 || this.capabilities.getProfile() == GlProfile.COMPATIBILITY && this.binding.canPointClientMemory()) {
+				this.binding.bindBuffer(GlConstants.ARRAY_BUFFER, ints[1]);
+				this.binding.vertexAttribPointer(entry.index, ints[2], ints[3], ints[4] != 0, ints[5], entry.pointer);
 			}
 			if (ints[0] != 0) {
-				buffers.enableVertexAttribArray(entry.index);
+				this.binding.enableVertexAttribArray(entry.index);
 			} else {
-				buffers.disableVertexAttribArray(entry.index);
+				this.binding.disableVertexAttribArray(entry.index);
 			}
 			break;
 		case VERTEX_ARRAY:
-			buffers.bindVertexArray(ints[0]);
+			this.binding.bindVertexArray(ints[0]);
 			break;
 		case BUFFER:
-			buffers.bindBuffer(entry.container, ints[0]);
+			this.binding.bindBuffer(entry.container, ints[0]);
 			break;
 		case TEXTURE_PARAMETER:
-			textures.activeTexture(GlConstants.TEXTURE0 + ints[1]);
-			textures.bindTexture(GlConstants.TEXTURE_2D, entry.container);
-			textures.texParameteri(GlConstants.TEXTURE_2D, entry.index, ints[0]);
+			this.binding.activeTexture(GlConstants.TEXTURE0 + ints[1]);
+			this.binding.bindTexture(GlConstants.TEXTURE_2D, entry.container);
+			this.binding.texParameteri(GlConstants.TEXTURE_2D, entry.index, ints[0]);
 			break;
 		case TEXTURE:
-			textures.activeTexture(GlConstants.TEXTURE0 + entry.container);
-			textures.bindTexture(GlConstants.TEXTURE_2D, ints[0]);
+			this.binding.activeTexture(GlConstants.TEXTURE0 + entry.container);
+			this.binding.bindTexture(GlConstants.TEXTURE_2D, ints[0]);
 			break;
 		case SAMPLER:
-			textures.bindSampler(entry.container, ints[0]);
+			this.binding.bindSampler(entry.container, ints[0]);
 			break;
 		case CURRENT_VERTEX_ATTRIBUTE:
-			buffers.vertexAttrib4f(entry.container, entry.floats[0], entry.floats[1], entry.floats[2], entry.floats[3]);
+			this.binding.vertexAttrib4f(entry.container, entry.floats[0], entry.floats[1], entry.floats[2], entry.floats[3]);
 			break;
 		case CAPABILITY:
 			if (ints[0] != 0) {
@@ -371,66 +365,66 @@ public final class GlStateJournal {
 			}
 			break;
 		case BLEND_EQUATION:
-			state.blendEquationSeparate(ints[0], ints[1]);
+			this.binding.blendEquationSeparate(ints[0], ints[1]);
 			break;
 		case BLEND_FUNCTION:
-			state.blendFuncSeparate(ints[0], ints[1], ints[2], ints[3]);
+			this.binding.blendFuncSeparate(ints[0], ints[1], ints[2], ints[3]);
 			break;
 		case COLOR_MASK:
-			state.colorMask(ints[0] != 0, ints[1] != 0, ints[2] != 0, ints[3] != 0);
+			this.binding.colorMask(ints[0] != 0, ints[1] != 0, ints[2] != 0, ints[3] != 0);
 			break;
 		case CLEAR_COLOR:
-			state.clearColor(entry.floats[0], entry.floats[1], entry.floats[2], entry.floats[3]);
+			this.binding.clearColor(entry.floats[0], entry.floats[1], entry.floats[2], entry.floats[3]);
 			break;
 		case CLEAR_DEPTH:
-			state.clearDepth(entry.floats[0]);
+			this.binding.clearDepth(entry.floats[0]);
 			break;
 		case CLEAR_STENCIL:
-			state.clearStencil(ints[0]);
+			this.binding.clearStencil(ints[0]);
 			break;
 		case DEPTH_MASK:
-			state.depthMask(ints[0] != 0);
+			this.binding.depthMask(ints[0] != 0);
 			break;
 		case DEPTH_FUNCTION:
-			state.depthFunc(ints[0]);
+			this.binding.depthFunc(ints[0]);
 			break;
 		case STENCIL_MASK:
-			state.stencilMaskSeparate(GlConstants.FRONT, ints[0]);
-			state.stencilMaskSeparate(GlConstants.BACK, ints[1]);
+			this.binding.stencilMaskSeparate(GlConstants.FRONT, ints[0]);
+			this.binding.stencilMaskSeparate(GlConstants.BACK, ints[1]);
 			break;
 		case STENCIL_FUNCTION:
-			state.stencilFuncSeparate(GlConstants.FRONT, ints[0], ints[1], ints[2]);
-			state.stencilFuncSeparate(GlConstants.BACK, ints[3], ints[4], ints[5]);
+			this.binding.stencilFuncSeparate(GlConstants.FRONT, ints[0], ints[1], ints[2]);
+			this.binding.stencilFuncSeparate(GlConstants.BACK, ints[3], ints[4], ints[5]);
 			break;
 		case STENCIL_OPERATION:
-			state.stencilOpSeparate(GlConstants.FRONT, ints[0], ints[1], ints[2]);
-			state.stencilOpSeparate(GlConstants.BACK, ints[3], ints[4], ints[5]);
+			this.binding.stencilOpSeparate(GlConstants.FRONT, ints[0], ints[1], ints[2]);
+			this.binding.stencilOpSeparate(GlConstants.BACK, ints[3], ints[4], ints[5]);
 			break;
 		case VIEWPORT:
-			state.viewport(ints[0], ints[1], ints[2], ints[3]);
+			this.binding.viewport(ints[0], ints[1], ints[2], ints[3]);
 			break;
 		case LINE_WIDTH:
-			state.lineWidth(entry.floats[0]);
+			this.binding.lineWidth(entry.floats[0]);
 			break;
 		case POLYGON_MODE:
 			if (this.capabilities.getProfile() == GlProfile.COMPATIBILITY) {
-				state.polygonMode(GlConstants.FRONT, ints[0]);
-				state.polygonMode(GlConstants.BACK, ints[1]);
+				this.binding.polygonMode(GlConstants.FRONT, ints[0]);
+				this.binding.polygonMode(GlConstants.BACK, ints[1]);
 			} else {
-				state.polygonMode(GlConstants.FRONT_AND_BACK, ints[0]);
+				this.binding.polygonMode(GlConstants.FRONT_AND_BACK, ints[0]);
 			}
 			break;
 		case FRONT_FACE:
-			state.frontFace(ints[0]);
+			this.binding.frontFace(ints[0]);
 			break;
 		case CULL_FACE:
-			state.cullFace(ints[0]);
+			this.binding.cullFace(ints[0]);
 			break;
 		case PIXEL_STORE:
-			state.pixelStorei(entry.container, ints[0]);
+			this.binding.pixelStorei(entry.container, ints[0]);
 			break;
 		default:
-			textures.activeTexture(ints[0]);
+			this.binding.activeTexture(ints[0]);
 			break;
 		}
 	}

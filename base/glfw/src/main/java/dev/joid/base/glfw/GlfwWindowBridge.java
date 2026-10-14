@@ -38,42 +38,22 @@ public final class GlfwWindowBridge implements IWindowBridge {
 
 	@Override
 	public int getWidth() {
-		final int[] width = new int[1];
-		final int[] height = new int[1];
-		GLFW.glfwGetFramebufferSize(this.window, width, height);
-		return width[0];
+		return this.getFramebufferSize()[0];
 	}
 
 	@Override
 	public int getHeight() {
-		final int[] width = new int[1];
-		final int[] height = new int[1];
-		GLFW.glfwGetFramebufferSize(this.window, width, height);
-		return height[0];
+		return this.getFramebufferSize()[1];
 	}
 
 	@Override
 	public double getMouseX() {
-		final double[] x = new double[1];
-		final double[] y = new double[1];
-		GLFW.glfwGetCursorPos(this.window, x, y);
-
-		final int[] width = new int[1];
-		final int[] height = new int[1];
-		GLFW.glfwGetWindowSize(this.window, width, height);
-		return GlfwWindows.toFramebuffer(x[0], width[0], this.getWidth());
+		return this.getMouse(0);
 	}
 
 	@Override
 	public double getMouseY() {
-		final double[] x = new double[1];
-		final double[] y = new double[1];
-		GLFW.glfwGetCursorPos(this.window, x, y);
-
-		final int[] width = new int[1];
-		final int[] height = new int[1];
-		GLFW.glfwGetWindowSize(this.window, width, height);
-		return GlfwWindows.toFramebuffer(y[0], height[0], this.getHeight());
+		return this.getMouse(1);
 	}
 
 	@Override
@@ -112,6 +92,23 @@ public final class GlfwWindowBridge implements IWindowBridge {
 		return GLFW.glfwGetKey(this.window, code) == GLFW.GLFW_PRESS;
 	}
 
+	private int[] getFramebufferSize() {
+		final int[] width = new int[1];
+		final int[] height = new int[1];
+		GLFW.glfwGetFramebufferSize(this.window, width, height);
+		return new int[] {width[0], height[0]};
+	}
+
+	private double getMouse(final int axis) {
+		final double[] x = new double[1];
+		final double[] y = new double[1];
+		final int[] width = new int[1];
+		final int[] height = new int[1];
+		GLFW.glfwGetCursorPos(this.window, x, y);
+		GLFW.glfwGetWindowSize(this.window, width, height);
+		return GlfwWindowBridge.toFramebuffer(axis == 0 ? x[0] : y[0], axis == 0 ? width[0] : height[0], this.getFramebufferSize()[axis]);
+	}
+
 	private static long createCursor(final Cursor cursor) {
 		switch (cursor) {
 		case POINTER:
@@ -135,6 +132,10 @@ public final class GlfwWindowBridge implements IWindowBridge {
 		default:
 			return GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
 		}
+	}
+
+	private static double toFramebuffer(final double position, final int windowSize, final int framebufferSize) {
+		return windowSize == 0 ? position : position * framebufferSize / windowSize;
 	}
 
 }

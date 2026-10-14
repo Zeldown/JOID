@@ -7,7 +7,7 @@ import org.lwjgl.vulkan.VK10;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import lombok.NonNull;
 
-public final class VulkanBorrowedTexture extends BorrowedTexture<VulkanImage> {
+public final class VulkanBorrowedTexture extends BorrowedTexture<VulkanImage> implements IVulkanTexture {
 
 	private VulkanBorrowedTexture(final Supplier<VulkanImage> image) {
 		super(image);
@@ -21,6 +21,7 @@ public final class VulkanBorrowedTexture extends BorrowedTexture<VulkanImage> {
 		return new VulkanBorrowedTexture(image);
 	}
 
+	@Override
 	public long getView() {
 		final VulkanImage image = super.getHandle();
 		return image != null ? image.getView() : VK10.VK_NULL_HANDLE;

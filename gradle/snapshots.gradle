@@ -1,0 +1,35 @@
+ext.snapshotTest = { Test task, File references, File output ->
+    task.workingDir = new File(buildDir, "snapshot/${output.name}")
+    task.forkEvery = 1
+    task.inputs.files fileTree(references)
+    task.outputs.dir output
+    task.systemProperty 'joid.snapshot.references', references.absolutePath
+    task.systemProperty 'joid.snapshot.output', output.absolutePath
+    task.testLogging.exceptionFormat = 'full'
+    task.testLogging.events 'failed'
+    task.doFirst {
+        delete task.workingDir, output
+        task.workingDir.mkdirs()
+    }
+}
+
+task updateSnapshots {
+    group = 'JOID'
+    description = 'Runs the snapshot tests and replaces the reference snapshots.'
+    dependsOn test
+}
+
+gradle.taskGraph.whenReady { graph ->
+    def update = graph.hasTask(updateSnapshots)
+    test.inputs.property 'updateSnapshots', update
+    test.systemProperty 'joid.snapshot.update', update
+}
+
+gradle.buildFinished {
+    tasks.withType(Test).findAll { testTask -> testTask.systemProperties.containsKey('joid.snapshot.output') }.each { testTask ->
+        def report = new File(testTask.systemProperties['joid.snapshot.output'].toString(), 'report.html')
+        if (testTask.state.failure != null && report.exists()) {
+            println "Snapshot report of ${testTask.path}: ${report.toPath().toUri().toASCIIString()}"
+        }
+    }
+}

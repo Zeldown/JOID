@@ -50,7 +50,7 @@ public final class Lwjgl3SnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public @NonNull String getRenderer() {
-		return GlSnapshotCapture.getRenderer(Lwjgl3GlBinding.inst());
+		return this.bridge.getCapabilities().getRenderer();
 	}
 
 }

@@ -7,14 +7,9 @@ import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.openal.binding.Lwjgl3AlBinding;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
-import dev.joid.internal.JOID;
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.backend.Backend;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.bridge.thread.FrameThreadBridge;
-import dev.joid.lib.bridge.thread.IThreadBridge;
-import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import lombok.NonNull;
 
@@ -25,7 +20,6 @@ public final class Lwjgl3Backend extends Backend<Lwjgl3Backend> {
 	private IGlBinding binding;
 
 	private Lwjgl3Backend(final long window) {
-		super(JOID.VERSION);
 		this.window  = window;
 		this.binding = Lwjgl3GlBinding.inst();
 	}
@@ -45,11 +39,6 @@ public final class Lwjgl3Backend extends Backend<Lwjgl3Backend> {
 	}
 
 	@Override
-	protected @NonNull IThreadBridge createThreadBridge() {
-		return FrameThreadBridge.create();
-	}
-
-	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
 		return new GlfwWindowBridge(this.window);
 	}
@@ -57,11 +46,6 @@ public final class Lwjgl3Backend extends Backend<Lwjgl3Backend> {
 	@Override
 	protected @NonNull IRenderBridge createRenderBridge() {
 		return GlRenderBridge.create(this.binding);
-	}
-
-	@Override
-	protected void registerDefaults() {
-		BridgeHandler.UI.registerDefault(WindowUIBridge.create());
 	}
 
 	@Override

@@ -19,6 +19,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
+import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.bridge.ui.IUIBridge;
@@ -208,8 +209,11 @@ public class BackendTest {
 	}
 
 	@Test
-	public void refusesABackendOfAnotherMajorVersion() {
-		this.backend = TraceBackend.create(this.trace, "70.0.0");
+	public void refusesABackendOfAnotherMajorVersion() throws ReflectiveOperationException {
+		this.backend = TraceBackend.create(this.trace);
+		final Field version = Backend.class.getDeclaredField("version");
+		version.setAccessible(true);
+		version.set(this.backend, "70.0.0");
 		try {
 			this.backend.register();
 			Assert.fail();
@@ -231,13 +235,19 @@ public class BackendTest {
 		Assert.assertEquals(32, backend.render.getState().getViewportHeight());
 	}
 
-	@Test(expected = NullPointerException.class)
-	public void refusesAMissingVersion() {
-		TraceBackend.create(this.trace, null);
+	@Test
+	public void readsTheVersionItWasBuiltForFromItsResource() {
+		Assert.assertEquals("development", this.backend().getVersion());
+		Assert.assertEquals(JOID.VERSION, JOID.readVersion(JOID.class, "joid.properties"));
+	}
+
+	@Test
+	public void runsTheTasksOfOtherThreadsAtEachFrameByDefault() {
+		Assert.assertTrue(this.backend().createDefaultThreadBridge() instanceof FrameThreadBridge);
 	}
 
 	private TraceBackend backend() {
-		this.backend = TraceBackend.create(this.trace, JOID.VERSION);
+		this.backend = TraceBackend.create(this.trace);
 		return this.backend;
 	}
 
@@ -265,13 +275,12 @@ public class BackendTest {
 		private Runnable defaults = () -> {};
 		private Runnable windowed = () -> {};
 
-		private TraceBackend(final List<String> trace, final String version) {
-			super(version);
+		private TraceBackend(final List<String> trace) {
 			this.trace = trace;
 		}
 
-		public static @NonNull TraceBackend create(final @NonNull List<String> trace, final String version) {
-			return new TraceBackend(trace, version);
+		public static @NonNull TraceBackend create(final @NonNull List<String> trace) {
+			return new TraceBackend(trace);
 		}
 
 		@Override
@@ -307,12 +316,16 @@ public class BackendTest {
 		protected void registerDefaults() {
 			this.trace.add("defaults");
 			this.defaults.run();
-			BridgeHandler.UI.registerDefault(WindowUIBridge.create());
+			super.registerDefaults();
 		}
 
 		@Override
 		protected void attachInput() {
 			this.trace.add("input");
+		}
+
+		private IThreadBridge createDefaultThreadBridge() {
+			return super.createThreadBridge();
 		}
 
 	}

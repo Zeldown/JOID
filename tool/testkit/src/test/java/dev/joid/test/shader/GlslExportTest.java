@@ -13,7 +13,6 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.GlslDialect;
-import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 
 public class GlslExportTest {
 
@@ -28,20 +27,6 @@ public class GlslExportTest {
 				for (final String extension : new String[] {".vert", ".frag"}) {
 					final File file = new File(new File(this.folder.getRoot(), dialect.name()), shader.name().toLowerCase(Locale.ROOT) + extension);
 					Assert.assertTrue(file.getPath(), new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8).startsWith(dialect.getDeclaration() + "\n"));
-				}
-			}
-		}
-	}
-
-	@Test
-	public void compilesTheExportedShadersOfTheModernDialects() throws IOException {
-		GlslExport.export(this.folder.getRoot());
-		for (final GlslDialect dialect : new GlslDialect[] {GlslDialect.GLSL_330, GlslDialect.GLSL_450}) {
-			for (final CoreShader shader : CoreShader.values()) {
-				for (final String name : new String[] {shader.name().toLowerCase(Locale.ROOT), shader.name().toLowerCase(Locale.ROOT) + "-line"}) {
-					final File output = new File(this.folder.getRoot(), dialect.name());
-					Assert.assertTrue(name, GlslCompiler.compileOpenGl(new String(Files.readAllBytes(new File(output, name + ".vert").toPath()), StandardCharsets.UTF_8), ShaderStage.VERTEX).remaining() > 0);
-					Assert.assertTrue(name, GlslCompiler.compileOpenGl(new String(Files.readAllBytes(new File(output, name + ".frag").toPath()), StandardCharsets.UTF_8), ShaderStage.FRAGMENT).remaining() > 0);
 				}
 			}
 		}

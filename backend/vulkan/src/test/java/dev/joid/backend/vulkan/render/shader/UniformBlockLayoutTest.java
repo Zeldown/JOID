@@ -1,4 +1,4 @@
-package dev.joid.test.shader;
+package dev.joid.backend.vulkan.render.shader;
 
 import java.util.ArrayList;
 import java.util.List;

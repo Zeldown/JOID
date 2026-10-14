@@ -1,5 +1,6 @@
 package dev.joid.base.glfw;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -65,6 +66,23 @@ public class GlfwWindowBridgeTest {
 			bridge.destroy();
 		});
 		Assert.assertEquals(Collections.emptyList(), errors);
+	}
+
+	@Test
+	public void scalesACursorPositionToTheFramebuffer() throws Exception {
+		Assert.assertEquals(300D, GlfwWindowBridgeTest.toFramebuffer(150D, 800, 1600), 0D);
+		Assert.assertEquals(75D, GlfwWindowBridgeTest.toFramebuffer(150D, 1600, 800), 0D);
+	}
+
+	@Test
+	public void keepsTheCursorOfAnEmptyWindow() throws Exception {
+		Assert.assertEquals(150D, GlfwWindowBridgeTest.toFramebuffer(150D, 0, 1600), 0D);
+	}
+
+	private static double toFramebuffer(final double position, final int windowSize, final int framebufferSize) throws Exception {
+		final Method method = GlfwWindowBridge.class.getDeclaredMethod("toFramebuffer", double.class, int.class, int.class);
+		method.setAccessible(true);
+		return (double) method.invoke(null, position, windowSize, framebufferSize);
 	}
 
 	private static List<Integer> record(final Runnable runnable) {

@@ -1,8 +1,9 @@
 package dev.joid.backend.lwjgl2.input;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
@@ -17,7 +18,6 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.event.ConsumableEvent;
 import lombok.NonNull;
 
 public class Lwjgl2InputForwarderTest {
@@ -45,95 +45,50 @@ public class Lwjgl2InputForwarderTest {
 	}
 
 	@Test
-	public void forwardsTheMouseButtons() {
-		this.input.mousePressed(1);
-		this.input.mouseMoved();
-		this.input.mouseReleased(1);
-		Assert.assertEquals(Arrays.asList("pressed RIGHT", "dragged RIGHT", "released RIGHT"), this.trace);
-	}
-
-	@Test
-	public void forwardsTheWheelInNotches() {
-		this.input.mouseScrolled(-240);
-		Assert.assertEquals(Collections.singletonList("scrolled -2.0"), this.trace);
-	}
-
-	@Test
-	public void forwardsTheKeyAndTheCharacterApart() {
-		this.input.keyPressed(Keyboard.KEY_A, 'a');
-		this.input.charTyped('a');
-		Assert.assertEquals(Arrays.asList("key A", "char a"), this.trace);
-	}
-
-	@Test
-	public void namesTheLettersAndDigitsAfterTheirCharacter() {
-		this.input.keyPressed(Keyboard.KEY_Q, 'a');
-		this.input.keyPressed(Keyboard.KEY_SEMICOLON, 'M');
-		this.input.keyPressed(Keyboard.KEY_W, '\u001A');
-		this.input.keyPressed(Keyboard.KEY_1, '1');
-		this.input.keyPressed(Keyboard.KEY_2, '\u00E9');
+	public void namesTheLettersAndDigitsAfterTheirCharacter() throws Exception {
+		this.keyPressed(Keyboard.KEY_Q, 'a');
+		this.keyPressed(Keyboard.KEY_SEMICOLON, 'M');
+		this.keyPressed(Keyboard.KEY_W, '\u001A');
+		this.keyPressed(Keyboard.KEY_1, '1');
+		this.keyPressed(Keyboard.KEY_2, 'é');
 		Assert.assertEquals(Arrays.asList("key A", "key M", "key Z", "key DIGIT_1", "key DIGIT_2"), this.trace);
 	}
 
 	@Test
-	public void keepsThePositionOfTheKeysOutsideTheMainBlock() {
-		this.input.keyPressed(Keyboard.KEY_BACK, '\b');
-		this.input.keyPressed(Keyboard.KEY_RETURN, '\r');
-		this.input.keyPressed(Keyboard.KEY_NUMPAD1, '1');
+	public void keepsThePositionOfTheKeysOutsideTheMainBlock() throws Exception {
+		this.keyPressed(Keyboard.KEY_BACK, '\b');
+		this.keyPressed(Keyboard.KEY_RETURN, '\r');
+		this.keyPressed(Keyboard.KEY_NUMPAD1, '1');
 		Assert.assertEquals(Arrays.asList("key BACKSPACE", "key ENTER", "key " + Lwjgl2WindowBridge.getKey(Keyboard.KEY_NUMPAD1)), this.trace);
 	}
 
 	@Test
-	public void releasesTheKeyItPressed() {
-		this.ui.cancel = true;
-		this.input.keyPressed(Keyboard.KEY_Q, 'a');
-		Assert.assertTrue(this.input.keyReleased(Keyboard.KEY_Q));
-		Assert.assertFalse(this.input.keyReleased(Keyboard.KEY_Q));
+	public void releasesTheKeyItPressed() throws Exception {
+		final Field field = Lwjgl2InputForwarder.class.getDeclaredField("pressedKeys");
+		field.setAccessible(true);
+		final Key[] pressedKeys = (Key[]) field.get(this.input);
+		this.keyPressed(Keyboard.KEY_Q, 'a');
+		Assert.assertSame(Key.A, pressedKeys[Keyboard.KEY_Q]);
+
+		final Method release = Lwjgl2InputForwarder.class.getDeclaredMethod("keyReleased", int.class);
+		release.setAccessible(true);
+		release.invoke(this.input, Keyboard.KEY_Q);
+		Assert.assertNull(pressedKeys[Keyboard.KEY_Q]);
 	}
 
-	@Test
-	public void forwardsNoControlCharacter() {
-		Assert.assertFalse(this.input.charTyped('\u0003'));
-		Assert.assertFalse(this.input.charTyped('\r'));
-		Assert.assertTrue(this.trace.isEmpty());
-	}
-
-	@Test
-	public void reportsTheEventsTheUiConsumed() {
-		Assert.assertFalse(this.input.keyPressed(Keyboard.KEY_A, 'a'));
-		Assert.assertFalse(this.input.keyReleased(Keyboard.KEY_A));
-		Assert.assertFalse(this.input.charTyped('a'));
-		this.ui.cancel = true;
-		Assert.assertTrue(this.input.keyPressed(Keyboard.KEY_A, 'a'));
-		Assert.assertTrue(this.input.keyReleased(Keyboard.KEY_A));
-		Assert.assertTrue(this.input.charTyped('a'));
-		Assert.assertTrue(this.input.mousePressed(0));
-		Assert.assertTrue(this.input.mouseMoved());
-		Assert.assertTrue(this.input.mouseReleased(0));
-		Assert.assertTrue(this.input.mouseScrolled(120));
+	private void keyPressed(final int code, final char character) throws Exception {
+		final Method press = Lwjgl2InputForwarder.class.getDeclaredMethod("keyPressed", int.class, char.class);
+		press.setAccessible(true);
+		press.invoke(this.input, code, character);
 	}
 
 	public static final class TraceUI extends UI {
 
 		private final List<String> trace;
 
-		private boolean cancel;
-
 		public TraceUI(final List<String> trace) {
 			this.trace = trace;
-			super.handleMousePressed(event -> this.record("pressed " + event.getButton(), event));
-			super.handleMouseDragged(event -> this.record("dragged " + event.getButton(), event));
-			super.handleMouseReleased(event -> this.record("released " + event.getButton(), event));
-			super.handleMouseScroll(event -> this.record("scrolled " + event.getNotchesY(), event));
-			super.handleKeyPressed(event -> this.record("key " + event.getKey(), event));
-			super.handleCharTyped(event -> this.record("char " + new String(Character.toChars(event.getCodepoint())), event));
-		}
-
-		private void record(final String event, final ConsumableEvent input) {
-			this.trace.add(event);
-			if (this.cancel) {
-				input.consume();
-			}
+			super.handleKeyPressed(event -> this.trace.add("key " + event.getKey()));
 		}
 
 	}

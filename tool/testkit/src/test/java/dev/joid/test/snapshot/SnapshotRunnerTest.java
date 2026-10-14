@@ -1,6 +1,6 @@
 package dev.joid.test.snapshot;
 
-import java.lang.reflect.Proxy;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,8 +14,10 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.clock.IClockBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
+import dev.joid.lib.utils.image.PixelLayout;
 import lombok.NonNull;
 
 public class SnapshotRunnerTest {
@@ -52,7 +54,7 @@ public class SnapshotRunnerTest {
 
 		@Override
 		public void create(final int width, final int height) {
-			BridgeHandler.RENDER.register((IRenderBridge) Proxy.newProxyInstance(IRenderBridge.class.getClassLoader(), new Class<?>[] {IRenderBridge.class}, (proxy, method, arguments) -> "hashCode".equals(method.getName()) ? System.identityHashCode(proxy) : "equals".equals(method.getName()) ? proxy == arguments[0] : null));
+			BridgeHandler.RENDER.register(new RecordingRenderBridge());
 		}
 
 		@Override
@@ -60,7 +62,7 @@ public class SnapshotRunnerTest {
 
 		@Override
 		public @NonNull SnapshotImage capture(final int width, final int height) {
-			throw new UnsupportedOperationException();
+			return SnapshotImage.fromBytes(ByteBuffer.allocate(width * height * 4), width, height, false, PixelLayout.RGBA8);
 		}
 
 		@Override

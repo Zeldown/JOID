@@ -14,26 +14,12 @@ dependencies {
     runtime "org.lwjgl:lwjgl-opengl:$lwjglVersion:$lwjglNatives"
 }
 
+ext.demoMain = 'dev.joid.backend.lwjgl3.demo.DemoWindow'
+
 apply from: rootProject.file('gradle/backend.gradle')
-
-/* Demo */
-task runDemo(type: JavaExec) {
-    group = 'JOID'
-    description = 'Launches the LWJGL 3 demo window.'
-    main = "dev.joid.backend.lwjgl3.demo.DemoWindow"
-    classpath = sourceSets.main.runtimeClasspath
-    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-        jvmArgs "-XstartOnFirstThread"
-    }
-}
-
 
 test {
     def profile = project.hasProperty('glProfile') ? project.property('glProfile') : 'DEFAULT'
     inputs.property 'glProfile', profile
     systemProperty 'joid.snapshot.profile', profile
-
-    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-        jvmArgs "-XstartOnFirstThread"
-    }
 }

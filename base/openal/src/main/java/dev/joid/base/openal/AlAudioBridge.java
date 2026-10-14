@@ -14,21 +14,20 @@ import dev.joid.lib.bridge.audio.IAudioSource;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public final class AlAudioBridge implements IAudioBridge {
 
-	private final IAlBinding         binding;
+	@Getter private final IAlBinding binding;
 	private final Set<AlAudioSource> sourceSet;
 	private final Map<Object, Float> groupVolumeMap;
 
-	private IAudioGain gain;
-	private boolean    ownContext;
+	@Getter private IAudioGain gain;
+	@Getter private boolean    ownContext;
 
 	private AlAudioBridge(final IAlBinding binding) {
 		this.binding        = binding;
 		this.sourceSet      = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 		this.groupVolumeMap = new HashMap<>();
-		this.gain           = (gain, group) -> gain * this.getGroupVolume(group);
+		this.gain           = (gain, group) -> gain;
 		this.ownContext     = true;
 	}
 
@@ -71,14 +70,6 @@ public final class AlAudioBridge implements IAudioBridge {
 
 	public float getGroupVolume(final Object group) {
 		return this.groupVolumeMap.getOrDefault(group, 1F);
-	}
-
-	public @NonNull Set<@NonNull AlAudioSource> getSourceSet() {
-		return Collections.unmodifiableSet(this.sourceSet);
-	}
-
-	public @NonNull Map<Object, @NonNull Float> getGroupVolumeMap() {
-		return Collections.unmodifiableMap(this.groupVolumeMap);
 	}
 
 	private void syncSources() {

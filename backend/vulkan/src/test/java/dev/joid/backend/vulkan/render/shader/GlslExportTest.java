@@ -1,0 +1,38 @@
+package dev.joid.backend.vulkan.render.shader;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.Locale;
+
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
+import dev.joid.lib.bridge.render.shader.source.GlslDialect;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.test.shader.GlslExport;
+
+public class GlslExportTest {
+
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
+
+	@Test
+	public void compilesTheExportedShadersOfTheModernDialects() throws IOException {
+		GlslExport.export(this.folder.getRoot());
+		for (final GlslDialect dialect : new GlslDialect[] {GlslDialect.GLSL_330, GlslDialect.GLSL_450}) {
+			for (final CoreShader shader : CoreShader.values()) {
+				for (final String name : new String[] {shader.name().toLowerCase(Locale.ROOT), shader.name().toLowerCase(Locale.ROOT) + "-line"}) {
+					final File output = new File(this.folder.getRoot(), dialect.name());
+					Assert.assertTrue(name, GlslCompiler.compileOpenGl(new String(Files.readAllBytes(new File(output, name + ".vert").toPath()), StandardCharsets.UTF_8), ShaderStage.VERTEX).remaining() > 0);
+					Assert.assertTrue(name, GlslCompiler.compileOpenGl(new String(Files.readAllBytes(new File(output, name + ".frag").toPath()), StandardCharsets.UTF_8), ShaderStage.FRAGMENT).remaining() > 0);
+				}
+			}
+		}
+	}
+
+}

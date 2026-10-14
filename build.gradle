@@ -39,6 +39,7 @@ ext {
     }
 
     variants = ['prod', 'dev', 'demo']
+    variantModules = [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan']
 
     excludeDemo = { task ->
         task.exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/*/demo/**', 'dev/joid/backend/*/demo/**'
@@ -118,7 +119,7 @@ task backendTemplate(type: Zip) {
         rename 'gitignore', '.gitignore'
     }
     from(rootDir) {
-        include 'gradlew.bat', 'gradle/wrapper/**', 'LICENSE', 'NOTICE'
+        include 'gradlew.bat', 'gradle/wrapper/**', 'gradle/snapshots.gradle', 'LICENSE', 'NOTICE'
     }
     from(rootDir) {
         include 'gradlew'
@@ -155,8 +156,8 @@ task collectArtifacts(type: Copy) {
     group = 'JOID'
     description = 'Copies every release artifact into build/libs.'
     dependsOn ':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':base-openal:jar', ':tool-msdf:jar'
-    dependsOn variants.collectMany { variant -> [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { module -> "$module:${variant}Jar" } }
-    from { [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collectMany { module -> variants.collect { variant -> project(module).tasks["${variant}Jar"].archivePath } } }
+    dependsOn variants.collectMany { variant -> variantModules.collect { module -> "$module:${variant}Jar" } }
+    from { variantModules.collectMany { module -> variants.collect { variant -> project(module).tasks["${variant}Jar"].archivePath } } }
     from { [':base-glfw', ':base-opengl'].collect { project(it).releaseJar.archivePath } }
     from { [':tool-testkit', ':tool-msdf', ':base-openal'].collect { project(it).jar.archivePath } }
     from backendTemplate
@@ -168,9 +169,9 @@ assemble.dependsOn collectArtifacts
 
 task checkJars {
     group = 'JOID'
-    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, and that NOTICE credits each of them.'
+    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, that the jars carry the version of JOID, and that NOTICE credits each of them.'
     dependsOn ':tool-testkit:jar'
-    dependsOn variants.collectMany { variant -> [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].collect { module -> "$module:${variant}Jar" } }
+    dependsOn variants.collectMany { variant -> variantModules.collect { module -> "$module:${variant}Jar" } }
     doLast {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
         def demo = ['dev/joid/demo/DemoFont.class', 'assets/demo/']
@@ -187,30 +188,15 @@ task checkJars {
                 failures << "NOTICE does not credit ${credit.value}, embedded as ${id.group}:${id.name}: add its entry to NOTICE"
             }
         }
-        def constants = { bytes ->
-            def input = new DataInputStream(new ByteArrayInputStream(bytes))
-            input.skipBytes(8)
-            def count = input.readUnsignedShort()
-            def strings = []
-            for (int index = 1; index < count; index++) {
-                def tag = input.readUnsignedByte()
-                if (tag == 1) {
-                    strings << input.readUTF()
-                } else if (tag == 5 || tag == 6) {
-                    input.skipBytes(8)
-                    index++
-                } else {
-                    input.skipBytes(tag == 15 ? 3 : tag in [7, 8, 16, 19, 20] ? 2 : 4)
-                }
-            }
-            strings
-        }
-        def references = { file -> new java.util.zip.ZipFile(file).withCloseable { zip -> zip.entries().findAll { entry -> entry.name.endsWith('.class') }.findAll { entry -> constants(zip.getInputStream(entry).bytes).any { constant -> libraries.any { library -> constant.startsWith(library) || constant.startsWith(library.replace('/', '.')) || constant.contains('L' + library) } } }.collect { entry -> entry.name } } }
-        def reads = { file, filter -> new java.util.zip.ZipFile(file).withCloseable { zip -> zip.entries().findAll { entry -> filter(entry.name) }.findAll { entry -> new String(zip.getInputStream(entry).bytes, 'ISO-8859-1').contains('dev/joid/demo/') }.collect { entry -> entry.name } } }
-        reads(project(':tool-testkit').jar.archivePath, { name -> name.endsWith('.class') }).each { name ->
+        def finds = { file, filter, pattern -> new java.util.zip.ZipFile(file).withCloseable { zip -> zip.entries().findAll { entry -> filter(entry.name) }.findAll { entry -> new String(zip.getInputStream(entry).bytes, 'ISO-8859-1') =~ pattern }.collect { entry -> entry.name } } }
+        def quote = { names -> names.collect { name -> java.util.regex.Pattern.quote(name) }.join('|') }
+        def classes = { name -> name.endsWith('.class') }
+        def demoClass = quote(['dev/joid/demo/'])
+        def library = "(?s)\\x01..(?:${quote(libraries + libraries.collect { name -> name.replace('/', '.') })})|L(?:${quote(libraries)})"
+        finds(project(':tool-testkit').jar.archivePath, classes, demoClass).each { name ->
             failures << "joid-tool-testkit needs the demo class of $name"
         }
-        [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan'].each { module ->
+        variantModules.each { module ->
             variants.each { variant ->
                 def jar = project(module).tasks["${variant}Jar"].archivePath
                 def entries = new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.entries().collect { entry -> entry.name } }
@@ -220,9 +206,11 @@ task checkJars {
                 if (!holds('dev/joid/internal/JOID.class')) {
                     failures << "${jar.name} misses JOID"
                 }
-                def version = new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.getEntry('dev/joid/internal/joid.properties')?.with { entry -> def properties = new Properties(); zip.getInputStream(entry).withCloseable { input -> properties.load(input) }; properties.getProperty('version') } }
-                if (version != project.version.toString()) {
-                    failures << "${jar.name} gives JOID the version $version instead of ${project.version} in dev/joid/internal/joid.properties"
+                (['dev/joid/internal/joid.properties'] + (module == ':core' ? [] : ["dev/joid/backend/${module - ':backend-'}/backend.properties"])).each { path ->
+                    def version = new java.util.zip.ZipFile(jar).withCloseable { zip -> zip.getEntry(path)?.with { entry -> def properties = new Properties(); zip.getInputStream(entry).withCloseable { input -> properties.load(input) }; properties.getProperty('version') } }
+                    if (version != project.version.toString()) {
+                        failures << "${jar.name} gives the version $version instead of ${project.version} in $path"
+                    }
                 }
                 ['META-INF/LICENSE', 'META-INF/NOTICE'].findAll { name -> !entries.contains(name) }.each { name ->
                     failures << "${jar.name} misses $name"
@@ -233,7 +221,7 @@ task checkJars {
                 libraries.findAll { prefix -> holds(prefix) }.each { prefix ->
                     failures << "${jar.name} holds $prefix without relocating it"
                 }
-                references(jar).each { name ->
+                finds(jar, classes, library).each { name ->
                     failures << "${jar.name}: $name refers to a library that is not relocated"
                 }
                 dev.each { prefix ->
@@ -253,7 +241,7 @@ task checkJars {
                     failures << "${jar.name} ${variant == 'prod' ? 'holds' : 'misses'} its snapshot backend"
                 }
                 if (variant == 'dev') {
-                    reads(jar, { name -> name ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*\.class/ }).each { name ->
+                    finds(jar, { name -> name ==~ /dev\/joid\/(base|backend)\/[^\/]+\/snapshot\/.*\.class/ }, demoClass).each { name ->
                         failures << "${jar.name}: $name needs a demo class"
                     }
                 }

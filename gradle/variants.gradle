@@ -1,0 +1,33 @@
+ext.embeddedModules = []
+def collectModules
+collectModules = { current ->
+    current.configurations.compile.dependencies.withType(ProjectDependency).each { dependency ->
+        def module = dependency.dependencyProject
+        if (!embeddedModules.contains(module)) {
+            evaluationDependsOn(module.path)
+            embeddedModules << module
+            collectModules(module)
+        }
+    }
+}
+collectModules(project)
+
+def shadowJarType = rootProject.buildscript.classLoader.loadClass('com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar')
+
+rootProject.variants.each { variant ->
+    task("${variant}Jar", type: shadowJarType) {
+        group = 'build'
+        description = "Builds the ${variant} jar of ${project.name}, with the JOID modules it uses and their libraries embedded."
+        from sourceSets.main.output
+        embeddedModules.each { module ->
+            from module.sourceSets.main.output
+        }
+
+        configurations = ([project] + embeddedModules).collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null }
+        classifier = variant
+        rootProject.shadeLibraries(it)
+        rootProject.excludeVariant(it, variant)
+    }
+
+    build.dependsOn "${variant}Jar"
+}

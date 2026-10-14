@@ -7,7 +7,9 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.thread.IThreadBridge;
+import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import lombok.Getter;
 import lombok.NonNull;
@@ -22,8 +24,8 @@ public abstract class Backend<T extends Backend<T>> {
 	private File    cacheDir;
 	private boolean registered;
 
-	protected Backend(final @NonNull String version) {
-		this.version = version;
+	protected Backend() {
+		this.version = JOID.readVersion(this.getClass(), "backend.properties");
 		this.audio   = true;
 	}
 
@@ -90,10 +92,12 @@ public abstract class Backend<T extends Backend<T>> {
 	}
 
 	protected IThreadBridge createThreadBridge() {
-		return null;
+		return FrameThreadBridge.create();
 	}
 
-	protected void registerDefaults() {}
+	protected void registerDefaults() {
+		BridgeHandler.UI.registerDefault(WindowUIBridge.create());
+	}
 
 	protected void attachInput() {}
 

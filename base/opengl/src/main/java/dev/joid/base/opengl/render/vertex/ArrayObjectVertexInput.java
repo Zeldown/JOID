@@ -12,8 +12,8 @@ public final class ArrayObjectVertexInput extends GlVertexInput {
 
 	private ArrayObjectVertexInput(final IGlBinding binding) {
 		super(binding);
-		this.array = binding.getBufferBinding().genVertexArray();
-		binding.getBufferBinding().bindVertexArray(this.array);
+		this.array = binding.genVertexArray();
+		binding.bindVertexArray(this.array);
 		super.pointAttributes();
 	}
 
@@ -23,8 +23,8 @@ public final class ArrayObjectVertexInput extends GlVertexInput {
 
 	@Override
 	public void bind() {
-		super.getBinding().getBufferBinding().bindVertexArray(this.array);
-		super.getBinding().getBufferBinding().bindBuffer(GlConstants.ARRAY_BUFFER, super.getBuffer());
+		super.getBinding().bindVertexArray(this.array);
+		super.getBinding().bindBuffer(GlConstants.ARRAY_BUFFER, super.getBuffer());
 	}
 
 }

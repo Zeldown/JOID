@@ -157,7 +157,7 @@ public final class AlAudioSource implements IAudioSource {
 			this.appliedGain = Float.NaN;
 		}
 
-		final float applied = this.bridge.getGain().apply(this.gain, this.group);
+		final float applied = this.bridge.getGain().apply(this.gain, this.group) * this.bridge.getGroupVolume(this.group);
 		if (Float.compare(applied, this.appliedGain) != 0) {
 			this.appliedGain = applied;
 			this.binding.gain(this.source, applied);

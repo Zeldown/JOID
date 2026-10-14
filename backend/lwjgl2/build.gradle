@@ -35,16 +35,10 @@ task extractNatives(type: Sync) {
 sourceSets.main.resources.srcDir "$buildDir/natives"
 processResources.dependsOn extractNatives
 
+ext.demoMain = 'dev.joid.backend.lwjgl2.demo.DemoWindow'
+
 apply from: rootProject.file('gradle/backend.gradle')
 
 rootProject.variants.each { variant ->
     tasks["${variant}Jar"].exclude 'dev/joid/base/openal/binding/Lwjgl3AlBinding*'
-}
-
-/* Demo */
-task runDemo(type: JavaExec) {
-    group = 'JOID'
-    description = 'Launches the LWJGL 2 demo window.'
-    main = "dev.joid.backend.lwjgl2.demo.DemoWindow"
-    classpath = sourceSets.main.runtimeClasspath
 }

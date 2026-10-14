@@ -4,7 +4,7 @@ import java.util.function.IntSupplier;
 import java.util.function.ToIntFunction;
 
 import dev.joid.base.opengl.binding.GlConstants;
-import dev.joid.base.opengl.binding.IGlTextureBinding;
+import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.render.GlEnums;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -18,25 +18,17 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 
 	private final GlRenderBridge bridge;
 
-	private GlBorrowedTexture(final GlRenderBridge bridge, final IntSupplier texture) {
+	private GlBorrowedTexture(final IntSupplier texture) {
 		super(texture::getAsInt);
-		this.bridge = bridge;
+		this.bridge = GlBorrowedTexture.findBridge();
 	}
 
 	public static @NonNull GlBorrowedTexture create(final int texture) {
-		return GlBorrowedTexture.create(GlBorrowedTexture.findBridge(), texture);
+		return new GlBorrowedTexture(() -> texture);
 	}
 
 	public static @NonNull GlBorrowedTexture create(final @NonNull IntSupplier texture) {
-		return GlBorrowedTexture.create(GlBorrowedTexture.findBridge(), texture);
-	}
-
-	public static @NonNull GlBorrowedTexture create(final @NonNull GlRenderBridge bridge, final int texture) {
-		return new GlBorrowedTexture(bridge, () -> texture);
-	}
-
-	public static @NonNull GlBorrowedTexture create(final @NonNull GlRenderBridge bridge, final @NonNull IntSupplier texture) {
-		return new GlBorrowedTexture(bridge, texture);
+		return new GlBorrowedTexture(texture);
 	}
 
 	@Override
@@ -46,46 +38,46 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 
 	@Override
 	public void sample(final @NonNull TextureSampling sampling) {
-		final IGlTextureBinding texture = this.bridge.getBinding().getTextureBinding();
-		texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlEnums.minFilter(sampling));
-		texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlEnums.magFilter(sampling));
-		texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_S, GlEnums.wrap(sampling.getWrap()));
-		texture.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_T, GlEnums.wrap(sampling.getWrap()));
+		final IGlBinding binding = this.bridge.getBinding();
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MIN_FILTER, GlEnums.minFilter(sampling));
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAG_FILTER, GlEnums.magFilter(sampling));
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_S, GlEnums.wrap(sampling.getWrap()));
+		binding.texParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_WRAP_T, GlEnums.wrap(sampling.getWrap()));
 	}
 
 	@Override
 	protected int getWidth(final @NonNull Integer texture) {
-		return this.read(texture, textures -> textures.getTexLevelParameteri(GlConstants.TEXTURE_2D, 0, GlConstants.TEXTURE_WIDTH));
+		return this.read(texture, binding -> binding.getTexLevelParameteri(GlConstants.TEXTURE_2D, 0, GlConstants.TEXTURE_WIDTH));
 	}
 
 	@Override
 	protected int getHeight(final @NonNull Integer texture) {
-		return this.read(texture, textures -> textures.getTexLevelParameteri(GlConstants.TEXTURE_2D, 0, GlConstants.TEXTURE_HEIGHT));
+		return this.read(texture, binding -> binding.getTexLevelParameteri(GlConstants.TEXTURE_2D, 0, GlConstants.TEXTURE_HEIGHT));
 	}
 
 	@Override
 	protected boolean isValid(final @NonNull Integer texture) {
-		return this.bridge.getGuard().call(() -> this.bridge.getBinding().getTextureBinding().isTexture(texture));
+		return this.bridge.getGuard().call(() -> this.bridge.getBinding().isTexture(texture));
 	}
 
 	@Override
 	protected boolean isMipmapped(final @NonNull Integer texture) {
-		return this.read(texture, textures -> Math.min(textures.getTexParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAX_LEVEL), textures.getTexLevelParameteri(GlConstants.TEXTURE_2D, 1, GlConstants.TEXTURE_WIDTH))) > 0;
+		return this.read(texture, binding -> Math.min(binding.getTexParameteri(GlConstants.TEXTURE_2D, GlConstants.TEXTURE_MAX_LEVEL), binding.getTexLevelParameteri(GlConstants.TEXTURE_2D, 1, GlConstants.TEXTURE_WIDTH))) > 0;
 	}
 
-	private int read(final int texture, final ToIntFunction<IGlTextureBinding> query) {
+	private int read(final int texture, final ToIntFunction<IGlBinding> query) {
 		return this.bridge.getGuard().call(() -> {
-			final IGlTextureBinding textures = this.bridge.getBinding().getTextureBinding();
-			if (!textures.isTexture(texture)) {
+			final IGlBinding binding = this.bridge.getBinding();
+			if (!binding.isTexture(texture)) {
 				return 0;
 			}
 
-			final int previous = this.bridge.getBinding().getInteger(GlConstants.TEXTURE_BINDING_2D);
-			textures.bindTexture(GlConstants.TEXTURE_2D, texture);
+			final int previous = binding.getInteger(GlConstants.TEXTURE_BINDING_2D);
+			binding.bindTexture(GlConstants.TEXTURE_2D, texture);
 			try {
-				return query.applyAsInt(textures);
+				return query.applyAsInt(binding);
 			} finally {
-				textures.bindTexture(GlConstants.TEXTURE_2D, previous);
+				binding.bindTexture(GlConstants.TEXTURE_2D, previous);
 			}
 		});
 	}

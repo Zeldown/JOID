@@ -23,7 +23,7 @@ import lombok.NonNull;
 
 public final class JOID {
 
-	public static final String VERSION = JOID.readVersion();
+	public static final String VERSION = JOID.readVersion(JOID.class, "joid.properties");
 
 	private static final String DEVELOPMENT_VERSION = "development";
 
@@ -93,6 +93,14 @@ public final class JOID {
 
 	public static void checkVersion(final @NonNull String version) {
 		JOID.checkVersion(version, JOID.VERSION);
+	}
+
+	public static @NonNull String readVersion(final @NonNull Class<?> owner, final @NonNull String resource) {
+		try (final InputStream input = owner.getResourceAsStream(resource)) {
+			return JOID.readVersion(input);
+		} catch (final IOException exception) {
+			return JOID.DEVELOPMENT_VERSION;
+		}
 	}
 
 	public static boolean isOpen(final @NonNull UI ui) {
@@ -207,14 +215,6 @@ public final class JOID {
 		final String major = version.split("[.]")[0];
 		if (!major.equals(loaded.split("[.]")[0])) {
 			throw new IllegalStateException("The backend was built for JOID " + major + ".x, but JOID " + loaded + " is loaded: update the backend");
-		}
-	}
-
-	private static String readVersion() {
-		try (final InputStream input = JOID.class.getResourceAsStream("joid.properties")) {
-			return JOID.readVersion(input);
-		} catch (final IOException exception) {
-			return JOID.DEVELOPMENT_VERSION;
 		}
 	}
 

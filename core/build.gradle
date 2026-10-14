@@ -1,7 +1,5 @@
 archivesBaseName = "joid-core"
 
-evaluationDependsOn(':tool-msdf')
-
 configurations {
     shade
     compile.extendsFrom shade
@@ -39,19 +37,6 @@ processResources {
     }
 }
 
-rootProject.variants.each { variant ->
-    task("${variant}Jar", type: com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar) {
-        group = 'build'
-        description = "Builds the ${variant} jar of the core, with its libraries embedded."
-        from sourceSets.main.output
-        from project(':tool-msdf').sourceSets.main.output
-        configurations = [project.configurations.shade]
-        classifier = variant
-        rootProject.shadeLibraries(it)
-        rootProject.excludeVariant(it, variant)
-    }
-
-    build.dependsOn "${variant}Jar"
-}
+apply from: rootProject.file('gradle/variants.gradle')
 
 build.dependsOn rootProject.installLocalGitHook

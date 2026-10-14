@@ -34,7 +34,7 @@ public enum SnapshotProfile {
 		this.version                = version;
 		this.profile                = profile;
 		this.shadingLanguageVersion = shadingLanguageVersion;
-		this.hiddenExtensionList    = Arrays.asList(hiddenExtensions);
+		this.hiddenExtensionList    = Collections.unmodifiableList(Arrays.asList(hiddenExtensions));
 	}
 
 	public static @NonNull SnapshotProfile current() {
@@ -45,10 +45,6 @@ public enum SnapshotProfile {
 		if (this.version != 0 && (capabilities.getVersion() != this.version || capabilities.getProfile() != this.profile)) {
 			throw new IllegalStateException("The snapshot profile " + this.name() + " needs OpenGL " + this.version / 100 + "." + this.version / 10 % 10 + " " + this.profile + ", this context offers " + capabilities.getName() + " " + capabilities.getProfile() + ": force its version with MESA_GL_VERSION_OVERRIDE and MESA_GLSL_VERSION_OVERRIDE");
 		}
-	}
-
-	public @NonNull List<String> getHiddenExtensionList() {
-		return Collections.unmodifiableList(this.hiddenExtensionList);
 	}
 
 }

@@ -36,9 +36,8 @@ public class Lwjgl3GlBindingTest {
 	}
 
 	@Test
-	public void sharesOneBindingPerDomain() {
+	public void sharesOneBinding() {
 		Assert.assertSame(Lwjgl3GlBinding.inst(), Lwjgl3GlBinding.inst());
-		Assert.assertSame(Lwjgl3GlBinding.inst().getStateBinding(), Lwjgl3GlBinding.inst().getStateBinding());
 	}
 
 	@Test

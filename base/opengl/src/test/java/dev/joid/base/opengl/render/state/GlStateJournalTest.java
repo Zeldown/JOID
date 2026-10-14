@@ -10,11 +10,7 @@ import org.junit.Test;
 
 import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
-import dev.joid.base.opengl.binding.IGlBufferBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
-import dev.joid.base.opengl.binding.IGlProgramBinding;
-import dev.joid.base.opengl.binding.IGlStateBinding;
-import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
 import dev.joid.base.opengl.capability.GlFrameBufferFamily;
 
@@ -50,23 +46,22 @@ public class GlStateJournalTest {
 				return args[1].equals(GlConstants.VERTEX_ATTRIB_ARRAY_ENABLED) ? 1 : args[1].equals(GlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING) ? 0 : 4;
 			case "getVertexAttribPointer":
 				return 1234L;
-			case "getStateBinding":
-				return GlStateJournalTest.fake(IGlStateBinding.class, (call, values) -> null);
-			case "getProgramBinding":
-				return GlStateJournalTest.fake(IGlProgramBinding.class, (call, values) -> null);
-			case "getTextureBinding":
-				return GlStateJournalTest.fake(IGlTextureBinding.class, (call, values) -> null);
 			case "getFrameBufferBinding":
 				return GlStateJournalTest.fake(IGlFrameBufferBinding.class, (call, values) -> null);
-			case "getBufferBinding":
-				return GlStateJournalTest.fake(IGlBufferBinding.class, (call, values) -> {
-					if (call.getName().equals("canPointClientMemory")) {
-						return clientMemory;
-					}
-
-					this.calls.add(call.getName() + " " + values[0] + (call.getName().equals("vertexAttribPointer") ? " " + values[5] : ""));
-					return null;
-				});
+			case "canPointClientMemory":
+				return clientMemory;
+			case "bindBuffer":
+			case "bufferData":
+			case "drawArrays":
+			case "vertexAttrib2f":
+			case "vertexAttrib3f":
+			case "vertexAttrib4f":
+			case "bindVertexArray":
+			case "vertexAttribPointer":
+			case "enableVertexAttribArray":
+			case "disableVertexAttribArray":
+				this.calls.add(method.getName() + " " + args[0] + (method.getName().equals("vertexAttribPointer") ? " " + args[5] : ""));
+				return null;
 			default:
 				return null;
 			}

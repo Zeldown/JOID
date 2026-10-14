@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
@@ -31,7 +30,7 @@ import dev.joid.backend.vulkan.render.descriptor.DescriptorCache;
 import dev.joid.backend.vulkan.render.framebuffer.VulkanFrameBuffer;
 import dev.joid.backend.vulkan.render.pipeline.PipelineCache;
 import dev.joid.backend.vulkan.render.shader.VulkanShader;
-import dev.joid.backend.vulkan.render.texture.VulkanBorrowedTexture;
+import dev.joid.backend.vulkan.render.texture.IVulkanTexture;
 import dev.joid.backend.vulkan.render.texture.VulkanTexture;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
@@ -56,16 +55,16 @@ import dev.joid.lib.bridge.render.vertex.VertexFill;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public final class VulkanRenderBridge extends RenderBridge {
 
+	@Getter private final IVulkanHost     host;
+	@Getter private final VulkanContext   context;
+	@Getter private final PipelineCache   pipelineCache;
+	@Getter private final DescriptorCache descriptorCache;
+
 	private final long[]                             samplers;
-	private final IVulkanHost                        host;
 	private final long                               screenLoadPass;
 	private final long                               screenClearPass;
-	private final VulkanContext                      context;
-	private final PipelineCache                      pipelineCache;
-	private final DescriptorCache                    descriptorCache;
 	private final FrameAllocator[]                   vertexAllocators;
 	private final FrameAllocator[]                   uniformAllocators;
 	private final NavigableMap<Long, List<Runnable>> garbage;
@@ -129,18 +128,6 @@ public final class VulkanRenderBridge extends RenderBridge {
 		VK10.vkDestroyRenderPass(device, this.screenClearPass, null);
 		VK10.vkDestroyRenderPass(device, this.screenLoadPass, null);
 		this.context.destroy();
-	}
-
-	public long[] getSamplers() {
-		return this.samplers.clone();
-	}
-
-	public FrameAllocator[] getVertexAllocators() {
-		return this.vertexAllocators.clone();
-	}
-
-	public FrameAllocator[] getUniformAllocators() {
-		return this.uniformAllocators.clone();
 	}
 
 	public void dispose(final @NonNull Runnable destroyer) {
@@ -288,10 +275,6 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	public void releaseHandle(final long handle) {
 		this.descriptorCache.invalidate(handle, this::dispose);
-	}
-
-	public @NonNull NavigableMap<Long, List<Runnable>> getGarbage() {
-		return Collections.unmodifiableNavigableMap(this.garbage);
 	}
 
 	private void endPass() {
@@ -456,7 +439,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		int index = 0;
 		for (final UniformSampler sampler : shader.getSamplerMap().values()) {
 			final SamplerBinding binding = super.resolveSampler(sampler);
-			images[index] = binding.getTexture() instanceof VulkanBorrowedTexture ? ((VulkanBorrowedTexture) binding.getTexture()).getView() : ((VulkanTexture) binding.getTexture()).getView();
+			images[index] = ((IVulkanTexture) binding.getTexture()).getView();
 			images[index + 1] = this.samplers[binding.getSampling().getIndex()];
 			index += 2;
 		}

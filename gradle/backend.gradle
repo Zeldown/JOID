@@ -1,37 +1,21 @@
-def embeddedModules = []
-def collectModules
-collectModules = { current ->
-    current.configurations.compile.dependencies.withType(ProjectDependency).each { dependency ->
-        def module = dependency.dependencyProject
-        if (!embeddedModules.contains(module)) {
-            evaluationDependsOn(module.path)
-            embeddedModules << module
-            collectModules(module)
-        }
+apply from: rootProject.file('gradle/variants.gradle')
+apply from: rootProject.file('gradle/snapshots.gradle')
+
+def backendResources = file("$buildDir/generated/backend")
+
+task backendProperties {
+    description = 'Writes the version of JOID the backend is built for into its backend.properties.'
+    inputs.property 'version', project.version
+    outputs.dir backendResources
+    doLast {
+        def properties = new File(backendResources, "dev/joid/backend/${project.name - 'backend-'}/backend.properties")
+        properties.parentFile.mkdirs()
+        properties.text = "version=${project.version}"
     }
 }
-collectModules(project)
 
-def shadowJarType = plugins.getPlugin('com.github.johnrengelman.shadow').class.classLoader.loadClass('com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar')
-
-rootProject.variants.each { variant ->
-    task("${variant}Jar", type: shadowJarType) {
-        group = 'build'
-        description = "Builds the ${variant} jar of the backend, with JOID and the modules it uses embedded."
-        from sourceSets.main.output
-        embeddedModules.each { module ->
-            from module.sourceSets.main.output
-        }
-
-        configurations = ([project] + embeddedModules).collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null }
-        classifier = variant
-        rootProject.shadeLibraries(it)
-        rootProject.excludeVariant(it, variant)
-    }
-
-    build.dependsOn "${variant}Jar"
-}
-
+sourceSets.main.resources.srcDir backendResources
+processResources.dependsOn backendProperties
 
 sourceSets {
     jarCheck {
@@ -55,9 +39,6 @@ dependencies {
         workingDir = file("$buildDir/jarCheck/$variant")
         systemProperty 'java.awt.headless', true
         systemProperty 'joid.data', file("$buildDir/jarCheck/$variant/data").absolutePath
-        if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
-            jvmArgs '-XstartOnFirstThread'
-        }
         doFirst {
             delete workingDir
             workingDir.mkdirs()
@@ -65,44 +46,17 @@ dependencies {
     }
 }
 
-task updateSnapshots {
+task runDemo(type: JavaExec) {
     group = 'JOID'
-    description = 'Runs the snapshot tests of this backend and replaces its reference snapshots.'
-    dependsOn test
+    description = "Launches the demo window of ${project.name}."
+    main = demoMain
+    classpath = sourceSets.main.runtimeClasspath
 }
 
-test {
-    def references = rootProject.file(".snapshots/${project.name}")
-    def output = rootProject.file("build/snapshots/${project.name}")
-
-    workingDir = file("$buildDir/snapshot")
-    forkEvery = 1
-    inputs.files fileTree(references)
-    outputs.dir output
-
-    systemProperty 'joid.snapshot.references', references.absolutePath
-    systemProperty 'joid.snapshot.output', output.absolutePath
-
-    testLogging {
-        exceptionFormat 'full'
-        events 'failed'
-    }
-
-    doFirst {
-        delete workingDir, output
-        workingDir.mkdirs()
+if (org.gradle.internal.os.OperatingSystem.current().isMacOsX() && embeddedModules.contains(project(':base-glfw'))) {
+    tasks.withType(JavaForkOptions) {
+        jvmArgs '-XstartOnFirstThread'
     }
 }
 
-gradle.taskGraph.whenReady { graph ->
-    def update = graph.hasTask(updateSnapshots)
-    test.inputs.property 'updateSnapshots', update
-    test.systemProperty 'joid.snapshot.update', update
-}
-
-gradle.buildFinished {
-    def report = rootProject.file("build/snapshots/${project.name}/report.html")
-    if (test.state.failure != null && report.exists()) {
-        println "Snapshot report of ${project.name}: ${report.toPath().toUri().toASCIIString()}"
-    }
-}
+snapshotTest(test, rootProject.file(".snapshots/${project.name}"), rootProject.file("build/snapshots/${project.name}"))

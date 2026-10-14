@@ -8,7 +8,6 @@ import org.lwjgl.opengl.PixelFormat;
 
 import dev.joid.backend.lwjgl2.Lwjgl2Backend;
 import dev.joid.backend.lwjgl2.Lwjgl2Natives;
-import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.snapshot.GlSnapshotCapture;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -65,7 +64,7 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public @NonNull String getRenderer() {
-		return GlSnapshotCapture.getRenderer(Lwjgl2GlBinding.inst());
+		return this.bridge.getCapabilities().getRenderer();
 	}
 
 }

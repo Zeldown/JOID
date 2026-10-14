@@ -115,7 +115,7 @@ public final class GlStateSnapshot {
 		for (int unit = 0; unit < 4; unit++) {
 			this.readUnit(unit, compatibility);
 		}
-		this.binding.getTextureBinding().activeTexture(activeTexture);
+		this.binding.activeTexture(activeTexture);
 
 		final int vertexArray = this.capabilities.hasVertexArrays() ? this.binding.getInteger(GlConstants.VERTEX_ARRAY_BINDING) : 0;
 		this.stateMap.put("VERTEX_ARRAY_BINDING", Integer.toString(vertexArray));
@@ -159,7 +159,7 @@ public final class GlStateSnapshot {
 	}
 
 	private void readUnit(final int unit, final boolean compatibility) {
-		this.binding.getTextureBinding().activeTexture(GlConstants.TEXTURE0 + unit);
+		this.binding.activeTexture(GlConstants.TEXTURE0 + unit);
 		final int texture = this.binding.getInteger(GlConstants.TEXTURE_BINDING_2D);
 		this.stateMap.put("TEXTURE_BINDING_2D " + unit, Integer.toString(texture));
 		if (this.capabilities.hasSamplerObjects()) {

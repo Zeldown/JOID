@@ -13,7 +13,9 @@ import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
+import dev.joid.base.opengl.render.texture.BlitGlMipmapBuilder;
 import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
+import dev.joid.base.opengl.render.vertex.ArrayObjectVertexInput;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.resource.Resource;
 
@@ -47,9 +49,9 @@ public class GlRenderBridgeTest {
 	@Test
 	public void choosesTheStrategiesOfTheContextOnce() {
 		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
-		Assert.assertSame(bridge.getStrategies().getDialect(), bridge.getStrategies().createTranslator().getDialect());
-		Assert.assertSame(bridge.getFrameBufferBinding(), bridge.getBinding().getFrameBufferBinding(bridge.getStrategies().getFrameBufferFamily()));
-		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getStrategies().isVertexArrayObject());
+		Assert.assertSame(bridge.getFrameBufferBinding(), bridge.getBinding().getFrameBufferBinding(bridge.getCapabilities().getFrameBufferFamily()));
+		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getVertexInput() instanceof ArrayObjectVertexInput);
+		Assert.assertEquals(bridge.getCapabilities().hasFrameBufferBlit(), bridge.getMipmapBuilder() instanceof BlitGlMipmapBuilder);
 	}
 
 	@Test

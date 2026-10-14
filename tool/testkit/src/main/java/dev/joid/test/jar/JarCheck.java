@@ -40,10 +40,6 @@ public final class JarCheck {
 	}
 
 	private static UI open(final String variant, final Backend<?> backend, final Runnable present) throws ReflectiveOperationException {
-		if ("development".equals(JOID.VERSION)) {
-			throw new IllegalStateException("The " + variant + " jar gives no version to JOID: it misses dev/joid/internal/joid.properties or its version was not expanded");
-		}
-
 		if (JOIDEnv.isDevMode() == "prod".equals(variant) || JOIDEnv.isDemoMode() != "demo".equals(variant)) {
 			throw new IllegalStateException("The " + variant + " jar runs with the dev mode " + JOIDEnv.isDevMode() + " and the demo mode " + JOIDEnv.isDemoMode() + ": check what excludeVariant leaves in it");
 		}

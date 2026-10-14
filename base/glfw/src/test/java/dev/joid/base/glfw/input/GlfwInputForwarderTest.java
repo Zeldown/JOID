@@ -6,10 +6,19 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWCharCallback;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOIDEnv;
@@ -22,82 +31,135 @@ import lombok.NonNull;
 
 public class GlfwInputForwarderTest {
 
+	private static long window;
+
 	private final List<String>  trace  = new ArrayList<>();
 	private final TraceUI       ui     = new TraceUI(this.trace);
 	private final DemoUIBridge  bridge = new DemoUIBridge();
-	private final IWindowBridge window = new FixedWindowBridge();
+	private final IWindowBridge fixed  = new FixedWindowBridge();
 
-	private GlfwInputForwarder input;
-	private boolean            devMode;
+	private boolean devMode;
+
+	@BeforeClass
+	public static void createHiddenWindow() {
+		Assume.assumeTrue(GLFW.glfwInit());
+		GLFW.glfwDefaultWindowHints();
+		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API);
+		GlfwInputForwarderTest.window = GLFW.glfwCreateWindow(64, 64, "JOID input test", 0L, 0L);
+		Assume.assumeTrue(GlfwInputForwarderTest.window != 0L);
+	}
+
+	@AfterClass
+	public static void destroyHiddenWindow() {
+		if (GlfwInputForwarderTest.window != 0L) {
+			GLFW.glfwDestroyWindow(GlfwInputForwarderTest.window);
+		}
+		GLFW.glfwTerminate();
+	}
 
 	@Before
 	public void openAUi() {
 		this.devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(false);
-		BridgeHandler.WINDOW.register(this.window);
+		BridgeHandler.WINDOW.register(this.fixed);
 		this.bridge.add(this.ui);
 		BridgeHandler.UI.register(this.bridge);
-		this.input = GlfwInputForwarder.create();
+		GLFW.glfwSetCharCallback(GlfwInputForwarderTest.window, (handle, codepoint) -> this.trace.add("passed char"));
+		GLFW.glfwSetCursorPosCallback(GlfwInputForwarderTest.window, (handle, x, y) -> this.trace.add("passed cursor"));
+		GLFW.glfwSetScrollCallback(GlfwInputForwarderTest.window, (handle, x, y) -> this.trace.add("passed scroll"));
+		GLFW.glfwSetKeyCallback(GlfwInputForwarderTest.window, (handle, code, scancode, action, mods) -> this.trace.add("passed key"));
+		GLFW.glfwSetMouseButtonCallback(GlfwInputForwarderTest.window, (handle, code, action, mods) -> this.trace.add("passed button"));
+		GlfwInputForwarder.create().attach(GlfwInputForwarderTest.window);
 	}
 
 	@After
 	public void closeTheUi() {
+		Callbacks.glfwFreeCallbacks(GlfwInputForwarderTest.window);
 		this.bridge.closeAll();
 		BridgeHandler.UI.unregister(this.bridge);
-		BridgeHandler.WINDOW.unregister(this.window);
+		BridgeHandler.WINDOW.unregister(this.fixed);
 		JOIDEnv.devMode(this.devMode);
 	}
 
 	@Test
 	public void forwardsTheMouseButtons() {
-		this.input.mousePressed(1);
-		this.input.mouseReleased(1);
+		this.ui.cancel = true;
+		GlfwInputForwarderTest.button(1, GLFW.GLFW_PRESS);
+		GlfwInputForwarderTest.button(1, GLFW.GLFW_RELEASE);
 		Assert.assertEquals(Arrays.asList("pressed RIGHT", "released RIGHT"), this.trace);
 	}
 
 	@Test
 	public void dragsWithThePressedButton() {
-		this.input.mousePressed(0);
-		this.input.mouseMoved();
-		this.input.mouseReleased(0);
-		this.input.mouseMoved();
+		this.ui.cancel = true;
+		GlfwInputForwarderTest.button(0, GLFW.GLFW_PRESS);
+		GlfwInputForwarderTest.cursor();
+		GlfwInputForwarderTest.button(0, GLFW.GLFW_RELEASE);
 		Assert.assertEquals(Arrays.asList("pressed LEFT", "dragged LEFT", "released LEFT"), this.trace);
 	}
 
 	@Test
 	public void forwardsTheWheelInNotches() {
-		this.input.mouseScrolled(0D, -0.5D);
+		this.ui.cancel = true;
+		GlfwInputForwarderTest.scroll(0D, -0.5D);
 		Assert.assertEquals(Collections.singletonList("scrolled -0.5"), this.trace);
 	}
 
 	@Test
 	public void forwardsTheKeyAndTheCharacterAsTheyCome() {
-		this.input.keyPressed(GLFW.GLFW_KEY_F3);
-		this.input.charTyped(0xE9);
-		this.input.keyPressed(GLFW.GLFW_KEY_ENTER);
+		this.ui.cancel = true;
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_PRESS);
+		GlfwInputForwarderTest.character(0xE9);
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_ENTER, GLFW.GLFW_PRESS);
 		Assert.assertEquals(Arrays.asList("key F3", "char é", "key ENTER"), this.trace);
 	}
 
 	@Test
 	public void forwardsACharacterOutsideTheBasicPlaneInOneCall() {
-		this.input.charTyped(0x1F600);
-		Assert.assertEquals(Collections.singletonList("char \uD83D\uDE00"), this.trace);
+		this.ui.cancel = true;
+		GlfwInputForwarderTest.character(0x1F600);
+		Assert.assertEquals(Collections.singletonList("char 😀"), this.trace);
 	}
 
 	@Test
-	public void reportsTheEventsTheUiConsumed() {
-		Assert.assertFalse(this.input.mousePressed(0));
-		Assert.assertFalse(this.input.keyPressed(GLFW.GLFW_KEY_F3));
-		Assert.assertFalse(this.input.keyReleased(GLFW.GLFW_KEY_F3));
-		Assert.assertFalse(this.input.charTyped('a'));
-		this.ui.cancel = true;
-		Assert.assertTrue(this.input.keyPressed(GLFW.GLFW_KEY_F3));
-		Assert.assertTrue(this.input.keyReleased(GLFW.GLFW_KEY_F3));
-		Assert.assertTrue(this.input.charTyped('a'));
-		Assert.assertTrue(this.input.mousePressed(0));
-		Assert.assertTrue(this.input.mouseMoved());
-		Assert.assertTrue(this.input.mouseReleased(0));
-		Assert.assertTrue(this.input.mouseScrolled(0D, 1D));
+	public void passesTheEventsTheUiLeftToThePreviousCallbacks() {
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_PRESS);
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_RELEASE);
+		GlfwInputForwarderTest.character('a');
+		GlfwInputForwarderTest.button(0, GLFW.GLFW_PRESS);
+		GlfwInputForwarderTest.scroll(0D, 1D);
+		Assert.assertEquals(Arrays.asList("key F3", "passed key", "passed key", "char a", "passed char", "pressed LEFT", "passed button", "scrolled 1.0", "passed scroll"), this.trace);
+	}
+
+	private static void key(final int code, final int action) {
+		final GLFWKeyCallback callback = GLFW.glfwSetKeyCallback(GlfwInputForwarderTest.window, null);
+		GLFW.glfwSetKeyCallback(GlfwInputForwarderTest.window, callback);
+		callback.invoke(GlfwInputForwarderTest.window, code, 0, action, 0);
+	}
+
+	private static void character(final int codepoint) {
+		final GLFWCharCallback callback = GLFW.glfwSetCharCallback(GlfwInputForwarderTest.window, null);
+		GLFW.glfwSetCharCallback(GlfwInputForwarderTest.window, callback);
+		callback.invoke(GlfwInputForwarderTest.window, codepoint);
+	}
+
+	private static void cursor() {
+		final GLFWCursorPosCallback callback = GLFW.glfwSetCursorPosCallback(GlfwInputForwarderTest.window, null);
+		GLFW.glfwSetCursorPosCallback(GlfwInputForwarderTest.window, callback);
+		callback.invoke(GlfwInputForwarderTest.window, 0D, 0D);
+	}
+
+	private static void scroll(final double x, final double y) {
+		final GLFWScrollCallback callback = GLFW.glfwSetScrollCallback(GlfwInputForwarderTest.window, null);
+		GLFW.glfwSetScrollCallback(GlfwInputForwarderTest.window, callback);
+		callback.invoke(GlfwInputForwarderTest.window, x, y);
+	}
+
+	private static void button(final int button, final int action) {
+		final GLFWMouseButtonCallback callback = GLFW.glfwSetMouseButtonCallback(GlfwInputForwarderTest.window, null);
+		GLFW.glfwSetMouseButtonCallback(GlfwInputForwarderTest.window, callback);
+		callback.invoke(GlfwInputForwarderTest.window, button, action, 0);
 	}
 
 	public static final class TraceUI extends UI {
