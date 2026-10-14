@@ -8,7 +8,6 @@ import dev.joid.demo.DemoFont;
 import dev.joid.demo.asset.locator.impl.DemoAssetLocator;
 import dev.joid.demo.resource.format.impl.DemoCheckerResourceFormat;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.internal.JOID;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
@@ -43,7 +42,7 @@ public class UIDemoResource extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoResource.INK);
-		final Resource vector = Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/vector/placeholder.svg"));
+		final Resource vector = Resource.of("assets/demo/textures/vector/placeholder.svg");
 		final Resource square = Resource.of("https://placehold.co/100x100.png");
 		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-image").onError((resource, error) -> System.out.println("[UIDemoResource] failed resource: " + error.getMessage()));
 		final BooleanSignal second = BooleanSignal.of(false);
@@ -61,19 +60,19 @@ public class UIDemoResource extends UIDemo {
 		ResourceNode.create(335, 50).resource(Resource.of("https://placehold.co/100x100.jpg")).attach(this);
 		TextNode.create(385, 175).text(Text.create("JPEG", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(565, 50, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"))).attach(this);
+		ResourceNode.create(565, 50, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).attach(this);
 		TextNode.create(615, 175).text(Text.create("WebP", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(795, 50, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/vector/placeholder.svg"))).attach(this);
+		ResourceNode.create(795, 50, 100, 100).resource(Resource.of("assets/demo/textures/vector/placeholder.svg")).attach(this);
 		TextNode.create(845, 175).text(Text.create("SVG", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1025, 50, 0, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/gif.gif")).linear()).attach(this);
+		ResourceNode.create(1025, 50, 0, 100).resource(Resource.of("assets/demo/textures/image/gif.gif").linear()).attach(this);
 		TextNode.create(1075, 175).text(Text.create("GIF", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1255, 50, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.webp"))).attach(this);
+		ResourceNode.create(1255, 50, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder-animated.webp")).attach(this);
 		TextNode.create(1305, 175).text(Text.create("Animated WebP", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1485, 50, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.png"))).attach(this);
+		ResourceNode.create(1485, 50, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder-animated.png")).attach(this);
 		TextNode.create(1535, 175).text(Text.create("APNG", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1713, 48, 104, 104).color(Color.WHITE).attach(this);
@@ -101,29 +100,29 @@ public class UIDemoResource extends UIDemo {
 		ResourceNode.create(1255, 280, 100, 100).resource(Resource.of("https://placehold.co/400x800.png")).stretch(StretchType.COVER).attach(this);
 		TextNode.create(1305, 405).text(Text.create("Cover", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1523, 318, 24, 24).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/vector/placeholder.svg"))).attach(this);
+		ResourceNode.create(1523, 318, 24, 24).resource(Resource.of("assets/demo/textures/vector/placeholder.svg")).attach(this);
 		TextNode.create(1535, 405).text(Text.create("SVG 24", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1740, 305, 50, 50).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/vector/placeholder.svg"))).attach(this);
+		ResourceNode.create(1740, 305, 50, 50).resource(Resource.of("assets/demo/textures/vector/placeholder.svg")).attach(this);
 		TextNode.create(1765, 405).text(Text.create("SVG 50", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(105, 510, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"))).color(Color.ORANGE).attach(this);
+		ResourceNode.create(105, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).color(Color.ORANGE).attach(this);
 		TextNode.create(155, 635).text(Text.create("Tint", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(375, 500, 20, 120).color(Color.WHITE).attach(this);
-		ResourceNode.create(335, 510, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"))).color(Color.WHITE.copyAlpha(0.4F)).attach(this);
+		ResourceNode.create(335, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).color(Color.WHITE.copyAlpha(0.4F)).attach(this);
 		TextNode.create(385, 635).text(Text.create("Transparent", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(565, 510, 100, 100).resource(Resource.of("https://placehold.co/100x100.png")).hoveredResource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"))).attach(this);
+		ResourceNode.create(565, 510, 100, 100).resource(Resource.of("https://placehold.co/100x100.png")).hoveredResource(Resource.of("assets/demo/textures/image/placeholder.webp")).attach(this);
 		TextNode.create(615, 635).text(Text.create("Hovered image", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(795, 510, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"))).hoveredColor(Color.ORANGE).attach(this);
+		ResourceNode.create(795, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).hoveredColor(Color.ORANGE).attach(this);
 		TextNode.create(845, 635).text(Text.create("Hovered tint", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1027, 512, 96, 96).resource(Resource.of("https://placehold.co/16x16.png").nearest()).attach(this);
+		ResourceNode.create(1027, 512, 96, 96).resource(Resource.of("https://placehold.co/16x16.png")).linear(false).attach(this);
 		TextNode.create(1075, 635).text(Text.create("Nearest", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1257, 512, 96, 96).resource(Resource.of("https://placehold.co/16x16.png").linear()).attach(this);
+		ResourceNode.create(1257, 512, 96, 96).resource(Resource.of("https://placehold.co/16x16.png")).linear(true).attach(this);
 		TextNode.create(1305, 635).text(Text.create("Linear", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode.create(1485, 510, 100, 100).resource(Resource.of("https://placehold.co/400x400.png")).effect(RoundedNodeEffect.create(10F)).attach(this);
@@ -147,10 +146,10 @@ public class UIDemoResource extends UIDemo {
 		.attach(this);
 		TextNode.create(385, 865).text(Text.create("Switch on click", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(565, 740, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp")).textureCoords(40D, 60D, 280D, 280D)).attach(this);
+		ResourceNode.create(565, 778, 100, 0).resource(Resource.of("assets/demo/textures/image/placeholder.webp").textureCoords(80D, 170D, 240D, 60D)).attach(this);
 		TextNode.create(615, 865).text(Text.create("Region", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(795, 740, 100, 100).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp")).mipmap(false)).attach(this);
+		ResourceNode.create(795, 740, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp").mipmap(false)).attach(this);
 		TextNode.create(845, 865).text(Text.create("Mipmap off", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode.create(1025, 740).resource(Resource.of(disc)).attach(this);
@@ -162,8 +161,8 @@ public class UIDemoResource extends UIDemo {
 		ResourceNode.create(1485, 740, 100, 100).resource(Resource.of("demo:textures/image/placeholder.webp")).attach(this);
 		TextNode.create(1535, 865).text(Text.create("Custom locator", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1690, 755, 70, 70).resource(UIDemoResource.PIXELATED.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"))).attach(this);
-		ResourceNode.create(1770, 755, 70, 70).resource(UIDemoResource.PIXELATED.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.png"))).attach(this);
+		ResourceNode.create(1690, 755, 70, 70).resource(UIDemoResource.PIXELATED.of("assets/demo/textures/image/placeholder.webp")).attach(this);
+		ResourceNode.create(1770, 755, 70, 70).resource(UIDemoResource.PIXELATED.of("assets/demo/textures/image/placeholder-animated.png")).attach(this);
 		TextNode.create(1765, 865).text(Text.create("Builder", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 	}
 

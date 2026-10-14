@@ -32,10 +32,10 @@ public class ResourceTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void loadsThroughTheDefaultAsyncLinearBuilder() {
+	public void loadsThroughTheDefaultLinearBuilderInTheBackground() {
 		final Resource resource = Resource.of(new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB));
 		Assert.assertSame(ResourceBuilder.create().getCache(), resource.getBuilder().getCache());
-		Assert.assertTrue(resource.getProperties().isAsync());
+		Assert.assertFalse(resource.isBlocking());
 		Assert.assertSame(TextureFilter.LINEAR, resource.getProperties().getInterpolation());
 		Assert.assertSame(resource.getResourceData(), resource.getBuilder().getCache().get(resource.getUniqueId()));
 	}
@@ -43,7 +43,7 @@ public class ResourceTest {
 	@Test
 	public void notifiesItsLoadWithItself() {
 		final List<Resource> loads = new ArrayList<>();
-		final Resource resource = ResourceBuilder.create().cache(null).of(new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB)).onLoad(loads::add);
+		final Resource resource = ResourceBuilder.create().cache(null).of(new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB)).blocking().onLoad(loads::add);
 		Assert.assertTrue(loads.isEmpty());
 		resource.generate();
 		Assert.assertTrue(resource.isLoaded());
@@ -56,16 +56,13 @@ public class ResourceTest {
 		final Resource resource = builder.compute("image", () -> new ResourceData("image", null));
 		Assert.assertNotSame(builder.getProperties(), resource.getProperties());
 		resource.nearest();
-		builder.async();
 		Assert.assertSame(TextureFilter.LINEAR, builder.getProperties().getInterpolation());
-		Assert.assertFalse(resource.getProperties().isAsync());
 	}
 
 	@Test
 	public void changesItsOwnProperties() {
 		final Resource resource = ResourceTest.resource(null);
-		Assert.assertSame(resource, resource.async().linear().mipmap(true).textureCoords(1D, 2D, 3D, 4D));
-		Assert.assertTrue(resource.getProperties().isAsync());
+		Assert.assertSame(resource, resource.linear().mipmap(true).textureCoords(1D, 2D, 3D, 4D));
 		Assert.assertSame(TextureFilter.LINEAR, resource.getProperties().getInterpolation());
 		Assert.assertEquals(Boolean.TRUE, resource.getProperties().getMipmap());
 		Assert.assertArrayEquals(new double[] {1D, 2D, 3D, 4D}, resource.getProperties().getTextureCoords(), 0D);
@@ -84,10 +81,9 @@ public class ResourceTest {
 	@Test
 	public void resetsItsPropertiesToTheBuilder() {
 		final ResourceBuilder builder = ResourceBuilder.create().cache(null).linear();
-		final Resource resource = builder.compute("image", () -> new ResourceData("image", null)).async().nearest().mipmap(false);
+		final Resource resource = builder.compute("image", () -> new ResourceData("image", null)).nearest().mipmap(false);
 		Assert.assertSame(resource, resource.reset());
 		Assert.assertNotSame(builder.getProperties(), resource.getProperties());
-		Assert.assertFalse(resource.getProperties().isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, resource.getProperties().getInterpolation());
 		Assert.assertNull(resource.getProperties().getMipmap());
 	}
@@ -95,9 +91,10 @@ public class ResourceTest {
 	@Test
 	public void copiesItselfOverTheSameData() {
 		final ResourceBuilder builder = ResourceBuilder.create().cache(null);
-		final Resource resource = builder.compute("image", () -> new ResourceData("image", null)).linear().mipmap(true);
+		final Resource resource = builder.compute("image", () -> new ResourceData("image", null)).linear().mipmap(true).blocking();
 		final Resource copy = resource.copy();
 		Assert.assertNotSame(resource, copy);
+		Assert.assertTrue(copy.isBlocking());
 		Assert.assertSame(resource.getResourceData(), copy.getResourceData());
 		Assert.assertSame(builder, copy.getBuilder());
 		Assert.assertSame(TextureFilter.LINEAR, copy.getProperties().getInterpolation());
@@ -196,17 +193,19 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void runsATaskAtOnceWhenBlocking() {
-		final List<Thread> threads = new ArrayList<>();
-		ResourceTest.resource(null).dispatch(() -> threads.add(Thread.currentThread()));
-		Assert.assertEquals(Collections.singletonList(Thread.currentThread()), threads);
+	public void runsATaskOnItsOwnThread() {
+		final List<Thread> threads = new CopyOnWriteArrayList<>();
+		final Resource resource = ResourceTest.resource(null);
+		resource.dispatch(() -> threads.add(Thread.currentThread()));
+		resource.getResourceData().await();
+		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
 	}
 
 	@Test
-	public void waitsForItsTasksWhenItTurnsBlocking() {
+	public void waitsForItsTasksOnlyWhenDrawn() {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final AtomicBoolean done = new AtomicBoolean();
-		final Resource resource = ResourceTest.resource(null).async();
+		final Resource resource = ResourceBuilder.create().cache(null).compute("image", () -> new ResourceData("image", null));
 		resource.dispatch(() -> {
 			try {
 				Thread.sleep(50L);
@@ -215,14 +214,16 @@ public class ResourceTest {
 			done.set(true);
 		});
 		Assert.assertSame(resource, resource.blocking());
+		Assert.assertTrue(resource.isBlocking());
+		Assert.assertFalse(done.get());
+		resource.prepareBind();
 		Assert.assertTrue(done.get());
-		Assert.assertFalse(resource.getProperties().isAsync());
 		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
 	}
 
 	@Test
 	public void decodesAtOnceWhenBlocking() {
-		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceTest.image());
+		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceTest.image()).blocking();
 		resource.generate();
 		Assert.assertTrue(resource.isGenerated());
 		Assert.assertTrue(resource.isLoaded());
@@ -232,8 +233,8 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void decodesInTheBackgroundWhenAsync() throws InterruptedException {
-		final Resource resource = ResourceBuilder.create().async().cache(null).of(ResourceTest.image());
+	public void decodesInTheBackgroundByDefault() throws InterruptedException {
+		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceTest.image());
 		resource.generate();
 		Assert.assertTrue(resource.isGenerated());
 		ResourceTest.await(resource::isLoaded);
@@ -242,7 +243,7 @@ public class ResourceTest {
 
 	@Test
 	public void uploadsItsPixelsIntoItsTexture() {
-		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceTest.image());
+		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceTest.image()).blocking();
 		resource.generate();
 		resource.upload();
 		final RecordingTexture texture = (RecordingTexture) resource.getTexture();
@@ -310,12 +311,12 @@ public class ResourceTest {
 	@Test
 	public void requestsItsDrawnSizeFromItsDecoder() {
 		final Decoder decoder = new Decoder(true);
-		final Resource resource = ResourceTest.resource(decoder);
+		final Resource resource = ResourceBuilder.create().cache(null).compute("image", () -> new ResourceData("image", decoder));
 		resource.request(0, 10);
 		resource.request(10, 0);
 		resource.request(30, 20);
-		resource.async().request(40, 50);
-		Assert.assertEquals(Arrays.asList("init", "request 30x20 blocking", "request 40x50 async"), decoder.calls);
+		resource.blocking().request(40, 50);
+		Assert.assertEquals(Arrays.asList("init", "request 30x20 async", "request 40x50 blocking"), decoder.calls);
 		ResourceTest.resource(null).request(30, 20);
 	}
 
@@ -347,7 +348,7 @@ public class ResourceTest {
 	public void clearsItsDataAndLeavesItsCache() {
 		final Decoder decoder = new Decoder(true);
 		final MemoryResourceCache cache = MemoryResourceCache.create();
-		final Resource resource = ResourceBuilder.create().cache(cache).compute("image", () -> new ResourceData("image", decoder));
+		final Resource resource = ResourceBuilder.create().cache(cache).compute("image", () -> new ResourceData("image", decoder)).blocking();
 		resource.prepareBind();
 		resource.clear();
 		Assert.assertTrue(decoder.texture.isDeleted());
@@ -356,14 +357,89 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void clearsWithoutCache() {
-		final RecordingTexture texture = new RecordingTexture();
-		ResourceBuilder.create().cache(null).of(texture).clear();
-		Assert.assertTrue(texture.isDeleted());
+	public void loadsAgainOnceCleared() {
+		final Decoder decoder = new Decoder(true);
+		final Resource resource = ResourceTest.resource(decoder);
+		resource.prepareBind();
+		resource.clear();
+		Assert.assertFalse(resource.isLoaded());
+		resource.prepareBind();
+		Assert.assertTrue(resource.isLoaded());
+		Assert.assertEquals(Arrays.asList("init", "prepare", "decode", "upload", "clear", "prepare", "decode", "upload"), decoder.calls);
+	}
+
+	@Test
+	public void reloadsWithoutLeavingItsCache() {
+		final Decoder decoder = new Decoder(true);
+		final MemoryResourceCache cache = MemoryResourceCache.create();
+		final Resource resource = ResourceBuilder.create().cache(cache).compute("image", () -> new ResourceData("image", decoder)).blocking();
+		resource.prepareBind();
+		Assert.assertSame(resource, resource.reload());
+		Assert.assertFalse(resource.isLoaded());
+		Assert.assertSame(resource.getResourceData(), cache.get("image"));
+		resource.prepareBind();
+		Assert.assertTrue(resource.isLoaded());
+	}
+
+	@Test
+	public void leavesTheCacheEntryOfAnotherData() {
+		final MemoryResourceCache cache = MemoryResourceCache.create();
+		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
+		final ResourceData cached = builder.compute("image", () -> new ResourceData("image", null)).getResourceData();
+		builder.cache(null).compute("image", () -> new ResourceData("image", null)).clear();
+		Assert.assertSame(cached, cache.get("image"));
+	}
+
+	@Test
+	public void neverDeletesAGivenTexture() {
+		final ITexture texture = new RecordingTexture().allocate(4, 2);
+		final Resource resource = ResourceBuilder.create().cache(null).of(texture);
+		resource.prepareBind();
+		resource.clear();
+		Assert.assertFalse(((RecordingTexture) texture).isDeleted());
+		resource.prepareBind();
+		Assert.assertTrue(resource.isLoaded());
+		Assert.assertSame(texture, resource.getTexture());
+	}
+
+	@Test
+	public void measuresItsTextureCoordinates() {
+		final Resource resource = ResourceTest.resource(null);
+		resource.getResourceData().width(40).height(20);
+		Assert.assertEquals(40, resource.getWidth());
+		Assert.assertEquals(20, resource.getHeight());
+		resource.textureCoords(5D, 5D, 10D, 8D);
+		Assert.assertEquals(10, resource.getWidth());
+		Assert.assertEquals(8, resource.getHeight());
+		Assert.assertEquals(40, resource.getSourceWidth());
+		Assert.assertEquals(20, resource.getSourceHeight());
+	}
+
+	@Test
+	public void sharesItselfWhenItsDecoderHasNoPlayback() {
+		final Resource resource = ResourceTest.resource(new Decoder(true));
+		Assert.assertSame(resource, resource.fork());
+		Assert.assertTrue(resource.getResourceData().getForks().isEmpty());
+		final Resource empty = ResourceTest.resource(null);
+		Assert.assertSame(empty, empty.fork());
+	}
+
+	@Test
+	public void forksItsPlaybackOverTheSameAsset() {
+		final AnimatedResourceDecoder decoder = new AnimatedResourceDecoder(Asset.of(ResourceTest.class.getResourceAsStream("/animation/blink.gif")), new GifResourceAnimationReader());
+		final Resource resource = ResourceTest.resource(decoder).linear();
+		final Resource fork = resource.fork();
+		Assert.assertNotSame(resource, fork);
+		Assert.assertNotSame(resource.getResourceData(), fork.getResourceData());
+		Assert.assertNotSame(decoder, fork.getDecoder());
+		Assert.assertSame(decoder, ((AnimatedResourceDecoder) fork.getDecoder()).getOrigin());
+		Assert.assertEquals(Collections.singletonList(fork.getResourceData()), resource.getResourceData().getForks());
+		Assert.assertTrue(fork.isBlocking());
+		Assert.assertSame(TextureFilter.LINEAR, fork.getProperties().getInterpolation());
 	}
 
 	private static Resource resource(final IResourceDecoder decoder) {
-		return ResourceBuilder.create().cache(null).compute("image", () -> new ResourceData("image", decoder));
+		return ResourceBuilder.create().cache(null).compute("image", () -> new ResourceData("image", decoder)).blocking();
 	}
 
 	private static BufferedImage image() {

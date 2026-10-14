@@ -120,7 +120,9 @@ public class ResourcePlayerNodeTest {
 		final Resource resource = ResourcePlayerNodeTest.blink();
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(resource);
 		Assert.assertSame(resource, player.getResource());
-		Assert.assertSame(resource.getDecoder(), player.getPlayback());
+		Assert.assertNotSame(resource, player.getFork());
+		Assert.assertNotSame(resource.getDecoder(), player.getPlayback());
+		Assert.assertSame(player.getFork().getDecoder(), player.getPlayback());
 		Assert.assertNull(player.getVideo());
 		this.bridges.open(new NodeUI(player));
 		Assert.assertTrue(player.isPlaying());
@@ -196,7 +198,7 @@ public class ResourcePlayerNodeTest {
 		this.settle(player, 10);
 		Assert.assertTrue(player.isPaused());
 		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
-		Assert.assertEquals(120, ((RecordingTexture) player.getResource().getResourceData().getTextures()[0]).getPixels()[0] & 0xFF, 3);
+		Assert.assertEquals(120, ((RecordingTexture) player.getFork().getResourceData().getTextures()[0]).getPixels()[0] & 0xFF, 3);
 		player.resume();
 		this.settle(player, 7);
 		Assert.assertTrue(player.isPlaying());
@@ -212,7 +214,7 @@ public class ResourcePlayerNodeTest {
 		this.settle(player, 1);
 		Assert.assertTrue(player.isPlaying());
 		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
-		Assert.assertEquals(120, ((RecordingTexture) player.getResource().getResourceData().getTextures()[0]).getPixels()[0] & 0xFF, 3);
+		Assert.assertEquals(120, ((RecordingTexture) player.getFork().getResourceData().getTextures()[0]).getPixels()[0] & 0xFF, 3);
 	}
 
 	@Test
@@ -368,14 +370,78 @@ public class ResourcePlayerNodeTest {
 		Assert.assertTrue(resource.getDecoder() instanceof AnimatedResourceDecoder);
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(resource);
 		this.bridges.open(new NodeUI(player)).frames(2);
-		Assert.assertEquals(0, ((AnimatedResourceDecoder) resource.getDecoder()).getDisplayed());
+		Assert.assertEquals(0, ((AnimatedResourceDecoder) player.getFork().getDecoder()).getDisplayed());
 		this.bridges.frame();
-		Assert.assertEquals(1, ((AnimatedResourceDecoder) resource.getDecoder()).getDisplayed());
+		Assert.assertEquals(1, ((AnimatedResourceDecoder) player.getFork().getDecoder()).getDisplayed());
+		Assert.assertEquals(-1, ((AnimatedResourceDecoder) resource.getDecoder()).getDisplayed());
+	}
+
+	@Test
+	public void playsASharedResourceApartFromAnotherPlayer() {
+		final Resource resource = ResourcePlayerNodeTest.blink();
+		final ResourcePlayerNode first = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(resource);
+		final ResourcePlayerNode second = ResourcePlayerNode.create(200D, 100D, 80D, 80D).resource(resource).autoplay(false);
+		this.bridges.open(new NodeUI(first, second)).frames(3);
+		Assert.assertNotSame(first.getPlayback(), second.getPlayback());
+		Assert.assertTrue(first.isPlaying());
+		Assert.assertFalse(second.isPlaying());
+		Assert.assertEquals(0.2D, first.getProgress(), 1E-9D);
+		Assert.assertEquals(0D, second.getProgress(), 0D);
+		second.play();
+		first.pause();
+		this.bridges.frames(3);
+		Assert.assertTrue(first.isPaused());
+		Assert.assertTrue(second.isPlaying());
+		Assert.assertEquals(0.2D, first.getProgress(), 1E-9D);
+		Assert.assertEquals(0.2D, second.getProgress(), 1E-9D);
+	}
+
+	@Test
+	public void playsAStreamedVideoAgainOnceGivenBack() {
+		final Resource video = ResourcePlayerNodeTest.video();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(video);
+		this.bridges.open(new NodeUI(player)).frames(2);
+		Assert.assertTrue(player.isPlaying());
+		player.resource(ResourcePlayerNodeTest.blink());
+		this.bridges.frames(2);
+		player.resource(video);
+		this.bridges.frames(2);
+		Assert.assertTrue(player.isPlaying());
+		Assert.assertNotNull(player.getVideo().getGrabber());
+		Assert.assertTrue(player.getVideo().getFile().isFile());
+		Assert.assertFalse(player.getFork().isFailed());
+	}
+
+	@Test
+	public void keepsTheStateAskedBeforeItsResourceLoads() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).loop(true);
+		Assert.assertSame(player, player.pause().seek(0.12D));
+		Assert.assertFalse(player.isResourceStarted());
+		this.bridges.open(new NodeUI(player)).frames(3);
+		Assert.assertFalse(player.isPlaying());
+		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
+		final ResourcePlayerNode later = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).autoplay(false).play();
+		this.bridges.open(new NodeUI(later)).frames(3);
+		Assert.assertTrue(later.isPlaying());
+	}
+
+	@Test
+	public void refusesToPlayAStillImage() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourceBuilder.create().cache(null).of(new RecordingTexture().allocate(4, 4)));
+		this.bridges.open(new NodeUI(player));
+		Assert.assertTrue(player.isResourceStarted());
+		Assert.assertNull(player.getPlayback());
+		try {
+			player.play();
+			Assert.fail("A still image must refuse to play");
+		} catch (final IllegalStateException expected) {
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith(" of this ResourcePlayerNode has no playback: give it a video or an animated image, or show a still image with a ResourceNode"));
+		}
 	}
 
 	@Test
 	public void placesTheAudioOfAVideoGivenAfterwards() {
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F).resource(ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv")));
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertTrue(video.isHasLocation());
@@ -415,11 +481,11 @@ public class ResourcePlayerNodeTest {
 	}
 
 	private static Resource blink() {
-		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/animation/blink.png"));
+		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/animation/blink.png")).blocking();
 	}
 
 	private static Resource video() {
-		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv"));
+		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv")).blocking();
 	}
 
 	public static final class NodeUI extends UI {

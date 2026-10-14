@@ -183,18 +183,57 @@ public class ResourceNodeTest {
 	}
 
 	@Test
-	public void switchesTheFilteringOfBothResources() {
-		final Resource main = ResourceNodeTest.resource(20, 10);
-		final Resource hovered = ResourceNodeTest.resource(20, 10);
-		final ResourceNode node = ResourceNode.create(100D, 100D).resource(main).hoveredResource(hovered);
-		Assert.assertSame(node, node.linear(true));
+	public void filtersItsResourcesWithoutChangingThem() {
+		final Resource main = ResourceNodeTest.resource(20, 10).linear();
+		final Resource hovered = ResourceNodeTest.resource(20, 10).linear();
+		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).resource(main).hoveredResource(hovered);
+		Assert.assertNull(node.getLinear());
+		Assert.assertSame(node, node.linear(false));
+		Assert.assertFalse(node.getLinear());
+		node.draw(0D, 0D);
+		Assert.assertSame(TextureFilter.NEAREST, this.bridges.getRender().getState().getTextureFilter());
 		Assert.assertSame(TextureFilter.LINEAR, main.getProperties().getInterpolation());
 		Assert.assertSame(TextureFilter.LINEAR, hovered.getProperties().getInterpolation());
-		node.linear(false);
-		Assert.assertSame(TextureFilter.NEAREST, main.getProperties().getInterpolation());
-		Assert.assertSame(TextureFilter.NEAREST, hovered.getProperties().getInterpolation());
+		ResourceNode.create(100D, 100D, 20D, 10D).resource(main).draw(0D, 0D);
+		Assert.assertSame(TextureFilter.LINEAR, this.bridges.getRender().getState().getTextureFilter());
 		final ResourceNode empty = ResourceNode.create(100D, 100D);
 		Assert.assertSame(empty, empty.linear(true));
+	}
+
+	@Test
+	public void filtersItsResourcesOnlyWhenTheyChange() {
+		final Resource main = ResourceNodeTest.resource(20, 10);
+		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).resource(main);
+		Assert.assertSame(main, node.getFilteredResource());
+		node.linear(true);
+		final Resource filtered = node.getFilteredResource();
+		Assert.assertNotSame(main, filtered);
+		Assert.assertSame(main.getResourceData(), filtered.getResourceData());
+		this.bridges.open(new NodeUI(node)).frames(3);
+		Assert.assertSame(filtered, node.getFilteredResource());
+		node.linear(false);
+		Assert.assertNotSame(filtered, node.getFilteredResource());
+		Assert.assertSame(TextureFilter.NEAREST, node.getFilteredResource().getProperties().getInterpolation());
+		final Resource next = ResourceNodeTest.resource(20, 10);
+		node.resource(next);
+		Assert.assertSame(next.getResourceData(), node.getFilteredResource().getResourceData());
+		Assert.assertNull(node.getFilteredHoveredResource());
+	}
+
+	@Test
+	public void takesTheSizeOfItsTextureCoordinates() {
+		final ResourceNode node = ResourceNode.create(100D, 100D).resource(ResourceNodeTest.resource(40, 20).textureCoords(10D, 5D, 16D, 8D)).color(ResourceNodeTest.TINT);
+		this.bridges.open(new NodeUI(node));
+		Assert.assertEquals(16D, node.getWidth(), 0D);
+		Assert.assertEquals(8D, node.getHeight(), 0D);
+		this.bridges.frame();
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 100D, 116D, 108D);
+	}
+
+	@Test
+	public void containsItsTextureCoordinates() {
+		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 100D, 100D).resource(ResourceNodeTest.resource(400, 100).textureCoords(0D, 0D, 10D, 20D)).color(ResourceNodeTest.TINT).stretch(StretchType.CONTAIN)));
+		this.assertBounds(this.single(ResourceNodeTest.TINT), 125D, 100D, 175D, 200D);
 	}
 
 	@Test

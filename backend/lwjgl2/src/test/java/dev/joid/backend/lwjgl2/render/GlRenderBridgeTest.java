@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
+import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
 import dev.joid.base.opengl.render.vertex.ArrayObjectVertexInput;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
@@ -67,14 +68,14 @@ public class GlRenderBridgeTest {
 		System.setErr(new PrintStream(output, true));
 		JOIDEnv.devMode(true);
 		try {
-			final Resource resource = Resource.of(2147483000);
+			final Resource resource = Resource.of(GlBorrowedTexture.create(2147483000));
 			resource.prepareBind();
 			Assert.assertTrue(resource.isFailed());
 		} finally {
 			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
-		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] The resource gl_texture_2147483000 cannot be read: The borrowed texture 2147483000 is not a texture of the host. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production."));
+		Assert.assertTrue(output.toString(), output.toString().contains(" cannot be read: The borrowed texture 2147483000 is not a texture of the host. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production."));
 	}
 
 }

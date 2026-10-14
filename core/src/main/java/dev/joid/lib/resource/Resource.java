@@ -8,6 +8,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
+import dev.joid.lib.resource.cache.IResourceCache;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
 import lombok.Getter;
@@ -16,16 +17,17 @@ import lombok.NonNull;
 @Getter
 public final class Resource {
 
-	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().async().linear();
+	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().linear();
 
 	private final ResourceData data;
 	private final ResourceBuilder builder;
 
+	private boolean            blocking;
 	private ResourceProperties properties;
 
 	protected Resource(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
 		this.builder    = builder;
-		this.properties = builder.getProperties().copy();
+		this.properties = builder.getProperties();
 		this.data       = data;
 	}
 
@@ -38,14 +40,8 @@ public final class Resource {
 		return this;
 	}
 
-	public final @NonNull Resource async() {
-		this.properties.async();
-		return this;
-	}
-
 	public final @NonNull Resource blocking() {
-		this.properties.blocking();
-		this.data.await();
+		this.blocking = true;
 		return this;
 	}
 
@@ -95,19 +91,48 @@ public final class Resource {
 	}
 
 	public final @NonNull Resource reset() {
-		this.properties = this.builder.getProperties().copy();
+		this.properties = this.builder.getProperties();
 		return this;
 	}
 
 	public final @NonNull Resource copy() {
-		return new Resource(this.builder, this.data).properties(this.properties.copy());
+		final Resource copy = new Resource(this.builder, this.data).properties(this.properties.copy());
+		copy.blocking = this.blocking;
+		return copy;
+	}
+
+	public final @NonNull Resource fork() {
+		final IResourceDecoder decoder = this.data.getDecoder();
+		final IResourceDecoder forked = decoder == null ? null : decoder.fork();
+		if (forked == null) {
+			return this;
+		}
+
+		final Resource fork = new Resource(this.builder, this.data.fork(forked)).properties(this.properties.copy());
+		fork.blocking = this.blocking;
+		return fork;
+	}
+
+	public final @NonNull Resource reload() {
+		this.data.clear();
+		return this;
 	}
 
 	public final int getWidth() {
-		return this.data.getWidth();
+		final double[] textureCoords = this.properties.getTextureCoords();
+		return textureCoords != null ? (int) Math.round(textureCoords[2]) : this.data.getWidth();
 	}
 
 	public final int getHeight() {
+		final double[] textureCoords = this.properties.getTextureCoords();
+		return textureCoords != null ? (int) Math.round(textureCoords[3]) : this.data.getHeight();
+	}
+
+	public final int getSourceWidth() {
+		return this.data.getWidth();
+	}
+
+	public final int getSourceHeight() {
 		return this.data.getHeight();
 	}
 
@@ -164,11 +189,11 @@ public final class Resource {
 	}
 
 	public final void dispatch(final @NonNull Runnable task) {
-		this.data.dispatch(task, this.properties.isAsync());
+		this.data.dispatch(task);
 	}
 
 	public final void generate() {
-		this.data.generate(this.properties.isAsync());
+		this.data.generate(!this.blocking);
 	}
 
 	public final void upload() {
@@ -191,7 +216,7 @@ public final class Resource {
 	public final void request(final int width, final int height) {
 		final IResourceDecoder decoder = this.data.getDecoder();
 		if (decoder != null && width > 0 && height > 0) {
-			decoder.request(this.data, width, height, this.properties.isAsync());
+			decoder.request(this.data, width, height, !this.blocking);
 		}
 	}
 
@@ -221,8 +246,16 @@ public final class Resource {
 	}
 
 	public final void prepareBind() {
+		if (this.blocking) {
+			this.data.await();
+		}
+
 		if (!this.isGenerated()) {
 			this.generate();
+		}
+
+		if (this.blocking) {
+			this.data.await();
 		}
 
 		if (Boolean.TRUE.equals(this.properties.getMipmap()) && this.isMipmappable() && this.data.getTextures() != null) {
@@ -237,12 +270,11 @@ public final class Resource {
 	}
 
 	public final void clear() {
-		if (this.data != null) {
-			this.data.clear();
-		}
+		this.data.clear();
 
-		if (this.builder != null && this.builder.getCache() != null) {
-			this.builder.getCache().remove(this.data.getUniqueId());
+		final IResourceCache cache = this.builder.getCache();
+		if (cache != null && cache.get(this.data.getUniqueId()) == this.data) {
+			cache.remove(this.data.getUniqueId());
 		}
 	}
 

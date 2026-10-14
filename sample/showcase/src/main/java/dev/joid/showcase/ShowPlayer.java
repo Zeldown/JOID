@@ -39,7 +39,7 @@ public class ShowPlayer extends ShowUI {
 		this.blob(1350, -300, 900, ShowUI.PINK.copyAlpha(0.22F), 9D, 0.5D, 50D);
 		CircleNode.create(560, 140, 800).color(ShowUI.ORANGE.copyAlpha(0.25F)).effect(BlurNodeEffect.create(120F)).attach(this);
 
-		final Resource clip = Resource.of(ShowPlayer.class.getResourceAsStream("/assets/showcase/honey.mp4"));
+		final Resource clip = Resource.of("assets/showcase/honey.mp4");
 		RectNode
 		.create(240, 96, 1440, 810)
 		.color(ShowUI.NIGHT)

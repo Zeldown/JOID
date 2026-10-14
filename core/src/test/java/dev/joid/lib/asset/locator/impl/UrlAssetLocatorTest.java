@@ -12,9 +12,13 @@ import dev.joid.lib.asset.impl.UrlAsset;
 public class UrlAssetLocatorTest {
 
 	@Test
-	public void supportsOnlyStrings() {
+	public void supportsOnlyStringsWithAScheme() {
 		final UrlAssetLocator locator = new UrlAssetLocator();
 		Assert.assertTrue(locator.supports("https://example.invalid/image.png"));
+		Assert.assertTrue(locator.supports("file:/home/image.png"));
+		Assert.assertTrue(locator.supports("jar:file:/home/assets.jar!/image.png"));
+		Assert.assertFalse(locator.supports("assets/image.png"));
+		Assert.assertFalse(locator.supports("C:\\assets\\image.png"));
 		Assert.assertFalse(locator.supports(new File("image.png")));
 		Assert.assertFalse(locator.supports(new ByteArrayInputStream(new byte[0])));
 	}

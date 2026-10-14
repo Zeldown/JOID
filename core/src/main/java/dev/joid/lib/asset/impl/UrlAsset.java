@@ -1,8 +1,10 @@
 package dev.joid.lib.asset.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -25,8 +27,13 @@ public final class UrlAsset extends Asset {
 	}
 
 	@Override
+	public File getFile() {
+		return this.url.startsWith("file:") ? new File(URI.create(this.url)) : null;
+	}
+
+	@Override
 	public boolean isRemote() {
-		return true;
+		return !this.url.startsWith("file:") && !this.url.startsWith("jar:");
 	}
 
 	@Override

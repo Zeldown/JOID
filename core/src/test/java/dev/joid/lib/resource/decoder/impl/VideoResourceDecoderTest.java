@@ -5,13 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,12 +26,14 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.asset.impl.FileAsset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.resource.ResourceData;
+import dev.joid.lib.video.VideoAudioPlayer;
 
 import lombok.NonNull;
 
@@ -118,8 +125,104 @@ public class VideoResourceDecoderTest {
 		final ResourceData data = new ResourceData("frames.mkv", null);
 		decoder.decode(data);
 		Assert.assertSame(file, decoder.getFile());
-		Assert.assertNull(decoder.getAsset());
+		Assert.assertTrue(decoder.getAsset() instanceof FileAsset);
 		Assert.assertEquals(16, data.getWidth());
+	}
+
+	@Test
+	public void neverDeletesTheFileItReadsInPlace() throws IOException {
+		final File file = this.folder.newFile("frames.mkv");
+		Files.write(file.toPath(), VideoResourceDecoderTest.bytes("frames.mkv"));
+		final VideoResourceDecoder decoder = this.decoder(file);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		decoder.clear(data);
+		Assert.assertTrue(file.isFile());
+		Assert.assertNull(decoder.getFile());
+	}
+
+	@Test
+	public void sharesItsCopyWithItsForksUntilTheLastClear() {
+		final File previous = JOIDEnv.getCacheDir();
+		JOIDEnv.cacheDir(this.folder.getRoot());
+		try {
+			final VideoResourceDecoder decoder = this.frames();
+			final VideoResourceDecoder fork = decoder.fork();
+			this.decoders.add(fork);
+			final ResourceData data = VideoResourceDecoderTest.load(decoder);
+			final ResourceData forked = VideoResourceDecoderTest.load(fork);
+			Assert.assertSame(decoder, fork.getOrigin());
+			Assert.assertSame(decoder.getFile(), fork.getFile());
+			Assert.assertNotSame(decoder.getGrabber(), fork.getGrabber());
+			Assert.assertEquals(16, forked.getWidth());
+			final File copy = decoder.getFile();
+			decoder.clear(data);
+			Assert.assertTrue(copy.isFile());
+			fork.clear(forked);
+			Assert.assertFalse(copy.exists());
+		} finally {
+			JOIDEnv.cacheDir(previous);
+		}
+	}
+
+	@Test
+	public void playsItsForkApart() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final VideoResourceDecoder fork = decoder.fork();
+		this.decoders.add(fork);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		final ResourceData forked = VideoResourceDecoderTest.load(fork.autoplay(false));
+		this.play(decoder, data, 7);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertFalse(fork.isPlaying());
+		Assert.assertEquals(40, VideoResourceDecoderTest.shade(data), 3);
+		Assert.assertEquals(20, VideoResourceDecoderTest.shade(forked), 3);
+	}
+
+	@Test
+	public void queuesNoAudioBeforeZeroAfterASeek() throws Exception {
+		for (final String path : new String[] {"/video/opus-vp9.webm", "/dev/joid/lib/resource/decoder/impl/voiced.mkv"}) {
+			final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream(path));
+			VideoResourceDecoderTest.load(decoder);
+			Assert.assertTrue(path, decoder.getGrabber().getFormatContext().start_time() < 0L);
+			decoder.seek(0D);
+			final long deadline = System.currentTimeMillis() + 5000L;
+			while (!decoder.isEnded() && decoder.getFrameQueue().remainingCapacity() > 0 && System.currentTimeMillis() < deadline) {
+				Thread.sleep(1L);
+			}
+
+			final double rate = decoder.getGrabber().getSampleRate();
+			final int queued = VideoResourceDecoderTest.queuedSamples(decoder.getAudioPlayer());
+			Assert.assertTrue(path + " " + queued, queued > 0);
+			Assert.assertTrue(path + " " + queued, queued <= Math.ceil(VideoResourceDecoderTest.audioEnd(path) * rate));
+			decoder.release();
+		}
+	}
+
+	@Test
+	public void keepsTheAudioOfAWebmOnceLooped() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm")).loop(true);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		while (decoder.getLoopOffset() <= 0D) {
+			this.play(decoder, data, 1);
+		}
+		this.play(decoder, data, 30);
+		final int written = Collections.frequency(this.audio.calls, "write");
+		this.play(decoder, data, 30);
+		Assert.assertTrue(Collections.frequency(this.audio.calls, "write") > written);
+	}
+
+	@Test
+	public void loopsAWebmWhoseAudioStartsBeforeZeroUnderAFrozenClock() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm")).loop(true);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		Assert.assertTrue(decoder.getGrabber().getFormatContext().start_time() < 0L);
+		for (int frame = 0; frame < 60; frame++) {
+			this.play(decoder, data, 1);
+			Assert.assertTrue("frame " + frame, decoder.isSettled());
+		}
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertTrue(decoder.getLoopOffset() > 0D);
+		Assert.assertTrue(decoder.getDecodedFrameIndex().get() > 0);
 	}
 
 	@Test
@@ -674,6 +777,37 @@ public class VideoResourceDecoderTest {
 		this.play(decoder, data, 6);
 		Assert.assertEquals(7, decoder.getDisplayedFrameIndex());
 		Assert.assertEquals(160, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	private static int queuedSamples(final VideoAudioPlayer player) throws ReflectiveOperationException {
+		final Field field = VideoAudioPlayer.class.getDeclaredField("sampleQueue");
+		field.setAccessible(true);
+		int samples = 0;
+		for (final Object chunk : (Collection<?>) field.get(player)) {
+			samples += ((short[]) chunk).length;
+		}
+		return samples;
+	}
+
+	private static double audioEnd(final String path) throws Exception {
+		final File file = File.createTempFile("joid-audio-", ".bin");
+		try {
+			Files.write(file.toPath(), Asset.of(VideoResourceDecoderTest.class.getResourceAsStream(path)).read());
+			final FFmpegFrameGrabber grabber = new FFmpegFrameGrabber(file);
+			grabber.start();
+			try {
+				double end = 0D;
+				for (Frame frame = grabber.grabSamples(); frame != null; frame = grabber.grabSamples()) {
+					end = Math.max(end, frame.timestamp / 1000000D + frame.samples[0].limit() / (double) grabber.getSampleRate());
+				}
+				return end;
+			} finally {
+				grabber.stop();
+				grabber.release();
+			}
+		} finally {
+			Files.delete(file.toPath());
+		}
 	}
 
 	private VideoResourceDecoder frames() {

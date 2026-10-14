@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.asset.impl.ClasspathAsset;
 import dev.joid.lib.asset.impl.FileAsset;
 import dev.joid.lib.asset.impl.StreamAsset;
 import dev.joid.lib.asset.impl.UrlAsset;
@@ -71,6 +72,33 @@ public class AssetLocatorTest {
 		Assert.assertTrue(AssetLocator.supports(new StringBuilder("image.png")));
 		AssetLocator.unregister(locator);
 		Assert.assertFalse(AssetLocator.supports(new StringBuilder("image.png")));
+	}
+
+	@Test
+	public void registersALocatorOnce() {
+		final Object handle = new Object();
+		final IAssetLocator locator = new IAssetLocator() {
+
+			@Override
+			public boolean supports(final @NonNull Object other) {
+				return other == handle;
+			}
+
+			@Override
+			public @NonNull Asset locate(final @NonNull Object other) {
+				return new SpecialAsset();
+			}
+
+		};
+		AssetLocator.register(locator);
+		AssetLocator.register(locator);
+		AssetLocator.unregister(locator);
+		Assert.assertFalse(AssetLocator.supports(handle));
+	}
+
+	@Test
+	public void locatesAPathInTheClasspath() {
+		Assert.assertTrue(AssetLocator.locate("animation/still.png") instanceof ClasspathAsset);
 	}
 
 	@Test

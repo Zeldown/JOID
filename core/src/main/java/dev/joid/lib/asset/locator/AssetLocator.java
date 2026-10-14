@@ -5,6 +5,7 @@ import java.util.List;
 
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.locator.impl.FileAssetLocator;
+import dev.joid.lib.asset.locator.impl.PathAssetLocator;
 import dev.joid.lib.asset.locator.impl.StreamAssetLocator;
 import dev.joid.lib.asset.locator.impl.UrlAssetLocator;
 import lombok.AccessLevel;
@@ -18,11 +19,13 @@ public class AssetLocator {
 
 	static {
 		AssetLocator.register(new UrlAssetLocator());
+		AssetLocator.register(new PathAssetLocator());
 		AssetLocator.register(new FileAssetLocator());
 		AssetLocator.register(new StreamAssetLocator());
 	}
 
 	public static void register(final @NonNull IAssetLocator locator) {
+		AssetLocator.LOCATORS.remove(locator);
 		AssetLocator.LOCATORS.add(0, locator);
 	}
 

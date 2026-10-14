@@ -31,17 +31,11 @@ public final class DrawResource {
 	}
 
 	public void drawResource(final double x, final double y, final @NonNull Resource resource) {
-		final double[] textureCoords = resource.getProperties().getTextureCoords();
-		if (textureCoords != null && textureCoords.length == 4) {
-			this.drawResource(x, y, textureCoords[2], textureCoords[3], resource);
-			return;
-		}
-
 		this.drawResource(x, y, resource.getWidth(), resource.getHeight(), resource);
 	}
 
 	public void drawResource(final double x, final double y, final double width, final double height, final @NonNull Resource resource) {
-		this.drawRegion(x, y, width, height, resource.getProperties().getTextureCoords(), resource);
+		this.drawRegion(x, y, width, height, null, resource);
 	}
 
 	public void drawResource(final double x, final double y, final double width, final double height, final double u, final double v, final double regionWidth, final double regionHeight, final @NonNull Resource resource) {
@@ -58,7 +52,9 @@ public final class DrawResource {
 		}
 	}
 
-	private void drawRegion(final double x, final double y, final double width, final double height, final double[] region, final Resource resource) {
+	private void drawRegion(final double x, final double y, final double width, final double height, final double[] crop, final Resource resource) {
+		final double[] textureCoords = resource.getProperties().getTextureCoords();
+		final double[] region = textureCoords == null ? crop : crop == null ? textureCoords : new double[] {textureCoords[0] + crop[0], textureCoords[1] + crop[1], crop[2], crop[3]};
 		final boolean failed = resource.isFailed();
 		if (failed && !JOIDEnv.isDevMode()) {
 			return;
@@ -73,8 +69,8 @@ public final class DrawResource {
 		final ResourceProperties properties = resource.getProperties();
 		if (!failed && properties.getTextureCoords() == null) {
 			final boolean cropped = region != null && region.length == 4;
-			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX() * (cropped ? resource.getWidth() / region[2] : 1D));
-			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY() * (cropped ? resource.getHeight() / region[3] : 1D));
+			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX() * (cropped ? resource.getSourceWidth() / region[2] : 1D));
+			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY() * (cropped ? resource.getSourceHeight() / region[3] : 1D));
 			resource.request(pixelWidth, pixelHeight);
 
 			final ITexture texture = resource.getTexture();
@@ -84,7 +80,7 @@ public final class DrawResource {
 			}
 		}
 
-		final double[] uv = failed || region == null || region.length != 4 ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getWidth(), region[1] / resource.getHeight(), (region[0] + region[2]) / resource.getWidth(), (region[1] + region[3]) / resource.getHeight()};
+		final double[] uv = failed || region == null || region.length != 4 ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getSourceWidth(), region[1] / resource.getSourceHeight(), (region[0] + region[2]) / resource.getSourceWidth(), (region[1] + region[3]) / resource.getSourceHeight()};
 		render.getModelView().push();
 		try {
 			render.getState().blend(BlendState.NORMAL);

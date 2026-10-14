@@ -16,6 +16,7 @@ import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
+import lombok.NonNull;
 
 public class ResourceFormatTest {
 
@@ -72,6 +73,28 @@ public class ResourceFormatTest {
 		Assert.assertEquals(8, data.getWidth());
 		Assert.assertEquals(0xFFFF0000, data.getData()[0][0]);
 		Assert.assertEquals(0, data.getData()[0][63] >>> 24);
+	}
+
+	@Test
+	public void registersAFormatOnce() {
+		final IResourceFormat format = new IResourceFormat() {
+
+			@Override
+			public boolean supports(final @NonNull byte[] header) {
+				return header.length > 0 && header[0] == (byte) 0x89;
+			}
+
+			@Override
+			public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
+				return new VideoResourceDecoder(asset);
+			}
+
+		};
+		ResourceFormat.register(format);
+		ResourceFormat.register(format);
+		Assert.assertTrue(ResourceFormat.decoder(Asset.of(new ByteArrayInputStream(ResourceFormatTest.PNG))) instanceof VideoResourceDecoder);
+		ResourceFormat.unregister(format);
+		Assert.assertTrue(ResourceFormat.decoder(Asset.of(new ByteArrayInputStream(ResourceFormatTest.PNG))) instanceof RasterResourceDecoder);
 	}
 
 	@Test

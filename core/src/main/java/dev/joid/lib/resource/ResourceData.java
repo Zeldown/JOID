@@ -1,12 +1,18 @@
 package dev.joid.lib.resource;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
 import dev.joid.internal.JOIDEnv;
@@ -27,6 +33,7 @@ public final class ResourceData {
 	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
 	private final List<Thread>              tasks          = new CopyOnWriteArrayList<>();
+	private final Set<ResourceData>         forks          = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 	private final List<Runnable>            loadListeners  = new CopyOnWriteArrayList<>();
 	private final List<Consumer<Throwable>> errorListeners = new CopyOnWriteArrayList<>();
 
@@ -38,6 +45,12 @@ public final class ResourceData {
 	private ITexture   missingTexture;
 
 	private volatile Throwable error;
+	private volatile Future<?> decoding;
+
+	private volatile int     generation;
+	private volatile boolean decodingRunning;
+
+	private Runnable pendingRelease;
 
 	private boolean loaded;
 	private boolean uploaded;
@@ -145,14 +158,16 @@ public final class ResourceData {
 		return this.decoder(decoder);
 	}
 
-	public final void dispatch(final @NonNull Runnable task, final boolean async) {
-		if (async) {
-			final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
-			this.tasks.add(thread);
-			thread.start();
-		} else {
-			task.run();
-		}
+	public final @NonNull ResourceData fork(final @NonNull IResourceDecoder decoder) {
+		final ResourceData fork = new ResourceData(this.uniqueId, decoder);
+		this.forks.add(fork);
+		return fork;
+	}
+
+	public final void dispatch(final @NonNull Runnable task) {
+		final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
+		this.tasks.add(thread);
+		thread.start();
 	}
 
 	public final void await() {
@@ -167,12 +182,27 @@ public final class ResourceData {
 				Thread.currentThread().interrupt();
 			}
 		}
+
+		final Future<?> decoding = this.decoding;
+		if (decoding == null) {
+			return;
+		}
+
+		try {
+			decoding.get();
+		} catch (final InterruptedException silent) {
+			Thread.currentThread().interrupt();
+		} catch (final ExecutionException silent) {}
 	}
 
 	public final void generate(final boolean async) {
 		if (this.error != null) {
 			this.generated = true;
 		} else if (this.decoder != null) {
+			if (this.decodingRunning) {
+				return;
+			}
+
 			this.generated = true;
 
 			try {
@@ -183,23 +213,31 @@ public final class ResourceData {
 			}
 
 			final IResourceDecoder decoder = this.decoder;
+			final int generation = this.generation;
 			final Runnable task = () -> {
 				try {
 					decoder.decode(this);
 				} catch (final RuntimeException exception) {
-					if (this.decoder == decoder) {
+					if (this.isCurrent(decoder, generation)) {
 						this.fail(exception);
 					}
 				}
 
-				if (this.decoder == decoder && this.error == null) {
+				if (this.isCurrent(decoder, generation) && this.error == null) {
 					this.uploaded = false;
 					this.fireLoad();
 				}
 			};
 
 			if (async) {
-				ResourceData.ASYNC_EXECUTOR.execute(task);
+				this.decodingRunning = true;
+				this.decoding = ResourceData.ASYNC_EXECUTOR.submit(() -> {
+					try {
+						task.run();
+					} finally {
+						this.endDecoding();
+					}
+				});
 			} else {
 				task.run();
 			}
@@ -277,6 +315,12 @@ public final class ResourceData {
 		return this.error != null;
 	}
 
+	public final @NonNull List<@NonNull ResourceData> getForks() {
+		synchronized (this.forks) {
+			return new ArrayList<>(this.forks);
+		}
+	}
+
 	public final int getWidth() {
 		if (this.region != null) {
 			return this.region[2];
@@ -303,10 +347,22 @@ public final class ResourceData {
 	}
 
 	public final void clear() {
-		if (this.textures != null) {
-			for (final ITexture texture : this.textures) {
-				texture.delete();
-			}
+		final IResourceDecoder decoder = this.decoder;
+		if (decoder != null) {
+			final ITexture[] textures = this.textures;
+			this.generation++;
+			this.textures = null;
+			this.error    = null;
+			this.width    = 0;
+			this.height   = 0;
+			this.release(() -> {
+				if (textures != null) {
+					for (final ITexture texture : textures) {
+						texture.delete();
+					}
+				}
+				decoder.clear(this);
+			});
 		}
 
 		if (this.missingTexture != null) {
@@ -314,10 +370,10 @@ public final class ResourceData {
 			this.missingTexture = null;
 		}
 
-		this.data = null;
-		if (this.decoder != null) {
-			this.decoder.clear(this);
-		}
+		this.data      = null;
+		this.loaded    = false;
+		this.uploaded  = false;
+		this.generated = false;
 	}
 
 	public static void releaseCollected() {
@@ -331,6 +387,37 @@ public final class ResourceData {
 			return null;
 		}
 		return clazz.cast(this.decoder);
+	}
+
+	private boolean isCurrent(final IResourceDecoder decoder, final int generation) {
+		return this.decoder == decoder && this.generation == generation;
+	}
+
+	private synchronized void release(final @NonNull Runnable release) {
+		if (!this.decodingRunning) {
+			release.run();
+			return;
+		}
+
+		final Runnable previous = this.pendingRelease;
+		this.pendingRelease = previous == null ? release : () -> {
+			previous.run();
+			release.run();
+		};
+	}
+
+	private synchronized void endDecoding() {
+		final Runnable release = this.pendingRelease;
+		this.pendingRelease = null;
+		if (release == null) {
+			this.decodingRunning = false;
+			return;
+		}
+
+		ThreadUtils.runOnRenderThread(() -> {
+			release.run();
+			this.decodingRunning = false;
+		});
 	}
 
 	private synchronized void fireLoad() {

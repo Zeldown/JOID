@@ -2,7 +2,6 @@ package dev.joid.demo.ui.resource;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -34,7 +33,7 @@ public class UIDemoAudio extends UIDemo {
 
 		ResourcePlayerNode
 		.create(80, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
+		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
 		.volume(volume)
@@ -67,7 +66,7 @@ public class UIDemoAudio extends UIDemo {
 
 		ResourcePlayerNode
 		.create(440, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
+		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
 		.location(() -> Point.create(0D, 0D, far.get() ? 30D : 0D))
@@ -100,7 +99,7 @@ public class UIDemoAudio extends UIDemo {
 
 		ResourcePlayerNode
 		.create(800, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
+		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 30D))
@@ -118,7 +117,7 @@ public class UIDemoAudio extends UIDemo {
 
 		ResourcePlayerNode
 		.create(1160, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
+		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 30D))
@@ -136,7 +135,7 @@ public class UIDemoAudio extends UIDemo {
 
 		ResourcePlayerNode
 		.create(1520, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
+		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 0D))

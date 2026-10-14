@@ -46,11 +46,10 @@ public class ResourceBuilderTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void startsBlockingAndNearestOnTheDefaultCache() {
+	public void startsNearestOnTheDefaultCache() {
 		final ResourceBuilder builder = ResourceBuilder.create();
 		Assert.assertTrue(builder.getCache() instanceof MemoryResourceCache);
 		Assert.assertSame(ResourceBuilder.create().getCache(), builder.getCache());
-		Assert.assertFalse(builder.getProperties().isAsync());
 		Assert.assertSame(TextureFilter.NEAREST, builder.getProperties().getInterpolation());
 		Assert.assertNull(builder.getProperties().getMipmap());
 		Assert.assertNull(builder.getProperties().getTextureCoords());
@@ -59,9 +58,9 @@ public class ResourceBuilderTest {
 	@Test
 	public void registersEveryBuilder() {
 		final ResourceBuilder builder = ResourceBuilder.create();
-		final ResourceBuilder copy = builder.copy();
+		final ResourceBuilder linear = builder.linear();
 		Assert.assertTrue(ResourceBuilder.getBuilders().contains(builder));
-		Assert.assertTrue(ResourceBuilder.getBuilders().contains(copy));
+		Assert.assertTrue(ResourceBuilder.getBuilders().contains(linear));
 	}
 
 	@Test
@@ -76,35 +75,44 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
-	public void changesEveryProperty() {
+	public void changesEveryPropertyInANewBuilder() {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create();
-		Assert.assertSame(builder, builder.async().linear().mipmap(true).textureCoords(1D, 2D, 3D, 4D).cache(cache));
-		Assert.assertTrue(builder.getProperties().isAsync());
-		Assert.assertSame(TextureFilter.LINEAR, builder.getProperties().getInterpolation());
-		Assert.assertEquals(Boolean.TRUE, builder.getProperties().getMipmap());
-		Assert.assertArrayEquals(new double[] {1D, 2D, 3D, 4D}, builder.getProperties().getTextureCoords(), 0D);
-		Assert.assertSame(cache, builder.getCache());
-	}
-
-	@Test
-	public void turnsBackToBlockingAndNearest() {
-		final ResourceBuilder builder = ResourceBuilder.create().async().linear();
-		Assert.assertSame(builder, builder.blocking().nearest());
-		Assert.assertFalse(builder.getProperties().isAsync());
+		final ResourceBuilder changed = builder.linear().mipmap(true).textureCoords(1D, 2D, 3D, 4D).cache(cache);
+		Assert.assertNotSame(builder, changed);
+		Assert.assertSame(TextureFilter.LINEAR, changed.getProperties().getInterpolation());
+		Assert.assertEquals(Boolean.TRUE, changed.getProperties().getMipmap());
+		Assert.assertArrayEquals(new double[] {1D, 2D, 3D, 4D}, changed.getProperties().getTextureCoords(), 0D);
+		Assert.assertSame(cache, changed.getCache());
 		Assert.assertSame(TextureFilter.NEAREST, builder.getProperties().getInterpolation());
-		Assert.assertSame(TextureFilter.LINEAR, builder.interpolation(TextureFilter.LINEAR).getProperties().getInterpolation());
+		Assert.assertNull(builder.getProperties().getMipmap());
+		Assert.assertNull(builder.getProperties().getTextureCoords());
+		Assert.assertSame(ResourceBuilder.create().getCache(), builder.getCache());
 	}
 
 	@Test
-	public void copiesItsPropertiesAndSharesItsCache() {
+	public void turnsBackToNearest() {
+		final ResourceBuilder builder = ResourceBuilder.create().linear();
+		Assert.assertSame(TextureFilter.NEAREST, builder.nearest().getProperties().getInterpolation());
+		Assert.assertSame(TextureFilter.LINEAR, builder.getProperties().getInterpolation());
+		Assert.assertSame(TextureFilter.LINEAR, ResourceBuilder.create().interpolation(TextureFilter.LINEAR).getProperties().getInterpolation());
+	}
+
+	@Test
+	public void givesACopyOfItsProperties() {
+		final ResourceBuilder builder = ResourceBuilder.create();
+		builder.getProperties().linear().mipmap(true);
+		Assert.assertSame(TextureFilter.NEAREST, builder.getProperties().getInterpolation());
+		Assert.assertNull(builder.getProperties().getMipmap());
+	}
+
+	@Test
+	public void sharesItsCacheWithTheBuildersItDerives() {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
-		final ResourceBuilder base = ResourceBuilder.create().async().linear().cache(cache);
-		final ResourceBuilder copy = base.copy().nearest();
-		Assert.assertNotSame(base, copy);
-		Assert.assertSame(cache, copy.getCache());
-		Assert.assertTrue(copy.getProperties().isAsync());
-		Assert.assertSame(TextureFilter.NEAREST, copy.getProperties().getInterpolation());
+		final ResourceBuilder base = ResourceBuilder.create().linear().cache(cache);
+		final ResourceBuilder nearest = base.nearest();
+		Assert.assertSame(cache, nearest.getCache());
+		Assert.assertSame(TextureFilter.NEAREST, nearest.getProperties().getInterpolation());
 		Assert.assertSame(TextureFilter.LINEAR, base.getProperties().getInterpolation());
 	}
 
@@ -113,7 +121,7 @@ public class ResourceBuilderTest {
 		final BufferedImage image = new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB);
 		final Resource resource = ResourceBuilder.create().cache(null).of(image);
 		Assert.assertTrue(resource.getDecoder() instanceof RasterResourceDecoder);
-		Assert.assertEquals(image.toString(), resource.getUniqueId());
+		Assert.assertTrue(resource.getUniqueId(), resource.getUniqueId().startsWith("image_"));
 	}
 
 	@Test
@@ -137,7 +145,7 @@ public class ResourceBuilderTest {
 	@Test
 	public void notifiesTheLoadOfALocalAssetOnceDecoded() {
 		final List<Resource> loads = new ArrayList<>();
-		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png")).onLoad(loads::add);
+		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png")).blocking().onLoad(loads::add);
 		Assert.assertTrue(loads.isEmpty());
 		resource.generate();
 		Assert.assertTrue(resource.isLoaded());
@@ -150,7 +158,7 @@ public class ResourceBuilderTest {
 		final List<Resource> loads = new ArrayList<>();
 		BridgeHandler.THREAD.register(thread);
 		try {
-			final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png")).onLoad(loads::add);
+			final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png")).blocking().onLoad(loads::add);
 			resource.generate();
 			Assert.assertTrue(loads.isEmpty());
 			thread.run();
@@ -189,21 +197,32 @@ public class ResourceBuilderTest {
 	@Test
 	public void picksTheDecoderOfAHeldAssetOnATaskThread() throws InterruptedException {
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
-		final Resource resource = ResourceBuilder.create().async().cache(null).of(asset);
+		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
 		Assert.assertNull(resource.getDecoder());
 		Assert.assertTrue(asset.readers.isEmpty());
 		asset.release.countDown();
-		resource.blocking();
+		resource.getResourceData().await();
 		Assert.assertTrue(resource.getDecoder() instanceof RasterResourceDecoder);
 		Assert.assertEquals("ResourceTask/remote", asset.readers.get(0).getName());
 	}
 
 	@Test
-	public void picksTheDecoderOfAHeldAssetAtOnceWhenBlocking() {
+	public void waitsForABlockingDownloadOnlyWhenDrawn() throws InterruptedException {
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")));
-		asset.release.countDown();
-		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
+		final Resource resource = ResourceBuilder.create().cache(null).of(asset).blocking();
+		Assert.assertNull(resource.getDecoder());
+		Assert.assertFalse(resource.isLoaded());
+		final Thread releaser = new Thread(() -> {
+			try {
+				Thread.sleep(50L);
+			} catch (final InterruptedException ignored) {}
+			asset.release.countDown();
+		});
+		releaser.start();
+		resource.prepareBind();
 		Assert.assertTrue(resource.getDecoder() instanceof AnimatedResourceDecoder);
+		Assert.assertTrue(resource.isLoaded());
+		releaser.join();
 	}
 
 	@Test
@@ -213,6 +232,7 @@ public class ResourceBuilderTest {
 		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create());
 		final Resource first = builder.of(asset);
 		final Resource second = builder.of(asset);
+		first.getResourceData().await();
 		Assert.assertSame(first.getResourceData(), second.getResourceData());
 		Assert.assertEquals(1, asset.opened.get());
 	}
@@ -286,8 +306,8 @@ public class ResourceBuilderTest {
 		final List<Resource> second = new ArrayList<>();
 		final RemoteAsset asset = new RemoteAsset(Asset.of(ResourceBuilderTest.class.getResourceAsStream("/animation/still.png")).read());
 		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create());
-		final Resource loaded = builder.of(asset).onLoad(first::add);
-		loaded.generate();
+		final Resource loaded = builder.of(asset).blocking().onLoad(first::add);
+		loaded.prepareBind();
 		final Resource cached = builder.of(asset).onLoad(second::add);
 		Assert.assertEquals(Collections.singletonList(loaded), first);
 		Assert.assertEquals(Collections.singletonList(cached), second);

@@ -5,7 +5,6 @@ import dev.joid.demo.shader.impl.DemoInvertShader;
 import dev.joid.demo.shader.pipeline.pass.DemoInvertShaderPass;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.DemoFrameBufferNode;
-import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
@@ -43,7 +42,7 @@ public class UIDemoRender extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoRender.INK);
 		final TextInfo large = TextInfo.create(DemoFont.MONTSERRAT, 40, UIDemoRender.INK);
-		final Resource image = Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"));
+		final Resource image = Resource.of("assets/demo/textures/image/placeholder.webp");
 
 		RectNode
 		.create(80, 40, 320, 260)

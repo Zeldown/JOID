@@ -51,7 +51,7 @@ public class ResourceFailureTest {
 	@Test
 	public void failsAnImageThatCannotBeDecoded() {
 		final List<Resource> failed = new ArrayList<>();
-		final Resource resource = ResourceBuilder.create().cache(null).of(new BytesAsset("broken.png", false, "not an image".getBytes(StandardCharsets.UTF_8))).onError((received, error) -> failed.add(received));
+		final Resource resource = ResourceBuilder.create().cache(null).of(new BytesAsset("broken.png", false, "not an image".getBytes(StandardCharsets.UTF_8))).blocking().onError((received, error) -> failed.add(received));
 		Assert.assertFalse(resource.isFailed());
 		resource.prepareBind();
 		Assert.assertTrue(resource.isFailed());
@@ -63,14 +63,14 @@ public class ResourceFailureTest {
 
 	@Test
 	public void failsAMissingFile() {
-		final Resource resource = ResourceBuilder.create().cache(null).of(new File(this.folder.getRoot(), "missing.png"));
+		final Resource resource = ResourceBuilder.create().cache(null).of(new File(this.folder.getRoot(), "missing.png")).blocking();
 		resource.prepareBind();
 		Assert.assertTrue(resource.isFailed());
 	}
 
 	@Test
 	public void failsARemoteImageOnItsTaskThread() {
-		final Resource resource = ResourceBuilder.create().async().cache(null).of(new BytesAsset("https://joid.invalid/photo.heic", true, ResourceFailureTest.HEIC));
+		final Resource resource = ResourceBuilder.create().cache(null).of(new BytesAsset("https://joid.invalid/photo.heic", true, ResourceFailureTest.HEIC));
 		resource.getResourceData().await();
 		Assert.assertTrue(resource.isFailed());
 	}
@@ -81,7 +81,7 @@ public class ResourceFailureTest {
 		try {
 			final String heif = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new BytesAsset("photo.heic", false, ResourceFailureTest.HEIC)));
 			Assert.assertEquals("[JOID] The resource photo.heic cannot be read: photo.heic is a HEIF or AVIF image, which JOID cannot decode, convert it to PNG, JPEG or WebP. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production." + System.lineSeparator(), heif);
-			final String missing = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new File(this.folder.getRoot(), "missing.png")).prepareBind());
+			final String missing = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new File(this.folder.getRoot(), "missing.png")).blocking().prepareBind());
 			Assert.assertTrue(missing, missing.startsWith("[JOID] The resource "));
 			Assert.assertTrue(missing, missing.endsWith(", check that the file or the URL exists and can be read. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production." + System.lineSeparator()));
 		} finally {

@@ -269,6 +269,24 @@ public class VideoAudioPlayerTest {
 	}
 
 	@Test
+	public void skipsTheSamplesBeforeTheStart() {
+		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3}), ShortBuffer.wrap(new short[] {4, 5, 6})}, 1);
+		VideoAudioPlayerTest.push(player, 15, 10);
+		player.update();
+		Assert.assertArrayEquals(new short[] {2, 5, 3, 6}, Arrays.copyOf(this.audio.source().written.get(0), 4));
+	}
+
+	@Test
+	public void dropsAChunkThatEndsBeforeTheStart() {
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3})}, 3);
+		Assert.assertEquals(0, player.getQueueSize());
+		player.pushSamples(new Buffer[] {FloatBuffer.wrap(new float[] {1F, 0F})}, 1);
+		Assert.assertEquals(1, player.getQueueSize());
+	}
+
+	@Test
 	public void ignoresEmptyOrUnknownSamples() {
 		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		player.pushSamples(new Buffer[0]);

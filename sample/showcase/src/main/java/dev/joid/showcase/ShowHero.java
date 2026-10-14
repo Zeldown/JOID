@@ -133,7 +133,7 @@ public class ShowHero extends ShowUI {
 	}
 
 	private void video() {
-		final Resource clip = Resource.of(ShowHero.class.getResourceAsStream("/assets/showcase/honey.mp4"));
+		final Resource clip = Resource.of("assets/showcase/honey.mp4");
 		RectNode
 		.create(1010, 96, 620, 400)
 		.color(ShowUI.NIGHT)
@@ -225,7 +225,7 @@ public class ShowHero extends ShowUI {
 	}
 
 	private void model() {
-		final ObjModel model = ObjModel.load("showcase", JOID.class.getResourceAsStream("/assets/demo/models/model.obj"), Resource.of(ShowHero.class.getResourceAsStream("/assets/showcase/teapot.png")));
+		final ObjModel model = ObjModel.load("showcase", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
 		RectNode
 		.create(1550, 560, 300, 340)
 		.color(ShowUI.vertical(Color.WHITE.copyAlpha(0.12F), Color.WHITE.copyAlpha(0.04F)))

@@ -236,6 +236,44 @@ public class DrawResourceTest {
 	}
 
 	@Test
+	public void samplesTheSpriteOnceAtAnExplicitSize() {
+		DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 100D, DrawResourceTest.image(400, 400).textureCoords(40D, 60D, 280D, 280D));
+		final Capture capture = this.single();
+		Assert.assertEquals(110D, capture.getRight(), 1E-3D);
+		Assert.assertEquals(120D, capture.getBottom(), 1E-3D);
+		Assert.assertEquals(0.1F, capture.getU(0), 1E-6F);
+		Assert.assertEquals(0.85F, capture.getV(0), 1E-6F);
+		Assert.assertEquals(0.8F, capture.getU(2), 1E-6F);
+		Assert.assertEquals(0.15F, capture.getV(2), 1E-6F);
+	}
+
+	@Test
+	public void containsTheSpriteOfTheResource() {
+		StretchType.CONTAIN.draw(0D, 0D, 100D, 100D, DrawResourceTest.image(64, 32).textureCoords(16D, 8D, 32D, 16D));
+		final Capture capture = this.single();
+		Assert.assertEquals(0D, capture.getLeft(), 1E-3D);
+		Assert.assertEquals(100D, capture.getRight(), 1E-3D);
+		Assert.assertEquals(25D, capture.getTop(), 1E-3D);
+		Assert.assertEquals(75D, capture.getBottom(), 1E-3D);
+		Assert.assertEquals(0.25F, capture.getU(0), 1E-6F);
+		Assert.assertEquals(0.75F, capture.getV(0), 1E-6F);
+		Assert.assertEquals(0.75F, capture.getU(2), 1E-6F);
+		Assert.assertEquals(0.25F, capture.getV(2), 1E-6F);
+	}
+
+	@Test
+	public void coversWithinTheSpriteOfTheResource() {
+		StretchType.COVER.draw(0D, 0D, 16D, 16D, DrawResourceTest.image(64, 32).textureCoords(16D, 8D, 32D, 16D));
+		final Capture capture = this.single();
+		Assert.assertEquals(16D, capture.getRight(), 1E-3D);
+		Assert.assertEquals(16D, capture.getBottom(), 1E-3D);
+		Assert.assertEquals(0.375F, capture.getU(0), 1E-6F);
+		Assert.assertEquals(0.75F, capture.getV(0), 1E-6F);
+		Assert.assertEquals(0.625F, capture.getU(2), 1E-6F);
+		Assert.assertEquals(0.25F, capture.getV(2), 1E-6F);
+	}
+
+	@Test
 	public void drawsATextureWithItsBlendAndFilter() {
 		final RecordingTexture texture = new RecordingTexture();
 		texture.allocate(64, 32);
@@ -313,7 +351,7 @@ public class DrawResourceTest {
 	}
 
 	private static Resource image(final int width, final int height) {
-		final Resource resource = ResourceBuilder.create().cache(null).blocking().linear().of(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB));
+		final Resource resource = ResourceBuilder.create().cache(null).linear().of(new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)).blocking();
 		resource.prepareBind();
 		return resource;
 	}
@@ -321,13 +359,13 @@ public class DrawResourceTest {
 	private static Resource atlas(final int x, final int y, final int width, final int height) {
 		final RecordingTexture texture = new RecordingTexture();
 		texture.allocate(64, 32);
-		final Resource resource = ResourceBuilder.create().cache(null).blocking().linear().compute("atlas", () -> new ResourceData("atlas", null).texture(texture).region(x, y, width, height));
+		final Resource resource = ResourceBuilder.create().cache(null).linear().compute("atlas", () -> new ResourceData("atlas", null).texture(texture).region(x, y, width, height)).blocking();
 		resource.prepareBind();
 		return resource;
 	}
 
 	private static Resource decoded(final IResourceDecoder decoder, final TextureFilter filter) {
-		final Resource resource = ResourceBuilder.create().cache(null).blocking().interpolation(filter).compute("decoded", () -> new ResourceData("decoded", decoder));
+		final Resource resource = ResourceBuilder.create().cache(null).interpolation(filter).compute("decoded", () -> new ResourceData("decoded", decoder)).blocking();
 		resource.prepareBind();
 		return resource;
 	}

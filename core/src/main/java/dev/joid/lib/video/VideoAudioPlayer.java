@@ -3,6 +3,7 @@ package dev.joid.lib.video;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import dev.joid.internal.JOIDLog;
@@ -140,6 +141,10 @@ public final class VideoAudioPlayer {
 	}
 
 	public void pushSamples(final @NonNull Buffer[] samples) {
+		this.pushSamples(samples, 0);
+	}
+
+	public void pushSamples(final @NonNull Buffer[] samples, final int skip) {
 		if (samples.length == 0 || samples[0] == null) {
 			return;
 		}
@@ -157,7 +162,7 @@ public final class VideoAudioPlayer {
 				}
 			}
 
-			this.sampleQueue.offer(interleaved);
+			this.offer(interleaved, skip * channelCount);
 		} else if (samples[0] instanceof ShortBuffer) {
 			if (samples.length > 1) {
 				final int channelCount = samples.length;
@@ -170,12 +175,12 @@ public final class VideoAudioPlayer {
 					}
 				}
 
-				this.sampleQueue.offer(interleaved);
+				this.offer(interleaved, skip * channelCount);
 			} else {
 				final ShortBuffer sb = (ShortBuffer) samples[0];
 				final short[] data = new short[sb.remaining()];
 				sb.get(data);
-				this.sampleQueue.offer(data);
+				this.offer(data, skip * this.channels);
 			}
 		}
 	}
@@ -228,6 +233,14 @@ public final class VideoAudioPlayer {
 		this.sampleQueue.clear();
 		this.pendingSamples = null;
 		this.initialized = false;
+	}
+
+	private void offer(final short[] samples, final int skip) {
+		if (skip <= 0) {
+			this.sampleQueue.offer(samples);
+		} else if (skip < samples.length) {
+			this.sampleQueue.offer(Arrays.copyOfRange(samples, skip, samples.length));
+		}
 	}
 
 	private float computeDistanceVolume() {

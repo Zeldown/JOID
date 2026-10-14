@@ -2,7 +2,6 @@ package dev.joid.demo.ui.shader;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -38,7 +37,7 @@ public class UIDemoEffect extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoEffect.INK);
-		final Resource image = Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder.webp"));
+		final Resource image = Resource.of("assets/demo/textures/image/placeholder.webp");
 
 		RectNode.create(55, 40, 200, 120).color(Color.WHITE).effect(RoundedNodeEffect.create(20F)).attach(this);
 		TextNode.create(155, 175).text(Text.create("Rounded", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
@@ -180,7 +179,7 @@ public class UIDemoEffect extends UIDemo {
 		RectNode
 		.create(555, 640, 120, 120)
 		.color(Color.ORANGE.toGradient(Color.MAGENTA))
-		.self(rect -> rect.effect(MaskNodeEffect.create(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/vector/mask.svg")), rect)))
+		.self(rect -> rect.effect(MaskNodeEffect.create(Resource.of("assets/demo/textures/vector/mask.svg"), rect)))
 		.attach(this);
 		TextNode.create(615, 775).text(Text.create("Image mask", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 

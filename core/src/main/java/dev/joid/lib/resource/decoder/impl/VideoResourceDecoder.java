@@ -42,10 +42,16 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private final AtomicInteger seeks = new AtomicInteger(0);
 	private final AtomicBoolean paused = new AtomicBoolean(false);
 	private final AtomicBoolean running = new AtomicBoolean(false);
+	private final VideoResourceDecoder origin;
 	private final AtomicInteger decodedFrameIndex = new AtomicInteger(0);
 
 	private File   file;
 	private String codec;
+
+	private File    shared;
+	private int     readers;
+	private boolean closed;
+	private boolean copied;
 
 	private Thread decodeThread;
 	private FFmpegFrameGrabber grabber;
@@ -86,12 +92,17 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private float referenceDistance = 5F;
 
 	public VideoResourceDecoder(final @NonNull File file) {
-		this.asset = null;
-		this.file = file;
+		this(FileAsset.create(file));
 	}
 
 	public VideoResourceDecoder(final @NonNull Asset asset) {
 		this.asset = asset;
+		this.origin = this;
+	}
+
+	private VideoResourceDecoder(final VideoResourceDecoder origin) {
+		this.asset = origin.asset;
+		this.origin = origin;
 	}
 
 	@Override
@@ -133,7 +144,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 			try {
 				if (this.file == null) {
-					this.file = VideoResourceDecoder.extract(this.asset);
+					this.file = this.origin.share(this);
 				}
 
 				this.grabber = this.open();
@@ -234,9 +245,13 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	public void clear(final @NonNull ResourceData resource) {
 		this.release();
 
-		if (this.asset != null && this.file != null) {
-			this.file.delete();
+		if (this.file != null) {
 			this.file = null;
+			this.origin.unshare();
+		}
+
+		if (this.origin == this) {
+			this.close();
 		}
 
 		if (this.textures != null) {
@@ -244,6 +259,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.textures[1].delete();
 			this.textures = null;
 		}
+	}
+
+	@Override
+	public @NonNull VideoResourceDecoder fork() {
+		return new VideoResourceDecoder(this.origin);
 	}
 
 	public void release() {
@@ -443,6 +463,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.released = false;
 
 			try {
+				if (this.file == null) {
+					this.file = this.origin.share(this);
+				}
+
 				this.grabber = this.open();
 
 				if (this.frameQueue == null) {
@@ -466,8 +490,57 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		}
 	}
 
+	private synchronized @NonNull File share(final @NonNull VideoResourceDecoder reader) throws IOException {
+		if (reader == this) {
+			this.closed = false;
+		}
+
+		if (this.shared == null) {
+			final File file = this.asset.getFile();
+			this.shared = file != null ? file : VideoResourceDecoder.extract(this.asset);
+			this.copied = file == null;
+		}
+
+		this.readers++;
+		return this.shared;
+	}
+
+	private synchronized void unshare() {
+		this.readers--;
+		if (this.closed) {
+			this.deleteCopy();
+		}
+	}
+
+	private synchronized void close() {
+		this.closed = true;
+		this.deleteCopy();
+	}
+
+	private void deleteCopy() {
+		if (this.readers > 0 || this.shared == null) {
+			return;
+		}
+
+		if (this.copied) {
+			this.shared.delete();
+		}
+		this.shared = null;
+		this.copied = false;
+	}
+
+	private void seekGrabber(final long microseconds) throws Exception {
+		final long start = this.grabber.getFormatContext().start_time();
+		this.grabber.setTimestamp(microseconds - (start == avutil.AV_NOPTS_VALUE ? 0L : Math.min(0L, start)), true);
+	}
+
+	private int getSkippedSamples(final long timestamp) {
+		final long start = (long) (this.seekTime * 1000000D);
+		return (int) Math.ceil((start - timestamp) * this.grabber.getSampleRate() / 1000000D);
+	}
+
 	private String describe() {
-		return this.asset != null ? this.asset.getUniqueId() : this.file.getPath();
+		return this.asset.getUniqueId();
 	}
 
 	private FFmpegFrameGrabber open() throws Exception {
@@ -529,7 +602,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 			try {
 				if (this.grabber != null) {
-					this.grabber.setTimestamp(microseconds);
+					this.seekGrabber(microseconds);
 				}
 			} catch (final Exception e) {
 				JOIDLog.warn("The video " + this.describe() + " cannot seek to " + microseconds + "us: " + e, e);
@@ -594,7 +667,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 						if (frame == null) {
 							if (this.loop) {
 								this.loopOffset = lastTime + 1D / this.frameRate;
-								this.grabber.setTimestamp(0);
+								this.seekGrabber(0L);
 								this.seekTime = 0D;
 								this.decodedFrameIndex.set(0);
 								continue;
@@ -603,7 +676,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 							decoded = null;
 						} else {
 							if (frame.samples != null && this.audioPlayer != null && this.volume > 0F) {
-								this.audioPlayer.pushSamples(frame.samples);
+								this.audioPlayer.pushSamples(frame.samples, this.getSkippedSamples(frame.timestamp));
 							}
 
 							if (frame.image == null) {
@@ -680,10 +753,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	}
 
 	private static @NonNull File extract(final @NonNull Asset asset) throws IOException {
-		if (asset instanceof FileAsset) {
-			return ((FileAsset) asset).getFile();
-		}
-
 		final File directory = new File(JOIDEnv.getCacheDir(), "video");
 		Files.createDirectories(directory.toPath());
 

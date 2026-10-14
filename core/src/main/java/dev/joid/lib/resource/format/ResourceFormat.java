@@ -31,7 +31,12 @@ public class ResourceFormat {
 	}
 
 	public static void register(final @NonNull IResourceFormat format) {
+		ResourceFormat.FORMATS.remove(format);
 		ResourceFormat.FORMATS.add(0, format);
+	}
+
+	public static void unregister(final @NonNull IResourceFormat format) {
+		ResourceFormat.FORMATS.remove(format);
 	}
 
 	public static @NonNull IResourceDecoder decoder(final @NonNull Asset asset) {

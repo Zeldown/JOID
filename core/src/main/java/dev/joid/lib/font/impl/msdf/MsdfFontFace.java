@@ -13,7 +13,7 @@ import lombok.NonNull;
 @Getter
 public final class MsdfFontFace implements IFontFace {
 
-	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).blocking().linear().mipmap(false);
+	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).linear().mipmap(false);
 
 	private final String                  name;
 	private final float                   xHeight;
@@ -42,7 +42,7 @@ public final class MsdfFontFace implements IFontFace {
 			throw new IllegalArgumentException("A font face needs a name");
 		}
 
-		return new MsdfFontFace(atlas, metrics, glyphs, kerningPairs, MsdfFontFace.BUILDER.of(image), name, weight, italic);
+		return new MsdfFontFace(atlas, metrics, glyphs, kerningPairs, MsdfFontFace.BUILDER.of(image).blocking(), name, weight, italic);
 	}
 
 	@Override

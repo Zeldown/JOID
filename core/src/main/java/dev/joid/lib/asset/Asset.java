@@ -1,6 +1,7 @@
 package dev.joid.lib.asset;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -22,6 +23,10 @@ public abstract class Asset {
 	}
 
 	public abstract @NonNull InputStream open() throws IOException;
+
+	public File getFile() {
+		return null;
+	}
 
 	public boolean isRemote() {
 		return false;

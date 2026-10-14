@@ -5,7 +5,6 @@ import dev.joid.backend.lwjgl2.binding.Lwjgl2GlBinding;
 import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.base.openal.AlAudioBridge;
 import dev.joid.base.opengl.render.GlRenderBridge;
-import dev.joid.base.opengl.resource.GlTextureResourceResolver;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
@@ -13,7 +12,6 @@ import dev.joid.lib.bridge.backend.Backend;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
-import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.NonNull;
 
 public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
@@ -44,7 +42,6 @@ public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
 
 	@Override
 	protected void registerDefaults() {
-		ResourceResolver.register(GlTextureResourceResolver.inst());
 		BridgeHandler.UI.registerDefault(WindowUIBridge.create());
 	}
 

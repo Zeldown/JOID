@@ -30,9 +30,13 @@ public class ResourcePlayerNode extends Node {
 	private static final EventType<NodeProgressEvent<?>> PROGRESS = EventType.create("onProgress");
 
 	private Resource resource;
+	private Resource fork;
 	private boolean wasPlaying;
 	private double lastProgress;
 	private boolean resourceStarted;
+
+	private Double  pendingTime;
+	private Boolean pendingPlaying;
 
 	private boolean loop;
 	private float volume = 1F;
@@ -58,34 +62,44 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final @NonNull ResourcePlayerNode stop() {
-		final IResourcePlayback playback = this.getPlayback();
-		if (playback != null) {
-			playback.stop();
-			this.wasPlaying = false;
-			super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
+		if (!this.resourceStarted) {
+			this.pendingTime = null;
+			this.pendingPlaying = false;
+			return this;
 		}
+
+		this.requirePlayback().stop();
+		this.wasPlaying = false;
+		super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
 		return this;
 	}
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.resource != null) {
-			this.resource.prepareBind();
+		if (this.fork == null && this.resource != null) {
+			if (this.resource.isBlocking()) {
+				this.resource.getResourceData().await();
+			}
+			this.fork = ResourcePlayerNode.fork(this.resource);
 		}
 
-		if (this.resource != null && this.resource.isFailed()) {
+		if (this.fork != null) {
+			this.fork.prepareBind();
+		}
+
+		if (this.fork != null && this.fork.isFailed()) {
 			Color.WHITE.bind();
-			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
+			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
 			return;
 		}
 
-		if (this.resource == null || !this.resource.isLoaded()) {
+		if (this.fork == null || !this.fork.isLoaded()) {
 			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.LOADING());
 			return;
 		}
 
-		final double videoWidth = this.resource.getWidth();
-		final double videoHeight = this.resource.getHeight();
+		final double videoWidth = this.fork.getWidth();
+		final double videoHeight = this.fork.getHeight();
 		if (videoWidth == 0 || videoHeight == 0) {
 			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.LOADING());
 			return;
@@ -128,10 +142,17 @@ public class ResourcePlayerNode extends Node {
 			final IResourcePlayback playback = this.getPlayback();
 			if (playback != null) {
 				playback.stop().seek(0D).loop(this.loop).autoplay(this.autoplay);
-				if (this.autoplay) {
+				if (this.pendingPlaying != null ? this.pendingPlaying : this.autoplay) {
 					playback.play();
 				}
+
+				if (this.pendingTime != null) {
+					playback.seek(this.pendingTime);
+				}
 			}
+
+			this.pendingTime = null;
+			this.pendingPlaying = null;
 		}
 
 		final IResourcePlayback playback = this.getPlayback();
@@ -153,20 +174,27 @@ public class ResourcePlayerNode extends Node {
 		}
 
 		Color.WHITE.bind();
-		this.stretchType.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.resource);
+		this.stretchType.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
 	}
 
 	public final @NonNull ResourcePlayerNode play() {
-		final IResourcePlayback playback = this.getPlayback();
-		if (playback != null) {
-			playback.play();
+		if (!this.resourceStarted) {
+			this.pendingPlaying = true;
+			return this;
 		}
+
+		this.requirePlayback().play();
 		return this;
 	}
 
 	public final @NonNull ResourcePlayerNode pause() {
-		final IResourcePlayback playback = this.getPlayback();
-		if (playback != null && playback.isPlaying()) {
+		if (!this.resourceStarted) {
+			this.pendingPlaying = false;
+			return this;
+		}
+
+		final IResourcePlayback playback = this.requirePlayback();
+		if (playback.isPlaying()) {
 			playback.pause();
 			super.fire(ResourcePlayerNode.PAUSE, () -> NodeEvent.create(this));
 		}
@@ -174,24 +202,33 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final @NonNull ResourcePlayerNode resume() {
-		final IResourcePlayback playback = this.getPlayback();
-		if (playback != null) {
-			playback.resume();
+		if (!this.resourceStarted) {
+			this.pendingPlaying = true;
+			return this;
 		}
+
+		this.requirePlayback().resume();
 		return this;
 	}
 
 	public final @NonNull ResourcePlayerNode seek(final double seconds) {
-		final IResourcePlayback playback = this.getPlayback();
-		if (playback != null) {
-			playback.seek(seconds);
+		if (!this.resourceStarted) {
+			this.pendingTime = seconds;
+			return this;
 		}
+
+		this.requirePlayback().seek(seconds);
 		return this;
 	}
 
 	public final @NonNull ResourcePlayerNode restart() {
-		final IResourcePlayback playback = this.getPlayback();
-		if (playback != null && playback.restart().isPlaying()) {
+		if (!this.resourceStarted) {
+			this.pendingTime = null;
+			this.pendingPlaying = true;
+			return this;
+		}
+
+		if (this.requirePlayback().restart().isPlaying()) {
 			this.wasPlaying = true;
 			super.fire(ResourcePlayerNode.PLAY, () -> NodeEvent.create(this));
 		}
@@ -253,7 +290,12 @@ public class ResourcePlayerNode extends Node {
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
 		return super.follow("resource", resource, value -> {
 			this.release();
+			if (this.fork != null && this.fork != this.resource) {
+				this.fork.clear();
+			}
+
 			this.resource = value;
+			this.fork = ResourcePlayerNode.fork(value);
 			this.resourceStarted = false;
 		});
 	}
@@ -369,11 +411,11 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public final IResourcePlayback getPlayback() {
-		return this.resource == null ? null : this.resource.getPlayback();
+		return this.fork == null ? null : this.fork.getPlayback();
 	}
 
 	public final VideoResourceDecoder getVideo() {
-		return this.resource == null || !(this.resource.getDecoder() instanceof VideoResourceDecoder) ? null : (VideoResourceDecoder) this.resource.getDecoder();
+		return this.fork == null || !(this.fork.getDecoder() instanceof VideoResourceDecoder) ? null : (VideoResourceDecoder) this.fork.getDecoder();
 	}
 
 	public final boolean isPaused() {
@@ -386,11 +428,23 @@ public class ResourcePlayerNode extends Node {
 		return playback != null && playback.isPlaying();
 	}
 
+	private @NonNull IResourcePlayback requirePlayback() {
+		final IResourcePlayback playback = this.getPlayback();
+		if (playback == null) {
+			throw new IllegalStateException("The resource " + this.fork.getUniqueId() + " of this ResourcePlayerNode has no playback: give it a video or an animated image, or show a still image with a ResourceNode");
+		}
+		return playback;
+	}
+
 	private void release() {
 		final VideoResourceDecoder video = this.getVideo();
 		if (video != null) {
 			video.release();
 		}
+	}
+
+	private static Resource fork(final @NonNull Resource resource) {
+		return resource.getDecoder() != null || resource.isFailed() || resource.getTexture() != null ? resource.fork() : null;
 	}
 
 }

@@ -49,6 +49,7 @@ public class UrlAssetTest {
 		Assert.assertEquals("https://example.invalid/image.png", asset.getUrl());
 		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());
 		Assert.assertTrue(asset.isRemote());
+		Assert.assertNull(asset.getFile());
 	}
 
 	@Test
@@ -76,6 +77,8 @@ public class UrlAssetTest {
 		final UrlAsset asset = UrlAsset.create(file.toURI().toString());
 		Assert.assertArrayEquals("joid file asset".getBytes(StandardCharsets.UTF_8), asset.read());
 		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.peek(4));
+		Assert.assertEquals(file.getAbsoluteFile(), asset.getFile().getAbsoluteFile());
+		Assert.assertFalse(asset.isRemote());
 	}
 
 	@Test
@@ -88,6 +91,8 @@ public class UrlAssetTest {
 		}
 		final UrlAsset asset = UrlAsset.create("jar:" + file.toURI() + "!/image.png");
 		Assert.assertArrayEquals("joid jar asset".getBytes(StandardCharsets.UTF_8), asset.read());
+		Assert.assertNull(asset.getFile());
+		Assert.assertFalse(asset.isRemote());
 	}
 
 	@Test

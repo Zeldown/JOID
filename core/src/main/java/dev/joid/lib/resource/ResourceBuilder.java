@@ -25,66 +25,43 @@ public final class ResourceBuilder {
 
 	private final Set<String> uniqueIdSet;
 
-	@Getter private IResourceCache cache;
-	@Getter private ResourceProperties properties;
+	private final ResourceProperties properties;
+	@Getter private final IResourceCache cache;
 
-	private ResourceBuilder() {
-		this.cache = ResourceBuilder.DEFAULT_CACHE;
-		this.properties = new ResourceProperties();
+	private ResourceBuilder(final IResourceCache cache, final @NonNull ResourceProperties properties) {
+		this.cache = cache;
+		this.properties = properties;
 		this.uniqueIdSet = ConcurrentHashMap.newKeySet();
 
 		ResourceBuilder.BUILDER_SET.add(this);
 	}
 
 	public static @NonNull ResourceBuilder create() {
-		return new ResourceBuilder();
+		return new ResourceBuilder(ResourceBuilder.DEFAULT_CACHE, new ResourceProperties());
 	}
 
 	public final @NonNull ResourceBuilder cache(final IResourceCache cache) {
-		this.cache = cache;
-		return this;
-	}
-
-	public final @NonNull ResourceBuilder async() {
-		this.properties.async();
-		return this;
-	}
-
-	public final @NonNull ResourceBuilder blocking() {
-		this.properties.blocking();
-		return this;
+		return new ResourceBuilder(cache, this.properties);
 	}
 
 	public final @NonNull ResourceBuilder interpolation(final @NonNull TextureFilter interpolation) {
-		this.properties.interpolation(interpolation);
-		return this;
+		return new ResourceBuilder(this.cache, this.properties.copy().interpolation(interpolation));
 	}
 
 	public final @NonNull ResourceBuilder linear() {
-		this.properties.linear();
-		return this;
+		return new ResourceBuilder(this.cache, this.properties.copy().linear());
 	}
 
 	public final @NonNull ResourceBuilder nearest() {
-		this.properties.nearest();
-		return this;
+		return new ResourceBuilder(this.cache, this.properties.copy().nearest());
 	}
 
 	public final @NonNull ResourceBuilder mipmap(final boolean mipmap) {
-		this.properties.mipmap(mipmap);
-		return this;
+		return new ResourceBuilder(this.cache, this.properties.copy().mipmap(mipmap));
 	}
 
 	public final @NonNull ResourceBuilder textureCoords(final double u, final double v, final double width, final double height) {
-		this.properties.textureCoords(u, v, width, height);
-		return this;
-	}
-
-	public final @NonNull ResourceBuilder copy() {
-		final ResourceBuilder copy = new ResourceBuilder();
-		copy.cache = this.cache;
-		copy.properties = this.properties.copy();
-		return copy;
+		return new ResourceBuilder(this.cache, this.properties.copy().textureCoords(u, v, width, height));
 	}
 
 	public @NonNull Resource of(final @NonNull Object input) {
@@ -132,6 +109,10 @@ public final class ResourceBuilder {
 			onCreate.accept(resource);
 		}
 		return resource;
+	}
+
+	public final @NonNull ResourceProperties getProperties() {
+		return this.properties.copy();
 	}
 
 	public final void reload() {

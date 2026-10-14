@@ -47,6 +47,28 @@ public class ResourceResolverTest {
 	}
 
 	@Test
+	public void registersAResolverOnce() {
+		final Object input = new Object();
+		final IResourceResolver resolver = new IResourceResolver() {
+
+			@Override
+			public boolean supports(final @NonNull Object other) {
+				return other == input;
+			}
+
+			@Override
+			public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object other) {
+				return builder.compute("once", () -> new ResourceData("once", null));
+			}
+
+		};
+		ResourceResolver.register(resolver);
+		ResourceResolver.register(resolver);
+		ResourceResolver.unregister(resolver);
+		Assert.assertFalse(ResourceResolver.supports(input));
+	}
+
+	@Test
 	public void namesTheTypeOfAnUnknownInput() {
 		try {
 			ResourceResolver.resolve(ResourceBuilder.create().cache(null), "image.png");

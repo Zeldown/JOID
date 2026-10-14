@@ -61,7 +61,8 @@ public abstract class BorrowedTextureContractSuite {
 
 	@Test
 	public void drawsABorrowedTexture() {
-		final Resource resource = Resource.of(BorrowedTextureContractSuite.backend.createBorrowableTexture(4, 2, BorrowedTextureContractSuite.RED, false));
+		final Object texture = BorrowedTextureContractSuite.backend.createBorrowableTexture(4, 2, BorrowedTextureContractSuite.RED, false);
+		final Resource resource = Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture));
 		BorrowedTextureContractSuite.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
 		Assert.assertTrue(resource.getTexture() instanceof BorrowedTexture);
 		Assert.assertEquals(4, resource.getWidth());
@@ -72,12 +73,12 @@ public abstract class BorrowedTextureContractSuite {
 	@Test
 	public void keepsTheBorrowedTextureOnceTheResourceIsReleased() {
 		final Object texture = BorrowedTextureContractSuite.backend.createBorrowableTexture(4, 4, BorrowedTextureContractSuite.RED, false);
-		final Resource resource = Resource.of(texture);
+		final Resource resource = Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture));
 		BorrowedTextureContractSuite.render(resource);
 		resource.getTexture().delete();
 		resource.clear();
 		Assert.assertTrue(BorrowedTextureContractSuite.backend.isBorrowableTexture(texture));
-		BorrowedTextureContractSuite.assertPixel(BorrowedTextureContractSuite.render(Resource.of(texture)), 32, 32, BorrowedTextureContractSuite.RED);
+		BorrowedTextureContractSuite.assertPixel(BorrowedTextureContractSuite.render(Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture))), 32, 32, BorrowedTextureContractSuite.RED);
 	}
 
 	@Test
@@ -114,7 +115,7 @@ public abstract class BorrowedTextureContractSuite {
 	public void restoresTheTextureParametersAfterTheFrame() {
 		final Object texture = BorrowedTextureContractSuite.backend.createBorrowableTexture(4, 4, BorrowedTextureContractSuite.RED, false);
 		final Map<String, String> parameters = BorrowedTextureContractSuite.backend.readBorrowableParameters(texture);
-		BorrowedTextureContractSuite.render(Resource.of(texture).linear());
+		BorrowedTextureContractSuite.render(Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture)).linear());
 		Assert.assertEquals(parameters, BorrowedTextureContractSuite.backend.readBorrowableParameters(texture));
 	}
 

@@ -21,20 +21,10 @@ public class ResourcePropertiesTest {
 	}
 
 	@Test
-	public void startsBlockingAndNearestWithoutTextureCoordinates() {
+	public void startsNearestWithoutTextureCoordinates() {
 		final ResourceProperties properties = ResourceProperties.create();
-		Assert.assertFalse(properties.isAsync());
 		Assert.assertSame(TextureFilter.NEAREST, properties.getInterpolation());
 		Assert.assertNull(properties.getTextureCoords());
-	}
-
-	@Test
-	public void switchesBetweenAsyncAndBlocking() {
-		final ResourceProperties properties = ResourceProperties.create();
-		Assert.assertSame(properties, properties.async());
-		Assert.assertTrue(properties.isAsync());
-		Assert.assertSame(properties, properties.blocking());
-		Assert.assertFalse(properties.isAsync());
 	}
 
 	@Test
@@ -52,10 +42,9 @@ public class ResourcePropertiesTest {
 
 	@Test
 	public void copiesEveryProperty() {
-		final ResourceProperties properties = ResourceProperties.create().async().linear().mipmap(true).textureCoords(0D, 0D, 0.5D, 0.5D);
+		final ResourceProperties properties = ResourceProperties.create().linear().mipmap(true).textureCoords(0D, 0D, 0.5D, 0.5D);
 		final ResourceProperties copy = properties.copy();
 		Assert.assertNotSame(properties, copy);
-		Assert.assertTrue(copy.isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, copy.getInterpolation());
 		Assert.assertTrue(copy.getMipmap());
 		Assert.assertArrayEquals(new double[] {0D, 0D, 0.5D, 0.5D}, copy.getTextureCoords(), 0D);
@@ -64,18 +53,16 @@ public class ResourcePropertiesTest {
 	@Test
 	public void changesACopyIndependently() {
 		final ResourceProperties properties = ResourceProperties.create();
-		properties.copy().async().linear().mipmap(true);
-		Assert.assertFalse(properties.isAsync());
+		properties.copy().linear().mipmap(true);
 		Assert.assertSame(TextureFilter.NEAREST, properties.getInterpolation());
 		Assert.assertNull(properties.getMipmap());
 	}
 
 	@Test
 	public void takesEveryPropertyOfAnother() {
-		final ResourceProperties other = ResourceProperties.create().async().linear().textureCoords(0D, 0D, 1D, 1D);
+		final ResourceProperties other = ResourceProperties.create().linear().textureCoords(0D, 0D, 1D, 1D);
 		final ResourceProperties properties = ResourceProperties.create();
 		Assert.assertSame(properties, properties.copy(other));
-		Assert.assertTrue(properties.isAsync());
 		Assert.assertSame(TextureFilter.LINEAR, properties.getInterpolation());
 		Assert.assertNull(properties.getMipmap());
 		Assert.assertArrayEquals(new double[] {0D, 0D, 1D, 1D}, properties.getTextureCoords(), 0D);

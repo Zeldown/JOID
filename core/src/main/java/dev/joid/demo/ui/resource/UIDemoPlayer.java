@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -40,20 +39,20 @@ public class UIDemoPlayer extends UIDemo {
 
 		final ResourcePlayerNode video = ResourcePlayerNode
 				.create(80, 40, 320, 180)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4")))
+				.resource(Resource.of("assets/demo/videos/video.mp4"))
 				.loop(true)
 				.attach(this);
 		TextNode.create(240, 285).text(Text.create("Video", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourcePlayerNode.create(440, 40, 320, 180).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm"))).loop(true).attach(this);
+		ResourcePlayerNode.create(440, 40, 320, 180).resource(Resource.of("assets/demo/videos/placeholder.webm")).loop(true).attach(this);
 		TextNode.create(600, 285).text(Text.create("WebM", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourcePlayerNode.create(800, 40, 320, 180).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.webp"))).loop(true).attach(this);
+		ResourcePlayerNode.create(800, 40, 320, 180).resource(Resource.of("assets/demo/textures/image/placeholder-animated.webp")).loop(true).attach(this);
 		TextNode.create(960, 285).text(Text.create("Animated image", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(1160, 40, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.webp")))
+		.resource(Resource.of("assets/demo/textures/image/placeholder-animated.webp"))
 		.loop(true)
 		.<ResourcePlayerNode>onClick(event -> {
 			if (event.getNode().isPlaying()) {
@@ -67,7 +66,7 @@ public class UIDemoPlayer extends UIDemo {
 
 		ResourcePlayerNode
 		.create(1520, 40, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
+		.resource(Resource.of("assets/demo/videos/placeholder.webm"))
 		.autoplay(false)
 		.<ResourcePlayerNode>onClick(event -> event.getNode().play())
 		.attach(this);
@@ -75,7 +74,7 @@ public class UIDemoPlayer extends UIDemo {
 
 		ResourcePlayerNode
 		.create(80, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/textures/image/placeholder-animated.png")))
+		.resource(Resource.of("assets/demo/textures/image/placeholder-animated.png"))
 		.onEnd(event -> ends.increment())
 		.<ResourcePlayerNode>onClick(event -> event.getNode().restart())
 		.attach(this);
@@ -84,7 +83,7 @@ public class UIDemoPlayer extends UIDemo {
 
 		ResourcePlayerNode
 		.create(440, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
+		.resource(Resource.of("assets/demo/videos/placeholder.webm"))
 		.loop(true)
 		.onPlay(event -> plays.increment())
 		.onPause(event -> pauses.increment())
@@ -101,7 +100,7 @@ public class UIDemoPlayer extends UIDemo {
 
 		ResourcePlayerNode
 		.create(800, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
+		.resource(Resource.of("assets/demo/videos/placeholder.webm"))
 		.loop(true)
 		.onProgress(event -> progress.set((float) event.getProgress()))
 		.attach(this);
@@ -110,8 +109,9 @@ public class UIDemoPlayer extends UIDemo {
 
 		final ResourcePlayerNode seeked = ResourcePlayerNode
 				.create(1160, 380, 320, 180)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
+				.resource(Resource.of("assets/demo/videos/placeholder.webm"))
 				.loop(true)
+				.seek(1D)
 				.attach(this);
 		RectNode
 		.create(1160, 570, 100, 36)
@@ -133,7 +133,7 @@ public class UIDemoPlayer extends UIDemo {
 
 		ResourcePlayerNode
 		.create(1520, 380, 320, 180)
-		.resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/placeholder.webm")))
+		.resource(Resource.of("assets/demo/videos/placeholder.webm"))
 		.loop(true)
 		.onStop(event -> stops.increment())
 		.<ResourcePlayerNode>onClick(event -> event.getNode().stop())
@@ -141,17 +141,17 @@ public class UIDemoPlayer extends UIDemo {
 		TextNode.create(1520, 574).text(Text.create("Stops: " + stops.get(), label)).attach(this);
 		TextNode.create(1680, 625).text(Text.create("Stop", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourcePlayerNode.create(150, 720, 180, 180).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4"))).loop(true).volume(0F).stretch(StretchType.COVER).attach(this);
+		ResourcePlayerNode.create(150, 720, 180, 180).resource(Resource.of("assets/demo/videos/video.mp4")).loop(true).volume(0F).stretch(StretchType.COVER).attach(this);
 		TextNode.create(240, 965).text(Text.create("Cover", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(510, 720, 180, 180).color(UIDemoPlayer.INK).attach(this);
-		ResourcePlayerNode.create(510, 720, 180, 180).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4"))).loop(true).volume(0F).stretch(StretchType.CONTAIN).attach(this);
+		ResourcePlayerNode.create(510, 720, 180, 180).resource(Resource.of("assets/demo/videos/video.mp4")).loop(true).volume(0F).stretch(StretchType.CONTAIN).attach(this);
 		TextNode.create(600, 965).text(Text.create("Contain", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourcePlayerNode.create(870, 720, 180, 180).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4"))).loop(true).volume(0F).stretch(StretchType.STRETCH).attach(this);
+		ResourcePlayerNode.create(870, 720, 180, 180).resource(Resource.of("assets/demo/videos/video.mp4")).loop(true).volume(0F).stretch(StretchType.STRETCH).attach(this);
 		TextNode.create(960, 965).text(Text.create("Stretch", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
-		ResourcePlayerNode.create(1160, 720, 320, 180).resource(Resource.of(JOID.class.getResourceAsStream("/assets/demo/videos/video.mp4"))).loop(true).volume(0F).attach(this);
+		ResourcePlayerNode.create(1160, 720, 320, 180).resource(Resource.of("assets/demo/videos/video.mp4")).loop(true).volume(0F).attach(this);
 		TextNode.create(1320, 965).text(Text.create("Muted", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1520, 720, 320, 180).color(Color.WHITE).attach(this);

@@ -336,6 +336,33 @@ public class AnimatedResourceDecoderTest {
 	}
 
 	@Test
+	public void sharesItsFramesWithItsForksButNotItsPosition() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
+		final AnimatedResourceDecoder fork = decoder.fork();
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		final ResourceData forked = AnimatedResourceDecoderTest.load(fork.autoplay(false));
+		Assert.assertSame(decoder, fork.getOrigin());
+		Assert.assertSame(decoder.getAnimation(), fork.getAnimation());
+		Assert.assertNotSame(decoder.getTexture(), fork.getTexture());
+		this.advance(decoder, data, 40L);
+		fork.update(forked);
+		Assert.assertEquals(1, decoder.getDisplayed());
+		Assert.assertEquals(0, fork.getDisplayed());
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertFalse(fork.isPlaying());
+	}
+
+	@Test
+	public void readsItsAssetOnceForAllItsForks() {
+		final CountingAsset asset = new CountingAsset();
+		final AnimatedResourceDecoder decoder = new AnimatedResourceDecoder(asset, new GifResourceAnimationReader());
+		AnimatedResourceDecoderTest.load(decoder.fork());
+		AnimatedResourceDecoderTest.load(decoder.fork());
+		AnimatedResourceDecoderTest.load(decoder);
+		Assert.assertEquals(1, asset.opened);
+	}
+
+	@Test
 	public void keepsItsSourceAndReader() {
 		final Asset asset = Asset.of(AnimatedResourceDecoderTest.class.getResourceAsStream("/animation/blink.gif"));
 		final IResourceAnimationReader reader = new GifResourceAnimationReader();
@@ -365,6 +392,22 @@ public class AnimatedResourceDecoderTest {
 		decoder.decode(data);
 		decoder.upload(data);
 		return data;
+	}
+
+	private static final class CountingAsset extends Asset {
+
+		private int opened;
+
+		private CountingAsset() {
+			super("counting.gif");
+		}
+
+		@Override
+		public @NonNull InputStream open() {
+			this.opened++;
+			return AnimatedResourceDecoderTest.class.getResourceAsStream("/animation/blink.gif");
+		}
+
 	}
 
 	private static final class OfflineAsset extends Asset {

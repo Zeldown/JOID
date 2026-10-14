@@ -172,7 +172,7 @@ public class ResourcePlayerNodeEventTest {
 	@Test
 	public void neverFiresForALoopingPlaybackStopped() {
 		final List<Object> received = new ArrayList<>();
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourceBuilder.create().cache(null).of(ResourcePlayerNodeEventTest.class.getResourceAsStream("/animation/blink.png"))).loop(true).onEnd(event -> received.add(event.getNode()));
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeEventTest.blink()).loop(true).onEnd(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(player)).frames(5);
 		player.stop();
 		this.bridges.frames(5);
@@ -216,7 +216,7 @@ public class ResourcePlayerNodeEventTest {
 	}
 
 	private static Resource blink() {
-		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeEventTest.class.getResourceAsStream("/animation/blink.png"));
+		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeEventTest.class.getResourceAsStream("/animation/blink.png")).blocking();
 	}
 
 	public static final class NodeUI extends UI {

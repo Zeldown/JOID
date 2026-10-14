@@ -20,8 +20,10 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	private final Asset                    asset;
 	private final IResourceAnimationReader reader;
+	private final AnimatedResourceDecoder  origin;
 
 	private ITexture          texture;
+	private ResourceAnimation source;
 	private ResourceAnimation animation;
 
 	private Integer plays;
@@ -37,6 +39,13 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	public AnimatedResourceDecoder(final @NonNull Asset asset, final @NonNull IResourceAnimationReader reader) {
 		this.asset = asset;
 		this.reader = reader;
+		this.origin = this;
+	}
+
+	private AnimatedResourceDecoder(final AnimatedResourceDecoder origin) {
+		this.asset = origin.asset;
+		this.reader = origin.reader;
+		this.origin = origin;
 	}
 
 	@Override
@@ -50,12 +59,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
-		try (InputStream stream = this.asset.open()) {
-			this.animation = this.reader.read(stream);
-		} catch (final IOException exception) {
-			throw new UncheckedIOException("The animation " + this.asset.getUniqueId() + " cannot be read", exception);
-		}
-
+		this.animation = this.origin.read();
 		resource.width(this.animation.getWidth());
 		resource.height(this.animation.getHeight());
 		resource.data(new int[][] {this.animation.getFrames().get(0).getPixels()});
@@ -96,6 +100,14 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 		this.running = false;
 		this.animation = null;
 		this.displayed = -1;
+		if (this.origin == this) {
+			this.clearSource();
+		}
+	}
+
+	@Override
+	public @NonNull AnimatedResourceDecoder fork() {
+		return new AnimatedResourceDecoder(this.origin);
 	}
 
 	@Override
@@ -182,6 +194,21 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	@Override
 	public double getCurrentTime() {
 		return this.animation == null ? 0D : this.getTime() % this.animation.getDuration() / 1000D;
+	}
+
+	private synchronized @NonNull ResourceAnimation read() {
+		if (this.source == null) {
+			try (InputStream stream = this.asset.open()) {
+				this.source = this.reader.read(stream);
+			} catch (final IOException exception) {
+				throw new UncheckedIOException("The animation " + this.asset.getUniqueId() + " cannot be read", exception);
+			}
+		}
+		return this.source;
+	}
+
+	private synchronized void clearSource() {
+		this.source = null;
 	}
 
 	private long getTime() {

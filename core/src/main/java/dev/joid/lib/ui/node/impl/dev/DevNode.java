@@ -8,7 +8,6 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDLog;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.animator.TweenAnimator;
@@ -104,7 +103,7 @@ public final class DevNode extends Node {
 			try {
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/inspect.png")))
+				.resource(Resource.of("assets/dev/textures/icons/inspect.png"))
 				.color(this.inspectSignal.map(inspect -> inspect ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.inspectSignal.map(inspect -> (inspect ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
 				.onClick(event -> {
@@ -117,7 +116,7 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/reload.png")))
+				.resource(Resource.of("assets/dev/textures/icons/reload.png"))
 				.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()))
 				.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()).darker(0.3F))
 				.onClick(event -> {
@@ -128,7 +127,7 @@ public final class DevNode extends Node {
 
 				ResourceNode
 				.create(0, 0, 24, 24)
-				.resource(Resource.of(JOID.class.getResourceAsStream("/assets/dev/textures/icons/grid.png")))
+				.resource(Resource.of("assets/dev/textures/icons/grid.png"))
 				.color(this.gridSignal.map(grid -> grid ? DevNode.ACTION : DevNode.WHITE))
 				.hoveredColor(this.gridSignal.map(grid -> (grid ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
 				.onClick(event -> {

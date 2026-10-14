@@ -7,6 +7,7 @@ import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlTextureBinding;
 import dev.joid.base.opengl.render.GlEnums;
 import dev.joid.base.opengl.render.GlRenderBridge;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.TextureSampling;
 import lombok.Getter;
@@ -20,6 +21,14 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 	private GlBorrowedTexture(final GlRenderBridge bridge, final IntSupplier texture) {
 		super(texture::getAsInt);
 		this.bridge = bridge;
+	}
+
+	public static @NonNull GlBorrowedTexture create(final int texture) {
+		return GlBorrowedTexture.create(GlBorrowedTexture.findBridge(), texture);
+	}
+
+	public static @NonNull GlBorrowedTexture create(final @NonNull IntSupplier texture) {
+		return GlBorrowedTexture.create(GlBorrowedTexture.findBridge(), texture);
 	}
 
 	public static @NonNull GlBorrowedTexture create(final @NonNull GlRenderBridge bridge, final int texture) {
@@ -88,6 +97,14 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 		} finally {
 			this.bridge.getGuard().exit();
 		}
+	}
+
+	private static @NonNull GlRenderBridge findBridge() {
+		final GlRenderBridge bridge = BridgeHandler.RENDER.getBridge(GlRenderBridge.class);
+		if (bridge == null) {
+			throw new IllegalStateException("No OpenGL render bridge is registered, register an OpenGL backend before GlBorrowedTexture.create(...)");
+		}
+		return bridge;
 	}
 
 }

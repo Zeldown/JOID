@@ -26,6 +26,10 @@ public class ResourceResolver {
 		ResourceResolver.RESOLVERS.add(0, resolver);
 	}
 
+	public static void unregister(final @NonNull IResourceResolver resolver) {
+		ResourceResolver.RESOLVERS.remove(resolver);
+	}
+
 	public static boolean supports(final @NonNull Object input) {
 		for (final IResourceResolver resolver : ResourceResolver.RESOLVERS) {
 			if (resolver.supports(input)) {

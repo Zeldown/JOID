@@ -352,7 +352,7 @@ public final class SnapshotRunner {
 	}
 
 	private static Stream<ResourceData> getCachedData() {
-		return ResourceBuilder.getBuilders().stream().map(ResourceBuilder::getCache).filter(Objects::nonNull).distinct().flatMap(cache -> cache.getDataList().stream()).distinct();
+		return ResourceBuilder.getBuilders().stream().map(ResourceBuilder::getCache).filter(Objects::nonNull).distinct().flatMap(cache -> cache.getDataList().stream()).flatMap(data -> Stream.concat(Stream.of(data), data.getForks().stream())).distinct();
 	}
 
 	private static boolean isShifted(final char character) {

@@ -11,7 +11,7 @@ import lombok.NonNull;
 
 public final class DemoPixelFontFace implements IFontFace {
 
-	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).blocking().nearest().mipmap(false);
+	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).nearest().mipmap(false);
 
 	private final int[] advances;
 
@@ -38,7 +38,7 @@ public final class DemoPixelFontFace implements IFontFace {
 			advances[codepoint - ' '] = width + 1;
 		}
 
-		return new DemoPixelFontFace(advances, DemoPixelFontFace.BUILDER.of(atlas));
+		return new DemoPixelFontFace(advances, DemoPixelFontFace.BUILDER.of(atlas).blocking());
 	}
 
 	@Override

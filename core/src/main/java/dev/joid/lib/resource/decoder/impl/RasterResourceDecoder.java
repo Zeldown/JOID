@@ -18,23 +18,26 @@ import lombok.NonNull;
 public class RasterResourceDecoder implements IResourceDecoder {
 
 	private final Asset          asset;
+	private final BufferedImage  source;
 	private final ImageReaderSpi reader;
 
 	private BufferedImage image;
 
 	public RasterResourceDecoder(final @NonNull Asset asset) {
 		this.asset = asset;
+		this.source = null;
 		this.reader = null;
 	}
 
 	public RasterResourceDecoder(final @NonNull BufferedImage image) {
 		this.asset = null;
+		this.source = image;
 		this.reader = null;
-		this.image = image;
 	}
 
 	public RasterResourceDecoder(final @NonNull Asset asset, final @NonNull ImageReaderSpi reader) {
 		this.asset = asset;
+		this.source = null;
 		this.reader = reader;
 	}
 
@@ -49,7 +52,7 @@ public class RasterResourceDecoder implements IResourceDecoder {
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
 		if (this.image == null) {
-			this.image = RasterResourceDecoder.read(this.asset, this.reader);
+			this.image = this.source != null ? this.source : RasterResourceDecoder.read(this.asset, this.reader);
 		}
 
 		resource.width(this.image.getWidth());
