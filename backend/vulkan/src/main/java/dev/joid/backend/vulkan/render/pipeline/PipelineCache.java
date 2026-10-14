@@ -43,6 +43,15 @@ public final class PipelineCache {
 		this.pipelineMap = new HashMap<>();
 	}
 
+	public void destroy() {
+		for (final long[] variants : this.pipelineMap.values()) {
+			for (final long pipeline : variants) {
+				VK10.vkDestroyPipeline(this.context.getDevice(), pipeline, null);
+			}
+		}
+		this.pipelineMap.clear();
+	}
+
 	public long get(final @NonNull PipelineKey key, final boolean offscreen, final long renderPass) {
 		final long[] variants = this.pipelineMap.computeIfAbsent(key, pipelineKey -> new long[2]);
 		final int index = offscreen ? 1 : 0;

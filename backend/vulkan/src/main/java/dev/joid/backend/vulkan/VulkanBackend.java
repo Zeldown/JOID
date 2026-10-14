@@ -1,5 +1,6 @@
 package dev.joid.backend.vulkan;
 
+import dev.joid.backend.vulkan.host.IVulkanHost;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.backend.vulkan.resource.VulkanImageResourceResolver;
 import dev.joid.base.glfw.GlfwWindowBridge;
@@ -18,15 +19,28 @@ import lombok.NonNull;
 
 public final class VulkanBackend extends Backend<VulkanBackend> {
 
-	private final long window;
+	private final long        window;
+	private final IVulkanHost host;
 
-	private VulkanBackend(final long window) {
+	private VulkanRenderBridge render;
+
+	private VulkanBackend(final long window, final IVulkanHost host) {
 		super(JOID.VERSION);
 		this.window = window;
+		this.host   = host;
 	}
 
-	public static @NonNull VulkanBackend create(final long window) {
-		return new VulkanBackend(window);
+	public static @NonNull VulkanBackend create(final long window, final @NonNull IVulkanHost host) {
+		return new VulkanBackend(window, host);
+	}
+
+	public void destroy() {
+		if (this.render == null) {
+			throw new IllegalStateException("VulkanBackend has no render bridge to destroy: call register() first and destroy() only once");
+		}
+
+		this.render.destroy();
+		this.render = null;
 	}
 
 	@Override
@@ -41,7 +55,8 @@ public final class VulkanBackend extends Backend<VulkanBackend> {
 
 	@Override
 	protected @NonNull IRenderBridge createRenderBridge() {
-		return new VulkanRenderBridge(this.window);
+		this.render = new VulkanRenderBridge(this.host);
+		return this.render;
 	}
 
 	@Override

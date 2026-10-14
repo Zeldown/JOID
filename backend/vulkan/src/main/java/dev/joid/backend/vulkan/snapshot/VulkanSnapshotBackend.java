@@ -3,13 +3,13 @@ package dev.joid.backend.vulkan.snapshot;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.lwjgl.vulkan.KHRSwapchain;
 import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkBufferImageCopy;
+import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 
 import dev.joid.backend.vulkan.VulkanBackend;
-import dev.joid.backend.vulkan.render.Swapchain;
+import dev.joid.backend.vulkan.host.VulkanWindowHost;
 import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.backend.vulkan.render.buffer.Buffer;
@@ -18,52 +18,63 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.utils.image.PixelLayout;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
+import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
 public final class VulkanSnapshotBackend implements ISnapshotBackend {
 
+	private VulkanBackend      backend;
+	private VulkanWindowHost   host;
 	private GlfwSnapshotWindow window;
 
 	@Override
 	public void destroy() {
+		this.backend.destroy();
+		this.host.destroy();
 		this.window.destroy();
 	}
 
 	@Override
 	public void create(final int width, final int height) {
-		this.window = GlfwSnapshotWindow.create(width, height, () -> GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API));
-		VulkanBackend.create(this.window.getWindow()).audio(false).register();
+		this.window  = GlfwSnapshotWindow.create(width, height, () -> GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API));
+		this.host    = VulkanWindowHost.create(this.window.getWindow());
+		this.backend = VulkanBackend.create(this.window.getWindow(), this.host).audio(false).register();
+		this.host.beginFrame();
 	}
 
 	@Override
 	public void present() {
-		((VulkanRenderBridge) BridgeHandler.RENDER.get()).present();
+		if (this.host.isFrameActive()) {
+			this.host.endFrame();
+		}
+		this.host.beginFrame();
 	}
 
 	@Override
 	public @NonNull SnapshotImage capture(final int width, final int height) {
-		final VulkanRenderBridge render = (VulkanRenderBridge) BridgeHandler.RENDER.get();
-		final VulkanContext context = render.getContext();
-		final Swapchain swapchain = render.getSwapchain();
-		final long image = swapchain.getImages()[render.getImageIndex()];
-		final int offset = swapchain.getHeight() - height;
+		final VulkanContext context = ((VulkanRenderBridge) BridgeHandler.RENDER.get()).getContext();
+		final VkCommandBuffer command = this.host.getCommandBuffer();
+		final long image = this.host.getTargetImage();
+		final int offset = this.host.getTargetHeight() - height;
 
 		final Buffer buffer = Buffer.create(context, (long) width * height * 4L, VK10.VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-		context.submit(command -> {
-			try (MemoryStack stack = MemoryStack.stackPush()) {
-				VulkanContext.transition(command, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, KHRSwapchain.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			VulkanContext.transition(command, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
-				final VkBufferImageCopy.Buffer copy = VkBufferImageCopy.calloc(1, stack);
-				copy.imageSubresource().aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).mipLevel(0).baseArrayLayer(0).layerCount(1);
-				copy.imageOffset().set(0, offset, 0);
-				copy.imageExtent().set(width, height, 1);
-				VK10.vkCmdCopyImageToBuffer(command, image, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer.getBuffer(), copy);
+			final VkBufferImageCopy.Buffer copy = VkBufferImageCopy.calloc(1, stack);
+			copy.imageSubresource().aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).mipLevel(0).baseArrayLayer(0).layerCount(1);
+			copy.imageOffset().set(0, offset, 0);
+			copy.imageExtent().set(width, height, 1);
+			VK10.vkCmdCopyImageToBuffer(command, image, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, buffer.getBuffer(), copy);
 
-				VulkanContext.transition(command, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, KHRSwapchain.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-			}
-		});
+			VulkanContext.transition(command, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+		}
 
-		final boolean bgra = swapchain.getFormat() == VK10.VK_FORMAT_B8G8R8A8_UNORM || swapchain.getFormat() == VK10.VK_FORMAT_B8G8R8A8_SRGB;
+		this.host.endFrame();
+		VK10.vkQueueWaitIdle(this.host.getQueue());
+
+		final boolean bgra = this.host.getColorFormat() == VK10.VK_FORMAT_B8G8R8A8_UNORM || this.host.getColorFormat() == VK10.VK_FORMAT_B8G8R8A8_SRGB;
 		final SnapshotImage snapshot = SnapshotImage.fromBytes(MemoryUtil.memByteBuffer(buffer.getAddress(), width * height * 4), width, height, false, bgra ? PixelLayout.BGRA8 : PixelLayout.RGBA8);
 		buffer.destroy();
 		return snapshot;
@@ -73,7 +84,7 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 	public @NonNull String getRenderer() {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
-			VK10.vkGetPhysicalDeviceProperties(((VulkanRenderBridge) BridgeHandler.RENDER.get()).getContext().getPhysicalDevice(), properties);
+			VK10.vkGetPhysicalDeviceProperties(this.host.getPhysicalDevice(), properties);
 			return properties.deviceNameString();
 		}
 	}

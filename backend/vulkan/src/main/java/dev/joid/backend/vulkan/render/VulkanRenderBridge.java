@@ -6,27 +6,26 @@ import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.function.Consumer;
 
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.lwjgl.vulkan.KHRSwapchain;
 import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VK13;
 import org.lwjgl.vulkan.VkClearAttachment;
 import org.lwjgl.vulkan.VkClearRect;
 import org.lwjgl.vulkan.VkClearValue;
 import org.lwjgl.vulkan.VkCommandBuffer;
-import org.lwjgl.vulkan.VkCommandBufferBeginInfo;
-import org.lwjgl.vulkan.VkFenceCreateInfo;
-import org.lwjgl.vulkan.VkPresentInfoKHR;
+import org.lwjgl.vulkan.VkDevice;
+import org.lwjgl.vulkan.VkFramebufferCreateInfo;
 import org.lwjgl.vulkan.VkRect2D;
 import org.lwjgl.vulkan.VkRenderPassBeginInfo;
 import org.lwjgl.vulkan.VkSamplerCreateInfo;
-import org.lwjgl.vulkan.VkSemaphoreCreateInfo;
-import org.lwjgl.vulkan.VkSubmitInfo;
 import org.lwjgl.vulkan.VkViewport;
 
-import dev.joid.backend.vulkan.render.buffer.Buffer;
+import dev.joid.backend.vulkan.host.IVulkanHost;
 import dev.joid.backend.vulkan.render.buffer.FrameAllocator;
 import dev.joid.backend.vulkan.render.descriptor.DescriptorCache;
 import dev.joid.backend.vulkan.render.framebuffer.VulkanFrameBuffer;
@@ -60,108 +59,99 @@ import lombok.NonNull;
 @Getter
 public final class VulkanRenderBridge extends RenderBridge {
 
-	private final long            frameFence;
-	private final long[]          samplers;
-	private final Swapchain       swapchain;
-	private final long            imageSemaphore;
-	private final VulkanContext   context;
-	private final List<Runnable>  garbage;
-	private final PipelineCache   pipelineCache;
-	private final VkCommandBuffer commandBuffer;
-	private final FrameAllocator  vertexAllocator;
-	private final FrameAllocator  uniformAllocator;
-	private final DescriptorCache descriptorCache;
+	private final long[]                             samplers;
+	private final IVulkanHost                        host;
+	private final long                               screenLoadPass;
+	private final long                               screenClearPass;
+	private final VulkanContext                      context;
+	private final PipelineCache                      pipelineCache;
+	private final DescriptorCache                    descriptorCache;
+	private final FrameAllocator[]                   vertexAllocators;
+	private final FrameAllocator[]                   uniformAllocators;
+	private final NavigableMap<Long, List<Runnable>> garbage;
 
+	private long              frame;
 	private int               passWidth;
-	private int               imageIndex;
+	private long              depthView;
+	private int               depthWidth;
 	private int               passHeight;
+	private long              depthImage;
+	private int               depthHeight;
+	private long              depthMemory;
 	private boolean           passActive;
 	private long              boundPipeline;
-	private Buffer            stagingBuffer;
 	private boolean           screenCleared;
+	private long              screenFramebuffer;
 	private VulkanFrameBuffer passTarget;
+	private FrameAllocator    vertexAllocator;
+	private FrameAllocator    uniformAllocator;
 
-	public VulkanRenderBridge(final long window) {
-		this.context          = new VulkanContext(window);
-		this.swapchain        = new Swapchain(this.context, window);
-		this.pipelineCache    = new PipelineCache(this.context);
-		this.descriptorCache  = new DescriptorCache(this.context);
-		this.garbage          = new ArrayList<>();
-		this.vertexAllocator  = new FrameAllocator(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 1L, this::dispose);
-		this.uniformAllocator = new FrameAllocator(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, this.context.getUniformAlignment(), this::dispose);
-		this.commandBuffer    = this.context.allocateCommandBuffer();
-
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final LongBuffer semaphore = stack.mallocLong(1);
-			VulkanContext.check(VK10.vkCreateSemaphore(this.context.getDevice(), VkSemaphoreCreateInfo.calloc(stack).sType$Default(), null, semaphore), "vkCreateSemaphore");
-			this.imageSemaphore = semaphore.get(0);
-
-			final LongBuffer fence = stack.mallocLong(1);
-			VulkanContext.check(VK10.vkCreateFence(this.context.getDevice(), VkFenceCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_FENCE_CREATE_SIGNALED_BIT), null, fence), "vkCreateFence");
-			this.frameFence = fence.get(0);
+	public VulkanRenderBridge(final IVulkanHost host) {
+		if (host.getFramesInFlight() < 1) {
+			throw new IllegalArgumentException("The Vulkan host " + host.getClass().getSimpleName() + " has " + host.getFramesInFlight() + " frames in flight, getFramesInFlight() must return 1 or more");
 		}
 
-		this.samplers = this.createSamplers();
+		this.host              = host;
+		this.context           = new VulkanContext(host);
+		this.pipelineCache     = new PipelineCache(this.context);
+		this.descriptorCache   = new DescriptorCache(this.context);
+		this.garbage           = new TreeMap<>();
+		this.screenClearPass   = this.context.createRenderPass(host.getColorFormat(), this.context.getDepthStencilFormat(), true);
+		this.screenLoadPass    = this.context.createRenderPass(host.getColorFormat(), this.context.getDepthStencilFormat(), false);
+		this.vertexAllocators  = new FrameAllocator[host.getFramesInFlight()];
+		this.uniformAllocators = new FrameAllocator[host.getFramesInFlight()];
+		for (int i = 0; i < host.getFramesInFlight(); i++) {
+			this.vertexAllocators[i] = new FrameAllocator(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 1L, this::dispose);
+			this.uniformAllocators[i] = new FrameAllocator(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, this.context.getUniformAlignment(), this::dispose);
+		}
+
+		this.vertexAllocator  = this.vertexAllocators[0];
+		this.uniformAllocator = this.uniformAllocators[0];
+		this.samplers         = this.createSamplers();
+	}
+
+	public void destroy() {
+		final VkDevice device = this.context.getDevice();
+		VK10.vkDeviceWaitIdle(device);
+		this.releaseScreenTarget();
+		this.releaseGarbage(Long.MAX_VALUE);
+		for (int i = 0; i < this.vertexAllocators.length; i++) {
+			this.vertexAllocators[i].destroy();
+			this.uniformAllocators[i].destroy();
+		}
+
+		for (final long sampler : this.samplers) {
+			VK10.vkDestroySampler(device, sampler, null);
+		}
+
+		this.pipelineCache.destroy();
+		this.descriptorCache.destroy();
+		VK10.vkDestroyRenderPass(device, this.screenClearPass, null);
+		VK10.vkDestroyRenderPass(device, this.screenLoadPass, null);
+		this.context.destroy();
 	}
 
 	public void dispose(final @NonNull Runnable destroyer) {
-		if (super.isFrameActive()) {
-			this.garbage.add(destroyer);
-		} else {
-			destroyer.run();
-		}
+		this.garbage.computeIfAbsent(this.frame, frame -> new ArrayList<>()).add(destroyer);
 	}
 
-	@Override
-	protected void submitFrameCommands() {
-		if (!this.screenCleared) {
-			this.beginPass(null);
+	public void record(final @NonNull Consumer<VkCommandBuffer> recorder) {
+		if (!super.isFrameActive()) {
+			this.context.submit(recorder);
+			return;
 		}
 
 		this.endPass();
-		VulkanContext.transition(this.commandBuffer, this.swapchain.getImages()[this.imageIndex], VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, KHRSwapchain.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-		VulkanContext.check(VK10.vkEndCommandBuffer(this.commandBuffer), "vkEndCommandBuffer");
-
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkSubmitInfo submit = VkSubmitInfo.calloc(stack)
-					.sType$Default()
-					.waitSemaphoreCount(1)
-					.pWaitSemaphores(stack.longs(this.imageSemaphore))
-					.pWaitDstStageMask(stack.ints(VK10.VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT))
-					.pCommandBuffers(stack.pointers(this.commandBuffer));
-			VulkanContext.check(VK10.vkResetFences(this.context.getDevice(), this.frameFence), "vkResetFences");
-			VulkanContext.check(VK10.vkQueueSubmit(this.context.getQueue(), submit, this.frameFence), "vkQueueSubmit");
-			VulkanContext.check(VK10.vkWaitForFences(this.context.getDevice(), this.frameFence, true, -1L), "vkWaitForFences");
-		}
-
-		final List<Runnable> released = new ArrayList<>(this.garbage);
-		this.garbage.clear();
-		released.forEach(Runnable::run);
+		recorder.accept(this.host.getCommandBuffer());
 	}
 
 	@Override
 	protected void beginFrameCommands() {
-		if (this.swapchain.isOutdated()) {
-			this.swapchain.recreate();
-		}
+		this.frame++;
+		this.releaseGarbage(this.frame - this.host.getFramesInFlight());
 
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final IntBuffer index = stack.mallocInt(1);
-			int result = KHRSwapchain.vkAcquireNextImageKHR(this.context.getDevice(), this.swapchain.getSwapchain(), -1L, this.imageSemaphore, VK10.VK_NULL_HANDLE, index);
-			if (result == KHRSwapchain.VK_ERROR_OUT_OF_DATE_KHR) {
-				this.swapchain.recreate();
-				result = KHRSwapchain.vkAcquireNextImageKHR(this.context.getDevice(), this.swapchain.getSwapchain(), -1L, this.imageSemaphore, VK10.VK_NULL_HANDLE, index);
-			}
-
-			if (result != KHRSwapchain.VK_SUBOPTIMAL_KHR) {
-				VulkanContext.check(result, "vkAcquireNextImageKHR");
-			}
-
-			this.imageIndex = index.get(0);
-			VulkanContext.check(VK10.vkResetCommandBuffer(this.commandBuffer, 0), "vkResetCommandBuffer");
-			VulkanContext.check(VK10.vkBeginCommandBuffer(this.commandBuffer, VkCommandBufferBeginInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT)), "vkBeginCommandBuffer");
-		}
-
+		this.vertexAllocator  = this.vertexAllocators[this.host.getFrameIndex()];
+		this.uniformAllocator = this.uniformAllocators[this.host.getFrameIndex()];
 		this.vertexAllocator.reset();
 		this.uniformAllocator.reset();
 		this.screenCleared = false;
@@ -170,17 +160,43 @@ public final class VulkanRenderBridge extends RenderBridge {
 		this.boundPipeline = VK10.VK_NULL_HANDLE;
 	}
 
-	public void present() {
+	@Override
+	protected void submitFrameCommands() {
+		this.endPass();
+		if (this.screenFramebuffer != VK10.VK_NULL_HANDLE) {
+			final VkDevice device = this.context.getDevice();
+			final long framebuffer = this.screenFramebuffer;
+			this.dispose(() -> VK10.vkDestroyFramebuffer(device, framebuffer, null));
+			this.screenFramebuffer = VK10.VK_NULL_HANDLE;
+		}
+	}
+
+	@Override
+	public void suspend(final @NonNull Runnable draw) {
+		this.endPass();
+		try {
+			draw.run();
+		} finally {
+			this.boundPipeline = VK10.VK_NULL_HANDLE;
+		}
+	}
+
+	@Override
+	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+		super.requireFrame();
+		this.beginPass((VulkanFrameBuffer) target);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkPresentInfoKHR info = VkPresentInfoKHR.calloc(stack)
-					.sType$Default()
-					.swapchainCount(1)
-					.pSwapchains(stack.longs(this.swapchain.getSwapchain()))
-					.pImageIndices(stack.ints(this.imageIndex));
-			final int result = KHRSwapchain.vkQueuePresentKHR(this.context.getQueue(), info);
-			if (result != KHRSwapchain.VK_ERROR_OUT_OF_DATE_KHR && result != KHRSwapchain.VK_SUBOPTIMAL_KHR) {
-				VulkanContext.check(result, "vkQueuePresentKHR");
-			}
+			final VkCommandBuffer buffer = this.host.getCommandBuffer();
+			VK10.vkCmdSetViewport(buffer, 0, VkViewport.calloc(1, stack).width(width).height(height).minDepth(0F).maxDepth(1F));
+			final VkRect2D.Buffer scissor = VkRect2D.calloc(1, stack);
+			scissor.extent().set(width, height);
+			VK10.vkCmdSetScissor(buffer, 0, scissor);
+		}
+
+		try {
+			draw.run();
+		} finally {
+			this.boundPipeline = VK10.VK_NULL_HANDLE;
 		}
 	}
 
@@ -191,7 +207,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).colorAttachment(0);
 			attachment.clearValue().color().float32(0, red).float32(1, green).float32(2, blue).float32(3, alpha);
-			VK10.vkCmdClearAttachments(this.commandBuffer, attachment, this.createClearRect(stack));
+			VK10.vkCmdClearAttachments(this.host.getCommandBuffer(), attachment, this.createClearRect(stack));
 		}
 	}
 
@@ -202,7 +218,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_DEPTH_BIT);
 			attachment.clearValue().depthStencil().depth(1F);
-			VK10.vkCmdClearAttachments(this.commandBuffer, attachment, this.createClearRect(stack));
+			VK10.vkCmdClearAttachments(this.host.getCommandBuffer(), attachment, this.createClearRect(stack));
 		}
 	}
 
@@ -213,7 +229,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_STENCIL_BIT);
 			attachment.clearValue().depthStencil().stencil(0);
-			VK10.vkCmdClearAttachments(this.commandBuffer, attachment, this.createClearRect(stack));
+			VK10.vkCmdClearAttachments(this.host.getCommandBuffer(), attachment, this.createClearRect(stack));
 		}
 	}
 
@@ -225,9 +241,9 @@ public final class VulkanRenderBridge extends RenderBridge {
 		final VulkanFrameBuffer target = (VulkanFrameBuffer) state.getFrameBuffer();
 		this.beginPass(target);
 
-		final long pipeline = this.pipelineCache.get(PipelineKey.create(shader, state, primitive), target != null, target == null ? this.swapchain.getClearRenderPass() : this.context.getOffscreenRenderPass());
+		final long pipeline = this.pipelineCache.get(PipelineKey.create(shader, state, primitive), target != null, target == null ? this.screenClearPass : this.context.getOffscreenRenderPass());
 		if (pipeline != this.boundPipeline) {
-			VK10.vkCmdBindPipeline(this.commandBuffer, VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
+			VK10.vkCmdBindPipeline(this.host.getCommandBuffer(), VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 			this.boundPipeline = pipeline;
 		}
 
@@ -237,9 +253,9 @@ public final class VulkanRenderBridge extends RenderBridge {
 			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer);
 			final long descriptorSet = this.descriptorCache.get(shader, this.uniformAllocator.getBuffer().getBuffer(), this.getImages(shader));
 
-			VK10.vkCmdBindDescriptorSets(this.commandBuffer, VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, shader.getPipelineLayout(), 0, stack.longs(descriptorSet), dynamicOffsets);
-			VK10.vkCmdBindVertexBuffers(this.commandBuffer, 0, stack.longs(this.vertexAllocator.getBuffer().getBuffer()), stack.longs(vertexOffset));
-			VK10.vkCmdDraw(this.commandBuffer, buffer.getCount(), 1, 0, 0);
+			VK10.vkCmdBindDescriptorSets(this.host.getCommandBuffer(), VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, shader.getPipelineLayout(), 0, stack.longs(descriptorSet), dynamicOffsets);
+			VK10.vkCmdBindVertexBuffers(this.host.getCommandBuffer(), 0, stack.longs(this.vertexAllocator.getBuffer().getBuffer()), stack.longs(vertexOffset));
+			VK10.vkCmdDraw(this.host.getCommandBuffer(), buffer.getCount(), 1, 0, 0);
 		}
 	}
 
@@ -262,26 +278,15 @@ public final class VulkanRenderBridge extends RenderBridge {
 		this.descriptorCache.invalidate(handle, this::dispose);
 	}
 
-	public final @NonNull List<Runnable> getGarbage() {
-		return Collections.unmodifiableList(this.garbage);
-	}
-
-	public @NonNull Buffer getStagingBuffer(final long size) {
-		if (this.stagingBuffer == null || this.stagingBuffer.getSize() < size) {
-			if (this.stagingBuffer != null) {
-				this.stagingBuffer.destroy();
-			}
-
-			this.stagingBuffer = Buffer.create(this.context, Math.max(size, 4L << 20), VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-		}
-		return this.stagingBuffer;
+	public @NonNull NavigableMap<Long, List<Runnable>> getGarbage() {
+		return Collections.unmodifiableNavigableMap(this.garbage);
 	}
 
 	private void endPass() {
 		if (this.passActive) {
-			VK10.vkCmdEndRenderPass(this.commandBuffer);
+			VK10.vkCmdEndRenderPass(this.host.getCommandBuffer());
 			if (this.passTarget != null) {
-				VulkanContext.transition(this.commandBuffer, this.passTarget.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+				VulkanContext.transition(this.host.getCommandBuffer(), this.passTarget.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			}
 			this.passActive = false;
 		}
@@ -293,12 +298,17 @@ public final class VulkanRenderBridge extends RenderBridge {
 		}
 
 		this.endPass();
+		final VkCommandBuffer buffer = this.host.getCommandBuffer();
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkRenderPassBeginInfo info = VkRenderPassBeginInfo.calloc(stack).sType$Default();
 			if (target == null) {
-				this.passWidth = this.swapchain.getWidth();
-				this.passHeight = this.swapchain.getHeight();
-				info.renderPass(this.screenCleared ? this.swapchain.getLoadRenderPass() : this.swapchain.getClearRenderPass()).framebuffer(this.swapchain.getFramebuffers()[this.imageIndex]);
+				this.passWidth = this.host.getTargetWidth();
+				this.passHeight = this.host.getTargetHeight();
+				if (this.screenFramebuffer == VK10.VK_NULL_HANDLE) {
+					this.screenFramebuffer = this.createScreenFramebuffer(stack);
+				}
+
+				info.renderPass(this.screenCleared ? this.screenLoadPass : this.screenClearPass).framebuffer(this.screenFramebuffer);
 				if (!this.screenCleared) {
 					final VkClearValue.Buffer clearValues = VkClearValue.calloc(2, stack);
 					clearValues.get(1).depthStencil().depth(1F).stencil(0);
@@ -308,17 +318,64 @@ public final class VulkanRenderBridge extends RenderBridge {
 			} else {
 				this.passWidth = target.getWidth();
 				this.passHeight = target.getHeight();
-				VulkanContext.transition(this.commandBuffer, target.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+				VulkanContext.transition(buffer, target.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 				info.renderPass(this.context.getOffscreenRenderPass()).framebuffer(target.getFramebuffer());
 			}
 
 			info.renderArea().extent().set(this.passWidth, this.passHeight);
-			VK10.vkCmdBeginRenderPass(this.commandBuffer, info, VK10.VK_SUBPASS_CONTENTS_INLINE);
+			VK10.vkCmdBeginRenderPass(buffer, info, VK10.VK_SUBPASS_CONTENTS_INLINE);
 		}
 
 		this.passActive    = true;
 		this.passTarget    = target;
 		this.boundPipeline = VK10.VK_NULL_HANDLE;
+	}
+
+	private long createScreenFramebuffer(final MemoryStack stack) {
+		final int format = this.context.getDepthStencilFormat();
+		if (this.depthWidth != this.passWidth || this.depthHeight != this.passHeight) {
+			this.releaseScreenTarget();
+			final long[] depth = this.context.createImage(this.passWidth, this.passHeight, format, VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
+			this.depthImage  = depth[0];
+			this.depthMemory = depth[1];
+			this.depthView   = this.context.createImageView(this.depthImage, format, VK10.VK_IMAGE_ASPECT_DEPTH_BIT | VK10.VK_IMAGE_ASPECT_STENCIL_BIT);
+			this.depthWidth  = this.passWidth;
+			this.depthHeight = this.passHeight;
+		}
+
+		final LongBuffer framebuffer = stack.mallocLong(1);
+		VulkanContext.check(VK10.vkCreateFramebuffer(this.context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(this.screenClearPass).pAttachments(stack.longs(this.host.getTargetView(), this.depthView)).width(this.passWidth).height(this.passHeight).layers(1), null, framebuffer), "vkCreateFramebuffer");
+		return framebuffer.get(0);
+	}
+
+	private void releaseScreenTarget() {
+		if (this.depthImage == VK10.VK_NULL_HANDLE) {
+			return;
+		}
+
+		final VkDevice device = this.context.getDevice();
+		final long view = this.depthView;
+		final long image = this.depthImage;
+		final long memory = this.depthMemory;
+		this.dispose(() -> {
+			VK10.vkDestroyImageView(device, view, null);
+			VK10.vkDestroyImage(device, image, null);
+			VK10.vkFreeMemory(device, memory, null);
+		});
+
+		this.depthView   = VK10.VK_NULL_HANDLE;
+		this.depthImage  = VK10.VK_NULL_HANDLE;
+		this.depthMemory = VK10.VK_NULL_HANDLE;
+		this.depthWidth  = 0;
+		this.depthHeight = 0;
+	}
+
+	private void releaseGarbage(final long lastFrame) {
+		final NavigableMap<Long, List<Runnable>> released = this.garbage.headMap(lastFrame, true);
+		final List<Runnable> destroyers = new ArrayList<>();
+		released.values().forEach(destroyers::addAll);
+		released.clear();
+		destroyers.forEach(Runnable::run);
 	}
 
 	private VkClearRect.Buffer createClearRect(final MemoryStack stack) {
@@ -328,30 +385,31 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	private void applyDynamicState(final MemoryStack stack, final RenderState state, final boolean offscreen, final int topology) {
+		final VkCommandBuffer buffer = this.host.getCommandBuffer();
 		final VkViewport.Buffer viewport = VkViewport.calloc(1, stack).x(state.getViewportX()).width(state.getViewportWidth()).minDepth(0F).maxDepth(1F);
 		if (offscreen) {
 			viewport.y(state.getViewportY()).height(state.getViewportHeight());
 		} else {
 			viewport.y(this.passHeight - state.getViewportY()).height(-state.getViewportHeight());
 		}
-		VK10.vkCmdSetViewport(this.commandBuffer, 0, viewport);
+		VK10.vkCmdSetViewport(buffer, 0, viewport);
 
 		final VkRect2D.Buffer scissor = VkRect2D.calloc(1, stack);
 		scissor.extent().set(this.passWidth, this.passHeight);
-		VK10.vkCmdSetScissor(this.commandBuffer, 0, scissor);
+		VK10.vkCmdSetScissor(buffer, 0, scissor);
 
-		VK13.vkCmdSetPrimitiveTopology(this.commandBuffer, topology);
-		VK13.vkCmdSetCullMode(this.commandBuffer, state.isCull() ? VK10.VK_CULL_MODE_BACK_BIT : VK10.VK_CULL_MODE_NONE);
-		VK13.vkCmdSetFrontFace(this.commandBuffer, offscreen ? VK10.VK_FRONT_FACE_CLOCKWISE : VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE);
-		VK13.vkCmdSetDepthTestEnable(this.commandBuffer, state.isDepthTest());
-		VK13.vkCmdSetDepthWriteEnable(this.commandBuffer, state.isDepthWrite());
-		VK13.vkCmdSetDepthCompareOp(this.commandBuffer, VK10.VK_COMPARE_OP_LESS);
+		VK13.vkCmdSetPrimitiveTopology(buffer, topology);
+		VK13.vkCmdSetCullMode(buffer, state.isCull() ? VK10.VK_CULL_MODE_BACK_BIT : VK10.VK_CULL_MODE_NONE);
+		VK13.vkCmdSetFrontFace(buffer, offscreen ? VK10.VK_FRONT_FACE_CLOCKWISE : VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE);
+		VK13.vkCmdSetDepthTestEnable(buffer, state.isDepthTest());
+		VK13.vkCmdSetDepthWriteEnable(buffer, state.isDepthWrite());
+		VK13.vkCmdSetDepthCompareOp(buffer, VK10.VK_COMPARE_OP_LESS);
 		final StencilState stencil = state.getStencil();
-		VK13.vkCmdSetStencilTestEnable(this.commandBuffer, stencil.isEnabled() && !offscreen);
-		VK13.vkCmdSetStencilOp(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, VulkanRenderBridge.operation(stencil.getFail()), VulkanRenderBridge.operation(stencil.getPass()), VulkanRenderBridge.operation(stencil.getDepthFail()), VulkanRenderBridge.compare(stencil.getFunction()));
-		VK10.vkCmdSetStencilCompareMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, stencil.getMask());
-		VK10.vkCmdSetStencilWriteMask(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, 0xFF);
-		VK10.vkCmdSetStencilReference(this.commandBuffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, stencil.getReference());
+		VK13.vkCmdSetStencilTestEnable(buffer, stencil.isEnabled() && !offscreen);
+		VK13.vkCmdSetStencilOp(buffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, VulkanRenderBridge.operation(stencil.getFail()), VulkanRenderBridge.operation(stencil.getPass()), VulkanRenderBridge.operation(stencil.getDepthFail()), VulkanRenderBridge.compare(stencil.getFunction()));
+		VK10.vkCmdSetStencilCompareMask(buffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, stencil.getMask());
+		VK10.vkCmdSetStencilWriteMask(buffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, 0xFF);
+		VK10.vkCmdSetStencilReference(buffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, stencil.getReference());
 	}
 
 	private long writeVertices(final VertexBuffer buffer, final RenderState state) {

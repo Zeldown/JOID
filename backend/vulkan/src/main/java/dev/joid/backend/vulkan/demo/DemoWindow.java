@@ -4,13 +4,14 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.Configuration;
 
 import dev.joid.backend.vulkan.VulkanBackend;
-import dev.joid.backend.vulkan.render.VulkanRenderBridge;
+import dev.joid.backend.vulkan.host.VulkanWindowHost;
 import dev.joid.base.glfw.demo.GlfwDemoWindow;
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.backend.Backend;
 import lombok.NonNull;
 
 public class DemoWindow extends GlfwDemoWindow {
+
+	private VulkanWindowHost host;
 
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);
@@ -29,12 +30,15 @@ public class DemoWindow extends GlfwDemoWindow {
 
 	@Override
 	protected @NonNull Backend<?> registerBackend(final long window) {
-		return VulkanBackend.create(window).register();
+		this.host = VulkanWindowHost.create(window);
+		final VulkanBackend backend = VulkanBackend.create(window, this.host).register();
+		this.host.beginFrame();
+		return backend;
 	}
 
 	@Override
 	protected void present() {
-		((VulkanRenderBridge) BridgeHandler.RENDER.get()).present();
+		this.host.endFrame().beginFrame();
 	}
 
 }

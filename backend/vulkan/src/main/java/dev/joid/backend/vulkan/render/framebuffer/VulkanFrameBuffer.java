@@ -39,7 +39,7 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 		texture.allocate(width, height);
 		final long[] depth = context.createImage(width, height, context.getDepthFormat(), VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 		final long depthView = context.createImageView(depth[0], context.getDepthFormat(), VK10.VK_IMAGE_ASPECT_DEPTH_BIT);
-		context.submit(buffer -> {
+		bridge.record(buffer -> {
 			try (MemoryStack stack = MemoryStack.stackPush()) {
 				VulkanContext.transition(buffer, depth[0], VK10.VK_IMAGE_ASPECT_DEPTH_BIT, VK10.VK_IMAGE_LAYOUT_UNDEFINED, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 				final VkImageSubresourceRange range = VkImageSubresourceRange.calloc(stack).aspectMask(VK10.VK_IMAGE_ASPECT_DEPTH_BIT).baseMipLevel(0).levelCount(1).baseArrayLayer(0).layerCount(1);

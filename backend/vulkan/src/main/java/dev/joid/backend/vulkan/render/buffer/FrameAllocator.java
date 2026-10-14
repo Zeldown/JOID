@@ -24,6 +24,10 @@ public final class FrameAllocator {
 		this.buffer    = Buffer.create(context, capacity, usage);
 	}
 
+	public void destroy() {
+		this.buffer.destroy();
+	}
+
 	public long allocate(final long size) {
 		final long aligned = (this.offset + this.alignment - 1) / this.alignment * this.alignment;
 		if (aligned + size > this.buffer.getSize()) {

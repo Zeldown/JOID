@@ -35,6 +35,14 @@ public final class DescriptorCache {
 		this.setMap   = new HashMap<>();
 	}
 
+	public void destroy() {
+		for (final long pool : this.poolList) {
+			VK10.vkDestroyDescriptorPool(this.context.getDevice(), pool, null);
+		}
+		this.poolList.clear();
+		this.setMap.clear();
+	}
+
 	public long get(final @NonNull VulkanShader shader, final long uniformBuffer, final @NonNull long[] images) {
 		final List<Long> key = new ArrayList<>(images.length + 2);
 		key.add(shader.getDescriptorSetLayout());

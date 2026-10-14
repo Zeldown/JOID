@@ -1,11 +1,12 @@
 package dev.joid.backend.vulkan.jar;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.Configuration;
 
 import dev.joid.backend.vulkan.VulkanBackend;
-import dev.joid.backend.vulkan.render.VulkanRenderBridge;
-import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.backend.vulkan.host.VulkanWindowHost;
 import dev.joid.test.jar.JarCheck;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,7 @@ public final class VulkanJarCheck {
 
 	public static void main(final String[] arguments) {
 		Configuration.STACK_SIZE.set(1024);
+		final AtomicReference<VulkanWindowHost> host = new AtomicReference<>();
 		JarCheck.run(arguments[0], () -> {
 			if (!GLFW.glfwInit()) {
 				throw new IllegalStateException("Unable to initialize GLFW");
@@ -26,8 +28,12 @@ public final class VulkanJarCheck {
 			if (window == 0L) {
 				throw new IllegalStateException("Unable to create the hidden GLFW window");
 			}
-			return VulkanBackend.create(window).audio(false).register();
-		}, () -> ((VulkanRenderBridge) BridgeHandler.RENDER.get()).present());
+
+			host.set(VulkanWindowHost.create(window));
+			final VulkanBackend backend = VulkanBackend.create(window, host.get()).audio(false).register();
+			host.get().beginFrame();
+			return backend;
+		}, () -> host.get().endFrame().beginFrame());
 	}
 
 }
