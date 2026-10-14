@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 import com.google.gson.Gson;
@@ -55,13 +56,16 @@ public final class JsonFiles {
 	}
 
 	public static void write(final @NonNull File file, final @NonNull String json) {
-		final File temporary = new File(file.getPath() + ".tmp");
+		Path temporary = null;
 		try {
-			Files.createDirectories(file.getAbsoluteFile().getParentFile().toPath());
-			Files.write(temporary.toPath(), json.getBytes(StandardCharsets.UTF_8));
-			Files.move(temporary.toPath(), file.toPath(), StandardCopyOption.ATOMIC_MOVE);
+			final Path directory = Files.createDirectories(file.getAbsoluteFile().getParentFile().toPath());
+			temporary = Files.createTempFile(directory, file.getName(), ".tmp");
+			Files.write(temporary, json.getBytes(StandardCharsets.UTF_8));
+			Files.move(temporary, file.toPath(), StandardCopyOption.ATOMIC_MOVE);
 		} catch (final IOException e) {
-			temporary.delete();
+			if (temporary != null) {
+				temporary.toFile().delete();
+			}
 			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be saved (" + e + "), check that the data folder can be written");
 		}
 	}
