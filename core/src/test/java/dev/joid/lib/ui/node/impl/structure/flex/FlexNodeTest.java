@@ -129,7 +129,7 @@ public class FlexNodeTest {
 
 	@Test
 	public void keepsTheOwnPositionGivenToAChild() {
-		final DoubleSignal offset = new DoubleSignal(5D);
+		final DoubleSignal offset = DoubleSignal.of(5D);
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).x(offset);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(RectNode.create(0D, 0D, 10D, 20D), child);
 		this.bridges.open(new NodeUI(flex));
@@ -221,7 +221,7 @@ public class FlexNodeTest {
 
 	@Test
 	public void laysOutTheChildrenRebuiltByAWatchedBody() {
-		final Signal<Integer> count = new Signal<>(1);
+		final Signal<Integer> count = Signal.of(1);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).margin(10D).watch(count, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY).body(node -> {
 			for (int i = 0; i < count.get(); i++) {
 				RectNode.create(0D, 0D, 100D, 50D).attach(node);

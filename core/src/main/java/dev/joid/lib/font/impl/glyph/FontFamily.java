@@ -23,7 +23,7 @@ public final class FontFamily<F extends IFontFace> {
 	@SafeVarargs
 	public static <F extends IFontFace> @NonNull FontFamily<F> of(final @NonNull F @NonNull... faces) {
 		if (faces.length == 0) {
-			throw new IllegalArgumentException("A font family needs at least one face");
+			throw new IllegalArgumentException("A font family needs at least one face, got none: pass its faces to FontFamily.of(...)");
 		}
 
 		final List<F> sorted = new ArrayList<>();

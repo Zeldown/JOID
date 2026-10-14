@@ -690,7 +690,7 @@ public abstract class Node implements INode {
 		try {
 			this.update();
 		} catch (final RuntimeException exception) {
-			JOIDLog.warnOnce("Node.update." + System.identityHashCode(this) + exception, "The update of " + this.describe() + " failed: " + exception, exception);
+			JOIDLog.warnOnce("Node.update." + System.identityHashCode(this) + exception, "The update of " + this.describe() + " failed (" + exception + "), the next updates still run: catch the exception inside update() to handle it", exception);
 		}
 		this.fire(Node.UPDATE, () -> NodeEvent.create(this));
 	}
@@ -1866,7 +1866,7 @@ public abstract class Node implements INode {
 			try {
 				source.getValue().pull(this);
 			} catch (final RuntimeException exception) {
-				JOIDLog.warnOnce("Node.pull." + this.getClass().getName() + "." + source.getKey() + "." + exception.getClass().getName(), "The " + source.getKey() + " of " + this.getClass().getSimpleName() + " cannot take its new value: " + exception, exception);
+				JOIDLog.warnOnce("Node.pull." + this.getClass().getName() + "." + source.getKey() + "." + exception.getClass().getName(), "The " + source.getKey() + " of " + this.getClass().getSimpleName() + " cannot take its new value (" + exception + "), it keeps the previous one: check the value its signal gives", exception);
 			}
 		}
 	}
@@ -2087,7 +2087,7 @@ public abstract class Node implements INode {
 				try {
 					property.apply(this, signal);
 				} catch (final Exception e) {
-					JOIDLog.warnOnce("Node.watch." + this.getClass().getName() + "." + e.getClass().getName(), "A watch of " + this.getClass().getSimpleName() + " cannot apply its property when its signal changes: " + e, e);
+					JOIDLog.warnOnce("Node.watch." + this.getClass().getName() + "." + e.getClass().getName(), "A watch of " + this.getClass().getSimpleName() + " cannot apply its property when its signal changes (" + e + "), the property keeps its previous value: check the value the signal gives", e);
 				}
 			}
 		} finally {
@@ -2537,7 +2537,7 @@ public abstract class Node implements INode {
 			copy.eventBus.addAll(this.eventBus);
 		}
 
-		copy.effectMap.putAll(this.effectMap);
+		this.effectMap.forEach((type, effect) -> copy.effectMap.put(type, effect.copy()));
 		copy.layerList.addAll(this.layerList);
 		copy.hoverElementList.addAll(this.hoverElementList);
 		copy.hoverSupplierList.addAll(this.hoverSupplierList);

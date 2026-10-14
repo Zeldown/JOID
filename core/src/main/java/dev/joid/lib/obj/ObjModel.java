@@ -56,7 +56,7 @@ public final class ObjModel implements IDrawableModel {
 
 	private ObjGroup currentGroup;
 
-	protected ObjModel(final @NonNull String name, final @NonNull Object handle, final @NonNull Resource texture) {
+	private ObjModel(final @NonNull String name, final @NonNull Object handle, final @NonNull Resource texture) {
 		this.name    = name;
 		this.texture = texture;
 		this.load(handle);
@@ -121,7 +121,7 @@ public final class ObjModel implements IDrawableModel {
 				this.groups.add(this.currentGroup);
 			}
 		} catch (final IOException e) {
-			throw new UncheckedIOException("The OBJ model " + this.name + " cannot be read: " + e.getMessage(), e);
+			throw new UncheckedIOException("The OBJ model " + this.name + " cannot be read (" + e.getMessage() + "), check that the file exists and can be read", e);
 		} finally {
 			try {
 				if (reader != null) {
@@ -302,20 +302,24 @@ public final class ObjModel implements IDrawableModel {
 	}
 
 	private static ObjFace face(final ObjVertex[] vertices, final ObjTextureCoordinate[] textureCoordinates, final ObjVertex[] vertexNormals, final int... corners) {
-		final ObjFace face = new ObjFace();
-		face.setVertices(new ObjVertex[corners.length]);
-		face.setTextureCoordinates(textureCoordinates != null ? new ObjTextureCoordinate[corners.length] : null);
-		face.setVertexNormals(vertexNormals != null ? new ObjVertex[corners.length] : null);
+		final ObjVertex[] faceVertices = new ObjVertex[corners.length];
+		final ObjVertex[] faceNormals = vertexNormals != null ? new ObjVertex[corners.length] : null;
+		final ObjTextureCoordinate[] faceCoordinates = textureCoordinates != null ? new ObjTextureCoordinate[corners.length] : null;
 		for (int i = 0; i < corners.length; i++) {
-			face.getVertices()[i] = vertices[corners[i]];
-			if (textureCoordinates != null) {
-				face.getTextureCoordinates()[i] = textureCoordinates[corners[i]];
+			faceVertices[i] = vertices[corners[i]];
+			if (faceCoordinates != null) {
+				faceCoordinates[i] = textureCoordinates[corners[i]];
 			}
 
-			if (vertexNormals != null) {
-				face.getVertexNormals()[i] = vertexNormals[corners[i]];
+			if (faceNormals != null) {
+				faceNormals[i] = vertexNormals[corners[i]];
 			}
 		}
+
+		final ObjFace face = new ObjFace();
+		face.setVertices(faceVertices);
+		face.setVertexNormals(faceNormals);
+		face.setTextureCoordinates(faceCoordinates);
 		face.setFaceNormal(face.normal());
 		return face;
 	}

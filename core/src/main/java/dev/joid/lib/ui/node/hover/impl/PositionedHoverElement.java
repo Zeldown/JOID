@@ -45,7 +45,7 @@ public abstract class PositionedHoverElement implements IHoverElement {
 		final double elementWidth = this.element.getWidth();
 		final double elementHeight = this.element.getHeight();
 
-		if (ui != null && elementWidth > 0 && elementHeight > 0) {
+		if (elementWidth > 0 && elementHeight > 0) {
 			final double left = ui.getView().toUiX(0D);
 			final double top = ui.getView().toUiY(0D);
 			final double right = ui.getView().toUiX(ui.getWindowWidth());

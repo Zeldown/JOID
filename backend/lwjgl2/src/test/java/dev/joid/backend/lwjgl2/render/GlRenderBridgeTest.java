@@ -75,7 +75,7 @@ public class GlRenderBridgeTest {
 			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
-		Assert.assertTrue(output.toString(), output.toString().contains(" cannot be read: The borrowed texture 2147483000 is not a texture of the host. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production."));
+		Assert.assertTrue(output.toString(), output.toString().contains(" cannot be read: The borrowed texture 2147483000 is not a texture of the host, borrow a texture that the host created and has not deleted. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production."));
 	}
 
 }

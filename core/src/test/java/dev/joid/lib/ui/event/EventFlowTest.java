@@ -80,7 +80,7 @@ public class EventFlowTest {
 
 	@Test
 	public void sendsTheInputOfAWaitingNodeToItsSkeletonOnly() {
-		final BooleanSignal ready = new BooleanSignal(false);
+		final BooleanSignal ready = BooleanSignal.of(false);
 		final FlowNode skeleton = new FlowNode("skeleton", this.trace);
 		final FlowNode child = new FlowNode("child", this.trace);
 		final FlowNode node = new FlowNode("node", this.trace).append(child).wait(waiting -> ready.get()).skeleton(waiting -> skeleton);
@@ -122,7 +122,7 @@ public class EventFlowTest {
 
 	@Test
 	public void keepsAUiOpenWhenItRefusesToClose() {
-		final BooleanSignal locked = new BooleanSignal(true);
+		final BooleanSignal locked = BooleanSignal.of(true);
 		final FlowUI ui = new FlowUI();
 		this.bridges.open(ui);
 		ui.beforeClose(event -> {
@@ -160,7 +160,7 @@ public class EventFlowTest {
 
 	@Test
 	public void refusesTheUserAndTheSettersButNeitherTheSignalsNorTheForcedValues() {
-		final BooleanSignal checked = new BooleanSignal(false);
+		final BooleanSignal checked = BooleanSignal.of(false);
 		final List<Object> changes = new ArrayList<>();
 		final Checkbox checkbox = new Checkbox();
 		checkbox.signal(checked).<Checkbox>beforeChange(event -> {
@@ -192,9 +192,9 @@ public class EventFlowTest {
 
 	@Test
 	public void followsTheSignalsAndForcedValuesOfEveryControlWhateverTheirRefusals() {
-		final StringSignal state = new StringSignal("one");
-		final StringSignal option = new StringSignal("first");
-		final IntegerSignal number = new IntegerSignal(1);
+		final StringSignal state = StringSignal.of("one");
+		final StringSignal option = StringSignal.of("first");
+		final IntegerSignal number = IntegerSignal.of(1);
 		final List<Object> changes = new ArrayList<>();
 		final Switch control = new Switch().states("one", "two").signal(state).<Switch>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
 		final Selector selector = new Selector().values("first", "second").signal(option).<Selector>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
@@ -219,7 +219,7 @@ public class EventFlowTest {
 		}).onChange(event -> this.trace.add("next"));
 		this.bridges.open(new FlowUI(checkbox));
 		final String printed = EventFlowTest.capture(() -> checkbox.checked(true));
-		Assert.assertTrue(printed, printed.startsWith("[JOID] The onChange listener of Checkbox in FlowUI failed: java.lang.IllegalStateException: broken"));
+		Assert.assertTrue(printed, printed.startsWith("[JOID] The onChange listener of Checkbox in FlowUI failed (java.lang.IllegalStateException: broken"));
 		Assert.assertEquals(Collections.singletonList("next"), this.trace);
 		Assert.assertTrue(checkbox.isChecked());
 	}

@@ -19,27 +19,16 @@ public class MapSignalTest {
 
 	@Test
 	public void startsWithAnEmptyMapWithoutDefault() {
-		final MapSignal<String, Integer> signal = new MapSignal<>();
-		Assert.assertFalse(signal.isPresent());
+		final MapSignal<String, Integer> signal = MapSignal.of();
 		Assert.assertEquals(Collections.emptyMap(), signal.get());
 		Assert.assertTrue(signal.isEmpty());
 		Assert.assertNull(signal.get("a"));
 	}
 
 	@Test
-	public void fallsBackOnTheGivenMap() {
-		final Map<String, Integer> map = new HashMap<>();
-		final MapSignal<String, Integer> signal = new MapSignal<>(map);
-		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(map, signal.get());
-		Assert.assertNotSame(map, signal.get());
-	}
-
-	@Test
 	public void startsWithTheGivenMap() {
 		final Map<String, Integer> map = new HashMap<>();
 		final MapSignal<String, Integer> signal = MapSignal.of(map);
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(map, signal.get());
 		Assert.assertNotSame(map, signal.get());
 	}
@@ -109,7 +98,7 @@ public class MapSignalTest {
 	@Test
 	public void notifiesTheMutatedMapWhenBuiltWithADefault() {
 		final List<Map<String, Integer>> received = new ArrayList<>();
-		final MapSignal<String, Integer> signal = new MapSignal<>(new HashMap<>());
+		final MapSignal<String, Integer> signal = MapSignal.of(new HashMap<>());
 		signal.subscribe(received::add);
 		signal.put("a", 1);
 		Assert.assertEquals(Collections.singletonList(Collections.singletonMap("a", 1)), received);
@@ -141,7 +130,7 @@ public class MapSignalTest {
 	@Test
 	public void notifiesAValueDerivedFromItsMapAtEveryMutation() {
 		final List<Map<String, Integer>> received = new ArrayList<>();
-		final MapSignal<String, Integer> signal = new MapSignal<>();
+		final MapSignal<String, Integer> signal = MapSignal.of();
 		final ComputedSignal<Map<String, Integer>> derived = Signal.from(() -> signal.get()).subscribe(received::add);
 		signal.put("a", 1);
 		signal.put("a", 2);

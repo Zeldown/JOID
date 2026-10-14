@@ -10,18 +10,20 @@ import lombok.NonNull;
 
 public class ListSignal<E> extends Signal<List<E>> {
 
-	public ListSignal() {
+	protected ListSignal() {
 		super(new ArrayList<>());
 	}
 
-	public ListSignal(final @NonNull Collection<E> value) {
+	protected ListSignal(final @NonNull Collection<E> value) {
 		super(new ArrayList<>(value));
 	}
 
-	public static <E> @NonNull ListSignal<E> of(final @NonNull Collection<E> defaultValue) {
-		final ListSignal<E> instance = new ListSignal<>(defaultValue);
-		instance.set(instance.getDefaultValue());
-		return instance;
+	public static <E> @NonNull ListSignal<E> of() {
+		return new ListSignal<>();
+	}
+
+	public static <E> @NonNull ListSignal<E> of(final @NonNull Collection<E> value) {
+		return new ListSignal<>(value);
 	}
 
 	public @NonNull ListSignal<E> clear() {

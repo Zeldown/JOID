@@ -19,8 +19,8 @@ import dev.joid.lib.utils.align.Align;
 @UIData(background = true)
 public class UIDemoFont extends UIDemo {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color INK         = new Color(153, 153, 153).freeze();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
 
 	private static final MsdfFont LIGHT_BOLD = MsdfFont.create(DemoFont.MONTSERRAT.getFace(FontWeight.LIGHT, false), DemoFont.MONTSERRAT.getFace(FontWeight.BOLD, false));
 

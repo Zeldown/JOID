@@ -11,22 +11,13 @@ public class DoubleSignalTest {
 
 	@Test
 	public void startsAtZero() {
-		final DoubleSignal signal = new DoubleSignal();
-		Assert.assertFalse(signal.isPresent());
+		final DoubleSignal signal = DoubleSignal.of();
 		Assert.assertEquals(0D, signal.get(), 0D);
-	}
-
-	@Test
-	public void fallsBackOnTheGivenDefault() {
-		final DoubleSignal signal = new DoubleSignal(1.5D);
-		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(1.5D, signal.get(), 0D);
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final DoubleSignal signal = DoubleSignal.of(1.5D);
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(1.5D, signal.get(), 0D);
 	}
 
@@ -37,9 +28,8 @@ public class DoubleSignalTest {
 
 	@Test
 	public void computesFromItsDefault() {
-		final DoubleSignal signal = new DoubleSignal(2D);
+		final DoubleSignal signal = DoubleSignal.of(2D);
 		signal.add(0.5D);
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(2.5D, signal.get(), 0D);
 	}
 
@@ -81,7 +71,7 @@ public class DoubleSignalTest {
 	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Double> received = new ArrayList<>();
-		final DoubleSignal signal = new DoubleSignal();
+		final DoubleSignal signal = DoubleSignal.of();
 		signal.subscribe(received::add);
 		signal.increment();
 		signal.multiply(4D);
@@ -100,7 +90,7 @@ public class DoubleSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("DoubleSignal{1.5}", DoubleSignal.of(1.5D).toString());
-		Assert.assertEquals("DoubleSignal{0.0}", new DoubleSignal().toString());
+		Assert.assertEquals("DoubleSignal{0.0}", DoubleSignal.of().toString());
 	}
 
 }

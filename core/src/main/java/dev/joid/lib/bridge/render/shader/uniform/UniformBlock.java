@@ -119,7 +119,7 @@ public final class UniformBlock {
 
 		final Matcher define = Pattern.compile("#define\\s+" + length + "\\s+(\\d+)").matcher(code);
 		if (!define.find()) {
-			throw new IllegalArgumentException("Unable to resolve the length " + length + " of the uniform array " + variable.getName());
+			throw new IllegalArgumentException("The length " + length + " of the uniform array " + variable.getName() + " is neither a number nor a #define of the shader, write a number or #define " + length + " in the shader source");
 		}
 		return Integer.parseInt(define.group(1));
 	}

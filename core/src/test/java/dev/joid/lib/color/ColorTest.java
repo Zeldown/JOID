@@ -144,6 +144,19 @@ public class ColorTest {
 	}
 
 	@Test
+	public void addsToAndScalesAGradient() {
+		final Color gradient = Color.gradient(Color.BLACK, Color.GRAY, Point.create(0D, 0D), Point.create(1D, 0D));
+		final Color added = gradient.add(new Color(0.25F, 0F, 0F, 0F));
+		Assert.assertTrue(added.isGradient());
+		Assert.assertEquals(new Color(0.25F, 0F, 0F, 1F), added.getGradient().getStartColor());
+		Assert.assertEquals(new Color(0.75F, 0.5F, 0.5F, 1F), added.getGradient().getEndColor());
+		final Color scaled = gradient.scale(0.5F);
+		Assert.assertTrue(scaled.isGradient());
+		Assert.assertEquals(new Color(0F, 0F, 0F, 0.5F), scaled.getGradient().getStartColor());
+		Assert.assertEquals(new Color(0.25F, 0.25F, 0.25F, 0.5F), scaled.getGradient().getEndColor());
+	}
+
+	@Test
 	public void replacesOneComponentOfAGradient() {
 		final Color gradient = Color.gradient(Color.BLACK, Color.WHITE, Point.create(0D, 0D), Point.create(1D, 0D));
 		Assert.assertEquals(new Color(1F, 0F, 0F, 1F), gradient.withRed(1F).getGradient().getStartColor());

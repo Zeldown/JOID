@@ -31,7 +31,7 @@ public final class GlStrategies {
 
 		final GlFrameBufferFamily frameBufferFamily = capabilities.getFrameBufferFamily();
 		if (frameBufferFamily == GlFrameBufferFamily.UNSUPPORTED) {
-			throw new IllegalStateException("JOID needs framebuffer objects (OpenGL 3.0, GL_ARB_framebuffer_object or GL_EXT_framebuffer_object), this context offers " + capabilities.getName());
+			throw new IllegalStateException("JOID needs framebuffer objects (OpenGL 3.0, GL_ARB_framebuffer_object or GL_EXT_framebuffer_object), this context offers " + capabilities.getName() + ": update the graphics driver or create a newer OpenGL context");
 		}
 
 		GlslDialect dialect = GlslDialect.GLSL_120;

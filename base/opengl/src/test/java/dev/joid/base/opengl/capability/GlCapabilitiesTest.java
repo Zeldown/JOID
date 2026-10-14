@@ -121,7 +121,7 @@ public class GlCapabilitiesTest {
 			GlStrategies.of(GlCapabilities.read(new ContextBinding("2.1 Mesa 24.0", "1.20", 0, 0)));
 			Assert.fail();
 		} catch (final IllegalStateException e) {
-			Assert.assertEquals("JOID needs framebuffer objects (OpenGL 3.0, GL_ARB_framebuffer_object or GL_EXT_framebuffer_object), this context offers OpenGL 2.1 with GLSL 1.20 (Test renderer)", e.getMessage());
+			Assert.assertEquals("JOID needs framebuffer objects (OpenGL 3.0, GL_ARB_framebuffer_object or GL_EXT_framebuffer_object), this context offers OpenGL 2.1 with GLSL 1.20 (Test renderer): update the graphics driver or create a newer OpenGL context", e.getMessage());
 		}
 	}
 

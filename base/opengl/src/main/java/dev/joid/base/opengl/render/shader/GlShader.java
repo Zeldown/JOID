@@ -106,7 +106,7 @@ public final class GlShader extends Shader {
 
 		final boolean linked = programs.getProgrami(program, GlConstants.LINK_STATUS) == GlConstants.TRUE;
 		if (!linked) {
-			JOIDLog.warn("OpenGL cannot link a shader program: " + programs.getProgramInfoLog(program));
+			JOIDLog.warn("OpenGL cannot link a shader program, fix its sources from the log of the driver: " + programs.getProgramInfoLog(program));
 		}
 
 		programs.detachShader(program, vertex);
@@ -121,7 +121,7 @@ public final class GlShader extends Shader {
 		programs.shaderSource(shader, source);
 		programs.compileShader(shader);
 		if (programs.getShaderi(shader, GlConstants.COMPILE_STATUS) != GlConstants.TRUE) {
-			JOIDLog.warn("OpenGL cannot compile a " + (type == GlConstants.VERTEX_SHADER ? "vertex" : "fragment") + " shader: " + programs.getShaderInfoLog(shader));
+			JOIDLog.warn("OpenGL cannot compile a " + (type == GlConstants.VERTEX_SHADER ? "vertex" : "fragment") + " shader, fix its source at the line the driver reports: " + programs.getShaderInfoLog(shader));
 			programs.deleteShader(shader);
 			return 0;
 		}

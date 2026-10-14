@@ -136,7 +136,7 @@ public class GlslShaderTranslatorTest {
 			GlslShaderTranslator.create(GlslDialect.GLSL_120, UniformLayout.LOOSE).translateFragment(GlslShaderTranslatorTest.vertex(), fragment);
 			Assert.fail();
 		} catch (final UnsupportedOperationException e) {
-			Assert.assertEquals("The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20", e.getMessage());
+			Assert.assertEquals("The shader uses unsigned integers, which needs GLSL 1.30, but the dialect is GLSL 1.20: rewrite the shader without it or translate it for a newer dialect", e.getMessage());
 		}
 		Assert.assertTrue(GlslShaderTranslator.create(GlslDialect.GLSL_130, UniformLayout.LOOSE).translateFragment(GlslShaderTranslatorTest.vertex(), fragment).contains("uniform uint u_Count;\n"));
 	}

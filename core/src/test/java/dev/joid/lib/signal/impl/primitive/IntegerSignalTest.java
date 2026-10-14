@@ -11,22 +11,13 @@ public class IntegerSignalTest {
 
 	@Test
 	public void startsAtZero() {
-		final IntegerSignal signal = new IntegerSignal();
-		Assert.assertFalse(signal.isPresent());
+		final IntegerSignal signal = IntegerSignal.of();
 		Assert.assertEquals(0, signal.get().intValue());
-	}
-
-	@Test
-	public void fallsBackOnTheGivenDefault() {
-		final IntegerSignal signal = new IntegerSignal(5);
-		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(5, signal.get().intValue());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final IntegerSignal signal = IntegerSignal.of(5);
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(5, signal.get().intValue());
 	}
 
@@ -37,9 +28,8 @@ public class IntegerSignalTest {
 
 	@Test
 	public void computesFromItsDefault() {
-		final IntegerSignal signal = new IntegerSignal(5);
+		final IntegerSignal signal = IntegerSignal.of(5);
 		signal.increment();
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(6, signal.get().intValue());
 	}
 
@@ -98,7 +88,7 @@ public class IntegerSignalTest {
 	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Integer> received = new ArrayList<>();
-		final IntegerSignal signal = new IntegerSignal();
+		final IntegerSignal signal = IntegerSignal.of();
 		signal.subscribe(received::add);
 		signal.increment();
 		signal.add(2);
@@ -117,7 +107,7 @@ public class IntegerSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("IntegerSignal{5}", IntegerSignal.of(5).toString());
-		Assert.assertEquals("IntegerSignal{0}", new IntegerSignal().toString());
+		Assert.assertEquals("IntegerSignal{0}", IntegerSignal.of().toString());
 	}
 
 }

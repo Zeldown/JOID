@@ -5,18 +5,20 @@ import lombok.NonNull;
 
 public class FloatSignal extends Signal<Float> {
 
-	public FloatSignal() {
+	protected FloatSignal() {
 		super(0F);
 	}
 
-	public FloatSignal(final float value) {
+	protected FloatSignal(final float value) {
 		super(value);
 	}
 
-	public static @NonNull FloatSignal of(final float defaultValue) {
-		final FloatSignal instance = new FloatSignal(defaultValue);
-		instance.set(defaultValue);
-		return instance;
+	public static @NonNull FloatSignal of() {
+		return new FloatSignal();
+	}
+
+	public static @NonNull FloatSignal of(final float value) {
+		return new FloatSignal(value);
 	}
 
 	public @NonNull FloatSignal add(final float value) {

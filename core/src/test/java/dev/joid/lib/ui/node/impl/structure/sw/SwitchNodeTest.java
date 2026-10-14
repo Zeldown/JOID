@@ -53,7 +53,7 @@ public class SwitchNodeTest {
 	@Test
 	public void staysInSyncWithItsSignal() {
 		final Switch node = this.open();
-		final Signal<String> quality = new Signal<>("high");
+		final Signal<String> quality = Signal.of("high");
 		Assert.assertSame(node, node.signal(quality));
 		Assert.assertEquals("high", node.getState());
 		node.state("low");
@@ -66,8 +66,8 @@ public class SwitchNodeTest {
 	@Test
 	public void followsOnlyItsLastSignal() {
 		final Switch node = this.open();
-		final Signal<String> quality = new Signal<>("high");
-		final Signal<String> shadows = new Signal<>("medium");
+		final Signal<String> quality = Signal.of("high");
+		final Signal<String> shadows = Signal.of("medium");
 		node.signal(quality).signal(shadows);
 		node.state("low");
 		Assert.assertEquals("low", shadows.get());
@@ -82,7 +82,7 @@ public class SwitchNodeTest {
 	@Test
 	public void refusesAComputedSignal() {
 		final Switch node = this.open();
-		final Signal<String> quality = new Signal<>("high");
+		final Signal<String> quality = Signal.of("high");
 		node.signal(quality);
 		try {
 			node.signal(quality.map(value -> value));
@@ -198,7 +198,7 @@ public class SwitchNodeTest {
 
 	@Test
 	public void takesTheStateOfItsSignalWhenItsStatesArrive() {
-		final Signal<String> quality = new Signal<>("high");
+		final Signal<String> quality = Signal.of("high");
 		Assert.assertEquals("high", new Switch().signal(quality).states("low", "medium", "high").getState());
 		Assert.assertEquals("high", quality.get());
 	}

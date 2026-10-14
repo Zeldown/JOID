@@ -336,7 +336,7 @@ public class BaseTweenTest {
 		}
 		Assert.assertEquals(Arrays.asList("end", "end", "complete"), calls);
 		Assert.assertEquals(10F, value.floatValue(), 0F);
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The onIterationEnd listener of Tween failed: java.lang.IllegalStateException: boom"));
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The onIterationEnd listener of Tween failed (java.lang.IllegalStateException: boom"));
 		Assert.assertEquals(output.toString(), output.toString().indexOf("[JOID]"), output.toString().lastIndexOf("[JOID]"));
 	}
 

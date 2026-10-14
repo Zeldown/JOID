@@ -56,9 +56,9 @@ import lombok.NoArgsConstructor;
 @UIData(background = true)
 public class UIDemoChoice extends UI {
 
-	private static final Color INK     = new Color(153, 153, 153);
-	private static final Color ACTIVE  = new Color(102, 102, 102);
-	private static final Color HOVERED = new Color(128, 128, 128);
+	private static final Color INK     = new Color(153, 153, 153).freeze();
+	private static final Color ACTIVE  = new Color(102, 102, 102).freeze();
+	private static final Color HOVERED = new Color(128, 128, 128).freeze();
 
 	public static final List<DemoEntry> LIST = new ArrayList<>();
 

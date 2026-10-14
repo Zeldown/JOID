@@ -3,14 +3,12 @@ package dev.joid.lib.bridge.render.matrix;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import lombok.Getter;
 import lombok.NonNull;
 
 public final class MatrixStack {
 
 	private final Deque<float[]> stack;
 
-	@Getter
 	private float[] matrix;
 
 	public MatrixStack() {
@@ -104,6 +102,10 @@ public final class MatrixStack {
 
 	public int getDepth() {
 		return this.stack.size();
+	}
+
+	public float[] getMatrix() {
+		return this.matrix.clone();
 	}
 
 	public float[] getNormalMatrix() {

@@ -216,7 +216,7 @@ public class ComputedSignalTest {
 	@Test
 	public void followsTheMutationsOfAListSignal() {
 		final List<Integer> received = new ArrayList<>();
-		final ListSignal<String> list = new ListSignal<>(new ArrayList<>(Collections.singletonList("a")));
+		final ListSignal<String> list = ListSignal.of(new ArrayList<>(Collections.singletonList("a")));
 		final ComputedSignal<Integer> size = Signal.from(list::size).subscribe(received::add);
 		list.add("b");
 		list.set(0, "c");
@@ -287,7 +287,7 @@ public class ComputedSignalTest {
 	@Test
 	public void notifiesAChangeMadeOnAnotherThread() throws InterruptedException {
 		final List<String> received = Collections.synchronizedList(new ArrayList<>());
-		final Signal<String> name = new Signal<>("joid");
+		final Signal<String> name = Signal.of("joid");
 		name.map(String::toUpperCase).subscribe(received::add);
 		final Thread thread = new Thread(() -> name.set("ui"));
 		thread.start();
@@ -356,7 +356,7 @@ public class ComputedSignalTest {
 			self.get(0).get();
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("A ComputedSignal cannot read itself while it computes its value", exception.getMessage());
+			Assert.assertEquals("A ComputedSignal cannot read itself while it computes its value, remove the read of this signal from its function", exception.getMessage());
 		}
 	}
 
@@ -390,12 +390,10 @@ public class ComputedSignalTest {
 
 	@Test
 	public void startsEmptyForANullValue() {
-		final Signal<String> name = new Signal<>();
+		final Signal<String> name = Signal.of((String) null);
 		final ComputedSignal<String> upper = name.map(value -> value == null ? null : value.toUpperCase());
-		Assert.assertFalse(upper.isPresent());
 		Assert.assertNull(upper.get());
 		name.set("joid");
-		Assert.assertTrue(upper.isPresent());
 		Assert.assertEquals("JOID", upper.peek());
 	}
 

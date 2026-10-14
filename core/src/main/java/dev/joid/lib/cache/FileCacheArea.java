@@ -47,7 +47,7 @@ public class FileCacheArea {
 	@SuppressWarnings("unchecked")
 	public final synchronized <T extends FileCacheArea> @NonNull T retention(final @NonNull Duration retention) {
 		if (retention.isNegative() || retention.isZero()) {
-			throw new IllegalArgumentException("The retention of the cache area " + this.name + " is " + retention + ", it must be positive");
+			throw new IllegalArgumentException("The retention " + retention + " of the cache area " + this.name + " is not positive, pass a duration above 0");
 		}
 
 		final String declarer = FileCacheArea.locateDeclarer();

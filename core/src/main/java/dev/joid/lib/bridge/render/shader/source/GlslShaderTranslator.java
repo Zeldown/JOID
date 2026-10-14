@@ -324,7 +324,7 @@ public class GlslShaderTranslator {
 	private void require(final Set<ShaderFeature> features) {
 		for (final ShaderFeature feature : features) {
 			if (!this.dialect.supports(feature)) {
-				throw new UnsupportedOperationException("The shader uses " + feature.getDescription() + ", which needs " + (this.dialect.isEs() ? feature.getEssl() : feature.getGlsl()).getName() + ", but the dialect is " + this.dialect.getName());
+				throw new UnsupportedOperationException("The shader uses " + feature.getDescription() + ", which needs " + (this.dialect.isEs() ? feature.getEssl() : feature.getGlsl()).getName() + ", but the dialect is " + this.dialect.getName() + ": rewrite the shader without it or translate it for a newer dialect");
 			}
 		}
 	}

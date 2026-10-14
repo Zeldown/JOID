@@ -24,7 +24,7 @@ public class SignalContextTest {
 		final Signal<String> second = Signal.of("b");
 		first.get();
 		second.get();
-		first.isPresent();
+		first.get();
 		Assert.assertEquals(Arrays.asList(first, second, first), SignalContext.current().takeReads());
 		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());
 	}
@@ -138,7 +138,7 @@ public class SignalContextTest {
 	public void movesTheEpochOnEveryChange() {
 		final long epoch = SignalContext.getEpoch();
 		Signal.of("a").set("b").publish();
-		Assert.assertTrue(SignalContext.getEpoch() >= epoch + 3);
+		Assert.assertTrue(SignalContext.getEpoch() >= epoch + 2);
 	}
 
 }

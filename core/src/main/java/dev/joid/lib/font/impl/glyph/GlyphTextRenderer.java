@@ -147,7 +147,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		if (!(styleFont instanceof GlyphFont) || styleFont.getTextRenderer().getClass() != this.getClass()) {
-			JOIDLog.devWarnOnce("GlyphTextRenderer.font." + styleFont.getClass().getName(), () -> "The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font");
+			JOIDLog.devWarnOnce("GlyphTextRenderer.font." + styleFont.getClass().getName(), () -> "The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font: give the style a font drawn by " + this.getClass().getSimpleName());
 			return font;
 		}
 

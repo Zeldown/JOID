@@ -183,7 +183,7 @@ public class MsdfFontLoaderTest {
 		}
 		final Throwable cause = MsdfFontLoaderTest.cause(new ByteArrayInputStream(output.toByteArray()));
 		Assert.assertTrue(String.valueOf(cause), cause instanceof IOException);
-		Assert.assertEquals("Unsupported msdf font version " + (MsdfWriter.VERSION - 1) + ", only the version " + MsdfWriter.VERSION + " loads: generate it again", cause.getMessage());
+		Assert.assertEquals("The msdf font version " + (MsdfWriter.VERSION - 1) + " is not supported, only the version " + MsdfWriter.VERSION + " loads: generate it again with the msdf tool of JOID", cause.getMessage());
 	}
 
 	@Test(timeout = 10000L)
@@ -199,7 +199,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 10000L)
 	public void namesTheProblemOfAnEmptyFamily() {
-		Assert.assertEquals("A msdf font needs at least one face", MsdfFontLoaderTest.cause().getMessage());
+		Assert.assertEquals("A msdf font needs at least one face, got none: pass the files of its faces", MsdfFontLoaderTest.cause().getMessage());
 	}
 
 	@Test(timeout = 10000L)

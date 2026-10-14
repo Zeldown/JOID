@@ -59,7 +59,7 @@ public abstract class NativeCursor {
 			try {
 				handle = this.load(cursor);
 			} catch (final LinkageError | RuntimeException exception) {
-				NativeCursor.warn("The " + cursor + " cursor cannot be loaded, the default one replaces it: " + exception);
+				NativeCursor.warn("The " + cursor + " cursor cannot be loaded (" + exception + "), the default one replaces it: check that the system has this cursor");
 			}
 			this.handleMap.put(cursor, handle);
 		}

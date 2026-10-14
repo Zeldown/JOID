@@ -11,7 +11,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DemoHighlightTextEffect implements ITextEffect {
 
-	private static final Color                   COLOR    = new Color(255, 214, 0, 110);
+	private static final Color                   COLOR    = new Color(255, 214, 0, 110).freeze();
 	private static final DemoHighlightTextEffect INSTANCE = new DemoHighlightTextEffect();
 
 	public static @NonNull DemoHighlightTextEffect inst() {

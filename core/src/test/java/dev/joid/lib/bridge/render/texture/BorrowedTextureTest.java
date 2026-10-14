@@ -83,7 +83,7 @@ public class BorrowedTextureTest {
 		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(() -> new BorrowableImage(4, 4, false, false)));
 		resource.prepareBind();
 		Assert.assertTrue(resource.isFailed());
-		Assert.assertEquals("The borrowed texture host 4x4 is not a texture of the host", resource.getResourceData().getError().getMessage());
+		Assert.assertEquals("The borrowed texture host 4x4 is not a texture of the host, borrow a texture that the host created and has not deleted", resource.getResourceData().getError().getMessage());
 	}
 
 	@Test

@@ -33,8 +33,8 @@ import dev.joid.lib.utils.point.Point;
 @UIData(background = true)
 public class UIDemoRender extends UIDemo {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color INK         = new Color(153, 153, 153).freeze();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
 
 	private static final BlendState MULTIPLY = BlendState.create(Equation.ADD, Factor.DST_COLOR, Factor.ZERO);
 

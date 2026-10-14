@@ -187,7 +187,7 @@ public final class SnapshotRunner {
 				shots.put(arguments[1], this.settle(arguments[1]));
 				break;
 			default:
-				throw new IllegalArgumentException("Unknown snapshot command: " + command);
+				throw new IllegalArgumentException("The snapshot command " + command + " is unknown, fix the scenario");
 			}
 		}
 		return shots;
@@ -241,7 +241,7 @@ public final class SnapshotRunner {
 
 	private void resize(final int width, final int height) {
 		if (width > 1920 || height > 1080) {
-			throw new IllegalArgumentException("The snapshot window " + width + "x" + height + " does not fit the " + 1920 + "x" + 1080 + " snapshot surface");
+			throw new IllegalArgumentException("The snapshot window " + width + "x" + height + " does not fit the " + 1920 + "x" + 1080 + " snapshot surface, give a smaller window");
 		}
 
 		this.window.setWidth(width);
@@ -299,7 +299,7 @@ public final class SnapshotRunner {
 			}
 			SnapshotRunner.sleep(10L);
 		}
-		throw new IllegalStateException("A resource never finished loading");
+		throw new IllegalStateException("A resource never finished loading in 30s, check that its file exists and that its decoder settles");
 	}
 
 	private SnapshotImage settle(final String name) {
@@ -314,11 +314,11 @@ public final class SnapshotRunner {
 		}
 
 		if (!current.isSame(previous)) {
-			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing");
+			throw new IllegalStateException(name + " never became stable while the clock was paused, " + current.compare(previous, 0).getPixels() + " pixels kept changing: mask the area that moves or stop what moves it");
 		}
 
 		if (!SnapshotRunner.isSettled()) {
-			throw new IllegalStateException(name + " never settled: a resource kept decoding or rendering");
+			throw new IllegalStateException(name + " never settled: a resource kept decoding or rendering, check that the resources of the scenario stop decoding");
 		}
 		return current;
 	}

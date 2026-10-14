@@ -11,7 +11,7 @@ import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
 @SuppressWarnings("unchecked")
-public abstract class NodeEffect<T extends Node> {
+public abstract class NodeEffect<T extends Node> implements Cloneable {
 
 	private Supplier<Integer>         priority;
 	private Supplier<NodeEffectScope> scope;
@@ -48,6 +48,14 @@ public abstract class NodeEffect<T extends Node> {
 	public List<IShaderPass> toShaderPasses(final @NonNull T node) {
 		final IShaderPass pass = this.toShaderPass(node);
 		return pass != null ? Collections.singletonList(pass) : Collections.emptyList();
+	}
+
+	public final <E extends NodeEffect<T>> @NonNull E copy() {
+		try {
+			return (E) super.clone();
+		} catch (final CloneNotSupportedException e) {
+			throw new IllegalStateException("The effect " + this.getClass().getSimpleName() + " cannot be copied (" + e + "), keep NodeEffect as its superclass", e);
+		}
 	}
 
 	public final int getPriority() {

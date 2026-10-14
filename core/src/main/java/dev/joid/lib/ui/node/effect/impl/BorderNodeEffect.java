@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.effect.impl;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import dev.joid.lib.color.Color;
@@ -16,16 +17,16 @@ import lombok.NonNull;
 @SuppressWarnings("unchecked")
 public class BorderNodeEffect extends NodeEffect<Node> {
 
-	private Supplier<Color>      colorSupplier;
-	private Supplier<Float>      widthSupplier;
-	private Supplier<Boolean>    fillSupplier;
-	private Supplier<BorderMode> modeSupplier;
+	private Supplier<Float>       widthSupplier;
+	private Supplier<Boolean>     fillSupplier;
+	private Supplier<BorderMode>  modeSupplier;
+	private Function<Node, Color> colorFunction;
 
 	protected BorderNodeEffect(final @NonNull Color color, final float width, final @NonNull BorderMode mode) {
 		super(200);
 		this.fillSupplier  = () -> true;
 		this.modeSupplier  = () -> mode;
-		this.colorSupplier = () -> color;
+		this.colorFunction = node -> color;
 		this.widthSupplier = () -> width;
 	}
 
@@ -57,7 +58,7 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 
 	@Override
 	public IShaderPass toShaderPass(final @NonNull Node node) {
-		return new BorderShaderPass(this.widthSupplier.get(), this.colorSupplier.get(), this.fillSupplier.get(), this.modeSupplier.get());
+		return new BorderShaderPass(this.widthSupplier.get(), this.colorFunction.apply(node), this.fillSupplier.get(), this.modeSupplier.get());
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E color(final @NonNull Color color) {
@@ -65,7 +66,12 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E color(final @NonNull Supplier<@NonNull Color> colorSupplier) {
-		this.colorSupplier = colorSupplier;
+		this.colorFunction = node -> colorSupplier.get();
+		return (E) this;
+	}
+
+	public final <E extends BorderNodeEffect, N extends Node> @NonNull E color(final @NonNull Function<@NonNull N, @NonNull Color> colorFunction) {
+		this.colorFunction = (Function<Node, Color>) colorFunction;
 		return (E) this;
 	}
 

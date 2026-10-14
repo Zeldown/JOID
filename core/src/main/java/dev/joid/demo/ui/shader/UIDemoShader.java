@@ -28,7 +28,7 @@ import dev.joid.lib.utils.point.Point;
 @UIData(background = true)
 public class UIDemoShader extends UIDemo {
 
-	private static final Color INK = new Color(153, 153, 153);
+	private static final Color INK = new Color(153, 153, 153).freeze();
 
 	@Override
 	public void init() {

@@ -81,7 +81,7 @@ public class NodeSetterTest {
 		Assert.assertEquals(5D, ui.getFlex().getMargin(), 0D);
 		Assert.assertSame(Align.CENTER, ui.getFlex().getAlign());
 		Assert.assertEquals(2F, ui.getBorder().getWidthSupplier().get(), 0F);
-		Assert.assertSame(Color.RED, ui.getBorder().getColorSupplier().get());
+		Assert.assertSame(Color.RED, ui.getBorder().getColorFunction().apply(null));
 		Assert.assertFalse(ui.getBorder().isFill());
 		Assert.assertEquals(1D, ui.getShadow().getOffsetX(), 0D);
 		Assert.assertEquals(3F, ui.getShadow().getBlur(), 0F);
@@ -180,9 +180,9 @@ public class NodeSetterTest {
 
 	@Test
 	public void followsASignalPassedToASetter() {
-		final DoubleSignal width = new DoubleSignal(10D);
+		final DoubleSignal width = DoubleSignal.of(10D);
 		final Signal<Color> color = Signal.of(Color.GRAY);
-		final BooleanSignal checked = new BooleanSignal(false);
+		final BooleanSignal checked = BooleanSignal.of(false);
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).color(color).width(width);
 		final Checkbox checkbox = new Checkbox().checked(checked);
 		this.bridges.open(new NodeUI(rect, checkbox));
@@ -200,7 +200,7 @@ public class NodeSetterTest {
 
 	@Test
 	public void keepsAFollowedPositionUnderTheLayout() {
-		final DoubleSignal x = new DoubleSignal(10D);
+		final DoubleSignal x = DoubleSignal.of(10D);
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).x(x);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 100D).align(Align.START);
 		this.bridges.open(new NodeUI(flex));
@@ -228,7 +228,7 @@ public class NodeSetterTest {
 	@Test
 	public void keepsDrawingWhenAFollowedValueIsRefused() {
 		final IntegerSignal index = IntegerSignal.of(0);
-		final DoubleSignal width = new DoubleSignal(10D);
+		final DoubleSignal width = DoubleSignal.of(10D);
 		final Switch node = new Switch().states("low", "high").index(index);
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).width(width);
 		this.bridges.open(new NodeUI(node, rect));
@@ -244,7 +244,7 @@ public class NodeSetterTest {
 		}
 		Assert.assertEquals("low", node.getState());
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
-		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The index of Switch cannot take its new value: java.lang.IllegalArgumentException: The index 5 is out of the state list [low, high]"));
+		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The index of Switch cannot take its new value (java.lang.IllegalArgumentException: The index 5 is out of the state list [low, high]"));
 	}
 
 	@Test

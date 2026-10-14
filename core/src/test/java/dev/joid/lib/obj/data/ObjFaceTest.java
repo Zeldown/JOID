@@ -114,7 +114,8 @@ public class ObjFaceTest {
 		final ObjVertex[] normals = {new ObjVertex(0F, 0F, 1F)};
 		final ObjFace face = new ObjFace();
 		face.setVertexNormals(normals);
-		Assert.assertSame(normals, face.getVertexNormals());
+		Assert.assertArrayEquals(normals, face.getVertexNormals());
+		Assert.assertNotSame(normals, face.getVertexNormals());
 	}
 
 	private static ObjFace face(final ObjVertex... vertices) {

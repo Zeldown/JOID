@@ -583,7 +583,7 @@ public class VideoResourceDecoderTest {
 		decoder.release();
 		Files.delete(file.toPath());
 		final String error = VideoResourceDecoderTest.capture(decoder::play);
-		Assert.assertTrue(error, error.startsWith("[JOID] The video " + file.getPath() + " cannot be reopened: "));
+		Assert.assertTrue(error, error.startsWith("[JOID] The video " + file.getPath() + " cannot be reopened ("));
 		Assert.assertNull(decoder.getGrabber());
 	}
 

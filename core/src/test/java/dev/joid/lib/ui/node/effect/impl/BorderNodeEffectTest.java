@@ -69,7 +69,7 @@ public class BorderNodeEffectTest {
 		final Color color = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final BorderNodeEffect effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
 		Assert.assertSame(effect, effect.color(color).width(6F).mode(BorderMode.IN).fill(false));
-		Assert.assertSame(color, effect.getColorSupplier().get());
+		Assert.assertSame(color, effect.getColorFunction().apply(null));
 		Assert.assertEquals(6F, effect.getWidthSupplier().get(), 0F);
 		Assert.assertSame(BorderMode.IN, effect.getMode());
 		Assert.assertFalse(effect.isFill());

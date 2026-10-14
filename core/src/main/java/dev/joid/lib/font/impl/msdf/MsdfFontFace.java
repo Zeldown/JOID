@@ -40,7 +40,7 @@ public final class MsdfFontFace implements IFontFace {
 
 	public static @NonNull MsdfFontFace create(final @NonNull MsdfAtlas atlas, final @NonNull MsdfMetrics metrics, final @NonNull Map<Integer, MsdfGlyph> glyphs, final @NonNull Map<Long, Float> kerningPairs, final @NonNull BufferedImage image, final @NonNull String name, final @NonNull FontWeight weight, final boolean italic) {
 		if (name.isEmpty()) {
-			throw new IllegalArgumentException("A font face needs a name");
+			throw new IllegalArgumentException("A font face needs a name, got an empty one: give the face the name of its font");
 		}
 
 		return new MsdfFontFace(atlas, metrics, glyphs, kerningPairs, MsdfFontFace.BUILDER.of(image).blocking(), name, weight, italic);

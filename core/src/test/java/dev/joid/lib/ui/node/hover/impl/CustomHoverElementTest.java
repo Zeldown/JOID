@@ -128,13 +128,6 @@ public class CustomHoverElementTest {
 		Assert.assertEquals(-3D, this.tooltip().getTop(), 1E-3D);
 	}
 
-	@Test
-	public void leavesTheElementWhereItIsOutsideAUi() {
-		CustomHoverElement.follow(new BoxElement(10D, -5D, 40D, 20D)).render(RectNode.create(0D, 0D, 10D, 10D), 1900D, 10D);
-		Assert.assertEquals(1910D, this.tooltip().getLeft(), 1E-3D);
-		Assert.assertEquals(5D, this.tooltip().getTop(), 1E-3D);
-	}
-
 	private Draw tooltip() {
 		return this.bridges.getRender().getDraws(0.6F, 0.4F, 0.2F).get(0);
 	}

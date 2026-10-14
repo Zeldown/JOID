@@ -13,18 +13,20 @@ import lombok.NonNull;
 
 public class MapSignal<K, V> extends Signal<Map<K, V>> {
 
-	public MapSignal() {
+	protected MapSignal() {
 		super(new LinkedHashMap<>());
 	}
 
-	public MapSignal(final @NonNull Map<K, V> value) {
+	protected MapSignal(final @NonNull Map<K, V> value) {
 		super(new LinkedHashMap<>(value));
 	}
 
-	public static <K, V> @NonNull MapSignal<K, V> of(final @NonNull Map<K, V> defaultValue) {
-		final MapSignal<K, V> instance = new MapSignal<>(defaultValue);
-		instance.set(instance.getDefaultValue());
-		return instance;
+	public static <K, V> @NonNull MapSignal<K, V> of() {
+		return new MapSignal<>();
+	}
+
+	public static <K, V> @NonNull MapSignal<K, V> of(final @NonNull Map<K, V> value) {
+		return new MapSignal<>(value);
 	}
 
 	public @NonNull MapSignal<K, V> clear() {

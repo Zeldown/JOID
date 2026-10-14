@@ -109,7 +109,6 @@ public class IndexedLinkedListTest {
 		final Element third = new Element(2);
 		final IndexedLinkedList<Element> list = new IndexedLinkedList<>(Arrays.asList(first, second, third));
 		first.index = 5;
-		list.sort();
 		Assert.assertEquals(Arrays.asList(second, third, first), list.ordered());
 	}
 
@@ -121,7 +120,6 @@ public class IndexedLinkedListTest {
 		final IndexedLinkedList<Element> list = new IndexedLinkedList<>(Arrays.asList(first, second, third));
 		first.index = 2;
 		third.index = 1;
-		list.sort();
 		Assert.assertEquals(Arrays.asList(second, third, first), list.ordered());
 	}
 
@@ -132,7 +130,7 @@ public class IndexedLinkedListTest {
 		final IndexedLinkedList<Element> list = new IndexedLinkedList<>(Arrays.asList(first, second));
 		final List<Element> ordered = list.ordered();
 		second.index = 3;
-		list.sort();
+		list.ordered();
 		Assert.assertEquals(Arrays.asList(first, second), ordered);
 	}
 

@@ -17,26 +17,16 @@ public class SetSignalTest {
 
 	@Test
 	public void startsWithAnEmptySetWithoutDefault() {
-		final SetSignal<String> signal = new SetSignal<>();
-		Assert.assertFalse(signal.isPresent());
+		final SetSignal<String> signal = SetSignal.of();
 		Assert.assertEquals(Collections.emptySet(), signal.get());
 		Assert.assertTrue(signal.isEmpty());
 		Assert.assertFalse(signal.contains("a"));
 	}
 
 	@Test
-	public void fallsBackOnACopyOfTheGivenSet() {
-		final Set<String> set = new HashSet<>(Arrays.asList("a", "b"));
-		final SetSignal<String> signal = new SetSignal<>(set);
-		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(set, signal.get());
-		Assert.assertNotSame(set, signal.get());
-	}
-
-	@Test
 	public void copiesAGivenCollectionWithoutDuplicates() {
 		final List<String> source = new ArrayList<>(Arrays.asList("a", "b", "a"));
-		final SetSignal<String> signal = new SetSignal<>(source);
+		final SetSignal<String> signal = SetSignal.of(source);
 		Assert.assertEquals(new HashSet<>(Arrays.asList("a", "b")), signal.get());
 		signal.add("c");
 		Assert.assertEquals(Arrays.asList("a", "b", "a"), source);
@@ -46,7 +36,6 @@ public class SetSignalTest {
 	public void startsWithTheGivenSet() {
 		final Set<String> set = new HashSet<>(Arrays.asList("a", "b"));
 		final SetSignal<String> signal = SetSignal.of(set);
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(set, signal.get());
 		Assert.assertNotSame(set, signal.get());
 	}
@@ -107,7 +96,7 @@ public class SetSignalTest {
 	@Test
 	public void notifiesTheMutatedSetWhenBuiltWithADefault() {
 		final List<Set<String>> received = new ArrayList<>();
-		final SetSignal<String> signal = new SetSignal<>(new HashSet<>());
+		final SetSignal<String> signal = SetSignal.of(new HashSet<>());
 		signal.subscribe(received::add);
 		signal.add("a");
 		Assert.assertEquals(Collections.singletonList(Collections.singleton("a")), received);

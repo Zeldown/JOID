@@ -90,11 +90,6 @@ public class ComputedSignal<T> extends Signal<T> {
 		return this.value;
 	}
 
-	@Override
-	public boolean isPresent() {
-		return super.get() != null;
-	}
-
 	public boolean isConstant() {
 		return this.constant;
 	}
@@ -106,7 +101,7 @@ public class ComputedSignal<T> extends Signal<T> {
 		}
 
 		if (this.computing) {
-			throw new IllegalStateException("A ComputedSignal cannot read itself while it computes its value");
+			throw new IllegalStateException("A ComputedSignal cannot read itself while it computes its value, remove the read of this signal from its function");
 		}
 
 		final long epoch = SignalContext.getEpoch();

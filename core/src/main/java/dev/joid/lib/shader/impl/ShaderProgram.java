@@ -23,7 +23,7 @@ public abstract class ShaderProgram {
 			}
 		} catch (final Exception e) {
 			this.vertex = null;
-			JOIDLog.warn("Unable to load the shader " + this.getClass().getSimpleName() + ": " + e.getMessage(), e);
+			JOIDLog.warn("The shader " + this.getClass().getSimpleName() + " cannot be loaded (" + e.getMessage() + "), what it draws is skipped: check the paths of its vertex and fragment sources", e);
 		}
 	}
 
@@ -33,7 +33,7 @@ public abstract class ShaderProgram {
 				this.shader = BridgeHandler.RENDER.get().createShader(this.vertex, this.fragment, BlendState.NORMAL);
 			} catch (final Exception e) {
 				this.vertex = null;
-				JOIDLog.warn("Unable to create the shader " + this.getClass().getSimpleName() + ": " + e.getMessage(), e);
+				JOIDLog.warn("The shader " + this.getClass().getSimpleName() + " cannot be created (" + e.getMessage() + "), what it draws is skipped: fix its vertex and fragment sources from this error", e);
 			}
 		}
 		return this.shader;

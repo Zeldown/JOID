@@ -40,6 +40,10 @@ public class ResourceProperties {
 		return this;
 	}
 
+	public final double[] getTextureCoords() {
+		return this.textureCoords == null ? null : this.textureCoords.clone();
+	}
+
 	public final @NonNull ResourceProperties copy() {
 		final ResourceProperties copy = new ResourceProperties();
 		copy.mipmap = this.mipmap;

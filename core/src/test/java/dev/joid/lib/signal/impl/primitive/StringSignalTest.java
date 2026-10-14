@@ -11,23 +11,14 @@ public class StringSignalTest {
 
 	@Test
 	public void startsWithAnEmptyTextWithoutDefault() {
-		final StringSignal signal = new StringSignal();
-		Assert.assertFalse(signal.isPresent());
+		final StringSignal signal = StringSignal.of();
 		Assert.assertEquals("", signal.get());
 		Assert.assertEquals("", signal.trim().toUpperCase().get());
 	}
 
 	@Test
-	public void fallsBackOnTheGivenDefault() {
-		final StringSignal signal = new StringSignal("joid");
-		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals("joid", signal.get());
-	}
-
-	@Test
 	public void startsWithTheGivenValue() {
 		final StringSignal signal = StringSignal.of("joid");
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals("joid", signal.get());
 	}
 
@@ -38,9 +29,8 @@ public class StringSignalTest {
 
 	@Test
 	public void computesFromItsDefault() {
-		final StringSignal signal = new StringSignal("jo");
+		final StringSignal signal = StringSignal.of("jo");
 		signal.append("id");
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals("joid", signal.get());
 	}
 
@@ -122,12 +112,12 @@ public class StringSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("StringSignal{joid}", StringSignal.of("joid").toString());
-		Assert.assertEquals("StringSignal{}", new StringSignal().toString());
+		Assert.assertEquals("StringSignal{}", StringSignal.of().toString());
 	}
 
 	@Test
 	public void appendsToAnEmptySignal() {
-		final StringSignal signal = new StringSignal();
+		final StringSignal signal = StringSignal.of();
 		signal.append("joid");
 		Assert.assertEquals("joid", signal.get());
 	}

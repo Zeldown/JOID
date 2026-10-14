@@ -7,7 +7,7 @@ public final class ExampleAudioBridge implements IAudioBridge {
 
 	@Override
 	public IAudioSource createSource(final int sampleRate, final int channels) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleAudioBridge.createSource() is not implemented, implement it with the API of your engine");
 	}
 
 }

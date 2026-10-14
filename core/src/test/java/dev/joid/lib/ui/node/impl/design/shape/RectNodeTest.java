@@ -217,10 +217,10 @@ public class RectNodeTest {
 		Assert.assertSame(effect, rect.getEffect(BorderNodeEffect.class));
 		Assert.assertEquals(5D, rect.getBorderStroke(), 0D);
 		Assert.assertFalse(rect.isBorderFill());
-		Assert.assertSame(Color.RED, effect.getColorSupplier().get());
+		Assert.assertSame(Color.RED, effect.getColorFunction().apply(rect));
 		rect.borderColor(Color.GREEN);
 		Assert.assertSame(effect, rect.getEffect(BorderNodeEffect.class));
-		Assert.assertSame(Color.GREEN, effect.getColorSupplier().get());
+		Assert.assertSame(Color.GREEN, effect.getColorFunction().apply(rect));
 	}
 
 	@Test
@@ -328,6 +328,18 @@ public class RectNodeTest {
 		this.bridges.open(new NodeUI(rect)).frame();
 		Assert.assertEquals(5F, (Float) this.border.getValues().get("u_BorderWidth"), 1E-4F);
 		Assert.assertArrayEquals(new float[] {0.4F, 0.6F, 0.2F, 1F}, (float[]) this.border.getValues().get("u_BorderColor"), 0F);
+	}
+
+	@Test
+	public void keepsItsOwnBorderOnceCopied() {
+		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).borderColor(new Color(0.6F, 0.4F, 0.2F, 1F)).borderStroke(3D);
+		final RectNode copy = rect.copy();
+		rect.borderColor(new Color(0.4F, 0.6F, 0.2F, 1F));
+		final BorderNodeEffect border = copy.getEffect(BorderNodeEffect.class);
+		Assert.assertNotSame(rect.getEffect(BorderNodeEffect.class), border);
+		Assert.assertEquals(new Color(0.6F, 0.4F, 0.2F, 1F), border.getColorFunction().apply(copy));
+		copy.borderColor(new Color(0.2F, 0.4F, 0.6F, 1F));
+		Assert.assertEquals(new Color(0.4F, 0.6F, 0.2F, 1F), rect.getEffect(BorderNodeEffect.class).getColorFunction().apply(rect));
 	}
 
 	@Test

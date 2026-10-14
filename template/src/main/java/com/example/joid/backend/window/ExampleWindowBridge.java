@@ -7,42 +7,42 @@ public final class ExampleWindowBridge implements IWindowBridge {
 
 	@Override
 	public int getWidth() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleWindowBridge.getWidth() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override
 	public int getHeight() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleWindowBridge.getHeight() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override
 	public double getMouseX() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleWindowBridge.getMouseX() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override
 	public double getMouseY() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleWindowBridge.getMouseY() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override
 	public String getClipboard() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleWindowBridge.getClipboard() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override
 	public boolean isMouseGrabbed() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleWindowBridge.isMouseGrabbed() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override
 	public boolean isKeyDown(final Key key) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleWindowBridge.isKeyDown() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override
 	public void setClipboard(final String text) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("ExampleWindowBridge.setClipboard() is not implemented, implement it with the API of your engine");
 	}
 
 }

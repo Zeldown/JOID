@@ -61,7 +61,7 @@ public final class VideoAudioPlayer {
 				source.group(this.group);
 				this.source = source;
 			} catch (final Exception e) {
-				JOIDLog.warnOnce("VideoAudioPlayer.source." + this.name, "The video " + this.name + " plays without sound: " + e);
+				JOIDLog.warnOnce("VideoAudioPlayer.source." + this.name, "The video " + this.name + " plays without sound (" + e + "), register an audio bridge and check the audio device");
 			}
 		}
 

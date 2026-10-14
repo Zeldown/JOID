@@ -79,7 +79,7 @@ public class FileCacheTest {
 			FileCache.area("negative").retention(Duration.ofHours(-1L));
 			Assert.fail("The retention must be positive");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("The retention of the cache area negative is PT-1H, it must be positive", expected.getMessage());
+			Assert.assertEquals("The retention PT-1H of the cache area negative is not positive, pass a duration above 0", expected.getMessage());
 		}
 	}
 

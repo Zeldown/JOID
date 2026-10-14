@@ -85,7 +85,7 @@ public final class VideoNatives {
 	private static File download(final String platform) {
 		final String checksum = VideoNatives.CHECKSUMS.get(platform);
 		if (checksum == null) {
-			throw new VideoNativesException("FFmpeg has no natives for the platform " + platform + ", videos play on windows-x86_64, linux-x86_64, macosx-x86_64 and macosx-arm64");
+			throw new VideoNativesException("FFmpeg has no natives for the platform " + platform + ", play the videos on windows-x86_64, linux-x86_64, macosx-x86_64 or macosx-arm64");
 		}
 
 		final String url = VideoNatives.repository + "/org/bytedeco/ffmpeg/" + VideoNatives.VERSION + "/ffmpeg-" + VideoNatives.VERSION + "-" + platform + ".jar";

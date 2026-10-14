@@ -149,7 +149,7 @@ public abstract class SelectorNode<V> extends Node {
 	@SafeVarargs
 	public final <T extends SelectorNode<V>> @NonNull T values(final @NonNull V @NonNull... values) {
 		if (values.length == 0) {
-			throw new IllegalArgumentException("A selector needs at least one option");
+			throw new IllegalArgumentException("A selector needs at least one option, got none: pass them to values(...)");
 		}
 
 		final V previous = this.optionMap.get(this.selected);

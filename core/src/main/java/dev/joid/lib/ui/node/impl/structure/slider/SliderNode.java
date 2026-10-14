@@ -91,7 +91,7 @@ public abstract class SliderNode<O> extends Node {
 	@SafeVarargs
 	public final <T extends SliderNode<O>> @NonNull T values(final @NonNull O @NonNull... values) {
 		if (values.length == 0) {
-			throw new IllegalArgumentException("A slider needs at least one option");
+			throw new IllegalArgumentException("A slider needs at least one option, got none: pass them to values(...)");
 		}
 
 		this.valueSet = new LinkedHashSet<>(Arrays.asList(values));

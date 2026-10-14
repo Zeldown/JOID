@@ -15,7 +15,7 @@ public final class FixedMatrixImport {
 
 	public static @NonNull FixedMatrixImport create(final @NonNull GlRenderBridge bridge) {
 		if (bridge.getCapabilities().getProfile() != GlProfile.COMPATIBILITY) {
-			throw new IllegalStateException("Only a compatibility context has fixed-function matrices to import, this context is " + bridge.getCapabilities().getProfile() + " with " + bridge.getCapabilities().getName());
+			throw new IllegalStateException("Only a compatibility context has fixed-function matrices to import, this context is " + bridge.getCapabilities().getProfile() + " with " + bridge.getCapabilities().getName() + ": create the context with the compatibility profile to import them");
 		}
 		return new FixedMatrixImport(new float[16], bridge);
 	}

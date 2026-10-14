@@ -81,8 +81,8 @@ public class EventBusTest {
 		});
 		Assert.assertFalse(key.isConsumed());
 		Assert.assertFalse(change.isCancelled());
-		Assert.assertTrue(printed, printed.contains("[JOID] The handleKeyPressed listener of RectNode in TestUI failed: java.lang.IllegalStateException: A MONITOR listener only reads NodeKeyEvent, it cannot call consume(): listen with another priority to consume it"));
-		Assert.assertTrue(printed, printed.contains("[JOID] The beforeChange listener of RectNode in TestUI failed: java.lang.IllegalStateException: A MONITOR listener only reads Pre, it cannot call cancel(): listen with another priority to cancel it"));
+		Assert.assertTrue(printed, printed.contains("[JOID] The handleKeyPressed listener of RectNode in TestUI failed (java.lang.IllegalStateException: A MONITOR listener only reads NodeKeyEvent, it cannot call consume(): listen with another priority to consume it"));
+		Assert.assertTrue(printed, printed.contains("[JOID] The beforeChange listener of RectNode in TestUI failed (java.lang.IllegalStateException: A MONITOR listener only reads Pre, it cannot call cancel(): listen with another priority to cancel it"));
 	}
 
 	@Test
@@ -102,7 +102,7 @@ public class EventBusTest {
 		this.bus.listen(EventBusTest.KEY, EventPriority.NORMAL, event -> this.trace.add("next"));
 		final String printed = EventBusTest.capture(() -> this.bus.fire(EventBusTest.KEY, this.key()));
 		Assert.assertEquals(Collections.singletonList("next"), this.trace);
-		Assert.assertTrue(printed, printed.startsWith("[JOID] The handleKeyPressed listener of RectNode in TestUI failed: java.lang.IllegalArgumentException: broken"));
+		Assert.assertTrue(printed, printed.startsWith("[JOID] The handleKeyPressed listener of RectNode in TestUI failed (java.lang.IllegalArgumentException: broken"));
 	}
 
 	@Test

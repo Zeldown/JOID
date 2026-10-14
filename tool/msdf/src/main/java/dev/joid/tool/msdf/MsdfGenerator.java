@@ -117,7 +117,7 @@ public final class MsdfGenerator {
 
 	private static double measure(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {
 		if (!Packer.pack(glyphs, size, range, width, height)) {
-			throw new IllegalStateException("The glyphs do not fit in " + width + "x" + height + " at " + size + "px");
+			throw new IllegalStateException("The glyphs do not fit in " + width + "x" + height + " at " + size + "px, raise --width and --height or lower --size");
 		}
 		return size;
 	}

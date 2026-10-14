@@ -28,7 +28,7 @@ public final class Lwjgl3AlBinding implements IAlBinding {
 	public void createContext() {
 		this.device = ALC10.alcOpenDevice((ByteBuffer) null);
 		if (this.device == 0L) {
-			throw new IllegalStateException("Unable to open the default OpenAL device");
+			throw new IllegalStateException("OpenAL cannot open the default audio device, check that an audio output device is connected and enabled");
 		}
 
 		this.context = ALC10.alcCreateContext(this.device, (IntBuffer) null);

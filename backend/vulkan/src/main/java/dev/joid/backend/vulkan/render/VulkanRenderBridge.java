@@ -131,6 +131,18 @@ public final class VulkanRenderBridge extends RenderBridge {
 		this.context.destroy();
 	}
 
+	public long[] getSamplers() {
+		return this.samplers.clone();
+	}
+
+	public FrameAllocator[] getVertexAllocators() {
+		return this.vertexAllocators.clone();
+	}
+
+	public FrameAllocator[] getUniformAllocators() {
+		return this.uniformAllocators.clone();
+	}
+
 	public void dispose(final @NonNull Runnable destroyer) {
 		this.garbage.computeIfAbsent(this.frame, frame -> new ArrayList<>()).add(destroyer);
 	}

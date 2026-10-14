@@ -59,7 +59,7 @@ public class ReplayLocalUI extends UI {
 				break;
 			}
 			case "branch": {
-				final ListSignal<String> names = new ListSignal<>(Collections.emptyList());
+				final ListSignal<String> names = ListSignal.of(Collections.emptyList());
 				this.listList.add(names);
 				SignalReplayNode.create().text(names.isEmpty() ? "none" : names.get(0) + " and " + names.get(0)).attach(this);
 				break;
@@ -76,7 +76,7 @@ public class ReplayLocalUI extends UI {
 			}
 			case "stale": {
 				final IntegerSignal saved = this.create(0);
-				final ListSignal<String> names = new ListSignal<>(Collections.singletonList("Ada"));
+				final ListSignal<String> names = ListSignal.of(Collections.singletonList("Ada"));
 				for (final String name : names.get()) {
 					SignalReplayNode.create().text(name).attach(this);
 				}

@@ -146,7 +146,7 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 	private static int getBitmapSize(final @NonNull TextGlyph<?> glyph) {
 		final GlyphFont<?> font = glyph.getFont();
 		if (!(font instanceof BitmapFont)) {
-			throw new IllegalStateException("The font " + font.getClass().getName() + " is drawn by a BitmapTextRenderer but is not a BitmapFont");
+			throw new IllegalStateException("The font " + font.getClass().getName() + " is drawn by a BitmapTextRenderer but is not a BitmapFont, draw it with its own font.getTextRenderer()");
 		}
 
 		return ((BitmapFont<?>) font).getBitmapSize();

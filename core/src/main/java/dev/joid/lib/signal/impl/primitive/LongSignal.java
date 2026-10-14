@@ -5,18 +5,20 @@ import lombok.NonNull;
 
 public class LongSignal extends Signal<Long> {
 
-	public LongSignal() {
+	protected LongSignal() {
 		super(0L);
 	}
 
-	public LongSignal(final long value) {
+	protected LongSignal(final long value) {
 		super(value);
 	}
 
-	public static @NonNull LongSignal of(final long defaultValue) {
-		final LongSignal instance = new LongSignal(defaultValue);
-		instance.set(defaultValue);
-		return instance;
+	public static @NonNull LongSignal of() {
+		return new LongSignal();
+	}
+
+	public static @NonNull LongSignal of(final long value) {
+		return new LongSignal(value);
 	}
 
 	public @NonNull LongSignal decrement() {

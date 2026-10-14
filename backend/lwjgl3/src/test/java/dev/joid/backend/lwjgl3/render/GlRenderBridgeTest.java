@@ -40,7 +40,7 @@ public class GlRenderBridgeTest {
 			bridge.createTexture().allocate(maxSize + 1, 1);
 			Assert.fail();
 		} catch (final IllegalArgumentException e) {
-			Assert.assertEquals("A texture of " + (maxSize + 1) + "x1 exceeds the maximum size " + maxSize + " of " + bridge.getCapabilities().getName(), e.getMessage());
+			Assert.assertEquals("A texture of " + (maxSize + 1) + "x1 exceeds the maximum size " + maxSize + " of " + bridge.getCapabilities().getName() + ", downscale the image", e.getMessage());
 		}
 	}
 
@@ -79,7 +79,7 @@ public class GlRenderBridgeTest {
 			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
-		Assert.assertTrue(output.toString(), output.toString().contains(" cannot be read: The borrowed texture 2147483000 is not a texture of the host. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production."));
+		Assert.assertTrue(output.toString(), output.toString().contains(" cannot be read: The borrowed texture 2147483000 is not a texture of the host, borrow a texture that the host created and has not deleted. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production."));
 	}
 
 }

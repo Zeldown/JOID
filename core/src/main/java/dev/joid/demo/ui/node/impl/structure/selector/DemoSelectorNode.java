@@ -14,8 +14,8 @@ import lombok.NonNull;
 
 public class DemoSelectorNode extends SelectorNode<String> {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(238, 238, 238);
+	private static final Color INK         = new Color(153, 153, 153).freeze();
+	private static final Color PLACEHOLDER = new Color(238, 238, 238).freeze();
 
 	protected DemoSelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

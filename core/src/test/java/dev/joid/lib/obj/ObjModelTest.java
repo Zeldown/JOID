@@ -321,7 +321,7 @@ public class ObjModelTest {
 			ObjModel.load("broken", new FailingStream(failure), ObjModelTest.TEXTURE);
 			Assert.fail("A read failure must reach the caller");
 		} catch (final UncheckedIOException expected) {
-			Assert.assertEquals("The OBJ model broken cannot be read: unreadable", expected.getMessage());
+			Assert.assertEquals("The OBJ model broken cannot be read (unreadable), check that the file exists and can be read", expected.getMessage());
 			Assert.assertSame(failure, expected.getCause());
 		}
 	}

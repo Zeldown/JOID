@@ -174,7 +174,7 @@ public class BackendTest {
 			backend.register();
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("TraceBackend is already registered", exception.getMessage());
+			Assert.assertEquals("TraceBackend is already registered, call register() only once", exception.getMessage());
 		}
 		Assert.assertEquals(1, Collections.frequency(this.trace, "window"));
 	}

@@ -8,7 +8,7 @@ import lombok.NonNull;
 
 public class DemoStringSliderNode extends StringSliderNode {
 
-	private static final Color INK = new Color(153, 153, 153);
+	private static final Color INK = new Color(153, 153, 153).freeze();
 
 	protected DemoStringSliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

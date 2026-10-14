@@ -57,7 +57,7 @@ public class WatchPropertyTest {
 
 	@Test
 	public void rebuildsAWatchingNodeOnEveryChange() {
-		final Signal<Integer> count = new Signal<>(1);
+		final Signal<Integer> count = Signal.of(1);
 		final WatchUI ui = new WatchUI(count);
 		this.bridges.open(ui).frame();
 		Assert.assertEquals(1, ui.node.getChildren().size());
@@ -67,7 +67,7 @@ public class WatchPropertyTest {
 
 	@Test
 	public void leavesTheOldChildrenWithoutParentOnARebuild() {
-		final Signal<Integer> count = new Signal<>(1);
+		final Signal<Integer> count = Signal.of(1);
 		final WatchUI ui = new WatchUI(count);
 		this.bridges.open(ui).frame();
 		final Node old = ui.node.getChildren().get(0);

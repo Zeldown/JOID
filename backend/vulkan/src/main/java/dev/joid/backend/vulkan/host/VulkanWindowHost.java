@@ -361,7 +361,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 	private static VkInstance createInstance(final MemoryStack stack) {
 		final PointerBuffer extensions = GLFWVulkan.glfwGetRequiredInstanceExtensions();
 		if (extensions == null) {
-			throw new IllegalStateException("Vulkan is not supported on this system");
+			throw new IllegalStateException("Vulkan is not supported on this system, update the graphics driver or use an OpenGL backend");
 		}
 
 		final VkApplicationInfo application = VkApplicationInfo.calloc(stack)
@@ -408,7 +408,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 		}
 
 		if (selected == null) {
-			throw new IllegalStateException("No Vulkan 1.3 device able to present to the window was found");
+			throw new IllegalStateException("No Vulkan 1.3 device able to present to the window was found, update the graphics driver or use an OpenGL backend");
 		}
 		return selected;
 	}

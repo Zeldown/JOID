@@ -58,7 +58,7 @@ public final class MsdfBinarySource extends MsdfSource {
 		final DataInputStream input = new DataInputStream(new InflaterInputStream(stream));
 		final int version = input.readUnsignedByte();
 		if (version != MsdfWriter.VERSION) {
-			throw new IOException("Unsupported msdf font version " + version + ", only the version " + MsdfWriter.VERSION + " loads: generate it again");
+			throw new IOException("The msdf font version " + version + " is not supported, only the version " + MsdfWriter.VERSION + " loads: generate it again with the msdf tool of JOID");
 		}
 
 		final FontWeight weight = FontWeight.of(input.readUnsignedShort());

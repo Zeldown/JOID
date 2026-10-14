@@ -16,7 +16,7 @@ public final class SnapshotComparison {
 		final File reference = new File(arguments[1]);
 		final File[] shots = reference.listFiles((directory, name) -> name.endsWith(".png"));
 		if (shots == null || shots.length == 0) {
-			System.err.println("No snapshot rendered in " + reference);
+			System.err.println("No snapshot rendered in " + reference + ", render the snapshots first");
 			System.exit(1);
 		}
 		Arrays.sort(shots);

@@ -11,22 +11,13 @@ public class FloatSignalTest {
 
 	@Test
 	public void startsAtZero() {
-		final FloatSignal signal = new FloatSignal();
-		Assert.assertFalse(signal.isPresent());
+		final FloatSignal signal = FloatSignal.of();
 		Assert.assertEquals(0F, signal.get(), 0F);
-	}
-
-	@Test
-	public void fallsBackOnTheGivenDefault() {
-		final FloatSignal signal = new FloatSignal(1.5F);
-		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(1.5F, signal.get(), 0F);
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final FloatSignal signal = FloatSignal.of(1.5F);
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(1.5F, signal.get(), 0F);
 	}
 
@@ -37,9 +28,8 @@ public class FloatSignalTest {
 
 	@Test
 	public void computesFromItsDefault() {
-		final FloatSignal signal = new FloatSignal(2F);
+		final FloatSignal signal = FloatSignal.of(2F);
 		signal.add(0.5F);
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(2.5F, signal.get(), 0F);
 	}
 
@@ -81,7 +71,7 @@ public class FloatSignalTest {
 	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Float> received = new ArrayList<>();
-		final FloatSignal signal = new FloatSignal();
+		final FloatSignal signal = FloatSignal.of();
 		signal.subscribe(received::add);
 		signal.increment();
 		signal.multiply(4F);
@@ -100,7 +90,7 @@ public class FloatSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("FloatSignal{1.5}", FloatSignal.of(1.5F).toString());
-		Assert.assertEquals("FloatSignal{0.0}", new FloatSignal().toString());
+		Assert.assertEquals("FloatSignal{0.0}", FloatSignal.of().toString());
 	}
 
 }

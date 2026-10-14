@@ -340,11 +340,11 @@ public final class Color {
 	}
 
 	public @NonNull Color add(final @NonNull Color c) {
-		return new Color(this.r + c.r, this.g + c.g, this.b + c.b, this.a + c.a, this.update);
+		return this.derive(this.r + c.r, this.g + c.g, this.b + c.b, this.a + c.a, color -> color.add(c), this.update);
 	}
 
 	public @NonNull Color scale(final float value) {
-		return new Color(this.r * value, this.g * value, this.b * value, this.a * value, this.update);
+		return this.derive(this.r * value, this.g * value, this.b * value, this.a * value, color -> color.scale(value), this.update);
 	}
 
 	public @NonNull Color to(final @NonNull Color target, final float progress) {
@@ -530,7 +530,10 @@ public final class Color {
 	}
 
 	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform) {
-		final UnaryOperator<Color> update = this.update == null ? null : color -> transform.apply(this.update.apply(color));
+		return this.derive(r, g, b, a, transform, this.update == null ? null : color -> transform.apply(this.update.apply(color)));
+	}
+
+	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform, final UnaryOperator<Color> update) {
 		final ColorGradient gradient = this.isGradient() ? new ColorGradient(transform.apply(this.gradient.getStartColor()), transform.apply(this.gradient.getEndColor()), this.gradient.getStartPoint(), this.gradient.getEndPoint()) : null;
 		return new Color(r, g, b, a, update, gradient);
 	}

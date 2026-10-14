@@ -66,7 +66,7 @@ public class TaskTest {
 			System.setErr(error);
 		}
 		Assert.assertEquals(Arrays.asList("high", "normal", "monitor false"), trace);
-		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The onRun listener of Task failed: java.lang.IllegalStateException: broken"));
+		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The onRun listener of Task failed (java.lang.IllegalStateException: broken"));
 	}
 
 	@Test

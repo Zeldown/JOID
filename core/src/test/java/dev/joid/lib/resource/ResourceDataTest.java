@@ -52,8 +52,9 @@ public class ResourceDataTest {
 		final ResourceData data = new ResourceData("image", null).uniqueId("renamed").decoder(decoder).data(pixels).textures(textures).width(2).height(1).loaded(true).uploaded(true).generated(true);
 		Assert.assertEquals("renamed", data.getUniqueId());
 		Assert.assertSame(decoder, data.getDecoder());
-		Assert.assertSame(pixels, data.getData());
-		Assert.assertSame(textures, data.getTextures());
+		Assert.assertArrayEquals(pixels, data.getData());
+		Assert.assertArrayEquals(textures, data.getTextures());
+		Assert.assertNotSame(textures, data.getTextures());
 		Assert.assertEquals(2, data.getWidth());
 		Assert.assertEquals(1, data.getHeight());
 		Assert.assertTrue(data.isLoaded());

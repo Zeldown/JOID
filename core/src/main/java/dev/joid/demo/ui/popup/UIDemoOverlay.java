@@ -16,8 +16,8 @@ import dev.joid.lib.utils.align.Align;
 @UIDataOverlay(active = true, interaction = @UIDataOverlayInteraction(active = true), render = @UIDataOverlayRender(aboveScreens = true))
 public class UIDemoOverlay extends UI {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color INK         = new Color(153, 153, 153).freeze();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
 
 	@Override
 	public void init() {

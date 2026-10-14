@@ -250,6 +250,10 @@ public final class Tessellator {
 		this.zOffset += z;
 	}
 
+	public int[] getRawBuffer() {
+		return this.rawBuffer == null ? null : this.rawBuffer.clone();
+	}
+
 	public Tessellator copy() {
 		return new Tessellator();
 	}

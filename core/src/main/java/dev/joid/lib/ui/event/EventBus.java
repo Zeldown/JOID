@@ -127,7 +127,7 @@ public final class EventBus {
 			}
 
 			registration.failure = failure;
-			JOIDLog.warn("The " + type.getName() + " listener of " + this.owner.get() + " failed: " + failure, exception);
+			JOIDLog.warn("The " + type.getName() + " listener of " + this.owner.get() + " failed (" + failure + "), the other listeners still run: catch the exception inside the listener to handle it", exception);
 		}
 	}
 

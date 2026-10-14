@@ -32,7 +32,7 @@ public final class BitmapCell {
 
 	public static @NonNull BitmapCell create(final @NonNull ITexture texture, final int texelLeft, final int texelTop, final int texelRight, final int texelBottom) {
 		if (texelRight <= texelLeft || texelBottom <= texelTop) {
-			throw new IllegalArgumentException("A bitmap cell needs at least one texel: " + texelLeft + ", " + texelTop + ", " + texelRight + ", " + texelBottom);
+			throw new IllegalArgumentException("A bitmap cell needs at least one texel, got the texels " + texelLeft + ", " + texelTop + ", " + texelRight + ", " + texelBottom + ": give a right above the left and a bottom above the top");
 		}
 
 		return new BitmapCell(texture, texelLeft, texelTop, texelRight, texelBottom);
@@ -50,7 +50,7 @@ public final class BitmapCell {
 
 	public @NonNull BitmapCell bounds(final double left, final double top, final double right, final double bottom) {
 		if (right <= left || bottom <= top) {
-			throw new IllegalArgumentException("The bounds of a bitmap cell cannot be empty: " + left + ", " + top + ", " + right + ", " + bottom);
+			throw new IllegalArgumentException("The bounds of a bitmap cell cannot be empty, got " + left + ", " + top + ", " + right + ", " + bottom + ": give a right above the left and a bottom above the top");
 		}
 
 		this.left = left;

@@ -223,7 +223,7 @@ public final class VulkanContext {
 
 	public static void check(final int result, final @NonNull String action) {
 		if (result != VK10.VK_SUCCESS) {
-			throw new IllegalStateException(action + " failed with error " + result);
+			throw new IllegalStateException(action + " failed with the Vulkan error " + result + ", update the graphics driver or run with the Vulkan validation layers to find the call at fault");
 		}
 	}
 
@@ -239,7 +239,7 @@ public final class VulkanContext {
 				return i;
 			}
 		}
-		throw new IllegalStateException("No Vulkan memory type matches the requested properties");
+		throw new IllegalStateException("No Vulkan memory type of the device matches the properties " + properties + " for the types " + Integer.toBinaryString(filter) + ", update the graphics driver or use another device");
 	}
 
 	private static int getAccess(final int layout) {

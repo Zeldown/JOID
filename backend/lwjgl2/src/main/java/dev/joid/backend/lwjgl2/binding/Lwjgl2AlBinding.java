@@ -29,7 +29,7 @@ public final class Lwjgl2AlBinding implements IAlBinding {
 		try {
 			AL.create();
 		} catch (final LWJGLException e) {
-			throw new IllegalStateException("Unable to create the OpenAL context", e);
+			throw new IllegalStateException("LWJGL 2 cannot create the OpenAL context (" + e.getMessage() + "), check that an audio output device is connected and enabled", e);
 		}
 	}
 

@@ -25,7 +25,7 @@ public enum CoreShader {
 		final String name = this.name().toLowerCase(Locale.ROOT);
 		final InputStream stream = CoreShader.class.getResourceAsStream("/assets/shaders/" + name + "/" + name + (stage == ShaderStage.VERTEX ? ".vsh" : ".fsh"));
 		if (stream == null) {
-			throw new IllegalStateException("The core shader " + name + " is missing from the classpath");
+			throw new IllegalStateException("The core shader " + name + " is missing from the classpath, check that the JOID jar is complete");
 		}
 		return stream;
 	}

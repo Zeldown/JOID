@@ -59,7 +59,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void takesTheValueOfItsSignalWhenItsOptionsArrive() {
-		final Signal<Integer> volume = new Signal<>(7);
+		final Signal<Integer> volume = Signal.of(7);
 		final Slider slider = new Slider().signal(volume).values(SliderNodeTest.digits());
 		Assert.assertEquals(7, slider.getValue().intValue());
 		Assert.assertEquals(7, volume.get().intValue());
@@ -68,7 +68,7 @@ public class SliderNodeTest {
 	@Test
 	public void letsItsListenersRefuseASetterButNeitherAForcedValueNorItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
-		final Signal<Integer> volume = new Signal<>(5);
+		final Signal<Integer> volume = Signal.of(5);
 		final Slider slider = new Slider().values(SliderNodeTest.digits()).signal(volume).thumb(new Thumb()).<Slider>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.value(9);
@@ -165,7 +165,7 @@ public class SliderNodeTest {
 	@Test
 	public void jumpsToTheClickedPosition() {
 		final List<Integer> changes = new ArrayList<>();
-		final Signal<Integer> signal = new Signal<>(5);
+		final Signal<Integer> signal = Signal.of(5);
 		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).signal(signal).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
@@ -181,7 +181,7 @@ public class SliderNodeTest {
 	@Test
 	public void followsItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
-		final Signal<Integer> signal = new Signal<>(5);
+		final Signal<Integer> signal = Signal.of(5);
 		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(signal).onChange(event -> changes.add(event.getValue()));
 		Assert.assertEquals(5, slider.getValue().intValue());
 		this.bridges.open(new NodeUI(slider)).frame();
@@ -193,8 +193,8 @@ public class SliderNodeTest {
 
 	@Test
 	public void followsOnlyItsLastSignal() {
-		final Signal<Integer> volume = new Signal<>(5);
-		final Signal<Integer> balance = new Signal<>(3);
+		final Signal<Integer> volume = Signal.of(5);
+		final Signal<Integer> balance = Signal.of(3);
 		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(volume).signal(balance);
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.value(7);
@@ -211,7 +211,7 @@ public class SliderNodeTest {
 
 	@Test
 	public void refusesAComputedSignal() {
-		final Signal<Integer> volume = new Signal<>(5);
+		final Signal<Integer> volume = Signal.of(5);
 		final Slider slider = new Slider().values(SliderNodeTest.digits()).thumb(new Thumb()).signal(volume);
 		try {
 			slider.signal(volume.map(value -> value + 1));
@@ -228,7 +228,7 @@ public class SliderNodeTest {
 	@Test
 	public void writesAChosenValueIntoItsSignal() {
 		final List<Integer> changes = new ArrayList<>();
-		final Signal<Integer> signal = new Signal<>(5);
+		final Signal<Integer> signal = Signal.of(5);
 		final Slider slider = new Slider().values(SliderNodeTest.digits()).value(5).thumb(new Thumb()).signal(signal).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.value(3);

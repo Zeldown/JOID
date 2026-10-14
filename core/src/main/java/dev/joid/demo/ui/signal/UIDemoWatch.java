@@ -27,8 +27,8 @@ import dev.joid.lib.utils.align.Align;
 @UIData(background = true)
 public class UIDemoWatch extends UIDemo {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color INK         = new Color(153, 153, 153).freeze();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
 
 	@Override
 	public void init() {
@@ -52,8 +52,8 @@ public class UIDemoWatch extends UIDemo {
 		final IntegerSignal notified = IntegerSignal.of(0);
 		final IntegerSignal read = IntegerSignal.of(0);
 		final IntegerSignal reset = IntegerSignal.of(5);
-		final MapSignal<String, Integer> counts = new MapSignal<>();
-		final SetSignal<String> keys = new SetSignal<>();
+		final MapSignal<String, Integer> counts = MapSignal.of();
+		final SetSignal<String> keys = SetSignal.of();
 		final IntegerSignal sent = IntegerSignal.of(0);
 		final IntegerSignal received = IntegerSignal.of(0);
 		final BooleanSignal listening = BooleanSignal.of(true);

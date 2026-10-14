@@ -161,7 +161,7 @@ public class UniformBlockTest {
 			UniformBlock.create(Collections.singletonList(ShaderVariable.create("float", "x", "[SIZE]", false)), "");
 			Assert.fail("An unresolved array length must be refused");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("Unable to resolve the length SIZE of the uniform array x", expected.getMessage());
+			Assert.assertEquals("The length SIZE of the uniform array x is neither a number nor a #define of the shader, write a number or #define SIZE in the shader source", expected.getMessage());
 		}
 	}
 

@@ -21,30 +21,28 @@ public class Signal<T> implements ISignal<T> {
 	private final transient Set<@NonNull ISignalSubscriber<T>> eventSet;
 	private final transient List<@NonNull ComputedSignal<?>>   observerList;
 
-	private volatile T value;
+	private final transient T defaultValue;
 
-	@Getter(AccessLevel.PROTECTED)
-	private volatile T defaultValue;
+	private volatile T value;
 
 	private transient boolean nextSilent = false;
 
 	@Getter(AccessLevel.PROTECTED)
 	private transient int version;
 
-	public Signal() {
+	protected Signal() {
 		this(null);
 	}
 
-	public Signal(final T defaultValue) {
-		this.defaultValue = defaultValue;
+	protected Signal(final T value) {
+		this.value = value;
+		this.defaultValue = value;
 		this.eventSet = new HashSet<>();
 		this.observerList = new CopyOnWriteArrayList<>();
 	}
 
-	public static <T> @NonNull Signal<T> of(final T defaultValue) {
-		final Signal<T> instance = new Signal<>(defaultValue);
-		instance.set(defaultValue);
-		return instance;
+	public static <T> @NonNull Signal<T> of(final T value) {
+		return new Signal<>(value);
 	}
 
 	public static <T> @NonNull Signal<T> of(final @NonNull CompletionStage<T> future) {
@@ -143,7 +141,7 @@ public class Signal<T> implements ISignal<T> {
 
 	@Override
 	public T peek() {
-		return this.value != null ? this.value : this.defaultValue;
+		return this.value;
 	}
 
 	protected @NonNull Set<@NonNull ISignalSubscriber<T>> getEventSet() {
@@ -154,12 +152,6 @@ public class Signal<T> implements ISignal<T> {
 	public @NonNull Signal<T> silent() {
 		this.nextSilent = true;
 		return this;
-	}
-
-	@Override
-	public boolean isPresent() {
-		SignalContext.current().read(this);
-		return this.value != null;
 	}
 
 	protected void refresh() {}

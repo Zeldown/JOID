@@ -14,7 +14,7 @@ public abstract class BitmapFont<F extends IFontFace> extends GlyphFont<F> {
 	protected BitmapFont(final @NonNull FontFamily<F> family, final int bitmapSize) {
 		super(family);
 		if (bitmapSize <= 0) {
-			throw new IllegalArgumentException("The bitmap size of a font must be positive: " + bitmapSize);
+			throw new IllegalArgumentException("The bitmap size " + bitmapSize + " of a font is not positive, pass a size above 0");
 		}
 
 		this.bitmapSize = bitmapSize;

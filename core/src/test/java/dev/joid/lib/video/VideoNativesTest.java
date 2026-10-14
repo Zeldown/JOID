@@ -115,7 +115,7 @@ public class VideoNativesTest {
 			VideoNativesTest.download("linux-arm64");
 			Assert.fail("The natives must not install");
 		} catch (final VideoNativesException expected) {
-			Assert.assertEquals("FFmpeg has no natives for the platform linux-arm64, videos play on windows-x86_64, linux-x86_64, macosx-x86_64 and macosx-arm64", expected.getMessage());
+			Assert.assertEquals("FFmpeg has no natives for the platform linux-arm64, play the videos on windows-x86_64, linux-x86_64, macosx-x86_64 or macosx-arm64", expected.getMessage());
 		}
 		Assert.assertArrayEquals(new String[0], this.cache.list());
 	}

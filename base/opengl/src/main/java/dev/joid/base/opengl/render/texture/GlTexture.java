@@ -55,7 +55,7 @@ public final class GlTexture extends Texture implements IGlTexture {
 	protected void allocateStorage(final @NonNull MipmapChain chain) {
 		final int maxSize = this.bridge.getCapabilities().getMaxTextureSize();
 		if (chain.getWidth() > maxSize || chain.getHeight() > maxSize) {
-			throw new IllegalArgumentException("A texture of " + chain.getWidth() + "x" + chain.getHeight() + " exceeds the maximum size " + maxSize + " of " + this.bridge.getCapabilities().getName());
+			throw new IllegalArgumentException("A texture of " + chain.getWidth() + "x" + chain.getHeight() + " exceeds the maximum size " + maxSize + " of " + this.bridge.getCapabilities().getName() + ", downscale the image");
 		}
 
 		this.bridge.getGuard().enter();

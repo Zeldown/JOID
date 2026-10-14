@@ -83,4 +83,16 @@ public final class ObjFace {
 		return new ObjVertex((float) (x * norm), (float) (y * norm), (float) (z * norm));
 	}
 
+	public ObjVertex[] getVertices() {
+		return this.vertices == null ? null : this.vertices.clone();
+	}
+
+	public ObjVertex[] getVertexNormals() {
+		return this.vertexNormals == null ? null : this.vertexNormals.clone();
+	}
+
+	public ObjTextureCoordinate[] getTextureCoordinates() {
+		return this.textureCoordinates == null ? null : this.textureCoordinates.clone();
+	}
+
 }

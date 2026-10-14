@@ -29,7 +29,7 @@ public final class MsdfFontLoader {
 	public static @NonNull CompletableFuture<MsdfFont> load(final @NonNull Object @NonNull... faces) {
 		if (faces.length == 0) {
 			final CompletableFuture<MsdfFont> future = new CompletableFuture<>();
-			future.completeExceptionally(new IllegalArgumentException("A msdf font needs at least one face"));
+			future.completeExceptionally(new IllegalArgumentException("A msdf font needs at least one face, got none: pass the files of its faces"));
 			return future;
 		}
 

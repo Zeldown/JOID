@@ -723,7 +723,7 @@ public class UITest {
 			ui.renew();
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("The UI " + RenewUI.class.getName() + " is not open, only an open UI can be renewed", exception.getMessage());
+			Assert.assertEquals("The UI " + RenewUI.class.getName() + " is not open, only an open UI can be renewed: open it before renew()", exception.getMessage());
 		}
 	}
 
@@ -858,7 +858,7 @@ public class UITest {
 		} finally {
 			System.setErr(previous);
 		}
-		Assert.assertTrue(output.toString(), output.toString().matches("\\[JOID\\] ProfiledUI took \\d+\\.\\d\\dms to draw a frame, more than the 16\\.66ms of 60 fps" + System.lineSeparator()));
+		Assert.assertTrue(output.toString(), output.toString().matches("\\[JOID\\] ProfiledUI took \\d+\\.\\d\\dms to draw a frame, more than the 16\\.66ms of 60 fps: move the heavy work out of draw\\(\\) or spread it over several frames" + System.lineSeparator()));
 	}
 
 	@Test

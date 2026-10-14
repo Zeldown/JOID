@@ -9,7 +9,7 @@ public final class DepthRange {
 
 	public static @NonNull float[] toZeroToOne(final @NonNull float[] projection) {
 		if (projection.length != 16) {
-			throw new IllegalArgumentException("A projection matrix holds 16 floats, got " + projection.length);
+			throw new IllegalArgumentException("A projection matrix holds 16 floats, got " + projection.length + ", pass the 16 floats of a 4x4 matrix");
 		}
 
 		final float[] matrix = projection.clone();

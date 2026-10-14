@@ -487,7 +487,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					}
 				}
 			} catch (final Exception e) {
-				JOIDLog.warn("The video " + this.describe() + " cannot be reopened: " + e.getMessage());
+				JOIDLog.warn("The video " + this.describe() + " cannot be reopened (" + e.getMessage() + "), check that the file can still be read");
 			}
 		}
 	}
@@ -600,7 +600,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					this.seekGrabber(microseconds);
 				}
 			} catch (final Exception e) {
-				JOIDLog.warn("The video " + this.describe() + " cannot seek to " + microseconds + "us: " + e, e);
+				JOIDLog.warn("The video " + this.describe() + " cannot seek to " + microseconds + "us (" + e + "), check that the file can still be read", e);
 			}
 
 			final long now = BridgeHandler.CLOCK.get().nanoTime();
@@ -713,7 +713,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				}
 			} catch (final InterruptedException ignored) {
 			} catch (final Exception e) {
-				JOIDLog.warn("The video " + this.describe() + " stops decoding: " + e, e);
+				JOIDLog.warn("The video " + this.describe() + " stops decoding (" + e + "), check that the file can still be read", e);
 			}
 		}, "joid-video-decode");
 		this.decodeThread.setDaemon(true);

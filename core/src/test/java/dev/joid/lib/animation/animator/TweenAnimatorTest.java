@@ -308,7 +308,7 @@ public class TweenAnimatorTest {
 		}
 		Assert.assertEquals(0.5F, other.get(), 0F);
 		Assert.assertEquals(0.5F, failing.get(), 0F);
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The update of TweenAnimator failed: java.lang.IllegalStateException: boom"));
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The update of TweenAnimator failed (java.lang.IllegalStateException: boom"));
 		Assert.assertEquals(output.toString(), output.toString().indexOf("[JOID]"), output.toString().lastIndexOf("[JOID]"));
 	}
 
@@ -334,7 +334,7 @@ public class TweenAnimatorTest {
 		Assert.assertEquals(1F, failing.get(), 0F);
 		Assert.assertEquals(0.5F, other.get(), 0F);
 		Assert.assertFalse(failing.isAutomatic());
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The onComplete listener of Timeline failed: java.lang.IllegalStateException: boom"));
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The onComplete listener of Timeline failed (java.lang.IllegalStateException: boom"));
 	}
 
 	@Test

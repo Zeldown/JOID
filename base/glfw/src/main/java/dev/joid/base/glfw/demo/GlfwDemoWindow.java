@@ -21,7 +21,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 	protected GlfwDemoWindow() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		if (!GLFW.glfwInit()) {
-			throw new IllegalStateException("Unable to initialize GLFW");
+			throw new IllegalStateException("GLFW cannot be initialized, check that the system has a display (DISPLAY or WAYLAND_DISPLAY on Linux)");
 		}
 
 		this.configureWindow();
@@ -29,7 +29,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 		this.window = GLFW.glfwCreateWindow(1920, 1080, "JOID - Demo (" + this.getBackendName() + ")", 0L, 0L);
 		if (this.window == 0L) {
-			throw new IllegalStateException("Unable to create the GLFW window");
+			throw new IllegalStateException("GLFW cannot create the 1920x1080 demo window of " + this.getBackendName() + ", check that the graphics driver supports the OpenGL version the window asks for");
 		}
 
 		JOID.onReady(() -> BridgeHandler.UI.register(this));

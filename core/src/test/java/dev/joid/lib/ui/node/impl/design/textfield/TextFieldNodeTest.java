@@ -758,7 +758,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void keepsItsTypedTextOnEscape() {
-		final Signal<String> signal = new Signal<>("hello");
+		final Signal<String> signal = Signal.of("hello");
 		final TextFieldNode field = this.field("").signal(signal).cursorPosition(5);
 		field.focused(false).focused(true);
 		this.type(field, " world");
@@ -1250,7 +1250,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void bindsItsTextToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
-		final Signal<String> signal = new Signal<>("hi");
+		final Signal<String> signal = Signal.of("hi");
 		final TextFieldNode field = this.field("").onChange(event -> changes.add(event.getText())).signal(signal);
 		Assert.assertEquals("hi", field.getText());
 		this.type(field.cursorPosition(2), "!");
@@ -1267,8 +1267,8 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void followsOnlyItsLastSignal() {
-		final Signal<String> name = new Signal<>("Alex");
-		final Signal<String> nickname = new Signal<>("Al");
+		final Signal<String> name = Signal.of("Alex");
+		final Signal<String> nickname = Signal.of("Al");
 		final TextFieldNode field = this.field("").signal(name).signal(nickname);
 		Assert.assertEquals("Al", field.getText());
 		field.text("Sam");
@@ -1283,7 +1283,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void refusesAComputedSignal() {
-		final Signal<String> name = new Signal<>("Alex");
+		final Signal<String> name = Signal.of("Alex");
 		final TextFieldNode field = this.field("").signal(name);
 		try {
 			field.signal(name.map(String::toUpperCase));

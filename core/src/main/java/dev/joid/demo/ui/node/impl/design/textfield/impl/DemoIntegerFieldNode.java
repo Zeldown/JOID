@@ -7,7 +7,7 @@ import lombok.NonNull;
 
 public class DemoIntegerFieldNode extends IntegerFieldNode {
 
-	private static final Color INK = new Color(153, 153, 153);
+	private static final Color INK = new Color(153, 153, 153).freeze();
 
 	protected DemoIntegerFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

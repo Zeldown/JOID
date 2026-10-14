@@ -43,7 +43,7 @@ public class TweenAnimator extends Signal<Float> {
 	@Getter
 	private Timeline timeline;
 
-	private TweenAnimator(final float value) {
+	protected TweenAnimator(final float value) {
 		super(value);
 		this.manager = new TweenManager();
 		this.speed = 1F;
@@ -227,11 +227,6 @@ public class TweenAnimator extends Signal<Float> {
 		throw new UnsupportedOperationException("A TweenAnimator is read-only and takes the value of its animation: call setValue(...) instead");
 	}
 
-	@Override
-	public boolean isPresent() {
-		return super.get() != null;
-	}
-
 	protected void writeValue(final float value) {
 		if (Float.compare(this.peek(), value) != 0) {
 			super.set(value);
@@ -266,7 +261,7 @@ public class TweenAnimator extends Signal<Float> {
 			try {
 				animator.update();
 			} catch (final RuntimeException exception) {
-				JOIDLog.warnOnce("TweenAnimator.update." + System.identityHashCode(animator) + exception, "The update of TweenAnimator failed: " + exception, exception);
+				JOIDLog.warnOnce("TweenAnimator.update." + System.identityHashCode(animator) + exception, "The update of TweenAnimator failed (" + exception + "), the other animators still run: catch the exception inside the tween callbacks to handle it", exception);
 			}
 		}
 	}

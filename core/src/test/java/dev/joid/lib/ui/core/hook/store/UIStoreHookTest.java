@@ -16,10 +16,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 
@@ -46,6 +49,7 @@ public class UIStoreHookTest {
 	public void restoreTheConfig() {
 		UIStoreHook.destroyStore(new GlobalStore());
 		UIStoreHook.destroyStore(new PermanentStore());
+		UIStoreHook.destroyStore(new SignalStore());
 		JOIDEnv.dataDir(this.previous);
 		if (this.created) {
 			new File("config").delete();
@@ -99,7 +103,7 @@ public class UIStoreHookTest {
 			UIStoreHook.useStore(OverloadedStore.class, 3D);
 			Assert.fail("No constructor of the store accepts a double");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("No public constructor of " + OverloadedStore.class.getName() + " accepts the arguments [3.0]", expected.getMessage());
+			Assert.assertEquals("No public constructor of " + OverloadedStore.class.getName() + " accepts the arguments [3.0], add such a constructor or pass the arguments of an existing one", expected.getMessage());
 		}
 	}
 
@@ -109,7 +113,7 @@ public class UIStoreHookTest {
 			UIStoreHook.useStore(OverloadedStore.class, (Object) null);
 			Assert.fail("Both constructors of the store accept null");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("Several public constructors of " + OverloadedStore.class.getName() + " accept the arguments [null]: "));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("Several public constructors of " + OverloadedStore.class.getName() + " accept the arguments [null] ("));
 		}
 	}
 
@@ -119,7 +123,7 @@ public class UIStoreHookTest {
 			UIStoreHook.useStore(FailingStore.class);
 			Assert.fail("The failure of the constructor must reach the caller");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The constructor of the store " + FailingStore.class.getName() + " failed: java.lang.IllegalStateException: broken store", expected.getMessage());
+			Assert.assertEquals("The constructor of the store " + FailingStore.class.getName() + " failed (java.lang.IllegalStateException: broken store), fix the constructor from this error", expected.getMessage());
 			Assert.assertEquals("broken store", expected.getCause().getMessage());
 		}
 	}
@@ -177,6 +181,18 @@ public class UIStoreHookTest {
 	public void restoresAPermanentStoreFromUtf8() throws IOException {
 		this.write("{\"value\":\"Français\"}");
 		Assert.assertEquals("Français", UIStoreHook.useStore(PermanentStore.class).value);
+	}
+
+	@Test
+	public void reloadsASignalWithoutItsStartingValue() throws IOException {
+		final SignalStore store = UIStoreHook.useStore(SignalStore.class);
+		store.count.set(7);
+		UIStoreHook.saveStore(store);
+		UIStoreHook.destroyStore(store);
+
+		final File file = new File(new File(this.folder.getRoot(), "store"), "signal.store");
+		Assert.assertEquals("{\"count\":{\"value\":7}}", new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8));
+		Assert.assertEquals(7, UIStoreHook.useStore(SignalStore.class).count.get().intValue());
 	}
 
 	@Test
@@ -389,6 +405,27 @@ public class UIStoreHookTest {
 		public @NonNull String toJson() {
 			final JsonObject json = new JsonObject();
 			json.addProperty("value", this.value);
+			return json.toString();
+		}
+
+	}
+
+	@UIStoreData(id = "signal", scope = StoreScope.PERMANENT)
+	public static class SignalStore extends UIStore {
+
+		private static final Gson GSON = new GsonBuilder().create();
+
+		private IntegerSignal count = IntegerSignal.of(3);
+
+		@Override
+		public void fromJson(final @NonNull String json) {
+			this.count = SignalStore.GSON.fromJson(JsonParser.parseString(json).getAsJsonObject().get("count"), IntegerSignal.class);
+		}
+
+		@Override
+		public @NonNull String toJson() {
+			final JsonObject json = new JsonObject();
+			json.add("count", SignalStore.GSON.toJsonTree(this.count));
 			return json.toString();
 		}
 

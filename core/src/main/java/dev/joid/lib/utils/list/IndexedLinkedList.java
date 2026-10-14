@@ -53,19 +53,6 @@ public class IndexedLinkedList<E extends IndexedElement> implements IIndexedList
 	}
 
 	@Override
-	public void sort() {
-		int index = Integer.MIN_VALUE;
-		for (final E element : this.orderedList) {
-			if (element.getIndex() < index) {
-				this.orderedList.sort(Comparator.comparingInt(IndexedElement::getIndex));
-				return;
-			}
-
-			index = element.getIndex();
-		}
-	}
-
-	@Override
 	public void clear() {
 		this.orderedList.clear();
 	}
@@ -124,6 +111,18 @@ public class IndexedLinkedList<E extends IndexedElement> implements IIndexedList
 	public Iterator<E> iterator() {
 		this.sort();
 		return this.orderedList.iterator();
+	}
+
+	private void sort() {
+		int index = Integer.MIN_VALUE;
+		for (final E element : this.orderedList) {
+			if (element.getIndex() < index) {
+				this.orderedList.sort(Comparator.comparingInt(IndexedElement::getIndex));
+				return;
+			}
+
+			index = element.getIndex();
+		}
 	}
 
 	private boolean isInPlace(final int position) {

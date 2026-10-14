@@ -166,7 +166,7 @@ public abstract class UI implements IUI, IndexedElement {
 		this.transitionPopup  = new UIDataPopupObject(this.popup);
 
 		if (this.popup.active() && this.overlay.active()) {
-			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time");
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
 		}
 
 		this.stencilStack = new Stack<>();
@@ -177,9 +177,9 @@ public abstract class UI implements IUI, IndexedElement {
 		this.transition = this.createPopupTransition();
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
-		this.zoomLevel = new DoubleSignal(1D);
-		this.scaledWidth = new DoubleSignal(UIView.DESIGN_WIDTH);
-		this.scaledHeight = new DoubleSignal(UIView.DESIGN_HEIGHT);
+		this.zoomLevel = DoubleSignal.of(1D);
+		this.scaledWidth = DoubleSignal.of(UIView.DESIGN_WIDTH);
+		this.scaledHeight = DoubleSignal.of(UIView.DESIGN_HEIGHT);
 
 		this.devNode = null;
 		this.lastHoveredFrame = -1L;
@@ -728,7 +728,7 @@ public abstract class UI implements IUI, IndexedElement {
 	public final @NonNull UI renew() {
 		final IUIBridge bridge = BridgeHandler.UI.get(this);
 		if (bridge == null || !bridge.isOpen(this)) {
-			throw new IllegalStateException("The UI " + this.getClass().getName() + " is not open, only an open UI can be renewed");
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " is not open, only an open UI can be renewed: open it before renew()");
 		}
 
 		final UI renewed;
@@ -739,7 +739,7 @@ public abstract class UI implements IUI, IndexedElement {
 		} catch (final NoSuchMethodException exception) {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead", exception);
 		} catch (final ReflectiveOperationException | RuntimeException exception) {
-			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be renewed: its constructor without argument failed", exception);
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be renewed: its constructor without argument failed (" + exception + "), fix the constructor from this error", exception);
 		}
 
 		this.dispose();
@@ -855,7 +855,7 @@ public abstract class UI implements IUI, IndexedElement {
 		if (JOIDEnv.isDevMode() && this.debug.hotreload() && this.watchedLocation == null) {
 			final File location = UI.locate(this.getClass());
 			if (location == null) {
-				JOIDLog.warnOnce("UI.hotReload", "Hot reload is off for " + this.getClass().getSimpleName() + ": its classes are not loaded from a folder or a jar file");
+				JOIDLog.warnOnce("UI.hotReload", "Hot reload is off for " + this.getClass().getSimpleName() + ": its classes are not loaded from a folder or a jar file, run it from one of them to reload it");
 				return;
 			}
 
@@ -998,7 +998,7 @@ public abstract class UI implements IUI, IndexedElement {
 		if (JOIDEnv.isDevMode() && this.debug.profiler()) {
 			final float ms = this.renderTime / 1_000_000F;
 			if (ms > 16.66F) {
-				JOIDLog.warn(this.getClass().getSimpleName() + " took " + String.format(Locale.ROOT, "%.2f", ms) + "ms to draw a frame, more than the 16.66ms of 60 fps");
+				JOIDLog.warn(this.getClass().getSimpleName() + " took " + String.format(Locale.ROOT, "%.2f", ms) + "ms to draw a frame, more than the 16.66ms of 60 fps: move the heavy work out of draw() or spread it over several frames");
 			}
 		}
 
@@ -1085,7 +1085,7 @@ public abstract class UI implements IUI, IndexedElement {
 		try {
 			this.untraced(runnable);
 		} catch (final RuntimeException exception) {
-			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + exception, "The " + input + " of " + UI.nameOf(this.getClass()) + " failed: " + exception, exception);
+			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + exception, "The " + input + " of " + UI.nameOf(this.getClass()) + " failed (" + exception + "), the next inputs still run: catch the exception inside the handler to handle it", exception);
 		}
 	}
 
@@ -1153,7 +1153,7 @@ public abstract class UI implements IUI, IndexedElement {
 			monitor.start();
 			UI.RUNNING_SET.add(monitor);
 		} catch (final Exception e) {
-			JOIDLog.warn("The hot reload of " + location.getAbsolutePath() + " cannot start: " + e, e);
+			JOIDLog.warn("The hot reload of " + location.getAbsolutePath() + " cannot start (" + e + "), the UI no longer reloads: check that the folder can be watched", e);
 		}
 	}
 
@@ -1165,7 +1165,7 @@ public abstract class UI implements IUI, IndexedElement {
 		try {
 			monitor.stop();
 		} catch (final Exception e) {
-			JOIDLog.warn("A hot reload watcher cannot stop: " + e, e);
+			JOIDLog.warn("A hot reload watcher cannot stop (" + e + "), it stops with the JVM", e);
 		}
 	}
 

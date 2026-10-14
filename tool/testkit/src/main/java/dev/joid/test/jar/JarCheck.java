@@ -56,7 +56,7 @@ public final class JarCheck {
 		}
 
 		if (!JOID.isOpen(ui)) {
-			throw new IllegalStateException(ui.getClass().getSimpleName() + " is no longer open after 60 frames of the " + variant + " jar");
+			throw new IllegalStateException(ui.getClass().getSimpleName() + " is no longer open after 60 frames of the " + variant + " jar, check what closes it in that jar");
 		}
 		return ui;
 	}

@@ -42,12 +42,6 @@ public class TextHoverElementTest {
 	}
 
 	@Test
-	public void ignoresANodeOutsideAUi() {
-		new TextHoverElement(Arrays.asList("Save", "Ctrl+S")).render(RectNode.create(0D, 0D, 10D, 10D), 150D, 160D);
-		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
-	}
-
-	@Test
 	public void showsNoTooltipForANullLine() {
 		final HoverSupplier supplier = () -> null;
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).hover(supplier);

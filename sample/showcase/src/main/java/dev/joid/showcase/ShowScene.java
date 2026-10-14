@@ -33,7 +33,7 @@ public enum ShowScene {
 		try {
 			return this.type.newInstance();
 		} catch (final ReflectiveOperationException exception) {
-			throw new IllegalStateException("Unable to create the showcase scene " + this.title, exception);
+			throw new IllegalStateException("The showcase scene " + this.title + " cannot be created (" + exception + "), give its UI a public constructor without argument", exception);
 		}
 	}
 

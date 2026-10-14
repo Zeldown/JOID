@@ -49,7 +49,7 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 		final IGlFrameBufferBinding frameBuffer = bridge.getFrameBufferBinding();
 		final GlShader shader = this.getShader(bridge);
 		if (!shader.isActive()) {
-			throw new IllegalStateException("The shader that draws the mipmaps does not compile on " + bridge.getCapabilities().getName());
+			throw new IllegalStateException("The shader that draws the mipmaps does not compile on " + bridge.getCapabilities().getName() + ", update the graphics driver");
 		}
 
 		binding.getProgramBinding().useProgram(shader.getProgram());

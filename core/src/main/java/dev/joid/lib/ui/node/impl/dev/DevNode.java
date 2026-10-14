@@ -45,13 +45,13 @@ import lombok.NonNull;
 @Getter
 public final class DevNode extends Node {
 
-	private static final Color RED         = new Color(239, 57, 38);
-	private static final Color ACTION      = new Color(57, 120, 255);
+	private static final Color RED         = new Color(239, 57, 38).freeze();
+	private static final Color ACTION      = new Color(57, 120, 255).freeze();
 
-	private static final Color BLACK       = new Color(23, 23, 25);
-	private static final Color WHITE       = new Color(250, 250, 250);
-	private static final Color LIGHT_BLACK = new Color(56, 56, 62);
-	private static final Color LIGHT_WHITE = new Color(161, 161, 170);
+	private static final Color BLACK       = new Color(23, 23, 25).freeze();
+	private static final Color WHITE       = new Color(250, 250, 250).freeze();
+	private static final Color LIGHT_BLACK = new Color(56, 56, 62).freeze();
+	private static final Color LIGHT_WHITE = new Color(161, 161, 170).freeze();
 
 	private static final Color[] GRID_COLORS = {DevNode.ACTION, DevNode.RED};
 
@@ -79,11 +79,11 @@ public final class DevNode extends Node {
 		super(x, y, 275, 53);
 		super.anchor(Align.END);
 
-		this.inspectSignal = new BooleanSignal(true);
-		this.gridSignal = new BooleanSignal(false);
+		this.inspectSignal = BooleanSignal.of(true);
+		this.gridSignal = BooleanSignal.of(false);
 
-		this.inspectedNode = new Signal<>();
-		this.inspectedNodeLocked = new BooleanSignal();
+		this.inspectedNode = Signal.of((Node) null);
+		this.inspectedNodeLocked = BooleanSignal.of();
 		this.lockedNode = Signal.from(() -> this.inspectedNodeLocked.get() ? this.inspectedNode.get() : null);
 
 		this.reloadAnimator = TweenAnimator.create(0F);
@@ -137,7 +137,7 @@ public final class DevNode extends Node {
 				.hover(() -> "[G] Grid")
 				.attach(flex);
 			} catch (final Exception e) {
-				JOIDLog.warn("The dev panel cannot show its tool icons: " + e, e);
+				JOIDLog.warn("The dev panel cannot show its tool icons (" + e + "), check that the JOID jar is complete", e);
 			}
 		})
 		.attach(this);
@@ -330,7 +330,7 @@ public final class DevNode extends Node {
 								.width(scroll.aw(-20))
 								.attach(scroll);
 							} catch (final Exception e) {
-								JOIDLog.warn("The dev panel cannot read the field " + field.getName() + " of " + inspectedNode.getClass().getSimpleName() + ": " + e, e);
+								JOIDLog.warn("The dev panel cannot read the field " + field.getName() + " of " + inspectedNode.getClass().getSimpleName() + " (" + e + "), the panel leaves it out", e);
 							}
 						}
 					}

@@ -5,18 +5,20 @@ import lombok.NonNull;
 
 public class BooleanSignal extends Signal<Boolean> {
 
-	public BooleanSignal() {
+	protected BooleanSignal() {
 		super(false);
 	}
 
-	public BooleanSignal(final boolean value) {
+	protected BooleanSignal(final boolean value) {
 		super(value);
 	}
 
-	public static @NonNull BooleanSignal of(final boolean defaultValue) {
-		final BooleanSignal instance = new BooleanSignal(defaultValue);
-		instance.set(defaultValue);
-		return instance;
+	public static @NonNull BooleanSignal of() {
+		return new BooleanSignal();
+	}
+
+	public static @NonNull BooleanSignal of(final boolean value) {
+		return new BooleanSignal(value);
 	}
 
 	public @NonNull BooleanSignal toggle() {

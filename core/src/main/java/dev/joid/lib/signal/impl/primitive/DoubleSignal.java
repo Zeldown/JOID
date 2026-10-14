@@ -5,18 +5,20 @@ import lombok.NonNull;
 
 public class DoubleSignal extends Signal<Double> {
 
-	public DoubleSignal() {
+	protected DoubleSignal() {
 		super(0D);
 	}
 
-	public DoubleSignal(final double value) {
+	protected DoubleSignal(final double value) {
 		super(value);
 	}
 
-	public static @NonNull DoubleSignal of(final double defaultValue) {
-		final DoubleSignal instance = new DoubleSignal(defaultValue);
-		instance.set(defaultValue);
-		return instance;
+	public static @NonNull DoubleSignal of() {
+		return new DoubleSignal();
+	}
+
+	public static @NonNull DoubleSignal of(final double value) {
+		return new DoubleSignal(value);
 	}
 
 	public @NonNull DoubleSignal add(final double value) {

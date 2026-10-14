@@ -69,7 +69,7 @@ public class RectNode extends Node {
 
 	public final <T extends RectNode> @NonNull T borderColor(final @NonNull Supplier<@NonNull Color> borderColor) {
 		super.follow("borderColor", borderColor, (final RectNode node, final Color value) -> node.borderColor = value);
-		this.getBorder().color(this::computeBorderColor);
+		this.getBorder().color(RectNode::computeBorderColor);
 		return (T) this;
 	}
 
@@ -79,7 +79,7 @@ public class RectNode extends Node {
 
 	public final <T extends RectNode> @NonNull T hoveredBorderColor(final @NonNull Supplier<Color> hoveredBorderColor) {
 		super.follow("hoveredBorderColor", hoveredBorderColor, (final RectNode node, final Color value) -> node.hoveredBorderColor = value);
-		this.getBorder().color(this::computeBorderColor);
+		this.getBorder().color(RectNode::computeBorderColor);
 		return (T) this;
 	}
 
@@ -107,7 +107,7 @@ public class RectNode extends Node {
 			return border;
 		}
 
-		final BorderNodeEffect created = BorderNodeEffect.create(Color.TRANSPARENT, 0F).color(this::computeBorderColor);
+		final BorderNodeEffect created = BorderNodeEffect.create(Color.TRANSPARENT, 0F).color(RectNode::computeBorderColor);
 		super.effect(created);
 		return created;
 	}

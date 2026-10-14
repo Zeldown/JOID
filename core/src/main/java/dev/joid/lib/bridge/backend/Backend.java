@@ -45,7 +45,7 @@ public abstract class Backend<T extends Backend<T>> {
 
 	public final @NonNull T register() {
 		if (this.registered) {
-			throw new IllegalStateException(this.getClass().getSimpleName() + " is already registered");
+			throw new IllegalStateException(this.getClass().getSimpleName() + " is already registered, call register() only once");
 		}
 
 		JOID.checkVersion(this.version);

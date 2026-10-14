@@ -30,7 +30,7 @@ public final class ShaderCompiler {
 		final long result = Shaderc.shaderc_compile_into_spv(ShaderCompiler.compiler, source, kind, name, "main", 0L);
 		try {
 			if (Shaderc.shaderc_result_get_compilation_status(result) != Shaderc.shaderc_compilation_status_success) {
-				throw new IllegalStateException("Vulkan " + name + " shader compilation failed: " + Shaderc.shaderc_result_get_error_message(result));
+				throw new IllegalStateException("The Vulkan " + name + " shader cannot be compiled, fix its source at the line shaderc reports: " + Shaderc.shaderc_result_get_error_message(result));
 			}
 
 			final ByteBuffer bytes = Shaderc.shaderc_result_get_bytes(result);

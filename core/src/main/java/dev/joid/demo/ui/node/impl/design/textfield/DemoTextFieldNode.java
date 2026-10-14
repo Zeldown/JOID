@@ -7,7 +7,7 @@ import lombok.NonNull;
 
 public class DemoTextFieldNode extends TextFieldNode {
 
-	private static final Color INK = new Color(153, 153, 153);
+	private static final Color INK = new Color(153, 153, 153).freeze();
 
 	protected DemoTextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

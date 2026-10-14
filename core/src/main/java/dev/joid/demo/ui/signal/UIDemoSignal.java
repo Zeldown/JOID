@@ -27,8 +27,8 @@ import dev.joid.lib.utils.align.Align;
 @UIData(background = true)
 public class UIDemoSignal extends UIDemo {
 
-	private static final Color INK         = new Color(153, 153, 153);
-	private static final Color PLACEHOLDER = new Color(221, 221, 221);
+	private static final Color INK         = new Color(153, 153, 153).freeze();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).freeze();
 
 	@Override
 	public void init() {
@@ -44,8 +44,8 @@ public class UIDemoSignal extends UIDemo {
 		final Signal<String> name = Signal.of("Ada");
 		final BooleanSignal shown = BooleanSignal.of(false);
 		final IntegerSignal heat = IntegerSignal.of(0);
-		final ListSignal<String> items = new ListSignal<>(Arrays.asList("First item", "Second item"));
-		final ListSignal<String> cards = new ListSignal<>();
+		final ListSignal<String> items = ListSignal.of(Arrays.asList("First item", "Second item"));
+		final ListSignal<String> cards = ListSignal.of();
 		final IntegerSignal sent = IntegerSignal.of(0);
 		final IntegerSignal saved = IntegerSignal.of(0);
 

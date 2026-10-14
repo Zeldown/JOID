@@ -11,22 +11,13 @@ public class LongSignalTest {
 
 	@Test
 	public void startsAtZero() {
-		final LongSignal signal = new LongSignal();
-		Assert.assertFalse(signal.isPresent());
+		final LongSignal signal = LongSignal.of();
 		Assert.assertEquals(0L, signal.get().longValue());
-	}
-
-	@Test
-	public void fallsBackOnTheGivenDefault() {
-		final LongSignal signal = new LongSignal(5L);
-		Assert.assertFalse(signal.isPresent());
-		Assert.assertEquals(5L, signal.get().longValue());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final LongSignal signal = LongSignal.of(5L);
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(5L, signal.get().longValue());
 	}
 
@@ -37,9 +28,8 @@ public class LongSignalTest {
 
 	@Test
 	public void computesFromItsDefault() {
-		final LongSignal signal = new LongSignal(5L);
+		final LongSignal signal = LongSignal.of(5L);
 		signal.increment();
-		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals(6L, signal.get().longValue());
 	}
 
@@ -98,7 +88,7 @@ public class LongSignalTest {
 	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Long> received = new ArrayList<>();
-		final LongSignal signal = new LongSignal();
+		final LongSignal signal = LongSignal.of();
 		signal.subscribe(received::add);
 		signal.increment();
 		signal.add(2L);
@@ -117,7 +107,7 @@ public class LongSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("LongSignal{5}", LongSignal.of(5L).toString());
-		Assert.assertEquals("LongSignal{0}", new LongSignal().toString());
+		Assert.assertEquals("LongSignal{0}", LongSignal.of().toString());
 	}
 
 	@Test

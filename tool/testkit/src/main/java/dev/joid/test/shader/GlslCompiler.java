@@ -35,7 +35,7 @@ public final class GlslCompiler {
 			final long result = Shaderc.shaderc_compile_into_spv(compiler, source, kind, stage.name().toLowerCase(Locale.ROOT), "main", options);
 			try {
 				if (Shaderc.shaderc_result_get_compilation_status(result) != Shaderc.shaderc_compilation_status_success) {
-					throw new AssertionError(Shaderc.shaderc_result_get_error_message(result) + "\n" + source);
+					throw new IllegalStateException("The " + stage.name().toLowerCase(Locale.ROOT) + " shader cannot be compiled, fix its source at the line shaderc reports: " + Shaderc.shaderc_result_get_error_message(result) + "\n" + source);
 				}
 
 				final ByteBuffer bytes = Shaderc.shaderc_result_get_bytes(result);

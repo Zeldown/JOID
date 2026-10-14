@@ -114,17 +114,17 @@ public final class UIStoreHook {
 		}
 
 		if (constructors.isEmpty()) {
-			throw new IllegalArgumentException("No public constructor of " + clazz.getName() + " accepts the arguments " + Arrays.toString(args));
+			throw new IllegalArgumentException("No public constructor of " + clazz.getName() + " accepts the arguments " + Arrays.toString(args) + ", add such a constructor or pass the arguments of an existing one");
 		}
 
 		if (constructors.size() > 1) {
-			throw new IllegalArgumentException("Several public constructors of " + clazz.getName() + " accept the arguments " + Arrays.toString(args) + ": " + constructors);
+			throw new IllegalArgumentException("Several public constructors of " + clazz.getName() + " accept the arguments " + Arrays.toString(args) + " (" + constructors + "), cast the null arguments to their type to pick one");
 		}
 
 		try {
 			return (T) constructors.get(0).newInstance(args);
 		} catch (final InvocationTargetException e) {
-			throw new IllegalStateException("The constructor of the store " + clazz.getName() + " failed: " + e.getCause(), e.getCause());
+			throw new IllegalStateException("The constructor of the store " + clazz.getName() + " failed (" + e.getCause() + "), fix the constructor from this error", e.getCause());
 		} catch (final ReflectiveOperationException e) {
 			throw new IllegalArgumentException("The store " + clazz.getName() + " cannot be created (" + e + "), make it a public class that is not abstract", e);
 		}

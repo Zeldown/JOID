@@ -55,7 +55,7 @@ public class VideoAudioPlayerTest {
 		player.update();
 		BridgeHandler.AUDIO.register(this.audio);
 		final String again = VideoAudioPlayerTest.capture(player::play);
-		Assert.assertEquals("[JOID] The video mute.mp4 plays without sound: java.lang.IllegalStateException: No audio bridge registered, call BridgeHandler.AUDIO.register before using JOID" + System.lineSeparator(), error);
+		Assert.assertEquals("[JOID] The video mute.mp4 plays without sound (java.lang.IllegalStateException: No audio bridge registered, call BridgeHandler.AUDIO.register before using JOID), register an audio bridge and check the audio device" + System.lineSeparator(), error);
 		Assert.assertEquals("", again);
 		Assert.assertEquals(16, player.getQueueSize());
 		Assert.assertTrue(this.audio.created.isEmpty());
@@ -67,7 +67,7 @@ public class VideoAudioPlayerTest {
 		final String first = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer("twice.mp4", 8000, 1).play());
 		final String second = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer("twice.mp4", 8000, 1).play());
 		BridgeHandler.AUDIO.register(this.audio);
-		Assert.assertTrue(first, first.startsWith("[JOID] The video twice.mp4 plays without sound: "));
+		Assert.assertTrue(first, first.startsWith("[JOID] The video twice.mp4 plays without sound ("));
 		Assert.assertEquals("", second);
 	}
 

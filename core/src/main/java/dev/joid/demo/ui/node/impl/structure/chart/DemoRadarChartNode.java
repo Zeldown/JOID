@@ -15,7 +15,7 @@ import lombok.NonNull;
 
 public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 
-	private static final Color INK = new Color(153, 153, 153);
+	private static final Color INK = new Color(153, 153, 153).freeze();
 
 	protected DemoRadarChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

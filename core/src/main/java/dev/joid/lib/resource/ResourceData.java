@@ -39,8 +39,8 @@ public final class ResourceData {
 	@Getter private String           uniqueId;
 	@Getter private IResourceDecoder decoder;
 
-	@Getter private int[][]    data;
-	@Getter private ITexture[] textures;
+	private int[][]    data;
+	private ITexture[] textures;
 
 	private ITexture missingTexture;
 
@@ -61,7 +61,6 @@ public final class ResourceData {
 	private int width;
 	private int height;
 
-	@Getter
 	private int[] region;
 
 	public ResourceData(final @NonNull String uniqueId, final IResourceDecoder decoder) {
@@ -248,7 +247,7 @@ public final class ResourceData {
 		} else if (this.textures != null && this.textures.length > 0) {
 			this.generated = true;
 			if (this.textures[0] instanceof BorrowedTexture && !((BorrowedTexture<?>) this.textures[0]).isValid()) {
-				this.fail(new IllegalArgumentException("The borrowed texture " + ((BorrowedTexture<?>) this.textures[0]).getHandle() + " is not a texture of the host"));
+				this.fail(new IllegalArgumentException("The borrowed texture " + ((BorrowedTexture<?>) this.textures[0]).getHandle() + " is not a texture of the host, borrow a texture that the host created and has not deleted"));
 				return;
 			}
 
@@ -341,6 +340,18 @@ public final class ResourceData {
 			return this.region[3];
 		}
 		return this.isBorrowed() ? this.textures[0].getHeight() : this.height;
+	}
+
+	public final int[] getRegion() {
+		return this.region == null ? null : this.region.clone();
+	}
+
+	public final int[][] getData() {
+		return this.data == null ? null : this.data.clone();
+	}
+
+	public final ITexture[] getTextures() {
+		return this.textures == null ? null : this.textures.clone();
 	}
 
 	protected final @NonNull ITexture getMissingTexture() {
