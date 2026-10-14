@@ -10,8 +10,11 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.utils.thread.ThreadUtils;
 
 public class ListSignalTest {
 
@@ -189,4 +192,28 @@ public class ListSignalTest {
 		Assert.assertEquals(Collections.singletonList("a"), signal.get());
 		Assert.assertEquals(Arrays.asList("a", "x"), list);
 	}
+
+	@Test
+	public void appliesADeferredMutationOnTheCurrentList() throws InterruptedException {
+		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final ListSignal<String> signal = new ListSignal<>(Collections.singletonList("a"));
+		final List<Boolean> results = new ArrayList<>();
+		BridgeHandler.THREAD.register(thread);
+		try {
+			final Thread worker = ThreadUtils.daemonThread(() -> {
+				results.add(signal.add("b"));
+				results.add(signal.remove("a"));
+			}, "worker");
+			worker.start();
+			worker.join();
+			Assert.assertEquals(Collections.singletonList("a"), signal.peek());
+			signal.add("c");
+			thread.runTasks();
+			Assert.assertEquals(Arrays.asList("c", "b"), signal.peek());
+			Assert.assertEquals(Arrays.asList(true, true), results);
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
 }

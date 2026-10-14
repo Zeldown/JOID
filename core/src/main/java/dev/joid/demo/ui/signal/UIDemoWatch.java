@@ -23,7 +23,6 @@ import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.thread.ThreadUtils;
 
 @UIData(background = true)
 public class UIDemoWatch extends UIDemo {
@@ -72,7 +71,7 @@ public class UIDemoWatch extends UIDemo {
 			return true;
 		});
 		sent.subscribe(listener);
-		future.thenAccept(value -> ThreadUtils.runOnRenderThread(() -> result.set(value)));
+		future.thenAccept(result::set);
 
 		RectNode
 		.create(100, 40, 400, 260)

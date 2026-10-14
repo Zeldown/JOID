@@ -12,8 +12,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.utils.thread.ThreadUtils;
 
 public class SignalTest {
 
@@ -26,7 +29,7 @@ public class SignalTest {
 		try {
 			signal.set("ui");
 			Assert.assertTrue(received.isEmpty());
-			thread.run();
+			thread.renderThread(true).run();
 			Assert.assertEquals(Collections.singletonList("ui"), received);
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
@@ -267,6 +270,97 @@ public class SignalTest {
 		final List<String> received = new ArrayList<>();
 		new Signal<String>().set("ui").subscribe(received::add).set(null);
 		Assert.assertEquals(Collections.singletonList(null), received);
+	}
+
+	@Test
+	public void appliesAWriteFromAnotherThreadAtTheNextFrame() throws InterruptedException {
+		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final Signal<String> signal = new Signal<>("joid");
+		BridgeHandler.THREAD.register(thread);
+		try {
+			SignalTest.fromWorker(() -> signal.set("worker"));
+			Assert.assertEquals("joid", signal.peek());
+			thread.runTasks();
+			Assert.assertEquals("worker", signal.peek());
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
+	public void appliesTheWritesOfAThreadInOrder() throws InterruptedException {
+		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<>("joid").subscribe(received::add);
+		BridgeHandler.THREAD.register(thread);
+		try {
+			SignalTest.fromWorker(() -> signal.set("a").set("b").reset().set("c"));
+			Assert.assertTrue(received.isEmpty());
+			thread.runTasks();
+			Assert.assertEquals(Arrays.asList("a", "b", "joid", "c"), received);
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
+	public void carriesItsSilenceWithADeferredWrite() throws InterruptedException {
+		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final List<String> received = new ArrayList<>();
+		final Signal<String> signal = new Signal<>("joid").subscribe(received::add);
+		BridgeHandler.THREAD.register(thread);
+		try {
+			SignalTest.fromWorker(() -> signal.silent().set("quiet"));
+			signal.set("loud");
+			thread.runTasks();
+			Assert.assertEquals("quiet", signal.peek());
+			signal.set("next");
+			Assert.assertEquals(Arrays.asList("loud", "next"), received);
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
+	public void appliesADeferredIncrementOnTheCurrentValue() throws InterruptedException {
+		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final IntegerSignal signal = new IntegerSignal(0);
+		BridgeHandler.THREAD.register(thread);
+		try {
+			SignalTest.fromWorker(() -> signal.increment().increment());
+			signal.set(10);
+			thread.runTasks();
+			Assert.assertEquals(12, signal.peek().intValue());
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
+	public void groupsTheDeferredWritesOfABatch() throws InterruptedException {
+		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final IntegerSignal left = new IntegerSignal(0);
+		final IntegerSignal right = new IntegerSignal(0);
+		final List<Integer> received = new ArrayList<>();
+		Signal.from(() -> left.get() + right.get()).subscribe(received::add);
+		BridgeHandler.THREAD.register(thread);
+		try {
+			SignalTest.fromWorker(() -> Signal.batch(() -> {
+				left.set(1);
+				right.set(2);
+			}));
+			Assert.assertTrue(received.isEmpty());
+			thread.runTasks();
+			Assert.assertEquals(Collections.singletonList(3), received);
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	private static void fromWorker(final Runnable task) throws InterruptedException {
+		final Thread worker = ThreadUtils.daemonThread(task, "worker");
+		worker.start();
+		worker.join();
 	}
 
 }

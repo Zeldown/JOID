@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import dev.joid.lib.signal.Signal;
 import lombok.NonNull;
@@ -19,30 +21,24 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public @NonNull ListSignal<E> clear() {
-		final List<E> list = new ArrayList<>();
-		this.commit(list, !this.peek().isEmpty());
+		this.mutate(list -> {
+			final boolean changed = !list.isEmpty();
+			list.clear();
+			return changed;
+		}, Boolean::booleanValue);
 		return this;
 	}
 
 	public boolean add(final E e) {
-		final List<E> list = this.copy();
-		final boolean success = list.add(e);
-		this.commit(list, success);
-		return success;
+		return this.mutate(list -> list.add(e), Boolean::booleanValue);
 	}
 
 	public boolean remove(final E e) {
-		final List<E> list = this.copy();
-		final boolean success = list.remove(e);
-		this.commit(list, success);
-		return success;
+		return this.mutate(list -> list.remove(e), Boolean::booleanValue);
 	}
 
 	public E remove(final int index) {
-		final List<E> list = this.copy();
-		final E result = list.remove(index);
-		this.commit(list, true);
-		return result;
+		return this.mutate(list -> list.remove(index), result -> true);
 	}
 
 	public boolean contains(final E e) {
@@ -62,18 +58,25 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public E set(final int index, final E element) {
-		final List<E> list = this.copy();
-		final E result = list.set(index, element);
-		this.commit(list, !Objects.equals(result, element));
-		return result;
+		return this.mutate(list -> list.set(index, element), result -> !Objects.equals(result, element));
 	}
 
 	public int size() {
 		return this.get().size();
 	}
 
-	private List<E> copy() {
-		return new ArrayList<>(this.peek());
+	private <R> R mutate(final Function<List<E>, R> mutation, final Predicate<R> changed) {
+		final List<E> base = this.peek();
+		final List<E> list = new ArrayList<>(base);
+		final R result = mutation.apply(list);
+		this.write(() -> {
+			if (this.peek() == base) {
+				this.commit(list, changed.test(result));
+			} else {
+				this.mutate(mutation, changed);
+			}
+		});
+		return result;
 	}
 
 	private void commit(final List<E> list, final boolean changed) {

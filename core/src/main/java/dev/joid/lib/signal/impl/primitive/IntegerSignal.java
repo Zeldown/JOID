@@ -14,32 +14,27 @@ public class IntegerSignal extends Signal<Integer> {
 	}
 
 	public @NonNull IntegerSignal decrement() {
-		final int updatedValue = this.peek() - 1;
-		this.set(updatedValue);
+		this.transform(current -> current - 1);
 		return this;
 	}
 
 	public @NonNull IntegerSignal increment() {
-		final int updatedValue = this.peek() + 1;
-		this.set(updatedValue);
+		this.transform(current -> current + 1);
 		return this;
 	}
 
 	public @NonNull IntegerSignal add(final int value) {
-		final int updatedValue = this.peek() + value;
-		this.set(updatedValue);
+		this.transform(current -> current + value);
 		return this;
 	}
 
 	public @NonNull IntegerSignal subtract(final int value) {
-		final int updatedValue = this.peek() - value;
-		this.set(updatedValue);
+		this.transform(current -> current - value);
 		return this;
 	}
 
 	public @NonNull IntegerSignal multiply(final int value) {
-		final int updatedValue = this.peek() * value;
-		this.set(updatedValue);
+		this.transform(current -> current * value);
 		return this;
 	}
 
@@ -48,14 +43,12 @@ public class IntegerSignal extends Signal<Integer> {
 			throw new IllegalArgumentException("The IntegerSignal of value " + this.peek() + " cannot be divided by 0, check the divisor before calling divide(...)");
 		}
 
-		final int updatedValue = this.peek() / value;
-		this.set(updatedValue);
+		this.transform(current -> current / value);
 		return this;
 	}
 
 	public @NonNull IntegerSignal power(final int exponent) {
-		final int updatedValue = (int) Math.pow(this.peek(), exponent);
-		this.set(updatedValue);
+		this.transform(current -> (int) Math.pow(current, exponent));
 		return this;
 	}
 

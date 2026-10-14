@@ -14,38 +14,32 @@ public class FloatSignal extends Signal<Float> {
 	}
 
 	public @NonNull FloatSignal add(final float value) {
-		final float updatedValue = this.peek() + value;
-		this.set(updatedValue);
+		this.transform(current -> current + value);
 		return this;
 	}
 
 	public @NonNull FloatSignal subtract(final float value) {
-		final float updatedValue = this.peek() - value;
-		this.set(updatedValue);
+		this.transform(current -> current - value);
 		return this;
 	}
 
 	public @NonNull FloatSignal multiply(final float value) {
-		final float updatedValue = this.peek() * value;
-		this.set(updatedValue);
+		this.transform(current -> current * value);
 		return this;
 	}
 
 	public @NonNull FloatSignal divide(final float value) {
-		final float updatedValue = this.peek() / value;
-		this.set(updatedValue);
+		this.transform(current -> current / value);
 		return this;
 	}
 
 	public @NonNull FloatSignal decrement() {
-		final float updatedValue = this.peek() - 1F;
-		this.set(updatedValue);
+		this.transform(current -> current - 1F);
 		return this;
 	}
 
 	public @NonNull FloatSignal increment() {
-		final float updatedValue = this.peek() + 1F;
-		this.set(updatedValue);
+		this.transform(current -> current + 1F);
 		return this;
 	}
 

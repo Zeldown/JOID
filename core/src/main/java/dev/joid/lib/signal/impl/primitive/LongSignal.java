@@ -14,32 +14,27 @@ public class LongSignal extends Signal<Long> {
 	}
 
 	public @NonNull LongSignal decrement() {
-		final long updatedValue = this.peek() - 1;
-		this.set(updatedValue);
+		this.transform(current -> current - 1);
 		return this;
 	}
 
 	public @NonNull LongSignal increment() {
-		final long updatedValue = this.peek() + 1;
-		this.set(updatedValue);
+		this.transform(current -> current + 1);
 		return this;
 	}
 
 	public @NonNull LongSignal add(final long value) {
-		final long updatedValue = this.peek() + value;
-		this.set(updatedValue);
+		this.transform(current -> current + value);
 		return this;
 	}
 
 	public @NonNull LongSignal subtract(final long value) {
-		final long updatedValue = this.peek() - value;
-		this.set(updatedValue);
+		this.transform(current -> current - value);
 		return this;
 	}
 
 	public @NonNull LongSignal multiply(final long value) {
-		final long updatedValue = this.peek() * value;
-		this.set(updatedValue);
+		this.transform(current -> current * value);
 		return this;
 	}
 
@@ -48,27 +43,29 @@ public class LongSignal extends Signal<Long> {
 			throw new IllegalArgumentException("The LongSignal of value " + this.peek() + " cannot be divided by 0, check the divisor before calling divide(...)");
 		}
 
-		final long updatedValue = this.peek() / value;
-		this.set(updatedValue);
+		this.transform(current -> current / value);
 		return this;
 	}
 
 	public @NonNull LongSignal power(final int exponent) {
+		this.transform(current -> LongSignal.raise(current, exponent));
+		return this;
+	}
+
+	private static long raise(final long value, final int exponent) {
 		if (exponent < 0) {
-			this.set((long) Math.pow(this.peek(), exponent));
-			return this;
+			return (long) Math.pow(value, exponent);
 		}
 
 		long result = 1L;
-		long base = this.peek();
+		long base = value;
 		for (int remaining = exponent; remaining > 0; remaining >>= 1) {
 			if ((remaining & 1) == 1) {
 				result *= base;
 			}
 			base *= base;
 		}
-		this.set(result);
-		return this;
+		return result;
 	}
 
 	@Override

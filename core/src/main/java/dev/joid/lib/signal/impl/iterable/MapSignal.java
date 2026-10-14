@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import dev.joid.lib.signal.Signal;
 import lombok.NonNull;
@@ -22,8 +24,10 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public @NonNull MapSignal<K, V> clear() {
-		final Map<K, V> map = new LinkedHashMap<>();
-		this.commit(map, !this.peek().isEmpty());
+		this.mutate(map -> {
+			map.clear();
+			return null;
+		}, map -> !map.isEmpty());
 		return this;
 	}
 
@@ -48,19 +52,11 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public V put(final K key, final V value) {
-		final Map<K, V> map = this.copy();
-		final boolean changed = !map.containsKey(key) || !Objects.equals(map.get(key), value);
-		final V result = map.put(key, value);
-		this.commit(map, changed);
-		return result;
+		return this.mutate(map -> map.put(key, value), map -> !map.containsKey(key) || !Objects.equals(map.get(key), value));
 	}
 
 	public V remove(final K key) {
-		final Map<K, V> map = this.copy();
-		final boolean changed = map.containsKey(key);
-		final V result = map.remove(key);
-		this.commit(map, changed);
-		return result;
+		return this.mutate(map -> map.remove(key), map -> map.containsKey(key));
 	}
 
 	public int size() {
@@ -71,8 +67,19 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return Collections.unmodifiableCollection(this.get().values());
 	}
 
-	private Map<K, V> copy() {
-		return new LinkedHashMap<>(this.peek());
+	private <R> R mutate(final Function<Map<K, V>, R> mutation, final Predicate<Map<K, V>> changed) {
+		final Map<K, V> base = this.peek();
+		final Map<K, V> map = new LinkedHashMap<>(base);
+		final boolean change = changed.test(base);
+		final R result = mutation.apply(map);
+		this.write(() -> {
+			if (this.peek() == base) {
+				this.commit(map, change);
+			} else {
+				this.mutate(mutation, changed);
+			}
+		});
+		return result;
 	}
 
 	private void commit(final Map<K, V> map, final boolean changed) {

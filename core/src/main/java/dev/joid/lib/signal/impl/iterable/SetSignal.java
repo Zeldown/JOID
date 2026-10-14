@@ -3,6 +3,8 @@ package dev.joid.lib.signal.impl.iterable;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import dev.joid.lib.signal.Signal;
 import lombok.NonNull;
@@ -18,23 +20,20 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	public @NonNull SetSignal<E> clear() {
-		final Set<E> set = new LinkedHashSet<>();
-		this.commit(set, !this.peek().isEmpty());
+		this.mutate(set -> {
+			final boolean changed = !set.isEmpty();
+			set.clear();
+			return changed;
+		}, Boolean::booleanValue);
 		return this;
 	}
 
 	public boolean add(final E e) {
-		final Set<E> set = this.copy();
-		final boolean success = set.add(e);
-		this.commit(set, success);
-		return success;
+		return this.mutate(set -> set.add(e), Boolean::booleanValue);
 	}
 
 	public boolean remove(final E e) {
-		final Set<E> set = this.copy();
-		final boolean success = set.remove(e);
-		this.commit(set, success);
-		return success;
+		return this.mutate(set -> set.remove(e), Boolean::booleanValue);
 	}
 
 	public boolean contains(final E e) {
@@ -49,8 +48,18 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return this.get().size();
 	}
 
-	private Set<E> copy() {
-		return new LinkedHashSet<>(this.peek());
+	private <R> R mutate(final Function<Set<E>, R> mutation, final Predicate<R> changed) {
+		final Set<E> base = this.peek();
+		final Set<E> set = new LinkedHashSet<>(base);
+		final R result = mutation.apply(set);
+		this.write(() -> {
+			if (this.peek() == base) {
+				this.commit(set, changed.test(result));
+			} else {
+				this.mutate(mutation, changed);
+			}
+		});
+		return result;
 	}
 
 	private void commit(final Set<E> set, final boolean changed) {

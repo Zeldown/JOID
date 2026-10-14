@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
+import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,7 @@ public final class SignalContext {
 	private final Signal<?>[]      reads        = new Signal<?>[64];
 	private final Set<Signal<?>>   pendingSet   = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final Deque<Signal<?>> pendingQueue = new ArrayDeque<>();
+	private final List<Runnable>   deferredList = new ArrayList<>();
 
 	private int               depth;
 	private int               readIndex;
@@ -53,7 +55,20 @@ public final class SignalContext {
 
 	public void close() {
 		this.depth--;
+		if (this.depth == 0 && !this.deferredList.isEmpty()) {
+			final List<Runnable> taskList = new ArrayList<>(this.deferredList);
+			this.deferredList.clear();
+			ThreadUtils.runOnRenderThread(() -> Signal.batch(() -> taskList.forEach(Runnable::run)));
+		}
 		this.flush();
+	}
+
+	public void defer(final @NonNull Runnable task) {
+		if (this.depth > 0) {
+			this.deferredList.add(task);
+		} else {
+			ThreadUtils.runOnRenderThread(task);
+		}
 	}
 
 	public void read(final Signal<?> signal) {

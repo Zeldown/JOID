@@ -6,7 +6,9 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.signal.replay.SignalReplay;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
@@ -65,14 +67,7 @@ public class Signal<T> implements ISignal<T> {
 
 	@Override
 	public @NonNull Signal<T> set(final T value) {
-		final T oldValue = this.value;
-		this.value = value;
-		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
-			this.nextSilent = false;
-			return this;
-		}
-
-		return this.publish();
+		return this.write(() -> this.store(value));
 	}
 
 	@Override
@@ -89,21 +84,7 @@ public class Signal<T> implements ISignal<T> {
 
 	@Override
 	public @NonNull Signal<T> publish() {
-		final SignalContext context = SignalContext.current();
-		this.version++;
-		SignalContext.nextEpoch();
-		context.open();
-		try {
-			if (this.nextSilent) {
-				this.nextSilent = false;
-			} else if (!this.eventSet.isEmpty()) {
-				context.schedule(this);
-			}
-			this.invalidate(context);
-		} finally {
-			context.close();
-		}
-		return this;
+		return this.write(this::propagate);
 	}
 
 	@Override
@@ -172,6 +153,30 @@ public class Signal<T> implements ISignal<T> {
 		this.version++;
 	}
 
+	protected final @NonNull Signal<T> transform(final @NonNull UnaryOperator<T> operator) {
+		return this.write(() -> this.store(operator.apply(this.peek())));
+	}
+
+	protected final @NonNull Signal<T> write(final @NonNull Runnable task) {
+		if (BridgeHandler.THREAD.get().isRenderThread()) {
+			task.run();
+			return this;
+		}
+
+		final boolean silent = this.nextSilent;
+		this.nextSilent = false;
+		SignalContext.current().defer(() -> {
+			final boolean previous = this.nextSilent;
+			this.nextSilent = silent;
+			try {
+				task.run();
+			} finally {
+				this.nextSilent = previous;
+			}
+		});
+		return this;
+	}
+
 	protected final void assign(final T value) {
 		final boolean silent = this.nextSilent;
 		this.nextSilent = true;
@@ -190,6 +195,34 @@ public class Signal<T> implements ISignal<T> {
 	protected final void emit(final T value) {
 		if (!this.eventSet.isEmpty()) {
 			ThreadUtils.runOnRenderThread(() -> this.notifySubscribers(value));
+		}
+	}
+
+	private void store(final T value) {
+		final T oldValue = this.value;
+		this.value = value;
+		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
+			this.nextSilent = false;
+			return;
+		}
+
+		this.propagate();
+	}
+
+	private void propagate() {
+		final SignalContext context = SignalContext.current();
+		this.version++;
+		SignalContext.nextEpoch();
+		context.open();
+		try {
+			if (this.nextSilent) {
+				this.nextSilent = false;
+			} else if (!this.eventSet.isEmpty()) {
+				context.schedule(this);
+			}
+			this.invalidate(context);
+		} finally {
+			context.close();
 		}
 	}
 

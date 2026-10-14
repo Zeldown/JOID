@@ -14,62 +14,52 @@ public class StringSignal extends Signal<String> {
 	}
 
 	public @NonNull StringSignal append(final String value) {
-		final String updatedValue = this.peek() + value;
-		this.set(updatedValue);
+		this.transform(current -> current + value);
 		return this;
 	}
 
 	public @NonNull StringSignal concat(final String str) {
-		final String updatedValue = this.peek().concat(str);
-		this.set(updatedValue);
+		this.transform(current -> current.concat(str));
 		return this;
 	}
 
 	public @NonNull StringSignal replace(final char oldChar, final char newChar) {
-		final String updatedValue = this.peek().replace(oldChar, newChar);
-		this.set(updatedValue);
+		this.transform(current -> current.replace(oldChar, newChar));
 		return this;
 	}
 
 	public @NonNull StringSignal replace(final CharSequence target, final CharSequence replacement) {
-		final String updatedValue = this.peek().replace(target, replacement);
-		this.set(updatedValue);
+		this.transform(current -> current.replace(target, replacement));
 		return this;
 	}
 
 	public @NonNull StringSignal toLowerCase() {
-		final String updatedValue = this.peek().toLowerCase();
-		this.set(updatedValue);
+		this.transform(String::toLowerCase);
 		return this;
 	}
 
 	public @NonNull StringSignal toUpperCase() {
-		final String updatedValue = this.peek().toUpperCase();
-		this.set(updatedValue);
+		this.transform(String::toUpperCase);
 		return this;
 	}
 
 	public @NonNull StringSignal trim() {
-		final String updatedValue = this.peek().trim();
-		this.set(updatedValue);
+		this.transform(String::trim);
 		return this;
 	}
 
 	public @NonNull StringSignal substring(final int beginIndex) {
-		final String updatedValue = this.peek().substring(beginIndex);
-		this.set(updatedValue);
+		this.transform(current -> current.substring(beginIndex));
 		return this;
 	}
 
 	public @NonNull StringSignal substring(final int beginIndex, final int endIndex) {
-		final String updatedValue = this.peek().substring(beginIndex, endIndex);
-		this.set(updatedValue);
+		this.transform(current -> current.substring(beginIndex, endIndex));
 		return this;
 	}
 
 	public @NonNull StringSignal intern() {
-		final String updatedValue = this.peek().intern();
-		this.set(updatedValue);
+		this.transform(String::intern);
 		return this;
 	}
 
