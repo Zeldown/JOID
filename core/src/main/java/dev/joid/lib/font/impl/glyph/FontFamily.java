@@ -30,7 +30,7 @@ public final class FontFamily<F extends IFontFace> {
 		for (final F face : faces) {
 			for (final F other : sorted) {
 				if (other.getWeight() == face.getWeight() && other.isItalic() == face.isItalic()) {
-					throw new IllegalArgumentException("Two faces share the weight " + face.getWeight().getValue() + (face.isItalic() ? " italic" : ""));
+					throw new IllegalArgumentException("Two faces share the weight " + face.getWeight().getValue() + (face.isItalic() ? " italic" : "") + ", keep one face per weight and style");
 				}
 			}
 			sorted.add(face);

@@ -104,12 +104,12 @@ public class ResourceAnimationReaderTest {
 
 	@Test
 	public void refusesAPngWithoutHeader() throws IOException {
-		ResourceAnimationReaderTest.assertRefused(new ApngResourceAnimationReader(), ResourceAnimationReaderTest.png(ResourceAnimationReaderTest.chunk("IEND", new byte[0])), "Missing IHDR chunk");
+		ResourceAnimationReaderTest.assertRefused(new ApngResourceAnimationReader(), ResourceAnimationReaderTest.png(ResourceAnimationReaderTest.chunk("IEND", new byte[0])), "The PNG has no IHDR chunk before its image data, the file is damaged: export it again");
 	}
 
 	@Test
 	public void refusesAStillPng() throws IOException {
-		ResourceAnimationReaderTest.assertRefused(new ApngResourceAnimationReader(), ResourceAnimationReaderTest.bytes("still.png"), "Not an animated PNG");
+		ResourceAnimationReaderTest.assertRefused(new ApngResourceAnimationReader(), ResourceAnimationReaderTest.bytes("still.png"), "The PNG has no acTL chunk or no frame control, it is not an animated PNG: draw it as a still image or export it as an APNG");
 	}
 
 	@Test(expected = IOException.class)
@@ -120,17 +120,17 @@ public class ResourceAnimationReaderTest {
 
 	@Test
 	public void refusesBytesThatAreNotAWebp() throws IOException {
-		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), ResourceAnimationReaderTest.bytes("blink.gif"), "Not a WebP file");
+		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), ResourceAnimationReaderTest.bytes("blink.gif"), "The file does not start with a RIFF WEBP header, it is not a WebP image: check the file and its extension");
 	}
 
 	@Test
 	public void refusesAStillWebp() throws IOException {
-		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), ResourceAnimationReaderTest.bytes("still.webp"), "Not an animated WebP");
+		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), ResourceAnimationReaderTest.bytes("still.webp"), "The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation");
 	}
 
 	@Test
 	public void refusesWebpFramesWithoutCanvas() {
-		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), new byte[] {'R', 'I', 'F', 'F', 28, 0, 0, 0, 'W', 'E', 'B', 'P', 'A', 'N', 'M', 'F', 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0}, "Not an animated WebP");
+		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), new byte[] {'R', 'I', 'F', 'F', 28, 0, 0, 0, 'W', 'E', 'B', 'P', 'A', 'N', 'M', 'F', 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0}, "The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation");
 	}
 
 	@Test

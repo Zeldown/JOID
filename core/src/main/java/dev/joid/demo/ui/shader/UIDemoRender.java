@@ -286,7 +286,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE.toGradient(UIDemoRender.INK), 10F, Point.create(node.getX() + 10D, node.getY() + 180D), Point.create(node.getX() + 190D, node.getY() + 180D), Point.create(node.getX() + 100D, node.getY() - 100D))))
+			.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE.toGradient(UIDemoRender.INK), 10F, Point.create(node.getX() + 10D, node.getY() + 180D), Point.create(node.getX() + 100D, node.getY() - 100D), Point.create(node.getX() + 190D, node.getY() + 180D))))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Gradient curve", info, Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

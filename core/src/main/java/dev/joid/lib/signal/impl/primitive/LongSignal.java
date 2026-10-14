@@ -51,7 +51,7 @@ public class LongSignal extends Signal<Long> {
 
 	public @NonNull LongSignal divide(final long value) {
 		if (value == 0) {
-			throw new ArithmeticException("Division by zero");
+			throw new IllegalArgumentException("The LongSignal of value " + this.peek() + " cannot be divided by 0, check the divisor before calling divide(...)");
 		}
 
 		final long updatedValue = this.peek() / value;

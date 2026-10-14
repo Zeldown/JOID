@@ -1,6 +1,7 @@
 package dev.joid.lib.signal.replay;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +86,10 @@ public final class SignalReplayParts {
 			holeMap.putIfAbsent(keyList.get(index), matcher.group(index + 1));
 		}
 		return holeMap;
+	}
+
+	public List<Object> getPartList() {
+		return Collections.unmodifiableList(this.partList);
 	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)

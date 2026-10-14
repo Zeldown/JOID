@@ -322,16 +322,6 @@ public class UIBridgeRegistryTest {
 		}
 
 		@Override
-		public void add(final @NonNull UI ui) {
-			super.getUiList().add(ui);
-		}
-
-		@Override
-		public void remove(final @NonNull UI ui) {
-			super.getUiList().remove(ui);
-		}
-
-		@Override
 		public boolean canHandle(final @NonNull UI ui) {
 			return this.type.isInstance(ui);
 		}

@@ -74,9 +74,16 @@ public class LongSignalTest {
 		Assert.assertEquals(-2L, signal.get().longValue());
 	}
 
-	@Test(expected = ArithmeticException.class)
+	@Test
 	public void refusesADivisionByZero() {
-		LongSignal.of(1L).divide(0L);
+		final LongSignal signal = LongSignal.of(7L);
+		try {
+			signal.divide(0L);
+			Assert.fail("A division by zero must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The LongSignal of value 7 cannot be divided by 0, check the divisor before calling divide(...)", expected.getMessage());
+		}
+		Assert.assertEquals(7L, signal.get().longValue());
 	}
 
 	@Test

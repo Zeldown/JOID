@@ -49,6 +49,11 @@ public class UIBridgeTest {
 
 	private final List<String> trace = new ArrayList<>();
 
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesAReadOnlyUiList() {
+		this.bridges.getUi().getUiList().clear();
+	}
+
 	@Test
 	public void listsTheUisItOpened() {
 		final TraceUI ui = new TraceUI("menu", this.trace);
@@ -56,7 +61,7 @@ public class UIBridgeTest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
-		Assert.assertEquals(Collections.singletonList(ui), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(ui), this.bridges.getUi().getUiList());
 	}
 
 	@Test
@@ -299,7 +304,7 @@ public class UIBridgeTest {
 		this.trace.clear();
 		this.bridges.getUi().keyPressed(Key.ESCAPE);
 		Assert.assertEquals(Arrays.asList("key hud ESCAPE", "close hud"), this.trace);
-		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList());
 	}
 
 	@Test
@@ -549,7 +554,7 @@ public class UIBridgeTest {
 		menu.getData().setZindex(10);
 		this.trace.clear();
 		this.bridges.draw();
-		Assert.assertEquals(Arrays.asList(hud, menu), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Arrays.asList(hud, menu), this.bridges.getUi().getUiList());
 		Assert.assertEquals(Arrays.asList("draw hud -2000.0", "draw menu -1990.0"), this.trace);
 	}
 
@@ -561,7 +566,7 @@ public class UIBridgeTest {
 		this.bridges.open(menu).open(hud).open(chat);
 		chat.getData().setZindex(-1);
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList(chat, menu, hud), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Arrays.asList(chat, menu, hud), this.bridges.getUi().getUiList());
 	}
 
 	@Test
@@ -772,7 +777,7 @@ public class UIBridgeTest {
 		this.trace.clear();
 		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.ESCAPE));
 		Assert.assertEquals(Arrays.asList("key overlay ESCAPE", "key menu ESCAPE", "close menu"), this.trace);
-		Assert.assertEquals(Collections.singletonList(overlay), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(overlay), this.bridges.getUi().getUiList());
 	}
 
 	@Test
@@ -829,7 +834,7 @@ public class UIBridgeTest {
 		this.bridges.draw(bridge);
 		bridge.mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("draw overlay -2000.0", "pressed overlay LEFT"), this.trace);
-		bridge.getUiList().remove(overlay);
+		bridge.remove(overlay);
 		overlay.dispose();
 	}
 
@@ -852,9 +857,9 @@ public class UIBridgeTest {
 		final TraceUI settings = new TraceUI("settings", this.trace);
 		this.bridges.getUi().open(menu);
 		this.bridges.getUi().open(overlay);
-		Assert.assertEquals(Arrays.asList(menu, overlay), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Arrays.asList(menu, overlay), this.bridges.getUi().getUiList());
 		this.bridges.getUi().open(settings);
-		Assert.assertEquals(Arrays.asList(overlay, settings), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Arrays.asList(overlay, settings), this.bridges.getUi().getUiList());
 		Assert.assertTrue(this.bridges.getUi().isScreenOpen());
 	}
 

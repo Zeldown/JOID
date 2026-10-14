@@ -74,9 +74,16 @@ public class IntegerSignalTest {
 		Assert.assertEquals(-2, signal.get().intValue());
 	}
 
-	@Test(expected = ArithmeticException.class)
+	@Test
 	public void refusesADivisionByZero() {
-		IntegerSignal.of(1).divide(0);
+		final IntegerSignal signal = IntegerSignal.of(7);
+		try {
+			signal.divide(0);
+			Assert.fail("A division by zero must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The IntegerSignal of value 7 cannot be divided by 0, check the divisor before calling divide(...)", expected.getMessage());
+		}
+		Assert.assertEquals(7, signal.get().intValue());
 	}
 
 	@Test

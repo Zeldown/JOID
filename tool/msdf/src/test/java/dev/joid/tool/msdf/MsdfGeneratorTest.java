@@ -83,6 +83,21 @@ public class MsdfGeneratorTest {
 		Files.delete(output.toPath());
 	}
 
+	@Test
+	public void keepsTheDashesInsideAnOptionName() throws Exception {
+		Assert.assertTrue(MsdfGeneratorTest.capture(() -> MsdfGenerator.main(new String[] {"--fo-nt", "missing.ttf"})).startsWith("Usage: msdf --font"));
+	}
+
+	@Test
+	public void refusesAnOptionWithoutValue() throws Exception {
+		try {
+			MsdfGenerator.main(new String[] {"--output", "out", "--font"});
+			Assert.fail("An option without value must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The option --font has no value, give it one after a space: --font <value>", expected.getMessage());
+		}
+	}
+
 	private static File target() throws Exception {
 		final File target = File.createTempFile("joid-msdf-", ".msdf");
 		target.deleteOnExit();

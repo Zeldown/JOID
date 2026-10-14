@@ -124,8 +124,12 @@ public final class MsdfGenerator {
 
 	private static Map<String, String> options(final String[] arguments) {
 		final Map<String, String> options = new HashMap<>();
-		for (int i = 0; i < arguments.length - 1; i += 2) {
-			options.put(arguments[i].replace("-", ""), arguments[i + 1]);
+		for (int i = 0; i < arguments.length; i += 2) {
+			if (i + 1 == arguments.length) {
+				throw new IllegalArgumentException("The option " + arguments[i] + " has no value, give it one after a space: " + arguments[i] + " <value>");
+			}
+
+			options.put(arguments[i].replaceFirst("^-+", ""), arguments[i + 1]);
 		}
 		return options;
 	}

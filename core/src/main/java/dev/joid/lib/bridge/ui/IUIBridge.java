@@ -1,8 +1,9 @@
 package dev.joid.lib.bridge.ui;
 
+import java.util.List;
+
 import dev.joid.lib.bridge.IBridge;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.utils.list.IIndexedList;
 import lombok.NonNull;
 
 public interface IUIBridge extends IBridge {
@@ -19,7 +20,7 @@ public interface IUIBridge extends IBridge {
 	public boolean canHandle(final @NonNull UI ui);
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz);
 
-	@NonNull public IIndexedList<@NonNull UI> getUiList();
+	@NonNull public List<@NonNull UI> getUiList();
 
 	public default double getInterfaceScale(final @NonNull UI ui) {
 		return 1D;

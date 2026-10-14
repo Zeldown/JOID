@@ -241,7 +241,7 @@ public class MsdfFontCacheTest {
 			MsdfFontCache.resolve("not a font".getBytes(StandardCharsets.UTF_8));
 			Assert.fail("The font must not generate");
 		} catch (final IOException expected) {
-			Assert.assertEquals("Unable to generate the msdf atlas of the font in " + this.directory.getAbsolutePath(), expected.getMessage());
+			Assert.assertEquals("The msdf atlas of the font cannot be generated in " + this.directory.getAbsolutePath() + ", check that the font is a valid TrueType or OpenType file and that the cache folder can be written", expected.getMessage());
 			Assert.assertNotNull(expected.getCause());
 		}
 		Assert.assertEquals(0, this.entries().length);
@@ -283,7 +283,7 @@ public class MsdfFontCacheTest {
 			Assert.fail("The font must not load");
 		} catch (final CompletionException expected) {
 			Assert.assertTrue(String.valueOf(expected.getCause()), expected.getCause() instanceof IOException);
-			Assert.assertEquals("Unable to generate the msdf atlas of the font in " + this.directory.getAbsolutePath(), expected.getCause().getMessage());
+			Assert.assertEquals("The msdf atlas of the font cannot be generated in " + this.directory.getAbsolutePath() + ", check that the font is a valid TrueType or OpenType file and that the cache folder can be written", expected.getCause().getMessage());
 		}
 		Assert.assertEquals(0, this.entries().length);
 	}

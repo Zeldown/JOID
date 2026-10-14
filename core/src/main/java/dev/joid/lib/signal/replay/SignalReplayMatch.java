@@ -1,6 +1,7 @@
 package dev.joid.lib.signal.replay;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +43,14 @@ public final class SignalReplayMatch {
 			}
 		}
 		return remainingList;
+	}
+
+	public Map<String, String> getHoleMap() {
+		return this.holeMap != null ? Collections.unmodifiableMap(this.holeMap) : null;
+	}
+
+	public Map<Object, Signal<?>> getPositionalMap() {
+		return Collections.unmodifiableMap(this.positionalMap);
 	}
 
 }

@@ -169,43 +169,43 @@ public final class DrawShape {
 		}
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point end, final @NonNull Point control) {
+	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point control, final @NonNull Point end) {
 		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(control.getX() - start.getX(), control.getY() - start.getY()) + Math.hypot(end.getX() - control.getX(), end.getY() - control.getY())));
 		final Point[] points = new Point[steps + 1];
 		points[0] = start;
 		for (int step = 1; step <= steps; step++) {
-			points[step] = Bezier.quadratic((float) step / steps, start, end, control);
+			points[step] = Bezier.quadratic((float) step / steps, start, control, end);
 		}
 		this.drawLine(color, points);
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point end, final @NonNull Point control) {
+	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point control, final @NonNull Point end) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
 			render.getState().lineWidth(stroke);
-			this.drawCurvedLine(color, start, end, control);
+			this.drawCurvedLine(color, start, control, end);
 		} finally {
 			render.popState();
 		}
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point end, final @NonNull Point endControl) {
+	public void drawCurvedLine(final @NonNull Color color, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point endControl, final @NonNull Point end) {
 		final int steps = Math.max(1, (int) Math.ceil(Math.hypot(startControl.getX() - start.getX(), startControl.getY() - start.getY()) + Math.hypot(endControl.getX() - startControl.getX(), endControl.getY() - startControl.getY()) + Math.hypot(end.getX() - endControl.getX(), end.getY() - endControl.getY())));
 		final Point[] points = new Point[steps + 1];
 		points[0] = start;
 		for (int step = 1; step <= steps; step++) {
-			points[step] = Bezier.cubic((float) step / steps, start, startControl, end, endControl);
+			points[step] = Bezier.cubic((float) step / steps, start, startControl, endControl, end);
 		}
 		this.drawLine(color, points);
 	}
 
-	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point end, final @NonNull Point endControl) {
+	public void drawCurvedLine(final @NonNull Color color, final float stroke, final @NonNull Point start, final @NonNull Point startControl, final @NonNull Point endControl, final @NonNull Point end) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.pushState();
 		try {
 			render.getState().lineWidth(stroke);
-			this.drawCurvedLine(color, start, startControl, end, endControl);
+			this.drawCurvedLine(color, start, startControl, endControl, end);
 		} finally {
 			render.popState();
 		}

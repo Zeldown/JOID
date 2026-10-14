@@ -33,7 +33,7 @@ public class StackUIBridgeTest {
 		final ScreenUI settings = new ScreenUI("settings", this.trace);
 		this.bridge.open(menu);
 		this.bridge.open(settings);
-		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList());
 		Assert.assertTrue(this.trace.contains("close menu"));
 		Assert.assertTrue(menu.isClosed());
 	}
@@ -44,7 +44,7 @@ public class StackUIBridgeTest {
 		menu.closeable = false;
 		this.bridge.open(menu);
 		this.bridge.open(new ScreenUI("settings", this.trace));
-		Assert.assertEquals(Collections.singletonList(menu), this.bridge.getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(menu), this.bridge.getUiList());
 	}
 
 	@Test
@@ -55,7 +55,7 @@ public class StackUIBridgeTest {
 		this.bridge.open(menu);
 		this.bridge.open(popup);
 		this.bridge.open(overlay);
-		Assert.assertEquals(Arrays.asList(menu, popup, overlay), this.bridge.getUiList().ordered());
+		Assert.assertEquals(Arrays.asList(menu, popup, overlay), this.bridge.getUiList());
 		Assert.assertFalse(this.trace.contains("close menu"));
 	}
 
@@ -102,7 +102,7 @@ public class StackUIBridgeTest {
 		this.bridge.open(new ScreenUI("menu", this.trace));
 		this.bridge.open(new PopupUI("popup", this.trace));
 		this.bridge.open(new ScreenUI("settings", this.trace));
-		this.bridge.close(this.bridge.getUiList().getLast());
+		this.bridge.close(this.bridge.getUiList().get(this.bridge.getUiList().size() - 1));
 		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
 	}
 
@@ -126,7 +126,7 @@ public class StackUIBridgeTest {
 		} finally {
 			BridgeHandler.UI.unregister(this.bridge);
 		}
-		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList());
 		Assert.assertEquals(Collections.singletonList("first screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
 	}
 
@@ -158,7 +158,7 @@ public class StackUIBridgeTest {
 		bridge.open(base);
 		bridge.open(menu);
 		bridge.open(settings);
-		Assert.assertEquals(Arrays.asList(base, settings), bridge.getUiList().ordered());
+		Assert.assertEquals(Arrays.asList(base, settings), bridge.getUiList());
 		Assert.assertFalse(this.trace.contains("close base"));
 		Assert.assertTrue(this.trace.contains("close menu"));
 	}

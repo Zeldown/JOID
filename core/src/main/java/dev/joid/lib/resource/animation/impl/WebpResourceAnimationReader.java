@@ -29,7 +29,7 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
 		final byte[] bytes = IOUtils.toByteArray(stream);
 		if (!WebpResourceAnimationReader.isWebp(bytes)) {
-			throw new IOException("Not a WebP file");
+			throw new IOException("The file does not start with a RIFF WEBP header, it is not a WebP image: check the file and its extension");
 		}
 
 		int width = 0;
@@ -59,7 +59,7 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 		}
 
 		if (frames.isEmpty() || width <= 0 || height <= 0) {
-			throw new IOException("Not an animated WebP");
+			throw new IOException("The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation");
 		}
 
 		final ImageReader reader = new WebPImageReaderSpi().createReaderInstance(null);

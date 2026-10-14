@@ -204,7 +204,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 10000L)
 	public void namesTheProblemOfTwoFacesOfTheSameWeight() {
-		Assert.assertEquals("Two faces share the weight 400", MsdfFontLoaderTest.cause(MsdfFontLoaderTest.atlas, MsdfFontLoaderTest.atlas).getMessage());
+		Assert.assertEquals("Two faces share the weight 400, keep one face per weight and style", MsdfFontLoaderTest.cause(MsdfFontLoaderTest.atlas, MsdfFontLoaderTest.atlas).getMessage());
 	}
 
 	@Test(timeout = 10000L)

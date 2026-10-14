@@ -49,6 +49,10 @@ public final class SignalReplaySite {
 		return this.sliceList.stream().allMatch(slice -> slice.getSignalCount() == 0) && this.sliceList.stream().anyMatch(SignalReplaySlice::isParameter);
 	}
 
+	public List<SignalReplaySlice> getSliceList() {
+		return Collections.unmodifiableList(this.sliceList);
+	}
+
 	private static void collect(final SignalReplayClass replayClass, final MethodNode method, final int lineNumber, final String setter, final List<SignalReplaySlice> sliceList) {
 		SignalReplayMethod replayMethod = null;
 		int line = -1;

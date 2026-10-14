@@ -32,7 +32,7 @@ public final class GlslExport {
 		for (final GlslDialect dialect : GlslDialect.values()) {
 			final File folder = new File(directory, dialect.name());
 			if (!folder.isDirectory() && !folder.mkdirs()) {
-				throw new IOException("Unable to create the folder " + folder.getAbsolutePath());
+				throw new IOException("The folder " + folder.getAbsolutePath() + " cannot be created, check that its parent folder can be written");
 			}
 
 			final GlslShaderTranslator translator = GlslShaderTranslator.create(dialect, dialect.hasUniformBlocks() ? UniformLayout.BLOCK : UniformLayout.LOOSE);

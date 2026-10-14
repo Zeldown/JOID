@@ -164,6 +164,45 @@ public class TaskTest {
 		Assert.assertNull(UI.getCurrent());
 	}
 
+	@Test
+	public void keepsItsUiAndItsListInStepFromBothSides() {
+		final TaskUI ui = this.open();
+		final RectNode node = RectNode.create(0, 0, 100, 100);
+		final Task task = Task.create(0L);
+		ui.addTask(task);
+		Assert.assertSame(ui, task.getUi());
+		Assert.assertEquals(Collections.singletonList(task), ui.getTaskList());
+		Assert.assertSame(node, node.addTask(task));
+		Assert.assertNull(task.getUi());
+		Assert.assertTrue(ui.getTaskList().isEmpty());
+		Assert.assertSame(node, task.getNode());
+		Assert.assertEquals(Collections.singletonList(task), node.getTaskList());
+		node.removeTask(task);
+		Assert.assertFalse(task.isAttached());
+		Assert.assertTrue(node.getTaskList().isEmpty());
+		task.attach(ui);
+		ui.removeTask(task);
+		Assert.assertFalse(task.isAttached());
+		Assert.assertTrue(ui.getTaskList().isEmpty());
+	}
+
+	@Test
+	public void exposesReadOnlyTaskLists() {
+		final TaskUI ui = this.open();
+		final RectNode node = RectNode.create(0, 0, 100, 100);
+		final Task task = Task.create(0L).attach(ui);
+		Task.create(0L).attach(node);
+		for (final List<Task> taskList : Arrays.asList(ui.getTaskList(), node.getTaskList())) {
+			try {
+				taskList.clear();
+				Assert.fail("A task list must not change from outside");
+			} catch (final UnsupportedOperationException expected) {
+				Assert.assertEquals(1, taskList.size());
+			}
+		}
+		Assert.assertTrue(task.isAttached());
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesANullListener() {
 		Task.create(0L).onRun(null);

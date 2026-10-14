@@ -22,7 +22,7 @@ public abstract class StackUIBridge extends UIBridge {
 
 		this.replacing = super.hasScreen();
 		try {
-			for (final UI current : new ArrayList<>(super.getUiList().ordered())) {
+			for (final UI current : new ArrayList<>(super.getUiList())) {
 				if (current.getOverlay().active() || !this.canReplace(current)) {
 					continue;
 				}
@@ -64,7 +64,7 @@ public abstract class StackUIBridge extends UIBridge {
 	@Override
 	public void add(final @NonNull UI ui) {
 		final boolean screen = !ui.getOverlay().active() && !super.hasScreen();
-		super.getUiList().add(ui);
+		super.add(ui);
 		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 		if (screen && !this.replacing && !this.deferred) {
 			this.attachScreen();
@@ -74,14 +74,14 @@ public abstract class StackUIBridge extends UIBridge {
 	@Override
 	public void remove(final @NonNull UI ui) {
 		final boolean screen = super.getUiList().contains(ui) && !ui.getOverlay().active();
-		super.getUiList().remove(ui);
+		super.remove(ui);
 		if (screen && !super.hasScreen() && !this.replacing && !this.deferred) {
 			this.detachScreen();
 		}
 	}
 
 	public void closeAll() {
-		for (final UI ui : new ArrayList<>(super.getUiList().ordered())) {
+		for (final UI ui : new ArrayList<>(super.getUiList())) {
 			ui.dispose();
 			this.remove(ui);
 		}

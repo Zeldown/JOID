@@ -51,7 +51,7 @@ public class IntegerSignal extends Signal<Integer> {
 
 	public @NonNull IntegerSignal divide(final int value) {
 		if (value == 0) {
-			throw new ArithmeticException("Division by zero");
+			throw new IllegalArgumentException("The IntegerSignal of value " + this.peek() + " cannot be divided by 0, check the divisor before calling divide(...)");
 		}
 
 		final int updatedValue = this.peek() / value;

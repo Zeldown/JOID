@@ -82,12 +82,7 @@ public class JOIDTest {
 			System.setOut(previous);
 		}
 		final String text = output.toString();
-		Assert.assertTrue(text, text.contains("[JOID] Loading JOID with parameters:"));
-		Assert.assertTrue(text, text.contains(" - DataDir: " + JOIDEnv.getDataDir().getAbsolutePath()));
-		Assert.assertTrue(text, text.contains(" - CacheDir: " + JOIDEnv.getCacheDir().getAbsolutePath()));
-		Assert.assertTrue(text, text.contains(" - DevMode: true"));
-		Assert.assertTrue(text, text.contains(" - DemoMode: true"));
-		Assert.assertTrue(text, text.contains(" - Version: " + JOID.VERSION));
+		Assert.assertTrue(text, text.startsWith("[JOID] " + JOID.VERSION + " loaded in dev and demo mode, data in " + JOIDEnv.getDataDir().getAbsolutePath() + ", cache in " + JOIDEnv.getCacheDir().getAbsolutePath() + System.lineSeparator()));
 	}
 
 	@Test
@@ -224,7 +219,7 @@ public class JOIDTest {
 	public void opensAUiThroughItsBridge() {
 		final MenuUI menu = new MenuUI();
 		Assert.assertSame(this.bridges.getUi(), JOID.open(menu));
-		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList());
 		Assert.assertEquals(1, menu.inits);
 	}
 
@@ -235,7 +230,7 @@ public class JOIDTest {
 		JOID.open(first);
 		JOID.open(second, false);
 		Assert.assertEquals(1, first.closes);
-		Assert.assertEquals(Collections.singletonList(second), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(second), this.bridges.getUi().getUiList());
 	}
 
 	@Test
@@ -244,7 +239,7 @@ public class JOIDTest {
 		final PopupUI popup = new PopupUI();
 		JOID.open(menu);
 		JOID.open(popup);
-		Assert.assertEquals(Arrays.asList(menu, popup), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Arrays.asList(menu, popup), this.bridges.getUi().getUiList());
 	}
 
 	@Test
@@ -254,9 +249,9 @@ public class JOIDTest {
 		menu.closeable = false;
 		JOID.open(menu);
 		JOID.open(next);
-		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList());
 		Assert.assertSame(this.bridges.getUi(), JOID.open(next, true));
-		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
 		Assert.assertEquals(1, menu.detaches);
 	}
 
@@ -469,7 +464,7 @@ public class JOIDTest {
 		final StubbornUI next = new StubbornUI();
 		this.bridges.open(menu).open(hud);
 		JOID.open(next, true);
-		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList().ordered());
+		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
 	}
 
 	private static void quietly(final JOID joid) {

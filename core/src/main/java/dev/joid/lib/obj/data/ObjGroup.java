@@ -1,6 +1,7 @@
 package dev.joid.lib.obj.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import dev.joid.lib.render.tessellator.DrawMode;
@@ -10,12 +11,12 @@ import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
-@Setter
 public final class ObjGroup {
 
-	private String        name;
-	private DrawMode      drawMode;
-	private List<ObjFace> faces;
+	@Setter private String   name;
+	@Setter private DrawMode drawMode;
+
+	private final List<ObjFace> faces;
 
 	public ObjGroup() {
 		this("");
@@ -31,6 +32,10 @@ public final class ObjGroup {
 		this.faces    = new ArrayList<>();
 	}
 
+	public void addFace(final @NonNull ObjFace face) {
+		this.faces.add(face);
+	}
+
 	public void render() {
 		if (this.faces.size() > 0) {
 			final Tessellator tessellator = Tessellator.inst().copy();
@@ -40,6 +45,10 @@ public final class ObjGroup {
 			}
 			tessellator.draw();
 		}
+	}
+
+	public @NonNull List<ObjFace> getFaces() {
+		return Collections.unmodifiableList(this.faces);
 	}
 
 }

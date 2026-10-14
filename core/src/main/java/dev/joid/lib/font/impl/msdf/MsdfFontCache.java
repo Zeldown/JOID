@@ -38,7 +38,7 @@ public final class MsdfFontCache {
 		try {
 			MsdfGenerator.generate(font, file, MsdfGenerator.codepoints(MsdfGenerator.CHARSET), MsdfGenerator.WIDTH, MsdfGenerator.HEIGHT, MsdfGenerator.RANGE, 0D);
 		} catch (final Exception exception) {
-			throw new IOException("Unable to generate the msdf atlas of the font in " + file.getParentFile().getAbsolutePath(), exception);
+			throw new IOException("The msdf atlas of the font cannot be generated in " + file.getParentFile().getAbsolutePath() + ", check that the font is a valid TrueType or OpenType file and that the cache folder can be written", exception);
 		}
 	}
 

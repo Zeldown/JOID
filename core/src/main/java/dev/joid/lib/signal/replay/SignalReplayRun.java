@@ -1,6 +1,7 @@
 package dev.joid.lib.signal.replay;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -122,6 +123,34 @@ public final class SignalReplayRun {
 			readList.addAll(group.readList);
 		}
 		return readList;
+	}
+
+	public Map<String, String> getHoleMap() {
+		return this.holeMap != null ? Collections.unmodifiableMap(this.holeMap) : null;
+	}
+
+	public List<Signal<?>> getPositionalList() {
+		return this.positionalList != null ? Collections.unmodifiableList(this.positionalList) : null;
+	}
+
+	public Map<Object, Signal<?>> getPositionalMap() {
+		return Collections.unmodifiableMap(this.positionalMap);
+	}
+
+	public List<Group> getGroupList() {
+		return Collections.unmodifiableList(this.groupList);
+	}
+
+	public List<Signal<?>> getDirectList() {
+		return Collections.unmodifiableList(this.directList);
+	}
+
+	public Map<SignalReplaySlice, Object[]> getDefinitionCache() {
+		return Collections.unmodifiableMap(this.definitionCache);
+	}
+
+	public List<Signal<?>> getCurrentList() {
+		return Collections.unmodifiableList(this.currentList);
 	}
 
 	private void flush() {

@@ -12,6 +12,8 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.backend.Backend;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.thread.FrameThreadBridge;
+import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import lombok.NonNull;
@@ -40,6 +42,11 @@ public final class Lwjgl3Backend extends Backend<Lwjgl3Backend> {
 	@Override
 	protected @NonNull IAudioBridge createAudioBridge() {
 		return AlAudioBridge.create(Lwjgl3AlBinding.inst());
+	}
+
+	@Override
+	protected @NonNull IThreadBridge createThreadBridge() {
+		return FrameThreadBridge.create();
 	}
 
 	@Override

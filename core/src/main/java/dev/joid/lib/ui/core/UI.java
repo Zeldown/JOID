@@ -499,6 +499,18 @@ public abstract class UI implements IUI, IndexedElement {
 		return Collections.unmodifiableMap(this.storeMap);
 	}
 
+	public final @NonNull List<@NonNull Task> getTaskList() {
+		return Collections.unmodifiableList(this.taskList);
+	}
+
+	public final @NonNull List<@NonNull Node> getNodeList() {
+		return this.nodeList.ordered();
+	}
+
+	public final @NonNull List<@NonNull Shortcut> getShortcutList() {
+		return Collections.unmodifiableList(this.shortcutList);
+	}
+
 	@Override
 	public int getIndex() {
 		return this.data.zindex();
@@ -758,6 +770,53 @@ public abstract class UI implements IUI, IndexedElement {
 		for (final Node node : nodes) {
 			node.load(this);
 			this.nodeList.add(node);
+		}
+	}
+
+	public final void remove(final @NonNull Node @NonNull ... nodes) {
+		for (final Node node : nodes) {
+			if (this.nodeList.contains(node)) {
+				node.fireDetach();
+				this.nodeList.remove(node);
+			}
+		}
+	}
+
+	public final void reorder(final @NonNull Node node) {
+		if (this.nodeList.contains(node)) {
+			this.nodeList.add(node);
+		}
+	}
+
+	public final void addTask(final @NonNull Task task) {
+		if (task.getUi() != this) {
+			task.attach(this);
+		} else if (!this.taskList.contains(task)) {
+			this.taskList.add(task);
+		}
+	}
+
+	public final void removeTask(final @NonNull Task task) {
+		if (task.getUi() == this) {
+			task.detach();
+		} else {
+			this.taskList.remove(task);
+		}
+	}
+
+	public final void addShortcut(final @NonNull Shortcut shortcut) {
+		if (shortcut.getUi() != this) {
+			shortcut.attach(this);
+		} else if (!this.shortcutList.contains(shortcut)) {
+			this.shortcutList.add(shortcut);
+		}
+	}
+
+	public final void removeShortcut(final @NonNull Shortcut shortcut) {
+		if (shortcut.getUi() == this) {
+			shortcut.detach();
+		} else {
+			this.shortcutList.remove(shortcut);
 		}
 	}
 

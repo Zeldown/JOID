@@ -1,5 +1,6 @@
 package dev.joid.lib.signal.replay;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -56,6 +57,18 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 			SignalReplay.warn(this.call, this.slice.getSignalNameList(), this.readList.size(), exception.getFailure() == SignalReplayFailure.REPLAY_FAILED ? exception : new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getMessage()), this.value);
 		}
 		return this.value;
+	}
+
+	public Map<String, String> getHoleMap() {
+		return this.holeMap != null ? Collections.unmodifiableMap(this.holeMap) : null;
+	}
+
+	public Map<Object, Signal<?>> getPositionalMap() {
+		return Collections.unmodifiableMap(this.positionalMap);
+	}
+
+	public List<Signal<?>> getReadList() {
+		return Collections.unmodifiableList(this.readList);
 	}
 
 }

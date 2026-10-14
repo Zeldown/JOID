@@ -27,7 +27,7 @@ public final class SnapshotImage {
 		try {
 			final BufferedImage image = ImageIO.read(file);
 			if (image == null) {
-				throw new IOException("Unreadable image " + file);
+				throw new IOException("The image " + file + " cannot be decoded, check that it is a valid PNG");
 			}
 
 			return new SnapshotImage(image.getWidth(), image.getHeight(), image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth()));

@@ -122,13 +122,13 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(515, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 110D), Point.create(node.getX() + 200D, node.getY() + 110D), Point.create(node.getX() + 100D, node.getY() - 90D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 110D), Point.create(node.getX() + 100D, node.getY() - 90D), Point.create(node.getX() + 200D, node.getY() + 110D))))
 		.attach(this);
 		TextNode.create(615, 575).text(Text.create("Curve", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(745, 440, 200, 120)
-		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 60D), Point.create(node.getX() + 70D, node.getY() - 60D), Point.create(node.getX() + 200D, node.getY() + 60D), Point.create(node.getX() + 130D, node.getY() + 180D))))
+		.self(node -> node.layer((mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(node.getX(), node.getY() + 60D), Point.create(node.getX() + 70D, node.getY() - 60D), Point.create(node.getX() + 130D, node.getY() + 180D), Point.create(node.getX() + 200D, node.getY() + 60D))))
 		.attach(this);
 		TextNode.create(845, 575).text(Text.create("Bezier", caption, Align.CENTER)).anchorX(Align.CENTER).attach(this);
 

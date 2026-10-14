@@ -197,7 +197,7 @@ public class ObjModelTest {
 			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 3", "f 1 2 4 3");
 			Assert.fail("A quad must not join a group of triangles");
 		} catch (final RuntimeException expected) {
-			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 4 3\" has 4 vertices while the faces before it in its group have 3, keep one kind of face per group, fix this line in the model file", expected.getMessage());
+			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 4 3\" has 4 vertices while the faces before it in its group are triangles, keep quads in their own group, fix this line in the model file", expected.getMessage());
 		}
 	}
 
@@ -207,7 +207,7 @@ public class ObjModelTest {
 			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 4 3", "f 1 2 3");
 			Assert.fail("A triangle must not join a group of quads");
 		} catch (final RuntimeException expected) {
-			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 3\" has 3 vertices while the faces before it in its group have 4, keep one kind of face per group, fix this line in the model file", expected.getMessage());
+			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 3\" has 3 vertices while the faces before it in its group have 4, keep quads in their own group, fix this line in the model file", expected.getMessage());
 		}
 	}
 
@@ -231,9 +231,52 @@ public class ObjModelTest {
 		ObjModelTest.load("vt 0.5");
 	}
 
-	@Test(expected = RuntimeException.class)
-	public void refusesAFaceOfFivePoints() {
-		ObjModelTest.triangle("f 1 2 3 1 2");
+	@Test
+	public void cutsAFaceOfMoreThanFourVerticesIntoAFanOfTriangles() {
+		final ObjModel model = ObjModelTest.load("v 0 0 0", "v 2 0 0", "v 3 1 0", "v 1 2 0", "v -1 1 0", "vt 0 0", "vt 1 0", "vt 1 1", "vt 0 1", "vt 0 0.5", "f 1/1 2/2 3/3 4/4 5/5");
+		final List<ObjFace> faces = model.getCurrentGroup().getFaces();
+		Assert.assertSame(DrawMode.TRIANGLES, model.getCurrentGroup().getDrawMode());
+		Assert.assertEquals(3, faces.size());
+		final List<ObjVertex> vertices = model.getVertices();
+		for (int i = 0; i < faces.size(); i++) {
+			final ObjFace face = faces.get(i);
+			Assert.assertArrayEquals(new ObjVertex[] {vertices.get(0), vertices.get(i + 1), vertices.get(i + 2)}, face.getVertices());
+			Assert.assertArrayEquals(new ObjTextureCoordinate[] {model.getTextureCoordinates().get(0), model.getTextureCoordinates().get(i + 1), model.getTextureCoordinates().get(i + 2)}, face.getTextureCoordinates());
+			Assert.assertNull(face.getVertexNormals());
+			Assert.assertEquals(1F, face.getFaceNormal().getZ(), 0F);
+		}
+	}
+
+	@Test
+	public void refusesAPolygonInAGroupOfQuads() {
+		try {
+			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 1 1 0", "v 0 1 0", "v -1 0 0", "f 1 2 3 4", "f 1 2 3 4 5");
+			Assert.fail("A polygon cut into triangles must not join a group of quads");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The OBJ model test cannot be read: its line 7 \"f 1 2 3 4 5\" has 5 vertices while the faces before it in its group have 4, keep quads in their own group, fix this line in the model file", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void readsTheScientificNotation() {
+		final ObjModel model = ObjModelTest.load("v 1e2 -2.5E-1 +3", "v .5 1. 0e0", "vn 1E0 0 0", "vt 5e-1 1e0");
+		Assert.assertEquals(100F, model.getVertices().get(0).getX(), 0F);
+		Assert.assertEquals(-0.25F, model.getVertices().get(0).getY(), 0F);
+		Assert.assertEquals(3F, model.getVertices().get(0).getZ(), 0F);
+		Assert.assertEquals(0.5F, model.getVertices().get(1).getX(), 0F);
+		Assert.assertEquals(1F, model.getVertices().get(1).getY(), 0F);
+		Assert.assertEquals(1F, model.getVertexNormals().get(0).getX(), 0F);
+		Assert.assertEquals(0.5F, model.getTextureCoordinates().get(0).getU(), 0F);
+		Assert.assertEquals(0F, model.getTextureCoordinates().get(0).getV(), 0F);
+	}
+
+	@Test
+	public void readsNegativeIndicesFromTheEnd() {
+		final ObjModel model = ObjModelTest.load("v 9 9 9", "v 0 0 0", "v 1 0 0", "v 0 1 0", "vt 0 0", "vt 1 0", "vt 0 1", "vn 0 0 1", "f -3/-3/-1 -2/-2/-1 -1/-1/-1");
+		final ObjFace face = model.getCurrentGroup().getFaces().get(0);
+		Assert.assertArrayEquals(model.getVertices().subList(1, 4).toArray(), face.getVertices());
+		Assert.assertArrayEquals(model.getTextureCoordinates().toArray(), face.getTextureCoordinates());
+		Assert.assertSame(model.getVertexNormals().get(0), face.getVertexNormals()[2]);
 	}
 
 	@Test(expected = RuntimeException.class)
@@ -241,9 +284,26 @@ public class ObjModelTest {
 		ObjModelTest.triangle("f 1/1 2//1 3");
 	}
 
-	@Test(expected = IndexOutOfBoundsException.class)
+	@Test
 	public void refusesAFacePointingPastTheVertices() {
-		ObjModelTest.triangle("f 1 2 4");
+		try {
+			ObjModelTest.triangle("f 1 2 4");
+			Assert.fail("A face must not point past the vertices");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The OBJ model test cannot be read: its line 8 \"f 1 2 4\" has the index 4 while 3 vertices come before it, use an index from 1 to 3 or from -1 to -3, fix this line in the model file", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void refusesTheIndexZeroAndANegativeIndexPastTheStart() {
+		for (final String face : new String[] {"f 0 1 2", "f -4 1 2", "f 1/-4 2/1 3/1", "f 1//2 2//1 3//1"}) {
+			try {
+				ObjModelTest.triangle(face);
+				Assert.fail(face + " must be refused");
+			} catch (final IllegalArgumentException expected) {
+				Assert.assertTrue(expected.getMessage(), expected.getMessage().contains("\"" + face + "\" has the index "));
+			}
+		}
 	}
 
 	@Test

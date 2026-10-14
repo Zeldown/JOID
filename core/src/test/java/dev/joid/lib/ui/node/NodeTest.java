@@ -3067,7 +3067,7 @@ public class NodeTest {
 		other.attach(ui);
 		raised.zindex(1);
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList(other, raised), ui.getNodeList().ordered());
+		Assert.assertEquals(Arrays.asList(other, raised), ui.getNodeList());
 		Assert.assertTrue(this.order(0.6F, 0.4F, 0.2F) < this.order(0.2F, 0.4F, 0.6F));
 	}
 

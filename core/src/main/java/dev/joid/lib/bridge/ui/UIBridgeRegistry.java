@@ -11,6 +11,8 @@ import java.util.function.Predicate;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.BridgeRegistry;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.thread.FrameThreadBridge;
+import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
@@ -36,6 +38,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 	}
 
 	public void frame() {
+		this.runThreadTasks();
 		final List<UIBridge> bridgeList = this.getUIBridgeList();
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
@@ -68,6 +71,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 	}
 
 	public void fireFrame() {
+		this.runThreadTasks();
 		this.frameList.forEach(Runnable::run);
 	}
 
@@ -127,6 +131,14 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 
 	public IUIBridge get(final @NonNull Class<? extends UI> clazz) {
 		return super.find(bridge -> bridge.canHandle(clazz));
+	}
+
+	private void runThreadTasks() {
+		for (final IThreadBridge bridge : BridgeHandler.THREAD.getBridgeList()) {
+			if (bridge instanceof FrameThreadBridge) {
+				((FrameThreadBridge) bridge).runTasks();
+			}
+		}
 	}
 
 	private boolean dispatch(final Predicate<UIBridge> event) {

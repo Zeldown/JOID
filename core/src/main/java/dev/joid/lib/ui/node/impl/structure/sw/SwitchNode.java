@@ -79,7 +79,12 @@ public abstract class SwitchNode extends Node {
 	}
 
 	public final @NonNull String getState() {
-		return this.stateList.get(this.stateIndex.get());
+		final List<String> stateList = this.stateList.get();
+		if (stateList.isEmpty()) {
+			throw new IllegalStateException("The " + this.getClass().getSimpleName() + " has no states, call states(...) before getState()");
+		}
+
+		return stateList.get(this.stateIndex.get());
 	}
 
 	public final <T extends SwitchNode> @NonNull T signal(final @NonNull Signal<String> signal) {

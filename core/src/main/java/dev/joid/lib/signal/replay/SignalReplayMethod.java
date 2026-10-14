@@ -211,6 +211,18 @@ public final class SignalReplayMethod {
 		}
 	}
 
+	public Map<String, Class<?>> getClassMap() {
+		return Collections.unmodifiableMap(this.classMap);
+	}
+
+	public Map<AbstractInsnNode, Object> getMemberMap() {
+		return Collections.unmodifiableMap(this.memberMap);
+	}
+
+	public Map<AbstractInsnNode, SignalReplaySlice> getDefinitionMap() {
+		return Collections.unmodifiableMap(this.definitionMap);
+	}
+
 	private Class<?> load(final String internalName) {
 		Class<?> loaded = this.classMap.get(internalName);
 		if (loaded == null) {

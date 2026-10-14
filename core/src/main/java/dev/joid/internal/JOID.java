@@ -52,23 +52,8 @@ public final class JOID {
 			}
 		}
 
-		System.out.println("=================================");
-		System.out.println("");
-		System.out.println("         _  ____ _____ _____    ");
-		System.out.println("        | |/ __ \\_   _|  __ \\ ");
-		System.out.println("        | | |  | || | | |  | |  ");
-		System.out.println("    _   | | |  | || | | |  | |  ");
-		System.out.println("   | |__| | |__| || |_| |__| |  ");
-		System.out.println("    \\____/ \\____/_____|_____/ ");
-		System.out.println("");
-		System.out.println("[JOID] Loading JOID with parameters:");
-		System.out.println(" - DataDir: " + JOIDEnv.getDataDir().getAbsolutePath());
-		System.out.println(" - CacheDir: " + JOIDEnv.getCacheDir().getAbsolutePath());
-		System.out.println(" - DevMode: " + JOIDEnv.isDevMode());
-		System.out.println(" - DemoMode: " + JOIDEnv.isDemoMode());
-		System.out.println(" - Version: " + JOID.VERSION);
-		System.out.println("");
-		System.out.println("=================================");
+		final String mode = JOIDEnv.isDemoMode() ? JOIDEnv.isDevMode() ? " in dev and demo mode" : " in demo mode" : JOIDEnv.isDevMode() ? " in dev mode" : "";
+		JOIDLog.info(JOID.VERSION + " loaded" + mode + ", data in " + JOIDEnv.getDataDir().getAbsolutePath() + ", cache in " + JOIDEnv.getCacheDir().getAbsolutePath());
 
 		JOID.initialize(MsdfFontCache.class, VideoNatives.class, VideoResourceDecoder.class);
 		ThreadUtils.daemonThread(FileCache::clean, "FileCache").start();
@@ -178,7 +163,7 @@ public final class JOID {
 
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
 		ThreadUtils.runOnRenderThread(() -> {
-			for (final UI currentUi : new ArrayList<>(bridge.getUiList().ordered())) {
+			for (final UI currentUi : new ArrayList<>(bridge.getUiList())) {
 				currentUi.dispose();
 				bridge.close(currentUi);
 			}
@@ -190,7 +175,7 @@ public final class JOID {
 
 	private static void shutdown() {
 		for (final IUIBridge bridge : new ArrayList<>(BridgeHandler.UI.getBridgeList())) {
-			for (final UI ui : new ArrayList<>(bridge.getUiList().ordered())) {
+			for (final UI ui : new ArrayList<>(bridge.getUiList())) {
 				UIPropertyHook.save(ui);
 			}
 		}

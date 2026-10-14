@@ -214,6 +214,16 @@ public class SwitchNodeTest {
 	}
 
 	@Test
+	public void refusesToGiveItsStateBeforeItsStates() {
+		try {
+			new Switch().getState();
+			Assert.fail("A switch without states has no state to give");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The Switch has no states, call states(...) before getState()", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void refusesToBeAttachedWithoutStates() {
 		try {
 			this.bridges.open(new SingleUI(new Switch()));

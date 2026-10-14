@@ -231,6 +231,26 @@ public class UITest {
 	}
 
 	@Test
+	public void keepsItsNodesBehindAReadOnlyListInZIndexOrder() {
+		final RectNode below = RectNode.create(0D, 0D, 10D, 10D);
+		final RectNode above = RectNode.create(0D, 0D, 10D, 10D);
+		final TraceUI ui = new TraceUI(this.trace, below, above);
+		this.bridges.open(ui);
+		Assert.assertEquals(Arrays.asList(below, above), ui.getNodeList());
+		below.zindex(1);
+		Assert.assertEquals(Arrays.asList(above, below), ui.getNodeList());
+		try {
+			ui.getNodeList().clear();
+			Assert.fail("The nodes of a UI must not change from outside");
+		} catch (final UnsupportedOperationException expected) {
+			Assert.assertEquals(2, ui.getNodeList().size());
+		}
+		ui.remove(below);
+		Assert.assertEquals(Collections.singletonList(above), ui.getNodeList());
+		Assert.assertFalse(below.isAttached());
+	}
+
+	@Test
 	public void reloadsItsInitOnAFreshTree() {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
 		ui.shortcut = Shortcut.create(Key.R);

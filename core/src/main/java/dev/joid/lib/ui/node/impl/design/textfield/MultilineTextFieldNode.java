@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.UnaryOperator;
 
@@ -338,6 +339,10 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		private final String          text;
 		private final int[]           tags;
 		private final List<FieldLine> lines;
+
+		public List<FieldLine> getLines() {
+			return Collections.unmodifiableList(this.lines);
+		}
 
 	}
 

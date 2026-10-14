@@ -6,7 +6,7 @@ The first call builds the showcase with Gradle (:sample-showcase:renderClasspath
 Commands are those of the testkit SnapshotRunner: ui <class>, wait <ms>, move <x> <y>, moveto <x> <y> <ms>,
 press LEFT, release, scroll <n>, type <text>, key <KEY>, dev true|false, shot <name>. Lines starting with # are skipped.
 """
-import os, subprocess, sys
+import os, re, subprocess, sys
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
 MODULE = os.path.dirname(TOOLS)
@@ -48,7 +48,7 @@ def render(lines, out):
 		"-cp", path, PACKAGE + "ShowcaseRender", scenario, out], cwd=WORK, capture_output=True, text=True, encoding="utf-8", errors="replace")
 	if r.returncode:
 		sys.exit("render failed:\n" + r.stdout[-4000:] + r.stderr[-4000:])
-	log = [l for l in (r.stdout + r.stderr).splitlines() if ("[JOID]" in l and "Loading JOID" not in l) or "Exception" in l]
+	log = [l for l in (r.stdout + r.stderr).splitlines() if ("[JOID]" in l and not re.match(r"\[JOID\] \d+\.\d+\S* loaded", l)) or "Exception" in l]
 	if log:
 		print("console:\n  " + "\n  ".join(log[:40]))
 

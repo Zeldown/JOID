@@ -1048,8 +1048,7 @@ public abstract class Node implements INode {
 			if (node.parent != null && node.parent != this) {
 				node.parent.remove(node);
 			} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
-				node.fireDetach();
-				node.ui.getNodeList().remove(node);
+				node.ui.remove(node);
 				node.clearOverflowArea(node.overflowArea);
 			}
 
@@ -1085,6 +1084,42 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T attach(final @NonNull Node node) {
 		node.append(this);
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T addTask(final @NonNull Task task) {
+		if (task.getNode() != this) {
+			task.attach(this);
+		} else if (!this.taskList.contains(task)) {
+			this.taskList.add(task);
+		}
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T removeTask(final @NonNull Task task) {
+		if (task.getNode() == this) {
+			task.detach();
+		} else {
+			this.taskList.remove(task);
+		}
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T addShortcut(final @NonNull Shortcut shortcut) {
+		if (shortcut.getNode() != this) {
+			shortcut.attach(this);
+		} else if (!this.shortcutList.contains(shortcut)) {
+			this.shortcutList.add(shortcut);
+		}
+		return (T) this;
+	}
+
+	public final <T extends Node> @NonNull T removeShortcut(final @NonNull Shortcut shortcut) {
+		if (shortcut.getNode() == this) {
+			shortcut.detach();
+		} else {
+			this.shortcutList.remove(shortcut);
+		}
 		return (T) this;
 	}
 
@@ -1420,7 +1455,7 @@ public abstract class Node implements INode {
 			return this.parent.getMappedIndex() + "." + this.parent.drawList.ordered().indexOf(this);
 		}
 
-		return String.valueOf(this.ui.getNodeList().ordered().indexOf(this));
+		return String.valueOf(this.ui.getNodeList().indexOf(this));
 	}
 
 	public final @NonNull Map<@NonNull TweenAnimator, @NonNull Float> getAnimatorMap() {
@@ -1441,6 +1476,14 @@ public abstract class Node implements INode {
 
 	public final @NonNull List<@NonNull ISignalSubscriber<?>> getLinkList() {
 		return Collections.unmodifiableList(this.linkList);
+	}
+
+	public final @NonNull List<@NonNull Task> getTaskList() {
+		return Collections.unmodifiableList(this.taskList);
+	}
+
+	public final @NonNull List<@NonNull Shortcut> getShortcutList() {
+		return Collections.unmodifiableList(this.shortcutList);
 	}
 
 	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
@@ -2224,7 +2267,7 @@ public abstract class Node implements INode {
 			if (node.parent != null && node.parent.drawList.contains(node)) {
 				node.parent.drawList.add(node);
 			} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
-				node.ui.getNodeList().add(node);
+				node.ui.reorder(node);
 			}
 		});
 	}

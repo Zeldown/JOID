@@ -59,7 +59,7 @@ public class DemoChartNode extends ChartNode {
 				final Point point = Point.create(ox, oy);
 				if (last != null) {
 					if (this.smooth) {
-						DrawUtils.SHAPE.drawCurvedLine(color, 2F, last, Point.create(last.getX() + offset / 3D, last.getY()), point, Point.create(ox - offset / 3D, oy));
+						DrawUtils.SHAPE.drawCurvedLine(color, 2F, last, Point.create(last.getX() + offset / 3D, last.getY()), Point.create(ox - offset / 3D, oy), point);
 					} else {
 						DrawUtils.SHAPE.drawLine(color, 2F, last, point);
 					}

@@ -211,8 +211,18 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	@Override
-	public @NonNull IndexedLinkedList<@NonNull UI> getUiList() {
-		return this.uiList;
+	public void add(final @NonNull UI ui) {
+		this.uiList.add(ui);
+	}
+
+	@Override
+	public void remove(final @NonNull UI ui) {
+		this.uiList.remove(ui);
+	}
+
+	@Override
+	public @NonNull List<@NonNull UI> getUiList() {
+		return this.uiList.ordered();
 	}
 
 	@Override

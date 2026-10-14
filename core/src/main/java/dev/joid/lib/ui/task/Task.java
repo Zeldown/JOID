@@ -64,7 +64,7 @@ public final class Task {
 		this.detach();
 		this.ui = ui;
 		this.nextRun = BridgeHandler.CLOCK.get().currentTimeMillis() + this.delay;
-		ui.getTaskList().add(this);
+		ui.addTask(this);
 		return this;
 	}
 
@@ -72,19 +72,21 @@ public final class Task {
 		this.detach();
 		this.node = node;
 		this.nextRun = BridgeHandler.CLOCK.get().currentTimeMillis() + this.delay;
-		node.getTaskList().add(this);
+		node.addTask(this);
 		return this;
 	}
 
 	public @NonNull Task detach() {
 		if (this.ui != null) {
-			this.ui.getTaskList().remove(this);
+			final UI attachedUi = this.ui;
 			this.ui = null;
+			attachedUi.removeTask(this);
 		}
 
 		if (this.node != null) {
-			this.node.getTaskList().remove(this);
+			final Node attachedNode = this.node;
 			this.node = null;
+			attachedNode.removeTask(this);
 		}
 		return this;
 	}

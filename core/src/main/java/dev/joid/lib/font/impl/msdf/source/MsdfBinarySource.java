@@ -52,7 +52,7 @@ public final class MsdfBinarySource extends MsdfSource {
 		final byte[] magic = new byte[MsdfBinarySource.MAGIC.length];
 		new DataInputStream(stream).readFully(magic);
 		if (!Arrays.equals(magic, MsdfBinarySource.MAGIC)) {
-			throw new IOException("Not a JOID msdf font");
+			throw new IOException("The file does not start with JOIDMSDF, it is not a font made by the msdf tool of JOID: generate it with that tool");
 		}
 
 		final DataInputStream input = new DataInputStream(new InflaterInputStream(stream));

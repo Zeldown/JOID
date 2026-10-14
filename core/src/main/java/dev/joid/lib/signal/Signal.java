@@ -51,7 +51,7 @@ public class Signal<T> implements ISignal<T> {
 		final Signal<T> instance = new Signal<>();
 		future.whenComplete((value, exception) -> {
 			if (exception == null) {
-				instance.set(value);
+				ThreadUtils.runOnRenderThread(() -> instance.set(value));
 				return;
 			}
 

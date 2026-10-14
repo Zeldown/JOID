@@ -1,6 +1,6 @@
 package dev.joid.lib.obj.data;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -33,22 +33,33 @@ public class ObjGroupTest {
 	}
 
 	@Test
-	public void changesEveryProperty() {
-		final List<ObjFace> faces = new ArrayList<>();
+	public void changesItsNameAndDrawMode() {
 		final ObjGroup group = new ObjGroup("part");
 		group.setName("renamed");
 		group.setDrawMode(DrawMode.TRIANGLES);
-		group.setFaces(faces);
 		Assert.assertEquals("renamed", group.getName());
 		Assert.assertSame(DrawMode.TRIANGLES, group.getDrawMode());
-		Assert.assertSame(faces, group.getFaces());
+	}
+
+	@Test
+	public void addsAFaceBehindAReadOnlyList() {
+		final ObjGroup group = new ObjGroup("part");
+		final ObjFace face = ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F));
+		group.addFace(face);
+		Assert.assertEquals(Collections.singletonList(face), group.getFaces());
+		try {
+			group.getFaces().clear();
+			Assert.fail("The faces of a group must not change from outside");
+		} catch (final UnsupportedOperationException expected) {
+			Assert.assertEquals(1, group.getFaces().size());
+		}
 	}
 
 	@Test
 	public void drawsItsFacesInOneCall() {
 		final ObjGroup group = new ObjGroup("pair", DrawMode.TRIANGLES);
-		group.getFaces().add(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F)));
-		group.getFaces().add(ObjGroupTest.face(new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
+		group.addFace(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F)));
+		group.addFace(ObjGroupTest.face(new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
 		group.render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(1, draws.size());
@@ -59,7 +70,7 @@ public class ObjGroupTest {
 	@Test
 	public void splitsItsQuadsIntoTriangles() {
 		final ObjGroup group = new ObjGroup("quad", DrawMode.QUADS);
-		group.getFaces().add(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
+		group.addFace(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
 		group.render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertSame(Primitive.TRIANGLES, draws.get(0).getPrimitive());

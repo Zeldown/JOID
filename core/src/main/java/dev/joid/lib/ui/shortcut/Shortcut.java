@@ -79,26 +79,28 @@ public final class Shortcut {
 	public @NonNull Shortcut attach(final @NonNull UI ui) {
 		this.detach();
 		this.ui = ui;
-		ui.getShortcutList().add(this);
+		ui.addShortcut(this);
 		return this;
 	}
 
 	public @NonNull Shortcut attach(final @NonNull Node node) {
 		this.detach();
 		this.node = node;
-		node.getShortcutList().add(this);
+		node.addShortcut(this);
 		return this;
 	}
 
 	public @NonNull Shortcut detach() {
 		if (this.ui != null) {
-			this.ui.getShortcutList().remove(this);
+			final UI attachedUi = this.ui;
 			this.ui = null;
+			attachedUi.removeShortcut(this);
 		}
 
 		if (this.node != null) {
-			this.node.getShortcutList().remove(this);
+			final Node attachedNode = this.node;
 			this.node = null;
+			attachedNode.removeShortcut(this);
 		}
 		return this;
 	}

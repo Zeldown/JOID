@@ -75,7 +75,7 @@ public class FontFamilyTest {
 			FontFamily.of(new Face(FontWeight.BOLD, true), new Face(FontWeight.BOLD, true));
 			Assert.fail("Two italic bold faces must be refused");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("Two faces share the weight 700 italic", expected.getMessage());
+			Assert.assertEquals("Two faces share the weight 700 italic, keep one face per weight and style", expected.getMessage());
 		}
 	}
 
