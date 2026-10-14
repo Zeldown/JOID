@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class RoundedNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Float> radiusSupplier;

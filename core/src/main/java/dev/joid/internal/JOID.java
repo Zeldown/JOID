@@ -104,7 +104,6 @@ public final class JOID {
 		return JOID.getUi(uiClass) != null;
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T extends UI> T getUi(final @NonNull Class<T> uiClass) {
 		final IUIBridge bridge = BridgeHandler.UI.get(uiClass);
 		if (bridge != null) {

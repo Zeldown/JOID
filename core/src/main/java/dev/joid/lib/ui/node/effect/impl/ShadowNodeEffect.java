@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class ShadowNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Float>  blurSupplier;

@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public abstract class ScrollbarNode extends Node {
 
 	@NonNull

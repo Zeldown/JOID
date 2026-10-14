@@ -44,7 +44,6 @@ public class FileCacheArea {
 		this.retention = Duration.ofDays(30L);
 	}
 
-	@SuppressWarnings("unchecked")
 	public final synchronized <T extends FileCacheArea> @NonNull T retention(final @NonNull Duration retention) {
 		if (retention.isNegative() || retention.isZero()) {
 			throw new IllegalArgumentException("The retention " + retention + " of the cache area " + this.name + " is not positive, pass a duration above 0");

@@ -1852,7 +1852,6 @@ public class UITest {
 		return listener.changes;
 	}
 
-	@SuppressWarnings("unchecked")
 	private static FileAlterationMonitor monitor(final UI ui) throws ReflectiveOperationException {
 		final Field field = UI.class.getDeclaredField("MONITOR_MAP");
 		field.setAccessible(true);

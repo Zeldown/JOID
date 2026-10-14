@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class LabelNode extends SignalReplayNode {
 
 	private Supplier<String> label;

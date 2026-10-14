@@ -14,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@SuppressWarnings("unchecked")
 public final class EventBus {
 
 	private final Supplier<String>                           owner;

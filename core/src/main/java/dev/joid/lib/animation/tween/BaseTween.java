@@ -8,7 +8,6 @@ import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.event.EventType;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public abstract class BaseTween<T> {
 
 	private static final EventType<TweenEvent> START                   = EventType.create("onStart");

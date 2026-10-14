@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public abstract class SliderThumbNode extends Node {
 
 	private boolean dragging;

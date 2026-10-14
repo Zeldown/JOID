@@ -19,7 +19,6 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRenderer {
 
 	private double runX;

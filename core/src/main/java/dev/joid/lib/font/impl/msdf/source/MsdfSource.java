@@ -6,7 +6,6 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public abstract class MsdfSource implements IMsdfSource {
 
 	private Boolean    italic;

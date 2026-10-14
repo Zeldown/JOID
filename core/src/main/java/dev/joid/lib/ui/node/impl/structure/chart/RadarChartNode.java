@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 
 	private final List<DATA> dataList;

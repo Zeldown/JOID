@@ -74,7 +74,6 @@ public class GlStateJournalTest {
 		return GlStateJournal.create(binding, GlCapabilities.read(binding), GlFrameBufferFamily.EXT);
 	}
 
-	@SuppressWarnings("unchecked")
 	private static <T> T fake(final Class<T> type, final Answer answer) {
 		return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, (proxy, method, args) -> {
 			final Object value = answer.answer(method, args == null ? new Object[0] : args);

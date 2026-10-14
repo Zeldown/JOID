@@ -13,7 +13,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class TextNode extends Node {
 
 	private Text text;

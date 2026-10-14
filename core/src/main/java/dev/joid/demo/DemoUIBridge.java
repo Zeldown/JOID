@@ -25,7 +25,6 @@ public class DemoUIBridge extends WindowUIBridge {
 		super.load();
 	}
 
-	@SuppressWarnings("unchecked")
 	public final <T extends DemoUIBridge> @NonNull T interfaceScale(final double interfaceScale) {
 		this.interfaceScale = interfaceScale;
 		return (T) this;

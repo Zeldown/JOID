@@ -17,7 +17,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	private static final EventType<NodeEvent<?>> SUBMIT = EventType.create("onSubmit");

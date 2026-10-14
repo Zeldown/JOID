@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class RectNode extends Node {
 
 	private Color color;

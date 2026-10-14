@@ -4,7 +4,6 @@ package dev.joid.lib.animation.tween.primitive;
 
 import dev.joid.lib.animation.tween.TweenAccessor;
 
-@SuppressWarnings("serial")
 public class MutableInteger extends Number implements TweenAccessor<MutableInteger> {
 
 	private int value;

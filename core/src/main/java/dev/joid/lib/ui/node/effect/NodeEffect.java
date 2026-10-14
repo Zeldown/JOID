@@ -10,7 +10,6 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public abstract class NodeEffect<T extends Node> implements Cloneable {
 
 	private Supplier<Integer>         priority;

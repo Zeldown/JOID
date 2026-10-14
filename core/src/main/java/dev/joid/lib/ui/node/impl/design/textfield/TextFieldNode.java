@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class TextFieldNode extends LineFieldNode<String> {
 
 	private UnaryOperator<String> formatter;

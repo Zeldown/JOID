@@ -56,13 +56,11 @@ public class GlslShaderTranslator {
 		return new GlslShaderTranslator(dialect, layout);
 	}
 
-	@SuppressWarnings("unchecked")
 	public final <T extends GlslShaderTranslator> @NonNull T clampToBorder(final boolean clampToBorder) {
 		this.clampToBorder = clampToBorder;
 		return (T) this;
 	}
 
-	@SuppressWarnings("unchecked")
 	public final <T extends GlslShaderTranslator> @NonNull T stencil(final @NonNull StencilEmulation.Pass stencil) {
 		this.stencil = stencil;
 		return (T) this;

@@ -787,7 +787,6 @@ public abstract class UI implements IUI, IndexedElement {
 		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final Object... args) {
 		if (this.storeMap.containsKey(clazz)) {
 			return (T) this.storeMap.get(clazz);
@@ -1044,7 +1043,6 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private <T extends UI> T listen(final EventType<?> type, final EventPriority priority, final EventListener<?> listener) {
 		this.eventBus.listen(type, priority, listener);
 		return (T) this;

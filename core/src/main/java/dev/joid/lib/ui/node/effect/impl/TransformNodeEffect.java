@@ -18,7 +18,6 @@ import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@SuppressWarnings("unchecked")
 public class TransformNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Transformation> transformationSupplier;

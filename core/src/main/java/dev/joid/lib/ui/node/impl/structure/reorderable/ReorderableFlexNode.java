@@ -25,7 +25,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class ReorderableFlexNode extends Node {
 
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER        = EventType.create("onReorder");

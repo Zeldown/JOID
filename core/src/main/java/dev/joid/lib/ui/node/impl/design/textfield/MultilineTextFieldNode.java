@@ -20,7 +20,6 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class MultilineTextFieldNode extends FieldNode<String> {
 
 	private double                yOffset;

@@ -14,7 +14,6 @@ import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 import lombok.NonNull;
 
-@SuppressWarnings("unchecked")
 public class WindowUIBridge extends StackUIBridge {
 
 	@Getter private Color    background;

@@ -20,7 +20,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class ResourcePlayerNode extends Node {
 
 	private static final EventType<NodeEvent<?>>         END      = EventType.create("onEnd");

@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class ModelViewerNode extends ModelNode {
 
 	private boolean dragged;

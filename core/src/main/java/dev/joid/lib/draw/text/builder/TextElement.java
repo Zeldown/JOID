@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public class TextElement {
 
 	private final StackTraceElement[] origin;

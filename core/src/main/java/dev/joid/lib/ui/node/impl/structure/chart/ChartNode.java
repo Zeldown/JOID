@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@SuppressWarnings("unchecked")
 public abstract class ChartNode extends Node {
 
 	private XChartAxis xAxis;
