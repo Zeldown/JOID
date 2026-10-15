@@ -6,59 +6,56 @@ import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.signal.Signal;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class TextElement {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TextElement {
 
 	private TextInfo      info;
 	private Supplier<?>   text;
 	private ITextModifier modifier;
 
-	protected TextElement(final @NonNull Supplier<?> text, final @NonNull TextInfo info, final ITextModifier modifier) {
-		this.text = text;
-		this.info = info;
-		this.modifier = modifier;
-	}
-
 	public static final @NonNull TextElement create(final @NonNull Object text, final @NonNull TextInfo info) {
-		return new TextElement(Signal.from(text), info, null);
+		return new TextElement(info, Signal.from(text), null);
 	}
 
 	public static final @NonNull TextElement create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
-		return new TextElement(() -> text.get(), info, null);
+		return new TextElement(info, () -> text.get(), null);
 	}
 
-	public final <T extends TextElement> @NonNull T text(final @NonNull Object text) {
+	public final @NonNull TextElement text(final @NonNull Object text) {
 		return this.text(Signal.from(text));
 	}
 
-	public final <T extends TextElement> @NonNull T text(final @NonNull Supplier<?> text) {
+	public final @NonNull TextElement text(final @NonNull Supplier<?> text) {
 		this.text = text;
-		return (T) this;
+		return this;
 	}
 
-	public final <T extends TextElement> @NonNull T info(final @NonNull TextInfo info) {
+	public final @NonNull TextElement info(final @NonNull TextInfo info) {
 		this.info = info;
-		return (T) this;
+		return this;
 	}
 
-	public final <T extends TextElement> @NonNull T modifier(final ITextModifier modifier) {
+	public final @NonNull TextElement modifier(final ITextModifier modifier) {
 		this.modifier = modifier;
-		return (T) this;
+		return this;
 	}
 
-	public final <T extends TextElement> @NonNull T copy() {
-		return (T) new TextElement(this.text, this.info, this.modifier);
+	public final @NonNull TextElement copy() {
+		return new TextElement(this.info, this.text, this.modifier);
 	}
 
-	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Object text) {
-		return (T) new TextElement(() -> text, this.info, this.modifier);
+	public final @NonNull TextElement copyWithText(final @NonNull Object text) {
+		return new TextElement(this.info, () -> text, this.modifier);
 	}
 
-	public final <T extends TextElement> @NonNull T copyWithText(final @NonNull Supplier<?> text) {
-		return (T) new TextElement(text, this.info, this.modifier);
+	public final @NonNull TextElement copyWithText(final @NonNull Supplier<?> text) {
+		return new TextElement(this.info, text, this.modifier);
 	}
 
 	public final @NonNull String getText() {

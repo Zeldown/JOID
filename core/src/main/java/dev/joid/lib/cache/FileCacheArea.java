@@ -26,9 +26,9 @@ import dev.joid.internal.JOIDLog;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class FileCacheArea {
+public final class FileCacheArea {
 
-	protected static final String MARKER = ".area";
+	public static final String MARKER = ".area";
 
 	private static final Pattern NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
 
@@ -38,13 +38,13 @@ public class FileCacheArea {
 	private boolean          declared;
 	@Getter private Duration retention;
 
-	protected FileCacheArea(final String name) {
+	public FileCacheArea(final String name) {
 		this.name = name;
 		this.lockMap = new ConcurrentHashMap<>();
 		this.retention = Duration.ofDays(30L);
 	}
 
-	public final synchronized <T extends FileCacheArea> @NonNull T retention(final @NonNull Duration retention) {
+	public final synchronized @NonNull FileCacheArea retention(final @NonNull Duration retention) {
 		if (retention.isNegative() || retention.isZero()) {
 			throw new IllegalArgumentException("The retention " + retention + " of the cache area " + this.name + " is not positive, pass a duration above 0");
 		}
@@ -63,7 +63,7 @@ public class FileCacheArea {
 				JOIDLog.devWarnOnce("cache-marker-" + this.name, () -> "The retention of the cache area " + this.name + " cannot be written into " + this.getDirectory().getAbsolutePath() + " (" + exception + "), check that the cache folder can be written");
 			}
 		}
-		return (T) this;
+		return this;
 	}
 
 	public @NonNull File getDirectory() {
@@ -120,7 +120,7 @@ public class FileCacheArea {
 		}
 	}
 
-	protected long clean(final long now, final AtomicInteger files) {
+	public long clean(final long now, final AtomicInteger files) {
 		final File[] entries = this.getDirectory().listFiles();
 		if (entries == null) {
 			return 0L;
@@ -248,7 +248,7 @@ public class FileCacheArea {
 		return this.lockMap.computeIfAbsent(key, ignored -> new Object());
 	}
 
-	protected static @NonNull String check(final String kind, final String name) {
+	public static @NonNull String check(final String kind, final String name) {
 		if (!FileCacheArea.NAME.matcher(name).matches()) {
 			throw new IllegalArgumentException("The cache " + kind + " name " + name + " is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'");
 		}
