@@ -27,23 +27,23 @@ public class ResourcePlayerNode extends Node {
 	private static final EventType<NodeEvent<?>>         PAUSE    = EventType.create("onPause");
 	private static final EventType<NodeProgressEvent<?>> PROGRESS = EventType.create("onProgress");
 
-	private Resource resource;
 	private Resource fork;
-	private boolean wasPlaying;
-	private double lastProgress;
-	private boolean resourceStarted;
+	private Resource resource;
+	private boolean  wasPlaying;
+	private double   lastProgress;
+	private boolean  resourceStarted;
 
 	private Double  pendingTime;
 	private Boolean pendingPlaying;
 
 	private boolean loop;
-	private float volume = 1F;
+	private float   volume = 1F;
+	private Object  audioGroup;
 	private boolean autoplay = true;
-	private Object audioGroup;
 
 	private Point location;
-	private Float    maxDistance;
-	private Float    referenceDistance;
+	private Float maxDistance;
+	private Float referenceDistance;
 
 	private StretchType stretchType = StretchType.STRETCH;
 
@@ -59,19 +59,6 @@ public class ResourcePlayerNode extends Node {
 
 	public static @NonNull ResourcePlayerNode create(final double x, final double y, final double width, final double height) {
 		return new ResourcePlayerNode(x, y, width, height);
-	}
-
-	public final @NonNull ResourcePlayerNode stop() {
-		if (!this.resourceStarted) {
-			this.pendingTime = null;
-			this.pendingPlaying = false;
-			return this;
-		}
-
-		this.requirePlayback().stop();
-		this.wasPlaying = false;
-		super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
-		return this;
 	}
 
 	@Override
@@ -90,21 +77,7 @@ public class ResourcePlayerNode extends Node {
 
 		if (!this.resourceStarted) {
 			this.resourceStarted = true;
-			final VideoResourceDecoder video = this.getVideo();
-			if (video != null) {
-				video.volume(this.volume).audioGroup(this.audioGroup);
-				if (this.location != null) {
-					video.location((float) this.location.getX(), (float) this.location.getY(), (float) this.location.getZ());
-				}
-
-				if (this.maxDistance != null) {
-					video.maxDistance(this.maxDistance);
-				}
-
-				if (this.referenceDistance != null) {
-					video.referenceDistance(this.referenceDistance);
-				}
-			}
+			this.applyAudio();
 
 			final IResourcePlayback playback = this.getPlayback();
 			if (playback != null) {
@@ -144,6 +117,14 @@ public class ResourcePlayerNode extends Node {
 		this.stretchType.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
 	}
 
+	@Override
+	public void detach() {
+		this.release();
+		this.wasPlaying = false;
+		this.lastProgress = 0D;
+		this.resourceStarted = false;
+	}
+
 	public final @NonNull ResourcePlayerNode play() {
 		if (!this.resourceStarted) {
 			this.pendingPlaying = true;
@@ -178,13 +159,16 @@ public class ResourcePlayerNode extends Node {
 		return this;
 	}
 
-	public final @NonNull ResourcePlayerNode seek(final double seconds) {
+	public final @NonNull ResourcePlayerNode stop() {
 		if (!this.resourceStarted) {
-			this.pendingTime = seconds;
+			this.pendingTime = null;
+			this.pendingPlaying = false;
 			return this;
 		}
 
-		this.requirePlayback().seek(seconds);
+		this.requirePlayback().stop();
+		this.wasPlaying = false;
+		super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
 		return this;
 	}
 
@@ -202,32 +186,14 @@ public class ResourcePlayerNode extends Node {
 		return this;
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T onPlay(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.PLAY, listener);
-	}
+	public final @NonNull ResourcePlayerNode seek(final double seconds) {
+		if (!this.resourceStarted) {
+			this.pendingTime = seconds;
+			return this;
+		}
 
-	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.PAUSE, listener);
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T onStop(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.STOP, listener);
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T onEnd(final @NonNull EventListener<NodeEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.END, listener);
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T onProgress(final @NonNull EventListener<NodeProgressEvent<T>> listener) {
-		return super.listen(ResourcePlayerNode.PROGRESS, listener);
-	}
-
-	@Override
-	public void detach() {
-		this.release();
-		this.wasPlaying = false;
-		this.lastProgress = 0D;
-		this.resourceStarted = false;
+		this.requirePlayback().seek(seconds);
+		return this;
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Resource resource) {
@@ -284,10 +250,7 @@ public class ResourcePlayerNode extends Node {
 	public final <T extends ResourcePlayerNode> @NonNull T volume(final @NonNull Supplier<Float> volume) {
 		return super.follow("volume", volume, value -> {
 			this.volume = value;
-			final VideoResourceDecoder video = this.getVideo();
-			if (video != null) {
-				video.volume(value);
-			}
+			this.applyAudio();
 		});
 	}
 
@@ -298,10 +261,7 @@ public class ResourcePlayerNode extends Node {
 	public final <T extends ResourcePlayerNode> @NonNull T audioGroup(final @NonNull Supplier<?> audioGroup) {
 		return super.follow("audioGroup", (Supplier<Object>) audioGroup, value -> {
 			this.audioGroup = value;
-			final VideoResourceDecoder video = this.getVideo();
-			if (video != null) {
-				video.audioGroup(value);
-			}
+			this.applyAudio();
 		});
 	}
 
@@ -312,10 +272,7 @@ public class ResourcePlayerNode extends Node {
 	public final <T extends ResourcePlayerNode> @NonNull T location(final @NonNull Supplier<@NonNull Point> location) {
 		return super.follow("location", location, value -> {
 			this.location = value;
-			final VideoResourceDecoder video = this.getVideo();
-			if (video != null) {
-				video.location((float) value.getX(), (float) value.getY(), (float) value.getZ());
-			}
+			this.applyAudio();
 		});
 	}
 
@@ -326,10 +283,7 @@ public class ResourcePlayerNode extends Node {
 	public final <T extends ResourcePlayerNode> @NonNull T referenceDistance(final @NonNull Supplier<Float> referenceDistance) {
 		return super.follow("referenceDistance", referenceDistance, value -> {
 			this.referenceDistance = value;
-			final VideoResourceDecoder video = this.getVideo();
-			if (video != null) {
-				video.referenceDistance(value);
-			}
+			this.applyAudio();
 		});
 	}
 
@@ -340,11 +294,28 @@ public class ResourcePlayerNode extends Node {
 	public final <T extends ResourcePlayerNode> @NonNull T maxDistance(final @NonNull Supplier<Float> maxDistance) {
 		return super.follow("maxDistance", maxDistance, value -> {
 			this.maxDistance = value;
-			final VideoResourceDecoder video = this.getVideo();
-			if (video != null) {
-				video.maxDistance(value);
-			}
+			this.applyAudio();
 		});
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onPlay(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.PLAY, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onPause(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.PAUSE, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onStop(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.STOP, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onEnd(final @NonNull EventListener<NodeEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.END, listener);
+	}
+
+	public final <T extends ResourcePlayerNode> @NonNull T onProgress(final @NonNull EventListener<NodeProgressEvent<T>> listener) {
+		return super.listen(ResourcePlayerNode.PROGRESS, listener);
 	}
 
 	public final double getDuration() {
@@ -402,6 +373,26 @@ public class ResourcePlayerNode extends Node {
 		final VideoResourceDecoder video = this.getVideo();
 		if (video != null) {
 			video.release();
+		}
+	}
+
+	private void applyAudio() {
+		final VideoResourceDecoder video = this.getVideo();
+		if (video == null) {
+			return;
+		}
+
+		video.volume(this.volume).audioGroup(this.audioGroup);
+		if (this.location != null) {
+			video.location((float) this.location.getX(), (float) this.location.getY(), (float) this.location.getZ());
+		}
+
+		if (this.maxDistance != null) {
+			video.maxDistance(this.maxDistance);
+		}
+
+		if (this.referenceDistance != null) {
+			video.referenceDistance(this.referenceDistance);
 		}
 	}
 

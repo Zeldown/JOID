@@ -14,9 +14,9 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode;
+import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
+import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
 import dev.joid.lib.utils.align.Align;
 
 public class ShowPaperKit implements IShowKit {
@@ -109,7 +109,7 @@ public class ShowPaperKit implements IShowKit {
 	}
 
 	@Override
-	public CheckboxNode toggle(final double x, final double y) {
+	public ToggleNode<Boolean, Boolean> toggle(final double x, final double y) {
 		return Toggle.create(x, y);
 	}
 
@@ -132,32 +132,22 @@ public class ShowPaperKit implements IShowKit {
 		return Math.sin((BridgeHandler.CLOCK.get().currentTimeMillis() / 9000D + phase) * Math.PI * 2D);
 	}
 
-	private static double approach(final double value, final double target, final long last, final long now, final double speed) {
-		final double delta = last == 0L ? 10D : (now - last) / 1000D;
-		return value + (target - value) * (1D - Math.exp(-delta * speed));
-	}
+	public static class Toggle extends ToggleNode<Boolean, Boolean> {
 
-	public static class Toggle extends CheckboxNode {
-
-		private long   last;
 		private double knob;
 
 		protected Toggle(final double x, final double y) {
 			super(x, y, 76, 42);
+			super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
+				this.knob = super.getUi().lerpByFramerate(this.knob, super.isToggle() ? 1D : 0D, 0.8D, 0.001D, true);
+				DrawUtils.SHAPE.drawRect(5D, 5D, 76D, 42D, ShowPaperKit.INK);
+				ShowPaperKit.box(0D, 0D, 76D, 42D, ShowPaperKit.CARD.to(ShowPaperKit.TOMATO, (float) this.knob), 3D);
+			}));
+			super.knob(ContainerNode.create(0, 0, 28, 28).layer((node, mouseX, mouseY) -> ShowPaperKit.box(7D + 34D * this.knob - node.getX(), 0D, 28D, 28D, ShowPaperKit.CARD.to(ShowPaperKit.INK, (float) this.knob), 3D)));
 		}
 
 		public static Toggle create(final double x, final double y) {
 			return new Toggle(x, y);
-		}
-
-		@Override
-		public void draw(final double mouseX, final double mouseY) {
-			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-			this.knob = ShowPaperKit.approach(this.knob, super.isChecked() ? 1D : 0D, this.last, now, 16D);
-			this.last = now;
-			DrawUtils.SHAPE.drawRect(super.getX() + 5D, super.getY() + 5D, 76D, 42D, ShowPaperKit.INK);
-			ShowPaperKit.box(super.getX(), super.getY(), 76D, 42D, ShowPaperKit.CARD.to(ShowPaperKit.TOMATO, (float) this.knob), 3D);
-			ShowPaperKit.box(super.getX() + 7D + 34D * this.knob, super.getY() + 7D, 28D, 28D, ShowPaperKit.CARD.to(ShowPaperKit.INK, (float) this.knob), 3D);
 		}
 
 	}
@@ -166,60 +156,41 @@ public class ShowPaperKit implements IShowKit {
 
 		protected Slider(final double x, final double y, final double width) {
 			super(x, y, width, 36);
-			super.thumb(new Knob());
+			super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
+				final double center = 18D + super.getProgress() * (node.getWidth() - 36D);
+				ShowPaperKit.box(0D, 10D, node.getWidth(), 16D, ShowPaperKit.CARD, 3D);
+				ShowPaperKit.box(0D, 10D, center, 16D, ShowPaperKit.TOMATO, 3D);
+				for (int i = 1; i < 10; i++) {
+					DrawUtils.SHAPE.drawRect(node.getWidth() * i / 10D - 1D, 30D, 2D, 8D, ShowPaperKit.INK.withAlpha(0.35F));
+				}
+			}));
+			super.thumb(ContainerNode.create(0, 0, 36, 36).layer((node, mouseX, mouseY) -> {
+				DrawUtils.SHAPE.drawRect(5D, 5D, 36D, 36D, ShowPaperKit.INK);
+				ShowPaperKit.box(0D, 0D, 36D, 36D, ShowPaperKit.BUTTER, 3D);
+			}));
 		}
 
 		public static Slider create(final double x, final double y, final double width) {
 			return new Slider(x, y, width);
 		}
 
-		@Override
-		public void drawSlider(final double mouseX, final double mouseY) {
-			final double center = 18D + super.getProgress() * (super.getWidth() - 36D);
-			ShowPaperKit.box(super.getX(), super.getY() + 10D, super.getWidth(), 16D, ShowPaperKit.CARD, 3D);
-			ShowPaperKit.box(super.getX(), super.getY() + 10D, center, 16D, ShowPaperKit.TOMATO, 3D);
-			for (int i = 1; i < 10; i++) {
-				DrawUtils.SHAPE.drawRect(super.getX() + super.getWidth() * i / 10D - 1D, super.getY() + 30D, 2D, 8D, ShowPaperKit.INK.withAlpha(0.35F));
-			}
-		}
-
-		private final class Knob extends SliderThumbNode {
-
-			protected Knob() {
-				super(36, 36);
-			}
-
-			@Override
-			public void drawThumb(final double mouseX, final double mouseY) {
-				DrawUtils.SHAPE.drawRect(super.getX() + 5D, super.getY() + 5D, 36D, 36D, ShowPaperKit.INK);
-				ShowPaperKit.box(super.getX(), super.getY(), 36D, 36D, ShowPaperKit.BUTTER, 3D);
-			}
-
-		}
-
 	}
 
 	public static class Field extends TextFieldNode {
 
-		private long   last;
 		private double focus;
 
 		protected Field(final double x, final double y, final double width) {
 			super(x, y, width, 68);
+			super.background(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
+				this.focus = super.getUi().lerpByFramerate(this.focus, super.isFocused() ? 1D : 0D, 0.6D, 0.001D, true);
+				DrawUtils.SHAPE.drawRect(8D, 8D, node.getWidth(), node.getHeight(), ShowPaperKit.INK.to(ShowPaperKit.TOMATO, (float) this.focus));
+				ShowPaperKit.box(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 3D);
+			}));
 		}
 
 		public static Field create(final double x, final double y, final double width) {
 			return new Field(x, y, width);
-		}
-
-		@Override
-		public void draw(final double mouseX, final double mouseY) {
-			final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-			this.focus = ShowPaperKit.approach(this.focus, super.isFocused() ? 1D : 0D, this.last, now, 12D);
-			this.last = now;
-			DrawUtils.SHAPE.drawRect(super.getX() + 8D, super.getY() + 8D, super.getWidth(), super.getHeight(), ShowPaperKit.INK.to(ShowPaperKit.TOMATO, (float) this.focus));
-			ShowPaperKit.box(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE, 3D);
-			super.draw(mouseX, mouseY);
 		}
 
 	}

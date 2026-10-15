@@ -633,7 +633,7 @@ public class ReorderableFlexNodeTest {
 		final RectNode second = RectNode.create(0D, 0D, 50D, 50D);
 		final RectNode third = RectNode.create(0D, 0D, 50D, 50D);
 		final RectNode fourth = RectNode.create(0D, 0D, 50D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNode.horizontal(100D, 100D, 50D).margin(10D).lock(first, third);
+		final ReorderableFlexNode flex = ReorderableFlexNode.horizontal(100D, 100D, 50D).<ReorderableFlexNode>margin(10D).lock(first, third);
 		flex.append(first, second, third, fourth);
 		this.bridges.open(new NodeUI(flex));
 		this.press(300D, 120D);

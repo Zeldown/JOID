@@ -18,8 +18,8 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
+import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
 import dev.joid.lib.utils.align.Align;
 
 public class ShowNeonKit implements IShowKit {
@@ -98,7 +98,7 @@ public class ShowNeonKit implements IShowKit {
 	}
 
 	@Override
-	public CheckboxNode toggle(final double x, final double y) {
+	public ToggleNode<Boolean, Boolean> toggle(final double x, final double y) {
 		return ShowSwitchNode.create(x, y, ShowUI.VIOLET);
 	}
 

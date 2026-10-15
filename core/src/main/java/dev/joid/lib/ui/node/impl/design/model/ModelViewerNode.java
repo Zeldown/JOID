@@ -3,6 +3,7 @@ package dev.joid.lib.ui.node.impl.design.model;
 import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.binding.InteractiveValue;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventType;
@@ -10,17 +11,21 @@ import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.utils.point.Point;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public class ModelViewerNode extends BaseModelNode {
 
-	private static final EventType<NodeChangeEvent.Post<?, Double>> CHANGE        = EventType.create("onChange");
-	private static final EventType<NodeChangeEvent.Pre<?, Double>>  BEFORE_CHANGE = EventType.create("beforeChange");
+	private static final EventType<NodeChangeEvent.Post<?, Double>> ZOOM        = EventType.create("onZoom");
+	private static final EventType<NodeChangeEvent.Pre<?, Double>>  BEFORE_ZOOM = EventType.create("beforeZoom");
 
 	private static final EventType<NodeChangeEvent.Post<?, Point>> ROTATE        = EventType.create("onRotate");
 	private static final EventType<NodeChangeEvent.Pre<?, Point>>  BEFORE_ROTATE = EventType.create("beforeRotate");
+
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Double> zoomValue;
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Point>  rotationValue;
 
 	private double zoom;
 	private double rotationYaw;
@@ -59,6 +64,13 @@ public class ModelViewerNode extends BaseModelNode {
 		this.minRotationPitch = () -> -Double.MAX_VALUE;
 		this.maxRotationPitch = () -> Double.MAX_VALUE;
 
+		this.zoomValue = InteractiveValue.create(super.getBindings(), "zoom", () -> this.zoom, (final Double zoom) -> this.zoom = zoom)
+		.clamp(zoom -> Math.max(this.minZoom.get(), Math.min(this.maxZoom.get(), zoom)))
+		.events(ModelViewerNode.BEFORE_ZOOM, (previous, zoom) -> NodeChangeEvent.Pre.create(this, previous, zoom), ModelViewerNode.ZOOM, (previous, zoom) -> NodeChangeEvent.Post.create(this, previous, zoom));
+		this.rotationValue = InteractiveValue.create(super.getBindings(), "rotation", () -> Point.create(this.rotationYaw, this.rotationPitch), this::turn)
+		.clamp(rotation -> Point.create(Math.max(this.minRotationYaw.get(), Math.min(this.maxRotationYaw.get(), rotation.getX())), Math.max(this.minRotationPitch.get(), Math.min(this.maxRotationPitch.get(), rotation.getY()))))
+		.events(ModelViewerNode.BEFORE_ROTATE, (previous, rotation) -> NodeChangeEvent.Pre.create(this, previous, rotation), ModelViewerNode.ROTATE, (previous, rotation) -> NodeChangeEvent.Post.create(this, previous, rotation));
+
 		this.settle();
 	}
 
@@ -78,7 +90,7 @@ public class ModelViewerNode extends BaseModelNode {
 			final double rotationPitch = this.rotationPitch - (mouseY - this.draggedMouseY) / 5F;
 			this.draggedMouseX = mouseX;
 			this.draggedMouseY = mouseY;
-			this.rotate(rotationYaw, rotationPitch, true);
+			this.rotationValue.change(Point.create(rotationYaw, rotationPitch));
 		}
 
 		final UI ui = super.getUi();
@@ -94,7 +106,7 @@ public class ModelViewerNode extends BaseModelNode {
 			return;
 		}
 
-		this.zoom(this.zoom + event.getNotchesY() / 25D, true);
+		this.zoomValue.set(this.zoomValue.get() + event.getNotchesY() / 25D);
 		event.consume();
 	}
 
@@ -147,27 +159,27 @@ public class ModelViewerNode extends BaseModelNode {
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoom(final double zoom) {
-		return super.start("zoom", zoom, value -> this.zoom(value, false));
+		return this.zoomValue.start(zoom);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoom(final @NonNull Signal<Double> zoom) {
-		return super.bind("zoom", zoom, value -> this.zoom(value, false));
+		return this.zoomValue.bind(zoom);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYaw(final double rotationYaw) {
-		return super.start("rotationYaw", rotationYaw, value -> this.rotate(value, this.rotationPitch, false));
+		return super.start("rotationYaw", rotationYaw, value -> this.rotationValue.update(Point.create(value, this.rotationPitch)));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYaw(final @NonNull Signal<Double> rotationYaw) {
-		return super.bind("rotationYaw", rotationYaw, value -> this.rotate(value, this.rotationPitch, false));
+		return super.bind("rotationYaw", rotationYaw, value -> this.rotationValue.update(Point.create(value, this.rotationPitch)), Point::getX);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitch(final double rotationPitch) {
-		return super.start("rotationPitch", rotationPitch, value -> this.rotate(this.rotationYaw, value, false));
+		return super.start("rotationPitch", rotationPitch, value -> this.rotationValue.update(Point.create(this.rotationYaw, value)));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitch(final @NonNull Signal<Double> rotationPitch) {
-		return super.bind("rotationPitch", rotationPitch, value -> this.rotate(this.rotationYaw, value, false));
+		return super.bind("rotationPitch", rotationPitch, value -> this.rotationValue.update(Point.create(this.rotationYaw, value)), Point::getY);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoomRange(final double min, final double max) {
@@ -200,30 +212,30 @@ public class ModelViewerNode extends BaseModelNode {
 		return (T) this;
 	}
 
-	public final <T extends ModelViewerNode> @NonNull T change(final double zoom) {
-		this.zoom(zoom, true);
+	public final <T extends ModelViewerNode> @NonNull T zoomTo(final double zoom) {
+		this.zoomValue.change(zoom);
 		return (T) this;
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotate(final double rotationYaw, final double rotationPitch) {
-		this.rotate(rotationYaw, rotationPitch, true);
+		this.rotationValue.change(Point.create(rotationYaw, rotationPitch));
 		return (T) this;
 	}
 
-	public final <T extends ModelViewerNode> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, Double>> listener) {
-		return super.listen(ModelViewerNode.BEFORE_CHANGE, listener);
+	public final <T extends ModelViewerNode> @NonNull T beforeZoom(final @NonNull EventListener<NodeChangeEvent.Pre<T, Double>> listener) {
+		return this.zoomValue.before(listener);
 	}
 
-	public final <T extends ModelViewerNode> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, Double>> listener) {
-		return super.listen(ModelViewerNode.CHANGE, listener);
+	public final <T extends ModelViewerNode> @NonNull T onZoom(final @NonNull EventListener<NodeChangeEvent.Post<T, Double>> listener) {
+		return this.zoomValue.on(listener);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T beforeRotate(final @NonNull EventListener<NodeChangeEvent.Pre<T, Point>> listener) {
-		return super.listen(ModelViewerNode.BEFORE_ROTATE, listener);
+		return this.rotationValue.before(listener);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T onRotate(final @NonNull EventListener<NodeChangeEvent.Post<T, Point>> listener) {
-		return super.listen(ModelViewerNode.ROTATE, listener);
+		return this.rotationValue.on(listener);
 	}
 
 	private void settle() {
@@ -232,34 +244,11 @@ public class ModelViewerNode extends BaseModelNode {
 		this.drawnRotationPitch = this.rotationPitch;
 	}
 
-	private void zoom(final double zoom, final boolean refusable) {
-		final double value = Math.max(this.minZoom.get(), Math.min(this.maxZoom.get(), zoom));
-		if (this.zoom == value) {
-			super.sync("zoom", value);
-			return;
-		}
-
-		super.change(ModelViewerNode.BEFORE_CHANGE, ModelViewerNode.CHANGE, this.zoom, value, refusable, () -> {
-			this.zoom = value;
-			super.sync("zoom", value);
-		});
-	}
-
-	private void rotate(final double rotationYaw, final double rotationPitch, final boolean refusable) {
-		final double yaw = Math.max(this.minRotationYaw.get(), Math.min(this.maxRotationYaw.get(), rotationYaw));
-		final double pitch = Math.max(this.minRotationPitch.get(), Math.min(this.maxRotationPitch.get(), rotationPitch));
-		if (this.rotationYaw == yaw && this.rotationPitch == pitch) {
-			super.sync("rotationYaw", yaw);
-			super.sync("rotationPitch", pitch);
-			return;
-		}
-
-		super.change(ModelViewerNode.BEFORE_ROTATE, ModelViewerNode.ROTATE, Point.create(this.rotationYaw, this.rotationPitch), Point.create(yaw, pitch), refusable, () -> {
-			this.rotationYaw   = yaw;
-			this.rotationPitch = pitch;
-			super.sync("rotationYaw", yaw);
-			super.sync("rotationPitch", pitch);
-		});
+	private void turn(final @NonNull Point rotation) {
+		this.rotationYaw   = rotation.getX();
+		this.rotationPitch = rotation.getY();
+		super.sync("rotationYaw", rotation);
+		super.sync("rotationPitch", rotation);
 	}
 
 }

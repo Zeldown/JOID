@@ -5,9 +5,9 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode;
 import dev.joid.lib.utils.align.Align;
 import lombok.NonNull;
@@ -19,16 +19,13 @@ public class DemoSelectorNode extends SelectorNode<String> {
 
 	protected DemoSelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-	}
-
-	public static @NonNull DemoSelectorNode create(final double x, final double y, final double width, final double height) {
-		return new DemoSelectorNode(x, y, width, height);
-	}
-
-	@Override
-	protected @NonNull Node option(final @NonNull String value) {
-		return RectNode
-		.create(0, 0, super.getDefaultWidth(), super.getDefaultHeight())
+		super.field(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
+			if (super.isActive()) {
+				DrawUtils.SHAPE.drawRect(-2D, -2D, node.getWidth() + 4D, node.getHeight() + 4D, DemoSelectorNode.INK);
+			}
+		}));
+		super.option(value -> RectNode
+		.create(0, 0, width, height)
 		.color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F))
 		.hoveredColor(DemoSelectorNode.PLACEHOLDER)
 		.body(rect -> {
@@ -37,14 +34,11 @@ public class DemoSelectorNode extends SelectorNode<String> {
 			.text(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 22, DemoSelectorNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F))).alignX(Align.START).alignY(Align.CENTER))
 			.anchorY(Align.CENTER)
 			.attach(rect);
-		});
+		}));
 	}
 
-	@Override
-	public void drawBackground(final double mouseX, final double mouseY) {
-		if (super.isActive()) {
-			DrawUtils.SHAPE.drawRect(super.getX() - 2D, super.getY() - 2D, super.getWidth() + 4D, super.getHeight() + 4D, DemoSelectorNode.INK);
-		}
+	public static @NonNull DemoSelectorNode create(final double x, final double y, final double width, final double height) {
+		return new DemoSelectorNode(x, y, width, height);
 	}
 
 }

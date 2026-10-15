@@ -2,8 +2,6 @@ package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
@@ -52,8 +50,6 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 			this.xOffset = 0D;
 		}
 
-		this.xOffset = super.getUi().lerpByFramerate(this.xOffset, this.xOffset, 0.5D, 0.2D, true);
-
 		final boolean isPlaceholder = text.isEmpty() && !super.isFocused();
 		double tmpTextY = super.getY() + super.getMarginTop();
 
@@ -66,25 +62,17 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		final double textX = this.getTextX(super.getX(), isPlaceholder ? super.getPlaceholder() : text);
 		final double textY = tmpTextY;
 		final int[] tags = FieldNode.tags(text, super.getShownInfo());
+		final FieldSelection selection = super.getSelection();
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY(), super.getWidth() - super.getMarginLeft() - super.getMarginRight(), super.getHeight(), () -> {
-			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getShownInfo().withColor(new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), 0.5F)) : super.getShownInfo(), Align.START, Align.START);
+			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getPlaceholderInfo() : super.getShownInfo(), Align.START, Align.START);
 
 			if (super.isFocused()) {
-				final double cursorX = textX + this.getX(text, tags, super.getCursorPos());
-				final float cursorOpacity = (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F);
-				final Color cursorColor = new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), cursorOpacity);
-				DrawUtils.SHAPE.drawRect(cursorX, textY, 2D, info.getHeight(), cursorColor);
+				DrawUtils.SHAPE.drawRect(textX + this.getX(text, tags, super.getCursorPos()), textY, 2D, info.getHeight(), super.getCursorColor());
 			}
 
-			if (super.getSelectionStart() != -1) {
-				final double cursorX = textX + this.getX(text, tags, super.getCursorPos());
-				final double selectionX = textX + this.getX(text, tags, super.getSelectionStart());
-
-				if (selectionX > cursorX) {
-					DrawUtils.SHAPE.drawRect(cursorX, textY, selectionX - cursorX, info.getHeight(), new Color(50, 152, 253, 100));
-				} else {
-					DrawUtils.SHAPE.drawRect(selectionX, textY, cursorX - selectionX, info.getHeight(), new Color(50, 152, 253, 100));
-				}
+			if (!selection.isEmpty()) {
+				final double startX = textX + this.getX(text, tags, selection.getStart());
+				DrawUtils.SHAPE.drawRect(startX, textY, textX + this.getX(text, tags, selection.getEnd()) - startX, info.getHeight(), FieldNode.SELECTION_COLOR);
 			}
 		});
 	}
@@ -100,7 +88,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 			return false;
 		}
 
-		super.blur();
+		super.blurNow();
 		super.fire(LineFieldNode.SUBMIT, () -> NodeEvent.create(this));
 		return true;
 	}
@@ -189,11 +177,11 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		return super.listen(LineFieldNode.SUBMIT, listener);
 	}
 
-	private final boolean isScrolling(final @NonNull String shown) {
+	private boolean isScrolling(final @NonNull String shown) {
 		return this.alignX.isStart() || super.getShownInfo().getWidth(shown) > super.getWidth() - super.getMarginLeft() - super.getMarginRight() - 2D;
 	}
 
-	private final double getTextX(final double x, final @NonNull String shown) {
+	private double getTextX(final double x, final @NonNull String shown) {
 		if (this.isScrolling(shown)) {
 			return x + super.getMarginLeft() - this.xOffset;
 		}
@@ -205,7 +193,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		return x + super.getWidth() - super.getShownInfo().getWidth(shown) - super.getMarginRight() - 2D;
 	}
 
-	private final double getX(final @NonNull String text, final @NonNull int[] tags, final int position) {
+	private double getX(final @NonNull String text, final @NonNull int[] tags, final int position) {
 		final int end = position < text.length() && tags[position] != -1 ? tags[position] : position;
 		return super.getShownInfo().getWidth(text.substring(0, end));
 	}

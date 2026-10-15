@@ -24,6 +24,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
+import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNodeTest;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNodeTest.FieldFont;
 import dev.joid.lib.ui.shortcut.Shortcut;
 
@@ -121,7 +122,7 @@ public class KeyLayoutTest {
 	public void selectsAllWithTheKeyThatTypesAOnAnAzertyKeyboard() {
 		final TextFieldNode field = this.field("hello");
 		this.control(Key.Q);
-		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(5, field.getCursorPos());
 	}
 

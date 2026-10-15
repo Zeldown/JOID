@@ -68,7 +68,7 @@ public class UIDemoSelector extends UIDemo {
 		.create(980, 210, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
-			DemoSelectorNode.create(40, 30, 320, 50).values("First", "Second", "Third").value("Second").active(true).attach(rect);
+			DemoSelectorNode.create(40, 30, 320, 50).active(true).values("First", "Second", "Third").value("Second").attach(rect);
 			TextNode.create(200, 275).text(Text.create("Open", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -77,7 +77,7 @@ public class UIDemoSelector extends UIDemo {
 		.create(1420, 210, 400, 260)
 		.color(UIDemoSelector.PLACEHOLDER)
 		.body(rect -> {
-			DemoSelectorNode.create(40, 30, 220, 50).values("First", "Second", "Third").active(open).onOpen(event -> opens.increment()).attach(rect);
+			DemoSelectorNode.create(40, 30, 220, 50).active(open).onOpen(event -> opens.increment()).values("First", "Second", "Third").attach(rect);
 			DemoCheckboxNode.create(300, 30, 50, 50).checked(open).attach(rect);
 			TextNode.create(40, 200).text(Text.create("Opened: " + opens.get(), info)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Bound open", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
@@ -120,11 +120,11 @@ public class UIDemoSelector extends UIDemo {
 		.body(rect -> {
 			final DemoSelectorNode locked = DemoSelectorNode
 			.create(40, 30, 220, 50)
-			.values("First", "Second", "Third")
 			.beforeOpen(event -> {
 				refusedOpens.increment();
 				event.cancel();
 			})
+			.values("First", "Second", "Third")
 			.attach(rect);
 			RectNode
 			.create(280, 30, 90, 50)

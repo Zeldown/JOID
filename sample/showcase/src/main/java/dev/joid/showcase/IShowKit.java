@@ -7,8 +7,8 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
+import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
 
 public interface IShowKit {
 
@@ -25,7 +25,7 @@ public interface IShowKit {
 	public RectNode choice(final double x, final double y, final String label, final BooleanSupplier selected);
 	public RectNode button(final double x, final double y, final double width, final Supplier<String> label, final boolean primary);
 
-	public CheckboxNode toggle(final double x, final double y);
+	public ToggleNode<Boolean, Boolean> toggle(final double x, final double y);
 	public TextFieldNode field(final double x, final double y, final double width);
 	public DoubleSliderNode slider(final double x, final double y, final double width);
 

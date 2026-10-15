@@ -3,7 +3,6 @@ package dev.joid.showcase;
 import java.util.ArrayList;
 import java.util.List;
 
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
@@ -21,7 +20,6 @@ public class ShowTheme extends ShowUI {
 
 	private final BooleanSignal dark = new BooleanSignal(false);
 
-	private long   last;
 	private double level;
 
 	@Override
@@ -52,7 +50,7 @@ public class ShowTheme extends ShowUI {
 		TextNode.create(360, 60).text(() -> Text.create("Good evening, Ada", ShowUI.font(FontWeight.EXTRA_BOLD, 46F, this.text()))).attach(this);
 		TextNode.create(362, 124).text(() -> Text.create("One signal drives every color on this screen.", ShowUI.font(FontWeight.MEDIUM, 21F, this.muted()))).attach(this);
 		TextNode.create(1700, 98).text(() -> Text.create(this.dark.get() ? "Dark" : "Light", ShowUI.font(FontWeight.SEMI_BOLD, 21F, this.muted()))).anchorX(Align.END).anchorY(Align.CENTER).attach(this);
-		ShowThemeNode.create(1730, 70).checked(this.dark).attach(this);
+		ShowThemeNode.create(1730, 70).toggle(this.dark).attach(this);
 
 		this.stat(0, "Listeners", "48,210", "+12.4 %", ShowUI.VIOLET);
 		this.stat(1, "Minutes played", "1.2 M", "+8.1 %", ShowUI.PINK);
@@ -129,10 +127,7 @@ public class ShowTheme extends ShowUI {
 	}
 
 	private void step() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final double delta = this.last == 0L ? 0D : (now - this.last) / 1000D;
-		this.last = now;
-		this.level += ((this.dark.get() ? 1D : 0D) - this.level) * (1D - Math.exp(-delta * 6D));
+		this.level = super.lerpByFramerate(this.level, this.dark.get() ? 1D : 0D, 0.3D, 0.001D, true);
 	}
 
 }

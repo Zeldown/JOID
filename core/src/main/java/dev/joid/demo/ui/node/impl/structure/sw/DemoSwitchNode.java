@@ -4,13 +4,8 @@ import dev.joid.demo.DemoFont;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
-import dev.joid.lib.utils.align.Align;
 import lombok.NonNull;
 
 public class DemoSwitchNode extends SwitchNode {
@@ -19,40 +14,14 @@ public class DemoSwitchNode extends SwitchNode {
 
 	protected DemoSwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+		super.option(state -> RectNode
+		.create(0, 0, 0, 0)
+		.color(() -> (state.equals(super.getValue()) ? DemoSwitchNode.INK : Color.WHITE).withAlpha(super.isEnabled() ? 1F : 0.4F))
+		.label(() -> Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, state.equals(super.getValue()) ? Color.WHITE : DemoSwitchNode.INK))));
 	}
 
 	public static @NonNull DemoSwitchNode create(final double x, final double y, final double width, final double height) {
 		return new DemoSwitchNode(x, y, width, height);
-	}
-
-	@Override
-	public void init(final @NonNull UI ui) {
-		RectNode
-		.create(0, 0, super.getWidth(), super.getHeight())
-		.color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F))
-		.attach(this);
-
-		final double stateWidth = super.getWidth() / super.getStateList().size();
-		FlexNode
-		.horizontal(0, 0, super.getHeight())
-		.body(flex -> {
-			for (final String state : super.getStateList()) {
-				RectNode
-				.create(0, 0, stateWidth, super.getHeight())
-				.color(() -> (super.getState().equals(state) ? DemoSwitchNode.INK : Color.WHITE).withAlpha(super.isEnabled() ? 1F : 0.4F))
-				.body(rect -> {
-					TextNode
-					.create(0, 0, rect.getWidth(), rect.getHeight())
-					.text(Signal.from(() -> Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, super.getState().equals(state) ? Color.WHITE : DemoSwitchNode.INK)).align(Align.CENTER)))
-					.attach(rect);
-				})
-				.onClick(event -> {
-					super.change(state);
-				})
-				.attach(flex);
-			}
-		})
-		.attach(this);
 	}
 
 }

@@ -16,6 +16,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 
 public class ToggleNodeTest {
 
@@ -185,6 +186,7 @@ public class ToggleNodeTest {
 
 		public Toggle() {
 			super(100D, 100D, 100D, 40D);
+			super.knob(RectNode.create(0D, 0D, 0D, 0D));
 		}
 
 	}
@@ -193,6 +195,7 @@ public class ToggleNodeTest {
 
 		public BooleanToggle() {
 			super(100D, 100D, 100D, 40D);
+			super.knob(RectNode.create(0D, 0D, 0D, 0D));
 		}
 
 	}

@@ -16,15 +16,13 @@ import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeReorderEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
+import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
-import dev.joid.lib.ui.node.property.position.PositionProperty;
-import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class ReorderableFlexNode extends Node {
+public class ReorderableFlexNode extends FlexNode {
 
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER        = EventType.create("onReorder");
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER_END    = EventType.create("onReorderEnd");
@@ -38,10 +36,7 @@ public class ReorderableFlexNode extends Node {
 	private final transient List<Node>        logicalOrder = new ArrayList<>();
 	private final transient Map<Node, Double> childCurrent = new HashMap<>();
 
-	private Align         align;
-	private double        margin;
-	private boolean       autoDrag = true;
-	private FlexDirection direction;
+	private boolean autoDrag = true;
 
 	private int     initialIndex;
 	private int     currentIndex;
@@ -54,8 +49,7 @@ public class ReorderableFlexNode extends Node {
 	private double  dragStartMouseY;
 
 	protected ReorderableFlexNode(final double x, final double y, final double width, final double height, final @NonNull FlexDirection direction) {
-		super(x, y, width, height);
-		this.direction = direction;
+		super(x, y, width, height, direction);
 	}
 
 	public static @NonNull ReorderableFlexNode vertical(final double x, final double y, final double width) {
@@ -67,26 +61,11 @@ public class ReorderableFlexNode extends Node {
 	}
 
 	@Override
-	public void init(final @NonNull UI ui) {
-		this.layout();
-	}
-
-	@Override
-	public void update() {
-		this.layout();
-	}
-
-	@Override
 	public void draw(final double mouseX, final double mouseY) {
 		if (this.reorderedNode != null && super.getChildren().contains(this.reorderedNode)) {
 			this.tickDrag(mouseX, mouseY);
 		}
-		this.layout();
-	}
-
-	@Override
-	public void drawSkeleton(final double mouseX, final double mouseY) {
-		this.layout();
+		super.draw(mouseX, mouseY);
 	}
 
 	@Override
@@ -131,13 +110,44 @@ public class ReorderableFlexNode extends Node {
 	}
 
 	@Override
-	protected @NonNull Node instantiate() {
-		return new ReorderableFlexNode(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.direction);
+	public @NonNull Node instantiate() {
+		return new ReorderableFlexNode(super.getX(), super.getY(), super.getWidth(), super.getHeight(), super.getDirection());
 	}
 
 	@Override
 	protected boolean isDraggingChild(final @NonNull Node child) {
 		return this.isDragging(child);
+	}
+
+	@Override
+	protected @NonNull List<@NonNull Node> getLayoutOrder() {
+		if (this.reorderedNode != null && !super.getChildren().contains(this.reorderedNode)) {
+			this.abandonReorder();
+		}
+
+		if (this.reorderedNode == null) {
+			return super.getLayoutOrder();
+		}
+
+		this.syncOrder();
+		return this.logicalOrder;
+	}
+
+	@Override
+	protected void layoutChild(final @NonNull Node child, final double offset) {
+		if (this.reorderedNode == null) {
+			super.layoutChild(child, offset);
+			return;
+		}
+
+		if (child == this.reorderedNode) {
+			super.layoutChild(child, this.draggedCurrent);
+			return;
+		}
+
+		final double current = super.getUi().lerpByFramerate(this.childCurrent.getOrDefault(child, offset), offset, 0.5D, 0.5D, true);
+		this.childCurrent.put(child, current);
+		super.layoutChild(child, current);
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T startDrag(final @NonNull Node child) {
@@ -205,30 +215,6 @@ public class ReorderableFlexNode extends Node {
 		return super.listen(ReorderableFlexNode.REORDER_END, listener);
 	}
 
-	public final <T extends ReorderableFlexNode> @NonNull T direction(final @NonNull FlexDirection direction) {
-		return this.direction(Signal.from(direction));
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T direction(final @NonNull Supplier<@NonNull FlexDirection> direction) {
-		return super.follow("direction", direction, value -> this.changeDirection(value));
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T align(final Align align) {
-		return this.align(Signal.from(align));
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T align(final @NonNull Supplier<Align> align) {
-		return super.follow("align", align, value -> this.align = value);
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T margin(final double margin) {
-		return this.margin(Signal.from(margin));
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T margin(final @NonNull Supplier<Double> margin) {
-		return super.follow("margin", margin, value -> this.margin = value);
-	}
-
 	public final <T extends ReorderableFlexNode> @NonNull T autoDrag(final boolean autoDrag) {
 		return this.autoDrag(Signal.from(autoDrag));
 	}
@@ -265,16 +251,6 @@ public class ReorderableFlexNode extends Node {
 		return this.reorderedNode == child;
 	}
 
-	private void changeDirection(final FlexDirection direction) {
-		if (this.direction != direction) {
-			for (final Node child : super.getChildren()) {
-				child.layoutPosition(0D, 0D);
-			}
-		}
-
-		this.direction = direction;
-	}
-
 	private void startDragInternal(final @NonNull Node child, final double mouseX, final double mouseY) {
 		final int index = super.getChildren().indexOf(child);
 		final boolean started = child.fireDragStart(() -> {
@@ -295,12 +271,12 @@ public class ReorderableFlexNode extends Node {
 			for (final Node c : super.getChildren()) {
 				this.childCurrent.put(c, offset);
 				if (c.isVisibleProperty()) {
-					offset += this.mainSize(c) + this.margin;
+					offset += this.mainSize(c) + super.getMargin();
 				}
 			}
 
 			this.draggedCurrent = this.childCurrent.get(child);
-			if (this.direction == FlexDirection.COLUMN) {
+			if (super.getDirection() == FlexDirection.COLUMN) {
 				this.dragOffset = mouseY - super.getAbsoluteY() - this.draggedCurrent;
 			} else {
 				this.dragOffset = mouseX - super.getAbsoluteX() - this.draggedCurrent;
@@ -314,7 +290,7 @@ public class ReorderableFlexNode extends Node {
 
 	private void tickDrag(final double mouseX, final double mouseY) {
 		final Node dragged = this.reorderedNode;
-		final boolean vertical = this.direction == FlexDirection.COLUMN;
+		final boolean vertical = super.getDirection() == FlexDirection.COLUMN;
 		final double draggedSize = this.mainSize(dragged);
 
 		final double target;
@@ -343,12 +319,12 @@ public class ReorderableFlexNode extends Node {
 			}
 
 			final double cSize = this.mainSize(c);
-			final double cMiddle = c.isVisibleProperty() ? off + (cSize + this.margin) / 2D : off;
+			final double cMiddle = c.isVisibleProperty() ? off + (cSize + super.getMargin()) / 2D : off;
 			if (cMiddle <= this.draggedCurrent) {
 				newIndex++;
 			}
 			if (c.isVisibleProperty()) {
-				off += cSize + this.margin;
+				off += cSize + super.getMargin();
 			}
 		}
 
@@ -408,7 +384,7 @@ public class ReorderableFlexNode extends Node {
 		double off = 0D;
 		for (final Node c : this.logicalOrder.subList(0, this.logicalOrder.indexOf(this.reorderedNode))) {
 			if (c.isVisibleProperty()) {
-				off += this.mainSize(c) + this.margin;
+				off += this.mainSize(c) + super.getMargin();
 			}
 		}
 		return off;
@@ -443,81 +419,18 @@ public class ReorderableFlexNode extends Node {
 		}
 	}
 
-	private void layout() {
-		if (this.reorderedNode != null && !super.getChildren().contains(this.reorderedNode)) {
-			this.abandonReorder();
-		}
-
-		final boolean vertical = this.direction == FlexDirection.COLUMN;
-		final boolean dragging = this.reorderedNode != null;
-		if (dragging) {
-			this.syncOrder();
-		}
-
-		final List<Node> order = dragging ? this.logicalOrder : super.getChildren();
-
-		double off = 0D;
-		for (final Node child : order) {
-			if (child.getPosition() == PositionProperty.ABSOLUTE || !child.isVisibleProperty()) {
-				continue;
-			}
-
-			final double size = this.mainSize(child);
-
-			if (child == this.reorderedNode) {
-				this.place(child, this.draggedCurrent);
-			} else if (dragging) {
-				final double cur = this.childCurrent.getOrDefault(child, off);
-				final double newPos = super.getUi().lerpByFramerate(cur, off, 0.5D, 0.5D, true);
-				this.childCurrent.put(child, newPos);
-				this.place(child, newPos);
-			} else {
-				this.place(child, off);
-			}
-
-			off += size + this.margin;
-		}
-
-		if (super.getOverflow() != OverflowProperty.NONE) {
-			return;
-		}
-
-		final double total = Math.max(0D, off - this.margin);
-		if (vertical) {
-			super.layoutSize(super.getWidth(), total);
-		} else {
-			super.layoutSize(total, super.getHeight());
-		}
-	}
-
 	private double computeFullExtent() {
 		double off = 0D;
 		for (final Node child : super.getChildren()) {
 			if (child.isVisibleProperty()) {
-				off += this.mainSize(child) + this.margin;
+				off += this.mainSize(child) + super.getMargin();
 			}
 		}
-		return Math.max(0D, off - this.margin);
+		return Math.max(0D, off - super.getMargin());
 	}
 
 	private double mainSize(final @NonNull Node child) {
-		return this.direction == FlexDirection.COLUMN ? child.getHeight() : child.getWidth();
-	}
-
-	private void place(final @NonNull Node child, final double main) {
-		if (this.direction == FlexDirection.COLUMN) {
-			child.layoutPosition(this.align == null ? 0D : this.getCross(child) - child.getDefaultX(), main);
-		} else {
-			child.layoutPosition(main, this.align == null ? 0D : this.getCross(child) - child.getDefaultY());
-		}
-	}
-
-	private double getCross(final @NonNull Node child) {
-		if (this.direction == FlexDirection.COLUMN) {
-			return this.align.isCenter() ? super.dw(2D) - child.dw(2D) : this.align.isEnd() ? super.aw(-child.getWidth()) : 0D;
-		}
-
-		return this.align.isCenter() ? super.dh(2D) - child.dh(2D) : this.align.isEnd() ? super.ah(-child.getHeight()) : 0D;
+		return super.getDirection() == FlexDirection.COLUMN ? child.getHeight() : child.getWidth();
 	}
 
 	private void syncOrder() {
@@ -549,7 +462,7 @@ public class ReorderableFlexNode extends Node {
 		Node parent = super.getParent();
 		while (parent != null) {
 			if (parent.getOverflow() == OverflowProperty.SCROLL && (parent.hasOverflowX() || parent.hasOverflowY())) {
-				if (this.direction == FlexDirection.COLUMN && parent.hasOverflowY()) {
+				if (super.getDirection() == FlexDirection.COLUMN && parent.hasOverflowY()) {
 					final double parentTop = parent.getAbsoluteY();
 					final double parentBottom = parentTop + parent.getHeight();
 					if (mouseY < parentTop + ReorderableFlexNode.SCROLL_HOT_ZONE) {
@@ -559,7 +472,7 @@ public class ReorderableFlexNode extends Node {
 						final double depth = Math.min(1D, (mouseY - (parentBottom - ReorderableFlexNode.SCROLL_HOT_ZONE)) / ReorderableFlexNode.SCROLL_HOT_ZONE);
 						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() - ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth);
 					}
-				} else if (this.direction == FlexDirection.ROW && parent.hasOverflowX()) {
+				} else if (super.getDirection() == FlexDirection.ROW && parent.hasOverflowX()) {
 					final double parentLeft = parent.getAbsoluteX();
 					final double parentRight = parentLeft + parent.getWidth();
 					if (mouseX < parentLeft + ReorderableFlexNode.SCROLL_HOT_ZONE) {

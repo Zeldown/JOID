@@ -2,7 +2,9 @@ package dev.joid.demo.ui.node.impl.structure.checkbox;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
+import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import lombok.NonNull;
 
 public class DemoCheckboxNode extends CheckboxNode {
@@ -11,19 +13,12 @@ public class DemoCheckboxNode extends CheckboxNode {
 
 	protected DemoCheckboxNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+		super.box(RectNode.create(0, 0, 0, 0).color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F)));
+		super.mark(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRect(node.dw(4), node.dh(4), node.dw(2), node.dh(2), DemoCheckboxNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F))));
 	}
 
 	public static @NonNull DemoCheckboxNode create(final double x, final double y, final double width, final double height) {
 		return new DemoCheckboxNode(x, y, width, height);
-	}
-
-	@Override
-	public void draw(final double mouseX, final double mouseY) {
-		final float alpha = super.isEnabled() ? 1F : 0.4F;
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.withAlpha(alpha));
-		if (super.isChecked()) {
-			DrawUtils.SHAPE.drawRect(super.getX() + super.dw(2) - super.dw(4), super.getY() + super.dh(2) - super.dh(4), super.dw(2), super.dh(2), DemoCheckboxNode.INK.withAlpha(alpha));
-		}
 	}
 
 }

@@ -37,11 +37,10 @@ import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.impl.IntegerFieldNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
+import dev.joid.lib.ui.node.impl.structure.choice.ChoiceNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderNode;
-import dev.joid.lib.ui.node.impl.structure.sw.SwitchNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
 import dev.joid.lib.utils.align.Align;
@@ -127,7 +126,7 @@ public class NodeSetterTest {
 
 	@Test
 	public void offersAStartValueOrAWritableSignalToAValueTheUserChanges() {
-		final Object[][] setters = {{Node.class, "scrollX"}, {Node.class, "scrollY"}, {CheckboxNode.class, "checked"}, {ToggleNode.class, "toggle"}, {SwitchNode.class, "state"}, {SwitchNode.class, "index"}, {SelectorNode.class, "value"}, {SelectorNode.class, "active"}, {SliderNode.class, "value"}, {FieldNode.class, "text"}, {FieldNode.class, "focused"}, {FieldNode.class, "cursorPosition"}, {IntegerFieldNode.class, "value"}, {ModelViewerNode.class, "zoom"}, {ModelViewerNode.class, "rotationYaw"}, {ModelViewerNode.class, "rotationPitch"}, {UI.class, "zoom"}};
+		final Object[][] setters = {{Node.class, "scrollX"}, {Node.class, "scrollY"}, {CheckboxNode.class, "checked"}, {ToggleNode.class, "toggle"}, {ChoiceNode.class, "value"}, {ChoiceNode.class, "valueIndex"}, {SelectorNode.class, "active"}, {FieldNode.class, "text"}, {FieldNode.class, "focused"}, {FieldNode.class, "cursorPosition"}, {FieldNode.class, "selection"}, {IntegerFieldNode.class, "value"}, {ModelViewerNode.class, "zoom"}, {ModelViewerNode.class, "rotationYaw"}, {ModelViewerNode.class, "rotationPitch"}, {UI.class, "zoom"}};
 		for (final Object[] setter : setters) {
 			int forms = 0;
 			for (final Method method : ((Class<?>) setter[0]).getDeclaredMethods()) {
@@ -159,8 +158,8 @@ public class NodeSetterTest {
 		Assert.assertEquals("Name 0", ui.getField().getText());
 		Assert.assertFalse(ui.getCheckbox().isChecked());
 		Assert.assertFalse(ui.getToggle().isToggle());
-		Assert.assertEquals("low", ui.getIndexed().getState());
-		Assert.assertEquals("low", ui.getNamed().getState());
+		Assert.assertEquals("low", ui.getIndexed().getValue());
+		Assert.assertEquals("low", ui.getNamed().getValue());
 		Assert.assertEquals("first", ui.getSelector().getValue());
 		Assert.assertEquals(1, ui.getSlider().getValue().intValue());
 		ui.getStep().set(4);
@@ -251,7 +250,7 @@ public class NodeSetterTest {
 	public void keepsDrawingWhenAFollowedValueIsRefused() {
 		final IntegerSignal index = new IntegerSignal(0);
 		final DoubleSignal width = new DoubleSignal(10D);
-		final Switch node = new Switch().states(index.map(value -> value == 0 ? Arrays.asList("low", "high") : Collections.<String>emptyList()));
+		final Switch node = new Switch().values(index.map(value -> value == 0 ? Arrays.asList("low", "high") : Collections.<String>emptyList()));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).width(width);
 		this.bridges.open(new NodeUI(node, rect));
 		final PrintStream error = System.err;
@@ -264,9 +263,9 @@ public class NodeSetterTest {
 		} finally {
 			System.setErr(error);
 		}
-		Assert.assertEquals("low", node.getState());
+		Assert.assertEquals("low", node.getValue());
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
-		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The states of Switch cannot take its new value (java.lang.IllegalArgumentException: A switch needs at least one state"));
+		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The values of Switch cannot take its new value (java.lang.IllegalArgumentException: The Switch needs at least one value"));
 	}
 
 	@Test

@@ -17,11 +17,11 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowDesign extends ShowUI {
 
-	private final StringSignal  name     = new StringSignal("Ada Lovelace");
-	private final BooleanSignal paper    = new BooleanSignal(false);
 	private final DoubleSignal  volume   = new DoubleSignal(0.3D);
+	private final BooleanSignal paper    = new BooleanSignal(false);
 	private final BooleanSignal notify   = new BooleanSignal(false);
 	private final BooleanSignal autoplay = new BooleanSignal(true);
+	private final StringSignal  name     = new StringSignal("Ada Lovelace");
 
 	private long   last;
 	private long   saved;
@@ -71,9 +71,9 @@ public class ShowDesign extends ShowUI {
 		kit.divider(1040, 316, 680).attach(layer);
 
 		TextNode.create(1040, 366).text(Text.create("Notifications", kit.label())).anchorY(Align.CENTER).attach(layer);
-		kit.toggle(1644, 345).checked(this.notify).attach(layer);
+		kit.toggle(1644, 345).toggle(this.notify).attach(layer);
 		TextNode.create(1040, 452).text(Text.create("Autoplay videos", kit.label())).anchorY(Align.CENTER).attach(layer);
-		kit.toggle(1644, 431).checked(this.autoplay).attach(layer);
+		kit.toggle(1644, 431).toggle(this.autoplay).attach(layer);
 		kit.divider(1040, 506, 680).attach(layer);
 
 		TextNode.create(1040, 554).text(Text.create("Volume", kit.label())).anchorY(Align.CENTER).attach(layer);

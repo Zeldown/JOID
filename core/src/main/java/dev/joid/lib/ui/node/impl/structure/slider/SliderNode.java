@@ -1,52 +1,44 @@
 package dev.joid.lib.ui.node.impl.structure.slider;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
-import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.event.EventListener;
-import dev.joid.lib.ui.event.EventType;
-import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.structure.choice.ChoiceNode;
 import lombok.Getter;
 import lombok.NonNull;
 
-public abstract class SliderNode<O> extends Node {
+@Getter
+public abstract class SliderNode<V> extends ChoiceNode<V> {
 
-	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
-	private static final EventType<NodeChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
+	private Node track;
+	private Node thumb;
 
-	@Getter private O value;
-	private Set<O>    valueSet;
-
-	@Getter private SliderThumbNode thumb;
-
-	private O pendingValue;
+	private boolean dragging;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.valueSet = new LinkedHashSet<>();
-
-		super.<SliderNode<O>>require("thumb", "call thumb(...) before attaching it", node -> node.thumb != null);
-		super.<SliderNode<O>>require("values", "call values(...) or range(...) before attaching it", node -> !node.valueSet.isEmpty());
-	}
-
-	@Override
-	public void init(final @NonNull UI ui) {
-		this.place();
+		super.<SliderNode<V>>require("thumb", "give it one with thumb(...)", node -> node.thumb != null);
 	}
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		this.thumb.layoutPosition(this.thumb.getLayoutX(), (super.getHeight() - this.thumb.getHeight()) / 2D);
-		this.pick();
+		if (this.track != null) {
+			this.track.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
+		}
 
-		this.drawSlider(mouseX, mouseY);
+		this.thumb.fit(super.getHeight(), super.getHeight());
+		if (!this.dragging) {
+			this.layoutValues();
+			return;
+		}
+
+		this.follow(mouseX);
+		if (!this.pick()) {
+			this.dragging = false;
+			this.layoutValues();
+		}
 	}
 
 	@Override
@@ -55,144 +47,70 @@ public abstract class SliderNode<O> extends Node {
 			return;
 		}
 
-		this.thumb.layoutPosition(event.getMouseX() - super.getAbsoluteX() - this.thumb.getWidth() / 2, this.thumb.getLayoutY());
-		this.thumb.dragging(true);
+		this.dragging = true;
+		this.follow(event.getMouseX());
 		event.consume();
 	}
 
-	public abstract void drawSlider(final double mouseX, final double mouseY);
+	@Override
+	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
+		if (!this.dragging || !event.getButton().isLeft()) {
+			return;
+		}
 
-	public final @NonNull Set<O> getValueSet() {
-		return Collections.unmodifiableSet(this.valueSet);
+		this.pick();
+		this.dragging = false;
+		this.layoutValues();
+	}
+
+	@Override
+	public void detach() {
+		this.dragging = false;
+	}
+
+	@Override
+	protected void layoutValues() {
+		if (this.thumb == null) {
+			return;
+		}
+
+		final int count = super.getValueList().size();
+		final double room = super.getWidth() - this.thumb.getWidth();
+		this.thumb.layoutPosition(count <= 1 ? 0D : room * Math.max(0, super.getValueIndex()) / (count - 1), (super.getHeight() - this.thumb.getHeight()) / 2D);
 	}
 
 	public final float getProgress() {
-		if (this.thumb == null || super.getWidth() <= this.thumb.getWidth()) {
+		final int count = super.getValueList().size();
+		if (this.thumb == null || count <= 1 || super.getWidth() <= this.thumb.getWidth()) {
 			return 0F;
+		}
+
+		if (!this.dragging) {
+			return Math.max(0, super.getValueIndex()) / (float) (count - 1);
 		}
 
 		return Math.min(1F, Math.max(0F, (float) this.thumb.getX() / (float) (super.getWidth() - this.thumb.getWidth())));
 	}
 
-	public final <T extends SliderNode<O>> @NonNull T thumb(final @NonNull SliderThumbNode thumb) {
-		if (this.thumb != null) {
-			super.remove(this.thumb);
-		}
-
-		this.thumb = thumb.slider(this).attach(this);
+	public final <T extends SliderNode<V>> @NonNull T track(final @NonNull Node track) {
+		this.track = super.part(this.track, track);
 		return (T) this;
 	}
 
-	@SafeVarargs
-	public final <T extends SliderNode<O>> @NonNull T values(final @NonNull O @NonNull... values) {
-		if (values.length == 0) {
-			throw new IllegalArgumentException("A slider needs at least one option, got none: pass them to values(...)");
-		}
-
-		this.valueSet = new LinkedHashSet<>(Arrays.asList(values));
-		final O pending = this.pendingValue;
-		this.pendingValue = null;
-		if (pending != null) {
-			this.choose(pending, false);
-		} else if (!this.valueSet.contains(this.value)) {
-			this.change(values[0], false);
-		} else if (super.hasUi()) {
-			this.place();
-		}
+	public final <T extends SliderNode<V>> @NonNull T thumb(final @NonNull Node thumb) {
+		this.thumb = super.part(this.thumb, thumb);
 		return (T) this;
 	}
 
-	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull O value) {
-		return super.start("value", value, option -> this.choose(option, false));
+	private void follow(final double mouseX) {
+		this.thumb.layoutPosition(Math.min(Math.max(0D, mouseX - super.getAbsoluteX() - this.thumb.getWidth() / 2D), super.getWidth() - this.thumb.getWidth()), (super.getHeight() - this.thumb.getHeight()) / 2D);
 	}
 
-	public final <T extends SliderNode<O>> @NonNull T value(final @NonNull Signal<O> value) {
-		return super.bind("value", value, option -> {
-			if (this.valueSet.isEmpty() || this.valueSet.contains(option)) {
-				this.choose(option, false);
-			}
-		});
-	}
-
-	public final <T extends SliderNode<O>> @NonNull T change(final @NonNull O value) {
-		this.choose(value, true);
-		return (T) this;
-	}
-
-	public final <T extends SliderNode<O>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, O>> listener) {
-		return super.listen(SliderNode.BEFORE_CHANGE, listener);
-	}
-
-	public final <T extends SliderNode<O>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, O>> listener) {
-		return super.listen(SliderNode.CHANGE, listener);
-	}
-
-	protected final void release() {
-		this.pick();
-		this.place();
-	}
-
-	private void choose(final O value, final boolean refusable) {
-		if (this.valueSet.isEmpty()) {
-			this.pendingValue = value;
-			return;
-		}
-
-		if (!this.valueSet.contains(value)) {
-			throw new IllegalArgumentException("The value " + value + " is not an option of the slider " + this.valueSet + ", pass one of them or add it with values(...)");
-		}
-
-		this.change(value, refusable);
-	}
-
-	private void change(final O value, final boolean refusable) {
-		if (value.equals(this.value)) {
-			return;
-		}
-
-		super.change(SliderNode.BEFORE_CHANGE, SliderNode.CHANGE, this.value, value, refusable, () -> {
-			this.value = value;
-			super.sync("value", value);
-		});
-
-		if (super.hasUi()) {
-			this.place();
-		}
-	}
-
-	private void pick() {
-		final O newValue = (O) this.valueSet.toArray()[Math.round((this.valueSet.size() - 1) * this.getProgress())];
-		if (this.value.equals(newValue)) {
-			return;
-		}
-
-		final boolean changed = super.change(SliderNode.BEFORE_CHANGE, SliderNode.CHANGE, this.value, newValue, true, () -> {
-			this.value = newValue;
-			super.sync("value", newValue);
-		});
-
-		if (!changed) {
-			this.thumb.dragging(false);
-			this.place();
-		}
-	}
-
-	private void place() {
-		if (this.valueSet.size() == 1) {
-			this.thumb.layoutPosition(0D, this.thumb.getLayoutY());
-			return;
-		}
-
-		int index = 0;
-		for (final O value : this.valueSet) {
-			if (value.equals(this.value)) {
-				break;
-			}
-
-			index++;
-		}
-
-		this.thumb.layoutPosition((super.getWidth() - this.thumb.getWidth()) * ((double) index / (double) (this.valueSet.size() - 1)), this.thumb.getLayoutY());
+	private boolean pick() {
+		final List<V> values = super.getValueList();
+		final V value = values.get(Math.round((values.size() - 1) * this.getProgress()));
+		super.change(value);
+		return value.equals(super.getValue());
 	}
 
 }

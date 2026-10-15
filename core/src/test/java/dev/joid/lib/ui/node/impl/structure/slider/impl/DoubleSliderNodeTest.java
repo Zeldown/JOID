@@ -1,6 +1,5 @@
 package dev.joid.lib.ui.node.impl.structure.slider.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -11,19 +10,19 @@ public class DoubleSliderNodeTest {
 	@Test
 	public void stepsFromItsMinimumToItsMaximum() {
 		final Slider slider = new Slider().range(0D, 1D, 0.25D);
-		Assert.assertEquals(Arrays.asList(0D, 0.25D, 0.5D, 0.75D, 1D), new ArrayList<>(slider.getValueSet()));
+		Assert.assertEquals(Arrays.asList(0D, 0.25D, 0.5D, 0.75D, 1D), slider.getValueList());
 		Assert.assertEquals(0D, slider.getValue(), 0D);
 	}
 
 	@Test
 	public void stopsBeforeAStepPastItsMaximum() {
-		Assert.assertEquals(Arrays.asList(0D, 0.5D), new ArrayList<>(new Slider().range(0D, 0.75D, 0.5D).getValueSet()));
+		Assert.assertEquals(Arrays.asList(0D, 0.5D), new Slider().range(0D, 0.75D, 0.5D).getValueList());
 	}
 
 	@Test
 	public void keepsTheOrderOfItsValues() {
 		final Slider slider = new Slider().values(1D, 0.25D, 0.5D, 0D).value(0.5D);
-		Assert.assertEquals(Arrays.asList(1D, 0.25D, 0.5D, 0D), new ArrayList<>(slider.getValueSet()));
+		Assert.assertEquals(Arrays.asList(1D, 0.25D, 0.5D, 0D), slider.getValueList());
 		Assert.assertEquals(0.5D, slider.getValue(), 0D);
 	}
 
@@ -45,9 +44,9 @@ public class DoubleSliderNodeTest {
 	@Test
 	public void reachesEachTenthUpToItsMaximum() {
 		final Slider slider = new Slider().range(0D, 1D, 0.1D);
-		Assert.assertEquals(11, slider.getValueSet().size());
-		Assert.assertTrue(slider.getValueSet().contains(0.3D));
-		Assert.assertTrue(slider.getValueSet().contains(1D));
+		Assert.assertEquals(11, slider.getValueList().size());
+		Assert.assertTrue(slider.getValueList().contains(0.3D));
+		Assert.assertTrue(slider.getValueList().contains(1D));
 	}
 
 	public static final class Slider extends DoubleSliderNode {
@@ -55,9 +54,6 @@ public class DoubleSliderNodeTest {
 		public Slider() {
 			super(0D, 0D, 400D, 50D);
 		}
-
-		@Override
-		public void drawSlider(final double mouseX, final double mouseY) {}
 
 	}
 

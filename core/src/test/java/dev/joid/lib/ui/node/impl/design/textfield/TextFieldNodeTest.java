@@ -52,7 +52,7 @@ public class TextFieldNodeTest {
 		Assert.assertFalse(field.isFocused());
 		Assert.assertEquals(-1, field.getMaxTextLength());
 		Assert.assertEquals(0, field.getCursorPos());
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		Assert.assertTrue(field.getAccept().test("abc"));
 		Assert.assertFalse(field.isAllowEmpty());
 		Assert.assertSame(Align.START, field.getAlignX());
@@ -363,7 +363,7 @@ public class TextFieldNodeTest {
 		this.control(field, Key.A);
 		this.click(500D, 500D);
 		Assert.assertFalse(field.isFocused());
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 	}
 
 	@Test
@@ -383,15 +383,15 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(1, field.getCursorPos());
 		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
 		this.click(144D, 120D);
-		Assert.assertEquals(1, field.getSelectionStart());
+		Assert.assertEquals(1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(4, field.getCursorPos());
 		this.click(124D, 120D);
-		Assert.assertEquals(1, field.getSelectionStart());
+		Assert.assertEquals(1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(2, field.getCursorPos());
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
 		this.bridges.getClock().advance(600L);
 		this.click(124D, 120D);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 	}
 
 	@Test
@@ -426,7 +426,7 @@ public class TextFieldNodeTest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
 		this.press(field, Key.RIGHT);
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
-		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(2, field.getCursorPos());
 		this.type(field, "x");
 		Assert.assertEquals("xb", field.getText());
@@ -552,7 +552,7 @@ public class TextFieldNodeTest {
 		this.type(field, "x");
 		Assert.assertEquals("x", field.getText());
 		Assert.assertEquals(1, field.getCursorPos());
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 	}
 
 	@Test
@@ -658,16 +658,16 @@ public class TextFieldNodeTest {
 		for (int i = 0; i < 3; i++) {
 			this.press(field, Key.RIGHT);
 		}
-		Assert.assertEquals(1, field.getSelectionStart());
+		Assert.assertEquals(1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(4, field.getCursorPos());
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_SHIFT);
 		this.press(field, Key.LEFT);
-		Assert.assertEquals(1, field.getSelectionStart());
+		Assert.assertEquals(1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(3, field.getCursorPos());
 		this.bridges.getWindow().getKeys().remove(Key.RIGHT_SHIFT);
 		this.press(field, Key.RIGHT);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(4, field.getCursorPos());
 	}
 
@@ -676,10 +676,10 @@ public class TextFieldNodeTest {
 		final TextFieldNode field = this.field("abcdef").cursorPosition(1);
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_SHIFT);
 		this.press(field, Key.RIGHT);
-		Assert.assertEquals(1, field.getSelectionStart());
+		Assert.assertEquals(1, TextFieldNodeTest.anchor(field));
 		this.bridges.getWindow().getKeys().remove(Key.RIGHT_SHIFT);
 		this.press(field, Key.LEFT);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(1, field.getCursorPos());
 	}
 
@@ -688,7 +688,7 @@ public class TextFieldNodeTest {
 		final TextFieldNode field = this.field("one two");
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_SHIFT, Key.LEFT_CONTROL));
 		this.press(field, Key.RIGHT);
-		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(4, field.getCursorPos());
 	}
 
@@ -728,7 +728,7 @@ public class TextFieldNodeTest {
 		this.press(forward, Key.BACKSPACE);
 		Assert.assertEquals("aef", forward.getText());
 		Assert.assertEquals(1, forward.getCursorPos());
-		Assert.assertEquals(-1, forward.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(forward));
 		final TextFieldNode backward = this.selected(4, 1);
 		this.press(backward, Key.BACKSPACE);
 		Assert.assertEquals("aef", backward.getText());
@@ -765,14 +765,14 @@ public class TextFieldNodeTest {
 		this.press(backward, Key.DELETE);
 		Assert.assertEquals("aef", backward.getText());
 		Assert.assertEquals(1, backward.getCursorPos());
-		Assert.assertEquals(-1, backward.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(backward));
 	}
 
 	@Test
 	public void selectsEverythingWithControlA() {
 		final TextFieldNode field = this.field("hello").cursorPosition(2);
 		this.control(field, Key.A);
-		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(5, field.getCursorPos());
 	}
 
@@ -785,7 +785,7 @@ public class TextFieldNodeTest {
 		final TextFieldNode backward = this.selected(5, 2);
 		this.control(backward, Key.C);
 		Assert.assertEquals("cde", this.bridges.getWindow().getClipboard());
-		Assert.assertEquals(5, backward.getSelectionStart());
+		Assert.assertEquals(5, TextFieldNodeTest.anchor(backward));
 	}
 
 	@Test
@@ -805,13 +805,13 @@ public class TextFieldNodeTest {
 		Assert.assertEquals("bcd", this.bridges.getWindow().getClipboard());
 		Assert.assertEquals("aef", forward.getText());
 		Assert.assertEquals(1, forward.getCursorPos());
-		Assert.assertEquals(-1, forward.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(forward));
 		final TextFieldNode backward = this.selected(5, 2);
 		this.control(backward, Key.X);
 		Assert.assertEquals("cde", this.bridges.getWindow().getClipboard());
 		Assert.assertEquals("abf", backward.getText());
 		Assert.assertEquals(2, backward.getCursorPos());
-		Assert.assertEquals(-1, backward.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(backward));
 	}
 
 	@Test
@@ -1154,7 +1154,7 @@ public class TextFieldNodeTest {
 		field.text("ab");
 		this.bridges.frame();
 		Assert.assertEquals(1, field.getCursorPos());
-		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(2, TextFieldNodeTest.anchor(field));
 	}
 
 	@Test
@@ -1164,7 +1164,7 @@ public class TextFieldNodeTest {
 		this.bridges.frame();
 		Assert.assertEquals("abcdef", field.getText());
 		Assert.assertEquals(3, field.getCursorPos());
-		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(2, TextFieldNodeTest.anchor(field));
 	}
 
 	@Test
@@ -1195,7 +1195,7 @@ public class TextFieldNodeTest {
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_CONTROL);
 		field.keyPressed(NodeKeyEvent.create(field, Key.A, null));
 		Assert.assertEquals("hello", field.getText());
-		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(5, field.getCursorPos());
 	}
 
@@ -1255,10 +1255,10 @@ public class TextFieldNodeTest {
 		final TextFieldNode field = this.field("abcdef").cursorPosition(2);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
 		this.press(field, Key.END);
-		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(2, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(6, field.getCursorPos());
 		this.press(field, Key.HOME);
-		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(2, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(0, field.getCursorPos());
 	}
 
@@ -1266,11 +1266,11 @@ public class TextFieldNodeTest {
 	public void dropsItsSelectionOnHomeAndEndWithoutShift() {
 		final TextFieldNode field = this.selected(1, 3);
 		this.press(field, Key.END);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(6, field.getCursorPos());
 		this.control(field, Key.A);
 		this.press(field, Key.HOME);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(0, field.getCursorPos());
 	}
 
@@ -1278,11 +1278,11 @@ public class TextFieldNodeTest {
 	public void dropsItsSelectionOnceUnfocused() {
 		final TextFieldNode field = this.selected(1, 3);
 		field.focused(false);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		field.focused(true);
 		this.control(field, Key.A);
 		this.press(field, Key.ENTER);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 	}
 
 	@Test
@@ -1337,11 +1337,11 @@ public class TextFieldNodeTest {
 		try {
 			final TextFieldNode field = this.field("one two");
 			this.control(field, Key.A);
-			Assert.assertEquals(-1, field.getSelectionStart());
+			Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 			this.bridges.getWindow().getKeys().add(Key.LEFT_SUPER);
 			this.press(field, Key.A);
 			this.bridges.getWindow().getKeys().remove(Key.LEFT_SUPER);
-			Assert.assertEquals(0, field.getSelectionStart());
+			Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 			this.press(field, Key.END);
 			this.bridges.getWindow().getKeys().add(Key.LEFT_ALT);
 			this.press(field, Key.LEFT);
@@ -1406,6 +1406,15 @@ public class TextFieldNodeTest {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text(text).focused(true);
 		this.bridges.open(new NodeUI(field));
 		return field;
+	}
+
+	public static int anchor(final FieldNode<?> field) {
+		final FieldSelection selection = field.getSelection();
+		if (selection.isEmpty()) {
+			return -1;
+		}
+
+		return field.getCursorPos() == selection.getStart() ? selection.getEnd() : selection.getStart();
 	}
 
 	private TextFieldNode selected(final int start, final int cursor) {

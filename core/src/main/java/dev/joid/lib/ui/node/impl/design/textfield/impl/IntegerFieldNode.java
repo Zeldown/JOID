@@ -16,6 +16,7 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	protected IntegerFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		super.fallback(0);
+		super.accept(text -> text.matches(this.minValue < 0 ? "-?[0-9]*" : "[0-9]*"));
 	}
 
 	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width) {
@@ -57,11 +58,6 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	@Override
 	protected final Integer increment(final @NonNull Integer value, final int count) {
 		return (int) Math.max(this.minValue, Math.min(this.maxValue, (long) value + (long) this.step * count));
-	}
-
-	@Override
-	protected final boolean accepts(final @NonNull String text) {
-		return text.matches(this.minValue < 0 ? "-?[0-9]*" : "[0-9]*");
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T max(final int maxValue) {

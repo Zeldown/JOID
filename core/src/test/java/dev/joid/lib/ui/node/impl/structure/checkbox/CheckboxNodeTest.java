@@ -16,6 +16,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 
 public class CheckboxNodeTest {
@@ -206,6 +207,7 @@ public class CheckboxNodeTest {
 
 		public Checkbox() {
 			super(100D, 100D, 24D, 24D);
+			super.mark(RectNode.create(0D, 0D, 0D, 0D));
 		}
 
 	}

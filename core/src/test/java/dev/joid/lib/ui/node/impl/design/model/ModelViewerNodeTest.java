@@ -137,11 +137,11 @@ public class ModelViewerNodeTest {
 		final List<Object> events = new ArrayList<>();
 		final ModelViewerNode viewer = ModelViewerNode
 		.create(100D, 100D, 200D, 200D)
-		.beforeChange(event -> events.add("before " + event.getValue()))
-		.onChange(event -> events.add("after " + event.getPrevious() + " " + event.getValue()))
+		.beforeZoom(event -> events.add("before " + event.getValue()))
+		.onZoom(event -> events.add("after " + event.getPrevious() + " " + event.getValue()))
 		.model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
-		Assert.assertSame(viewer, viewer.change(1.5D));
+		Assert.assertSame(viewer, viewer.zoomTo(1.5D));
 		viewer.zoom(1.2D);
 		Assert.assertEquals(Arrays.asList("before 1.5", "after 1.0 1.5", "after 1.5 1.2"), events);
 	}
@@ -149,9 +149,9 @@ public class ModelViewerNodeTest {
 	@Test
 	public void keepsItsZoomWhenItsGestureIsRefused() {
 		final DoubleSignal zoom = new DoubleSignal(1D);
-		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom).beforeChange(event -> event.cancel()).model(new FixedModel());
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom).beforeZoom(event -> event.cancel()).model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
-		viewer.change(1.5D);
+		viewer.zoomTo(1.5D);
 		this.bridges.move(200D, 200D).frames(2).scroll(1D);
 		Assert.assertEquals(1D, viewer.getZoom(), 0D);
 		Assert.assertEquals(1D, zoom.peek(), 0D);

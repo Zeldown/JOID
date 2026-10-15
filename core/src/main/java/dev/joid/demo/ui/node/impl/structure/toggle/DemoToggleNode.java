@@ -1,7 +1,7 @@
 package dev.joid.demo.ui.node.impl.structure.toggle;
 
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
 import lombok.NonNull;
 
@@ -11,17 +11,12 @@ public class DemoToggleNode extends ToggleNode<String, String> {
 
 	protected DemoToggleNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+		super.track(RectNode.create(0, 0, 0, 0).color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F)));
+		super.knob(RectNode.create(0, 0, 0, 0).color(() -> DemoToggleNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F)));
 	}
 
 	public static @NonNull DemoToggleNode create(final double x, final double y, final double width, final double height) {
 		return new DemoToggleNode(x, y, width, height);
-	}
-
-	@Override
-	public void draw(final double mouseX, final double mouseY) {
-		final float alpha = super.isEnabled() ? 1F : 0.4F;
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE.withAlpha(alpha));
-		DrawUtils.SHAPE.drawRect(super.getX() + (super.isToggle() ? super.dw(2) : 0), super.getY(), super.dw(2), super.getHeight(), DemoToggleNode.INK.withAlpha(alpha));
 	}
 
 }

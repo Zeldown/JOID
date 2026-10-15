@@ -1,19 +1,11 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
-import java.util.function.UnaryOperator;
-
-import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class TextFieldNode extends LineFieldNode<String> {
-
-	private UnaryOperator<String> formatter;
 
 	protected TextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-
-		this.formatter = UnaryOperator.identity();
 	}
 
 	public static @NonNull TextFieldNode create(final double x, final double y, final double width) {
@@ -26,17 +18,12 @@ public class TextFieldNode extends LineFieldNode<String> {
 
 	@Override
 	protected final String parse(final @NonNull String text) {
-		return this.formatter.apply(text);
+		return text;
 	}
 
 	@Override
 	protected final @NonNull String format(final @NonNull String value) {
 		return value;
-	}
-
-	public final <T extends TextFieldNode> @NonNull T format(final @NonNull UnaryOperator<@NonNull String> formatter) {
-		this.formatter = formatter;
-		return (T) this;
 	}
 
 }

@@ -15,7 +15,6 @@ import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.box.BoundingBox;
 
 @UIData(background = true)
 public class UIDemoOverflow extends UIDemo {
@@ -79,7 +78,7 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 360, 180)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(0, 188, 60, 12, BoundingBox.create(0, 188, 360, 12)))
+			.scrollbar(DemoScrollbarNode.create(0, 188, 360, 12, 60))
 			.body(area -> {
 				GridNode
 				.create(10, 10, 690, 410)
@@ -129,7 +128,7 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 340, 200)
 			.margin(10D)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(348, 0, 12, 40, BoundingBox.create(348, 0, 12, 200)))
+			.scrollbar(DemoScrollbarNode.create(348, 0, 12, 200, 40))
 			.body(grid -> {
 				for (int i = 0; i < 25; i++) {
 					RectNode.create(10, 10, 56, 56).color(UIDemoOverflow.INK).attach(grid);
@@ -148,7 +147,7 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 360, 180)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(0, 188, 60, 12, BoundingBox.create(0, 188, 360, 12)))
+			.scrollbar(DemoScrollbarNode.create(0, 188, 360, 12, 60))
 			.body(area -> {
 				FlexNode
 				.horizontal(10, 10, 160)

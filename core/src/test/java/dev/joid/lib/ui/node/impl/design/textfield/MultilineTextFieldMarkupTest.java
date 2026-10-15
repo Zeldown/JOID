@@ -308,7 +308,7 @@ public class MultilineTextFieldMarkupTest {
 	public void selectsTheWordOfADoubleClickOnAWrappedLine() {
 		final MultilineTextFieldNode field = this.field("<b>aaaa bbbbb cc</b>", true);
 		this.clicks(20D, 25D, 2);
-		Assert.assertEquals(8, field.getSelectionStart());
+		Assert.assertEquals(8, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(13, field.getCursorPos());
 	}
 
@@ -317,7 +317,7 @@ public class MultilineTextFieldMarkupTest {
 		for (final boolean markup : new boolean[] {true, false}) {
 			final MultilineTextFieldNode field = this.field("<b>aa\nbb</b>\ncc", markup);
 			this.clicks(5D, 25D, 3);
-			Assert.assertEquals(6, field.getSelectionStart());
+			Assert.assertEquals(6, TextFieldNodeTest.anchor(field));
 			Assert.assertEquals(12, field.getCursorPos());
 		}
 	}
@@ -327,10 +327,10 @@ public class MultilineTextFieldMarkupTest {
 		final MultilineTextFieldNode field = this.field("<b>aa\nbb</b>\ncc", true);
 		this.clicks(5D, 25D, 3);
 		this.drag(5D, 45D);
-		Assert.assertEquals(6, field.getSelectionStart());
+		Assert.assertEquals(6, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(15, field.getCursorPos());
 		this.drag(5D, 5D);
-		Assert.assertEquals(12, field.getSelectionStart());
+		Assert.assertEquals(12, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(0, field.getCursorPos());
 	}
 
@@ -339,10 +339,10 @@ public class MultilineTextFieldMarkupTest {
 		final MultilineTextFieldNode field = this.field("<b>aa\nbb</b>\ncc", true);
 		this.clicks(20D, 5D, 1);
 		this.drag(20D, 25D);
-		Assert.assertEquals(4, field.getSelectionStart());
+		Assert.assertEquals(4, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(7, field.getCursorPos());
 		this.drag(20D, 5D);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(4, field.getCursorPos());
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.drag(20D, 45D);

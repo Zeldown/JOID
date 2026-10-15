@@ -41,8 +41,8 @@ public class UIDemoReorderable extends UIDemo {
 			.body(area -> {
 				ReorderableFlexNode
 				.vertical(0, 0, 360)
-				.margin(6D)
 				.onReorderEnd(event -> System.out.println("[UIDemoReorderable] vertical auto list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()))
+				.margin(6D)
 				.body(flex -> {
 					for (int i = 0; i < 8; i++) {
 						final int index = i;
@@ -71,9 +71,9 @@ public class UIDemoReorderable extends UIDemo {
 		.body(rect -> {
 			final ReorderableFlexNode manual = ReorderableFlexNode
 					.vertical(20, 20, 360)
-					.margin(6D)
 					.autoDrag(false)
-					.onReorderEnd(event -> System.out.println("[UIDemoReorderable] vertical handle list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()));
+					.onReorderEnd(event -> System.out.println("[UIDemoReorderable] vertical handle list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()))
+					.margin(6D);
 			manual.body(flex -> {
 			for (int i = 0; i < 5; i++) {
 				final int index = i;
@@ -107,10 +107,10 @@ public class UIDemoReorderable extends UIDemo {
 		.body(rect -> {
 			ReorderableFlexNode
 			.vertical(20, 20, 200)
-			.margin(6D)
 			.onReorderStart(event -> starts.increment())
 			.onReorder(event -> moves.increment())
 			.onReorderEnd(event -> last.set(event.getOldIndex() + " -> " + event.getNewIndex()))
+			.margin(6D)
 			.body(flex -> {
 				for (int i = 0; i < 5; i++) {
 					final int index = i;
@@ -178,8 +178,8 @@ public class UIDemoReorderable extends UIDemo {
 			.body(area -> {
 				ReorderableFlexNode
 				.horizontal(10, 10, 200)
-				.margin(10D)
 				.onReorderEnd(event -> System.out.println("[UIDemoReorderable] horizontal auto list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()))
+				.margin(10D)
 				.body(flex -> {
 					for (int i = 0; i < 8; i++) {
 						final int index = i;
@@ -213,9 +213,9 @@ public class UIDemoReorderable extends UIDemo {
 			.body(area -> {
 				final ReorderableFlexNode manual = ReorderableFlexNode
 						.horizontal(10, 10, 200)
-						.margin(10D)
 						.autoDrag(false)
-						.onReorderEnd(event -> System.out.println("[UIDemoReorderable] horizontal handle list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()));
+						.onReorderEnd(event -> System.out.println("[UIDemoReorderable] horizontal handle list: reorder end " + event.getOldIndex() + " -> " + event.getNewIndex()))
+						.margin(10D);
 				manual.body(flex -> {
 					for (int i = 0; i < 8; i++) {
 						final int index = i;
@@ -305,11 +305,11 @@ public class UIDemoReorderable extends UIDemo {
 		.body(rect -> {
 			ReorderableFlexNode
 			.vertical(20, 20, 360)
-			.margin(6D)
 			.beforeReorder(event -> {
 				refused.increment();
 				event.cancel();
 			})
+			.margin(6D)
 			.body(flex -> {
 				for (int i = 0; i < 4; i++) {
 					final int index = i;

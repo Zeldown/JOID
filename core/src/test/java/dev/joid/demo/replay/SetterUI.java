@@ -26,8 +26,8 @@ import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNodeTest.Selector;
+import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest;
 import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.IntegerSlider;
-import dev.joid.lib.ui.node.impl.structure.slider.SliderNodeTest.Thumb;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
 import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNodeTest.Toggle;
 import dev.joid.lib.utils.align.Align;
@@ -120,14 +120,14 @@ public class SetterUI extends UI {
 		.attach(this);
 		this.checkbox = new Checkbox().checked(this.step.get() > 0).attach(this);
 		this.toggle = new Toggle().state("on", 0).toggle(this.step.get() > 0).attach(this);
-		this.indexed = new Switch().states("low", "medium", "high").index(this.step.get() % 3).attach(this);
-		this.named = new Switch().states("low", "medium", "high").state(this.step.get() > 0 ? "high" : "low").attach(this);
+		this.indexed = new Switch().values("low", "medium", "high").valueIndex(this.step.get() % 3).attach(this);
+		this.named = new Switch().values("low", "medium", "high").value(this.step.get() > 0 ? "high" : "low").attach(this);
 		this.selector = new Selector()
+		.active(this.step.get() > 1)
 		.values("first", "second", "third")
 		.value(this.step.get() > 0 ? "second" : "first")
-		.active(this.step.get() > 1)
 		.attach(this);
-		this.slider = new IntegerSlider().range(1, 9).thumb(new Thumb()).value(1 + this.step.get()).attach(this);
+		this.slider = new IntegerSlider().range(1, 9).thumb(SliderNodeTest.thumb()).value(1 + this.step.get()).attach(this);
 		this.flex = FlexNode
 		.vertical(0D, 0D, 100D)
 		.margin(this.step.get() * 5D)

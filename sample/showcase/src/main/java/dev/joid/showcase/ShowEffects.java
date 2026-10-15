@@ -1,6 +1,5 @@
 package dev.joid.showcase;
 
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
@@ -26,7 +25,6 @@ public class ShowEffects extends ShowUI {
 	private final double[]        levels   = new double[ShowEffects.NAMES.length];
 	private final BooleanSignal[] switches = new BooleanSignal[ShowEffects.NAMES.length];
 
-	private long last;
 
 	@Override
 	protected void scene() {
@@ -53,7 +51,7 @@ public class ShowEffects extends ShowUI {
 			final Color dot = dots[i];
 			CircleNode.create(158, y + 15D, 12).color(() -> on.get() ? dot : Color.WHITE.withAlpha(0.18F)).effect(ShadowNodeEffect.create(dot, 10F).color(() -> dot.withAlpha(on.get() ? 0.9F : 0F))).attach(this);
 			TextNode.create(188, y + 21D).text(Text.create(ShowEffects.NAMES[i], ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);
-			ShowSwitchNode.create(650, y, dot).checked(on).attach(this);
+			ShowSwitchNode.create(650, y, dot).toggle(on).attach(this);
 		}
 	}
 
@@ -90,12 +88,8 @@ public class ShowEffects extends ShowUI {
 	}
 
 	private void step() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final double delta = this.last == 0L ? 0D : (now - this.last) / 1000D;
-		this.last = now;
 		for (int i = 0; i < this.levels.length; i++) {
-			final double target = this.switches[i].get() ? 1D : 0D;
-			this.levels[i] += (target - this.levels[i]) * (1D - Math.exp(-delta * 7D));
+			this.levels[i] = super.lerpByFramerate(this.levels[i], this.switches[i].get() ? 1D : 0D, 0.35D, 0.001D, true);
 		}
 	}
 

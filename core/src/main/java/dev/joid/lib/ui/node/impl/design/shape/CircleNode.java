@@ -27,8 +27,7 @@ public class CircleNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final Color color = this.hoveredColor != null ? this.color.to(this.hoveredColor, super.hoverValue(1F)) : this.color;
-		DrawUtils.SHAPE.drawCircle(super.getX() + super.dw(2D), super.getY() + super.dh(2D), color, Math.min(super.getWidth(), super.getHeight()) / 2D);
+		DrawUtils.SHAPE.drawCircle(super.getX() + super.dw(2D), super.getY() + super.dh(2D), super.hoverColor(this.color, this.hoveredColor), Math.min(super.getWidth(), super.getHeight()) / 2D);
 	}
 
 	@Override

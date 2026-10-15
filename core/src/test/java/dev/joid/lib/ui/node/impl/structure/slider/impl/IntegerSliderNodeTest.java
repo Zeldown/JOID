@@ -1,6 +1,5 @@
 package dev.joid.lib.ui.node.impl.structure.slider.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -11,14 +10,14 @@ public class IntegerSliderNodeTest {
 	@Test
 	public void spansAnInclusiveRange() {
 		final Slider slider = new Slider().range(1, 5);
-		Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), new ArrayList<>(slider.getValueSet()));
+		Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), slider.getValueList());
 		Assert.assertEquals(1, slider.getValue().intValue());
 	}
 
 	@Test
 	public void spansARangeByItsStep() {
 		final Slider slider = new Slider().range(0, 10, 4);
-		Assert.assertEquals(Arrays.asList(0, 4, 8), new ArrayList<>(slider.getValueSet()));
+		Assert.assertEquals(Arrays.asList(0, 4, 8), slider.getValueList());
 		Assert.assertEquals(0, slider.getValue().intValue());
 	}
 
@@ -35,7 +34,7 @@ public class IntegerSliderNodeTest {
 	@Test
 	public void keepsTheOrderOfItsValues() {
 		final Slider slider = new Slider().values(30, 10, 20).value(20);
-		Assert.assertEquals(Arrays.asList(30, 10, 20), new ArrayList<>(slider.getValueSet()));
+		Assert.assertEquals(Arrays.asList(30, 10, 20), slider.getValueList());
 		Assert.assertEquals(20, slider.getValue().intValue());
 	}
 
@@ -59,9 +58,6 @@ public class IntegerSliderNodeTest {
 		public Slider() {
 			super(0D, 0D, 400D, 50D);
 		}
-
-		@Override
-		public void drawSlider(final double mouseX, final double mouseY) {}
 
 	}
 

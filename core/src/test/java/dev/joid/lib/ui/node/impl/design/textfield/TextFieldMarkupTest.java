@@ -184,7 +184,7 @@ public class TextFieldMarkupTest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
 		this.click(field, 30D);
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
-		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(5, field.getCursorPos());
 		final Draw selection = this.selection();
 		Assert.assertEquals(2D, selection.getLeft(), 1E-5D);
@@ -263,7 +263,7 @@ public class TextFieldMarkupTest {
 		for (final boolean markup : new boolean[] {true, false}) {
 			final TextFieldNode field = this.field("aa <b>bold</b> cc", markup);
 			this.clicks(field, markup ? 40D : 70D, 2);
-			Assert.assertEquals(3, field.getSelectionStart());
+			Assert.assertEquals(3, TextFieldNodeTest.anchor(field));
 			Assert.assertEquals(14, field.getCursorPos());
 		}
 	}
@@ -272,7 +272,7 @@ public class TextFieldMarkupTest {
 	public void selectsAWordWithASpacedTagAsOneWordWithMarkup() {
 		final TextFieldNode field = this.field("a <c red>bb</c> c", true);
 		this.clicks(field, 25D, 2);
-		Assert.assertEquals(2, field.getSelectionStart());
+		Assert.assertEquals(2, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(15, field.getCursorPos());
 	}
 
@@ -280,7 +280,7 @@ public class TextFieldMarkupTest {
 	public void selectsEverythingOnATripleClick() {
 		final TextFieldNode field = this.field("aa <b>bold</b> cc", true);
 		this.clicks(field, 40D, 3);
-		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(17, field.getCursorPos());
 	}
 
@@ -289,10 +289,10 @@ public class TextFieldMarkupTest {
 		final TextFieldNode field = this.field("aa <b>bold</b> cc", true);
 		this.clicks(field, 40D, 2);
 		this.drag(field, 105D);
-		Assert.assertEquals(3, field.getSelectionStart());
+		Assert.assertEquals(3, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(17, field.getCursorPos());
 		this.drag(field, 5D);
-		Assert.assertEquals(14, field.getSelectionStart());
+		Assert.assertEquals(14, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(0, field.getCursorPos());
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.drag(field, 92D);
@@ -304,13 +304,13 @@ public class TextFieldMarkupTest {
 		final TextFieldNode field = this.field("a<b>bc</b>d", true);
 		this.click(field, 4D);
 		this.drag(field, 30D);
-		Assert.assertEquals(0, field.getSelectionStart());
+		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(5, field.getCursorPos());
 		final Draw selection = this.selection();
 		Assert.assertEquals(2D, selection.getLeft(), 1E-5D);
 		Assert.assertEquals(27D, selection.getRight(), 1E-5D);
 		this.drag(field, 4D);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(0, field.getCursorPos());
 	}
 
@@ -319,10 +319,10 @@ public class TextFieldMarkupTest {
 		final TextFieldNode field = this.field("aa bb", false);
 		this.clicks(field, 5D, 1);
 		this.clicks(field, 35D, 1);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		this.bridges.getClock().advance(600L);
 		this.clicks(field, 35D, 1);
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(1, field.getPressCount());
 	}
 

@@ -1,12 +1,8 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.function.UnaryOperator;
 
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.draw.text.builder.TextOverflow;
@@ -22,15 +18,13 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class MultilineTextFieldNode extends FieldNode<String> {
 
-	private double                yOffset;
-	private UnaryOperator<String> formatter;
+	private double yOffset;
 
 	protected MultilineTextFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
 		super.margin(2D);
 		super.cursorMargin(-1D);
-		this.formatter = UnaryOperator.identity();
 	}
 
 	public static @NonNull MultilineTextFieldNode create(final double x, final double y, final double width, final double height) {
@@ -40,7 +34,6 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	@Override
 	protected void drawField() {
 		final String text = super.getText();
-		final TextInfo info = super.getInfo();
 		final double maxWidth = this.getRawWidth();
 		final FieldLayout layout = this.getLayout();
 		final List<FieldLine> lines = layout.getLines();
@@ -57,14 +50,12 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			this.yOffset = 0;
 		}
 
-		this.yOffset = super.getUi().lerpByFramerate(this.yOffset, this.yOffset, 0.5D, 0.2D, true);
-
 		final double textX = super.getX() + super.getMarginLeft();
 		final double textY = super.getY() + super.getMarginTop() - this.yOffset;
 
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY() + super.getMarginTop(), maxWidth, this.getRawHeight(), () -> {
 			if (text.isEmpty() && !super.isFocused()) {
-				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), super.getPlaceholder(), super.getShownInfo().withColor(new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), 0.5F)), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
+				DrawUtils.TEXT.drawText(textX, textY, maxWidth, super.getHeight(), super.getPlaceholder(), super.getPlaceholderInfo(), Align.START, Align.START, TextOverflow.NONE, TextMode.SPLIT);
 			}
 
 			for (int i = 0; i < lines.size(); i++) {
@@ -75,16 +66,13 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			if (super.isFocused()) {
 				final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPos());
 				final double cursorX = textX + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPos()));
-				final double cursorY = textY + lineHeight * cursorLineCol[0];
-				final float cursorOpacity = (float) ((Math.sin(2 * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1) / 2F);
-				final Color cursorColor = new Color(info.getColor().getRedF(), info.getColor().getGreenF(), info.getColor().getBlueF(), cursorOpacity);
-				DrawUtils.SHAPE.drawRect(cursorX, cursorY, 2, lineHeight, cursorColor);
+				DrawUtils.SHAPE.drawRect(cursorX, textY + lineHeight * cursorLineCol[0], 2, lineHeight, super.getCursorColor());
 			}
 
-			if (super.getSelectionStart() != -1 && !lines.isEmpty()) {
-				final Color selectionColor = new Color(50, 152, 253, 100);
-				final int start = Math.min(super.getCursorPos(), super.getSelectionStart());
-				final int end = Math.max(super.getCursorPos(), super.getSelectionStart());
+			final FieldSelection selection = super.getSelection();
+			if (!selection.isEmpty() && !lines.isEmpty()) {
+				final int start = selection.getStart();
+				final int end = selection.getEnd();
 				final int startLine = this.getLineAndColumn(layout, start)[0];
 				final int endLine = this.getLineAndColumn(layout, end)[0];
 				for (int i = startLine; i <= endLine; i++) {
@@ -93,7 +81,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 					final int to = i == endLine ? Math.min(end, line.getEnd()) : line.getEnd();
 					final double selectionX = this.getX(layout, line, from);
 					final double selectionWidth = this.getX(layout, line, to) - selectionX;
-					DrawUtils.SHAPE.drawRect(textX + selectionX, textY + lineHeight * i, selectionWidth <= 0D ? 2 : selectionWidth, lineHeight, selectionColor);
+					DrawUtils.SHAPE.drawRect(textX + selectionX, textY + lineHeight * i, selectionWidth <= 0D ? 2 : selectionWidth, lineHeight, FieldNode.SELECTION_COLOR);
 				}
 			}
 		});
@@ -101,7 +89,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 	@Override
 	protected final String parse(final @NonNull String text) {
-		return this.formatter.apply(text);
+		return text;
 	}
 
 	@Override
@@ -127,12 +115,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 			final double cursorX = this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPos());
 			final int newCursorPos = this.getPosition(layout, lines.get(newLineIdx), cursorX);
-			super.updateSelection();
-			if (key == Key.UP) {
-				super.decreaseCursor(super.getCursorPos() - newCursorPos);
-			} else {
-				super.increaseCursor(newCursorPos - super.getCursorPos());
-			}
+			super.placeCursor(newCursorPos, key == Key.DOWN);
 			return true;
 		}
 
@@ -212,28 +195,23 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 	}
 
-	public final <T extends MultilineTextFieldNode> @NonNull T format(final @NonNull UnaryOperator<@NonNull String> formatter) {
-		this.formatter = formatter;
-		return (T) this;
-	}
-
-	private final double getRawWidth() {
+	private double getRawWidth() {
 		return super.getWidth() - super.getMarginLeft() - super.getMarginRight();
 	}
 
-	private final double getRawHeight() {
+	private double getRawHeight() {
 		return super.getHeight() - super.getMarginTop() - super.getMarginBottom();
 	}
 
-	private final double getLineHeight() {
+	private double getLineHeight() {
 		return super.getInfo().getHeight();
 	}
 
-	private final @NonNull FieldLayout getLayout() {
+	private @NonNull FieldLayout getLayout() {
 		return this.getLayout(super.getText());
 	}
 
-	private final @NonNull FieldLayout getLayout(final @NonNull String text) {
+	private @NonNull FieldLayout getLayout(final @NonNull String text) {
 		final TextInfo info = super.getShownInfo();
 		final int[] tags = FieldNode.tags(text, info);
 		final List<FieldLine> lines = new ArrayList<>();
@@ -289,7 +267,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 	}
 
-	private final int[] getLineAndColumn(final @NonNull FieldLayout layout, final int pos) {
+	private int[] getLineAndColumn(final @NonNull FieldLayout layout, final int pos) {
 		final List<FieldLine> lines = layout.getLines();
 		if (lines.isEmpty()) {
 			return new int[] {0, 0};
@@ -306,13 +284,13 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		return new int[] {lines.size() - 1, lastLine.getEnd() - lastLine.getStart()};
 	}
 
-	private final double getX(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final int pos) {
+	private double getX(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final int pos) {
 		final int clamped = Math.max(line.getStart(), Math.min(pos, line.getEnd()));
 		final int end = clamped < layout.getText().length() && layout.getTags()[clamped] != -1 ? layout.getTags()[clamped] : clamped;
 		return super.getShownInfo().getWidth(line.getPrefix() + layout.getText().substring(line.getStart(), Math.max(line.getStart(), end)));
 	}
 
-	private final int getPosition(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final double x) {
+	private int getPosition(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final double x) {
 		final String text = layout.getText();
 		int previous = line.getStart();
 		for (int i = line.getStart(); i < line.getEnd(); i++) {
@@ -338,10 +316,6 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		private final String          text;
 		private final int[]           tags;
 		private final List<FieldLine> lines;
-
-		public List<FieldLine> getLines() {
-			return Collections.unmodifiableList(this.lines);
-		}
 
 	}
 

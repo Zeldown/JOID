@@ -22,9 +22,9 @@ import dev.joid.lib.utils.point.Point;
 public class ShowReactive extends ShowUI {
 
 	private final DoubleSignal  space  = new DoubleSignal(0.3D);
+	private final DoubleSignal  warmth = new DoubleSignal(0.2D);
 	private final BooleanSignal halo   = new BooleanSignal(false);
 	private final DoubleSignal  energy = new DoubleSignal(0.35D);
-	private final DoubleSignal  warmth = new DoubleSignal(0.2D);
 
 	@Override
 	protected void scene() {
@@ -56,7 +56,7 @@ public class ShowReactive extends ShowUI {
 
 		TextNode.create(158, 734).text(Text.create("Halo", ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).attach(this);
 		TextNode.create(158, 770).text(Text.create(this.halo.get() ? "On, glowing behind the orb" : "Off", ShowUI.font(FontWeight.MEDIUM, 18F, ShowUI.MUTED))).attach(this);
-		ShowSwitchNode.create(690, 736, ShowUI.VIOLET).checked(this.halo).attach(this);
+		ShowSwitchNode.create(690, 736, ShowUI.VIOLET).toggle(this.halo).attach(this);
 
 		final Color[] cool = {ShowUI.VIOLET, ShowUI.SKY, ShowUI.CYAN, ShowUI.EMERALD, ShowUI.FUCHSIA};
 		final Color[] warm = {ShowUI.PINK, ShowUI.ORANGE, ShowUI.AMBER, Color.decode("#F43F5E"), Color.decode("#FDE68A")};

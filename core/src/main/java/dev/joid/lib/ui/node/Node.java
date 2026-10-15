@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -101,8 +102,8 @@ public abstract class Node implements INode {
 
 	private static final EventType<NodeMouseEvent<Node>> CLICK = EventType.create("onClick");
 
-	private static final EventType<NodeKeyEvent<Node>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
 	private static final EventType<NodeCharEvent<Node>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
+	private static final EventType<NodeKeyEvent<Node>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
 	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
 	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
 	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_RELEASED = EventType.create("handleMouseReleased");
@@ -453,18 +454,6 @@ public abstract class Node implements INode {
 						}
 					}
 
-					if (this.scrollbar != null) {
-						if (this.scrollbar.isHorizontal() && this.hasOverflowX()) {
-							final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollX / this.maxScrollX)));
-							this.scrollbar.layoutPosition(this.scrollbar.getScrollWidth() * percent, 0D);
-						}
-
-						if (!this.scrollbar.isHorizontal() && this.hasOverflowY()) {
-							final float percent = (float) Math.min(1, Math.max(0, Math.abs(this.scrollY / this.maxScrollY)));
-							this.scrollbar.layoutPosition(0D, this.scrollbar.getScrollHeight() * percent);
-						}
-					}
-
 					if (this.dragging && BridgeHandler.WINDOW.get().isMouseGrabbed()) {
 						this.stopDragging();
 					}
@@ -694,13 +683,13 @@ public abstract class Node implements INode {
 
 		final boolean attached = this.attached;
 		this.attached = false;
+		this.detach();
 		this.bindings.unsubscribe();
 		this.taskList.forEach(Task::detach);
 		this.endInteraction();
 		if (attached) {
 			this.effectMap.values().forEach(effect -> effect.detach(this));
 		}
-		this.detach();
 		this.fire(Node.DETACH, () -> NodeEvent.create(this));
 	}
 
@@ -1747,6 +1736,10 @@ public abstract class Node implements INode {
 		return value * Math.min(1F, Math.max(0F, this.hoverAnimator.get()));
 	}
 
+	public final @NonNull Color hoverColor(final @NonNull Color color, final Color hoveredColor) {
+		return hoveredColor != null ? color.to(hoveredColor, this.hoverValue(1F)) : color;
+	}
+
 	public final double w() {
 		return this.width;
 	}
@@ -1799,24 +1792,6 @@ public abstract class Node implements INode {
 		return this.bindings.fire(type, event);
 	}
 
-	protected final <N extends Node, V> boolean change(final @NonNull EventType<? super NodeChangeEvent.Pre<N, V>> before, final @NonNull EventType<? super NodeChangeEvent.Post<N, V>> after, final V previous, final V value, final boolean refusable, final @NonNull Runnable apply) {
-		if (this.ui == null) {
-			apply.run();
-			return true;
-		}
-
-		if (refusable) {
-			final NodeChangeEvent.Pre<N, V> event = this.fire(before, () -> NodeChangeEvent.Pre.create((N) this, previous, value));
-			if (event != null && event.isCancelled()) {
-				return false;
-			}
-		}
-
-		apply.run();
-		this.fire(after, () -> NodeChangeEvent.Post.create((N) this, previous, value));
-		return true;
-	}
-
 	protected final <T extends Node, V> @NonNull T start(final @NonNull String property, final V value, final @NonNull Consumer<V> applier) {
 		return this.bindings.start(property, value, applier);
 	}
@@ -1839,6 +1814,26 @@ public abstract class Node implements INode {
 
 	protected final <N extends Node> void require(final @NonNull String setting, final @NonNull String advice, final @NonNull Predicate<@NonNull N> present) {
 		this.requirementList.add(new NodeRequirement(advice, setting, (Predicate<Node>) present));
+	}
+
+	protected final <N extends Node> @NonNull N part(final Node previous, final @NonNull N next) {
+		if (previous == next) {
+			return next;
+		}
+
+		final int index = this.children.indexOf(previous);
+		if (previous != null) {
+			this.remove(previous);
+		}
+
+		this.append(next);
+		if (index >= 0) {
+			final List<Node> order = new ArrayList<>(this.children);
+			order.remove(next);
+			order.add(Math.min(index, order.size()), next);
+			this.reorderChildren(order);
+		}
+		return next;
 	}
 
 	protected final void reorderChildren(final @NonNull List<@NonNull Node> order) {
@@ -2291,11 +2286,15 @@ public abstract class Node implements INode {
 
 		copy.mounted = this.mounted;
 
+		final Map<Object, Object> copies = new IdentityHashMap<>();
+		copy.drawList.clear();
+		copy.children.clear();
 		for (final Node child : this.children) {
 			final Node childCopy = child.duplicate(listeners);
 			childCopy.parent = copy;
 			copy.drawList.add(childCopy);
 			copy.children.add(childCopy);
+			copies.put(child, childCopy);
 		}
 
 		if (this.scrollbar != null) {
@@ -2317,15 +2316,15 @@ public abstract class Node implements INode {
 			try {
 				field.setAccessible(true);
 				if (!Modifier.isFinal(field.getModifiers())) {
-					field.set(copy, field.get(this));
+					field.set(copy, copies.getOrDefault(field.get(this), field.get(this)));
 				} else if (Collection.class.isAssignableFrom(field.getType())) {
 					final Collection<Object> collection = (Collection<Object>) field.get(copy);
 					collection.clear();
-					collection.addAll((Collection<Object>) field.get(this));
+					((Collection<Object>) field.get(this)).forEach(element -> collection.add(copies.getOrDefault(element, element)));
 				} else if (Map.class.isAssignableFrom(field.getType())) {
 					final Map<Object, Object> map = (Map<Object, Object>) field.get(copy);
 					map.clear();
-					map.putAll((Map<Object, Object>) field.get(this));
+					((Map<Object, Object>) field.get(this)).forEach((key, value) -> map.put(copies.getOrDefault(key, key), copies.getOrDefault(value, value)));
 				}
 			} catch (final Exception e) {
 				throw new IllegalStateException("The node " + this.getClass().getSimpleName() + " cannot be copied: its field " + field.getName() + " cannot be set (" + e + "), mark the field transient to leave it out of copy()", e);

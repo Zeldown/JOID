@@ -1,6 +1,5 @@
 package dev.joid.lib.ui.node.impl.structure.slider.impl;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.junit.Assert;
@@ -11,14 +10,14 @@ public class StringSliderNodeTest {
 	@Test
 	public void keepsTheOrderOfItsValues() {
 		final Slider slider = new Slider().values("low", "medium", "high").value("medium");
-		Assert.assertEquals(Arrays.asList("low", "medium", "high"), new ArrayList<>(slider.getValueSet()));
+		Assert.assertEquals(Arrays.asList("low", "medium", "high"), slider.getValueList());
 		Assert.assertEquals("medium", slider.getValue());
 	}
 
 	@Test
 	public void namesTheConstantsOfAnEnum() {
 		final Slider slider = new Slider().values(Quality.values());
-		Assert.assertEquals(Arrays.asList("LOW", "MEDIUM", "HIGH"), new ArrayList<>(slider.getValueSet()));
+		Assert.assertEquals(Arrays.asList("LOW", "MEDIUM", "HIGH"), slider.getValueList());
 		Assert.assertEquals("LOW", slider.getValue());
 	}
 
@@ -50,9 +49,6 @@ public class StringSliderNodeTest {
 		public Slider() {
 			super(0D, 0D, 400D, 50D);
 		}
-
-		@Override
-		public void drawSlider(final double mouseX, final double mouseY) {}
 
 	}
 

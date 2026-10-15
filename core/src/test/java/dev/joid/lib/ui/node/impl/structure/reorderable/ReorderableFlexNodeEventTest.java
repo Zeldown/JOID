@@ -24,7 +24,7 @@ public class ReorderableFlexNodeEventTest {
 	public void firesOnceTheDragStarted() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode second = RectNode.create(0D, 0D, 200D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorderStart(event -> received.addAll(Arrays.asList(event.getNode(), event.getChild(), event.getNode().isDragging(event.getChild()), event.getNode().getInitialIndex())));
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).<ReorderableFlexNode>margin(10D).onReorderStart(event -> received.addAll(Arrays.asList(event.getNode(), event.getChild(), event.getNode().isDragging(event.getChild()), event.getNode().getInitialIndex())));
 		flex.append(RectNode.create(0D, 0D, 200D, 50D), second);
 		this.bridges.open(new NodeUI(flex)).move(150D, 180D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -85,7 +85,7 @@ public class ReorderableFlexNodeEventTest {
 	public void firesOnlyWhenTheOrderChanges() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode first = RectNode.create(0D, 0D, 200D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorder(event -> received.addAll(Arrays.asList(event.getNode(), event.getChild())));
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).<ReorderableFlexNode>margin(10D).onReorder(event -> received.addAll(Arrays.asList(event.getNode(), event.getChild())));
 		flex.append(first, RectNode.create(0D, 0D, 200D, 50D));
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -98,7 +98,7 @@ public class ReorderableFlexNodeEventTest {
 	@Test
 	public void followsTheIndexOfTheDraggedChild() {
 		final List<Object> indexes = new ArrayList<>();
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorder(event -> indexes.add(event.getNode().getCurrentIndex()));
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).<ReorderableFlexNode>margin(10D).onReorder(event -> indexes.add(event.getNode().getCurrentIndex()));
 		flex.append(RectNode.create(0D, 0D, 200D, 50D), RectNode.create(0D, 0D, 200D, 50D));
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -109,7 +109,7 @@ public class ReorderableFlexNodeEventTest {
 	@Test
 	public void staysQuietOnceReleased() {
 		final List<Object> received = new ArrayList<>();
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorder(event -> received.add(event.getChild()));
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).<ReorderableFlexNode>margin(10D).onReorder(event -> received.add(event.getChild()));
 		flex.append(RectNode.create(0D, 0D, 200D, 50D), RectNode.create(0D, 0D, 200D, 50D));
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -143,7 +143,7 @@ public class ReorderableFlexNodeEventTest {
 	public void firesOnceTheChildSettledOnItsSlot() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode first = RectNode.create(0D, 0D, 200D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorderEnd(event -> received.addAll(Arrays.asList(event.getNode(), event.getChild(), event.getOldIndex(), event.getNewIndex(), event.getNode().getChildIndex(event.getChild()), event.getChild().getY(), event.getNode().isDragging(event.getChild()))));
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).<ReorderableFlexNode>margin(10D).onReorderEnd(event -> received.addAll(Arrays.asList(event.getNode(), event.getChild(), event.getOldIndex(), event.getNewIndex(), event.getNode().getChildIndex(event.getChild()), event.getChild().getY(), event.getNode().isDragging(event.getChild()))));
 		flex.append(first, RectNode.create(0D, 0D, 200D, 50D), RectNode.create(0D, 0D, 200D, 50D));
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -158,7 +158,7 @@ public class ReorderableFlexNodeEventTest {
 	public void reportsTheSameIndexForADropInPlace() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode second = RectNode.create(0D, 0D, 200D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorderEnd(event -> received.addAll(Arrays.asList(event.getChild(), event.getOldIndex(), event.getNewIndex())));
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).<ReorderableFlexNode>margin(10D).onReorderEnd(event -> received.addAll(Arrays.asList(event.getChild(), event.getOldIndex(), event.getNewIndex())));
 		flex.append(RectNode.create(0D, 0D, 200D, 50D), second);
 		this.bridges.open(new NodeUI(flex)).move(150D, 180D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -192,7 +192,7 @@ public class ReorderableFlexNodeEventTest {
 		final List<Object> received = new ArrayList<>();
 		final RectNode first = RectNode.create(0D, 0D, 200D, 50D).beforeDragDrop(event -> event.cancel());
 		final RectNode second = RectNode.create(0D, 0D, 200D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).margin(10D).onReorderEnd(event -> received.addAll(Arrays.asList(event.getOldIndex(), event.getNewIndex())));
+		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(100D, 100D, 200D).<ReorderableFlexNode>margin(10D).onReorderEnd(event -> received.addAll(Arrays.asList(event.getOldIndex(), event.getNewIndex())));
 		flex.append(first, second);
 		this.bridges.open(new NodeUI(flex)).move(150D, 120D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);

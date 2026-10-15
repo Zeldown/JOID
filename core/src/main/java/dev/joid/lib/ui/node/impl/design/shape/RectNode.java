@@ -32,8 +32,7 @@ public class RectNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final Color color = this.hoveredColor != null ? this.color.to(this.hoveredColor, super.hoverValue(1F)) : this.color;
-		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), color);
+		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), super.hoverColor(this.color, this.hoveredColor));
 	}
 
 	public final double getBorderStroke() {
@@ -112,7 +111,7 @@ public class RectNode extends Node {
 	}
 
 	private @NonNull Color computeBorderColor() {
-		return this.hoveredBorderColor != null ? this.borderColor.to(this.hoveredBorderColor, super.hoverValue(1F)) : this.borderColor;
+		return super.hoverColor(this.borderColor, this.hoveredBorderColor);
 	}
 
 }

@@ -21,8 +21,8 @@ public class ResourceNode extends Node {
 	private Resource filteredResource;
 	private Resource filteredHoveredResource;
 
-	private Color color = Color.WHITE;
 	private Color hoveredColor;
+	private Color color = Color.WHITE;
 
 	private Boolean linear;
 
@@ -69,7 +69,7 @@ public class ResourceNode extends Node {
 		super.fit(resourceWidth * scale, resourceHeight * scale);
 
 		final BoundingBox canvas = BoundingBox.create(super.getX(), super.getY(), super.getWidth(), super.getHeight());
-		final Color primary = this.hoveredColor != null && this.hoveredResource == null ? this.color.to(this.hoveredColor, super.hoverValue(1F)) : this.color;
+		final Color primary = this.hoveredResource == null ? super.hoverColor(this.color, this.hoveredColor) : this.color;
 		primary.bind(() -> this.drawResource(this.filteredResource), canvas, true);
 
 		if (this.hoveredResource != null && this.hoveredResource != this.resource) {

@@ -1,7 +1,5 @@
 package dev.joid.lib.ui.node.impl.structure.selector;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +14,6 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
@@ -25,7 +22,6 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode.SelectorDirection;
 
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 
 public class SelectorNodeTest {
 
@@ -42,9 +38,9 @@ public class SelectorNodeTest {
 	@Before
 	public void createAnOptionList() {
 		this.selector = new Selector().onChange(event -> this.changes.add(event.getValue())).values("first", "second", "third");
-		this.first = (RectNode) this.selector.getChildren().get(0);
-		this.second = (RectNode) this.selector.getChildren().get(1);
-		this.third = (RectNode) this.selector.getChildren().get(2);
+		this.first = (RectNode) this.selector.getOptionList().get(0);
+		this.second = (RectNode) this.selector.getOptionList().get(1);
+		this.third = (RectNode) this.selector.getOptionList().get(2);
 		this.changes.clear();
 	}
 
@@ -154,23 +150,6 @@ public class SelectorNodeTest {
 	}
 
 	@Test
-	public void refusesANodeAddedBesideItsValues() {
-		final RectNode stranger = RectNode.create(0D, 0D, 10D, 10D).attach(this.selector);
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
-			this.bridges.open(new NodeUI(this.selector)).frame();
-		} finally {
-			System.setErr(previous);
-		}
-		Assert.assertTrue(output.toString(), output.toString().contains("IllegalStateException: The node RectNode is not an option of the selector, add the options with values(...)"));
-		Assert.assertFalse(this.selector.getChildren().contains(stranger));
-		this.bridges.frame();
-		this.assertDrawn(0.1F, 0.3F, 0.5F, 100D, 140D);
-	}
-
-	@Test
 	public void staysClosedOnAClickBesideIt() {
 		this.bridges.open(new NodeUI(this.selector)).frame();
 		this.click(1000D, 1000D);
@@ -249,7 +228,7 @@ public class SelectorNodeTest {
 	@Test
 	public void keepsEveryValueAsAnOption() {
 		final Selector selector = new Selector().values("easy", "normal", "hard");
-		Assert.assertEquals(Arrays.asList("easy", "normal", "hard"), new ArrayList<>(selector.getOptionMap().values()));
+		Assert.assertEquals(Arrays.asList("easy", "normal", "hard"), selector.getValueList());
 		Assert.assertEquals("easy", selector.getValue());
 	}
 
@@ -304,7 +283,7 @@ public class SelectorNodeTest {
 	@Test
 	public void writesThePickedValueIntoItsSignal() {
 		final Signal<String> language = new Signal<>();
-		this.bridges.open(new NodeUI(this.selector.value(language).active(true))).frames(2);
+		this.bridges.open(new NodeUI(this.selector.active(true).value(language))).frames(2);
 		this.click(150D, 200D);
 		Assert.assertEquals("third", language.get());
 	}
@@ -462,22 +441,16 @@ public class SelectorNodeTest {
 
 		public Selector() {
 			super(100D, 100D, 200D, 40D);
-		}
-
-		@Override
-		protected @NonNull Node option(final @NonNull String value) {
-			if ("first".equals(value)) {
-				return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.1F, 0.3F, 0.5F, 1F));
-			}
-			if ("second".equals(value)) {
-				return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.3F, 0.5F, 0.7F, 1F));
-			}
-			return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.5F, 0.7F, 0.9F, 1F));
-		}
-
-		@Override
-		public void drawBackground(final double mouseX, final double mouseY) {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), new Color(0.2F, 0.4F, 0.6F, 1F));
+			super.field(RectNode.create(0D, 0D, 0D, 0D).color(new Color(0.2F, 0.4F, 0.6F, 1F)));
+			super.option(value -> {
+				if ("first".equals(value)) {
+					return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.1F, 0.3F, 0.5F, 1F));
+				}
+				if ("second".equals(value)) {
+					return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.3F, 0.5F, 0.7F, 1F));
+				}
+				return RectNode.create(0D, 0D, 10D, 10D).color(new Color(0.5F, 0.7F, 0.9F, 1F));
+			});
 		}
 
 	}

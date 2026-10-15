@@ -2,10 +2,13 @@ package dev.joid.lib.ui.node.impl.design.textfield;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.markup.ITextMarkup;
@@ -13,6 +16,7 @@ import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.binding.InteractiveValue;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventType;
@@ -24,11 +28,14 @@ import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.platform.Platform;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public abstract class FieldNode<V> extends Node {
+
+	protected static final Color SELECTION_COLOR = new Color(50, 152, 253, 100).lock();
 
 	private static final EventType<NodeFieldChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeFieldChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
@@ -41,6 +48,16 @@ public abstract class FieldNode<V> extends Node {
 	private static final EventType<NodeChangeEvent.Post<?, Integer>> CURSOR_MOVE        = EventType.create("onCursorMove");
 	private static final EventType<NodeChangeEvent.Pre<?, Integer>>  BEFORE_CURSOR_MOVE = EventType.create("beforeCursorMove");
 
+	private static final EventType<NodeChangeEvent.Post<?, FieldSelection>> SELECT        = EventType.create("onSelect");
+	private static final EventType<NodeChangeEvent.Pre<?, FieldSelection>>  BEFORE_SELECT = EventType.create("beforeSelect");
+
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<String>         textValue;
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Integer>        cursorValue;
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Boolean>        focusedValue;
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<FieldSelection> selectionValue;
+
+	private Node background;
+
 	private String   text;
 	private TextInfo info;
 	private String   placeholder;
@@ -48,14 +65,15 @@ public abstract class FieldNode<V> extends Node {
 	private boolean focused;
 	private int     maxTextLength;
 
-	private V                 fallback;
-	private boolean           allowEmpty;
-	private Predicate<String> accept;
+	private V                     fallback;
+	private boolean               allowEmpty;
+	private Predicate<String>     accept;
+	private UnaryOperator<String> formatter;
 
 	private boolean markup;
 
-	private int cursorPos;
-	private int selectionStart;
+	private int            cursorPos;
+	private FieldSelection selection;
 
 	private int    pressCount;
 	private long   lastPress;
@@ -84,9 +102,25 @@ public abstract class FieldNode<V> extends Node {
 		this.placeholder   = "";
 		this.focused       = false;
 		this.accept        = text -> true;
+		this.formatter     = UnaryOperator.identity();
 		this.maxTextLength = -1;
+		this.selection     = FieldSelection.create(0, 0);
 
-		this.selectionStart = -1;
+		this.textValue = InteractiveValue.create(super.getBindings(), "text", () -> this.text, (final String text) -> this.text = text)
+		.events(FieldNode.BEFORE_CHANGE, (previous, text) -> NodeFieldChangeEvent.Pre.create(this, previous, text, this.valueOf(text), this.isValid(text)), FieldNode.CHANGE, (previous, text) -> NodeFieldChangeEvent.Post.create(this, previous, text, this.valueOf(text), this.isValid(text)));
+		this.focusedValue = InteractiveValue.toggle(super.getBindings(), "focused", () -> this.focused, this::applyFocus)
+		.events(true, FieldNode.BEFORE_FOCUS, (previous, focused) -> NodeChangeEvent.Pre.create(this, previous, focused), FieldNode.FOCUS, (previous, focused) -> NodeChangeEvent.Post.create(this, previous, focused))
+		.events(false, FieldNode.BEFORE_BLUR, (previous, focused) -> NodeChangeEvent.Pre.create(this, previous, focused), FieldNode.BLUR, (previous, focused) -> NodeChangeEvent.Post.create(this, previous, focused));
+		this.cursorValue = InteractiveValue.create(super.getBindings(), "cursorPosition", () -> this.cursorPos, (final Integer position) -> this.cursorPos = position)
+		.clamp(position -> this.snap(Math.min(Math.max(0, position), this.text.length()), false))
+		.events(FieldNode.BEFORE_CURSOR_MOVE, (previous, position) -> NodeChangeEvent.Pre.create(this, previous, position), FieldNode.CURSOR_MOVE, (previous, position) -> NodeChangeEvent.Post.create(this, previous, position));
+		this.selectionValue = InteractiveValue.create(super.getBindings(), "selection", () -> this.selection, this::applySelection)
+		.clamp(selection -> {
+			final int start = this.snap(Math.min(Math.max(0, selection.getStart()), this.text.length()), false);
+			final int end = this.snap(Math.min(Math.max(0, selection.getEnd()), this.text.length()), false);
+			return FieldSelection.create(start == end ? 0 : start, start == end ? 0 : end);
+		})
+		.events(FieldNode.BEFORE_SELECT, (previous, selection) -> NodeChangeEvent.Pre.create(this, previous, selection), FieldNode.SELECT, (previous, selection) -> NodeChangeEvent.Post.create(this, previous, selection));
 
 		super.cursor(Cursor.TEXT);
 		super.<FieldNode<V>>require("info", "call info(...) before attaching it", node -> node.info != null);
@@ -114,22 +148,22 @@ public abstract class FieldNode<V> extends Node {
 		return null;
 	}
 
-	protected boolean accepts(final @NonNull String text) {
-		return true;
-	}
-
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.cursorPos > this.text.length()) {
-			this.trackCursor(false, () -> this.cursorPos = this.text.length());
+		if (this.background != null) {
+			this.background.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}
 
-		if (this.selectionStart > this.text.length()) {
-			this.selectionStart = this.text.length();
+		if (this.cursorPos > this.text.length()) {
+			this.cursorValue.update(this.cursorPos);
+		}
+
+		if (this.selection.getEnd() > this.text.length()) {
+			this.selectionValue.update(this.selection);
 		}
 
 		this.drawField();
-		this.trackCursor(true, this::repeatInput);
+		this.repeatInput();
 	}
 
 	@Override
@@ -139,7 +173,7 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		if (!this.isShortcutKeyDown() || UI.isAltKeyDown()) {
-			this.trackCursor(true, () -> this.insert(new String(Character.toChars(event.getCodepoint()))));
+			this.insert(new String(Character.toChars(event.getCodepoint())));
 		}
 		event.consume();
 	}
@@ -152,28 +186,28 @@ public abstract class FieldNode<V> extends Node {
 
 		event.consume();
 		if (event.getKey() == Key.ESCAPE) {
-			this.focus(false, true);
+			this.focusedValue.set(false);
 			return;
 		}
 
-		this.trackCursor(true, () -> this.pressKey(event.getKey()));
+		this.pressKey(event.getKey());
 	}
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 		if (event.isConsumed() || !super.isHovered()) {
-			if (this.focus(false, true)) {
-				this.selectionStart = -1;
+			if (FieldNode.settle(this.focusedValue, false)) {
+				this.selectionValue.set(FieldSelection.create(0, 0));
 				this.pressCount = 0;
 			}
 			return;
 		}
 
-		if (!this.focus(true, true)) {
+		if (!FieldNode.settle(this.focusedValue, true)) {
 			return;
 		}
 
-		this.trackCursor(true, () -> this.press(event.getMouseX(), event.getMouseY(), event.getButton().isLeft()));
+		this.press(event.getMouseX(), event.getMouseY(), event.getButton().isLeft());
 		event.consume();
 	}
 
@@ -188,40 +222,43 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		this.trackCursor(true, () -> this.stepValue(event.getNotchesY() > 0D ? 1 : -1));
+		this.stepValue(event.getNotchesY() > 0D ? 1 : -1);
 		event.consume();
 	}
 
 	@Override
 	public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
 		if (this.selecting) {
-			this.trackCursor(true, () -> this.select(this.snap(this.getPositionAt(event.getMouseX(), event.getMouseY()), false)));
+			this.drag(this.snap(this.getPositionAt(event.getMouseX(), event.getMouseY()), false));
 		}
 	}
 
 	@Override
 	public void detach() {
-		this.focus(false, false);
+		this.focusedValue.update(false);
 		this.inputting = false;
 		this.selecting = false;
 	}
 
 	public final V getValue() {
-		if (this.text.isEmpty() && this.allowEmpty) {
-			return null;
-		}
-
-		final V parsed = this.parse(this.text);
-		return parsed == null ? this.fallback : this.correct(parsed);
+		return this.valueOf(this.text);
 	}
 
 	public final boolean isValid() {
-		if (this.text.isEmpty() && this.allowEmpty) {
-			return true;
-		}
+		return this.isValid(this.text);
+	}
 
-		final V parsed = this.isAccepted(this.text) ? this.parse(this.text) : null;
-		return parsed != null && parsed.equals(this.correct(parsed));
+	public final int getCursorPos() {
+		return this.cursorValue.get();
+	}
+
+	public final @NonNull FieldSelection getSelection() {
+		return this.selectionValue.get();
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T background(final @NonNull Node background) {
+		this.background = super.part(this.background, background.zindex(-1));
+		return (T) this;
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull String text) {
@@ -249,15 +286,20 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focused(final boolean focused) {
-		return super.start("focused", focused, value -> this.focus(value, false));
+		return this.focusedValue.start(focused);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focused(final @NonNull Signal<Boolean> focused) {
-		return super.bind("focused", focused, value -> this.focus(value, false));
+		return this.focusedValue.bind(focused);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T accept(final @NonNull Predicate<@NonNull String> accept) {
 		this.accept = accept;
+		return (T) this;
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T format(final @NonNull UnaryOperator<@NonNull String> formatter) {
+		this.formatter = formatter;
 		return (T) this;
 	}
 
@@ -355,11 +397,19 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final int cursorPosition) {
-		return super.start("cursorPosition", cursorPosition, value -> this.moveCursor(value, false));
+		return this.cursorValue.start(cursorPosition);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final @NonNull Signal<Integer> cursorPosition) {
-		return super.bind("cursorPosition", cursorPosition, value -> this.moveCursor(value, false));
+		return this.cursorValue.bind(cursorPosition);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T selection(final int start, final int end) {
+		return this.selectionValue.start(FieldSelection.create(start, end));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T selection(final @NonNull Signal<FieldSelection> selection) {
+		return this.selectionValue.bind(selection);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T change(final @NonNull String text) {
@@ -368,50 +418,63 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeFieldChangeEvent.Pre<T, V>> listener) {
-		return super.listen(FieldNode.BEFORE_CHANGE, listener);
+		return this.textValue.before(listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onChange(final @NonNull EventListener<NodeFieldChangeEvent.Post<T, V>> listener) {
-		return super.listen(FieldNode.CHANGE, listener);
+		return this.textValue.on(listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focus() {
-		this.focus(true, true);
+		this.focusedValue.change(true);
 		return (T) this;
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T blur() {
-		this.focus(false, true);
+		this.focusedValue.change(false);
 		return (T) this;
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T beforeFocus(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return super.listen(FieldNode.BEFORE_FOCUS, listener);
+		return this.focusedValue.before(true, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onFocus(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return super.listen(FieldNode.FOCUS, listener);
+		return this.focusedValue.on(true, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T beforeBlur(final @NonNull EventListener<NodeChangeEvent.Pre<T, Boolean>> listener) {
-		return super.listen(FieldNode.BEFORE_BLUR, listener);
+		return this.focusedValue.before(false, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onBlur(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
-		return super.listen(FieldNode.BLUR, listener);
+		return this.focusedValue.on(false, listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T moveCursor(final int position) {
-		this.moveCursor(position, true);
+		this.cursorValue.change(position);
 		return (T) this;
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T beforeCursorMove(final @NonNull EventListener<NodeChangeEvent.Pre<T, Integer>> listener) {
-		return super.listen(FieldNode.BEFORE_CURSOR_MOVE, listener);
+		return this.cursorValue.before(listener);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T onCursorMove(final @NonNull EventListener<NodeChangeEvent.Post<T, Integer>> listener) {
-		return super.listen(FieldNode.CURSOR_MOVE, listener);
+		return this.cursorValue.on(listener);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T select(final int start, final int end) {
+		this.selectionValue.change(FieldSelection.create(start, end));
+		return (T) this;
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T beforeSelect(final @NonNull EventListener<NodeChangeEvent.Pre<T, FieldSelection>> listener) {
+		return this.selectionValue.before(listener);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T onSelect(final @NonNull EventListener<NodeChangeEvent.Post<T, FieldSelection>> listener) {
+		return this.selectionValue.on(listener);
 	}
 
 	protected final void fallback(final V fallback) {
@@ -419,13 +482,13 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final <T extends FieldNode<V>> @NonNull T startValue(final V value) {
-		return super.start("text", value, current -> this.trackCursor(false, () -> this.write(current, false)));
+		return super.start("text", value, current -> this.write(current, false));
 	}
 
 	protected final <T extends FieldNode<V>> @NonNull T bindValue(final @NonNull Signal<V> value) {
 		return super.bind("text", value, current -> {
 			if (!current.equals(this.getValue())) {
-				this.trackCursor(false, () -> this.write(current, false));
+				this.write(current, false);
 			}
 		}, (final String text) -> this.getValue());
 	}
@@ -449,14 +512,19 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
+	protected final void blurNow() {
+		FieldNode.settle(this.focusedValue, false);
+	}
+
 	protected final boolean insert(final @NonNull String text) {
 		String textToAdd = this.clean(text);
 		if (textToAdd.isEmpty()) {
 			return false;
 		}
 
-		final int start = this.selectionStart == -1 ? this.cursorPos : Math.min(this.selectionStart, this.cursorPos);
-		final int end = this.selectionStart == -1 ? this.cursorPos : Math.max(this.selectionStart, this.cursorPos);
+		final FieldSelection selection = this.getSelection();
+		final int start = selection.isEmpty() ? this.getCursorPos() : selection.getStart();
+		final int end = selection.isEmpty() ? this.getCursorPos() : selection.getEnd();
 		if (this.maxTextLength >= 0) {
 			textToAdd = FieldNode.cut(textToAdd, Math.max(0, this.maxTextLength - this.text.codePointCount(0, this.text.length()) + this.text.codePointCount(start, end)));
 			if (textToAdd.isEmpty()) {
@@ -468,27 +536,31 @@ public abstract class FieldNode<V> extends Node {
 			return false;
 		}
 
-		this.selectionStart = -1;
-		this.cursorPos = start;
+		this.selectionValue.set(FieldSelection.create(0, 0));
+		this.cursorValue.set(start);
 		this.increaseCursor(textToAdd.length());
 		return true;
 	}
 
-	protected final void updateSelection() {
-		if (!UI.isShiftKeyDown()) {
-			this.selectionStart = -1;
-		} else if (this.selectionStart == -1) {
-			this.selectionStart = this.cursorPos;
+	protected final void placeCursor(final int position, final boolean forward) {
+		final int anchor = this.getAnchor();
+		final int cursor = this.snap(Math.min(Math.max(0, position), this.text.length()), forward);
+		this.cursorValue.set(cursor);
+		this.selectionValue.set(UI.isShiftKeyDown() ? FieldSelection.create(anchor, cursor) : FieldSelection.create(0, 0));
+		if (forward) {
+			this.followCursorForward();
+		} else {
+			this.followCursorBackward();
 		}
 	}
 
 	protected final void decreaseCursor(final int value) {
-		this.cursorPos = this.snap(Math.max(0, this.cursorPos - value), false);
+		this.cursorValue.set(this.snap(Math.max(0, this.getCursorPos() - value), false));
 		this.followCursorBackward();
 	}
 
 	protected final void increaseCursor(final int value) {
-		this.cursorPos = this.snap(Math.min(this.text.length(), this.cursorPos + value), true);
+		this.cursorValue.set(this.snap(Math.min(this.text.length(), this.getCursorPos() + value), true));
 		this.followCursorForward();
 	}
 
@@ -496,61 +568,83 @@ public abstract class FieldNode<V> extends Node {
 		return this.markup ? this.info : this.info.copy().markups();
 	}
 
-	private final boolean focus(final boolean focused, final boolean refusable) {
-		if (this.focused == focused) {
+	protected final @NonNull TextInfo getPlaceholderInfo() {
+		final Color color = this.info.getColor();
+		return this.getShownInfo().withColor(new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), 0.5F));
+	}
+
+	protected final @NonNull Color getCursorColor() {
+		final Color color = this.info.getColor();
+		return new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F));
+	}
+
+	private void applyFocus(final boolean focused) {
+		if (!focused) {
+			this.commit();
+			this.selectionValue.update(FieldSelection.create(0, 0));
+		}
+
+		this.focused = focused;
+	}
+
+	private void applySelection(final @NonNull FieldSelection selection) {
+		this.selection = selection;
+		if (!selection.isEmpty() && this.cursorPos != selection.getStart() && this.cursorPos != selection.getEnd()) {
+			this.cursorValue.update(selection.getEnd());
+		}
+	}
+
+	private void repeatInput() {
+		if (!this.inputting || BridgeHandler.CLOCK.get().currentTimeMillis() - this.lastInput < (this.firstInput ? 500 : 100)) {
+			return;
+		}
+
+		this.firstInput = false;
+		if (!this.inputType.isDown() || !this.repeatKey(this.inputType)) {
+			this.inputting = false;
+			return;
+		}
+
+		this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
+	}
+
+	private boolean repeatKey(final @NonNull Key key) {
+		final int cursor = this.getCursorPos();
+		if (key == Key.LEFT) {
+			this.placeCursor(this.isWordKeyDown() ? this.previousWordIndex() : cursor - 1, false);
 			return true;
 		}
 
-		return super.change(focused ? FieldNode.BEFORE_FOCUS : FieldNode.BEFORE_BLUR, focused ? FieldNode.FOCUS : FieldNode.BLUR, this.focused, focused, refusable, () -> {
-			if (!focused) {
-				this.trackCursor(false, this::commit);
-			}
-
-			this.focused = focused;
-			if (!focused) {
-				this.selectionStart = -1;
-			}
-			super.sync("focused", focused);
-		});
-	}
-
-	private final void repeatInput() {
-		if (this.inputting && BridgeHandler.CLOCK.get().currentTimeMillis() - this.lastInput >= (this.firstInput ? 500 : 100)) {
-			this.firstInput = false;
-
-			if (!this.inputType.isDown()) {
-				this.inputting = false;
-				return;
-			}
-
-			if (this.inputType == Key.DELETE) {
-				if (this.cursorPos >= this.text.length()) {
-					this.inputting = false;
-					return;
-				}
-
-				this.edit(this.text.substring(0, this.cursorPos) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.nextIndex(this.cursorPos)));
-			} else if (this.inputType == Key.BACKSPACE) {
-				if (this.cursorPos <= 0) {
-					this.inputting = false;
-					return;
-				}
-
-				final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.previousIndex(this.cursorPos);
-				if (this.edit(this.text.substring(0, backStart) + this.text.substring(this.cursorPos))) {
-					this.decreaseCursor(this.cursorPos - backStart);
-				}
-			} else if (this.inputType == Key.LEFT) {
-				this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
-			} else if (this.inputType == Key.RIGHT) {
-				this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
-			}
-
-			this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
+		if (key == Key.RIGHT) {
+			this.placeCursor(this.isWordKeyDown() ? this.nextWordIndex() : cursor + 1, true);
+			return true;
 		}
+
+		if (key == Key.BACKSPACE) {
+			if (cursor <= 0) {
+				return false;
+			}
+
+			final int start = this.isWordKeyDown() ? this.previousWordIndex() : this.previousIndex(cursor);
+			if (this.edit(this.text.substring(0, start) + this.text.substring(cursor))) {
+				this.decreaseCursor(cursor - start);
+			}
+			return true;
+		}
+
+		if (key == Key.DELETE) {
+			if (cursor >= this.text.length()) {
+				return false;
+			}
+
+			this.edit(this.text.substring(0, cursor) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.nextIndex(cursor)));
+			return true;
+		}
+
+		return false;
 	}
 
-	private final void pressKey(final @NonNull Key key) {
+	private void pressKey(final @NonNull Key key) {
 		if (this.handleKey(key)) {
 			return;
 		}
@@ -560,174 +654,91 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		if (key == Key.LEFT) {
-			this.updateSelection();
+		if (key == Key.LEFT || key == Key.RIGHT) {
 			this.holdInput(key);
-			this.decreaseCursor(this.isWordKeyDown() ? this.cursorPos - this.previousWordIndex() : 1);
+			this.repeatKey(key);
 			return;
 		}
 
-		if (key == Key.RIGHT) {
-			this.updateSelection();
-			this.holdInput(key);
-			this.increaseCursor(this.isWordKeyDown() ? this.nextWordIndex() - this.cursorPos : 1);
-			return;
-		}
-
-		if (key == Key.BACKSPACE) {
-			if (this.deleteSelection() || this.cursorPos <= 0) {
-				return;
+		if (key == Key.BACKSPACE || key == Key.DELETE) {
+			if (!this.deleteSelection() && this.repeatKey(key)) {
+				this.holdInput(key);
 			}
-
-			this.holdInput(key);
-			final int backStart = this.isWordKeyDown() ? this.previousWordIndex() : this.previousIndex(this.cursorPos);
-			if (this.edit(this.text.substring(0, backStart) + this.text.substring(this.cursorPos))) {
-				this.decreaseCursor(this.cursorPos - backStart);
-			}
-			return;
-		}
-
-		if (key == Key.DELETE) {
-			if (this.deleteSelection() || this.cursorPos >= this.text.length()) {
-				return;
-			}
-
-			this.holdInput(key);
-			final int deleteEnd = this.isWordKeyDown() ? this.nextWordIndex() : this.nextIndex(this.cursorPos);
-			this.edit(this.text.substring(0, this.cursorPos) + this.text.substring(deleteEnd));
 			return;
 		}
 
 		if (key == Key.HOME) {
-			this.updateSelection();
-			this.cursorPos = 0;
-			this.decreaseCursor(0);
+			this.placeCursor(0, false);
 			return;
 		}
 
 		if (key == Key.END) {
-			this.updateSelection();
-			this.cursorPos = this.text.length();
-			this.increaseCursor(0);
+			this.placeCursor(this.text.length(), true);
 			return;
 		}
 
+		final FieldSelection selection = this.getSelection();
 		if (key == Key.A && this.isShortcutKeyDown()) {
-			this.selectionStart = 0;
-			this.cursorPos = this.text.length();
+			this.cursorValue.set(this.text.length());
+			this.selectionValue.set(FieldSelection.create(0, this.text.length()));
 			return;
 		}
 
 		if (key == Key.C && this.isShortcutKeyDown()) {
-			if (this.selectionStart == -1) {
-				return;
+			if (!selection.isEmpty()) {
+				BridgeHandler.WINDOW.get().setClipboard(this.text.substring(selection.getStart(), selection.getEnd()));
 			}
-
-			if (this.selectionStart < this.cursorPos) {
-				BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.selectionStart, this.cursorPos));
-			} else {
-				BridgeHandler.WINDOW.get().setClipboard(this.text.substring(this.cursorPos, this.selectionStart));
-			}
-
 			return;
 		}
 
 		if (key == Key.X && this.isShortcutKeyDown()) {
-			if (this.selectionStart == -1) {
+			if (selection.isEmpty()) {
 				return;
 			}
 
-			final int start = Math.min(this.selectionStart, this.cursorPos);
-			final int end = Math.max(this.selectionStart, this.cursorPos);
-			final String cut = this.text.substring(start, end);
-			if (this.edit(this.text.substring(0, start) + this.text.substring(end))) {
+			final String cut = this.text.substring(selection.getStart(), selection.getEnd());
+			if (this.edit(this.text.substring(0, selection.getStart()) + this.text.substring(selection.getEnd()))) {
 				BridgeHandler.WINDOW.get().setClipboard(cut);
-				this.cursorPos = start;
-				this.selectionStart = -1;
+				this.cursorValue.set(selection.getStart());
+				this.selectionValue.set(FieldSelection.create(0, 0));
 			}
 			return;
 		}
 
-		if (key == Key.V && this.isShortcutKeyDown()) {
-			if (this.insert(BridgeHandler.WINDOW.get().getClipboard())) {
-				this.commit();
-			}
+		if (key == Key.V && this.isShortcutKeyDown() && this.insert(BridgeHandler.WINDOW.get().getClipboard())) {
+			this.commit();
 		}
 	}
 
-	private final void replace(final String newText, final boolean refusable) {
-		this.trackCursor(false, () -> {
-			final String text = this.limit(newText == null ? "" : newText);
-			if (!text.equals(this.text)) {
-				this.rewrite(text, refusable);
-			}
-
-			if (!this.focused) {
-				this.commit();
-			}
-		});
-	}
-
-	private final void moveCursor(final int position, final boolean refusable) {
-		this.trackCursor(refusable, () -> this.cursorPos = this.snap(Math.min(Math.max(0, position), this.text.length()), false));
-	}
-
-	private final void trackCursor(final boolean refusable, final @NonNull Runnable action) {
-		final int cursor = this.cursorPos;
-		final int selection = this.selectionStart;
-		action.run();
-		final int position = this.cursorPos;
-		if (position == cursor) {
-			super.sync("cursorPosition", position);
-			return;
+	private void replace(final String newText, final boolean refusable) {
+		final String text = this.limit(newText == null ? "" : newText);
+		if (!text.equals(this.text)) {
+			this.rewrite(text, refusable);
 		}
 
-		this.cursorPos = cursor;
-		final boolean moved = super.change(FieldNode.BEFORE_CURSOR_MOVE, FieldNode.CURSOR_MOVE, cursor, position, refusable, () -> {
-			this.cursorPos = position;
-			super.sync("cursorPosition", position);
-		});
-		if (!moved) {
-			this.selectionStart = selection;
+		if (!this.focused) {
+			this.commit();
 		}
 	}
 
-	private final boolean edit(final @NonNull String newText) {
-		if (newText.equals(this.text) || !this.isAccepted(newText)) {
+	private boolean edit(final @NonNull String newText) {
+		if (newText.equals(this.text) || !this.accept.test(newText)) {
 			return false;
 		}
 
-		return this.change(newText, true);
+		return this.changeText(newText, true);
 	}
 
-
-	private final boolean change(final @NonNull String newText, final boolean refusable) {
-		if (!super.hasUi()) {
-			this.text = newText;
-			super.sync("text", newText);
+	private boolean changeText(final @NonNull String text, final boolean refusable) {
+		if (!refusable) {
+			this.textValue.update(text);
 			return true;
 		}
 
-		final String previous = this.text;
-		this.text = newText;
-		final V value = this.getValue();
-		final boolean valid = this.isValid();
-		this.text = previous;
-
-		if (refusable) {
-			final NodeFieldChangeEvent.Pre<FieldNode<V>, V> event = super.fire(FieldNode.BEFORE_CHANGE, () -> NodeFieldChangeEvent.Pre.create(this, previous, newText, value, valid));
-			if (event != null && event.isCancelled()) {
-				return false;
-			}
-		}
-
-		this.text = newText;
-		super.sync("text", newText);
-		super.fire(FieldNode.CHANGE, () -> NodeFieldChangeEvent.Post.create(this, previous, newText, value, valid));
-		return true;
+		return FieldNode.settle(this.textValue, text);
 	}
 
-	private final void commit() {
+	private void commit() {
 		final V value = this.getValue();
 		this.fallback = value;
 		final String text = value == null ? "" : this.limit(this.format(value));
@@ -738,26 +749,46 @@ public abstract class FieldNode<V> extends Node {
 		super.sync("text", this.text);
 	}
 
-	private final void rewrite(final @NonNull String newText, final boolean refusable) {
-		final int cursorFromEnd = this.text.length() - this.cursorPos;
-		final int selectionFromEnd = this.text.length() - this.selectionStart;
-		if (!this.change(newText, refusable) || !this.focused) {
+	private void rewrite(final @NonNull String newText, final boolean refusable) {
+		final int length = this.text.length();
+		final int cursor = this.getCursorPos();
+		final FieldSelection selection = this.getSelection();
+		if (!this.changeText(newText, refusable) || !this.focused) {
 			return;
 		}
 
-		this.cursorPos = this.snap(Math.max(0, this.text.length() - cursorFromEnd), false);
-		if (this.selectionStart != -1) {
-			this.selectionStart = this.snap(Math.max(0, this.text.length() - selectionFromEnd), false);
+		final int shift = this.text.length() - length;
+		this.cursorValue.update(cursor + shift);
+		if (!selection.isEmpty()) {
+			this.selectionValue.update(FieldSelection.create(selection.getStart() + shift, selection.getEnd() + shift));
 		}
 	}
 
-	private final boolean canStep() {
+	private V valueOf(final @NonNull String text) {
+		if (text.isEmpty() && this.allowEmpty) {
+			return null;
+		}
+
+		final V parsed = this.parse(this.formatter.apply(text));
+		return parsed == null ? this.fallback : this.correct(parsed);
+	}
+
+	private boolean isValid(final @NonNull String text) {
+		if (text.isEmpty() && this.allowEmpty) {
+			return true;
+		}
+
+		final V parsed = this.accept.test(text) ? this.parse(this.formatter.apply(text)) : null;
+		return parsed != null && parsed.equals(this.correct(parsed));
+	}
+
+	private boolean canStep() {
 		final V value = this.getValue();
 		final V from = value != null ? value : this.fallback;
 		return from != null && this.increment(from, 0) != null;
 	}
 
-	private final void stepValue(final int count) {
+	private void stepValue(final int count) {
 		final V value = this.getValue();
 		final V from = value != null ? value : this.fallback;
 		if (from == null) {
@@ -770,16 +801,12 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	private final boolean isAccepted(final @NonNull String text) {
-		return this.accepts(text) && this.accept.test(text);
-	}
-
-	private final @NonNull String limit(final @NonNull String text) {
+	private @NonNull String limit(final @NonNull String text) {
 		final String cleaned = this.clean(text);
 		return this.maxTextLength >= 0 ? FieldNode.cut(cleaned, this.maxTextLength) : cleaned;
 	}
 
-	private final @NonNull String clean(final @NonNull String text) {
+	private @NonNull String clean(final @NonNull String text) {
 		final StringBuilder builder = new StringBuilder();
 		text.replace("\r\n", "\n").replace("\r", "\n").codePoints().forEach(codepoint -> {
 			if (codepoint == '\n' ? this.isMultiline() : !Character.isISOControl(codepoint)) {
@@ -789,14 +816,14 @@ public abstract class FieldNode<V> extends Node {
 		return builder.toString();
 	}
 
-	private final void holdInput(final @NonNull Key key) {
+	private void holdInput(final @NonNull Key key) {
 		this.firstInput = true;
 		this.inputting  = true;
 		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.inputType  = key;
 	}
 
-	private final void press(final double mouseX, final double mouseY, final boolean left) {
+	private void press(final double mouseX, final double mouseY, final boolean left) {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 		final boolean repeated = left && this.pressCount > 0 && now - this.lastPress <= 500L && Math.abs(mouseX - this.lastPressX) <= 4D && Math.abs(mouseY - this.lastPressY) <= 4D;
 		this.pressCount = repeated ? Math.min(this.pressCount + 1, 3) : 1;
@@ -806,44 +833,28 @@ public abstract class FieldNode<V> extends Node {
 		this.selecting  = left;
 
 		final int position = this.snap(this.getPositionAt(mouseX, mouseY), false);
-		if (this.pressCount == 1) {
-			this.updateSelection();
-			this.anchorStart = this.selectionStart == -1 ? position : this.selectionStart;
-			this.anchorEnd = this.anchorStart;
-			this.cursorPos = position;
-			return;
-		}
-
-		final int[] range = this.getRange(position);
+		final int[] range = this.pressCount == 1 ? new int[] {UI.isShiftKeyDown() ? this.getAnchor() : position, position} : this.getRange(position);
 		this.anchorStart = range[0];
-		this.anchorEnd = range[1];
-		this.selectionStart = range[0] == range[1] ? -1 : range[0];
-		this.cursorPos = range[1];
+		this.anchorEnd = this.pressCount == 1 ? range[0] : range[1];
+		this.cursorValue.set(range[1]);
+		this.selectionValue.set(FieldSelection.create(range[0], range[1]));
 	}
 
-	private final void select(final int position) {
+	private void drag(final int position) {
 		final int[] range = this.getRange(position);
-		final int previous = this.cursorPos;
-		if (range[0] < this.anchorStart) {
-			this.selectionStart = this.anchorEnd;
-			this.cursorPos = range[0];
+		final int previous = this.getCursorPos();
+		final int anchor = range[0] < this.anchorStart ? this.anchorEnd : this.anchorStart;
+		final int cursor = range[0] < this.anchorStart ? range[0] : Math.max(range[1], this.anchorEnd);
+		this.cursorValue.set(cursor);
+		this.selectionValue.set(FieldSelection.create(anchor, cursor));
+		if (cursor < previous) {
+			this.followCursorBackward();
 		} else {
-			this.selectionStart = this.anchorStart;
-			this.cursorPos = Math.max(range[1], this.anchorEnd);
-		}
-
-		if (this.selectionStart == this.cursorPos) {
-			this.selectionStart = -1;
-		}
-
-		if (this.cursorPos < previous) {
-			this.decreaseCursor(0);
-		} else {
-			this.increaseCursor(0);
+			this.followCursorForward();
 		}
 	}
 
-	private final int[] getRange(final int position) {
+	private int[] getRange(final int position) {
 		if (this.pressCount == 2) {
 			return this.getWordRange(position);
 		}
@@ -855,7 +866,7 @@ public abstract class FieldNode<V> extends Node {
 		return new int[] {position, position};
 	}
 
-	private final int[] getWordRange(final int position) {
+	private int[] getWordRange(final int position) {
 		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
 		final boolean word = position < this.text.length() && !this.isSeparator(tags, position) || position > 0 && !this.isSeparator(tags, position - 1);
 		int start = position;
@@ -871,7 +882,7 @@ public abstract class FieldNode<V> extends Node {
 		return new int[] {start, end};
 	}
 
-	private final int[] getLineRange(final int position) {
+	private int[] getLineRange(final int position) {
 		if (!this.isMultiline()) {
 			return new int[] {0, this.text.length()};
 		}
@@ -880,24 +891,30 @@ public abstract class FieldNode<V> extends Node {
 		return new int[] {this.text.lastIndexOf('\n', position - 1) + 1, end < 0 ? this.text.length() : end};
 	}
 
-	private final boolean deleteSelection() {
-		if (this.selectionStart == -1 || this.selectionStart == this.cursorPos) {
-			this.selectionStart = -1;
+	private boolean deleteSelection() {
+		final FieldSelection selection = this.getSelection();
+		if (selection.isEmpty()) {
 			return false;
 		}
 
-		final int start = Math.min(this.selectionStart, this.cursorPos);
-		final int end = Math.max(this.selectionStart, this.cursorPos);
-		if (!this.edit(this.text.substring(0, start) + this.text.substring(end))) {
-			return true;
+		if (this.edit(this.text.substring(0, selection.getStart()) + this.text.substring(selection.getEnd()))) {
+			this.selectionValue.set(FieldSelection.create(0, 0));
+			this.cursorValue.set(selection.getStart());
 		}
-
-		this.selectionStart = -1;
-		this.cursorPos = start;
 		return true;
 	}
 
-	private final int snap(final int index, final boolean forward) {
+	private int getAnchor() {
+		final FieldSelection selection = this.getSelection();
+		final int cursor = this.getCursorPos();
+		if (selection.isEmpty()) {
+			return cursor;
+		}
+
+		return cursor == selection.getStart() ? selection.getEnd() : selection.getStart();
+	}
+
+	private int snap(final int index, final boolean forward) {
 		if (index <= 0 || index >= this.text.length() || !Character.isHighSurrogate(this.text.charAt(index - 1)) || !Character.isLowSurrogate(this.text.charAt(index))) {
 			return index;
 		}
@@ -905,17 +922,17 @@ public abstract class FieldNode<V> extends Node {
 		return forward ? index + 1 : index - 1;
 	}
 
-	private final int nextIndex(final int index) {
+	private int nextIndex(final int index) {
 		return Character.offsetByCodePoints(this.text, index, 1);
 	}
 
-	private final int previousIndex(final int index) {
+	private int previousIndex(final int index) {
 		return Character.offsetByCodePoints(this.text, index, -1);
 	}
 
-	private final int nextWordIndex() {
+	private int nextWordIndex() {
 		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
-		int index = this.cursorPos;
+		int index = this.getCursorPos();
 		while (index < this.text.length() && !this.isSeparator(tags, index)) {
 			index++;
 		}
@@ -927,9 +944,9 @@ public abstract class FieldNode<V> extends Node {
 		return index;
 	}
 
-	private final int previousWordIndex() {
+	private int previousWordIndex() {
 		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
-		int index = this.cursorPos;
+		int index = this.getCursorPos();
 		while (index > 0 && this.isSeparator(tags, index - 1)) {
 			index--;
 		}
@@ -941,19 +958,19 @@ public abstract class FieldNode<V> extends Node {
 		return index;
 	}
 
-	private final boolean isMac() {
+	private boolean isMac() {
 		return Platform.current() == Platform.MACOS;
 	}
 
-	private final boolean isWordKeyDown() {
+	private boolean isWordKeyDown() {
 		return this.isMac() ? UI.isAltKeyDown() : UI.isCtrlKeyDown();
 	}
 
-	private final boolean isShortcutKeyDown() {
+	private boolean isShortcutKeyDown() {
 		return this.isMac() ? Key.LEFT_SUPER.isDown() || Key.RIGHT_SUPER.isDown() : UI.isCtrlKeyDown();
 	}
 
-	private final boolean isSeparator(final @NonNull int[] tags, final int index) {
+	private boolean isSeparator(final @NonNull int[] tags, final int index) {
 		final char c = this.text.charAt(index);
 		return tags[index] == -1 && (c == ' ' || c == '\n');
 	}
@@ -989,6 +1006,12 @@ public abstract class FieldNode<V> extends Node {
 			}
 		}
 		return opened.toString();
+	}
+
+	private static <X> boolean settle(final @NonNull InteractiveValue<X> value, final X next) {
+		value.set(next);
+		value.commit();
+		return Objects.equals(value.get(), next);
 	}
 
 	private static @NonNull String cut(final @NonNull String text, final int codepoints) {

@@ -67,7 +67,6 @@ import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.list.IndexedList;
 import dev.joid.lib.utils.point.Point;
 
@@ -1549,7 +1548,7 @@ public class NodeTest {
 
 	@Test
 	public void movesItsScrollbarAlongTheHorizontalScroll() {
-		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D));
+		final Bar bar = new Bar(0D, 110D, 400D, 10D, 40D);
 		final ContainerNode row = NodeTest.row().scrollbar(bar);
 		this.bridges.open(new NodeUI(row));
 		Assert.assertSame(bar, row.getScrollbar());
@@ -1557,24 +1556,24 @@ public class NodeTest {
 		Assert.assertSame(row, bar.getParent());
 		row.scrollX(-150D).updateScroll();
 		this.bridges.frame();
-		Assert.assertEquals(180D, bar.getX(), 1E-9D);
+		Assert.assertEquals(180D, bar.getThumb().getX(), 1E-9D);
 		Assert.assertEquals(280D, this.draw(0.6F, 0.4F, 0.2F).getLeft(), 1E-3D);
 	}
 
 	@Test
 	public void movesItsScrollbarAlongTheVerticalScroll() {
-		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
+		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
 		final ContainerNode column = NodeTest.column().scrollbar(bar);
 		this.bridges.open(new NodeUI(column));
 		column.scrollY(-100D).updateScroll();
 		this.bridges.frame();
-		Assert.assertEquals(40D, bar.getY(), 1E-9D);
+		Assert.assertEquals(40D, bar.getThumb().getY(), 1E-9D);
 		Assert.assertEquals(140D, this.draw(0.6F, 0.4F, 0.2F).getTop(), 1E-3D);
 	}
 
 	@Test
 	public void followsItsDraggedScrollbarFaster() {
-		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D));
+		final Bar bar = new Bar(0D, 110D, 400D, 10D, 40D);
 		final ContainerNode row = NodeTest.row().scrollbar(bar);
 		this.press(row, 120D, 215D);
 		Assert.assertTrue(bar.isDragging());
@@ -1586,7 +1585,7 @@ public class NodeTest {
 	@Test
 	public void forwardsTheMouseAndKeysToItsScrollbar() {
 		final List<String> events = new ArrayList<>();
-		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D)).handleKeyPressed(event -> events.add("key")).handleCharTyped(event -> events.add("char")).handleMouseScroll(event -> events.add("scrolled")).handleMouseDragged(event -> events.add("dragged")).handleMouseReleased(event -> events.add("released"));
+		final Bar bar = new Bar(0D, 110D, 400D, 10D, 40D).handleKeyPressed(event -> events.add("key")).handleCharTyped(event -> events.add("char")).handleMouseScroll(event -> events.add("scrolled")).handleMouseDragged(event -> events.add("dragged")).handleMouseReleased(event -> events.add("released"));
 		this.bridges.open(new NodeUI(NodeTest.row().scrollbar(bar)));
 		this.bridges.getUi().keyPressed(Key.A);
 		this.bridges.getUi().charTyped('a');
@@ -1601,7 +1600,7 @@ public class NodeTest {
 	public void loadsAScrollbarSetOnceItsUiIsOpen() {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
-		final Bar bar = new Bar(0D, 110D, 40D, 10D, BoundingBox.create(0D, 110D, 400D, 10D));
+		final Bar bar = new Bar(0D, 110D, 400D, 10D, 40D);
 		row.scrollbar(bar);
 		Assert.assertTrue(bar.hasUi());
 	}
@@ -2237,7 +2236,7 @@ public class NodeTest {
 	@Test
 	public void copiesItsHoverScrollWaitsAnimatorsAndScrollbar() {
 		final TweenAnimator animator = TweenAnimator.create();
-		final Bar bar = new Bar(410D, 0D, 10D, 20D, BoundingBox.create(410D, 0D, 10D, 100D));
+		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
 		final ContainerNode column = NodeTest.column().hoverDuration(50L).hoverEquation(TweenEquations.QUAD_IN).scrollSpeed(2D).wait(node -> false).animate(animator).scrollbar(bar);
 		final ContainerNode copy = column.copy();
 		Assert.assertEquals(50L, copy.getHoverDuration());
@@ -2248,7 +2247,8 @@ public class NodeTest {
 		Assert.assertNotSame(bar, copy.getScrollbar());
 		Assert.assertSame(Bar.class, copy.getScrollbar().getClass());
 		Assert.assertSame(copy, copy.getScrollbar().getScrollNode());
-		Assert.assertSame(bar.getScroll(), copy.getScrollbar().getScroll());
+		Assert.assertNotSame(bar.getThumb(), copy.getScrollbar().getThumb());
+		Assert.assertSame(copy.getScrollbar(), copy.getScrollbar().getThumb().getParent());
 		Assert.assertSame(column, bar.getScrollNode());
 	}
 
@@ -2395,8 +2395,8 @@ public class NodeTest {
 	@Test
 	public void detachesTheScrollbarAndTheSkeletonItReplaces() {
 		final List<String> events = new ArrayList<>();
-		final Bar first = new Bar(90D, 0D, 10D, 20D, BoundingBox.create(0D, 0D, 10D, 100D));
-		final Bar second = new Bar(90D, 0D, 10D, 20D, BoundingBox.create(0D, 0D, 10D, 100D));
+		final Bar first = new Bar(90D, 0D, 10D, 100D, 20D);
+		final Bar second = new Bar(90D, 0D, 10D, 100D, 20D);
 		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).overflow(OverflowProperty.SCROLL).scrollbar(first).skeleton(rect -> new RecordingNode("old", events, 0D, 0D, 10D, 10D));
 		this.bridges.open(new NodeUI(node));
 		events.clear();
@@ -2757,7 +2757,7 @@ public class NodeTest {
 	@Test
 	public void detachesItsScrollbarAndItsSkeleton() {
 		final Signal<Integer> signal = new Signal<>(0);
-		final Bar bar = new Bar(90D, 0D, 10D, 20D, BoundingBox.create(0D, 0D, 10D, 100D)).watch(signal);
+		final Bar bar = new Bar(90D, 0D, 10D, 100D, 20D).watch(signal);
 		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).overflow(OverflowProperty.SCROLL).scrollbar(bar).skeleton(rect -> RectNode.create(0D, 0D, 10D, 10D).watch(signal));
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 200D, 200D).append(node);
 		this.bridges.open(new NodeUI(parent));
@@ -3646,13 +3646,17 @@ public class NodeTest {
 
 	public static final class Bar extends ScrollbarNode {
 
-		public Bar(final double x, final double y, final double width, final double height, final BoundingBox scroll) {
-			super(x, y, width, height, scroll);
+		private final double length;
+
+		public Bar(final double x, final double y, final double width, final double height, final double length) {
+			super(x, y, width, height);
+			this.length = length;
+			super.thumb(RectNode.create(0D, 0D, width > height ? length : 0D, width > height ? 0D : length).color(new Color(0.6F, 0.4F, 0.2F, 1F)));
 		}
 
 		@Override
-		public void drawScrollbar(final double mouseX, final double mouseY) {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), new Color(0.6F, 0.4F, 0.2F, 1F));
+		protected @NonNull Node instantiate() {
+			return new Bar(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.length);
 		}
 
 	}

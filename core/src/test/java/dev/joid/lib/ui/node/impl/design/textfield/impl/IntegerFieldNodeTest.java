@@ -24,6 +24,7 @@ import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
+import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNodeTest;
 
 public class IntegerFieldNodeTest {
 
@@ -461,7 +462,7 @@ public class IntegerFieldNodeTest {
 		Assert.assertTrue(first.isFocused());
 		Assert.assertFalse(second.isFocused());
 		Assert.assertEquals("3", first.getText());
-		Assert.assertEquals(-1, first.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(first));
 		Assert.assertEquals(1, first.getCursorPos());
 	}
 
@@ -473,7 +474,7 @@ public class IntegerFieldNodeTest {
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(field.isFocused());
 		Assert.assertEquals(2, field.getCursorPos());
-		Assert.assertEquals(-1, field.getSelectionStart());
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 	}
 
 	@Test

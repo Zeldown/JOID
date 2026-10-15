@@ -16,17 +16,16 @@ import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.box.BoundingBox;
 
 public class ShowLists extends ShowUI {
 
 	private static final String[] TIMES   = {"3:42", "4:05", "2:58", "5:11", "3:27", "3:49", "4:33", "2:41", "3:56", "4:18", "3:34", "4:02"};
-	private static final Color[]  COLORS  = {ShowUI.AMBER, ShowUI.CYAN, ShowUI.PINK, ShowUI.EMERALD, ShowUI.VIOLET, ShowUI.SKY, ShowUI.CYAN, ShowUI.ORANGE, ShowUI.FUCHSIA, ShowUI.ORANGE, ShowUI.SKY, ShowUI.EMERALD};
 	private static final String[] TITLES  = {"Golden Hour", "Neon Tide", "Velvet", "Aurora", "Midnight", "Paper Planes", "Low Tide", "Saffron", "Glasshouse", "Cinder", "Blue Hour", "Driftwood"};
+	private static final Color[]  COLORS  = {ShowUI.AMBER, ShowUI.CYAN, ShowUI.PINK, ShowUI.EMERALD, ShowUI.VIOLET, ShowUI.SKY, ShowUI.CYAN, ShowUI.ORANGE, ShowUI.FUCHSIA, ShowUI.ORANGE, ShowUI.SKY, ShowUI.EMERALD};
 	private static final String[] ARTISTS = {"Amber Lane", "The Shallows", "Rosa Mendes", "North Lights", "Lo & Behold", "Kite Club", "The Shallows", "Amber Lane", "Mira Sol", "Ash & Oak", "North Lights", "Kite Club"};
 
-	private final StringSignal next  = new StringSignal(ShowLists.TITLES[0]);
 	private final List<String> order = new ArrayList<>();
+	private final StringSignal next  = new StringSignal(ShowLists.TITLES[0]);
 
 	@Override
 	protected void scene() {
@@ -55,15 +54,15 @@ public class ShowLists extends ShowUI {
 		.create(470, 240, 980, 730)
 		.color(Color.TRANSPARENT)
 		.overflow(OverflowProperty.SCROLL)
-		.scrollbar(ShowScrollbarNode.create(964, 0, 8, 150, BoundingBox.create(964, 0, 8, 730)))
+		.scrollbar(ShowScrollbarNode.create(964, 0, 8, 730, 150))
 		.body(area -> {
 			final ReorderableFlexNode list = ReorderableFlexNode
 			.vertical(20, 0, 920)
-			.margin(12D)
 			.onReorderEnd(event -> {
 				this.order.add(event.getNewIndex(), this.order.remove(event.getOldIndex()));
 				this.next.set(this.order.get(0));
-			});
+			})
+			.margin(12D);
 			list.body(flex -> {
 				for (int i = 0; i < ShowLists.TITLES.length; i++) {
 					this.row(list, i);
