@@ -25,10 +25,10 @@ public final class Lwjgl2Natives {
 			return;
 		}
 
-		Lwjgl2Natives.installed = true;
 		final String platform = Lwjgl2Natives.getPlatform();
 		final String[] libraries = Lwjgl2Natives.getLibraries(platform);
 		if (System.getProperty("org.lwjgl.librarypath") != null || Lwjgl2Natives.isProvided(libraries)) {
+			Lwjgl2Natives.installed = true;
 			return;
 		}
 
@@ -50,6 +50,7 @@ public final class Lwjgl2Natives {
 			throw new IllegalStateException("Unable to extract the LWJGL 2 natives into " + Lwjgl2Natives.AREA.getDirectory().getAbsolutePath() + ", check that the cache folder can be written", exception);
 		}
 		System.setProperty("org.lwjgl.librarypath", directory.getAbsolutePath());
+		Lwjgl2Natives.installed = true;
 	}
 
 	private static String getPlatform() {
