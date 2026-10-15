@@ -39,27 +39,27 @@ public final class ResourceBuilder {
 		return new ResourceBuilder(ResourceBuilder.DEFAULT_CACHE, new ResourceProperties());
 	}
 
-	public final @NonNull ResourceBuilder cache(final IResourceCache cache) {
+	public @NonNull ResourceBuilder cache(final IResourceCache cache) {
 		return new ResourceBuilder(cache, this.properties);
 	}
 
-	public final @NonNull ResourceBuilder interpolation(final @NonNull TextureFilter interpolation) {
+	public @NonNull ResourceBuilder interpolation(final @NonNull TextureFilter interpolation) {
 		return new ResourceBuilder(this.cache, this.properties.copy().interpolation(interpolation));
 	}
 
-	public final @NonNull ResourceBuilder linear() {
+	public @NonNull ResourceBuilder linear() {
 		return new ResourceBuilder(this.cache, this.properties.copy().linear());
 	}
 
-	public final @NonNull ResourceBuilder nearest() {
+	public @NonNull ResourceBuilder nearest() {
 		return new ResourceBuilder(this.cache, this.properties.copy().nearest());
 	}
 
-	public final @NonNull ResourceBuilder mipmap(final boolean mipmap) {
+	public @NonNull ResourceBuilder mipmap(final boolean mipmap) {
 		return new ResourceBuilder(this.cache, this.properties.copy().mipmap(mipmap));
 	}
 
-	public final @NonNull ResourceBuilder textureCoords(final double u, final double v, final double width, final double height) {
+	public @NonNull ResourceBuilder textureCoords(final double u, final double v, final double width, final double height) {
 		return new ResourceBuilder(this.cache, this.properties.copy().textureCoords(u, v, width, height));
 	}
 
@@ -96,7 +96,7 @@ public final class ResourceBuilder {
 		return this.compute(asset.getUniqueId(), () -> ResourceBuilder.read(asset));
 	}
 
-	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {
+	public @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {
 		if (this.cache == null) {
 			return new Resource(this, dataSupplier.get());
 		}
@@ -112,11 +112,11 @@ public final class ResourceBuilder {
 		return new Resource(this, data);
 	}
 
-	public final @NonNull ResourceProperties getProperties() {
+	public @NonNull ResourceProperties getProperties() {
 		return this.properties.copy();
 	}
 
-	public final void reload() {
+	public void reload() {
 		if (this.cache == null) {
 			return;
 		}

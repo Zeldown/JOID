@@ -35,12 +35,11 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@Getter
 public final class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
 	private static final FileCacheArea AREA = FileCache.area("video").retention(Duration.ofDays(7L));
 
-	private final Asset                asset;
+	@Getter private final Asset        asset;
 	private final VideoResourceDecoder origin;
 	private final Object               grabberLock       = new Object();
 	private final AtomicInteger        seeks             = new AtomicInteger(0);
@@ -59,11 +58,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	private ArrayBlockingQueue<DecodedFrame> frameQueue;
 
-	private volatile boolean ended;
-	private volatile boolean seeked;
-	private volatile double  seekTime;
-	private volatile double  loopOffset;
-	private volatile int     displayedFrameIndex;
+	private volatile boolean     ended;
+	private volatile boolean     seeked;
+	private volatile double      seekTime;
+	private volatile double      loopOffset;
+	@Getter private volatile int displayedFrameIndex;
 
 	private long startTime;
 	private long pauseTime;
@@ -74,22 +73,22 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private ITexture[] textures;
 	private boolean    texturesAllocated;
 
-	private int    videoWidth;
-	private int    totalFrames;
-	private double duration;
-	private double frameRate;
+	@Getter private int    videoWidth;
+	@Getter private int    totalFrames;
+	@Getter private double duration;
+	@Getter private double frameRate;
 
-	private boolean loop;
-	private float   volume   = 1F;
-	private Object  audioGroup;
-	private boolean autoplay = true;
+	@Getter private boolean loop;
+	@Getter private float   volume   = 1F;
+	@Getter private Object  audioGroup;
+	@Getter private boolean autoplay = true;
 
-	private float   locationX;
-	private float   locationY;
-	private float   locationZ;
-	private boolean hasLocation;
-	private float   maxDistance       = 50F;
-	private float   referenceDistance = 5F;
+	private float         locationX;
+	private float         locationY;
+	private float         locationZ;
+	private boolean       hasLocation;
+	@Getter private float maxDistance       = 50F;
+	@Getter private float referenceDistance = 5F;
 
 	public VideoResourceDecoder(final @NonNull File file) {
 		this(FileAsset.create(file));
@@ -122,11 +121,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		this.textures = new ITexture[] {render.createTexture(), render.createTexture()};
+		this.textures = new ITexture[] {ResourceData.placeholder(), ResourceData.placeholder()};
 		resource.texture(this.textures[0]);
-		this.textures[0].allocate(1, 1).upload(new int[] {0}, 1, 1);
-		this.textures[1].allocate(1, 1).upload(new int[] {0}, 1, 1);
 	}
 
 	@Override

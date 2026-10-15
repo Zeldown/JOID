@@ -32,13 +32,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class VectorResourceDecoder implements IResourceDecoder {
 
 	private static final double          BUCKET = 1.25D;
 	private static final ExecutorService RASTER = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("ResourceVector"));
 
-	private final Asset                   asset;
+	@Getter private final Asset           asset;
 	private final Map<Long, ITexture>     textures;
 	private final AtomicReference<Raster> pending;
 
@@ -58,7 +57,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
-		this.texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1);
+		this.texture = ResourceData.placeholder();
 		resource.texture(this.texture);
 	}
 

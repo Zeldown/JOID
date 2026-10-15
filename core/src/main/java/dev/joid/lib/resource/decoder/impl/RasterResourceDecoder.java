@@ -46,7 +46,7 @@ public class RasterResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
-		resource.texture(BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1));
+		resource.texture(ResourceData.placeholder());
 	}
 
 	@Override
@@ -65,13 +65,7 @@ public class RasterResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		for (int i = 0; i < resource.getTextureCount(); i++) {
-			if (resource.getData(i) == null) {
-				continue;
-			}
-
-			resource.getTexture(i).allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(i), resource.getWidth(), resource.getHeight());
-		}
+		resource.uploadTextures();
 		this.clear(resource);
 	}
 

@@ -1,6 +1,7 @@
 package dev.joid.lib.resource;
 
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -457,7 +458,7 @@ public class ResourceTest {
 		Assert.assertNotSame(resource, fork);
 		Assert.assertNotSame(resource.getResourceData(), fork.getResourceData());
 		Assert.assertNotSame(decoder, fork.getDecoder());
-		Assert.assertSame(decoder, ((AnimatedResourceDecoder) fork.getDecoder()).getOrigin());
+		Assert.assertSame(decoder, ResourceTest.field(fork.getDecoder(), "origin"));
 		Assert.assertEquals(Collections.singletonList(fork.getResourceData()), resource.getResourceData().getForks());
 		Assert.assertTrue(fork.isBlocking());
 		Assert.assertSame(TextureFilter.LINEAR, fork.getProperties().getInterpolation());
@@ -480,6 +481,16 @@ public class ResourceTest {
 			Thread.sleep(1L);
 		}
 		Assert.assertTrue(condition.getAsBoolean());
+	}
+
+	private static Object field(final Object target, final String name) {
+		try {
+			final Field field = target.getClass().getDeclaredField(name);
+			field.setAccessible(true);
+			return field.get(target);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	private static final class Decoder implements IResourceDecoder {

@@ -29,13 +29,13 @@ public final class MemoryResourceCache implements IResourceCache {
 		return new MemoryResourceCache();
 	}
 
-	public final @NonNull MemoryResourceCache size(final int size) {
+	public @NonNull MemoryResourceCache size(final int size) {
 		this.size = size;
 		this.rebuild();
 		return this;
 	}
 
-	public final @NonNull MemoryResourceCache expiry(final long expiry) {
+	public @NonNull MemoryResourceCache expiry(final long expiry) {
 		this.expiry = expiry;
 		this.rebuild();
 		return this;

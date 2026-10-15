@@ -14,16 +14,15 @@ import dev.joid.lib.resource.playback.IResourcePlayback;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public final class Resource {
 
 	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().linear();
 
-	private final ResourceData    data;
-	private final ResourceBuilder builder;
+	private final ResourceData            data;
+	@Getter private final ResourceBuilder builder;
 
-	private boolean            blocking;
-	private ResourceProperties properties;
+	@Getter private boolean            blocking;
+	@Getter private ResourceProperties properties;
 
 	private long restTime;
 	private int  requestedWidth;
@@ -40,71 +39,71 @@ public final class Resource {
 		return Resource.DEFAULT_BUILDER.of(input);
 	}
 
-	public final @NonNull Resource properties(final @NonNull ResourceProperties properties) {
+	public @NonNull Resource properties(final @NonNull ResourceProperties properties) {
 		this.properties = properties;
 		return this;
 	}
 
-	public final @NonNull Resource blocking() {
+	public @NonNull Resource blocking() {
 		this.blocking = true;
 		return this;
 	}
 
-	public final @NonNull Resource interpolation(final @NonNull TextureFilter interpolation) {
+	public @NonNull Resource interpolation(final @NonNull TextureFilter interpolation) {
 		this.properties.interpolation(interpolation);
 		return this;
 	}
 
-	public final @NonNull Resource linear() {
+	public @NonNull Resource linear() {
 		this.properties.linear();
 		return this;
 	}
 
-	public final @NonNull Resource nearest() {
+	public @NonNull Resource nearest() {
 		this.properties.nearest();
 		return this;
 	}
 
-	public final @NonNull Resource mipmap(final boolean mipmap) {
+	public @NonNull Resource mipmap(final boolean mipmap) {
 		this.properties.mipmap(mipmap);
 		return this;
 	}
 
-	public final @NonNull Resource textureCoords(final double u, final double v, final double width, final double height) {
+	public @NonNull Resource textureCoords(final double u, final double v, final double width, final double height) {
 		this.properties.textureCoords(u, v, width, height);
 		return this;
 	}
 
-	public final @NonNull Resource uniqueId(final @NonNull String uniqueId) {
+	public @NonNull Resource uniqueId(final @NonNull String uniqueId) {
 		this.data.uniqueId(uniqueId);
 		return this;
 	}
 
-	public final @NonNull Resource decoder(final IResourceDecoder decoder) {
+	public @NonNull Resource decoder(final IResourceDecoder decoder) {
 		this.data.decoder(decoder);
 		return this;
 	}
 
-	public final @NonNull Resource onLoad(final @NonNull Consumer<@NonNull Resource> callback) {
+	public @NonNull Resource onLoad(final @NonNull Consumer<@NonNull Resource> callback) {
 		this.data.onLoad(() -> callback.accept(this));
 		return this;
 	}
 
-	public final @NonNull Resource onError(final @NonNull BiConsumer<@NonNull Resource, @NonNull Throwable> callback) {
+	public @NonNull Resource onError(final @NonNull BiConsumer<@NonNull Resource, @NonNull Throwable> callback) {
 		this.data.onError(error -> callback.accept(this, error));
 		return this;
 	}
 
-	public final @NonNull Resource reset() {
+	public @NonNull Resource reset() {
 		this.properties = this.builder.getProperties();
 		return this;
 	}
 
-	public final @NonNull Resource copy() {
+	public @NonNull Resource copy() {
 		return this.derive(this.data);
 	}
 
-	public final @NonNull Resource fork() {
+	public @NonNull Resource fork() {
 		final IResourceDecoder decoder = this.data.getDecoder();
 		final IResourceDecoder forked = decoder == null ? null : decoder.fork();
 		if (forked == null) {
@@ -114,94 +113,94 @@ public final class Resource {
 		return this.derive(this.data.fork(forked));
 	}
 
-	public final @NonNull Resource reload() {
+	public @NonNull Resource reload() {
 		this.data.clear();
 		return this;
 	}
 
-	public final int getWidth() {
+	public int getWidth() {
 		final double[] textureCoords = this.properties.getTextureCoords();
 		return textureCoords != null ? (int) Math.round(textureCoords[2]) : this.data.getWidth();
 	}
 
-	public final int getHeight() {
+	public int getHeight() {
 		final double[] textureCoords = this.properties.getTextureCoords();
 		return textureCoords != null ? (int) Math.round(textureCoords[3]) : this.data.getHeight();
 	}
 
-	public final int getSourceWidth() {
+	public int getSourceWidth() {
 		return this.data.getWidth();
 	}
 
-	public final int getSourceHeight() {
+	public int getSourceHeight() {
 		return this.data.getHeight();
 	}
 
-	public final int[] getData() {
+	public int[] getData() {
 		return this.data.getData(0);
 	}
 
-	public final int[] getData(final int index) {
+	public int[] getData(final int index) {
 		return this.data.getData(index);
 	}
 
-	public final ITexture getTexture() {
+	public ITexture getTexture() {
 		return this.data.getTexture(0);
 	}
 
-	public final ITexture getTexture(final int index) {
+	public ITexture getTexture(final int index) {
 		return this.data.getTexture(index);
 	}
 
-	public final IResourceDecoder getDecoder() {
+	public IResourceDecoder getDecoder() {
 		return this.data.getDecoder();
 	}
 
-	public final boolean isMipmappable() {
+	public boolean isMipmappable() {
 		return this.data.getDecoder() == null || this.data.getDecoder().isMipmappable();
 	}
 
-	public final @NonNull String getUniqueId() {
+	public @NonNull String getUniqueId() {
 		return this.data.getUniqueId();
 	}
 
-	public final ResourceData getResourceData() {
+	public ResourceData getResourceData() {
 		return this.data;
 	}
 
-	public final IResourcePlayback getPlayback() {
+	public IResourcePlayback getPlayback() {
 		return this.data.getDecoder() instanceof IResourcePlayback ? (IResourcePlayback) this.data.getDecoder() : null;
 	}
 
-	public final boolean isLoaded() {
+	public boolean isLoaded() {
 		return this.data.isLoaded();
 	}
 
-	public final boolean isUploaded() {
+	public boolean isUploaded() {
 		return this.data.isUploaded();
 	}
 
-	public final boolean isGenerated() {
+	public boolean isGenerated() {
 		return this.data.isGenerated();
 	}
 
-	public final boolean isFailed() {
+	public boolean isFailed() {
 		return this.data.isFailed();
 	}
 
-	public final void generate() {
+	public void generate() {
 		this.data.generate(!this.blocking);
 	}
 
-	public final void upload() {
+	public void upload() {
 		this.data.upload();
 	}
 
-	public final void unbind() {
+	public void unbind() {
 		BridgeHandler.RENDER.get().getState().texture(null);
 	}
 
-	public final void bind(final @NonNull TextureWrap wrap, final @NonNull Runnable runnable) {
+	public void bind(final @NonNull TextureWrap wrap, final @NonNull Runnable runnable) {
 		this.bindTextureOnly(wrap);
 		try {
 			runnable.run();
@@ -210,7 +209,7 @@ public final class Resource {
 		}
 	}
 
-	public final void request(final int width, final int height) {
+	public void request(final int width, final int height) {
 		final IResourceDecoder decoder = this.data.getDecoder();
 		if (decoder == null || width <= 0 || height <= 0) {
 			return;
@@ -226,7 +225,7 @@ public final class Resource {
 		decoder.request(this.data, width, height, !this.blocking, now < this.restTime);
 	}
 
-	public final void bindTextureOnly(final @NonNull TextureWrap wrap) {
+	public void bindTextureOnly(final @NonNull TextureWrap wrap) {
 		this.prepareBind();
 		if (this.isFailed()) {
 			if (JOIDEnv.isDevMode()) {
@@ -251,7 +250,7 @@ public final class Resource {
 		BridgeHandler.RENDER.get().getState().texture(texture).textureFilter(this.properties.getInterpolation()).textureWrap(wrap);
 	}
 
-	public final void prepareBind() {
+	public void prepareBind() {
 		if (this.blocking) {
 			this.data.await();
 		}
@@ -275,7 +274,7 @@ public final class Resource {
 		}
 	}
 
-	public final void clear() {
+	public void clear() {
 		this.data.clear();
 
 		final IResourceCache cache = this.builder.getCache();

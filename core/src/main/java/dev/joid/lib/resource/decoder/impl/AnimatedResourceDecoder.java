@@ -15,10 +15,9 @@ import dev.joid.lib.resource.playback.IResourcePlayback;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
-	private final Asset                    asset;
+	@Getter private final Asset            asset;
 	private final IResourceAnimationReader reader;
 	private final AnimatedResourceDecoder  origin;
 
@@ -26,16 +25,16 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	private ResourceAnimation source;
 	private ResourceAnimation animation;
 
-	private Integer plays;
-	private boolean autoplay = true;
+	private Integer         plays;
+	@Getter private boolean autoplay = true;
 
-	private long    position;
-	private int     displayed = -1;
-	private boolean seeked;
-	private boolean paused;
-	private long    startTime;
-	private long    pauseTime;
-	private boolean running;
+	private long            position;
+	private int             displayed = -1;
+	private boolean         seeked;
+	@Getter private boolean paused;
+	private long            startTime;
+	private long            pauseTime;
+	private boolean         running;
 
 	public AnimatedResourceDecoder(final @NonNull Asset asset, final @NonNull IResourceAnimationReader reader) {
 		this.asset = asset;
@@ -54,7 +53,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
-		this.texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1);
+		this.texture = ResourceData.placeholder();
 		resource.texture(this.texture);
 	}
 

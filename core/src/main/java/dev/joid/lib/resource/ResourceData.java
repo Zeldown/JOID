@@ -71,12 +71,12 @@ public final class ResourceData {
 		}
 	}
 
-	public final @NonNull ResourceData uniqueId(final @NonNull String uniqueId) {
+	public @NonNull ResourceData uniqueId(final @NonNull String uniqueId) {
 		this.uniqueId = uniqueId;
 		return this;
 	}
 
-	public final @NonNull ResourceData decoder(final IResourceDecoder decoder) {
+	public @NonNull ResourceData decoder(final IResourceDecoder decoder) {
 		this.decoder = decoder;
 		if (this.decoder != null) {
 			this.decoder.init(this);
@@ -84,42 +84,42 @@ public final class ResourceData {
 		return this;
 	}
 
-	public final @NonNull ResourceData texture(final @NonNull ITexture texture) {
+	public @NonNull ResourceData texture(final @NonNull ITexture texture) {
 		this.textures = new ITexture[] {texture};
 		return this;
 	}
 
-	public final @NonNull ResourceData textures(final ITexture[] textures) {
+	public @NonNull ResourceData textures(final ITexture[] textures) {
 		this.textures = textures;
 		return this;
 	}
 
-	public final @NonNull ResourceData data(final int[][] data) {
+	public @NonNull ResourceData data(final int[][] data) {
 		this.data = data;
 		return this;
 	}
 
-	public final @NonNull ResourceData generated(final boolean generated) {
+	public @NonNull ResourceData generated(final boolean generated) {
 		this.generated = generated;
 		return this;
 	}
 
-	public final @NonNull ResourceData width(final int width) {
+	public @NonNull ResourceData width(final int width) {
 		this.width = width;
 		return this;
 	}
 
-	public final @NonNull ResourceData height(final int height) {
+	public @NonNull ResourceData height(final int height) {
 		this.height = height;
 		return this;
 	}
 
-	public final @NonNull ResourceData region(final int x, final int y, final int width, final int height) {
+	public @NonNull ResourceData region(final int x, final int y, final int width, final int height) {
 		this.region = new int[] {x, y, width, height};
 		return this;
 	}
 
-	public final @NonNull ResourceData reload(final IResourceDecoder decoder) {
+	public @NonNull ResourceData reload(final IResourceDecoder decoder) {
 		this.await();
 		if (this.decoder != null) {
 			if (this.textures != null) {
@@ -147,19 +147,19 @@ public final class ResourceData {
 		return this.decoder(decoder);
 	}
 
-	public final @NonNull ResourceData fork(final @NonNull IResourceDecoder decoder) {
+	public @NonNull ResourceData fork(final @NonNull IResourceDecoder decoder) {
 		final ResourceData fork = new ResourceData(this.uniqueId, decoder);
 		this.forks.add(fork);
 		return fork;
 	}
 
-	public final void dispatch(final @NonNull Runnable task) {
+	public void dispatch(final @NonNull Runnable task) {
 		final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
 		this.tasks.add(thread);
 		thread.start();
 	}
 
-	public final void await() {
+	public void await() {
 		for (final Thread task : this.tasks) {
 			if (!task.isAlive()) {
 				continue;
@@ -184,7 +184,7 @@ public final class ResourceData {
 		} catch (final ExecutionException silent) {}
 	}
 
-	public final void generate(final boolean async) {
+	public void generate(final boolean async) {
 		if (this.error != null) {
 			this.generated = true;
 		} else if (this.decoder != null) {
@@ -245,19 +245,13 @@ public final class ResourceData {
 		}
 	}
 
-	public final void upload() {
+	public void upload() {
 		if (this.data == null) {
 			return;
 		}
 
 		if (this.decoder == null) {
-			for (int i = 0; i < this.textures.length; i++) {
-				if (this.data[i] == null) {
-					continue;
-				}
-
-				this.textures[i].allocate(this.width, this.height).upload(this.data[i], this.width, this.height);
-			}
+			this.uploadTextures();
 		} else {
 			this.decoder.upload(this);
 		}
@@ -266,7 +260,17 @@ public final class ResourceData {
 		this.data = null;
 	}
 
-	public final synchronized void fail(final @NonNull Throwable error) {
+	public void uploadTextures() {
+		for (int i = 0; i < this.textures.length; i++) {
+			if (this.data[i] == null) {
+				continue;
+			}
+
+			this.textures[i].allocate(this.width, this.height).upload(this.data[i], this.width, this.height);
+		}
+	}
+
+	public synchronized void fail(final @NonNull Throwable error) {
 		if (this.error != null) {
 			return;
 		}
@@ -283,7 +287,7 @@ public final class ResourceData {
 		}
 	}
 
-	public final synchronized @NonNull ResourceData onLoad(final @NonNull Runnable listener) {
+	public synchronized @NonNull ResourceData onLoad(final @NonNull Runnable listener) {
 		this.loadListeners.add(listener);
 		if (this.loaded) {
 			ThreadUtils.runOnRenderThread(listener);
@@ -291,7 +295,7 @@ public final class ResourceData {
 		return this;
 	}
 
-	public final synchronized @NonNull ResourceData onError(final @NonNull Consumer<@NonNull Throwable> listener) {
+	public synchronized @NonNull ResourceData onError(final @NonNull Consumer<@NonNull Throwable> listener) {
 		this.errorListeners.add(listener);
 		if (this.error != null) {
 			final Throwable error = this.error;
@@ -300,62 +304,62 @@ public final class ResourceData {
 		return this;
 	}
 
-	public final boolean isFailed() {
+	public boolean isFailed() {
 		return this.error != null;
 	}
 
-	public final @NonNull List<@NonNull Thread> getTasks() {
+	public @NonNull List<@NonNull Thread> getTasks() {
 		return Collections.unmodifiableList(this.tasks);
 	}
 
-	public final @NonNull List<@NonNull ResourceData> getForks() {
+	public @NonNull List<@NonNull ResourceData> getForks() {
 		synchronized (this.forks) {
 			return new ArrayList<>(this.forks);
 		}
 	}
 
-	public final int getWidth() {
+	public int getWidth() {
 		if (this.region != null) {
 			return this.region[2];
 		}
 		return this.isBorrowed() ? this.textures[0].getWidth() : this.width;
 	}
 
-	public final int getHeight() {
+	public int getHeight() {
 		if (this.region != null) {
 			return this.region[3];
 		}
 		return this.isBorrowed() ? this.textures[0].getHeight() : this.height;
 	}
 
-	public final int[] getRegion() {
+	public int[] getRegion() {
 		return this.region == null ? null : this.region.clone();
 	}
 
-	public final int[][] getData() {
+	public int[][] getData() {
 		return this.data == null ? null : this.data.clone();
 	}
 
-	public final int[] getData(final int index) {
+	public int[] getData(final int index) {
 		final int[][] data = this.data;
 		return data == null || data.length <= index ? null : data[index];
 	}
 
-	public final ITexture[] getTextures() {
+	public ITexture[] getTextures() {
 		return this.textures == null ? null : this.textures.clone();
 	}
 
-	public final ITexture getTexture(final int index) {
+	public ITexture getTexture(final int index) {
 		final ITexture[] textures = this.textures;
 		return textures == null || textures.length <= index ? null : textures[index];
 	}
 
-	public final int getTextureCount() {
+	public int getTextureCount() {
 		final ITexture[] textures = this.textures;
 		return textures == null ? 0 : textures.length;
 	}
 
-	public final @NonNull ITexture getMissingTexture() {
+	public @NonNull ITexture getMissingTexture() {
 		if (this.missingTexture == null) {
 			final int[] pixels = new int[64];
 			for (int i = 0; i < pixels.length; i++) {
@@ -366,7 +370,7 @@ public final class ResourceData {
 		return this.missingTexture;
 	}
 
-	public final void clear() {
+	public void clear() {
 		final IResourceDecoder decoder = this.decoder;
 		if (decoder != null) {
 			final ITexture[] textures = this.textures;
@@ -394,6 +398,10 @@ public final class ResourceData {
 		this.loaded    = false;
 		this.uploaded  = false;
 		this.generated = false;
+	}
+
+	public static @NonNull ITexture placeholder() {
+		return BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1);
 	}
 
 	public static void releaseCollected() {

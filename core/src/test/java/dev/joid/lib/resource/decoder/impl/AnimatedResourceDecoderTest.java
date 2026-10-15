@@ -3,6 +3,7 @@ package dev.joid.lib.resource.decoder.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Field;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -13,6 +14,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.animation.IResourceAnimationReader;
+import dev.joid.lib.resource.animation.ResourceAnimation;
 import dev.joid.lib.resource.animation.impl.ApngResourceAnimationReader;
 import dev.joid.lib.resource.animation.impl.GifResourceAnimationReader;
 import lombok.NonNull;
@@ -27,7 +29,7 @@ public class AnimatedResourceDecoderTest {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
 		final ResourceData data = new ResourceData("blink.png", decoder);
 		decoder.prepare(data);
-		final RecordingTexture texture = (RecordingTexture) decoder.getTexture();
+		final RecordingTexture texture = (RecordingTexture) AnimatedResourceDecoderTest.field(decoder, "texture");
 		Assert.assertSame(texture, data.getTextures()[0]);
 		Assert.assertEquals(1, texture.getWidth());
 		Assert.assertArrayEquals(new int[] {0}, texture.getPixels());
@@ -40,7 +42,7 @@ public class AnimatedResourceDecoderTest {
 		decoder.decode(data);
 		Assert.assertEquals(8, data.getWidth());
 		Assert.assertEquals(8, data.getHeight());
-		Assert.assertSame(decoder.getAnimation().getFrames().get(0).getPixels(), data.getData()[0]);
+		Assert.assertSame(((ResourceAnimation) AnimatedResourceDecoderTest.field(decoder, "animation")).getFrames().get(0).getPixels(), data.getData()[0]);
 		Assert.assertEquals(0.24D, decoder.getDuration(), 0D);
 	}
 
@@ -60,12 +62,12 @@ public class AnimatedResourceDecoderTest {
 	public void startsOnUploadByDefault() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
 		AnimatedResourceDecoderTest.load(decoder);
-		final RecordingTexture texture = (RecordingTexture) decoder.getTexture();
+		final RecordingTexture texture = (RecordingTexture) AnimatedResourceDecoderTest.field(decoder, "texture");
 		Assert.assertTrue(decoder.isAutoplay());
 		Assert.assertTrue(decoder.isPlaying());
-		Assert.assertEquals(0, decoder.getDisplayed());
+		Assert.assertEquals(0, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		Assert.assertEquals(8, texture.getWidth());
-		Assert.assertArrayEquals(decoder.getAnimation().getFrames().get(0).getPixels(), texture.getPixels());
+		Assert.assertArrayEquals(((ResourceAnimation) AnimatedResourceDecoderTest.field(decoder, "animation")).getFrames().get(0).getPixels(), texture.getPixels());
 	}
 
 	@Test
@@ -76,7 +78,7 @@ public class AnimatedResourceDecoderTest {
 		decoder.update(data);
 		Assert.assertFalse(decoder.isAutoplay());
 		Assert.assertFalse(decoder.isPlaying());
-		Assert.assertEquals(0, decoder.getDisplayed());
+		Assert.assertEquals(0, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		Assert.assertEquals(0D, decoder.getCurrentTime(), 0D);
 	}
 
@@ -85,14 +87,14 @@ public class AnimatedResourceDecoderTest {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
 		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
 		this.advance(decoder, data, 39L);
-		Assert.assertEquals(0, decoder.getDisplayed());
+		Assert.assertEquals(0, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		this.advance(decoder, data, 1L);
-		Assert.assertEquals(1, decoder.getDisplayed());
-		Assert.assertArrayEquals(decoder.getAnimation().getFrames().get(1).getPixels(), ((RecordingTexture) decoder.getTexture()).getPixels());
+		Assert.assertEquals(1, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
+		Assert.assertArrayEquals(((ResourceAnimation) AnimatedResourceDecoderTest.field(decoder, "animation")).getFrames().get(1).getPixels(), ((RecordingTexture) AnimatedResourceDecoderTest.field(decoder, "texture")).getPixels());
 		this.advance(decoder, data, 80L);
-		Assert.assertEquals(2, decoder.getDisplayed());
+		Assert.assertEquals(2, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		this.advance(decoder, data, 120L);
-		Assert.assertEquals(0, decoder.getDisplayed());
+		Assert.assertEquals(0, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 	}
 
 	@Test
@@ -115,7 +117,7 @@ public class AnimatedResourceDecoderTest {
 		Assert.assertTrue(decoder.isPlaying());
 		this.advance(decoder, data, 10L);
 		Assert.assertFalse(decoder.isPlaying());
-		Assert.assertEquals(2, decoder.getDisplayed());
+		Assert.assertEquals(2, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		Assert.assertEquals(0.239D, decoder.getCurrentTime(), 1E-9D);
 		this.advance(decoder, data, 1000L);
 		Assert.assertEquals(0.239D, decoder.getCurrentTime(), 1E-9D);
@@ -143,7 +145,7 @@ public class AnimatedResourceDecoderTest {
 		gif.update(gifData);
 		Assert.assertTrue(apng.isPlaying());
 		Assert.assertFalse(gif.isPlaying());
-		Assert.assertEquals(2, gif.getDisplayed());
+		Assert.assertEquals(2, ((int) AnimatedResourceDecoderTest.field(gif, "displayed")));
 	}
 
 	@Test
@@ -155,7 +157,7 @@ public class AnimatedResourceDecoderTest {
 		this.advance(decoder, data, 500L);
 		Assert.assertFalse(decoder.isPlaying());
 		Assert.assertFalse(decoder.isPaused());
-		Assert.assertEquals(1, decoder.getDisplayed());
+		Assert.assertEquals(1, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		Assert.assertEquals(0.1D, decoder.getCurrentTime(), 1E-9D);
 	}
 
@@ -168,7 +170,7 @@ public class AnimatedResourceDecoderTest {
 		Assert.assertSame(decoder, decoder.play());
 		this.advance(decoder, data, 10L);
 		Assert.assertTrue(decoder.isPlaying());
-		Assert.assertEquals(0, decoder.getDisplayed());
+		Assert.assertEquals(0, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		Assert.assertEquals(0.01D, decoder.getCurrentTime(), 1E-9D);
 	}
 
@@ -204,7 +206,7 @@ public class AnimatedResourceDecoderTest {
 		Assert.assertSame(decoder, decoder.restart());
 		this.advance(decoder, data, 10L);
 		Assert.assertTrue(decoder.isPlaying());
-		Assert.assertEquals(0, decoder.getDisplayed());
+		Assert.assertEquals(0, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		Assert.assertEquals(0.01D, decoder.getCurrentTime(), 1E-9D);
 	}
 
@@ -261,7 +263,7 @@ public class AnimatedResourceDecoderTest {
 		Assert.assertSame(decoder, decoder.seek(0.13D));
 		decoder.update(data);
 		Assert.assertEquals(0.13D, decoder.getCurrentTime(), 1E-9D);
-		Assert.assertEquals(2, decoder.getDisplayed());
+		Assert.assertEquals(2, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		decoder.seek(-1D);
 		Assert.assertEquals(0D, decoder.getCurrentTime(), 0D);
 	}
@@ -286,7 +288,7 @@ public class AnimatedResourceDecoderTest {
 		this.advance(decoder, data, 20L);
 		decoder.pause().seek(1D);
 		this.advance(decoder, data, 100L);
-		Assert.assertEquals(decoder.getAnimation().getFrames().size() - 1, decoder.getDisplayed());
+		Assert.assertEquals(((ResourceAnimation) AnimatedResourceDecoderTest.field(decoder, "animation")).getFrames().size() - 1, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		Assert.assertEquals(0.239D, decoder.getCurrentTime(), 1E-9D);
 	}
 
@@ -298,7 +300,7 @@ public class AnimatedResourceDecoderTest {
 		this.advance(decoder, data, 100L);
 		Assert.assertFalse(decoder.isPlaying());
 		Assert.assertEquals(0.2D, decoder.getCurrentTime(), 1E-9D);
-		Assert.assertEquals(2, decoder.getDisplayed());
+		Assert.assertEquals(2, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 	}
 
 	@Test
@@ -317,7 +319,7 @@ public class AnimatedResourceDecoderTest {
 		Assert.assertEquals(0D, decoder.getDuration(), 0D);
 		Assert.assertEquals(0D, decoder.getProgress(), 0D);
 		Assert.assertEquals(0D, decoder.getCurrentTime(), 0D);
-		Assert.assertNull(decoder.getPlays());
+		Assert.assertNull(AnimatedResourceDecoderTest.field(decoder, "plays"));
 		Assert.assertTrue(decoder.isLoop());
 	}
 
@@ -329,8 +331,8 @@ public class AnimatedResourceDecoderTest {
 		decoder.prepare(data);
 		decoder.decode(data);
 		this.advance(decoder, data, 50L);
-		Assert.assertEquals(-1, decoder.getDisplayed());
-		Assert.assertArrayEquals(new int[] {0}, ((RecordingTexture) decoder.getTexture()).getPixels());
+		Assert.assertEquals(-1, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
+		Assert.assertArrayEquals(new int[] {0}, ((RecordingTexture) AnimatedResourceDecoderTest.field(decoder, "texture")).getPixels());
 	}
 
 	@Test
@@ -339,8 +341,8 @@ public class AnimatedResourceDecoderTest {
 		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
 		decoder.clear(data);
 		this.advance(decoder, data, 50L);
-		Assert.assertNull(decoder.getAnimation());
-		Assert.assertEquals(-1, decoder.getDisplayed());
+		Assert.assertNull(AnimatedResourceDecoderTest.field(decoder, "animation"));
+		Assert.assertEquals(-1, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
 		Assert.assertFalse(decoder.isPlaying());
 		Assert.assertEquals(0D, decoder.getDuration(), 0D);
 	}
@@ -351,13 +353,13 @@ public class AnimatedResourceDecoderTest {
 		final AnimatedResourceDecoder fork = decoder.fork();
 		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
 		final ResourceData forked = AnimatedResourceDecoderTest.load(fork.autoplay(false));
-		Assert.assertSame(decoder, fork.getOrigin());
-		Assert.assertSame(decoder.getAnimation(), fork.getAnimation());
-		Assert.assertNotSame(decoder.getTexture(), fork.getTexture());
+		Assert.assertSame(decoder, AnimatedResourceDecoderTest.field(fork, "origin"));
+		Assert.assertSame(AnimatedResourceDecoderTest.field(decoder, "animation"), AnimatedResourceDecoderTest.field(fork, "animation"));
+		Assert.assertNotSame(AnimatedResourceDecoderTest.field(decoder, "texture"), AnimatedResourceDecoderTest.field(fork, "texture"));
 		this.advance(decoder, data, 40L);
 		fork.update(forked);
-		Assert.assertEquals(1, decoder.getDisplayed());
-		Assert.assertEquals(0, fork.getDisplayed());
+		Assert.assertEquals(1, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
+		Assert.assertEquals(0, ((int) AnimatedResourceDecoderTest.field(fork, "displayed")));
 		Assert.assertTrue(decoder.isPlaying());
 		Assert.assertFalse(fork.isPlaying());
 	}
@@ -379,8 +381,8 @@ public class AnimatedResourceDecoderTest {
 		final AnimatedResourceDecoder decoder = new AnimatedResourceDecoder(asset, reader);
 		decoder.init(new ResourceData("blink.gif", null));
 		Assert.assertSame(asset, decoder.getAsset());
-		Assert.assertSame(reader, decoder.getReader());
-		Assert.assertNull(decoder.getAnimation());
+		Assert.assertSame(reader, AnimatedResourceDecoderTest.field(decoder, "reader"));
+		Assert.assertNull(AnimatedResourceDecoderTest.field(decoder, "animation"));
 	}
 
 	private void advance(final AnimatedResourceDecoder decoder, final ResourceData data, final long milliseconds) {
@@ -402,6 +404,16 @@ public class AnimatedResourceDecoderTest {
 		decoder.decode(data);
 		decoder.upload(data);
 		return data;
+	}
+
+	private static Object field(final Object target, final String name) {
+		try {
+			final Field field = target.getClass().getDeclaredField(name);
+			field.setAccessible(true);
+			return field.get(target);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	private static final class CountingAsset extends Asset {

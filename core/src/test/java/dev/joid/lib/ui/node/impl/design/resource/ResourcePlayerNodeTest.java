@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.design.resource;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -322,9 +323,9 @@ public class ResourcePlayerNodeTest {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertSame(player, player.location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
-		Assert.assertEquals(1F, video.getLocationX(), 0F);
-		Assert.assertEquals(2F, video.getLocationY(), 0F);
-		Assert.assertEquals(3F, video.getLocationZ(), 0F);
+		Assert.assertEquals(1F, ResourcePlayerNodeTest.<Float>read(video, "locationX"), 0F);
+		Assert.assertEquals(2F, ResourcePlayerNodeTest.<Float>read(video, "locationY"), 0F);
+		Assert.assertEquals(3F, ResourcePlayerNodeTest.<Float>read(video, "locationZ"), 0F);
 		Assert.assertEquals(2F, video.getReferenceDistance(), 0F);
 		Assert.assertEquals(9F, video.getMaxDistance(), 0F);
 	}
@@ -347,7 +348,7 @@ public class ResourcePlayerNodeTest {
 		this.bridges.open(ui).frames(2);
 		final VideoResourceDecoder video = player.getVideo();
 		ui.dispose();
-		Assert.assertTrue(video.isReleased());
+		Assert.assertTrue(ResourcePlayerNodeTest.<Boolean>read(video, "released"));
 		Assert.assertFalse(player.isPlaying());
 	}
 
@@ -383,7 +384,7 @@ public class ResourcePlayerNodeTest {
 		final VideoResourceDecoder previous = player.getVideo();
 		this.bridges.open(new NodeUI(player)).frames(2);
 		player.resource(ResourcePlayerNodeTest.blink());
-		Assert.assertTrue(previous.isReleased());
+		Assert.assertTrue(ResourcePlayerNodeTest.<Boolean>read(previous, "released"));
 		Assert.assertNull(player.getVideo());
 	}
 
@@ -393,10 +394,10 @@ public class ResourcePlayerNodeTest {
 		Assert.assertTrue(resource.getDecoder() instanceof AnimatedResourceDecoder);
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(resource);
 		this.bridges.open(new NodeUI(player)).frames(2);
-		Assert.assertEquals(0, ((AnimatedResourceDecoder) ResourcePlayerNodeTest.<Resource>read(player, "fork").getDecoder()).getDisplayed());
+		Assert.assertEquals(0, (int) ResourcePlayerNodeTest.<Integer>read(ResourcePlayerNodeTest.<Resource>read(player, "fork").getDecoder(), "displayed"));
 		this.bridges.frame();
-		Assert.assertEquals(1, ((AnimatedResourceDecoder) ResourcePlayerNodeTest.<Resource>read(player, "fork").getDecoder()).getDisplayed());
-		Assert.assertEquals(-1, ((AnimatedResourceDecoder) resource.getDecoder()).getDisplayed());
+		Assert.assertEquals(1, (int) ResourcePlayerNodeTest.<Integer>read(ResourcePlayerNodeTest.<Resource>read(player, "fork").getDecoder(), "displayed"));
+		Assert.assertEquals(-1, (int) ResourcePlayerNodeTest.<Integer>read(resource.getDecoder(), "displayed"));
 	}
 
 	@Test
@@ -430,8 +431,8 @@ public class ResourcePlayerNodeTest {
 		player.resource(video);
 		this.bridges.frames(2);
 		Assert.assertTrue(player.isPlaying());
-		Assert.assertNotNull(player.getVideo().getGrabber());
-		Assert.assertTrue(player.getVideo().getFile().isFile());
+		Assert.assertNotNull(ResourcePlayerNodeTest.read(player.getVideo(), "grabber"));
+		Assert.assertTrue(ResourcePlayerNodeTest.<File>read(player.getVideo(), "file").isFile());
 		Assert.assertFalse(ResourcePlayerNodeTest.<Resource>read(player, "fork").isFailed());
 	}
 
@@ -467,8 +468,8 @@ public class ResourcePlayerNodeTest {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
-		Assert.assertTrue(video.isHasLocation());
-		Assert.assertEquals(1F, video.getLocationX(), 0F);
+		Assert.assertTrue(ResourcePlayerNodeTest.<Boolean>read(video, "hasLocation"));
+		Assert.assertEquals(1F, ResourcePlayerNodeTest.<Float>read(video, "locationX"), 0F);
 		Assert.assertEquals(2F, video.getReferenceDistance(), 0F);
 		Assert.assertEquals(9F, video.getMaxDistance(), 0F);
 	}
@@ -503,11 +504,11 @@ public class ResourcePlayerNodeTest {
 		Assert.assertEquals(bottom, draw.getBottom(), 1E-3D);
 	}
 
-	private static <V> V read(final ResourcePlayerNode player, final String name) {
+	private static <V> V read(final Object target, final String name) {
 		try {
-			final Field field = ResourcePlayerNode.class.getDeclaredField(name);
+			final Field field = target.getClass().getDeclaredField(name);
 			field.setAccessible(true);
-			return (V) field.get(player);
+			return (V) field.get(target);
 		} catch (final ReflectiveOperationException exception) {
 			throw new IllegalStateException(exception);
 		}

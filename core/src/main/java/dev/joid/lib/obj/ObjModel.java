@@ -117,19 +117,19 @@ public final class ObjModel implements IDrawableModel {
 		this.texture.bind(TextureWrap.REPEAT, () -> this.groups.forEach(ObjGroup::render));
 	}
 
-	public final @NonNull List<ObjVertex> getVertices() {
+	public @NonNull List<ObjVertex> getVertices() {
 		return Collections.unmodifiableList(this.vertices);
 	}
 
-	public final @NonNull List<ObjVertex> getVertexNormals() {
+	public @NonNull List<ObjVertex> getVertexNormals() {
 		return Collections.unmodifiableList(this.vertexNormals);
 	}
 
-	public final @NonNull List<ObjTextureCoordinate> getTextureCoordinates() {
+	public @NonNull List<ObjTextureCoordinate> getTextureCoordinates() {
 		return Collections.unmodifiableList(this.textureCoordinates);
 	}
 
-	public final @NonNull List<ObjGroup> getGroups() {
+	public @NonNull List<ObjGroup> getGroups() {
 		return Collections.unmodifiableList(this.groups);
 	}
 
