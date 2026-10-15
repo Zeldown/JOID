@@ -13,15 +13,11 @@ public interface IWindowBridge extends IBridge {
 	public double getMouseX();
 	public double getMouseY();
 	public boolean isMouseGrabbed();
-	public boolean isKeyDown(final @NonNull Key key);
+	public boolean isKeyDown(final @NonNull Key physicalKey);
 
 	public @NonNull String getClipboard();
 	public void setClipboard(final @NonNull String text);
 
 	public default void setCursor(final @NonNull Cursor cursor) {}
-
-	public default boolean isPhysicalKeyDown(final @NonNull Key key) {
-		return this.isKeyDown(key);
-	}
 
 }

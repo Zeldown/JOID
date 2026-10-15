@@ -23,12 +23,12 @@ public class INodeTest {
 	public void handlesNoEventByDefault() {
 		final INode node = new BareNode();
 		final RectNode owner = RectNode.create(0D, 0D, 0D, 0D);
-		final NodeKeyEvent<RectNode> input = NodeKeyEvent.create(owner, Key.A, null);
+		final NodeKeyEvent<RectNode> input = NodeKeyEvent.create(owner, Key.A, Key.A, null);
 		node.mousePressed(NodeMouseEvent.create(owner, 0D, 0D, MouseButton.LEFT, 0L, input));
 		node.mouseDragged(NodeMouseEvent.create(owner, 0D, 0D, MouseButton.LEFT, 16L, input));
 		node.mouseReleased(NodeMouseEvent.create(owner, 0D, 0D, MouseButton.LEFT, 0L, input));
 		node.mouseScroll(NodeMouseScrollEvent.create(owner, 0D, 0D, 0D, 1D, input));
-		node.keyPressed(NodeKeyEvent.create(owner, Key.A, input));
+		node.keyPressed(NodeKeyEvent.create(owner, Key.A, Key.A, input));
 		node.charTyped(NodeCharEvent.create(owner, 'a', input));
 		Assert.assertFalse(input.isConsumed());
 	}

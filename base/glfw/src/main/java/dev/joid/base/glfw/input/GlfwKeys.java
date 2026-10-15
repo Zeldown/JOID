@@ -154,10 +154,6 @@ public final class GlfwKeys {
 	}
 
 	public static boolean isKeyDown(final @NonNull Key key, final @NonNull IntPredicate down) {
-		return GlfwKeys.LAYOUT.isDown(key, physical -> GlfwKeys.isPhysicalKeyDown(physical, down));
-	}
-
-	public static boolean isPhysicalKeyDown(final @NonNull Key key, final @NonNull IntPredicate down) {
 		final int code = GlfwKeys.getCode(key);
 		return code != GLFW.GLFW_KEY_UNKNOWN && down.test(code);
 	}

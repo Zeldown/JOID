@@ -123,12 +123,12 @@ public abstract class UIBridge implements IUIBridge {
 		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelKeyboard());
 	}
 
-	public final boolean keyPressed(final @NonNull Key key) {
+	public final boolean keyPressed(final @NonNull Key physicalKey, final @NonNull Key key) {
 		this.consumedKeySet.remove(key);
-		final UI ui = this.dispatch(current -> UIBridge.isClosedBy(current, key) || current.fireKeyPressed(key));
+		final UI ui = this.dispatch(current -> UIBridge.isClosedBy(current, key) || current.fireKeyPressed(physicalKey, key));
 		if (ui != null && UIBridge.isClosedBy(ui, key)) {
 			this.consumedKeySet.add(key);
-			if (!ui.fireKeyPressed(key) && ui.fireClose()) {
+			if (!ui.fireKeyPressed(physicalKey, key) && ui.fireClose()) {
 				this.close(ui);
 			}
 			return true;

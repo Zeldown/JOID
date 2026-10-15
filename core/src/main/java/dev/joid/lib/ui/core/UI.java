@@ -339,14 +339,14 @@ public abstract class UI implements IUI, IndexedElement {
 		return this.listen(UI.HANDLE_KEY_PRESSED, listener);
 	}
 
-	public final boolean fireKeyPressed(final @NonNull Key key) {
+	public final boolean fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key) {
 		if (!this.initialized) {
 			return false;
 		}
 
-		final UIKeyEvent<UI> event = UIKeyEvent.create(this, key);
+		final UIKeyEvent<UI> event = UIKeyEvent.create(this, physicalKey, key);
 		this.fireShortcuts(key, true, event);
-		return this.fireInput(UI.HANDLE_KEY_PRESSED, "keyPressed", event, node -> node.fireKeyPressed(key, event), () -> {
+		return this.fireInput(UI.HANDLE_KEY_PRESSED, "keyPressed", event, node -> node.fireKeyPressed(physicalKey, key, event), () -> {
 			this.fireShortcuts(key, false, event);
 			if (this.data.zoomable() && !event.isConsumed()) {
 				final double zoom = this.zoom;

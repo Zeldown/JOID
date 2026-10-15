@@ -458,7 +458,7 @@ public class IntegerFieldNodeTest {
 		final TextFieldNode second = TextFieldNode.create(0D, 100D, 100D, 30D).text("hello").info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
 		this.bridges.open(new NodeUI(first, second));
 		first.focused(true).cursorPosition(1);
-		first.keyPressed(NodeKeyEvent.create(first, Key.TAB, null));
+		first.keyPressed(NodeKeyEvent.create(first, Key.TAB, Key.TAB, null));
 		Assert.assertTrue(first.isFocused());
 		Assert.assertFalse(second.isFocused());
 		Assert.assertEquals("3", first.getText());
@@ -502,7 +502,7 @@ public class IntegerFieldNodeTest {
 	}
 
 	private void press(final IntegerFieldNode field, final Key key) {
-		field.keyPressed(NodeKeyEvent.create(field, key, null));
+		field.keyPressed(NodeKeyEvent.create(field, key, key, null));
 	}
 
 	private void control(final IntegerFieldNode field, final Key key) {

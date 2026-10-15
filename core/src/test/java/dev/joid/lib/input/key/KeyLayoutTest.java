@@ -71,11 +71,10 @@ public class KeyLayoutTest {
 	}
 
 	@Before
-	public void useAnAzertyKeyboard() {
+	public void useATemporaryDataFolder() {
 		this.configDir = JOIDEnv.getDataDir();
 		this.devMode = JOIDEnv.isDevMode();
 		JOIDEnv.dataDir(this.folder.getRoot());
-		this.bridges.getWindow().setLayout(this.layout);
 	}
 
 	@After
@@ -105,17 +104,6 @@ public class KeyLayoutTest {
 		Assert.assertSame(Key.F5, this.layout.translate(Key.F5));
 		Assert.assertSame(Key.NUMPAD_1, this.layout.translate(Key.NUMPAD_1));
 		Assert.assertSame(Key.LEFT_CONTROL, this.layout.translate(Key.LEFT_CONTROL));
-	}
-
-	@Test
-	public void holdsTheLayoutLetterAndThePhysicalKey() {
-		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.Q, Key.LEFT_CONTROL));
-		Assert.assertTrue(Key.A.isDown());
-		Assert.assertFalse(Key.Q.isDown());
-		Assert.assertTrue(Key.Q.isPhysicalDown());
-		Assert.assertFalse(Key.A.isPhysicalDown());
-		Assert.assertTrue(Key.LEFT_CONTROL.isDown());
-		Assert.assertTrue(Key.LEFT_CONTROL.isPhysicalDown());
 	}
 
 	@Test
@@ -176,7 +164,7 @@ public class KeyLayoutTest {
 
 	private void control(final Key physical) {
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, physical));
-		this.bridges.getUi().keyPressed(this.layout.translate(physical));
+		this.bridges.getUi().keyPressed(physical, this.layout.translate(physical));
 		this.bridges.getWindow().getKeys().clear();
 	}
 

@@ -9,16 +9,17 @@ import lombok.NonNull;
 @Getter
 public final class NodeKeyEvent<N extends Node> extends NodeInputEvent<N> {
 
-	@NonNull
-	private final Key key;
+	@NonNull private final Key key;
+	@NonNull private final Key physicalKey;
 
-	private NodeKeyEvent(final N node, final Key key, final ConsumableEvent source) {
+	private NodeKeyEvent(final N node, final Key physicalKey, final Key key, final ConsumableEvent source) {
 		super(node, source);
 		this.key = key;
+		this.physicalKey = physicalKey;
 	}
 
-	public static <N extends Node> @NonNull NodeKeyEvent<N> create(final @NonNull N node, final @NonNull Key key, final ConsumableEvent source) {
-		return new NodeKeyEvent<>(node, key, source);
+	public static <N extends Node> @NonNull NodeKeyEvent<N> create(final @NonNull N node, final @NonNull Key physicalKey, final @NonNull Key key, final ConsumableEvent source) {
+		return new NodeKeyEvent<>(node, physicalKey, key, source);
 	}
 
 }

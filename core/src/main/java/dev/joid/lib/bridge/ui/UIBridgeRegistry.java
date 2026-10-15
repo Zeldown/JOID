@@ -15,14 +15,19 @@ import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.key.KeyState;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
+import lombok.Getter;
 import lombok.NonNull;
 
 public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 
 	private final List<Runnable>                   frameList;
 	private final Map<MouseButton, List<UIBridge>> pressedMap;
+
+	@Getter
+	private final KeyState keyState;
 
 	private int width;
 	private int height;
@@ -31,6 +36,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 		super("UI");
 		this.frameList = new CopyOnWriteArrayList<>();
 		this.pressedMap = new EnumMap<>(MouseButton.class);
+		this.keyState = KeyState.create();
 	}
 
 	public static @NonNull UIBridgeRegistry create() {
@@ -111,11 +117,13 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 		return this.dispatch(bridge -> bridge.charTyped(codepoint));
 	}
 
-	public boolean keyPressed(final @NonNull Key key) {
-		return this.dispatch(bridge -> bridge.keyPressed(key));
+	public boolean keyPressed(final @NonNull Key physicalKey, final @NonNull Key key) {
+		this.keyState.press(physicalKey, key);
+		return this.dispatch(bridge -> bridge.keyPressed(physicalKey, key));
 	}
 
-	public boolean keyReleased(final @NonNull Key key) {
+	public boolean keyReleased(final @NonNull Key physicalKey) {
+		final Key key = this.keyState.release(physicalKey);
 		boolean consumed = false;
 		for (final UIBridge bridge : this.getInputList()) {
 			consumed |= bridge.keyReleased(key);

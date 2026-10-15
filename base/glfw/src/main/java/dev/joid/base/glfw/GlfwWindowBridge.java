@@ -71,11 +71,6 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isPhysicalKeyDown(final @NonNull Key key) {
-		return GlfwKeys.isPhysicalKeyDown(key, this::isCodeDown);
-	}
-
-	@Override
 	public void setCursor(final @NonNull Cursor cursor) {
 		GLFW.glfwSetCursor(this.window, cursor == Cursor.DEFAULT ? 0L : this.cursorMap.computeIfAbsent(cursor, GlfwWindowBridge::createCursor));
 	}

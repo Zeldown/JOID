@@ -45,7 +45,7 @@ public class ShortcutTest {
 		final RectNode node = RectNode.create(0, 0, 100, 100).handleKeyPressed(event -> this.trace.add("node"));
 		final ShortcutUI ui = this.open(node);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Arrays.asList("node", "shortcut"), this.trace);
 	}
 
@@ -53,7 +53,7 @@ public class ShortcutTest {
 	public void runsItsTriggerListenersByPriority() {
 		final ShortcutUI ui = this.open();
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("normal")).onTrigger(EventListener.priority(EventPriority.HIGHEST, event -> this.trace.add("highest " + event.getKey()))).onTrigger(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("monitor"))).attach(ui);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Arrays.asList("highest S", "normal", "monitor"), this.trace);
 	}
 
@@ -62,7 +62,7 @@ public class ShortcutTest {
 		final RectNode node = RectNode.create(0, 0, 100, 100).handleKeyPressed(event -> this.trace.add("node"));
 		final ShortcutUI ui = this.open(node);
 		Shortcut.create(Key.S).overrideFocus(true).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Collections.singletonList("shortcut"), this.trace);
 		Assert.assertNull(node.getLastKey());
 	}
@@ -72,7 +72,7 @@ public class ShortcutTest {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(new FieldFont(), 10F)).focused(true);
 		final ShortcutUI ui = this.open(field);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertTrue(this.trace.isEmpty());
 		Assert.assertSame(Key.S, field.getLastKey());
 	}
@@ -82,7 +82,7 @@ public class ShortcutTest {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(new FieldFont(), 10F)).focused(true);
 		final ShortcutUI ui = this.open(field);
 		Shortcut.create(Key.S).overrideFocus(true).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Collections.singletonList("shortcut"), this.trace);
 		Assert.assertNull(field.getLastKey());
 		Assert.assertTrue(field.isFocused());
@@ -93,7 +93,7 @@ public class ShortcutTest {
 		final ShortcutUI ui = this.open();
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("first")).attach(ui);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("second")).attach(ui);
-		ui.fireKeyPressed(Key.S);
+		ui.fireKeyPressed(Key.S, Key.S);
 		Assert.assertEquals(Collections.singletonList("first"), this.trace);
 	}
 
@@ -101,7 +101,7 @@ public class ShortcutTest {
 	public void letsTheKeyThroughWhenItDoesNotTrigger() {
 		final ShortcutUI ui = this.open();
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
-		Assert.assertFalse(ui.fireKeyPressed(Key.D));
+		Assert.assertFalse(ui.fireKeyPressed(Key.D, Key.D));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
 
@@ -112,14 +112,14 @@ public class ShortcutTest {
 		Shortcut.create(Key.S).ctrl(true).shift(true).onTrigger(event -> this.trace.add("ctrl shift")).attach(ui);
 		Shortcut.create(Key.S).alt(true).onTrigger(event -> this.trace.add("alt")).attach(ui);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		ui.fireKeyPressed(Key.S);
+		ui.fireKeyPressed(Key.S, Key.S);
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_SHIFT);
-		ui.fireKeyPressed(Key.S);
+		ui.fireKeyPressed(Key.S, Key.S);
 		this.bridges.getWindow().getKeys().clear();
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_ALT);
-		ui.fireKeyPressed(Key.S);
+		ui.fireKeyPressed(Key.S, Key.S);
 		this.bridges.getWindow().getKeys().clear();
-		ui.fireKeyPressed(Key.S);
+		ui.fireKeyPressed(Key.S, Key.S);
 		Assert.assertEquals(Arrays.asList("ctrl shift", "alt", "plain"), this.trace);
 	}
 
@@ -131,17 +131,17 @@ public class ShortcutTest {
 		final RectNode parent = RectNode.create(0, 0, 200, 200).append(node);
 		final ShortcutUI ui = this.open(parent);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(node);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		shown.set(false);
-		Assert.assertFalse(ui.fireKeyPressed(Key.S));
+		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		shown.set(true);
 		enabled.set(false);
-		Assert.assertFalse(ui.fireKeyPressed(Key.S));
+		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		enabled.set(true);
 		parent.remove(node);
-		Assert.assertFalse(ui.fireKeyPressed(Key.S));
+		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		parent.append(node);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Arrays.asList("shortcut", "shortcut"), this.trace);
 	}
 
@@ -152,7 +152,7 @@ public class ShortcutTest {
 		final ShortcutUI ui = this.open(RectNode.create(0, 0, 200, 200).visible(() -> shown.get()).append(node));
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(node);
 		shown.set(false);
-		Assert.assertFalse(ui.fireKeyPressed(Key.S));
+		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
 
@@ -162,7 +162,7 @@ public class ShortcutTest {
 		final ShortcutUI ui = this.open(node);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("ui")).attach(ui);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("node")).attach(node);
-		ui.fireKeyPressed(Key.S);
+		ui.fireKeyPressed(Key.S, Key.S);
 		Assert.assertEquals(Collections.singletonList("node"), this.trace);
 	}
 
@@ -170,7 +170,7 @@ public class ShortcutTest {
 	public void stopsOnceDetached() {
 		final ShortcutUI ui = this.open();
 		final Shortcut shortcut = Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui).detach();
-		Assert.assertFalse(ui.fireKeyPressed(Key.S));
+		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertFalse(shortcut.isAttached());
 		Assert.assertNull(shortcut.getUi());
 		Assert.assertTrue(ui.getShortcutList().isEmpty());
@@ -218,7 +218,7 @@ public class ShortcutTest {
 		final ShortcutUI ui = this.open();
 		final List<ShortcutEvent> events = new ArrayList<>();
 		final Shortcut shortcut = Shortcut.create(Key.S).onTrigger(events::add).attach(ui);
-		ui.fireKeyPressed(Key.S);
+		ui.fireKeyPressed(Key.S, Key.S);
 		Assert.assertEquals(1, events.size());
 		Assert.assertSame(shortcut, events.get(0).getShortcut());
 		Assert.assertSame(Key.S, events.get(0).getKey());
@@ -231,8 +231,8 @@ public class ShortcutTest {
 		final List<UI> currents = new ArrayList<>();
 		Shortcut.create(Key.S).onTrigger(event -> currents.add(UI.getCurrent())).attach(ui);
 		Shortcut.create(Key.D).onTrigger(event -> currents.add(UI.getCurrent())).attach(node);
-		ui.fireKeyPressed(Key.S);
-		ui.fireKeyPressed(Key.D);
+		ui.fireKeyPressed(Key.S, Key.S);
+		ui.fireKeyPressed(Key.D, Key.D);
 		Assert.assertEquals(Arrays.asList(ui, ui), currents);
 		Assert.assertNull(UI.getCurrent());
 	}
@@ -248,7 +248,7 @@ public class ShortcutTest {
 			final ShortcutUI ui = this.open();
 			Shortcut.create("unknown binding").onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 			Shortcut.create("unknown binding");
-			Assert.assertFalse(ui.fireKeyPressed(Key.S));
+			Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		} finally {
 			System.setErr(error);
 			JOIDEnv.devMode(previous);

@@ -76,7 +76,7 @@ public class MultilineTextFieldNodeTest {
 		this.bridges.open(ui);
 		this.bridges.getWindow().setClipboard("ab\r\ncd");
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		ui.field.keyPressed(NodeKeyEvent.create(ui.field, Key.V, null));
+		ui.field.keyPressed(NodeKeyEvent.create(ui.field, Key.V, Key.V, null));
 		Assert.assertEquals("ab\ncd", ui.field.getText());
 	}
 
@@ -86,7 +86,7 @@ public class MultilineTextFieldNodeTest {
 		this.bridges.open(ui);
 		Assert.assertEquals("ab\ncd\nef", ui.field.getText());
 		ui.field.cursorPosition(1);
-		ui.field.keyPressed(NodeKeyEvent.create(ui.field, Key.DOWN, null));
+		ui.field.keyPressed(NodeKeyEvent.create(ui.field, Key.DOWN, Key.DOWN, null));
 		Assert.assertEquals(4, ui.field.getCursorPosition());
 	}
 
@@ -523,7 +523,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void receivesTheKeysTypedInItsUi() {
 		final MultilineTextFieldNode field = this.field("ab").cursorPosition(2);
-		this.bridges.getUi().keyPressed(Key.C);
+		this.bridges.getUi().keyPressed(Key.C, Key.C);
 		this.bridges.getUi().charTyped('c');
 		Assert.assertEquals("abc", field.getText());
 	}
@@ -540,7 +540,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void consumesTheKeysItReceives() {
 		final MultilineTextFieldNode field = this.field("ab");
-		final NodeKeyEvent<?> key = NodeKeyEvent.create(field, Key.X, null);
+		final NodeKeyEvent<?> key = NodeKeyEvent.create(field, Key.X, Key.X, null);
 		final NodeCharEvent<?> character = NodeCharEvent.create(field, 'x', null);
 		field.keyPressed(key);
 		field.charTyped(character);
@@ -551,7 +551,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void leavesAKeyAlreadyTakenElsewhere() {
 		final MultilineTextFieldNode field = this.field("ab");
-		final NodeKeyEvent<?> consumedKey = NodeKeyEvent.create(field, Key.X, null);
+		final NodeKeyEvent<?> consumedKey = NodeKeyEvent.create(field, Key.X, Key.X, null);
 		consumedKey.consume();
 		field.keyPressed(consumedKey);
 		final NodeCharEvent<?> consumedChar = NodeCharEvent.create(field, 'x', null);
@@ -1087,7 +1087,7 @@ public class MultilineTextFieldNodeTest {
 	public void selectsEverythingWithTheRightControlKey() {
 		final MultilineTextFieldNode field = this.field("ab\ncd").cursorPosition(2);
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_CONTROL);
-		field.keyPressed(NodeKeyEvent.create(field, Key.A, null));
+		field.keyPressed(NodeKeyEvent.create(field, Key.A, Key.A, null));
 		Assert.assertEquals("ab\ncd", field.getText());
 		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(5, field.getCursorPosition());
@@ -1280,7 +1280,7 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {
-		field.keyPressed(NodeKeyEvent.create(field, key, null));
+		field.keyPressed(NodeKeyEvent.create(field, key, key, null));
 	}
 
 	private void control(final MultilineTextFieldNode field, final Key key) {

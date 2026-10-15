@@ -830,20 +830,20 @@ public abstract class Node implements INode {
 		return this.listen(Node.HANDLE_KEY_PRESSED, listener);
 	}
 
-	public final boolean fireKeyPressed(final @NonNull Key key) {
-		final NodeKeyEvent<Node> input = NodeKeyEvent.create(this, key, null);
-		this.fireKeyPressed(key, input);
+	public final boolean fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key) {
+		final NodeKeyEvent<Node> input = NodeKeyEvent.create(this, physicalKey, key, null);
+		this.fireKeyPressed(physicalKey, key, input);
 		return input.isConsumed();
 	}
 
-	public final void fireKeyPressed(final @NonNull Key key, final @NonNull ConsumableEvent source) {
+	public final void fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull ConsumableEvent source) {
 		if (!this.isVisible()) {
 			return;
 		}
 
 		this.lastKey = key;
 		this.lastKeyTime = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.dispatch(NodeKeyEvent.create(this, key, source), this.isEnabled(), Node.HANDLE_KEY_PRESSED, (node, event) -> node.fireKeyPressed(key, event), this::keyPressed);
+		this.dispatch(NodeKeyEvent.create(this, physicalKey, key, source), this.isEnabled(), Node.HANDLE_KEY_PRESSED, (node, event) -> node.fireKeyPressed(physicalKey, key, event), this::keyPressed);
 	}
 
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {

@@ -290,10 +290,10 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(container));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		Assert.assertSame(rect, DevNodeTest.peek(panel, "inspectedNode"));
-		this.bridges.getUi().keyPressed(Key.ENTER);
+		this.bridges.getUi().keyPressed(Key.ENTER, Key.ENTER);
 		Assert.assertSame(container, DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertTrue(DevNodeTest.peek(panel, "inspectedNodeLocked"));
-		this.bridges.getUi().keyPressed(Key.NUMPAD_ENTER);
+		this.bridges.getUi().keyPressed(Key.NUMPAD_ENTER, Key.NUMPAD_ENTER);
 		Assert.assertSame(container, DevNodeTest.peek(panel, "inspectedNode"));
 	}
 
@@ -304,7 +304,7 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(container));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
 		Assert.assertTrue(DevNodeTest.texts(panel).contains("children: 0"));
-		this.bridges.getUi().keyPressed(Key.ENTER);
+		this.bridges.getUi().keyPressed(Key.ENTER, Key.ENTER);
 		final List<String> texts = DevNodeTest.texts(panel);
 		Assert.assertTrue(texts.toString(), texts.contains("ContainerNode"));
 		Assert.assertTrue(texts.toString(), texts.contains("children: 1"));
@@ -313,7 +313,7 @@ public class DevNodeTest {
 	@Test
 	public void ignoresEnterWithoutInspectedNode() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
-		this.bridges.getUi().keyPressed(Key.ENTER);
+		this.bridges.getUi().keyPressed(Key.ENTER, Key.ENTER);
 		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 	}
@@ -365,12 +365,12 @@ public class DevNodeTest {
 	public void togglesTheInspectionWithI() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		DevNodeTest.lock(this.bridges, 250D, 250D);
-		this.bridges.getUi().keyPressed(Key.I);
+		this.bridges.getUi().keyPressed(Key.I, Key.I);
 		this.bridges.getUi().charTyped('i');
 		Assert.assertFalse(DevNodeTest.peek(panel, "inspectSignal"));
 		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
-		this.bridges.getUi().keyPressed(Key.I);
+		this.bridges.getUi().keyPressed(Key.I, Key.I);
 		this.bridges.getUi().charTyped('i');
 		Assert.assertTrue(DevNodeTest.peek(panel, "inspectSignal"));
 	}
@@ -406,7 +406,7 @@ public class DevNodeTest {
 	public void reloadsTheUiWithR() {
 		final DevUI ui = new DevUI();
 		DevNodeTest.open(this.bridges, ui);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		this.bridges.getUi().charTyped('r');
 		Assert.assertEquals(2, ui.inits);
 	}
@@ -416,7 +416,7 @@ public class DevNodeTest {
 		final DevUI ui = new DevUI();
 		DevNodeTest.open(this.bridges, ui);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		this.bridges.getUi().charTyped('r');
 		Assert.assertEquals(2, ui.inits);
 	}
@@ -426,7 +426,7 @@ public class DevNodeTest {
 		final DoubleSignal x = new DoubleSignal(200D);
 		final DevUI ui = new DevUI(RectNode.create(200D, 200D, 300D, 150D).x(x));
 		DevNodeTest.open(this.bridges, ui);
-		this.bridges.getUi().keyPressed(Key.U);
+		this.bridges.getUi().keyPressed(Key.U, Key.U);
 		this.bridges.getUi().charTyped('u');
 		x.set(250D);
 		ui.reload();
@@ -437,7 +437,7 @@ public class DevNodeTest {
 	@Test
 	public void drawsAGridAroundTheMouse() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
-		this.bridges.getUi().keyPressed(Key.G);
+		this.bridges.getUi().keyPressed(Key.G, Key.G);
 		this.bridges.getUi().charTyped('g');
 		Assert.assertTrue(DevNodeTest.peek(panel, "gridSignal"));
 		this.bridges.move(400D, 300D).frame();
@@ -452,9 +452,9 @@ public class DevNodeTest {
 	@Test
 	public void togglesTheGridWithG() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
-		this.bridges.getUi().keyPressed(Key.G);
+		this.bridges.getUi().keyPressed(Key.G, Key.G);
 		this.bridges.getUi().charTyped('g');
-		this.bridges.getUi().keyPressed(Key.G);
+		this.bridges.getUi().keyPressed(Key.G, Key.G);
 		this.bridges.getUi().charTyped('g');
 		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
 	}
@@ -462,7 +462,7 @@ public class DevNodeTest {
 	@Test
 	public void changesTheGridColorOnARightClick() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
-		this.bridges.getUi().keyPressed(Key.G);
+		this.bridges.getUi().keyPressed(Key.G, Key.G);
 		this.bridges.getUi().charTyped('g');
 		this.bridges.move(400D, 300D).frame();
 		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
@@ -495,7 +495,7 @@ public class DevNodeTest {
 	public void ignoresTheKeysBelowAnotherUi() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.open(new DevUI());
-		panel.fireKeyPressed(Key.G);
+		panel.fireKeyPressed(Key.G, Key.G);
 		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
 	}
 
@@ -503,9 +503,9 @@ public class DevNodeTest {
 	public void ignoresACancelledInput() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
-		final NodeKeyEvent<?> consumedInput = NodeKeyEvent.create(panel, Key.G, null);
+		final NodeKeyEvent<?> consumedInput = NodeKeyEvent.create(panel, Key.G, Key.G, null);
 		consumedInput.consume();
-		panel.fireKeyPressed(Key.G, consumedInput);
+		panel.fireKeyPressed(Key.G, Key.G, consumedInput);
 		final NodeMouseEvent<?> consumedPress = NodeMouseEvent.create(panel, 250D, 250D, MouseButton.LEFT, 0L, null);
 		consumedPress.consume();
 		panel.fireMousePressed(250D, 250D, MouseButton.LEFT, consumedPress);
@@ -549,7 +549,7 @@ public class DevNodeTest {
 
 	private static DevNode open(final HeadlessBridges bridges, final DevUI ui) {
 		bridges.open(ui);
-		bridges.getUi().keyPressed(Key.F3);
+		bridges.getUi().keyPressed(Key.F3, Key.F3);
 		bridges.frames(2);
 		return (DevNode) ui.getDevNode();
 	}

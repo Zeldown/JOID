@@ -7,6 +7,7 @@ import dev.joid.demo.ui.node.impl.structure.checkbox.DemoCheckboxNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -45,8 +46,19 @@ public class UIDemoEventFlow extends UIDemo {
 		final DoubleSignal scroll = new DoubleSignal(0D);
 		final BooleanSignal focused = new BooleanSignal(false);
 		final IntegerSignal cursor = new IntegerSignal(0);
+		final IntegerSignal letter = new IntegerSignal(0);
+		final DoubleSignal walkX = new DoubleSignal(40D);
 
 		super.handleKeyPressed(event -> key.set(event.getKey().name()));
+		super.handleKeyPressed(event -> {
+			if (event.getKey() == Key.Z) {
+				letter.increment();
+			}
+
+			if (event.getPhysicalKey() == Key.A || event.getPhysicalKey() == Key.D) {
+				walkX.set(Math.max(40D, Math.min(220D, walkX.peek() + (event.getPhysicalKey() == Key.A ? -20D : 20D))));
+			}
+		});
 		super.beforeClose(EventListener.priority(EventPriority.HIGH, event -> {
 			if (locked.peek()) {
 				kept.increment();
@@ -266,6 +278,17 @@ public class UIDemoEventFlow extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 138).text(Text.create("Cursor: " + cursor.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Before cursor", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(80, 720, 320, 260)
+		.color(UIDemoEventFlow.PLACEHOLDER)
+		.body(rect -> {
+			RectNode.create(40, 40, 60, 60).color(UIDemoEventFlow.INK).x(walkX).attach(rect);
+			TextNode.create(40, 130).text(Text.create("Letter Z: " + letter.get(), info)).attach(rect);
+			TextNode.create(40, 175).text(Text.create("Move: A / D", info)).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Letter vs position", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

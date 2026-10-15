@@ -104,9 +104,9 @@ public class EventFlowTest {
 		ui.handleKeyPressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("monitor " + event.isConsumed())));
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Shortcut.create(Key.F).overrideFocus(true).onTrigger(event -> this.trace.add("forced")).attach(ui);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
-		Assert.assertTrue(ui.fireKeyPressed(Key.F));
-		Assert.assertFalse(ui.fireKeyPressed(Key.Q));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.F, Key.F));
+		Assert.assertFalse(ui.fireKeyPressed(Key.Q, Key.Q));
 		Assert.assertEquals(Arrays.asList("node", "ui", "shortcut", "monitor true", "forced", "monitor true", "node", "ui", "monitor false"), this.trace);
 	}
 
@@ -116,7 +116,7 @@ public class EventFlowTest {
 		this.bridges.open(ui);
 		ui.handleKeyPressed(event -> event.consume());
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
-		Assert.assertTrue(ui.fireKeyPressed(Key.S));
+		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
 
@@ -144,7 +144,7 @@ public class EventFlowTest {
 		final FlowUI ui = new FlowUI();
 		this.bridges.open(ui);
 		ui.beforeClose(event -> event.cancel());
-		this.bridges.getUi().keyPressed(Key.ESCAPE);
+		this.bridges.getUi().keyPressed(Key.ESCAPE, Key.ESCAPE);
 		Assert.assertTrue(JOID.isOpen(ui));
 	}
 
@@ -154,7 +154,7 @@ public class EventFlowTest {
 		this.bridges.open(ui);
 		ui.reload();
 		ui.reload();
-		ui.fireKeyPressed(Key.A);
+		ui.fireKeyPressed(Key.A, Key.A);
 		Assert.assertEquals(Arrays.asList("constructor", "init"), this.trace);
 	}
 

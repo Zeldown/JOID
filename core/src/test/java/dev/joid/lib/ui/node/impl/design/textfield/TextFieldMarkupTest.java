@@ -354,7 +354,7 @@ public class TextFieldMarkupTest {
 	}
 
 	private void press(final TextFieldNode field, final Key key) {
-		field.keyPressed(NodeKeyEvent.create(field, key, null));
+		field.keyPressed(NodeKeyEvent.create(field, key, key, null));
 	}
 
 	private void control(final TextFieldNode field, final Key key) {

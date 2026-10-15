@@ -134,11 +134,11 @@ public enum Key {
 	UNKNOWN;
 
 	public boolean isDown() {
-		return BridgeHandler.WINDOW.get().isKeyDown(this);
+		return BridgeHandler.UI.getKeyState().isDown(this);
 	}
 
 	public boolean isPhysicalDown() {
-		return BridgeHandler.WINDOW.get().isPhysicalKeyDown(this);
+		return BridgeHandler.WINDOW.get().isKeyDown(this);
 	}
 
 }

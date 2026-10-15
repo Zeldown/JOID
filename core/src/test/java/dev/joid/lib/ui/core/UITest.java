@@ -216,7 +216,7 @@ public class UITest {
 	public void exposesItselfAsTheCurrentUiDuringItsFramesAndInputs() {
 		final ScopeUI ui = new ScopeUI();
 		this.bridges.open(ui);
-		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
 		Assert.assertEquals(Arrays.asList(ui, ui, ui), ui.currentList);
 		Assert.assertNull(UI.getCurrent());
 	}
@@ -393,7 +393,7 @@ public class UITest {
 		Assert.assertFalse(ui.fireMouseReleased(MouseButton.LEFT));
 		Assert.assertFalse(ui.fireMouseDragged(MouseButton.LEFT, 10L));
 		Assert.assertFalse(ui.fireMouseScroll(0D, 1D));
-		Assert.assertFalse(ui.fireKeyPressed(Key.A));
+		Assert.assertFalse(ui.fireKeyPressed(Key.A, Key.A));
 		Assert.assertFalse(ui.fireCharTyped('a'));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
@@ -444,14 +444,14 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		Assert.assertFalse(ui.fireMousePressed(MouseButton.LEFT));
-		Assert.assertFalse(ui.fireKeyPressed(Key.A));
+		Assert.assertFalse(ui.fireKeyPressed(Key.A, Key.A));
 		Assert.assertFalse(ui.fireCharTyped('a'));
 		ui.cancel = true;
 		Assert.assertTrue(ui.fireMousePressed(MouseButton.LEFT));
 		Assert.assertTrue(ui.fireMouseReleased(MouseButton.LEFT));
 		Assert.assertTrue(ui.fireMouseDragged(MouseButton.LEFT, 10L));
 		Assert.assertTrue(ui.fireMouseScroll(0D, 1D));
-		Assert.assertTrue(ui.fireKeyPressed(Key.A));
+		Assert.assertTrue(ui.fireKeyPressed(Key.A, Key.A));
 		Assert.assertTrue(ui.fireCharTyped('a'));
 	}
 
@@ -463,7 +463,7 @@ public class UITest {
 		ui.fireMouseScroll(0D, 1D);
 		ui.fireMouseDragged(MouseButton.LEFT, 10L);
 		ui.fireMouseReleased(MouseButton.LEFT);
-		ui.fireKeyPressed(Key.A);
+		ui.fireKeyPressed(Key.A, Key.A);
 		ui.fireCharTyped('a');
 		Assert.assertEquals(Arrays.asList("scrolled node", "scrolled 1.0", "dragged node", "dragged LEFT 10", "released node", "released LEFT", "key node", "key A", "char node", "char a"), this.trace);
 	}
@@ -492,9 +492,9 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.R);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		Assert.assertEquals(Arrays.asList("key R", "shortcut", "key R cancelled"), this.trace);
 	}
 
@@ -505,7 +505,7 @@ public class UITest {
 		this.trace.clear();
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("save")).attach(ui);
 		this.bridges.getWindow().getKeys().add(Key.S);
-		this.bridges.getUi().keyPressed(Key.S);
+		this.bridges.getUi().keyPressed(Key.S, Key.S);
 		Assert.assertEquals(Arrays.asList("save", "key S cancelled"), this.trace);
 	}
 
@@ -518,7 +518,7 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.R);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		Assert.assertEquals(Arrays.asList("key node", "key R cancelled"), this.trace);
 	}
 
@@ -533,7 +533,7 @@ public class UITest {
 		this.bridges.frames(2);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.S);
-		this.bridges.getUi().keyPressed(Key.S);
+		this.bridges.getUi().keyPressed(Key.S, Key.S);
 		Assert.assertTrue(runs.get() > 0);
 		Assert.assertEquals(Arrays.asList("save", "key S cancelled"), this.trace);
 	}
@@ -546,7 +546,7 @@ public class UITest {
 		ui.reload();
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.R);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		Assert.assertEquals(Arrays.asList("shortcut", "key R cancelled"), this.trace);
 	}
 
@@ -558,7 +558,7 @@ public class UITest {
 		Shortcut.create(Key.S).ctrl(true).onTrigger(event -> this.trace.add("first")).attach(ui);
 		Shortcut.create(Key.S).ctrl(true).onTrigger(event -> this.trace.add("second")).attach(ui);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S));
-		this.bridges.getUi().keyPressed(Key.S);
+		this.bridges.getUi().keyPressed(Key.S, Key.S);
 		Assert.assertEquals(2, ui.getShortcutList().size());
 		Assert.assertEquals(Arrays.asList("first", "key S cancelled"), this.trace);
 	}
@@ -570,8 +570,8 @@ public class UITest {
 		this.trace.clear();
 		Shortcut.create(Key.S).ctrl(true).onTrigger(event -> this.trace.add("save")).attach(ui);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S, Key.A));
-		this.bridges.getUi().keyPressed(Key.A);
-		this.bridges.getUi().keyPressed(Key.S);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
+		this.bridges.getUi().keyPressed(Key.S, Key.S);
 		Assert.assertEquals(Arrays.asList("key A", "save", "key S cancelled"), this.trace);
 	}
 
@@ -581,15 +581,15 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.MINUS);
+		this.bridges.getUi().keyPressed(Key.MINUS, Key.MINUS);
 		Assert.assertEquals(0.9D, ui.getView().getZoom(), 0D);
-		this.bridges.getUi().keyPressed(Key.NUMPAD_ADD);
+		this.bridges.getUi().keyPressed(Key.NUMPAD_ADD, Key.NUMPAD_ADD);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
 		this.bridges.getWindow().getKeys().clear();
 		this.bridges.getWindow().getKeys().add(Key.RIGHT_ALT);
-		this.bridges.getUi().keyPressed(Key.NUMPAD_SUBTRACT);
+		this.bridges.getUi().keyPressed(Key.NUMPAD_SUBTRACT, Key.NUMPAD_SUBTRACT);
 		Assert.assertEquals(0.9D, ui.getView().getZoom(), 0D);
-		this.bridges.getUi().keyPressed(Key.EQUAL);
+		this.bridges.getUi().keyPressed(Key.EQUAL, Key.EQUAL);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
 		Assert.assertEquals(Arrays.asList("key MINUS cancelled", "key NUMPAD_ADD cancelled", "key NUMPAD_SUBTRACT cancelled", "key EQUAL cancelled"), this.trace);
 	}
@@ -600,10 +600,10 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.EQUAL);
+		this.bridges.getUi().keyPressed(Key.EQUAL, Key.EQUAL);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
 		ui.zoom(0.1D);
-		this.bridges.getUi().keyPressed(Key.MINUS);
+		this.bridges.getUi().keyPressed(Key.MINUS, Key.MINUS);
 		Assert.assertEquals(0.1D, ui.getView().getZoom(), 0D);
 		Assert.assertEquals(Arrays.asList("key EQUAL", "key MINUS"), this.trace);
 	}
@@ -612,7 +612,7 @@ public class UITest {
 	public void keepsItsZoomWithoutModifierKey() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		this.bridges.getUi().keyPressed(Key.MINUS);
+		this.bridges.getUi().keyPressed(Key.MINUS, Key.MINUS);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
 	}
 
@@ -621,7 +621,7 @@ public class UITest {
 		final FixedUI ui = new FixedUI(this.trace);
 		this.bridges.open(ui);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.MINUS);
+		this.bridges.getUi().keyPressed(Key.MINUS, Key.MINUS);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
 	}
 
@@ -650,7 +650,7 @@ public class UITest {
 		this.bridges.open(ui);
 		Assert.assertEquals(0.5D, ui.getZoom(), 0D);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.EQUAL);
+		this.bridges.getUi().keyPressed(Key.EQUAL, Key.EQUAL);
 		Assert.assertEquals(0.6D, zoom.peek(), 1E-9D);
 		zoom.set(0.3D);
 		this.bridges.frame();
@@ -709,7 +709,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace).zoom(zoom).beforeZoom(event -> event.cancel());
 		this.bridges.open(ui);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.EQUAL);
+		this.bridges.getUi().keyPressed(Key.EQUAL, Key.EQUAL);
 		ui.zoomBy(0.2D);
 		Assert.assertEquals(0.5D, ui.getZoom(), 0D);
 		Assert.assertEquals(0.5D, zoom.peek(), 0D);
@@ -742,7 +742,7 @@ public class UITest {
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		Assert.assertEquals(2, ui.inits);
 		Assert.assertEquals(Collections.singletonList("key R cancelled"), this.trace);
 	}
@@ -753,7 +753,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		ui.zoom(0.5D);
-		this.bridges.getUi().keyPressed(Key.F5);
+		this.bridges.getUi().keyPressed(Key.F5, Key.F5);
 		Assert.assertEquals(2, ui.inits);
 		Assert.assertEquals(0.5D, ui.getView().getZoom(), 0D);
 	}
@@ -766,7 +766,7 @@ public class UITest {
 		ui.clicks++;
 		ui.zoom(0.5D);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(1, ui.inits);
 		final RenewUI renewed = (RenewUI) this.bridges.getUi().getUiList().get(0);
@@ -783,7 +783,7 @@ public class UITest {
 		this.bridges.open(ui);
 		ui.clicks++;
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(2, ui.inits);
 		Assert.assertEquals(1, ui.clicks);
@@ -812,7 +812,7 @@ public class UITest {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
 		try {
-			this.bridges.getUi().keyPressed(Key.R);
+			this.bridges.getUi().keyPressed(Key.R, Key.R);
 		} finally {
 			System.setErr(previous);
 		}
@@ -838,10 +838,10 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.trace.clear();
-		this.bridges.getUi().keyPressed(Key.F5);
-		this.bridges.getUi().keyPressed(Key.F3);
+		this.bridges.getUi().keyPressed(Key.F5, Key.F5);
+		this.bridges.getUi().keyPressed(Key.F3, Key.F3);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
-		this.bridges.getUi().keyPressed(Key.R);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		Assert.assertEquals(1, ui.inits);
 		Assert.assertNull(ui.getDevNode());
 		Assert.assertEquals(Arrays.asList("key F5", "key F3", "key R"), this.trace);
@@ -855,9 +855,9 @@ public class UITest {
 		this.trace.clear();
 		Assert.assertTrue(ui.getDevNode() instanceof DevNode);
 		Assert.assertFalse(ui.getNodeList().contains(ui.getDevNode()));
-		this.bridges.getUi().keyPressed(Key.F3);
+		this.bridges.getUi().keyPressed(Key.F3, Key.F3);
 		Assert.assertTrue(ui.getNodeList().contains(ui.getDevNode()));
-		this.bridges.getUi().keyPressed(Key.F3);
+		this.bridges.getUi().keyPressed(Key.F3, Key.F3);
 		Assert.assertFalse(ui.getNodeList().contains(ui.getDevNode()));
 		Assert.assertEquals(Arrays.asList("key F3 cancelled", "key F3 cancelled"), this.trace);
 	}
@@ -867,7 +867,7 @@ public class UITest {
 		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		this.bridges.getUi().keyPressed(Key.F3);
+		this.bridges.getUi().keyPressed(Key.F3, Key.F3);
 		final DevNode panel = (DevNode) ui.getDevNode();
 		ui.reload();
 		Assert.assertSame(panel, ui.getDevNode());
@@ -894,7 +894,7 @@ public class UITest {
 		this.bridges.open(ui);
 		JOIDEnv.devMode(true);
 		this.trace.clear();
-		this.bridges.getUi().keyPressed(Key.F3);
+		this.bridges.getUi().keyPressed(Key.F3, Key.F3);
 		Assert.assertNull(ui.getDevNode());
 		Assert.assertEquals(Collections.singletonList("key F3"), this.trace);
 	}
@@ -1874,7 +1874,7 @@ public class UITest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAKeyWithoutKey() {
-		new TraceUI(this.trace).fireKeyPressed(null);
+		new TraceUI(this.trace).fireKeyPressed(null, null);
 	}
 
 	@Test
@@ -1888,12 +1888,12 @@ public class UITest {
 			this.trace.clear();
 			Shortcut.create(binding).ctrl(true).onTrigger(event -> this.trace.add("save")).attach(ui);
 			this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.S, Key.D));
-			this.bridges.getUi().keyPressed(Key.S);
+			this.bridges.getUi().keyPressed(Key.S, Key.S);
 			binding.key = Key.D;
-			this.bridges.getUi().keyPressed(Key.S);
-			this.bridges.getUi().keyPressed(Key.D);
+			this.bridges.getUi().keyPressed(Key.S, Key.S);
+			this.bridges.getUi().keyPressed(Key.D, Key.D);
 			binding.key = null;
-			this.bridges.getUi().keyPressed(Key.D);
+			this.bridges.getUi().keyPressed(Key.D, Key.D);
 			Assert.assertEquals(Arrays.asList("save", "key S cancelled", "key S", "save", "key D cancelled", "key D"), this.trace);
 		} finally {
 			KeyResolver.unregister(resolver);

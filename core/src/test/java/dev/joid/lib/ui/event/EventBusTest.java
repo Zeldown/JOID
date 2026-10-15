@@ -163,7 +163,7 @@ public class EventBusTest {
 	}
 
 	private NodeKeyEvent<RectNode> key() {
-		return NodeKeyEvent.create(RectNode.create(0D, 0D, 10D, 10D), Key.A, null);
+		return NodeKeyEvent.create(RectNode.create(0D, 0D, 10D, 10D), Key.A, Key.A, null);
 	}
 
 	private static String capture(final Runnable runnable) {

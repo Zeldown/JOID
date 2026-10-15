@@ -32,7 +32,7 @@ public class NodeKeyEventTest {
 		final RectNode sibling = RectNode.create(400D, 100D, 200D, 100D).handleKeyPressed(event -> received.add("sibling")).handleKeyPressed(EventListener.priority(EventPriority.MONITOR, event -> received.add("sibling monitor")));
 		parent.append(child);
 		this.bridges.open(new NodeUI(sibling, parent)).frames(30);
-		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A));
+		Assert.assertTrue(this.bridges.getUi().keyPressed(Key.A, Key.A));
 		Assert.assertEquals(Arrays.asList("child", "sibling monitor"), received);
 	}
 
@@ -42,9 +42,19 @@ public class NodeKeyEventTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).handleKeyPressed(event -> received.addAll(Arrays.asList(event.getNode(), event.getKey())));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(1500D, 900D).frames(2);
-		this.bridges.getUi().keyPressed(Key.A);
-		this.bridges.getUi().keyPressed(Key.ENTER);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
+		this.bridges.getUi().keyPressed(Key.ENTER, Key.ENTER);
 		Assert.assertEquals(Arrays.asList(rect, Key.A, rect, Key.ENTER), received);
+	}
+
+	@Test
+	public void receivesThePhysicalKeyBesideTheLayoutKey() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).handleKeyPressed(event -> received.addAll(Arrays.asList(event.getKey(), event.getPhysicalKey())));
+		final NodeUI ui = new NodeUI(rect).handleKeyPressed(event -> received.addAll(Arrays.asList(event.getKey(), event.getPhysicalKey())));
+		this.bridges.open(ui).frames(30);
+		this.bridges.getUi().keyPressed(Key.Q, Key.A);
+		Assert.assertEquals(Arrays.asList(Key.A, Key.Q, Key.A, Key.Q), received);
 	}
 
 	@Test
@@ -52,7 +62,7 @@ public class NodeKeyEventTest {
 		final List<Object> received = new ArrayList<>();
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).handleKeyPressed(event -> received.add(event.getKey())).handleCharTyped(event -> received.add(event.getCodepoint()));
 		this.bridges.open(new NodeUI(rect)).frames(30);
-		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
 		this.bridges.getUi().charTyped('a');
 		Assert.assertEquals(Arrays.asList(Key.A, (int) 'a'), received);
 	}
@@ -64,7 +74,7 @@ public class NodeKeyEventTest {
 		final RectNode child = RectNode.create(10D, 10D, 20D, 20D).handleKeyPressed(event -> received.addAll(Arrays.asList(event.getNode(), event.getKey())));
 		parent.append(child);
 		this.bridges.open(new NodeUI(parent)).frames(30);
-		this.bridges.getUi().keyPressed(Key.B);
+		this.bridges.getUi().keyPressed(Key.B, Key.B);
 		Assert.assertEquals(Arrays.asList(child, Key.B), received);
 	}
 
@@ -74,7 +84,7 @@ public class NodeKeyEventTest {
 		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(() -> false).handleKeyPressed(event -> received.add(event.getNode()));
 		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(() -> false).handleKeyPressed(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
-		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
 		Assert.assertTrue(received.isEmpty());
 	}
 

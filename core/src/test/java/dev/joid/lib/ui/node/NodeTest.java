@@ -971,7 +971,7 @@ public class NodeTest {
 		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.scroll(1D);
-		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
 		this.bridges.getUi().charTyped('a');
 		Assert.assertEquals(Arrays.asList("above pressed", "parent pressed", "below pressed", "above dragged", "parent dragged", "below dragged", "above released", "parent released", "below released", "above scrolled", "parent scrolled", "below scrolled", "above key", "parent key", "below key", "above char", "parent char", "below char"), events);
 	}
@@ -984,7 +984,7 @@ public class NodeTest {
 		Assert.assertSame(MouseButton.RIGHT, node.getLastClickButton());
 		Assert.assertEquals(this.bridges.getClock().currentTimeMillis(), node.getLastClickTime());
 		this.bridges.frame();
-		this.bridges.getUi().keyPressed(Key.Z);
+		this.bridges.getUi().keyPressed(Key.Z, Key.Z);
 		this.bridges.getUi().charTyped('z');
 		Assert.assertEquals('z', node.getLastCodepoint());
 		Assert.assertSame(Key.Z, node.getLastKey());
@@ -1104,7 +1104,7 @@ public class NodeTest {
 		this.bridges.getUi().mouseMoved();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.scroll(1D);
-		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
 		this.bridges.getUi().charTyped('a');
 		Assert.assertEquals(Arrays.asList("skeleton pressed", "skeleton dragged", "skeleton released", "skeleton scrolled", "skeleton key", "skeleton char"), events);
 		ready[0] = true;
@@ -1606,7 +1606,7 @@ public class NodeTest {
 		final List<String> events = new ArrayList<>();
 		final Bar bar = new Bar(0D, 110D, 400D, 10D, 40D).handleKeyPressed(event -> events.add("key")).handleCharTyped(event -> events.add("char")).handleMouseScroll(event -> events.add("scrolled")).handleMouseDragged(event -> events.add("dragged")).handleMouseReleased(event -> events.add("released"));
 		this.bridges.open(new NodeUI(NodeTest.row().scrollbar(bar)));
-		this.bridges.getUi().keyPressed(Key.A);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
 		this.bridges.getUi().charTyped('a');
 		this.bridges.scroll(1D);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);

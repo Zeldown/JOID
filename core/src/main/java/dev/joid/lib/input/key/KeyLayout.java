@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -43,7 +42,7 @@ public final class KeyLayout {
 	}
 
 	public @NonNull Key translate(final @NonNull Key key) {
-		if (!KeyLayout.LAYOUT_KEYS.contains(key)) {
+		if (!KeyLayout.isLayoutKey(key)) {
 			return key;
 		}
 
@@ -55,18 +54,8 @@ public final class KeyLayout {
 		return KeyLayout.CHARACTER_MAP.getOrDefault(Character.toLowerCase(name.charAt(0)), key);
 	}
 
-	public boolean isDown(final @NonNull Key key, final @NonNull Predicate<@NonNull Key> physicalPredicate) {
-		if (!KeyLayout.LAYOUT_KEYS.contains(key)) {
-			return physicalPredicate.test(key);
-		}
-
-		for (final Key physical : KeyLayout.LAYOUT_KEYS) {
-			if (physicalPredicate.test(physical) && this.translate(physical) == key) {
-				return true;
-			}
-		}
-
-		return false;
+	public static boolean isLayoutKey(final @NonNull Key key) {
+		return KeyLayout.LAYOUT_KEYS.contains(key);
 	}
 
 }

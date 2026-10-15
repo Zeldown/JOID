@@ -382,7 +382,7 @@ public class MultilineTextFieldMarkupTest {
 	}
 
 	private void press(final MultilineTextFieldNode field, final Key key) {
-		field.keyPressed(NodeKeyEvent.create(field, key, null));
+		field.keyPressed(NodeKeyEvent.create(field, key, key, null));
 	}
 
 	private void type(final MultilineTextFieldNode field, final String text) {

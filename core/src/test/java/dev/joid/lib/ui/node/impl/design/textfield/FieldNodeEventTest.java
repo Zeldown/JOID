@@ -97,7 +97,7 @@ public class FieldNodeEventTest {
 		final List<String> changes = new ArrayList<>();
 		final MultilineTextFieldNode field = this.multiline().beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getText()));
 		this.bridges.open(new NodeUI(field));
-		field.keyPressed(NodeKeyEvent.create(field, Key.ENTER, null));
+		field.keyPressed(NodeKeyEvent.create(field, Key.ENTER, Key.ENTER, null));
 		Assert.assertEquals("ab", field.getText());
 		Assert.assertTrue(changes.isEmpty());
 	}
@@ -108,7 +108,7 @@ public class FieldNodeEventTest {
 		final TextFieldNode field = TextFieldNode.create(0D, 0D, 100D).onSubmit(event -> received.addAll(Arrays.asList(event.getNode(), event.getNode().getText(), event.getNode().isFocused())));
 		field.info(TextInfo.create(FieldNodeEventTest.FONT, 10F)).text("hello").focused(true);
 		this.bridges.open(new NodeUI(field));
-		this.bridges.getUi().keyPressed(Key.ENTER);
+		this.bridges.getUi().keyPressed(Key.ENTER, Key.ENTER);
 		Assert.assertEquals(Arrays.asList(field, "hello", false), received);
 	}
 

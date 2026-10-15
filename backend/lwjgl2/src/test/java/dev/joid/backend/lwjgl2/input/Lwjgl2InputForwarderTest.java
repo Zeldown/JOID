@@ -1,10 +1,11 @@
 package dev.joid.backend.lwjgl2.input;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -22,10 +23,10 @@ import lombok.NonNull;
 
 public class Lwjgl2InputForwarderTest {
 
-	private final List<String>  trace  = new ArrayList<>();
-	private final TraceUI       ui     = new TraceUI(this.trace);
-	private final DemoUIBridge  bridge = new DemoUIBridge();
-	private final IWindowBridge window = new FixedWindowBridge();
+	private final List<String>      trace  = new ArrayList<>();
+	private final TraceUI           ui     = new TraceUI(this.trace);
+	private final DemoUIBridge      bridge = new DemoUIBridge();
+	private final FixedWindowBridge window = new FixedWindowBridge();
 
 	private Lwjgl2InputForwarder input;
 
@@ -64,16 +65,15 @@ public class Lwjgl2InputForwarderTest {
 
 	@Test
 	public void releasesTheKeyItPressed() throws Exception {
-		final Field field = Lwjgl2InputForwarder.class.getDeclaredField("pressedKeys");
-		field.setAccessible(true);
-		final Key[] pressedKeys = (Key[]) field.get(this.input);
+		this.window.keys.add(Key.Q);
 		this.keyPressed(Keyboard.KEY_Q, 'a');
-		Assert.assertSame(Key.A, pressedKeys[Keyboard.KEY_Q]);
+		Assert.assertTrue(Key.A.isDown());
+		Assert.assertTrue(Key.Q.isPhysicalDown());
 
 		final Method release = Lwjgl2InputForwarder.class.getDeclaredMethod("keyReleased", int.class);
 		release.setAccessible(true);
 		release.invoke(this.input, Keyboard.KEY_Q);
-		Assert.assertNull(pressedKeys[Keyboard.KEY_Q]);
+		Assert.assertFalse(Key.A.isDown());
 	}
 
 	private void keyPressed(final int code, final char character) throws Exception {
@@ -94,6 +94,8 @@ public class Lwjgl2InputForwarderTest {
 	}
 
 	public static final class FixedWindowBridge implements IWindowBridge {
+
+		private final Set<Key> keys = EnumSet.noneOf(Key.class);
 
 		@Override
 		public int getWidth() {
@@ -122,7 +124,7 @@ public class Lwjgl2InputForwarderTest {
 
 		@Override
 		public boolean isKeyDown(final @NonNull Key key) {
-			return false;
+			return this.keys.contains(key);
 		}
 
 		@Override

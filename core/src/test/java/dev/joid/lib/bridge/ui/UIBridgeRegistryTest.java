@@ -212,7 +212,7 @@ public class UIBridgeRegistryTest {
 		this.open(registry, "low", 0);
 		high.cancel = true;
 		Assert.assertTrue(registry.mousePressed(MouseButton.LEFT));
-		Assert.assertTrue(registry.keyPressed(Key.A));
+		Assert.assertTrue(registry.keyPressed(Key.A, Key.A));
 		Assert.assertTrue(registry.charTyped('a'));
 		Assert.assertTrue(registry.mouseScroll(0D, 1D));
 		Assert.assertEquals(Arrays.asList("pressed high", "key high", "char high", "scroll high"), this.trace);
@@ -224,7 +224,7 @@ public class UIBridgeRegistryTest {
 		this.open(registry, "high", 1);
 		this.open(registry, "low", 0);
 		Assert.assertFalse(registry.mousePressed(MouseButton.LEFT));
-		Assert.assertFalse(registry.keyPressed(Key.A));
+		Assert.assertFalse(registry.keyPressed(Key.A, Key.A));
 		Assert.assertEquals(Arrays.asList("pressed high", "pressed low", "key high", "key low"), this.trace);
 	}
 
@@ -259,11 +259,21 @@ public class UIBridgeRegistryTest {
 		this.open(registry, "high", 1);
 		final TraceUI low = this.open(registry, "low", 0);
 		low.cancel = true;
-		Assert.assertTrue(registry.keyPressed(Key.A));
+		Assert.assertTrue(registry.keyPressed(Key.A, Key.A));
 		low.cancel = false;
 		Assert.assertTrue(registry.keyReleased(Key.A));
 		Assert.assertFalse(registry.keyReleased(Key.A));
 		Assert.assertFalse(registry.keyReleased(Key.B));
+	}
+
+	@Test
+	public void releasesAtItsPositionTheKeyOfThePress() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final TraceUI ui = this.open(registry, "ui", 0);
+		ui.cancel = true;
+		Assert.assertTrue(registry.keyPressed(Key.Q, Key.A));
+		Assert.assertTrue(registry.keyReleased(Key.Q));
+		Assert.assertFalse(registry.keyReleased(Key.A));
 	}
 
 	@Test(expected = NullPointerException.class)
