@@ -23,11 +23,10 @@ public abstract class ScrollbarNode extends BaseScrollbarNode {
 			this.track.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}
 
+		final double length = super.getThumbLength();
 		if (super.isHorizontal()) {
-			final double length = super.getWidth() * super.getRatio();
 			this.thumb.layoutPosition((super.getWidth() - length) * super.getProgress(), 0D).layoutSize(length, super.getHeight());
 		} else {
-			final double length = super.getHeight() * super.getRatio();
 			this.thumb.layoutPosition(0D, (super.getHeight() - length) * super.getProgress()).layoutSize(super.getWidth(), length);
 		}
 	}

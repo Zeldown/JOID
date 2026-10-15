@@ -230,24 +230,23 @@ public class UIDemoOverflow extends UIDemo {
 		.color(UIDemoOverflow.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
-			.create(20, 20, 360, 160)
+			.create(20, 20, 340, 160)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
+			.scrollbar(DemoScrollbarNode.create(348, 0, 12, 160))
 			.onScrollToEnd(event -> {
-				if (items.get() < 24) {
-					for (int i = 0; i < 4; i++) {
-						RectNode.create(0, 0, 340, 40).color(UIDemoOverflow.INK).attach(event.getNode().getChild(0, FlexNode.class));
-					}
-					items.add(4);
+				for (int i = 0; i < 4; i++) {
+					RectNode.create(0, 0, 320, 40).color(UIDemoOverflow.INK).attach(event.getNode().getChild(0, FlexNode.class));
 				}
+				items.add(4);
 			})
 			.body(area -> {
 				FlexNode
-				.vertical(10, 10, 340)
+				.vertical(10, 10, 320)
 				.margin(10D)
 				.body(flex -> {
 					for (int i = 0; i < 6; i++) {
-						RectNode.create(0, 0, 340, 40).color(UIDemoOverflow.INK).attach(flex);
+						RectNode.create(0, 0, 320, 40).color(UIDemoOverflow.INK).attach(flex);
 					}
 				})
 				.attach(area);

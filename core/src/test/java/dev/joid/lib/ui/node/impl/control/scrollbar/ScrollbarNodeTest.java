@@ -154,6 +154,46 @@ public class ScrollbarNodeTest {
 	}
 
 	@Test
+	public void keepsItsThumbAtItsMinimumOnAVeryLongContent() {
+		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
+		final RectNode content = ScrollbarNodeTest.list(bar);
+		this.bridges.open(new NodeUI(content)).frame();
+		Assert.assertEquals(0.01D, bar.getRatio(), 1E-9D);
+		Assert.assertEquals(10D, bar.getThumbLength(), 0D);
+		Assert.assertEquals(10D, bar.getThumb().getHeight(), 0D);
+		bar.minThumb(25D);
+		this.bridges.frame();
+		Assert.assertEquals(25D, bar.getThumbLength(), 0D);
+		Assert.assertEquals(25D, bar.getThumb().getHeight(), 0D);
+	}
+
+	@Test
+	public void dragsItsMinimumThumbAcrossTheWholeScroll() {
+		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
+		final RectNode content = ScrollbarNodeTest.list(bar);
+		this.press(content, 515D, 105D);
+		this.bridges.move(515D, 195D).frame();
+		Assert.assertEquals(1D, bar.getProgress(), 1E-9D);
+		Assert.assertEquals(-9900D, content.getTargetScrollY(), 1E-6D);
+		Assert.assertEquals(90D, bar.getThumb().getY(), 1E-9D);
+		this.bridges.move(515D, 150D).frame();
+		Assert.assertEquals(0.5D, bar.getProgress(), 1E-9D);
+		this.bridges.move(515D, 0D).frame();
+		Assert.assertEquals(0D, bar.getProgress(), 0D);
+		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void centersItsMinimumThumbOnAPressOnItsTrack() {
+		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
+		final RectNode content = ScrollbarNodeTest.list(bar);
+		this.press(content, 515D, 160D);
+		this.bridges.frame();
+		Assert.assertEquals(-9900D * 55D / 90D, content.getTargetScrollY(), 1E-6D);
+		Assert.assertEquals(55D, bar.getThumb().getY(), 1E-9D);
+	}
+
+	@Test
 	public void leavesAContentThatFitsInPlace() {
 		final RectNode content = RectNode.create(100D, 100D, 400D, 100D);
 		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D).scrollNode(content);
@@ -193,6 +233,14 @@ public class ScrollbarNodeTest {
 		RectNode.create(0D, 0D, 400D, 100D).color(new Color(0.1F, 0.3F, 0.5F, 1F)).attach(content);
 		RectNode.create(0D, 100D, 400D, 100D).color(new Color(0.3F, 0.5F, 0.7F, 1F)).attach(content);
 		RectNode.create(0D, 200D, 400D, 100D).color(new Color(0.5F, 0.7F, 0.9F, 1F)).attach(content);
+		return content;
+	}
+
+	private static RectNode list(final Bar bar) {
+		final RectNode content = RectNode.create(100D, 100D, 400D, 100D).overflow(OverflowProperty.SCROLL).scrollbar(bar);
+		for (int i = 0; i < 100; i++) {
+			RectNode.create(0D, i * 100D, 400D, 100D).attach(content);
+		}
 		return content;
 	}
 

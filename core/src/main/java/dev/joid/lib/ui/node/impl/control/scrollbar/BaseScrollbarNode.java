@@ -8,6 +8,7 @@ import lombok.NonNull;
 public abstract class BaseScrollbarNode extends Node {
 
 	@Getter private Node    scrollNode;
+	@Getter private double  minThumb;
 	@Getter private boolean dragging;
 
 	private double grab;
@@ -15,6 +16,7 @@ public abstract class BaseScrollbarNode extends Node {
 
 	protected BaseScrollbarNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+		this.minThumb = Math.min(width, height);
 
 		super.<BaseScrollbarNode>require("scrolled node", "pass it to node.scrollbar(...) instead of attaching it", node -> node.scrollNode != null);
 	}
@@ -25,7 +27,7 @@ public abstract class BaseScrollbarNode extends Node {
 			return;
 		}
 
-		final double room = this.getLength() * (1D - this.getRatio());
+		final double room = this.getLength() - this.getThumbLength();
 		final double start = (this.isHorizontal() ? mouseX - super.getAbsoluteX() : mouseY - super.getAbsoluteY()) - this.grab;
 		this.dragProgress = room <= 0D ? 0D : Math.min(1D, Math.max(0D, start / room));
 		if (this.isHorizontal()) {
@@ -46,8 +48,8 @@ public abstract class BaseScrollbarNode extends Node {
 			return;
 		}
 
-		final double length = this.getLength() * this.getRatio();
-		final double start = this.getLength() * (1D - this.getRatio()) * this.getProgress();
+		final double length = this.getThumbLength();
+		final double start = (this.getLength() - length) * this.getProgress();
 		final double mouse = this.isHorizontal() ? event.getMouseX() - super.getAbsoluteX() : event.getMouseY() - super.getAbsoluteY();
 		this.grab         = mouse >= start && mouse <= start + length ? mouse - start : length / 2D;
 		this.dragProgress = this.getProgress();
@@ -93,8 +95,17 @@ public abstract class BaseScrollbarNode extends Node {
 		return visible / (visible + (this.isHorizontal() ? this.scrollNode.getMaxScrollX() : this.scrollNode.getMaxScrollY()));
 	}
 
+	public final double getThumbLength() {
+		return Math.min(this.getLength(), Math.max(this.minThumb, this.getLength() * this.getRatio()));
+	}
+
 	public final <T extends BaseScrollbarNode> @NonNull T scrollNode(final @NonNull Node scrollNode) {
 		this.scrollNode = scrollNode;
+		return (T) this;
+	}
+
+	public final <T extends BaseScrollbarNode> @NonNull T minThumb(final double minThumb) {
+		this.minThumb = minThumb;
 		return (T) this;
 	}
 
