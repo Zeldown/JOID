@@ -85,6 +85,30 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void drawsEveryFrameBegunBeforeThePresent() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.beginFrame();
+		try {
+			render.clearColor(0F, 0F, 0F, 1F);
+			render.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+		} finally {
+			render.endFrame();
+		}
+
+		render.beginFrame();
+		try {
+			render.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.RED));
+		} finally {
+			render.endFrame();
+		}
+
+		final SnapshotImage image = RenderBridgeContractSuite.backend.capture(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
+		RenderBridgeContractSuite.backend.present();
+		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.RED);
+	}
+
+	@Test
 	public void refusesATextureLargerThanTheBackend() {
 		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> BridgeHandler.RENDER.get().createTexture().allocate(1 << 20, 1));
 		Assert.assertTrue(exception.getMessage(), exception.getMessage().startsWith("A texture of 1048576x1 exceeds the maximum size "));

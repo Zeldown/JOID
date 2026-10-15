@@ -61,6 +61,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 	@Getter private int     frameIndex;
 	@Getter private int     targetWidth;
 	@Getter private int     targetHeight;
+	@Getter private long    frameNumber;
 	@Getter private boolean frameActive;
 
 	private long[] views;
@@ -185,6 +186,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 			VulkanContext.transition(buffer, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 		}
 
+		this.frameNumber++;
 		this.frameActive = true;
 		return this;
 	}

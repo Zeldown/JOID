@@ -94,6 +94,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		this.context           = VulkanContext.create(host);
 		this.pipelineCache     = PipelineCache.create(this.context);
 		this.descriptorCache   = DescriptorCache.create(this.context);
+		this.frame             = -1L;
 		this.garbage           = new TreeMap<>();
 		this.screenClearPass   = this.context.createRenderPass(host.getColorFormat(), this.context.getDepthStencilFormat(), true);
 		this.screenLoadPass    = this.context.createRenderPass(host.getColorFormat(), this.context.getDepthStencilFormat(), false);
@@ -150,13 +151,16 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	@Override
 	protected void beginFrameCommands() {
-		this.frame++;
-		this.releaseGarbage(this.frame - this.host.getFramesInFlight());
+		if (this.frame != this.host.getFrameNumber()) {
+			this.frame = this.host.getFrameNumber();
+			this.releaseGarbage(this.frame - this.host.getFramesInFlight());
 
-		this.vertexAllocator  = this.vertexAllocators[this.host.getFrameIndex()];
-		this.uniformAllocator = this.uniformAllocators[this.host.getFrameIndex()];
-		this.vertexAllocator.reset();
-		this.uniformAllocator.reset();
+			this.vertexAllocator  = this.vertexAllocators[this.host.getFrameIndex()];
+			this.uniformAllocator = this.uniformAllocators[this.host.getFrameIndex()];
+			this.vertexAllocator.reset();
+			this.uniformAllocator.reset();
+		}
+
 		this.screenCleared = false;
 		this.passActive    = false;
 		this.passTarget    = null;

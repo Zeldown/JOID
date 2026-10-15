@@ -17,6 +17,7 @@ public interface IVulkanHost {
 	public @NonNull VkPhysicalDevice getPhysicalDevice();
 
 	public int getFrameIndex();
+	public long getFrameNumber();
 	public int getFramesInFlight();
 	public @NonNull VkCommandBuffer getCommandBuffer();
 
