@@ -98,9 +98,11 @@ public abstract class ShaderProgram {
 	}
 
 	public static void uniformGradient(final @NonNull IShader shader, final @NonNull Point startPoint, final @NonNull Point endPoint, final @NonNull Color startColor, final @NonNull Color endColor, final float x1, final float y1, final float x2, final float y2) {
+		final Color start = startColor.update();
+		final Color end = endColor.update();
 		shader
-		.uniform("u_GradientStart", startColor.getRedF(), startColor.getGreenF(), startColor.getBlueF(), startColor.getAlphaF())
-		.uniform("u_GradientEnd", endColor.getRedF(), endColor.getGreenF(), endColor.getBlueF(), endColor.getAlphaF())
+		.uniform("u_GradientStart", start.getRedF(), start.getGreenF(), start.getBlueF(), start.getAlphaF())
+		.uniform("u_GradientEnd", end.getRedF(), end.getGreenF(), end.getBlueF(), end.getAlphaF())
 		.uniform("u_GradientStartPos", (float) startPoint.getX(), (float) startPoint.getY())
 		.uniform("u_GradientEndPos", (float) endPoint.getX(), (float) endPoint.getY())
 		.uniform("u_GradientCanvas", x1, y1, x2, y2);

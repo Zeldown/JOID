@@ -20,16 +20,17 @@ public final class BorderShader extends ShaderProgram {
 	public void bind(final float borderWidth, final @NonNull Color borderColor, final float texelW, final float texelH, final boolean fill, final int mode, final float rectX1, final float rectY1, final float rectX2, final float rectY2) {
 		this.bind();
 
+		final Color color = borderColor.update();
 		this.getShader()
 		.uniform("u_BorderWidth", borderWidth)
-		.uniform("u_BorderColor", borderColor.getRedF(), borderColor.getGreenF(), borderColor.getBlueF(), borderColor.getAlphaF())
+		.uniform("u_BorderColor", color.getRedF(), color.getGreenF(), color.getBlueF(), color.getAlphaF())
 		.uniform("u_TexelSize", texelW, texelH)
 		.uniform("u_Fill", fill ? 1 : 0)
 		.uniform("u_Mode", mode)
 		.uniform("u_Rect", rectX1, rectY1, rectX2, rectY2);
 
-		if (borderColor.isGradient()) {
-			ShaderProgram.uniformGradient(this.getShader(), borderColor.getGradient(), rectX1, rectY1, rectX2, rectY2);
+		if (color.isGradient()) {
+			ShaderProgram.uniformGradient(this.getShader(), color.getGradient(), rectX1, rectY1, rectX2, rectY2);
 		} else {
 			this.getShader().uniform("u_HasGradient", 0);
 		}

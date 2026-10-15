@@ -50,6 +50,13 @@ public class GradientShaderTest {
 	}
 
 	@Test
+	public void paintsTheCurrentFrameOfAnAnimatedStop() {
+		final Color animated = new Color(1F, 1F, 1F, 1F, color -> new Color(0.2F, 0.4F, 0.6F, 1F));
+		GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), animated, Color.BLUE, () -> {}, BoundingBox.create(0D, 0D, 1D, 1D));
+		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) this.shader.getValues().get("u_GradientStart"), 0F);
+	}
+
+	@Test
 	public void tintsATexture() {
 		GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.BLUE, true, () -> {}, BoundingBox.create(0D, 0D, 1D, 1D));
 		Assert.assertEquals(1, this.shader.getValues().get("hasTexture"));

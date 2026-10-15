@@ -67,6 +67,12 @@ public class BorderShaderPassTest {
 	}
 
 	@Test
+	public void outlinesWithTheCurrentFrameOfAnAnimatedColor() {
+		BorderShaderPass.create(new Color(1F, 1F, 1F, 1F, color -> new Color(0.2F, 0.4F, 0.6F, 1F)), 3F).bind(this.context());
+		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) this.shader.getValues().get("u_BorderColor"), 0F);
+	}
+
+	@Test
 	public void spreadsAGradientOverTheBox() {
 		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.6F, 0.4F, 0.2F, 1F)), 3F).bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
