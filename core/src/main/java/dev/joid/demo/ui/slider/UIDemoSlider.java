@@ -2,9 +2,9 @@ package dev.joid.demo.ui.slider;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.node.impl.structure.slider.impl.DemoDoubleSliderNode;
-import dev.joid.demo.ui.node.impl.structure.slider.impl.DemoIntegerSliderNode;
-import dev.joid.demo.ui.node.impl.structure.slider.impl.DemoStringSliderNode;
+import dev.joid.demo.ui.node.impl.control.slider.DemoDoubleSliderNode;
+import dev.joid.demo.ui.node.impl.control.slider.DemoIntegerSliderNode;
+import dev.joid.demo.ui.node.impl.control.slider.DemoStringSliderNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -12,8 +12,8 @@ import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)

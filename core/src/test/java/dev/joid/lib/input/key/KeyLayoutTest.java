@@ -23,9 +23,9 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNodeTest;
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNodeTest.FieldFont;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNodeTest;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNodeTest.FieldFont;
 import dev.joid.lib.ui.shortcut.Shortcut;
 
 public class KeyLayoutTest {

@@ -2,8 +2,8 @@ package dev.joid.showcase;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
-import dev.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode;
+import dev.joid.lib.ui.node.impl.control.scrollbar.ScrollbarNode;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 
 public class ShowScrollbarNode extends ScrollbarNode {
 

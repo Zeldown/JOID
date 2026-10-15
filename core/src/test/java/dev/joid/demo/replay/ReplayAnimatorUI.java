@@ -2,7 +2,7 @@ package dev.joid.demo.replay;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

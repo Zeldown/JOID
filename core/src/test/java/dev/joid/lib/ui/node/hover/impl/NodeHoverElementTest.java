@@ -15,7 +15,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.PositionedHoverElement.HoverElementPosition;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class NodeHoverElementTest {
 

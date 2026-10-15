@@ -74,7 +74,7 @@ import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.TextHoverElement;
-import dev.joid.lib.ui.node.impl.structure.scrollbar.BaseScrollbarNode;
+import dev.joid.lib.ui.node.impl.control.scrollbar.BaseScrollbarNode;
 import dev.joid.lib.ui.node.layer.INodeLayer;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableAreaType;

@@ -23,8 +23,8 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
-import dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode;
+import dev.joid.lib.ui.node.impl.resource.ResourceNode;
+import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.video.VideoNativesException;
 
 import lombok.NonNull;

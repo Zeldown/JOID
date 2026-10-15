@@ -8,9 +8,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.DemoUIBridge;
-import dev.joid.demo.ui.node.impl.design.textfield.DemoMultilineTextFieldNode;
-import dev.joid.demo.ui.node.impl.design.textfield.DemoTextFieldNode;
-import dev.joid.demo.ui.node.impl.design.textfield.impl.DemoIntegerFieldNode;
+import dev.joid.demo.ui.node.impl.control.field.DemoIntegerFieldNode;
+import dev.joid.demo.ui.node.impl.control.field.DemoMultilineTextFieldNode;
+import dev.joid.demo.ui.node.impl.control.field.DemoTextFieldNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.cursor.Cursor;
@@ -23,7 +23,7 @@ import dev.joid.lib.ui.core.data.overlay.render.UIDataOverlayRender;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class UIBridgeCursorTest {
 

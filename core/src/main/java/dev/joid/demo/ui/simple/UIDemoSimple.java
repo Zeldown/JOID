@@ -11,12 +11,12 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.impl.design.progress.ProgressNode;
-import dev.joid.lib.ui.node.impl.design.progress.ProgressNode.ProgressDirection;
-import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
+import dev.joid.lib.ui.node.impl.progress.ProgressNode;
+import dev.joid.lib.ui.node.impl.progress.ProgressNode.ProgressDirection;
+import dev.joid.lib.ui.node.impl.shape.CircleNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true, anchorX = Align.END, anchorY = Align.START)

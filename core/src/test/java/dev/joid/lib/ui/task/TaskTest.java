@@ -22,7 +22,7 @@ import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class TaskTest {
 

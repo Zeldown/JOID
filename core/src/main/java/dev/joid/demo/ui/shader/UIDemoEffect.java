@@ -20,10 +20,10 @@ import dev.joid.lib.ui.node.effect.impl.MaskNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
-import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
-import dev.joid.lib.ui.node.impl.design.resource.ResourceNode.StretchType;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.node.impl.resource.ResourceNode;
+import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)

@@ -39,7 +39,7 @@ import dev.joid.lib.ui.event.ConsumableEvent;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.shortcut.Shortcut;
 
 import lombok.NonNull;

@@ -10,10 +10,10 @@ import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
-import dev.joid.lib.ui.node.impl.design.model.ModelViewerNode;
-import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.node.impl.model.ModelViewerNode;
+import dev.joid.lib.ui.node.impl.shape.CircleNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 public class ShowModel extends ShowUI {

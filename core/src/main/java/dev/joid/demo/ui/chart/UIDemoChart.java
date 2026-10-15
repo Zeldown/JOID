@@ -2,18 +2,18 @@ package dev.joid.demo.ui.chart;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.node.impl.structure.chart.DemoChartNode;
-import dev.joid.demo.ui.node.impl.structure.chart.DemoRadarChartNode;
+import dev.joid.demo.ui.node.impl.chart.DemoChartNode;
+import dev.joid.demo.ui.node.impl.chart.DemoRadarChartNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartAxis;
-import dev.joid.lib.ui.node.impl.structure.chart.ChartNode.ChartData;
-import dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode.RadarChartData;
+import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis;
+import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartData;
+import dev.joid.lib.ui.node.impl.chart.RadarChartNode.RadarChartData;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)

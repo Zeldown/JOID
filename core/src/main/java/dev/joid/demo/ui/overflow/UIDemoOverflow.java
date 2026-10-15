@@ -2,17 +2,17 @@ package dev.joid.demo.ui.overflow;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.node.impl.structure.scrollbar.DemoScrollbarNode;
+import dev.joid.demo.ui.node.impl.control.scrollbar.DemoScrollbarNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
-import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
+import dev.joid.lib.ui.node.impl.layout.FlexNode;
+import dev.joid.lib.ui.node.impl.layout.GridNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 

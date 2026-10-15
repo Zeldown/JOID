@@ -5,10 +5,10 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
-import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
+import dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode;
+import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public interface IShowKit {
 

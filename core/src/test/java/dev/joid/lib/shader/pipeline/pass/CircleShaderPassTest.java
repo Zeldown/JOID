@@ -15,7 +15,7 @@ import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class CircleShaderPassTest {
 

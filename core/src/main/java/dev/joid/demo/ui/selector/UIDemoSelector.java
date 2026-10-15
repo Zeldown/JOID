@@ -2,8 +2,8 @@ package dev.joid.demo.ui.selector;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
-import dev.joid.demo.ui.node.impl.structure.checkbox.DemoCheckboxNode;
-import dev.joid.demo.ui.node.impl.structure.selector.DemoSelectorNode;
+import dev.joid.demo.ui.node.impl.control.checkbox.DemoCheckboxNode;
+import dev.joid.demo.ui.node.impl.control.selector.DemoSelectorNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -11,9 +11,9 @@ import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode.SelectorDirection;
+import dev.joid.lib.ui.node.impl.control.selector.SelectorNode.SelectorDirection;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)

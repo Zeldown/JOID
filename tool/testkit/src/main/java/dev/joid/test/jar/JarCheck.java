@@ -9,7 +9,7 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.backend.Backend;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

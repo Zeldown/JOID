@@ -8,7 +8,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.replay.SignalReplayNode;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.Getter;
 import lombok.Setter;
 

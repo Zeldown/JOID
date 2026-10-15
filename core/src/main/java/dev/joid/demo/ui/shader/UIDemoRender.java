@@ -22,9 +22,9 @@ import dev.joid.lib.shader.pipeline.pass.BlurShaderPass;
 import dev.joid.lib.shader.pipeline.pass.BorderShaderPass;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.point.Point;
 

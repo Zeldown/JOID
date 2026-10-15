@@ -2,8 +2,8 @@ package dev.joid.showcase;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
-import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
+import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 
 public class ShowSwitchNode extends ToggleNode<Boolean, Boolean> {
 

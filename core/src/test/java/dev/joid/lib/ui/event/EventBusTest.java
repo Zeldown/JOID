@@ -14,7 +14,7 @@ import org.junit.Test;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class EventBusTest {
 

@@ -1,0 +1,29 @@
+package dev.joid.lib.ui.node.impl.control.field;
+
+import lombok.NonNull;
+
+public class TextFieldNode extends LineFieldNode<String> {
+
+	protected TextFieldNode(final double x, final double y, final double width, final double height) {
+		super(x, y, width, height);
+	}
+
+	public static @NonNull TextFieldNode create(final double x, final double y, final double width) {
+		return new TextFieldNode(x, y, width, 0D);
+	}
+
+	public static @NonNull TextFieldNode create(final double x, final double y, final double width, final double height) {
+		return new TextFieldNode(x, y, width, height);
+	}
+
+	@Override
+	protected final String parse(final @NonNull String text) {
+		return text;
+	}
+
+	@Override
+	protected final @NonNull String format(final @NonNull String value) {
+		return value;
+	}
+
+}

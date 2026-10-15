@@ -23,8 +23,8 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 
 public class DemoPixelFontTest {
 

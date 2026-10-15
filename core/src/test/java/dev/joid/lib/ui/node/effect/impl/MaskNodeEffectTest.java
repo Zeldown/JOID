@@ -18,7 +18,7 @@ import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.AllArgsConstructor;
 
 public class MaskNodeEffectTest {

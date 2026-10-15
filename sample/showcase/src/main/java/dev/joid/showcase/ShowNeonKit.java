@@ -14,12 +14,12 @@ import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
-import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.text.TextNode;
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
-import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
+import dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode;
+import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
+import dev.joid.lib.ui.node.impl.shape.CircleNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 public class ShowNeonKit implements IShowKit {

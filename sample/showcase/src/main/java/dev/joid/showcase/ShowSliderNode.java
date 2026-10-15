@@ -2,8 +2,8 @@ package dev.joid.showcase;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
-import dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode;
+import dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 
 public class ShowSliderNode extends DoubleSliderNode {
 

@@ -24,9 +24,9 @@ import dev.joid.lib.ui.core.data.debug.UIDataDebug;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
-import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNodeTest.FieldFont;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNodeTest.FieldFont;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ShortcutTest {
 

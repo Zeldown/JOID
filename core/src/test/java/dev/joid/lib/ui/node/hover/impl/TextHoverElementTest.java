@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 import lombok.NonNull;
 

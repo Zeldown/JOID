@@ -16,8 +16,8 @@ import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.ShadowShader;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.CircleNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.AllArgsConstructor;
 
 public class ShadowNodeEffectTest {

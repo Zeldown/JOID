@@ -16,7 +16,7 @@ import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class TransformNodeEffectTest {
 

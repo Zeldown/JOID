@@ -11,7 +11,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class InteractiveValueTest {
 

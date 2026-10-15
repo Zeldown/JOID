@@ -3,7 +3,7 @@ package dev.joid.showcase;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
-import dev.joid.lib.ui.node.impl.design.shape.RectNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ShowInspect extends ShowLists {
 
