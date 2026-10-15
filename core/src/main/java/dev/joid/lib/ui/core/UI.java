@@ -661,17 +661,13 @@ public abstract class UI implements IUI, IndexedElement {
 		return renewed;
 	}
 
-	public final double lerpByFramerate(final double value, final double target, final double speed, final double snapDiff, final boolean snap) {
+	public final double lerpByFramerate(final double value, final double target, final double speed, final double snapDiff) {
 		final double diff = target - value;
-		final double absDiff = Math.abs(diff);
-
-		final double offset = Math.min(absDiff, speed * this.frameTime / (1000D / 60D) * absDiff / 3D);
-
-		if (absDiff > snapDiff) {
-			return value + (diff > 0 ? offset : -offset);
+		if (Math.abs(diff) <= snapDiff) {
+			return target;
 		}
 
-		return snap ? target : value;
+		return value + diff * (1D - Math.pow(1D - Math.min(1D, speed), this.frameTime / (1000D / 60D)));
 	}
 
 	public final void add(final @NonNull Node @NonNull ... nodes) {

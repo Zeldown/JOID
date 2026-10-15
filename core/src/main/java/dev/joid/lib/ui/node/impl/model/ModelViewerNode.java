@@ -94,9 +94,9 @@ public class ModelViewerNode extends BaseModelNode {
 		}
 
 		final UI ui = super.getUi();
-		this.drawnRotationYaw = this.drawnRotationYaw != this.rotationYaw ? ui.lerpByFramerate(this.drawnRotationYaw, this.rotationYaw, 0.1D, 0.1D, true) : this.drawnRotationYaw;
-		this.drawnRotationPitch = this.drawnRotationPitch != this.rotationPitch ? ui.lerpByFramerate(this.drawnRotationPitch, this.rotationPitch, 0.1D, 0.1D, true) : this.drawnRotationPitch;
-		this.drawnZoom = this.drawnZoom != this.zoom ? ui.lerpByFramerate(this.drawnZoom, this.zoom, 0.1D, 0D, true) : this.drawnZoom;
+		this.drawnRotationYaw = ui.lerpByFramerate(this.drawnRotationYaw, this.rotationYaw, 1D / 30D, 0.1D);
+		this.drawnRotationPitch = ui.lerpByFramerate(this.drawnRotationPitch, this.rotationPitch, 1D / 30D, 0.1D);
+		this.drawnZoom = ui.lerpByFramerate(this.drawnZoom, this.zoom, 1D / 30D, 0.001D);
 		super.drawModel(this.drawnZoom, this.drawnRotationYaw, this.drawnRotationPitch);
 	}
 

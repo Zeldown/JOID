@@ -35,7 +35,7 @@ public abstract class ToggleNode<F, S> extends BaseToggleNode<F, S> {
 		}
 
 		final float target = super.isToggle() ? 1F : 0F;
-		this.knobProgress = this.placed && this.speed < 1F ? (float) super.getUi().lerpByFramerate(this.knobProgress, target, this.speed * 3D, 0.001D, true) : target;
+		this.knobProgress = this.placed && this.speed < 1F ? (float) super.getUi().lerpByFramerate(this.knobProgress, target, this.speed, 0.001D) : target;
 		this.placed = true;
 		this.knob.fit(super.getWidth() / 2D, super.getHeight());
 		this.knob.layoutPosition((super.getWidth() - this.knob.getWidth()) * this.knobProgress, (super.getHeight() - this.knob.getHeight()) / 2D);

@@ -178,16 +178,6 @@ public class DraggablePropertyTest {
 	}
 
 	@Test
-	public void easesTowardsItsTarget() {
-		final DraggableProperty draggable = DraggableProperty.free();
-		Assert.assertEquals(5D, draggable.lerp(1000D / 60D, 0D, 30D), 1E-9D);
-		Assert.assertEquals(25D, draggable.lerp(1000D / 60D, 30D, 0D), 1E-9D);
-		Assert.assertEquals(10D, draggable.lerp(1000D / 30D, 0D, 30D), 1E-9D);
-		Assert.assertEquals(0.4D, draggable.lerp(1000D / 60D, 0D, 0.4D), 0D);
-		Assert.assertEquals(31D, draggable.lerp(1000D, 0D, 31D), 0D);
-	}
-
-	@Test
 	public void copiesItsAreaAndSnaps() {
 		final RectNode target = RectNode.create(0D, 0D, 10D, 10D);
 		final DraggableProperty draggable = DraggableProperty.custom(10D, 20D, 300D, 200D).enabled(node -> false).snap(DraggableSnapType.OVERLAP, target);

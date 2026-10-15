@@ -143,7 +143,7 @@ public class ReorderableFlexNode extends FlexNode {
 			return;
 		}
 
-		final double current = super.getUi().lerpByFramerate(this.childCurrent.getOrDefault(child, offset), offset, 0.5D, 0.5D, true);
+		final double current = super.getUi().lerpByFramerate(this.childCurrent.getOrDefault(child, offset), offset, 1D / 6D, 0.5D);
 		this.childCurrent.put(child, current);
 		super.layoutChild(child, current);
 	}
@@ -300,7 +300,7 @@ public class ReorderableFlexNode extends FlexNode {
 			target = Math.max(0D, Math.min(Math.max(0D, extent - draggedSize), localMouse - this.dragOffset));
 		}
 
-		this.draggedCurrent = super.getUi().lerpByFramerate(this.draggedCurrent, target, 0.5D, 0.5D, true);
+		this.draggedCurrent = super.getUi().lerpByFramerate(this.draggedCurrent, target, 1D / 6D, 0.5D);
 
 		if (this.releasing) {
 			if (this.draggedCurrent == target) {

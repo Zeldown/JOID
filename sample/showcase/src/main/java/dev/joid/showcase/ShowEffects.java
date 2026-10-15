@@ -31,7 +31,7 @@ public class ShowEffects extends ShowUI {
 	@Override
 	public void update() {
 		for (int i = 0; i < this.levels.length; i++) {
-			this.levels[i] = super.lerpByFramerate(this.levels[i], this.switches[i].get() ? 1D : 0D, 0.35D, 0.001D, true);
+			this.levels[i] = super.lerpByFramerate(this.levels[i], this.switches[i].get() ? 1D : 0D, 7D / 60D, 0.001D);
 		}
 	}
 

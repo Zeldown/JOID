@@ -141,16 +141,6 @@ public class DraggableProperty {
 		return new double[] {boundX, boundY, boundWidth, boundHeight};
 	}
 
-	public double lerp(final double frameTime, final double value, final double target) {
-		final double diff = target - value;
-		final double absDiff = Math.abs(diff);
-		final double offset = Math.min(absDiff, 0.5D * frameTime / (1000D / 60D) * absDiff / 3D);
-		if (absDiff > 0.5D) {
-			return value + (diff > 0D ? offset : -offset);
-		}
-		return target;
-	}
-
 	public final @NonNull DraggableProperty enabled(final @NonNull Predicate<@NonNull Node> enabled) {
 		this.enabled = enabled;
 		return this;

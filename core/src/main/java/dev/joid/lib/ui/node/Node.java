@@ -408,12 +408,12 @@ public abstract class Node implements INode {
 
 					if (this.targetScrollX != this.scrollX) {
 						final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-						this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed, speed, true);
+						this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed / 3D, speed);
 					}
 
 					if (this.targetScrollY != this.scrollY) {
 						final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-						this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed, speed, true);
+						this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed / 3D, speed);
 					}
 
 					if (this.scrollEndX && this.scrollX == this.targetScrollX) {
@@ -477,8 +477,8 @@ public abstract class Node implements INode {
 
 						if (this.dragged) {
 							if (this.draggable.getType() == DraggableType.MOVE) {
-								final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteX(), this.targetDragX);
-								final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.getAbsoluteY(), this.targetDragY);
+								final double newAbsoluteX = this.ui.lerpByFramerate(this.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
+								final double newAbsoluteY = this.ui.lerpByFramerate(this.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
 								final double diffX = this.getAbsoluteX() - this.x;
 								final double diffY = this.getAbsoluteY() - this.y;
 
@@ -487,8 +487,8 @@ public abstract class Node implements INode {
 									this.targetDragY = this.getAbsoluteY();
 								}
 							} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
-								final double newAbsoluteX = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteX(), this.targetDragX);
-								final double newAbsoluteY = this.draggable.lerp(this.getUi().getFrameTime(), this.draggedNode.getAbsoluteY(), this.targetDragY);
+								final double newAbsoluteX = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
+								final double newAbsoluteY = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
 								this.draggedNode.moveTo(newAbsoluteX, newAbsoluteY);
 							}
 

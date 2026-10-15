@@ -175,7 +175,7 @@ public class ShowPaperKit implements IShowKit {
 		protected Field(final double x, final double y, final double width) {
 			super(x, y, width, 68);
 			super.background(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-				this.focus = super.getUi().lerpByFramerate(this.focus, super.isFocused() ? 1D : 0D, 0.6D, 0.001D, true);
+				this.focus = super.getUi().lerpByFramerate(this.focus, super.isFocused() ? 1D : 0D, 0.2D, 0.001D);
 				DrawUtils.SHAPE.drawRect(8D, 8D, node.getWidth(), node.getHeight(), ShowPaperKit.INK.to(ShowPaperKit.TOMATO, (float) this.focus));
 				ShowPaperKit.box(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 3D);
 			}));

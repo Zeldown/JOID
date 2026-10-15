@@ -1360,7 +1360,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(row));
 		row.scrollX(-300D);
 		this.bridges.frame();
-		Assert.assertEquals(-19.2D, row.getScrollX(), 1E-9D);
+		Assert.assertEquals(-300D * (1D - Math.pow(1D - 0.2D / 3D, 0.96D)), row.getScrollX(), 1E-9D);
 		Assert.assertEquals(381D, row.getChildren().get(1).getX(), 1E-4D);
 	}
 
@@ -1598,7 +1598,7 @@ public class NodeTest {
 		Assert.assertTrue(bar.isDragging());
 		this.bridges.move(300D, 215D).frames(2);
 		Assert.assertEquals(-300D, row.getTargetScrollX(), 1E-6D);
-		Assert.assertEquals(-96D, row.getScrollX(), 1E-6D);
+		Assert.assertEquals(-300D * (1D - Math.pow(2D / 3D, 0.96D)), row.getScrollX(), 1E-6D);
 	}
 
 	@Test

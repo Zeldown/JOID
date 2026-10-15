@@ -38,7 +38,7 @@ public class ShowTheme extends ShowUI {
 
 	@Override
 	public void update() {
-		this.level = super.lerpByFramerate(this.level, this.dark.get() ? 1D : 0D, 0.3D, 0.001D, true);
+		this.level = super.lerpByFramerate(this.level, this.dark.get() ? 1D : 0D, 0.1D, 0.001D);
 	}
 
 	@Override

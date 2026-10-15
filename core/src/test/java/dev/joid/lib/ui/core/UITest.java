@@ -1549,41 +1549,53 @@ public class UITest {
 	}
 
 	@Test
-	public void movesAThirdOfTheWayAtSixtyFramesPerSecond() {
+	public void movesItsSpeedShareOfTheWayEverySixtiethOfASecond() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		Assert.assertEquals(10D, ui.lerpByFramerate(0D, 30D, 1D, 0.5D, true), 0D);
-		Assert.assertEquals(20D, ui.lerpByFramerate(30D, 0D, 1D, 0.5D, true), 0D);
-		Assert.assertEquals(15D, ui.lerpByFramerate(0D, 30D, 1.5D, 0.5D, true), 0D);
+		Assert.assertEquals(3D, ui.lerpByFramerate(0D, 30D, 0.1D, 0.5D), 1E-9D);
+		Assert.assertEquals(27D, ui.lerpByFramerate(30D, 0D, 0.1D, 0.5D), 1E-9D);
 	}
 
 	@Test
-	public void movesWithTheFrameTimeMeasuredOnTheClock() {
+	public void reachesTheSamePositionAtAnyFramerate() {
+		final double expected = 100D * (1D - Math.pow(0.9D, 60D));
+		Assert.assertEquals(expected, UITest.lerpForOneSecond(this.bridges, new TraceUI(this.trace), 30), 1E-9D);
+		Assert.assertEquals(expected, UITest.lerpForOneSecond(this.bridges, new TraceUI(this.trace), 60), 1E-9D);
+		Assert.assertEquals(expected, UITest.lerpForOneSecond(this.bridges, new TraceUI(this.trace), 144), 1E-9D);
+	}
+
+	@Test
+	public void reachesItsTargetAtOnceWithASpeedOfOne() {
 		final TraceUI ui = new TraceUI(this.trace);
-		this.bridges.open(ui).frame();
-		Assert.assertEquals(9.6D, ui.lerpByFramerate(0D, 30D, 1D, 0.5D, true), 0.0001D);
+		this.bridges.open(ui);
+		Assert.assertEquals(30D, ui.lerpByFramerate(0D, 30D, 1D, 0.5D), 0D);
+		Assert.assertEquals(-30D, ui.lerpByFramerate(0D, -30D, 5D, 0.5D), 0D);
 	}
 
 	@Test
 	public void staysStillBeforeItsFirstFrame() {
-		Assert.assertEquals(0D, new TraceUI(this.trace).lerpByFramerate(0D, 30D, 1D, 0.5D, true), 0D);
+		Assert.assertEquals(0D, new TraceUI(this.trace).lerpByFramerate(0D, 30D, 1D, 0.5D), 0D);
 	}
 
 	@Test
 	public void snapsToItsTargetOnceCloseEnough() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		Assert.assertEquals(30D, ui.lerpByFramerate(29.8D, 30D, 1D, 0.5D, true), 0D);
-		Assert.assertEquals(29.8D, ui.lerpByFramerate(29.8D, 30D, 1D, 0.5D, false), 0D);
-		Assert.assertEquals(30D, ui.lerpByFramerate(30D, 30D, 1D, 0D, false), 0D);
+		Assert.assertEquals(30D, ui.lerpByFramerate(29.8D, 30D, 0.1D, 0.5D), 0D);
+		Assert.assertEquals(30D, ui.lerpByFramerate(30D, 30D, 0.1D, 0D), 0D);
+		Assert.assertEquals(29.1D, ui.lerpByFramerate(29D, 30D, 0.1D, 0.5D), 1E-9D);
 	}
 
 	@Test
 	public void neverMovesPastItsTarget() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
-		Assert.assertEquals(30D, ui.lerpByFramerate(0D, 30D, 100D, 0.5D, true), 0D);
-		Assert.assertEquals(-30D, ui.lerpByFramerate(0D, -30D, 100D, 0.5D, true), 0D);
+		this.bridges.getClock().advance(1000L);
+		this.bridges.draw();
+		final double value = ui.lerpByFramerate(0D, 30D, 0.5D, 0.5D);
+		final double negative = ui.lerpByFramerate(0D, -30D, 0.5D, 0.5D);
+		Assert.assertTrue(value <= 30D && value > 29.99D);
+		Assert.assertTrue(negative >= -30D && negative < -29.99D);
 	}
 
 	@Test
@@ -1942,6 +1954,17 @@ public class UITest {
 	private static String stencil(final HeadlessBridges bridges) {
 		final RenderState state = bridges.getRender().getState();
 		return state.getStencil().isEnabled() ? state.getStencil().getFunction() + " " + state.getStencil().getReference() : "off";
+	}
+
+	private static double lerpForOneSecond(final HeadlessBridges bridges, final UI ui, final int framesPerSecond) {
+		bridges.open(ui);
+		double value = 0D;
+		for (int frame = 0; frame < framesPerSecond; frame++) {
+			bridges.getClock().advance((frame + 1) * 1000L / framesPerSecond - frame * 1000L / framesPerSecond);
+			bridges.draw();
+			value = ui.lerpByFramerate(value, 100D, 0.1D, 0.001D);
+		}
+		return value;
 	}
 
 	private static String out(final Runnable runnable) {

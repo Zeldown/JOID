@@ -40,7 +40,7 @@ public abstract class SliderNode<V> extends BaseSliderNode<V> {
 
 		this.thumb.fit(super.getHeight(), super.getHeight());
 		final double target = super.getInset() + super.getProgress() * (super.getWidth() - super.getInset() * 2D) - this.thumb.getWidth() / 2D;
-		this.thumbX = this.placed && !super.isSliding() && this.speed < 1F ? super.getUi().lerpByFramerate(this.thumbX, target, this.speed * 3D, 0.001D, true) : target;
+		this.thumbX = this.placed && !super.isSliding() && this.speed < 1F ? super.getUi().lerpByFramerate(this.thumbX, target, this.speed, 0.001D) : target;
 		this.placed = true;
 		this.thumb.layoutPosition(this.thumbX, (super.getHeight() - this.thumb.getHeight()) / 2D);
 	}

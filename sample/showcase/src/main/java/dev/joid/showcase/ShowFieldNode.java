@@ -18,7 +18,7 @@ public class ShowFieldNode extends TextFieldNode {
 		super(x, y, width, 68);
 		this.accent = accent;
 		super.background(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-			this.focus = super.getUi().lerpByFramerate(this.focus, super.isFocused() ? 1D : 0D, 0.6D, 0.001D, true);
+			this.focus = super.getUi().lerpByFramerate(this.focus, super.isFocused() ? 1D : 0D, 0.2D, 0.001D);
 			final float f = (float) this.focus;
 			if (f > 0.01F) {
 				DrawUtils.SHAPE.drawShadow(0D, 0D, node.getWidth(), node.getHeight(), this.accent.withAlpha(0.55F * f), 18F, 22F);

@@ -383,10 +383,10 @@ public final class DevNode extends Node {
 				this.targetInspectHeight = this.inspectedNode.peek().getHeight();
 			}
 
-			this.inspectX = super.getUi().lerpByFramerate(this.inspectX, this.targetInspectX, 0.5D, 0.5D, true);
-			this.inspectY = super.getUi().lerpByFramerate(this.inspectY, this.targetInspectY, 0.5D, 0.5D, true);
-			this.inspectWidth = super.getUi().lerpByFramerate(this.inspectWidth, this.targetInspectWidth, 0.5D, 0.5D, true);
-			this.inspectHeight = super.getUi().lerpByFramerate(this.inspectHeight, this.targetInspectHeight, 0.5D, 0.5D, true);
+			this.inspectX = super.getUi().lerpByFramerate(this.inspectX, this.targetInspectX, 1D / 6D, 0.5D);
+			this.inspectY = super.getUi().lerpByFramerate(this.inspectY, this.targetInspectY, 1D / 6D, 0.5D);
+			this.inspectWidth = super.getUi().lerpByFramerate(this.inspectWidth, this.targetInspectWidth, 1D / 6D, 0.5D);
+			this.inspectHeight = super.getUi().lerpByFramerate(this.inspectHeight, this.targetInspectHeight, 1D / 6D, 0.5D);
 
 			if (this.inspectedNode.peek() != null) {
 				this.drawInfoBox(this.inspectX, this.inspectY, this.inspectWidth, this.inspectHeight, this.inspectedNode.peek());
