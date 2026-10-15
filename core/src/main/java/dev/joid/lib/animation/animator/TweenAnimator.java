@@ -2,9 +2,9 @@ package dev.joid.lib.animation.animator;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.animation.tween.Timeline;
@@ -20,11 +20,10 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 public class TweenAnimator extends Signal<Float> {
 
-	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(new HashSet<>());
 
 	static {
 		BridgeHandler.UI.onFrame(TweenAnimator::updateRunning);
@@ -34,7 +33,6 @@ public class TweenAnimator extends Signal<Float> {
 	private boolean automatic;
 
 	@Getter
-	@Setter
 	private float speed;
 
 	private long         lastUpdate;
@@ -100,6 +98,23 @@ public class TweenAnimator extends Signal<Float> {
 		}
 
 		this.timeline = timeline;
+		return this;
+	}
+
+	public @NonNull TweenAnimator speed(final float speed) {
+		this.speed = speed;
+		return this;
+	}
+
+	public @NonNull TweenAnimator repeat(final int count, final float delay) {
+		this.requireTimeline();
+		this.timeline.repeat(count, delay);
+		return this;
+	}
+
+	public @NonNull TweenAnimator repeatYoyo(final int count, final float delay) {
+		this.requireTimeline();
+		this.timeline.repeatYoyo(count, delay);
 		return this;
 	}
 

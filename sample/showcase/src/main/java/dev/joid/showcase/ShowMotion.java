@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
+import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
@@ -41,10 +42,10 @@ public class ShowMotion extends ShowUI {
 	private void row(final int index, final String name, final String constant, final TweenEquation equation, final Color from, final Color to) {
 		final double y = 300D + index * 110D;
 		final TweenAnimator eased = TweenAnimator.create(0F).sequence(1500F, 1F, equation);
-		eased.getTimeline().delay(300F + index * 90F).repeatYoyo(-1, 700F);
+		eased.getTimeline().delay(300F + index * 90F).repeatYoyo(Tween.INFINITY, 700F);
 		eased.start();
 		final TweenAnimator clock = TweenAnimator.create(0F).sequence(1500F, 1F);
-		clock.getTimeline().delay(300F + index * 90F).repeatYoyo(-1, 700F);
+		clock.getTimeline().delay(300F + index * 90F).repeatYoyo(Tween.INFINITY, 700F);
 		clock.start();
 
 		TextNode.create(160, y - 16D).text(Text.create(name, ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);

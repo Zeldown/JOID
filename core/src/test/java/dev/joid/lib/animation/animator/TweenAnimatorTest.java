@@ -105,8 +105,7 @@ public class TweenAnimatorTest {
 
 	@Test
 	public void scalesTheElapsedTimeBySpeed() {
-		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).start();
-		animator.setSpeed(2F);
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).speed(2F).start();
 		animator.update(0.25F);
 		Assert.assertEquals(5F, animator.get(), 0F);
 	}
@@ -137,8 +136,7 @@ public class TweenAnimatorTest {
 	@Test
 	public void notifiesEveryStepOfItsTimeline() {
 		final List<String> calls = new ArrayList<>();
-		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F);
-		animator.getTimeline().repeatYoyo(1, 0F);
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).repeatYoyo(1, 0F);
 		animator
 		.onStart(event -> calls.add("start"))
 		.onIterationStart(event -> calls.add("iterationStart"))
@@ -186,8 +184,7 @@ public class TweenAnimatorTest {
 
 	@Test
 	public void clearsItsAnimation() {
-		final TweenAnimator animator = TweenAnimator.create(5F).sequence(1F, 10F).start();
-		animator.setSpeed(2F);
+		final TweenAnimator animator = TweenAnimator.create(5F).sequence(1F, 10F).speed(2F).start();
 		animator.clear();
 		Assert.assertEquals(0F, animator.get(), 0F);
 		Assert.assertEquals(1F, animator.getSpeed(), 0F);
@@ -252,6 +249,22 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
+	public void repeatsItsTimeline() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).repeat(1, 0F).start();
+		animator.update(1F);
+		animator.update(0.25F);
+		Assert.assertEquals(2.5F, animator.get(), 0F);
+	}
+
+	@Test
+	public void repeatsItsTimelineBackAndForth() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).repeatYoyo(1, 0F).start();
+		animator.update(1F);
+		animator.update(0.25F);
+		Assert.assertEquals(7.5F, animator.get(), 0F);
+	}
+
+	@Test
 	public void tweensItsOwnValueLinearly() {
 		final TweenAnimator animator = TweenAnimator.create(2F);
 		final Tween tween = animator.tween(10F).target(6F);
@@ -286,6 +299,16 @@ public class TweenAnimatorTest {
 		this.clock.advance(16L);
 		BridgeHandler.UI.fireFrame();
 		Assert.assertEquals(0.5F, animator.get(), 0F);
+	}
+
+	@Test
+	public void runsToItsEndWithoutAnyReference() {
+		final List<String> calls = new ArrayList<>();
+		new AnimatorUI(TweenAnimator.create().sequence(32F, 1F).onComplete(event -> calls.add("complete"))).load(1920D, 1080D);
+		System.gc();
+		this.clock.advance(48L);
+		BridgeHandler.UI.fireFrame();
+		Assert.assertEquals(Collections.singletonList("complete"), calls);
 	}
 
 	@Test
