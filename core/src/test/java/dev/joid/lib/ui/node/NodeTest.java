@@ -151,7 +151,7 @@ public class NodeTest {
 		Assert.assertTrue(node.isVisible());
 		Assert.assertTrue(node.isEnabled());
 		Assert.assertTrue(node.isMounted());
-		Assert.assertFalse(node.hasUi());
+		Assert.assertFalse(node.isAttached());
 	}
 
 	@Test
@@ -828,13 +828,13 @@ public class NodeTest {
 	public void forgetsItsRemovedEffects() {
 		final List<String> events = new ArrayList<>();
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(new RecordingEffect("first", events)).effect(new OtherEffect("second", events));
-		Assert.assertTrue(node.hasEffect(RecordingEffect.class));
-		Assert.assertSame(node, node.removeEffect(RecordingEffect.class));
-		Assert.assertFalse(node.hasEffect(RecordingEffect.class));
-		Assert.assertNull(node.getEffect(RecordingEffect.class));
 		Assert.assertTrue(node.hasEffect(OtherEffect.class));
-		Assert.assertSame(node, node.clearEffects());
+		Assert.assertSame(node, node.removeEffect(OtherEffect.class));
 		Assert.assertFalse(node.hasEffect(OtherEffect.class));
+		Assert.assertNull(node.getEffect(OtherEffect.class));
+		Assert.assertTrue(node.hasEffect(RecordingEffect.class));
+		Assert.assertSame(node, node.clearEffects());
+		Assert.assertFalse(node.hasEffect(RecordingEffect.class));
 		this.bridges.open(new NodeUI(node));
 		Assert.assertTrue(events.isEmpty());
 	}
@@ -869,9 +869,10 @@ public class NodeTest {
 		final GlowBorderEffect glow = GlowBorderEffect.create().<GlowBorderEffect>fill(false).glow(4F);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(glow);
 		Assert.assertSame(glow, node.getEffect(GlowBorderEffect.class));
-		Assert.assertNull(node.getEffect(BorderNodeEffect.class));
+		Assert.assertSame(glow, node.getEffect(BorderNodeEffect.class));
 		Assert.assertFalse(glow.isFill());
 		Assert.assertEquals(4F, glow.getGlow(), 0F);
+		Assert.assertFalse(node.removeEffect(BorderNodeEffect.class).hasEffect(GlowBorderEffect.class));
 	}
 
 	@Test
@@ -1126,11 +1127,11 @@ public class NodeTest {
 	public void loadsItsSkeletonInItsUi() {
 		final RectNode early = RectNode.create(0D, 0D, 10D, 10D).skeleton(rect -> RectNode.create(0D, 0D, 10D, 10D));
 		final ContainerNode container = ContainerNode.create(0D, 0D, 500D, 500D).append(early);
-		Assert.assertFalse(early.getSkeleton().hasUi());
+		Assert.assertFalse(early.getSkeleton().isAttached());
 		this.bridges.open(new NodeUI(container));
-		Assert.assertTrue(early.getSkeleton().hasUi());
+		Assert.assertTrue(early.getSkeleton().isAttached());
 		final RectNode late = RectNode.create(0D, 0D, 10D, 10D).attach(container).skeleton(rect -> RectNode.create(0D, 0D, 10D, 10D));
-		Assert.assertTrue(late.getSkeleton().hasUi());
+		Assert.assertTrue(late.getSkeleton().isAttached());
 		Assert.assertSame(late, late.getSkeleton().getParent());
 	}
 
@@ -1629,7 +1630,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(row));
 		final Bar bar = new Bar(0D, 110D, 400D, 10D, 40D);
 		row.scrollbar(bar);
-		Assert.assertTrue(bar.hasUi());
+		Assert.assertTrue(bar.isAttached());
 	}
 
 	@Test
@@ -2031,7 +2032,7 @@ public class NodeTest {
 		Assert.assertEquals(Arrays.asList(first, second), appended);
 		Assert.assertEquals(Arrays.asList(first, second), parent.getChildren());
 		Assert.assertSame(parent, second.getParent());
-		Assert.assertFalse(first.hasUi());
+		Assert.assertFalse(first.isAttached());
 	}
 
 	@Test
@@ -2039,6 +2040,8 @@ public class NodeTest {
 		final List<String> events = new ArrayList<>();
 		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D);
 		final ContainerNode first = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(first));
+		events.clear();
 		final ContainerNode second = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		Assert.assertFalse(first.getChildren().contains(child));
 		Assert.assertTrue(second.getChildren().contains(child));
@@ -2066,6 +2069,8 @@ public class NodeTest {
 		final RectNode kept = RectNode.create(0D, 0D, 10D, 10D);
 		final RectNode stranger = RectNode.create(0D, 0D, 10D, 10D);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(first, kept, second);
+		this.bridges.open(new NodeUI(parent));
+		events.clear();
 		Assert.assertSame(parent, parent.remove(first, second, stranger));
 		Assert.assertEquals(Arrays.asList(kept), parent.getChildren());
 		Assert.assertEquals(Arrays.asList("first detach", "callback", "second detach"), events);
@@ -2096,7 +2101,7 @@ public class NodeTest {
 		final NodeUI ui = new NodeUI(parent);
 		this.bridges.open(ui);
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).attach(parent);
-		Assert.assertTrue(child.hasUi());
+		Assert.assertTrue(child.isAttached());
 		Assert.assertSame(ui, child.getUi());
 	}
 
@@ -2198,6 +2203,8 @@ public class NodeTest {
 		final RecordingNode grandchild = new RecordingNode("grandchild", events, 0D, 0D, 10D, 10D);
 		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D).append(grandchild).onDetach(event -> events.add("callback"));
 		final RectNode parent = RectNode.create(0D, 0D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		events.clear();
 		Assert.assertSame(parent, parent.clearChildren());
 		Assert.assertEquals(Arrays.asList("grandchild detach", "child detach", "callback"), events);
 		Assert.assertTrue(parent.getChildren().isEmpty());
@@ -2210,6 +2217,7 @@ public class NodeTest {
 		final RectNode parent = RectNode.create(100D, 100D, 100D, 100D).append(child).visible(() -> false).enabled(() -> false);
 		final List<Node> parents = new ArrayList<>();
 		child.onDetach(event -> parents.add(event.getNode().getParent()));
+		this.bridges.open(new NodeUI(parent));
 		Assert.assertFalse(child.isVisible());
 		Assert.assertFalse(child.isEnabled());
 		Assert.assertEquals(110D, child.getAbsoluteX(), 0D);
@@ -2294,7 +2302,6 @@ public class NodeTest {
 	public void takesTheUiItIsGiven() {
 		final NodeUI ui = new NodeUI(ContainerNode.create(0D, 0D, 10D, 10D));
 		final RectNode node = NodeTest.assign(RectNode.create(0D, 0D, 10D, 10D), "ui", ui);
-		Assert.assertTrue(node.hasUi());
 		Assert.assertSame(ui, node.getUi());
 	}
 
@@ -3362,6 +3369,113 @@ public class NodeTest {
 		}
 	}
 
+	@Test
+	public void keepsDrawingWhenItsVisibilityFails() {
+		NodeTest.forgetWarnings();
+		final boolean[] failing = {false};
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).visible(() -> {
+			if (failing[0]) {
+				throw new IllegalStateException("The visibility of this node fails on purpose");
+			}
+			return true;
+		});
+		this.bridges.open(new NodeUI(node)).frame();
+		failing[0] = true;
+		final String errors = NodeTest.capture(() -> this.bridges.frames(3));
+		Assert.assertEquals(1, errors.split("The visible of RectNode cannot take its new value", -1).length - 1);
+		Assert.assertTrue(node.isVisible());
+	}
+
+	@Test
+	public void announcesTheEndOnceForNotchesThatOutrunTheGrowthOfItsList() {
+		final List<Double> endings = new ArrayList<>();
+		final ContainerNode row = NodeTest.row().onScrollToEnd(event -> {
+			endings.add(event.getNode().getTargetScrollX());
+			RectNode.create(700D, 0D, 700D, 100D).attach(event.getNode());
+		});
+		this.bridges.open(new NodeUI(row));
+		row.scrollX(-1000D);
+		row.scrollX(-330D);
+		this.bridges.frames(2);
+		Assert.assertEquals(Arrays.asList(-300D), endings);
+	}
+
+	@Test
+	public void announcesTheEndOnceWhenItSticksToTheBottomOfAGrowingList() {
+		final List<Double> endings = new ArrayList<>();
+		final ContainerNode column = NodeTest.column().onScrollToEnd(event -> endings.add(event.getNode().getTargetScrollY()));
+		this.bridges.open(new NodeUI(column));
+		RectNode.create(0D, 300D, 400D, 100D).attach(column);
+		column.scrollY(-1E9D);
+		this.bridges.frames(2);
+		Assert.assertEquals(Arrays.asList(-300D), endings);
+	}
+
+	@Test
+	public void announcesTheEndOfAListThatGrowsUpToTheOffsetItAimsAt() {
+		final List<Double> endings = new ArrayList<>();
+		final ContainerNode column = NodeTest.column().onScrollToEnd(event -> endings.add(event.getNode().getTargetScrollY()));
+		this.bridges.open(new NodeUI(column));
+		RectNode.create(0D, 300D, 400D, 100D).attach(column);
+		column.scrollY(-300D);
+		this.bridges.frames(2);
+		Assert.assertEquals(Arrays.asList(-300D), endings);
+	}
+
+	@Test
+	public void leavesItsParentWhenAttachedToTheRootOfItsUi() {
+		final List<String> events = new ArrayList<>();
+		final RecordingNode card = new RecordingNode("card", events, 10D, 10D, 50D, 50D);
+		final ContainerNode panel = ContainerNode.create(100D, 100D, 200D, 200D).append(card);
+		final NodeUI ui = new NodeUI(panel);
+		this.bridges.open(ui);
+		events.clear();
+		card.attach(ui);
+		card.attach(ui);
+		Assert.assertNull(card.getParent());
+		Assert.assertTrue(panel.getChildren().isEmpty());
+		Assert.assertEquals(Arrays.asList(panel, card), ui.getNodeList());
+		Assert.assertEquals(Arrays.asList("card detach", "card init"), events);
+	}
+
+	@Test
+	public void leavesANodeThatWasNeverAttachedAlone() {
+		final List<String> events = new ArrayList<>();
+		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D).onDetach(event -> events.add("onDetach"));
+		ContainerNode.create(0D, 0D, 100D, 100D).append(child).remove(child);
+		Assert.assertTrue(events.isEmpty());
+	}
+
+	@Test
+	public void detachesTheChildrenOfARemovedNodeOnce() {
+		final List<String> events = new ArrayList<>();
+		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D).onDetach(event -> events.add("onDetach"));
+		final ContainerNode panel = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		final NodeUI ui = new NodeUI(panel);
+		this.bridges.open(ui);
+		events.clear();
+		ui.remove(panel);
+		panel.clearChildren();
+		Assert.assertEquals(Arrays.asList("child detach", "onDetach"), events);
+	}
+
+	@Test
+	public void copiesTheScrollOfItsContent() {
+		final ContainerNode row = NodeTest.row();
+		this.bridges.open(new NodeUI(row));
+		row.scrollX(-150D).updateScroll();
+		final ContainerNode copy = row.copy();
+		Assert.assertEquals(-150D, copy.getTargetScrollX(), 0D);
+		Assert.assertEquals(-150D, copy.getScrollX(), 0D);
+	}
+
+	@Test
+	public void pointsTheFieldsOfACopyAtItsOwnScrollbarAndSkeleton() {
+		final BarredNode copy = new BarredNode().copy();
+		Assert.assertSame(copy.getScrollbar(), copy.bar);
+		Assert.assertSame(copy.getSkeleton(), copy.placeholder);
+	}
+
 	private Draw draw(final float red, final float green, final float blue) {
 		return this.bridges.getRender().getDraws(red, green, blue).get(0);
 	}
@@ -3555,7 +3669,7 @@ public class NodeTest {
 		public void init() {
 			final RectNode node = RectNode.create(0D, 0D, 10D, 10D);
 			this.found = node.getUi();
-			this.bound = node.hasUi();
+			this.bound = node.isAttached();
 		}
 
 	}
@@ -3839,6 +3953,19 @@ public class NodeTest {
 		@Override
 		public void setClipboard(final @NonNull String text) {
 			this.window.setClipboard(text);
+		}
+
+	}
+
+	public static final class BarredNode extends Node {
+
+		private Bar  bar;
+		private Node placeholder;
+
+		public BarredNode() {
+			super(100D, 100D, 400D, 100D);
+			this.bar = new Bar(400D, 0D, 10D, 100D, 20D);
+			super.scrollbar(this.bar).skeleton(node -> this.placeholder = RectNode.create(0D, 0D, 400D, 100D));
 		}
 
 	}

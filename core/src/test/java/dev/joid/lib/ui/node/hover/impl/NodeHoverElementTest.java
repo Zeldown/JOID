@@ -89,10 +89,26 @@ public class NodeHoverElementTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).hover(NodeHoverElement.follow(tooltip));
 		final NodeUI ui = new NodeUI(rect);
 		this.bridges.open(ui).frames(30);
-		Assert.assertFalse(tooltip.hasUi());
+		Assert.assertFalse(tooltip.isAttached());
 		this.bridges.move(150D, 160D).frames(5);
 		Assert.assertSame(ui, tooltip.getUi());
 		Assert.assertEquals(Collections.singletonList(tooltip), received);
+	}
+
+	@Test
+	public void detachesTheNodeOnceItsElementIsRemoved() {
+		final RectNode first = RectNode.create(10D, -5D, 40D, 20D);
+		final RectNode second = RectNode.create(10D, 20D, 40D, 20D);
+		final NodeHoverElement element = NodeHoverElement.follow(first);
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).hover(element).hover(NodeHoverElement.follow(second));
+		this.bridges.open(new NodeUI(rect)).frames(30);
+		this.bridges.move(150D, 160D).frames(5);
+		Assert.assertTrue(first.isAttached());
+		rect.removeHover(element);
+		Assert.assertFalse(first.isAttached());
+		Assert.assertTrue(second.isAttached());
+		rect.clearHover();
+		Assert.assertFalse(second.isAttached());
 	}
 
 	private Draw tooltip() {

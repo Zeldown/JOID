@@ -265,7 +265,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	private void updateCursor() {
-		final boolean pressed = this.pressedNode != null && this.pressedNode.hasUi() && this.uiList.contains(this.pressedNode.getUi());
+		final boolean pressed = this.pressedNode != null && this.pressedNode.isAttached() && this.uiList.contains(this.pressedNode.getUi());
 		final Node hovered = pressed ? this.pressedNode : this.getHoveredNode();
 		this.hoveredCursor = hovered != null ? hovered.getResolvedCursor() : null;
 

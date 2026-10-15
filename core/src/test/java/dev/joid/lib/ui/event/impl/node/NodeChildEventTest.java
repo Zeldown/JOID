@@ -32,7 +32,7 @@ public class NodeChildEventTest {
 	@Test
 	public void firesOnceTheChildIsAttachedAndLoaded() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode parent = RectNode.create(100D, 100D, 200D, 100D).onChildAppend(event -> received.addAll(Arrays.asList(event.getChild().getParent() == event.getNode(), event.getNode().getChildren().contains(event.getChild()), event.getChild().hasUi())));
+		final RectNode parent = RectNode.create(100D, 100D, 200D, 100D).onChildAppend(event -> received.addAll(Arrays.asList(event.getChild().getParent() == event.getNode(), event.getNode().getChildren().contains(event.getChild()), event.getChild().isAttached())));
 		this.bridges.open(new NodeUI(parent)).frames(30);
 		parent.append(RectNode.create(10D, 10D, 20D, 20D));
 		Assert.assertEquals(Arrays.asList(true, true, true), received);

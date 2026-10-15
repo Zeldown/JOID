@@ -679,7 +679,15 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void add(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
-			node.load(this);
+			if (node.getParent() != null) {
+				node.getParent().remove(node);
+			} else if (node.isAttached() && node.getUi() != this) {
+				node.getUi().remove(node);
+			}
+
+			if (!node.isAttached()) {
+				node.load(this);
+			}
 			this.nodeList.add(node);
 		}
 	}

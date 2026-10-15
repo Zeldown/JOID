@@ -35,6 +35,7 @@ public class WatchPropertyTest {
 	public void detachesEveryChild() {
 		final int[] detached = {0};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D).onDetach(event -> detached[0]++), RectNode.create(5D, 5D, 5D, 5D));
+		this.bridges.open(new NodeUI(node));
 		WatchProperty.CLEAR_CHILDREN.apply(node, new Signal<>(1));
 		Assert.assertTrue(node.getChildren().isEmpty());
 		Assert.assertEquals(1, detached[0]);

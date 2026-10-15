@@ -99,6 +99,12 @@ public class ShadowNodeEffectTest {
 	}
 
 	@Test
+	public void followsTheCornersOfAnExtendedRoundedEffect() {
+		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(new SoftRoundedEffect()).effect(ShadowNodeEffect.create(Color.BLACK, 8F)))).frame();
+		Assert.assertEquals(12F, (Float) this.shader.getValues().get("u_Radius"), 0F);
+	}
+
+	@Test
 	public void followsTheRoundedSidesOfItsNode() {
 		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(RoundedNodeEffect.create(12F).right(false).bottom(false)).effect(ShadowNodeEffect.create(Color.BLACK, 8F)))).frame();
 		Assert.assertEquals(12F, (Float) this.shader.getValues().get("u_Radius"), 0F);
@@ -155,6 +161,14 @@ public class ShadowNodeEffectTest {
 		@Override
 		public void init() {
 			super.add(this.node);
+		}
+
+	}
+
+	public static final class SoftRoundedEffect extends RoundedNodeEffect {
+
+		public SoftRoundedEffect() {
+			super(() -> 12F);
 		}
 
 	}

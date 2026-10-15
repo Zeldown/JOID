@@ -22,9 +22,7 @@ public class NodeHoverElement extends PositionedHoverElement {
 
 			@Override
 			public void detach() {
-				if (node.isAttached()) {
-					node.fireDetach();
-				}
+				node.fireDetach();
 			}
 
 			@Override

@@ -23,7 +23,7 @@ public class NodeEventTest {
 	@Test
 	public void firesOnceTheNodeIsLoadedInAUi() {
 		final List<Object> received = new ArrayList<>();
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onInit(event -> received.addAll(Arrays.asList(event.getNode(), event.getNode().hasUi())));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).onInit(event -> received.addAll(Arrays.asList(event.getNode(), event.getNode().isAttached())));
 		Assert.assertTrue(received.isEmpty());
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		Assert.assertEquals(Arrays.asList(rect, true), received);

@@ -94,6 +94,16 @@ public class UIBridgeCursorTest {
 	}
 
 	@Test
+	public void dropsTheCursorOfAPressedNodeThatLeavesItsUi() {
+		final RectNode button = RectNode.create(100, 100, 200, 200).cursor(Cursor.POINTER);
+		button.onClick(event -> button.getUi().remove(button));
+		this.bridges.open(new NodeUI(RectNode.create(0, 0, 1000, 1000).cursor(Cursor.TEXT), button)).move(150D, 150D).frame();
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList(Cursor.POINTER, Cursor.TEXT), this.bridges.getWindow().getCursors());
+	}
+
+	@Test
 	public void followsAReactiveCursor() {
 		final Signal<Boolean> busy = new Signal<>(false);
 		this.bridges.open(new NodeUI(RectNode.create(100, 100, 200, 200).cursor(() -> busy.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER))).move(150D, 150D).frame();

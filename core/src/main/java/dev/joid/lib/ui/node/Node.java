@@ -387,6 +387,7 @@ public abstract class Node implements INode {
 
 					boolean scrollsX = false;
 					boolean scrollsY = false;
+					final boolean measured = this.scrollMeasured;
 					if (this.overflow == OverflowProperty.SCROLL) {
 						double offsetX = Double.POSITIVE_INFINITY;
 						double offsetY = Double.POSITIVE_INFINITY;
@@ -413,10 +414,19 @@ public abstract class Node implements INode {
 						this.scrollMeasured = true;
 					}
 
-					this.scrollXValue.update(this.targetScrollX);
-					this.scrollYValue.update(this.targetScrollY);
+					final double targetScrollX = this.targetScrollX;
+					final double targetScrollY = this.targetScrollY;
+					this.scrollXValue.update(targetScrollX);
+					this.scrollYValue.update(targetScrollY);
 					this.scrollEndX = this.scrollEndX && this.targetScrollX == -this.maxScrollX;
 					this.scrollEndY = this.scrollEndY && this.targetScrollY == -this.maxScrollY;
+					if (!measured && this.scrollMeasured && this.scrollEndX && this.targetScrollX == targetScrollX) {
+						this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, Axis.HORIZONTAL, targetScrollX, targetScrollX));
+					}
+
+					if (!measured && this.scrollMeasured && this.scrollEndY && this.targetScrollY == targetScrollY) {
+						this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, Axis.VERTICAL, targetScrollY, targetScrollY));
+					}
 
 					if (this.targetScrollX != this.scrollX) {
 						final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
@@ -675,6 +685,10 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireDetach() {
+		if (!this.attached) {
+			return;
+		}
+
 		this.drawList.forEach(Node::fireDetach);
 
 		if (this.scrollbar != null) {
@@ -685,15 +699,12 @@ public abstract class Node implements INode {
 			this.skeleton.fireDetach();
 		}
 
-		final boolean attached = this.attached;
 		this.attached = false;
 		this.detach();
 		this.endInteraction();
 		this.bindings.unsubscribe();
 		this.hoverElementList.forEach(IHoverElement::detach);
-		if (attached) {
-			this.effectMap.values().forEach(effect -> effect.detach(this));
-		}
+		this.effectMap.values().forEach(effect -> effect.detach(this));
 		this.fire(Node.DETACH, () -> NodeEvent.create(this));
 	}
 
@@ -929,14 +940,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T clearChildren() {
-		this.drawList.forEach(child -> {
-			child.fireDetach();
-			child.parent = null;
-			child.clearOverflowArea(child.overflowArea);
-		});
-		this.drawList.clear();
-		this.children.clear();
-		return (T) this;
+		return this.remove(this.children.toArray(new Node[0]));
 	}
 
 	public final <T extends Node> @NonNull T copy() {
@@ -1249,7 +1253,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T scrollbar(final @NonNull BaseScrollbarNode scrollbar) {
-		if (this.scrollbar != null && this.scrollbar != scrollbar && this.scrollbar.isAttached()) {
+		if (this.scrollbar != null && this.scrollbar != scrollbar) {
 			this.scrollbar.fireDetach();
 		}
 
@@ -1289,7 +1293,7 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T skeleton(final @NonNull Function<@NonNull T, Node> skeleton) {
 		final Node previous = this.skeleton;
 		this.skeleton = skeleton.apply((T) this);
-		if (previous != null && previous != this.skeleton && previous.attached) {
+		if (previous != null && previous != this.skeleton) {
 			previous.fireDetach();
 		}
 
@@ -1378,9 +1382,10 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T removeEffect(final @NonNull Class<?> effect) {
-		final NodeEffect<Node> removed = this.effectMap.remove(effect);
-		if (this.attached && removed != null) {
-			removed.detach(this);
+		final List<NodeEffect<Node>> removed = this.effectMap.values().stream().filter(effect::isInstance).collect(Collectors.toList());
+		this.effectMap.values().removeAll(removed);
+		if (this.attached) {
+			removed.forEach(previous -> previous.detach(this));
 		}
 		return (T) this;
 	}
@@ -1423,11 +1428,14 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T removeHover(final @NonNull IHoverElement element) {
-		this.hoverElementList.remove(element);
+		if (this.hoverElementList.remove(element)) {
+			element.detach();
+		}
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T clearHover() {
+		this.hoverElementList.forEach(IHoverElement::detach);
 		this.hoverElementList.clear();
 		this.hoverSupplierList.clear();
 		return (T) this;
@@ -1542,10 +1550,6 @@ public abstract class Node implements INode {
 		return this.listen(Node.HOVER_END, listener);
 	}
 
-	public final boolean hasUi() {
-		return this.ui != null;
-	}
-
 	public final boolean hasOverflowX() {
 		return this.maxScrollX > 0;
 	}
@@ -1559,7 +1563,7 @@ public abstract class Node implements INode {
 	}
 
 	public final boolean hasEffect(final @NonNull Class<?> clazz) {
-		return this.effectMap.containsKey(clazz);
+		return this.effectMap.values().stream().anyMatch(clazz::isInstance);
 	}
 
 	public boolean isEnabled() {
@@ -1678,7 +1682,13 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends NodeEffect<?>> T getEffect(final @NonNull Class<T> clazz) {
-		return clazz.cast(this.effectMap.get(clazz));
+		for (final NodeEffect<Node> effect : this.effectMap.values()) {
+			if (clazz.isInstance(effect)) {
+				return clazz.cast(effect);
+			}
+		}
+
+		return null;
 	}
 
 	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
@@ -2098,7 +2108,7 @@ public abstract class Node implements INode {
 		.clamp(offset -> this.scrollMeasured ? Math.max(-(horizontal ? this.maxScrollX : this.maxScrollY), Math.min(offset, 0D)) : Math.min(offset, 0D))
 		.events(Node.BEFORE_SCROLL, (previous, offset) -> NodeScrollEvent.Pre.create(this, axis, previous, offset), Node.SCROLL, (previous, offset) -> NodeScrollEvent.Post.create(this, axis, previous, offset))
 		.then((previous, offset) -> {
-			if ((horizontal ? this.scrollEndX : this.scrollEndY) && this.bindings.isSubscribed()) {
+			if ((horizontal ? this.scrollEndX : this.scrollEndY) && this.scrollMeasured && this.bindings.isSubscribed()) {
 				this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, axis, previous, offset));
 			}
 		});
@@ -2265,6 +2275,11 @@ public abstract class Node implements INode {
 		copy.hoverEquation = this.hoverEquation;
 		copy.scrollSpeed = this.scrollSpeed;
 
+		copy.scrollX = this.scrollX;
+		copy.scrollY = this.scrollY;
+		copy.targetScrollX = this.targetScrollX;
+		copy.targetScrollY = this.targetScrollY;
+
 		copy.waitingList.clear();
 		copy.waitingList.addAll(this.waitingList);
 		copy.animatorMap.putAll(this.animatorMap);
@@ -2286,11 +2301,13 @@ public abstract class Node implements INode {
 			final Node scrollbar = ((Node) this.scrollbar).duplicate(listeners);
 			scrollbar.parent = copy;
 			copy.scrollbar = ((BaseScrollbarNode) scrollbar).scrollNode(copy);
+			copies.put(this.scrollbar, copy.scrollbar);
 		}
 
 		if (this.skeleton != null) {
 			copy.skeleton = this.skeleton.duplicate(listeners);
 			copy.skeleton.parent = copy;
+			copies.put(this.skeleton, copy.skeleton);
 		}
 
 		for (final Field field : this.getFields(this.getClass())) {
