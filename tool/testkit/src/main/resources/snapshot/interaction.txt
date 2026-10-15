@@ -921,3 +921,11 @@ wait 800
 move 1320 490
 wait 300
 shot inter-event-tooltip
+ui dev.joid.demo.ui.event.UIDemoEventFlow
+wait 800
+key Z
+down D
+wait 500
+up D
+wait 300
+shot inter-event-flow-walk

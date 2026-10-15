@@ -136,19 +136,19 @@ public final class SnapshotRunner {
 				this.window.setMouseX(Double.parseDouble(arguments[1]));
 				this.window.setMouseY(Double.parseDouble(arguments[2]));
 				this.render(false);
-				this.bridge.mouseMoved();
+				BridgeHandler.UI.mouseMoved();
 				break;
 			case "moveto":
 				this.moveTo(Double.parseDouble(arguments[1]), Double.parseDouble(arguments[2]), Long.parseLong(arguments[3]));
 				break;
 			case "press":
-				this.bridge.mousePressed(arguments.length > 1 ? MouseButton.valueOf(arguments[1]) : MouseButton.LEFT);
+				BridgeHandler.UI.mousePressed(arguments.length > 1 ? MouseButton.valueOf(arguments[1]) : MouseButton.LEFT);
 				break;
 			case "release":
-				this.bridge.mouseReleased(arguments.length > 1 ? MouseButton.valueOf(arguments[1]) : MouseButton.LEFT);
+				BridgeHandler.UI.mouseReleased(arguments.length > 1 ? MouseButton.valueOf(arguments[1]) : MouseButton.LEFT);
 				break;
 			case "scroll":
-				this.bridge.mouseScroll(arguments.length > 2 ? Double.parseDouble(arguments[1]) : 0D, Double.parseDouble(arguments[arguments.length > 2 ? 2 : 1]));
+				BridgeHandler.UI.mouseScroll(arguments.length > 2 ? Double.parseDouble(arguments[1]) : 0D, Double.parseDouble(arguments[arguments.length > 2 ? 2 : 1]));
 				break;
 			case "type":
 				this.type(command.substring(5));
@@ -158,9 +158,11 @@ public final class SnapshotRunner {
 				break;
 			case "down":
 				this.window.getKeys().add(Key.valueOf(arguments[1]));
+				BridgeHandler.UI.keyPressed(Key.valueOf(arguments[1]), Key.valueOf(arguments[1]));
 				break;
 			case "up":
 				this.window.getKeys().remove(Key.valueOf(arguments[1]));
+				BridgeHandler.UI.keyReleased(Key.valueOf(arguments[1]));
 				break;
 			case "resize":
 				this.resize(Integer.parseInt(arguments[1]), Integer.parseInt(arguments[2]));
@@ -198,8 +200,9 @@ public final class SnapshotRunner {
 			final char character = Character.isBmpCodePoint(codepoint) ? (char) codepoint : 0;
 			final boolean shift = SnapshotRunner.isShifted(character) && this.window.getKeys().add(Key.LEFT_SHIFT);
 			final Key key = SnapshotRunner.getKey(character);
-			this.bridge.keyPressed(key, key);
-			this.bridge.charTyped(codepoint);
+			BridgeHandler.UI.keyPressed(key, key);
+			BridgeHandler.UI.charTyped(codepoint);
+			BridgeHandler.UI.keyReleased(key);
 			if (shift) {
 				this.window.getKeys().remove(Key.LEFT_SHIFT);
 			}
@@ -236,7 +239,8 @@ public final class SnapshotRunner {
 			}
 		}
 
-		this.bridge.keyPressed(key, key);
+		BridgeHandler.UI.keyPressed(key, key);
+		BridgeHandler.UI.keyReleased(key);
 		this.window.getKeys().removeAll(added);
 	}
 
@@ -282,7 +286,7 @@ public final class SnapshotRunner {
 			this.window.setMouseX(startX + (x - startX) * progress);
 			this.window.setMouseY(startY + (y - startY) * progress);
 			this.render(false);
-			this.bridge.mouseMoved();
+			BridgeHandler.UI.mouseMoved();
 		}
 	}
 

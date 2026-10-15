@@ -212,6 +212,7 @@ public abstract class StateGuardContractSuite {
 			render.endFrame();
 		}
 
+		Assert.assertNotNull("IRenderBridge.suspend must run the host draw it is given", suspended.get());
 		StateGuardContractSuite.assertState("JOID must leave the state of the host as the nested host draw left it", suspended.get(), this.backend.readState());
 		final SnapshotImage image = this.backend.capture(StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
 		StateGuardContractSuite.assertState("Reading the pixels must leave the state of the host", suspended.get(), this.backend.readState());
