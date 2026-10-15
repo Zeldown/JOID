@@ -1,5 +1,8 @@
 package dev.joid.demo.ui;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,8 +31,10 @@ public class DemoEntryTest {
 	}
 
 	@Test
-	public void listsTheOverlayToggleInTheMenu() {
-		Assert.assertTrue(UIDemoChoice.LIST.stream().anyMatch(entry -> "UIDemoOverlay: off".equals(entry.getText())));
+	public void listsTheOverlayToggleInTheMenu() throws ReflectiveOperationException {
+		final Field field = UIDemoChoice.class.getDeclaredField("LIST");
+		field.setAccessible(true);
+		Assert.assertTrue(((List<DemoEntry>) field.get(null)).stream().anyMatch(entry -> "UIDemoOverlay: off".equals(entry.getText())));
 	}
 
 }

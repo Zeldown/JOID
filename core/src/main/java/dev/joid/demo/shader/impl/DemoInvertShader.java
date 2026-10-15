@@ -15,6 +15,10 @@ public final class DemoInvertShader extends ShaderProgram {
 		return DemoInvertShader.INSTANCE;
 	}
 
+	public static void use(final float amount, final @NonNull Runnable runnable) {
+		DemoInvertShader.INSTANCE.use(() -> DemoInvertShader.INSTANCE.bind(amount), runnable);
+	}
+
 	public void bind(final float amount) {
 		super.bind();
 		super.getShader().uniform("u_Amount", amount);

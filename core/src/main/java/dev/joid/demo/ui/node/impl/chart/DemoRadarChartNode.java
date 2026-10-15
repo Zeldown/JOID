@@ -56,26 +56,8 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 
 	public final Point getPoint(final int index, final double radius) {
 		final int size = super.getDataList().size();
-		final double angle = 2 * Math.PI / size;
-
-		final double cx = super.getX() + super.dw(2);
-		final double cy = super.getY() + super.dh(2);
-
-		final Point[] points = new Point[size];
-		for (int i = 0; i < size; i++) {
-			final double theta = (i + size / 2) * angle;
-			final double x = cx + radius * Math.cos(theta);
-			final double y = cy + radius * Math.sin(theta);
-			points[i] = Point.create(x, y);
-		}
-
-		final Point[] sorted = new Point[size];
-		sorted[0] = points[0];
-		for (int i = 1; i < size; i++) {
-			sorted[i] = points[size - i];
-		}
-
-		return sorted[index];
+		final double theta = ((size - index) % size + size / 2) * (2 * Math.PI / size);
+		return Point.create(super.getX() + super.dw(2) + radius * Math.cos(theta), super.getY() + super.dh(2) + radius * Math.sin(theta));
 	}
 
 }

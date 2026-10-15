@@ -52,21 +52,16 @@ public class UIDemoWatch extends UIDemo {
 		final IntegerSignal notified = new IntegerSignal(0);
 		final IntegerSignal read = new IntegerSignal(0);
 		final IntegerSignal reset = new IntegerSignal(5);
+		final IntegerSignal adds = new IntegerSignal(0);
 		final MapSignal<String, Integer> counts = new MapSignal<>();
 		final SetSignal<String> keys = new SetSignal<>();
 		final IntegerSignal sent = new IntegerSignal(0);
 		final IntegerSignal received = new IntegerSignal(0);
 		final BooleanSignal listening = new BooleanSignal(true);
-		final ISignalListener<Integer> listener = value -> {
-			received.increment();
-		};
+		final ISignalListener<Integer> listener = value -> received.increment();
 
-		sum.onChange(value -> {
-			updates.increment();
-		});
-		quiet.onChange(value -> {
-			notified.increment();
-		});
+		sum.onChange(value -> updates.increment());
+		quiet.onChange(value -> notified.increment());
 		sent.onChange(listener);
 		future.thenAccept(result::set);
 
@@ -87,7 +82,7 @@ public class UIDemoWatch extends UIDemo {
 			.onWatch(event -> watched.increment())
 			.attach(rect);
 			TextNode.create(40, 185).text(Text.create("Watched: " + watched.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("onWatch", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("onWatch", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -106,7 +101,7 @@ public class UIDemoWatch extends UIDemo {
 			FlexNode
 			.horizontal(40, 130, 50)
 			.margin(10D)
-			.watch(squares, () -> live.get(), WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+			.watch(squares, live::get, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
 			.body(flex -> {
 				for (int i = 0; i < squares.peek(); i++) {
 					RectNode.create(0, 0, 40, 50).color(UIDemoWatch.INK).attach(flex);
@@ -114,7 +109,7 @@ public class UIDemoWatch extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 200).text(Text.create("Count: " + squares.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Watch while live", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Watch while live", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -133,7 +128,7 @@ public class UIDemoWatch extends UIDemo {
 			.color(UIDemoWatch.INK)
 			.watch(grown, WatchProperty.custom((node, signal) -> node.width(60D + grown.peek() * 60D)))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Custom property", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Custom property", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -151,7 +146,7 @@ public class UIDemoWatch extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 175).text(Text.create("Mounted: " + mounts.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("wait a delay", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("wait a delay", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -176,7 +171,7 @@ public class UIDemoWatch extends UIDemo {
 				TextNode.create(20, 25).text(Text.create("Shown when ready", info)).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("wait a condition", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("wait a condition", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -192,7 +187,7 @@ public class UIDemoWatch extends UIDemo {
 				TextNode.create(20, 35).text(Text.create("Result: " + result.get(), info)).attach(container);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Future", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Future", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -220,7 +215,7 @@ public class UIDemoWatch extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Sum: " + sum.get(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Updates: " + updates.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("batch", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("batch", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -242,7 +237,7 @@ public class UIDemoWatch extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + quiet.get(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Notified: " + notified.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("silent", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("silent", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -258,7 +253,7 @@ public class UIDemoWatch extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("get: " + read.get(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("peek: " + read.peek(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("peek", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("peek", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -279,7 +274,7 @@ public class UIDemoWatch extends UIDemo {
 			.label(Text.create("Reset", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + reset.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("reset", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("reset", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -291,15 +286,16 @@ public class UIDemoWatch extends UIDemo {
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
 			.onClick(event -> {
-				final String key = "Key " + counts.size() % 3;
+				final String key = "Key " + adds.peek() % 3;
+				adds.increment();
 				counts.put(key, counts.containsKey(key) ? counts.get(key) + 1 : 1);
 				keys.add(key);
 			})
 			.label(Text.create("Add", label))
 			.attach(rect);
-			TextNode.create(40, 120).text(Text.create("Map keys: " + counts.size(), info)).attach(rect);
+			TextNode.create(40, 120).text(Text.create("Map Key 0: " + (counts.containsKey("Key 0") ? counts.get("Key 0") : 0), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Set size: " + keys.size(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Map and set", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Map and set", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -327,7 +323,7 @@ public class UIDemoWatch extends UIDemo {
 			.label(Text.create(listening.get() ? "Unsubscribe" : "Subscribe", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Received: " + received.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("unsubscribe", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("unsubscribe", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

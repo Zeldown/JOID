@@ -27,7 +27,7 @@ public class UIDemoDraggable extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
-	private final IntegerSignal ends   = new IntegerSignal(0);
+	private final IntegerSignal drops  = new IntegerSignal(0);
 	private final IntegerSignal drags  = new IntegerSignal(0);
 	private final IntegerSignal snaps  = new IntegerSignal(0);
 	private final IntegerSignal moves  = new IntegerSignal(0);
@@ -54,7 +54,7 @@ public class UIDemoDraggable extends UIDemo {
 			.body(grip)
 			.draggable(DraggableProperty.free())
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Free", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Free", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -75,7 +75,7 @@ public class UIDemoDraggable extends UIDemo {
 			})
 			.layer(outline)
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Parent area", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Parent area", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -90,7 +90,7 @@ public class UIDemoDraggable extends UIDemo {
 			.body(grip)
 			.draggable(DraggableProperty.node(area))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Node area", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Node area", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -105,7 +105,7 @@ public class UIDemoDraggable extends UIDemo {
 			.body(grip)
 			.draggable(DraggableProperty.custom(1460, 80, 320, 180))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Custom area", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Custom area", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -123,7 +123,7 @@ public class UIDemoDraggable extends UIDemo {
 			.body(grip)
 			.draggable(nearest)
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Snap", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Snap", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -137,13 +137,13 @@ public class UIDemoDraggable extends UIDemo {
 			overlap.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
 			RectNode
 			.create(160, 150, 80, 80)
-			.color(() -> this.moves.get() / 10 % 2 == 0 ? UIDemoDraggable.INK : UIDemoDraggable.PLACEHOLDER)
+			.color(this.moves.get() / 10 % 2 == 0 ? UIDemoDraggable.INK : UIDemoDraggable.PLACEHOLDER)
 			.body(grip)
 			.draggable(overlap)
 			.onDrag(event -> this.moves.increment())
 			.onDragSnap(event -> RectNode.create(0, 0, 80, 80).color(UIDemoDraggable.INK).attach(event.getTarget()))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Copy", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Copy", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -167,7 +167,7 @@ public class UIDemoDraggable extends UIDemo {
 			})
 			.onMount(event -> event.getNode().scrollY(-40D))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Scrolled parent", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Scrolled parent", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -187,7 +187,7 @@ public class UIDemoDraggable extends UIDemo {
 			.body(grip)
 			.draggable(DraggableProperty.free())
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Overlap: front only", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Overlap: front only", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -202,7 +202,7 @@ public class UIDemoDraggable extends UIDemo {
 			.draggable(DraggableProperty.free())
 			.beforeDragStart(event -> event.cancel())
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Refused start", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Refused start", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -217,7 +217,7 @@ public class UIDemoDraggable extends UIDemo {
 			.draggable(DraggableProperty.free())
 			.beforeDragDrop(event -> event.cancel())
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Refused end", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Refused end", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -226,7 +226,7 @@ public class UIDemoDraggable extends UIDemo {
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(160, 90, 80, 80).color(UIDemoDraggable.INK.withAlpha(0.4F)).draggable(DraggableProperty.disabled()).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Disabled", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Disabled", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -245,13 +245,13 @@ public class UIDemoDraggable extends UIDemo {
 			.onDragStart(event -> this.starts.increment())
 			.onDrag(event -> this.drags.increment())
 			.onDragSnap(event -> this.snaps.increment())
-			.onDragDrop(event -> this.ends.increment())
+			.onDragDrop(event -> this.drops.increment())
 			.attach(rect);
 			TextNode.create(170, 40).text(Text.create("onDragStart " + this.starts.get(), counter)).attach(rect);
 			TextNode.create(170, 90).text(Text.create("onDrag " + this.drags.get(), counter)).attach(rect);
-			TextNode.create(170, 140).text(Text.create("onSnap " + this.snaps.get(), counter)).attach(rect);
-			TextNode.create(170, 190).text(Text.create("onDragEnd " + this.ends.get(), counter)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Callbacks", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(170, 140).text(Text.create("onDragSnap " + this.snaps.get(), counter)).attach(rect);
+			TextNode.create(170, 190).text(Text.create("onDragDrop " + this.drops.get(), counter)).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Callbacks", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

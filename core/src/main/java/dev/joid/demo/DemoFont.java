@@ -31,10 +31,6 @@ public class DemoFont {
 		DemoFont.PIXEL = DemoPixelFont.create(DemoFont.read("Pixel/Pixel.png"));
 	}
 
-	public static boolean isLoaded() {
-		return DemoFont.MONTSERRAT != null && DemoFont.PACIFICO != null && DemoFont.PLAYFAIR_DISPLAY != null && DemoFont.PIXEL != null;
-	}
-
 	private static InputStream get(final String file) {
 		return JOID.class.getResourceAsStream("/assets/demo/fonts/" + file);
 	}

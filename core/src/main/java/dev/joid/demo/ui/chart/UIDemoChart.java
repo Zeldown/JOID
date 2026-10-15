@@ -38,7 +38,7 @@ public class UIDemoChart extends UIDemo {
 			.yAxis(ChartAxis.y("value"))
 			.data("Visits", ChartData.create().add("Mon", 2).add("Tue", 6).add("Wed", 4).add("Thu", 8).add("Fri", 7))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Smooth", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Smooth", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -53,7 +53,7 @@ public class UIDemoChart extends UIDemo {
 			.yAxis(ChartAxis.y("value"))
 			.data("Visits", ChartData.create().add("Mon", 2).add("Tue", 6).add("Wed", 4).add("Thu", 8).add("Fri", 7))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Straight", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Straight", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -68,7 +68,7 @@ public class UIDemoChart extends UIDemo {
 			.data("Visits", ChartData.create().add("Mon", 2).add("Tue", 6).add("Wed", 4).add("Thu", 8).add("Fri", 7))
 			.data("Orders", ChartData.create().add("Mon", 1).add("Tue", 2).add("Wed", 3).add("Thu", 3).add("Fri", 5))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Two series", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Two series", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -82,7 +82,7 @@ public class UIDemoChart extends UIDemo {
 			.yAxis(ChartAxis.y("price").prefix("$").suffix(" k"))
 			.data("Price", ChartData.create().add("Jan", 10).add("Feb", 12.5D).add("Mar", 11).add("Apr", 15))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Prefix and suffix", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Prefix and suffix", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -91,7 +91,7 @@ public class UIDemoChart extends UIDemo {
 		.color(UIDemoChart.PLACEHOLDER)
 		.body(rect -> {
 			DemoChartNode.create(20, 20, 360, 220).xAxis(ChartAxis.x("day", "Mon", "Tue", "Wed")).yAxis(ChartAxis.y("value")).attach(rect);
-			TextNode.create(200, 275).text(Text.create("No data", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("No data", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -106,7 +106,7 @@ public class UIDemoChart extends UIDemo {
 			.data(RadarChartData.create("C", 4))
 			.data(RadarChartData.create("D", 2))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Radar", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Radar", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -123,7 +123,7 @@ public class UIDemoChart extends UIDemo {
 			.data(RadarChartData.create("E", 3))
 			.data(RadarChartData.create("F", 4))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Six axes", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Six axes", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -132,11 +132,11 @@ public class UIDemoChart extends UIDemo {
 		.color(UIDemoChart.PLACEHOLDER)
 		.body(rect -> {
 			final DemoChartNode chart = DemoChartNode
-					.create(20, 20, 260, 220)
-					.xAxis(ChartAxis.x("day", "Mon", "Tue", "Wed", "Thu"))
-					.yAxis(ChartAxis.y("value"))
-					.data("Week", ChartData.create().add("Mon", 1).add("Tue", 3).add("Wed", 2).add("Thu", 4))
-					.attach(rect);
+			.create(20, 20, 260, 220)
+			.xAxis(ChartAxis.x("day", "Mon", "Tue", "Wed", "Thu"))
+			.yAxis(ChartAxis.y("value"))
+			.data("Week", ChartData.create().add("Mon", 1).add("Tue", 3).add("Wed", 2).add("Thu", 4))
+			.attach(rect);
 			RectNode
 			.create(290, 20, 90, 50)
 			.color(UIDemoChart.INK)
@@ -146,7 +146,7 @@ public class UIDemoChart extends UIDemo {
 			})
 			.label(Text.create("Next", label))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("New data", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("New data", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

@@ -67,7 +67,7 @@ public class UIDemoOption extends UIDemo {
 			.label(Text.create("Next", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(() -> Text.create("Scale: " + super.getView().getInterfaceScale(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Interface scale", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Interface scale", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -81,7 +81,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoFixedScalePopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Scale ignored", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Scale ignored", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -95,7 +95,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoLimitedScalePopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Scale limit", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Scale limit", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -109,7 +109,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoCornerPopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Corner anchor", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Corner anchor", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -123,7 +123,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoTintedPopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Tinted backdrop", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Tinted backdrop", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -137,7 +137,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoLockedPopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Not closeable", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Not closeable", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -151,7 +151,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoFixedZoomPopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Not zoomable", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Not zoomable", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -165,7 +165,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoDebugOffPopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Debug off", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Debug off", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -179,7 +179,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoInstantPopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("No transition", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("No transition", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -193,7 +193,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoPopInPopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pop in only", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Pop in only", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -207,7 +207,7 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> JOID.open(new UIDemoSlidePopup()))
 			.label(Text.create("Open", label))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Custom transition", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Custom transition", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -216,7 +216,7 @@ public class UIDemoOption extends UIDemo {
 		.color(UIDemoOption.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(160, 130).text(Text.create("Ticks: " + ticks.get(), info).align(Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Periodic task", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Periodic task", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -242,8 +242,8 @@ public class UIDemoOption extends UIDemo {
 			.onClick(event -> zoom.set(1D))
 			.label(Text.create("1:1", label))
 			.attach(rect);
-			TextNode.create(40, 130).text(() -> Text.create("Zoom: " + Math.round(zoom.get() * 100D) + " %", info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Zoom signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(40, 130).text(Text.create("Zoom: " + Math.round(zoom.get() * 100D) + " %", info)).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Zoom signal", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -254,7 +254,7 @@ public class UIDemoOption extends UIDemo {
 			DemoCheckboxNode.create(40, 40, 60, 60).checked(locked).attach(rect);
 			TextNode.create(120, 55).text(Text.create("Locked", info)).attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refusedZooms.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Before zoom", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Before zoom", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

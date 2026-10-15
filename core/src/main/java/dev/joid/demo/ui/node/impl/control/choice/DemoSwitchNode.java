@@ -14,10 +14,10 @@ public class DemoSwitchNode extends SwitchNode {
 
 	protected DemoSwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.option((state, index) -> RectNode
+		super.option((value, index) -> RectNode
 		.create(0, 0, 0, 0)
-		.color(() -> (state.equals(super.getValue()) ? DemoSwitchNode.INK : Color.WHITE).withAlpha(super.isEnabled() ? 1F : 0.4F))
-		.label(() -> Text.create(state, TextInfo.create(DemoFont.MONTSERRAT, 20, state.equals(super.getValue()) ? Color.WHITE : DemoSwitchNode.INK))));
+		.color(() -> (value.equals(super.getValue()) ? DemoSwitchNode.INK : Color.WHITE).withAlpha(super.isEnabled() ? 1F : 0.4F))
+		.label(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 20, value.equals(super.getValue()) ? Color.WHITE : DemoSwitchNode.INK))));
 	}
 
 	public static @NonNull DemoSwitchNode create(final double x, final double y, final double width, final double height) {

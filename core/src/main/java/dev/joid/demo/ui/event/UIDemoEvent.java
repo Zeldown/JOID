@@ -62,7 +62,7 @@ public class UIDemoEvent extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 80).text(Text.create("Pressed: " + pressed.get(), info)).attach(rect);
 			TextNode.create(40, 125).text(Text.create("Released: " + released.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Press anywhere", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Press anywhere", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -82,7 +82,7 @@ public class UIDemoEvent extends UIDemo {
 				RectNode.create(0, 0, 60, 60).color(UIDemoEvent.INK).x(knob).interactive(false).attach(bar);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Mouse dragged", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Mouse dragged", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -101,7 +101,7 @@ public class UIDemoEvent extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 145).text(Text.create("Scroll: " + scrolled.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Mouse scroll", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Mouse scroll", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -117,10 +117,10 @@ public class UIDemoEvent extends UIDemo {
 				hoverY.set(event.getMouseY() - event.getNode().getAbsoluteY());
 			})
 			.body(area -> {
-				CircleNode.create(0, 0, 20).color(UIDemoEvent.INK).x(() -> hoverX.get() - 10D).y(() -> hoverY.get() - 10D).interactive(false).attach(area);
+				CircleNode.create(0, 0, 20).color(UIDemoEvent.INK).x(hoverX.get() - 10D).y(hoverY.get() - 10D).interactive(false).attach(area);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hover", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hover", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -130,7 +130,7 @@ public class UIDemoEvent extends UIDemo {
 		.body(rect -> {
 			RectNode.create(100, 40, 120, 80).color(UIDemoEvent.INK).onInit(event -> inits.increment()).attach(rect);
 			TextNode.create(100, 145).text(Text.create("Init: " + inits.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Init", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Init", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -139,7 +139,7 @@ public class UIDemoEvent extends UIDemo {
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(40, 100, 60, 60).color(UIDemoEvent.INK).onUpdate(event -> event.getNode().width(60D + 180D * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000L) / 2000D)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Update", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Update", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -148,7 +148,7 @@ public class UIDemoEvent extends UIDemo {
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(40, 100, 60, 60).color(UIDemoEvent.INK).onRender(event -> event.getNode().x(Math.max(40D, Math.min(220D, event.getMouseX() - rect.getAbsoluteX() - 30D)))).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Render", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Render", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -179,7 +179,7 @@ public class UIDemoEvent extends UIDemo {
 			.attach(rect);
 			TextNode.create(20, 160).text(Text.create("Appended: " + appended.get(), info)).attach(rect);
 			TextNode.create(20, 200).text(Text.create("Detached: " + detached.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Append and detach", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Append and detach", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -193,7 +193,7 @@ public class UIDemoEvent extends UIDemo {
 			.hoveredColor(Color.WHITE)
 			.hover(NodeHoverElement.follow(RectNode.create(16, -50, 140, 50).color(UIDemoEvent.INK).label(Text.create("A node", label))))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Node tooltip", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Node tooltip", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -207,7 +207,7 @@ public class UIDemoEvent extends UIDemo {
 			.hoveredColor(Color.WHITE)
 			.hover(CustomHoverElement.follow((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(-24D, -24D, 48D, 48D, UIDemoEvent.INK, 24F, 3D)))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Custom tooltip", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Custom tooltip", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -221,7 +221,7 @@ public class UIDemoEvent extends UIDemo {
 			.hoveredColor(Color.WHITE)
 			.hover(NodeHoverElement.fixed(RectNode.create(120, 745, 240, 50).color(UIDemoEvent.INK).label(Text.create("Always here", label))))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Fixed tooltip", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Fixed tooltip", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -235,7 +235,7 @@ public class UIDemoEvent extends UIDemo {
 			.hoveredColor(Color.WHITE)
 			.hover(NodeHoverElement.relative(RectNode.create(0, -48, 120, 40).color(Color.WHITE).label(Text.create("Above", info))))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Relative tooltip", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Relative tooltip", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -251,7 +251,7 @@ public class UIDemoEvent extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Count: " + clicks.get(), info)).attach(rect);
 			TextNode.create(40, 165).text(Text.create("Shift adds 10", info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Shift click", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Shift click", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -264,7 +264,7 @@ public class UIDemoEvent extends UIDemo {
 			DemoTextFieldNode.create(40, 40, 240, 50).info(info).marginHorizontal(12D).placeholder("Focus me").attach(rect);
 			TextNode.create(40, 120).text(Text.create("Ctrl + Space: " + shortcuts.get(), info)).attach(rect);
 			TextNode.create(40, 165).text(Text.create("F2: " + forced.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Shortcut", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Shortcut", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -287,7 +287,7 @@ public class UIDemoEvent extends UIDemo {
 			.label(Text.create(running.get() ? "Stop" : "Start", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Seconds: " + seconds.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Task", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Task", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

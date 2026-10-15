@@ -14,8 +14,8 @@ import lombok.NonNull;
 
 public class DemoSelectorNode extends SelectorNode<String> {
 
-	private static final Color INK         = new Color(153, 153, 153).lock();
-	private static final Color PLACEHOLDER = new Color(238, 238, 238).lock();
+	private static final Color INK   = new Color(153, 153, 153).lock();
+	private static final Color HOVER = new Color(238, 238, 238).lock();
 
 	protected DemoSelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -27,7 +27,7 @@ public class DemoSelectorNode extends SelectorNode<String> {
 		super.option(value -> RectNode
 		.create(0, 0, width, height)
 		.color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F))
-		.hoveredColor(DemoSelectorNode.PLACEHOLDER)
+		.hoveredColor(DemoSelectorNode.HOVER)
 		.body(rect -> {
 			TextNode
 			.create(16, rect.dh(2))

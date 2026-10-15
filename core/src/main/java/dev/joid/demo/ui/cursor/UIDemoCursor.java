@@ -39,7 +39,7 @@ public class UIDemoCursor extends UIDemo {
 			.color(UIDemoCursor.PLACEHOLDER)
 			.body(rect -> {
 				RectNode.create(100, 40, 120, 120).color(UIDemoCursor.INK).hoveredColor(Color.WHITE).cursor(cursors[index]).attach(rect);
-				TextNode.create(160, 215).text(Text.create(captions[index], info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+				TextNode.create(160, 215).text(Text.create(captions[index], info)).anchorX(Align.CENTER).attach(rect);
 			})
 			.attach(this);
 		}
@@ -56,7 +56,7 @@ public class UIDemoCursor extends UIDemo {
 				RectNode.create(70, 30, 100, 100).color(UIDemoCursor.INK).hoveredColor(UIDemoCursor.PLACEHOLDER).attach(parent);
 			})
 			.attach(rect);
-			TextNode.create(160, 215).text(Text.create("Inherited", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Inherited", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -72,7 +72,7 @@ public class UIDemoCursor extends UIDemo {
 				RectNode.create(70, 30, 100, 100).color(UIDemoCursor.INK).hoveredColor(UIDemoCursor.PLACEHOLDER).cursor(Cursor.POINTER).attach(parent);
 			})
 			.attach(rect);
-			TextNode.create(160, 215).text(Text.create("Overridden", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Overridden", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -81,7 +81,7 @@ public class UIDemoCursor extends UIDemo {
 		.color(UIDemoCursor.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(100, 40, 120, 120).color(UIDemoCursor.INK).hoveredColor(Color.WHITE).cursor(Cursor.MOVE).draggable(DraggableProperty.parent()).attach(rect);
-			TextNode.create(160, 215).text(Text.create("Drag", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Drag", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -91,11 +91,11 @@ public class UIDemoCursor extends UIDemo {
 		.body(rect -> {
 			RectNode
 			.create(100, 40, 120, 120)
-			.color(() -> locked.get() ? UIDemoCursor.INK.withAlpha(0.4F) : UIDemoCursor.INK)
-			.cursor(() -> locked.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER)
+			.color(locked.get() ? UIDemoCursor.INK.withAlpha(0.4F) : UIDemoCursor.INK)
+			.cursor(locked.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER)
 			.onClick(event -> locked.set(!locked.get()))
 			.attach(rect);
-			TextNode.create(160, 215).text(Text.create("Reactive", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Reactive", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -104,7 +104,7 @@ public class UIDemoCursor extends UIDemo {
 		.color(UIDemoCursor.PLACEHOLDER)
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 75, 240, 50).info(info).marginHorizontal(12D).placeholder("Text field").attach(rect);
-			TextNode.create(160, 215).text(Text.create("Text field", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Text field", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -121,8 +121,8 @@ public class UIDemoCursor extends UIDemo {
 			.onClick(event -> through.increment())
 			.attach(rect);
 			RectNode.create(130, 60, 60, 60).color(UIDemoCursor.PLACEHOLDER).interactive(false).attach(rect);
-			TextNode.create(160, 160).text(Text.create("Clicks: " + through.get(), small).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
-			TextNode.create(160, 215).text(Text.create("Click-through", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 160).text(Text.create("Clicks: " + through.get(), small)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Click-through", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -139,8 +139,8 @@ public class UIDemoCursor extends UIDemo {
 			.onClick(event -> blocked.increment())
 			.attach(rect);
 			RectNode.create(130, 60, 60, 60).color(UIDemoCursor.PLACEHOLDER).attach(rect);
-			TextNode.create(160, 160).text(Text.create("Clicks: " + blocked.get(), small).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
-			TextNode.create(160, 215).text(Text.create("Blocked", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 160).text(Text.create("Clicks: " + blocked.get(), small)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Blocked", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -158,8 +158,8 @@ public class UIDemoCursor extends UIDemo {
 				RectNode.create(60, 30, 80, 60).color(UIDemoCursor.PLACEHOLDER).attach(parent);
 			})
 			.attach(rect);
-			TextNode.create(160, 160).text(Text.create("Clicks: " + bubbled.get(), small).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
-			TextNode.create(160, 215).text(Text.create("Bubbling", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 160).text(Text.create("Clicks: " + bubbled.get(), small)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Bubbling", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -171,7 +171,7 @@ public class UIDemoCursor extends UIDemo {
 				final int line = i;
 				TextNode.create(20, 16 + line * 28).text(Text.create(() -> super.getNodeListAt(super.getMouseX(), super.getMouseY()).stream().skip(line).findFirst().map(node -> node.getClass().getSimpleName() + " " + (int) node.getWidth() + "x" + (int) node.getHeight() + (node.isInteractive() ? "" : " through")).orElse(""), small)).attach(rect);
 			}
-			TextNode.create(160, 215).text(Text.create("Nodes at point", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("Nodes at point", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -179,9 +179,9 @@ public class UIDemoCursor extends UIDemo {
 		.create(1520, 800, 320, 200)
 		.color(UIDemoCursor.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(160, 70).text(Text.create(() -> "x " + (int) super.getViewX() + "  y " + (int) super.getViewY(), info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
-			TextNode.create(160, 110).text(Text.create(() -> (int) super.getViewWidth() + " x " + (int) super.getViewHeight(), info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
-			TextNode.create(160, 215).text(Text.create("View edges", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 70).text(Text.create(() -> "x " + (int) super.getViewX() + "  y " + (int) super.getViewY(), info)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 110).text(Text.create(() -> (int) super.getViewWidth() + " x " + (int) super.getViewHeight(), info)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 215).text(Text.create("View edges", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

@@ -34,7 +34,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold</b> regular <w=100>thin</w> <w=300>light</w> <w=600>semi bold</w> <w=900>black</w> <w=800>extra <b>bold</b> back</w>", markup)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Weights", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Weights", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -43,7 +43,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<i>italic</i> upright <b><i>bold italic</i></b> <w=100><i>thin italic</i></w>", markup)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Italic", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Italic", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -52,7 +52,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<c=cc3333>red</c> <c=2e8b57>green</c> <c=3355cc>blue</c> <c=e67e00>orange <b>bold</b> still orange</c> ink", markup)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Colors", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Colors", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -61,7 +61,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<u>underline</u> <h>highlight</h> <u><h>both</h></u> <c=cc3333><u>colored underline</u></c> <b><u>bold underline</u></b>", markup)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Decorations", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Decorations", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -71,7 +71,7 @@ public class UIDemoMarkup extends UIDemo {
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold <i>bold italic <c=3355cc>blue <u>underlined</u></c></i></b> back to ink", markup)).mode(TextMode.SPLIT).attach(rect);
 			TextNode.create(20, 110, 280, 0).text(Text.create("<f=pacifico>Pacifico <c=3355cc>blue</c></f> <f=playfair><i>Playfair</i></f> ink", markup)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Tags and fonts", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Tags and fonts", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -80,7 +80,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<c=3355cc>the shadow <b>follows</b> the <u>markup</u></c> <h>behind the highlight</h>", markup.copy().shadow(Color.BLACK))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Shadow", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Shadow", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -89,7 +89,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<c=cc3333>colors</c> <c=2e8b57>are</c> <b>ignored</b> when the text is not colored", markup.copy().colored(false))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Uncolored", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Uncolored", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -98,7 +98,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>raw</b> <c=cc3333>tags</c> <u>stay</u> text", markup.copy().markups())).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Markup off", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Markup off", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -107,7 +107,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>spaced</b> <c=3355cc>markup</c> <u>keeps</u> its <h>spacing</h>", markup.copy().letterSpacing(0.3F))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Spaced", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Spaced", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -117,7 +117,7 @@ public class UIDemoMarkup extends UIDemo {
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>ends</b> <c=3355cc>here</c>", markup).alignX(Align.END)).attach(rect);
 			TextNode.create(20, 80, 280, 0).text(Text.create("<b>centered</b> <i>markup</i>", markup).alignX(Align.CENTER)).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Aligned", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Aligned", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -126,7 +126,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>Bold words</b> and <c=cc3333>a colored phrase that wraps over several lines</c> keep their style", markup)).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Wrapped", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Wrapped", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -135,7 +135,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold</b> and <c=cc3333>red text cut by the width</c>", markup).overflow(TextOverflow.ELLIPSIS)).mode(TextMode.OVERFLOW).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Cut", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Cut", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -144,7 +144,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<i>italic</i> <c=cc3333>red</c> <u>underline</u> <h>highlight</h>", markup.copy().font(DemoFont.PACIFICO))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Pacifico", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Pacifico", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -153,7 +153,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<i>italic</i> <c=cc3333>red</c> <u>underline</u> <h>highlight</h>", markup.copy().font(DemoFont.PLAYFAIR_DISPLAY))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Playfair Display", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Playfair Display", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -162,7 +162,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("an underline and a highlight on the whole text", markup.copy().effects(DemoUnderlineTextEffect.inst(), DemoHighlightTextEffect.inst()))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Whole text", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Whole text", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -171,7 +171,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 30, 280, 0).text(Text.create("a wave moves every glyph without touching the layout", markup.copy().effects(DemoWaveTextEffect.inst()))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Wave", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Wave", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -180,7 +180,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("a rainbow colors the text glyph by glyph", markup.copy().effects(DemoRainbowTextEffect.inst()))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Rainbow", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Rainbow", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -189,7 +189,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("scrambled characters keep their width", markup.copy().effects(DemoScrambleTextEffect.inst()))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Scramble", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Scramble", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -198,7 +198,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 30, 280, 0).text(Text.create("the shadow waves with the text", markup.copy().effects(DemoWaveTextEffect.inst()).shadow(Color.BLACK))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Wave and shadow", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Wave and shadow", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -207,7 +207,7 @@ public class UIDemoMarkup extends UIDemo {
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>markup</b> <u>adds</u> <h>effects</h> under the rainbow", markup.copy().effects(DemoRainbowTextEffect.inst()))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Effect and markup", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 205).text(Text.create("Effect and markup", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

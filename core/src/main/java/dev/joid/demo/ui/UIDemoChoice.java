@@ -48,9 +48,7 @@ import dev.joid.lib.ui.node.impl.layout.GridNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @UIData(background = true)
 public class UIDemoChoice extends UI {
 
@@ -58,7 +56,7 @@ public class UIDemoChoice extends UI {
 	private static final Color ACTIVE  = new Color(102, 102, 102).lock();
 	private static final Color HOVERED = new Color(128, 128, 128).lock();
 
-	public static final List<DemoEntry> LIST = new ArrayList<>();
+	private static final List<DemoEntry> LIST = new ArrayList<>();
 
 	static {
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoChoice.class));

@@ -22,7 +22,6 @@ import dev.joid.internal.JOIDLog;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.FileAsset;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;

@@ -122,7 +122,10 @@ public class JOIDTest {
 		try {
 			JOIDEnv.devMode(false);
 			JOIDTest.quietly(JOIDTest.create());
-			Assert.assertTrue(DemoFont.isLoaded());
+			Assert.assertNotNull(DemoFont.MONTSERRAT);
+			Assert.assertNotNull(DemoFont.PACIFICO);
+			Assert.assertNotNull(DemoFont.PLAYFAIR_DISPLAY);
+			Assert.assertNotNull(DemoFont.PIXEL);
 			Assert.assertSame(DevFont.MONTSERRAT, DemoFont.MONTSERRAT);
 		} finally {
 			DevFont.MONTSERRAT = previous;

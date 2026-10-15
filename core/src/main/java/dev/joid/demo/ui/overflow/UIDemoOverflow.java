@@ -46,7 +46,7 @@ public class UIDemoOverflow extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Vertical scroll", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Vertical scroll", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -66,7 +66,7 @@ public class UIDemoOverflow extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Horizontal scroll", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Horizontal scroll", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -91,7 +91,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Both axes", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Both axes", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -115,7 +115,7 @@ public class UIDemoOverflow extends UIDemo {
 				RectNode.create(20, 40, 240, 120).color(UIDemoOverflow.INK).attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Hidden and none", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Hidden and none", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -135,7 +135,7 @@ public class UIDemoOverflow extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Grid with scrollbar", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Grid with scrollbar", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -160,7 +160,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Horizontal scrollbar", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Horizontal scrollbar", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -185,7 +185,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Scroll speed", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Scroll speed", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -194,21 +194,21 @@ public class UIDemoOverflow extends UIDemo {
 		.color(UIDemoOverflow.PLACEHOLDER)
 		.body(rect -> {
 			final RectNode area = RectNode
-					.create(20, 20, 220, 200)
-					.color(Color.WHITE)
-					.overflow(OverflowProperty.SCROLL)
-					.body(container -> {
-						FlexNode
-						.vertical(10, 10, 200)
-						.margin(10D)
-						.body(flex -> {
-							for (int i = 0; i < 10; i++) {
-								RectNode.create(0, 0, 200, 40).color(i % 2 == 0 ? UIDemoOverflow.INK : UIDemoOverflow.PLACEHOLDER).attach(flex);
-							}
-						})
-						.attach(container);
-					})
-					.attach(rect);
+			.create(20, 20, 220, 200)
+			.color(Color.WHITE)
+			.overflow(OverflowProperty.SCROLL)
+			.body(container -> {
+				FlexNode
+				.vertical(10, 10, 200)
+				.margin(10D)
+				.body(flex -> {
+					for (int i = 0; i < 10; i++) {
+						RectNode.create(0, 0, 200, 40).color(i % 2 == 0 ? UIDemoOverflow.INK : UIDemoOverflow.PLACEHOLDER).attach(flex);
+					}
+				})
+				.attach(container);
+			})
+			.attach(rect);
 			RectNode
 			.create(260, 20, 120, 50)
 			.color(UIDemoOverflow.INK)
@@ -221,7 +221,7 @@ public class UIDemoOverflow extends UIDemo {
 			.onClick(event -> area.scrollTo(area.getTargetScrollX(), -area.getMaxScrollY()))
 			.label(Text.create("Bottom", label))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Scroll from code", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Scroll from code", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -254,7 +254,7 @@ public class UIDemoOverflow extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(20, 200).text(Text.create("Items: " + items.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Load at the end", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Load at the end", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -267,10 +267,7 @@ public class UIDemoOverflow extends UIDemo {
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
 			.onScroll(event -> offset.set((int) event.getOffset()))
-			.onScrollEndReached(event -> {
-				System.out.println("[UIDemoOverflow] scroll end: " + event.getNode().getScrollX() + ", " + event.getNode().getScrollY());
-				ends.increment();
-			})
+			.onScrollEndReached(event -> ends.increment())
 			.body(area -> {
 				FlexNode
 				.vertical(10, 10, 340)
@@ -285,7 +282,7 @@ public class UIDemoOverflow extends UIDemo {
 			.attach(rect);
 			TextNode.create(20, 175).text(Text.create("Offset: " + offset.get(), info)).attach(rect);
 			TextNode.create(220, 175).text(Text.create("Ends: " + ends.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Scroll events", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Scroll events", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -324,7 +321,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Nested scroll", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Nested scroll", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -353,7 +350,7 @@ public class UIDemoOverflow extends UIDemo {
 				.attach(area);
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Loading items", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Loading items", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

@@ -52,7 +52,7 @@ public class UIDemoStore extends UIDemo {
 		.color(UIDemoStore.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(200, 100).text(Text.create("Created at " + local.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Local store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Local store", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -61,7 +61,7 @@ public class UIDemoStore extends UIDemo {
 		.color(UIDemoStore.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(200, 100).text(Text.create("Created at " + global.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Global store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Global store", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -70,12 +70,12 @@ public class UIDemoStore extends UIDemo {
 		.color(UIDemoStore.PLACEHOLDER)
 		.body(rect -> {
 			TextNode.create(200, 100).text(Text.create("Created at " + permanent.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Permanent store", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Permanent store", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
 		RectNode
-		.create(760, 680, 400, 200)
+		.create(530, 680, 400, 200)
 		.color(UIDemoStore.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -85,12 +85,12 @@ public class UIDemoStore extends UIDemo {
 			.label(Text.create("+1", label))
 			.attach(rect);
 			TextNode.create(190, 100).text(() -> Text.create("Clicks: " + this.clicks, info).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Remembered field", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("Remembered field", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
 		RectNode
-		.create(1220, 680, 400, 200)
+		.create(990, 680, 400, 200)
 		.color(UIDemoStore.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -108,7 +108,7 @@ public class UIDemoStore extends UIDemo {
 			.label(Text.create("Cache", label))
 			.attach(rect);
 			TextNode.create(190, 100).text(() -> Text.create(this.cache, info).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("File cache", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 215).text(Text.create("File cache", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

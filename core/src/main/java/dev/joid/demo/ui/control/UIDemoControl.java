@@ -44,13 +44,10 @@ public class UIDemoControl extends UIDemo {
 		.body(rect -> {
 			DemoCheckboxNode
 			.create(40, 30, 60, 60)
-			.onChange(event -> {
-				System.out.println("[UIDemoControl] checkbox checked: " + event.getValue());
-				checkboxChanges.increment();
-			})
+			.onChange(event -> checkboxChanges.increment())
 			.attach(rect);
 			TextNode.create(40, 100).text(Text.create("Changes: " + checkboxChanges.get(), info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Checkbox", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Checkbox", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -59,7 +56,7 @@ public class UIDemoControl extends UIDemo {
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoCheckboxNode.create(40, 30, 60, 60).checked(true).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Checked", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Checked", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -70,7 +67,7 @@ public class UIDemoControl extends UIDemo {
 			DemoCheckboxNode.create(40, 30, 60, 60).checked(sharedCheck).attach(rect);
 			DemoCheckboxNode.create(120, 30, 60, 60).checked(sharedCheck).attach(rect);
 			TextNode.create(40, 100).text(Text.create(sharedCheck.get() ? "Checked" : "Unchecked", info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Shared signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Shared signal", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -86,7 +83,7 @@ public class UIDemoControl extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 100).text(Text.create("Refused: " + refusedChecks.get(), info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Refused", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Refused", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -95,7 +92,7 @@ public class UIDemoControl extends UIDemo {
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoCheckboxNode.create(40, 30, 60, 60).checked(true).enabled(false).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Disabled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Disabled", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -106,13 +103,10 @@ public class UIDemoControl extends UIDemo {
 			DemoToggleNode
 			.create(40, 30, 120, 60)
 			.state("On", "Off")
-			.onChange(event -> {
-				System.out.println("[UIDemoControl] toggle value: " + event.getNode().getValue());
-				toggleValue.set(event.getNode().getValue());
-			})
+			.onChange(event -> toggleValue.set(event.getNode().getValue()))
 			.attach(rect);
 			TextNode.create(40, 100).text(Text.create("Value: " + toggleValue.get(), info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Toggle", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Toggle", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -121,7 +115,7 @@ public class UIDemoControl extends UIDemo {
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoToggleNode.create(40, 30, 120, 60).toggle(true).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Toggled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Toggled", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -132,7 +126,7 @@ public class UIDemoControl extends UIDemo {
 			DemoToggleNode.create(40, 30, 120, 60).toggle(sharedToggle).attach(rect);
 			DemoToggleNode.create(180, 30, 120, 60).toggle(sharedToggle).attach(rect);
 			TextNode.create(40, 100).text(Text.create(sharedToggle.get() ? "Toggled" : "Not toggled", info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Shared signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Shared signal", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -148,7 +142,7 @@ public class UIDemoControl extends UIDemo {
 			})
 			.attach(rect);
 			TextNode.create(40, 100).text(Text.create("Refused: " + refusedToggles.get(), info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Refused", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Refused", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -157,7 +151,7 @@ public class UIDemoControl extends UIDemo {
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoToggleNode.create(40, 30, 120, 60).toggle(true).enabled(false).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Disabled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Disabled", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -168,13 +162,10 @@ public class UIDemoControl extends UIDemo {
 			DemoSwitchNode
 			.create(40, 30, 240, 50)
 			.values("One", "Two", "Three")
-			.onChange(event -> {
-				System.out.println("[UIDemoControl] switch state: " + event.getValue());
-				switchState.set(event.getValue());
-			})
+			.onChange(event -> switchState.set(event.getValue()))
 			.attach(rect);
 			TextNode.create(40, 100).text(Text.create("State: " + switchState.get(), info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Switch", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Switch", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -183,7 +174,7 @@ public class UIDemoControl extends UIDemo {
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoSwitchNode.create(40, 30, 240, 50).values("One", "Two", "Three").valueIndex(2).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Index", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Index", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -194,7 +185,7 @@ public class UIDemoControl extends UIDemo {
 			DemoSwitchNode.create(40, 30, 240, 50).values("One", "Two", "Three").value(sharedState).attach(rect);
 			DemoSwitchNode.create(40, 90, 240, 50).values("One", "Two", "Three").value(sharedState).attach(rect);
 			TextNode.create(40, 150).text(Text.create("State: " + sharedState.get(), info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Shared signal", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Shared signal", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -219,7 +210,7 @@ public class UIDemoControl extends UIDemo {
 			.label(Text.create("Change", label))
 			.attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refusedStates.get(), info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Refused", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Refused", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -228,17 +219,17 @@ public class UIDemoControl extends UIDemo {
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoSwitchNode.create(40, 30, 240, 50).values("One", "Two", "Three").valueIndex(1).enabled(false).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Disabled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Disabled", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
 		RectNode
-		.create(80, 780, 320, 180)
+		.create(800, 780, 320, 180)
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoPillToggleNode.create(40, 30, 120, 60).toggle(pill).attach(rect);
 			TextNode.create(40, 100).text(Text.create(pill.get() ? "Toggled" : "Not toggled", info)).attach(rect);
-			TextNode.create(160, 195).text(Text.create("Custom", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 195).text(Text.create("Custom", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

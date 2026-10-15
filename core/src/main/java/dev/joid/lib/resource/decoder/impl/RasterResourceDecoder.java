@@ -9,7 +9,6 @@ import javax.imageio.ImageIO;
 import javax.imageio.spi.ImageReaderSpi;
 
 import dev.joid.lib.asset.Asset;
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.utils.image.ImageUtils;

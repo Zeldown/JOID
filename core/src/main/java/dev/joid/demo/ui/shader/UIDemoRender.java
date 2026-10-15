@@ -6,7 +6,6 @@ import dev.joid.demo.shader.pipeline.pass.DemoInvertShaderPass;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.DemoFrameBufferNode;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.BlendState.Equation;
 import dev.joid.lib.bridge.render.state.BlendState.Factor;
@@ -63,7 +62,7 @@ public class UIDemoRender extends UIDemo {
 				});
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Tessellator", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Tessellator", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -81,7 +80,7 @@ public class UIDemoRender extends UIDemo {
 				});
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Matrix stack", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Matrix stack", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -108,7 +107,7 @@ public class UIDemoRender extends UIDemo {
 				});
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Multiply blend", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Multiply blend", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -125,7 +124,7 @@ public class UIDemoRender extends UIDemo {
 				});
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Raw rect", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Raw rect", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -137,7 +136,7 @@ public class UIDemoRender extends UIDemo {
 			.create(60, 30, 200, 200)
 			.layer((node, mouseX, mouseY) -> DrawUtils.TEXT.drawText(100D, 100D, "Drawn", large, Align.CENTER, Align.CENTER))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Draw text", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Draw text", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -149,7 +148,7 @@ public class UIDemoRender extends UIDemo {
 			.create(60, 30, 200, 200)
 			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawDashedLine(UIDemoRender.INK, 12, 4F, Point.create(0D, 160D), Point.create(100D, 40D), Point.create(200D, 160D)))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Dashed line", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Dashed line", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -164,7 +163,7 @@ public class UIDemoRender extends UIDemo {
 				DrawUtils.SHAPE.drawRoundedRect(20D, 50D, 160D, 100D, Color.WHITE, 16F);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Shadow", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Shadow", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -176,7 +175,7 @@ public class UIDemoRender extends UIDemo {
 			.create(60, 30, 200, 200)
 			.layer((node, mouseX, mouseY) -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Draw resource", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Draw resource", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -185,7 +184,7 @@ public class UIDemoRender extends UIDemo {
 		.color(UIDemoRender.PLACEHOLDER)
 		.body(rect -> {
 			DemoFrameBufferNode.create(60, 68, 200, 125).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Frame buffer", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Frame buffer", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -197,7 +196,7 @@ public class UIDemoRender extends UIDemo {
 			.create(60, 30, 200, 200)
 			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), RoundedShaderPass.create(40F, 40F, 40F, 160F, 160F), BorderShaderPass.create(UIDemoRender.INK, 4F)))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pipeline", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Pipeline", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -209,7 +208,7 @@ public class UIDemoRender extends UIDemo {
 			.create(60, 30, 200, 200)
 			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), BlurShaderPass.create(12F, true)))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Horizontal blur", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Horizontal blur", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -221,7 +220,7 @@ public class UIDemoRender extends UIDemo {
 			.create(60, 30, 200, 200)
 			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), new DemoInvertShaderPass(1F)))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Custom pass", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Custom pass", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -231,22 +230,9 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.layer((node, mouseX, mouseY) -> {
-				if (!DemoInvertShader.inst().canDraw()) {
-					return;
-				}
-
-				final IShader previous = BridgeHandler.RENDER.get().getState().getShader();
-				DemoInvertShader.inst().bind(1F);
-				try {
-					DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image);
-				} finally {
-					DemoInvertShader.inst().unbind();
-					BridgeHandler.RENDER.get().getState().shader(previous);
-				}
-			})
+			.layer((node, mouseX, mouseY) -> DemoInvertShader.use(1F, () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image)))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Custom shader", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Custom shader", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -258,7 +244,7 @@ public class UIDemoRender extends UIDemo {
 			.create(60, 30, 200, 200)
 			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(UIDemoRender.INK, 14F, Point.create(10D, 180D), Point.create(100D, 20D), Point.create(60D, 180D), Point.create(190D, 120D)))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Line joins", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Line joins", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -270,7 +256,7 @@ public class UIDemoRender extends UIDemo {
 			.create(60, 30, 200, 200)
 			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE.toGradient(UIDemoRender.INK), 10F, Point.create(10D, 180D), Point.create(100D, -100D), Point.create(190D, 180D)))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Gradient curve", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Gradient curve", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

@@ -21,6 +21,7 @@ public class DemoUIBridge extends WindowUIBridge {
 	}
 
 	public void start() {
+		super.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE));
 		JOID.open(new UIDemoChoice());
 		super.load();
 	}
@@ -33,11 +34,6 @@ public class DemoUIBridge extends WindowUIBridge {
 	@Override
 	public double getInterfaceScale(final @NonNull UI ui) {
 		return this.interfaceScale;
-	}
-
-	@Override
-	public TextInfo getHoverInfo() {
-		return DevFont.MONTSERRAT != null ? TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE) : null;
 	}
 
 }

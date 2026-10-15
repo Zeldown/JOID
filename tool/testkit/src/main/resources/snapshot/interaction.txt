@@ -236,7 +236,7 @@ wait 100
 press LEFT
 release LEFT
 wait 100
-move 180 840
+move 900 840
 wait 100
 press LEFT
 release LEFT
@@ -662,26 +662,18 @@ wait 100
 press LEFT
 release LEFT
 wait 100
-move 200 785
-wait 100
-press LEFT
-release LEFT
-wait 100
-press LEFT
-release LEFT
-wait 100
-press LEFT
-release LEFT
-wait 100
 move 640 785
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1520 785
+press LEFT
+release LEFT
 wait 100
 press LEFT
 release LEFT
+wait 100
+move 1080 785
 wait 100
 press LEFT
 release LEFT

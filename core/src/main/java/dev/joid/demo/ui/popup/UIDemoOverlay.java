@@ -29,7 +29,7 @@ public class UIDemoOverlay extends UI {
 		.draggable(DraggableProperty.screen())
 		.body(rect -> {
 			RectNode.create(100, 50, 120, 120).color(UIDemoOverlay.INK).hoveredColor(Color.WHITE).attach(rect);
-			TextNode.create(160, 210).text(Text.create("Above screens", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 210).text(Text.create("Above screens", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}
@@ -47,7 +47,7 @@ public class UIDemoOverlay extends UI {
 			.draggable(DraggableProperty.screen())
 			.body(rect -> {
 				RectNode.create(100, 50, 120, 120).color(UIDemoOverlay.INK).hoveredColor(Color.WHITE).attach(rect);
-				TextNode.create(160, 210).text(Text.create("Below screens", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+				TextNode.create(160, 210).text(Text.create("Below screens", caption)).anchorX(Align.CENTER).attach(rect);
 			})
 			.attach(this);
 		}

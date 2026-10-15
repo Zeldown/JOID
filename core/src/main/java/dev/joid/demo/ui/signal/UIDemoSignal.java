@@ -21,7 +21,6 @@ import dev.joid.lib.ui.node.impl.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.ui.node.property.WatchProperty;
-import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)
@@ -45,13 +44,6 @@ public class UIDemoSignal extends UIDemo {
 		final BooleanSignal shown = new BooleanSignal(false);
 		final IntegerSignal heat = new IntegerSignal(0);
 		final ListSignal<String> items = new ListSignal<>(Arrays.asList("First item", "Second item"));
-		final ListSignal<String> cards = new ListSignal<>();
-		final IntegerSignal sent = new IntegerSignal(0);
-		final IntegerSignal saved = new IntegerSignal(0);
-
-		sent.onChange(value -> {
-			saved.set(value);
-		});
 
 		RectNode
 		.create(100, 40, 400, 260)
@@ -65,7 +57,7 @@ public class UIDemoSignal extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Clicks: " + clicks.get(), info)).attach(rect);
 			RectNode.create(40, 180, 20, 20).color(UIDemoSignal.INK).width(Math.min(320D, 20D + clicks.get() * 40D)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Native expression", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Native expression", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -80,7 +72,7 @@ public class UIDemoSignal extends UIDemo {
 			.label(Text.create("+1", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create(mapped.map(value -> "Doubled: " + value * 2), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("map", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("map", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -101,7 +93,7 @@ public class UIDemoSignal extends UIDemo {
 			.label(Text.create("B +1", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create(Signal.from(() -> "A + B = " + (left.get() + right.get())), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Signal.from", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Signal.from", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -115,7 +107,7 @@ public class UIDemoSignal extends UIDemo {
 			.color(UIDemoSignal.INK)
 			.width(() -> (BridgeHandler.CLOCK.get().currentTimeMillis() - opened) % 2000L / 2000D * 320D)
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Every frame", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Every frame", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -136,7 +128,7 @@ public class UIDemoSignal extends UIDemo {
 			.onClick(event -> volume.set(0))
 			.label(Text.create("Reset", label))
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Two-way slider", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Two-way slider", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -146,7 +138,7 @@ public class UIDemoSignal extends UIDemo {
 		.body(rect -> {
 			DemoCheckboxNode.create(40, 40, 50, 50).checked(muted).attach(rect);
 			TextNode.create(110, 52).text(Text.create(muted.get() ? "Muted" : "Sound on", info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Checkbox", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Checkbox", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -156,7 +148,7 @@ public class UIDemoSignal extends UIDemo {
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 40, 320, 50).info(info).marginHorizontal(12D).text(name).attach(rect);
 			TextNode.create(40, 120).text(Text.create("Hello " + name.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Text field", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Text field", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -171,12 +163,12 @@ public class UIDemoSignal extends UIDemo {
 			.label(Text.create("Toggle", label))
 			.attach(rect);
 			RectNode.create(40, 120, 80, 80).color(UIDemoSignal.INK).visible(shown).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Visibility", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Visibility", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
 		RectNode
-		.create(100, 720, 400, 260)
+		.create(540, 720, 400, 260)
 		.color(UIDemoSignal.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -187,12 +179,12 @@ public class UIDemoSignal extends UIDemo {
 			.attach(rect);
 			RectNode.create(40, 120, 80, 80).color(heat.get() >= 3 ? UIDemoSignal.INK : Color.WHITE).attach(rect);
 			TextNode.create(140, 145).text(Text.create(heat.get() >= 3 ? "3 clicks or more" : "Under 3 clicks", info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("Color", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Color", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
 		RectNode
-		.create(540, 720, 400, 260)
+		.create(980, 720, 400, 260)
 		.color(UIDemoSignal.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -228,44 +220,9 @@ public class UIDemoSignal extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("watch", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("watch", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
-
-		RectNode
-		.create(980, 720, 400, 260)
-		.color(UIDemoSignal.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 40, 320, 180)
-			.color(Color.WHITE)
-			.wait(container -> !cards.isEmpty())
-			.body(container -> {
-				TextNode.create(20, 20).text(Text.create(cards.isEmpty() ? "" : cards.get(0), info)).attach(container);
-				TextNode.create(20, 70).text(Text.create(cards.isEmpty() ? "" : cards.get(1), info)).attach(container);
-				TextNode.create(20, 120).text(Text.create(cards.isEmpty() ? "" : cards.get(2), info)).attach(container);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("wait", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1420, 720, 400, 260)
-		.color(UIDemoSignal.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 40, 120, 50)
-			.color(UIDemoSignal.INK)
-			.onClick(event -> sent.increment())
-			.label(Text.create("Send", label))
-			.attach(rect);
-			TextNode.create(40, 120).text(Text.create("Saved: " + saved.get(), info)).attach(rect);
-			TextNode.create(200, 275).text(Text.create("subscribe", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		Task.create(3000L).onRun(event -> cards.set(Arrays.asList("Ada Lovelace", "Analytical Engine", "1843"))).attach(this);
 	}
 
 }

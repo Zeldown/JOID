@@ -39,7 +39,7 @@ public class UIDemoSimple extends UIDemo {
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(100, 50, 120, 120).color(UIDemoSimple.INK).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Rect", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Rect", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -48,7 +48,7 @@ public class UIDemoSimple extends UIDemo {
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(100, 50, 120, 120).color(UIDemoSimple.INK).hoveredColor(Color.WHITE).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hovered color", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hovered color", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -58,7 +58,7 @@ public class UIDemoSimple extends UIDemo {
 		.body(rect -> {
 			RectNode.create(50, 60, 90, 100).color(Color.WHITE).borderColor(UIDemoSimple.INK).borderStroke(10D).attach(rect);
 			RectNode.create(180, 60, 90, 100).color(Color.WHITE).borderColor(UIDemoSimple.INK).borderStroke(10D).borderFill(false).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Border corners", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Border corners", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -67,7 +67,7 @@ public class UIDemoSimple extends UIDemo {
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(100, 50, 120, 120).color(UIDemoSimple.INK).borderColor(UIDemoSimple.INK).hoveredBorderColor(Color.WHITE).borderStroke(8D).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hovered border", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hovered border", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -80,7 +80,7 @@ public class UIDemoSimple extends UIDemo {
 			.color(Color.WHITE)
 			.layer((square, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(square.dw(2), square.dh(2), UIDemoSimple.INK, 40D))
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Layer", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Layer", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -89,7 +89,7 @@ public class UIDemoSimple extends UIDemo {
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
 			CircleNode.create(100, 50, 120).color(UIDemoSimple.INK).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Circle", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Circle", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -98,7 +98,7 @@ public class UIDemoSimple extends UIDemo {
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
 			CircleNode.create(100, 50, 120).color(UIDemoSimple.INK).hoveredColor(Color.WHITE).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hovered circle", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hovered circle", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -107,7 +107,7 @@ public class UIDemoSimple extends UIDemo {
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(100, 50, 120, 120).color(UIDemoSimple.INK).hover(() -> "A single line").attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hover text", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hover text", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -116,7 +116,7 @@ public class UIDemoSimple extends UIDemo {
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(100, 50, 120, 120).color(UIDemoSimple.INK).hover(() -> Arrays.asList("First line", "Second line", "Third line")).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hover lines", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hover lines", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -132,7 +132,7 @@ public class UIDemoSimple extends UIDemo {
 				RectNode.create(70, 40, 100, 100).color(UIDemoSimple.INK).hover(() -> "Child").attach(parent);
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Nested hover", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Nested hover", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -143,13 +143,9 @@ public class UIDemoSimple extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoSimple.INK)
-			.onClick(event -> {
-				System.out.println("[UIDemoSimple] button clicked: " + event.getButton());
-				left.increment();
-			})
+			.onClick(event -> left.increment())
 			.handleMousePressed(event -> {
 				if (!event.getButton().isLeft() && event.getNode().isHovered()) {
-					System.out.println("[UIDemoSimple] button clicked: " + event.getButton());
 					right.increment();
 				}
 			})
@@ -157,7 +153,7 @@ public class UIDemoSimple extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Left: " + left.get(), info)).attach(rect);
 			TextNode.create(40, 165).text(Text.create("Other: " + right.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Click", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Click", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -174,7 +170,7 @@ public class UIDemoSimple extends UIDemo {
 			.attach(rect);
 			TextNode.create(40, 145).text(Text.create("Start: " + starts.get(), info)).attach(rect);
 			TextNode.create(40, 190).text(Text.create("End: " + ends.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hover events", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hover events", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -184,7 +180,7 @@ public class UIDemoSimple extends UIDemo {
 		.body(rect -> {
 			RectNode.create(40, 50, 110, 120).color(UIDemoSimple.INK).hoveredColor(Color.WHITE).attach(rect);
 			RectNode.create(170, 50, 110, 120).color(UIDemoSimple.INK).hoveredColor(Color.WHITE).hoverDuration(1500L).hoverEquation(TweenEquations.BOUNCE_OUT).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Hover speed", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Hover speed", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -196,7 +192,7 @@ public class UIDemoSimple extends UIDemo {
 			ProgressNode.create(40, 100, 160, 30).background(Color.WHITE).foreground(UIDemoSimple.INK).direction(ProgressDirection.RIGHT_TO_LEFT).progress(0.5F).attach(rect);
 			ProgressNode.create(220, 40, 25, 180).background(Color.WHITE).foreground(UIDemoSimple.INK).direction(ProgressDirection.TOP_TO_BOTTOM).progress(0.75F).attach(rect);
 			ProgressNode.create(255, 40, 25, 180).background(Color.WHITE).foreground(UIDemoSimple.INK).direction(ProgressDirection.BOTTOM_TO_TOP).progress(0.6F).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Progress", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Progress", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -212,7 +208,7 @@ public class UIDemoSimple extends UIDemo {
 			.onClick(event -> System.out.println("[UIDemoSimple] never clicked"))
 			.enabled(false)
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Disabled", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Disabled", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

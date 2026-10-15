@@ -12,6 +12,7 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.UIDataPopup;
+import dev.joid.lib.ui.shortcut.Shortcut;
 
 @UIData(background = true)
 @UIDataPopup(active = true)
@@ -28,15 +29,9 @@ public class UIDemoPopup extends UI {
 		.info(TextInfo.create(DemoFont.MONTSERRAT, 30, UIDemoPopup.INK))
 		.marginHorizontal(12D)
 		.placeholder("Placeholder")
-		.onChange(event -> System.out.println("[UIDemoPopup] popup field text: " + event.getText()))
 		.attach(this);
 
-		super.handleKeyPressed(event -> {
-			if (event.getKey() == Key.K && Key.LEFT_CONTROL.isDown()) {
-				JOID.open(new UIDemoPopup());
-				event.consume();
-			}
-		});
+		Shortcut.create(Key.K).ctrl(true).overrideFocus(true).onTrigger(event -> JOID.open(new UIDemoPopup())).attach(this);
 	}
 
 }

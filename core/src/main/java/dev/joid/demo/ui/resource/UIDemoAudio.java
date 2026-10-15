@@ -58,8 +58,8 @@ public class UIDemoAudio extends UIDemo {
 		.onClick(event -> volume.set(Math.min(1F, volume.get() + 0.25F)))
 		.label(Text.create("+", button))
 		.attach(this);
-		TextNode.create(300, 576).text(() -> Text.create(Math.round(volume.get() * 100F) + " %", label)).attach(this);
-		TextNode.create(240, 625).text(Text.create("Volume", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(300, 576).text(Text.create(Math.round(volume.get() * 100F) + " %", label)).attach(this);
+		TextNode.create(240, 625).text(Text.create("Volume", caption)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(440, 380, 320, 180)
@@ -87,8 +87,8 @@ public class UIDemoAudio extends UIDemo {
 		.onClick(event -> far.set(true))
 		.label(Text.create("Far", button))
 		.attach(this);
-		TextNode.create(660, 576).text(() -> Text.create("z: " + (far.get() ? 30 : 0), label)).attach(this);
-		TextNode.create(600, 625).text(Text.create("Distance", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(660, 576).text(Text.create("z: " + (far.get() ? 30 : 0), label)).attach(this);
+		TextNode.create(600, 625).text(Text.create("Distance", caption)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(800, 380, 320, 180)
@@ -106,7 +106,7 @@ public class UIDemoAudio extends UIDemo {
 		})
 		.attach(this);
 		TextNode.create(800, 576).text(Text.create("z: 30, full up to 40", label)).attach(this);
-		TextNode.create(960, 625).text(Text.create("Reference distance", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(960, 625).text(Text.create("Reference distance", caption)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(1160, 380, 320, 180)
@@ -124,7 +124,7 @@ public class UIDemoAudio extends UIDemo {
 		})
 		.attach(this);
 		TextNode.create(1160, 576).text(Text.create("z: 30, silent from 20", label)).attach(this);
-		TextNode.create(1320, 625).text(Text.create("Max distance", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1320, 625).text(Text.create("Max distance", caption)).anchorX(Align.CENTER).attach(this);
 
 		ResourcePlayerNode
 		.create(1520, 380, 320, 180)
@@ -152,8 +152,8 @@ public class UIDemoAudio extends UIDemo {
 		.onClick(event -> away.set(true))
 		.label(Text.create("Away", button))
 		.attach(this);
-		TextNode.create(1740, 576).text(() -> Text.create("z: " + (away.get() ? 30 : 0), label)).attach(this);
-		TextNode.create(1680, 625).text(Text.create("Listener", caption).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1740, 576).text(Text.create("z: " + (away.get() ? 30 : 0), label)).attach(this);
+		TextNode.create(1680, 625).text(Text.create("Listener", caption)).anchorX(Align.CENTER).attach(this);
 	}
 
 }

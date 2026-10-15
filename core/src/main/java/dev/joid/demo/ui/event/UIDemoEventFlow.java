@@ -84,7 +84,7 @@ public class UIDemoEventFlow extends UIDemo {
 			.label(Text.create("Click", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Order: " + order.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Priority", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Priority", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -108,7 +108,7 @@ public class UIDemoEventFlow extends UIDemo {
 			TextNode.create(40, 120).text(Text.create("Button: " + clicks.get(), info)).attach(rect);
 			TextNode.create(40, 165).text(Text.create("Card: " + heard.get(), info)).attach(rect);
 			TextNode.create(40, 210).text(Text.create("Monitor: " + monitored.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Monitor", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Monitor", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -127,7 +127,7 @@ public class UIDemoEventFlow extends UIDemo {
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Consume", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Consume", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -150,7 +150,7 @@ public class UIDemoEventFlow extends UIDemo {
 			.label(Text.create("Code", label))
 			.attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refused.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("User only", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("User only", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -160,7 +160,7 @@ public class UIDemoEventFlow extends UIDemo {
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 40, 240, 50).info(info).marginHorizontal(12D).placeholder("Takes the keys").attach(rect);
 			TextNode.create(40, 120).text(Text.create("UI: " + key.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("UI listener", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("UI listener", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -171,7 +171,7 @@ public class UIDemoEventFlow extends UIDemo {
 			DemoCheckboxNode.create(40, 40, 60, 60).checked(locked).attach(rect);
 			TextNode.create(120, 55).text(Text.create("Locked", info)).attach(rect);
 			TextNode.create(40, 140).text(Text.create("Kept open: " + kept.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Before close", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Before close", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -196,8 +196,8 @@ public class UIDemoEventFlow extends UIDemo {
 			.onClick(event -> square.move(40D, 40D))
 			.label(Text.create("Reset", label))
 			.attach(rect);
-			TextNode.create(40, 198).text(() -> Text.create("x: " + Math.round(moveX.get()), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Before move", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(40, 198).text(Text.create("x: " + Math.round(moveX.get()), info)).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Before move", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -233,8 +233,8 @@ public class UIDemoEventFlow extends UIDemo {
 			.onClick(event -> scroll.set(-200D))
 			.label(Text.create("Code", label))
 			.attach(rect);
-			TextNode.create(40, 190).text(() -> Text.create("Offset: " + Math.round(scroll.get()), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Before scroll", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(40, 190).text(Text.create("Offset: " + Math.round(scroll.get()), info)).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Before scroll", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -256,7 +256,7 @@ public class UIDemoEventFlow extends UIDemo {
 			.attach(rect);
 			DemoCheckboxNode.create(40, 130, 50, 50).checked(focused).attach(rect);
 			TextNode.create(110, 142).text(Text.create(focused.get() ? "Focused" : "Blurred", info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Before blur", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Before blur", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -283,18 +283,18 @@ public class UIDemoEventFlow extends UIDemo {
 			.label(Text.create("Code", label))
 			.attach(rect);
 			TextNode.create(40, 138).text(Text.create("Cursor: " + cursor.get(), info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Before cursor", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Before cursor", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
 		RectNode
-		.create(80, 720, 320, 260)
+		.create(800, 720, 320, 260)
 		.color(UIDemoEventFlow.PLACEHOLDER)
 		.body(rect -> {
 			RectNode.create(40, 40, 60, 60).color(UIDemoEventFlow.INK).x(walkX).onUpdate(event -> walkX.set(Math.max(40D, Math.min(220D, walkX.peek() + walk.peek() * super.getFrameTime() / 1000D)))).attach(rect);
 			TextNode.create(40, 130).text(Text.create("Letter Z: " + letter.get(), info)).attach(rect);
 			TextNode.create(40, 175).text(Text.create("Move: A / D", info)).attach(rect);
-			TextNode.create(160, 275).text(Text.create("Letter vs position", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Letter vs position", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

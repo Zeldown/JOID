@@ -26,8 +26,8 @@ public final class DemoEntry {
 				final UI ui = clazz.newInstance();
 				ui.transition(DemoPushTransition.create());
 				JOID.open(ui);
-			} catch (final Exception e) {
-				e.printStackTrace();
+			} catch (final ReflectiveOperationException exception) {
+				throw new IllegalStateException("The demo " + clazz.getSimpleName() + " cannot be created (" + exception + "), give its UI a public constructor without argument", exception);
 			}
 		}).hover(clazz.getName());
 	}
