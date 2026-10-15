@@ -43,10 +43,8 @@ public class EdgeTest {
 	}
 
 	@Test
-	public void measuresAPolylineAlongItsSegments() {
+	public void endsAPolylineAlongItsLastSegment() {
 		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(3D, 0D), new Vector2(3D, 4D)));
-		Assert.assertArrayEquals(new double[] {3D, 4D}, edge.getLengths(), 0D);
-		Assert.assertEquals(7D, edge.getTotal(), 0D);
 		Assert.assertEquals(1D, edge.endDirection().normalize().getY(), 1E-12D);
 	}
 
@@ -56,7 +54,6 @@ public class EdgeTest {
 		final SignedDistance distance = new SignedDistance();
 		edge.distance(0D, 0D, distance);
 		Assert.assertEquals(-Double.MAX_VALUE, distance.getDistance(), 0D);
-		Assert.assertEquals(0D, edge.getTotal(), 0D);
 	}
 
 	@Test

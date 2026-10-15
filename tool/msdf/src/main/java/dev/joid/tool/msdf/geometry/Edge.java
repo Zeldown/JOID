@@ -10,8 +10,6 @@ public final class Edge {
 
 	private final double[] x;
 	private final double[] y;
-	private final double   total;
-	private final double[] lengths;
 
 	@Setter
 	private int color;
@@ -23,14 +21,6 @@ public final class Edge {
 			this.x[i] = points.get(i).getX();
 			this.y[i] = points.get(i).getY();
 		}
-
-		this.lengths = new double[this.x.length - 1];
-		double sum = 0D;
-		for (int i = 0; i < this.lengths.length; i++) {
-			this.lengths[i] = Math.hypot(this.x[i + 1] - this.x[i], this.y[i + 1] - this.y[i]);
-			sum += this.lengths[i];
-		}
-		this.total = sum;
 		this.color = 7;
 	}
 
@@ -53,7 +43,8 @@ public final class Edge {
 	public void distance(final double px, final double py, final SignedDistance result) {
 		result.reset();
 
-		for (int i = 0; i < this.lengths.length; i++) {
+		final int segments = this.x.length - 1;
+		for (int i = 0; i < segments; i++) {
 			final double ax = this.x[i];
 			final double ay = this.y[i];
 			final double bx = this.x[i + 1] - ax;
@@ -81,7 +72,7 @@ public final class Edge {
 				continue;
 			}
 
-			result.set(sign >= 0D ? distance : -distance, orthogonal, i == 0 && parameter <= 0D ? -1 : i == this.lengths.length - 1 && parameter >= 1D ? 1 : 0);
+			result.set(sign >= 0D ? distance : -distance, orthogonal, i == 0 && parameter <= 0D ? -1 : i == segments - 1 && parameter >= 1D ? 1 : 0);
 		}
 	}
 

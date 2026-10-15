@@ -17,7 +17,6 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
-import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -470,16 +469,6 @@ public class ResourceDataTest {
 		Assert.assertFalse(texture.isDeleted());
 		ResourceData.releaseCollected();
 		Assert.assertTrue(texture.isDeleted());
-	}
-
-	@Test
-	public void findsItsDecoderByType() {
-		final Decoder decoder = new Decoder();
-		final ResourceData data = new ResourceData("image", decoder);
-		Assert.assertSame(decoder, data.getDecoder(Decoder.class));
-		Assert.assertSame(decoder, data.getDecoder(IResourceDecoder.class));
-		Assert.assertNull(data.getDecoder(RasterResourceDecoder.class));
-		Assert.assertNull(new ResourceData("image", null).getDecoder(Decoder.class));
 	}
 
 	@Test(expected = NullPointerException.class)

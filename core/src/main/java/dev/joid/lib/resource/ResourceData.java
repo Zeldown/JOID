@@ -402,13 +402,6 @@ public final class ResourceData {
 		}
 	}
 
-	public final <T extends IResourceDecoder> T getDecoder(final @NonNull Class<T> clazz) {
-		if (this.decoder == null || !clazz.isAssignableFrom(this.decoder.getClass())) {
-			return null;
-		}
-		return clazz.cast(this.decoder);
-	}
-
 	private boolean isCurrent(final IResourceDecoder decoder, final int generation) {
 		return this.decoder == decoder && this.generation == generation;
 	}

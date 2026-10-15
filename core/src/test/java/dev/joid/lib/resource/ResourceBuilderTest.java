@@ -240,36 +240,26 @@ public class ResourceBuilderTest {
 	@Test
 	public void computesEveryTimeWithoutCache() {
 		final AtomicInteger supplied = new AtomicInteger();
-		final List<Resource> created = new ArrayList<>();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(null);
-		final Resource first = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null), created::add);
+		final Resource first = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
 		builder.reload();
-		final Resource second = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null), created::add);
+		final Resource second = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
 		Assert.assertEquals("image1", first.getUniqueId());
 		Assert.assertEquals("image2", second.getUniqueId());
 		Assert.assertEquals(2, supplied.get());
-		Assert.assertEquals(2, created.size());
 	}
 
 	@Test
 	public void computesOnceInItsCache() {
 		final AtomicInteger supplied = new AtomicInteger();
-		final List<Resource> created = new ArrayList<>();
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
-		final Resource first = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null), created::add);
-		final Resource second = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null), created::add);
+		final Resource first = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
+		final Resource second = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
 		Assert.assertSame(first.getResourceData(), second.getResourceData());
 		Assert.assertSame(first.getResourceData(), cache.get("image"));
 		Assert.assertSame(builder, second.getBuilder());
 		Assert.assertEquals(1, supplied.get());
-		Assert.assertEquals(Collections.singletonList(first), created);
-	}
-
-	@Test
-	public void computesWithoutCreationCallback() {
-		final Resource resource = ResourceBuilder.create().cache(MemoryResourceCache.create()).compute("image", () -> new ResourceData("image", null));
-		Assert.assertEquals("image", resource.getUniqueId());
 	}
 
 	@Test

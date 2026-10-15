@@ -5,7 +5,6 @@ import dev.joid.lib.bridge.clock.IClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
-import dev.joid.lib.bridge.signal.IdentitySignalReplayRemapper;
 import dev.joid.lib.bridge.thread.DirectThreadBridge;
 import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.ui.UIBridgeRegistry;
@@ -35,7 +34,7 @@ public final class BridgeHandler {
 
 		CLOCK.register(new SystemClockBridge());
 		THREAD.register(new DirectThreadBridge());
-		SIGNAL_REPLAY.register(new IdentitySignalReplayRemapper());
+		SIGNAL_REPLAY.register(new ISignalReplayRemapper() {});
 	}
 
 }

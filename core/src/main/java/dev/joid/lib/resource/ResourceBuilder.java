@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import dev.joid.lib.asset.Asset;
@@ -88,16 +87,8 @@ public final class ResourceBuilder {
 	}
 
 	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {
-		return this.compute(uniqueId, dataSupplier, null);
-	}
-
-	public final @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier, final Consumer<Resource> onCreate) {
 		if (this.cache == null) {
-			final Resource resource = new Resource(this, dataSupplier.get());
-			if (onCreate != null) {
-				onCreate.accept(resource);
-			}
-			return resource;
+			return new Resource(this, dataSupplier.get());
 		}
 
 		this.uniqueIdSet.add(uniqueId);
@@ -108,11 +99,7 @@ public final class ResourceBuilder {
 
 		final ResourceData data = dataSupplier.get();
 		this.cache.put(uniqueId, data);
-		final Resource resource = new Resource(this, data);
-		if (onCreate != null) {
-			onCreate.accept(resource);
-		}
-		return resource;
+		return new Resource(this, data);
 	}
 
 	public final @NonNull ResourceProperties getProperties() {
