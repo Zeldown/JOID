@@ -251,7 +251,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	private String refuse(final String action) {
-		return "The " + this + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
+		return "The " + this.getClass().getSimpleName() + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
 	}
 
 	private synchronized void follow() {

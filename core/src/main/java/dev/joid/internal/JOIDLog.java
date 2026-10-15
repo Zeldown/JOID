@@ -43,4 +43,10 @@ public final class JOIDLog {
 		}
 	}
 
+	public static void devWarnOnce(final String key, final Supplier<String> message, final Throwable cause) {
+		if (JOIDEnv.isDevMode() && JOIDLog.KEY_SET.add(key)) {
+			JOIDLog.warn(message.get(), cause);
+		}
+	}
+
 }

@@ -348,15 +348,28 @@ public class ComputedSignalTest {
 			doubled.set(5);
 			Assert.fail("A computed signal cannot be set");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The ComputedSignal{4} is computed from other signals and cannot be set to 5, set the signals it reads instead", expected.getMessage());
+			Assert.assertEquals("The ComputedSignal is computed from other signals and cannot be set to 5, set the signals it reads instead", expected.getMessage());
 		}
 		try {
 			doubled.reset();
 			Assert.fail("A computed signal cannot be reset");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The ComputedSignal{4} is computed from other signals and cannot be reset, set the signals it reads instead", expected.getMessage());
+			Assert.assertEquals("The ComputedSignal is computed from other signals and cannot be reset, set the signals it reads instead", expected.getMessage());
 		}
 		Assert.assertEquals(4, doubled.peek().intValue());
+	}
+
+	@Test
+	public void refusesToBeWrittenWithoutComputingItsValue() {
+		final Supplier<Integer> failing = () -> {
+			throw new IllegalArgumentException("The supplier failed");
+		};
+		try {
+			Signal.from(failing).set(5);
+			Assert.fail("A computed signal cannot be set");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The ComputedSignal is computed from other signals and cannot be set to 5, set the signals it reads instead", expected.getMessage());
+		}
 	}
 
 	@Test

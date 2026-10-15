@@ -168,6 +168,15 @@ public class SignalReplayTest {
 	}
 
 	@Test
+	public void warnsOnceWithItsTraceWhenTheReplayFailsInside() {
+		final ReplayScenarioUI ui = new ReplayScenarioUI("equals");
+		final String output = this.open(ui);
+		Assert.assertTrue(output, output.startsWith("[JOID] The replay of a signal read failed on an internal error, the value \"" + SignalReplayTest.node(ui, 0).getTag().get() + "\" stays fixed\njava.lang.IllegalStateException: Tag 0 cannot be compared\n"));
+		Assert.assertTrue(output, output.contains("\tat dev.joid.demo.replay.ReplayScenarioUI$Tag.equals("));
+		Assert.assertEquals("", this.open(new ReplayScenarioUI("equals")));
+	}
+
+	@Test
 	public void keepsTheLastValueWhenALaterReplayFails() {
 		final ReplayScenarioUI ui = new ReplayScenarioUI("later");
 		Assert.assertEquals("", this.open(ui));

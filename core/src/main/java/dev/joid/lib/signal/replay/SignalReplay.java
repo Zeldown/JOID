@@ -49,6 +49,7 @@ public final class SignalReplay {
 			}
 			return SignalReplay.resolve(value, readList, call, state, stale);
 		} catch (final RuntimeException | LinkageError exception) {
+			SignalReplay.warn(exception, value);
 			return null;
 		} finally {
 			state.replaying = false;
@@ -77,6 +78,10 @@ public final class SignalReplay {
 
 	public static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
 		JOIDLog.devWarnOnce("SignalReplay." + call.getKey(), () -> call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());
+	}
+
+	private static void warn(final Throwable exception, final Object value) {
+		JOIDLog.devWarnOnce("SignalReplay.error." + exception, () -> "The replay of a signal read failed on an internal error, the value \"" + value + "\" stays fixed", exception);
 	}
 
 	private static void enter(final Object owner, final Object parent) {

@@ -65,6 +65,9 @@ public class ReplayScenarioUI extends UI {
 			case "later":
 				SignalReplayNode.create().text("i" + this.names.get(this.clicks.get())).attach(this);
 				break;
+			case "equals":
+				SignalReplayNode.create().tag(new Tag(this.clicks.get())).attach(this);
+				break;
 			case "silent":
 				this.clicks.get();
 				SignalReplayNode.create().text("plain").attach(this);
@@ -110,6 +113,23 @@ public class ReplayScenarioUI extends UI {
 	private Signal<Integer> alternate() {
 		this.flip = !this.flip;
 		return this.flip ? this.clicks : this.other;
+	}
+
+	@RequiredArgsConstructor
+	private static final class Tag {
+
+		private final int value;
+
+		@Override
+		public boolean equals(final Object object) {
+			throw new IllegalStateException("Tag " + this.value + " cannot be compared");
+		}
+
+		@Override
+		public int hashCode() {
+			return this.value;
+		}
+
 	}
 
 }

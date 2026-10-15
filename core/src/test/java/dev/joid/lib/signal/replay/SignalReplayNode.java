@@ -11,6 +11,7 @@ import lombok.NonNull;
 @Getter
 public class SignalReplayNode extends Node {
 
+	private Supplier<Object>  tag;
 	private Supplier<String>  text;
 	private Supplier<Color>   color;
 	private Supplier<Double>  sizeX;
@@ -59,6 +60,11 @@ public class SignalReplayNode extends Node {
 
 	public final <T extends SignalReplayNode> @NonNull T caption(final @NonNull Supplier<SignalReplayCaption> caption) {
 		this.caption = caption;
+		return (T) this;
+	}
+
+	public final <T extends SignalReplayNode> @NonNull T tag(final Object tag) {
+		this.tag = Signal.from(tag);
 		return (T) this;
 	}
 
