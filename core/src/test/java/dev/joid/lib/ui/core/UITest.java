@@ -394,6 +394,7 @@ public class UITest {
 		Assert.assertFalse(ui.fireMouseDragged(MouseButton.LEFT, 10L));
 		Assert.assertFalse(ui.fireMouseScroll(0D, 1D));
 		Assert.assertFalse(ui.fireKeyPressed(Key.A, Key.A));
+		Assert.assertFalse(ui.fireKeyReleased(Key.A, Key.A));
 		Assert.assertFalse(ui.fireCharTyped('a'));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
@@ -452,6 +453,7 @@ public class UITest {
 		Assert.assertTrue(ui.fireMouseDragged(MouseButton.LEFT, 10L));
 		Assert.assertTrue(ui.fireMouseScroll(0D, 1D));
 		Assert.assertTrue(ui.fireKeyPressed(Key.A, Key.A));
+		Assert.assertTrue(ui.fireKeyReleased(Key.A, Key.A));
 		Assert.assertTrue(ui.fireCharTyped('a'));
 	}
 
@@ -464,8 +466,9 @@ public class UITest {
 		ui.fireMouseDragged(MouseButton.LEFT, 10L);
 		ui.fireMouseReleased(MouseButton.LEFT);
 		ui.fireKeyPressed(Key.A, Key.A);
+		ui.fireKeyReleased(Key.A, Key.A);
 		ui.fireCharTyped('a');
-		Assert.assertEquals(Arrays.asList("scrolled node", "scrolled 1.0", "dragged node", "dragged LEFT 10", "released node", "released LEFT", "key node", "key A", "char node", "char a"), this.trace);
+		Assert.assertEquals(Arrays.asList("scrolled node", "scrolled 1.0", "dragged node", "dragged LEFT 10", "released node", "released LEFT", "key node", "key A", "keyup node", "keyup A", "char node", "char a"), this.trace);
 	}
 
 	@Test
@@ -2069,6 +2072,10 @@ public class UITest {
 			});
 			super.handleKeyPressed(event -> this.consume(event));
 			super.handleKeyPressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("key " + event.getKey() + (event.isConsumed() ? " cancelled" : ""))));
+			super.handleKeyReleased(event -> {
+				this.trace.add("keyup " + event.getKey());
+				this.consume(event);
+			});
 			super.handleCharTyped(event -> this.consume(event));
 			super.handleCharTyped(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("char " + new String(Character.toChars(event.getCodepoint())) + (event.isConsumed() ? " cancelled" : ""))));
 		}
@@ -2368,6 +2375,11 @@ public class UITest {
 			if (this.cancel) {
 				event.consume();
 			}
+		}
+
+		@Override
+		public void keyReleased(final @NonNull NodeKeyEvent<?> event) {
+			this.trace.add("keyup " + this.name);
 		}
 
 		@Override

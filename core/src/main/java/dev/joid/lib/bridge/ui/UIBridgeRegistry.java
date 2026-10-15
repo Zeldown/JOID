@@ -126,7 +126,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 		final Key key = this.keyState.release(physicalKey);
 		boolean consumed = false;
 		for (final UIBridge bridge : this.getInputList()) {
-			consumed |= bridge.keyReleased(key);
+			consumed |= bridge.keyReleased(physicalKey, key);
 		}
 		return consumed;
 	}

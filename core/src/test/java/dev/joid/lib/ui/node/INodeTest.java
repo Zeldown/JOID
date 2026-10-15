@@ -29,6 +29,7 @@ public class INodeTest {
 		node.mouseReleased(NodeMouseEvent.create(owner, 0D, 0D, MouseButton.LEFT, 0L, input));
 		node.mouseScroll(NodeMouseScrollEvent.create(owner, 0D, 0D, 0D, 1D, input));
 		node.keyPressed(NodeKeyEvent.create(owner, Key.A, Key.A, input));
+		node.keyReleased(NodeKeyEvent.create(owner, Key.A, Key.A, input));
 		node.charTyped(NodeCharEvent.create(owner, 'a', input));
 		Assert.assertFalse(input.isConsumed());
 	}

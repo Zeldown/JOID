@@ -261,7 +261,9 @@ public class UIBridgeRegistryTest {
 		low.cancel = true;
 		Assert.assertTrue(registry.keyPressed(Key.A, Key.A));
 		low.cancel = false;
+		this.trace.clear();
 		Assert.assertTrue(registry.keyReleased(Key.A));
+		Assert.assertEquals(Arrays.asList("keyup high", "keyup low"), this.trace);
 		Assert.assertFalse(registry.keyReleased(Key.A));
 		Assert.assertFalse(registry.keyReleased(Key.B));
 	}
@@ -360,6 +362,7 @@ public class UIBridgeRegistryTest {
 			super.handleMouseReleased(event -> this.record("released", event));
 			super.handleMouseScroll(event -> this.record("scroll", event));
 			super.handleKeyPressed(event -> this.record("key", event));
+			super.handleKeyReleased(event -> this.record("keyup", event));
 			super.handleCharTyped(event -> this.record("char", event));
 		}
 

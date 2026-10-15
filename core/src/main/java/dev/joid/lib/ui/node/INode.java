@@ -24,5 +24,6 @@ public interface INode extends IndexedElement {
 
 	default public void charTyped(final @NonNull NodeCharEvent<?> event) {}
 	default public void keyPressed(final @NonNull NodeKeyEvent<?> event) {}
+	default public void keyReleased(final @NonNull NodeKeyEvent<?> event) {}
 
 }

@@ -2,12 +2,14 @@ package dev.joid.lib.ui.event.impl.node;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
@@ -86,6 +88,37 @@ public class NodeKeyEventTest {
 		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
 		this.bridges.getUi().keyPressed(Key.A, Key.A);
 		Assert.assertTrue(received.isEmpty());
+	}
+
+	@Test
+	public void receivesTheReleaseWithTheKeysOfItsPress() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).handleKeyReleased(event -> received.addAll(Arrays.asList(event.getNode(), event.getKey(), event.getPhysicalKey())));
+		final NodeUI ui = new NodeUI(rect).handleKeyReleased(event -> received.addAll(Arrays.asList(event.getUi(), event.getKey(), event.getPhysicalKey())));
+		this.bridges.open(ui).frames(30);
+		BridgeHandler.UI.keyPressed(Key.Q, Key.A);
+		BridgeHandler.UI.keyReleased(Key.Q);
+		Assert.assertEquals(Arrays.asList(rect, Key.A, Key.Q, ui, Key.A, Key.Q), received);
+	}
+
+	@Test
+	public void receivesAtItsPositionTheReleaseOfAnUnknownPress() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).handleKeyReleased(event -> received.addAll(Arrays.asList(event.getKey(), event.getPhysicalKey())));
+		this.bridges.open(new NodeUI(rect)).frames(30);
+		BridgeHandler.UI.keyReleased(Key.K);
+		Assert.assertEquals(Arrays.asList(Key.K, Key.K), received);
+	}
+
+	@Test
+	public void receivesTheReleaseOnAHiddenOrDisabledNode() {
+		final List<Object> received = new ArrayList<>();
+		final RectNode hidden = RectNode.create(100D, 100D, 200D, 100D).visible(() -> false).handleKeyReleased(event -> received.add(event.getNode()));
+		final RectNode disabled = RectNode.create(400D, 100D, 200D, 100D).enabled(() -> false).handleKeyReleased(event -> received.add(event.getNode()));
+		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
+		this.bridges.getUi().keyReleased(Key.A, Key.A);
+		Assert.assertEquals(new HashSet<>(Arrays.asList(hidden, disabled)), new HashSet<>(received));
 	}
 
 	public static final class NodeUI extends UI {

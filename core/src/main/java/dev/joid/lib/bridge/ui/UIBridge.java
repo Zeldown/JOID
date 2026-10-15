@@ -141,7 +141,8 @@ public abstract class UIBridge implements IUIBridge {
 		return consumed;
 	}
 
-	public final boolean keyReleased(final @NonNull Key key) {
+	public final boolean keyReleased(final @NonNull Key physicalKey, final @NonNull Key key) {
+		this.dispatch(current -> current.fireKeyReleased(physicalKey, key));
 		return this.consumedKeySet.remove(key);
 	}
 

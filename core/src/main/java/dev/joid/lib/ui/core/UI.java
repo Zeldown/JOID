@@ -76,6 +76,7 @@ import lombok.NonNull;
 public abstract class UI implements IUI, IndexedElement {
 
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
+	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_RELEASED   = EventType.create("handleKeyReleased");
 	private static final EventType<UICharEvent<UI>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
 	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
 	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
@@ -382,6 +383,19 @@ public abstract class UI implements IUI, IndexedElement {
 				}
 			}
 		});
+	}
+
+	public final <T extends UI> @NonNull T handleKeyReleased(final @NonNull EventListener<UIKeyEvent<T>> listener) {
+		return this.listen(UI.HANDLE_KEY_RELEASED, listener);
+	}
+
+	public final boolean fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key) {
+		if (!this.initialized) {
+			return false;
+		}
+
+		final UIKeyEvent<UI> event = UIKeyEvent.create(this, physicalKey, key);
+		return this.fireInput(UI.HANDLE_KEY_RELEASED, "keyReleased", event, node -> node.fireKeyReleased(physicalKey, key, event), () -> {});
 	}
 
 	public final void fireUpdate() {

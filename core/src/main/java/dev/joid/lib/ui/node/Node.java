@@ -103,6 +103,7 @@ public abstract class Node implements INode {
 
 	private static final EventType<NodeCharEvent<Node>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
 	private static final EventType<NodeKeyEvent<Node>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
+	private static final EventType<NodeKeyEvent<Node>>         HANDLE_KEY_RELEASED   = EventType.create("handleKeyReleased");
 	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
 	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
 	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_RELEASED = EventType.create("handleMouseReleased");
@@ -844,6 +845,20 @@ public abstract class Node implements INode {
 		this.lastKey = key;
 		this.lastKeyTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.dispatch(NodeKeyEvent.create(this, physicalKey, key, source), this.isEnabled(), Node.HANDLE_KEY_PRESSED, (node, event) -> node.fireKeyPressed(physicalKey, key, event), this::keyPressed);
+	}
+
+	public final <T extends Node> @NonNull T handleKeyReleased(final @NonNull EventListener<NodeKeyEvent<T>> listener) {
+		return this.listen(Node.HANDLE_KEY_RELEASED, listener);
+	}
+
+	public final boolean fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key) {
+		final NodeKeyEvent<Node> input = NodeKeyEvent.create(this, physicalKey, key, null);
+		this.fireKeyReleased(physicalKey, key, input);
+		return input.isConsumed();
+	}
+
+	public final void fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull ConsumableEvent source) {
+		this.dispatch(NodeKeyEvent.create(this, physicalKey, key, source), true, Node.HANDLE_KEY_RELEASED, (node, event) -> node.fireKeyReleased(physicalKey, key, event), this::keyReleased);
 	}
 
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {

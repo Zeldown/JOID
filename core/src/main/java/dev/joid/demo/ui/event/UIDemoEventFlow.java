@@ -47,6 +47,7 @@ public class UIDemoEventFlow extends UIDemo {
 		final BooleanSignal focused = new BooleanSignal(false);
 		final IntegerSignal cursor = new IntegerSignal(0);
 		final IntegerSignal letter = new IntegerSignal(0);
+		final DoubleSignal walk = new DoubleSignal(0D);
 		final DoubleSignal walkX = new DoubleSignal(40D);
 
 		super.handleKeyPressed(event -> key.set(event.getKey().name()));
@@ -56,7 +57,12 @@ public class UIDemoEventFlow extends UIDemo {
 			}
 
 			if (event.getPhysicalKey() == Key.A || event.getPhysicalKey() == Key.D) {
-				walkX.set(Math.max(40D, Math.min(220D, walkX.peek() + (event.getPhysicalKey() == Key.A ? -20D : 20D))));
+				walk.set(event.getPhysicalKey() == Key.A ? -4D : 4D);
+			}
+		});
+		super.handleKeyReleased(event -> {
+			if (event.getPhysicalKey() == (walk.peek() < 0D ? Key.A : Key.D)) {
+				walk.set(0D);
 			}
 		});
 		super.beforeClose(EventListener.priority(EventPriority.HIGH, event -> {
@@ -285,7 +291,7 @@ public class UIDemoEventFlow extends UIDemo {
 		.create(80, 720, 320, 260)
 		.color(UIDemoEventFlow.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 40, 60, 60).color(UIDemoEventFlow.INK).x(walkX).attach(rect);
+			RectNode.create(40, 40, 60, 60).color(UIDemoEventFlow.INK).x(walkX).onUpdate(event -> walkX.set(Math.max(40D, Math.min(220D, walkX.peek() + walk.peek())))).attach(rect);
 			TextNode.create(40, 130).text(Text.create("Letter Z: " + letter.get(), info)).attach(rect);
 			TextNode.create(40, 175).text(Text.create("Move: A / D", info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Letter vs position", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
