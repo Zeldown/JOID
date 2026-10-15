@@ -44,16 +44,16 @@ public final class AnnotationValues {
 	private static Method find(final Object target, final String name, final Class<?>... types) {
 		try {
 			return target.getClass().getMethod(name, types);
-		} catch (final NoSuchMethodException e) {
-			throw new IllegalStateException("The class " + target.getClass().getName() + " has no public method " + name + "(...) for the annotation value " + name + ", add it", e);
+		} catch (final NoSuchMethodException exception) {
+			throw new IllegalStateException("The class " + target.getClass().getName() + " has no public method " + name + "(...) for the annotation value " + name + ", add it", exception);
 		}
 	}
 
 	private static Object invoke(final Method method, final Object target, final Object... arguments) {
 		try {
 			return method.invoke(target, arguments);
-		} catch (final ReflectiveOperationException e) {
-			throw new IllegalStateException("The method " + method.getName() + " of " + target.getClass().getName() + " failed for an annotation value (" + e + ")", e);
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException("The method " + method.getName() + " of " + target.getClass().getName() + " failed for an annotation value (" + exception + ")", exception);
 		}
 	}
 

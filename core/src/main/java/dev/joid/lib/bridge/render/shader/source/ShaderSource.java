@@ -71,10 +71,10 @@ public final class ShaderSource {
 	}
 
 	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull Object handle) {
-		try (InputStream stream = Asset.of(handle).open()) {
+		try (final InputStream stream = Asset.of(handle).open()) {
 			return ShaderSource.parse(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
+		} catch (final IOException exception) {
+			throw new UncheckedIOException(exception);
 		}
 	}
 

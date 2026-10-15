@@ -24,7 +24,7 @@ public final class DemoEntry {
 		return new DemoEntry(clazz.getSimpleName(), () -> {
 			try {
 				final UI ui = clazz.newInstance();
-				ui.setTransition(new DemoPushTransition());
+				ui.transition(DemoPushTransition.create());
 				JOID.open(ui);
 			} catch (final Exception e) {
 				e.printStackTrace();

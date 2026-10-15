@@ -56,8 +56,8 @@ public abstract class NodeEffect<T extends Node> implements Cloneable {
 	public final <E extends NodeEffect<T>> @NonNull E copy() {
 		try {
 			return (E) super.clone();
-		} catch (final CloneNotSupportedException e) {
-			throw new IllegalStateException("The effect " + this.getClass().getSimpleName() + " cannot be copied (" + e + "), keep NodeEffect as its superclass", e);
+		} catch (final CloneNotSupportedException exception) {
+			throw new IllegalStateException("The effect " + this.getClass().getSimpleName() + " cannot be copied (" + exception + "), keep NodeEffect as its superclass", exception);
 		}
 	}
 

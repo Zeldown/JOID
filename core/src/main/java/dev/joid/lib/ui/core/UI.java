@@ -111,11 +111,11 @@ public abstract class UI implements IUI, IndexedElement {
 	@Getter private final UIDataOverlayObject overlay;
 
 	@Getter
-	private transient Transition transition;
+	private Transition transition;
 
-	private transient PopupTransition                              popupTransition;
-	private transient Map<Class<? extends UIStore>, UIStore>       storeMap;
-	private transient Map<Class<? extends Annotation>, Annotation> annotationMap;
+	private PopupTransition                              popupTransition;
+	private Map<Class<? extends UIStore>, UIStore>       storeMap;
+	private Map<Class<? extends Annotation>, Annotation> annotationMap;
 
 	private double zoom;
 
@@ -702,14 +702,15 @@ public abstract class UI implements IUI, IndexedElement {
 		return (T) this;
 	}
 
-	public final void setDepthLevel(final double level) {
-		this.depthLevel = level;
+	public final <T extends UI> @NonNull T depthLevel(final double depthLevel) {
+		this.depthLevel = depthLevel;
+		return (T) this;
 	}
 
-	public final @NonNull UI setTransition(final Transition transition) {
+	public final <T extends UI> @NonNull T transition(final Transition transition) {
 		this.transition = transition;
 		this.customTransition = true;
-		return this;
+		return (T) this;
 	}
 
 	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final @NonNull Supplier<T> factory) {
@@ -809,9 +810,8 @@ public abstract class UI implements IUI, IndexedElement {
 		final long start = BridgeHandler.CLOCK.get().nanoTime();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 
-		final long frame = BridgeHandler.CLOCK.get().nanoTime();
-		this.frameTime = this.lastFrame == 0L ? 1000D / 60D : (frame - this.lastFrame) / 1_000_000D;
-		this.lastFrame = frame;
+		this.frameTime = this.lastFrame == 0L ? 1000D / 60D : (start - this.lastFrame) / 1_000_000D;
+		this.lastFrame = start;
 		this.frameCount++;
 
 		this.mouseX = mouseX;
@@ -821,7 +821,8 @@ public abstract class UI implements IUI, IndexedElement {
 		if (!this.closed) {
 			this.refreshWatch();
 		}
-		this.onTop = this.getBridge() != null && this.getBridge().isOnTop(this);
+		final IUIBridge bridge = this.getBridge();
+		this.onTop = bridge != null && bridge.isOnTop(this);
 
 		final List<Task> taskList = new ArrayList<>(this.taskList);
 		this.nodeList.forEach(node -> UI.collectTasks(node, taskList));
@@ -831,7 +832,6 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 		}
 
-		final IUIBridge bridge = this.getBridge();
 		final double interfaceScale = bridge == null || !this.scale.active() ? 1D : this.scale.apply(bridge.getInterfaceScale(this));
 		if (interfaceScale != this.view.getInterfaceScale()) {
 			this.view.interfaceScale(interfaceScale);
@@ -843,26 +843,27 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final Transition transition = this.transition;
 		if (this.data.background()) {
-			float opacity = this.data.getBackgroundColor().getAlpha() / 255F;
+			final float alpha = this.data.getBackgroundColor().getAlpha() / 255F;
+			float opacity = alpha;
 			if (transition != null) {
 				if (transition.getIn().isRunning()) {
-					opacity = Math.min(1F, Math.max(0F, transition.getIn().getAnimator().peek())) * (this.data.getBackgroundColor().getAlpha() / 255F);
+					opacity = Math.min(1F, Math.max(0F, transition.getIn().getAnimator().peek())) * alpha;
 				}
 
 				if (transition.getOut().isRunning()) {
-					opacity = Math.min(1F, Math.max(0F, 1F - transition.getOut().getAnimator().peek())) * (this.data.getBackgroundColor().getAlpha() / 255F);
+					opacity = Math.min(1F, Math.max(0F, 1F - transition.getOut().getAnimator().peek())) * alpha;
 				}
 			}
-			DrawUtils.SHAPE.drawRect(0, 0, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().withAlpha(opacity));
+			DrawUtils.SHAPE.drawRect(0D, 0D, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().withAlpha(opacity));
 		}
 
 		render.getState().alphaCutoff(0F);
 		final Runnable body = () -> this.view.render(render, this.data.projection(), () -> {
-			this.depthLevel = 0;
+			this.depthLevel = 0D;
 			double lastDepthLevel = this.depthLevel;
 
 			for (final Node node : this.nodeList.ordered()) {
-				render.getModelView().translate(0, 0, this.depthLevel - lastDepthLevel);
+				render.getModelView().translate(0D, 0D, this.depthLevel - lastDepthLevel);
 				lastDepthLevel = this.depthLevel;
 				node.render(mx, my);
 			}
@@ -889,7 +890,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		if (this.lastFpsUpdate == 0L) {
-			this.fps = 0;
+			this.fps = 0D;
 			this.fpsCounter = 0;
 			this.lastFpsUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		} else if (this.frameTime > 0D) {
@@ -1005,7 +1006,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return null;
 		}
 
-		final Transition transition = new PopTransition();
+		final Transition transition = PopTransition.create();
 		if (!popupTransition.isIn()) {
 			transition.getIn().disable();
 		}

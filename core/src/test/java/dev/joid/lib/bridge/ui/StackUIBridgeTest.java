@@ -126,7 +126,7 @@ public class StackUIBridgeTest {
 	public void keepsTheScreenCallbacksQuietWhileTheReplacedScreenPlaysItsExit() {
 		final ScreenUI menu = new ScreenUI("menu", this.trace);
 		final ScreenUI settings = new ScreenUI("settings", this.trace);
-		menu.setTransition(new PopTransition());
+		menu.transition(PopTransition.create());
 		BridgeHandler.UI.register(this.bridge);
 		try {
 			this.bridge.open(menu);

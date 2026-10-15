@@ -106,7 +106,7 @@ public abstract class ShowUI extends UI {
 	}
 
 	protected static void open(final UI ui) {
-		ui.setTransition(new DemoPushTransition());
+		ui.transition(DemoPushTransition.create());
 		JOID.open(ui);
 	}
 

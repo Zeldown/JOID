@@ -1021,9 +1021,9 @@ public class NodeTest {
 	public void countsItsLoads() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D);
 		this.bridges.open(new NodeUI(node));
-		Assert.assertEquals(1L, node.getUpdateCount());
+		Assert.assertEquals(1L, node.getLoadCount());
 		node.load(node.getUi());
-		Assert.assertEquals(2L, node.getUpdateCount());
+		Assert.assertEquals(2L, node.getLoadCount());
 	}
 
 	@Test
@@ -1031,11 +1031,11 @@ public class NodeTest {
 		final DoubleSignal x = new DoubleSignal(0D);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).x(x);
 		this.bridges.open(new NodeUI(node)).frames(2);
-		Assert.assertEquals(1L, node.getUpdateCount());
+		Assert.assertEquals(1L, node.getLoadCount());
 		x.set(20D);
 		this.bridges.frame();
 		Assert.assertEquals(20D, node.getX(), 0D);
-		Assert.assertEquals(1L, node.getUpdateCount());
+		Assert.assertEquals(1L, node.getLoadCount());
 	}
 
 	@Test
@@ -1367,7 +1367,7 @@ public class NodeTest {
 	@Test
 	public void reportsTheEndOfAHorizontalScrollOnceItRests() {
 		final List<Double> ends = new ArrayList<>();
-		final ContainerNode row = NodeTest.row().onScrollAtEnd(event -> ends.add(event.getNode().getScrollX()));
+		final ContainerNode row = NodeTest.row().onScrollEndReached(event -> ends.add(event.getNode().getScrollX()));
 		this.bridges.open(new NodeUI(row));
 		row.scrollX(-1000D);
 		Assert.assertEquals(-300D, row.getTargetScrollX(), 0D);
@@ -1382,7 +1382,7 @@ public class NodeTest {
 	@Test
 	public void reportsTheEndOfAVerticalScrollOnceItRests() {
 		final List<Double> ends = new ArrayList<>();
-		final ContainerNode column = NodeTest.column().onScrollAtEnd(event -> ends.add(event.getNode().getScrollY()));
+		final ContainerNode column = NodeTest.column().onScrollEndReached(event -> ends.add(event.getNode().getScrollY()));
 		this.bridges.open(new NodeUI(column));
 		column.scrollY(-1000D);
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
@@ -1395,7 +1395,7 @@ public class NodeTest {
 	@Test
 	public void forgetsTheEndOfAScrollLeftBeforeItRests() {
 		final List<Double> ends = new ArrayList<>();
-		final ContainerNode row = NodeTest.row().onScrollAtEnd(event -> ends.add(event.getNode().getScrollX()));
+		final ContainerNode row = NodeTest.row().onScrollEndReached(event -> ends.add(event.getNode().getScrollX()));
 		this.bridges.open(new NodeUI(row));
 		row.scrollX(-1000D);
 		this.bridges.frame();
@@ -1408,7 +1408,7 @@ public class NodeTest {
 	@Test
 	public void announcesTheEndOfAScrollAsSoonAsItAimsAtIt() {
 		final List<String> events = new ArrayList<>();
-		final ContainerNode row = NodeTest.row().onScrollToEnd(event -> events.add("ending " + event.getNode().getTargetScrollX())).onScrollAtEnd(event -> events.add("end " + event.getNode().getScrollX()));
+		final ContainerNode row = NodeTest.row().onScrollToEnd(event -> events.add("ending " + event.getNode().getTargetScrollX())).onScrollEndReached(event -> events.add("end " + event.getNode().getScrollX()));
 		this.bridges.open(new NodeUI(row));
 		row.scrollX(-1000D);
 		Assert.assertEquals(Arrays.asList("ending -300.0"), events);
@@ -1445,7 +1445,7 @@ public class NodeTest {
 			if (event.getNode().getChildren().size() == 2) {
 				RectNode.create(700D, 0D, 300D, 100D).attach(event.getNode());
 			}
-		}).onScrollAtEnd(event -> ends.add(event.getNode().getScrollX()));
+		}).onScrollEndReached(event -> ends.add(event.getNode().getScrollX()));
 		this.bridges.open(new NodeUI(row));
 		row.scrollX(-1000D);
 		this.bridges.frames(200);

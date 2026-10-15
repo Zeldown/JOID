@@ -112,7 +112,7 @@ public class UIDemoChoice extends UI {
 	@Override
 	public void init() {
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 26, Color.WHITE);
-		super.setTransition(new DemoPushTransition());
+		super.transition(DemoPushTransition.create());
 
 		GridNode
 		.create(90, 40, 1740, 1000)

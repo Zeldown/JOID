@@ -5,7 +5,7 @@ import dev.joid.demo.ui.core.transition.impl.DemoSlideTransition;
 public class UIDemoSlidePopup extends UIDemoOptionPopup {
 
 	public UIDemoSlidePopup() {
-		super.setTransition(new DemoSlideTransition());
+		super.transition(DemoSlideTransition.create());
 	}
 
 }

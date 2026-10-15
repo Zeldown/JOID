@@ -75,8 +75,8 @@ public final class UIStoreHook {
 			UIStoreHook.GLOBAL_CACHE.remove(store.getClass());
 			try {
 				store.destroy();
-			} catch (final RuntimeException e) {
-				JOIDLog.warn("The store " + UIStoreHook.getId(store) + " failed in destroy() at shutdown (" + e + "), the other stores are still destroyed");
+			} catch (final RuntimeException exception) {
+				JOIDLog.warn("The store " + UIStoreHook.getId(store) + " failed in destroy() at shutdown (" + exception + "), the other stores are still destroyed");
 			}
 		}
 	}

@@ -267,7 +267,7 @@ public class UIDemoOverflow extends UIDemo {
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
 			.onScroll(event -> offset.set((int) event.getOffset()))
-			.onScrollAtEnd(event -> {
+			.onScrollEndReached(event -> {
 				System.out.println("[UIDemoOverflow] scroll end: " + event.getNode().getScrollX() + ", " + event.getNode().getScrollY());
 				ends.increment();
 			})

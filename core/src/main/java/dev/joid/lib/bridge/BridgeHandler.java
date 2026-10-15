@@ -32,8 +32,8 @@ public final class BridgeHandler {
 		THREAD        = BridgeRegistry.create("THREAD");
 		SIGNAL_REPLAY = BridgeRegistry.create("SIGNAL_REPLAY");
 
-		CLOCK.register(new SystemClockBridge());
-		THREAD.register(new DirectThreadBridge());
+		CLOCK.register(SystemClockBridge.create());
+		THREAD.register(DirectThreadBridge.create());
 		SIGNAL_REPLAY.register(new ISignalReplayRemapper() {});
 	}
 

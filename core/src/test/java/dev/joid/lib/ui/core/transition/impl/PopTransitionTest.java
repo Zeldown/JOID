@@ -24,7 +24,7 @@ public class PopTransitionTest {
 	@Test
 	public void growsFromThreeQuartersOfTheUi() {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
-		final TransitionStep in = new PopTransition().getIn();
+		final TransitionStep in = PopTransition.create().getIn();
 		in.init(ui);
 		in.start();
 		Assert.assertEquals(0F, in.getAnimator().get(), 0F);
@@ -34,7 +34,7 @@ public class PopTransitionTest {
 	@Test
 	public void reachesItsFullSizeIn130Milliseconds() {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
-		final TransitionStep in = new PopTransition().getIn();
+		final TransitionStep in = PopTransition.create().getIn();
 		in.start();
 		Assert.assertTrue(in.isRunning());
 		in.render(ui, () -> {});
@@ -49,7 +49,7 @@ public class PopTransitionTest {
 	@Test
 	public void shrinksBackToThreeQuartersOfTheUi() {
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
-		final TransitionStep out = new PopTransition().getOut();
+		final TransitionStep out = PopTransition.create().getOut();
 		out.init(ui);
 		out.start();
 		this.assertScale(ui, out, 1D);
@@ -64,7 +64,7 @@ public class PopTransitionTest {
 	@Test
 	public void popsAUiInWhenItOpens() {
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)));
-		ui.setTransition(new PopTransition());
+		ui.transition(PopTransition.create());
 		this.bridges.open(ui);
 		Assert.assertEquals(150D, this.width(), 1E-3D);
 		this.bridges.frame();
@@ -76,7 +76,7 @@ public class PopTransitionTest {
 	@Test
 	public void popsAUiInAfterASlowOpening() {
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)));
-		ui.setTransition(new PopTransition());
+		ui.transition(PopTransition.create());
 		this.bridges.getUi().add(ui);
 		this.bridges.getClock().advance(500L);
 		this.bridges.frame();
@@ -90,7 +90,7 @@ public class PopTransitionTest {
 	@Test
 	public void popsAUiOutBeforeItCloses() {
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D).color(new Color(0.2F, 0.4F, 0.6F, 1F)));
-		ui.setTransition(new PopTransition());
+		ui.transition(PopTransition.create());
 		this.bridges.open(ui).frames(20);
 		Assert.assertFalse(ui.fireClose());
 		this.bridges.frames(2);

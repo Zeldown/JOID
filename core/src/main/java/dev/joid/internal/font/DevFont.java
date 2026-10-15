@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DevFont {
+public final class DevFont {
 
 	public static MsdfFont MONTSERRAT;
 

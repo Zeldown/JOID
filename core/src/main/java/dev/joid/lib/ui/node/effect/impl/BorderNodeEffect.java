@@ -33,6 +33,10 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 		return new BorderNodeEffect(color, width);
 	}
 
+	public float getWidth() {
+		return this.widthSupplier.get();
+	}
+
 	public boolean isFill() {
 		return this.fillSupplier.get();
 	}

@@ -38,7 +38,6 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 	}
 
 	public void frame() {
-		this.runThreadTasks();
 		final List<UIBridge> bridgeList = this.getUIBridgeList();
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		final IRenderBridge render = BridgeHandler.RENDER.get();

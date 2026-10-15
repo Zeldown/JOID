@@ -87,7 +87,7 @@ public class NodeScrollEventTest {
 	@Test
 	public void firesOnceTheScrollReachesTheEnd() {
 		final List<Object> received = new ArrayList<>();
-		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollAtEnd(event -> received.add(event.getNode()));
+		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollEndReached(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(box)).frames(30);
 		box.scrollY(-200D);
 		this.bridges.frames(200);
@@ -102,7 +102,7 @@ public class NodeScrollEventTest {
 	@Test
 	public void firesWhenTheWheelReachesTheEnd() {
 		final List<Object> received = new ArrayList<>();
-		final ContainerNode box = NodeScrollEventTest.box(360D).onScrollAtEnd(event -> received.add(event.getNode()));
+		final ContainerNode box = NodeScrollEventTest.box(360D).onScrollEndReached(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(box)).frames(30);
 		this.bridges.move(700D, 200D).frames(2).scroll(-1D).frames(200);
 		Assert.assertTrue(received.isEmpty());
@@ -114,7 +114,7 @@ public class NodeScrollEventTest {
 	@Test
 	public void ignoresAScrollBackToTheTop() {
 		final List<Object> received = new ArrayList<>();
-		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollAtEnd(event -> received.add(event.getNode()));
+		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollEndReached(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(box)).frames(30);
 		box.scrollY(-200D);
 		box.scrollY(0D);
@@ -125,7 +125,7 @@ public class NodeScrollEventTest {
 	@Test
 	public void ignoresAnEndLeftBeforeTheScrollRests() {
 		final List<Object> received = new ArrayList<>();
-		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollAtEnd(event -> received.add(event.getNode()));
+		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollEndReached(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(box)).frames(30);
 		box.scrollY(-900D);
 		this.bridges.frames(5);
@@ -137,7 +137,7 @@ public class NodeScrollEventTest {
 	@Test
 	public void receivesThePositionWhereTheScrollRests() {
 		final List<Double> received = new ArrayList<>();
-		final ContainerNode box = ContainerNode.create(500D, 100D, 300D, 300D).overflow(OverflowProperty.SCROLL).onScrollAtEnd(event -> received.add(event.getNode().getScrollY()));
+		final ContainerNode box = ContainerNode.create(500D, 100D, 300D, 300D).overflow(OverflowProperty.SCROLL).onScrollEndReached(event -> received.add(event.getNode().getScrollY()));
 		RectNode.create(0D, 0D, 100D, 1000D).attach(box);
 		this.bridges.open(new NodeUI(box)).frames(30);
 		box.scrollY(-700D);

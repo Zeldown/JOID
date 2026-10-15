@@ -280,7 +280,7 @@ public final class FileCacheArea {
 			throw new IllegalStateException("The file cache cannot name the content of " + file.getAbsolutePath() + ": this JVM has no SHA-1 digest, run JOID on a standard JVM", exception);
 		}
 
-		try (InputStream stream = Files.newInputStream(file.toPath())) {
+		try (final InputStream stream = Files.newInputStream(file.toPath())) {
 			final byte[] buffer = new byte[65536];
 			for (int read = stream.read(buffer); read != -1; read = stream.read(buffer)) {
 				digest.update(buffer, 0, read);

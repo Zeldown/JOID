@@ -37,7 +37,7 @@ public class TweenAnimatorTest {
 
 	@After
 	public void restoreTheSystemClock() {
-		BridgeHandler.CLOCK.register(new SystemClockBridge());
+		BridgeHandler.CLOCK.register(SystemClockBridge.create());
 	}
 
 	@Test

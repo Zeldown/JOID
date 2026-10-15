@@ -73,8 +73,8 @@ public final class HotReload {
 		try {
 			monitor.start();
 			HotReload.RUNNING_SET.add(monitor);
-		} catch (final Exception e) {
-			JOIDLog.warn("The hot reload of " + location.getAbsolutePath() + " cannot start (" + e + "), the UI no longer reloads: check that the folder can be watched", e);
+		} catch (final Exception exception) {
+			JOIDLog.warn("The hot reload of " + location.getAbsolutePath() + " cannot start (" + exception + "), the UI no longer reloads: check that the folder can be watched", exception);
 		}
 	}
 
@@ -85,8 +85,8 @@ public final class HotReload {
 
 		try {
 			monitor.stop();
-		} catch (final Exception e) {
-			JOIDLog.warn("A hot reload watcher cannot stop (" + e + "), it stops with the JVM", e);
+		} catch (final Exception exception) {
+			JOIDLog.warn("A hot reload watcher cannot stop (" + exception + "), it stops with the JVM", exception);
 		}
 	}
 
@@ -94,8 +94,8 @@ public final class HotReload {
 		final FileAlterationObserver observer;
 		try {
 			observer = FileAlterationObserver.builder().setFile(location.isDirectory() ? location : location.getParentFile()).get();
-		} catch (final IOException e) {
-			throw new UncheckedIOException(e);
+		} catch (final IOException exception) {
+			throw new UncheckedIOException(exception);
 		}
 
 		observer.addListener(new FileAlterationListenerAdaptor() {
@@ -120,7 +120,7 @@ public final class HotReload {
 
 				try {
 					Thread.sleep(1000L);
-				} catch (final Exception e) {}
+				} catch (final Exception exception) {}
 
 				JOIDLog.info(this.change.getName() + " changed, the UIs that use it reload");
 				this.change = null;

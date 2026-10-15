@@ -37,7 +37,7 @@ public class RectNode extends Node {
 
 	public final double getBorderStroke() {
 		final BorderNodeEffect border = super.getEffect(BorderNodeEffect.class);
-		return border == null ? 0D : border.getWidthSupplier().get();
+		return border == null ? 0D : border.getWidth();
 	}
 
 	public final boolean isBorderFill() {

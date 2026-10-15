@@ -45,7 +45,7 @@ public class ShaderPipelineTest {
 	@After
 	public void releaseThePool() {
 		ShaderPipeline.cleanup();
-		BridgeHandler.CLOCK.register(new SystemClockBridge());
+		BridgeHandler.CLOCK.register(SystemClockBridge.create());
 	}
 
 	@Test

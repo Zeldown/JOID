@@ -14,12 +14,13 @@ import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
 public class WindowUIBridge extends StackUIBridge {
 
-	@Getter private Color    background;
-	@Getter private Color    hoverColor;
-	@Getter private TextInfo hoverInfo;
-	@Getter private Color    hoverBorderColor;
+	private Color    background;
+	private Color    hoverColor;
+	private TextInfo hoverInfo;
+	private Color    hoverBorderColor;
 
 	protected WindowUIBridge() {
 		this.background       = Color.BLACK;

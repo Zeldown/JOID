@@ -170,9 +170,9 @@ public class UITest {
 	public void replacesItsTransition() {
 		final TraceUI ui = new TraceUI(this.trace);
 		final RecordingTransition transition = new RecordingTransition(this.trace);
-		Assert.assertSame(ui, ui.setTransition(transition));
+		Assert.assertSame(ui, ui.transition(transition));
 		Assert.assertSame(transition, ui.getTransition());
-		ui.setTransition(null);
+		ui.transition(null);
 		Assert.assertNull(ui.getTransition());
 	}
 
@@ -357,7 +357,7 @@ public class UITest {
 	public void keepsAGivenTransitionWhenItsPopupChanges() {
 		final PopupUI ui = new PopupUI(this.trace);
 		final RecordingTransition transition = new RecordingTransition(this.trace);
-		ui.setTransition(transition);
+		ui.transition(transition);
 		ui.getPopup().transition(PopupTransition.NONE);
 		this.bridges.open(ui).frame();
 		Assert.assertSame(transition, ui.getTransition());
@@ -378,8 +378,8 @@ public class UITest {
 	@Test
 	public void keepsItsTransitionAcrossAReloadThatLeavesItsPopupUnchanged() {
 		final PopupUI ui = new PopupUI(this.trace);
-		final Transition transition = new PopTransition();
-		ui.setTransition(transition);
+		final Transition transition = PopTransition.create();
+		ui.transition(transition);
 		this.bridges.open(ui);
 		ui.reload();
 		Assert.assertSame(transition, ui.getTransition());
@@ -1118,14 +1118,14 @@ public class UITest {
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList("update", "depth 0.0", "depth 30.0"), this.trace);
 		Assert.assertEquals(30D, ui.getDepthLevel(), 0D);
-		ui.setDepthLevel(5D);
+		ui.depthLevel(5D);
 		Assert.assertEquals(5D, ui.getDepthLevel(), 0D);
 	}
 
 	@Test
 	public void wrapsItsDrawInItsTransition() {
 		final TraceUI ui = new TraceUI(this.trace, new TraceNode("node", this.trace, 0));
-		ui.setTransition(new RecordingTransition(this.trace));
+		ui.transition(new RecordingTransition(this.trace));
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("in init", "out init", "update node", "update", "in pre", "draw node", "in post"), this.trace);
 		this.trace.clear();
@@ -1140,7 +1140,7 @@ public class UITest {
 		final RecordingTransition transition = new RecordingTransition(this.trace);
 		transition.getIn().disable();
 		transition.getOut().disable();
-		ui.setTransition(transition);
+		ui.transition(transition);
 		this.bridges.open(ui);
 		Assert.assertEquals(Collections.singletonList("update"), this.trace);
 		Assert.assertTrue(ui.fireClose());
@@ -1151,7 +1151,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		final RecordingTransition transition = new RecordingTransition(this.trace);
 		transition.getOut().disable();
-		ui.setTransition(transition);
+		ui.transition(transition);
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("in init", "update", "in pre", "in post"), this.trace);
 		this.trace.clear();
@@ -1164,7 +1164,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		final RecordingTransition transition = new RecordingTransition(this.trace);
 		transition.getIn().disable();
-		ui.setTransition(transition);
+		ui.transition(transition);
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("out init", "update"), this.trace);
 		this.trace.clear();
@@ -1178,7 +1178,7 @@ public class UITest {
 	@Test
 	public void endsItsTransitionOnTheFrameItsTimelineFinishes() {
 		final TraceUI ui = new TraceUI(this.trace);
-		ui.setTransition(new RecordingTransition(this.trace));
+		ui.transition(new RecordingTransition(this.trace));
 		this.bridges.open(ui);
 		this.trace.clear();
 		this.bridges.getClock().advance(200L);
@@ -1197,7 +1197,7 @@ public class UITest {
 				throw new IllegalStateException("broken");
 			}
 		}));
-		ui.setTransition(new RecordingTransition(this.trace));
+		ui.transition(new RecordingTransition(this.trace));
 		this.bridges.open(ui);
 		broken[0] = true;
 		this.trace.clear();
@@ -2412,7 +2412,7 @@ public class UITest {
 		public void draw(final double mouseX, final double mouseY) {
 			this.trace.add("depth " + (UITest.depth() + 2000F));
 			if (this.level > 0D) {
-				super.getUi().setDepthLevel(this.level);
+				super.getUi().depthLevel(this.level);
 			}
 		}
 

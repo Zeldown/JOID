@@ -31,6 +31,10 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 		return new BlurNodeEffect(radiusSupplier);
 	}
 
+	public float getRadius() {
+		return this.radiusSupplier.get();
+	}
+
 	@Override
 	public boolean isShaderEffect() {
 		return true;

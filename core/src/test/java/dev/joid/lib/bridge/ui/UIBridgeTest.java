@@ -522,7 +522,7 @@ public class UIBridgeTest {
 	@Test
 	public void keepsDrawingTheUisAboveAUiClosingBehindThem() {
 		final DepthUI menu = new DepthUI("menu", this.trace);
-		menu.setTransition(new PopTransition());
+		menu.transition(PopTransition.create());
 		this.bridges.open(menu).open(new PopupUI("popup", this.trace)).frames(20);
 		JOID.close(menu);
 		final PrintStream previous = System.err;
@@ -1140,7 +1140,7 @@ public class UIBridgeTest {
 				}
 
 				this.trace.add("draw " + this.name + " " + UIBridgeTest.depth());
-				super.setDepthLevel(this.level);
+				super.depthLevel(this.level);
 			}));
 		}
 
