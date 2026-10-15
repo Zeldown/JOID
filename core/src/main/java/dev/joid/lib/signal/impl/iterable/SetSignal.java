@@ -49,15 +49,10 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	private @NonNull SetSignal<E> mutate(final @NonNull Consumer<Set<E>> mutation) {
-		final Set<E> base = this.peek();
-		final Set<E> set = new LinkedHashSet<>(base);
-		mutation.accept(set);
-		this.write(() -> {
-			if (this.peek() == base) {
-				this.set(set);
-			} else {
-				this.mutate(mutation);
-			}
+		this.transform(current -> {
+			final Set<E> set = new LinkedHashSet<>(current);
+			mutation.accept(set);
+			return set;
 		});
 		return this;
 	}

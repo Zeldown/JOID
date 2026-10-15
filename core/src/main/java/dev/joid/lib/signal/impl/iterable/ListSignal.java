@@ -65,15 +65,10 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	private @NonNull ListSignal<E> mutate(final @NonNull Consumer<List<E>> mutation) {
-		final List<E> base = this.peek();
-		final List<E> list = new ArrayList<>(base);
-		mutation.accept(list);
-		this.write(() -> {
-			if (this.peek() == base) {
-				this.set(list);
-			} else {
-				this.mutate(mutation);
-			}
+		this.transform(current -> {
+			final List<E> list = new ArrayList<>(current);
+			mutation.accept(list);
+			return list;
 		});
 		return this;
 	}

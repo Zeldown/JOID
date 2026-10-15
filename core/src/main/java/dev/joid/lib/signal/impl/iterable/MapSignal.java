@@ -67,15 +67,10 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	private @NonNull MapSignal<K, V> mutate(final @NonNull Consumer<Map<K, V>> mutation) {
-		final Map<K, V> base = this.peek();
-		final Map<K, V> map = new LinkedHashMap<>(base);
-		mutation.accept(map);
-		this.write(() -> {
-			if (this.peek() == base) {
-				this.set(map);
-			} else {
-				this.mutate(mutation);
-			}
+		this.transform(current -> {
+			final Map<K, V> map = new LinkedHashMap<>(current);
+			mutation.accept(map);
+			return map;
 		});
 		return this;
 	}
