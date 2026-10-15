@@ -206,7 +206,7 @@ public final class ResourceData {
 			final Runnable task = () -> {
 				try {
 					decoder.decode(this);
-				} catch (final RuntimeException exception) {
+				} catch (final Throwable exception) {
 					if (this.isCurrent(decoder, generation)) {
 						this.fail(exception);
 					}

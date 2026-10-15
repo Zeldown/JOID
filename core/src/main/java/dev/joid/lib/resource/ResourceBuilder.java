@@ -68,7 +68,17 @@ public final class ResourceBuilder {
 			return ResourceResolver.resolve(this, input);
 		}
 
-		final Asset asset = Asset.of(input);
+		final Asset asset;
+		try {
+			asset = Asset.of(input);
+		} catch (final IllegalArgumentException exception) {
+			if (!(input instanceof String)) {
+				throw exception;
+			}
+
+			return this.compute((String) input, () -> ResourceBuilder.failed((String) input, exception));
+		}
+
 		if (asset.isRemote()) {
 			return this.compute(asset.getUniqueId(), () -> {
 				final ResourceData data = new ResourceData(asset.getUniqueId(), null);
@@ -126,10 +136,14 @@ public final class ResourceBuilder {
 		try {
 			return new ResourceData(asset.getUniqueId(), ResourceFormat.decoder(asset));
 		} catch (final RuntimeException exception) {
-			final ResourceData data = new ResourceData(asset.getUniqueId(), null);
-			data.fail(exception);
-			return data;
+			return ResourceBuilder.failed(asset.getUniqueId(), exception);
 		}
+	}
+
+	private static @NonNull ResourceData failed(final @NonNull String uniqueId, final @NonNull RuntimeException exception) {
+		final ResourceData data = new ResourceData(uniqueId, null);
+		data.fail(exception);
+		return data;
 	}
 
 }

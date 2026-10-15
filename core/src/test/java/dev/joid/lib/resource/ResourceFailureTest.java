@@ -84,6 +84,16 @@ public class ResourceFailureTest {
 	}
 
 	@Test
+	public void failsAMissingPath() {
+		final List<Throwable> errors = new ArrayList<>();
+		final Resource resource = ResourceBuilder.create().cache(null).of("joid-missing/missing.png").blocking();
+		resource.getResourceData().onError(errors::add);
+		resource.prepareBind();
+		Assert.assertTrue(resource.isFailed());
+		Assert.assertEquals(1, errors.size());
+	}
+
+	@Test
 	public void failsARemoteImageOnItsTaskThread() {
 		final Resource resource = ResourceBuilder.create().cache(null).of(new BytesAsset("https://joid.invalid/photo.heic", true, ResourceFailureTest.HEIC));
 		resource.getResourceData().await();

@@ -13,6 +13,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -124,6 +125,17 @@ public class UrlAssetTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesANullUrl() {
 		UrlAsset.create(null);
+	}
+
+	@Test
+	public void reportsTheSecureFailureWhenThePlainFallbackFailsToo() {
+		try {
+			UrlAsset.create(this.server.url("https", "/missing.png")).read();
+			Assert.fail("A missing asset must fail");
+		} catch (final IOException expected) {
+			Assert.assertFalse(expected instanceof FileNotFoundException);
+			Assert.assertTrue(Arrays.stream(expected.getSuppressed()).anyMatch(FileNotFoundException.class::isInstance));
+		}
 	}
 
 	@Test

@@ -377,6 +377,21 @@ public class ResourceDataTest {
 	}
 
 	@Test
+	public void failsOnAnErrorOfItsAsyncDecode() {
+		final ResourceData data = new ResourceData("image", new Decoder() {
+
+			@Override
+			public void decode(final @NonNull ResourceData resource) {
+				throw new LinkageError("The native library is missing");
+			}
+
+		});
+		data.generate(true);
+		data.await();
+		Assert.assertTrue(data.isFailed());
+	}
+
+	@Test
 	public void reloadsAFailedResourceWithANewDecoder() {
 		final ResourceData data = new ResourceData("image", null);
 		data.fail(new IllegalStateException("missing"));

@@ -44,7 +44,13 @@ public final class UrlAsset extends Asset {
 			if (!this.url.startsWith("https:")) {
 				throw exception;
 			}
-			return UrlAsset.connect(this.url.replaceFirst("^https:", "http:"));
+
+			try {
+				return UrlAsset.connect(this.url.replaceFirst("^https:", "http:"));
+			} catch (final IOException fallback) {
+				exception.addSuppressed(fallback);
+				throw exception;
+			}
 		}
 	}
 

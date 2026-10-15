@@ -173,7 +173,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					final int[] pixels = this.frameToPixels(firstFrame, this.grabber.getImageWidth(), resource.getHeight());
 					resource.data(new int[][] { pixels });
 				}
-			} catch (final Exception exception) {
+			} catch (final Exception | LinkageError exception) {
 				resource.fail(exception);
 			}
 		}
