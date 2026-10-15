@@ -10,7 +10,7 @@ targetCompatibility = 1.8
 ext {
     joidVersion = '@JOID_VERSION@'
     lwjglVersion = '3.3.4'
-    lwjglNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? 'natives-windows' : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-macos-arm64' : 'natives-macos') : 'natives-linux'
+    lwjglNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? 'natives-windows' : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-macos-arm64' : 'natives-macos') : (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-linux-arm64' : 'natives-linux')
     macOs = org.gradle.internal.os.OperatingSystem.current().isMacOsX()
 }
 
