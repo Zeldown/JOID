@@ -115,11 +115,10 @@ public class NodeEffectTest {
 
 	@Test
 	public void wrapsTheDrawOfItsNode() {
-		this.bridges.move(50D, 60D);
 		this.bridges.open(new NodeUI(new TraceNode("node", this.trace).effect(new TraceEffect("effect", this.trace, true))));
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("pre effect 50.0 60.0", "draw node", "post effect 50.0 60.0"), this.trace);
+		Assert.assertEquals(Arrays.asList("open effect", "draw node", "close effect"), this.trace);
 	}
 
 	@Test
@@ -136,18 +135,7 @@ public class NodeEffectTest {
 		this.bridges.open(new NodeUI(node));
 		this.trace.clear();
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("pre early 0.0 0.0", "pre late 0.0 0.0", "draw node", "post late 0.0 0.0", "post early 0.0 0.0"), this.trace);
-	}
-
-	@Test
-	public void wrapsTheDrawOfTheNextEffectsByPriority() {
-		final TraceNode node = new TraceNode("node", this.trace);
-		node.effect(new WrapEffect("inner", this.trace).priority(2));
-		node.effect(new TraceEffect("outer", this.trace, true).priority(1));
-		this.bridges.open(new NodeUI(node));
-		this.trace.clear();
-		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("pre outer 0.0 0.0", "pre inner 0.0 0.0", "open inner", "draw node", "close inner", "post inner 0.0 0.0", "post outer 0.0 0.0"), this.trace);
+		Assert.assertEquals(Arrays.asList("open early", "open late", "draw node", "close late", "close early"), this.trace);
 	}
 
 	@Test
@@ -182,7 +170,7 @@ public class NodeEffectTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToWrapAMissingNode() {
-		new PlainEffect().pre(null, 0D, 0D);
+		new PlainEffect().draw(null, () -> {});
 	}
 
 	@AllArgsConstructor
@@ -238,13 +226,10 @@ public class NodeEffectTest {
 		}
 
 		@Override
-		public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
-			this.trace.add("pre " + this.name + " " + mouseX + " " + mouseY);
-		}
-
-		@Override
-		public void post(final @NonNull Node node, final double mouseX, final double mouseY) {
-			this.trace.add("post " + this.name + " " + mouseX + " " + mouseY);
+		public void draw(final @NonNull Node node, final @NonNull Runnable body) {
+			this.trace.add("open " + this.name);
+			body.run();
+			this.trace.add("close " + this.name);
 		}
 
 		@Override
@@ -258,21 +243,6 @@ public class NodeEffectTest {
 
 		private OtherTraceEffect(final String name, final List<String> trace) {
 			super(name, trace, true);
-		}
-
-	}
-
-	public static final class WrapEffect extends TraceEffect {
-
-		private WrapEffect(final String name, final List<String> trace) {
-			super(name, trace, true);
-		}
-
-		@Override
-		public void draw(final @NonNull Node node, final @NonNull Runnable body) {
-			super.trace.add("open " + super.name);
-			body.run();
-			super.trace.add("close " + super.name);
 		}
 
 	}

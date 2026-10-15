@@ -51,22 +51,19 @@ public class ShadowNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
+	public void draw(final @NonNull Node node, final @NonNull Runnable body) {
 		final double x = node.getX() + this.getOffsetX();
 		final double y = node.getY() + this.getOffsetY();
+		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
 		if (node instanceof CircleNode || node.hasEffect(CircleNodeEffect.class)) {
 			final double size = Math.min(node.getWidth(), node.getHeight());
 			DrawUtils.SHAPE.drawShadow(x + (node.getWidth() - size) / 2D, y + (node.getHeight() - size) / 2D, size, size, this.getColor(), (float) size / 2F, this.getBlur());
-			return;
-		}
-
-		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
-		if (rounded == null) {
+		} else if (rounded == null) {
 			DrawUtils.SHAPE.drawShadow(x, y, node.getWidth(), node.getHeight(), this.getColor(), 0F, this.getBlur());
-			return;
+		} else {
+			DrawUtils.SHAPE.drawShadow(x, y, node.getWidth(), node.getHeight(), this.getColor(), rounded.getRadius(), rounded.isLeft(), rounded.isTop(), rounded.isRight(), rounded.isBottom(), this.getBlur());
 		}
-
-		DrawUtils.SHAPE.drawShadow(x, y, node.getWidth(), node.getHeight(), this.getColor(), rounded.getRadius(), rounded.isLeft(), rounded.isTop(), rounded.isRight(), rounded.isBottom(), this.getBlur());
+		body.run();
 	}
 
 	public final <E extends ShadowNodeEffect> @NonNull E blur(final float blur) {

@@ -790,7 +790,7 @@ public class NodeTest {
 		final RecordingEffect early = new OtherEffect("early", events).priority(1);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(late).effect(early);
 		this.bridges.open(new NodeUI(node));
-		Assert.assertEquals(Arrays.asList("early init", "late init", "early pre", "late pre", "late post", "early post"), events);
+		Assert.assertEquals(Arrays.asList("early init", "late init", "early open", "late open", "late close", "early close"), events);
 	}
 
 	@Test
@@ -802,7 +802,7 @@ public class NodeTest {
 		events.clear();
 		first.priority(1);
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("second pre", "first pre", "first post", "second post"), events);
+		Assert.assertEquals(Arrays.asList("second open", "first open", "first close", "second close"), events);
 	}
 
 	@Test
@@ -813,7 +813,7 @@ public class NodeTest {
 		Assert.assertEquals(1, NodeTest.<Map<?, ?>>field(node, "effectMap").size());
 		Assert.assertSame(second, node.getEffect(RecordingEffect.class));
 		this.bridges.open(new NodeUI(node));
-		Assert.assertEquals(Arrays.asList("second init", "second pre", "second post"), events);
+		Assert.assertEquals(Arrays.asList("second init", "second open", "second close"), events);
 	}
 
 	@Test
@@ -3707,13 +3707,10 @@ public class NodeTest {
 		}
 
 		@Override
-		public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
-			this.events.add(this.name + " pre");
-		}
-
-		@Override
-		public void post(final @NonNull Node node, final double mouseX, final double mouseY) {
-			this.events.add(this.name + " post");
+		public void draw(final @NonNull Node node, final @NonNull Runnable body) {
+			this.events.add(this.name + " open");
+			body.run();
+			this.events.add(this.name + " close");
 		}
 
 	}
@@ -3745,8 +3742,9 @@ public class NodeTest {
 		private final List<String> events;
 
 		@Override
-		public void pre(final @NonNull RectNode node, final double mouseX, final double mouseY) {
+		public void draw(final @NonNull RectNode node, final @NonNull Runnable body) {
 			this.events.add(node.getColor().toString());
+			body.run();
 		}
 
 	}

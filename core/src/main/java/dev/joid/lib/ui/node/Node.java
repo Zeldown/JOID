@@ -600,14 +600,7 @@ public abstract class Node implements INode {
 					for (int i = otherEffects.size() - 1; i >= 0; i--) {
 						final NodeEffect<Node> effect = otherEffects.get(i);
 						final Runnable body = effectDraw;
-						effectDraw = () -> {
-							effect.pre(this, mouseX, mouseY);
-							try {
-								effect.draw(this, body);
-							} finally {
-								effect.post(this, mouseX, mouseY);
-							}
-						};
+						effectDraw = () -> effect.draw(this, body);
 					}
 					effectDraw.run();
 
