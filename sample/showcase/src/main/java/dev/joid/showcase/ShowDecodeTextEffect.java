@@ -5,6 +5,9 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.effect.ITextGlyph;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class ShowDecodeTextEffect implements ITextEffect {
 
 	private static final String POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@";
@@ -12,12 +15,6 @@ public class ShowDecodeTextEffect implements ITextEffect {
 	private final long   start;
 	private final Color  accent;
 	private final double stagger;
-
-	public ShowDecodeTextEffect(final long start, final double stagger, final Color accent) {
-		this.start = start;
-		this.stagger = stagger;
-		this.accent = accent;
-	}
 
 	@Override
 	public void apply(final ITextGlyph glyph) {

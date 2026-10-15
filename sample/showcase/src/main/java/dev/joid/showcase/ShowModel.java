@@ -25,7 +25,7 @@ public class ShowModel extends ShowUI {
 		this.blob(1300, 550, 900, ShowUI.PINK.withAlpha(0.20F), 9D, 0.5D, 50D);
 
 		final ObjModel model = ObjModel.load("teapot", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
-		this.glass(110, 100, 1700, 880, 32F).attach(this);
+		ShowUI.glass(110, 100, 1700, 880, 32F).attach(this);
 		CircleNode.create(330, 220, 640).color(ShowUI.FUCHSIA.withAlpha(0.32F)).effect(BlurNodeEffect.create(110F)).attach(this);
 
 		final ModelViewerNode viewer = ModelViewerNode

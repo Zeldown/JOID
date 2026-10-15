@@ -19,6 +19,8 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowLists extends ShowUI {
 
+	private static final Color DRAGGED = Color.decode("#2B2647").lock();
+
 	private static final String[] TIMES   = {"3:42", "4:05", "2:58", "5:11", "3:27", "3:49", "4:33", "2:41", "3:56", "4:18", "3:34", "4:02"};
 	private static final String[] TITLES  = {"Golden Hour", "Neon Tide", "Velvet", "Aurora", "Midnight", "Paper Planes", "Low Tide", "Saffron", "Glasshouse", "Cinder", "Blue Hour", "Driftwood"};
 	private static final Color[]  COLORS  = {ShowUI.AMBER, ShowUI.CYAN, ShowUI.PINK, ShowUI.EMERALD, ShowUI.VIOLET, ShowUI.SKY, ShowUI.CYAN, ShowUI.ORANGE, ShowUI.FUCHSIA, ShowUI.ORANGE, ShowUI.SKY, ShowUI.EMERALD};
@@ -39,7 +41,7 @@ public class ShowLists extends ShowUI {
 			this.order.add(title);
 		}
 
-		this.glass(440, 80, 1040, 920, 34F).attach(this);
+		ShowUI.glass(440, 80, 1040, 920, 34F).attach(this);
 		TextNode.create(490, 120).text(Text.create("Playlist", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);
 		TextNode.create(492, 182).text(Text.create("12 tracks  ·  46 min  ·  drag to reorder, scroll for more", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 		RectNode
@@ -79,7 +81,7 @@ public class ShowLists extends ShowUI {
 		final Color color = ShowLists.COLORS[index];
 		RectNode
 		.create(0, 0, 920, 88)
-		.<RectNode>self(row -> row.color(() -> list.isDragging(row) ? Color.decode("#2B2647") : Color.WHITE.withAlpha(0.05F + row.hoverValue(0.05F))))
+		.<RectNode>self(row -> row.color(() -> list.isDragging(row) ? ShowLists.DRAGGED : Color.WHITE.withAlpha(0.05F + row.hoverValue(0.05F))))
 		.<RectNode>self(row -> row.effect(ShadowNodeEffect.create(color, 30F).color(() -> color.withAlpha(list.isDragging(row) ? 0.55F : 0F))))
 		.effect(RoundedNodeEffect.create(20F))
 		.body(row -> {

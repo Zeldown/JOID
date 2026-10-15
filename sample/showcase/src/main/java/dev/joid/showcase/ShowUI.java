@@ -27,21 +27,25 @@ public abstract class ShowUI extends UI {
 	public static final Color PINK    = Color.decode("#F472B6").lock();
 	public static final Color CYAN    = Color.decode("#22D3EE").lock();
 	public static final Color TEXT    = Color.decode("#F8FAFC").lock();
+	public static final Color ROSE    = Color.decode("#F43F5E").lock();
 	public static final Color NIGHT   = Color.decode("#07071A").lock();
 	public static final Color AMBER   = Color.decode("#FBBF24").lock();
 	public static final Color MUTED   = Color.decode("#A1A1AA").lock();
 	public static final Color FAINT   = Color.decode("#71717A").lock();
+	public static final Color HONEY   = Color.decode("#FDE68A").lock();
 	public static final Color VIOLET  = Color.decode("#8B5CF6").lock();
 	public static final Color ORANGE  = Color.decode("#FB923C").lock();
 	public static final Color FUCHSIA = Color.decode("#E879F9").lock();
 	public static final Color EMERALD = Color.decode("#34D399").lock();
+
+	private static final Color BACKGROUND = Color.decode("#18181B").lock();
 
 	private long start;
 
 	@Override
 	public void init() {
 		this.start = BridgeHandler.CLOCK.get().currentTimeMillis();
-		RectNode.create(0, 0, 1920, 1080).color(Color.decode("#18181B")).attach(this);
+		RectNode.create(0, 0, 1920, 1080).color(ShowUI.BACKGROUND).attach(this);
 		this.scene();
 
 		Shortcut.create(Key.ESCAPE).onTrigger(event -> this.menu()).attach(this);
@@ -84,7 +88,7 @@ public abstract class ShowUI extends UI {
 		.attach(this);
 	}
 
-	protected RectNode glass(final double x, final double y, final double width, final double height, final float radius) {
+	protected static RectNode glass(final double x, final double y, final double width, final double height, final float radius) {
 		return RectNode
 		.create(x, y, width, height)
 		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.10F), Color.WHITE.withAlpha(0.04F)))

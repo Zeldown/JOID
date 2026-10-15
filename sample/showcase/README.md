@@ -8,7 +8,7 @@ Every designed scene of the README showcase, as a runnable module on the Vulkan 
 ./gradlew :sample-showcase:run
 ```
 
-`runShowcase` does the same. A window opens on a menu that lists the thirteen scenes; click a card to open one. Every scene is live: drag, scroll, type and click as in any application.
+A window opens on a menu that lists the thirteen scenes; click a card to open one. Every scene is live: drag, scroll, type and click as in any application.
 
 | Key | Action |
 | --- | --- |

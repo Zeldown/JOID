@@ -7,6 +7,8 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ShowInspect extends ShowLists {
 
+	private static final Color VEIL = Color.decode("#120C2A").lock();
+
 	@Override
 	protected void scene() {
 		super.scene();
@@ -20,7 +22,7 @@ public class ShowInspect extends ShowLists {
 	}
 
 	private Color veil(final double delay) {
-		return Color.decode("#120C2A").withAlpha((float) (1D - this.ease(TweenEquations.QUAD_INOUT, 0.1D + delay, 0.55D + delay)));
+		return ShowInspect.VEIL.withAlpha((float) (1D - this.ease(TweenEquations.QUAD_INOUT, 0.1D + delay, 0.55D + delay)));
 	}
 
 }

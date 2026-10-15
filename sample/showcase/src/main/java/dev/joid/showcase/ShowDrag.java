@@ -23,6 +23,8 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowDrag extends ShowUI {
 
+	private static final Color NAVY = Color.decode("#1E3A8A").lock();
+
 	private final StringSignal  title  = new StringSignal("");
 	private final StringSignal  artist = new StringSignal("");
 	private final Signal<Color> accent = new Signal<>(ShowUI.VIOLET);
@@ -33,7 +35,7 @@ public class ShowDrag extends ShowUI {
 		this.blob(-300, -300, 900, ShowUI.VIOLET.withAlpha(0.35F), 8D, 0D, 50D);
 		this.blob(1350, 450, 900, ShowUI.CYAN.withAlpha(0.18F), 8D, 0.5D, 50D);
 
-		this.glass(420, 90, 1080, 460, 36F).attach(this);
+		ShowUI.glass(420, 90, 1080, 460, 36F).attach(this);
 		CircleNode.create(475, 130, 360).color(this.accent.get().withAlpha(0.5F)).effect(BlurNodeEffect.create(80F)).attach(this);
 
 		final RectNode slot = RectNode
@@ -76,7 +78,7 @@ public class ShowDrag extends ShowUI {
 		this.record(1, slot, "Neon Tide", "The Shallows", ShowUI.CYAN, ShowUI.VIOLET);
 		this.record(2, slot, "Velvet", "Rosa Mendes", ShowUI.PINK, ShowUI.FUCHSIA);
 		this.record(3, slot, "Aurora", "North Lights", ShowUI.EMERALD, ShowUI.SKY);
-		this.record(4, slot, "Midnight", "Lo & Behold", ShowUI.VIOLET, Color.decode("#1E3A8A"));
+		this.record(4, slot, "Midnight", "Lo & Behold", ShowUI.VIOLET, ShowDrag.NAVY);
 	}
 
 	private void record(final int index, final RectNode slot, final String name, final String by, final Color from, final Color to) {

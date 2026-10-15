@@ -3,15 +3,12 @@ package dev.joid.showcase;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
-import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
@@ -59,12 +56,7 @@ public class ShowNeonKit implements IShowKit {
 
 	@Override
 	public RectNode panel(final double x, final double y, final double width, final double height) {
-		return RectNode
-		.create(x, y, width, height)
-		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.10F), Color.WHITE.withAlpha(0.04F)))
-		.effect(RoundedNodeEffect.create(36F))
-		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.14F), 1.5F).mode(BorderMode.IN))
-		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F).offsetY(24D));
+		return ShowUI.glass(x, y, width, height, 36F);
 	}
 
 	@Override
@@ -116,14 +108,10 @@ public class ShowNeonKit implements IShowKit {
 		CircleNode
 		.create(x, y, size)
 		.color(color)
-		.<CircleNode>x(() -> x + ShowNeonKit.wave(phase) * 50D)
-		.<CircleNode>y(() -> y + ShowNeonKit.wave(phase + 0.25D) * 30D)
+		.<CircleNode>x(() -> x + IShowKit.wave(phase) * 50D)
+		.<CircleNode>y(() -> y + IShowKit.wave(phase + 0.25D) * 30D)
 		.effect(BlurNodeEffect.create((float) (size / 6D)))
 		.attach(layer);
-	}
-
-	private static double wave(final double phase) {
-		return Math.sin((BridgeHandler.CLOCK.get().currentTimeMillis() / 9000D + phase) * Math.PI * 2D);
 	}
 
 }

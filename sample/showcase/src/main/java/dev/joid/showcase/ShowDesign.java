@@ -28,8 +28,16 @@ public class ShowDesign extends ShowUI {
 	private double level;
 
 	@Override
+	public void update() {
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final double delta = this.last == 0L ? 0D : (now - this.last) / 1000D;
+		this.last = now;
+		final double target = this.paper.get() ? 1D : 0D;
+		this.level = target > this.level ? Math.min(target, this.level + delta / 1.1D) : Math.max(target, this.level - delta / 1.1D);
+	}
+
+	@Override
 	protected void scene() {
-		RectNode.create(0, 0, 1, 1).color(Color.TRANSPARENT).onUpdate(event -> this.step()).attach(this);
 		final RectNode neon = RectNode.create(0, 0, 1920, 1080).color(Color.TRANSPARENT).visible(() -> this.right() - this.left() < 1920D);
 		neon.body(layer -> this.screen(new ShowNeonKit(), layer)).attach(this);
 
@@ -111,14 +119,6 @@ public class ShowDesign extends ShowUI {
 
 	private double right() {
 		return this.paper.get() ? this.front() : 1920D;
-	}
-
-	private void step() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final double delta = this.last == 0L ? 0D : (now - this.last) / 1000D;
-		this.last = now;
-		final double target = this.paper.get() ? 1D : 0D;
-		this.level = target > this.level ? Math.min(target, this.level + delta / 1.1D) : Math.max(target, this.level - delta / 1.1D);
 	}
 
 }

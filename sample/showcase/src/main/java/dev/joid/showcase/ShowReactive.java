@@ -38,7 +38,7 @@ public class ShowReactive extends ShowUI {
 	}
 
 	private void mixer() {
-		this.glass(110, 120, 700, 840, 32F).attach(this);
+		ShowUI.glass(110, 120, 700, 840, 32F).attach(this);
 		TextNode.create(156, 164).text(Text.create("Mixer", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);
 		TextNode.create(158, 226).text(Text.create("Three signals. Every node that reads one follows it.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 
@@ -59,7 +59,7 @@ public class ShowReactive extends ShowUI {
 		ShowSwitchNode.create(690, 736, ShowUI.VIOLET).toggle(this.halo).attach(this);
 
 		final Color[] cool = {ShowUI.VIOLET, ShowUI.SKY, ShowUI.CYAN, ShowUI.EMERALD, ShowUI.FUCHSIA};
-		final Color[] warm = {ShowUI.PINK, ShowUI.ORANGE, ShowUI.AMBER, Color.decode("#F43F5E"), Color.decode("#FDE68A")};
+		final Color[] warm = {ShowUI.PINK, ShowUI.ORANGE, ShowUI.AMBER, ShowUI.ROSE, ShowUI.HONEY};
 		for (int i = 0; i < cool.length; i++) {
 			final Color from = cool[i];
 			final Color to = warm[i];
@@ -73,7 +73,7 @@ public class ShowReactive extends ShowUI {
 	}
 
 	private void stage() {
-		this.glass(860, 120, 950, 840, 32F).attach(this);
+		ShowUI.glass(860, 120, 950, 840, 32F).attach(this);
 
 		CircleNode
 		.create(1335 - 330, 500 - 330, 660)

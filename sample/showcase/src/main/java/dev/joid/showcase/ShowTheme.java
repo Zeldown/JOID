@@ -19,14 +19,32 @@ import dev.joid.lib.utils.geom.Point;
 
 public class ShowTheme extends ShowUI {
 
+	private static final Color CARD_DARK    = Color.decode("#17162C").lock();
+	private static final Color LINE_DARK    = Color.decode("#24223A").lock();
+	private static final Color PAGE_DARK    = Color.decode("#0B0A18").lock();
+	private static final Color SIDE_DARK    = Color.decode("#131226").lock();
+	private static final Color LINE_LIGHT   = Color.decode("#E7E5F0").lock();
+	private static final Color MUTED_DARK   = Color.decode("#A1A1B5").lock();
+	private static final Color PAGE_LIGHT   = Color.decode("#F3F2F8").lock();
+	private static final Color TEXT_LIGHT   = Color.decode("#16142A").lock();
+	private static final Color ACTIVE_DARK  = Color.decode("#C4B5FD").lock();
+	private static final Color CURVE_LIGHT  = Color.decode("#0F0E1A").lock();
+	private static final Color MUTED_LIGHT  = Color.decode("#6B6880").lock();
+	private static final Color ACTIVE_LIGHT = Color.decode("#5B21B6").lock();
+
 	private final BooleanSignal dark = new BooleanSignal(false);
 
 	private double level;
 
 	@Override
+	public void update() {
+		this.level = super.lerpByFramerate(this.level, this.dark.get() ? 1D : 0D, 0.3D, 0.001D, true);
+	}
+
+	@Override
 	protected void scene() {
-		RectNode.create(0, 0, 1920, 1080).color(() -> this.tone("#F3F2F8", "#0B0A18")).onUpdate(event -> this.step()).attach(this);
-		RectNode.create(0, 0, 300, 1080).color(() -> this.tone("#FFFFFF", "#131226")).attach(this);
+		RectNode.create(0, 0, 1920, 1080).color(() -> this.tone(ShowTheme.PAGE_LIGHT, ShowTheme.PAGE_DARK)).attach(this);
+		RectNode.create(0, 0, 300, 1080).color(() -> this.tone(Color.WHITE, ShowTheme.SIDE_DARK)).attach(this);
 		RectNode.create(299, 0, 1, 1080).color(() -> this.line()).attach(this);
 
 		RectNode
@@ -45,7 +63,7 @@ public class ShowTheme extends ShowUI {
 			final String item = items[i];
 			RectNode.create(32, 170 + i * 68, 236, 54).color(() -> active ? ShowUI.VIOLET.withAlpha(0.14F + 0.1F * (float) this.level) : Color.TRANSPARENT).effect(RoundedNodeEffect.create(16F)).attach(this);
 			RectNode.create(56, 189 + i * 68, 16, 16).color(() -> active ? ShowUI.VIOLET : this.muted()).effect(RoundedNodeEffect.create(5F)).attach(this);
-			TextNode.create(92, 197 + i * 68).text(() -> Text.create(item, ShowUI.font(FontWeight.SEMI_BOLD, 21F, active ? this.tone("#5B21B6", "#C4B5FD") : this.muted()))).anchorY(Align.CENTER).attach(this);
+			TextNode.create(92, 197 + i * 68).text(() -> Text.create(item, ShowUI.font(FontWeight.SEMI_BOLD, 21F, active ? this.tone(ShowTheme.ACTIVE_LIGHT, ShowTheme.ACTIVE_DARK) : this.muted()))).anchorY(Align.CENTER).attach(this);
 		}
 
 		TextNode.create(360, 60).text(() -> Text.create("Good evening, Ada", ShowUI.font(FontWeight.EXTRA_BOLD, 46F, this.text()))).attach(this);
@@ -90,7 +108,7 @@ public class ShowTheme extends ShowUI {
 	private RectNode card(final double x, final double y, final double width, final double height) {
 		return RectNode
 		.create(x, y, width, height)
-		.color(() -> this.tone("#FFFFFF", "#17162C"))
+		.color(() -> this.tone(Color.WHITE, ShowTheme.CARD_DARK))
 		.effect(RoundedNodeEffect.create(28F))
 		.effect(ShadowNodeEffect.create(Color.BLACK, 40F).offsetY(14D).color(() -> Color.BLACK.withAlpha(0.07F + 0.33F * (float) this.level)));
 	}
@@ -108,27 +126,23 @@ public class ShowTheme extends ShowUI {
 			DrawUtils.SHAPE.drawRoundedRect(bx, y + height - 40D - bar, slot * 0.6D, bar, ShowUI.vertical(ShowUI.FUCHSIA, ShowUI.VIOLET.withAlpha(0.35F)), 10F, true, true, true, false);
 			points.add(Point.create(bx + slot * 0.3D, y + height - 40D - bar - 26D));
 		}
-		DrawUtils.SHAPE.drawLine(this.tone("#0F0E1A", "#F8FAFC").withAlpha(0.7F), 3F, points.toArray(new Point[0]));
+		DrawUtils.SHAPE.drawLine(this.tone(ShowTheme.CURVE_LIGHT, ShowUI.TEXT).withAlpha(0.7F), 3F, points.toArray(new Point[0]));
 	}
 
 	private Color text() {
-		return this.tone("#16142A", "#F8FAFC");
+		return this.tone(ShowTheme.TEXT_LIGHT, ShowUI.TEXT);
 	}
 
 	private Color muted() {
-		return this.tone("#6B6880", "#A1A1B5");
+		return this.tone(ShowTheme.MUTED_LIGHT, ShowTheme.MUTED_DARK);
 	}
 
 	private Color line() {
-		return this.tone("#E7E5F0", "#24223A");
+		return this.tone(ShowTheme.LINE_LIGHT, ShowTheme.LINE_DARK);
 	}
 
-	private Color tone(final String light, final String dark) {
-		return Color.decode(light).to(Color.decode(dark), (float) this.level);
-	}
-
-	private void step() {
-		this.level = super.lerpByFramerate(this.level, this.dark.get() ? 1D : 0D, 0.3D, 0.001D, true);
+	private Color tone(final Color light, final Color dark) {
+		return light.to(dark, (float) this.level);
 	}
 
 }

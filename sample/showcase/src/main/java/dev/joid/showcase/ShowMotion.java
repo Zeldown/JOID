@@ -27,7 +27,7 @@ public class ShowMotion extends ShowUI {
 		this.blob(-250, -250, 900, ShowUI.VIOLET.withAlpha(0.38F), 9D, 0D, 50D);
 		this.blob(1300, 500, 900, ShowUI.CYAN.withAlpha(0.20F), 9D, 0.5D, 50D);
 
-		this.glass(110, 100, 1700, 880, 32F).attach(this);
+		ShowUI.glass(110, 100, 1700, 880, 32F).attach(this);
 		TextNode.create(156, 144).text(Text.create("Motion", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);
 		TextNode.create(158, 206).text(Text.create("Every property can ease: position, size, color, rotation.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 

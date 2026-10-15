@@ -20,11 +20,20 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowEffects extends ShowUI {
 
+	private static final Color GOLD  = Color.decode("#D97706").lock();
+	private static final Color SLATE = Color.decode("#2A2A3C").lock();
+
 	private static final String[] NAMES = {"Rounded corners", "Gradient", "Inner border", "Drop shadow", "Glow", "Blur", "Tilt"};
 
 	private final double[]        levels   = new double[ShowEffects.NAMES.length];
 	private final BooleanSignal[] switches = new BooleanSignal[ShowEffects.NAMES.length];
 
+	@Override
+	public void update() {
+		for (int i = 0; i < this.levels.length; i++) {
+			this.levels[i] = super.lerpByFramerate(this.levels[i], this.switches[i].get() ? 1D : 0D, 0.35D, 0.001D, true);
+		}
+	}
 
 	@Override
 	protected void scene() {
@@ -35,12 +44,10 @@ public class ShowEffects extends ShowUI {
 
 		this.panel();
 		this.card();
-
-		RectNode.create(0, 0, 0, 0).onUpdate(event -> this.step()).attach(this);
 	}
 
 	private void panel() {
-		this.glass(110, 120, 650, 840, 32F).attach(this);
+		ShowUI.glass(110, 120, 650, 840, 32F).attach(this);
 		TextNode.create(156, 164).text(Text.create("Effects", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);
 		TextNode.create(158, 226).text(Text.create("Stack them on any node, animate any value.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 		final Color[] dots = {ShowUI.VIOLET, ShowUI.PINK, ShowUI.SKY, ShowUI.AMBER, ShowUI.FUCHSIA, ShowUI.CYAN, ShowUI.EMERALD};
@@ -56,10 +63,10 @@ public class ShowEffects extends ShowUI {
 	}
 
 	private void card() {
-		this.glass(860, 120, 950, 840, 32F).attach(this);
+		ShowUI.glass(860, 120, 950, 840, 32F).attach(this);
 		RectNode
 		.create(1035, 355, 600, 370)
-		.color(() -> ShowUI.diagonal(Color.decode("#2A2A3C").to(ShowUI.VIOLET, this.level(1)), Color.decode("#2A2A3C").to(ShowUI.PINK, this.level(1))))
+		.color(() -> ShowUI.diagonal(ShowEffects.SLATE.to(ShowUI.VIOLET, this.level(1)), ShowEffects.SLATE.to(ShowUI.PINK, this.level(1))))
 		.effect(RoundedNodeEffect.create(() -> 2F + 34F * this.level(0)).scope(NodeEffectScope.CHILDREN))
 		.effect(BorderNodeEffect.create(Color.WHITE, 2F).mode(BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.45F * this.level(2))))
 		.effect(ShadowNodeEffect.create(Color.BLACK, 40F).color(this::shadow).blur(() -> 6F + 54F * Math.max(this.level(3), this.level(4)) + 20F * this.level(4)).offsetY(() -> 34D * this.level(3) * (1D - this.level(4))))
@@ -70,7 +77,7 @@ public class ShowEffects extends ShowUI {
 			CircleNode.create(260, 220, 300).color(() -> ShowUI.FUCHSIA.withAlpha(0.8F * this.level(1))).effect(BlurNodeEffect.create(1F).radius(() -> 1F + 50F * this.level(5))).attach(card);
 			TextNode.create(44, 40).text(Text.create("JOID", ShowUI.font(FontWeight.BLACK, 34F, Color.WHITE))).attach(card);
 			TextNode.create(556, 46).text(Text.create("PLATINUM", ShowUI.font(FontWeight.BOLD, 16F, Color.WHITE.withAlpha(0.8F)).letterSpacing(0.3F))).anchorX(Align.END).attach(card);
-			RectNode.create(44, 128, 76, 58).color(ShowUI.diagonal(Color.decode("#FDE68A"), Color.decode("#D97706"))).effect(RoundedNodeEffect.create(12F)).attach(card);
+			RectNode.create(44, 128, 76, 58).color(ShowUI.diagonal(ShowUI.HONEY, ShowEffects.GOLD)).effect(RoundedNodeEffect.create(12F)).attach(card);
 			TextNode.create(44, 222).text(Text.create("4000  1234  5678  8000", ShowUI.font(FontWeight.SEMI_BOLD, 36F, Color.WHITE).letterSpacing(0.06F))).attach(card);
 			TextNode.create(44, 300).text(Text.create("ADA LOVELACE", ShowUI.font(FontWeight.BOLD, 20F, Color.WHITE.withAlpha(0.85F)).letterSpacing(0.2F))).attach(card);
 			TextNode.create(556, 300).text(Text.create("10 / 30", ShowUI.font(FontWeight.BOLD, 20F, Color.WHITE.withAlpha(0.85F)))).anchorX(Align.END).attach(card);
@@ -85,12 +92,6 @@ public class ShowEffects extends ShowUI {
 
 	private float level(final int index) {
 		return (float) this.levels[index];
-	}
-
-	private void step() {
-		for (int i = 0; i < this.levels.length; i++) {
-			this.levels[i] = super.lerpByFramerate(this.levels[i], this.switches[i].get() ? 1D : 0D, 0.35D, 0.001D, true);
-		}
 	}
 
 }

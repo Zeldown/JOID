@@ -5,15 +5,13 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.effect.ITextGlyph;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class ShowRiseTextEffect implements ITextEffect {
 
 	private final long   start;
 	private final double stagger;
-
-	public ShowRiseTextEffect(final long start, final double stagger) {
-		this.start = start;
-		this.stagger = stagger;
-	}
 
 	@Override
 	public void apply(final ITextGlyph glyph) {

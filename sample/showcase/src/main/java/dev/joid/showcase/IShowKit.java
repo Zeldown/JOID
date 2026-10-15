@@ -3,6 +3,7 @@ package dev.joid.showcase;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
@@ -28,5 +29,9 @@ public interface IShowKit {
 	public ToggleNode<Boolean, Boolean> toggle(final double x, final double y);
 	public TextFieldNode field(final double x, final double y, final double width);
 	public DoubleSliderNode slider(final double x, final double y, final double width);
+
+	public static double wave(final double phase) {
+		return Math.sin((BridgeHandler.CLOCK.get().currentTimeMillis() / 9000D + phase) * Math.PI * 2D);
+	}
 
 }

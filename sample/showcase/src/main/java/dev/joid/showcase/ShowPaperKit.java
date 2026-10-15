@@ -4,7 +4,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
@@ -37,8 +36,8 @@ public class ShowPaperKit implements IShowKit {
 			}
 			DrawUtils.SHAPE.drawRect(96D, 0D, 3D, 1080D, ShowPaperKit.TOMATO.withAlpha(0.45F));
 		}).attach(layer);
-		CircleNode.create(1610, -150, 520).color(ShowPaperKit.BUTTER).<CircleNode>y(() -> -150D + ShowPaperKit.wave(0D) * 18D).attach(layer);
-		CircleNode.create(800, 900, 260).color(ShowPaperKit.TOMATO).<CircleNode>x(() -> 800D + ShowPaperKit.wave(0.3D) * 24D).attach(layer);
+		CircleNode.create(1610, -150, 520).color(ShowPaperKit.BUTTER).<CircleNode>y(() -> -150D + IShowKit.wave(0D) * 18D).attach(layer);
+		CircleNode.create(800, 900, 260).color(ShowPaperKit.TOMATO).<CircleNode>x(() -> 800D + IShowKit.wave(0.3D) * 24D).attach(layer);
 	}
 
 	@Override
@@ -126,10 +125,6 @@ public class ShowPaperKit implements IShowKit {
 	private static void box(final double x, final double y, final double width, final double height, final Color fill, final double stroke) {
 		DrawUtils.SHAPE.drawRect(x, y, width, height, ShowPaperKit.INK);
 		DrawUtils.SHAPE.drawRect(x + stroke, y + stroke, width - stroke * 2D, height - stroke * 2D, fill);
-	}
-
-	private static double wave(final double phase) {
-		return Math.sin((BridgeHandler.CLOCK.get().currentTimeMillis() / 9000D + phase) * Math.PI * 2D);
 	}
 
 	public static class Toggle extends ToggleNode<Boolean, Boolean> {

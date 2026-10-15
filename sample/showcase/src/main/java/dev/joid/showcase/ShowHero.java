@@ -33,8 +33,15 @@ import dev.joid.lib.utils.geom.Point;
 
 public class ShowHero extends ShowUI {
 
+	private static final Color TOAST = Color.decode("#1E1B3A").lock();
+
 	private final DoubleSignal  progress = new DoubleSignal(0D);
 	private final IntegerSignal plays    = new IntegerSignal(12480);
+
+	@Override
+	public void update() {
+		this.plays.set(12480 + (int) (this.t() * 9D));
+	}
 
 	@Override
 	protected void scene() {
@@ -51,8 +58,6 @@ public class ShowHero extends ShowUI {
 		this.stats();
 		this.model();
 		this.toast();
-
-		RectNode.create(0, 0, 0, 0).onUpdate(event -> this.plays.set(12480 + (int) (this.t() * 9D))).attach(this);
 	}
 
 	private void brand() {
@@ -108,7 +113,7 @@ public class ShowHero extends ShowUI {
 	}
 
 	private void queue() {
-		this.glass(120, 790, 800, 196, 24F).attach(this);
+		ShowUI.glass(120, 790, 800, 196, 24F).attach(this);
 		TextNode.create(150, 812).text(Text.create("UP NEXT", ShowUI.font(FontWeight.BOLD, 16F, ShowUI.FAINT).letterSpacing(0.25F))).attach(this);
 		TextNode.create(890, 812).text(Text.create("3 tracks", ShowUI.font(FontWeight.MEDIUM, 16F, ShowUI.FAINT))).anchorX(Align.END).attach(this);
 		this.track(0, "Neon Tide", "The Shallows", ShowUI.CYAN, ShowUI.VIOLET);
@@ -154,7 +159,7 @@ public class ShowHero extends ShowUI {
 			.color(Color.BLACK.withAlpha(0.35F))
 			.effect(RoundedNodeEffect.create(19F))
 			.body(pill -> {
-				CircleNode.create(16, 14, 10).color(Color.decode("#F43F5E")).effect(ShadowNodeEffect.create(Color.decode("#F43F5E"), 8F)).attach(pill);
+				CircleNode.create(16, 14, 10).color(ShowUI.ROSE).effect(ShadowNodeEffect.create(ShowUI.ROSE, 8F)).attach(pill);
 				TextNode.create(36, 19).text(Text.create("Now playing", ShowUI.font(FontWeight.SEMI_BOLD, 16F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(pill);
 			})
 			.attach(card);
@@ -243,7 +248,7 @@ public class ShowHero extends ShowUI {
 	private void toast() {
 		RectNode
 		.create(1290, 940, 520, 100)
-		.color(Color.decode("#1E1B3A").withAlpha(0.92F))
+		.color(ShowHero.TOAST.withAlpha(0.92F))
 		.<RectNode>x(() -> 1290D + 700D * (1D - this.ease(TweenEquations.BACK_OUT, 1D, 1.8D)) + 700D * this.ease(TweenEquations.QUAD_IN, 5.2D, 5.8D))
 		.effect(RoundedNodeEffect.create(24F))
 		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.5F), 40F).offsetY(18D))

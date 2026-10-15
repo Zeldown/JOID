@@ -7,6 +7,10 @@ import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 
 public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
 
+	private static final Color MOON        = Color.decode("#F5F3FF").lock();
+	private static final Color TRACK_DARK  = Color.decode("#2A2846").lock();
+	private static final Color TRACK_LIGHT = Color.decode("#E4E4EE").lock();
+
 	protected ShowThemeNode(final double x, final double y) {
 		super(x, y, 112, 56);
 		super.speed(0.15F);
@@ -14,7 +18,7 @@ public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
 		super.knob(ContainerNode.create(0, 0, 56, 56).layer((node, mouseX, mouseY) -> {
 			final float k = super.getKnobProgress();
 			DrawUtils.SHAPE.drawShadow(6D, 6D, 44D, 44D, ShowUI.AMBER.to(ShowUI.VIOLET, k).withAlpha(0.7F), 22F, 18F);
-			DrawUtils.SHAPE.drawCircle(28D, 28D, ShowUI.AMBER.to(Color.decode("#F5F3FF"), k), 20D);
+			DrawUtils.SHAPE.drawCircle(28D, 28D, ShowUI.AMBER.to(ShowThemeNode.MOON, k), 20D);
 			if (k > 0.01F) {
 				DrawUtils.SHAPE.drawCircle(28D + 9D * k, 28D - 7D * k, this.getTrackColor(), 15D * k);
 			}
@@ -26,7 +30,7 @@ public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
 	}
 
 	private Color getTrackColor() {
-		return Color.decode("#E4E4EE").to(Color.decode("#2A2846"), super.getKnobProgress());
+		return ShowThemeNode.TRACK_LIGHT.to(ShowThemeNode.TRACK_DARK, super.getKnobProgress());
 	}
 
 }

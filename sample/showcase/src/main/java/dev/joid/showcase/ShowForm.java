@@ -37,7 +37,7 @@ public class ShowForm extends ShowUI {
 
 	private void form() {
 		final TextInfo input = ShowUI.font(FontWeight.MEDIUM, 26F, ShowUI.TEXT);
-		this.glass(110, 120, 750, 840, 32F).attach(this);
+		ShowUI.glass(110, 120, 750, 840, 32F).attach(this);
 		TextNode.create(156, 164).text(Text.create("Create your account", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);
 		TextNode.create(158, 226).text(Text.create("Fields, selection and markup, drawn in your kit.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 
@@ -70,7 +70,7 @@ public class ShowForm extends ShowUI {
 	}
 
 	private void profile() {
-		this.glass(960, 120, 850, 840, 32F).attach(this);
+		ShowUI.glass(960, 120, 850, 840, 32F).attach(this);
 		TextNode.create(1006, 164).text(Text.create("PREVIEW", ShowUI.font(FontWeight.BOLD, 18F, ShowUI.FAINT).letterSpacing(0.25F))).attach(this);
 		CircleNode.create(1235, 230, 400).color(ShowUI.VIOLET.withAlpha(0.45F)).effect(BlurNodeEffect.create(70F)).attach(this);
 		RectNode
