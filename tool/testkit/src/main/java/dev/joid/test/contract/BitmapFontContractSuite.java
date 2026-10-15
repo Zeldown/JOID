@@ -96,8 +96,8 @@ public abstract class BitmapFontContractSuite {
 				final SnapshotImage image = BitmapFontContractSuite.render(atlas, scale);
 				final String label = atlas + " at " + scale;
 				final double texel = 2D * scale;
-				final List<Double> columns = BitmapFontContractSuite.columns(image);
 				Assert.assertEquals(label + ": ink", Atlas.INK * texel * texel, BitmapFontContractSuite.ink(image), 0.01D * Atlas.INK * texel * texel);
+				final List<Double> columns = BitmapFontContractSuite.columns(image);
 				Assert.assertEquals(label + ": columns", 3, columns.size());
 				for (final double column : columns) {
 					Assert.assertEquals(label + ": column", texel, column, 0.03D);
@@ -126,18 +126,14 @@ public abstract class BitmapFontContractSuite {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final ITexture texture = render.createTexture().allocate(2 * atlas.texels, atlas.texels).upload(atlas.pixels(), 2 * atlas.texels, atlas.texels);
 		final Font font = new Font(new Renderer(atlas, texture));
-		render.beginFrame();
-		render.clearColor(0F, 0F, 0F, 1F);
-		render.getModelView().with(matrix -> {
-			matrix.scale(scale, scale, 1D);
-			font.getTextRenderer().drawText(8.3D, 4.6D, "A", TextInfo.create(font, 16F, Color.WHITE));
-		});
-		render.endFrame();
-
-		final SnapshotImage image = BitmapFontContractSuite.backend.capture(BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT);
-		BitmapFontContractSuite.backend.present();
-		texture.delete();
-		return image;
+		try {
+			return ContractDraw.frame(BitmapFontContractSuite.backend, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, bridge -> bridge.getModelView().with(matrix -> {
+				matrix.scale(scale, scale, 1D);
+				font.getTextRenderer().drawText(8.3D, 4.6D, "A", TextInfo.create(font, 16F, Color.WHITE));
+			}));
+		} finally {
+			texture.delete();
+		}
 	}
 
 	private static double ink(final SnapshotImage image) {

@@ -3,7 +3,6 @@ package dev.joid.test.contract;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-import java.util.Locale;
 import java.util.function.Consumer;
 
 import org.junit.AfterClass;
@@ -82,7 +81,7 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void drawsVertexColors() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN)));
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -114,8 +113,8 @@ public abstract class RenderBridgeContractSuite {
 
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
 		});
-		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
-		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -130,7 +129,7 @@ public abstract class RenderBridgeContractSuite {
 				shader.unbind();
 			}
 		});
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -154,7 +153,7 @@ public abstract class RenderBridgeContractSuite {
 				shader.unbind();
 			}
 		});
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -170,7 +169,7 @@ public abstract class RenderBridgeContractSuite {
 				shader.unbind();
 			}
 		});
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -188,8 +187,8 @@ public abstract class RenderBridgeContractSuite {
 				shader.unbind();
 			}
 		});
-		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.GREEN);
-		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.RED);
 	}
 
 	@Test
@@ -198,7 +197,7 @@ public abstract class RenderBridgeContractSuite {
 		final SnapshotImage scaled = RenderBridgeContractSuite.render(bridge -> RenderBridgeContractSuite.drawLitFace(bridge, 100D));
 		final int lit = unit.getPixels()[32 + 32 * unit.getWidth()];
 		Assert.assertTrue("A face turned to the light must be brighter than the ambient light", (lit & 255) > 0x80);
-		RenderBridgeContractSuite.assertPixel(scaled, 32, 32, lit);
+		ContractDraw.assertPixel(scaled, 32, 32, lit);
 	}
 
 	@Test
@@ -209,8 +208,8 @@ public abstract class RenderBridgeContractSuite {
 			bridge.getState().alphaCutoff(0F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, 0x0000FF00));
 		});
-		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
-		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -220,8 +219,8 @@ public abstract class RenderBridgeContractSuite {
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE, 0F, -RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
 		});
-		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
-		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -238,8 +237,8 @@ public abstract class RenderBridgeContractSuite {
 		});
 		frameBuffer.delete();
 
-		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
-		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -252,8 +251,8 @@ public abstract class RenderBridgeContractSuite {
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
 			bridge.getState().stencil(StencilState.DISABLED);
 		});
-		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.GREEN);
-		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test
@@ -267,9 +266,9 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void drawsLinesOnePixelWide() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> bridge.draw(Primitive.LINES, RenderBridgeContractSuite.line(8F, 32.5F, 56F, 32.5F, RenderBridgeContractSuite.WHITE)));
-		RenderBridgeContractSuite.assertPixel(image, 32, 31, RenderBridgeContractSuite.BLACK);
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.WHITE);
-		RenderBridgeContractSuite.assertPixel(image, 32, 33, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 32, 31, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.WHITE);
+		ContractDraw.assertPixel(image, 32, 33, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test
@@ -278,10 +277,10 @@ public abstract class RenderBridgeContractSuite {
 			bridge.getState().lineWidth(6F);
 			DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, Point.create(8D, 32D), Point.create(56D, 32D));
 		});
-		RenderBridgeContractSuite.assertPixel(image, 32, 27, RenderBridgeContractSuite.BLACK);
-		RenderBridgeContractSuite.assertPixel(image, 32, 30, RenderBridgeContractSuite.WHITE);
-		RenderBridgeContractSuite.assertPixel(image, 32, 33, RenderBridgeContractSuite.WHITE);
-		RenderBridgeContractSuite.assertPixel(image, 32, 36, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 32, 27, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 32, 30, RenderBridgeContractSuite.WHITE);
+		ContractDraw.assertPixel(image, 32, 33, RenderBridgeContractSuite.WHITE);
+		ContractDraw.assertPixel(image, 32, 36, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test
@@ -290,9 +289,9 @@ public abstract class RenderBridgeContractSuite {
 			bridge.getState().lineWidth(6F);
 			DrawUtils.SHAPE.drawShape(DrawMode.LINE_STRIP, Color.WHITE, Point.create(8D, 32D), Point.create(32D, 32D), Point.create(32D, 56D));
 		});
-		RenderBridgeContractSuite.assertPixel(image, 32, 31, RenderBridgeContractSuite.WHITE);
-		RenderBridgeContractSuite.assertPixel(image, 34, 29, RenderBridgeContractSuite.WHITE);
-		RenderBridgeContractSuite.assertPixel(image, 36, 27, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 32, 31, RenderBridgeContractSuite.WHITE);
+		ContractDraw.assertPixel(image, 34, 29, RenderBridgeContractSuite.WHITE);
+		ContractDraw.assertPixel(image, 36, 27, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test
@@ -308,10 +307,10 @@ public abstract class RenderBridgeContractSuite {
 				shader.unbind();
 			}
 		});
-		RenderBridgeContractSuite.assertPixel(image, 32, 27, RenderBridgeContractSuite.BLACK);
-		RenderBridgeContractSuite.assertPixel(image, 32, 30, RenderBridgeContractSuite.GREEN);
-		RenderBridgeContractSuite.assertPixel(image, 32, 33, RenderBridgeContractSuite.GREEN);
-		RenderBridgeContractSuite.assertPixel(image, 32, 36, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 32, 27, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 32, 30, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 32, 33, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 32, 36, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test
@@ -324,10 +323,10 @@ public abstract class RenderBridgeContractSuite {
 		});
 		texture.delete();
 
-		RenderBridgeContractSuite.assertPixel(image, 16, 16, RenderBridgeContractSuite.RED);
-		RenderBridgeContractSuite.assertPixel(image, 48, 16, RenderBridgeContractSuite.GREEN);
-		RenderBridgeContractSuite.assertPixel(image, 16, 48, RenderBridgeContractSuite.BLUE);
-		RenderBridgeContractSuite.assertPixel(image, 48, 48, RenderBridgeContractSuite.WHITE);
+		ContractDraw.assertPixel(image, 16, 16, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 48, 16, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 16, 48, RenderBridgeContractSuite.BLUE);
+		ContractDraw.assertPixel(image, 48, 48, RenderBridgeContractSuite.WHITE);
 	}
 
 	@Test
@@ -402,7 +401,7 @@ public abstract class RenderBridgeContractSuite {
 		});
 		frameBuffer.delete();
 
-		RenderBridgeContractSuite.assertPixel(image, 60, 60, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 60, 60, RenderBridgeContractSuite.RED);
 	}
 
 	@Test
@@ -420,8 +419,8 @@ public abstract class RenderBridgeContractSuite {
 		});
 		frameBuffer.delete();
 
-		RenderBridgeContractSuite.assertPixel(image, 16, 32, RenderBridgeContractSuite.RED);
-		RenderBridgeContractSuite.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
 	}
 
 	@Test
@@ -437,22 +436,22 @@ public abstract class RenderBridgeContractSuite {
 		}));
 		Assert.assertEquals(32, size[0]);
 		Assert.assertEquals(32, size[1]);
-		RenderBridgeContractSuite.assertPixel(image, 24, 12, RenderBridgeContractSuite.RED);
-		RenderBridgeContractSuite.assertPixel(image, 24, 36, RenderBridgeContractSuite.GREEN);
-		RenderBridgeContractSuite.assertPixel(image, 4, 4, RenderBridgeContractSuite.BLACK);
-		RenderBridgeContractSuite.assertPixel(image, 50, 50, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 24, 12, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 24, 36, RenderBridgeContractSuite.GREEN);
+		ContractDraw.assertPixel(image, 4, 4, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 50, 50, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test
 	public void hidesFarFacesBehindNearOnes() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> RenderBridgeContractSuite.drawInDepth(bridge, false));
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
 	}
 
 	@Test
 	public void clearsTheDepth() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> RenderBridgeContractSuite.drawInDepth(bridge, true));
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.BLUE);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.BLUE);
 	}
 
 	@Test
@@ -469,7 +468,7 @@ public abstract class RenderBridgeContractSuite {
 		});
 		frameBuffer.delete();
 
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
 	}
 
 	@Test
@@ -502,7 +501,7 @@ public abstract class RenderBridgeContractSuite {
 		});
 		frameBuffer.delete();
 
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
 	}
 
 	@Test
@@ -511,7 +510,7 @@ public abstract class RenderBridgeContractSuite {
 			bridge.getState().color(1F, 0F, 0F, 1F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 		});
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
 	}
 
 	@Test
@@ -520,8 +519,8 @@ public abstract class RenderBridgeContractSuite {
 			bridge.getState().color(1F, 0F, 0F, 1F);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE / 2, false, 0));
 		});
-		RenderBridgeContractSuite.assertPixel(image, 8, 8, RenderBridgeContractSuite.RED);
-		RenderBridgeContractSuite.assertPixel(image, 56, 56, RenderBridgeContractSuite.BLACK);
+		ContractDraw.assertPixel(image, 8, 8, RenderBridgeContractSuite.RED);
+		ContractDraw.assertPixel(image, 56, 56, RenderBridgeContractSuite.BLACK);
 	}
 
 	@Test
@@ -535,7 +534,7 @@ public abstract class RenderBridgeContractSuite {
 		});
 		texture.delete();
 
-		RenderBridgeContractSuite.assertPixel(image, 32, 32, RenderBridgeContractSuite.BLUE);
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.BLUE);
 	}
 
 	@Test
@@ -574,15 +573,7 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	private static SnapshotImage render(final Consumer<IRenderBridge> draw) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.beginFrame();
-		render.clearColor(0F, 0F, 0F, 1F);
-		draw.accept(render);
-		render.endFrame();
-
-		final SnapshotImage image = RenderBridgeContractSuite.backend.capture(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
-		RenderBridgeContractSuite.backend.present();
-		return image;
+		return ContractDraw.frame(RenderBridgeContractSuite.backend, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, draw);
 	}
 
 	private static IShader shader(final String fragment) {
@@ -655,11 +646,6 @@ public abstract class RenderBridgeContractSuite {
 		return sum / count;
 	}
 
-	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {
-		final int actual = image.getPixels()[x + y * image.getWidth()];
-		Assert.assertEquals("Pixel " + x + "," + y, String.format(Locale.ROOT, "#%08X", expected), String.format(Locale.ROOT, "#%08X", actual));
-	}
-
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final float start, final float end) {
 		return RenderBridgeContractSuite.quad(x, y, width, height, true, 0, false, start, end);
 	}
@@ -673,21 +659,7 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color, final boolean normal, final float start, final float end) {
-		final float[][] corners = {{x, y, start, start}, {x + width, y, end, start}, {x + width, y + height, end, end}, {x, y, start, start}, {x + width, y + height, end, end}, {x, y + height, start, end}};
-		final ByteBuffer buffer = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
-		for (int i = 0; i < corners.length; i++) {
-			final int offset = i * VertexBuffer.STRIDE;
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset(), corners[i][0]);
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 4, corners[i][1]);
-			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset(), corners[i][2]);
-			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, corners[i][3]);
-			buffer.put(offset + VertexAttribute.COLOR.getOffset(), (byte) (color >> 16));
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 1, (byte) (color >> 8));
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 2, (byte) color);
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 3, (byte) (color >> 24));
-			buffer.put(offset + VertexAttribute.NORMAL.getOffset() + 2, (byte) 127);
-		}
-		return VertexBuffer.create(buffer, corners.length, texture, color != 0, normal);
+		return ContractDraw.quad(x, y, width, height, 0F, texture, color, normal, start, end);
 	}
 
 	private static VertexBuffer line(final float startX, final float startY, final float endX, final float endY, final int color) {

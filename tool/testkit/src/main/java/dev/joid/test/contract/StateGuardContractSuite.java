@@ -1,7 +1,5 @@
 package dev.joid.test.contract;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TreeSet;
@@ -28,7 +26,6 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
-import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.test.snapshot.SnapshotImage;
@@ -167,10 +164,10 @@ public abstract class StateGuardContractSuite {
 		this.backend.present();
 		Assert.assertEquals(32, size[0]);
 		Assert.assertEquals(32, size[1]);
-		StateGuardContractSuite.assertPixel(image, 24, 12, 0xFFFF0000);
-		StateGuardContractSuite.assertPixel(image, 24, 36, 0xFF00FF00);
-		StateGuardContractSuite.assertPixel(image, 4, 4, 0xFF000000);
-		StateGuardContractSuite.assertPixel(image, 50, 50, 0xFF000000);
+		ContractDraw.assertPixel(image, 24, 12, 0xFFFF0000);
+		ContractDraw.assertPixel(image, 24, 36, 0xFF00FF00);
+		ContractDraw.assertPixel(image, 4, 4, 0xFF000000);
+		ContractDraw.assertPixel(image, 50, 50, 0xFF000000);
 	}
 
 	private void check(final StateTrap trap) {
@@ -311,28 +308,8 @@ public abstract class StateGuardContractSuite {
 		}
 	}
 
-	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {
-		final int actual = image.getPixels()[x + y * image.getWidth()];
-		Assert.assertEquals("Pixel " + x + "," + y, String.format(Locale.ROOT, "#%08X", expected), String.format(Locale.ROOT, "#%08X", actual));
-	}
-
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final float z, final boolean texture, final int color) {
-		final float[][] corners = {{x, y, 0F, 0F}, {x + width, y, 1F, 0F}, {x + width, y + height, 1F, 1F}, {x, y, 0F, 0F}, {x + width, y + height, 1F, 1F}, {x, y + height, 0F, 1F}};
-		final ByteBuffer buffer = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
-		for (int i = 0; i < corners.length; i++) {
-			final int offset = i * VertexBuffer.STRIDE;
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset(), corners[i][0]);
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 4, corners[i][1]);
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 8, z);
-			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset(), corners[i][2]);
-			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, corners[i][3]);
-			buffer.put(offset + VertexAttribute.COLOR.getOffset(), (byte) (color >> 16));
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 1, (byte) (color >> 8));
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 2, (byte) color);
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 3, (byte) (color >> 24));
-			buffer.put(offset + VertexAttribute.NORMAL.getOffset() + 2, (byte) 127);
-		}
-		return VertexBuffer.create(buffer, corners.length, texture, color != 0, false);
+		return ContractDraw.quad(x, y, width, height, z, texture, color, false, 0F, 1F);
 	}
 
 }

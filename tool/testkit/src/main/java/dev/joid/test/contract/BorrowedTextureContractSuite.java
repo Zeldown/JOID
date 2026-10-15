@@ -1,8 +1,5 @@
 package dev.joid.test.contract;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -19,7 +16,6 @@ import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
-import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import dev.joid.lib.resource.Resource;
 import dev.joid.test.snapshot.SnapshotImage;
@@ -63,7 +59,7 @@ public abstract class BorrowedTextureContractSuite {
 	public void drawsABorrowedTexture() {
 		final Object texture = BorrowedTextureContractSuite.backend.createBorrowableTexture(4, 2, BorrowedTextureContractSuite.RED, false);
 		final Resource resource = Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture));
-		BorrowedTextureContractSuite.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
+		ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
 		Assert.assertTrue(resource.getTexture() instanceof BorrowedTexture);
 		Assert.assertEquals(4, resource.getWidth());
 		Assert.assertEquals(2, resource.getHeight());
@@ -78,7 +74,7 @@ public abstract class BorrowedTextureContractSuite {
 		resource.getTexture().delete();
 		resource.clear();
 		Assert.assertTrue(BorrowedTextureContractSuite.backend.isBorrowableTexture(texture));
-		BorrowedTextureContractSuite.assertPixel(BorrowedTextureContractSuite.render(Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture))), 32, 32, BorrowedTextureContractSuite.RED);
+		ContractDraw.assertPixel(BorrowedTextureContractSuite.render(Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture))), 32, 32, BorrowedTextureContractSuite.RED);
 	}
 
 	@Test
@@ -125,42 +121,19 @@ public abstract class BorrowedTextureContractSuite {
 		final Object blue = BorrowedTextureContractSuite.backend.createBorrowableTexture(8, 2, BorrowedTextureContractSuite.BLUE, false);
 		final AtomicReference<Object> current = new AtomicReference<>(red);
 		final Resource resource = Resource.of(BorrowedTextureContractSuite.backend.borrow(current::get));
-		BorrowedTextureContractSuite.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
+		ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
 		current.set(blue);
-		BorrowedTextureContractSuite.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.BLUE);
+		ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.BLUE);
 		Assert.assertEquals(8, resource.getWidth());
 		Assert.assertEquals(2, resource.getHeight());
 	}
 
 	private static SnapshotImage render(final Resource resource) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.beginFrame();
-		render.clearColor(0F, 0F, 0F, 1F);
-		resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> render.draw(Primitive.TRIANGLES, BorrowedTextureContractSuite.quad()));
-		render.endFrame();
-
-		final SnapshotImage image = BorrowedTextureContractSuite.backend.capture(BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE);
-		BorrowedTextureContractSuite.backend.present();
-		return image;
-	}
-
-	private static void assertPixel(final SnapshotImage image, final int x, final int y, final int expected) {
-		final int actual = image.getPixels()[x + y * image.getWidth()];
-		Assert.assertEquals("Pixel " + x + "," + y, String.format(Locale.ROOT, "#%08X", expected), String.format(Locale.ROOT, "#%08X", actual));
+		return ContractDraw.frame(BorrowedTextureContractSuite.backend, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE, render -> resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> render.draw(Primitive.TRIANGLES, BorrowedTextureContractSuite.quad())));
 	}
 
 	private static VertexBuffer quad() {
-		final float size = BorrowedTextureContractSuite.SIZE;
-		final float[][] corners = {{0F, 0F, 0F, 0F}, {size, 0F, 1F, 0F}, {size, size, 1F, 1F}, {0F, 0F, 0F, 0F}, {size, size, 1F, 1F}, {0F, size, 0F, 1F}};
-		final ByteBuffer buffer = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
-		for (int i = 0; i < corners.length; i++) {
-			final int offset = i * VertexBuffer.STRIDE;
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset(), corners[i][0]);
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 4, corners[i][1]);
-			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset(), corners[i][2]);
-			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, corners[i][3]);
-		}
-		return VertexBuffer.create(buffer, corners.length, true, false, false);
+		return ContractDraw.quad(0F, 0F, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE, 0F, true, 0, false, 0F, 1F);
 	}
 
 }
