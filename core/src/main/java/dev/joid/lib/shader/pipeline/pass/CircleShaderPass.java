@@ -4,18 +4,19 @@ import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class CircleShaderPass implements IShaderPass {
 
 	private final float radius;
 	private final float centerX;
 	private final float centerY;
 
-	public CircleShaderPass(final float radius, final float centerX, final float centerY) {
-		this.radius = radius;
-		this.centerX = centerX;
-		this.centerY = centerY;
+	public static @NonNull CircleShaderPass create(final float radius, final float centerX, final float centerY) {
+		return new CircleShaderPass(radius, centerX, centerY);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package dev.joid.lib.utils.registry;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
@@ -33,6 +34,10 @@ public final class Registry<T> {
 			}
 		}
 		return null;
+	}
+
+	public @NonNull List<T> getAll() {
+		return Collections.unmodifiableList(this.list);
 	}
 
 }

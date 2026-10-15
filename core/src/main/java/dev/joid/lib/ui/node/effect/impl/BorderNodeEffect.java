@@ -57,7 +57,7 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 
 	@Override
 	public IShaderPass toShaderPass(final @NonNull Node node) {
-		return new BorderShaderPass(this.widthSupplier.get(), this.colorFunction.apply(node), this.fillSupplier.get(), this.modeSupplier.get());
+		return BorderShaderPass.create(this.colorFunction.apply(node), this.widthSupplier.get()).fill(this.fillSupplier.get()).mode(this.modeSupplier.get());
 	}
 
 	public final <E extends BorderNodeEffect> @NonNull E color(final @NonNull Color color) {

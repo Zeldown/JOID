@@ -3,16 +3,18 @@ package dev.joid.lib.shader.pipeline.pass;
 import dev.joid.lib.shader.impl.BlurShader;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class BlurShaderPass implements IShaderPass {
 
 	private final float radius;
 	private final boolean horizontal;
 
-	public BlurShaderPass(final float radius, final boolean horizontal) {
-		this.radius = radius;
-		this.horizontal = horizontal;
+	public static @NonNull BlurShaderPass create(final float radius, final boolean horizontal) {
+		return new BlurShaderPass(radius, horizontal);
 	}
 
 	@Override

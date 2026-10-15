@@ -1,29 +1,28 @@
 package dev.joid.lib.font.markup;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import dev.joid.lib.font.TextStyle;
+import dev.joid.lib.utils.registry.Registry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TextMarkup {
+public final class TextMarkup {
 
-	private static final List<ITextMarkup> MARKUPS = new CopyOnWriteArrayList<>();
+	private static final Registry<ITextMarkup> MARKUPS = Registry.create();
 
 	public static void register(final @NonNull ITextMarkup markup) {
-		TextMarkup.MARKUPS.add(0, markup);
+		TextMarkup.MARKUPS.register(markup);
 	}
 
 	public static void unregister(final @NonNull ITextMarkup markup) {
-		TextMarkup.MARKUPS.remove(markup);
+		TextMarkup.MARKUPS.unregister(markup);
 	}
 
 	public static @NonNull List<ITextMarkup> getRegistered() {
-		return Collections.unmodifiableList(TextMarkup.MARKUPS);
+		return TextMarkup.MARKUPS.getAll();
 	}
 
 	public static int parse(final @NonNull List<ITextMarkup> markups, final @NonNull String text, final int index, final @NonNull TextStyle style) {

@@ -72,6 +72,14 @@ public class TextMarkupTest {
 		Assert.assertFalse(TextMarkup.getRegistered().contains(TextMarkupTest.STARS));
 	}
 
+	@Test
+	public void registersAMarkupOnlyOnce() {
+		TextMarkup.register(TextMarkupTest.BOLD);
+		TextMarkup.register(TextMarkupTest.BOLD);
+		TextMarkup.unregister(TextMarkupTest.BOLD);
+		Assert.assertFalse(TextMarkup.getRegistered().contains(TextMarkupTest.BOLD));
+	}
+
 	private static TextStyle style() {
 		return TextStyle.create(FontWeight.REGULAR, false, Color.WHITE).derive();
 	}

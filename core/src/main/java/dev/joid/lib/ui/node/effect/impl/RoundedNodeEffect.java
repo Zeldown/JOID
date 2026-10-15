@@ -71,7 +71,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 		final float y1 = (float) (grid.snapY(node.getY()) + (this.isTop() ? radius : 0));
 		final float x2 = (float) (grid.snapRight(node.getX(), node.getX() + node.getWidth()) - (this.isRight() ? radius : 0));
 		final float y2 = (float) (grid.snapBottom(node.getY(), node.getY() + node.getHeight()) - (this.isBottom() ? radius : 0));
-		return new RoundedShaderPass(radius, x1, y1, x2, y2);
+		return RoundedShaderPass.create(radius, x1, y1, x2, y2);
 	}
 
 	public final <E extends RoundedNodeEffect> @NonNull E radius(final float radius) {

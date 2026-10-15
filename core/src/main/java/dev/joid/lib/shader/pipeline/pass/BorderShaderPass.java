@@ -9,24 +9,31 @@ import lombok.NonNull;
 
 public class BorderShaderPass implements IShaderPass {
 
-	private final boolean fill;
-	private final BorderMode mode;
-	private final float borderWidth;
-	private final Color borderColor;
+	private final Color color;
+	private final float width;
 
-	public BorderShaderPass(final float borderWidth, final @NonNull Color borderColor) {
-		this(borderWidth, borderColor, true, BorderMode.OUT);
+	private boolean    fill;
+	private BorderMode mode;
+
+	protected BorderShaderPass(final @NonNull Color color, final float width) {
+		this.color = color;
+		this.width = width;
+		this.fill  = true;
+		this.mode  = BorderMode.OUT;
 	}
 
-	public BorderShaderPass(final float borderWidth, final @NonNull Color borderColor, final boolean fill) {
-		this(borderWidth, borderColor, fill, BorderMode.OUT);
+	public static @NonNull BorderShaderPass create(final @NonNull Color color, final float width) {
+		return new BorderShaderPass(color, width);
 	}
 
-	public BorderShaderPass(final float borderWidth, final @NonNull Color borderColor, final boolean fill, final @NonNull BorderMode mode) {
-		this.borderWidth = borderWidth;
-		this.borderColor = borderColor;
+	public final <T extends BorderShaderPass> @NonNull T fill(final boolean fill) {
 		this.fill = fill;
+		return (T) this;
+	}
+
+	public final <T extends BorderShaderPass> @NonNull T mode(final @NonNull BorderMode mode) {
 		this.mode = mode;
+		return (T) this;
 	}
 
 	@Override
@@ -42,12 +49,12 @@ public class BorderShaderPass implements IShaderPass {
 
 		final float x = (float) context.getX();
 		final float y = (float) context.getY();
-		BorderShader.inst().bind((float) (this.borderWidth * context.getGrid().getScaleX()), this.borderColor, context.getTexelWidth(), context.getTexelHeight(), this.fill, this.mode.ordinal(), x, y, x + (float) context.getWidth(), y + (float) context.getHeight());
+		BorderShader.inst().bind((float) (this.width * context.getGrid().getScaleX()), this.color, context.getTexelWidth(), context.getTexelHeight(), this.fill, this.mode.ordinal(), x, y, x + (float) context.getWidth(), y + (float) context.getHeight());
 	}
 
 	@Override
 	public float expansion() {
-		return this.borderWidth + 2F;
+		return this.width + 2F;
 	}
 
 }

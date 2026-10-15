@@ -47,7 +47,7 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 			return Collections.emptyList();
 		}
 
-		return Arrays.asList(new BlurShaderPass(radius, true), new BlurShaderPass(radius, false));
+		return Arrays.asList(BlurShaderPass.create(radius, true), BlurShaderPass.create(radius, false));
 	}
 
 	public final <E extends BlurNodeEffect> @NonNull E radius(final float radius) {

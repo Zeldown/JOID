@@ -40,7 +40,7 @@ public class CircleShaderPassTest {
 
 	@Test
 	public void clipsTheRenderedTexture() {
-		new CircleShaderPass(15F, 40F, 50F).bind(this.context());
+		CircleShaderPass.create(15F, 40F, 50F).bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(15F, (Float) values.get("radius"), 0F);
@@ -50,13 +50,13 @@ public class CircleShaderPassTest {
 
 	@Test
 	public void drawsWithoutExpanding() {
-		final CircleShaderPass pass = new CircleShaderPass(15F, 40F, 50F);
+		final CircleShaderPass pass = CircleShaderPass.create(15F, 40F, 50F);
 		Assert.assertEquals(0F, pass.expansion(), 0F);
 	}
 
 	@Test
 	public void releasesTheShader() {
-		final CircleShaderPass pass = new CircleShaderPass(15F, 40F, 50F);
+		final CircleShaderPass pass = CircleShaderPass.create(15F, 40F, 50F);
 		pass.bind(this.context());
 		pass.unbind();
 		Assert.assertFalse(this.shader.isBound());

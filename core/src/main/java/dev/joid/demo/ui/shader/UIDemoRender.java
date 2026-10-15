@@ -195,7 +195,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), new RoundedShaderPass(40F, 40F, 40F, 160F, 160F), new BorderShaderPass(4F, UIDemoRender.INK)))
+			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), RoundedShaderPass.create(40F, 40F, 40F, 160F, 160F), BorderShaderPass.create(UIDemoRender.INK, 4F)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Pipeline", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -207,7 +207,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), new BlurShaderPass(12F, true)))
+			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), BlurShaderPass.create(12F, true)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Horizontal blur", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})

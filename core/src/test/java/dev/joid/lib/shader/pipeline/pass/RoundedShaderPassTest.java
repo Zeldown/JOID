@@ -32,7 +32,7 @@ public class RoundedShaderPassTest {
 
 	@Test
 	public void roundsTheRenderedTextureOfAFixedBox() {
-		new RoundedShaderPass(6F, 1F, 2F, 3F, 4F).bind(this.context());
+		RoundedShaderPass.create(6F, 1F, 2F, 3F, 4F).bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(6F, (Float) values.get("u_Radius"), 0F);
@@ -70,7 +70,7 @@ public class RoundedShaderPassTest {
 
 	@Test
 	public void rampsItsEdgesWithoutSnappingWhenRotated() {
-		new RoundedShaderPass(6F, 1F, 2F, 3F, 4F).bind(this.context());
+		RoundedShaderPass.create(6F, 1F, 2F, 3F, 4F).bind(this.context());
 		Assert.assertEquals(1, this.shader.getValues().get("u_Aligned"));
 		this.bridges.getRender().getModelView().push();
 		try {
@@ -84,13 +84,13 @@ public class RoundedShaderPassTest {
 
 	@Test
 	public void drawsWithoutExpanding() {
-		final RoundedShaderPass pass = new RoundedShaderPass(6F, 1F, 2F, 3F, 4F);
+		final RoundedShaderPass pass = RoundedShaderPass.create(6F, 1F, 2F, 3F, 4F);
 		Assert.assertEquals(0F, pass.expansion(), 0F);
 	}
 
 	@Test
 	public void releasesTheShader() {
-		final RoundedShaderPass pass = new RoundedShaderPass(6F, 1F, 2F, 3F, 4F);
+		final RoundedShaderPass pass = RoundedShaderPass.create(6F, 1F, 2F, 3F, 4F);
 		pass.bind(this.context());
 		pass.unbind();
 		Assert.assertFalse(this.shader.isBound());

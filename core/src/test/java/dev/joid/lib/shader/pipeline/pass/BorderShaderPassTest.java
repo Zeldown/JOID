@@ -31,7 +31,7 @@ public class BorderShaderPassTest {
 
 	@Test
 	public void drawsAFilledOuterBorderByDefault() {
-		final BorderShaderPass pass = new BorderShaderPass(3F, new Color(0.2F, 0.4F, 0.6F, 1F));
+		final BorderShaderPass pass = BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
 		pass.bind(this.context());
 		Assert.assertEquals(1, this.shader.getValues().get("u_Fill"));
 		Assert.assertEquals(BorderMode.OUT.ordinal(), this.shader.getValues().get("u_Mode"));
@@ -40,14 +40,14 @@ public class BorderShaderPassTest {
 
 	@Test
 	public void leavesTheInsideEmpty() {
-		new BorderShaderPass(3F, new Color(0.2F, 0.4F, 0.6F, 1F), false).bind(this.context());
+		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F).fill(false).bind(this.context());
 		Assert.assertEquals(0, this.shader.getValues().get("u_Fill"));
 		Assert.assertEquals(BorderMode.OUT.ordinal(), this.shader.getValues().get("u_Mode"));
 	}
 
 	@Test
 	public void drawsAnInnerBorder() {
-		new BorderShaderPass(3F, new Color(0.2F, 0.4F, 0.6F, 1F), true, BorderMode.IN).bind(this.context());
+		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F).fill(true).mode(BorderMode.IN).bind(this.context());
 		Assert.assertEquals(BorderMode.IN.ordinal(), this.shader.getValues().get("u_Mode"));
 	}
 
@@ -56,7 +56,7 @@ public class BorderShaderPassTest {
 		this.bridges.resize(1366, 768);
 		this.bridges.getRender().getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final ShaderPassContext context = this.context();
-		new BorderShaderPass(3F, new Color(0.2F, 0.4F, 0.6F, 0.5F)).bind(context);
+		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 0.5F), 3F).bind(context);
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(3F * 1366F / 1920F, (Float) values.get("u_BorderWidth"), 1E-4F);
@@ -68,7 +68,7 @@ public class BorderShaderPassTest {
 
 	@Test
 	public void spreadsAGradientOverTheBox() {
-		new BorderShaderPass(3F, new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.6F, 0.4F, 0.2F, 1F))).bind(this.context());
+		BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.6F, 0.4F, 0.2F, 1F)), 3F).bind(this.context());
 		final Map<String, Object> values = this.shader.getValues();
 		Assert.assertEquals(1, values.get("u_HasGradient"));
 		Assert.assertArrayEquals(new float[] {0.2F, 0.4F, 0.6F, 1F}, (float[]) values.get("u_GradientStart"), 0F);
@@ -80,7 +80,7 @@ public class BorderShaderPassTest {
 
 	@Test
 	public void releasesTheShader() {
-		final BorderShaderPass pass = new BorderShaderPass(3F, new Color(0.2F, 0.4F, 0.6F, 1F));
+		final BorderShaderPass pass = BorderShaderPass.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
 		pass.bind(this.context());
 		pass.unbind();
 		Assert.assertFalse(this.shader.isBound());
