@@ -40,9 +40,9 @@ public class ModelViewerNode extends BaseModelNode {
 	private Supplier<Double> minRotationPitch;
 	private Supplier<Double> maxRotationPitch;
 
-	private boolean dragged;
-	private double  draggedMouseX;
-	private double  draggedMouseY;
+	@Getter(AccessLevel.NONE) private boolean dragged;
+	@Getter(AccessLevel.NONE) private double  draggedMouseX;
+	@Getter(AccessLevel.NONE) private double  draggedMouseY;
 
 	private double drawnZoom;
 	private double drawnRotationYaw;

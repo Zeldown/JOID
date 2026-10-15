@@ -220,7 +220,7 @@ public abstract class ChartNode extends Node {
 			this(new LinkedHashMap<>());
 		}
 
-		protected ChartData(final Map<@NonNull String, @NonNull Number> dataMap) {
+		protected ChartData(final @NonNull Map<@NonNull String, @NonNull Number> dataMap) {
 			this.dataMap = dataMap;
 		}
 
@@ -228,12 +228,12 @@ public abstract class ChartNode extends Node {
 			return new ChartData();
 		}
 
-		public static @NonNull ChartData create(final Map<@NonNull String, @NonNull Number> dataMap) {
+		public static @NonNull ChartData create(final @NonNull Map<@NonNull String, @NonNull Number> dataMap) {
 			return new ChartData(dataMap);
 		}
 
 		public boolean isEmpty() {
-			return this.dataMap == null || this.dataMap.isEmpty();
+			return this.dataMap.isEmpty();
 		}
 
 		public Number getMax() {
@@ -261,12 +261,12 @@ public abstract class ChartNode extends Node {
 			return (T) this;
 		}
 
-		public final <T extends ChartData> T add(final @NonNull String label, final Number data) {
+		public final <T extends ChartData> @NonNull T add(final @NonNull String label, final Number data) {
 			this.dataMap.put(label, data);
 			return (T) this;
 		}
 
-		public final <T extends ChartData> @NonNull T dataMap(final Map<@NonNull String, @NonNull Number> dataMap) {
+		public final <T extends ChartData> @NonNull T dataMap(final @NonNull Map<@NonNull String, @NonNull Number> dataMap) {
 			this.dataMap = dataMap;
 			return (T) this;
 		}

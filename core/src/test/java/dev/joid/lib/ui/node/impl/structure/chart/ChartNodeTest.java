@@ -363,12 +363,6 @@ public class ChartNodeTest {
 		Assert.assertEquals(7D, data.getMax().doubleValue(), 0D);
 	}
 
-	@Test
-	public void staysEmptyWithoutAMap() {
-		Assert.assertTrue(ChartData.create(null).isEmpty());
-		Assert.assertTrue(ChartData.create().dataMap(null).isEmpty());
-	}
-
 	private static void assertBox(final Draw draw, final double left, final double top, final double right, final double bottom) {
 		Assert.assertEquals(left, draw.getLeft(), 1E-3D);
 		Assert.assertEquals(top, draw.getTop(), 1E-3D);

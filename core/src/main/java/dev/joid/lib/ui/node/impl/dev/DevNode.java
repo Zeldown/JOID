@@ -40,11 +40,9 @@ import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.point.Point;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public final class DevNode extends Node {
 
 	private static final Color RED         = new Color(239, 57, 38).lock();
@@ -57,14 +55,14 @@ public final class DevNode extends Node {
 
 	private static final Color[] GRID_COLORS = {DevNode.ACTION, DevNode.RED};
 
-	@Getter(AccessLevel.NONE) private final BooleanSignal gridSignal;
-	@Getter(AccessLevel.NONE) private final BooleanSignal inspectSignal;
+	private final BooleanSignal gridSignal;
+	private final BooleanSignal inspectSignal;
 
-	@Getter(AccessLevel.NONE) private final Signal<Node>         inspectedNode;
-	@Getter(AccessLevel.NONE) private final ComputedSignal<Node> lockedNode;
-	@Getter(AccessLevel.NONE) private final BooleanSignal        inspectedNodeLocked;
+	private final Signal<Node>         inspectedNode;
+	private final ComputedSignal<Node> lockedNode;
+	private final BooleanSignal        inspectedNodeLocked;
 
-	private final TweenAnimator reloadAnimator;
+	@Getter private final TweenAnimator reloadAnimator;
 
 	private double inspectX;
 	private double inspectY;
@@ -75,7 +73,7 @@ public final class DevNode extends Node {
 	private double targetInspectWidth;
 	private double targetInspectHeight;
 
-	private int gridColorIndex = 0;
+	private int gridColorIndex;
 
 	private DevNode(final double x, final double y) {
 		super(x, y, 275, 53);
@@ -420,7 +418,7 @@ public final class DevNode extends Node {
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (event.isConsumed() || !super.isEnabled()) {
+		if (event.isConsumed()) {
 			return;
 		}
 
@@ -441,7 +439,7 @@ public final class DevNode extends Node {
 
 	@Override
 	public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
-		if (event.isConsumed() || !super.isEnabled()) {
+		if (event.isConsumed()) {
 			return;
 		}
 

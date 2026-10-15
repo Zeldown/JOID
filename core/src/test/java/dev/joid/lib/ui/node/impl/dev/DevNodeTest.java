@@ -78,7 +78,7 @@ public class DevNodeTest {
 		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
 		Assert.assertEquals(0F, panel.getReloadAnimator().get(), 0F);
-		Assert.assertEquals(0, panel.getGridColorIndex());
+		Assert.assertEquals(0, DevNodeTest.<Integer>read(panel, "gridColorIndex").intValue());
 	}
 
 	@Test
@@ -133,10 +133,10 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(rect));
 		this.bridges.move(250D, 250D).frames(60);
 		Assert.assertSame(rect, DevNodeTest.peek(panel, "inspectedNode"));
-		Assert.assertEquals(200D, panel.getInspectX(), 0D);
-		Assert.assertEquals(200D, panel.getInspectY(), 0D);
-		Assert.assertEquals(300D, panel.getInspectWidth(), 0D);
-		Assert.assertEquals(150D, panel.getInspectHeight(), 0D);
+		Assert.assertEquals(200D, DevNodeTest.<Double>read(panel, "inspectX"), 0D);
+		Assert.assertEquals(200D, DevNodeTest.<Double>read(panel, "inspectY"), 0D);
+		Assert.assertEquals(300D, DevNodeTest.<Double>read(panel, "inspectWidth"), 0D);
+		Assert.assertEquals(150D, DevNodeTest.<Double>read(panel, "inspectHeight"), 0D);
 		final Draw box = DevNodeTest.draws(this.bridges, DevNodeTest.ACTION, 0.3F).get(0);
 		Assert.assertEquals(200D, box.getLeft(), 0.001D);
 		Assert.assertEquals(200D, box.getTop(), 0.001D);
@@ -148,11 +148,11 @@ public class DevNodeTest {
 	public void movesItsInspectionBoxTowardTheHoveredNode() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
-		Assert.assertTrue(panel.getInspectX() > 0D && panel.getInspectX() < 200D);
-		Assert.assertEquals(200D, panel.getTargetInspectX(), 0D);
-		Assert.assertEquals(200D, panel.getTargetInspectY(), 0D);
-		Assert.assertEquals(300D, panel.getTargetInspectWidth(), 0D);
-		Assert.assertEquals(150D, panel.getTargetInspectHeight(), 0D);
+		Assert.assertTrue(DevNodeTest.<Double>read(panel, "inspectX") > 0D && DevNodeTest.<Double>read(panel, "inspectX") < 200D);
+		Assert.assertEquals(200D, DevNodeTest.<Double>read(panel, "targetInspectX"), 0D);
+		Assert.assertEquals(200D, DevNodeTest.<Double>read(panel, "targetInspectY"), 0D);
+		Assert.assertEquals(300D, DevNodeTest.<Double>read(panel, "targetInspectWidth"), 0D);
+		Assert.assertEquals(150D, DevNodeTest.<Double>read(panel, "targetInspectHeight"), 0D);
 	}
 
 	@Test
@@ -466,20 +466,20 @@ public class DevNodeTest {
 		this.bridges.getUi().charTyped('g');
 		this.bridges.move(400D, 300D).frame();
 		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
-		Assert.assertEquals(1, panel.getGridColorIndex());
+		Assert.assertEquals(1, DevNodeTest.<Integer>read(panel, "gridColorIndex").intValue());
 		this.bridges.frame();
 		Assert.assertEquals(4, DevNodeTest.draws(this.bridges, DevNodeTest.RED, 1F).stream().filter(draw -> draw.getShader() == null && draw.getTop() < 1000D).count());
 		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
-		Assert.assertEquals(0, panel.getGridColorIndex());
+		Assert.assertEquals(0, DevNodeTest.<Integer>read(panel, "gridColorIndex").intValue());
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		Assert.assertEquals(0, panel.getGridColorIndex());
+		Assert.assertEquals(0, DevNodeTest.<Integer>read(panel, "gridColorIndex").intValue());
 	}
 
 	@Test
 	public void keepsItsGridColorWithoutGrid() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
-		Assert.assertEquals(0, panel.getGridColorIndex());
+		Assert.assertEquals(0, DevNodeTest.<Integer>read(panel, "gridColorIndex").intValue());
 	}
 
 	@Test
@@ -532,6 +532,16 @@ public class DevNodeTest {
 			final Field field = DevNode.class.getDeclaredField(name);
 			field.setAccessible(true);
 			return (T) ((Signal<?>) field.get(panel)).peek();
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException(exception);
+		}
+	}
+
+	private static <T> T read(final DevNode panel, final String name) {
+		try {
+			final Field field = DevNode.class.getDeclaredField(name);
+			field.setAccessible(true);
+			return (T) field.get(panel);
 		} catch (final ReflectiveOperationException exception) {
 			throw new IllegalStateException(exception);
 		}

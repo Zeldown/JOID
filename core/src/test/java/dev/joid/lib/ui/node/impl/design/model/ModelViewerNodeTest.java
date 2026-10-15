@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.design.model;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +32,7 @@ public class ModelViewerNodeTest {
 		Assert.assertEquals(2D, viewer.getMaxZoom(), 0D);
 		Assert.assertEquals(-Double.MAX_VALUE, viewer.getMinRotationYaw(), 0D);
 		Assert.assertEquals(Double.MAX_VALUE, viewer.getMaxRotationPitch(), 0D);
-		Assert.assertFalse(viewer.isDragged());
+		Assert.assertFalse(ModelViewerNodeTest.isDragged(viewer));
 	}
 
 	@Test
@@ -162,16 +163,16 @@ public class ModelViewerNodeTest {
 	@Test
 	public void stopsTurningWhenDetached() {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
-		Assert.assertTrue(viewer.isDragged());
+		Assert.assertTrue(ModelViewerNodeTest.isDragged(viewer));
 		viewer.fireDetach();
-		Assert.assertFalse(viewer.isDragged());
+		Assert.assertFalse(ModelViewerNodeTest.isDragged(viewer));
 	}
 
 	@Test
 	public void turnsWithTheDraggedMouse() {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
 		this.bridges.move(250D, 180D).frame();
-		Assert.assertTrue(viewer.isDragged());
+		Assert.assertTrue(ModelViewerNodeTest.isDragged(viewer));
 		Assert.assertEquals(10D, viewer.getRotationYaw(), 1E-9D);
 		Assert.assertEquals(4D, viewer.getRotationPitch(), 1E-9D);
 		Assert.assertTrue(viewer.getDrawnRotationYaw() > 0D && viewer.getDrawnRotationYaw() < 10D);
@@ -236,7 +237,7 @@ public class ModelViewerNodeTest {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.move(250D, 180D).frame();
-		Assert.assertFalse(viewer.isDragged());
+		Assert.assertFalse(ModelViewerNodeTest.isDragged(viewer));
 		Assert.assertEquals(0D, viewer.getRotationYaw(), 0D);
 	}
 
@@ -246,7 +247,7 @@ public class ModelViewerNodeTest {
 		this.bridges.open(new NodeUI(viewer)).frame();
 		this.bridges.move(1000D, 200D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		Assert.assertFalse(viewer.isDragged());
+		Assert.assertFalse(ModelViewerNodeTest.isDragged(viewer));
 	}
 
 	@Test
@@ -255,10 +256,10 @@ public class ModelViewerNodeTest {
 		this.bridges.open(new NodeUI(viewer)).frame();
 		this.bridges.move(200D, 200D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
-		Assert.assertFalse(viewer.isDragged());
+		Assert.assertFalse(ModelViewerNodeTest.isDragged(viewer));
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
-		Assert.assertTrue(viewer.isDragged());
+		Assert.assertTrue(ModelViewerNodeTest.isDragged(viewer));
 	}
 
 	@Test
@@ -276,6 +277,16 @@ public class ModelViewerNodeTest {
 		this.bridges.move(200D, 200D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		return viewer;
+	}
+
+	private static boolean isDragged(final ModelViewerNode viewer) {
+		try {
+			final Field field = ModelViewerNode.class.getDeclaredField("dragged");
+			field.setAccessible(true);
+			return field.getBoolean(viewer);
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException(exception);
+		}
 	}
 
 	@AllArgsConstructor

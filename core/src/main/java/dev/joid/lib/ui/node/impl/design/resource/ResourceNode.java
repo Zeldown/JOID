@@ -22,11 +22,11 @@ public class ResourceNode extends Node {
 	private Resource filteredHoveredResource;
 
 	private Color hoveredColor;
-	private Color color = Color.WHITE;
+	private Color color;
 
 	private Boolean linear;
 
-	private StretchType stretchType = StretchType.STRETCH;
+	private StretchType stretchType;
 
 	protected ResourceNode(final double x, final double y) {
 		this(x, y, 0, 0);
@@ -34,6 +34,10 @@ public class ResourceNode extends Node {
 
 	protected ResourceNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+
+		this.color       = Color.WHITE;
+		this.stretchType = StretchType.STRETCH;
+
 		super.<ResourceNode>wait(node -> node.isReady());
 		super.<ResourceNode>require("resource", "call resource(...) before attaching it", node -> node.resource != null);
 	}
