@@ -122,7 +122,7 @@ public final class Tessellator {
 			render.draw(this.isLineMode() ? Primitive.LINES : Primitive.TRIANGLES, VertexBuffer.create(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
 		}
 
-		if (this.rawBufferSize > 0x20000 && this.rawBufferIndex < this.rawBufferSize << 3) {
+		if (this.rawBufferSize > 0x20000 && this.rawBufferIndex < this.rawBufferSize >> 3) {
 			this.rawBufferSize = 0x10000;
 			this.rawBuffer = new int[this.rawBufferSize];
 		}
@@ -172,7 +172,7 @@ public final class Tessellator {
 		this.normal = normalX & 255 | (normalY & 255) << 8 | (normalZ & 255) << 16;
 	}
 
-	public void addVertex(final double x, final double y, final double v) {
+	public void addVertex(final double x, final double y, final double z) {
 		if (this.rawBufferIndex >= this.rawBufferSize - 32) {
 			if (this.rawBufferSize == 0) {
 				this.rawBufferSize = 0x10000;
@@ -198,7 +198,7 @@ public final class Tessellator {
 
 		this.rawBuffer[this.rawBufferIndex + 0] = Float.floatToRawIntBits((float) x);
 		this.rawBuffer[this.rawBufferIndex + 1] = Float.floatToRawIntBits((float) y);
-		this.rawBuffer[this.rawBufferIndex + 2] = Float.floatToRawIntBits((float) v);
+		this.rawBuffer[this.rawBufferIndex + 2] = Float.floatToRawIntBits((float) z);
 		this.rawBufferIndex += 8;
 		this.vertexCount++;
 	}

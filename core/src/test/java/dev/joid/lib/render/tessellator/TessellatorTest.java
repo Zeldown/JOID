@@ -384,7 +384,7 @@ public class TessellatorTest {
 	}
 
 	@Test
-	public void releasesAHugeBufferAfterItsDraw() {
+	public void keepsAHugeBufferWhileItsDrawFillsIt() {
 		final Tessellator tessellator = Tessellator.create();
 		tessellator.start(DrawMode.QUADS);
 		for (int i = 0; i < 20000; i++) {
@@ -393,6 +393,22 @@ public class TessellatorTest {
 		Assert.assertEquals(0x40000, TessellatorAccess.rawBufferSize(tessellator));
 		tessellator.draw();
 		Assert.assertEquals(30000, this.single().getCount());
+		Assert.assertEquals(0x40000, TessellatorAccess.rawBufferSize(tessellator));
+	}
+
+	@Test
+	public void releasesAHugeBufferAfterASmallDraw() {
+		final Tessellator tessellator = Tessellator.create();
+		tessellator.start(DrawMode.QUADS);
+		for (int i = 0; i < 20000; i++) {
+			tessellator.addVertex(i, 0D, 0D);
+		}
+		tessellator.draw();
+		tessellator.start(DrawMode.TRIANGLES);
+		for (int i = 0; i < 3; i++) {
+			tessellator.addVertex(i, 0D, 0D);
+		}
+		tessellator.draw();
 		Assert.assertEquals(0x10000, TessellatorAccess.rawBufferSize(tessellator));
 		Assert.assertEquals(0x10000, TessellatorAccess.rawBuffer(tessellator).length);
 	}
