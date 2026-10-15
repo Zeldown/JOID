@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import lombok.Getter;
-
-@Getter
 public final class Shape {
 
 	private final List<List<Edge>> contours = new ArrayList<>();
@@ -17,7 +14,7 @@ public final class Shape {
 		}
 	}
 
-	public final List<List<Edge>> getContours() {
+	public List<List<Edge>> getContours() {
 		return Collections.unmodifiableList(this.contours);
 	}
 

@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-
 import dev.joid.tool.msdf.atlas.GlyphEntry;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
 import dev.joid.tool.msdf.atlas.Packer;
@@ -48,15 +47,6 @@ public final class MsdfGenerator {
 		final int[] codepoints = MsdfGenerator.codepoints(options.getOrDefault("charset", MsdfGenerator.CHARSET));
 
 		MsdfGenerator.generate(font, output, codepoints, width, height, range, options.containsKey("size") ? Double.parseDouble(options.get("size")) : 0D);
-	}
-
-	public static void generate(final File file, final File output, final int[] codepoints, final int width, final int height, final double range, final double requested) throws Exception {
-		final long start = System.currentTimeMillis();
-		final File target = new File(output, "font.msdf");
-		output.mkdirs();
-
-		final String summary = MsdfGenerator.generate(Files.readAllBytes(file.toPath()), target, codepoints, width, height, range, requested);
-		System.out.println(file.getName() + " -> " + summary + ", " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	public static String generate(final byte[] data, final File target, final int[] codepoints, final int width, final int height, final double range, final double requested) throws Exception {
@@ -111,6 +101,15 @@ public final class MsdfGenerator {
 		}
 
 		return values.stream().mapToInt(Integer::intValue).toArray();
+	}
+
+	private static void generate(final File file, final File output, final int[] codepoints, final int width, final int height, final double range, final double requested) throws Exception {
+		final long start = System.currentTimeMillis();
+		final File target = new File(output, "font.msdf");
+		output.mkdirs();
+
+		final String summary = MsdfGenerator.generate(Files.readAllBytes(file.toPath()), target, codepoints, width, height, range, requested);
+		System.out.println(file.getName() + " -> " + summary + ", " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	private static double measure(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {

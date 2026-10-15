@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import lombok.Getter;
-
-@Getter
 public final class FontFile {
 
 	private final byte[] data;
@@ -27,7 +24,7 @@ public final class FontFile {
 		return new FontFile(data);
 	}
 
-	public final Map<String, Integer> getTables() {
+	public Map<String, Integer> getTables() {
 		return Collections.unmodifiableMap(this.tables);
 	}
 

@@ -175,8 +175,8 @@ task checkJars {
     doLast {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
         def demo = ['dev/joid/demo/DemoFont.class', 'assets/demo/']
-        def shaded = ['dev/joid/shaded/asm/', 'dev/joid/shaded/gson/', 'dev/joid/shaded/guava/', 'dev/joid/shaded/commons/io/', 'dev/joid/shaded/commons/lang3/']
-        def libraries = ['org/objectweb/asm/', 'com/google/gson/', 'com/google/common/', 'com/google/thirdparty/', 'org/apache/commons/io/', 'org/apache/commons/lang3/', 'javax/vecmath/']
+        def shaded = ['dev/joid/shaded/asm/', 'dev/joid/shaded/gson/', 'dev/joid/shaded/guava/', 'dev/joid/shaded/jsvg/', 'dev/joid/shaded/twelvemonkeys/', 'dev/joid/shaded/commons/io/', 'dev/joid/shaded/commons/lang3/']
+        def libraries = ['org/objectweb/asm/', 'com/google/gson/', 'com/google/common/', 'com/google/thirdparty/', 'com/github/weisj/', 'com/twelvemonkeys/', 'org/apache/commons/io/', 'org/apache/commons/lang3/', 'javax/vecmath/']
         def credits = ['org.ow2.asm': 'ASM', 'com.google.guava': 'Guava', 'org.bytedeco': 'JavaCV and JavaCPP', 'net.java.dev.jna': 'JNA', 'com.github.weisj': 'JSVG', 'commons-io': 'Apache Commons IO', 'com.google.code.gson': 'Gson', 'com.twelvemonkeys': 'TwelveMonkeys ImageIO', 'org.apache.commons': 'Apache Commons Lang']
         def notice = rootProject.file('NOTICE').readLines('UTF-8').collect { line -> line.trim() }
         def failures = []

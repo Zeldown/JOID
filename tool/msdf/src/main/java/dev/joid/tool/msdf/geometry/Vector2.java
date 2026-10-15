@@ -1,17 +1,14 @@
 package dev.joid.tool.msdf.geometry;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public final class Vector2 {
 
 	private final double x;
 	private final double y;
-
-	public Vector2(final double x, final double y) {
-		this.x = x;
-		this.y = y;
-	}
 
 	public Vector2 add(final Vector2 other) {
 		return new Vector2(this.x + other.x, this.y + other.y);

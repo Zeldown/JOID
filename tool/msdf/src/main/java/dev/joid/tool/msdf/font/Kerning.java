@@ -49,7 +49,7 @@ public final class Kerning {
 		return reader;
 	}
 
-	public final Map<Long, Integer> getKerning() {
+	public Map<Long, Integer> getKerning() {
 		return Collections.unmodifiableMap(this.kerning);
 	}
 
