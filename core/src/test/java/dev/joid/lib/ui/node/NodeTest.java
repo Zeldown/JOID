@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -54,6 +55,7 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.hover.IHoverElement;
+import dev.joid.lib.ui.node.hover.impl.NodeHoverElement;
 import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
@@ -2074,6 +2076,75 @@ public class NodeTest {
 	}
 
 	@Test
+	public void loadsAChildAppendedToARemovedParentOnceTheParentIsBack() {
+		final List<String> events = new ArrayList<>();
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D);
+		final NodeUI ui = new NodeUI(parent);
+		this.bridges.open(ui);
+		ui.remove(parent);
+		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D).attach(parent);
+		Assert.assertFalse(child.isAttached());
+		Assert.assertTrue(events.isEmpty());
+		ui.add(parent);
+		Assert.assertTrue(child.isAttached());
+		Assert.assertEquals(Arrays.asList("child init"), events);
+	}
+
+	@Test
+	public void loadsAChildAppendedTwiceOnce() {
+		final List<String> events = new ArrayList<>();
+		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		this.bridges.open(new NodeUI(parent));
+		events.clear();
+		parent.append(child);
+		Assert.assertTrue(events.isEmpty());
+		Assert.assertEquals(Arrays.asList(child), parent.getChildren());
+	}
+
+	@Test
+	public void updatesItsScrollbarAndItsSkeleton() {
+		final List<String> events = new ArrayList<>();
+		final Bar bar = new Bar(90D, 0D, 10D, 100D, 20D).onUpdate(event -> events.add("scrollbar"));
+		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).overflow(OverflowProperty.SCROLL).scrollbar(bar).skeleton(rect -> RectNode.create(0D, 0D, 10D, 10D).onUpdate(event -> events.add("skeleton"))).wait(rect -> false);
+		this.bridges.open(new NodeUI(node));
+		events.clear();
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList("scrollbar", "skeleton"), events);
+	}
+
+	@Test
+	public void sendsTheReleaseToTheNodesHiddenOrDisabledSinceThePress() {
+		final List<String> events = new ArrayList<>();
+		final boolean[] shown = {true};
+		final RecordingNode hidden = new RecordingNode("hidden", events, 0D, 0D, 50D, 50D).handleMouseReleased(event -> events.add("hidden handler"));
+		final RecordingNode disabled = new RecordingNode("disabled", events, 0D, 0D, 50D, 50D).enabled(() -> shown[0]).handleMouseReleased(event -> events.add("disabled handler"));
+		final RecordingNode inert = new RecordingNode("inert", events, 0D, 0D, 50D, 50D).interactive(() -> shown[0]);
+		final ContainerNode panel = ContainerNode.create(0D, 0D, 100D, 100D).visible(() -> shown[0]).append(hidden);
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(panel, disabled, inert)));
+		this.bridges.move(25D, 25D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		shown[0] = false;
+		events.clear();
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		Assert.assertEquals(new HashSet<>(Arrays.asList("hidden released", "hidden handler", "disabled released", "disabled handler", "inert released")), new HashSet<>(events));
+	}
+
+	@Test
+	public void detachesTheNodeOfItsHoverWithItself() {
+		final RectNode tooltip = RectNode.create(0D, 0D, 10D, 10D);
+		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).hover(NodeHoverElement.follow(tooltip));
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
+		this.bridges.open(new NodeUI(parent)).move(150D, 150D).frames(2);
+		Assert.assertTrue(tooltip.isAttached());
+		parent.remove(node);
+		Assert.assertFalse(tooltip.isAttached());
+		parent.append(node);
+		this.bridges.frames(2);
+		Assert.assertTrue(tooltip.isAttached());
+	}
+
+	@Test
 	public void attachesItselfToAUi() {
 		final NodeUI ui = new NodeUI(ContainerNode.create(0D, 0D, 10D, 10D));
 		this.bridges.open(ui);
@@ -2471,6 +2542,7 @@ public class NodeTest {
 	public void keepsUpdatingTheOtherNodesWhenAnUpdateFails() {
 		final List<String> events = new ArrayList<>();
 		final RecordingNode after = new RecordingNode("after", events, 0D, 0D, 10D, 10D);
+		NodeTest.forgetWarnings();
 		final String output = NodeTest.capture(() -> {
 			this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 100D, 100D).append(new FailingNode(), after)));
 			events.clear();
@@ -2478,6 +2550,22 @@ public class NodeTest {
 		});
 		Assert.assertEquals(Arrays.asList("after update", "after update"), events);
 		Assert.assertEquals(1, output.split("The update of FailingNode in NodeUI failed", -1).length - 1);
+	}
+
+	@Test
+	public void warnsOnceAboutAnUpdateThatFailsWithAnotherMessageEveryFrame() {
+		final int[] frames = {0};
+		final Node node = new Node(0D, 0D, 10D, 10D) {
+
+			@Override
+			public void update() {
+				throw new IllegalStateException("The update fails on frame " + frames[0]++);
+			}
+
+		};
+		final String output = NodeTest.capture(() -> this.bridges.open(new NodeUI(node)).frames(3));
+		Assert.assertTrue(frames[0] > 2);
+		Assert.assertEquals(1, output.split("failed \\(java.lang.IllegalStateException", -1).length - 1);
 	}
 
 	@Test
@@ -3281,6 +3369,16 @@ public class NodeTest {
 			System.setErr(error);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	private static void forgetWarnings() {
+		try {
+			final Field field = JOIDLog.class.getDeclaredField("KEY_SET");
+			field.setAccessible(true);
+			((Set<?>) field.get(null)).clear();
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	private static int links(final Node node) {

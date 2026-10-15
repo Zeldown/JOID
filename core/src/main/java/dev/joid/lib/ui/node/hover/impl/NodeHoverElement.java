@@ -12,12 +12,19 @@ public class NodeHoverElement extends PositionedHoverElement {
 
 			@Override
 			public void render(final @NonNull Node parentNode, final double mouseX, final double mouseY) {
-				if (!node.hasUi()) {
+				if (!node.isAttached()) {
 					node.load(parentNode.getUi());
 				}
 
 				BridgeHandler.RENDER.get().getModelView().translate(-node.getX(), -node.getY(), 0);
 				node.render(mouseX, mouseY);
+			}
+
+			@Override
+			public void detach() {
+				if (node.isAttached()) {
+					node.fireDetach();
+				}
 			}
 
 			@Override

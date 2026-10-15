@@ -94,7 +94,7 @@ public class TaskTest {
 	}
 
 	@Test
-	public void stopsWhenItsNodeIsDetached() {
+	public void pausesWhileItsNodeIsDetached() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
 		final RectNode parent = RectNode.create(0, 0, 200, 200).append(node);
 		this.open(parent);
@@ -102,11 +102,13 @@ public class TaskTest {
 		this.bridges.frames(2);
 		Assert.assertEquals(2, this.runs.get());
 		parent.remove(node);
-		parent.append(node);
 		this.bridges.frames(2);
 		Assert.assertEquals(2, this.runs.get());
-		Assert.assertFalse(task.isAttached());
-		Assert.assertTrue(node.getTaskList().isEmpty());
+		parent.append(node);
+		this.bridges.frames(2);
+		Assert.assertEquals(4, this.runs.get());
+		Assert.assertTrue(task.isAttached());
+		Assert.assertEquals(Collections.singletonList(task), node.getTaskList());
 	}
 
 	@Test
@@ -124,13 +126,10 @@ public class TaskTest {
 
 	@Test
 	public void stopsWhenItsUiCloses() {
-		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final TaskUI ui = this.open(node);
-		final Task first = Task.create(0L).every(0L).attach(ui);
-		final Task second = Task.create(0L).every(0L).attach(node);
+		final TaskUI ui = this.open();
+		final Task task = Task.create(0L).every(0L).attach(ui);
 		JOID.close(ui);
-		Assert.assertFalse(first.isAttached());
-		Assert.assertFalse(second.isAttached());
+		Assert.assertFalse(task.isAttached());
 		Assert.assertTrue(ui.getTaskList().isEmpty());
 	}
 

@@ -658,10 +658,18 @@ public abstract class Node implements INode {
 	public final void fireUpdate() {
 		this.fireAnimate();
 		this.drawList.ordered().stream().forEach(Node::fireUpdate);
+		if (this.scrollbar != null) {
+			this.scrollbar.fireUpdate();
+		}
+
+		if (this.skeleton != null && !this.mounted) {
+			this.skeleton.fireUpdate();
+		}
+
 		try {
 			this.update();
 		} catch (final RuntimeException exception) {
-			JOIDLog.warnOnce("Node.update." + System.identityHashCode(this) + exception, "The update of " + this.describe() + " failed (" + exception + "), the next updates still run: catch the exception inside update() to handle it", exception);
+			JOIDLog.warnOnce("Node.update." + this.getClass().getName() + "." + exception.getClass().getName(),"The update of " + this.describe() + " failed (" + exception + "), the next updates still run: catch the exception inside update() to handle it", exception);
 		}
 		this.fire(Node.UPDATE, () -> NodeEvent.create(this));
 	}
@@ -684,9 +692,9 @@ public abstract class Node implements INode {
 		final boolean attached = this.attached;
 		this.attached = false;
 		this.detach();
-		this.bindings.unsubscribe();
-		this.taskList.forEach(Task::detach);
 		this.endInteraction();
+		this.bindings.unsubscribe();
+		this.hoverElementList.forEach(IHoverElement::detach);
 		if (attached) {
 			this.effectMap.values().forEach(effect -> effect.detach(this));
 		}
@@ -712,7 +720,7 @@ public abstract class Node implements INode {
 			return;
 		}
 
-		this.dispatch(NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, source), Node.HANDLE_MOUSE_SCROLL, (node, event) -> node.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event), event -> {
+		this.dispatch(NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, source), this.isEnabled(), Node.HANDLE_MOUSE_SCROLL, (node, event) -> node.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event), event -> {
 			if (!event.isConsumed() && this.isHovered()) {
 				final double speed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
 				if (notchesY != 0D && this.hasOverflowY()) {
@@ -747,7 +755,7 @@ public abstract class Node implements INode {
 
 	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull ConsumableEvent source) {
 		if (this.isVisible() && this.isInteractive()) {
-			this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, source), Node.HANDLE_MOUSE_DRAGGED, (node, event) -> node.fireMouseDragged(mouseX, mouseY, button, deltaTime, event), this::mouseDragged);
+			this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, source), this.isEnabled(), Node.HANDLE_MOUSE_DRAGGED, (node, event) -> node.fireMouseDragged(mouseX, mouseY, button, deltaTime, event), this::mouseDragged);
 		}
 
 		if (this.dragging) {
@@ -775,7 +783,7 @@ public abstract class Node implements INode {
 
 		this.lastClickButton = button;
 		this.lastClickTime = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source), Node.HANDLE_MOUSE_PRESSED, (node, event) -> node.fireMousePressed(mouseX, mouseY, button, event), event -> {
+		this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source), this.isEnabled(), Node.HANDLE_MOUSE_PRESSED, (node, event) -> node.fireMousePressed(mouseX, mouseY, button, event), event -> {
 			if (!event.isConsumed() && button.isLeft() && this.isHovered() && this.hasListener(Node.CLICK)) {
 				this.fire(Node.CLICK, () -> event);
 				event.consume();
@@ -802,23 +810,11 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull ConsumableEvent source) {
-		final NodeMouseEvent<Node> event = NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source);
 		if (this.dragging) {
 			this.stopDragging();
 		}
 
-		if (this.isVisible() && this.isInteractive()) {
-			this.dispatch(event, Node.HANDLE_MOUSE_RELEASED, (node, forwarded) -> node.fireMouseReleased(mouseX, mouseY, button, forwarded), this::mouseReleased);
-			return;
-		}
-
-		if (this.scrollbar != null) {
-			this.scrollbar.fireMouseReleased(mouseX, mouseY, button, event);
-		}
-
-		if (this.skeleton != null && !this.mounted) {
-			this.skeleton.fireMouseReleased(mouseX, mouseY, button, event);
-		}
+		this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source), true, Node.HANDLE_MOUSE_RELEASED, (node, event) -> node.fireMouseReleased(mouseX, mouseY, button, event), this::mouseReleased);
 	}
 
 	public final <T extends Node> @NonNull T handleCharTyped(final @NonNull EventListener<NodeCharEvent<T>> listener) {
@@ -837,7 +833,7 @@ public abstract class Node implements INode {
 		}
 
 		this.lastCodepoint = codepoint;
-		this.dispatch(NodeCharEvent.create(this, codepoint, source), Node.HANDLE_CHAR_TYPED, (node, event) -> node.fireCharTyped(codepoint, event), this::charTyped);
+		this.dispatch(NodeCharEvent.create(this, codepoint, source), this.isEnabled(), Node.HANDLE_CHAR_TYPED, (node, event) -> node.fireCharTyped(codepoint, event), this::charTyped);
 	}
 
 	public final <T extends Node> @NonNull T handleKeyPressed(final @NonNull EventListener<NodeKeyEvent<T>> listener) {
@@ -857,7 +853,7 @@ public abstract class Node implements INode {
 
 		this.lastKey = key;
 		this.lastKeyTime = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.dispatch(NodeKeyEvent.create(this, key, source), Node.HANDLE_KEY_PRESSED, (node, event) -> node.fireKeyPressed(key, event), this::keyPressed);
+		this.dispatch(NodeKeyEvent.create(this, key, source), this.isEnabled(), Node.HANDLE_KEY_PRESSED, (node, event) -> node.fireKeyPressed(key, event), this::keyPressed);
 	}
 
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {
@@ -870,7 +866,7 @@ public abstract class Node implements INode {
 			}
 
 			node.parent(this);
-			if (this.ui != null) {
+			if (this.attached && !node.attached) {
 				node.load(this.ui);
 			}
 			this.drawList.add(node);
@@ -1248,7 +1244,7 @@ public abstract class Node implements INode {
 		this.scrollbar = scrollbar;
 		this.scrollbar.scrollNode(this);
 		((Node) this.scrollbar).parent(this);
-		if (this.ui != null) {
+		if (this.attached && !this.scrollbar.isAttached()) {
 			this.scrollbar.load(this.ui);
 		}
 		return (T) this;
@@ -1287,7 +1283,7 @@ public abstract class Node implements INode {
 
 		if (this.skeleton != null) {
 			this.skeleton.parent(this);
-			if (this.ui != null) {
+			if (this.attached && !this.skeleton.attached) {
 				this.skeleton.load(this.ui);
 			}
 		}
@@ -1974,7 +1970,7 @@ public abstract class Node implements INode {
 		this.overflow = overflow;
 	}
 
-	private <E extends NodeInputEvent<Node>> void dispatch(final E event, final EventType<?> type, final BiConsumer<Node, E> forward, final Consumer<E> handler) {
+	private <E extends NodeInputEvent<Node>> void dispatch(final E event, final boolean enabled, final EventType<?> type, final BiConsumer<Node, E> forward, final Consumer<E> handler) {
 		if (this.scrollbar != null) {
 			forward.accept(this.scrollbar, event);
 		}
@@ -1984,7 +1980,6 @@ public abstract class Node implements INode {
 			return;
 		}
 
-		final boolean enabled = this.isEnabled();
 		this.drawList.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> forward.accept(child, event));
 		if (enabled) {
 			this.bindings.mark();

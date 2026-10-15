@@ -117,6 +117,16 @@ public class DraggablePropertyTest {
 		DraggableProperty.free().area(DraggableAreaType.CUSTOM, new int[] {0, 0, 10, 10});
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesACustomAreaTypeGivenAlone() {
+		DraggableProperty.free().area(DraggableAreaType.CUSTOM);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void refusesANodeAreaTypeGivenAlone() {
+		DraggableProperty.free().area(DraggableAreaType.NODE);
+	}
+
 	@Test
 	public void snapsToTheNearestNode() {
 		final RectNode left = RectNode.create(0D, 0D, 10D, 10D);

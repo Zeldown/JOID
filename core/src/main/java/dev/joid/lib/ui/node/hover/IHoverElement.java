@@ -8,6 +8,8 @@ public interface IHoverElement {
 
 	public void render(final @NonNull Node node, final double mouseX, final double mouseY);
 
+	public default void detach() {}
+
 	public default double getX() { return 0; }
 
 	public default double getY() { return 0; }

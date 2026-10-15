@@ -162,8 +162,7 @@ public class DraggableProperty {
 	}
 
 	public final @NonNull DraggableProperty area(final @NonNull DraggableAreaType areaType) {
-		this.areaType = areaType;
-		return this;
+		return this.area(areaType, null);
 	}
 
 	public final @NonNull DraggableProperty area(final @NonNull DraggableAreaType areaType, final Object area) {

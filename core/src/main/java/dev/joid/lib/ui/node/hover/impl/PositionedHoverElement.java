@@ -61,6 +61,11 @@ public abstract class PositionedHoverElement implements IHoverElement {
 		});
 	}
 
+	@Override
+	public void detach() {
+		this.element.detach();
+	}
+
 	public enum HoverElementPosition {
 
 		FOLLOW,
