@@ -134,12 +134,15 @@ public class ShowPaperKit implements IShowKit {
 
 	public static class Toggle extends ToggleNode<Boolean, Boolean> {
 
-		private double knob;
+		private double  knob;
+		private boolean drawn;
 
 		protected Toggle(final double x, final double y) {
 			super(x, y, 76, 42);
 			super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-				this.knob = super.getUi().lerpByFramerate(this.knob, super.isToggle() ? 1D : 0D, 0.8D, 0.001D, true);
+				final double target = super.isToggle() ? 1D : 0D;
+				this.knob = this.drawn ? super.getUi().lerpByFramerate(this.knob, target, 0.8D, 0.001D, true) : target;
+				this.drawn = true;
 				DrawUtils.SHAPE.drawRect(5D, 5D, 76D, 42D, ShowPaperKit.INK);
 				ShowPaperKit.box(0D, 0D, 76D, 42D, ShowPaperKit.CARD.to(ShowPaperKit.TOMATO, (float) this.knob), 3D);
 			}));

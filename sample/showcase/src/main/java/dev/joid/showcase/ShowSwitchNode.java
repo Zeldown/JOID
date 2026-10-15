@@ -9,13 +9,16 @@ public class ShowSwitchNode extends ToggleNode<Boolean, Boolean> {
 
 	private final Color on;
 
-	private double knob;
+	private double  knob;
+	private boolean drawn;
 
 	protected ShowSwitchNode(final double x, final double y, final Color on) {
 		super(x, y, 76, 42);
 		this.on = on;
 		super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-			this.knob = super.getUi().lerpByFramerate(this.knob, super.isToggle() ? 1D : 0D, 0.8D, 0.001D, true);
+			final double target = super.isToggle() ? 1D : 0D;
+			this.knob = this.drawn ? super.getUi().lerpByFramerate(this.knob, target, 0.8D, 0.001D, true) : target;
+			this.drawn = true;
 			final float k = (float) this.knob;
 			if (k > 0.01F) {
 				DrawUtils.SHAPE.drawShadow(0D, 0D, 76D, 42D, this.on.withAlpha(0.7F * k), 21F, 18F);

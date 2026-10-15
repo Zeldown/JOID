@@ -7,12 +7,15 @@ import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
 
 public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
 
-	private double knob;
+	private double  knob;
+	private boolean drawn;
 
 	protected ShowThemeNode(final double x, final double y) {
 		super(x, y, 112, 56);
 		super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-			this.knob = super.getUi().lerpByFramerate(this.knob, super.isToggle() ? 1D : 0D, 0.5D, 0.001D, true);
+			final double target = super.isToggle() ? 1D : 0D;
+			this.knob = this.drawn ? super.getUi().lerpByFramerate(this.knob, target, 0.5D, 0.001D, true) : target;
+			this.drawn = true;
 			DrawUtils.SHAPE.drawRoundedRect(0D, 0D, 112D, 56D, this.getTrackColor(), 28F);
 		}));
 		super.knob(ContainerNode.create(0, 0, 56, 56).layer((node, mouseX, mouseY) -> {
