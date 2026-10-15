@@ -32,9 +32,8 @@ public final class Lwjgl2GlBinding implements IGlBinding {
 
 	private final IntBuffer   intBuffer     = BufferUtils.createIntBuffer(16);
 	private final FloatBuffer floatBuffer   = BufferUtils.createFloatBuffer(16);
+	private final IntBuffer   uploadBuffer  = BufferUtils.createIntBuffer(1 << 20);
 	private final ByteBuffer  pointerBuffer = BufferUtils.createByteBuffer(PointerBuffer.getPointerSize());
-
-	private IntBuffer uploadBuffer;
 
 	public static @NonNull Lwjgl2GlBinding inst() {
 		return Lwjgl2GlBinding.INSTANCE;
@@ -489,13 +488,13 @@ public final class Lwjgl2GlBinding implements IGlBinding {
 
 	@Override
 	public void texSubImage2D(final int target, final int level, final int x, final int y, final int width, final int height, final int format, final int type, final @NonNull int[] pixels) {
-		if (this.uploadBuffer == null || this.uploadBuffer.capacity() < width * height) {
-			this.uploadBuffer = BufferUtils.createIntBuffer(width * height);
+		final int rows = this.uploadBuffer.capacity() / width;
+		for (int row = 0; row < height; row += rows) {
+			final int count = Math.min(rows, height - row);
+			this.uploadBuffer.clear();
+			this.uploadBuffer.put(pixels, row * width, count * width).flip();
+			GL11.glTexSubImage2D(target, level, x, y + row, width, count, format, type, this.uploadBuffer);
 		}
-
-		this.uploadBuffer.clear();
-		this.uploadBuffer.put(pixels, 0, width * height).flip();
-		GL11.glTexSubImage2D(target, level, x, y, width, height, format, type, this.uploadBuffer);
 	}
 
 	@Override
