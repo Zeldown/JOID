@@ -213,6 +213,13 @@ public class TextTest {
 	}
 
 	@Test
+	public void convertsANewValueToText() {
+		final Text text = Text.create(TextElement.create("ab", TextTest.info()), TextElement.create("cd", TextTest.info()));
+		Assert.assertEquals("42cd", text.text(42).getText());
+		Assert.assertEquals("421.5", text.text(1, 1.5D).getText());
+	}
+
+	@Test
 	public void remeasuresOnceItsInfoChanges() {
 		final Text text = Text.create(TextElement.create("ab", TextTest.info()), TextElement.create("cd", TextTest.info()));
 		Assert.assertEquals(40D, text.getWidth(), 0D);

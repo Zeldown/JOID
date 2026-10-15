@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class FontBounds {
+public final class FontBounds {
 
 	private final double width;
 	private final double height;

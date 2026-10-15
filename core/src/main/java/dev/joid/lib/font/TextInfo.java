@@ -35,19 +35,19 @@ public final class TextInfo extends LockableValue<TextInfo> {
 	private ITextMarkup[] markups;
 	private ITextEffect[] effects;
 
-	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
+	public static @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
 		return new TextInfo(font, FontWeight.REGULAR, fontSize, Color.BLACK);
 	}
 
-	public static final @NonNull TextInfo create(final @NonNull IFont font, final float fontSize, final @NonNull Color color) {
+	public static @NonNull TextInfo create(final @NonNull IFont font, final float fontSize, final @NonNull Color color) {
 		return new TextInfo(font, FontWeight.REGULAR, fontSize, color);
 	}
 
-	public static final @NonNull TextInfo create(final @NonNull IFont font, final @NonNull FontWeight weight, final float fontSize) {
+	public static @NonNull TextInfo create(final @NonNull IFont font, final @NonNull FontWeight weight, final float fontSize) {
 		return new TextInfo(font, weight, fontSize, Color.BLACK);
 	}
 
-	public static final @NonNull TextInfo create(final @NonNull IFont font, final @NonNull FontWeight weight, final float fontSize, final @NonNull Color color) {
+	public static @NonNull TextInfo create(final @NonNull IFont font, final @NonNull FontWeight weight, final float fontSize, final @NonNull Color color) {
 		return new TextInfo(font, weight, fontSize, color);
 	}
 
@@ -55,183 +55,183 @@ public final class TextInfo extends LockableValue<TextInfo> {
 		this(font, fontSize, weight, 0, 0, color, true, false, null, null, null, null, null, new ITextEffect[0]);
 	}
 
-	public final double getHeight() {
+	public double getHeight() {
 		return this.font.getTextRenderer().getLineHeight(this);
 	}
 
-	public final double getHeight(final @NonNull String text) {
+	public double getHeight(final @NonNull String text) {
 		return this.font.getTextRenderer().getHeight(text, this);
 	}
 
-	public final @NonNull TextStyle getStyle() {
+	public @NonNull TextStyle getStyle() {
 		return TextStyle.create(this.weight, this.italic, this.color, this.effects).font(this.font);
 	}
 
-	public final float getShadowX() {
+	public float getShadowX() {
 		return this.shadowX != null ? this.shadowX : this.fontSize / 13.5F;
 	}
 
-	public final float getShadowY() {
+	public float getShadowY() {
 		return this.shadowY != null ? this.shadowY : this.fontSize / 13.5F;
 	}
 
-	public final @NonNull List<ITextEffect> getEffects() {
+	public @NonNull List<ITextEffect> getEffects() {
 		return Collections.unmodifiableList(Arrays.asList(this.effects));
 	}
 
-	public final @NonNull List<ITextMarkup> getMarkups() {
+	public @NonNull List<ITextMarkup> getMarkups() {
 		return this.markups == null ? TextMarkup.getRegistered() : Collections.unmodifiableList(Arrays.asList(this.markups));
 	}
 
-	public final double getWidth(final @NonNull String text) {
+	public double getWidth(final @NonNull String text) {
 		return this.font.getTextRenderer().getWidth(text, this);
 	}
 
-	public final @NonNull FontBounds getBounds(final @NonNull String text) {
+	public @NonNull FontBounds getBounds(final @NonNull String text) {
 		return FontBounds.create(this.getWidth(text), this.getHeight(text));
 	}
 
-	public final double dw(final @NonNull String text, final double value) {
+	public double dw(final @NonNull String text, final double value) {
 		return this.getWidth(text) / value;
 	}
 
-	public final double dh(final double value) {
+	public double dh(final double value) {
 		return this.getHeight() / value;
 	}
 
-	public final double dh(final @NonNull String text, final double value) {
+	public double dh(final @NonNull String text, final double value) {
 		return this.getHeight(text) / value;
 	}
 
-	public final double aw(final @NonNull String text, final double value) {
+	public double aw(final @NonNull String text, final double value) {
 		return this.getWidth(text) + value;
 	}
 
-	public final double ah(final double value) {
+	public double ah(final double value) {
 		return this.getHeight() + value;
 	}
 
-	public final double ah(final @NonNull String text, final double value) {
+	public double ah(final @NonNull String text, final double value) {
 		return this.getHeight(text) + value;
 	}
 
-	public final @NonNull TextInfo font(final IFont font) {
+	public @NonNull TextInfo font(final @NonNull IFont font) {
 		return this.mutate("withFont", () -> this.font = font);
 	}
 
-	public final @NonNull TextInfo fontSize(final float fontSize) {
+	public @NonNull TextInfo fontSize(final float fontSize) {
 		return this.mutate("withFontSize", () -> this.fontSize = fontSize);
 	}
 
-	public final @NonNull TextInfo weight(final @NonNull FontWeight weight) {
+	public @NonNull TextInfo weight(final @NonNull FontWeight weight) {
 		return this.mutate("withWeight", () -> this.weight = weight);
 	}
 
-	public final @NonNull TextInfo letterSpacing(final float letterSpacing) {
+	public @NonNull TextInfo letterSpacing(final float letterSpacing) {
 		return this.mutate("withLetterSpacing", () -> this.letterSpacing = letterSpacing);
 	}
 
-	public final @NonNull TextInfo lineHeight(final float lineHeight) {
+	public @NonNull TextInfo lineHeight(final float lineHeight) {
 		return this.mutate("withLineHeight", () -> this.lineHeight = lineHeight);
 	}
 
-	public final @NonNull TextInfo color(final @NonNull Color color) {
+	public @NonNull TextInfo color(final @NonNull Color color) {
 		return this.mutate("withColor", () -> this.color = color);
 	}
 
-	public final @NonNull TextInfo colored(final boolean colored) {
+	public @NonNull TextInfo colored(final boolean colored) {
 		return this.mutate("withColored", () -> this.colored = colored);
 	}
 
-	public final @NonNull TextInfo italic(final boolean italic) {
+	public @NonNull TextInfo italic(final boolean italic) {
 		return this.mutate("withItalic", () -> this.italic = italic);
 	}
 
-	public final @NonNull TextInfo markups(final @NonNull ITextMarkup @NonNull... markups) {
+	public @NonNull TextInfo markups(final @NonNull ITextMarkup @NonNull... markups) {
 		return this.mutate("withMarkups", () -> this.markups = markups.clone());
 	}
 
-	public final @NonNull TextInfo effects(final @NonNull ITextEffect @NonNull... effects) {
+	public @NonNull TextInfo effects(final @NonNull ITextEffect @NonNull... effects) {
 		return this.mutate("withEffects", () -> this.effects = effects.clone());
 	}
 
-	public final @NonNull TextInfo shadow() {
+	public @NonNull TextInfo shadow() {
 		return this.mutate("withShadow", () -> this.shadowColor = this.color.darker(0.3F));
 	}
 
-	public final @NonNull TextInfo shadow(final Color color) {
+	public @NonNull TextInfo shadow(final Color color) {
 		return this.mutate("withShadow", () -> this.shadowColor = color);
 	}
 
-	public final @NonNull TextInfo shadow(final float x, final float y) {
+	public @NonNull TextInfo shadow(final float x, final float y) {
 		return this.mutate("withShadow", () -> {
 			this.shadowX = x;
 			this.shadowY = y;
 		});
 	}
 
-	public final @NonNull TextInfo shadowTint(final Float shadowTint) {
+	public @NonNull TextInfo shadowTint(final Float shadowTint) {
 		return this.mutate("withShadowTint", () -> this.shadowTint = shadowTint);
 	}
 
-	public final @NonNull TextInfo withFont(final IFont font) {
+	public @NonNull TextInfo withFont(final @NonNull IFont font) {
 		return this.derive(info -> info.font(font));
 	}
 
-	public final @NonNull TextInfo withFontSize(final float fontSize) {
+	public @NonNull TextInfo withFontSize(final float fontSize) {
 		return this.derive(info -> info.fontSize(fontSize));
 	}
 
-	public final @NonNull TextInfo withWeight(final @NonNull FontWeight weight) {
+	public @NonNull TextInfo withWeight(final @NonNull FontWeight weight) {
 		return this.derive(info -> info.weight(weight));
 	}
 
-	public final @NonNull TextInfo withLetterSpacing(final float letterSpacing) {
+	public @NonNull TextInfo withLetterSpacing(final float letterSpacing) {
 		return this.derive(info -> info.letterSpacing(letterSpacing));
 	}
 
-	public final @NonNull TextInfo withLineHeight(final float lineHeight) {
+	public @NonNull TextInfo withLineHeight(final float lineHeight) {
 		return this.derive(info -> info.lineHeight(lineHeight));
 	}
 
-	public final @NonNull TextInfo withColor(final @NonNull Color color) {
+	public @NonNull TextInfo withColor(final @NonNull Color color) {
 		return this.derive(info -> info.color(color));
 	}
 
-	public final @NonNull TextInfo withColored(final boolean colored) {
+	public @NonNull TextInfo withColored(final boolean colored) {
 		return this.derive(info -> info.colored(colored));
 	}
 
-	public final @NonNull TextInfo withItalic(final boolean italic) {
+	public @NonNull TextInfo withItalic(final boolean italic) {
 		return this.derive(info -> info.italic(italic));
 	}
 
-	public final @NonNull TextInfo withMarkups(final @NonNull ITextMarkup @NonNull... markups) {
+	public @NonNull TextInfo withMarkups(final @NonNull ITextMarkup @NonNull... markups) {
 		return this.derive(info -> info.markups(markups));
 	}
 
-	public final @NonNull TextInfo withEffects(final @NonNull ITextEffect @NonNull... effects) {
+	public @NonNull TextInfo withEffects(final @NonNull ITextEffect @NonNull... effects) {
 		return this.derive(info -> info.effects(effects));
 	}
 
-	public final @NonNull TextInfo withShadow() {
+	public @NonNull TextInfo withShadow() {
 		return this.derive(info -> info.shadow());
 	}
 
-	public final @NonNull TextInfo withShadow(final Color color) {
+	public @NonNull TextInfo withShadow(final Color color) {
 		return this.derive(info -> info.shadow(color));
 	}
 
-	public final @NonNull TextInfo withShadow(final float x, final float y) {
+	public @NonNull TextInfo withShadow(final float x, final float y) {
 		return this.derive(info -> info.shadow(x, y));
 	}
 
-	public final @NonNull TextInfo withShadowTint(final Float shadowTint) {
+	public @NonNull TextInfo withShadowTint(final Float shadowTint) {
 		return this.derive(info -> info.shadowTint(shadowTint));
 	}
 
 	@Override
-	public final @NonNull TextInfo copy() {
+	public @NonNull TextInfo copy() {
 		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.shadowTint, this.markups, this.effects);
 	}
 

@@ -4,7 +4,7 @@ import java.lang.reflect.Field;
 
 import dev.joid.demo.font.impl.bitmap.DemoPixelTextRenderer;
 import dev.joid.lib.draw.raster.ExternalRaster;
-import dev.joid.lib.font.impl.bitmap.BitmapTextRenderer;
+import dev.joid.lib.font.impl.glyph.GlyphTextRenderer;
 import dev.joid.lib.font.impl.msdf.MsdfTextRenderer;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 public final class RenderSingletons {
 
 	public static void reset() {
-		RenderSingletons.clear(MsdfTextRenderer.class, MsdfTextRenderer.inst(), "shader");
-		RenderSingletons.clear(BitmapTextRenderer.class, DemoPixelTextRenderer.inst(), "shader");
+		RenderSingletons.clear(GlyphTextRenderer.class, MsdfTextRenderer.inst(), "shader");
+		RenderSingletons.clear(GlyphTextRenderer.class, DemoPixelTextRenderer.inst(), "shader");
 		RenderSingletons.clear(ExternalRaster.class, ExternalRaster.inst(), "target");
 	}
 

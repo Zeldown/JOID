@@ -1,5 +1,6 @@
 package dev.joid.lib.font.impl.glyph;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingShader;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
@@ -24,7 +26,6 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 public class GlyphTextRendererTest {
 
@@ -236,19 +237,14 @@ public class GlyphTextRendererTest {
 
 	@Test
 	public void writesTheColorUniformsOfAGlyph() {
-		final RecordingShader shader = new RecordingShader();
-		GlyphTextRendererTest.RENDERER.shader = shader;
-		try {
-			GlyphTextRendererTest.RENDERER.drawText(5D, 6D, "A", GlyphTextRendererTest.info().color(Color.RED), 1D, 2D, 300D, 40D);
-			Assert.assertEquals(0, shader.getValues().get("u_HasGradient"));
-			Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 1F}, (float[]) shader.getValues().get("color"), 0F);
-			GlyphTextRendererTest.RENDERER.drawText(5D, 6D, "A", GlyphTextRendererTest.info().color(Color.RED.toGradient(Color.BLUE)), 1D, 2D, 300D, 40D);
-			Assert.assertEquals(1, shader.getValues().get("u_HasGradient"));
-			Assert.assertArrayEquals(new float[] {0F, 0F, 1F, 1F}, (float[]) shader.getValues().get("u_GradientEnd"), 0F);
-			Assert.assertArrayEquals(new float[] {1F, 2F, 301F, 42F}, (float[]) shader.getValues().get("u_GradientCanvas"), 0F);
-		} finally {
-			GlyphTextRendererTest.RENDERER.shader = null;
-		}
+		GlyphTextRendererTest.RENDERER.drawText(5D, 6D, "A", GlyphTextRendererTest.info().color(Color.RED), 1D, 2D, 300D, 40D);
+		final RecordingShader shader = (RecordingShader) GlyphTextRendererTest.RENDERER.getShader();
+		Assert.assertEquals(0, shader.getValues().get("u_HasGradient"));
+		Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 1F}, (float[]) shader.getValues().get("color"), 0F);
+		GlyphTextRendererTest.RENDERER.drawText(5D, 6D, "A", GlyphTextRendererTest.info().color(Color.RED.toGradient(Color.BLUE)), 1D, 2D, 300D, 40D);
+		Assert.assertEquals(1, shader.getValues().get("u_HasGradient"));
+		Assert.assertArrayEquals(new float[] {0F, 0F, 1F, 1F}, (float[]) shader.getValues().get("u_GradientEnd"), 0F);
+		Assert.assertArrayEquals(new float[] {1F, 2F, 301F, 42F}, (float[]) shader.getValues().get("u_GradientCanvas"), 0F);
 	}
 	@Test
 	public void switchesTheFaceThroughMarkup() {
@@ -566,7 +562,6 @@ public class GlyphTextRendererTest {
 
 	}
 
-	@RequiredArgsConstructor
 	private static final class Renderer extends GlyphTextRenderer<Face> {
 
 		private final boolean               aligned;
@@ -574,11 +569,16 @@ public class GlyphTextRendererTest {
 		private final List<TextGlyph<Face>> drawn = new ArrayList<>();
 
 		private List<String>     events = new ArrayList<>();
-		private RecordingShader  shader;
 		private RuntimeException failure;
+
+		private Renderer(final boolean aligned) {
+			super(CoreShader.FONT);
+			this.aligned = aligned;
+		}
 
 		@Override
 		protected void end() {
+			super.end();
 			this.events.add("end");
 		}
 
@@ -591,20 +591,29 @@ public class GlyphTextRendererTest {
 				throw this.failure;
 			}
 
-			if (this.shader != null) {
-				super.uniformColor(this.shader, glyph.getColor());
-			}
+			super.bindColor(glyph.getColor());
 		}
 
 		@Override
-		protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
+		protected void begin() {
+			super.begin();
 			this.events.add("begin");
-			this.runs.add(new double[] {runX, runY, runWidth, runHeight});
+			this.runs.add(new double[] {this.run("runX"), this.run("runY"), this.run("runWidth"), this.run("runHeight")});
 		}
 
 		@Override
 		protected boolean isGridAligned() {
 			return this.aligned;
+		}
+
+		private double run(final String name) {
+			try {
+				final Field field = GlyphTextRenderer.class.getDeclaredField(name);
+				field.setAccessible(true);
+				return field.getDouble(this);
+			} catch (final ReflectiveOperationException exception) {
+				throw new AssertionError(exception);
+			}
 		}
 
 	}

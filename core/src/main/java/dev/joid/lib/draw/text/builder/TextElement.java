@@ -19,51 +19,51 @@ public final class TextElement {
 	private Supplier<?>   text;
 	private ITextModifier modifier;
 
-	public static final @NonNull TextElement create(final @NonNull Object text, final @NonNull TextInfo info) {
+	public static @NonNull TextElement create(final @NonNull Object text, final @NonNull TextInfo info) {
 		return new TextElement(info, Signal.from(text), null);
 	}
 
-	public static final @NonNull TextElement create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
+	public static @NonNull TextElement create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
 		return new TextElement(info, text, null);
 	}
 
-	public final @NonNull TextElement text(final @NonNull Object text) {
+	public @NonNull TextElement text(final @NonNull Object text) {
 		return this.text(Signal.from(text));
 	}
 
-	public final @NonNull TextElement text(final @NonNull Supplier<?> text) {
+	public @NonNull TextElement text(final @NonNull Supplier<?> text) {
 		this.text = text;
 		return this;
 	}
 
-	public final @NonNull TextElement info(final @NonNull TextInfo info) {
+	public @NonNull TextElement info(final @NonNull TextInfo info) {
 		this.info = info;
 		return this;
 	}
 
-	public final @NonNull TextElement modifier(final ITextModifier modifier) {
+	public @NonNull TextElement modifier(final ITextModifier modifier) {
 		this.modifier = modifier;
 		return this;
 	}
 
-	public final @NonNull TextElement copy() {
+	public @NonNull TextElement copy() {
 		return new TextElement(this.info, this.text, this.modifier);
 	}
 
-	public final @NonNull TextElement copyWithText(final @NonNull Object text) {
+	public @NonNull TextElement copyWithText(final @NonNull Object text) {
 		return new TextElement(this.info, () -> text, this.modifier);
 	}
 
-	public final @NonNull TextElement copyWithText(final @NonNull Supplier<?> text) {
+	public @NonNull TextElement copyWithText(final @NonNull Supplier<?> text) {
 		return new TextElement(this.info, text, this.modifier);
 	}
 
-	public final @NonNull String getText() {
+	public @NonNull String getText() {
 		final String rawText = this.getRawText();
 		return this.modifier == null ? rawText : this.modifier.modify(rawText, this.info);
 	}
 
-	public final @NonNull String getRawText() {
+	public @NonNull String getRawText() {
 		return TextConverter.convert(this.text.get());
 	}
 

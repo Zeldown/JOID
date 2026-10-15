@@ -1,60 +1,32 @@
 package dev.joid.lib.font.impl.msdf;
 
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
-import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
-import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.color.Color;
 import dev.joid.lib.font.impl.glyph.GlyphTextRenderer;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 
 	private static final MsdfTextRenderer INSTANCE = new MsdfTextRenderer();
 
-	private Color        color;
-	private float        pixelX;
-	private float        pixelY;
-	private PixelGrid    grid;
-	private IShader      shader;
 	private MsdfFontFace face;
+
+	private MsdfTextRenderer() {
+		super(CoreShader.FONT);
+	}
 
 	public static @NonNull MsdfTextRenderer inst() {
 		return MsdfTextRenderer.INSTANCE;
 	}
 
 	@Override
-	protected void end() {
-		this.shader.unbind();
-	}
-
-	@Override
-	protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (this.shader == null) {
-			this.shader = CoreShader.FONT.create(BlendState.NORMAL);
-		}
-
-		if (!this.shader.isActive()) {
-			throw new IllegalStateException("The msdf font shader cannot be compiled by " + render.getClass().getSimpleName() + ", the error printed by JOID when it was created tells why");
-		}
-
+	protected void begin() {
+		super.begin();
 		this.face = null;
-		this.color = null;
-		this.pixelX = 0F;
-		this.grid = render.getPixelGrid();
-
-		Color.reset();
-		this.shader.bind();
 	}
 
 	@Override
@@ -69,23 +41,20 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 			this.bindFace(face);
 		}
 
-		if (glyph.getColor() != this.color) {
-			this.bindColor(glyph.getColor());
-		}
+		super.bindColor(glyph.getColor());
 
+		final PixelGrid grid = super.getGrid();
 		final MsdfAtlas atlas = face.getAtlas();
 		final MsdfBounds plane = msdf.getPlaneBounds();
 		final MsdfBounds bounds = msdf.getAtlasBounds();
 		final double size = glyph.getSize();
 		final double height = this.getVerticalSize(face, size);
-		final float pixelX = (float) (atlas.getSize() / (atlas.getWidth() * size * this.grid.getScaleX()));
-		final float pixelY = (float) (atlas.getSize() / (atlas.getHeight() * height * this.grid.getScaleY()));
-		if (pixelX != this.pixelX || pixelY != this.pixelY) {
-			this.bindPixel(pixelX, pixelY);
-		}
+		final float pixelX = (float) (atlas.getSize() / (atlas.getWidth() * size * grid.getScaleX()));
+		final float pixelY = (float) (atlas.getSize() / (atlas.getHeight() * height * grid.getScaleY()));
+		super.bindPixel(pixelX, pixelY);
 
 		final double inset = 0.5D / atlas.getSize();
-		final double baseline = this.grid.snapY(glyph.getBaseline()) + glyph.getOffsetY();
+		final double baseline = grid.snapY(glyph.getBaseline()) + glyph.getOffsetY();
 		final double origin = glyph.getX() + glyph.getOffsetX();
 
 		final double left = origin + (plane.getLeft() + inset) * size;
@@ -109,28 +78,18 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 		tessellator.draw();
 	}
 
-	private void bindColor(final @NonNull Color color) {
-		this.color = color;
-		super.uniformColor(this.shader, color);
-	}
-
 	private void bindFace(final @NonNull MsdfFontFace face) {
 		this.face = face;
 		face.getTexture().bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
-		this.shader
+		super.getShader()
 		.uniform("texel", 1F / face.getAtlas().getWidth(), 1F / face.getAtlas().getHeight())
 		.uniform("pxRange", face.getAtlas().getDistanceRange());
 	}
 
-	private void bindPixel(final float pixelX, final float pixelY) {
-		this.pixelX = pixelX;
-		this.pixelY = pixelY;
-		this.shader.uniform("pixel", pixelX, pixelY);
-	}
-
 	private double getVerticalSize(final @NonNull MsdfFontFace face, final double size) {
-		final double xHeight = face.getXHeight() * size * this.grid.getScaleY();
-		return this.grid.isAligned() && xHeight > 0D ? size * Math.max(1D, Math.round(xHeight)) / xHeight : size;
+		final PixelGrid grid = super.getGrid();
+		final double xHeight = face.getXHeight() * size * grid.getScaleY();
+		return grid.isAligned() && xHeight > 0D ? size * Math.max(1D, Math.round(xHeight)) / xHeight : size;
 	}
 
 }

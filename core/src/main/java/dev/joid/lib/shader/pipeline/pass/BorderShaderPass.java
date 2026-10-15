@@ -49,7 +49,7 @@ public class BorderShaderPass implements IShaderPass {
 
 		final float x = (float) context.getX();
 		final float y = (float) context.getY();
-		BorderShader.inst().bind((float) (this.width * context.getGrid().getScaleX()), this.color, context.getTexelWidth(), context.getTexelHeight(), this.fill, this.mode.ordinal(), x, y, x + (float) context.getWidth(), y + (float) context.getHeight());
+		BorderShader.inst().bind((float) (this.width * context.getGrid().getScaleX()), this.color, context.getTexelWidth(), context.getTexelHeight(), this.fill, this.mode, x, y, x + (float) context.getWidth(), y + (float) context.getHeight());
 	}
 
 	@Override

@@ -5,8 +5,11 @@ import java.util.List;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.CoreShader;
+import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
@@ -17,14 +20,27 @@ import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.shader.impl.ShaderProgram;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRenderer {
+
+	private final CoreShader source;
 
 	private double runX;
 	private double runY;
 	private double runWidth;
 	private double runHeight;
+
+	private Color color;
+	private float pixelX;
+	private float pixelY;
+
+	@Getter(AccessLevel.PROTECTED) private IShader   shader;
+	@Getter(AccessLevel.PROTECTED) private PixelGrid grid;
 
 	@Override
 	public final @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
@@ -99,8 +115,28 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return new GlyphLayout<>(placements, placements.isEmpty() ? 0D : pen - spacing);
 	}
 
-	protected abstract void end();
-	protected abstract void begin(final double runX, final double runY, final double runWidth, final double runHeight);
+	protected void end() {
+		this.shader.unbind();
+	}
+
+	protected void begin() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (this.shader == null) {
+			this.shader = this.source.create(BlendState.NORMAL);
+		}
+
+		if (!this.shader.isActive()) {
+			throw new IllegalStateException("The font shader of " + this.getClass().getSimpleName() + " cannot be compiled by " + render.getClass().getSimpleName() + ", the error printed by JOID when it was created tells why");
+		}
+
+		this.color = null;
+		this.pixelX = 0F;
+		this.pixelY = 0F;
+		this.grid = render.getPixelGrid();
+
+		Color.reset();
+		this.shader.bind();
+	}
 
 	protected abstract void drawGlyph(final @NonNull TextGlyph<F> glyph);
 
@@ -108,15 +144,30 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return false;
 	}
 
-	protected final void uniformColor(final @NonNull IShader shader, final @NonNull Color color) {
-		final Color current = color.update();
-		shader.uniform("color", current.getRedF(), current.getGreenF(), current.getBlueF(), current.getAlphaF());
-		if (!current.isGradient()) {
-			shader.uniform("u_HasGradient", 0);
+	protected final void bindColor(final @NonNull Color color) {
+		if (color == this.color) {
 			return;
 		}
 
-		ShaderProgram.uniformGradient(shader, current.getGradient(), (float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
+		this.color = color;
+		final Color current = color.update();
+		this.shader.uniform("color", current.getRedF(), current.getGreenF(), current.getBlueF(), current.getAlphaF());
+		if (!current.isGradient()) {
+			this.shader.uniform("u_HasGradient", 0);
+			return;
+		}
+
+		ShaderProgram.uniformGradient(this.shader, current.getGradient(), (float) this.runX, (float) this.runY, (float) (this.runX + this.runWidth), (float) (this.runY + this.runHeight));
+	}
+
+	protected final void bindPixel(final float pixelX, final float pixelY) {
+		if (pixelX == this.pixelX && pixelY == this.pixelY) {
+			return;
+		}
+
+		this.pixelX = pixelX;
+		this.pixelY = pixelY;
+		this.shader.uniform("pixel", pixelX, pixelY);
 	}
 
 	private @NonNull F getFace(final @NonNull TextInfo info) {
@@ -205,7 +256,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		this.runWidth = runWidth;
 		this.runHeight = runHeight;
 		BridgeHandler.RENDER.get().withState(render -> {
-			this.begin(runX, runY, runWidth, runHeight);
+			this.begin();
 			try {
 				for (final TextGlyph<F> glyph : glyphs) {
 					this.drawGlyph(glyph);

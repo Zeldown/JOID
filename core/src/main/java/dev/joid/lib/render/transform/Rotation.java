@@ -36,7 +36,7 @@ public final class Rotation {
 		return new Rotation(yaw, pitch, roll);
 	}
 
-	public static @NonNull Rotation create(final Supplier<Double> yawSupplier, final Supplier<Double> pitchSupplier, final Supplier<Double> rollSupplier) {
+	public static @NonNull Rotation create(final @NonNull Supplier<Double> yawSupplier, final @NonNull Supplier<Double> pitchSupplier, final @NonNull Supplier<Double> rollSupplier) {
 		return new Rotation(yawSupplier, pitchSupplier, rollSupplier);
 	}
 

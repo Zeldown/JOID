@@ -36,37 +36,37 @@ public final class Text {
 		this.overflow    = TextOverflow.NONE;
 	}
 
-	public static final @NonNull Text create(final @NonNull TextElement @NonNull... elementList) {
+	public static @NonNull Text create(final @NonNull TextElement @NonNull... elementList) {
 		return new Text(Arrays.asList(elementList));
 	}
 
-	public static final @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info) {
+	public static @NonNull Text create(final @NonNull Object text, final @NonNull TextInfo info) {
 		return Text.create(TextElement.create(Signal.from(text), info));
 	}
 
-	public static final @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
+	public static @NonNull Text create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
 		return Text.create(TextElement.create(text, info));
 	}
 
-	public final @NonNull List<TextElement> getElementList() {
+	public @NonNull List<TextElement> getElementList() {
 		return Collections.unmodifiableList(this.elementList);
 	}
 
-	public final double getWidth() {
+	public double getWidth() {
 		this.measure();
 		return this.width;
 	}
 
-	public final double getHeight() {
+	public double getHeight() {
 		this.measure();
 		return this.height;
 	}
 
-	public final @NonNull String getText() {
+	public @NonNull String getText() {
 		return this.elementList.stream().map(this::getText).collect(Collectors.joining());
 	}
 
-	public final @NonNull String getText(final @NonNull TextElement element) {
+	public @NonNull String getText(final @NonNull TextElement element) {
 		if (this.modifier == null) {
 			return element.getText();
 		}
@@ -86,11 +86,11 @@ public final class Text {
 		return this.modifier.modify(element.getText(), info);
 	}
 
-	public final @NonNull String getRawText() {
+	public @NonNull String getRawText() {
 		return this.elementList.stream().map(TextElement::getRawText).collect(Collectors.joining());
 	}
 
-	public final @NonNull FontBounds getBounds() {
+	public @NonNull FontBounds getBounds() {
 		return FontBounds.create(this.getWidth(), this.getHeight());
 	}
 
@@ -98,11 +98,11 @@ public final class Text {
 		return this.element(index);
 	}
 
-	public @NonNull Text text(final @NonNull String text) {
+	public @NonNull Text text(final @NonNull Object text) {
 		return this.text(Signal.from(text));
 	}
 
-	public @NonNull Text text(final int index, final @NonNull String text) {
+	public @NonNull Text text(final int index, final @NonNull Object text) {
 		return this.text(index, Signal.from(text));
 	}
 
@@ -159,49 +159,49 @@ public final class Text {
 		return Text.create().overflow(this.overflow).alignX(this.alignX).alignY(this.alignY).modifier(this.modifier);
 	}
 
-	public final @NonNull Text align(final @NonNull Align align) {
+	public @NonNull Text align(final @NonNull Align align) {
 		this.alignX = align;
 		this.alignY = align;
 		return this;
 	}
 
-	public final @NonNull Text alignX(final @NonNull Align alignX) {
+	public @NonNull Text alignX(final @NonNull Align alignX) {
 		this.alignX = alignX;
 		return this;
 	}
 
-	public final @NonNull Text alignY(final @NonNull Align alignY) {
+	public @NonNull Text alignY(final @NonNull Align alignY) {
 		this.alignY = alignY;
 		return this;
 	}
 
-	public final @NonNull Text overflow(final @NonNull TextOverflow overflow) {
+	public @NonNull Text overflow(final @NonNull TextOverflow overflow) {
 		this.overflow = overflow;
 		return this;
 	}
 
-	public final @NonNull Text modifier(final ITextModifier modifier) {
+	public @NonNull Text modifier(final ITextModifier modifier) {
 		this.modifier = modifier;
 		return this;
 	}
 
-	public final boolean isEmpty() {
+	public boolean isEmpty() {
 		return this.elementList.isEmpty();
 	}
 
-	public final double dw(final double value) {
+	public double dw(final double value) {
 		return this.getWidth() / value;
 	}
 
-	public final double dh(final double value) {
+	public double dh(final double value) {
 		return this.getHeight() / value;
 	}
 
-	public final double aw(final double value) {
+	public double aw(final double value) {
 		return this.getWidth() + value;
 	}
 
-	public final double ah(final double value) {
+	public double ah(final double value) {
 		return this.getHeight() + value;
 	}
 

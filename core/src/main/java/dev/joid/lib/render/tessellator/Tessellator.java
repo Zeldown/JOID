@@ -45,11 +45,11 @@ public final class Tessellator {
 	private DrawMode drawMode;
 	private boolean  isDrawing;
 
-	public static Tessellator inst() {
+	public static @NonNull Tessellator inst() {
 		return Tessellator.INSTANCE;
 	}
 
-	public static Tessellator create() {
+	public static @NonNull Tessellator create() {
 		return new Tessellator();
 	}
 

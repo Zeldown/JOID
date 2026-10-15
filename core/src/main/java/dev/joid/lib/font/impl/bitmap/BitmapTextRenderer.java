@@ -1,15 +1,11 @@
 package dev.joid.lib.font.impl.bitmap;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
-import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
-import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.color.Color;
 import dev.joid.lib.font.impl.glyph.GlyphFont;
 import dev.joid.lib.font.impl.glyph.GlyphTextRenderer;
 import dev.joid.lib.font.impl.glyph.IFontFace;
@@ -20,39 +16,19 @@ import lombok.NonNull;
 
 public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextRenderer<F> {
 
-	private Color         color;
-	private float         pixelX;
-	private float         pixelY;
-	private PixelGrid     grid;
-	private IShader       shader;
-	private ITexture      texture;
-	private boolean       grayscale;
-	private IRenderBridge render;
+	private ITexture texture;
+	private boolean  grayscale;
 
-	@Override
-	protected final void end() {
-		this.shader.unbind();
+	protected BitmapTextRenderer() {
+		super(CoreShader.BITMAP);
 	}
 
 	@Override
-	protected final void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
-		this.render = BridgeHandler.RENDER.get();
-		if (this.shader == null) {
-			this.shader = CoreShader.BITMAP.create(BlendState.NORMAL);
-		}
-
-		if (!this.shader.isActive()) {
-			throw new IllegalStateException("The bitmap font shader cannot be compiled by " + this.render.getClass().getSimpleName() + ", the error printed by JOID when it was created tells why");
-		}
-
-		this.color = null;
-		this.pixelX = 0F;
+	protected final void begin() {
+		super.begin();
 		this.texture = null;
 		this.grayscale = false;
-		this.grid = this.render.getPixelGrid();
-
-		Color.reset();
-		this.shader.uniform("grayscale", false).bind();
+		super.getShader().uniform("grayscale", false);
 	}
 
 	@Override
@@ -70,24 +46,21 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 			this.bindGrayscale(cell.isGrayscale());
 		}
 
-		if (glyph.getColor() != this.color) {
-			this.bindColor(glyph.getColor());
-		}
+		super.bindColor(glyph.getColor());
 
+		final PixelGrid grid = super.getGrid();
 		final double unit = glyph.getSize() / BitmapTextRenderer.getBitmapSize(glyph);
 		final double width = cell.getWidth() * unit;
 		final double height = cell.getHeight() * unit;
-		final float pixelX = (float) (cell.getTexelWidth() / (width * this.grid.getScaleX()));
-		final float pixelY = (float) (cell.getTexelHeight() / (height * this.grid.getScaleY()));
-		if (pixelX != this.pixelX || pixelY != this.pixelY) {
-			this.bindPixel(pixelX, pixelY);
-		}
+		final float pixelX = (float) (cell.getTexelWidth() / (width * grid.getScaleX()));
+		final float pixelY = (float) (cell.getTexelHeight() / (height * grid.getScaleY()));
+		super.bindPixel(pixelX, pixelY);
 
-		this.shader.uniform("bounds", (float) cell.getTexelLeft(), (float) cell.getTexelTop(), (float) cell.getTexelRight(), (float) cell.getTexelBottom());
+		super.getShader().uniform("bounds", (float) cell.getTexelLeft(), (float) cell.getTexelTop(), (float) cell.getTexelRight(), (float) cell.getTexelBottom());
 
 		final ITexture texture = cell.getTexture();
-		final double marginX = 1D / this.grid.getScaleX();
-		final double marginY = 1D / this.grid.getScaleY();
+		final double marginX = 1D / grid.getScaleX();
+		final double marginY = 1D / grid.getScaleY();
 		final double baseline = glyph.getBaseline() + glyph.getOffsetY();
 		final double left = glyph.getX() + glyph.getOffsetX() + cell.getLeft() * unit - marginX;
 		final double top = baseline - glyph.getAscender() + cell.getTop() * unit - marginY;
@@ -120,26 +93,15 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 
 	protected abstract BitmapCell getCell(final @NonNull TextGlyph<F> glyph);
 
-	private void bindColor(final @NonNull Color color) {
-		this.color = color;
-		super.uniformColor(this.shader, color);
-	}
-
 	private void bindGrayscale(final boolean grayscale) {
 		this.grayscale = grayscale;
-		this.shader.uniform("grayscale", grayscale);
+		super.getShader().uniform("grayscale", grayscale);
 	}
 
 	private void bindTexture(final @NonNull ITexture texture) {
 		this.texture = texture;
-		this.render.getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
-		this.shader.uniform("texel", 1F / texture.getWidth(), 1F / texture.getHeight());
-	}
-
-	private void bindPixel(final float pixelX, final float pixelY) {
-		this.pixelX = pixelX;
-		this.pixelY = pixelY;
-		this.shader.uniform("pixel", pixelX, pixelY);
+		BridgeHandler.RENDER.get().getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
+		super.getShader().uniform("texel", 1F / texture.getWidth(), 1F / texture.getHeight());
 	}
 
 	private static int getBitmapSize(final @NonNull TextGlyph<?> glyph) {

@@ -36,11 +36,11 @@ public final class Vector {
 		return new Vector(x, y, z);
 	}
 
-	public static @NonNull Vector create(final Supplier<Double> xSupplier, final Supplier<Double> ySupplier) {
+	public static @NonNull Vector create(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier) {
 		return new Vector(xSupplier, ySupplier, () -> 0D);
 	}
 
-	public static @NonNull Vector create(final Supplier<Double> xSupplier, final Supplier<Double> ySupplier, final Supplier<Double> zSupplier) {
+	public static @NonNull Vector create(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier, final @NonNull Supplier<Double> zSupplier) {
 		return new Vector(xSupplier, ySupplier, zSupplier);
 	}
 
@@ -48,7 +48,7 @@ public final class Vector {
 		return new Vector(x, 0, 0);
 	}
 
-	public static @NonNull Vector X(final Supplier<Double> xSupplier) {
+	public static @NonNull Vector X(final @NonNull Supplier<Double> xSupplier) {
 		return new Vector(xSupplier, () -> 0D, () -> 0D);
 	}
 
@@ -56,7 +56,7 @@ public final class Vector {
 		return new Vector(0, y, 0);
 	}
 
-	public static @NonNull Vector Y(final Supplier<Double> ySupplier) {
+	public static @NonNull Vector Y(final @NonNull Supplier<Double> ySupplier) {
 		return new Vector(() -> 0D, ySupplier, () -> 0D);
 	}
 
@@ -64,7 +64,7 @@ public final class Vector {
 		return new Vector(0, 0, z);
 	}
 
-	public static @NonNull Vector Z(final Supplier<Double> zSupplier) {
+	public static @NonNull Vector Z(final @NonNull Supplier<Double> zSupplier) {
 		return new Vector(() -> 0D, () -> 0D, zSupplier);
 	}
 
@@ -85,7 +85,7 @@ public final class Vector {
 		return this;
 	}
 
-	public @NonNull Vector x(final Supplier<Double> xSupplier) {
+	public @NonNull Vector x(final @NonNull Supplier<Double> xSupplier) {
 		this.xSupplier = xSupplier;
 		return this;
 	}
@@ -95,7 +95,7 @@ public final class Vector {
 		return this;
 	}
 
-	public @NonNull Vector y(final Supplier<Double> ySupplier) {
+	public @NonNull Vector y(final @NonNull Supplier<Double> ySupplier) {
 		this.ySupplier = ySupplier;
 		return this;
 	}
@@ -105,7 +105,7 @@ public final class Vector {
 		return this;
 	}
 
-	public @NonNull Vector z(final Supplier<Double> zSupplier) {
+	public @NonNull Vector z(final @NonNull Supplier<Double> zSupplier) {
 		this.zSupplier = zSupplier;
 		return this;
 	}
@@ -114,7 +114,7 @@ public final class Vector {
 		return this.add(() -> x, () -> y, () -> z);
 	}
 
-	public @NonNull Vector add(final Supplier<Double> xSupplier, final Supplier<Double> ySupplier, final Supplier<Double> zSupplier) {
+	public @NonNull Vector add(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier, final @NonNull Supplier<Double> zSupplier) {
 		final Supplier<Double> currentXSupplier = this.xSupplier;
 		final Supplier<Double> currentYSupplier = this.ySupplier;
 		final Supplier<Double> currentZSupplier = this.zSupplier;

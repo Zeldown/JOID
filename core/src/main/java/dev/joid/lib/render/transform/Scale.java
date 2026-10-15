@@ -32,7 +32,7 @@ public final class Scale {
 		return new Scale(width, height, depth);
 	}
 
-	public static @NonNull Scale create(final Supplier<Double> widthSupplier, final Supplier<Double> heightSupplier, final Supplier<Double> depthSupplier) {
+	public static @NonNull Scale create(final @NonNull Supplier<Double> widthSupplier, final @NonNull Supplier<Double> heightSupplier, final @NonNull Supplier<Double> depthSupplier) {
 		return new Scale(widthSupplier, heightSupplier, depthSupplier);
 	}
 
@@ -40,7 +40,7 @@ public final class Scale {
 		return new Scale(width, 1, 1);
 	}
 
-	public static @NonNull Scale WIDTH(final Supplier<Double> widthSupplier) {
+	public static @NonNull Scale WIDTH(final @NonNull Supplier<Double> widthSupplier) {
 		return new Scale(widthSupplier, () -> 1D, () -> 1D);
 	}
 
@@ -48,7 +48,7 @@ public final class Scale {
 		return new Scale(1, height, 1);
 	}
 
-	public static @NonNull Scale HEIGHT(final Supplier<Double> heightSupplier) {
+	public static @NonNull Scale HEIGHT(final @NonNull Supplier<Double> heightSupplier) {
 		return new Scale(() -> 1D, heightSupplier, () -> 1D);
 	}
 
@@ -56,7 +56,7 @@ public final class Scale {
 		return new Scale(1, 1, depth);
 	}
 
-	public static @NonNull Scale DEPTH(final Supplier<Double> depthSupplier) {
+	public static @NonNull Scale DEPTH(final @NonNull Supplier<Double> depthSupplier) {
 		return new Scale(() -> 1D, () -> 1D, depthSupplier);
 	}
 
@@ -77,7 +77,7 @@ public final class Scale {
 		return this;
 	}
 
-	public @NonNull Scale width(final Supplier<Double> widthSupplier) {
+	public @NonNull Scale width(final @NonNull Supplier<Double> widthSupplier) {
 		this.xSupplier = widthSupplier;
 		return this;
 	}
@@ -87,7 +87,7 @@ public final class Scale {
 		return this;
 	}
 
-	public @NonNull Scale height(final Supplier<Double> heightSupplier) {
+	public @NonNull Scale height(final @NonNull Supplier<Double> heightSupplier) {
 		this.ySupplier = heightSupplier;
 		return this;
 	}
@@ -97,7 +97,7 @@ public final class Scale {
 		return this;
 	}
 
-	public @NonNull Scale depth(final Supplier<Double> depthSupplier) {
+	public @NonNull Scale depth(final @NonNull Supplier<Double> depthSupplier) {
 		this.zSupplier = depthSupplier;
 		return this;
 	}

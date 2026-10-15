@@ -27,7 +27,7 @@ public final class DrawText {
 		return DrawText.INSTANCE;
 	}
 
-	public FontBounds drawText(final double x, final double y, final @NonNull Text text) {
+	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull Text text) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
 		}
@@ -55,7 +55,7 @@ public final class DrawText {
 		return text.getBounds();
 	}
 
-	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull Text text, final @NonNull TextMode mode) {
+	public @NonNull FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull Text text, final @NonNull TextMode mode) {
 		if (text.isEmpty()) {
 			return FontBounds.empty();
 		}
@@ -168,11 +168,11 @@ public final class DrawText {
 		return FontBounds.create(width, heightSum);
 	}
 
-	public FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align alignX, final @NonNull Align alignY) {
+	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align alignX, final @NonNull Align alignY) {
 		return this.drawText(x, y, Text.create(text, info).alignX(alignX).alignY(alignY));
 	}
 
-	public FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align alignX, final @NonNull Align alignY, final @NonNull TextOverflow overflow, final @NonNull TextMode mode) {
+	public @NonNull FontBounds drawText(final double x, final double y, final double width, final double height, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align alignX, final @NonNull Align alignY, final @NonNull TextOverflow overflow, final @NonNull TextMode mode) {
 		return this.drawText(x, y, width, height, Text.create(text, info).alignX(alignX).alignY(alignY).overflow(overflow), mode);
 	}
 
