@@ -79,7 +79,12 @@ public final class ObjFace {
 		final double x = y1 * z2 - z1 * y2;
 		final double y = z1 * x2 - x1 * z2;
 		final double z = x1 * y2 - y1 * x2;
-		final double norm = 1D / Math.sqrt(x * x + y * y + z * z);
+		final double length = x * x + y * y + z * z;
+		if (length == 0D) {
+			return new ObjVertex(0F, 0F, 1F);
+		}
+
+		final double norm = 1D / Math.sqrt(length);
 		return new ObjVertex((float) (x * norm), (float) (y * norm), (float) (z * norm));
 	}
 

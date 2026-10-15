@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -222,6 +223,20 @@ public class VectorResourceDecoderTest {
 		Assert.assertNull(VectorResourceDecoderTest.field(decoder, "document"));
 		decoder.request(data, 64, 64, false, false);
 		Assert.assertSame(larger, data.getTextures()[0]);
+	}
+
+	@Test
+	public void dropsARasterOfTheDocumentItReplaced() throws InterruptedException {
+		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
+		final ResourceData data = VectorResourceDecoderTest.load(decoder);
+		decoder.request(data, 48, 48, true, false);
+		VectorResourceDecoderTest.awaitRaster(decoder);
+		final AtomicReference<Object> pending = (AtomicReference<Object>) VectorResourceDecoderTest.field(decoder, "pending");
+		final Object raster = pending.get();
+		decoder.clear(data);
+		pending.set(raster);
+		decoder.update(data);
+		Assert.assertTrue(decoder.getTextures().isEmpty());
 	}
 
 	@Test

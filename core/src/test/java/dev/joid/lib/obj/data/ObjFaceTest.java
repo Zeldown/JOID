@@ -31,6 +31,14 @@ public class ObjFaceTest {
 	}
 
 	@Test
+	public void pointsTheNormalOfADegenerateFaceAlongZ() {
+		final ObjVertex normal = ObjFaceTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 1F), new ObjVertex(2F, 2F)).normal();
+		Assert.assertEquals(0F, normal.getX(), 0F);
+		Assert.assertEquals(0F, normal.getY(), 0F);
+		Assert.assertEquals(1F, normal.getZ(), 0F);
+	}
+
+	@Test
 	public void rendersItsVerticesWithItsNormal() {
 		final Tessellator tessellator = ObjFaceTest.tessellator();
 		final ObjFace face = ObjFaceTest.face(new ObjVertex(0F, 0F, 2F), new ObjVertex(1F, 0F, 2F), new ObjVertex(0F, 1F, 2F));

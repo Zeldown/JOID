@@ -130,7 +130,7 @@ public class ResourceBuilderTest {
 		final Resource resource = ResourceBuilder.create().cache(null).of(texture);
 		Assert.assertNull(resource.getDecoder());
 		Assert.assertSame(texture, resource.getTexture());
-		Assert.assertEquals("texture_" + System.identityHashCode(texture), resource.getUniqueId());
+		Assert.assertTrue(resource.getUniqueId(), resource.getUniqueId().matches("texture_\\d+"));
 	}
 
 	@Test

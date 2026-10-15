@@ -1,5 +1,10 @@
 package dev.joid.lib.resource.resolver.impl;
 
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
@@ -9,6 +14,9 @@ import lombok.NonNull;
 
 public class TextureResourceResolver implements IResourceResolver {
 
+	private static final AtomicLong            COUNTER = new AtomicLong();
+	private static final Map<ITexture, String> IDS     = Collections.synchronizedMap(new WeakHashMap<>());
+
 	@Override
 	public boolean supports(final @NonNull Object input) {
 		return input instanceof ITexture;
@@ -17,7 +25,7 @@ public class TextureResourceResolver implements IResourceResolver {
 	@Override
 	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
 		final ITexture texture = (ITexture) input;
-		final String uniqueId = "texture_" + System.identityHashCode(texture);
+		final String uniqueId = TextureResourceResolver.IDS.computeIfAbsent(texture, key -> "texture_" + TextureResourceResolver.COUNTER.incrementAndGet());
 		return builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(texture));
 	}
 

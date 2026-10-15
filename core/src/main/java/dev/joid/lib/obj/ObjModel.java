@@ -32,8 +32,7 @@ public final class ObjModel implements IDrawableModel {
 	private static final Pattern FACE_PATTERN         = Pattern.compile("f( -?\\d+/-?\\d+/-?\\d+){3,} *");
 	private static final Pattern FACE_TEXTURE_PATTERN = Pattern.compile("f( -?\\d+/-?\\d+){3,} *");
 	private static final Pattern FACE_NORMAL_PATTERN  = Pattern.compile("f( -?\\d+//-?\\d+){3,} *");
-	private static final Pattern GROUP_PATTERN        = Pattern.compile("([go]( [\\w\\d\\.]+)+ *\\n)|([go]( [\\w\\d\\.]+)+ *$)");
-	private static final Pattern VERTEX_PATTERN       = Pattern.compile("v( [-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?){3,4} *");
+	private static final Pattern VERTEX_PATTERN       = Pattern.compile("v( [-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?){3,7} *");
 	private static final Pattern NORMAL_PATTERN       = Pattern.compile("vn( [-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?){3,4} *");
 	private static final Pattern TEXTURE_PATTERN      = Pattern.compile("vt( [-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?){2,3} *");
 
@@ -88,7 +87,7 @@ public final class ObjModel implements IDrawableModel {
 						this.groups.add(group);
 					}
 
-					group = this.parseGroup(line, lineCount);
+					group = new ObjGroup(line.substring(2));
 				}
 			}
 
@@ -222,13 +221,6 @@ public final class ObjModel implements IDrawableModel {
 			throw this.malformed(line, lineCount, "has the index " + index + " while " + list.size() + " " + kind + " come before it, use an index from 1 to " + list.size() + " or from -1 to -" + list.size());
 		}
 		return list.get(position);
-	}
-
-	private @NonNull ObjGroup parseGroup(final @NonNull String line, final int lineCount) {
-		if (!ObjModel.GROUP_PATTERN.matcher(line).matches()) {
-			throw this.malformed(line, lineCount, "is not a group or an object \"g name\" or \"o name\" with names of letters, digits, underscores and dots");
-		}
-		return new ObjGroup(line.substring(line.indexOf(" ") + 1));
 	}
 
 	private @NonNull IllegalArgumentException malformed(final @NonNull String line, final int lineCount, final @NonNull String problem) {

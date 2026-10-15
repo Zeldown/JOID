@@ -76,7 +76,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		final FloatSize size = this.document.size();
 		resource.width(Math.max(1, (int) Math.ceil(size.width)));
 		resource.height(Math.max(1, (int) Math.ceil(size.height)));
-		resource.data(new int[][] {this.render(resource.getWidth(), resource.getHeight())});
+		resource.data(new int[][] {VectorResourceDecoder.render(this.document, resource.getWidth(), resource.getHeight())});
 	}
 
 	@Override
@@ -116,14 +116,14 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		if (async) {
 			this.schedule(exactWidth, exactHeight);
 		} else {
-			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(exactWidth, exactHeight).upload(this.render(exactWidth, exactHeight), exactWidth, exactHeight));
+			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(exactWidth, exactHeight).upload(VectorResourceDecoder.render(this.document, exactWidth, exactHeight), exactWidth, exactHeight));
 		}
 	}
 
 	@Override
 	public void update(final @NonNull ResourceData resource) {
 		final Raster raster = this.pending.getAndSet(null);
-		if (raster != null) {
+		if (raster != null && raster.document == this.document) {
 			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(raster.width, raster.height).upload(raster.pixels, raster.width, raster.height));
 		}
 	}
@@ -190,26 +190,26 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		}
 
 		this.rendering = true;
+		final SVGDocument document = this.document;
 		VectorResourceDecoder.RASTER.execute(() -> {
 			try {
-				this.pending.set(new Raster(width, height, this.render(width, height)));
+				this.pending.set(new Raster(width, height, VectorResourceDecoder.render(document, width, height), document));
 			} finally {
 				this.rendering = false;
 			}
 		});
 	}
 
-	private int[] render(final int width, final int height) {
-		final SVGDocument current = this.document;
+	private static int[] render(final SVGDocument document, final int width, final int height) {
 		final BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		final Graphics2D graphics = image.createGraphics();
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		if (current != null) {
-			final FloatSize size = current.size();
+		if (document != null) {
+			final FloatSize size = document.size();
 			graphics.scale(width / size.width, height / size.height);
-			current.render((Component) null, graphics, new ViewBox(size));
+			document.render((Component) null, graphics, new ViewBox(size));
 		}
 		graphics.dispose();
 
@@ -225,9 +225,10 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class Raster {
 
-		private final int   width;
-		private final int   height;
-		private final int[] pixels;
+		private final int         width;
+		private final int         height;
+		private final int[]       pixels;
+		private final SVGDocument document;
 
 	}
 

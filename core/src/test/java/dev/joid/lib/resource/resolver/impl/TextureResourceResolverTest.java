@@ -24,9 +24,18 @@ public class TextureResourceResolverTest {
 	public void wrapsTheTextureWithoutDecoder() {
 		final Texture texture = new Texture();
 		final Resource resource = new TextureResourceResolver().resolve(ResourceBuilder.create().cache(null), texture);
-		Assert.assertEquals("texture_" + System.identityHashCode(texture), resource.getUniqueId());
+		Assert.assertTrue(resource.getUniqueId(), resource.getUniqueId().matches("texture_\\d+"));
 		Assert.assertSame(texture, resource.getTexture());
 		Assert.assertNull(resource.getDecoder());
+	}
+
+	@Test
+	public void givesEachTextureItsOwnId() {
+		final TextureResourceResolver resolver = new TextureResourceResolver();
+		final ResourceBuilder builder = ResourceBuilder.create().cache(null);
+		final Texture texture = new Texture();
+		Assert.assertEquals(resolver.resolve(builder, texture).getUniqueId(), resolver.resolve(builder, texture).getUniqueId());
+		Assert.assertNotEquals(resolver.resolve(builder, texture).getUniqueId(), resolver.resolve(builder, new Texture()).getUniqueId());
 	}
 
 	@Test

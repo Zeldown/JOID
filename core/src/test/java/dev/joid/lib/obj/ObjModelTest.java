@@ -445,13 +445,18 @@ public class ObjModelTest {
 	}
 
 	@Test
-	public void namesTheLineOfAMalformedGroup() {
-		try {
-			ObjModelTest.load("v 0 0 0", "o left-wing");
-			Assert.fail("A group name with a dash must be refused");
-		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("The OBJ model test cannot be read: its line 2 \"o left-wing\" is not a group or an object \"g name\" or \"o name\" with names of letters, digits, underscores and dots, fix this line in the model file", expected.getMessage());
-		}
+	public void namesAGroupWithTheRestOfItsLine() {
+		final ObjModel model = ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "o Mesh-1", "f 1 2 3", "g Body (1)", "f 1 2 3");
+		Assert.assertEquals("Mesh-1", model.getGroups().get(0).getName());
+		Assert.assertEquals("Body (1)", model.getGroups().get(1).getName());
+	}
+
+	@Test
+	public void keepsTheThreeCoordinatesOfAColoredVertex() {
+		final ObjVertex vertex = ObjModelTest.load("v 1 2 3 0.5 0.25 1").getVertices().get(0);
+		Assert.assertEquals(1F, vertex.getX(), 0F);
+		Assert.assertEquals(2F, vertex.getY(), 0F);
+		Assert.assertEquals(3F, vertex.getZ(), 0F);
 	}
 
 	private static ObjModel cube() {
