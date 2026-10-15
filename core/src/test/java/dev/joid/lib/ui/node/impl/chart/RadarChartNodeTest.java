@@ -14,7 +14,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.chart.RadarChartNode.RadarChartData;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 
 public class RadarChartNodeTest {
 

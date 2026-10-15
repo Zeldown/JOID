@@ -26,7 +26,7 @@ import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
 import dev.joid.lib.shader.impl.ShadowShader;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 
 public class DrawShapeTest {
 

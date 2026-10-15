@@ -11,8 +11,8 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.BoundingBox;
+import dev.joid.lib.utils.geom.Point;
 
 public class GradientShaderTest {
 

@@ -2,7 +2,7 @@ package dev.joid.lib.ui.core;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

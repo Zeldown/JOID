@@ -6,7 +6,7 @@ import java.util.List;
 
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.property.watch.WatchProperty;
+import dev.joid.lib.ui.node.property.WatchProperty;
 import lombok.Getter;
 import lombok.NonNull;
 

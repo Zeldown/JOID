@@ -11,7 +11,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
-import dev.joid.lib.ui.core.data.popup.UIDataPopup;
+import dev.joid.lib.ui.core.data.UIDataPopup;
 
 @UIData(background = true)
 @UIDataPopup(active = true)

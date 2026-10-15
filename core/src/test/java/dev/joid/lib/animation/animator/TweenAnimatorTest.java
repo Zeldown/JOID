@@ -23,7 +23,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 
 public class TweenAnimatorTest {
 

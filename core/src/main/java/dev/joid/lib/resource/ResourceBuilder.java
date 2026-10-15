@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.resource.cache.IResourceCache;
-import dev.joid.lib.resource.cache.impl.MemoryResourceCache;
+import dev.joid.lib.resource.cache.MemoryResourceCache;
 import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.Getter;

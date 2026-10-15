@@ -14,7 +14,7 @@ import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.layout.ReorderableFlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 
 public class ShowLists extends ShowUI {

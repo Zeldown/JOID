@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
-import dev.joid.lib.ui.node.property.position.PositionProperty;
+import dev.joid.lib.ui.node.property.OverflowProperty;
+import dev.joid.lib.ui.node.property.PositionProperty;
 import lombok.Getter;
 import lombok.NonNull;
 

@@ -22,7 +22,7 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.resource.animation.impl.GifResourceAnimationReader;
-import dev.joid.lib.resource.cache.impl.MemoryResourceCache;
+import dev.joid.lib.resource.cache.MemoryResourceCache;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import lombok.NonNull;

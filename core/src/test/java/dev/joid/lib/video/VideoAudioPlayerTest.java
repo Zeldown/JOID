@@ -22,7 +22,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioSource;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
 
 public class VideoAudioPlayerTest {

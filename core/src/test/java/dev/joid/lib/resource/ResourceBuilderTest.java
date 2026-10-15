@@ -27,7 +27,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.resource.cache.IResourceCache;
-import dev.joid.lib.resource.cache.impl.MemoryResourceCache;
+import dev.joid.lib.resource.cache.MemoryResourceCache;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VectorResourceDecoder;

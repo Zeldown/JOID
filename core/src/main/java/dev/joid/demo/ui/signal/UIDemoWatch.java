@@ -20,7 +20,7 @@ import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.ui.node.property.watch.WatchProperty;
+import dev.joid.lib.ui.node.property.WatchProperty;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 

@@ -13,7 +13,7 @@ import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import dev.joid.lib.video.VideoAudioPlayer;
 
 @UIData(background = true)

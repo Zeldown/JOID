@@ -8,7 +8,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.geom.BoundingBox;
 import lombok.Getter;
 import lombok.NonNull;
 

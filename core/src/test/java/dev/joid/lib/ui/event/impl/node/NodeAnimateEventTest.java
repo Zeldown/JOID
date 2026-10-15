@@ -11,7 +11,7 @@ import org.junit.Test;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.debug.UIDataDebug;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.AllArgsConstructor;

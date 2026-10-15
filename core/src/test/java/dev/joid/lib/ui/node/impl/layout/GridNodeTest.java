@@ -12,8 +12,8 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
-import dev.joid.lib.ui.node.property.position.PositionProperty;
+import dev.joid.lib.ui.node.property.OverflowProperty;
+import dev.joid.lib.ui.node.property.PositionProperty;
 
 public class GridNodeTest {
 

@@ -8,9 +8,9 @@ import java.util.function.UnaryOperator;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.state.RenderState;
-import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.geom.BoundingBox;
+import dev.joid.lib.utils.geom.Point;
 import dev.joid.lib.utils.lock.LockableValue;
-import dev.joid.lib.utils.point.Point;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;

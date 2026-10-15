@@ -44,7 +44,7 @@ import dev.joid.lib.ui.node.impl.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.progress.ProgressNode.ProgressDirection;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 
 public class NodeSetterTest {
 

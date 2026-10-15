@@ -9,7 +9,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.impl.chart.ChartNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
 
 public class DemoChartNode extends ChartNode {

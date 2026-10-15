@@ -14,7 +14,7 @@ import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeProgressEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.Getter;
 import lombok.NonNull;
 

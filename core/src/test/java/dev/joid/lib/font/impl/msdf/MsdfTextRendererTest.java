@@ -25,7 +25,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.effect.ITextGlyph;
 import dev.joid.lib.font.markup.ITextMarkup;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 
 public class MsdfTextRendererTest {
 

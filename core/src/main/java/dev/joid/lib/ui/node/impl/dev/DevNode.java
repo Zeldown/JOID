@@ -35,11 +35,11 @@ import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
-import dev.joid.lib.ui.node.property.watch.WatchProperty;
+import dev.joid.lib.ui.node.property.OverflowProperty;
+import dev.joid.lib.ui.node.property.WatchProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.Getter;
 import lombok.NonNull;
 

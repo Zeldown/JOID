@@ -8,7 +8,7 @@ import dev.joid.demo.ui.animation.UIDemoAnimation;
 import dev.joid.demo.ui.animation.UIDemoTween;
 import dev.joid.demo.ui.chart.UIDemoChart;
 import dev.joid.demo.ui.control.UIDemoControl;
-import dev.joid.demo.ui.core.transition.impl.DemoPushTransition;
+import dev.joid.demo.ui.core.transition.DemoPushTransition;
 import dev.joid.demo.ui.cursor.UIDemoCursor;
 import dev.joid.demo.ui.draggable.UIDemoDraggable;
 import dev.joid.demo.ui.event.UIDemoEvent;
@@ -46,7 +46,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.GridNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
 import lombok.NoArgsConstructor;
 

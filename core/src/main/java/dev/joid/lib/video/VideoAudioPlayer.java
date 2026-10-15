@@ -9,7 +9,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioSource;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
 import lombok.Setter;
 

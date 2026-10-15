@@ -9,8 +9,8 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.state.RenderState;
-import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.BoundingBox;
+import dev.joid.lib.utils.geom.Point;
 
 public class ColorTest {
 

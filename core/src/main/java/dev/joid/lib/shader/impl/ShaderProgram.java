@@ -9,7 +9,7 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.color.ColorGradient;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
 
 public abstract class ShaderProgram {

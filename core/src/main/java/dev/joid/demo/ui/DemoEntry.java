@@ -2,7 +2,7 @@ package dev.joid.demo.ui;
 
 import java.util.function.Supplier;
 
-import dev.joid.demo.ui.core.transition.impl.DemoPushTransition;
+import dev.joid.demo.ui.core.transition.DemoPushTransition;
 import dev.joid.internal.JOID;
 import dev.joid.lib.ui.core.UI;
 import lombok.AccessLevel;

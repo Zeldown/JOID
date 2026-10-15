@@ -15,7 +15,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.popup.UIDataPopup;
+import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.Getter;

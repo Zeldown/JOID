@@ -9,7 +9,7 @@ import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.ui.node.impl.chart.RadarChartNode;
 import dev.joid.lib.ui.node.impl.chart.RadarChartNode.RadarChartData;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
 
 public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {

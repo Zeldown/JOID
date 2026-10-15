@@ -3,8 +3,8 @@ package dev.joid.lib.shader.impl;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.BoundingBox;
+import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
 
 public final class GradientShader extends ShaderProgram {

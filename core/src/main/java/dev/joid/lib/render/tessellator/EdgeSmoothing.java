@@ -1,6 +1,6 @@
 package dev.joid.lib.render.tessellator;
 
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

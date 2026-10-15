@@ -17,7 +17,7 @@ import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.overlay.UIDataOverlayObject;
+import dev.joid.lib.ui.core.data.UIDataOverlayObject;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.list.IndexedList;
 import lombok.NonNull;

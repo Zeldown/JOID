@@ -21,8 +21,8 @@ import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.box.BoundingBox;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.BoundingBox;
+import dev.joid.lib.utils.geom.Point;
 
 @UIData(background = true)
 public class UIDemoShader extends UIDemo {

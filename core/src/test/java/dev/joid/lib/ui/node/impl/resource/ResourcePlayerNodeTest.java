@@ -22,7 +22,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 
 public class ResourcePlayerNodeTest {
 

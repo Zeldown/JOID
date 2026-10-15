@@ -11,7 +11,7 @@ import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.layout.GridNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.ui.node.property.position.PositionProperty;
+import dev.joid.lib.ui.node.property.PositionProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.align.Axis;
 

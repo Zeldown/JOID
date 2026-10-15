@@ -13,10 +13,10 @@ import org.junit.Test;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.overlay.UIDataOverlay;
-import dev.joid.lib.ui.core.data.popup.UIDataPopup;
-import dev.joid.lib.ui.core.data.popup.UIDataPopup.PopupTransition;
-import dev.joid.lib.ui.core.transition.impl.PopTransition;
+import dev.joid.lib.ui.core.data.UIDataOverlay;
+import dev.joid.lib.ui.core.data.UIDataPopup;
+import dev.joid.lib.ui.core.data.UIDataPopup.PopupTransition;
+import dev.joid.lib.ui.core.transition.PopTransition;
 import lombok.NonNull;
 
 public class StackUIBridgeTest {

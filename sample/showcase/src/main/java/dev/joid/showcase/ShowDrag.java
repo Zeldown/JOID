@@ -17,8 +17,8 @@ import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
-import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapType;
+import dev.joid.lib.ui.node.property.DraggableProperty;
+import dev.joid.lib.ui.node.property.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.utils.align.Align;
 
 public class ShowDrag extends ShowUI {

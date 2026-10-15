@@ -1,7 +1,7 @@
 package dev.joid.showcase;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.demo.ui.core.transition.impl.DemoPushTransition;
+import dev.joid.demo.ui.core.transition.DemoPushTransition;
 import dev.joid.internal.JOID;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -18,7 +18,7 @@ import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.shortcut.Shortcut;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 
 public abstract class ShowUI extends UI {
 

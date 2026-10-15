@@ -12,7 +12,7 @@ import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
+import dev.joid.lib.ui.node.property.DraggableProperty;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)

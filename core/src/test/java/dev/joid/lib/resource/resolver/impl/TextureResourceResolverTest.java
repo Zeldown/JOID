@@ -8,7 +8,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
-import dev.joid.lib.resource.cache.impl.MemoryResourceCache;
+import dev.joid.lib.resource.cache.MemoryResourceCache;
 import lombok.NonNull;
 
 public class TextureResourceResolverTest {

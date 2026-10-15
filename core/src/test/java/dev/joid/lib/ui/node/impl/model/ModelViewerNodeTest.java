@@ -15,7 +15,7 @@ import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.utils.point.Point;
+import dev.joid.lib.utils.geom.Point;
 import lombok.AllArgsConstructor;
 
 public class ModelViewerNodeTest {

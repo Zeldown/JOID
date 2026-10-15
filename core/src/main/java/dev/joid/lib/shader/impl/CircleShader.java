@@ -3,7 +3,7 @@ package dev.joid.lib.shader.impl;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.color.ColorGradient;
-import dev.joid.lib.utils.box.BoundingBox;
+import dev.joid.lib.utils.geom.BoundingBox;
 import lombok.NonNull;
 
 public final class CircleShader extends ShaderProgram {
