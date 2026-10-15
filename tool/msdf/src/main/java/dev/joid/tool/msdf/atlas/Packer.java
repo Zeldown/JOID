@@ -57,7 +57,9 @@ public final class Packer {
 			}
 		}
 
-		Packer.pack(glyphs, low, range, width, height);
+		if (!Packer.pack(glyphs, low, range, width, height)) {
+			throw new IllegalStateException("The glyphs do not fit in " + width + "x" + height + " even at " + low + "px, raise --width and --height or shrink the charset");
+		}
 		return low;
 	}
 

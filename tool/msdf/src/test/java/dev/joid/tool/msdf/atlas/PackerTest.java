@@ -40,6 +40,12 @@ public class PackerTest {
 	}
 
 	@Test
+	public void refusesGlyphsThatDoNotFitAtAnySize() {
+		final IllegalStateException exception = Assert.assertThrows(IllegalStateException.class, () -> Packer.fit(PackerTest.squares(40), 2D, 8, 8));
+		Assert.assertEquals("The glyphs do not fit in 8x8 even at 1.0px, raise --width and --height or shrink the charset", exception.getMessage());
+	}
+
+	@Test
 	public void skipsGlyphsWithoutOutline() {
 		final List<GlyphEntry> glyphs = new ArrayList<>(Arrays.asList(new GlyphEntry(' ', 0.25D, new Shape())));
 		Assert.assertFalse(glyphs.get(0).isDrawable());

@@ -75,6 +75,16 @@ public class MsdfGeneratorTest {
 	}
 
 	@Test
+	public void readsARangeWithoutSpaceAfterTheComma() throws Exception {
+		Assert.assertArrayEquals(new int[] {65, 66, 67, 70}, MsdfGenerator.codepoints("[65,67],70"));
+	}
+
+	@Test
+	public void keepsEachCodepointOfACharsetOnce() throws Exception {
+		Assert.assertArrayEquals(new int[] {65, 66, 67, 70}, MsdfGenerator.codepoints("[65, 67], 66, 70, [65, 66]"));
+	}
+
+	@Test
 	public void forcesTheEmSizeOfTheCommandLine() throws Exception {
 		final File output = Files.createTempDirectory("joid-msdf-").toFile();
 		final String printed = MsdfGeneratorTest.capture(() -> MsdfGenerator.main(new String[] {"--font", MsdfFonts.copy(MsdfFonts.REGULAR).getAbsolutePath(), "--output", output.getAbsolutePath(), "--width", "128", "--height", "128", "--range", "4", "--size", "24", "--charset", "[65, 65]"}));

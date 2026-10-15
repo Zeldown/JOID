@@ -6,9 +6,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 
 import dev.joid.tool.msdf.atlas.GlyphEntry;
@@ -90,9 +92,9 @@ public final class MsdfGenerator {
 	public static int[] codepoints(final String charset) throws Exception {
 		final File file = new File(charset);
 		final String text = file.isFile() ? new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8) : charset;
-		final List<Integer> values = new ArrayList<>();
+		final Set<Integer> values = new LinkedHashSet<>();
 		for (final String part : text.trim().split("(?<=\\])|,(?![^\\[]*\\])")) {
-			final String entry = part.replace(",", "").trim();
+			final String entry = part.replace(",", " ").trim();
 			if (entry.isEmpty()) {
 				continue;
 			}
@@ -108,11 +110,7 @@ public final class MsdfGenerator {
 			values.add(Integer.parseInt(entry));
 		}
 
-		final int[] codepoints = new int[values.size()];
-		for (int i = 0; i < codepoints.length; i++) {
-			codepoints[i] = values.get(i);
-		}
-		return codepoints;
+		return values.stream().mapToInt(Integer::intValue).toArray();
 	}
 
 	private static double measure(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {
