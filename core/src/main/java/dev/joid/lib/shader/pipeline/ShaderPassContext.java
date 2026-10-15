@@ -22,6 +22,8 @@ public final class ShaderPassContext {
 	private final double    regionHeight;
 	private final int       textureWidth;
 	private final int       textureHeight;
+	private final int       frameBufferWidth;
+	private final int       frameBufferHeight;
 
 	public static @NonNull ShaderPassContext create(final double x, final double y, final double width, final double height, final double expansion, final @NonNull PixelGrid grid) {
 		final double left = x - expansion;
@@ -29,7 +31,9 @@ public final class ShaderPassContext {
 		final double right = x + width + expansion;
 		final double bottom = y + height + expansion;
 		if (!grid.isAligned()) {
-			return new ShaderPassContext(x, y, width, height, expansion, grid, left, top, right - left, bottom - top, grid.toPixelWidth(right - left), grid.toPixelHeight(bottom - top));
+			final int textureWidth = grid.toPixelWidth(right - left);
+			final int textureHeight = grid.toPixelHeight(bottom - top);
+			return new ShaderPassContext(x, y, width, height, expansion, grid, left, top, right - left, bottom - top, textureWidth, textureHeight, textureWidth, textureHeight);
 		}
 
 		final double screenLeft = Math.floor(Math.min(grid.toScreenX(left), grid.toScreenX(right)) + 1E-3D);
@@ -40,15 +44,21 @@ public final class ShaderPassContext {
 		final double regionTop = Math.min(grid.fromScreenY(screenTop), grid.fromScreenY(screenBottom));
 		final double regionRight = Math.max(grid.fromScreenX(screenLeft), grid.fromScreenX(screenRight));
 		final double regionBottom = Math.max(grid.fromScreenY(screenTop), grid.fromScreenY(screenBottom));
-		return new ShaderPassContext(x, y, width, height, expansion, grid, regionLeft, regionTop, regionRight - regionLeft, regionBottom - regionTop, Math.max(1, (int) (screenRight - screenLeft)), Math.max(1, (int) (screenBottom - screenTop)));
+		final int textureWidth = Math.max(1, (int) (screenRight - screenLeft));
+		final int textureHeight = Math.max(1, (int) (screenBottom - screenTop));
+		return new ShaderPassContext(x, y, width, height, expansion, grid, regionLeft, regionTop, regionRight - regionLeft, regionBottom - regionTop, textureWidth, textureHeight, textureWidth, textureHeight);
+	}
+
+	public @NonNull ShaderPassContext withFrameBuffer(final int frameBufferWidth, final int frameBufferHeight) {
+		return new ShaderPassContext(this.x, this.y, this.width, this.height, this.expansion, this.grid, this.regionX, this.regionY, this.regionWidth, this.regionHeight, this.textureWidth, this.textureHeight, frameBufferWidth, frameBufferHeight);
 	}
 
 	public float getTexelWidth() {
-		return 1F / this.textureWidth;
+		return 1F / this.frameBufferWidth;
 	}
 
 	public float getTexelHeight() {
-		return 1F / this.textureHeight;
+		return 1F / this.frameBufferHeight;
 	}
 
 }

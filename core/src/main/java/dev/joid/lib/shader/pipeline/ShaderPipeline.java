@@ -8,10 +8,10 @@ import java.util.Map;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.render.framebuffer.FrameBuffer;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.ui.node.Node;
@@ -23,8 +23,8 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderPipeline {
 
-	private static int                                          pipelineDepth = 0;
-	private static final Map<List<Integer>, PooledFrameBuffers> FBO_POOL      = new HashMap<>();
+	private static int                                    pipelineDepth = 0;
+	private static final Map<Integer, PooledFrameBuffers> FBO_POOL      = new HashMap<>();
 
 	public static void render(final @NonNull Node node, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
 		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), passes, baseDraw);
@@ -71,46 +71,49 @@ public final class ShaderPipeline {
 		}
 	}
 
-	private static void drawTexturedQuad(final @NonNull FrameBuffer frameBuffer, final @NonNull ShaderPassContext context) {
+	private static void drawTexturedQuad(final @NonNull IFrameBuffer frameBuffer, final @NonNull ShaderPassContext context) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final boolean aligned = render.getPixelGrid().isAligned();
 		render.getState().blend(BlendState.PREMULTIPLIED);
-		render.getState().texture(frameBuffer.getHandle().getTexture()).textureFilter(TextureFilter.LINEAR).textureWrap(aligned ? TextureWrap.CLAMP_TO_BORDER : TextureWrap.CLAMP_TO_EDGE);
+		render.getState().texture(frameBuffer.getTexture()).textureFilter(TextureFilter.LINEAR).textureWrap(aligned ? TextureWrap.CLAMP_TO_BORDER : TextureWrap.CLAMP_TO_EDGE);
 		render.getState().color(1F, 1F, 1F, 1F);
 
 		final double growU = aligned ? 0D : 1D / context.getTextureWidth();
 		final double growV = aligned ? 0D : 1D / context.getTextureHeight();
+		final double scaleU = (double) context.getTextureWidth() / context.getFrameBufferWidth();
+		final double scaleV = (double) context.getTextureHeight() / context.getFrameBufferHeight();
 		final double x = context.getRegionX() - context.getRegionWidth() * growU;
 		final double y = context.getRegionY() - context.getRegionHeight() * growV;
 		final double w = context.getRegionWidth() * (1D + growU * 2D);
 		final double h = context.getRegionHeight() * (1D + growV * 2D);
 		final Tessellator tess = Tessellator.inst();
 		tess.start(DrawMode.QUADS);
-		tess.addVertexWithUV(x, y + h, 0D, -growU, -growV);
-		tess.addVertexWithUV(x + w, y + h, 0D, 1D + growU, -growV);
-		tess.addVertexWithUV(x + w, y, 0D, 1D + growU, 1D + growV);
-		tess.addVertexWithUV(x, y, 0D, -growU, 1D + growV);
+		tess.addVertexWithUV(x, y + h, 0D, -growU * scaleU, -growV * scaleV);
+		tess.addVertexWithUV(x + w, y + h, 0D, (1D + growU) * scaleU, -growV * scaleV);
+		tess.addVertexWithUV(x + w, y, 0D, (1D + growU) * scaleU, (1D + growV) * scaleV);
+		tess.addVertexWithUV(x, y, 0D, -growU * scaleU, (1D + growV) * scaleV);
 		tess.draw();
 	}
 
-	private static void renderMultiPass(final @NonNull ShaderPassContext context, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
-		if (context.getWidth() <= 0D || context.getHeight() <= 0D) {
+	private static void renderMultiPass(final @NonNull ShaderPassContext area, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
+		if (area.getWidth() <= 0D || area.getHeight() <= 0D) {
 			baseDraw.run();
 			return;
 		}
 
-		final FrameBuffer[] fbos = ShaderPipeline.getOrCreateFBOs(context.getTextureWidth(), context.getTextureHeight()).frameBuffers;
+		final IFrameBuffer[] fbos = ShaderPipeline.allocate(area.getTextureWidth(), area.getTextureHeight()).frameBuffers;
+		final ShaderPassContext context = area.withFrameBuffer(fbos[0].getWidth(), fbos[0].getHeight());
 		BridgeHandler.RENDER.get().withState(render -> {
 			ShaderPipeline.drawInto(fbos[0], context, () -> {
 				render.getState().blend(BlendState.NORMAL);
 				baseDraw.run();
 			});
 
-			FrameBuffer src = fbos[0];
-			FrameBuffer dst = fbos[1];
+			IFrameBuffer src = fbos[0];
+			IFrameBuffer dst = fbos[1];
 			for (int i = 0; i < passes.size() - 1; i++) {
 				final IShaderPass pass = passes.get(i);
-				final FrameBuffer source = src;
+				final IFrameBuffer source = src;
 				ShaderPipeline.drawInto(dst, context, () -> ShaderPipeline.drawPass(pass, context, source));
 				src = dst;
 				dst = source;
@@ -120,14 +123,19 @@ public final class ShaderPipeline {
 		});
 	}
 
-	private static void drawInto(final @NonNull FrameBuffer target, final @NonNull ShaderPassContext context, final @NonNull Runnable draw) {
-		target.fill(context.getRegionX(), context.getRegionY(), context.getRegionWidth(), context.getRegionHeight(), () -> {
-			BridgeHandler.RENDER.get().clearColor(0F, 0F, 0F, 0F);
-			draw.run();
+	private static void drawInto(final @NonNull IFrameBuffer target, final @NonNull ShaderPassContext context, final @NonNull Runnable draw) {
+		BridgeHandler.RENDER.get().withState(render -> {
+			render.getState().frameBuffer(target).viewport(0, 0, context.getTextureWidth(), context.getTextureHeight());
+			render.getProjection().with(projection -> render.getModelView().with(modelView -> {
+				projection.ortho(context.getRegionX(), context.getRegionX() + context.getRegionWidth(), context.getRegionY() + context.getRegionHeight(), context.getRegionY(), -1000D, 1000D);
+				modelView.identity();
+				render.clearColor(0F, 0F, 0F, 0F);
+				draw.run();
+			}));
 		});
 	}
 
-	private static void drawPass(final @NonNull IShaderPass pass, final @NonNull ShaderPassContext context, final @NonNull FrameBuffer source) {
+	private static void drawPass(final @NonNull IShaderPass pass, final @NonNull ShaderPassContext context, final @NonNull IFrameBuffer source) {
 		pass.bind(context);
 		try {
 			ShaderPipeline.drawTexturedQuad(source, context);
@@ -136,24 +144,35 @@ public final class ShaderPipeline {
 		}
 	}
 
-	private static PooledFrameBuffers getOrCreateFBOs(final int width, final int height) {
+	private static PooledFrameBuffers allocate(final int width, final int height) {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final List<Integer> key = Arrays.asList(ShaderPipeline.pipelineDepth, width, height);
-		final PooledFrameBuffers pooled = ShaderPipeline.FBO_POOL.get(key);
-		if (pooled != null) {
+		final PooledFrameBuffers pooled = ShaderPipeline.FBO_POOL.get(ShaderPipeline.pipelineDepth);
+		final boolean owned = pooled != null;
+		if (owned && pooled.frameBuffers[0].getWidth() >= width && pooled.frameBuffers[0].getHeight() >= height) {
 			pooled.lastUse = now;
 			return pooled;
 		}
 
-		final PooledFrameBuffers created = new PooledFrameBuffers(new FrameBuffer[] {FrameBuffer.create(width, height, TextureFilter.LINEAR), FrameBuffer.create(width, height, TextureFilter.LINEAR)}, now);
-		ShaderPipeline.FBO_POOL.put(key, created);
+		final int targetWidth = ShaderPipeline.capacity(owned ? pooled.frameBuffers[0].getWidth() : 0, width);
+		final int targetHeight = ShaderPipeline.capacity(owned ? pooled.frameBuffers[0].getHeight() : 0, height);
+		if (owned) {
+			pooled.delete();
+		}
+
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final PooledFrameBuffers created = new PooledFrameBuffers(new IFrameBuffer[] {render.createFrameBuffer(targetWidth, targetHeight), render.createFrameBuffer(targetWidth, targetHeight)}, now);
+		ShaderPipeline.FBO_POOL.put(ShaderPipeline.pipelineDepth, created);
 		return created;
+	}
+
+	private static int capacity(final int current, final int required) {
+		return current >= required ? current : Math.max(required, Math.min(4096, current * 2));
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class PooledFrameBuffers {
 
-		private final FrameBuffer[] frameBuffers;
+		private final IFrameBuffer[] frameBuffers;
 
 		private long lastUse;
 

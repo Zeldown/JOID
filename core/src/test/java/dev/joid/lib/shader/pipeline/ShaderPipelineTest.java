@@ -198,12 +198,39 @@ public class ShaderPipelineTest {
 	}
 
 	@Test
-	public void reusesItsFrameBuffersForTheSameSize() {
+	public void reusesItsFrameBuffersForEverySizeTheyHold() {
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
 		ShaderPipeline.render(300D, 400D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		Assert.assertEquals(2, this.render.getFrameBuffers().size());
 		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		Assert.assertEquals(4, this.render.getFrameBuffers().size());
+		ShaderPipeline.render(10D, 20D, 75D, 30D, this::drawBox, new RecordingPass("mask", 0F, this.log));
+		Assert.assertEquals(2, this.render.getFrameBuffers().size());
+	}
+
+	@Test
+	public void drawsASmallerSizeInTheCornerOfItsFrameBuffers() {
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
+		final RecordingPass pass = new RecordingPass("mask", 0F, this.log);
+		ShaderPipeline.render(10D, 20D, 60D, 25D, this::drawBox, pass);
+		final List<Capture> captures = this.render.getCaptures();
+		final Capture content = captures.get(captures.size() - 2);
+		Assert.assertEquals(60, content.getState().getViewportWidth());
+		Assert.assertEquals(25, content.getState().getViewportHeight());
+		Assert.assertEquals(0.6F, this.render.getLast().getU(1), 1E-6F);
+		Assert.assertEquals(0.5F, this.render.getLast().getV(2), 1E-6F);
+		Assert.assertEquals(1F / 100F, pass.getContext().getTexelWidth(), 0F);
+		Assert.assertEquals(1F / 50F, pass.getContext().getTexelHeight(), 0F);
+	}
+
+	@Test
+	public void growsItsFrameBuffersByDoublingTheSideThatNoLongerFits() {
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
+		ShaderPipeline.render(10D, 20D, 120D, 40D, this::drawBox, new RecordingPass("mask", 0F, this.log));
+		final List<IFrameBuffer> frameBuffers = this.render.getFrameBuffers();
+		Assert.assertEquals(4, frameBuffers.size());
+		Assert.assertTrue(((RecordingFrameBuffer) frameBuffers.get(0)).isDeleted());
+		Assert.assertTrue(((RecordingFrameBuffer) frameBuffers.get(1)).isDeleted());
+		Assert.assertEquals(200, frameBuffers.get(2).getWidth());
+		Assert.assertEquals(50, frameBuffers.get(2).getHeight());
 	}
 
 	@Test
@@ -234,29 +261,17 @@ public class ShaderPipelineTest {
 		final ManualClockBridge clock = ManualClockBridge.create(1000L);
 		BridgeHandler.CLOCK.register(clock);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
 		clock.advance(3000L);
 		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		clock.advance(1999L);
+		clock.advance(4999L);
 		ShaderPipeline.releaseUnused();
 		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
 		clock.advance(1L);
 		ShaderPipeline.releaseUnused();
 		Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
 		Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(1)).isDeleted());
-		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(2)).isDeleted());
-		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(3)).isDeleted());
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		Assert.assertEquals(6, this.render.getFrameBuffers().size());
-	}
-
-	@Test
-	public void keepsApartTheSizesThatShareAPackedKey() {
-		ShaderPipeline.render(0D, 0D, 1D, 65537D, () -> {}, new RecordingPass("mask", 0F, this.log));
-		ShaderPipeline.render(0D, 0D, 2D, 1D, () -> {}, new RecordingPass("mask", 0F, this.log));
 		Assert.assertEquals(4, this.render.getFrameBuffers().size());
-		Assert.assertEquals(2, this.render.getFrameBuffers().get(2).getWidth());
-		Assert.assertEquals(1, this.render.getFrameBuffers().get(2).getHeight());
 	}
 
 	@Test
