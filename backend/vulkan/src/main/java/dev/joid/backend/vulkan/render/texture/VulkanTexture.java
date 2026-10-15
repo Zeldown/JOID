@@ -31,6 +31,11 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 
 	@Override
 	protected void allocateStorage(final @NonNull MipmapChain chain) {
+		final VulkanContext context = this.bridge.getContext();
+		if (chain.getWidth() > context.getMaxTextureSize() || chain.getHeight() > context.getMaxTextureSize()) {
+			throw new IllegalArgumentException("A texture of " + chain.getWidth() + "x" + chain.getHeight() + " exceeds the maximum size " + context.getMaxTextureSize() + " of " + context.getDeviceName() + ", downscale the image");
+		}
+
 		this.release();
 		final long[] storage = this.createStorage(chain);
 		this.image  = storage[0];

@@ -86,6 +86,12 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void refusesATextureLargerThanTheBackend() {
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> BridgeHandler.RENDER.get().createTexture().allocate(1 << 20, 1));
+		Assert.assertTrue(exception.getMessage(), exception.getMessage().startsWith("A texture of 1048576x1 exceeds the maximum size "));
+	}
+
+	@Test
 	public void compilesCoreShaders() {
 		for (final CoreShader coreShader : CoreShader.values()) {
 			final IShader shader = BridgeHandler.RENDER.get().createShader(coreShader.read(ShaderStage.VERTEX), coreShader.read(ShaderStage.FRAGMENT), BlendState.NORMAL);

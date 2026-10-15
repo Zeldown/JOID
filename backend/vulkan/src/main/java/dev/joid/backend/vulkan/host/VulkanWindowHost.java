@@ -249,6 +249,18 @@ public final class VulkanWindowHost implements IVulkanHost {
 	}
 
 	private void recreate() {
+		final int[] width = new int[1];
+		final int[] height = new int[1];
+		GLFW.glfwGetFramebufferSize(this.window, width, height);
+		while ((width[0] == 0 || height[0] == 0) && !GLFW.glfwWindowShouldClose(this.window)) {
+			GLFW.glfwWaitEvents();
+			GLFW.glfwGetFramebufferSize(this.window, width, height);
+		}
+
+		if (width[0] == 0 || height[0] == 0) {
+			return;
+		}
+
 		VK10.vkDeviceWaitIdle(this.device);
 		this.destroySwapchainResources();
 		this.createSwapchain();

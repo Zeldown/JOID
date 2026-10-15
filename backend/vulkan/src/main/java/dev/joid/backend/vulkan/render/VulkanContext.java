@@ -43,6 +43,8 @@ public final class VulkanContext {
 	private final VkDevice                         device;
 	private final int                              depthFormat;
 	private final long                             commandPool;
+	private final String                           deviceName;
+	private final int                              maxTextureSize;
 	private final long                             uniformAlignment;
 	private final int                              depthStencilFormat;
 	private final long                             offscreenRenderPass;
@@ -59,6 +61,8 @@ public final class VulkanContext {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
 			VK10.vkGetPhysicalDeviceProperties(this.physicalDevice, properties);
+			this.deviceName       = properties.deviceNameString();
+			this.maxTextureSize   = properties.limits().maxImageDimension2D();
 			this.uniformAlignment = properties.limits().minUniformBufferOffsetAlignment();
 
 			this.memoryProperties = VkPhysicalDeviceMemoryProperties.malloc();
