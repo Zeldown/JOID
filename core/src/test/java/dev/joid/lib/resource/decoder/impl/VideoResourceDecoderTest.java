@@ -726,6 +726,18 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void playsFromTheTimeItSeeksToWhileStopped() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 20);
+		decoder.stop().seek(0.5D).play();
+		this.play(decoder, data, 1);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(0.5D, decoder.getCurrentTime(), 1E-9D);
+		Assert.assertEquals(119, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	@Test
 	public void showsTheFrameItSeeksTo() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.frames();
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);

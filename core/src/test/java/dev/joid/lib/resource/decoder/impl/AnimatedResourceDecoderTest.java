@@ -302,6 +302,16 @@ public class AnimatedResourceDecoderTest {
 	}
 
 	@Test
+	public void playsFromTheTimeItSeeksToWhileStopped() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		decoder.stop().seek(0.2D).play();
+		this.advance(decoder, data, 20L);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(0.22D, decoder.getCurrentTime(), 1E-9D);
+	}
+
+	@Test
 	public void hasNoTimeBeforeItsDecode() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
 		Assert.assertEquals(0D, decoder.getDuration(), 0D);

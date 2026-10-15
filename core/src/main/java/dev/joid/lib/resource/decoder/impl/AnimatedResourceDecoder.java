@@ -31,6 +31,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	private long    position;
 	private int     displayed = -1;
+	private boolean seeked;
 	private boolean paused;
 	private long    startTime;
 	private long    pauseTime;
@@ -116,8 +117,9 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 			return this.paused ? this.resume() : this;
 		}
 
-		this.position = 0L;
-		this.startTime = BridgeHandler.CLOCK.get().nanoTime();
+		this.position = this.seeked ? this.position : 0L;
+		this.startTime = BridgeHandler.CLOCK.get().nanoTime() - this.position * 1000000L;
+		this.seeked = false;
 		this.running = true;
 		this.paused = false;
 		return this;
@@ -155,6 +157,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 		final long time = Math.max(0L, Math.min((long) (seconds * 1000D), end));
 		this.position = time;
 		this.startTime = (this.paused ? this.pauseTime : BridgeHandler.CLOCK.get().nanoTime()) - time * 1000000L;
+		this.seeked = !this.running;
 		return this;
 	}
 

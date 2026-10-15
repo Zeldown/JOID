@@ -111,6 +111,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	@Override
 	public @NonNull VideoResourceDecoder stop() {
 		this.running.set(false);
+		this.seeked = false;
 		this.joinDecodeThread();
 
 		if (this.audioPlayer != null) {
@@ -297,13 +298,14 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		this.joinDecodeThread();
 		if (this.grabber == null) {
 			this.reopenGrabber();
-		} else if (this.decodedFrameIndex.get() > 0) {
+		} else if (!this.seeked && this.decodedFrameIndex.get() > 0) {
 			this.seekInternal(0L);
 		}
 
-		this.displayedFrameIndex = 0;
+		this.seekTime = this.seeked ? this.seekTime : 0D;
+		this.displayedFrameIndex = (int) (this.seekTime * this.frameRate);
 		this.loopOffset = 0D;
-		this.startTime = BridgeHandler.CLOCK.get().nanoTime();
+		this.startTime = BridgeHandler.CLOCK.get().nanoTime() - (long) (this.seekTime * 1000000000D);
 		this.ended = false;
 		this.running.set(true);
 		this.paused.set(false);
