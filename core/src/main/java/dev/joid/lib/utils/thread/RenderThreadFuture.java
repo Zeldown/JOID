@@ -3,6 +3,8 @@ package dev.joid.lib.utils.thread;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import lombok.NonNull;
@@ -31,6 +33,18 @@ public final class RenderThreadFuture<T> extends CompletableFuture<T> {
 	public T get() throws InterruptedException, ExecutionException {
 		this.settleOnRenderThread();
 		return super.get();
+	}
+
+	@Override
+	public T get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+		if (!this.isDone() && BridgeHandler.THREAD.get().isRenderThread()) {
+			try {
+				this.settle(this.source.get(timeout, unit), null);
+			} catch (final ExecutionException exception) {
+				this.settle(null, exception.getCause());
+			}
+		}
+		return super.get(timeout, unit);
 	}
 
 	private void settleOnRenderThread() {
