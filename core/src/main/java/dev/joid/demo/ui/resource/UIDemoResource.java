@@ -106,7 +106,7 @@ public class UIDemoResource extends UIDemo {
 		ResourceNode.create(1740, 305, 50, 50).resource(Resource.of("assets/demo/textures/vector/placeholder.svg")).attach(this);
 		TextNode.create(1765, 405).text(Text.create("SVG 50", caption)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(105, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).color(Color.ORANGE).attach(this);
+		ResourceNode.create(105, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).color(UIDemoResource.INK).attach(this);
 		TextNode.create(155, 635).text(Text.create("Tint", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(375, 500, 20, 120).color(Color.WHITE).attach(this);
@@ -116,7 +116,7 @@ public class UIDemoResource extends UIDemo {
 		ResourceNode.create(565, 510, 100, 100).resource(Resource.of("https://placehold.co/100x100.png")).hoveredResource(Resource.of("assets/demo/textures/image/placeholder.webp")).attach(this);
 		TextNode.create(615, 635).text(Text.create("Hovered image", caption)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(795, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).hoveredColor(Color.ORANGE).attach(this);
+		ResourceNode.create(795, 510, 100, 100).resource(Resource.of("assets/demo/textures/image/placeholder.webp")).hoveredColor(UIDemoResource.INK).attach(this);
 		TextNode.create(845, 635).text(Text.create("Hovered tint", caption)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode.create(1027, 512, 96, 96).resource(Resource.of("https://placehold.co/16x16.png")).linear(false).attach(this);

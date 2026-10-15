@@ -19,29 +19,30 @@ import dev.joid.lib.utils.geom.Point;
 @UIData(background = true)
 public class UIDemoShader extends UIDemo {
 
-	private static final Color INK = new Color(153, 153, 153).lock();
+	private static final Color INK         = new Color(153, 153, 153).lock();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoShader.INK);
 
-		RectNode.create(55, 40, 200, 120).color(Color.RED).attach(this);
+		RectNode.create(55, 40, 200, 120).color(UIDemoShader.INK).attach(this);
 		TextNode.create(155, 175).text(Text.create("Solid", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(285, 40, 200, 120).color(Color.BLUE.toGradient(Color.GREEN)).attach(this);
+		RectNode.create(285, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK)).attach(this);
 		TextNode.create(385, 175).text(Text.create("Gradient", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(515, 40, 200, 120).color(Color.CYAN.toGradient(Color.MAGENTA, Point.create(0D, 0D), Point.create(0D, 1D))).attach(this);
+		RectNode.create(515, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.create(0D, 0D), Point.create(0D, 1D))).attach(this);
 		TextNode.create(615, 175).text(Text.create("Vertical gradient", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(745, 40, 200, 120).color(Color.ORANGE.toGradient(Color.BLUE, Point.create(0D, 0D), Point.create(1D, 1D))).attach(this);
+		RectNode.create(745, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.create(0D, 0D), Point.create(1D, 1D))).attach(this);
 		TextNode.create(845, 175).text(Text.create("Diagonal gradient", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1045, 30, 60, 140).color(Color.WHITE).attach(this);
-		RectNode.create(975, 40, 200, 120).color(Color.RED.withAlpha(0.5F)).attach(this);
+		RectNode.create(975, 40, 200, 120).color(UIDemoShader.INK.withAlpha(0.5F)).attach(this);
 		TextNode.create(1075, 175).text(Text.create("Transparent", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(1205, 40, 200, 120).color(Color.RED.toGradient(Color.RED.withAlpha(0F))).attach(this);
+		RectNode.create(1205, 40, 200, 120).color(UIDemoShader.INK.toGradient(UIDemoShader.INK.withAlpha(0F))).attach(this);
 		TextNode.create(1305, 175).text(Text.create("Fading gradient", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1435, 40, 200, 120).color(Color.RAINBOW).attach(this);
@@ -70,7 +71,7 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(745, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.ORANGE, 30F, 1D))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), UIDemoShader.INK, 30F, 1D))
 		.attach(this);
 		TextNode.create(845, 375).text(Text.create("Thin stroke", caption)).anchorX(Align.CENTER).attach(this);
 
@@ -88,13 +89,13 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(1435, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(100D, 60D, Color.MAGENTA, 60D))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(100D, 60D, UIDemoShader.INK, 60D))
 		.attach(this);
 		TextNode.create(1535, 375).text(Text.create("Circle", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1665, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(Color.GREEN, Point.create(100D, 0D), Point.create(200D, 120D), Point.create(0D, 120D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(UIDemoShader.INK, Point.create(100D, 0D), Point.create(200D, 120D), Point.create(0D, 120D)))
 		.attach(this);
 		TextNode.create(1765, 375).text(Text.create("Polygon", caption)).anchorX(Align.CENTER).attach(this);
 
@@ -124,19 +125,19 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(975, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, Color.CYAN, Point.create(100D, 0D), Point.create(200D, 60D), Point.create(100D, 120D), Point.create(0D, 60D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, UIDemoShader.INK, Point.create(100D, 0D), Point.create(200D, 60D), Point.create(100D, 120D), Point.create(0D, 60D)))
 		.attach(this);
 		TextNode.create(1075, 575).text(Text.create("Line loop", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1205, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, Color.ORANGE, Point.create(0D, 0D), Point.create(90D, 120D), Point.create(0D, 120D), Point.create(110D, 0D), Point.create(200D, 0D), Point.create(200D, 120D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, UIDemoShader.INK, Point.create(0D, 0D), Point.create(90D, 120D), Point.create(0D, 120D), Point.create(110D, 0D), Point.create(200D, 0D), Point.create(200D, 120D)))
 		.attach(this);
 		TextNode.create(1305, 575).text(Text.create("Triangles", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1435, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), Color.RED, Color.YELLOW, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(0D, 0D, node.getWidth(), node.getHeight())))
+		.layer((node, mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), UIDemoShader.PLACEHOLDER, UIDemoShader.INK, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(0D, 0D, node.getWidth(), node.getHeight())))
 		.attach(this);
 		TextNode.create(1535, 575).text(Text.create("Shader bound", caption)).anchorX(Align.CENTER).attach(this);
 
