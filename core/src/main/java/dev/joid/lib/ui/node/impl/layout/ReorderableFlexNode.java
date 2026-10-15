@@ -449,7 +449,7 @@ public class ReorderableFlexNode extends FlexNode {
 		}
 
 		final double zone = 60D;
-		final double speed = 2D;
+		final double speed = 2D * super.getUi().getFrameTime() / (1000D / 60D);
 		Node parent = super.getParent();
 		while (parent != null) {
 			if (parent.getOverflow() == OverflowProperty.SCROLL && (parent.hasOverflowX() || parent.hasOverflowY())) {

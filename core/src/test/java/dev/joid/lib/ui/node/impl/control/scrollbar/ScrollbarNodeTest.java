@@ -168,6 +168,15 @@ public class ScrollbarNodeTest {
 	}
 
 	@Test
+	public void keepsItsThumbAtTheThicknessItIsGivenLater() {
+		final Bar bar = new Bar(410D, 0D, 0D, 100D, 20D);
+		final RectNode content = ScrollbarNodeTest.list(bar);
+		bar.width(10D);
+		this.bridges.open(new NodeUI(content)).frame();
+		Assert.assertEquals(10D, bar.getThumbLength(), 0D);
+	}
+
+	@Test
 	public void dragsItsMinimumThumbAcrossTheWholeScroll() {
 		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
 		final RectNode content = ScrollbarNodeTest.list(bar);

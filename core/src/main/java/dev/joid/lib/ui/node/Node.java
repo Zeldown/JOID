@@ -775,12 +775,13 @@ public abstract class Node implements INode {
 		this.lastClickButton = button;
 		this.lastClickTime = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source), this.isEnabled(), Node.HANDLE_MOUSE_PRESSED, (node, event) -> node.fireMousePressed(mouseX, mouseY, button, event), event -> {
-			if (!event.isConsumed() && button.isLeft() && this.isHovered() && this.hasListener(Node.CLICK)) {
-				this.fire(Node.CLICK, () -> event);
+			final boolean click = !event.isConsumed() && button.isLeft() && this.isHovered() && this.hasListener(Node.CLICK);
+			this.mousePressed(event);
+			if (click) {
+				this.fire(Node.CLICK, () -> NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, null));
 				event.consume();
 			}
 
-			this.mousePressed(event);
 			if (!event.isConsumed() && this.draggable != null && this.draggable.isEnabled(this) && button.isLeft() && this.isHovered()) {
 				this.startDragging(mouseX, mouseY);
 				if (this.dragging) {

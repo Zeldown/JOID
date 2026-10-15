@@ -340,6 +340,16 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void focusesOnAClickItAlsoGivesToItsListener() {
+		final List<String> clicks = new ArrayList<>();
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").onClick(event -> clicks.add("click"));
+		this.bridges.open(new NodeUI(field));
+		this.click(124D, 120D);
+		Assert.assertTrue(field.isFocused());
+		Assert.assertEquals(Collections.singletonList("click"), clicks);
+	}
+
+	@Test
 	public void putsTheCursorAtTheEndOnAClickPastTheText() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello");
 		this.bridges.open(new NodeUI(field));

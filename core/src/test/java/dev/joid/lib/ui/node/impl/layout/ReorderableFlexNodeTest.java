@@ -697,6 +697,22 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
+	public void scrollsItsParentAsFastAtAnyFramerate() {
+		final RectNode parent = this.scrollingColumn();
+		this.press(150D, 120D);
+		this.bridges.move(150D, 240D).frames(2);
+		final double start = parent.getTargetScrollY();
+		for (int frame = 0; frame < 4; frame++) {
+			this.bridges.getClock().advance(16L);
+			this.bridges.frame();
+		}
+		final double slow = parent.getTargetScrollY() - start;
+		this.bridges.frames(8);
+		Assert.assertTrue(slow < 0D);
+		Assert.assertEquals(slow, parent.getTargetScrollY() - start - slow, 1E-6D);
+	}
+
+	@Test
 	public void waitsForTheMouseToMoveBeforeScrolling() {
 		final RectNode parent = this.scrollingColumn();
 		this.press(150D, 230D);

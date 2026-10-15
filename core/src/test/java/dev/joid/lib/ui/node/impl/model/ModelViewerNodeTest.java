@@ -69,11 +69,22 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void bringsItsValuesInsideARangeGivenAfterThem() {
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(1.5D).rotationYaw(30D).rotationPitch(-20D);
+		viewer.zoomRange(0.1D, 1D).rotationYawRange(-5D, 5D).rotationPitchRange(-2D, 2D);
+		Assert.assertEquals(1D, viewer.getZoom(), 0D);
+		Assert.assertEquals(5D, viewer.getRotationYaw(), 0D);
+		Assert.assertEquals(-2D, viewer.getRotationPitch(), 0D);
+	}
+
+	@Test
 	public void zoomsInsideASuppliedZoomRange() {
 		final double[] max = {3D};
-		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D);
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());
 		Assert.assertSame(viewer, viewer.zoomRange(() -> 0.5D, () -> max[0]));
+		this.bridges.open(new NodeUI(viewer));
 		max[0] = 4D;
+		this.bridges.frame();
 		Assert.assertEquals(4D, viewer.zoom(5D).getZoom(), 0D);
 		Assert.assertEquals(0.5D, viewer.zoom(0D).getZoom(), 0D);
 		Assert.assertSame(viewer, viewer.rotationYawRange(() -> -5D, () -> 5D).rotationPitchRange(() -> -2D, () -> 2D));

@@ -26,7 +26,7 @@ public class TextNode extends Node {
 	}
 
 	public static @NonNull TextNode create(final double x, final double y) {
-		return new TextNode(x, y, 0, 0);
+		return new TextNode(x, y, 0D, 0D);
 	}
 
 	public static @NonNull TextNode create(final double x, final double y, final double width, final double height) {
@@ -43,6 +43,8 @@ public class TextNode extends Node {
 		if (this.hasText()) {
 			final FontBounds bounds = DrawUtils.TEXT.drawText(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.text, this.mode);
 			this.fitText(bounds.getWidth(), bounds.getHeight());
+		} else {
+			this.fitText(0D, 0D);
 		}
 	}
 
@@ -75,6 +77,8 @@ public class TextNode extends Node {
 	private void measure() {
 		if (this.hasText()) {
 			this.fitText(this.text.getWidth(), this.mode == TextMode.SPLIT ? DrawUtils.TEXT.getLines(super.getWidth(), this.text).stream().mapToDouble(Text::getHeight).sum() : this.text.getHeight());
+		} else {
+			this.fitText(0D, 0D);
 		}
 	}
 

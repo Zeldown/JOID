@@ -189,6 +189,18 @@ public class TextNodeTest {
 	}
 
 	@Test
+	public void shrinksToNothingOnceItsTextIsEmpty() {
+		final AtomicReference<String> value = new AtomicReference<>("hello");
+		final TextNode node = TextNode.create(0D, 0D).text(Text.create(value::get, this.info()));
+		this.bridges.open(new NodeUI(node));
+		Assert.assertEquals(50D, node.getWidth(), 0D);
+		value.set("");
+		this.bridges.frame();
+		Assert.assertEquals(0D, node.getWidth(), 0D);
+		Assert.assertEquals(0D, node.getHeight(), 0D);
+	}
+
+	@Test
 	public void keepsTheSizeItIsGivenOnceOpen() {
 		final AtomicReference<String> value = new AtomicReference<>("ab");
 		final TextNode node = TextNode.create(0D, 0D).text(Text.create(value::get, this.info()));

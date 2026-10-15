@@ -1,5 +1,8 @@
 package dev.joid.lib.ui.node.impl.control.scrollbar;
 
+import java.util.function.Supplier;
+
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
@@ -16,7 +19,7 @@ public abstract class BaseScrollbarNode extends Node {
 
 	protected BaseScrollbarNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		this.minThumb = Math.min(width, height);
+		this.minThumb(() -> Math.min(super.getWidth(), super.getHeight()));
 
 		super.<BaseScrollbarNode>require("scrolled node", "pass it to node.scrollbar(...) instead of attaching it", node -> node.scrollNode != null);
 	}
@@ -105,8 +108,11 @@ public abstract class BaseScrollbarNode extends Node {
 	}
 
 	public final <T extends BaseScrollbarNode> @NonNull T minThumb(final double minThumb) {
-		this.minThumb = minThumb;
-		return (T) this;
+		return this.minThumb(Signal.from(minThumb));
+	}
+
+	public final <T extends BaseScrollbarNode> @NonNull T minThumb(final @NonNull Supplier<Double> minThumb) {
+		return super.follow("minThumb", minThumb, value -> this.minThumb = value);
 	}
 
 	private boolean isOverflowing() {

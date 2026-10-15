@@ -220,7 +220,7 @@ public abstract class FieldNode<V> extends Node {
 
 	@Override
 	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
-		if (event.isConsumed() || event.getNotchesY() == 0D || !super.isHovered() || !this.canStep()) {
+		if (event.isConsumed() || event.getNotchesY() == 0D || !this.focused || !super.isHovered() || !this.canStep()) {
 			return;
 		}
 
