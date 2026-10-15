@@ -204,11 +204,16 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		this.runY = runY;
 		this.runWidth = runWidth;
 		this.runHeight = runHeight;
-		this.begin(runX, runY, runWidth, runHeight);
-		for (final TextGlyph<F> glyph : glyphs) {
-			this.drawGlyph(glyph);
-		}
-		this.end();
+		BridgeHandler.RENDER.get().withState(render -> {
+			this.begin(runX, runY, runWidth, runHeight);
+			try {
+				for (final TextGlyph<F> glyph : glyphs) {
+					this.drawGlyph(glyph);
+				}
+			} finally {
+				this.end();
+			}
+		});
 
 		for (final TextGlyph<F> glyph : glyphs) {
 			for (final ITextEffect effect : glyph.getStyle().getEffects()) {

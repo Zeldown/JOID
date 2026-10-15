@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
@@ -89,6 +90,7 @@ public class GlyphTextRendererTest {
 	public void reset() {
 		for (final Renderer renderer : new Renderer[] {GlyphTextRendererTest.RENDERER, GlyphTextRendererTest.ALIGNED}) {
 			renderer.events = this.events;
+			renderer.failure = null;
 			renderer.drawn.clear();
 			renderer.runs.clear();
 		}
@@ -123,6 +125,18 @@ public class GlyphTextRendererTest {
 				"background A", "background B",
 				"begin", "draw A shadow", "draw B shadow", "end", "decorate A shadow", "decorate B shadow",
 				"begin", "draw A", "draw B", "end", "decorate A", "decorate B"), this.events);
+	}
+
+	@Test
+	public void endsItsRunAndRestoresTheStateWhenAGlyphFails() {
+		GlyphTextRendererTest.RENDERER.failure = new IllegalStateException("The glyph failed");
+		try {
+			GlyphTextRendererTest.draw("AB", GlyphTextRendererTest.info());
+			Assert.fail("The failure of the glyph must reach the caller");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals(Arrays.asList("begin", "draw A", "end"), this.events);
+			Assert.assertEquals(1F, this.render.getState().getLineWidth(), 0F);
+		}
 	}
 
 	@Test
@@ -559,8 +573,9 @@ public class GlyphTextRendererTest {
 		private final List<double[]>        runs  = new ArrayList<>();
 		private final List<TextGlyph<Face>> drawn = new ArrayList<>();
 
-		private List<String>    events = new ArrayList<>();
-		private RecordingShader shader;
+		private List<String>     events = new ArrayList<>();
+		private RecordingShader  shader;
+		private RuntimeException failure;
 
 		@Override
 		protected void end() {
@@ -571,6 +586,11 @@ public class GlyphTextRendererTest {
 		protected void drawGlyph(final TextGlyph<Face> glyph) {
 			this.drawn.add(glyph);
 			this.events.add("draw " + (char) glyph.getCodepoint() + (glyph.isShadow() ? " shadow" : ""));
+			if (this.failure != null) {
+				BridgeHandler.RENDER.get().getState().lineWidth(4F);
+				throw this.failure;
+			}
+
 			if (this.shader != null) {
 				super.uniformColor(this.shader, glyph.getColor());
 			}
