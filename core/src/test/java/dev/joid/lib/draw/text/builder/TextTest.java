@@ -282,13 +282,28 @@ public class TextTest {
 	}
 
 	@Test
-	public void ignoresAnIndexOutsideItsElements() {
+	public void refusesAnIndexOutsideItsElements() {
 		final Text text = Text.create("ab", TextTest.info());
-		Assert.assertEquals(20D, text.getWidth(), 0D);
-		Assert.assertSame(text, text.text(-1, "x").text(1, "x").text(-1, () -> "x").text(1, () -> "x").info(-1, TextTest.info().fontSize(20F)).info(1, TextTest.info().fontSize(20F)));
+		try {
+			text.text(1, "x");
+			Assert.fail("The text has a single element");
+		} catch (final IndexOutOfBoundsException expected) {
+			Assert.assertEquals("The text has no element at index 1, give an index from 0 and lower than its element count (1)", expected.getMessage());
+		}
+		try {
+			text.info(-1, TextTest.info().fontSize(20F));
+			Assert.fail("An index cannot be negative");
+		} catch (final IndexOutOfBoundsException expected) {
+			Assert.assertEquals("The text has no element at index -1, give an index from 0 and lower than its element count (1)", expected.getMessage());
+		}
+		try {
+			Text.create().text("x");
+			Assert.fail("An empty text has no element");
+		} catch (final IndexOutOfBoundsException expected) {
+			Assert.assertEquals("The text has no element at index 0, give an index from 0 and lower than its element count (0)", expected.getMessage());
+		}
 		Assert.assertEquals("ab", text.getText());
 		Assert.assertEquals(20D, text.getWidth(), 0D);
-		Assert.assertTrue(Text.create().text("x").text(() -> "x").info(TextTest.info()).isEmpty());
 	}
 
 	@Test

@@ -102,7 +102,7 @@ public final class Text {
 	}
 
 	public @NonNull TextElement get(final int index) {
-		return this.elementList.get(index);
+		return this.element(index);
 	}
 
 	public @NonNull Text text(final @NonNull String text) {
@@ -118,11 +118,7 @@ public final class Text {
 	}
 
 	public @NonNull Text text(final int index, final @NonNull Supplier<?> text) {
-		if (index < 0 || index >= this.elementList.size()) {
-			return this;
-		}
-
-		this.elementList.get(index).text(text);
+		this.element(index).text(text);
 		return this;
 	}
 
@@ -131,11 +127,7 @@ public final class Text {
 	}
 
 	public @NonNull Text info(final int index, final @NonNull TextInfo info) {
-		if (index < 0 || index >= this.elementList.size()) {
-			return this;
-		}
-
-		this.elementList.get(index).info(info);
+		this.element(index).info(info);
 		return this;
 	}
 
@@ -216,6 +208,13 @@ public final class Text {
 
 	public final double ah(final double value) {
 		return this.getHeight() + value;
+	}
+
+	private @NonNull TextElement element(final int index) {
+		if (index < 0 || index >= this.elementList.size()) {
+			throw new IndexOutOfBoundsException("The text has no element at index " + index + ", give an index from 0 and lower than its element count (" + this.elementList.size() + ")");
+		}
+		return this.elementList.get(index);
 	}
 
 	private void measure() {
