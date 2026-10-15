@@ -7,7 +7,6 @@ import java.util.Locale;
 import java.util.function.UnaryOperator;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.lock.LockableValue;
@@ -42,11 +41,9 @@ public final class Color extends LockableValue<Color> {
 	private float b;
 	private float a;
 
-	@EqualsAndHashCode.Exclude
 	private UnaryOperator<Color> update;
 
 	@Getter
-	@EqualsAndHashCode.Exclude
 	private ColorGradient gradient;
 
 	@EqualsAndHashCode.Exclude
@@ -237,12 +234,7 @@ public final class Color extends LockableValue<Color> {
 	public void bind(final @NonNull Runnable runnable, final @NonNull BoundingBox canvas, final boolean hasTexture) {
 		final RenderState state = BridgeHandler.RENDER.get().getState();
 		if (this.isGradient()) {
-			final IShader previousShader = state.getShader();
-			try {
-				this.gradient.use(hasTexture, runnable, canvas);
-			} finally {
-				state.shader(previousShader);
-			}
+			this.gradient.use(hasTexture, runnable, canvas);
 		} else {
 			final float red = state.getRed();
 			final float green = state.getGreen();
@@ -316,11 +308,11 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color add(final @NonNull Color c) {
-		return this.derive(this.r + c.r, this.g + c.g, this.b + c.b, this.a + c.a, color -> color.add(c), this.update);
+		return this.derive(this.r + c.r, this.g + c.g, this.b + c.b, this.a + c.a, color -> color.add(c));
 	}
 
 	public @NonNull Color scale(final float value) {
-		return this.derive(this.r * value, this.g * value, this.b * value, this.a * value, color -> color.scale(value), this.update);
+		return this.derive(this.r * value, this.g * value, this.b * value, this.a * value, color -> color.scale(value));
 	}
 
 	public @NonNull Color to(final @NonNull Color target, final float progress) {
@@ -364,9 +356,9 @@ public final class Color extends LockableValue<Color> {
 			final Color start = this.gradient.getStartColor();
 			final Color end = this.gradient.getEndColor();
 			final float scale = this.a > 0F ? alpha / this.a : 0F;
-			return new Color(this.r, this.g, this.b, alpha, this.update, new ColorGradient(start.withAlpha(this.a > 0F ? start.a * scale : alpha), end.withAlpha(this.a > 0F ? end.a * scale : alpha), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
+			return new Color(this.r, this.g, this.b, alpha, this.follow(color -> color.withAlpha(alpha)), new ColorGradient(start.withAlpha(this.a > 0F ? start.a * scale : alpha), end.withAlpha(this.a > 0F ? end.a * scale : alpha), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
 		}
-		return new Color(this.r, this.g, this.b, alpha, this.update);
+		return new Color(this.r, this.g, this.b, alpha, this.follow(color -> color.withAlpha(alpha)));
 	}
 
 	public @NonNull Color withGreen(final float green) {
@@ -379,7 +371,12 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color update() {
-		return this.update == null ? this : this.update.apply(this);
+		if (this.update == null) {
+			return this;
+		}
+
+		final Color frame = this.update.apply(this);
+		return frame.update == null ? frame : new Color(frame.r, frame.g, frame.b, frame.a, null, frame.gradient);
 	}
 
 	public boolean isGradient() {
@@ -405,12 +402,12 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform) {
-		return this.derive(r, g, b, a, transform, this.update == null ? null : color -> transform.apply(this.update.apply(color)));
+		final ColorGradient gradient = this.isGradient() ? new ColorGradient(transform.apply(this.gradient.getStartColor()), transform.apply(this.gradient.getEndColor()), this.gradient.getStartPoint(), this.gradient.getEndPoint()) : null;
+		return new Color(r, g, b, a, this.follow(transform), gradient);
 	}
 
-	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform, final UnaryOperator<Color> update) {
-		final ColorGradient gradient = this.isGradient() ? new ColorGradient(transform.apply(this.gradient.getStartColor()), transform.apply(this.gradient.getEndColor()), this.gradient.getStartPoint(), this.gradient.getEndPoint()) : null;
-		return new Color(r, g, b, a, update, gradient);
+	private UnaryOperator<Color> follow(final @NonNull UnaryOperator<Color> transform) {
+		return this.update == null ? null : color -> transform.apply(this.update());
 	}
 
 	private static @NonNull Color lerp(final @NonNull Color from, final @NonNull Color to, final float progress) {

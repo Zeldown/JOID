@@ -4,10 +4,12 @@ import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.point.Point;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 public class ColorGradient {
 
