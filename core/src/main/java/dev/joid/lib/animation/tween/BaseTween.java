@@ -353,7 +353,7 @@ public abstract class BaseTween<T> {
 	}
 
 	private void testCompletion() {
-		this.isFinished = this.repeatCnt >= 0 && (this.step > this.repeatCnt * 2 || this.step < 0);
+		this.isFinished = this.isInitialized && this.repeatCnt >= 0 && (this.step > this.repeatCnt * 2 || this.step < 0);
 	}
 
 	private T listen(final EventType<TweenEvent> type, final EventListener<TweenEvent> listener) {

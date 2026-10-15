@@ -22,6 +22,7 @@ import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
 
@@ -249,6 +250,18 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
+	public void restartsItsTimelineFromItsCompletion() {
+		final TweenAnimator animator = TweenAnimator.create();
+		animator.sequence(1F, 10F).push(1F, 0F).onComplete(event -> animator.start()).start();
+		animator.update(1F);
+		animator.update(1F);
+		animator.update(0.5F);
+		animator.update(0.5F);
+		Assert.assertNotNull(animator.getTimeline());
+		Assert.assertEquals(10F, animator.get(), 0F);
+	}
+
+	@Test
 	public void repeatsItsTimeline() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).repeat(1, 0F).start();
 		animator.update(1F);
@@ -435,6 +448,17 @@ public class TweenAnimatorTest {
 		animator.update(0F);
 		animator.update(1F);
 		Assert.assertEquals(Arrays.asList(5F, 10F), values);
+	}
+
+	@Test
+	public void staysSilentInsideASilentWrite() {
+		final List<Float> values = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(2F, 10F).start();
+		animator.onChange(values::add);
+		Signal.silent(() -> animator.update(1F));
+		Signal.silent(() -> animator.value(0F));
+		Assert.assertTrue(values.isEmpty());
+		Assert.assertEquals(0F, animator.get(), 0F);
 	}
 
 	@Test

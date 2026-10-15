@@ -166,7 +166,7 @@ public class Signal<T> implements Supplier<T> {
 		this.version++;
 	}
 
-	protected final void propagate(final boolean notify) {
+	private void propagate(final boolean notify) {
 		final SignalContext context = SignalContext.current();
 		this.version++;
 		SignalContext.nextEpoch();
@@ -219,7 +219,7 @@ public class Signal<T> implements Supplier<T> {
 		return this.value;
 	}
 
-	private void fire() {
+	protected final void fire() {
 		this.propagate(!SignalContext.current().isSilent());
 	}
 
