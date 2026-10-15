@@ -38,9 +38,13 @@ public final class PipelineCache {
 	private final VulkanContext            context;
 	private final Map<PipelineKey, long[]> pipelineMap;
 
-	public PipelineCache(final VulkanContext context) {
+	private PipelineCache(final VulkanContext context) {
 		this.context     = context;
 		this.pipelineMap = new HashMap<>();
+	}
+
+	public static @NonNull PipelineCache create(final VulkanContext context) {
+		return new PipelineCache(context);
 	}
 
 	public void destroy() {

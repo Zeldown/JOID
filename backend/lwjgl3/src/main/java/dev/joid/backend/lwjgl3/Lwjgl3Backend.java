@@ -40,7 +40,7 @@ public final class Lwjgl3Backend extends Backend<Lwjgl3Backend> {
 
 	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
-		return new GlfwWindowBridge(this.window);
+		return GlfwWindowBridge.create(this.window);
 	}
 
 	@Override

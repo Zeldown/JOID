@@ -29,10 +29,14 @@ public final class DescriptorCache {
 	private final VulkanContext           context;
 	private final Map<List<Long>, long[]> setMap;
 
-	public DescriptorCache(final VulkanContext context) {
+	private DescriptorCache(final VulkanContext context) {
 		this.context  = context;
 		this.poolList = new ArrayList<>();
 		this.setMap   = new HashMap<>();
+	}
+
+	public static @NonNull DescriptorCache create(final VulkanContext context) {
+		return new DescriptorCache(context);
 	}
 
 	public void destroy() {

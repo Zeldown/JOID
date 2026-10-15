@@ -13,10 +13,13 @@ import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.backend.vulkan.render.buffer.Buffer;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
 import dev.joid.lib.bridge.render.texture.Texture;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VulkanTexture extends Texture implements IVulkanTexture {
 
 	private final VulkanRenderBridge bridge;
@@ -25,8 +28,8 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 	private long image;
 	private long memory;
 
-	public VulkanTexture(final @NonNull VulkanRenderBridge bridge) {
-		this.bridge = bridge;
+	public static @NonNull VulkanTexture create(final VulkanRenderBridge bridge) {
+		return new VulkanTexture(bridge);
 	}
 
 	@Override

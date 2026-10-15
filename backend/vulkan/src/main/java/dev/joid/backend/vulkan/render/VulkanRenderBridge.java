@@ -85,28 +85,32 @@ public final class VulkanRenderBridge extends RenderBridge {
 	private FrameAllocator    vertexAllocator;
 	private FrameAllocator    uniformAllocator;
 
-	public VulkanRenderBridge(final IVulkanHost host) {
+	private VulkanRenderBridge(final IVulkanHost host) {
 		if (host.getFramesInFlight() < 1) {
 			throw new IllegalArgumentException("The Vulkan host " + host.getClass().getSimpleName() + " has " + host.getFramesInFlight() + " frames in flight, getFramesInFlight() must return 1 or more");
 		}
 
 		this.host              = host;
-		this.context           = new VulkanContext(host);
-		this.pipelineCache     = new PipelineCache(this.context);
-		this.descriptorCache   = new DescriptorCache(this.context);
+		this.context           = VulkanContext.create(host);
+		this.pipelineCache     = PipelineCache.create(this.context);
+		this.descriptorCache   = DescriptorCache.create(this.context);
 		this.garbage           = new TreeMap<>();
 		this.screenClearPass   = this.context.createRenderPass(host.getColorFormat(), this.context.getDepthStencilFormat(), true);
 		this.screenLoadPass    = this.context.createRenderPass(host.getColorFormat(), this.context.getDepthStencilFormat(), false);
 		this.vertexAllocators  = new FrameAllocator[host.getFramesInFlight()];
 		this.uniformAllocators = new FrameAllocator[host.getFramesInFlight()];
 		for (int i = 0; i < host.getFramesInFlight(); i++) {
-			this.vertexAllocators[i] = new FrameAllocator(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 1L, this::dispose);
-			this.uniformAllocators[i] = new FrameAllocator(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, this.context.getUniformAlignment(), this::dispose);
+			this.vertexAllocators[i] = FrameAllocator.create(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 1L, this::dispose);
+			this.uniformAllocators[i] = FrameAllocator.create(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, this.context.getUniformAlignment(), this::dispose);
 		}
 
 		this.vertexAllocator  = this.vertexAllocators[0];
 		this.uniformAllocator = this.uniformAllocators[0];
 		this.samplers         = this.createSamplers();
+	}
+
+	public static @NonNull VulkanRenderBridge create(final IVulkanHost host) {
+		return new VulkanRenderBridge(host);
 	}
 
 	public void destroy() {
@@ -260,7 +264,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	@Override
 	public @NonNull ITexture createTexture() {
-		return new VulkanTexture(this);
+		return VulkanTexture.create(this);
 	}
 
 	@Override

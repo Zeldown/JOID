@@ -18,7 +18,7 @@ public class VulkanBackendTest {
 
 	@Test
 	public void rejectsAHostWithoutFrameInFlight() {
-		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> new VulkanRenderBridge(VulkanBackendTest.host(0)));
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> VulkanRenderBridge.create(VulkanBackendTest.host(0)));
 		Assert.assertTrue(exception.getMessage(), exception.getMessage().contains("getFramesInFlight() must return 1 or more"));
 	}
 

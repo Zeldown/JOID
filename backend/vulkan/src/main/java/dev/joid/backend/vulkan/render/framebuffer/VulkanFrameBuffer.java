@@ -35,7 +35,7 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 
 	public static @NonNull VulkanFrameBuffer create(final VulkanRenderBridge bridge, final int width, final int height) {
 		final VulkanContext context = bridge.getContext();
-		final VulkanTexture texture = new VulkanTexture(bridge);
+		final VulkanTexture texture = VulkanTexture.create(bridge);
 		texture.allocate(width, height);
 		final long[] depth = context.createImage(width, height, context.getDepthFormat(), VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT);
 		final long depthView = context.createImageView(depth[0], context.getDepthFormat(), VK10.VK_IMAGE_ASPECT_DEPTH_BIT);

@@ -17,8 +17,11 @@ import dev.joid.backend.lwjgl2.window.cursor.NativeCursors;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2WindowBridge implements IWindowBridge {
 
 	private static final Key[]             KEY_ARRAY = new Key[Keyboard.KEYBOARD_SIZE];
@@ -138,6 +141,10 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 		Lwjgl2WindowBridge.map(Key.RIGHT_ALT, Keyboard.KEY_RMENU);
 		Lwjgl2WindowBridge.map(Key.RIGHT_SUPER, Keyboard.KEY_RMETA);
 		Lwjgl2WindowBridge.map(Key.MENU, Keyboard.KEY_APPS);
+	}
+
+	public static @NonNull Lwjgl2WindowBridge create() {
+		return new Lwjgl2WindowBridge();
 	}
 
 	@Override

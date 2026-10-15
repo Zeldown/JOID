@@ -9,7 +9,6 @@ import dev.joid.base.glfw.input.GlfwKeys;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
-import lombok.Getter;
 import lombok.NonNull;
 
 public final class GlfwWindowBridge implements IWindowBridge {
@@ -17,13 +16,13 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	private final long              window;
 	private final Map<Cursor, Long> cursorMap;
 
-	@Getter
-	private Cursor cursor;
-
-	public GlfwWindowBridge(final long window) {
+	private GlfwWindowBridge(final long window) {
 		this.window    = window;
 		this.cursorMap = new EnumMap<>(Cursor.class);
-		this.cursor    = Cursor.DEFAULT;
+	}
+
+	public static @NonNull GlfwWindowBridge create(final long window) {
+		return new GlfwWindowBridge(window);
 	}
 
 	public void destroy() {
@@ -33,7 +32,6 @@ public final class GlfwWindowBridge implements IWindowBridge {
 			}
 		}
 		this.cursorMap.clear();
-		this.cursor = Cursor.DEFAULT;
 	}
 
 	@Override
@@ -80,7 +78,6 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	@Override
 	public void setCursor(final @NonNull Cursor cursor) {
 		GLFW.glfwSetCursor(this.window, cursor == Cursor.DEFAULT ? 0L : this.cursorMap.computeIfAbsent(cursor, GlfwWindowBridge::createCursor));
-		this.cursor = cursor;
 	}
 
 	@Override

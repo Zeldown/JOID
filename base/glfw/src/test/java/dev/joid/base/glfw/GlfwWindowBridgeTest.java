@@ -1,9 +1,11 @@
 package dev.joid.base.glfw;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -38,15 +40,16 @@ public class GlfwWindowBridgeTest {
 	}
 
 	@Test
-	public void showsEveryCursorWithoutError() {
+	public void showsEveryCursorWithoutError() throws Exception {
+		final GlfwWindowBridge bridge = GlfwWindowBridge.create(GlfwWindowBridgeTest.window);
+		final Map<?, ?> cursorMap = GlfwWindowBridgeTest.cursorMap(bridge);
 		final List<Integer> errors = GlfwWindowBridgeTest.record(() -> {
-			final GlfwWindowBridge bridge = new GlfwWindowBridge(GlfwWindowBridgeTest.window);
 			for (final Cursor cursor : Cursor.values()) {
 				bridge.setCursor(cursor);
-				Assert.assertSame(cursor, bridge.getCursor());
+				Assert.assertEquals(cursor != Cursor.DEFAULT, cursorMap.containsKey(cursor));
 			}
 			bridge.destroy();
-			Assert.assertSame(Cursor.DEFAULT, bridge.getCursor());
+			Assert.assertTrue(cursorMap.isEmpty());
 		});
 		errors.removeIf(error -> error == GLFW.GLFW_CURSOR_UNAVAILABLE);
 		Assert.assertEquals(Collections.emptyList(), errors);
@@ -55,7 +58,7 @@ public class GlfwWindowBridgeTest {
 	@Test
 	public void reusesItsCursorsUntilDestroyed() {
 		final List<Integer> errors = GlfwWindowBridgeTest.record(() -> {
-			final GlfwWindowBridge bridge = new GlfwWindowBridge(GlfwWindowBridgeTest.window);
+			final GlfwWindowBridge bridge = GlfwWindowBridge.create(GlfwWindowBridgeTest.window);
 			for (int i = 0; i < 3; i++) {
 				bridge.setCursor(Cursor.TEXT);
 				bridge.setCursor(Cursor.DEFAULT);
@@ -83,6 +86,12 @@ public class GlfwWindowBridgeTest {
 		final Method method = GlfwWindowBridge.class.getDeclaredMethod("toFramebuffer", double.class, int.class, int.class);
 		method.setAccessible(true);
 		return (double) method.invoke(null, position, windowSize, framebufferSize);
+	}
+
+	private static Map<?, ?> cursorMap(final GlfwWindowBridge bridge) throws Exception {
+		final Field field = GlfwWindowBridge.class.getDeclaredField("cursorMap");
+		field.setAccessible(true);
+		return (Map<?, ?>) field.get(bridge);
 	}
 
 	private static List<Integer> record(final Runnable runnable) {

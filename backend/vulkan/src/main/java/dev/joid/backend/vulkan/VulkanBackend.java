@@ -44,12 +44,12 @@ public final class VulkanBackend extends Backend<VulkanBackend> {
 
 	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
-		return new GlfwWindowBridge(this.window);
+		return GlfwWindowBridge.create(this.window);
 	}
 
 	@Override
 	protected @NonNull IRenderBridge createRenderBridge() {
-		this.render = new VulkanRenderBridge(this.host);
+		this.render = VulkanRenderBridge.create(this.host);
 		return this.render;
 	}
 
