@@ -147,6 +147,79 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
+	public void opensTheWaitingScreenWhenTheLeavingOneIsForcedToClose() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		menu.transition(PopTransition.create());
+		BridgeHandler.UI.register(this.bridge);
+		try {
+			this.bridge.open(menu);
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+
+			this.bridge.open(settings);
+			menu.dispose();
+			this.bridge.close(menu);
+			Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList());
+			this.bridge.close(settings);
+		} finally {
+			BridgeHandler.UI.unregister(this.bridge);
+		}
+		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void dropsTheWaitingScreenWhenItClosesEveryUi() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		menu.transition(PopTransition.create());
+		BridgeHandler.UI.register(this.bridge);
+		try {
+			this.bridge.open(menu);
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+
+			this.bridge.open(settings);
+			this.bridge.closeAll();
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+		} finally {
+			BridgeHandler.UI.unregister(this.bridge);
+		}
+		Assert.assertTrue(this.bridge.getUiList().isEmpty());
+		Assert.assertFalse(this.trace.contains("init settings"));
+		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void keepsALeavingScreenOpenedAgain() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		menu.transition(PopTransition.create());
+		BridgeHandler.UI.register(this.bridge);
+		try {
+			this.bridge.open(menu);
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+
+			this.bridge.open(settings);
+			this.bridge.open(menu);
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+		} finally {
+			BridgeHandler.UI.unregister(this.bridge);
+		}
+		Assert.assertEquals(Collections.singletonList(menu), this.bridge.getUiList());
+		Assert.assertFalse(menu.isClosed());
+		Assert.assertFalse(this.trace.contains("init settings"));
+	}
+
+	@Test
 	public void tellsTheFirstScreenOpenWhenNoScreenWasReplaced() {
 		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
 		this.bridge.open(overlay);

@@ -92,6 +92,12 @@ public abstract class UI implements IUI, IndexedElement {
 	@Getter
 	private static UI current;
 
+	private static long frameNumber;
+
+	static {
+		BridgeHandler.UI.onFrame(() -> UI.frameNumber++);
+	}
+
 	@NonNull private final EventBus                   eventBus;
 	@NonNull private final IndexedList<@NonNull Node> nodeList;
 
@@ -134,6 +140,7 @@ public abstract class UI implements IUI, IndexedElement {
 	@Getter private double frameTime;
 
 	private long lastFrame;
+	private long drawnFrame;
 	private long fpsCounter;
 	private long frameCount;
 	private long lastFpsUpdate;
@@ -184,6 +191,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.zoom = 1D;
 		this.devNode = null;
+		this.drawnFrame = Long.MIN_VALUE;
 		this.lastHoveredFrame = -1L;
 		this.hoveredPath = Collections.emptyList();
 	}
@@ -423,7 +431,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		if (this.transition != null && this.transition.getOut().isEnabled() && this.data.visible()) {
+		if (this.transition != null && this.transition.getOut().isEnabled() && this.data.visible() && this.drawnFrame + 1L >= UI.frameNumber) {
 			this.transition.getOut().start();
 			this.transition.getOut().getAnimator().onComplete(tween -> {
 				this.dispose();
@@ -595,6 +603,7 @@ public abstract class UI implements IUI, IndexedElement {
 			JOIDLog.info(this.getClass().getSimpleName() + " reloaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
 		}
 
+		this.drawnFrame = UI.frameNumber;
 		this.untraced(() -> this.drawFrame(mouseX, mouseY));
 	}
 

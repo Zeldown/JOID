@@ -10,12 +10,22 @@ import lombok.NonNull;
 
 public abstract class StackUIBridge extends UIBridge {
 
+	private UI      pending;
+	private UI      leaving;
 	private boolean deferred;
 	private boolean replacing;
 
 	@Override
 	public void open(final @NonNull UI ui) {
 		if (super.isOpen(ui)) {
+			if (ui.getTransition() != null && ui.getTransition().getOut().isRunning()) {
+				ui.getTransition().getOut().stop();
+			}
+
+			if (ui == this.leaving) {
+				this.drop();
+			}
+
 			super.remove(ui);
 			super.add(ui);
 			return;
@@ -36,13 +46,8 @@ public abstract class StackUIBridge extends UIBridge {
 				final boolean result = current.fireClose();
 				if (current.getTransition() != null && current.getTransition().getOut().isRunning()) {
 					this.deferred = true;
-					current.getTransition().getOut().getAnimator().onComplete(tween -> {
-						try {
-							this.open(ui);
-						} finally {
-							this.deferred = false;
-						}
-					});
+					this.leaving  = current;
+					this.pending  = ui;
 					return;
 				}
 
@@ -64,7 +69,20 @@ public abstract class StackUIBridge extends UIBridge {
 
 	@Override
 	public void close(final @NonNull UI ui) {
-		this.remove(ui);
+		if (ui != this.leaving) {
+			this.remove(ui);
+			return;
+		}
+
+		final UI next = this.pending;
+		this.leaving = null;
+		this.pending = null;
+		try {
+			this.remove(ui);
+			this.open(next);
+		} finally {
+			this.deferred = this.pending != null;
+		}
 	}
 
 	@Override
@@ -80,6 +98,10 @@ public abstract class StackUIBridge extends UIBridge {
 	@Override
 	public void remove(final @NonNull UI ui) {
 		final boolean screen = super.getUiList().contains(ui) && !ui.getOverlay().active();
+		if (ui == this.leaving) {
+			this.drop();
+		}
+
 		super.remove(ui);
 		if (screen && !super.hasScreen() && !this.replacing && !this.deferred) {
 			this.detachScreen();
@@ -110,5 +132,11 @@ public abstract class StackUIBridge extends UIBridge {
 	protected void attachScreen() {}
 
 	protected void detachScreen() {}
+
+	private void drop() {
+		this.leaving  = null;
+		this.pending  = null;
+		this.deferred = false;
+	}
 
 }

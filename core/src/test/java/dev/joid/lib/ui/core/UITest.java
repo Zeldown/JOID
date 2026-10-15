@@ -1019,6 +1019,29 @@ public class UITest {
 	}
 
 	@Test
+	public void closesAtOnceWhenItWasNotDrawnInTheLastFrame() {
+		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
+		this.bridges.open(ui).frames(20);
+		BridgeHandler.UI.fireFrame();
+		this.bridges.draw(other -> other != ui);
+		BridgeHandler.UI.fireFrame();
+		Assert.assertTrue(ui.fireClose());
+	}
+
+	@Test
+	public void staysOpenWhenOpenedAgainBeforeItsOutTransitionEnds() {
+		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
+		this.bridges.open(ui).frames(20);
+		Assert.assertFalse(ui.fireClose());
+		JOID.open(ui);
+		this.bridges.frames(20);
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
+		Assert.assertFalse(ui.isClosed());
+		Assert.assertFalse(ui.getTransition().getOut().isRunning());
+		Assert.assertFalse(this.trace.contains("detach node"));
+	}
+
+	@Test
 	public void staysOpenWhenOpenedAgainDuringItsOutTransition() {
 		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui).frames(20);
