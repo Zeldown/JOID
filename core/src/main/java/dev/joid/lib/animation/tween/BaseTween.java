@@ -40,6 +40,7 @@ public abstract class BaseTween<T> {
 		this.build();
 		this.step = -2;
 		this.currentTime = 0;
+		this.isKilled = false;
 		this.isStarted = true;
 		this.isFinished = false;
 		this.isInitialized = false;

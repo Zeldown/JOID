@@ -30,6 +30,17 @@ public class TweenManagerTest {
 	}
 
 	@Test
+	public void startsAnObjectAddedWhileItUpdates() {
+		final TweenValue value = new TweenValue(0F);
+		final TweenManager manager = new TweenManager();
+		manager.add(Tween.mark().delay(1F).onComplete(event -> manager.add(value.to(1F).target(10F).ease(TweenEquations.LINEAR))));
+		manager.update(1F);
+		manager.update(1F);
+		manager.update(1F);
+		Assert.assertEquals(10F, value.getValue(), 0F);
+	}
+
+	@Test
 	public void rewindsWithANegativeDelta() {
 		final TweenValue value = new TweenValue(0F);
 		final TweenManager manager = new TweenManager().add(value.to(2F).target(10F).ease(TweenEquations.LINEAR));

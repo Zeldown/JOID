@@ -42,13 +42,14 @@ public class TweenManager {
 			this.objects.removeIf(BaseTween::isFinished);
 
 			if (!this.isPaused) {
+				final List<BaseTween<?>> objectList = new ArrayList<>(this.objects);
 				if (delta >= 0) {
-					for (final BaseTween<?> object : this.objects) {
+					for (final BaseTween<?> object : objectList) {
 						object.update(delta);
 					}
 				} else {
-					for (int i = this.objects.size() - 1; i >= 0; i--) {
-						this.objects.get(i).update(delta);
+					for (int i = objectList.size() - 1; i >= 0; i--) {
+						objectList.get(i).update(delta);
 					}
 				}
 			}

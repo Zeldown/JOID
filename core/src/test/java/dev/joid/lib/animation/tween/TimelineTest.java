@@ -238,7 +238,7 @@ public class TimelineTest {
 			Timeline.createSequence().start().push(Tween.mark());
 			Assert.fail("A started timeline must refuse a new child");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("A timeline takes no new child once it is started, build it before start()", expected.getMessage());
+			Assert.assertEquals("A timeline takes no new child once it is built (start() builds it), push its children before start()", expected.getMessage());
 		}
 	}
 

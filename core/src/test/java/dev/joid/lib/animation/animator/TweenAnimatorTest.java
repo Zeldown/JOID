@@ -229,6 +229,29 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
+	public void restartsATimelineItKilled() {
+		final TweenAnimator animator = TweenAnimator.create();
+		final Timeline in = Timeline.createSequence().push(animator.tween(10F).target(1F));
+		final Timeline out = Timeline.createSequence().push(animator.tween(10F).target(0F));
+		animator.timeline(in).start();
+		animator.update(5F);
+		animator.timeline(out).start();
+		animator.timeline(in).start();
+		animator.update(10F);
+		Assert.assertEquals(1F, animator.get(), 0F);
+	}
+
+	@Test
+	public void chainsASequenceFromItsCompletion() {
+		final TweenAnimator animator = TweenAnimator.create();
+		animator.sequence(1F, 10F).onComplete(event -> animator.sequence(1F, 0F).start()).start();
+		animator.update(1F);
+		animator.update(1F);
+		animator.update(1F);
+		Assert.assertEquals(0F, animator.get(), 0F);
+	}
+
+	@Test
 	public void tweensItsOwnValueLinearly() {
 		final TweenAnimator animator = TweenAnimator.create(2F);
 		final Tween tween = animator.tween(10F).target(6F);

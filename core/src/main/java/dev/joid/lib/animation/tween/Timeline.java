@@ -171,7 +171,7 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	private void requireOpen() {
 		if (this.isBuilt) {
-			throw new IllegalStateException("A timeline takes no new child once it is started, build it before start()");
+			throw new IllegalStateException("A timeline takes no new child once it is built (start() builds it), push its children before start()");
 		}
 	}
 
