@@ -116,6 +116,15 @@ public class GlfwInputForwarderTest {
 	}
 
 	@Test
+	public void leavesTheKeyRepeatToTheUi() {
+		this.ui.cancel = true;
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_BACKSPACE, GLFW.GLFW_PRESS);
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_BACKSPACE, GLFW.GLFW_REPEAT);
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_BACKSPACE, GLFW.GLFW_REPEAT);
+		Assert.assertEquals(Arrays.asList("key BACKSPACE", "passed key", "passed key"), this.trace);
+	}
+
+	@Test
 	public void forwardsACharacterOutsideTheBasicPlaneInOneCall() {
 		this.ui.cancel = true;
 		GlfwInputForwarderTest.character(0x1F600);

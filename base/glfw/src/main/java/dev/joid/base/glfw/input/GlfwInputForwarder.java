@@ -44,7 +44,7 @@ public final class GlfwInputForwarder {
 
 		final GLFWKeyCallback key = GLFW.glfwSetKeyCallback(window, null);
 		GLFW.glfwSetKeyCallback(window, (handle, code, scancode, action, mods) -> {
-			final boolean consumed = action != GLFW.GLFW_RELEASE ? BridgeHandler.UI.keyPressed(GlfwKeys.getKey(code)) : BridgeHandler.UI.keyReleased(GlfwKeys.getKey(code));
+			final boolean consumed = action == GLFW.GLFW_PRESS ? BridgeHandler.UI.keyPressed(GlfwKeys.getKey(code)) : action == GLFW.GLFW_RELEASE && BridgeHandler.UI.keyReleased(GlfwKeys.getKey(code));
 			if (!consumed && key != null) {
 				key.invoke(handle, code, scancode, action, mods);
 			}

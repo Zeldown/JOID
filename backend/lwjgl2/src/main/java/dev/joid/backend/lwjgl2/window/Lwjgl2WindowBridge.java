@@ -157,7 +157,7 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 
 	@Override
 	public double getMouseY() {
-		return (Display.getHeight() - Mouse.getY()) * (double) Display.getPixelScaleFactor();
+		return (Display.getHeight() - 1 - Mouse.getY()) * (double) Display.getPixelScaleFactor();
 	}
 
 	@Override
