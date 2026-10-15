@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.dev;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,7 @@ import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.point.Point;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -55,12 +57,12 @@ public final class DevNode extends Node {
 
 	private static final Color[] GRID_COLORS = {DevNode.ACTION, DevNode.RED};
 
-	private final BooleanSignal gridSignal;
-	private final BooleanSignal inspectSignal;
+	@Getter(AccessLevel.NONE) private final BooleanSignal gridSignal;
+	@Getter(AccessLevel.NONE) private final BooleanSignal inspectSignal;
 
-	private final Signal<Node> inspectedNode;
-	private final ComputedSignal<Node> lockedNode;
-	private final BooleanSignal inspectedNodeLocked;
+	@Getter(AccessLevel.NONE) private final Signal<Node>         inspectedNode;
+	@Getter(AccessLevel.NONE) private final ComputedSignal<Node> lockedNode;
+	@Getter(AccessLevel.NONE) private final BooleanSignal        inspectedNodeLocked;
 
 	private final TweenAnimator reloadAnimator;
 
@@ -75,7 +77,7 @@ public final class DevNode extends Node {
 
 	private int gridColorIndex = 0;
 
-	protected DevNode(final double x, final double y) {
+	private DevNode(final double x, final double y) {
 		super(x, y, 275, 53);
 		super.anchor(Align.END);
 
@@ -296,7 +298,7 @@ public final class DevNode extends Node {
 						}
 
 						for (final Field field : clazz.getDeclaredFields()) {
-							if ((field.getModifiers() & 8) != 0) {
+							if (Modifier.isStatic(field.getModifiers())) {
 								continue;
 							}
 
@@ -339,7 +341,7 @@ public final class DevNode extends Node {
 			})
 			.attach(node);
 		})
-		.watch(this.getLockedNode(), WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
+		.watch(this.lockedNode, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)
 		.visible(this.inspectedNodeLocked)
 		.attach(this);
 
@@ -352,9 +354,9 @@ public final class DevNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.getInspectSignal().peek()) {
-			if (!this.getInspectedNodeLocked().peek()) {
-				this.getInspectedNode().set(null);
+		if (this.inspectSignal.peek()) {
+			if (!this.inspectedNodeLocked.peek()) {
+				this.inspectedNode.set(null);
 				final List<Node> nodeList = super.getUi().getNodeListAt(mouseX, mouseY);
 				if (UI.isCtrlKeyDown()) {
 					Collections.reverse(nodeList);
@@ -383,7 +385,7 @@ public final class DevNode extends Node {
 			this.inspectHeight = super.getUi().lerpByFramerate(this.inspectHeight, this.targetInspectHeight, 0.5D, 0.5D, true);
 
 			if (this.inspectedNode.peek() != null) {
-				this.drawInfoBox(this.inspectX, this.inspectY, this.inspectWidth, this.inspectHeight, DevNode.ACTION, 1F, this.inspectedNode.peek());
+				this.drawInfoBox(this.inspectX, this.inspectY, this.inspectWidth, this.inspectHeight, this.inspectedNode.peek());
 			}
 		}
 
@@ -395,7 +397,7 @@ public final class DevNode extends Node {
 			this.init(super.getUi());
 		}
 
-		if (this.getGridSignal().peek()) {
+		if (this.gridSignal.peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(UIView.DESIGN_WIDTH / 2D - 1D, 0), Point.create(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.create(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
@@ -470,26 +472,6 @@ public final class DevNode extends Node {
 		this.inspectedNodeLocked.set(true);
 	}
 
-	private BooleanSignal getGridSignal() {
-		return this.gridSignal;
-	}
-
-	private BooleanSignal getInspectSignal() {
-		return this.inspectSignal;
-	}
-
-	private Signal<Node> getInspectedNode() {
-		return this.inspectedNode;
-	}
-
-	private ComputedSignal<Node> getLockedNode() {
-		return this.lockedNode;
-	}
-
-	private BooleanSignal getInspectedNodeLocked() {
-		return this.inspectedNodeLocked;
-	}
-
 	private boolean isAncestorOf(final Node node) {
 		for (Node parent = node.getParent(); parent != null; parent = parent.getParent()) {
 			if (parent == this) {
@@ -499,14 +481,14 @@ public final class DevNode extends Node {
 		return false;
 	}
 
-	private void drawInfoBox(final double x, final double y, final double width, final double height, final Color color, final float opacity, final Node node) {
-		DrawUtils.SHAPE.drawRect(x, y, width, height, color.withAlpha(0.3F * opacity));
-		DrawUtils.SHAPE.drawDashedLine(color.withAlpha(opacity), 7, 2F, Point.create(x, y), Point.create(x + width, y));
-		DrawUtils.SHAPE.drawDashedLine(color.withAlpha(opacity), 7, 2F, Point.create(x, y), Point.create(x, y + height));
-		DrawUtils.SHAPE.drawDashedLine(color.withAlpha(opacity), 7, 2F, Point.create(x + width, y), Point.create(x + width, y + height));
-		DrawUtils.SHAPE.drawDashedLine(color.withAlpha(opacity), 7, 2F, Point.create(x, y + height), Point.create(x + width, y + height));
+	private void drawInfoBox(final double x, final double y, final double width, final double height, final Node node) {
+		DrawUtils.SHAPE.drawRect(x, y, width, height, DevNode.ACTION.withAlpha(0.3F));
+		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x, y), Point.create(x + width, y));
+		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x, y), Point.create(x, y + height));
+		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x + width, y), Point.create(x + width, y + height));
+		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x, y + height), Point.create(x + width, y + height));
 
-		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE.withAlpha(opacity)).shadow().shadow(Color.BLACK.withAlpha(0.7F * opacity));
+		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE).shadow().shadow(Color.BLACK.withAlpha(0.7F));
 		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);
 		final Text nodeTimeText = Text.create(String.format(Locale.ROOT, "%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
 
@@ -517,12 +499,12 @@ public final class DevNode extends Node {
 		final double infoBoxY = y - 35 < 0 ? y + height + 5 : y - 35;
 		final double infoBoxWidth = margin + padding * 2 + nodeNameText.getWidth() + nodeTimeText.getWidth();
 
-		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.withAlpha(0.8F * opacity), 5F);
+		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.withAlpha(0.8F), 5F);
 
 		double ox = infoBoxX + padding;
 		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeNameText.alignY(Align.CENTER)).getWidth() + margin;
-		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE.withAlpha(opacity), 2);
-		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.alignY(Align.CENTER)).getWidth() + margin;
+		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE, 2);
+		DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.alignY(Align.CENTER));
 	}
 
 }

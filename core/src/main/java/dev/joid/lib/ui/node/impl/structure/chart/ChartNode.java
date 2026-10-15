@@ -118,6 +118,7 @@ public abstract class ChartNode extends Node {
 
 	public static class ChartAxis {
 
+		@Getter
 		private final String name;
 
 		protected ChartAxis(final @NonNull String name) {
@@ -132,17 +133,13 @@ public abstract class ChartNode extends Node {
 			return new XChartAxis(name, labels);
 		}
 
-		public String getName() {
-			return this.name;
-		}
-
 		@Getter
 		public static final class XChartAxis extends ChartAxis {
 
 			private final Set<String> labelSet;
 			private final Map<String, ChartData> dataMap;
 
-			protected XChartAxis(final @NonNull String name, final @NonNull String... labels) {
+			private XChartAxis(final @NonNull String name, final @NonNull String... labels) {
 				super(name);
 
 				this.labelSet = new LinkedHashSet<>();
@@ -192,7 +189,7 @@ public abstract class ChartNode extends Node {
 			private String prefix;
 			private String suffix;
 
-			protected YChartAxis(final @NonNull String name) {
+			private YChartAxis(final @NonNull String name) {
 				super(name);
 			}
 

@@ -123,7 +123,6 @@ public final class Text {
 		}
 
 		this.elementList.get(index).text(text);
-		this.measured = null;
 		return this;
 	}
 
@@ -137,37 +136,31 @@ public final class Text {
 		}
 
 		this.elementList.get(index).info(info);
-		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text addAll(final @NonNull List<@NonNull TextElement> elementList) {
 		this.elementList.addAll(elementList);
-		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text add(final @NonNull Text builder) {
 		this.elementList.addAll(builder.getElementList());
-		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text add(final @NonNull TextElement element) {
 		this.elementList.add(element);
-		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text remove(final @NonNull TextElement element) {
 		this.elementList.remove(element);
-		this.measured = null;
 		return this;
 	}
 
 	public @NonNull Text clear() {
 		this.elementList.clear();
-		this.measured = null;
 		return this;
 	}
 
@@ -202,7 +195,6 @@ public final class Text {
 
 	public final @NonNull Text modifier(final ITextModifier modifier) {
 		this.modifier = modifier;
-		this.measured = null;
 		return this;
 	}
 

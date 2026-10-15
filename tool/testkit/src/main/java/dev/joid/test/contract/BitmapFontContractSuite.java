@@ -128,13 +128,10 @@ public abstract class BitmapFontContractSuite {
 		final Font font = new Font(new Renderer(atlas, texture));
 		render.beginFrame();
 		render.clearColor(0F, 0F, 0F, 1F);
-		render.getModelView().push();
-		try {
-			render.getModelView().scale(scale, scale, 1D);
+		render.getModelView().with(matrix -> {
+			matrix.scale(scale, scale, 1D);
 			font.getTextRenderer().drawText(8.3D, 4.6D, "A", TextInfo.create(font, 16F, Color.WHITE));
-		} finally {
-			render.getModelView().pop();
-		}
+		});
 		render.endFrame();
 
 		final SnapshotImage image = BitmapFontContractSuite.backend.capture(BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT);

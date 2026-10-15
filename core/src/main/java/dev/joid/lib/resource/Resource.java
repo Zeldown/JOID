@@ -29,7 +29,7 @@ public final class Resource {
 	private int  requestedWidth;
 	private int  requestedHeight;
 
-	protected Resource(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
+	public Resource(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
 		this.builder    = builder;
 		this.properties = builder.getProperties();
 		this.data       = data;
@@ -101,9 +101,7 @@ public final class Resource {
 	}
 
 	public final @NonNull Resource copy() {
-		final Resource copy = new Resource(this.builder, this.data).properties(this.properties.copy());
-		copy.blocking = this.blocking;
-		return copy;
+		return this.derive(this.data);
 	}
 
 	public final @NonNull Resource fork() {
@@ -113,9 +111,7 @@ public final class Resource {
 			return this;
 		}
 
-		final Resource fork = new Resource(this.builder, this.data.fork(forked)).properties(this.properties.copy());
-		fork.blocking = this.blocking;
-		return fork;
+		return this.derive(this.data.fork(forked));
 	}
 
 	public final @NonNull Resource reload() {
@@ -191,10 +187,6 @@ public final class Resource {
 
 	public final boolean isFailed() {
 		return this.data.isFailed();
-	}
-
-	protected final void dispatch(final @NonNull Runnable task) {
-		this.data.dispatch(task);
 	}
 
 	public final void generate() {
@@ -290,6 +282,12 @@ public final class Resource {
 		if (cache != null && cache.get(this.data.getUniqueId()) == this.data) {
 			cache.remove(this.data.getUniqueId());
 		}
+	}
+
+	private @NonNull Resource derive(final @NonNull ResourceData data) {
+		final Resource derived = new Resource(this.builder, data).properties(this.properties.copy());
+		derived.blocking = this.blocking;
+		return derived;
 	}
 
 }

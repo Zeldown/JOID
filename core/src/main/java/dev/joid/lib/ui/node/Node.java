@@ -97,8 +97,8 @@ import lombok.NonNull;
 @Getter
 public abstract class Node implements INode {
 
-	private static final transient Gson GSON        = new GsonBuilder().create();
-	private static final transient Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
+	private static final Gson GSON        = new GsonBuilder().create();
+	private static final Gson PRETTY_GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	private static final EventType<NodeMouseEvent<Node>> CLICK = EventType.create("onClick");
 

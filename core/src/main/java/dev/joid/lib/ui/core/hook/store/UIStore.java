@@ -5,8 +5,6 @@ import lombok.NonNull;
 
 public abstract class UIStore {
 
-	private UIStoreData data;
-
 	public void init() {}
 
 	public void destroy() {}
@@ -22,11 +20,7 @@ public abstract class UIStore {
 	}
 
 	public UIStoreData getData() {
-		if (this.data == null) {
-			this.data = UIStoreHook.getData(this.getClass());
-		}
-
-		return this.data;
+		return UIStoreHook.getData(this.getClass());
 	}
 
 }

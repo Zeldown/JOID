@@ -18,9 +18,9 @@ public class BorderShader extends ShaderProgram {
 	}
 
 	public void bind(final float borderWidth, final @NonNull Color borderColor, final float texelW, final float texelH, final boolean fill, final int mode, final float rectX1, final float rectY1, final float rectX2, final float rectY2) {
-		BorderShader.INSTANCE.bind();
+		this.bind();
 
-		BorderShader.INSTANCE.getShader()
+		this.getShader()
 		.uniform("u_BorderWidth", borderWidth)
 		.uniform("u_BorderColor", borderColor.getRedF(), borderColor.getGreenF(), borderColor.getBlueF(), borderColor.getAlphaF())
 		.uniform("u_TexelSize", texelW, texelH)

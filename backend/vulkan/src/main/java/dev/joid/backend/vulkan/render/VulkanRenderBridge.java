@@ -248,7 +248,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			this.applyDynamicState(stack, state, target != null, primitive == Primitive.LINES ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-			final long vertexOffset = this.writeVertices(buffer, state);
+			final long vertexOffset = this.writeVertices(buffer);
 			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer);
 			final long descriptorSet = this.descriptorCache.get(shader, this.uniformAllocator.getBuffer().getBuffer(), this.getImages(shader));
 
@@ -407,7 +407,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		VK10.vkCmdSetStencilReference(buffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, stencil.getReference());
 	}
 
-	private long writeVertices(final VertexBuffer buffer, final RenderState state) {
+	private long writeVertices(final VertexBuffer buffer) {
 		final int size = buffer.getCount() * VertexBuffer.STRIDE;
 		final long offset = this.vertexAllocator.allocate(size);
 		VertexFill.complete(buffer, MemoryUtil.memByteBuffer(this.vertexAllocator.getBuffer().getAddress() + offset, size));

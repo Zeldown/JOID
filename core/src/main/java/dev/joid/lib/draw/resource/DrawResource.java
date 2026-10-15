@@ -60,7 +60,7 @@ public final class DrawResource {
 		final double bottom = grid.snapBottom(y, y + height);
 		final ResourceProperties properties = resource.getProperties();
 		if (!failed && properties.getTextureCoords() == null) {
-			final boolean cropped = region != null && region.length == 4;
+			final boolean cropped = region != null;
 			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX() * (cropped ? resource.getSourceWidth() / region[2] : 1D));
 			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY() * (cropped ? resource.getSourceHeight() / region[3] : 1D));
 			resource.request(pixelWidth, pixelHeight);
@@ -72,7 +72,7 @@ public final class DrawResource {
 			}
 		}
 
-		final double[] uv = failed || region == null || region.length != 4 ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getSourceWidth(), region[1] / resource.getSourceHeight(), (region[0] + region[2]) / resource.getSourceWidth(), (region[1] + region[3]) / resource.getSourceHeight()};
+		final double[] uv = failed || region == null ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getSourceWidth(), region[1] / resource.getSourceHeight(), (region[0] + region[2]) / resource.getSourceWidth(), (region[1] + region[3]) / resource.getSourceHeight()};
 		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
 			render.getState().blend(BlendState.NORMAL);
 			if (grid.isAligned()) {

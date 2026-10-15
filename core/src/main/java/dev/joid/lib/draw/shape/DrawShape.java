@@ -7,7 +7,6 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.matrix.PixelGrid.Span;
-import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.render.tessellator.DrawMode;
@@ -90,8 +89,7 @@ public final class DrawShape {
 	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final PixelGrid grid = render.getPixelGrid();
-		final IShader rounded = RoundedShader.inst().getShader();
-		if (!grid.isAligned() && render.getState().getShader() == null && rounded != null && rounded.isActive()) {
+		if (!grid.isAligned() && render.getState().getShader() == null && RoundedShader.inst().isAvailable()) {
 			this.drawOutline(Math.min(x, x2) - stroke, Math.min(y, y2) - stroke, Math.max(x, x2) + stroke, Math.max(y, y2) + stroke, color, stroke);
 			return;
 		}
@@ -240,8 +238,7 @@ public final class DrawShape {
 			return;
 		}
 
-		final IShader rounded = RoundedShader.inst().getShader();
-		if (render.getState().getShader() != null || rounded == null || !rounded.isActive()) {
+		if (render.getState().getShader() != null || !RoundedShader.inst().isAvailable()) {
 			this.drawPoints(DrawMode.POLYGON, color, true, Point.create(left, bottom), Point.create(right, bottom), Point.create(right, top), Point.create(left, top));
 			return;
 		}

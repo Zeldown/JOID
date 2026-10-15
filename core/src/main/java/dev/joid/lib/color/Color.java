@@ -173,18 +173,8 @@ public final class Color extends LockableValue<Color> {
 		if (color1.isGradient() && color2.isGradient()) {
 			final ColorGradient g1 = color1.gradient;
 			final ColorGradient g2 = color2.gradient;
-			final Color start = new Color(
-					g1.getStartColor().r * inv + g2.getStartColor().r * progress,
-					g1.getStartColor().g * inv + g2.getStartColor().g * progress,
-					g1.getStartColor().b * inv + g2.getStartColor().b * progress,
-					g1.getStartColor().a * inv + g2.getStartColor().a * progress
-					);
-			final Color end = new Color(
-					g1.getEndColor().r * inv + g2.getEndColor().r * progress,
-					g1.getEndColor().g * inv + g2.getEndColor().g * progress,
-					g1.getEndColor().b * inv + g2.getEndColor().b * progress,
-					g1.getEndColor().a * inv + g2.getEndColor().a * progress
-					);
+			final Color start = Color.lerp(g1.getStartColor(), g2.getStartColor(), progress);
+			final Color end = Color.lerp(g1.getEndColor(), g2.getEndColor(), progress);
 			final Point startPoint = Point.create(g1.getStartPoint().getX() * inv + g2.getStartPoint().getX() * progress, g1.getStartPoint().getY() * inv + g2.getStartPoint().getY() * progress);
 			final Point endPoint = Point.create(g1.getEndPoint().getX() * inv + g2.getEndPoint().getX() * progress, g1.getEndPoint().getY() * inv + g2.getEndPoint().getY() * progress);
 			return new Color(new ColorGradient(start, end, startPoint, endPoint));
@@ -192,15 +182,15 @@ public final class Color extends LockableValue<Color> {
 
 		if (color1.isGradient()) {
 			final ColorGradient g = color1.gradient;
-			final Color start = new Color(g.getStartColor().r * inv + color2.r * progress, g.getStartColor().g * inv + color2.g * progress, g.getStartColor().b * inv + color2.b * progress, g.getStartColor().a * inv + color2.a * progress);
-			final Color end = new Color(g.getEndColor().r * inv + color2.r * progress, g.getEndColor().g * inv + color2.g * progress, g.getEndColor().b * inv + color2.b * progress, g.getEndColor().a * inv + color2.a * progress);
+			final Color start = Color.lerp(g.getStartColor(), color2, progress);
+			final Color end = Color.lerp(g.getEndColor(), color2, progress);
 			return new Color(new ColorGradient(start, end, g.getStartPoint(), g.getEndPoint()));
 		}
 
 		if (color2.isGradient()) {
 			final ColorGradient g = color2.gradient;
-			final Color start = new Color(color1.r * inv + g.getStartColor().r * progress, color1.g * inv + g.getStartColor().g * progress, color1.b * inv + g.getStartColor().b * progress, color1.a * inv + g.getStartColor().a * progress);
-			final Color end = new Color(color1.r * inv + g.getEndColor().r * progress, color1.g * inv + g.getEndColor().g * progress, color1.b * inv + g.getEndColor().b * progress, color1.a * inv + g.getEndColor().a * progress);
+			final Color start = Color.lerp(color1, g.getStartColor(), progress);
+			final Color end = Color.lerp(color1, g.getEndColor(), progress);
 			return new Color(new ColorGradient(start, end, g.getStartPoint(), g.getEndPoint()));
 		}
 
@@ -232,18 +222,7 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull String encode() {
-		String hexRed = Integer.toHexString(this.getRed());
-		String hexGreen = Integer.toHexString(this.getGreen());
-		String hexBlue = Integer.toHexString(this.getBlue());
-		String hexAlpha = Integer.toHexString(this.getAlpha());
-
-		hexRed = this.padZero(hexRed);
-		hexGreen = this.padZero(hexGreen);
-		hexBlue = this.padZero(hexBlue);
-		hexAlpha = this.padZero(hexAlpha);
-
-		final String hexCode = "#" + hexRed + hexGreen + hexBlue + hexAlpha;
-		return hexCode.toUpperCase(Locale.ROOT);
+		return String.format(Locale.ROOT, "#%02X%02X%02X%02X", this.getRed(), this.getGreen(), this.getBlue(), this.getAlpha());
 	}
 
 	public void bind() {
@@ -434,8 +413,9 @@ public final class Color extends LockableValue<Color> {
 		return new Color(r, g, b, a, update, gradient);
 	}
 
-	private @NonNull String padZero(final @NonNull String str) {
-		return str.length() == 1 ? "0" + str : str;
+	private static @NonNull Color lerp(final @NonNull Color from, final @NonNull Color to, final float progress) {
+		final float inv = 1F - progress;
+		return new Color(from.r * inv + to.r * progress, from.g * inv + to.g * progress, from.b * inv + to.b * progress, from.a * inv + to.a * progress);
 	}
 
 	private static float clamp(final float value) {

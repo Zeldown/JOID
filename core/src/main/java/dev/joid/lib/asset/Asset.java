@@ -1,9 +1,11 @@
 package dev.joid.lib.asset;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+
+import org.apache.commons.io.IOUtils;
 
 import dev.joid.lib.asset.locator.AssetLocator;
 import lombok.Getter;
@@ -42,37 +44,17 @@ public abstract class Asset {
 	}
 
 	public final @NonNull byte[] read() throws IOException {
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		try (InputStream stream = this.open()) {
-			final byte[] buffer = new byte[8192];
-			int count;
-			while ((count = stream.read(buffer)) != -1) {
-				output.write(buffer, 0, count);
-			}
+			return IOUtils.toByteArray(stream);
 		}
-		return output.toByteArray();
 	}
 
 	protected static int fill(final @NonNull InputStream stream, final @NonNull byte[] buffer) throws IOException {
-		int total = 0;
-		while (total < buffer.length) {
-			final int count = stream.read(buffer, total, buffer.length - total);
-			if (count == -1) {
-				break;
-			}
-			total += count;
-		}
-		return total;
+		return IOUtils.read(stream, buffer);
 	}
 
 	protected static @NonNull byte[] shrink(final @NonNull byte[] buffer, final int length) {
-		if (length == buffer.length) {
-			return buffer;
-		}
-
-		final byte[] shrunk = new byte[length];
-		System.arraycopy(buffer, 0, shrunk, 0, length);
-		return shrunk;
+		return length == buffer.length ? buffer : Arrays.copyOf(buffer, length);
 	}
 
 	@Override

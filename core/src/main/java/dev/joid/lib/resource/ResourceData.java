@@ -104,20 +104,6 @@ public final class ResourceData {
 		return this;
 	}
 
-	protected final @NonNull ResourceData loaded(final boolean loaded) {
-		if (loaded) {
-			this.fireLoad();
-		} else {
-			this.loaded = false;
-		}
-		return this;
-	}
-
-	protected final @NonNull ResourceData uploaded(final boolean uploaded) {
-		this.uploaded = uploaded;
-		return this;
-	}
-
 	public final @NonNull ResourceData width(final int width) {
 		this.width = width;
 		return this;
@@ -167,7 +153,7 @@ public final class ResourceData {
 		return fork;
 	}
 
-	protected final void dispatch(final @NonNull Runnable task) {
+	public final void dispatch(final @NonNull Runnable task) {
 		final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
 		this.tasks.add(thread);
 		thread.start();
@@ -369,7 +355,7 @@ public final class ResourceData {
 		return textures == null ? 0 : textures.length;
 	}
 
-	protected final @NonNull ITexture getMissingTexture() {
+	public final @NonNull ITexture getMissingTexture() {
 		if (this.missingTexture == null) {
 			final int[] pixels = new int[64];
 			for (int i = 0; i < pixels.length; i++) {

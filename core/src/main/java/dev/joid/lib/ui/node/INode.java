@@ -8,7 +8,7 @@ import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.utils.list.IndexedElement;
 import lombok.NonNull;
 
-public interface INode extends IndexedElement, Cloneable {
+public interface INode extends IndexedElement {
 
 	default public void update() {}
 	default public void detach() {}

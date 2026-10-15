@@ -71,13 +71,17 @@ public final class ResourceBuilder {
 
 		final Asset asset = Asset.of(input);
 		if (asset.isRemote()) {
-			return this.compute(asset.getUniqueId(), () -> new ResourceData(asset.getUniqueId(), null), computed -> computed.dispatch(() -> {
-				try {
-					computed.decoder(ResourceFormat.decoder(asset));
-				} catch (final RuntimeException exception) {
-					computed.getResourceData().fail(exception);
-				}
-			}));
+			return this.compute(asset.getUniqueId(), () -> {
+				final ResourceData data = new ResourceData(asset.getUniqueId(), null);
+				data.dispatch(() -> {
+					try {
+						data.decoder(ResourceFormat.decoder(asset));
+					} catch (final RuntimeException exception) {
+						data.fail(exception);
+					}
+				});
+				return data;
+			});
 		}
 
 		return this.compute(asset.getUniqueId(), () -> ResourceBuilder.read(asset));

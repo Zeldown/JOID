@@ -1,10 +1,8 @@
 package dev.joid.lib.signal;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -17,8 +15,8 @@ import lombok.NonNull;
 
 public class Signal<T> implements Supplier<T> {
 
-	private final transient Set<@NonNull ISignalListener<? super T>> listenerSet;
-	private final transient List<@NonNull ComputedSignal<?>>         observerList;
+	private final transient Set<@NonNull ISignalListener<? super T>>         listenerSet;
+	private final transient CopyOnWriteArrayList<@NonNull ComputedSignal<?>> observerList;
 
 	private final transient T defaultValue;
 
@@ -32,7 +30,7 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	public Signal(final T value) {
-		this.listenerSet = new LinkedHashSet<>();
+		this.listenerSet = new CopyOnWriteArraySet<>();
 		this.observerList = new CopyOnWriteArrayList<>();
 		this.value = this.seal(value);
 		this.sealedValue = this.value;
@@ -78,16 +76,12 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	public @NonNull Signal<T> onChange(final @NonNull ISignalListener<? super T> listener) {
-		synchronized (this.listenerSet) {
-			this.listenerSet.add(listener);
-		}
+		this.listenerSet.add(listener);
 		return this;
 	}
 
 	public @NonNull Signal<T> removeOnChange(final @NonNull ISignalListener<? super T> listener) {
-		synchronized (this.listenerSet) {
-			this.listenerSet.remove(listener);
-		}
+		this.listenerSet.remove(listener);
 		return this;
 	}
 
@@ -138,23 +132,12 @@ public class Signal<T> implements Supplier<T> {
 		return !this.observerList.isEmpty() || this.hasListeners();
 	}
 
-	protected synchronized void addObserver(final ComputedSignal<?> observer) {
-		for (final ComputedSignal<?> current : this.observerList) {
-			if (current == observer) {
-				return;
-			}
-		}
-
-		this.observerList.add(observer);
+	protected void addObserver(final ComputedSignal<?> observer) {
+		this.observerList.addIfAbsent(observer);
 	}
 
-	protected synchronized void removeObserver(final ComputedSignal<?> observer) {
-		for (int index = 0; index < this.observerList.size(); index++) {
-			if (this.observerList.get(index) == observer) {
-				this.observerList.remove(index);
-				return;
-			}
-		}
+	protected void removeObserver(final ComputedSignal<?> observer) {
+		this.observerList.remove(observer);
 	}
 
 	protected final @NonNull Signal<T> write(final @NonNull Runnable task) {
@@ -171,9 +154,7 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	protected final boolean hasListeners() {
-		synchronized (this.listenerSet) {
-			return !this.listenerSet.isEmpty();
-		}
+		return !this.listenerSet.isEmpty();
 	}
 
 	protected final void invalidate(final SignalContext context) {
@@ -231,13 +212,8 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	private void notifyListeners(final T value) {
-		final List<ISignalListener<? super T>> listenerList;
-		synchronized (this.listenerSet) {
-			listenerList = new ArrayList<>(this.listenerSet);
-		}
-
 		RuntimeException failure = null;
-		for (final ISignalListener<? super T> listener : listenerList) {
+		for (final ISignalListener<? super T> listener : this.listenerSet) {
 			try {
 				listener.onChange(value);
 			} catch (final RuntimeException exception) {

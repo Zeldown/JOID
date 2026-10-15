@@ -2,8 +2,8 @@ package dev.joid.lib.font.converter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+import dev.joid.lib.utils.registry.Registry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -11,15 +11,14 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TextConverter {
 
-	private static final List<ITextConverter> CONVERTERS = new CopyOnWriteArrayList<>();
+	private static final Registry<ITextConverter> CONVERTERS = Registry.create();
 
 	public static void register(final @NonNull ITextConverter converter) {
-		TextConverter.CONVERTERS.remove(converter);
-		TextConverter.CONVERTERS.add(0, converter);
+		TextConverter.CONVERTERS.register(converter);
 	}
 
 	public static void unregister(final @NonNull ITextConverter converter) {
-		TextConverter.CONVERTERS.remove(converter);
+		TextConverter.CONVERTERS.unregister(converter);
 	}
 
 	public static @NonNull String convert(final @NonNull Object text) {
@@ -27,13 +26,8 @@ public class TextConverter {
 			return (String) text;
 		}
 
-		for (final ITextConverter converter : TextConverter.CONVERTERS) {
-			if (converter.supports(text)) {
-				return converter.convert(text);
-			}
-		}
-
-		return text.toString();
+		final ITextConverter converter = TextConverter.CONVERTERS.find(candidate -> candidate.supports(text));
+		return converter != null ? converter.convert(text) : text.toString();
 	}
 
 	public static @NonNull List<@NonNull String> convertLines(final @NonNull Object content) {

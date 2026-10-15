@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.AtomicDouble;
 
 import dev.joid.internal.HotReload;
 import dev.joid.internal.JOIDEnv;
@@ -848,13 +847,13 @@ public abstract class UI implements IUI, IndexedElement {
 		render.getState().alphaCutoff(0F);
 		final Drawing body = () -> this.view.render(render, this.data.projection(), () -> {
 			this.depthLevel = 0;
-			final AtomicDouble lastDepthLevel = new AtomicDouble(this.depthLevel);
+			double lastDepthLevel = this.depthLevel;
 
-			this.nodeList.ordered().forEach(node -> {
-				render.getModelView().translate(0, 0, this.depthLevel - lastDepthLevel.get());
-				lastDepthLevel.set(this.depthLevel);
+			for (final Node node : this.nodeList.ordered()) {
+				render.getModelView().translate(0, 0, this.depthLevel - lastDepthLevel);
+				lastDepthLevel = this.depthLevel;
 				node.render(mx, my);
-			});
+			}
 
 			if (this.getHoveredNode() != null) {
 				this.renderHoveredNode(mx, my);

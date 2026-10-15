@@ -186,7 +186,7 @@ public class ResourceTest {
 		Assert.assertFalse(resource.isLoaded());
 		Assert.assertFalse(resource.isUploaded());
 		Assert.assertFalse(resource.isGenerated());
-		resource.getResourceData().loaded(true).uploaded(true).generated(true);
+		ResourceDataTest.upload(ResourceDataTest.load(resource.getResourceData())).generated(true);
 		Assert.assertTrue(resource.isLoaded());
 		Assert.assertTrue(resource.isUploaded());
 		Assert.assertTrue(resource.isGenerated());
@@ -196,7 +196,7 @@ public class ResourceTest {
 	public void runsATaskOnItsOwnThread() {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final Resource resource = ResourceTest.resource(null);
-		resource.dispatch(() -> threads.add(Thread.currentThread()));
+		resource.getResourceData().dispatch(() -> threads.add(Thread.currentThread()));
 		resource.getResourceData().await();
 		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
 	}
@@ -206,7 +206,7 @@ public class ResourceTest {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final AtomicBoolean done = new AtomicBoolean();
 		final Resource resource = ResourceBuilder.create().cache(null).compute("image", () -> new ResourceData("image", null));
-		resource.dispatch(() -> {
+		resource.getResourceData().dispatch(() -> {
 			try {
 				Thread.sleep(50L);
 			} catch (final InterruptedException ignored) {}

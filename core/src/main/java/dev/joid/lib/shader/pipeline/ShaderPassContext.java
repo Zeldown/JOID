@@ -23,7 +23,7 @@ public final class ShaderPassContext {
 	private final int       textureWidth;
 	private final int       textureHeight;
 
-	protected static @NonNull ShaderPassContext create(final double x, final double y, final double width, final double height, final double expansion, final @NonNull PixelGrid grid) {
+	public static @NonNull ShaderPassContext create(final double x, final double y, final double width, final double height, final double expansion, final @NonNull PixelGrid grid) {
 		final double left = x - expansion;
 		final double top = y - expansion;
 		final double right = x + width + expansion;

@@ -124,7 +124,6 @@ public class ProgressNode extends Node {
 	private double getProgressWidth() {
 		switch (this.direction) {
 		case LEFT_TO_RIGHT:
-			return super.getWidth() * this.getShownProgress();
 		case RIGHT_TO_LEFT:
 			return super.getWidth() * this.getShownProgress();
 		default:
@@ -135,7 +134,6 @@ public class ProgressNode extends Node {
 	private double getProgressHeight() {
 		switch (this.direction) {
 		case TOP_TO_BOTTOM:
-			return super.getHeight() * this.getShownProgress();
 		case BOTTOM_TO_TOP:
 			return super.getHeight() * this.getShownProgress();
 		default:

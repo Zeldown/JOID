@@ -535,30 +535,24 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void keepsTranslationsExact() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().push();
-		try {
-			render.getModelView().scale(0.75D, 0.75D, 1D);
-			render.getModelView().translate(10.3D, 0D, 0D);
+		render.getModelView().with(matrix -> {
+			matrix.scale(0.75D, 0.75D, 1D);
+			matrix.translate(10.3D, 0D, 0D);
 			Assert.assertEquals(7.725D, render.getPixelGrid().toScreenX(0D), 1E-4D);
-		} finally {
-			render.getModelView().pop();
-		}
+		});
 	}
 
 	@Test
 	public void quantizesAMotionToWholePixels() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().push();
-		try {
-			render.getModelView().scale(0.75D, 0.75D, 1D);
-			render.getModelView().translate(10.3D, 0D, 0D);
+		render.getModelView().with(matrix -> {
+			matrix.scale(0.75D, 0.75D, 1D);
+			matrix.translate(10.3D, 0D, 0D);
 			render.quantize(10.3D, -4.1D);
 			final PixelGrid grid = render.getPixelGrid();
 			Assert.assertEquals(8D, grid.toScreenX(0D), 1E-4D);
 			Assert.assertEquals(Math.rint(grid.toScreenY(-4.1D)), grid.toScreenY(-4.1D), 1E-4D);
-		} finally {
-			render.getModelView().pop();
-		}
+		});
 	}
 
 	@Test

@@ -1,5 +1,7 @@
 package dev.joid.lib.resource;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,7 +51,7 @@ public class ResourceDataTest {
 		final Decoder decoder = new Decoder();
 		final int[][] pixels = {{1, 2}};
 		final ITexture[] textures = {new Texture(2, 1)};
-		final ResourceData data = new ResourceData("image", null).uniqueId("renamed").decoder(decoder).data(pixels).textures(textures).width(2).height(1).loaded(true).uploaded(true).generated(true);
+		final ResourceData data = ResourceDataTest.upload(ResourceDataTest.load(new ResourceData("image", null).uniqueId("renamed").decoder(decoder).data(pixels).textures(textures).width(2).height(1).generated(true)));
 		Assert.assertEquals("renamed", data.getUniqueId());
 		Assert.assertSame(decoder, data.getDecoder());
 		Assert.assertArrayEquals(pixels, data.getData());
@@ -114,7 +116,7 @@ public class ResourceDataTest {
 	@Test
 	public void generatesThroughItsDecoder() {
 		final Decoder decoder = new Decoder();
-		final ResourceData data = new ResourceData("image", decoder).uploaded(true);
+		final ResourceData data = ResourceDataTest.upload(new ResourceData("image", decoder));
 		data.generate(false);
 		Assert.assertEquals(Arrays.asList("init", "prepare", "decode"), decoder.calls);
 		Assert.assertTrue(data.isGenerated());
@@ -135,7 +137,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void takesTheSizeOfItsTextureWithoutDecoder() {
-		final ResourceData data = new ResourceData("image", null).texture(new Texture(4, 2)).uploaded(true);
+		final ResourceData data = ResourceDataTest.upload(new ResourceData("image", null).texture(new Texture(4, 2)));
 		data.generate(false);
 		Assert.assertTrue(data.isGenerated());
 		Assert.assertTrue(data.isLoaded());
@@ -351,7 +353,7 @@ public class ResourceDataTest {
 	public void notifiesItsLoadOncePerLoad() {
 		final List<String> loads = new ArrayList<>();
 		final ResourceData data = new ResourceData("image", new Decoder()).onLoad(() -> loads.add("load"));
-		data.loaded(true).loaded(true);
+		ResourceDataTest.load(ResourceDataTest.load(data));
 		Assert.assertEquals(1, loads.size());
 		data.reload(new Decoder());
 		Assert.assertEquals(1, loads.size());
@@ -393,7 +395,7 @@ public class ResourceDataTest {
 	public void releasesWhatItsDecoderMadeOnReload() {
 		final Decoder previous = new Decoder();
 		final Texture texture = new Texture(4, 2);
-		final ResourceData data = new ResourceData("image", previous).texture(texture).width(4).height(2).loaded(true).uploaded(true).generated(true);
+		final ResourceData data = ResourceDataTest.upload(ResourceDataTest.load(new ResourceData("image", previous).texture(texture).width(4).height(2).generated(true)));
 		data.reload(new Decoder());
 		Assert.assertTrue(texture.isDeleted());
 		Assert.assertNull(data.getTextures());
@@ -483,6 +485,28 @@ public class ResourceDataTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesANullId() {
 		new ResourceData(null, null);
+	}
+
+	public static ResourceData load(final ResourceData data) {
+		try {
+			final Method method = ResourceData.class.getDeclaredMethod("fireLoad");
+			method.setAccessible(true);
+			method.invoke(data);
+			return data;
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
+	}
+
+	public static ResourceData upload(final ResourceData data) {
+		try {
+			final Field field = ResourceData.class.getDeclaredField("uploaded");
+			field.setAccessible(true);
+			field.setBoolean(data, true);
+			return data;
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	private static class Decoder implements IResourceDecoder {
