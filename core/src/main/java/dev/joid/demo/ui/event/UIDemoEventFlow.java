@@ -57,7 +57,7 @@ public class UIDemoEventFlow extends UIDemo {
 			}
 
 			if (event.getPhysicalKey() == Key.A || event.getPhysicalKey() == Key.D) {
-				walk.set(event.getPhysicalKey() == Key.A ? -4D : 4D);
+				walk.set(event.getPhysicalKey() == Key.A ? -240D : 240D);
 			}
 		});
 		super.handleKeyReleased(event -> {
@@ -291,7 +291,7 @@ public class UIDemoEventFlow extends UIDemo {
 		.create(80, 720, 320, 260)
 		.color(UIDemoEventFlow.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 40, 60, 60).color(UIDemoEventFlow.INK).x(walkX).onUpdate(event -> walkX.set(Math.max(40D, Math.min(220D, walkX.peek() + walk.peek())))).attach(rect);
+			RectNode.create(40, 40, 60, 60).color(UIDemoEventFlow.INK).x(walkX).onUpdate(event -> walkX.set(Math.max(40D, Math.min(220D, walkX.peek() + walk.peek() * super.getFrameTime() / 1000D)))).attach(rect);
 			TextNode.create(40, 130).text(Text.create("Letter Z: " + letter.get(), info)).attach(rect);
 			TextNode.create(40, 175).text(Text.create("Move: A / D", info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Letter vs position", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);

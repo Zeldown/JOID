@@ -7,7 +7,7 @@ A backend extends `Backend`, creates three bridges — `IRenderBridge`, `IWindow
 ## Setup
 
 1. Put the JOID jars listed in [`libs/README.md`](libs/README.md) in `libs/`.
-2. Rename the `com.example.joid.backend` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group`, `archivesBaseName` and the `main` class of `runDemo` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
+2. Rename the `com.example.joid.backend` package in `src/main/java`, `src/test/java` and `src/demo/java`, `group`, `archivesBaseName`, `backendPackage` and the `main` class of `runDemo` in `build.gradle`, and `rootProject.name` in `settings.gradle`.
 3. Add the libraries of your engine to the `compile` dependencies. When your engine runs on GLFW or OpenAL, add `joid-base-glfw` and `joid-base-openal` to the `embed` configuration instead of writing those bridges (on OpenGL, add `joid-base-opengl` too and implement its bindings instead of a render bridge):
 
 ```groovy
@@ -22,7 +22,7 @@ The JOID core needs no declaration: its jars embed its libraries (Gson, Guava, C
 
 | Class | Role |
 |---|---|
-| `ExampleBackend` | Extends the core `Backend<ExampleBackend>`: its `register()` checks the JOID version (an `IllegalStateException` when the loaded JOID has another major version than the one the build writes into `com/example/joid/backend/backend.properties`, a newer minor version is accepted), then registers the bridges your hooks create (`createAudioBridge()`, `createWindowBridge()`, `createRenderBridge()`, and `createThreadBridge()`, `FrameThreadBridge.create()` by default, which runs the tasks sent from other threads at the start of `frame()`), calls `registerDefaults()` (a `WindowUIBridge` by default; override it to add your resource resolvers, asset locators, key resolvers...) and `attachInput()` (override it to forward the input of your engine to `BridgeHandler.UI`), then loads JOID and runs the `JOID.onReady` callbacks. The application calls `ExampleBackend.create().register()`, then `frame()` in its loop. |
+| `ExampleBackend` | Extends the core `Backend<ExampleBackend>`: its `register()` checks the JOID version (an `IllegalStateException` when the loaded JOID has another major version than the one the build writes into `backend.properties` in the `backendPackage` of `build.gradle`, a newer minor version is accepted), then registers the bridges your hooks create (`createAudioBridge()`, `createWindowBridge()`, `createRenderBridge()`, and `createThreadBridge()`, `FrameThreadBridge.create()` by default, which runs the tasks sent from other threads at the start of `frame()`), calls `registerDefaults()` (a `WindowUIBridge` by default; override it to add your resource resolvers, asset locators, key resolvers...) and `attachInput()` (override it to forward the input of your engine to `BridgeHandler.UI`), then loads JOID and runs the `JOID.onReady` callbacks. The application calls `ExampleBackend.create().register()`, then `frame()` in its loop. |
 | `render/ExampleRenderBridge` | Extends the core `RenderBridge`, which tracks matrices and state in Java. Implement `clearColorBuffer`, `clearDepthBuffer`, `clearStencilBuffer`, `drawPrimitive`, `createTexture`, `createFrameBuffer` and `createShader`, applying the current state when they run. |
 | `window/ExampleWindowBridge` | Window size, mouse, keyboard and clipboard. |
 | `audio/ExampleAudioBridge` | Streaming audio sources used by the video player. |

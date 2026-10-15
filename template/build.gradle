@@ -9,6 +9,7 @@ targetCompatibility = 1.8
 
 ext {
     joidVersion = '@JOID_VERSION@'
+    backendPackage = 'com.example.joid.backend'
     lwjglVersion = '3.3.4'
     lwjglNatives = org.gradle.internal.os.OperatingSystem.current().isWindows() ? 'natives-windows' : org.gradle.internal.os.OperatingSystem.current().isMacOsX() ? (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-macos-arm64' : 'natives-macos') : (System.getProperty('os.arch').startsWith('aarch64') ? 'natives-linux-arm64' : 'natives-linux')
     macOs = org.gradle.internal.os.OperatingSystem.current().isMacOsX()
@@ -43,7 +44,7 @@ task backendProperties {
     inputs.property 'version', joidVersion
     outputs.dir backendResources
     doLast {
-        def properties = new File(backendResources, 'com/example/joid/backend/backend.properties')
+        def properties = new File(backendResources, "${backendPackage.replace('.', '/')}/backend.properties")
         properties.parentFile.mkdirs()
         properties.text = "version=$joidVersion"
     }

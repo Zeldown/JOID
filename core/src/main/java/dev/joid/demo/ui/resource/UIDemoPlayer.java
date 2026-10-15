@@ -116,7 +116,7 @@ public class UIDemoPlayer extends UIDemo {
 		RectNode
 		.create(1160, 570, 100, 36)
 		.color(UIDemoPlayer.INK)
-		.onClick(event -> seeked.seek(1D))
+		.onClick(event -> seeked.seek(seeked.getProgress() * seeked.getDuration() + 1D))
 		.label(Text.create("+1 s", button))
 		.attach(this);
 		RectNode
@@ -170,10 +170,10 @@ public class UIDemoPlayer extends UIDemo {
 		Shortcut
 		.create(Key.F)
 		.onTrigger(event -> {
-			if (video.getWidth() < this.getWindowWidth()) {
-				video.x(0).y(0).width(this.getWindowWidth()).height(this.getWindowHeight());
+			if (video.getWidth() < super.getWindowWidth()) {
+				video.x(0).y(0).width(super.getWindowWidth()).height(super.getWindowHeight()).zindex(1);
 			} else {
-				video.x(80).y(40).width(320).height(180);
+				video.x(80).y(40).width(320).height(180).zindex(0);
 			}
 		})
 		.attach(this);

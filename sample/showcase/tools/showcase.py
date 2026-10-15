@@ -304,11 +304,13 @@ def frames(clip, first, last, batch):
 
 
 if __name__ == "__main__":
-	args = [a for a in sys.argv[1:] if not a.startswith("--")]
+	argv = sys.argv[1:]
 	batch = 110
-	if "--batch" in sys.argv:
-		batch = int(sys.argv[sys.argv.index("--batch") + 1])
-		args.remove(str(batch))
+	if "--batch" in argv:
+		index = argv.index("--batch")
+		batch = int(argv[index + 1])
+		del argv[index:index + 2]
+	args = [a for a in argv if not a.startswith("--")]
 	if not args or args[0] not in list(CLIPS) + ["all"]:
 		sys.exit(__doc__)
 	first = int(args[1]) if len(args) > 1 else 0

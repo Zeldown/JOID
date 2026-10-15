@@ -33,6 +33,8 @@ public class ShowLists extends ShowUI {
 		this.blob(-250, 400, 900, ShowUI.VIOLET.withAlpha(0.40F), 9D, 0D, 50D);
 		this.blob(1350, -250, 900, ShowUI.CYAN.withAlpha(0.20F), 9D, 0.5D, 50D);
 
+		this.order.clear();
+		this.next.set(ShowLists.TITLES[0]);
 		for (final String title : ShowLists.TITLES) {
 			this.order.add(title);
 		}

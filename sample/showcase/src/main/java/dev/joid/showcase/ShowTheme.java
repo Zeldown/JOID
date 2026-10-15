@@ -2,6 +2,7 @@ package dev.joid.showcase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -71,7 +72,7 @@ public class ShowTheme extends ShowUI {
 			final int plays = 9400 - i * 1350;
 			RectNode.create(1400, y, 60, 60).color(ShowUI.diagonal(colors[i], colors[i].to(ShowUI.VIOLET, 0.5F))).effect(CircleNodeEffect.create()).attach(this);
 			TextNode.create(1480, y + 18D).text(() -> Text.create(artist, ShowUI.font(FontWeight.SEMI_BOLD, 22F, this.text()))).anchorY(Align.CENTER).attach(this);
-			TextNode.create(1480, y + 46D).text(() -> Text.create(String.format("%,d plays", plays), ShowUI.font(FontWeight.MEDIUM, 17F, this.muted()))).anchorY(Align.CENTER).attach(this);
+			TextNode.create(1480, y + 46D).text(() -> Text.create(String.format(Locale.US, "%,d plays", plays), ShowUI.font(FontWeight.MEDIUM, 17F, this.muted()))).anchorY(Align.CENTER).attach(this);
 		}
 	}
 
