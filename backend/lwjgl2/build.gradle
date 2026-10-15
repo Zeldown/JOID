@@ -38,7 +38,3 @@ processResources.dependsOn extractNatives
 ext.demoMain = 'dev.joid.backend.lwjgl2.demo.DemoWindow'
 
 apply from: rootProject.file('gradle/backend.gradle')
-
-rootProject.variants.each { variant ->
-    tasks["${variant}Jar"].exclude 'dev/joid/base/openal/binding/Lwjgl3AlBinding*'
-}

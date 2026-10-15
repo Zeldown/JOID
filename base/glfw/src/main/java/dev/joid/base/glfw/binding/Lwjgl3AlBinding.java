@@ -1,4 +1,4 @@
-package dev.joid.base.openal.binding;
+package dev.joid.base.glfw.binding;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -7,6 +7,8 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
+
+import dev.joid.base.openal.binding.IAlBinding;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

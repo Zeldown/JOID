@@ -2,7 +2,4 @@ archivesBaseName = "joid-base-openal"
 
 dependencies {
     compile project(':core')
-
-    compileOnly "org.lwjgl:lwjgl:$lwjglVersion"
-    compileOnly "org.lwjgl:lwjgl-openal:$lwjglVersion"
 }

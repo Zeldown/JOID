@@ -2,9 +2,9 @@ package dev.joid.backend.lwjgl3;
 
 import dev.joid.backend.lwjgl3.binding.Lwjgl3GlBinding;
 import dev.joid.base.glfw.GlfwWindowBridge;
+import dev.joid.base.glfw.binding.Lwjgl3AlBinding;
 import dev.joid.base.glfw.input.GlfwInputForwarder;
 import dev.joid.base.openal.AlAudioBridge;
-import dev.joid.base.openal.binding.Lwjgl3AlBinding;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.audio.IAudioBridge;
