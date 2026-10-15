@@ -93,14 +93,19 @@ public abstract class SnapshotSuite {
 				continue;
 			}
 
-			final SnapshotDifference difference = shot.getValue().compare(SnapshotImage.read(reference), 0);
+			final SnapshotImage expected = SnapshotImage.read(reference);
+			final SnapshotDifference difference = shot.getValue().compare(expected, 0);
 			if (difference.getPixels() == 0) {
 				SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), SnapshotStatus.IDENTICAL, 0, render, reference));
 				continue;
 			}
 
 			SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), SnapshotStatus.DIFFERENT, difference.getPixels(), render, reference));
-			failures.add(shot.getKey() + ": " + difference.getPixels() + " pixels differ from the reference, maximum channel delta " + difference.getMaximum());
+			if (shot.getValue().getWidth() != expected.getWidth() || shot.getValue().getHeight() != expected.getHeight()) {
+				failures.add(shot.getKey() + ": " + shot.getValue().getWidth() + "x" + shot.getValue().getHeight() + " instead of the " + expected.getWidth() + "x" + expected.getHeight() + " of the reference");
+			} else {
+				failures.add(shot.getKey() + ": " + difference.getPixels() + " pixels differ from the reference, maximum channel delta " + difference.getMaximum());
+			}
 		}
 
 		Assert.assertTrue(String.join(System.lineSeparator(), failures) + System.lineSeparator() + "Report: " + new File(output, "report.html").toPath().toUri().toASCIIString(), failures.isEmpty());

@@ -34,7 +34,9 @@ public final class SnapshotComparison {
 					continue;
 				}
 
-				final SnapshotDifference difference = SnapshotImage.read(candidate).compare(SnapshotImage.read(shot), 1);
+				final SnapshotImage expected = SnapshotImage.read(shot);
+				final SnapshotImage actual = SnapshotImage.read(candidate);
+				final SnapshotDifference difference = actual.compare(expected, 1);
 				if (difference.getPixels() == 0) {
 					identical++;
 					entries.add(SnapshotEntry.create(name, SnapshotStatus.IDENTICAL, 0, candidate, shot));
@@ -42,7 +44,11 @@ public final class SnapshotComparison {
 				}
 
 				entries.add(SnapshotEntry.create(name, SnapshotStatus.DIFFERENT, difference.getPixels(), candidate, shot));
-				failures.add(name + ": " + difference.getPixels() + " pixels differ from " + reference.getName() + ", maximum channel delta " + difference.getMaximum());
+				if (actual.getWidth() != expected.getWidth() || actual.getHeight() != expected.getHeight()) {
+					failures.add(name + ": " + actual.getWidth() + "x" + actual.getHeight() + " instead of the " + expected.getWidth() + "x" + expected.getHeight() + " of " + reference.getName());
+				} else {
+					failures.add(name + ": " + difference.getPixels() + " pixels differ from " + reference.getName() + ", maximum channel delta " + difference.getMaximum());
+				}
 			}
 			System.out.println(candidates.getName() + ": " + identical + "/" + shots.length + " snapshots identical to " + reference.getName());
 		}
