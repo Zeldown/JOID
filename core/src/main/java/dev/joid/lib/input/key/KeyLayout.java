@@ -51,7 +51,12 @@ public final class KeyLayout {
 			return key;
 		}
 
-		return KeyLayout.CHARACTER_MAP.getOrDefault(Character.toLowerCase(name.charAt(0)), key);
+		final Key translated = KeyLayout.fromCharacter(name.charAt(0));
+		return translated == null ? key : translated;
+	}
+
+	public static Key fromCharacter(final char character) {
+		return KeyLayout.CHARACTER_MAP.get(Character.toLowerCase(character));
 	}
 
 	public static boolean isLayoutKey(final @NonNull Key key) {

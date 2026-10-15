@@ -46,13 +46,20 @@ public class Lwjgl2InputForwarderTest {
 	}
 
 	@Test
-	public void namesTheLettersAndDigitsAfterTheirCharacter() throws Exception {
+	public void namesTheLettersAndPunctuationAfterTheirCharacter() throws Exception {
 		this.keyPressed(Keyboard.KEY_Q, 'a');
 		this.keyPressed(Keyboard.KEY_SEMICOLON, 'M');
 		this.keyPressed(Keyboard.KEY_W, '\u001A');
-		this.keyPressed(Keyboard.KEY_1, '1');
+		this.keyPressed(Keyboard.KEY_M, ',');
+		this.keyPressed(Keyboard.KEY_COMMA, ';');
+		Assert.assertEquals(Arrays.asList("key A", "key M", "key Z", "key COMMA", "key SEMICOLON"), this.trace);
+	}
+
+	@Test
+	public void keepsThePositionOfTheDigits() throws Exception {
+		this.keyPressed(Keyboard.KEY_1, '&');
 		this.keyPressed(Keyboard.KEY_2, 'é');
-		Assert.assertEquals(Arrays.asList("key A", "key M", "key Z", "key DIGIT_1", "key DIGIT_2"), this.trace);
+		Assert.assertEquals(Arrays.asList("key DIGIT_1", "key DIGIT_2"), this.trace);
 	}
 
 	@Test

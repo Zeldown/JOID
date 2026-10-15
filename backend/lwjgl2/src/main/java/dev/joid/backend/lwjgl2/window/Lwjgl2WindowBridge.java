@@ -17,6 +17,7 @@ import dev.joid.backend.lwjgl2.window.cursor.NativeCursors;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
+import dev.joid.lib.input.key.KeyLayout;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -185,7 +186,7 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 
 	public static @NonNull Key getKey(final int code, final char character) {
 		final Key position = Lwjgl2WindowBridge.getKey(code);
-		if (position.compareTo(Key.DIGIT_9) > 0 && (position.compareTo(Key.APOSTROPHE) < 0 || position.compareTo(Key.GRAVE_ACCENT) > 0)) {
+		if (!KeyLayout.isLayoutKey(position)) {
 			return position;
 		}
 
@@ -193,14 +194,8 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 			return Key.values()[Key.A.ordinal() + character - 0x01];
 		}
 
-		if (character >= 'a' && character <= 'z' || character >= 'A' && character <= 'Z') {
-			return Key.values()[Key.A.ordinal() + Character.toUpperCase(character) - 'A'];
-		}
-
-		if (character >= '0' && character <= '9') {
-			return Key.values()[Key.DIGIT_0.ordinal() + character - '0'];
-		}
-		return position;
+		final Key key = KeyLayout.fromCharacter(character);
+		return key == null ? position : key;
 	}
 
 	@Override
