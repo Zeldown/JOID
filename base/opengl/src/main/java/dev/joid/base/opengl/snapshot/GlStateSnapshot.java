@@ -59,10 +59,8 @@ public final class GlStateSnapshot {
 		if (this.capabilities.hasFrameBufferBlit()) {
 			this.integer("READ_FRAMEBUFFER_BINDING", GlConstants.READ_FRAMEBUFFER_BINDING);
 		}
-		if (this.capabilities.hasPixelBuffers()) {
-			this.integer("PIXEL_PACK_BUFFER_BINDING", GlConstants.PIXEL_PACK_BUFFER_BINDING);
-			this.integer("PIXEL_UNPACK_BUFFER_BINDING", GlConstants.PIXEL_UNPACK_BUFFER_BINDING);
-		}
+		this.integer("PIXEL_PACK_BUFFER_BINDING", GlConstants.PIXEL_PACK_BUFFER_BINDING);
+		this.integer("PIXEL_UNPACK_BUFFER_BINDING", GlConstants.PIXEL_UNPACK_BUFFER_BINDING);
 		this.integer("READ_BUFFER", GlConstants.READ_BUFFER);
 		this.integer("ACTIVE_TEXTURE", GlConstants.ACTIVE_TEXTURE);
 

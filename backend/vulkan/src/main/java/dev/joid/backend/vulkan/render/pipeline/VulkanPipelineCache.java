@@ -33,18 +33,18 @@ import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.NonNull;
 
-public final class PipelineCache {
+public final class VulkanPipelineCache {
 
 	private final VulkanContext            context;
 	private final Map<PipelineKey, long[]> pipelineMap;
 
-	private PipelineCache(final VulkanContext context) {
+	private VulkanPipelineCache(final VulkanContext context) {
 		this.context     = context;
 		this.pipelineMap = new HashMap<>();
 	}
 
-	public static @NonNull PipelineCache create(final VulkanContext context) {
-		return new PipelineCache(context);
+	public static @NonNull VulkanPipelineCache create(final VulkanContext context) {
+		return new VulkanPipelineCache(context);
 	}
 
 	public void destroy() {
@@ -93,7 +93,7 @@ public final class PipelineCache {
 
 			final VkVertexInputAttributeDescription.Buffer attributes = VkVertexInputAttributeDescription.calloc(VertexAttribute.values().length, stack);
 			for (final VertexAttribute attribute : VertexAttribute.values()) {
-				attributes.get(attribute.ordinal()).location(attribute.getLocation()).binding(0).format(PipelineCache.format(attribute)).offset(attribute.getOffset());
+				attributes.get(attribute.ordinal()).location(attribute.getLocation()).binding(0).format(VulkanPipelineCache.format(attribute)).offset(attribute.getOffset());
 			}
 
 			final VkPipelineVertexInputStateCreateInfo vertexInput = VkPipelineVertexInputStateCreateInfo.calloc(stack)
@@ -111,12 +111,12 @@ public final class PipelineCache {
 			final BlendState blend = key.getBlend();
 			final VkPipelineColorBlendAttachmentState.Buffer blendAttachment = VkPipelineColorBlendAttachmentState.calloc(1, stack)
 					.blendEnable(blend.isEnabled())
-					.srcColorBlendFactor(PipelineCache.factor(blend.getSourceColor()))
-					.dstColorBlendFactor(PipelineCache.factor(blend.getDestinationColor()))
-					.colorBlendOp(PipelineCache.operation(blend.getEquation()))
-					.srcAlphaBlendFactor(PipelineCache.factor(blend.getSourceAlpha()))
-					.dstAlphaBlendFactor(PipelineCache.factor(blend.getDestinationAlpha()))
-					.alphaBlendOp(PipelineCache.operation(blend.getEquation()))
+					.srcColorBlendFactor(VulkanPipelineCache.factor(blend.getSourceColor()))
+					.dstColorBlendFactor(VulkanPipelineCache.factor(blend.getDestinationColor()))
+					.colorBlendOp(VulkanPipelineCache.operation(blend.getEquation()))
+					.srcAlphaBlendFactor(VulkanPipelineCache.factor(blend.getSourceAlpha()))
+					.dstAlphaBlendFactor(VulkanPipelineCache.factor(blend.getDestinationAlpha()))
+					.alphaBlendOp(VulkanPipelineCache.operation(blend.getEquation()))
 					.colorWriteMask(key.isColorWrite() ? VK10.VK_COLOR_COMPONENT_R_BIT | VK10.VK_COLOR_COMPONENT_G_BIT | VK10.VK_COLOR_COMPONENT_B_BIT | VK10.VK_COLOR_COMPONENT_A_BIT : 0);
 
 			final VkGraphicsPipelineCreateInfo.Buffer info = VkGraphicsPipelineCreateInfo.calloc(1, stack)

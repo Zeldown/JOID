@@ -6,6 +6,7 @@ import com.sun.jna.Function;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.input.cursor.Cursor;
 import lombok.NonNull;
 
@@ -55,7 +56,7 @@ public final class X11NativeCursor extends NativeCursor {
 		try {
 			return X11NativeCursor.getLibrary(name, file).getFunction(function);
 		} catch (final UnsatisfiedLinkError error) {
-			NativeCursor.warn("libXcursor cannot be loaded, the X11 cursors come from the cursor font: " + error.getMessage());
+			JOIDLog.devWarnOnce("X11NativeCursor.libXcursor", () -> "libXcursor cannot be loaded, the X11 cursors come from the cursor font: " + error.getMessage());
 			return null;
 		}
 	}
@@ -74,8 +75,6 @@ public final class X11NativeCursor extends NativeCursor {
 			return 108;
 		case RESIZE_NS:
 			return 116;
-		case DEFAULT:
-			return 68;
 		default:
 			return -1;
 		}

@@ -25,10 +25,10 @@ import org.lwjgl.vulkan.VkSamplerCreateInfo;
 import org.lwjgl.vulkan.VkViewport;
 
 import dev.joid.backend.vulkan.host.IVulkanHost;
-import dev.joid.backend.vulkan.render.buffer.FrameAllocator;
-import dev.joid.backend.vulkan.render.descriptor.DescriptorCache;
+import dev.joid.backend.vulkan.render.buffer.VulkanFrameAllocator;
+import dev.joid.backend.vulkan.render.descriptor.VulkanDescriptorCache;
 import dev.joid.backend.vulkan.render.framebuffer.VulkanFrameBuffer;
-import dev.joid.backend.vulkan.render.pipeline.PipelineCache;
+import dev.joid.backend.vulkan.render.pipeline.VulkanPipelineCache;
 import dev.joid.backend.vulkan.render.shader.VulkanShader;
 import dev.joid.backend.vulkan.render.texture.IVulkanTexture;
 import dev.joid.backend.vulkan.render.texture.VulkanTexture;
@@ -57,33 +57,33 @@ import lombok.NonNull;
 
 public final class VulkanRenderBridge extends RenderBridge {
 
-	@Getter private final IVulkanHost     host;
-	@Getter private final VulkanContext   context;
-	@Getter private final PipelineCache   pipelineCache;
-	@Getter private final DescriptorCache descriptorCache;
+	@Getter private final IVulkanHost           host;
+	@Getter private final VulkanContext         context;
+	@Getter private final VulkanPipelineCache   pipelineCache;
+	@Getter private final VulkanDescriptorCache descriptorCache;
 
 	private final long[]                             samplers;
 	private final long                               screenLoadPass;
 	private final long                               screenClearPass;
-	private final FrameAllocator[]                   vertexAllocators;
-	private final FrameAllocator[]                   uniformAllocators;
+	private final VulkanFrameAllocator[]             vertexAllocators;
+	private final VulkanFrameAllocator[]             uniformAllocators;
 	private final NavigableMap<Long, List<Runnable>> garbage;
 
-	private long              frame;
-	private int               passWidth;
-	private long              depthView;
-	private int               depthWidth;
-	private int               passHeight;
-	private long              depthImage;
-	private int               depthHeight;
-	private long              depthMemory;
-	private boolean           passActive;
-	private long              boundPipeline;
-	private boolean           screenCleared;
-	private long              screenFramebuffer;
-	private VulkanFrameBuffer passTarget;
-	private FrameAllocator    vertexAllocator;
-	private FrameAllocator    uniformAllocator;
+	private long                 frame;
+	private int                  passWidth;
+	private long                 depthView;
+	private int                  depthWidth;
+	private int                  passHeight;
+	private long                 depthImage;
+	private int                  depthHeight;
+	private long                 depthMemory;
+	private boolean              passActive;
+	private long                 boundPipeline;
+	private boolean              screenCleared;
+	private long                 screenFramebuffer;
+	private VulkanFrameBuffer    passTarget;
+	private VulkanFrameAllocator vertexAllocator;
+	private VulkanFrameAllocator uniformAllocator;
 
 	private VulkanRenderBridge(final IVulkanHost host) {
 		if (host.getFramesInFlight() < 1) {
@@ -92,17 +92,17 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 		this.host              = host;
 		this.context           = VulkanContext.create(host);
-		this.pipelineCache     = PipelineCache.create(this.context);
-		this.descriptorCache   = DescriptorCache.create(this.context);
+		this.pipelineCache     = VulkanPipelineCache.create(this.context);
+		this.descriptorCache   = VulkanDescriptorCache.create(this.context);
 		this.frame             = -1L;
 		this.garbage           = new TreeMap<>();
 		this.screenClearPass   = this.context.createRenderPass(host.getColorFormat(), this.context.getDepthStencilFormat(), true);
 		this.screenLoadPass    = this.context.createRenderPass(host.getColorFormat(), this.context.getDepthStencilFormat(), false);
-		this.vertexAllocators  = new FrameAllocator[host.getFramesInFlight()];
-		this.uniformAllocators = new FrameAllocator[host.getFramesInFlight()];
+		this.vertexAllocators  = new VulkanFrameAllocator[host.getFramesInFlight()];
+		this.uniformAllocators = new VulkanFrameAllocator[host.getFramesInFlight()];
 		for (int i = 0; i < host.getFramesInFlight(); i++) {
-			this.vertexAllocators[i] = FrameAllocator.create(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 1L, this::dispose);
-			this.uniformAllocators[i] = FrameAllocator.create(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, this.context.getUniformAlignment(), this::dispose);
+			this.vertexAllocators[i] = VulkanFrameAllocator.create(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, 1L, this::dispose);
+			this.uniformAllocators[i] = VulkanFrameAllocator.create(this.context, 8L << 20, VK10.VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, this.context.getUniformAlignment(), this::dispose);
 		}
 
 		this.vertexAllocator  = this.vertexAllocators[0];

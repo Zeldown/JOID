@@ -23,20 +23,20 @@ import dev.joid.backend.vulkan.render.shader.VulkanShader;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import lombok.NonNull;
 
-public final class DescriptorCache {
+public final class VulkanDescriptorCache {
 
 	private final List<Long>              poolList;
 	private final VulkanContext           context;
 	private final Map<List<Long>, long[]> setMap;
 
-	private DescriptorCache(final VulkanContext context) {
+	private VulkanDescriptorCache(final VulkanContext context) {
 		this.context  = context;
 		this.poolList = new ArrayList<>();
 		this.setMap   = new HashMap<>();
 	}
 
-	public static @NonNull DescriptorCache create(final VulkanContext context) {
-		return new DescriptorCache(context);
+	public static @NonNull VulkanDescriptorCache create(final VulkanContext context) {
+		return new VulkanDescriptorCache(context);
 	}
 
 	public void destroy() {

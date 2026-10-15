@@ -6,19 +6,19 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public final class ArrayObjectVertexInput extends GlVertexInput {
+public final class ArrayObjectGlVertexInput extends GlVertexInput {
 
 	private final int array;
 
-	private ArrayObjectVertexInput(final IGlBinding binding) {
+	private ArrayObjectGlVertexInput(final IGlBinding binding) {
 		super(binding);
 		this.array = binding.genVertexArray();
 		binding.bindVertexArray(this.array);
 		super.pointAttributes();
 	}
 
-	public static @NonNull ArrayObjectVertexInput create(final @NonNull IGlBinding binding) {
-		return new ArrayObjectVertexInput(binding);
+	public static @NonNull ArrayObjectGlVertexInput create(final @NonNull IGlBinding binding) {
+		return new ArrayObjectGlVertexInput(binding);
 	}
 
 	@Override

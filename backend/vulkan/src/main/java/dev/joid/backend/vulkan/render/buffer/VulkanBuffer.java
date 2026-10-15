@@ -12,7 +12,7 @@ import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Buffer {
+public final class VulkanBuffer {
 
 	private final VulkanContext context;
 	private final long          buffer;
@@ -20,12 +20,12 @@ public final class Buffer {
 	private final long          size;
 	private final long          address;
 
-	public static @NonNull Buffer create(final VulkanContext context, final long size, final int usage) {
+	public static @NonNull VulkanBuffer create(final VulkanContext context, final long size, final int usage) {
 		final long[] handles = context.createBuffer(size, usage, VK10.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK10.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final PointerBuffer address = stack.mallocPointer(1);
 			VulkanContext.check(VK10.vkMapMemory(context.getDevice(), handles[1], 0L, size, 0, address), "vkMapMemory");
-			return new Buffer(context, handles[0], handles[1], size, address.get(0));
+			return new VulkanBuffer(context, handles[0], handles[1], size, address.get(0));
 		}
 	}
 

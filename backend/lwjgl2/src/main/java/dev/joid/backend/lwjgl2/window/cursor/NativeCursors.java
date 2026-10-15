@@ -1,5 +1,6 @@
 package dev.joid.backend.lwjgl2.window.cursor;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.utils.platform.Platform;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,7 @@ public final class NativeCursors {
 				return X11NativeCursor.create();
 			}
 		} catch (final ReflectiveOperationException | LinkageError | RuntimeException exception) {
-			NativeCursor.warn("JNA is missing or cannot be loaded, the mouse cursor stays the default one: " + exception);
+			JOIDLog.devWarnOnce("NativeCursors.jna", () -> "JNA is missing or cannot be loaded, the mouse cursor stays the default one: " + exception);
 			return null;
 		}
 	}

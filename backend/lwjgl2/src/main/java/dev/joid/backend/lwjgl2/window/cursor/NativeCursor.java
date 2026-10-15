@@ -6,7 +6,6 @@ import java.util.Map;
 
 import org.lwjgl.opengl.Display;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.input.cursor.Cursor;
 import lombok.NonNull;
@@ -43,7 +42,7 @@ public abstract class NativeCursor {
 			this.applied = cursor;
 		} catch (final ReflectiveOperationException | LinkageError | RuntimeException exception) {
 			this.failed = true;
-			NativeCursor.warn("The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the default one: " + exception);
+			JOIDLog.devWarnOnce("NativeCursor.apply", () -> "The native cursors of LWJGL 2 cannot be set, the mouse cursor stays the default one: " + exception);
 		}
 	}
 
@@ -59,17 +58,11 @@ public abstract class NativeCursor {
 			try {
 				handle = this.load(cursor);
 			} catch (final LinkageError | RuntimeException exception) {
-				NativeCursor.warn("The " + cursor + " cursor cannot be loaded (" + exception + "), the default one replaces it: check that the system has this cursor");
+				JOIDLog.devWarnOnce("NativeCursor." + cursor, () -> "The " + cursor + " cursor cannot be loaded (" + exception + "), the default one replaces it: check that the system has this cursor");
 			}
 			this.handleMap.put(cursor, handle);
 		}
 		return this.handleMap.get(cursor);
-	}
-
-	protected static void warn(final @NonNull String message) {
-		if (JOIDEnv.isDevMode()) {
-			JOIDLog.warn(message);
-		}
 	}
 
 }

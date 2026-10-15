@@ -67,8 +67,8 @@ public final class VulkanShader extends Shader {
 		final ByteBuffer vertex;
 		final ByteBuffer fragment;
 		try {
-			vertex = ShaderCompiler.compileVertex(translation.getVertex());
-			fragment = ShaderCompiler.compileFragment(translation.getFragment());
+			vertex = VulkanShaderCompiler.compileVertex(translation.getVertex());
+			fragment = VulkanShaderCompiler.compileFragment(translation.getFragment());
 		} catch (final IllegalStateException e) {
 			JOIDLog.warn(e.getMessage());
 			return;

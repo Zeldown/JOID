@@ -14,7 +14,7 @@ import dev.joid.backend.lwjgl2.snapshot.Lwjgl2SnapshotBackend;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
 import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
-import dev.joid.base.opengl.render.vertex.ArrayObjectVertexInput;
+import dev.joid.base.opengl.render.vertex.ArrayObjectGlVertexInput;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.resource.Resource;
@@ -57,7 +57,7 @@ public class GlRenderBridgeTest {
 	public void usesItsOwnVertexArrayWhenTheContextHasOne() {
 		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
 		Assume.assumeTrue(bridge.getCapabilities().hasVertexArrays());
-		Assert.assertTrue(bridge.getVertexInput() instanceof ArrayObjectVertexInput);
+		Assert.assertTrue(bridge.getVertexInput() instanceof ArrayObjectGlVertexInput);
 	}
 
 	@Test

@@ -116,10 +116,8 @@ public final class GlStateGuard {
 		this.binding.pixelStorei(GlConstants.UNPACK_ROW_LENGTH, 0);
 		this.binding.pixelStorei(GlConstants.UNPACK_SKIP_ROWS, 0);
 		this.binding.pixelStorei(GlConstants.UNPACK_SKIP_PIXELS, 0);
-		if (this.capabilities.hasPixelBuffers()) {
-			this.binding.bindBuffer(GlConstants.PIXEL_PACK_BUFFER, 0);
-			this.binding.bindBuffer(GlConstants.PIXEL_UNPACK_BUFFER, 0);
-		}
+		this.binding.bindBuffer(GlConstants.PIXEL_PACK_BUFFER, 0);
+		this.binding.bindBuffer(GlConstants.PIXEL_UNPACK_BUFFER, 0);
 	}
 
 }

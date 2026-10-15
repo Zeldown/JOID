@@ -10,7 +10,7 @@ import org.lwjgl.vulkan.VkImageCopy;
 
 import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
-import dev.joid.backend.vulkan.render.buffer.Buffer;
+import dev.joid.backend.vulkan.render.buffer.VulkanBuffer;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
 import dev.joid.lib.bridge.render.texture.Texture;
 import lombok.AccessLevel;
@@ -53,7 +53,7 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 	protected void uploadPixels(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
 		final int width = chain.getWidth();
 		final int height = chain.getHeight();
-		final Buffer staging = Buffer.create(this.bridge.getContext(), (long) width * height * 4L, VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+		final VulkanBuffer staging = VulkanBuffer.create(this.bridge.getContext(), (long) width * height * 4L, VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 		MemoryUtil.memIntBuffer(staging.getAddress(), width * height).put(pixels, 0, width * height);
 
 		final long image = this.image;

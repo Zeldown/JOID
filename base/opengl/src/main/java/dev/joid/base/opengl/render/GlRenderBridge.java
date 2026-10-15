@@ -12,8 +12,8 @@ import dev.joid.base.opengl.render.texture.DrawGlMipmapBuilder;
 import dev.joid.base.opengl.render.texture.GlTexture;
 import dev.joid.base.opengl.render.texture.IGlMipmapBuilder;
 import dev.joid.base.opengl.render.texture.IGlTexture;
-import dev.joid.base.opengl.render.vertex.ArrayObjectVertexInput;
-import dev.joid.base.opengl.render.vertex.DefaultVertexInput;
+import dev.joid.base.opengl.render.vertex.ArrayObjectGlVertexInput;
+import dev.joid.base.opengl.render.vertex.DefaultGlVertexInput;
 import dev.joid.base.opengl.render.vertex.GlVertexInput;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
@@ -47,7 +47,7 @@ public class GlRenderBridge extends RenderBridge {
 		this.binding            = this.guard.getBinding();
 		this.mipmapBuilder      = this.capabilities.hasFrameBufferBlit() ? BlitGlMipmapBuilder.create() : DrawGlMipmapBuilder.create();
 		this.frameBufferBinding = this.binding.getFrameBufferBinding(this.capabilities.getFrameBufferFamily());
-		this.vertexInput        = this.guard.call(() -> this.capabilities.hasVertexArrays() ? ArrayObjectVertexInput.create(this.binding) : DefaultVertexInput.create(this.binding));
+		this.vertexInput        = this.guard.call(() -> this.capabilities.hasVertexArrays() ? ArrayObjectGlVertexInput.create(this.binding) : DefaultGlVertexInput.create(this.binding));
 	}
 
 	public static @NonNull GlRenderBridge create(final @NonNull IGlBinding binding) {
