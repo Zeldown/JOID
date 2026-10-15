@@ -236,7 +236,7 @@ wait 100
 press LEFT
 release LEFT
 wait 100
-move 900 840
+move 720 840
 wait 100
 press LEFT
 release LEFT
@@ -747,12 +747,12 @@ wait 100
 press LEFT
 release LEFT
 wait 100
-move 1530 445
+move 1495 445
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1690 445
+move 1600 445
 wait 100
 press LEFT
 release LEFT

@@ -2,14 +2,18 @@ package dev.joid.demo.ui.shader;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.node.effect.impl.DemoInvertNodeEffect;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.tessellator.DrawMode;
+import dev.joid.lib.resource.Resource;
 import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
+import dev.joid.lib.ui.node.impl.resource.ResourceNode;
+import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
@@ -25,6 +29,8 @@ public class UIDemoShader extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoShader.INK);
+		final Resource image = Resource.of("assets/demo/textures/image/placeholder.webp");
+		final Resource mask = Resource.of("assets/demo/textures/vector/mask.svg");
 
 		RectNode.create(55, 40, 200, 120).color(UIDemoShader.INK).attach(this);
 		TextNode.create(155, 175).text(Text.create("Solid", caption)).anchorX(Align.CENTER).attach(this);
@@ -143,6 +149,21 @@ public class UIDemoShader extends UIDemo {
 
 		TextNode.create(1765, 470).text(Text.create("Gradient", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.RED.toGradient(Color.YELLOW, Point.create(0D, 0D), Point.create(1D, 0D))))).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1765, 575).text(Text.create("Gradient text", caption)).anchorX(Align.CENTER).attach(this);
+
+		ContainerNode
+		.create(630, 640, 200, 120)
+		.layer((node, mouseX, mouseY) -> super.mask(40D, 20D, 120D, 80D, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), UIDemoShader.INK)))
+		.attach(this);
+		TextNode.create(730, 775).text(Text.create("Mask", caption)).anchorX(Align.CENTER).attach(this);
+
+		ContainerNode
+		.create(860, 640, 200, 120)
+		.layer((node, mouseX, mouseY) -> super.mask(mask, 40D, 0D, 120D, 120D, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), UIDemoShader.INK)))
+		.attach(this);
+		TextNode.create(960, 775).text(Text.create("Image mask", caption)).anchorX(Align.CENTER).attach(this);
+
+		ResourceNode.create(1090, 640, 200, 120).resource(image).stretch(StretchType.COVER).effect(DemoInvertNodeEffect.create(1F)).attach(this);
+		TextNode.create(1190, 775).text(Text.create("Custom effect", caption)).anchorX(Align.CENTER).attach(this);
 	}
 
 }

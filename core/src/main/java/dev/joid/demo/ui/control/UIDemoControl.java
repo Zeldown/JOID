@@ -6,6 +6,7 @@ import dev.joid.demo.ui.node.impl.control.checkbox.DemoCheckboxNode;
 import dev.joid.demo.ui.node.impl.control.choice.DemoSwitchNode;
 import dev.joid.demo.ui.node.impl.control.toggle.DemoPillToggleNode;
 import dev.joid.demo.ui.node.impl.control.toggle.DemoToggleNode;
+import dev.joid.demo.ui.node.impl.layout.DemoSplitNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
@@ -224,12 +225,43 @@ public class UIDemoControl extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(800, 780, 320, 180)
+		.create(620, 780, 320, 180)
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoPillToggleNode.create(40, 30, 120, 60).toggle(pill).attach(rect);
 			TextNode.create(40, 100).text(Text.create(pill.get() ? "Toggled" : "Not toggled", info)).attach(rect);
 			TextNode.create(160, 195).text(Text.create("Custom", info)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(980, 780, 320, 180)
+		.color(UIDemoControl.PLACEHOLDER)
+		.body(rect -> {
+			final DemoSplitNode split = DemoSplitNode
+			.create(40, 20, 240, 80)
+			.body(layout -> {
+				RectNode.create(0, 0, 0, 0).color(UIDemoControl.INK).attach(layout);
+				RectNode.create(0, 0, 0, 40).color(Color.WHITE).attach(layout);
+			})
+			.attach(rect);
+			RectNode
+			.create(40, 120, 110, 40)
+			.color(UIDemoControl.INK)
+			.onClick(event -> {
+				if (split.getChildren().size() < 5) {
+					RectNode.create(0, 0, 0, 0).color(UIDemoControl.INK).attach(split);
+				}
+			})
+			.label(Text.create("Add", label))
+			.attach(rect);
+			RectNode
+			.create(170, 120, 110, 40)
+			.color(UIDemoControl.INK)
+			.onClick(event -> split.clearChildren())
+			.label(Text.create("Clear", label))
+			.attach(rect);
+			TextNode.create(160, 195).text(Text.create("Custom layout", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

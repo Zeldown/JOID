@@ -2,6 +2,7 @@ package dev.joid.demo.ui.event;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.node.impl.control.checkbox.DemoCheckboxNode;
 import dev.joid.demo.ui.node.impl.control.field.DemoTextFieldNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
@@ -50,6 +51,9 @@ public class UIDemoEvent extends UIDemo {
 		final IntegerSignal seconds = new IntegerSignal(0);
 		final BooleanSignal running = new BooleanSignal(true);
 		final Task timer = Task.create(1000L).every(1000L).onRun(event -> seconds.increment());
+		final Shortcut space = Shortcut.create(Key.SPACE).ctrl(true).onTrigger(event -> shortcuts.increment());
+		super.addTask(timer);
+		super.addShortcut(space);
 
 		RectNode
 		.create(80, 40, 320, 260)
@@ -259,10 +263,20 @@ public class UIDemoEvent extends UIDemo {
 		.create(1160, 720, 320, 260)
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
-			Shortcut.create(Key.SPACE).ctrl(true).onTrigger(event -> shortcuts.increment()).attach(rect);
 			Shortcut.create(Key.F2).overrideFocus(true).onTrigger(event -> forced.increment()).attach(rect);
 			DemoTextFieldNode.create(40, 40, 240, 50).info(info).marginHorizontal(12D).placeholder("Focus me").attach(rect);
 			TextNode.create(40, 120).text(Text.create("Ctrl + Space: " + shortcuts.get(), info)).attach(rect);
+			DemoCheckboxNode
+			.create(250, 112, 40, 40)
+			.checked(true)
+			.onChange(event -> {
+				if (event.getValue()) {
+					super.addShortcut(space);
+				} else {
+					super.removeShortcut(space);
+				}
+			})
+			.attach(rect);
 			TextNode.create(40, 165).text(Text.create("F2: " + forced.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Shortcut", info)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -272,17 +286,16 @@ public class UIDemoEvent extends UIDemo {
 		.create(1520, 720, 320, 260)
 		.color(UIDemoEvent.PLACEHOLDER)
 		.body(rect -> {
-			timer.attach(rect);
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoEvent.INK)
 			.onClick(event -> {
-				if (timer.isAttached()) {
-					timer.detach();
+				if (running.peek()) {
+					super.removeTask(timer);
 				} else {
-					timer.attach(rect);
+					super.addTask(timer);
 				}
-				running.set(timer.isAttached());
+				running.toggle();
 			})
 			.label(Text.create(running.get() ? "Stop" : "Start", label))
 			.attach(rect);

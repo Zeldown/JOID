@@ -224,16 +224,22 @@ public class UIDemoWatch extends UIDemo {
 		.color(UIDemoWatch.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
-			.create(40, 40, 140, 50)
+			.create(40, 40, 70, 50)
 			.color(UIDemoWatch.INK)
 			.onClick(event -> quiet.increment())
 			.label(Text.create("+1", label))
 			.attach(rect);
 			RectNode
-			.create(200, 40, 140, 50)
+			.create(125, 40, 110, 50)
 			.color(UIDemoWatch.INK)
 			.onClick(event -> quiet.silent(IntegerSignal::increment))
-			.label(Text.create("Silent +1", label))
+			.label(Text.create("Silent", label))
+			.attach(rect);
+			RectNode
+			.create(250, 40, 125, 50)
+			.color(UIDemoWatch.INK)
+			.onClick(event -> Signal.silent(quiet::increment))
+			.label(Text.create("All silent", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Value: " + quiet.get(), info)).attach(rect);
 			TextNode.create(40, 170).text(Text.create("Notified: " + notified.get(), info)).attach(rect);

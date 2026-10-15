@@ -3,6 +3,7 @@ package dev.joid.demo.ui.option;
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.demo.ui.UIDemo;
+import dev.joid.demo.ui.UIDemoChoice;
 import dev.joid.demo.ui.node.impl.control.checkbox.DemoCheckboxNode;
 import dev.joid.demo.ui.option.popup.UIDemoCornerPopup;
 import dev.joid.demo.ui.option.popup.UIDemoDebugOffPopup;
@@ -255,6 +256,20 @@ public class UIDemoOption extends UIDemo {
 			TextNode.create(120, 55).text(Text.create("Locked", info)).attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refusedZooms.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Before zoom", info)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(1520, 720, 320, 260)
+		.color(UIDemoOption.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(100, 105, 120, 50)
+			.color(UIDemoOption.INK)
+			.onClick(event -> JOID.forceOpen(new UIDemoChoice()))
+			.label(Text.create("Menu", label))
+			.attach(rect);
+			TextNode.create(160, 275).text(Text.create("Force open", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}
