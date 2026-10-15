@@ -19,6 +19,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
@@ -32,6 +33,7 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
+import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.utils.align.Align;
 import lombok.NonNull;
@@ -409,6 +411,24 @@ public class DevNodeTest {
 		this.bridges.getUi().keyPressed(Key.R, Key.R);
 		this.bridges.getUi().charTyped('r');
 		Assert.assertEquals(2, ui.inits);
+	}
+
+	@Test
+	public void leavesItsShortcutsToAFocusedField() {
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 300D).info(TextInfo.create(DevFont.MONTSERRAT, 15));
+		final DevUI ui = new DevUI(field);
+		final DevNode panel = DevNodeTest.open(this.bridges, ui);
+		field.focused(true);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
+		this.bridges.getUi().charTyped('r');
+		this.bridges.getUi().keyPressed(Key.I, Key.I);
+		this.bridges.getUi().charTyped('i');
+		this.bridges.getUi().keyPressed(Key.G, Key.G);
+		this.bridges.getUi().charTyped('g');
+		Assert.assertEquals(1, ui.inits);
+		Assert.assertEquals("rig", field.getText());
+		Assert.assertTrue(DevNodeTest.peek(panel, "inspectSignal"));
+		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
 	}
 
 	@Test

@@ -27,7 +27,6 @@ import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.event.EventType;
-import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.resource.ResourceNode;
@@ -38,6 +37,7 @@ import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
+import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.point.Point;
 import lombok.Getter;
@@ -87,6 +87,12 @@ public final class DevNode extends Node {
 		this.lockedNode = Signal.from(() -> this.inspectedNodeLocked.get() ? this.inspectedNode.get() : null);
 
 		this.reloadAnimator = TweenAnimator.create(0F);
+
+		Shortcut.create(Key.R).onTrigger(event -> super.getUi().reload()).attach(this);
+		Shortcut.create(Key.I).onTrigger(event -> this.toggleInspect()).attach(this);
+		Shortcut.create(Key.ENTER).onTrigger(event -> this.inspectParent()).attach(this);
+		Shortcut.create(Key.NUMPAD_ENTER).onTrigger(event -> this.inspectParent()).attach(this);
+		Shortcut.create(Key.G).onTrigger(event -> this.gridSignal.set(!this.gridSignal.peek())).attach(this);
 	}
 
 	public static @NonNull DevNode create(final double x, final double y) {
@@ -437,32 +443,14 @@ public final class DevNode extends Node {
 		}
 	}
 
-	@Override
-	public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
-		if (event.isConsumed()) {
-			return;
-		}
+	private void toggleInspect() {
+		this.inspectSignal.set(!this.inspectSignal.peek());
+		this.inspectedNode.set(null);
+		this.inspectedNodeLocked.set(false);
+	}
 
-		final Key key = event.getKey();
-
-		if (key == Key.I) {
-			this.inspectSignal.set(!this.inspectSignal.peek());
-			this.inspectedNode.set(null);
-			this.inspectedNodeLocked.set(false);
-			return;
-		}
-
-		if (key == Key.R && !Key.LEFT_CONTROL.isDown()) {
-			super.getUi().reload();
-			return;
-		}
-
-		if (key == Key.G) {
-			this.gridSignal.set(!this.gridSignal.peek());
-			return;
-		}
-
-		if (key != Key.NUMPAD_ENTER && key != Key.ENTER || this.inspectedNode.peek() == null || this.inspectedNode.peek().getParent() == null) {
+	private void inspectParent() {
+		if (this.inspectedNode.peek() == null || this.inspectedNode.peek().getParent() == null) {
 			return;
 		}
 
