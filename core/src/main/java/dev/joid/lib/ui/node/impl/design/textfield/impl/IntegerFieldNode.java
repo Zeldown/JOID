@@ -5,18 +5,25 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.impl.design.textfield.LineFieldNode;
+import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
 public class IntegerFieldNode extends LineFieldNode<Integer> {
 
-	private int step     = 1;
-	private int maxValue = Integer.MAX_VALUE;
-	private int minValue = Integer.MIN_VALUE;
+	private int max;
+	private int min;
+	private int step;
 
 	protected IntegerFieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+
+		this.max  = Integer.MAX_VALUE;
+		this.min  = Integer.MIN_VALUE;
+		this.step = 1;
+
 		super.fallback(0);
-		super.accept(text -> text.matches(this.minValue < 0 ? "-?[0-9]*" : "[0-9]*"));
+		super.accept(text -> text.matches(this.min < 0 ? "-?[0-9]*" : "[0-9]*"));
 	}
 
 	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width) {
@@ -52,32 +59,32 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 
 	@Override
 	protected final Integer correct(final @NonNull Integer value) {
-		return Math.max(this.minValue, Math.min(this.maxValue, value));
+		return Math.max(this.min, Math.min(this.max, value));
 	}
 
 	@Override
 	protected final Integer increment(final @NonNull Integer value, final int count) {
-		return (int) Math.max(this.minValue, Math.min(this.maxValue, (long) value + (long) this.step * count));
+		return (int) Math.max(this.min, Math.min(this.max, (long) value + (long) this.step * count));
 	}
 
-	public final <T extends IntegerFieldNode> @NonNull T max(final int maxValue) {
-		return this.max(Signal.from(maxValue));
+	public final <T extends IntegerFieldNode> @NonNull T max(final int max) {
+		return this.max(Signal.from(max));
 	}
 
-	public final <T extends IntegerFieldNode> @NonNull T max(final @NonNull Supplier<Integer> maxValue) {
-		return super.follow("maxValue", maxValue, value -> {
-			this.maxValue = value;
+	public final <T extends IntegerFieldNode> @NonNull T max(final @NonNull Supplier<Integer> max) {
+		return super.follow("max", max, value -> {
+			this.max = value;
 			this.revalidate();
 		});
 	}
 
-	public final <T extends IntegerFieldNode> @NonNull T min(final int minValue) {
-		return this.min(Signal.from(minValue));
+	public final <T extends IntegerFieldNode> @NonNull T min(final int min) {
+		return this.min(Signal.from(min));
 	}
 
-	public final <T extends IntegerFieldNode> @NonNull T min(final @NonNull Supplier<Integer> minValue) {
-		return super.follow("minValue", minValue, value -> {
-			this.minValue = value;
+	public final <T extends IntegerFieldNode> @NonNull T min(final @NonNull Supplier<Integer> min) {
+		return super.follow("min", min, value -> {
+			this.min = value;
 			this.revalidate();
 		});
 	}

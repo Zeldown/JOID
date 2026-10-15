@@ -1,95 +1,54 @@
 package dev.joid.lib.ui.node.impl.structure.slider;
 
-import java.util.List;
+import java.util.function.Supplier;
 
-import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.structure.choice.ChoiceNode;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public abstract class SliderNode<V> extends ChoiceNode<V> {
+public abstract class SliderNode<V> extends BaseSliderNode<V> {
 
 	private Node track;
 	private Node thumb;
 
-	private boolean dragging;
+	private float speed;
+
+	@Getter(AccessLevel.NONE)
+	private double thumbX;
+
+	@Getter(AccessLevel.NONE)
+	private boolean placed;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
+		this.speed = 1F;
+
+		super.inset(() -> this.thumb == null ? 0D : this.thumb.getWidth() / 2D);
 		super.<SliderNode<V>>require("thumb", "give it one with thumb(...)", node -> node.thumb != null);
 	}
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
+		super.draw(mouseX, mouseY);
 		if (this.track != null) {
 			this.track.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}
 
 		this.thumb.fit(super.getHeight(), super.getHeight());
-		if (!this.dragging) {
-			this.layoutValues();
-			return;
-		}
-
-		this.follow(mouseX);
-		if (!this.pick()) {
-			this.dragging = false;
-			this.layoutValues();
-		}
-	}
-
-	@Override
-	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (event.isConsumed() || !event.getButton().isLeft() || !super.isHovered()) {
-			return;
-		}
-
-		this.dragging = true;
-		this.follow(event.getMouseX());
-		event.consume();
-	}
-
-	@Override
-	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
-		if (!this.dragging || !event.getButton().isLeft()) {
-			return;
-		}
-
-		this.pick();
-		this.dragging = false;
-		this.layoutValues();
+		final double target = super.getInset() + super.getProgress() * (super.getWidth() - super.getInset() * 2D) - this.thumb.getWidth() / 2D;
+		this.thumbX = this.placed && !super.isSliding() && this.speed < 1F ? super.getUi().lerpByFramerate(this.thumbX, target, this.speed * 3D, 0.001D, true) : target;
+		this.placed = true;
+		this.thumb.layoutPosition(this.thumbX, (super.getHeight() - this.thumb.getHeight()) / 2D);
 	}
 
 	@Override
 	public void detach() {
-		this.dragging = false;
-	}
-
-	@Override
-	protected void layoutValues() {
-		if (this.thumb == null) {
-			return;
-		}
-
-		final int count = super.getValueList().size();
-		final double room = super.getWidth() - this.thumb.getWidth();
-		this.thumb.layoutPosition(count <= 1 ? 0D : room * Math.max(0, super.getValueIndex()) / (count - 1), (super.getHeight() - this.thumb.getHeight()) / 2D);
-	}
-
-	public final float getProgress() {
-		final int count = super.getValueList().size();
-		if (this.thumb == null || count <= 1 || super.getWidth() <= this.thumb.getWidth()) {
-			return 0F;
-		}
-
-		if (!this.dragging) {
-			return Math.max(0, super.getValueIndex()) / (float) (count - 1);
-		}
-
-		return Math.min(1F, Math.max(0F, (float) this.thumb.getX() / (float) (super.getWidth() - this.thumb.getWidth())));
+		super.detach();
+		this.placed = false;
 	}
 
 	public final <T extends SliderNode<V>> @NonNull T track(final @NonNull Node track) {
@@ -102,15 +61,12 @@ public abstract class SliderNode<V> extends ChoiceNode<V> {
 		return (T) this;
 	}
 
-	private void follow(final double mouseX) {
-		this.thumb.layoutPosition(Math.min(Math.max(0D, mouseX - super.getAbsoluteX() - this.thumb.getWidth() / 2D), super.getWidth() - this.thumb.getWidth()), (super.getHeight() - this.thumb.getHeight()) / 2D);
+	public final <T extends SliderNode<V>> @NonNull T speed(final float speed) {
+		return this.speed(Signal.from(speed));
 	}
 
-	private boolean pick() {
-		final List<V> values = super.getValueList();
-		final V value = values.get(Math.round((values.size() - 1) * this.getProgress()));
-		super.change(value);
-		return value.equals(super.getValue());
+	public final <T extends SliderNode<V>> @NonNull T speed(final @NonNull Supplier<Float> speed) {
+		return super.follow("speed", speed, value -> this.speed = value);
 	}
 
 }

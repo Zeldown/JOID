@@ -95,7 +95,7 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(42)).cursorPosition(1);
 		this.type(field, "x");
 		Assert.assertEquals("42", field.getText());
-		Assert.assertEquals(1, field.getCursorPos());
+		Assert.assertEquals(1, field.getCursorPosition());
 	}
 
 	@Test
@@ -237,7 +237,7 @@ public class IntegerFieldNodeTest {
 		})).cursorPosition(1);
 		this.type(field, "2");
 		Assert.assertEquals("4", field.getText());
-		Assert.assertEquals(1, field.getCursorPos());
+		Assert.assertEquals(1, field.getCursorPosition());
 	}
 
 	@Test
@@ -383,13 +383,13 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(9)).cursorPosition(1);
 		this.press(field, Key.UP);
 		Assert.assertEquals("10", field.getText());
-		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(2, field.getCursorPosition());
 		field.cursorPosition(0);
 		this.press(field, Key.DOWN);
 		Assert.assertEquals("9", field.getText());
-		Assert.assertEquals(0, field.getCursorPos());
+		Assert.assertEquals(0, field.getCursorPosition());
 		this.press(field, Key.UP);
-		Assert.assertEquals(1, field.getCursorPos());
+		Assert.assertEquals(1, field.getCursorPosition());
 	}
 
 	@Test
@@ -397,11 +397,11 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(100)).cursorPosition(2);
 		this.press(field, Key.DOWN);
 		Assert.assertEquals("99", field.getText());
-		Assert.assertEquals(1, field.getCursorPos());
+		Assert.assertEquals(1, field.getCursorPosition());
 		field.cursorPosition(2);
 		this.press(field, Key.UP);
 		Assert.assertEquals("100", field.getText());
-		Assert.assertEquals(3, field.getCursorPos());
+		Assert.assertEquals(3, field.getCursorPosition());
 	}
 
 	@Test
@@ -412,7 +412,7 @@ public class IntegerFieldNodeTest {
 		this.bridges.move(150D, 110D).frames(2);
 		this.bridges.scroll(1D);
 		Assert.assertEquals("100", field.getText());
-		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(2, field.getCursorPosition());
 	}
 
 	@Test
@@ -421,11 +421,11 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(signal)).cursorPosition(1);
 		signal.set(1000);
 		Assert.assertEquals("1000", field.getText());
-		Assert.assertEquals(4, field.getCursorPos());
+		Assert.assertEquals(4, field.getCursorPosition());
 		field.cursorPosition(0);
 		signal.set(7);
 		Assert.assertEquals("7", field.getText());
-		Assert.assertEquals(0, field.getCursorPos());
+		Assert.assertEquals(0, field.getCursorPosition());
 	}
 
 	@Test
@@ -433,10 +433,10 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(5)).cursorPosition(0);
 		this.type(field, "00");
 		Assert.assertEquals("005", field.getText());
-		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(2, field.getCursorPosition());
 		this.press(field, Key.UP);
 		Assert.assertEquals("6", field.getText());
-		Assert.assertEquals(0, field.getCursorPos());
+		Assert.assertEquals(0, field.getCursorPosition());
 	}
 
 	@Test
@@ -463,7 +463,7 @@ public class IntegerFieldNodeTest {
 		Assert.assertFalse(second.isFocused());
 		Assert.assertEquals("3", first.getText());
 		Assert.assertEquals(-1, TextFieldNodeTest.anchor(first));
-		Assert.assertEquals(1, first.getCursorPos());
+		Assert.assertEquals(1, first.getCursorPosition());
 	}
 
 	@Test
@@ -473,7 +473,7 @@ public class IntegerFieldNodeTest {
 		this.bridges.move(124D, 110D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertTrue(field.isFocused());
-		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(2, field.getCursorPosition());
 		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 	}
 

@@ -15,7 +15,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@Getter
 public class MultilineTextFieldNode extends FieldNode<String> {
 
 	private double yOffset;
@@ -24,7 +23,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		super(x, y, width, height);
 
 		super.margin(2D);
-		super.cursorMargin(-1D);
+		super.cursorMargin(() -> super.getInfo() == null ? 0D : this.getLineHeight() * 2D);
 	}
 
 	public static @NonNull MultilineTextFieldNode create(final double x, final double y, final double width, final double height) {
@@ -38,12 +37,8 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		final FieldLayout layout = this.getLayout();
 		final List<FieldLine> lines = layout.getLines();
 		final double lineHeight = this.getLineHeight();
-		if (super.getCursorMargin() == -1D) {
-			super.cursorMargin(lineHeight * 2);
-		}
-
 		if (this.yOffset > lines.size() * lineHeight) {
-			super.decreaseCursor(0);
+			this.followCursorBackward();
 		}
 
 		if (this.yOffset < 0) {
@@ -64,9 +59,9 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			}
 
 			if (super.isFocused()) {
-				final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPos());
-				final double cursorX = textX + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPos()));
-				DrawUtils.SHAPE.drawRect(cursorX, textY + lineHeight * cursorLineCol[0], 2, lineHeight, super.getCursorColor());
+				final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPosition());
+				final double cursorX = textX + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPosition()));
+				DrawUtils.SHAPE.drawRect(cursorX, textY + lineHeight * cursorLineCol[0], 2, lineHeight, super.getShownCursorColor());
 			}
 
 			final FieldSelection selection = super.getSelection();
@@ -81,7 +76,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 					final int to = i == endLine ? Math.min(end, line.getEnd()) : line.getEnd();
 					final double selectionX = this.getX(layout, line, from);
 					final double selectionWidth = this.getX(layout, line, to) - selectionX;
-					DrawUtils.SHAPE.drawRect(textX + selectionX, textY + lineHeight * i, selectionWidth <= 0D ? 2 : selectionWidth, lineHeight, FieldNode.SELECTION_COLOR);
+					DrawUtils.SHAPE.drawRect(textX + selectionX, textY + lineHeight * i, selectionWidth <= 0D ? 2 : selectionWidth, lineHeight, super.getSelectionColor());
 				}
 			}
 		});
@@ -107,13 +102,13 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		if (key == Key.UP || key == Key.DOWN) {
 			final FieldLayout layout = this.getLayout();
 			final List<FieldLine> lines = layout.getLines();
-			final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPos());
+			final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPosition());
 			final int newLineIdx = cursorLineCol[0] + (key == Key.UP ? -1 : 1);
 			if (newLineIdx < 0 || newLineIdx >= lines.size()) {
 				return true;
 			}
 
-			final double cursorX = this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPos());
+			final double cursorX = this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPosition());
 			final int newCursorPos = this.getPosition(layout, lines.get(newLineIdx), cursorX);
 			super.placeCursor(newCursorPos, key == Key.DOWN);
 			return true;
@@ -157,7 +152,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	@Override
 	protected final void followCursorForward() {
 		final double lineHeight = this.getLineHeight();
-		final String beforeCursor = super.getText().substring(0, super.getCursorPos());
+		final String beforeCursor = super.getText().substring(0, super.getCursorPosition());
 		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (this.getLayout(beforeCursor).getLines().size() - 1);
 		if (cursorY + lineHeight - this.yOffset > super.getY() + super.getHeight() - super.getMarginBottom()) {
 			this.yOffset = cursorY + lineHeight - super.getY() - super.getHeight() + super.getMarginBottom();
@@ -166,13 +161,13 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 
 	@Override
 	protected final void followCursorBackward() {
-		if (super.getCursorPos() == 0) {
+		if (super.getCursorPosition() == 0) {
 			this.yOffset = 0;
 			return;
 		}
 
 		final double lineHeight = this.getLineHeight();
-		final String beforeCursor = super.getText().substring(0, super.getCursorPos());
+		final String beforeCursor = super.getText().substring(0, super.getCursorPosition());
 		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (this.getLayout(beforeCursor).getLines().size() - 1);
 		if (cursorY - this.yOffset < super.getY() + super.getMarginTop() + super.getCursorMargin()) {
 			this.yOffset = cursorY - super.getY() - super.getMarginTop() - super.getCursorMargin();

@@ -103,6 +103,7 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(SliderNodeTest.digits()).value(5);
 		this.bridges.open(new NodeUI(slider)).frame();
 		slider.values(5, 6, 7);
+		this.bridges.frame();
 		Assert.assertEquals(0D, slider.getThumb().getX(), 1E-9D);
 	}
 
@@ -158,7 +159,7 @@ public class SliderNodeTest {
 		this.bridges.open(new NodeUI(slider)).frame();
 		SliderNodeTest.drag(slider);
 		slider.fireDetach();
-		Assert.assertFalse(slider.isDragging());
+		Assert.assertFalse(slider.isSliding());
 	}
 
 	@Test
@@ -170,7 +171,7 @@ public class SliderNodeTest {
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frame();
-		Assert.assertTrue(slider.isDragging());
+		Assert.assertTrue(slider.isSliding());
 		Assert.assertEquals(7, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(7), changes);
 		Assert.assertEquals(7, signal.get().intValue());
@@ -247,12 +248,11 @@ public class SliderNodeTest {
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(150D, 125D).frames(2);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
-		Assert.assertFalse(slider.isDragging());
-		Assert.assertEquals(43.75D, slider.getThumb().getX(), 1E-9D);
+		Assert.assertFalse(slider.isSliding());
 		Assert.assertEquals(2, slider.getValue().intValue());
 		this.bridges.frame();
 		Assert.assertEquals(43.75D, slider.getThumb().getX(), 1E-9D);
-		Assert.assertEquals(Arrays.asList(2), changes);
+		Assert.assertEquals(Arrays.asList(7, 2), changes);
 	}
 
 	@Test
@@ -263,6 +263,7 @@ public class SliderNodeTest {
 		this.bridges.move(425D, 125D).frame();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(8, slider.getValue().intValue());
+		this.bridges.frame();
 		Assert.assertEquals(306.25D, slider.getThumb().getX(), 1E-9D);
 	}
 
@@ -273,7 +274,7 @@ public class SliderNodeTest {
 		this.bridges.move(1000D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frame();
-		Assert.assertFalse(slider.isDragging());
+		Assert.assertFalse(slider.isSliding());
 		Assert.assertEquals(5, slider.getValue().intValue());
 	}
 
@@ -306,7 +307,7 @@ public class SliderNodeTest {
 	}
 
 	@Test
-	public void putsItsThumbBackOnceWhenAChangeIsRefused() {
+	public void keepsSlidingWhenAChangeIsRefused() {
 		final List<Integer> proposals = new ArrayList<>();
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(SliderNodeTest.digits()).value(5).beforeChange(event -> {
 			proposals.add(event.getValue());
@@ -316,10 +317,15 @@ public class SliderNodeTest {
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frames(3);
-		Assert.assertFalse(slider.isDragging());
-		Assert.assertEquals(175D, slider.getThumb().getX(), 1E-9D);
+		Assert.assertTrue(slider.isSliding());
 		Assert.assertEquals(5, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(7), proposals);
+		this.bridges.move(150D, 125D).frames(2);
+		Assert.assertEquals(Arrays.asList(7, 2), proposals);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(3);
+		Assert.assertFalse(slider.isSliding());
+		Assert.assertEquals(175D, slider.getThumb().getX(), 1E-9D);
 	}
 
 	@Test
@@ -331,7 +337,7 @@ public class SliderNodeTest {
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frame();
-		Assert.assertFalse(slider.isDragging());
+		Assert.assertFalse(slider.isSliding());
 		Assert.assertEquals(5, slider.getValue().intValue());
 	}
 
@@ -370,7 +376,7 @@ public class SliderNodeTest {
 		this.bridges.move(110D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
-		Assert.assertTrue(slider.isDragging());
+		Assert.assertTrue(slider.isSliding());
 	}
 
 	private Draw thumbDraw() {
@@ -385,7 +391,7 @@ public class SliderNodeTest {
 
 	private static void drag(final SliderNode<?> slider) {
 		try {
-			final Field field = SliderNode.class.getDeclaredField("dragging");
+			final Field field = BaseSliderNode.class.getDeclaredField("sliding");
 			field.setAccessible(true);
 			field.setBoolean(slider, true);
 		} catch (final ReflectiveOperationException exception) {

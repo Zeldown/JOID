@@ -3,18 +3,17 @@ package dev.joid.lib.ui.node.impl.structure.sw;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.impl.structure.choice.ChoiceNode;
 import lombok.NonNull;
 
-public abstract class SwitchNode extends ChoiceNode<String> {
+public abstract class SwitchNode extends BaseSwitchNode {
 
 	private final List<Node> optionList;
 
-	private Function<String, Node> option;
+	private BiFunction<String, Integer, Node> option;
 
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -48,15 +47,16 @@ public abstract class SwitchNode extends ChoiceNode<String> {
 	}
 
 	@Override
-	protected void layoutValues() {
+	protected void createOptions() {
 		this.optionList.forEach(option -> super.remove(option));
 		this.optionList.clear();
 		if (this.option == null) {
 			return;
 		}
 
-		for (final String value : super.getValueList()) {
-			final Node option = this.option.apply(value);
+		final List<String> values = super.getValueList();
+		for (int i = 0; i < values.size(); i++) {
+			final Node option = this.option.apply(values.get(i), i);
 			this.optionList.add(option);
 			super.append(option);
 		}
@@ -66,9 +66,9 @@ public abstract class SwitchNode extends ChoiceNode<String> {
 		return Collections.unmodifiableList(this.optionList);
 	}
 
-	public final <T extends SwitchNode> @NonNull T option(final @NonNull Function<String, Node> option) {
+	public final <T extends SwitchNode> @NonNull T option(final @NonNull BiFunction<@NonNull String, @NonNull Integer, @NonNull Node> option) {
 		this.option = option;
-		this.layoutValues();
+		this.createOptions();
 		return (T) this;
 	}
 

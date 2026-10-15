@@ -135,6 +135,27 @@ public class ToggleNodeTest {
 	}
 
 	@Test
+	public void glidesItsKnobToItsNewSide() {
+		final Toggle toggle = new Toggle();
+		this.bridges.open(new NodeUI(toggle)).frame();
+		toggle.change(true);
+		this.bridges.frame();
+		Assert.assertTrue(toggle.getKnob().getX() > 0D && toggle.getKnob().getX() < 50D);
+		this.bridges.frames(60);
+		Assert.assertEquals(50D, toggle.getKnob().getX(), 0D);
+		Assert.assertEquals(1F, toggle.getKnobProgress(), 0F);
+	}
+
+	@Test
+	public void movesItsKnobAtOnceAtFullSpeed() {
+		final Toggle toggle = new Toggle().speed(1F);
+		this.bridges.open(new NodeUI(toggle)).frame();
+		toggle.change(true);
+		this.bridges.frame();
+		Assert.assertEquals(50D, toggle.getKnob().getX(), 0D);
+	}
+
+	@Test
 	public void ignoresAClickBesideIt() {
 		final Toggle toggle = new Toggle().state("on", 0);
 		this.bridges.open(new NodeUI(toggle)).frame();

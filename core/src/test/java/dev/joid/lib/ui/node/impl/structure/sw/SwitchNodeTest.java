@@ -337,7 +337,7 @@ public class SwitchNodeTest {
 
 		public Switch() {
 			super(100D, 100D, 120D, 40D);
-			super.option(state -> {
+			super.option((state, index) -> {
 				this.loads++;
 				return RectNode.create(0D, 0D, 10D, 10D);
 			});

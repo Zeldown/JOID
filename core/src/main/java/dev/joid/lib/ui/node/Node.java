@@ -74,7 +74,7 @@ import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.TextHoverElement;
-import dev.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode;
+import dev.joid.lib.ui.node.impl.structure.scrollbar.BaseScrollbarNode;
 import dev.joid.lib.ui.node.layer.INodeLayer;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableAreaType;
@@ -166,10 +166,10 @@ public abstract class Node implements INode {
 	private transient UI   ui;
 	private transient Node parent;
 
-	private transient Node           skeleton;
-	private transient Node           overflowArea;
-	private transient ScrollbarNode  scrollbar;
-	private transient Consumer<Node> bodyConsumer;
+	private transient Node              skeleton;
+	private transient Node              overflowArea;
+	private transient Consumer<Node>    bodyConsumer;
+	private transient BaseScrollbarNode scrollbar;
 
 	private double defaultX;
 	private double defaultY;
@@ -1227,7 +1227,7 @@ public abstract class Node implements INode {
 		return this.follow("scrollSpeed", scrollSpeed, value -> this.scrollSpeed = value);
 	}
 
-	public final <T extends Node> @NonNull T scrollbar(final @NonNull ScrollbarNode scrollbar) {
+	public final <T extends Node> @NonNull T scrollbar(final @NonNull BaseScrollbarNode scrollbar) {
 		if (this.scrollbar != null && this.scrollbar != scrollbar && this.scrollbar.isAttached()) {
 			this.scrollbar.fireDetach();
 		}
@@ -2270,7 +2270,7 @@ public abstract class Node implements INode {
 		if (this.scrollbar != null) {
 			final Node scrollbar = ((Node) this.scrollbar).duplicate(listeners);
 			scrollbar.parent = copy;
-			copy.scrollbar = ((ScrollbarNode) scrollbar).scrollNode(copy);
+			copy.scrollbar = ((BaseScrollbarNode) scrollbar).scrollNode(copy);
 		}
 
 		if (this.skeleton != null) {

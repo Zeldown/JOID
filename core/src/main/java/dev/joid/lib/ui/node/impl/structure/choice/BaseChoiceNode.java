@@ -14,7 +14,7 @@ import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
-public abstract class ChoiceNode<V> extends Node {
+public abstract class BaseChoiceNode<V> extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
@@ -26,7 +26,7 @@ public abstract class ChoiceNode<V> extends Node {
 	private V   value;
 	private int pendingIndex;
 
-	protected ChoiceNode(final double x, final double y, final double width, final double height) {
+	protected BaseChoiceNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
 		this.valueList    = new ArrayList<>();
@@ -36,12 +36,12 @@ public abstract class ChoiceNode<V> extends Node {
 			this.pendingIndex = -1;
 		})
 		.clamp(value -> this.valueList.isEmpty() || this.valueList.contains(value) ? value : this.value)
-		.events(ChoiceNode.BEFORE_CHANGE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), ChoiceNode.CHANGE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
+		.events(BaseChoiceNode.BEFORE_CHANGE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), BaseChoiceNode.CHANGE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
 
-		super.<ChoiceNode<V>>require("values", "call values(...) before attaching it", node -> !node.valueList.isEmpty());
+		super.<BaseChoiceNode<V>>require("values", "call values(...) before attaching it", node -> !node.valueList.isEmpty());
 	}
 
-	protected abstract void layoutValues();
+	protected void createOptions() {}
 
 	public final V getValue() {
 		if (this.valueList.isEmpty()) {
@@ -60,27 +60,27 @@ public abstract class ChoiceNode<V> extends Node {
 	}
 
 	@SafeVarargs
-	public final <T extends ChoiceNode<V>> @NonNull T values(final @NonNull V @NonNull... values) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T values(final @NonNull V @NonNull... values) {
 		return this.values(Signal.from(Arrays.asList(values)));
 	}
 
-	public final <T extends ChoiceNode<V>> @NonNull T values(final @NonNull Supplier<@NonNull List<V>> values) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T values(final @NonNull Supplier<@NonNull List<V>> values) {
 		return super.follow("values", values, this::configure);
 	}
 
-	public final <T extends ChoiceNode<V>> @NonNull T value(final @NonNull V value) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T value(final @NonNull V value) {
 		return this.choiceValue.start(this.requireOption(this.valueList, value));
 	}
 
-	public final <T extends ChoiceNode<V>> @NonNull T value(final @NonNull Signal<V> value) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T value(final @NonNull Signal<V> value) {
 		return this.choiceValue.bind(value);
 	}
 
-	public final <T extends ChoiceNode<V>> @NonNull T valueIndex(final int valueIndex) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T valueIndex(final int valueIndex) {
 		return super.start("value", valueIndex, index -> this.select(this.requireIndex(this.valueList, index)));
 	}
 
-	public final <T extends ChoiceNode<V>> @NonNull T valueIndex(final @NonNull Signal<Integer> valueIndex) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T valueIndex(final @NonNull Signal<Integer> valueIndex) {
 		return super.bind("value", valueIndex, index -> {
 			if (this.valueList.isEmpty() || index >= 0 && index < this.valueList.size()) {
 				this.select(index);
@@ -88,16 +88,16 @@ public abstract class ChoiceNode<V> extends Node {
 		}, (final V value) -> this.valueList.indexOf(value));
 	}
 
-	public final <T extends ChoiceNode<V>> @NonNull T change(final @NonNull V value) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T change(final @NonNull V value) {
 		this.choiceValue.change(this.requireOption(this.valueList, value));
 		return (T) this;
 	}
 
-	public final <T extends ChoiceNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, V>> listener) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T beforeChange(final @NonNull EventListener<NodeChangeEvent.Pre<T, V>> listener) {
 		return this.choiceValue.before(listener);
 	}
 
-	public final <T extends ChoiceNode<V>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, V>> listener) {
+	public final <T extends BaseChoiceNode<V>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, V>> listener) {
 		return this.choiceValue.on(listener);
 	}
 
@@ -127,7 +127,7 @@ public abstract class ChoiceNode<V> extends Node {
 		this.pendingIndex = -1;
 		this.valueList.clear();
 		this.valueList.addAll(values);
-		this.layoutValues();
+		this.createOptions();
 		this.choiceValue.update(values.contains(current) ? current : values.get(0));
 	}
 

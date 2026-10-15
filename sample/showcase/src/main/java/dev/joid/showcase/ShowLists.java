@@ -54,7 +54,7 @@ public class ShowLists extends ShowUI {
 		.create(470, 240, 980, 730)
 		.color(Color.TRANSPARENT)
 		.overflow(OverflowProperty.SCROLL)
-		.scrollbar(ShowScrollbarNode.create(964, 0, 8, 730, 150))
+		.scrollbar(ShowScrollbarNode.create(964, 0, 8, 730))
 		.body(area -> {
 			final ReorderableFlexNode list = ReorderableFlexNode
 			.vertical(20, 0, 920)

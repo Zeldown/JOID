@@ -1575,8 +1575,8 @@ public class NodeTest {
 		Assert.assertSame(row, bar.getParent());
 		row.scrollX(-150D).updateScroll();
 		this.bridges.frame();
-		Assert.assertEquals(180D, bar.getThumb().getX(), 1E-9D);
-		Assert.assertEquals(280D, this.draw(0.6F, 0.4F, 0.2F).getLeft(), 1E-3D);
+		Assert.assertEquals(600D / 7D, bar.getThumb().getX(), 1E-9D);
+		Assert.assertEquals(186D, this.draw(0.6F, 0.4F, 0.2F).getLeft(), 1E-3D);
 	}
 
 	@Test
@@ -1586,8 +1586,8 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(column));
 		column.scrollY(-100D).updateScroll();
 		this.bridges.frame();
-		Assert.assertEquals(40D, bar.getThumb().getY(), 1E-9D);
-		Assert.assertEquals(140D, this.draw(0.6F, 0.4F, 0.2F).getTop(), 1E-3D);
+		Assert.assertEquals(100D / 3D, bar.getThumb().getY(), 1E-9D);
+		Assert.assertEquals(133D, this.draw(0.6F, 0.4F, 0.2F).getTop(), 1E-3D);
 	}
 
 	@Test
@@ -1597,8 +1597,8 @@ public class NodeTest {
 		this.press(row, 120D, 215D);
 		Assert.assertTrue(bar.isDragging());
 		this.bridges.move(300D, 215D).frames(2);
-		Assert.assertEquals(-150D, row.getTargetScrollX(), 1E-6D);
-		Assert.assertEquals(-48D, row.getScrollX(), 1E-6D);
+		Assert.assertEquals(-300D, row.getTargetScrollX(), 1E-6D);
+		Assert.assertEquals(-96D, row.getScrollX(), 1E-6D);
 	}
 
 	@Test
@@ -2335,8 +2335,8 @@ public class NodeTest {
 		Assert.assertNotSame(bar, copy.getScrollbar());
 		Assert.assertSame(Bar.class, copy.getScrollbar().getClass());
 		Assert.assertSame(copy, copy.getScrollbar().getScrollNode());
-		Assert.assertNotSame(bar.getThumb(), copy.getScrollbar().getThumb());
-		Assert.assertSame(copy.getScrollbar(), copy.getScrollbar().getThumb().getParent());
+		Assert.assertNotSame(bar.getThumb(), ((Bar) copy.getScrollbar()).getThumb());
+		Assert.assertSame(copy.getScrollbar(), ((Bar) copy.getScrollbar()).getThumb().getParent());
 		Assert.assertSame(column, bar.getScrollNode());
 	}
 

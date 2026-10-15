@@ -123,7 +123,7 @@ public class KeyLayoutTest {
 		final TextFieldNode field = this.field("hello");
 		this.control(Key.Q);
 		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(5, field.getCursorPos());
+		Assert.assertEquals(5, field.getCursorPosition());
 	}
 
 	@Test

@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.design.textfield;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import org.junit.Assert;
@@ -117,10 +118,10 @@ public class TextFieldMarkupTest {
 		final TextFieldNode field = this.field("a<b>bc</b>d", true).cursorPosition(1);
 		for (int position = 2; position <= 5; position++) {
 			this.press(field, Key.RIGHT);
-			Assert.assertEquals(position, field.getCursorPos());
+			Assert.assertEquals(position, field.getCursorPosition());
 		}
 		this.press(field, Key.LEFT);
-		Assert.assertEquals(4, field.getCursorPos());
+		Assert.assertEquals(4, field.getCursorPosition());
 		Assert.assertEquals(12D, this.cursor().getLeft(), 1E-5D);
 	}
 
@@ -129,9 +130,9 @@ public class TextFieldMarkupTest {
 		for (final boolean markup : new boolean[] {true, false}) {
 			final TextFieldNode field = this.field("<b>aa bb</b>", markup).cursorPosition(5);
 			this.press(field, Key.END);
-			Assert.assertEquals(12, field.getCursorPos());
+			Assert.assertEquals(12, field.getCursorPosition());
 			this.press(field, Key.HOME);
-			Assert.assertEquals(0, field.getCursorPos());
+			Assert.assertEquals(0, field.getCursorPosition());
 		}
 	}
 
@@ -139,16 +140,16 @@ public class TextFieldMarkupTest {
 	public void jumpsOverATagWithASpaceAsOneWordWithControl() {
 		final TextFieldNode field = this.field("a <c red>bb</c> c", true).cursorPosition(2);
 		this.control(field, Key.RIGHT);
-		Assert.assertEquals(16, field.getCursorPos());
+		Assert.assertEquals(16, field.getCursorPosition());
 		this.control(field, Key.LEFT);
-		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(2, field.getCursorPosition());
 	}
 
 	@Test
 	public void stopsOnTheSpaceOfALiteralTagWithControlWithoutMarkup() {
 		final TextFieldNode field = this.field("a <c red>bb</c> c", false).cursorPosition(2);
 		this.control(field, Key.RIGHT);
-		Assert.assertEquals(5, field.getCursorPos());
+		Assert.assertEquals(5, field.getCursorPosition());
 	}
 
 	@Test
@@ -185,7 +186,7 @@ public class TextFieldMarkupTest {
 		this.click(field, 30D);
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
 		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(5, field.getCursorPos());
+		Assert.assertEquals(5, field.getCursorPosition());
 		final Draw selection = this.selection();
 		Assert.assertEquals(2D, selection.getLeft(), 1E-5D);
 		Assert.assertEquals(27D, selection.getRight(), 1E-5D);
@@ -196,7 +197,7 @@ public class TextFieldMarkupTest {
 		final TextFieldNode field = this.field("a<b>bc</b>d", true).cursorPosition(4);
 		this.type(field, "x");
 		Assert.assertEquals("a<b>xbc</b>d", field.getText());
-		Assert.assertEquals(5, field.getCursorPos());
+		Assert.assertEquals(5, field.getCursorPosition());
 		Assert.assertEquals(27D, this.cursor().getLeft(), 1E-5D);
 		field.cursorPosition(1);
 		this.type(field, "y");
@@ -221,7 +222,7 @@ public class TextFieldMarkupTest {
 		field.cursorPosition(3);
 		this.press(field, Key.BACKSPACE);
 		Assert.assertEquals("a<b>bc</b>d", field.getText());
-		Assert.assertEquals(2, field.getCursorPos());
+		Assert.assertEquals(2, field.getCursorPosition());
 		Assert.assertEquals(12D, this.cursor().getLeft(), 1E-5D);
 	}
 
@@ -241,7 +242,7 @@ public class TextFieldMarkupTest {
 		Assert.assertEquals("a<b>c</b>d", field.getText());
 		this.press(field, Key.BACKSPACE);
 		Assert.assertEquals("a<bc</b>d", field.getText());
-		Assert.assertEquals(3, field.getCursorPos());
+		Assert.assertEquals(3, field.getCursorPosition());
 	}
 
 	@Test
@@ -254,7 +255,7 @@ public class TextFieldMarkupTest {
 		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
 		this.press(field, Key.BACKSPACE);
 		Assert.assertEquals("ac</b>d", field.getText());
-		Assert.assertEquals(1, field.getCursorPos());
+		Assert.assertEquals(1, field.getCursorPosition());
 		Assert.assertEquals(12D, this.cursor().getLeft(), 1E-5D);
 	}
 
@@ -264,7 +265,7 @@ public class TextFieldMarkupTest {
 			final TextFieldNode field = this.field("aa <b>bold</b> cc", markup);
 			this.clicks(field, markup ? 40D : 70D, 2);
 			Assert.assertEquals(3, TextFieldNodeTest.anchor(field));
-			Assert.assertEquals(14, field.getCursorPos());
+			Assert.assertEquals(14, field.getCursorPosition());
 		}
 	}
 
@@ -273,7 +274,7 @@ public class TextFieldMarkupTest {
 		final TextFieldNode field = this.field("a <c red>bb</c> c", true);
 		this.clicks(field, 25D, 2);
 		Assert.assertEquals(2, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(15, field.getCursorPos());
+		Assert.assertEquals(15, field.getCursorPosition());
 	}
 
 	@Test
@@ -281,7 +282,7 @@ public class TextFieldMarkupTest {
 		final TextFieldNode field = this.field("aa <b>bold</b> cc", true);
 		this.clicks(field, 40D, 3);
 		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(17, field.getCursorPos());
+		Assert.assertEquals(17, field.getCursorPosition());
 	}
 
 	@Test
@@ -290,13 +291,13 @@ public class TextFieldMarkupTest {
 		this.clicks(field, 40D, 2);
 		this.drag(field, 105D);
 		Assert.assertEquals(3, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(17, field.getCursorPos());
+		Assert.assertEquals(17, field.getCursorPosition());
 		this.drag(field, 5D);
 		Assert.assertEquals(14, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(0, field.getCursorPos());
+		Assert.assertEquals(0, field.getCursorPosition());
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.drag(field, 92D);
-		Assert.assertEquals(0, field.getCursorPos());
+		Assert.assertEquals(0, field.getCursorPosition());
 	}
 
 	@Test
@@ -305,13 +306,13 @@ public class TextFieldMarkupTest {
 		this.click(field, 4D);
 		this.drag(field, 30D);
 		Assert.assertEquals(0, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(5, field.getCursorPos());
+		Assert.assertEquals(5, field.getCursorPosition());
 		final Draw selection = this.selection();
 		Assert.assertEquals(2D, selection.getLeft(), 1E-5D);
 		Assert.assertEquals(27D, selection.getRight(), 1E-5D);
 		this.drag(field, 4D);
 		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(0, field.getCursorPos());
+		Assert.assertEquals(0, field.getCursorPosition());
 	}
 
 	@Test
@@ -323,7 +324,7 @@ public class TextFieldMarkupTest {
 		this.bridges.getClock().advance(600L);
 		this.clicks(field, 35D, 1);
 		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
-		Assert.assertEquals(1, field.getPressCount());
+		Assert.assertEquals(1, TextFieldMarkupTest.<Integer>read(field, FieldNode.class, "pressCount").intValue());
 	}
 
 	private TextFieldNode field(final String text, final boolean markup) {
@@ -336,7 +337,7 @@ public class TextFieldMarkupTest {
 	private int click(final TextFieldNode field, final double x) {
 		this.bridges.getClock().advance(600L);
 		this.clicks(field, x, 1);
-		return field.getCursorPos();
+		return field.getCursorPosition();
 	}
 
 	private void clicks(final TextFieldNode field, final double x, final int count) {
@@ -380,6 +381,16 @@ public class TextFieldMarkupTest {
 		final List<Draw> draws = this.bridges.getRender().getDraws(50 / 255F, 152 / 255F, 253 / 255F);
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0);
+	}
+
+	private static <T> T read(final Object field, final Class<?> owner, final String name) {
+		try {
+			final Field declared = owner.getDeclaredField(name);
+			declared.setAccessible(true);
+			return (T) declared.get(field);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	public static final class NodeUI extends UI {

@@ -137,13 +137,13 @@ public class DemoPixelFontTest {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 600D).info(DemoPixelFontTest.info(16F)).text("abcd");
 		this.bridges.open(new NodeUI(field));
 		this.click(1D, 124D, 120D);
-		final int caret = field.getCursorPos();
+		final int caret = field.getCursorPosition();
 		this.bridges.resize(480, 270).getClock().advance(1000L);
 		this.click(0.25D, 124D, 120D);
-		Assert.assertEquals(caret, field.getCursorPos());
+		Assert.assertEquals(caret, field.getCursorPosition());
 		this.bridges.resize(2560, 1369).getClock().advance(1000L);
 		this.click(1369D / 1080D, 124D, 120D);
-		Assert.assertEquals(caret, field.getCursorPos());
+		Assert.assertEquals(caret, field.getCursorPosition());
 	}
 
 	private List<Draw> glyphs() {

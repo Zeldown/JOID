@@ -28,14 +28,10 @@ import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.utils.platform.Platform;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class FieldNode<V> extends Node {
-
-	protected static final Color SELECTION_COLOR = new Color(50, 152, 253, 100).lock();
 
 	private static final EventType<NodeFieldChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeFieldChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
@@ -51,28 +47,33 @@ public abstract class FieldNode<V> extends Node {
 	private static final EventType<NodeChangeEvent.Post<?, FieldSelection>> SELECT        = EventType.create("onSelect");
 	private static final EventType<NodeChangeEvent.Pre<?, FieldSelection>>  BEFORE_SELECT = EventType.create("beforeSelect");
 
-	@Getter(AccessLevel.NONE) private final transient InteractiveValue<String>         textValue;
-	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Integer>        cursorValue;
-	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Boolean>        focusedValue;
-	@Getter(AccessLevel.NONE) private final transient InteractiveValue<FieldSelection> selectionValue;
+	private final transient InteractiveValue<String>         textValue;
+	private final transient InteractiveValue<Integer>        cursorValue;
+	private final transient InteractiveValue<Boolean>        focusedValue;
+	private final transient InteractiveValue<FieldSelection> selectionValue;
 
-	private Node background;
+	@Getter private String   text;
+	@Getter private TextInfo info;
+	@Getter private String   placeholder;
 
-	private String   text;
-	private TextInfo info;
-	private String   placeholder;
+	@Getter private boolean focused;
+	@Getter private int     maxTextLength;
 
-	private boolean focused;
-	private int     maxTextLength;
+	@Getter private boolean               allowEmpty;
+	@Getter private Predicate<String>     accept;
+	@Getter private UnaryOperator<String> formatter;
 
-	private V                     fallback;
-	private boolean               allowEmpty;
-	private Predicate<String>     accept;
-	private UnaryOperator<String> formatter;
+	private V fallback;
 
-	private boolean markup;
+	@Getter private boolean markup;
 
-	private int            cursorPos;
+	@Getter private Node background;
+
+	@Getter private Color cursorColor;
+	@Getter private Color selectionColor;
+	@Getter private Color placeholderColor;
+
+	private int            cursorPosition;
 	private FieldSelection selection;
 
 	private int    pressCount;
@@ -84,11 +85,11 @@ public abstract class FieldNode<V> extends Node {
 	private int     anchorStart;
 	private boolean selecting;
 
-	private double marginTop;
-	private double marginLeft;
-	private double marginRight;
-	private double marginBottom;
-	private double cursorMargin;
+	@Getter private double marginTop;
+	@Getter private double marginLeft;
+	@Getter private double marginRight;
+	@Getter private double marginBottom;
+	@Getter private double cursorMargin;
 
 	private Key     inputType;
 	private long    lastInput;
@@ -98,20 +99,21 @@ public abstract class FieldNode<V> extends Node {
 	protected FieldNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.text          = "";
-		this.placeholder   = "";
-		this.focused       = false;
-		this.accept        = text -> true;
-		this.formatter     = UnaryOperator.identity();
-		this.maxTextLength = -1;
-		this.selection     = FieldSelection.create(0, 0);
+		this.text           = "";
+		this.placeholder    = "";
+		this.focused        = false;
+		this.accept         = text -> true;
+		this.formatter      = UnaryOperator.identity();
+		this.maxTextLength  = -1;
+		this.selection      = FieldSelection.create(0, 0);
+		this.selectionColor = new Color(50, 152, 253, 100);
 
 		this.textValue = InteractiveValue.create(super.getBindings(), "text", () -> this.text, (final String text) -> this.text = text)
 		.events(FieldNode.BEFORE_CHANGE, (previous, text) -> NodeFieldChangeEvent.Pre.create(this, previous, text, this.valueOf(text), this.isValid(text)), FieldNode.CHANGE, (previous, text) -> NodeFieldChangeEvent.Post.create(this, previous, text, this.valueOf(text), this.isValid(text)));
 		this.focusedValue = InteractiveValue.toggle(super.getBindings(), "focused", () -> this.focused, this::applyFocus)
 		.events(true, FieldNode.BEFORE_FOCUS, (previous, focused) -> NodeChangeEvent.Pre.create(this, previous, focused), FieldNode.FOCUS, (previous, focused) -> NodeChangeEvent.Post.create(this, previous, focused))
 		.events(false, FieldNode.BEFORE_BLUR, (previous, focused) -> NodeChangeEvent.Pre.create(this, previous, focused), FieldNode.BLUR, (previous, focused) -> NodeChangeEvent.Post.create(this, previous, focused));
-		this.cursorValue = InteractiveValue.create(super.getBindings(), "cursorPosition", () -> this.cursorPos, (final Integer position) -> this.cursorPos = position)
+		this.cursorValue = InteractiveValue.create(super.getBindings(), "cursorPosition", () -> this.cursorPosition, (final Integer position) -> this.cursorPosition = position)
 		.clamp(position -> this.snap(Math.min(Math.max(0, position), this.text.length()), false))
 		.events(FieldNode.BEFORE_CURSOR_MOVE, (previous, position) -> NodeChangeEvent.Pre.create(this, previous, position), FieldNode.CURSOR_MOVE, (previous, position) -> NodeChangeEvent.Post.create(this, previous, position));
 		this.selectionValue = InteractiveValue.create(super.getBindings(), "selection", () -> this.selection, this::applySelection)
@@ -154,8 +156,8 @@ public abstract class FieldNode<V> extends Node {
 			this.background.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}
 
-		if (this.cursorPos > this.text.length()) {
-			this.cursorValue.update(this.cursorPos);
+		if (this.cursorPosition > this.text.length()) {
+			this.cursorValue.update(this.cursorPosition);
 		}
 
 		if (this.selection.getEnd() > this.text.length()) {
@@ -248,7 +250,7 @@ public abstract class FieldNode<V> extends Node {
 		return this.isValid(this.text);
 	}
 
-	public final int getCursorPos() {
+	public final int getCursorPosition() {
 		return this.cursorValue.get();
 	}
 
@@ -283,6 +285,30 @@ public abstract class FieldNode<V> extends Node {
 
 	public final <T extends FieldNode<V>> @NonNull T info(final @NonNull Supplier<@NonNull TextInfo> info) {
 		return super.follow("info", info, value -> this.info = value);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T cursorColor(final @NonNull Color cursorColor) {
+		return this.cursorColor(Signal.from(cursorColor));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T cursorColor(final @NonNull Supplier<@NonNull Color> cursorColor) {
+		return super.follow("cursorColor", cursorColor, value -> this.cursorColor = value);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T selectionColor(final @NonNull Color selectionColor) {
+		return this.selectionColor(Signal.from(selectionColor));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T selectionColor(final @NonNull Supplier<@NonNull Color> selectionColor) {
+		return super.follow("selectionColor", selectionColor, value -> this.selectionColor = value);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T placeholderColor(final @NonNull Color placeholderColor) {
+		return this.placeholderColor(Signal.from(placeholderColor));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T placeholderColor(final @NonNull Supplier<@NonNull Color> placeholderColor) {
+		return super.follow("placeholderColor", placeholderColor, value -> this.placeholderColor = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T focused(final boolean focused) {
@@ -523,8 +549,8 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		final FieldSelection selection = this.getSelection();
-		final int start = selection.isEmpty() ? this.getCursorPos() : selection.getStart();
-		final int end = selection.isEmpty() ? this.getCursorPos() : selection.getEnd();
+		final int start = selection.isEmpty() ? this.getCursorPosition() : selection.getStart();
+		final int end = selection.isEmpty() ? this.getCursorPosition() : selection.getEnd();
 		if (this.maxTextLength >= 0) {
 			textToAdd = FieldNode.cut(textToAdd, Math.max(0, this.maxTextLength - this.text.codePointCount(0, this.text.length()) + this.text.codePointCount(start, end)));
 			if (textToAdd.isEmpty()) {
@@ -555,12 +581,12 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final void decreaseCursor(final int value) {
-		this.cursorValue.set(this.snap(Math.max(0, this.getCursorPos() - value), false));
+		this.cursorValue.set(this.snap(Math.max(0, this.getCursorPosition() - value), false));
 		this.followCursorBackward();
 	}
 
 	protected final void increaseCursor(final int value) {
-		this.cursorValue.set(this.snap(Math.min(this.text.length(), this.getCursorPos() + value), true));
+		this.cursorValue.set(this.snap(Math.min(this.text.length(), this.getCursorPosition() + value), true));
 		this.followCursorForward();
 	}
 
@@ -569,13 +595,17 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final @NonNull TextInfo getPlaceholderInfo() {
+		if (this.placeholderColor != null) {
+			return this.getShownInfo().withColor(this.placeholderColor);
+		}
+
 		final Color color = this.info.getColor();
 		return this.getShownInfo().withColor(new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), 0.5F));
 	}
 
-	protected final @NonNull Color getCursorColor() {
-		final Color color = this.info.getColor();
-		return new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F));
+	protected final @NonNull Color getShownCursorColor() {
+		final Color color = this.cursorColor != null ? this.cursorColor : this.info.getColor();
+		return new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), color.getAlphaF() * (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F));
 	}
 
 	private void applyFocus(final boolean focused) {
@@ -589,7 +619,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private void applySelection(final @NonNull FieldSelection selection) {
 		this.selection = selection;
-		if (!selection.isEmpty() && this.cursorPos != selection.getStart() && this.cursorPos != selection.getEnd()) {
+		if (!selection.isEmpty() && this.cursorPosition != selection.getStart() && this.cursorPosition != selection.getEnd()) {
 			this.cursorValue.update(selection.getEnd());
 		}
 	}
@@ -609,7 +639,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private boolean repeatKey(final @NonNull Key key) {
-		final int cursor = this.getCursorPos();
+		final int cursor = this.getCursorPosition();
 		if (key == Key.LEFT) {
 			this.placeCursor(this.isWordKeyDown() ? this.previousWordIndex() : cursor - 1, false);
 			return true;
@@ -751,7 +781,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private void rewrite(final @NonNull String newText, final boolean refusable) {
 		final int length = this.text.length();
-		final int cursor = this.getCursorPos();
+		final int cursor = this.getCursorPosition();
 		final FieldSelection selection = this.getSelection();
 		if (!this.changeText(newText, refusable) || !this.focused) {
 			return;
@@ -842,7 +872,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private void drag(final int position) {
 		final int[] range = this.getRange(position);
-		final int previous = this.getCursorPos();
+		final int previous = this.getCursorPosition();
 		final int anchor = range[0] < this.anchorStart ? this.anchorEnd : this.anchorStart;
 		final int cursor = range[0] < this.anchorStart ? range[0] : Math.max(range[1], this.anchorEnd);
 		this.cursorValue.set(cursor);
@@ -906,7 +936,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private int getAnchor() {
 		final FieldSelection selection = this.getSelection();
-		final int cursor = this.getCursorPos();
+		final int cursor = this.getCursorPosition();
 		if (selection.isEmpty()) {
 			return cursor;
 		}
@@ -932,7 +962,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private int nextWordIndex() {
 		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
-		int index = this.getCursorPos();
+		int index = this.getCursorPosition();
 		while (index < this.text.length() && !this.isSeparator(tags, index)) {
 			index++;
 		}
@@ -946,7 +976,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private int previousWordIndex() {
 		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
-		int index = this.getCursorPos();
+		int index = this.getCursorPosition();
 		while (index > 0 && this.isSeparator(tags, index - 1)) {
 			index--;
 		}

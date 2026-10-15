@@ -78,7 +78,7 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 360, 180)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(0, 188, 360, 12, 60))
+			.scrollbar(DemoScrollbarNode.create(0, 188, 360, 12))
 			.body(area -> {
 				GridNode
 				.create(10, 10, 690, 410)
@@ -128,7 +128,7 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 340, 200)
 			.margin(10D)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(348, 0, 12, 200, 40))
+			.scrollbar(DemoScrollbarNode.create(348, 0, 12, 200))
 			.body(grid -> {
 				for (int i = 0; i < 25; i++) {
 					RectNode.create(10, 10, 56, 56).color(UIDemoOverflow.INK).attach(grid);
@@ -147,7 +147,7 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 360, 180)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(0, 188, 360, 12, 60))
+			.scrollbar(DemoScrollbarNode.create(0, 188, 360, 12))
 			.body(area -> {
 				FlexNode
 				.horizontal(10, 10, 160)

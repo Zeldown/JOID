@@ -157,6 +157,15 @@ public class SelectorNodeTest {
 	}
 
 	@Test
+	public void staysClosedOnAClickAlreadyConsumed() {
+		final NodeUI ui = new NodeUI(this.selector);
+		this.bridges.open(ui).frame();
+		RectNode.create(0D, 0D, 1920D, 1080D).onClick(event -> {}).attach(ui);
+		this.click(150D, 120D);
+		Assert.assertFalse(this.selector.isActive());
+	}
+
+	@Test
 	public void showsAChosenOption() {
 		Assert.assertSame(this.selector, this.selector.value("second"));
 		Assert.assertSame(this.second, this.selector.getSelected());

@@ -171,72 +171,77 @@ wait 600
 shot inter-slider
 ui dev.joid.demo.ui.control.UIDemoControl
 wait 800
-move 150 110
+move 150 90
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 870 110
+move 870 90
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1230 110
+move 1230 90
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1590 110
+move 1590 90
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 180 450
+move 180 340
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 900 450
+move 900 340
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1260 450
+move 1260 340
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1620 450
+move 1620 340
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 320 785
+move 320 585
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 880 855
+move 880 645
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1400 785
+move 1400 585
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1320 785
+move 1320 585
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1680 785
+move 1680 585
 wait 100
 press LEFT
 release LEFT
 wait 100
-wait 600
+move 180 840
+wait 100
+press LEFT
+release LEFT
+wait 100
+wait 400
 shot inter-control
 ui dev.joid.demo.ui.selector.UIDemoSelector
 wait 800

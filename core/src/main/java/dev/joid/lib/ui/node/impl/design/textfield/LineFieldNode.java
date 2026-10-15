@@ -13,13 +13,12 @@ import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	private static final EventType<NodeEvent<?>> SUBMIT = EventType.create("onSubmit");
 
-	private Align alignX;
-	private Align alignY;
+	@Getter private Align alignX;
+	@Getter private Align alignY;
 
 	private double xOffset;
 
@@ -38,12 +37,9 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	protected void drawField() {
 		final String text = super.getText();
 		final TextInfo info = super.getInfo();
-		if (super.getHeight() == 0) {
-			super.height(info.ah(super.getMarginTop() + super.getMarginBottom()));
-		}
-
+		super.fit(super.getWidth(), info.ah(super.getMarginTop() + super.getMarginBottom()));
 		if (this.xOffset > super.getShownInfo().getWidth(text)) {
-			super.decreaseCursor(0);
+			this.followCursorBackward();
 		}
 
 		if (this.xOffset < 0D) {
@@ -67,12 +63,12 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getPlaceholderInfo() : super.getShownInfo(), Align.START, Align.START);
 
 			if (super.isFocused()) {
-				DrawUtils.SHAPE.drawRect(textX + this.getX(text, tags, super.getCursorPos()), textY, 2D, info.getHeight(), super.getCursorColor());
+				DrawUtils.SHAPE.drawRect(textX + this.getX(text, tags, super.getCursorPosition()), textY, 2D, info.getHeight(), super.getShownCursorColor());
 			}
 
 			if (!selection.isEmpty()) {
 				final double startX = textX + this.getX(text, tags, selection.getStart());
-				DrawUtils.SHAPE.drawRect(startX, textY, textX + this.getX(text, tags, selection.getEnd()) - startX, info.getHeight(), FieldNode.SELECTION_COLOR);
+				DrawUtils.SHAPE.drawRect(startX, textY, textX + this.getX(text, tags, selection.getEnd()) - startX, info.getHeight(), super.getSelectionColor());
 			}
 		});
 	}
@@ -123,7 +119,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		final double textX = this.getTextX(super.getX(), super.getText());
-		final double cursorX = textX + this.getX(super.getText(), FieldNode.tags(super.getText(), super.getShownInfo()), super.getCursorPos());
+		final double cursorX = textX + this.getX(super.getText(), FieldNode.tags(super.getText(), super.getShownInfo()), super.getCursorPosition());
 		if (cursorX > super.getX() + super.getWidth() - super.getMarginRight() - super.getCursorMargin()) {
 			this.xOffset += cursorX - (super.getX() + super.getWidth() - super.getMarginRight() - super.getCursorMargin());
 		}
@@ -131,7 +127,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	@Override
 	protected final void followCursorBackward() {
-		if (super.getCursorPos() == 0) {
+		if (super.getCursorPosition() == 0) {
 			this.xOffset = 0D;
 			return;
 		}
@@ -142,7 +138,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		final double textX = this.getTextX(super.getX(), super.getText());
-		final double cursorX = textX + this.getX(super.getText(), FieldNode.tags(super.getText(), super.getShownInfo()), super.getCursorPos());
+		final double cursorX = textX + this.getX(super.getText(), FieldNode.tags(super.getText(), super.getShownInfo()), super.getCursorPosition());
 		if (cursorX < super.getX() + super.getMarginLeft() + super.getCursorMargin()) {
 			this.xOffset -= super.getX() + super.getMarginLeft() + super.getCursorMargin() - cursorX;
 		}

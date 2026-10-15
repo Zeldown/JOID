@@ -35,14 +35,14 @@ import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.textfield.FieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode;
 import dev.joid.lib.ui.node.impl.design.textfield.impl.IntegerFieldNode;
-import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode;
+import dev.joid.lib.ui.node.impl.structure.checkbox.BaseCheckboxNode;
 import dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNodeTest.Checkbox;
-import dev.joid.lib.ui.node.impl.structure.choice.ChoiceNode;
+import dev.joid.lib.ui.node.impl.structure.choice.BaseChoiceNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
-import dev.joid.lib.ui.node.impl.structure.selector.SelectorNode;
+import dev.joid.lib.ui.node.impl.structure.selector.BaseSelectorNode;
 import dev.joid.lib.ui.node.impl.structure.sw.SwitchNodeTest.Switch;
-import dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode;
+import dev.joid.lib.ui.node.impl.structure.toggle.BaseToggleNode;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.point.Point;
 
@@ -126,7 +126,7 @@ public class NodeSetterTest {
 
 	@Test
 	public void offersAStartValueOrAWritableSignalToAValueTheUserChanges() {
-		final Object[][] setters = {{Node.class, "scrollX"}, {Node.class, "scrollY"}, {CheckboxNode.class, "checked"}, {ToggleNode.class, "toggle"}, {ChoiceNode.class, "value"}, {ChoiceNode.class, "valueIndex"}, {SelectorNode.class, "active"}, {FieldNode.class, "text"}, {FieldNode.class, "focused"}, {FieldNode.class, "cursorPosition"}, {FieldNode.class, "selection"}, {IntegerFieldNode.class, "value"}, {ModelViewerNode.class, "zoom"}, {ModelViewerNode.class, "rotationYaw"}, {ModelViewerNode.class, "rotationPitch"}, {UI.class, "zoom"}};
+		final Object[][] setters = {{Node.class, "scrollX"}, {Node.class, "scrollY"}, {BaseCheckboxNode.class, "checked"}, {BaseToggleNode.class, "toggle"}, {BaseChoiceNode.class, "value"}, {BaseChoiceNode.class, "valueIndex"}, {BaseSelectorNode.class, "active"}, {FieldNode.class, "text"}, {FieldNode.class, "focused"}, {FieldNode.class, "cursorPosition"}, {FieldNode.class, "selection"}, {IntegerFieldNode.class, "value"}, {ModelViewerNode.class, "zoom"}, {ModelViewerNode.class, "rotationYaw"}, {ModelViewerNode.class, "rotationPitch"}, {UI.class, "zoom"}};
 		for (final Object[] setter : setters) {
 			int forms = 0;
 			for (final Method method : ((Class<?>) setter[0]).getDeclaredMethods()) {
