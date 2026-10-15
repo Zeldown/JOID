@@ -60,7 +60,6 @@ import dev.joid.lib.ui.node.impl.design.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
-import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
 import dev.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty;
 import dev.joid.lib.ui.node.property.draggable.DraggableProperty.DraggableSnapType;
@@ -69,6 +68,7 @@ import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.align.Axis;
 import dev.joid.lib.utils.list.IndexedList;
 import dev.joid.lib.utils.point.Point;
 
@@ -2371,7 +2371,7 @@ public class NodeTest {
 		Assert.assertEquals(10D, circleCopy.getX(), 0D);
 		final FlexNode flex = FlexNode.horizontal(1D, 2D, 3D);
 		final FlexNode flexCopy = flex.copy();
-		Assert.assertSame(FlexDirection.ROW, flexCopy.getDirection());
+		Assert.assertSame(Axis.HORIZONTAL, flexCopy.getDirection());
 		Assert.assertEquals(3D, flexCopy.getHeight(), 0D);
 	}
 

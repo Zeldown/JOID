@@ -2,7 +2,6 @@ package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.render.Drawing;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
@@ -44,7 +43,7 @@ public class MaskNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public void draw(final @NonNull Node node, final @NonNull Drawing body) {
+	public void draw(final @NonNull Node node, final @NonNull Runnable body) {
 		final Resource resource = this.resourceSupplier.get();
 		final double x = node.getX() + this.xSupplier.get();
 		final double y = node.getY() + this.ySupplier.get();

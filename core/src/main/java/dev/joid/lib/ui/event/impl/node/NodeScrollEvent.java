@@ -3,6 +3,7 @@ package dev.joid.lib.ui.event.impl.node;
 import dev.joid.lib.ui.event.CancellableEvent;
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.align.Axis;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -11,9 +12,9 @@ public abstract class NodeScrollEvent<N extends Node> extends NodeEvent<N> {
 
 	private final double     offset;
 	private final double     previous;
-	private final ScrollAxis axis;
+	private final Axis axis;
 
-	private NodeScrollEvent(final N node, final ScrollAxis axis, final double previous, final double offset) {
+	private NodeScrollEvent(final N node, final Axis axis, final double previous, final double offset) {
 		super(node);
 		this.axis = axis;
 		this.previous = previous;
@@ -25,11 +26,11 @@ public abstract class NodeScrollEvent<N extends Node> extends NodeEvent<N> {
 
 		private boolean cancelled;
 
-		private Pre(final N node, final ScrollAxis axis, final double previous, final double offset) {
+		private Pre(final N node, final Axis axis, final double previous, final double offset) {
 			super(node, axis, previous, offset);
 		}
 
-		public static <N extends Node> @NonNull Pre<N> create(final @NonNull N node, final @NonNull ScrollAxis axis, final double previous, final double offset) {
+		public static <N extends Node> @NonNull Pre<N> create(final @NonNull N node, final @NonNull Axis axis, final double previous, final double offset) {
 			return new Pre<>(node, axis, previous, offset);
 		}
 
@@ -43,23 +44,12 @@ public abstract class NodeScrollEvent<N extends Node> extends NodeEvent<N> {
 
 	public static final class Post<N extends Node> extends NodeScrollEvent<N> {
 
-		private Post(final N node, final ScrollAxis axis, final double previous, final double offset) {
+		private Post(final N node, final Axis axis, final double previous, final double offset) {
 			super(node, axis, previous, offset);
 		}
 
-		public static <N extends Node> @NonNull Post<N> create(final @NonNull N node, final @NonNull ScrollAxis axis, final double previous, final double offset) {
+		public static <N extends Node> @NonNull Post<N> create(final @NonNull N node, final @NonNull Axis axis, final double previous, final double offset) {
 			return new Post<>(node, axis, previous, offset);
-		}
-
-	}
-
-	public static enum ScrollAxis {
-
-		HORIZONTAL,
-		VERTICAL;
-
-		public final boolean isHorizontal() {
-			return this == ScrollAxis.HORIZONTAL;
 		}
 
 	}

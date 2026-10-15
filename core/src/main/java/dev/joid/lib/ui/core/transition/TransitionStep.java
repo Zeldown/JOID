@@ -2,7 +2,6 @@ package dev.joid.lib.ui.core.transition;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquation;
-import dev.joid.lib.render.Drawing;
 import dev.joid.lib.ui.core.UI;
 import lombok.Getter;
 import lombok.NonNull;
@@ -25,7 +24,7 @@ public class TransitionStep {
 		this.duration = duration;
 		this.equation = equation;
 		this.animator = TweenAnimator.create(0F);
-		this.draw = (ui, progress, body) -> body.draw();
+		this.draw = (ui, progress, body) -> body.run();
 		this.enabled = true;
 	}
 
@@ -51,9 +50,9 @@ public class TransitionStep {
 		this.animator.sequence(this.duration, 1F, this.equation);
 	}
 
-	public final void render(final @NonNull UI ui, final @NonNull Drawing body) {
+	public final void render(final @NonNull UI ui, final @NonNull Runnable body) {
 		if (!this.running) {
-			body.draw();
+			body.run();
 			return;
 		}
 

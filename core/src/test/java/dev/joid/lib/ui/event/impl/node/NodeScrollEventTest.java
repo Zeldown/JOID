@@ -11,11 +11,11 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.event.impl.node.NodeScrollEvent.ScrollAxis;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.structure.container.ContainerNode;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
+import dev.joid.lib.utils.align.Axis;
 
 public class NodeScrollEventTest {
 
@@ -50,7 +50,7 @@ public class NodeScrollEventTest {
 		this.bridges.open(new NodeUI(box)).frames(30);
 		box.scrollX(-100D);
 		box.scrollY(-200D);
-		Assert.assertEquals(Arrays.asList(ScrollAxis.HORIZONTAL, -100D, ScrollAxis.VERTICAL, -200D), received);
+		Assert.assertEquals(Arrays.asList(Axis.HORIZONTAL, -100D, Axis.VERTICAL, -200D), received);
 	}
 
 	@Test
@@ -72,7 +72,7 @@ public class NodeScrollEventTest {
 		box.scrollY(-200D);
 		box.scrollY(-900D);
 		box.scrollY(-1000D);
-		Assert.assertEquals(Arrays.asList(ScrollAxis.VERTICAL, -700D), received);
+		Assert.assertEquals(Arrays.asList(Axis.VERTICAL, -700D), received);
 	}
 
 	@Test

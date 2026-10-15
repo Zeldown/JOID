@@ -14,11 +14,11 @@ import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.align.Axis;
 
 public class FlexNodeTest {
 
@@ -278,7 +278,7 @@ public class FlexNodeTest {
 	public void turnsIntoARowWithTheDirection() {
 		final RectNode first = RectNode.create(0D, 0D, 50D, 100D);
 		final RectNode second = RectNode.create(0D, 0D, 30D, 100D);
-		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).direction(FlexDirection.ROW).append(first, second);
+		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).direction(Axis.HORIZONTAL).append(first, second);
 		this.bridges.open(new NodeUI(flex));
 		Assert.assertEquals(50D, second.getX(), 0D);
 		Assert.assertEquals(0D, second.getY(), 0D);
@@ -287,7 +287,7 @@ public class FlexNodeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullDirection() {
-		FlexNode.vertical(0D, 0D, 300D).direction((FlexDirection) null);
+		FlexNode.vertical(0D, 0D, 300D).direction((Axis) null);
 	}
 
 	@Test
@@ -295,11 +295,11 @@ public class FlexNodeTest {
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D);
 		Assert.assertEquals(0D, flex.getMargin(), 0D);
 		Assert.assertNull(flex.getAlign());
-		Assert.assertSame(FlexDirection.COLUMN, flex.getDirection());
-		flex.margin(10D).align(Align.END).direction(FlexDirection.ROW);
+		Assert.assertSame(Axis.VERTICAL, flex.getDirection());
+		flex.margin(10D).align(Align.END).direction(Axis.HORIZONTAL);
 		Assert.assertEquals(10D, flex.getMargin(), 0D);
 		Assert.assertSame(Align.END, flex.getAlign());
-		Assert.assertSame(FlexDirection.ROW, flex.getDirection());
+		Assert.assertSame(Axis.HORIZONTAL, flex.getDirection());
 	}
 
 	@Test
@@ -308,13 +308,7 @@ public class FlexNodeTest {
 		Assert.assertSame(flex, flex.margin(10D));
 		Assert.assertSame(flex, flex.align(Align.CENTER));
 		Assert.assertSame(flex, flex.align((Align) null));
-		Assert.assertSame(flex, flex.direction(FlexDirection.ROW));
-	}
-
-	@Test
-	public void offersAColumnAndARow() {
-		Assert.assertArrayEquals(new FlexDirection[] {FlexDirection.COLUMN, FlexDirection.ROW}, FlexDirection.values());
-		Assert.assertSame(FlexDirection.ROW, FlexDirection.valueOf("ROW"));
+		Assert.assertSame(flex, flex.direction(Axis.HORIZONTAL));
 	}
 
 	@Test
@@ -323,7 +317,7 @@ public class FlexNodeTest {
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(RectNode.create(0D, 0D, 50D, 50D), second);
 		this.bridges.open(new NodeUI(flex));
 		Assert.assertEquals(50D, second.getY(), 0D);
-		flex.direction(FlexDirection.ROW);
+		flex.direction(Axis.HORIZONTAL);
 		this.bridges.frame();
 		Assert.assertEquals(50D, second.getX(), 0D);
 		Assert.assertEquals(0D, second.getY(), 0D);

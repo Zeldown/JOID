@@ -151,7 +151,7 @@ public class TransitionTest {
 		final List<String> trace = new ArrayList<>();
 		final TransitionStep step = TransitionTest.step().draw((ui, progress, body) -> {
 			trace.add("before " + progress);
-			body.draw();
+			body.run();
 			trace.add("after");
 		});
 		step.render(this.ui, () -> trace.add("body"));

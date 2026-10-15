@@ -28,7 +28,6 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.render.Drawing;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
@@ -576,11 +575,11 @@ public abstract class UI implements IUI, IndexedElement {
 		this.getBridge().drawHover(this, content, mouseX, mouseY);
 	}
 
-	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
+	public final void mask(final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Runnable drawing) {
 		this.mask(() -> DrawUtils.SHAPE.drawRect(maskX, maskY, maskWidth, maskHeight, Color.RED), drawing);
 	}
 
-	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Drawing drawing) {
+	public final void mask(final @NonNull Resource resource, final double maskX, final double maskY, final double maskWidth, final double maskHeight, final @NonNull Runnable drawing) {
 		this.mask(() -> {
 			BridgeHandler.RENDER.get().getState().alphaCutoff(0.5F);
 			DrawUtils.RESOURCE.drawResource(maskX, maskY, maskWidth, maskHeight, resource);
@@ -759,16 +758,16 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 	}
 
-	private void mask(final Drawing shape, final Drawing drawing) {
+	private void mask(final Runnable shape, final Runnable drawing) {
 		this.startMask(shape);
 		try {
-			drawing.draw();
+			drawing.run();
 		} finally {
 			this.stopMask();
 		}
 	}
 
-	private void startMask(final Drawing shape) {
+	private void startMask(final Runnable shape) {
 		this.maskDepth++;
 		BridgeHandler.RENDER.get().withState(render -> {
 			if (this.maskDepth == 1) {
@@ -777,7 +776,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
 			render.getState().colorWrite(false);
-			shape.draw();
+			shape.run();
 		});
 		BridgeHandler.RENDER.get().getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
@@ -845,7 +844,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		render.getState().alphaCutoff(0F);
-		final Drawing body = () -> this.view.render(render, this.data.projection(), () -> {
+		final Runnable body = () -> this.view.render(render, this.data.projection(), () -> {
 			this.depthLevel = 0;
 			double lastDepthLevel = this.depthLevel;
 
@@ -863,7 +862,7 @@ public abstract class UI implements IUI, IndexedElement {
 		if (transition != null) {
 			transition.getIn().render(this, () -> transition.getOut().render(this, body));
 		} else {
-			body.draw();
+			body.run();
 		}
 
 		final long end = BridgeHandler.CLOCK.get().nanoTime();

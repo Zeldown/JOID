@@ -2380,7 +2380,7 @@ public class UITest {
 			super.draw((ui, progress, body) -> {
 				trace.add(name + " pre");
 				try {
-					body.draw();
+					body.run();
 				} finally {
 					trace.add(name + " post");
 				}

@@ -12,7 +12,6 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.render.Drawing;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.core.UI;
@@ -270,9 +269,9 @@ public class NodeEffectTest {
 		}
 
 		@Override
-		public void draw(final @NonNull Node node, final @NonNull Drawing body) {
+		public void draw(final @NonNull Node node, final @NonNull Runnable body) {
 			super.trace.add("open " + super.name);
-			body.draw();
+			body.run();
 			super.trace.add("close " + super.name);
 		}
 

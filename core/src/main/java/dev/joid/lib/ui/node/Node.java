@@ -41,7 +41,6 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.render.Drawing;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.signal.Signal;
@@ -69,7 +68,6 @@ import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.ui.event.impl.node.NodeScrollEvent;
-import dev.joid.lib.ui.event.impl.node.NodeScrollEvent.ScrollAxis;
 import dev.joid.lib.ui.event.impl.node.NodeWatchEvent;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
@@ -87,6 +85,7 @@ import dev.joid.lib.ui.node.property.watch.WatchProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.align.Axis;
 import dev.joid.lib.utils.list.IndexedList;
 import dev.joid.lib.utils.point.Point;
 import lombok.AccessLevel;
@@ -262,8 +261,8 @@ public abstract class Node implements INode {
 		this.waitingList     = new ArrayList<>();
 		this.requirementList = new ArrayList<>();
 		this.positionValue   = InteractiveValue.create(this.bindings, "position", () -> Point.create(this.defaultX, this.defaultY), this::locate).events(Node.BEFORE_MOVE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), Node.MOVE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
-		this.scrollXValue    = this.createScrollValue(ScrollAxis.HORIZONTAL);
-		this.scrollYValue    = this.createScrollValue(ScrollAxis.VERTICAL);
+		this.scrollXValue    = this.createScrollValue(Axis.HORIZONTAL);
+		this.scrollYValue    = this.createScrollValue(Axis.VERTICAL);
 		this.animatorMap     = new HashMap<>();
 		this.hoverAnimator   = TweenAnimator.create();
 
@@ -433,12 +432,12 @@ public abstract class Node implements INode {
 
 					if (this.scrollEndX && this.scrollX == this.targetScrollX) {
 						this.scrollEndX = false;
-						this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, ScrollAxis.HORIZONTAL, this.scrollX, this.scrollX));
+						this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, Axis.HORIZONTAL, this.scrollX, this.scrollX));
 					}
 
 					if (this.scrollEndY && this.scrollY == this.targetScrollY) {
 						this.scrollEndY = false;
-						this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, ScrollAxis.VERTICAL, this.scrollY, this.scrollY));
+						this.fire(Node.SCROLL_AT_END, () -> NodeScrollEvent.Post.create(this, Axis.VERTICAL, this.scrollY, this.scrollY));
 					}
 
 					if (this.overflow == OverflowProperty.SCROLL) {
@@ -543,7 +542,7 @@ public abstract class Node implements INode {
 					final List<NodeEffect<Node>> selfShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.SELF).collect(Collectors.toList());
 					final List<NodeEffect<Node>> subtreeShaderEffects = shaderEffects.stream().filter(e -> e.getScope() == NodeEffectScope.CHILDREN).collect(Collectors.toList());
 
-					final Drawing content = () -> {
+					final Runnable content = () -> {
 						if (this.overflow != OverflowProperty.NONE) {
 							this.drawList.forEach(child -> child.overflowArea = this);
 						} else if (this.overflowArea != null) {
@@ -594,11 +593,11 @@ public abstract class Node implements INode {
 						if (this.overflow != OverflowProperty.NONE) {
 							this.ui.mask(this.x, this.y, this.width, this.height, content);
 						} else {
-							content.draw();
+							content.run();
 						}
 					};
 
-					Drawing effectDraw = () -> {
+					Runnable effectDraw = () -> {
 						if (!subtreeShaderEffects.isEmpty()) {
 							final List<IShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
 							ShaderPipeline.render(this, subtreePasses, maskDraw);
@@ -608,7 +607,7 @@ public abstract class Node implements INode {
 					};
 					for (int i = otherEffects.size() - 1; i >= 0; i--) {
 						final NodeEffect<Node> effect = otherEffects.get(i);
-						final Drawing body = effectDraw;
+						final Runnable body = effectDraw;
 						effectDraw = () -> {
 							effect.pre(this, mouseX, mouseY);
 							try {
@@ -618,7 +617,7 @@ public abstract class Node implements INode {
 							}
 						};
 					}
-					effectDraw.draw();
+					effectDraw.run();
 
 					if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
 						this.scrollbar.render(mouseX, mouseY);
@@ -2089,7 +2088,7 @@ public abstract class Node implements INode {
 		this.bindings.sync("y", position);
 	}
 
-	private void scroll(final ScrollAxis axis, final double offset) {
+	private void scroll(final Axis axis, final double offset) {
 		final boolean horizontal = axis.isHorizontal();
 		final double max = horizontal ? this.maxScrollX : this.maxScrollY;
 		final boolean end = max > 0D && offset <= -max;
@@ -2102,7 +2101,7 @@ public abstract class Node implements INode {
 		}
 	}
 
-	private InteractiveValue<Double> createScrollValue(final ScrollAxis axis) {
+	private InteractiveValue<Double> createScrollValue(final Axis axis) {
 		final boolean horizontal = axis.isHorizontal();
 		return InteractiveValue.create(this.bindings, horizontal ? "scrollX" : "scrollY", () -> horizontal ? this.targetScrollX : this.targetScrollY, (final Double offset) -> this.scroll(axis, offset))
 		.clamp(offset -> this.ui != null ? Math.max(-(horizontal ? this.maxScrollX : this.maxScrollY), Math.min(offset, 0D)) : Math.min(offset, 0D))

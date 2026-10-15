@@ -10,10 +10,10 @@ import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
 import dev.joid.lib.ui.node.impl.design.text.TextNode;
 import dev.joid.lib.ui.node.impl.structure.flex.FlexNode;
-import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
 import dev.joid.lib.ui.node.impl.structure.grid.GridNode;
 import dev.joid.lib.ui.node.property.position.PositionProperty;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.align.Axis;
 
 @UIData(background = true)
 public class UIDemoLayout extends UIDemo {
@@ -261,7 +261,7 @@ public class UIDemoLayout extends UIDemo {
 			FlexNode
 			.vertical(20, 20, 40)
 			.margin(8D)
-			.direction(row.map(value -> value ? FlexDirection.ROW : FlexDirection.COLUMN))
+			.direction(row.map(value -> value ? Axis.HORIZONTAL : Axis.VERTICAL))
 			.body(flex -> {
 				RectNode.create(0, 0, 40, 40).color(UIDemoLayout.INK).attach(flex);
 				RectNode.create(0, 0, 40, 40).color(Color.WHITE).attach(flex);

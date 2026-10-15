@@ -16,9 +16,9 @@ import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.design.shape.RectNode;
-import dev.joid.lib.ui.node.impl.structure.flex.FlexNode.FlexDirection;
 import dev.joid.lib.ui.node.property.overflow.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.align.Axis;
 
 
 public class ReorderableFlexNodeTest {
@@ -38,7 +38,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(120D, third.getY(), 0D);
 		Assert.assertEquals(200D, flex.getWidth(), 0D);
 		Assert.assertEquals(170D, flex.getHeight(), 0D);
-		Assert.assertSame(FlexDirection.COLUMN, flex.getDirection());
+		Assert.assertSame(Axis.VERTICAL, flex.getDirection());
 	}
 
 	@Test
@@ -54,7 +54,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(180D, third.getX(), 0D);
 		Assert.assertEquals(260D, flex.getWidth(), 0D);
 		Assert.assertEquals(50D, flex.getHeight(), 0D);
-		Assert.assertSame(FlexDirection.ROW, flex.getDirection());
+		Assert.assertSame(Axis.HORIZONTAL, flex.getDirection());
 	}
 
 	@Test
@@ -133,7 +133,7 @@ public class ReorderableFlexNodeTest {
 	public void turnsIntoARowWithTheDirection() {
 		final RectNode first = RectNode.create(0D, 0D, 80D, 50D);
 		final RectNode second = RectNode.create(0D, 0D, 80D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second).direction(FlexDirection.ROW);
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second).direction(Axis.HORIZONTAL);
 		this.bridges.open(new NodeUI(flex));
 		Assert.assertEquals(90D, second.getX(), 0D);
 		Assert.assertEquals(0D, second.getY(), 0D);
@@ -149,11 +149,11 @@ public class ReorderableFlexNodeTest {
 		Assert.assertSame(flex, flex.margin(10D));
 		Assert.assertSame(flex, flex.align(Align.END));
 		Assert.assertSame(flex, flex.autoDrag(false));
-		Assert.assertSame(flex, flex.direction(FlexDirection.ROW));
+		Assert.assertSame(flex, flex.direction(Axis.HORIZONTAL));
 		Assert.assertEquals(10D, flex.getMargin(), 0D);
 		Assert.assertSame(Align.END, flex.getAlign());
 		Assert.assertFalse(flex.isAutoDrag());
-		Assert.assertSame(FlexDirection.ROW, flex.getDirection());
+		Assert.assertSame(Axis.HORIZONTAL, flex.getDirection());
 	}
 
 	@Test
@@ -168,7 +168,7 @@ public class ReorderableFlexNodeTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullDirection() {
-		ReorderableFlexNode.vertical(0D, 0D, 300D).direction((FlexDirection) null);
+		ReorderableFlexNode.vertical(0D, 0D, 300D).direction((Axis) null);
 	}
 
 	@Test
@@ -871,7 +871,7 @@ public class ReorderableFlexNodeTest {
 		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, RectNode.create(0D, 0D, 50D, 50D), second);
 		this.bridges.open(new NodeUI(flex));
 		Assert.assertEquals(60D, second.getY(), 0D);
-		flex.direction(FlexDirection.ROW);
+		flex.direction(Axis.HORIZONTAL);
 		this.bridges.frame();
 		Assert.assertEquals(60D, second.getX(), 0D);
 		Assert.assertEquals(0D, second.getY(), 0D);

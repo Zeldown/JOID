@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.render.Drawing;
 import lombok.NonNull;
 
 public class Transformation {
@@ -62,10 +61,10 @@ public class Transformation {
 		this.transform(0D, 0D);
 	}
 
-	public void apply(final @NonNull Drawing drawing) {
+	public void apply(final @NonNull Runnable drawing) {
 		BridgeHandler.RENDER.get().getModelView().with(matrix -> {
 			this.transform(0D, 0D);
-			drawing.draw();
+			drawing.run();
 		});
 	}
 
