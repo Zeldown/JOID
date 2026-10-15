@@ -249,7 +249,7 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update();
 		final short[] chunk = this.audio.source().written.get(0);
-		Assert.assertArrayEquals(new short[] {19660, 19660, -19660, -19660, 9830, 0}, Arrays.copyOf(chunk, 6));
+		Assert.assertArrayEquals(new short[] {32767, 32767, -32767, -32767, 16383, 0}, Arrays.copyOf(chunk, 6));
 	}
 
 	@Test
@@ -277,6 +277,17 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update();
 		Assert.assertArrayEquals(new short[] {2, 5, 3, 6}, Arrays.copyOf(this.audio.source().written.get(0), 4));
+	}
+
+	@Test
+	public void skipsWholeFramesOfInterleavedFloatSamples() {
+		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 2);
+		player.play();
+		player.update();
+		player.pushSamples(new Buffer[] {FloatBuffer.wrap(new float[] {0.25F, 0.5F, -0.25F, -0.5F})}, 1);
+		VideoAudioPlayerTest.push(player, 15, 10);
+		player.update();
+		Assert.assertArrayEquals(new short[] {-8191, -16383, 0, 1}, Arrays.copyOf(this.audio.source().written.get(0), 4));
 	}
 
 	@Test

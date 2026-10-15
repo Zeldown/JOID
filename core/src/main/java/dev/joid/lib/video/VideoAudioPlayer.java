@@ -90,9 +90,7 @@ public final class VideoAudioPlayer {
 	}
 
 	public void flush() {
-		this.sampleQueue.clear();
-		this.pendingSamples = null;
-		this.pendingOffset = 0;
+		this.clearQueue();
 		this.buffersQueued = false;
 		if (this.source != null) {
 			this.source.stop();
@@ -106,9 +104,7 @@ public final class VideoAudioPlayer {
 
 		if (!this.buffersQueued) {
 			if (this.needsFlush) {
-				this.sampleQueue.clear();
-				this.pendingSamples = null;
-				this.pendingOffset = 0;
+				this.clearQueue();
 				this.needsFlush = false;
 				return;
 			}
@@ -125,21 +121,16 @@ public final class VideoAudioPlayer {
 		}
 
 		this.fill();
-		this.source.gain(this.volume * 0.3F);
-
-		if (this.positional) {
-			final float distanceVolume = this.computeDistanceVolume();
-			if (distanceVolume <= 0.001F) {
-				if (this.source.isPlaying()) {
-					this.source.pause();
-				}
-				this.sampleQueue.clear();
-				return;
+		final float distanceVolume = this.positional ? this.computeDistanceVolume() : 1F;
+		if (distanceVolume <= 0.001F) {
+			if (this.source.isPlaying()) {
+				this.source.pause();
 			}
-
-			this.source.gain(this.volume * 0.3F * distanceVolume);
+			this.sampleQueue.clear();
+			return;
 		}
 
+		this.source.gain(this.volume * 0.3F * distanceVolume);
 		if (!this.source.isPlaying()) {
 			this.source.play();
 		}
@@ -158,12 +149,12 @@ public final class VideoAudioPlayer {
 
 			for (int i = 0; i < samplesPerChannel; i++) {
 				for (int ch = 0; ch < channelCount; ch++) {
-					final float val = Math.max(-1F, Math.min(1F, ((FloatBuffer) samples[ch]).get())) * 0.6F;
+					final float val = Math.max(-1F, Math.min(1F, ((FloatBuffer) samples[ch]).get()));
 					interleaved[i * channelCount + ch] = (short) (val * 32767F);
 				}
 			}
 
-			this.offer(interleaved, skip * channelCount);
+			this.offer(interleaved, skip * this.channels);
 		} else if (samples[0] instanceof ShortBuffer) {
 			if (samples.length > 1) {
 				final int channelCount = samples.length;
@@ -207,9 +198,14 @@ public final class VideoAudioPlayer {
 			this.source = null;
 		}
 
+		this.clearQueue();
+		this.initialized = false;
+	}
+
+	private void clearQueue() {
 		this.sampleQueue.clear();
 		this.pendingSamples = null;
-		this.initialized = false;
+		this.pendingOffset = 0;
 	}
 
 	private void offer(final short[] samples, final int skip) {
@@ -286,13 +282,7 @@ public final class VideoAudioPlayer {
 			return null;
 		}
 
-		if (offset < chunk.length) {
-			final short[] trimmed = new short[offset];
-			System.arraycopy(chunk, 0, trimmed, 0, offset);
-			return trimmed;
-		}
-
-		return chunk;
+		return offset < chunk.length ? Arrays.copyOf(chunk, offset) : chunk;
 	}
 
 }
