@@ -49,7 +49,7 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
 
-@UIData(background = true)
+@UIData(background = true, closeable = false)
 public class UIDemoChoice extends UI {
 
 	private static final Color INK     = new Color(153, 153, 153).lock();
