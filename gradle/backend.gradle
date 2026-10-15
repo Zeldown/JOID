@@ -51,6 +51,7 @@ task runDemo(type: JavaExec) {
     description = "Launches the demo window of ${project.name}."
     main = demoMain
     classpath = sourceSets.main.runtimeClasspath
+    systemProperty 'joid.data', file("$buildDir/data").absolutePath
 }
 
 if (org.gradle.internal.os.OperatingSystem.current().isMacOsX() && embeddedModules.contains(project(':base-glfw'))) {

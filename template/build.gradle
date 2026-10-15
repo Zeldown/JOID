@@ -162,6 +162,7 @@ task runDemo(type: JavaExec) {
     description = 'Launches the demo window.'
     main = 'com.example.joid.backend.demo.DemoWindow'
     classpath = sourceSets.demo.runtimeClasspath
+    systemProperty 'joid.data', file("$buildDir/data").absolutePath
 }
 
 if (macOs) {
