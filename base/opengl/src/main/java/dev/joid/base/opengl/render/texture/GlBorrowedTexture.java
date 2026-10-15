@@ -57,7 +57,7 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 
 	@Override
 	protected boolean isValid(final @NonNull Integer texture) {
-		return this.bridge.getGuard().call(() -> this.bridge.getBinding().isTexture(texture));
+		return this.bridge.getBinding().isTexture(texture);
 	}
 
 	@Override

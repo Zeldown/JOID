@@ -423,12 +423,10 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 		final long previousBuffer = this.uniformAllocator.getBuffer().getBuffer();
 		final IntBuffer offsets = this.uploadBlock(stack, shader);
-		if (this.uniformAllocator.getBuffer().getBuffer() == previousBuffer) {
-			return offsets;
+		if (this.uniformAllocator.getBuffer().getBuffer() != previousBuffer) {
+			this.descriptorCache.invalidate(previousBuffer, this::dispose);
 		}
-
-		this.descriptorCache.invalidate(previousBuffer, this::dispose);
-		return this.uploadBlock(stack, shader);
+		return offsets;
 	}
 
 	private IntBuffer uploadBlock(final MemoryStack stack, final VulkanShader shader) {
