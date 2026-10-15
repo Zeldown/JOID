@@ -218,6 +218,12 @@ public class DrawTextTest {
 	}
 
 	@Test
+	public void movesAWordStartingAnElementToTheNextLine() {
+		final List<Text> lines = DrawTextTest.draw().getLines(55D, Text.create(TextElement.create("ab ", this.info), TextElement.create("cde", this.info)));
+		Assert.assertEquals(Arrays.asList("ab ", "cde"), lines.stream().map(Text::getText).collect(Collectors.toList()));
+	}
+
+	@Test
 	public void wrapsASentenceMeasuredWithTheFont() {
 		final TextInfo info = TextInfo.create(DrawTextTest.montserrat, 20F);
 		final double width = info.getWidth("Hello world");

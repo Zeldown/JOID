@@ -188,6 +188,10 @@ public final class ObjModel implements IDrawableModel {
 			throw this.malformed(line, lineCount, drawMode == DrawMode.QUADS ? "has 4 vertices while the faces before it in its group are triangles, keep quads in their own group" : "has " + tokens.length + " vertices while the faces before it in its group have 4, keep quads in their own group");
 		}
 
+		if (!group.getFaces().isEmpty() && (group.getFaces().get(0).getTextureCoordinates() != null) != textured) {
+			throw this.malformed(line, lineCount, textured ? "has texture coordinates while the faces before it in its group have none, keep one face format per group" : "has no texture coordinates while the faces before it in its group have some, keep one face format per group");
+		}
+
 		final ObjVertex[] vertices = new ObjVertex[tokens.length];
 		final ObjTextureCoordinate[] textureCoordinates = textured ? new ObjTextureCoordinate[tokens.length] : null;
 		final ObjVertex[] vertexNormals = normal ? new ObjVertex[tokens.length] : null;

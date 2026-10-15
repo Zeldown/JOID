@@ -205,6 +205,26 @@ public class ObjModelTest {
 	}
 
 	@Test
+	public void refusesTexturedFacesInAGroupWithoutTexture() {
+		try {
+			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "vt 0 0", "f 1 2 3", "f 1/1 2/1 3/1");
+			Assert.fail("A textured face must not join a group without texture");
+		} catch (final RuntimeException expected) {
+			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1/1 2/1 3/1\" has texture coordinates while the faces before it in its group have none, keep one face format per group, fix this line in the model file", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void refusesFacesWithoutTextureInATexturedGroup() {
+		try {
+			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "vt 0 0", "f 1/1 2/1 3/1", "f 1 2 3");
+			Assert.fail("A face without texture must not join a textured group");
+		} catch (final RuntimeException expected) {
+			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 3\" has no texture coordinates while the faces before it in its group have some, keep one face format per group, fix this line in the model file", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void refusesTrianglesInAGroupOfQuads() {
 		try {
 			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 4 3", "f 1 2 3");
