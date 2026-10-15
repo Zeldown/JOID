@@ -5,8 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
@@ -15,6 +13,7 @@ import java.time.Duration;
 import java.util.Locale;
 
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.asset.impl.UrlAsset;
 import dev.joid.lib.asset.locator.IAssetLocator;
 import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
@@ -36,9 +35,7 @@ public final class SnapshotUrlAssetLocator implements IAssetLocator {
 	}
 
 	private static void download(final @NonNull String url, final @NonNull File file) throws IOException {
-		final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-		connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36");
-		try (InputStream stream = connection.getInputStream()) {
+		try (InputStream stream = UrlAsset.create(url).open()) {
 			Files.copy(stream, file.toPath());
 		}
 	}

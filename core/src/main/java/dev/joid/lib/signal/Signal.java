@@ -10,7 +10,6 @@ import java.util.function.UnaryOperator;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.signal.replay.SignalReplay;
-import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.NonNull;
 
 public class Signal<T> implements Supplier<T> {
@@ -183,8 +182,21 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	protected final void emit(final T value) {
-		if (this.hasListeners()) {
-			ThreadUtils.runOnRenderThread(() -> this.notifyListeners(value));
+		RuntimeException failure = null;
+		for (final ISignalListener<? super T> listener : this.listenerSet) {
+			try {
+				listener.onChange(value);
+			} catch (final RuntimeException exception) {
+				if (failure == null) {
+					failure = exception;
+				} else {
+					failure.addSuppressed(exception);
+				}
+			}
+		}
+
+		if (failure != null) {
+			throw failure;
 		}
 	}
 
@@ -209,25 +221,6 @@ public class Signal<T> implements Supplier<T> {
 
 	private void fire() {
 		this.propagate(!SignalContext.current().isSilent());
-	}
-
-	private void notifyListeners(final T value) {
-		RuntimeException failure = null;
-		for (final ISignalListener<? super T> listener : this.listenerSet) {
-			try {
-				listener.onChange(value);
-			} catch (final RuntimeException exception) {
-				if (failure == null) {
-					failure = exception;
-				} else {
-					failure.addSuppressed(exception);
-				}
-			}
-		}
-
-		if (failure != null) {
-			throw failure;
-		}
 	}
 
 	@Override
