@@ -38,13 +38,14 @@ public class DemoWindow extends DemoUIBridge {
 		this.loop();
 	}
 
-	public void loop() {
+	private void loop() {
 		while (!Display.isCloseRequested()) {
 			if (!Display.isVisible()) {
 				try {
 					Thread.sleep(100);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
+				} catch (final InterruptedException exception) {
+					Thread.currentThread().interrupt();
+					break;
 				}
 				Display.update();
 				continue;

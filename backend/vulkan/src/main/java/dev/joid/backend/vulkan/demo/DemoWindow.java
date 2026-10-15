@@ -38,7 +38,10 @@ public class DemoWindow extends GlfwDemoWindow {
 
 	@Override
 	protected void present() {
-		this.host.endFrame().beginFrame();
+		this.host.endFrame();
+		if (!GLFW.glfwWindowShouldClose(super.getWindow())) {
+			this.host.beginFrame();
+		}
 	}
 
 }

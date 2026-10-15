@@ -41,7 +41,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 		this.loop();
 	}
 
-	public void loop() {
+	private void loop() {
 		while (!GLFW.glfwWindowShouldClose(this.window)) {
 			if (GLFW.glfwGetWindowAttrib(this.window, GLFW.GLFW_ICONIFIED) == GLFW.GLFW_TRUE) {
 				GLFW.glfwWaitEvents();
