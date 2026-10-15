@@ -35,9 +35,7 @@ public class TextNode extends Node {
 
 	@Override
 	public void init(final @NonNull UI ui) {
-		if (this.hasText()) {
-			this.fitText(this.text.getWidth(), this.mode == TextMode.SPLIT ? DrawUtils.TEXT.getLines(super.getWidth(), this.text).stream().mapToDouble(Text::getHeight).sum() : this.text.getHeight());
-		}
+		this.measure();
 	}
 
 	@Override
@@ -50,10 +48,7 @@ public class TextNode extends Node {
 
 	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {
-		if (this.text != null && !this.text.isEmpty()) {
-			super.fit(this.text.getWidth(), this.text.getHeight());
-		}
-
+		this.measure();
 		super.drawSkeleton(mouseX, mouseY);
 	}
 
@@ -75,6 +70,12 @@ public class TextNode extends Node {
 
 	private boolean hasText() {
 		return this.text != null && !this.text.isEmpty() && !this.text.getText().isEmpty();
+	}
+
+	private void measure() {
+		if (this.hasText()) {
+			this.fitText(this.text.getWidth(), this.mode == TextMode.SPLIT ? DrawUtils.TEXT.getLines(super.getWidth(), this.text).stream().mapToDouble(Text::getHeight).sum() : this.text.getHeight());
+		}
 	}
 
 	private void fitText(final double width, final double height) {

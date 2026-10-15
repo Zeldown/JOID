@@ -219,6 +219,15 @@ public class TextNodeTest {
 	}
 
 	@Test
+	public void keepsEveryLineInItsSkeletonInSplitMode() {
+		final TextNode node = TextNode.create(10D, 20D, 30D, 0D).mode(TextMode.SPLIT).text(this.text("ab cd ef")).wait(waiting -> false);
+		this.bridges.open(new NodeUI(node));
+		this.bridges.frame();
+		Assert.assertEquals(30D, node.getWidth(), 0D);
+		Assert.assertEquals(60D, node.getHeight(), 0D);
+	}
+
+	@Test
 	public void keepsTheSizeOfItsSkeletonWithoutText() {
 		final TextNode missing = TextNode.create(10D, 20D).wait(waiting -> false);
 		final TextNode empty = TextNode.create(10D, 20D).text(Text.create()).wait(waiting -> false);

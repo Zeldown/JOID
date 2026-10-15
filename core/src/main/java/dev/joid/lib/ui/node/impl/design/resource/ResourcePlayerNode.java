@@ -18,7 +18,6 @@ import dev.joid.lib.utils.point.Point;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class ResourcePlayerNode extends Node {
 
 	private static final EventType<NodeEvent<?>>         END      = EventType.create("onEnd");
@@ -27,8 +26,9 @@ public class ResourcePlayerNode extends Node {
 	private static final EventType<NodeEvent<?>>         PAUSE    = EventType.create("onPause");
 	private static final EventType<NodeProgressEvent<?>> PROGRESS = EventType.create("onProgress");
 
+	@Getter private Resource resource;
+
 	private Resource fork;
-	private Resource resource;
 	private boolean  wasPlaying;
 	private double   lastProgress;
 	private boolean  resourceStarted;
@@ -36,19 +36,24 @@ public class ResourcePlayerNode extends Node {
 	private Double  pendingTime;
 	private Boolean pendingPlaying;
 
-	private boolean loop;
-	private float   volume = 1F;
-	private Object  audioGroup;
-	private boolean autoplay = true;
+	@Getter private boolean loop;
+	@Getter private float   volume;
+	@Getter private Object  audioGroup;
+	@Getter private boolean autoplay;
 
-	private Point location;
-	private Float maxDistance;
-	private Float referenceDistance;
+	@Getter private Point location;
+	@Getter private Float maxDistance;
+	@Getter private Float referenceDistance;
 
-	private StretchType stretchType = StretchType.STRETCH;
+	@Getter private StretchType stretchType;
 
 	protected ResourcePlayerNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+
+		this.volume      = 1F;
+		this.autoplay    = true;
+		this.stretchType = StretchType.STRETCH;
+
 		super.<ResourcePlayerNode>wait(node -> node.isReady());
 		super.<ResourcePlayerNode>require("resource", "call resource(...) before attaching it", node -> node.resource != null);
 	}
@@ -120,25 +125,26 @@ public class ResourcePlayerNode extends Node {
 	@Override
 	public void detach() {
 		this.release();
+		this.clearFork();
 		this.wasPlaying = false;
 		this.lastProgress = 0D;
 		this.resourceStarted = false;
 	}
 
-	public final @NonNull ResourcePlayerNode play() {
+	public final <T extends ResourcePlayerNode> @NonNull T play() {
 		if (!this.resourceStarted) {
 			this.pendingPlaying = true;
-			return this;
+			return (T) this;
 		}
 
 		this.requirePlayback().play();
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ResourcePlayerNode pause() {
+	public final <T extends ResourcePlayerNode> @NonNull T pause() {
 		if (!this.resourceStarted) {
 			this.pendingPlaying = false;
-			return this;
+			return (T) this;
 		}
 
 		final IResourcePlayback playback = this.requirePlayback();
@@ -146,54 +152,54 @@ public class ResourcePlayerNode extends Node {
 			playback.pause();
 			super.fire(ResourcePlayerNode.PAUSE, () -> NodeEvent.create(this));
 		}
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ResourcePlayerNode resume() {
+	public final <T extends ResourcePlayerNode> @NonNull T resume() {
 		if (!this.resourceStarted) {
 			this.pendingPlaying = true;
-			return this;
+			return (T) this;
 		}
 
 		this.requirePlayback().resume();
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ResourcePlayerNode stop() {
+	public final <T extends ResourcePlayerNode> @NonNull T stop() {
 		if (!this.resourceStarted) {
 			this.pendingTime = null;
 			this.pendingPlaying = false;
-			return this;
+			return (T) this;
 		}
 
 		this.requirePlayback().stop();
 		this.wasPlaying = false;
 		super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ResourcePlayerNode restart() {
+	public final <T extends ResourcePlayerNode> @NonNull T restart() {
 		if (!this.resourceStarted) {
 			this.pendingTime = null;
 			this.pendingPlaying = true;
-			return this;
+			return (T) this;
 		}
 
 		if (this.requirePlayback().restart().isPlaying()) {
 			this.wasPlaying = true;
 			super.fire(ResourcePlayerNode.PLAY, () -> NodeEvent.create(this));
 		}
-		return this;
+		return (T) this;
 	}
 
-	public final @NonNull ResourcePlayerNode seek(final double seconds) {
+	public final <T extends ResourcePlayerNode> @NonNull T seek(final double seconds) {
 		if (!this.resourceStarted) {
 			this.pendingTime = seconds;
-			return this;
+			return (T) this;
 		}
 
 		this.requirePlayback().seek(seconds);
-		return this;
+		return (T) this;
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Resource resource) {
@@ -203,10 +209,7 @@ public class ResourcePlayerNode extends Node {
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
 		return super.follow("resource", resource, value -> {
 			this.release();
-			if (this.fork != null && this.fork != this.resource) {
-				this.fork.clear();
-			}
-
+			this.clearFork();
 			this.resource = value;
 			this.fork = ResourcePlayerNode.fork(value);
 			this.resourceStarted = false;
@@ -367,6 +370,13 @@ public class ResourcePlayerNode extends Node {
 
 		this.fork.prepareBind();
 		return this.fork.isFailed() || this.fork.isLoaded() && this.fork.getWidth() != 0 && this.fork.getHeight() != 0;
+	}
+
+	private void clearFork() {
+		if (this.fork != null && this.fork != this.resource) {
+			this.fork.clear();
+		}
+		this.fork = null;
 	}
 
 	private void release() {
