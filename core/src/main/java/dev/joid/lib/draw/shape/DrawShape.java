@@ -132,6 +132,10 @@ public final class DrawShape {
 	}
 
 	public void drawDashedLine(final @NonNull Color color, final int pattern, final float stroke, final @NonNull Point @NonNull... points) {
+		if (pattern <= 0) {
+			throw new IllegalArgumentException("The dash pattern " + pattern + " is not positive, pass a length above 0");
+		}
+
 		final List<Point> dashes = new ArrayList<>();
 		for (int i = 0; i + 1 < points.length; i++) {
 			final Point start = points[i];

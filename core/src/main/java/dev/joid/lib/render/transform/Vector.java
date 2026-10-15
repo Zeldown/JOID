@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class Vector {
+public final class Vector {
 
 	private Supplier<Double> xSupplier;
 	private Supplier<Double> ySupplier;
@@ -69,15 +69,15 @@ public class Vector {
 	}
 
 	public double getX() {
-		return xSupplier.get();
+		return this.xSupplier.get();
 	}
 
 	public double getY() {
-		return ySupplier.get();
+		return this.ySupplier.get();
 	}
 
 	public double getZ() {
-		return zSupplier.get();
+		return this.zSupplier.get();
 	}
 
 	public @NonNull Vector x(final double x) {
@@ -111,13 +111,7 @@ public class Vector {
 	}
 
 	public @NonNull Vector add(final double x, final double y, final double z) {
-		final double currentX = this.xSupplier.get();
-		final double currentY = this.ySupplier.get();
-		final double currentZ = this.zSupplier.get();
-		this.xSupplier = () -> currentX + x;
-		this.ySupplier = () -> currentY + y;
-		this.zSupplier = () -> currentZ + z;
-		return this;
+		return this.add(() -> x, () -> y, () -> z);
 	}
 
 	public @NonNull Vector add(final Supplier<Double> xSupplier, final Supplier<Double> ySupplier, final Supplier<Double> zSupplier) {

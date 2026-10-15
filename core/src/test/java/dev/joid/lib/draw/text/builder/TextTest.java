@@ -325,6 +325,14 @@ public class TextTest {
 	}
 
 	@Test
+	public void keepsItsElementsWhenItsCopyChangesThem() {
+		final Text text = Text.create("ab", TextTest.info());
+		text.copy().text("x").info(TextInfo.create(TextTest.FONT, 20F));
+		Assert.assertEquals("ab", text.getText());
+		Assert.assertEquals(20D, text.getWidth(), 0D);
+	}
+
+	@Test
 	public void copiesItsSettingsWithoutItsElements() {
 		final Text copy = Text.create("ab", TextTest.info()).alignX(Align.CENTER).alignY(Align.END).overflow(TextOverflow.ELLIPSIS).modifier(TextModifier.UPPER_CASE).copyProperties();
 		Assert.assertTrue(copy.isEmpty());

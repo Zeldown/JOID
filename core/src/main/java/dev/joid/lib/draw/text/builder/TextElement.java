@@ -24,7 +24,7 @@ public final class TextElement {
 	}
 
 	public static final @NonNull TextElement create(final @NonNull Supplier<?> text, final @NonNull TextInfo info) {
-		return new TextElement(info, () -> text.get(), null);
+		return new TextElement(info, text, null);
 	}
 
 	public final @NonNull TextElement text(final @NonNull Object text) {

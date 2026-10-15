@@ -101,12 +101,12 @@ public class VectorTest {
 	}
 
 	@Test
-	public void addsAnOffsetToItsCurrentPosition() {
+	public void keepsFollowingItsSuppliersAfterAnOffset() {
 		final double[] value = {1D};
 		final Vector vector = Vector.create(() -> value[0], () -> 2D, () -> 3D);
 		Assert.assertSame(vector, vector.add(10D, 20D, 30D));
 		value[0] = 100D;
-		Assert.assertEquals(11D, vector.getX(), 0D);
+		Assert.assertEquals(110D, vector.getX(), 0D);
 		Assert.assertEquals(22D, vector.getY(), 0D);
 		Assert.assertEquals(33D, vector.getZ(), 0D);
 	}

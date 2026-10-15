@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.FontBounds;
@@ -62,11 +63,7 @@ public final class Text {
 	}
 
 	public final @NonNull String getText() {
-		if (this.elementList.isEmpty()) {
-			return "";
-		}
-
-		return this.elementList.stream().map(this::getText).reduce("", (a, b) -> a + b);
+		return this.elementList.stream().map(this::getText).collect(Collectors.joining());
 	}
 
 	public final @NonNull String getText(final @NonNull TextElement element) {
@@ -90,11 +87,7 @@ public final class Text {
 	}
 
 	public final @NonNull String getRawText() {
-		if (this.elementList.isEmpty()) {
-			return "";
-		}
-
-		return this.elementList.stream().map(TextElement::getRawText).reduce("", (a, b) -> a + b);
+		return this.elementList.stream().map(TextElement::getRawText).collect(Collectors.joining());
 	}
 
 	public final @NonNull FontBounds getBounds() {
@@ -157,7 +150,9 @@ public final class Text {
 	}
 
 	public @NonNull Text copy() {
-		return Text.create().add(this).overflow(this.overflow).alignX(this.alignX).alignY(this.alignY).modifier(this.modifier);
+		final Text copy = this.copyProperties();
+		this.elementList.forEach(element -> copy.add(element.copy()));
+		return copy;
 	}
 
 	public @NonNull Text copyProperties() {

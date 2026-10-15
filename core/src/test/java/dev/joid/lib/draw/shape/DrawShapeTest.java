@@ -528,6 +528,16 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void refusesADashPatternThatIsNotPositive() {
+		try {
+			DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 0, 2F, Point.create(0D, 50D), Point.create(100D, 50D));
+			Assert.fail("A dash pattern of 0 must be refused");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The dash pattern 0 is not positive, pass a length above 0", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void cutsADashedLineIntoEqualDashesAndGaps() {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 2F, Point.create(0D, 50D), Point.create(100D, 50D));

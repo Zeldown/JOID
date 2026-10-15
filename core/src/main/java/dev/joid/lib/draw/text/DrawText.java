@@ -78,7 +78,7 @@ public final class DrawText {
 
 			if (mode == TextMode.OVERFLOW) {
 				final Text overflowText = text.copyProperties().modifier(null);
-				final String overflowStr = text.getOverflow() == null || text.getWidth() <= width ? "" : text.getOverflow().getOverflow();
+				final String overflowStr = text.getWidth() <= width ? "" : text.getOverflow().getOverflow();
 
 				boolean overflow = false;
 				double overflowWidth = 0;
@@ -115,7 +115,7 @@ public final class DrawText {
 					return FontBounds.empty();
 				}
 
-				if (overflow && overflowText.getOverflow() != null) {
+				if (overflow) {
 					final TextElement lastElement = overflowText.getElementList().get(overflowText.getElementList().size() - 1);
 					lastElement.text(overflowText.getText(lastElement) + overflowText.getOverflow().getOverflow());
 				}
@@ -160,7 +160,7 @@ public final class DrawText {
 				continue;
 			}
 
-			this.drawText(ox, oy, line.copy().alignY(Align.START));
+			this.drawText(ox, oy, line.alignY(Align.START));
 			oy += line.getHeight();
 			heightSum += line.getHeight();
 		}
