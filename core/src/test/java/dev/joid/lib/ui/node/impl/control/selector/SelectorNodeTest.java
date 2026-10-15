@@ -395,6 +395,16 @@ public class SelectorNodeTest {
 		Assert.assertFalse(SelectorDirection.UP.isDown());
 	}
 
+	@Test
+	public void opensACopyOnAClickOnItsSelection() {
+		final Selector copy = this.selector.copy();
+		this.bridges.open(new NodeUI(copy)).frame();
+		this.click(150D, 120D);
+		Assert.assertTrue(copy.isActive());
+		this.assertDrawn(0.3F, 0.5F, 0.7F, 140D, 180D);
+		this.assertDrawn(0.5F, 0.7F, 0.9F, 180D, 220D);
+	}
+
 	private void click(final double x, final double y) {
 		this.bridges.move(x, y).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);

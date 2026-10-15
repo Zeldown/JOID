@@ -47,8 +47,9 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 
 		final List<V> values = super.getValueList();
 		for (int i = 0; i < this.optionList.size(); i++) {
+			final Node option = this.optionList.get(i);
 			final double rank = super.getOptionRank(values.get(i));
-			this.optionList.get(i).layoutPosition(0D, this.direction.isDown() ? rank * size : raise - rank * size).layoutSize(super.getWidth(), size);
+			option.visible(super.isActive() || this.isSelected(option)).layoutPosition(0D, this.direction.isDown() ? rank * size : raise - rank * size).layoutSize(super.getWidth(), size);
 		}
 	}
 
@@ -75,7 +76,7 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 		for (final V value : super.getValueList()) {
 			final Node option = this.option.apply(value);
 			this.optionList.add(option);
-			super.append(option.visible(() -> super.isActive() || this.isSelected(option)));
+			super.append(option.visible(super.isActive() || this.isSelected(option)));
 		}
 	}
 

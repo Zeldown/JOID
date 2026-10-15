@@ -186,9 +186,9 @@ public abstract class Node implements INode {
 	private double width;
 	private double height;
 
-	private Supplier<Boolean> visible;
-	private Supplier<Boolean> enabled;
-	private Supplier<Boolean> interactive;
+	private boolean visible;
+	private boolean enabled;
+	private boolean interactive;
 
 	private Align            anchorX;
 	private Align            anchorY;
@@ -215,6 +215,9 @@ public abstract class Node implements INode {
 
 	private boolean mounted;
 	private boolean attached;
+
+	@Getter(AccessLevel.NONE)
+	private boolean pulled;
 
 	private Cursor        cursor;
 	private boolean       hovered;
@@ -282,9 +285,9 @@ public abstract class Node implements INode {
 		this.defaultWidth  = this.width  = width;
 		this.defaultHeight = this.height = height;
 
-		this.visible = () -> true;
-		this.enabled = () -> true;
-		this.interactive = () -> true;
+		this.visible = true;
+		this.enabled = true;
+		this.interactive = true;
 
 		this.position = PositionProperty.RELATIVE;
 		this.overflow = OverflowProperty.NONE;
@@ -332,7 +335,16 @@ public abstract class Node implements INode {
 		try {
 			render.getModelView().with(matrix -> {
 				Color.reset();
-				this.bindings.pull();
+				if (!this.pulled) {
+					this.bindings.pull();
+				}
+
+				this.pulled = false;
+				this.drawList.forEach(child -> {
+					child.bindings.pull();
+					child.pulled = true;
+				});
+
 				if (this.parent != null) {
 					matrix.translate(this.parent.x, this.parent.y, 0D);
 					if (this.position == PositionProperty.ABSOLUTE) {
@@ -1311,8 +1323,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T visible(final @NonNull Supplier<Boolean> visible) {
-		this.visible = visible;
-		return (T) this;
+		return this.follow("visible", visible, value -> this.visible = Boolean.TRUE.equals(value));
 	}
 
 	public final <T extends Node> @NonNull T enabled(final boolean enabled) {
@@ -1320,8 +1331,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T enabled(final @NonNull Supplier<Boolean> enabled) {
-		this.enabled = enabled;
-		return (T) this;
+		return this.follow("enabled", enabled, value -> this.enabled = Boolean.TRUE.equals(value));
 	}
 
 	public final <T extends Node> @NonNull T interactive(final boolean interactive) {
@@ -1329,8 +1339,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T interactive(final @NonNull Supplier<Boolean> interactive) {
-		this.interactive = interactive;
-		return (T) this;
+		return this.follow("interactive", interactive, value -> this.interactive = Boolean.TRUE.equals(value));
 	}
 
 	public final <T extends Node> @NonNull T label(final Text label) {
@@ -1558,7 +1567,7 @@ public abstract class Node implements INode {
 			return false;
 		}
 
-		return Boolean.TRUE.equals(this.enabled.get());
+		return this.enabled;
 	}
 
 	public boolean isInteractive() {
@@ -1566,7 +1575,7 @@ public abstract class Node implements INode {
 			return false;
 		}
 
-		return Boolean.TRUE.equals(this.interactive.get());
+		return this.interactive;
 	}
 
 	public boolean isVisible() {
@@ -1584,7 +1593,7 @@ public abstract class Node implements INode {
 	}
 
 	public boolean isVisibleProperty() {
-		return Boolean.TRUE.equals(this.visible.get());
+		return this.visible;
 	}
 
 	public boolean isDragging() {
@@ -2195,9 +2204,9 @@ public abstract class Node implements INode {
 			json.addProperty("scrollX", this.targetScrollX + " / " + this.maxScrollX + " [" + this.overflow.toString() + "]");
 			json.addProperty("scrollY", this.targetScrollY + " / " + this.maxScrollY + " [" + this.overflow.toString() + "]");
 
-			json.addProperty("visible", this.visible.get());
-			json.addProperty("enabled", this.enabled.get());
-			json.addProperty("interactive", this.interactive.get());
+			json.addProperty("visible", this.visible);
+			json.addProperty("enabled", this.enabled);
+			json.addProperty("interactive", this.interactive);
 			json.addProperty("hovered", this.hovered);
 
 			json.addProperty("isChild", this.parent != null);
@@ -2236,12 +2245,9 @@ public abstract class Node implements INode {
 		copy.defaultWidth = this.defaultWidth;
 		copy.defaultHeight = this.defaultHeight;
 
-		final boolean visible = this.isVisibleProperty();
-		final boolean enabled = Boolean.TRUE.equals(this.enabled.get());
-		final boolean interactive = Boolean.TRUE.equals(this.interactive.get());
-		copy.visible = () -> visible;
-		copy.enabled = () -> enabled;
-		copy.interactive = () -> interactive;
+		copy.visible = this.visible;
+		copy.enabled = this.enabled;
+		copy.interactive = this.interactive;
 		copy.position = this.position;
 		copy.overflow = this.overflow;
 		copy.anchorX = this.anchorX;

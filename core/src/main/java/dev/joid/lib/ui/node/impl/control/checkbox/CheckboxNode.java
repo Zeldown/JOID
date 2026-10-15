@@ -22,7 +22,7 @@ public abstract class CheckboxNode extends BaseCheckboxNode {
 			this.box.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}
 
-		this.mark.fit(super.getWidth(), super.getHeight());
+		this.mark.visible(super.isChecked()).fit(super.getWidth(), super.getHeight());
 		this.mark.layoutPosition((super.getWidth() - this.mark.getWidth()) / 2D, (super.getHeight() - this.mark.getHeight()) / 2D);
 	}
 
@@ -32,7 +32,7 @@ public abstract class CheckboxNode extends BaseCheckboxNode {
 	}
 
 	public final <T extends CheckboxNode> @NonNull T mark(final @NonNull Node mark) {
-		this.mark = super.part(this.mark, mark.visible(super::isChecked));
+		this.mark = super.part(this.mark, mark.visible(super.isChecked()));
 		return (T) this;
 	}
 

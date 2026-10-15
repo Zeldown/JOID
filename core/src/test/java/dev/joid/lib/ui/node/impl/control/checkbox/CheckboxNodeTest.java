@@ -173,6 +173,27 @@ public class CheckboxNodeTest {
 		Assert.assertFalse(below.isChecked());
 	}
 
+	@Test
+	public void flipsOnAClickItAlsoGivesToItsListener() {
+		final List<String> clicks = new ArrayList<>();
+		final Checkbox checkbox = new Checkbox().onClick(event -> clicks.add("click"));
+		this.bridges.open(new NodeUI(checkbox)).frame();
+		this.click(110D, 110D);
+		Assert.assertTrue(checkbox.isChecked());
+		Assert.assertEquals(Arrays.asList("click"), clicks);
+	}
+
+	@Test
+	public void showsTheMarkOfACheckedCopy() {
+		final Checkbox copy = new Checkbox().copy();
+		this.bridges.open(new NodeUI(copy)).frame();
+		Assert.assertFalse(copy.getMark().isVisible());
+		this.click(110D, 110D);
+		this.bridges.frame();
+		Assert.assertTrue(copy.isChecked());
+		Assert.assertTrue(copy.getMark().isVisible());
+	}
+
 	private void click(final double x, final double y) {
 		this.bridges.move(x, y).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);

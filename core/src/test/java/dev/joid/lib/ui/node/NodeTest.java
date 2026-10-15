@@ -329,9 +329,12 @@ public class NodeTest {
 		final Signal<Integer> second = new Signal<>(3);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(Signal.from(() -> first.get() != null && second.get() != null));
 		Assert.assertFalse(node.isVisible());
+		this.bridges.open(new NodeUI(node));
 		first.set("ready");
+		this.bridges.frame();
 		Assert.assertTrue(node.isVisible());
 		second.set(4);
+		this.bridges.frame();
 		Assert.assertTrue(node.isVisible());
 	}
 
@@ -340,9 +343,12 @@ public class NodeTest {
 		final BooleanSignal shown = new BooleanSignal(false);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(shown);
 		Assert.assertFalse(node.isVisible());
+		this.bridges.open(new NodeUI(node));
 		shown.set(true);
+		this.bridges.frame();
 		Assert.assertTrue(node.isVisible());
 		shown.set(false);
+		this.bridges.frame();
 		Assert.assertFalse(node.isVisible());
 	}
 
@@ -380,7 +386,7 @@ public class NodeTest {
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("below"), clicks);
 		interactive[0] = true;
-		this.bridges.frame();
+		this.bridges.frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("below", "above"), clicks);
 	}
@@ -577,7 +583,9 @@ public class NodeTest {
 		final BooleanSignal interactive = new BooleanSignal(false);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).interactive(interactive);
 		Assert.assertFalse(node.isInteractive());
+		this.bridges.open(new NodeUI(node));
 		interactive.set(true);
+		this.bridges.frame();
 		Assert.assertTrue(node.isInteractive());
 		Assert.assertFalse(RectNode.create(0D, 0D, 10D, 10D).interactive(false).isInteractive());
 		Assert.assertTrue(RectNode.create(0D, 0D, 10D, 10D).isInteractive());
@@ -2076,8 +2084,8 @@ public class NodeTest {
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(0, clicks[0]);
 		enabled[0] = true;
-		Assert.assertTrue(child.isEnabled());
 		this.bridges.frame();
+		Assert.assertTrue(child.isEnabled());
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(1, clicks[0]);
 	}
@@ -2416,7 +2424,9 @@ public class NodeTest {
 		final boolean[] on = {true};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(() -> on[0]).enabled(() -> on[0]).interactive(() -> on[0]);
 		final RectNode copy = node.copy();
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 100D, 100D).append(node, copy)));
 		on[0] = false;
+		this.bridges.frame();
 		Assert.assertFalse(node.isVisibleProperty());
 		Assert.assertTrue(copy.isVisibleProperty());
 		Assert.assertTrue(copy.isEnabled());

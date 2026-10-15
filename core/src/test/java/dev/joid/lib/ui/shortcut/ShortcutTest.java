@@ -134,11 +134,14 @@ public class ShortcutTest {
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(node);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		shown.set(false);
+		this.bridges.frame();
 		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		shown.set(true);
 		enabled.set(false);
+		this.bridges.frame();
 		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		enabled.set(true);
+		this.bridges.frame();
 		parent.remove(node);
 		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		parent.append(node);
@@ -153,6 +156,7 @@ public class ShortcutTest {
 		final ShortcutUI ui = this.open(RectNode.create(0, 0, 200, 200).visible(() -> shown.get()).append(node));
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(node);
 		shown.set(false);
+		this.bridges.frame();
 		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertTrue(this.trace.isEmpty());
 	}
