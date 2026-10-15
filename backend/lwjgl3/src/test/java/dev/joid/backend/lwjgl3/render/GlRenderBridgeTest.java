@@ -8,6 +8,8 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.lwjgl.opengl.GL11C;
+import org.lwjgl.opengl.GL30C;
 
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.base.opengl.capability.GlProfile;
@@ -17,6 +19,7 @@ import dev.joid.base.opengl.render.texture.BlitGlMipmapBuilder;
 import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
 import dev.joid.base.opengl.render.vertex.ArrayObjectVertexInput;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.resource.Resource;
 
 public class GlRenderBridgeTest {
@@ -52,6 +55,27 @@ public class GlRenderBridgeTest {
 		Assert.assertSame(bridge.getFrameBufferBinding(), bridge.getBinding().getFrameBufferBinding(bridge.getCapabilities().getFrameBufferFamily()));
 		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getVertexInput() instanceof ArrayObjectVertexInput);
 		Assert.assertEquals(bridge.getCapabilities().hasFrameBufferBlit(), bridge.getMipmapBuilder() instanceof BlitGlMipmapBuilder);
+	}
+
+	@Test
+	public void restoresTheReadFrameBufferOfTheHostAfterARaster() {
+		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
+		Assume.assumeTrue(bridge.getCapabilities().hasFrameBufferBlit());
+		final int read = GL30C.glGenFramebuffers();
+		GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, read);
+		bridge.beginFrame();
+		try {
+			final IFrameBuffer target = bridge.createFrameBuffer(8, 8);
+			bridge.raster(target, 8, 8, () -> {});
+			target.delete();
+		} finally {
+			bridge.endFrame();
+		}
+
+		final int bound = GL11C.glGetInteger(GL30C.GL_READ_FRAMEBUFFER_BINDING);
+		GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, 0);
+		GL30C.glDeleteFramebuffers(read);
+		Assert.assertEquals(read, bound);
 	}
 
 	@Test

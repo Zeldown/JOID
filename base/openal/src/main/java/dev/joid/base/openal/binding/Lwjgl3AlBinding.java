@@ -32,6 +32,12 @@ public final class Lwjgl3AlBinding implements IAlBinding {
 		}
 
 		this.context = ALC10.alcCreateContext(this.device, (IntBuffer) null);
+		if (this.context == 0L) {
+			ALC10.alcCloseDevice(this.device);
+			this.device = 0L;
+			throw new IllegalStateException("OpenAL cannot create a context on the default audio device, check that no other application holds it exclusively and that its driver is up to date");
+		}
+
 		ALC10.alcMakeContextCurrent(this.context);
 		AL.createCapabilities(ALC.createCapabilities(this.device));
 	}

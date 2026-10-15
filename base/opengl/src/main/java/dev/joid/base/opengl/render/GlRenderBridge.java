@@ -74,6 +74,7 @@ public class GlRenderBridge extends RenderBridge {
 		this.guard.suspend(() -> {
 			final int[] viewport = new int[4];
 			final int previous = this.binding.getInteger(GlConstants.DRAW_FRAMEBUFFER_BINDING);
+			final int previousRead = this.capabilities.hasFrameBufferBlit() ? this.binding.getInteger(GlConstants.READ_FRAMEBUFFER_BINDING) : previous;
 			this.binding.getIntegers(GlConstants.VIEWPORT, viewport);
 			this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, ((GlFrameBuffer) target).getId());
 			this.binding.viewport(0, 0, width, height);
@@ -81,6 +82,9 @@ public class GlRenderBridge extends RenderBridge {
 				draw.run();
 			} finally {
 				this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, previous);
+				if (previousRead != previous) {
+					this.frameBufferBinding.bindFramebuffer(GlConstants.READ_FRAMEBUFFER, previousRead);
+				}
 				this.binding.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
 			}
 		});
