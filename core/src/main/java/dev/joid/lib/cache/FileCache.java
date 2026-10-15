@@ -35,9 +35,8 @@ public final class FileCache {
 		final List<String> details = new ArrayList<>();
 		long freed = 0L;
 		for (final File directory : directories) {
-			final FileCacheArea area = FileCache.AREA_MAP.get(directory.getName());
 			final AtomicInteger files = new AtomicInteger();
-			freed += (area != null ? area : new FileCacheArea(directory.getName())).clean(now, files);
+			freed += FileCache.AREA_MAP.computeIfAbsent(directory.getName(), FileCacheArea::new).clean(now, files);
 			if (files.get() > 0) {
 				details.add(directory.getName() + ": " + files.get() + (files.get() == 1 ? " file" : " files"));
 			}

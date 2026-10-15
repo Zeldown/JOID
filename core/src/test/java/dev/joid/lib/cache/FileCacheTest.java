@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -13,6 +14,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -262,6 +264,16 @@ public class FileCacheTest {
 		FileCacheTest.capture(() -> Assert.assertEquals(1L, FileCache.clean()));
 		Assert.assertFalse(old.exists());
 		Assert.assertTrue(recent.isFile());
+	}
+
+	@Test
+	public void keepsTheAreaItCleansForItsLaterUse() throws IOException, ReflectiveOperationException {
+		final File directory = this.folder.newFolder("cleaned");
+		FileCacheTest.write(new File(directory, ".area"), "PT48H");
+		FileCacheTest.capture(FileCache::clean);
+		final Field field = FileCache.class.getDeclaredField("AREA_MAP");
+		field.setAccessible(true);
+		Assert.assertSame(((Map<?, ?>) field.get(null)).get("cleaned"), FileCache.area("cleaned"));
 	}
 
 	@Test

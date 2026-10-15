@@ -1472,6 +1472,23 @@ public class NodeTest {
 	}
 
 	@Test
+	public void keepsAScrollGivenBeforeItsFirstMeasure() {
+		final ContainerNode column = NodeTest.column().onInit(event -> event.getNode().scrollTo(0D, -50D));
+		this.bridges.open(new NodeUI(column));
+		Assert.assertEquals(-50D, column.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void scrollsToTheEndOfAChildAppendedJustBefore() {
+		final ContainerNode column = NodeTest.column();
+		this.bridges.open(new NodeUI(column));
+		RectNode.create(0D, 300D, 400D, 100D).attach(column);
+		column.scrollTo(0D, -1000D);
+		this.bridges.frame();
+		Assert.assertEquals(-300D, column.getTargetScrollY(), 0D);
+	}
+
+	@Test
 	public void writesTheWheelIntoItsScrollSignal() {
 		final DoubleSignal scroll = new DoubleSignal(0D);
 		final ContainerNode column = NodeTest.column().scrollY(scroll);
@@ -2392,6 +2409,18 @@ public class NodeTest {
 		this.bridges.frame();
 		Assert.assertEquals(25D, node.getWidth(), 0D);
 		Assert.assertEquals(10D, copy.getWidth(), 0D);
+	}
+
+	@Test
+	public void copiesItsVisibilityAndInteractivityWithoutTheirSources() {
+		final boolean[] on = {true};
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(() -> on[0]).enabled(() -> on[0]).interactive(() -> on[0]);
+		final RectNode copy = node.copy();
+		on[0] = false;
+		Assert.assertFalse(node.isVisibleProperty());
+		Assert.assertTrue(copy.isVisibleProperty());
+		Assert.assertTrue(copy.isEnabled());
+		Assert.assertTrue(copy.isInteractive());
 	}
 
 	@Test

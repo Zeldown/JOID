@@ -20,14 +20,11 @@ public class TransformNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public void pre(final @NonNull Node node, final double mouseX, final double mouseY) {
-		BridgeHandler.RENDER.get().getModelView().push();
-		this.transformation.transform(node.getX() + node.getWidth() / 2D, node.getY() + node.getHeight() / 2D);
-	}
-
-	@Override
-	public void post(final @NonNull Node node, final double mouseX, final double mouseY) {
-		BridgeHandler.RENDER.get().getModelView().pop();
+	public void draw(final @NonNull Node node, final @NonNull Runnable body) {
+		BridgeHandler.RENDER.get().getModelView().with(matrix -> {
+			this.transformation.transform(node.getX() + node.getWidth() / 2D, node.getY() + node.getHeight() / 2D);
+			body.run();
+		});
 	}
 
 	public final <E extends TransformNodeEffect> @NonNull E transformation(final @NonNull Transformation transformation) {

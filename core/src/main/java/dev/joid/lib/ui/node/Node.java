@@ -231,6 +231,7 @@ public abstract class Node implements INode {
 
 	private boolean scrollEndX;
 	private boolean scrollEndY;
+	private boolean scrollMeasured;
 
 	private double  restX;
 	private double  restY;
@@ -413,6 +414,8 @@ public abstract class Node implements INode {
 							this.maxScrollY += scrollOffsetY;
 							scrollsY = true;
 						}
+
+						this.scrollMeasured = true;
 					}
 
 					this.scrollXValue.update(this.targetScrollX);
@@ -873,6 +876,8 @@ public abstract class Node implements INode {
 			this.children.add(node);
 			this.fire(Node.CHILD_APPEND, () -> NodeChildEvent.create(this, node));
 		}
+
+		this.scrollMeasured = false;
 		return (T) this;
 	}
 
@@ -1964,6 +1969,7 @@ public abstract class Node implements INode {
 			this.scrollYValue.update(0D);
 			this.scrollX = this.scrollY = 0D;
 			this.scrollEndX = this.scrollEndY = false;
+			this.scrollMeasured = false;
 		}
 
 		this.overflow = overflow;
@@ -2104,7 +2110,7 @@ public abstract class Node implements INode {
 	private InteractiveValue<Double> createScrollValue(final Axis axis) {
 		final boolean horizontal = axis.isHorizontal();
 		return InteractiveValue.create(this.bindings, horizontal ? "scrollX" : "scrollY", () -> horizontal ? this.targetScrollX : this.targetScrollY, (final Double offset) -> this.scroll(axis, offset))
-		.clamp(offset -> this.ui != null ? Math.max(-(horizontal ? this.maxScrollX : this.maxScrollY), Math.min(offset, 0D)) : Math.min(offset, 0D))
+		.clamp(offset -> this.scrollMeasured ? Math.max(-(horizontal ? this.maxScrollX : this.maxScrollY), Math.min(offset, 0D)) : Math.min(offset, 0D))
 		.events(Node.BEFORE_SCROLL, (previous, offset) -> NodeScrollEvent.Pre.create(this, axis, previous, offset), Node.SCROLL, (previous, offset) -> NodeScrollEvent.Post.create(this, axis, previous, offset))
 		.then((previous, offset) -> {
 			if ((horizontal ? this.scrollEndX : this.scrollEndY) && this.bindings.isSubscribed()) {
@@ -2254,9 +2260,12 @@ public abstract class Node implements INode {
 		copy.defaultWidth = this.defaultWidth;
 		copy.defaultHeight = this.defaultHeight;
 
-		copy.visible = this.visible;
-		copy.enabled = this.enabled;
-		copy.interactive = this.interactive;
+		final boolean visible = this.isVisibleProperty();
+		final boolean enabled = Boolean.TRUE.equals(this.enabled.get());
+		final boolean interactive = Boolean.TRUE.equals(this.interactive.get());
+		copy.visible = () -> visible;
+		copy.enabled = () -> enabled;
+		copy.interactive = () -> interactive;
 		copy.position = this.position;
 		copy.overflow = this.overflow;
 		copy.anchorX = this.anchorX;

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -521,6 +523,22 @@ public class UITest {
 	}
 
 	@Test
+	public void keepsTheTasksAndShortcutsOfItsConstructor() {
+		final AtomicInteger runs = new AtomicInteger();
+		final TraceUI ui = new TraceUI(this.trace);
+		Task.create(0L).every(16L).onRun(event -> runs.incrementAndGet()).attach(ui);
+		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("save")).attach(ui);
+		this.bridges.open(ui);
+		ui.reload();
+		this.bridges.frames(2);
+		this.trace.clear();
+		this.bridges.getWindow().getKeys().add(Key.S);
+		this.bridges.getUi().keyPressed(Key.S);
+		Assert.assertTrue(runs.get() > 0);
+		Assert.assertEquals(Arrays.asList("save", "key S cancelled"), this.trace);
+	}
+
+	@Test
 	public void keepsOneShortcutAcrossItsReloads() {
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.shortcut = Shortcut.create(Key.R).onTrigger(event -> this.trace.add("shortcut"));
@@ -990,6 +1008,28 @@ public class UITest {
 	}
 
 	@Test
+	public void closesAtOnceWhileHidden() {
+		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
+		this.bridges.open(ui).frames(20);
+		ui.getData().visible(false);
+		Assert.assertTrue(ui.fireClose());
+	}
+
+	@Test
+	public void staysOpenWhenOpenedAgainDuringItsOutTransition() {
+		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
+		this.bridges.open(ui).frames(20);
+		Assert.assertFalse(ui.fireClose());
+		JOID.forceClose(ui);
+		Assert.assertEquals(1, Collections.frequency(this.trace, "detach node"));
+		JOID.open(ui);
+		this.bridges.frames(20);
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
+		Assert.assertFalse(ui.isClosed());
+		Assert.assertEquals(1, Collections.frequency(this.trace, "detach node"));
+	}
+
+	@Test
 	public void measuresItsFrameTimeOnTheClock() {
 		final TraceUI ui = new TraceUI(this.trace);
 		Assert.assertEquals(0D, ui.getFrameTime(), 0D);
@@ -1402,6 +1442,24 @@ public class UITest {
 		});
 		Assert.assertEquals(Arrays.asList("EQUAL 2", "EQUAL 1"), stencils);
 		Assert.assertEquals("off", UITest.stencil(this.bridges));
+	}
+
+	@Test
+	public void stopsItsMaskWhenItsShapeFails() throws ReflectiveOperationException {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		final Method mask = UI.class.getDeclaredMethod("mask", Runnable.class, Runnable.class);
+		mask.setAccessible(true);
+		try {
+			mask.invoke(ui, (Runnable) () -> {
+				throw new IllegalStateException("broken");
+			}, (Runnable) () -> {});
+			Assert.fail();
+		} catch (final InvocationTargetException e) {
+			Assert.assertEquals("broken", e.getCause().getMessage());
+		}
+		Assert.assertEquals(0, UITest.maskDepth(ui));
+		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
 	}
 
 	@Test

@@ -96,7 +96,9 @@ public abstract class UI implements IUI, IndexedElement {
 
 	private final List<Task>               taskList;
 	private final NodeBindings             bindings;
+	private final List<Task>               keptTaskList;
 	private final List<Shortcut>           shortcutList;
+	private final List<Shortcut>           keptShortcutList;
 	private final InteractiveValue<Double> zoomValue;
 
 	@Getter
@@ -169,10 +171,12 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
 
-		this.bindings     = NodeBindings.create(this, this.eventBus, () -> UI.nameOf(this.getClass()), this::traced);
-		this.taskList     = new CopyOnWriteArrayList<>();
-		this.shortcutList = new CopyOnWriteArrayList<>();
-		this.zoomValue    = InteractiveValue.create(this.bindings, "zoom", () -> this.zoom, (final Double zoom) -> {
+		this.bindings         = NodeBindings.create(this, this.eventBus, () -> UI.nameOf(this.getClass()), this::traced);
+		this.taskList         = new CopyOnWriteArrayList<>();
+		this.keptTaskList     = new ArrayList<>();
+		this.shortcutList     = new CopyOnWriteArrayList<>();
+		this.keptShortcutList = new ArrayList<>();
+		this.zoomValue        = InteractiveValue.create(this.bindings, "zoom", () -> this.zoom, (final Double zoom) -> {
 			this.zoom = zoom;
 			this.view.zoom(zoom);
 		}).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
@@ -198,12 +202,15 @@ public abstract class UI implements IUI, IndexedElement {
 			UIPropertyHook.load(this);
 
 			final boolean devNodeEnabled = this.nodeList.contains(this.devNode);
-			this.shortcutList.forEach(Shortcut::detach);
 			if (!this.loaded) {
 				this.eventBus.keep();
+				this.keptTaskList.addAll(this.taskList);
+				this.keptShortcutList.addAll(this.shortcutList);
 				this.loaded = true;
 			}
 			this.eventBus.reset();
+			this.shortcutList.forEach(Shortcut::detach);
+			this.keptShortcutList.forEach(this::addShortcut);
 			this.scoped(() -> {
 				if (!this.closed) {
 					for (final Node node : this.nodeList) {
@@ -213,6 +220,7 @@ public abstract class UI implements IUI, IndexedElement {
 					}
 					this.taskList.forEach(Task::detach);
 				}
+				this.keptTaskList.forEach(this::addTask);
 				this.nodeList.clear();
 
 				SignalReplay.reset();
@@ -401,7 +409,7 @@ public abstract class UI implements IUI, IndexedElement {
 			return false;
 		}
 
-		if (this.transition != null && this.transition.getOut().isEnabled()) {
+		if (this.transition != null && this.transition.getOut().isEnabled() && this.data.visible()) {
 			this.transition.getOut().start();
 			this.transition.getOut().getAnimator().onComplete(tween -> {
 				this.dispose();
@@ -536,6 +544,11 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	public final void dispose() {
+		if (this.transition != null) {
+			this.transition.getIn().stop();
+			this.transition.getOut().stop();
+		}
+
 		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
 		this.taskList.forEach(Task::detach);
 		this.bindings.unsubscribe();
@@ -759,8 +772,8 @@ public abstract class UI implements IUI, IndexedElement {
 	}
 
 	private void mask(final Runnable shape, final Runnable drawing) {
-		this.startMask(shape);
 		try {
+			this.startMask(shape);
 			drawing.run();
 		} finally {
 			this.stopMask();
@@ -962,7 +975,7 @@ public abstract class UI implements IUI, IndexedElement {
 		try {
 			this.untraced(runnable);
 		} catch (final RuntimeException exception) {
-			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + exception, "The " + input + " of " + UI.nameOf(this.getClass()) + " failed (" + exception + "), the next inputs still run: catch the exception inside the handler to handle it", exception);
+			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + "." + exception.getClass().getName(), "The " + input + " of " + UI.nameOf(this.getClass()) + " failed (" + exception + "), the next inputs still run: catch the exception inside the handler to handle it", exception);
 		}
 	}
 

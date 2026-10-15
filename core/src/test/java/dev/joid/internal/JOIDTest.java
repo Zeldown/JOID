@@ -28,6 +28,7 @@ import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
+import dev.joid.lib.bridge.ui.UIBridgeRegistryTest.RoutingBridge;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.popup.UIDataPopup;
@@ -202,6 +203,20 @@ public class JOIDTest {
 		Assert.assertSame(menu, JOID.getUi(MenuUI.class));
 		Assert.assertSame(menu, JOID.getUi(UI.class));
 		Assert.assertFalse(JOID.isOpen(PopupUI.class));
+	}
+
+	@Test
+	public void findsAnOpenedUiInEveryBridge() {
+		final RoutingBridge other = new RoutingBridge(MenuUI.class);
+		final MenuUI menu = new MenuUI();
+		BridgeHandler.UI.register(other, -1);
+		try {
+			other.add(menu);
+			Assert.assertSame(menu, JOID.getUi(MenuUI.class));
+			Assert.assertTrue(JOID.isOpen(MenuUI.class));
+		} finally {
+			BridgeHandler.UI.unregister(other);
+		}
 	}
 
 	@Test

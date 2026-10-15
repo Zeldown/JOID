@@ -60,6 +60,22 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
+	public void bringsAnOpenUiBackOnTopWithoutClosingIt() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final PopupUI first = new PopupUI("first", this.trace);
+		final PopupUI second = new PopupUI("second", this.trace);
+		this.bridge.open(menu);
+		this.bridge.open(first);
+		this.bridge.open(second);
+		this.trace.clear();
+		this.bridge.open(first);
+		this.bridge.open(menu);
+		Assert.assertEquals(Arrays.asList(second, first, menu), this.bridge.getUiList());
+		Assert.assertTrue(this.trace.isEmpty());
+		Assert.assertFalse(menu.isClosed());
+	}
+
+	@Test
 	public void loadsTheUiItAddsAtTheWindowSize() {
 		final ScreenUI menu = new ScreenUI("menu", this.trace);
 		this.bridges.resize(1366, 768);

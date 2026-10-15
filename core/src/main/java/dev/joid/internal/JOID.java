@@ -27,7 +27,7 @@ public final class JOID {
 
 	private static final String DEVELOPMENT_VERSION = "development";
 
-	private static JOID instance;
+	private static final JOID INSTANCE = new JOID();
 
 	private final List<Runnable> readyList = new ArrayList<>();
 
@@ -35,13 +35,10 @@ public final class JOID {
 	private boolean ready;
 
 	public static @NonNull JOID inst() {
-		if (JOID.instance == null) {
-			JOID.instance = new JOID();
-		}
-		return JOID.instance;
+		return JOID.INSTANCE;
 	}
 
-	public @NonNull JOID load() {
+	public synchronized @NonNull JOID load() {
 		synchronized (this.readyList) {
 			if (this.ready) {
 				return this;
@@ -108,8 +105,7 @@ public final class JOID {
 	}
 
 	public static <T extends UI> T getUi(final @NonNull Class<T> uiClass) {
-		final IUIBridge bridge = BridgeHandler.UI.get(uiClass);
-		if (bridge != null) {
+		for (final IUIBridge bridge : BridgeHandler.UI.getBridgeList()) {
 			for (final UI ui : bridge.getUiList()) {
 				if (uiClass.isInstance(ui)) {
 					return (T) ui;

@@ -50,6 +50,13 @@ public class TransitionStep {
 		this.animator.sequence(this.duration, 1F, this.equation);
 	}
 
+	public final void stop() {
+		if (this.animator.getTimeline() != null && !this.animator.getTimeline().isFinished()) {
+			this.animator.value(0F);
+		}
+		this.running = false;
+	}
+
 	public final void render(final @NonNull UI ui, final @NonNull Runnable body) {
 		if (!this.running) {
 			body.run();

@@ -15,6 +15,12 @@ public abstract class StackUIBridge extends UIBridge {
 
 	@Override
 	public void open(final @NonNull UI ui) {
+		if (super.isOpen(ui)) {
+			super.remove(ui);
+			super.add(ui);
+			return;
+		}
+
 		if (ui.getPopup().active() || ui.getOverlay().active()) {
 			this.add(ui);
 			return;

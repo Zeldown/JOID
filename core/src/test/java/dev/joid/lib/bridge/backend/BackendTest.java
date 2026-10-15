@@ -1,7 +1,6 @@
 package dev.joid.lib.bridge.backend;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,9 +33,10 @@ public class BackendTest {
 
 	private final List<String> trace = new ArrayList<>();
 
-	private JOID    previous;
-	private boolean devMode;
-	private boolean demoMode;
+	private boolean        ready;
+	private boolean        devMode;
+	private boolean        demoMode;
+	private List<Runnable> readyList;
 
 	private File dataDir;
 	private File cacheDir;
@@ -45,14 +45,15 @@ public class BackendTest {
 
 	@Before
 	public void startAFreshJOID() throws ReflectiveOperationException {
-		this.previous = JOID.inst();
+		this.ready = JOID.inst().isReady();
+		this.readyList = new ArrayList<>(BackendTest.readyList());
 		this.devMode = JOIDEnv.isDevMode();
 		this.demoMode = JOIDEnv.isDemoMode();
 		this.dataDir = JOIDEnv.getDataDir();
 		this.cacheDir = JOIDEnv.getCacheDir();
 		JOIDEnv.devMode(false);
 		JOIDEnv.demoMode(false);
-		BackendTest.instance(BackendTest.create());
+		BackendTest.ready(false, Collections.emptyList());
 	}
 
 	@After
@@ -69,7 +70,7 @@ public class BackendTest {
 			}
 		}
 
-		BackendTest.instance(this.previous);
+		BackendTest.ready(this.ready, this.readyList);
 		JOIDEnv.devMode(this.devMode);
 		JOIDEnv.demoMode(this.demoMode);
 		JOIDEnv.dataDir(this.dataDir);
@@ -251,16 +252,19 @@ public class BackendTest {
 		return this.backend;
 	}
 
-	private static JOID create() throws ReflectiveOperationException {
-		final Constructor<JOID> constructor = JOID.class.getDeclaredConstructor();
-		constructor.setAccessible(true);
-		return constructor.newInstance();
+	private static List<Runnable> readyList() throws ReflectiveOperationException {
+		final Field field = JOID.class.getDeclaredField("readyList");
+		field.setAccessible(true);
+		return (List<Runnable>) field.get(JOID.inst());
 	}
 
-	private static void instance(final JOID joid) throws ReflectiveOperationException {
-		final Field field = JOID.class.getDeclaredField("instance");
+	private static void ready(final boolean ready, final List<Runnable> readyList) throws ReflectiveOperationException {
+		final Field field = JOID.class.getDeclaredField("ready");
 		field.setAccessible(true);
-		field.set(null, joid);
+		field.setBoolean(JOID.inst(), ready);
+		final List<Runnable> current = BackendTest.readyList();
+		current.clear();
+		current.addAll(readyList);
 	}
 
 	public static final class TraceBackend extends Backend<TraceBackend> {

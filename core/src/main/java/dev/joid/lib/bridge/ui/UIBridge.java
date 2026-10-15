@@ -177,7 +177,7 @@ public abstract class UIBridge implements IUIBridge {
 				render.popState();
 			}
 
-			JOIDLog.warnOnce("UIBridge.draw." + System.identityHashCode(this) + exception, this.getClass().getSimpleName() + " cannot draw a frame and skips the rest of it (" + exception + "), fix the draw code from this error", exception);
+			JOIDLog.warnOnce("UIBridge.draw." + System.identityHashCode(this) + "." + exception.getClass().getName(), this.getClass().getSimpleName() + " cannot draw a frame and skips the rest of it (" + exception + "), fix the draw code from this error", exception);
 		}
 	}
 

@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
+import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Scale;
@@ -101,6 +102,22 @@ public class TransformNodeEffectTest {
 		Assert.assertEquals(1, draws.size());
 		Assert.assertEquals(300D, draws.get(0).getLeft(), 1E-3D);
 		Assert.assertEquals(100D, draws.get(0).getTop(), 1E-3D);
+	}
+
+	@Test
+	public void leavesTheMatrixStackAsItWasWhenAnOperationFails() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(() -> {
+			throw new IllegalStateException("broken");
+		}, () -> 0D))));
+		final MatrixStack modelView = this.bridges.getRender().getModelView();
+		final int depth = modelView.getDepth();
+		try {
+			node.render(0D, 0D);
+			Assert.fail();
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("broken", expected.getMessage());
+		}
+		Assert.assertEquals(depth, modelView.getDepth());
 	}
 
 	private void open(final TransformNodeEffect effect) {
