@@ -2,6 +2,7 @@
 
 mode=$1
 files=$(cat)
+tested="$(git rev-parse --git-dir)/joid-tested"
 
 sources=0
 if printf '%s\n' "$files" | grep -qE '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
@@ -11,6 +12,9 @@ fi
 if [ $sources -eq 0 ] && ! printf '%s\n' "$files" | grep -qE '^sample/showcase/(src/|build\.gradle$)'; then
     echo "🔍 No source change, tests skipped"
     echo ""
+    if [ "$mode" = "index" ] && grep -qx "$(git rev-parse HEAD^{tree})" "$tested" 2>/dev/null; then
+        { tail -n 99 "$tested"; git write-tree; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
+    fi
     exit 0
 fi
 
@@ -19,7 +23,6 @@ if [ "$mode" = "index" ]; then
 else
     tree=$(git rev-parse HEAD^{tree})
 fi
-tested="$(git rev-parse --git-dir)/joid-tested"
 
 stashed=0
 restore() {
@@ -72,17 +75,8 @@ for module in glfw openal opengl; do
     fi
 done
 
-for module in lwjgl2 lwjgl3 vulkan; do
-    case " $modules " in
-        *" $module "*)
-            tasks="$tasks :backend-$module:check"
-            ;;
-        *)
-            if [ -d "build/snapshots/backend-$module" ]; then
-                tasks="$tasks -x :backend-$module:test"
-            fi
-            ;;
-    esac
+for module in $modules; do
+    tasks="$tasks :backend-$module:check"
 done
 
 if [ $sources -eq 1 ]; then

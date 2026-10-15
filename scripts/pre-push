@@ -14,7 +14,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     fi
 
     if ! grep -qx "$(git rev-parse "$local_sha^{tree}")" "$tested" 2>/dev/null; then
-        if [ "$local_sha" != "$(git rev-parse HEAD)" ]; then
+        if [ "$(git rev-parse "$local_sha^{commit}")" != "$(git rev-parse HEAD)" ]; then
             echo "❌ $local_ref is not the checked out commit and was never tested, check it out and push again"
             echo ""
             exit 1
