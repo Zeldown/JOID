@@ -36,21 +36,20 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 
 	@Override
 	protected final void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (render != this.render) {
-			this.render = render;
+		this.render = BridgeHandler.RENDER.get();
+		if (this.shader == null) {
 			this.shader = CoreShader.BITMAP.create(BlendState.NORMAL);
 		}
 
 		if (!this.shader.isActive()) {
-			throw new IllegalStateException("The bitmap font shader cannot be compiled by " + render.getClass().getSimpleName() + ", the error printed by JOID when it was created tells why");
+			throw new IllegalStateException("The bitmap font shader cannot be compiled by " + this.render.getClass().getSimpleName() + ", the error printed by JOID when it was created tells why");
 		}
 
 		this.color = null;
 		this.pixelX = 0F;
 		this.texture = null;
 		this.grayscale = false;
-		this.grid = render.getPixelGrid();
+		this.grid = this.render.getPixelGrid();
 
 		Color.reset();
 		this.shader.uniform("grayscale", false).bind();

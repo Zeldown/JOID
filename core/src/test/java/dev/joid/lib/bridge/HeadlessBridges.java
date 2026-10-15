@@ -8,6 +8,7 @@ import org.junit.rules.ExternalResource;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
+import dev.joid.lib.bridge.render.RenderSingletons;
 import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
 import dev.joid.lib.ui.core.UI;
@@ -24,6 +25,7 @@ public final class HeadlessBridges extends ExternalResource {
 
 	@Override
 	protected void before() {
+		RenderSingletons.reset();
 		BridgeHandler.UI.register(this.ui);
 		BridgeHandler.CLOCK.register(this.clock);
 		BridgeHandler.WINDOW.register(this.window);

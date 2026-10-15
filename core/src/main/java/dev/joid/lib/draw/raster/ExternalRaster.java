@@ -16,8 +16,7 @@ public final class ExternalRaster {
 
 	private static final ExternalRaster INSTANCE = new ExternalRaster();
 
-	private IFrameBuffer  target;
-	private IRenderBridge bridge;
+	private IFrameBuffer target;
 
 	public static @NonNull ExternalRaster inst() {
 		return ExternalRaster.INSTANCE;
@@ -46,7 +45,7 @@ public final class ExternalRaster {
 	}
 
 	private IFrameBuffer allocate(final IRenderBridge render, final int width, final int height) {
-		final boolean owned = this.target != null && this.bridge == render;
+		final boolean owned = this.target != null;
 		if (owned && this.target.getWidth() >= width && this.target.getHeight() >= height) {
 			return this.target;
 		}
@@ -57,7 +56,6 @@ public final class ExternalRaster {
 			this.target.delete();
 		}
 
-		this.bridge = render;
 		this.target = render.createFrameBuffer(targetWidth, targetHeight);
 		return this.target;
 	}

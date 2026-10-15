@@ -21,13 +21,12 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 
 	private static final MsdfTextRenderer INSTANCE = new MsdfTextRenderer();
 
-	private Color         color;
-	private float         pixelX;
-	private float         pixelY;
-	private PixelGrid     grid;
-	private IShader       shader;
-	private MsdfFontFace  face;
-	private IRenderBridge render;
+	private Color        color;
+	private float        pixelX;
+	private float        pixelY;
+	private PixelGrid    grid;
+	private IShader      shader;
+	private MsdfFontFace face;
 
 	public static @NonNull MsdfTextRenderer inst() {
 		return MsdfTextRenderer.INSTANCE;
@@ -41,8 +40,7 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 	@Override
 	protected void begin(final double runX, final double runY, final double runWidth, final double runHeight) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (render != this.render) {
-			this.render = render;
+		if (this.shader == null) {
 			this.shader = CoreShader.FONT.create(BlendState.NORMAL);
 		}
 
