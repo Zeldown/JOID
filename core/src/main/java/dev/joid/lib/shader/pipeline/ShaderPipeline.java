@@ -91,8 +91,6 @@ public final class ShaderPipeline {
 		tess.addVertexWithUV(x + w, y, 0D, 1D + growU, 1D + growV);
 		tess.addVertexWithUV(x, y, 0D, -growU, 1D + growV);
 		tess.draw();
-
-		render.getState().blend(BlendState.DISABLED).texture(null);
 	}
 
 	private static void renderMultiPass(final @NonNull ShaderPassContext context, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {

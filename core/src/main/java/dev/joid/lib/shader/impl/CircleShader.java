@@ -6,7 +6,7 @@ import dev.joid.lib.color.ColorGradient;
 import dev.joid.lib.utils.box.BoundingBox;
 import lombok.NonNull;
 
-public class CircleShader extends ShaderProgram {
+public final class CircleShader extends ShaderProgram {
 
 	private static final CircleShader INSTANCE = new CircleShader();
 

@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class Rotation {
+public final class Rotation {
 
 	public static final Rotation YAW   = new Rotation(1, 0, 0);
 	public static final Rotation ROLL  = new Rotation(0, 0, 1);

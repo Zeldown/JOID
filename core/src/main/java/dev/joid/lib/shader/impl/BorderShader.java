@@ -5,7 +5,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.color.Color;
 import lombok.NonNull;
 
-public class BorderShader extends ShaderProgram {
+public final class BorderShader extends ShaderProgram {
 
 	private static final BorderShader INSTANCE = new BorderShader();
 

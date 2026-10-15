@@ -6,7 +6,7 @@ import dev.joid.lib.color.ColorGradient;
 import dev.joid.lib.utils.box.BoundingBox;
 import lombok.NonNull;
 
-public class RoundedShader extends ShaderProgram {
+public final class RoundedShader extends ShaderProgram {
 
 	private static final RoundedShader INSTANCE = new RoundedShader();
 

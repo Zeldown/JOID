@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TextModifier {
+public final class TextModifier {
 
 	public static final ITextModifier LOWER_CASE       = text -> text.toLowerCase(Locale.ROOT);
 	public static final ITextModifier UPPER_CASE       = text -> text.toUpperCase(Locale.ROOT);

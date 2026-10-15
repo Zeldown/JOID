@@ -4,7 +4,7 @@ import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import lombok.NonNull;
 
-public class BlurShader extends ShaderProgram {
+public final class BlurShader extends ShaderProgram {
 
 	private static final BlurShader INSTANCE = new BlurShader();
 

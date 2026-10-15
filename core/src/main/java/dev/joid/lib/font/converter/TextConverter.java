@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TextConverter {
+public final class TextConverter {
 
 	private static final Registry<ITextConverter> CONVERTERS = Registry.create();
 

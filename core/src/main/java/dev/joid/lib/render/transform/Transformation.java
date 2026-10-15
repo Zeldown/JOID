@@ -8,7 +8,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import lombok.NonNull;
 
-public class Transformation {
+public final class Transformation {
 
 	private final List<Operation> operations;
 
@@ -52,7 +52,7 @@ public class Transformation {
 	}
 
 	public @NonNull Transformation scale(final @NonNull Scale scale, final Vector pivot) {
-		this.operations.add((render, pivotX, pivotY) -> Transformation.around(render, pivot, pivotX, pivotY, () -> render.getModelView().scale(scale.getRawX(), scale.getRawY(), scale.getRawZ())));
+		this.operations.add((render, pivotX, pivotY) -> Transformation.around(render, pivot, pivotX, pivotY, () -> render.getModelView().scale(scale.getX(), scale.getY(), scale.getZ())));
 		return this;
 	}
 

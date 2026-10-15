@@ -4,7 +4,7 @@ import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import lombok.NonNull;
 
-public class ShadowShader extends ShaderProgram {
+public final class ShadowShader extends ShaderProgram {
 
 	private static final ShadowShader INSTANCE = new ShadowShader();
 

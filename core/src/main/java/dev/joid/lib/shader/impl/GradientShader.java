@@ -7,7 +7,7 @@ import dev.joid.lib.utils.box.BoundingBox;
 import dev.joid.lib.utils.point.Point;
 import lombok.NonNull;
 
-public class GradientShader extends ShaderProgram {
+public final class GradientShader extends ShaderProgram {
 
 	private static final GradientShader INSTANCE = new GradientShader();
 

@@ -46,7 +46,8 @@ public final class DrawResource {
 	}
 
 	private void drawRegion(final double x, final double y, final double width, final double height, final double[] crop, final Resource resource) {
-		final double[] textureCoords = resource.getProperties().getTextureCoords();
+		final ResourceProperties properties = resource.getProperties();
+		final double[] textureCoords = properties.getTextureCoords();
 		final double[] region = textureCoords == null ? crop : crop == null ? textureCoords : new double[] {textureCoords[0] + crop[0], textureCoords[1] + crop[1], crop[2], crop[3]};
 		final boolean failed = resource.isFailed();
 		if (failed && !JOIDEnv.isDevMode()) {
@@ -58,8 +59,7 @@ public final class DrawResource {
 		final double top = grid.snapY(y);
 		final double right = grid.snapRight(x, x + width);
 		final double bottom = grid.snapBottom(y, y + height);
-		final ResourceProperties properties = resource.getProperties();
-		if (!failed && properties.getTextureCoords() == null) {
+		if (!failed && textureCoords == null) {
 			final boolean cropped = region != null;
 			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX() * (cropped ? resource.getSourceWidth() / region[2] : 1D));
 			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY() * (cropped ? resource.getSourceHeight() / region[3] : 1D));
