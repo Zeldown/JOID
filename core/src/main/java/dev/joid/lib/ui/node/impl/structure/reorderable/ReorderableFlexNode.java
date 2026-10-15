@@ -22,7 +22,6 @@ import dev.joid.lib.utils.align.Axis;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class ReorderableFlexNode extends FlexNode {
 
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER        = EventType.create("onReorder");
@@ -30,20 +29,18 @@ public class ReorderableFlexNode extends FlexNode {
 	private static final EventType<NodeReorderEvent.Pre<?>>  BEFORE_REORDER = EventType.create("beforeReorder");
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER_START  = EventType.create("onReorderStart");
 
-	private static final double SCROLL_HOT_ZONE  = 60D;
-	private static final double SCROLL_SPEED_MAX = 2D;
+	private final transient Set<Node>         pinnedNodes;
+	private final transient List<Node>        logicalOrder;
+	private final transient Map<Node, Double> childCurrent;
 
-	private final transient Set<Node>         lockedNodes  = new HashSet<>();
-	private final transient List<Node>        logicalOrder = new ArrayList<>();
-	private final transient Map<Node, Double> childCurrent = new HashMap<>();
+	@Getter private boolean autoDrag;
 
-	private boolean autoDrag = true;
+	@Getter private Node reorderedNode;
 
 	private int     initialIndex;
 	private int     currentIndex;
 	private boolean releasing;
 	private double  dragOffset;
-	private Node    reorderedNode;
 	private boolean scrollArmed;
 	private double  draggedCurrent;
 	private double  dragStartMouseX;
@@ -51,6 +48,11 @@ public class ReorderableFlexNode extends FlexNode {
 
 	protected ReorderableFlexNode(final double x, final double y, final double width, final double height, final @NonNull Axis direction) {
 		super(x, y, width, height, direction);
+
+		this.pinnedNodes  = new HashSet<>();
+		this.logicalOrder = new ArrayList<>();
+		this.childCurrent = new HashMap<>();
+		this.autoDrag     = true;
 	}
 
 	public static @NonNull ReorderableFlexNode vertical(final double x, final double y, final double width) {
@@ -71,13 +73,13 @@ public class ReorderableFlexNode extends FlexNode {
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (!this.autoDrag || !event.getButton().isLeft() || event.isConsumed() || this.reorderedNode != null || !super.isEnabled()) {
+		if (!this.autoDrag || !event.getButton().isLeft() || event.isConsumed() || this.reorderedNode != null) {
 			return;
 		}
 
 		for (final Node child : super.getChildren()) {
 			if (child.isHovered()) {
-				if (this.lockedNodes.contains(child)) {
+				if (this.pinnedNodes.contains(child)) {
 					return;
 				}
 
@@ -103,11 +105,7 @@ public class ReorderableFlexNode extends FlexNode {
 			return;
 		}
 
-		if (super.getChildren().contains(this.reorderedNode)) {
-			this.finishRelease();
-		} else {
-			this.abandonReorder();
-		}
+		this.finishReorder(super.getChildren().contains(this.reorderedNode));
 	}
 
 	@Override
@@ -123,7 +121,7 @@ public class ReorderableFlexNode extends FlexNode {
 	@Override
 	protected @NonNull List<@NonNull Node> getLayoutOrder() {
 		if (this.reorderedNode != null && !super.getChildren().contains(this.reorderedNode)) {
-			this.abandonReorder();
+			this.finishReorder(false);
 		}
 
 		if (this.reorderedNode == null) {
@@ -157,7 +155,7 @@ public class ReorderableFlexNode extends FlexNode {
 		}
 
 		this.getChildIndex(child);
-		if (this.lockedNodes.contains(child)) {
+		if (this.pinnedNodes.contains(child)) {
 			return (T) this;
 		}
 
@@ -186,16 +184,16 @@ public class ReorderableFlexNode extends FlexNode {
 		return (T) this;
 	}
 
-	public final <T extends ReorderableFlexNode> @NonNull T lock(final @NonNull Node @NonNull... children) {
+	public final <T extends ReorderableFlexNode> @NonNull T pin(final @NonNull Node @NonNull... children) {
 		for (final Node child : children) {
-			this.lockedNodes.add(child);
+			this.pinnedNodes.add(child);
 		}
 		return (T) this;
 	}
 
-	public final <T extends ReorderableFlexNode> @NonNull T unlock(final @NonNull Node @NonNull... children) {
+	public final <T extends ReorderableFlexNode> @NonNull T unpin(final @NonNull Node @NonNull... children) {
 		for (final Node child : children) {
-			this.lockedNodes.remove(child);
+			this.pinnedNodes.remove(child);
 		}
 		return (T) this;
 	}
@@ -224,8 +222,8 @@ public class ReorderableFlexNode extends FlexNode {
 		return super.follow("autoDrag", autoDrag, value -> this.autoDrag = value);
 	}
 
-	public final @NonNull Set<Node> getLockedNodes() {
-		return Collections.unmodifiableSet(this.lockedNodes);
+	public final @NonNull Set<Node> getPinnedNodes() {
+		return Collections.unmodifiableSet(this.pinnedNodes);
 	}
 
 	public final @NonNull List<Node> getLogicalOrder() {
@@ -244,8 +242,8 @@ public class ReorderableFlexNode extends FlexNode {
 		return index;
 	}
 
-	public final boolean isLocked(final @NonNull Node child) {
-		return this.lockedNodes.contains(child);
+	public final boolean isPinned(final @NonNull Node child) {
+		return this.pinnedNodes.contains(child);
 	}
 
 	public final boolean isDragging(final @NonNull Node child) {
@@ -307,7 +305,7 @@ public class ReorderableFlexNode extends FlexNode {
 
 		if (this.releasing) {
 			if (this.draggedCurrent == target) {
-				this.finishRelease();
+				this.finishReorder(true);
 			}
 			return;
 		}
@@ -349,7 +347,7 @@ public class ReorderableFlexNode extends FlexNode {
 	private int freeSlot(final int index) {
 		final int step = index < this.currentIndex ? 1 : -1;
 		int slot = index;
-		while (slot != this.currentIndex && this.lockedNodes.contains(this.logicalOrder.get(slot))) {
+		while (slot != this.currentIndex && this.pinnedNodes.contains(this.logicalOrder.get(slot))) {
 			slot += step;
 		}
 		return slot;
@@ -360,7 +358,7 @@ public class ReorderableFlexNode extends FlexNode {
 		int position = 0;
 		for (int i = 0; i < this.logicalOrder.size(); i++) {
 			final Node child = this.logicalOrder.get(i);
-			if (this.lockedNodes.contains(child)) {
+			if (this.pinnedNodes.contains(child)) {
 				continue;
 			}
 
@@ -375,7 +373,7 @@ public class ReorderableFlexNode extends FlexNode {
 
 		int next = 0;
 		for (int i = 0; i < this.logicalOrder.size(); i++) {
-			if (!this.lockedNodes.contains(this.logicalOrder.get(i))) {
+			if (!this.pinnedNodes.contains(this.logicalOrder.get(i))) {
 				this.logicalOrder.set(i, free.get(next++));
 			}
 		}
@@ -391,24 +389,14 @@ public class ReorderableFlexNode extends FlexNode {
 		return off;
 	}
 
-	private void finishRelease() {
+	private void finishReorder(final boolean kept) {
 		final Node node = this.reorderedNode;
 		final int oldIndex = this.initialIndex;
 		final int newIndex = this.currentIndex;
-
-		this.applyReorder();
-
-		this.reorderedNode = null;
-		this.releasing = false;
-		this.logicalOrder.clear();
-		this.childCurrent.clear();
-
-		super.fire(ReorderableFlexNode.REORDER_END, () -> NodeReorderEvent.Post.create(this, node, oldIndex, newIndex));
-	}
-
-	private void abandonReorder() {
-		final Node node = this.reorderedNode;
 		final boolean releasing = this.releasing;
+		if (kept) {
+			this.applyReorder();
+		}
 
 		this.reorderedNode = null;
 		this.releasing = false;
@@ -418,6 +406,7 @@ public class ReorderableFlexNode extends FlexNode {
 		if (!releasing) {
 			node.fireDragDrop(null, () -> {});
 		}
+		super.fire(ReorderableFlexNode.REORDER_END, () -> NodeReorderEvent.Post.create(this, node, oldIndex, newIndex));
 	}
 
 	private double computeFullExtent() {
@@ -460,28 +449,30 @@ public class ReorderableFlexNode extends FlexNode {
 			this.scrollArmed = true;
 		}
 
+		final double zone = 60D;
+		final double speed = 2D;
 		Node parent = super.getParent();
 		while (parent != null) {
 			if (parent.getOverflow() == OverflowProperty.SCROLL && (parent.hasOverflowX() || parent.hasOverflowY())) {
 				if (super.getDirection() == Axis.VERTICAL && parent.hasOverflowY()) {
 					final double parentTop = parent.getAbsoluteY();
 					final double parentBottom = parentTop + parent.getHeight();
-					if (mouseY < parentTop + ReorderableFlexNode.SCROLL_HOT_ZONE) {
-						final double depth = Math.min(1D, (parentTop + ReorderableFlexNode.SCROLL_HOT_ZONE - mouseY) / ReorderableFlexNode.SCROLL_HOT_ZONE);
-						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() + ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth);
-					} else if (mouseY > parentBottom - ReorderableFlexNode.SCROLL_HOT_ZONE) {
-						final double depth = Math.min(1D, (mouseY - (parentBottom - ReorderableFlexNode.SCROLL_HOT_ZONE)) / ReorderableFlexNode.SCROLL_HOT_ZONE);
-						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() - ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth);
+					if (mouseY < parentTop + zone) {
+						final double depth = Math.min(1D, (parentTop + zone - mouseY) / zone);
+						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() + speed * depth * depth);
+					} else if (mouseY > parentBottom - zone) {
+						final double depth = Math.min(1D, (mouseY - (parentBottom - zone)) / zone);
+						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() - speed * depth * depth);
 					}
 				} else if (super.getDirection() == Axis.HORIZONTAL && parent.hasOverflowX()) {
 					final double parentLeft = parent.getAbsoluteX();
 					final double parentRight = parentLeft + parent.getWidth();
-					if (mouseX < parentLeft + ReorderableFlexNode.SCROLL_HOT_ZONE) {
-						final double depth = Math.min(1D, (parentLeft + ReorderableFlexNode.SCROLL_HOT_ZONE - mouseX) / ReorderableFlexNode.SCROLL_HOT_ZONE);
-						parent.scrollTo(parent.getTargetScrollX() + ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth, parent.getTargetScrollY());
-					} else if (mouseX > parentRight - ReorderableFlexNode.SCROLL_HOT_ZONE) {
-						final double depth = Math.min(1D, (mouseX - (parentRight - ReorderableFlexNode.SCROLL_HOT_ZONE)) / ReorderableFlexNode.SCROLL_HOT_ZONE);
-						parent.scrollTo(parent.getTargetScrollX() - ReorderableFlexNode.SCROLL_SPEED_MAX * depth * depth, parent.getTargetScrollY());
+					if (mouseX < parentLeft + zone) {
+						final double depth = Math.min(1D, (parentLeft + zone - mouseX) / zone);
+						parent.scrollTo(parent.getTargetScrollX() + speed * depth * depth, parent.getTargetScrollY());
+					} else if (mouseX > parentRight - zone) {
+						final double depth = Math.min(1D, (mouseX - (parentRight - zone)) / zone);
+						parent.scrollTo(parent.getTargetScrollX() - speed * depth * depth, parent.getTargetScrollY());
 					}
 				}
 				return;

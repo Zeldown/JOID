@@ -144,26 +144,26 @@ public class UIDemoReorderable extends UIDemo {
 			slots.body(flex -> {
 				for (int i = 0; i < 5; i++) {
 					final int index = i;
-					final boolean locked = index == 0 || index == 2;
+					final boolean pinned = index == 0 || index == 2;
 					final RectNode node = RectNode
 							.create(0, 0, 360, 34)
-							.color(locked ? UIDemoReorderable.INK.withAlpha(0.4F) : UIDemoReorderable.INK)
+							.color(pinned ? UIDemoReorderable.INK.withAlpha(0.4F) : UIDemoReorderable.INK)
 							.body(item -> {
-								if (!locked) {
+								if (!pinned) {
 									RectNode.create(10, 10, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 									RectNode.create(10, 16, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 									RectNode.create(10, 22, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(item);
 								}
-								TextNode.create(50, item.dh(2)).text(Text.create((locked ? "Locked " : "Item ") + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
+								TextNode.create(50, item.dh(2)).text(Text.create((pinned ? "Pinned " : "Item ") + (index + 1), label).alignX(Align.START).alignY(Align.CENTER)).anchorY(Align.CENTER).attach(item);
 							})
 							.attach(flex);
-					if (locked) {
-						slots.lock(node);
+					if (pinned) {
+						slots.pin(node);
 					}
 				}
 			});
 			slots.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Locked", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(200, 275).text(Text.create("Pinned", info).alignX(Align.CENTER)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
