@@ -983,10 +983,10 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void pulsesTheOpacityOfItsCursor() {
 		this.field("ab");
-		this.bridges.getClock().setTime(234L);
+		this.bridges.getClock().time(234L);
 		this.bridges.frame();
 		Assert.assertEquals(1F, this.cursor().getAlpha(), 0.0001F);
-		this.bridges.getClock().setTime(734L);
+		this.bridges.getClock().time(734L);
 		this.bridges.frame();
 		Assert.assertEquals(0F, this.cursor().getAlpha(), 0.0001F);
 	}

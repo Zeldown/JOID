@@ -1086,10 +1086,10 @@ public class TextFieldNodeTest {
 	@Test
 	public void pulsesTheOpacityOfItsCursor() {
 		this.field("abcd");
-		this.bridges.getClock().setTime(234L);
+		this.bridges.getClock().time(234L);
 		this.bridges.frame();
 		Assert.assertEquals(1F, this.cursor().getAlpha(), 0.0001F);
-		this.bridges.getClock().setTime(984L);
+		this.bridges.getClock().time(984L);
 		this.bridges.frame();
 		Assert.assertEquals(0.5F, this.cursor().getAlpha(), 0.0001F);
 	}

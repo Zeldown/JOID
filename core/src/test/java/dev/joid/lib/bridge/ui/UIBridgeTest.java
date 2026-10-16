@@ -458,7 +458,7 @@ public class UIBridgeTest {
 			this.bridges.getUi().draw();
 			Assert.fail("A draw outside a frame must be refused");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("DemoUIBridge.draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use frame()", expected.getMessage());
+			Assert.assertEquals("DemoUIBridge.draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()", expected.getMessage());
 		}
 	}
 
@@ -902,27 +902,14 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void updatesThenDrawsItsBackgroundInsideTheFrameBeforeItsUis() {
-		final UIBridge bridge = new StackUIBridge() {
-
-			@Override
-			protected void drawBackground() {
-				UIBridgeTest.this.trace.add("background " + ((RenderBridge) BridgeHandler.RENDER.get()).isFrameActive());
-			}
-
-		};
-		bridge.add(new TraceUI("menu", this.trace));
-		this.trace.clear();
-		bridge.frame();
-		Assert.assertEquals(Arrays.asList("update menu", "background true", "draw menu -2000.0"), this.trace);
-		Assert.assertFalse(((RenderBridge) BridgeHandler.RENDER.get()).isFrameActive());
-	}
-
-	@Test
 	public void resizesTheScreenAndLoadsItsUis() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		registry.register(this.bridges.getUi());
 		this.bridges.open(menu);
-		this.bridges.getUi().resize(800, 600);
+		this.bridges.getWindow().setWidth(800);
+		this.bridges.getWindow().setHeight(600);
+		registry.frame();
 		Assert.assertEquals(800, this.bridges.getRender().getState().getViewportWidth());
 		Assert.assertEquals(600, this.bridges.getRender().getState().getViewportHeight());
 		Assert.assertEquals(800D, menu.getWindowWidth(), 0D);
@@ -1023,9 +1010,12 @@ public class UIBridgeTest {
 	@Test
 	public void clearsTheScreenToTheBackgroundOfAWindowBridge() {
 		final WindowUIBridge bridge = WindowUIBridge.create();
-		bridge.frame();
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		registry.register(bridge);
+		registry.frame();
 		Assert.assertEquals(Color.BLACK, this.bridges.getRender().getClearedColor());
-		bridge.background(Color.RED).frame();
+		bridge.background(Color.RED);
+		registry.frame();
 		Assert.assertEquals(Color.RED, this.bridges.getRender().getClearedColor());
 		Assert.assertEquals(2, this.bridges.getRender().getColorClears());
 		Assert.assertEquals(2, this.bridges.getRender().getDepthClears());

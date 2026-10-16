@@ -50,24 +50,6 @@ public abstract class UIBridge implements IUIBridge {
 		this.load(window.getWidth(), window.getHeight());
 	}
 
-	public final void resize(final int width, final int height) {
-		BridgeHandler.RENDER.get().screen(width, height);
-		this.load(width, height);
-	}
-
-	public final void frame() {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		BridgeHandler.UI.fireFrame();
-		this.update();
-		render.beginFrame();
-		try {
-			this.drawBackground();
-			this.draw();
-		} finally {
-			render.endFrame();
-		}
-	}
-
 	public final boolean mouseMoved() {
 		if (this.pressed == null) {
 			return false;
@@ -157,7 +139,7 @@ public abstract class UIBridge implements IUIBridge {
 	public final void draw(final @NonNull Predicate<@NonNull UI> filter) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (!render.isFrameActive()) {
-			throw new IllegalStateException(this.getClass().getSimpleName() + ".draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use frame()");
+			throw new IllegalStateException(this.getClass().getSimpleName() + ".draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()");
 		}
 
 		final int stateDepth = render.getStateDepth();
@@ -260,7 +242,6 @@ public abstract class UIBridge implements IUIBridge {
 				ui.draw(window.getMouseX(), window.getMouseY());
 				depthLevel = ui.getDepthLevel() + 10D;
 			}
-			matrix.translate(0D, 0D, -depthLevel);
 		});
 	}
 

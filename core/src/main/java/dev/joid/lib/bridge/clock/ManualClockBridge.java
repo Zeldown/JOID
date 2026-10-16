@@ -4,11 +4,13 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ManualClockBridge implements IClockBridge {
 
 	@Setter
+	@Accessors(fluent = true, chain = true)
 	private long time;
 
 	public static @NonNull ManualClockBridge create(final long time) {

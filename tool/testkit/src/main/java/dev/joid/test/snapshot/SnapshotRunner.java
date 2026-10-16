@@ -110,7 +110,7 @@ public final class SnapshotRunner {
 		this.bridge.interfaceScale(1D);
 		this.window.getKeys().clear();
 		this.masks.clear();
-		this.clock.setTime(1735689600000L);
+		this.clock.time(1735689600000L);
 		JOIDEnv.devMode(false);
 		this.resize(1920, 1080);
 
@@ -252,7 +252,8 @@ public final class SnapshotRunner {
 		this.window.setWidth(width);
 		this.window.setHeight(height);
 
-		this.bridge.resize(width, height);
+		BridgeHandler.RENDER.get().screen(width, height);
+		this.bridge.load();
 	}
 
 	private void show(final String type, final boolean open) {
@@ -329,7 +330,7 @@ public final class SnapshotRunner {
 	}
 
 	private SnapshotImage render(final boolean capture) {
-		this.bridge.frame();
+		BridgeHandler.UI.frame();
 
 		final SnapshotImage image = capture ? this.backend.capture(this.window.getWidth(), this.window.getHeight()) : null;
 		this.backend.present();

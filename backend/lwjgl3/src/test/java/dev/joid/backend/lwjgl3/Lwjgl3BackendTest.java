@@ -33,8 +33,9 @@ public class Lwjgl3BackendTest {
 			Assert.assertNotNull(bridge);
 			Assert.assertEquals(Color.BLACK, bridge.getBackground());
 
-			bridge.background(Color.RED).resize(64, 64);
-			bridge.frame();
+			bridge.background(Color.RED);
+			BridgeHandler.RENDER.get().screen(64, 64);
+			BridgeHandler.UI.frame();
 			Assert.assertEquals(0xFFFF0000, backend.capture(64, 64).getPixels()[0]);
 		} finally {
 			backend.destroy();

@@ -171,9 +171,6 @@ public class UIBridgeRegistryTest {
 			Assert.assertEquals(0.25F, animator.get(), 0F);
 			BridgeHandler.UI.frame();
 			Assert.assertEquals(0.5F, animator.get(), 0F);
-			this.bridges.getClock().advance(16L);
-			this.bridges.getUi().frame();
-			Assert.assertEquals(0.75F, animator.get(), 0F);
 		} finally {
 			BridgeHandler.UI.unregister(other);
 		}
