@@ -486,16 +486,16 @@ public abstract class Node implements INode {
 				final double speed = UI.isCtrlKeyDown() ? this.scrollSpeed * 2D : this.scrollSpeed;
 				if (notchesY != 0D && this.hasOverflowY()) {
 					if (this.canScroll(this.scrollYValue, this.maxScrollY, notchesY)) {
-						this.scrollYValue.set(this.scrollYValue.get() + (notchesY > 0D ? 30D : -30D) * speed);
+						this.scrollYValue.set(this.scrollYValue.get() + notchesY * 30D * speed);
 						event.consume();
 					}
-				} else if (notchesY != 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesY)) {
-					this.scrollXValue.set(this.scrollXValue.get() + (notchesY > 0D ? 30D : -30D) * speed);
+				} else if (notchesY != 0D && notchesX == 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesY)) {
+					this.scrollXValue.set(this.scrollXValue.get() + notchesY * 30D * speed);
 					event.consume();
 				}
 
 				if (notchesX != 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesX)) {
-					this.scrollXValue.set(this.scrollXValue.get() + (notchesX > 0D ? 30D : -30D) * speed);
+					this.scrollXValue.set(this.scrollXValue.get() + notchesX * 30D * speed);
 					event.consume();
 				}
 			}
@@ -1631,6 +1631,9 @@ public abstract class Node implements INode {
 
 			if (this.parent != null) {
 				matrix.translate(-this.parent.x, -this.parent.y, 0D);
+				if (this.position == PositionProperty.ABSOLUTE) {
+					matrix.translate(this.parent.getAbsoluteX(), this.parent.getAbsoluteY(), 0D);
+				}
 			}
 
 			this.draggedNode.render(mouseX, mouseY);
@@ -1775,14 +1778,14 @@ public abstract class Node implements INode {
 						this.targetDragX = this.getAbsoluteX();
 						this.targetDragY = this.getAbsoluteY();
 					}
+
+					if (!this.dragging && newAbsoluteX == this.targetDragX && newAbsoluteY == this.targetDragY) {
+						this.dragged = false;
+					}
 				} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
 					final double newAbsoluteX = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
 					final double newAbsoluteY = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
 					this.draggedNode.moveTo(newAbsoluteX, newAbsoluteY);
-				}
-
-				if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
-					this.dragged = false;
 				}
 			}
 		}
@@ -1921,7 +1924,7 @@ public abstract class Node implements INode {
 	}
 
 	private boolean isAt(final double x, final double y) {
-		return this.isVisible() && (this.overflowArea == null || this.overflowArea.isAt(x, y)) && x > this.getAbsoluteX() && x <= this.getAbsoluteX() + this.width && y > this.getAbsoluteY() && y <= this.getAbsoluteY() + this.height;
+		return this.isVisible() && (this.overflowArea == null || this.overflowArea.isAt(x, y)) && x >= this.getAbsoluteX() && x < this.getAbsoluteX() + this.width && y >= this.getAbsoluteY() && y < this.getAbsoluteY() + this.height;
 	}
 
 	private void collectNodesAt(final double x, final double y, final List<Node> nodeList) {
@@ -2238,15 +2241,20 @@ public abstract class Node implements INode {
 	private @NonNull Node duplicate(final boolean listeners) {
 		final Node copy = this.instantiate();
 		copy.ui = this.ui;
+		copy.bindings.releaseFollows();
 
 		copy.eventBus.clear();
 		if (listeners) {
 			copy.eventBus.addAll(this.eventBus);
 		}
 
+		copy.effectMap.clear();
 		this.effectMap.forEach((type, effect) -> copy.effectMap.put(type, effect.copy()));
+		copy.layerList.clear();
 		copy.layerList.addAll(this.layerList);
+		copy.hoverElementList.clear();
 		copy.hoverElementList.addAll(this.hoverElementList);
+		copy.hoverSupplierList.clear();
 		copy.hoverSupplierList.addAll(this.hoverSupplierList);
 
 		copy.defaultX = this.defaultX;

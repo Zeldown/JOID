@@ -91,6 +91,13 @@ public class ShadowNodeEffectTest {
 	}
 
 	@Test
+	public void drawsTheShadowOutsideAMaskAddedBeforeIt() {
+		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(MaskNodeEffect.create()).effect(ShadowNodeEffect.create(new Color(0.1F, 0.3F, 0.5F, 0.5F), 8F)))).frame();
+		final List<Draw> draws = this.bridges.getRender().getDraws();
+		Assert.assertTrue(draws.indexOf(this.bridges.getRender().getDraws(0.1F, 0.3F, 0.5F).get(0)) < draws.indexOf(this.bridges.getRender().getDraws(1F, 0F, 0F).get(0)));
+	}
+
+	@Test
 	public void followsTheRoundedCornersOfItsNode() {
 		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 200D, 50D).color(Color.WHITE).effect(RoundedNodeEffect.create(12F)).effect(ShadowNodeEffect.create(Color.BLACK, 8F)))).frame();
 		Assert.assertEquals(12F, (Float) this.shader.getValues().get("u_Radius"), 0F);

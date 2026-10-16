@@ -130,6 +130,10 @@ public final class NodeBindings {
 		}
 	}
 
+	public void releaseFollows() {
+		this.bindingMap.values().removeIf(binding -> binding.writer == null);
+	}
+
 	public boolean isBound(final @NonNull String property) {
 		final NodeBinding<?> binding = this.bindingMap.get(property);
 		return binding != null && binding.writer != null;

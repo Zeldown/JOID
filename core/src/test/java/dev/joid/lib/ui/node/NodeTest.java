@@ -632,6 +632,19 @@ public class NodeTest {
 	}
 
 	@Test
+	public void givesTheSharedEdgeOfTwoNodesToTheNodeThatStartsThere() {
+		final RectNode left = RectNode.create(100D, 100D, 100D, 100D);
+		final RectNode right = RectNode.create(200D, 100D, 100D, 100D);
+		final NodeUI ui = new NodeUI(ContainerNode.create(0D, 0D, 500D, 500D).append(left, right));
+		this.bridges.open(ui).frame();
+		Assert.assertSame(left, ui.getNodeAt(100D, 100D));
+		Assert.assertSame(right, ui.getNodeAt(200D, 150D));
+		Assert.assertSame(right, ui.getNodeAt(250D, 100D));
+		Assert.assertNotSame(right, ui.getNodeAt(300D, 150D));
+		Assert.assertNotSame(left, ui.getNodeAt(150D, 200D));
+	}
+
+	@Test
 	public void hoversTheChildrenOutsideAnAreaThatStopsClipping() {
 		final RectNode child = RectNode.create(50D, 50D, 100D, 100D);
 		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child);
@@ -1257,8 +1270,29 @@ public class NodeTest {
 		this.bridges.scroll(-1D, -1D);
 		Assert.assertEquals(-60D, area.getTargetScrollX(), 0D);
 		Assert.assertEquals(-30D, area.getTargetScrollY(), 0D);
-		this.bridges.scroll(2D, 0D);
+		this.bridges.scroll(1D, 0D);
 		Assert.assertEquals(-30D, area.getTargetScrollX(), 0D);
+	}
+
+	@Test
+	public void scrollsByTheAmplitudeOfTheWheel() {
+		final ContainerNode area = NodeTest.column();
+		this.bridges.open(new NodeUI(area));
+		this.bridges.move(300D, 150D).frames(2);
+		this.bridges.scroll(-0.1D);
+		Assert.assertEquals(-3D, area.getTargetScrollY(), 1E-9D);
+		this.bridges.scroll(-2D);
+		Assert.assertEquals(-63D, area.getTargetScrollY(), 1E-9D);
+	}
+
+	@Test
+	public void scrollsADiagonalWheelOnceAlongItsOnlyOverflow() {
+		final ContainerNode row = NodeTest.row();
+		this.bridges.open(new NodeUI(row));
+		this.bridges.move(300D, 150D).frames(2);
+		this.bridges.scroll(-1D, -1D);
+		Assert.assertEquals(-30D, row.getTargetScrollX(), 0D);
+		Assert.assertEquals(0D, row.getTargetScrollY(), 0D);
 	}
 
 	@Test
@@ -1706,6 +1740,16 @@ public class NodeTest {
 	}
 
 	@Test
+	public void settlesAMovedNodeOnAFractionalTarget() {
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).draggable(DraggableProperty.free());
+		this.bridges.resize(1366, 768).open(new NodeUI(ContainerNode.create(111.1D, 47.6D, 1000D, 1000D).append(FlexNode.vertical(333.3D, 333.3D, 200D).append(RectNode.create(0D, 0D, 999.9D, 2333.1D), node)))).frames(3);
+		this.bridges.move((node.getAbsoluteX() + 5D) * 1366D / 1920D, (node.getAbsoluteY() + 5D) * 768D / 1080D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.drop(300.15D, 180.09D);
+		Assert.assertFalse(node.isDragged());
+	}
+
+	@Test
 	public void restsAtTheStartOfAParentNarrowerThanItself() {
 		final RectNode node = RectNode.create(0D, 0D, 300D, 50D).draggable(DraggableProperty.parent());
 		this.bridges.open(new NodeUI(ContainerNode.create(100D, 100D, 200D, 200D).append(node))).frames(100);
@@ -1814,6 +1858,20 @@ public class NodeTest {
 		Assert.assertEquals(310D, draws.get(0).getLeft(), 1E-3D);
 		Assert.assertEquals(510D, draws.get(1).getLeft(), 1E-3D);
 		Assert.assertEquals(410D, draws.get(1).getTop(), 1E-3D);
+	}
+
+	@Test
+	public void drawsTheDraggedCopyOfAnAbsoluteChildUnderTheMouse() {
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).position(PositionProperty.ABSOLUTE).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.press(ContainerNode.create(300D, 200D, 500D, 500D).append(node), 20D, 20D);
+		this.bridges.move(220D, 220D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
+		Assert.assertEquals(2, draws.size());
+		Assert.assertEquals(10D, draws.get(0).getLeft(), 1E-3D);
+		Assert.assertEquals(210D, draws.get(1).getLeft(), 1E-3D);
+		Assert.assertEquals(210D, draws.get(1).getTop(), 1E-3D);
 	}
 
 	@Test
@@ -2490,6 +2548,16 @@ public class NodeTest {
 		this.bridges.frame();
 		Assert.assertEquals(25D, node.getWidth(), 0D);
 		Assert.assertEquals(10D, copy.getWidth(), 0D);
+	}
+
+	@Test
+	public void copiesTheValuesAndLayersItsConstructorSetsOnce() {
+		final DefaultedNode node = new DefaultedNode().width(30D);
+		node.base = 25D;
+		final DefaultedNode copy = node.copy();
+		this.bridges.open(new NodeUI(copy)).frame();
+		Assert.assertEquals(30D, copy.getWidth(), 0D);
+		Assert.assertEquals(1, this.bridges.getRender().getDraws(0.3F, 0.5F, 0.7F).size());
 	}
 
 	@Test
@@ -3784,6 +3852,17 @@ public class NodeTest {
 
 		public <V> BindingNode link(final String property, final Signal<V> signal, final List<Object> values) {
 			return super.bind(property, signal, value -> values.add(value));
+		}
+
+	}
+
+	public static final class DefaultedNode extends Node {
+
+		private double base;
+
+		public DefaultedNode() {
+			super(0D, 0D, 10D, 10D);
+			super.width(() -> this.base * 2D).layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRect(0D, 0D, 1D, 1D, new Color(0.3F, 0.5F, 0.7F, 1F)));
 		}
 
 	}

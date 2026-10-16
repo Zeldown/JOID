@@ -18,6 +18,7 @@ public class ShadowNodeEffect extends NodeEffect<Node> {
 	private Supplier<Double> offsetYSupplier;
 
 	protected ShadowNodeEffect(final @NonNull Supplier<@NonNull Color> colorSupplier, final @NonNull Supplier<Float> blurSupplier) {
+		super(-50);
 		this.blurSupplier    = blurSupplier;
 		this.colorSupplier   = colorSupplier;
 		this.offsetXSupplier = () -> 0D;
