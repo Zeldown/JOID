@@ -24,7 +24,7 @@ jobs:
       - name: Install Mesa, Lavapipe and Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0 mesa-vulkan-drivers libvulkan1 libxxf86vm1 libxrandr2 x11-xserver-utils
       - name: Build and check the jars
-        run: chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew build checkJars testDemoJar testProdJar --continue
+        run: chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew build checkJars checkTemplate testDemoJar testProdJar --continue
       - name: Upload the reports
         if: failure()
         uses: actions/upload-artifact@v4

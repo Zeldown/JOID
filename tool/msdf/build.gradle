@@ -11,6 +11,7 @@ task generateFont(type: JavaExec) {
     description = 'Packs one font file into a font.msdf atlas, from -Pfont and the optional -Poutput, -Pcharset, -Prange, -Pwidth, -Pheight and -Psize.'
     main = "dev.joid.tool.msdf.MsdfGenerator"
     classpath = sourceSets.main.runtimeClasspath
+    workingDir = gradle.startParameter.currentDir
     args '--output', project.findProperty('output') ?: 'build/font'
     args(['font', 'charset', 'range', 'width', 'height', 'size'].findAll { name -> project.hasProperty(name) }.collectMany { name -> ['--' + name, project.property(name)] })
 }

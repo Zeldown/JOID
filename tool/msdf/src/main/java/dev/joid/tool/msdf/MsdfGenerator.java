@@ -36,8 +36,7 @@ public final class MsdfGenerator {
 	public static void main(final String[] arguments) throws Exception {
 		final Map<String, String> options = MsdfGenerator.options(arguments);
 		if (!options.containsKey("font") || !Arrays.asList("font", "output", "charset", "range", "width", "height", "size").containsAll(options.keySet())) {
-			System.out.println("Usage: msdf --font <file.ttf|file.otf> [--output <directory>] [--charset <file|ranges>] [--range <pixels>] [--width <pixels>] [--height <pixels>] [--size <pixels>]");
-			return;
+			throw new IllegalArgumentException("Usage: msdf --font <file.ttf|file.otf> [--output <directory>] [--charset <file|ranges>] [--range <pixels>] [--width <pixels>] [--height <pixels>] [--size <pixels>]");
 		}
 
 		final File font = new File(options.get("font"));

@@ -271,15 +271,8 @@ task checkJars {
 /* Tests */
 task updateSnapshots {
     group = 'JOID'
-    description = 'Runs the snapshot tests of the LWJGL 2, LWJGL 3 and Vulkan backends one after the other and replaces their reference snapshots.'
+    description = 'Runs the snapshot tests of the LWJGL 2, LWJGL 3 and Vulkan backends and replaces their reference snapshots.'
     dependsOn ':backend-lwjgl2:updateSnapshots', ':backend-lwjgl3:updateSnapshots', ':backend-vulkan:updateSnapshots'
-}
-
-gradle.projectsEvaluated {
-    if (gradle.startParameter.taskNames.any { name -> name in ['updateSnapshots', ':updateSnapshots'] }) {
-        project(':backend-lwjgl3').test.mustRunAfter ':backend-lwjgl2:test'
-        project(':backend-vulkan').test.mustRunAfter ':backend-lwjgl3:test'
-    }
 }
 
 task crossBackendTest(type: JavaExec) {
@@ -291,12 +284,35 @@ task crossBackendTest(type: JavaExec) {
     args file('build/snapshots/cross').absolutePath, file('build/snapshots/backend-lwjgl3').absolutePath, file('build/snapshots/backend-lwjgl2').absolutePath, file('build/snapshots/backend-vulkan').absolutePath
 }
 
+task checkTemplate(type: GradleBuild) {
+    group = 'JOID'
+    description = 'Unpacks the backend template with the release jars in its libs folder, then compiles it.'
+    dependsOn collectArtifacts
+    dir = file('build/template')
+    tasks = ['compileJava', 'compileTestJava', 'compileDemoJava']
+    doFirst {
+        delete 'build/template'
+        copy {
+            from zipTree(backendTemplate.archivePath)
+            into 'build/template'
+        }
+        copy {
+            from 'build/libs'
+            include '*.jar'
+            into 'build/template/libs'
+        }
+    }
+}
+
 task exportShaders(type: JavaExec) {
     group = 'JOID'
     description = 'Writes the core shaders translated into every GLSL dialect into build/shaders.'
     main = 'dev.joid.test.shader.GlslExport'
     classpath = project(':tool-testkit').sourceSets.main.runtimeClasspath
     args file('build/shaders').absolutePath
+    doFirst {
+        delete 'build/shaders'
+    }
 }
 
 task validateShaders {

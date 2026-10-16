@@ -9,7 +9,12 @@ if printf '%s\n' "$files" | grep -qE '^(core/|base/|backend/|tool/|gradle/|build
     sources=1
 fi
 
-if [ $sources -eq 0 ] && ! printf '%s\n' "$files" | grep -qE '^sample/showcase/(src/|build\.gradle$)'; then
+template=0
+if printf '%s\n' "$files" | grep -qE '^(core/|template/)'; then
+    template=1
+fi
+
+if [ $sources -eq 0 ] && [ $template -eq 0 ] && ! printf '%s\n' "$files" | grep -qE '^sample/showcase/(src/|build\.gradle$)'; then
     echo "🔍 No source change, tests skipped"
     echo ""
     if [ "$mode" = "index" ] && grep -qx "$(git rev-parse HEAD^{tree})" "$tested" 2>/dev/null; then
@@ -51,19 +56,6 @@ if printf '%s\n' "$files" | grep -qE '^(core/|tool/|gradle/|build\.gradle$|setti
     all=1
 fi
 
-modules=""
-for module in lwjgl2 lwjgl3 vulkan; do
-    if [ $all -eq 1 ] || printf '%s\n' "$files" | grep -q "^backend/$module/"; then
-        modules="$modules $module"
-    elif [ "$module" != "lwjgl2" ] && printf '%s\n' "$files" | grep -qE '^base/(glfw|openal)/'; then
-        modules="$modules $module"
-    elif [ "$module" = "lwjgl2" ] && printf '%s\n' "$files" | grep -q '^base/openal/'; then
-        modules="$modules $module"
-    elif [ "$module" != "vulkan" ] && printf '%s\n' "$files" | grep -qE '^base/opengl/'; then
-        modules="$modules $module"
-    fi
-done
-
 tasks=""
 if [ $all -eq 1 ]; then
     tasks=":tool-msdf:check :core:check :tool-testkit:check"
@@ -75,18 +67,18 @@ for module in glfw openal opengl; do
     fi
 done
 
-for module in $modules; do
-    tasks="$tasks :backend-$module:check"
-done
+if [ $template -eq 1 ]; then
+    tasks="$tasks checkTemplate"
+fi
 
 if [ $sources -eq 1 ]; then
-    echo "🔍 Testing$modules, then comparing the backends"
+    echo "🔍 Testing the changes, then comparing the backends"
     echo ""
     ./gradlew $tasks :sample-showcase:compileJava crossBackendTest --offline
 else
-    echo "🔍 Compiling the showcase"
+    echo "🔍 Compiling the changes"
     echo ""
-    ./gradlew :sample-showcase:compileJava --offline
+    ./gradlew $tasks :sample-showcase:compileJava --offline
 fi
 status=$?
 

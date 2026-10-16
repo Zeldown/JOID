@@ -56,8 +56,9 @@ public class MsdfGeneratorTest {
 	}
 
 	@Test
-	public void printsTheUsageWithoutAFont() throws Exception {
-		Assert.assertTrue(MsdfGeneratorTest.capture(() -> MsdfGenerator.main(new String[0])).startsWith("Usage: msdf --font"));
+	public void refusesToRunWithoutAFont() {
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> MsdfGenerator.main(new String[0]));
+		Assert.assertTrue(exception.getMessage().startsWith("Usage: msdf --font"));
 	}
 
 	@Test
@@ -94,15 +95,17 @@ public class MsdfGeneratorTest {
 	}
 
 	@Test
-	public void keepsTheDashesInsideAnOptionName() throws Exception {
-		Assert.assertTrue(MsdfGeneratorTest.capture(() -> MsdfGenerator.main(new String[] {"--fo-nt", "missing.ttf"})).startsWith("Usage: msdf --font"));
+	public void keepsTheDashesInsideAnOptionName() {
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> MsdfGenerator.main(new String[] {"--fo-nt", "missing.ttf"}));
+		Assert.assertTrue(exception.getMessage().startsWith("Usage: msdf --font"));
 	}
 
 	@Test
-	public void printsTheUsageForAnUnknownOption() throws Exception {
+	public void refusesAnUnknownOption() throws Exception {
 		final File output = Files.createTempDirectory("joid-msdf-").toFile();
-		final String printed = MsdfGeneratorTest.capture(() -> MsdfGenerator.main(new String[] {"--font", MsdfFonts.copy(MsdfFonts.REGULAR).getAbsolutePath(), "--output", output.getAbsolutePath(), "--chrset", "[65, 65]"}));
-		Assert.assertTrue(printed, printed.startsWith("Usage: msdf --font"));
+		final String font = MsdfFonts.copy(MsdfFonts.REGULAR).getAbsolutePath();
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> MsdfGenerator.main(new String[] {"--font", font, "--output", output.getAbsolutePath(), "--chrset", "[65, 65]"}));
+		Assert.assertTrue(exception.getMessage(), exception.getMessage().startsWith("Usage: msdf --font"));
 		Assert.assertFalse(new File(output, "font.msdf").exists());
 		Files.delete(output.toPath());
 	}
