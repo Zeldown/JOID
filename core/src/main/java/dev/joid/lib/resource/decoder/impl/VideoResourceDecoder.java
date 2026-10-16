@@ -32,6 +32,7 @@ import dev.joid.lib.resource.playback.IResourcePlayback;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import dev.joid.lib.video.VideoAudioPlayer;
 import dev.joid.lib.video.VideoNatives;
+import dev.joid.lib.video.VideoNativesException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -137,7 +138,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		try {
 			VideoNatives.install().join();
 		} catch (final CompletionException exception) {
-			throw (RuntimeException) exception.getCause();
+			final Throwable cause = exception.getCause();
+			throw cause instanceof RuntimeException ? (RuntimeException) cause : new VideoNativesException("The FFmpeg natives cannot be installed (" + cause + "), check the video libraries on the classpath", cause);
 		}
 
 		if (this.file == null) {
@@ -205,7 +207,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	public void update(final @NonNull ResourceData resource) {
 		if (this.audioPlayer != null) {
 			this.audioPlayer.update();
-			this.audioPlayer.setVolume(this.volume);
 		}
 
 		if (!this.running.get()) {
@@ -273,7 +274,9 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.decodeThread.interrupt();
 			try {
 				this.decodeThread.join(1000L);
-			} catch (final InterruptedException ignored) {}
+			} catch (final InterruptedException interrupted) {
+				Thread.currentThread().interrupt();
+			}
 			this.decodeThread = null;
 		}
 
@@ -364,6 +367,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	public @NonNull VideoResourceDecoder volume(final float volume) {
 		this.volume = volume;
+		if (this.audioPlayer != null) {
+			this.audioPlayer.setVolume(volume);
+		}
+
 		synchronized (this.grabberLock) {
 			if (volume > 0F && this.audioPlayer == null && this.grabber != null) {
 				this.createAudioPlayer();
@@ -504,6 +511,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private void createAudioPlayer() {
 		if (this.grabber.getAudioChannels() > 0 && this.volume > 0F && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
 			this.audioPlayer = new VideoAudioPlayer(this.describe(), this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+			this.audioPlayer.setVolume(this.volume);
 			this.audioPlayer.setGroup(this.audioGroup);
 			if (this.hasLocation) {
 				this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
@@ -625,7 +633,9 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		if (this.decodeThread != null) {
 			try {
 				this.decodeThread.join(1000L);
-			} catch (final InterruptedException ignored) {}
+			} catch (final InterruptedException interrupted) {
+				Thread.currentThread().interrupt();
+			}
 			this.decodeThread = null;
 		}
 	}

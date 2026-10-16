@@ -74,7 +74,7 @@ public final class VideoNatives {
 			try {
 				VideoNatives.register(VideoNatives.download(Loader.getPlatform()));
 				installation.complete(null);
-			} catch (final RuntimeException exception) {
+			} catch (final RuntimeException | Error exception) {
 				JOIDLog.warn(exception.getMessage() + (exception.getCause() != null ? " (" + exception.getCause() + ")" : ""));
 				installation.completeExceptionally(exception);
 			}

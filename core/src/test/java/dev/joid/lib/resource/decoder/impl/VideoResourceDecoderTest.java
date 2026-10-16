@@ -763,6 +763,39 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void passesItsVolumeToItsAudioPlayerRightAway() {
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv"));
+		decoder.decode(new ResourceData("voiced.mkv", null));
+		decoder.volume(0.5F);
+		Assert.assertEquals(0.5F, ((float) VideoResourceDecoderTest.field(VideoResourceDecoderTest.field(decoder, "audioPlayer"), "volume")), 0F);
+	}
+
+	@Test
+	public void keepsTheInterruptionOfItsCallerWhenReleased() throws ReflectiveOperationException {
+		final CountDownLatch done = new CountDownLatch(1);
+		final Thread stubborn = new Thread(() -> {
+			while (done.getCount() > 0L) {
+				try {
+					done.await();
+				} catch (final InterruptedException ignored) {}
+			}
+		});
+		stubborn.start();
+		final VideoResourceDecoder decoder = this.frames();
+		final Field field = VideoResourceDecoder.class.getDeclaredField("decodeThread");
+		field.setAccessible(true);
+		field.set(decoder, stubborn);
+		Thread.currentThread().interrupt();
+		try {
+			decoder.release();
+			Assert.assertTrue(Thread.interrupted());
+		} finally {
+			Thread.interrupted();
+			done.countDown();
+		}
+	}
+
+	@Test
 	public void startsItsAudioOnceUnmuted() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv")).volume(0F);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);

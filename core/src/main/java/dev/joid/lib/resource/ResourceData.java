@@ -59,9 +59,9 @@ public final class ResourceData {
 
 	private Runnable pendingRelease;
 
-	@Getter private boolean loaded;
-	@Getter private boolean uploaded;
-	@Getter private boolean generated;
+	@Getter private boolean          uploaded;
+	@Getter private boolean          generated;
+	@Getter private volatile boolean loaded;
 
 	private int width;
 	private int height;

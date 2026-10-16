@@ -3,6 +3,7 @@ package dev.joid.lib.video;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.JarURLConnection;
@@ -10,6 +11,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import org.bytedeco.javacpp.Loader;
 import org.junit.After;
@@ -74,6 +76,34 @@ public class VideoNativesTest {
 
 		Files.delete(jar.toPath());
 		Assert.assertEquals(directory, VideoNativesTest.download(platform));
+	}
+
+	@Test(timeout = 10000L)
+	public void endsItsInstallationOnAnErrorOfItsThread() throws ReflectiveOperationException, InterruptedException {
+		final Field installed = VideoNatives.class.getDeclaredField("installed");
+		final Field installation = VideoNatives.class.getDeclaredField("installation");
+		installed.setAccessible(true);
+		installation.setAccessible(true);
+		final Object wasInstalled = installed.get(null);
+		final String handlers = System.getProperty("java.protocol.handler.pkgs");
+		System.setProperty("java.protocol.handler.pkgs", "dev.joid.lib.video");
+		installed.set(null, false);
+		installation.set(null, null);
+		VideoNatives.repository("failing://natives");
+		try {
+			VideoNatives.install().get();
+			Assert.fail("The natives must not install");
+		} catch (final ExecutionException expected) {
+			Assert.assertTrue(String.valueOf(expected.getCause()), expected.getCause() instanceof LinkageError);
+		} finally {
+			installed.set(null, wasInstalled);
+			installation.set(null, null);
+			if (handlers == null) {
+				System.clearProperty("java.protocol.handler.pkgs");
+			} else {
+				System.setProperty("java.protocol.handler.pkgs", handlers);
+			}
+		}
 	}
 
 	@Test
