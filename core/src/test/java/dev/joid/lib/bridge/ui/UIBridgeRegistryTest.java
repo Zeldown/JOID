@@ -177,6 +177,16 @@ public class UIBridgeRegistryTest {
 	}
 
 	@Test
+	public void advancesTheAnimatorsStartedOutsideAUiWhileAUiIsOpen() {
+		this.bridges.open(new MenuUI());
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F).start();
+		Assert.assertTrue(animator.isAutomatic());
+		this.bridges.getClock().advance(16L);
+		BridgeHandler.UI.fireFrame();
+		Assert.assertEquals(0.5F, animator.get(), 0F);
+	}
+
+	@Test
 	public void clearsNothingWithoutUIBridge() {
 		final UIBridgeRegistry registry = UIBridgeRegistry.create();
 		final int clears = this.bridges.getRender().getColorClears();

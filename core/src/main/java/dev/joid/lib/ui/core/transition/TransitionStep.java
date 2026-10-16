@@ -40,14 +40,18 @@ public class TransitionStep {
 	public void init(final @NonNull UI ui) {}
 
 	public final void start() {
-		this.animator.value(0F);
+		this.start(0F);
+	}
+
+	public final void start(final float progress) {
+		this.animator.value(progress);
 		if (!this.enabled) {
 			return;
 		}
 
 		this.drawn = false;
 		this.running = true;
-		this.animator.sequence(this.duration, 1F, this.equation);
+		this.animator.sequence(this.duration * (1F - progress), 1F, this.equation);
 	}
 
 	public final void stop() {

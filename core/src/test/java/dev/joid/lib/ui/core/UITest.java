@@ -1004,6 +1004,17 @@ public class UITest {
 	}
 
 	@Test
+	public void leavesFromTheProgressItsInTransitionReached() {
+		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
+		this.bridges.open(ui).frames(2);
+		final float shown = ui.getTransition().getIn().getAnimator().peek();
+		Assert.assertTrue(shown > 0F && shown < 1F);
+		Assert.assertFalse(ui.fireClose());
+		Assert.assertFalse(ui.getTransition().getIn().isRunning());
+		Assert.assertEquals(1F - shown, ui.getTransition().getOut().getAnimator().peek(), 0F);
+	}
+
+	@Test
 	public void closesAtOnceWithItsOutTransitionDisabled() {
 		final InPopupUI ui = new InPopupUI(this.trace);
 		this.bridges.open(ui).frames(20);
@@ -1157,7 +1168,7 @@ public class UITest {
 		this.trace.clear();
 		Assert.assertFalse(ui.fireClose());
 		this.bridges.frame();
-		Assert.assertEquals(Arrays.asList("close", "update node", "update", "in pre", "out pre", "draw node", "out post", "in post"), this.trace);
+		Assert.assertEquals(Arrays.asList("close", "update node", "update", "out pre", "draw node", "out post"), this.trace);
 	}
 
 	@Test

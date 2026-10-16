@@ -49,6 +49,7 @@ import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
 import dev.joid.lib.ui.core.transition.PopTransition;
 import dev.joid.lib.ui.core.transition.Transition;
+import dev.joid.lib.ui.core.transition.TransitionStep;
 import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.event.Event;
 import dev.joid.lib.ui.event.EventBus;
@@ -431,7 +432,10 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		if (this.transition != null && this.transition.getOut().isEnabled() && this.data.visible() && this.drawnFrame + 1L >= UI.frameNumber) {
-			this.transition.getOut().start();
+			final TransitionStep in = this.transition.getIn();
+			final float progress = in.isRunning() ? Math.min(1F, Math.max(0F, 1F - in.getAnimator().peek())) : 0F;
+			in.stop();
+			this.transition.getOut().start(progress);
 			this.transition.getOut().getAnimator().onComplete(tween -> {
 				this.dispose();
 				this.getBridge().close(this);

@@ -61,7 +61,7 @@ public class TweenAnimator extends Signal<Float> {
 		this.requireTimeline();
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.timeline.start(this.manager);
-		this.automatic = UI.getCurrent() != null;
+		this.automatic = UI.getCurrent() != null || BridgeHandler.UI.find(bridge -> !bridge.getUiList().isEmpty()) != null;
 		if (this.automatic) {
 			TweenAnimator.RUNNING_SET.add(this);
 		} else {
