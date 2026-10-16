@@ -53,7 +53,6 @@ scale 0.5
 wait 500
 shot window-font-1600x900-scale-0.5
 resize 1920 1080
-scale 1
 scale 0.75
 ui dev.joid.demo.ui.option.UIDemoOption
 open dev.joid.demo.ui.option.popup.UIDemoFixedScalePopup
@@ -64,4 +63,3 @@ ui dev.joid.demo.ui.option.UIDemoOption
 open dev.joid.demo.ui.option.popup.UIDemoLimitedScalePopup
 wait 800
 shot window-option-scale-limit
-scale 1

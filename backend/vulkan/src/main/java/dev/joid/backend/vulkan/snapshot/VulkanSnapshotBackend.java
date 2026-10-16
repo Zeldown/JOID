@@ -9,7 +9,7 @@ import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 
 import dev.joid.backend.vulkan.VulkanBackend;
-import dev.joid.backend.vulkan.host.VulkanWindowHost;
+import dev.joid.backend.vulkan.host.WindowVulkanHost;
 import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.backend.vulkan.render.buffer.VulkanBuffer;
@@ -25,7 +25,7 @@ import lombok.NonNull;
 public final class VulkanSnapshotBackend implements ISnapshotBackend {
 
 	private VulkanBackend      backend;
-	private VulkanWindowHost   host;
+	private WindowVulkanHost   host;
 	private GlfwSnapshotWindow window;
 
 	@Override
@@ -42,7 +42,7 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 	@Override
 	public void create(final int width, final int height) {
 		this.window  = GlfwSnapshotWindow.create(width, height, () -> GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API));
-		this.host    = VulkanWindowHost.create(this.window.getWindow());
+		this.host    = WindowVulkanHost.create(this.window.getWindow());
 		this.backend = VulkanBackend.create(this.window.getWindow(), this.host).audio(false).register();
 		this.host.beginFrame();
 	}

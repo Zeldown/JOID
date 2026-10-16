@@ -66,8 +66,8 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isKeyDown(final @NonNull Key key) {
-		return GlfwKeys.isKeyDown(key, this::isCodeDown);
+	public boolean isKeyDown(final @NonNull Key physicalKey) {
+		return GlfwKeys.isKeyDown(physicalKey, this::isCodeDown);
 	}
 
 	@Override

@@ -53,5 +53,3 @@ shot resource-controls
 key F
 wait 500
 shot resource-fullscreen
-key F
-wait 300

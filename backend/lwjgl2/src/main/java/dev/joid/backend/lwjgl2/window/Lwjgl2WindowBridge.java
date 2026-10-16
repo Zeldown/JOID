@@ -66,8 +66,8 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isKeyDown(final @NonNull Key key) {
-		return Lwjgl2Keys.isKeyDown(key);
+	public boolean isKeyDown(final @NonNull Key physicalKey) {
+		return Lwjgl2Keys.isKeyDown(physicalKey);
 	}
 
 	@Override

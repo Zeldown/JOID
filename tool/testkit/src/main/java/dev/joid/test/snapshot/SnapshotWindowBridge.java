@@ -1,8 +1,6 @@
 package dev.joid.test.snapshot;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 import dev.joid.lib.bridge.window.IWindowBridge;
@@ -16,23 +14,14 @@ import lombok.Setter;
 @Setter
 public final class SnapshotWindowBridge implements IWindowBridge {
 
-	private final Set<Key>     keys    = EnumSet.noneOf(Key.class);
-	private final List<Cursor> cursors = new ArrayList<>();
+	private final Set<Key> keys = EnumSet.noneOf(Key.class);
 
 	private int    width;
 	private int    height;
 	private double mouseX;
 	private double mouseY;
 	private String clipboard = "";
-
-	public @NonNull Cursor getCursor() {
-		return this.cursors.isEmpty() ? Cursor.DEFAULT : this.cursors.get(this.cursors.size() - 1);
-	}
-
-	@Override
-	public void setCursor(final @NonNull Cursor cursor) {
-		this.cursors.add(cursor);
-	}
+	private Cursor cursor    = Cursor.DEFAULT;
 
 	@Override
 	public boolean isMouseGrabbed() {
@@ -40,8 +29,8 @@ public final class SnapshotWindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isKeyDown(final @NonNull Key key) {
-		return this.keys.contains(key);
+	public boolean isKeyDown(final @NonNull Key physicalKey) {
+		return this.keys.contains(physicalKey);
 	}
 
 }

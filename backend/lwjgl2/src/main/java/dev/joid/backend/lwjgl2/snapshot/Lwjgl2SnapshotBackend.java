@@ -46,8 +46,8 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 				this.buffer = new Pbuffer(width, height, format, null);
 				this.buffer.makeCurrent();
 			}
-		} catch (final LWJGLException e) {
-			throw new IllegalStateException("LWJGL 2 cannot create the " + width + "x" + height + " OpenGL context of the snapshots (" + e.getMessage() + "), check that the graphics driver supports OpenGL", e);
+		} catch (final LWJGLException exception) {
+			throw new IllegalStateException("LWJGL 2 cannot create the " + width + "x" + height + " OpenGL context of the snapshots (" + exception.getMessage() + "), check that the graphics driver supports OpenGL", exception);
 		}
 
 		backend.register();

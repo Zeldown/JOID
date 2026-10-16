@@ -40,7 +40,7 @@ import dev.joid.backend.vulkan.render.VulkanContext;
 import lombok.Getter;
 import lombok.NonNull;
 
-public final class VulkanWindowHost implements IVulkanHost {
+public final class WindowVulkanHost implements IVulkanHost {
 
 	@Getter private final VkQueue          queue;
 	@Getter private final VkDevice         device;
@@ -70,16 +70,16 @@ public final class VulkanWindowHost implements IVulkanHost {
 	private long   swapchain;
 	private long[] renderSemaphores;
 
-	private VulkanWindowHost(final long window, final int framesInFlight) {
+	private WindowVulkanHost(final long window, final int framesInFlight) {
 		this.window         = window;
 		this.framesInFlight = framesInFlight;
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			this.instance         = VulkanWindowHost.createInstance(stack);
-			this.surface          = VulkanWindowHost.createSurface(stack, this.instance, window);
-			this.physicalDevice   = VulkanWindowHost.selectPhysicalDevice(stack, this.instance, this.surface);
-			this.queueFamilyIndex = VulkanWindowHost.findQueueFamily(stack, this.physicalDevice, this.surface);
-			this.device           = VulkanWindowHost.createDevice(stack, this.physicalDevice, this.queueFamilyIndex);
+			this.instance         = WindowVulkanHost.createInstance(stack);
+			this.surface          = WindowVulkanHost.createSurface(stack, this.instance, window);
+			this.physicalDevice   = WindowVulkanHost.selectPhysicalDevice(stack, this.instance, this.surface);
+			this.queueFamilyIndex = WindowVulkanHost.findQueueFamily(stack, this.physicalDevice, this.surface);
+			this.device           = WindowVulkanHost.createDevice(stack, this.physicalDevice, this.queueFamilyIndex);
 
 			final PointerBuffer queue = stack.mallocPointer(1);
 			VK10.vkGetDeviceQueue(this.device, this.queueFamilyIndex, 0, queue);
@@ -108,7 +108,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 			this.imageSemaphores = new long[framesInFlight];
 			for (int i = 0; i < framesInFlight; i++) {
 				this.commandBuffers[i] = new VkCommandBuffer(buffers.get(i), this.device);
-				this.imageSemaphores[i] = VulkanWindowHost.createSemaphore(stack, this.device);
+				this.imageSemaphores[i] = WindowVulkanHost.createSemaphore(stack, this.device);
 
 				final LongBuffer fence = stack.mallocLong(1);
 				VulkanContext.check(VK10.vkCreateFence(this.device, VkFenceCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_FENCE_CREATE_SIGNALED_BIT), null, fence), "vkCreateFence");
@@ -119,15 +119,15 @@ public final class VulkanWindowHost implements IVulkanHost {
 		this.createSwapchain();
 	}
 
-	public static @NonNull VulkanWindowHost create(final long window) {
-		return VulkanWindowHost.create(window, 2);
+	public static @NonNull WindowVulkanHost create(final long window) {
+		return WindowVulkanHost.create(window, 2);
 	}
 
-	public static @NonNull VulkanWindowHost create(final long window, final int framesInFlight) {
+	public static @NonNull WindowVulkanHost create(final long window, final int framesInFlight) {
 		if (framesInFlight < 1) {
 			throw new IllegalArgumentException("A Vulkan window host needs at least one frame in flight, got " + framesInFlight + ": pass 1 to wait for each frame, 2 or more to record the next frame while the GPU draws the previous ones");
 		}
-		return new VulkanWindowHost(window, framesInFlight);
+		return new WindowVulkanHost(window, framesInFlight);
 	}
 
 	public void destroy() {
@@ -149,7 +149,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 		VK10.vkDestroyInstance(this.instance, null);
 	}
 
-	public @NonNull VulkanWindowHost beginFrame() {
+	public @NonNull WindowVulkanHost beginFrame() {
 		if (this.frameActive) {
 			throw new IllegalStateException("The Vulkan window frame has already begun, call endFrame() first");
 		}
@@ -191,7 +191,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 		return this;
 	}
 
-	public @NonNull VulkanWindowHost endFrame() {
+	public @NonNull WindowVulkanHost endFrame() {
 		if (!this.frameActive) {
 			throw new IllegalStateException("The Vulkan window frame has not begun, call beginFrame() first");
 		}
@@ -318,7 +318,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 			for (int i = 0; i < this.images.length; i++) {
 				this.images[i] = images.get(i);
 				this.views[i] = VulkanContext.createImageView(this.device, this.images[i], this.colorFormat, VK10.VK_IMAGE_ASPECT_COLOR_BIT, 1);
-				this.renderSemaphores[i] = VulkanWindowHost.createSemaphore(stack, this.device);
+				this.renderSemaphores[i] = WindowVulkanHost.createSemaphore(stack, this.device);
 			}
 		}
 	}
@@ -394,7 +394,7 @@ public final class VulkanWindowHost implements IVulkanHost {
 		for (int i = 0; i < devices.capacity(); i++) {
 			final VkPhysicalDevice device = new VkPhysicalDevice(devices.get(i), instance);
 			VK10.vkGetPhysicalDeviceProperties(device, properties);
-			if (properties.apiVersion() < VK13.VK_API_VERSION_1_3 || VulkanWindowHost.findQueueFamily(stack, device, surface) == -1 || !VulkanWindowHost.hasExtension(device, KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
+			if (properties.apiVersion() < VK13.VK_API_VERSION_1_3 || WindowVulkanHost.findQueueFamily(stack, device, surface) == -1 || !WindowVulkanHost.hasExtension(device, KHRSwapchain.VK_KHR_SWAPCHAIN_EXTENSION_NAME)) {
 				continue;
 			}
 

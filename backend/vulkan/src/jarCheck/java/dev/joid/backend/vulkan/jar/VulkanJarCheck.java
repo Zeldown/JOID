@@ -6,7 +6,7 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.Configuration;
 
 import dev.joid.backend.vulkan.VulkanBackend;
-import dev.joid.backend.vulkan.host.VulkanWindowHost;
+import dev.joid.backend.vulkan.host.WindowVulkanHost;
 import dev.joid.test.jar.JarCheck;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ public final class VulkanJarCheck {
 
 	public static void main(final String[] arguments) {
 		Configuration.STACK_SIZE.set(1024);
-		final AtomicReference<VulkanWindowHost> host = new AtomicReference<>();
+		final AtomicReference<WindowVulkanHost> host = new AtomicReference<>();
 		JarCheck.run(arguments[0], () -> {
 			if (!GLFW.glfwInit()) {
 				throw new IllegalStateException("Unable to initialize GLFW");
@@ -29,7 +29,7 @@ public final class VulkanJarCheck {
 				throw new IllegalStateException("Unable to create the hidden GLFW window");
 			}
 
-			host.set(VulkanWindowHost.create(window));
+			host.set(WindowVulkanHost.create(window));
 			final VulkanBackend backend = VulkanBackend.create(window, host.get()).audio(false).register();
 			host.get().beginFrame();
 			return backend;

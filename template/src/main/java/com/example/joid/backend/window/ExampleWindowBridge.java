@@ -36,7 +36,7 @@ public final class ExampleWindowBridge implements IWindowBridge {
 	}
 
 	@Override
-	public boolean isKeyDown(final Key key) {
+	public boolean isKeyDown(final Key physicalKey) {
 		throw new UnsupportedOperationException("ExampleWindowBridge.isKeyDown() is not implemented, implement it with the API of your engine");
 	}
 

@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.backend.vulkan.host.IVulkanHost;
-import dev.joid.backend.vulkan.host.VulkanWindowHost;
+import dev.joid.backend.vulkan.host.WindowVulkanHost;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 
 public class VulkanBackendTest {
@@ -24,7 +24,7 @@ public class VulkanBackendTest {
 
 	@Test
 	public void rejectsAWindowHostWithoutFrameInFlight() {
-		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> VulkanWindowHost.create(0L, 0));
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> WindowVulkanHost.create(0L, 0));
 		Assert.assertTrue(exception.getMessage(), exception.getMessage().contains("at least one frame in flight, got 0"));
 	}
 

@@ -70,8 +70,8 @@ public final class VulkanShader extends Shader {
 		try {
 			vertex = VulkanShaderCompiler.compileVertex(translation.getVertex());
 			fragment = VulkanShaderCompiler.compileFragment(translation.getFragment());
-		} catch (final IllegalStateException e) {
-			JOIDLog.warn(e.getMessage());
+		} catch (final IllegalStateException exception) {
+			JOIDLog.warn(exception.getMessage());
 			return;
 		}
 

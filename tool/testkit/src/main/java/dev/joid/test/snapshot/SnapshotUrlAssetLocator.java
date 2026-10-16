@@ -34,7 +34,7 @@ public final class SnapshotUrlAssetLocator implements IAssetLocator {
 		return new CachedAsset(url, SnapshotUrlAssetLocator.hash(url));
 	}
 
-	private static void download(final @NonNull String url, final @NonNull File file) throws IOException {
+	private static void download(final String url, final File file) throws IOException {
 		try (InputStream stream = UrlAsset.create(url).open()) {
 			Files.copy(stream, file.toPath());
 		}
@@ -52,7 +52,7 @@ public final class SnapshotUrlAssetLocator implements IAssetLocator {
 
 		private final String key;
 
-		private CachedAsset(final @NonNull String url, final @NonNull String key) {
+		private CachedAsset(final String url, final String key) {
 			super(url);
 			this.key = key;
 		}

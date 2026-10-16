@@ -29,8 +29,8 @@ public final class Lwjgl2JarCheck {
 				} else {
 					new Pbuffer(640, 480, format, null).makeCurrent();
 				}
-			} catch (final LWJGLException e) {
-				throw new IllegalStateException("Unable to create the LWJGL 2 context", e);
+			} catch (final LWJGLException exception) {
+				throw new IllegalStateException("Unable to create the LWJGL 2 context", exception);
 			}
 
 			final Lwjgl2Backend backend = Lwjgl2Backend.create().audio(false).register();

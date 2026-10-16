@@ -107,7 +107,6 @@ public class GlRenderBridge extends RenderBridge {
 			this.applyTarget(super.getState());
 			this.binding.depthMask(true);
 			this.binding.clear(GlConstants.DEPTH_BUFFER_BIT);
-			this.binding.depthMask(super.getState().isDepthWrite());
 		});
 	}
 
@@ -128,7 +127,6 @@ public class GlRenderBridge extends RenderBridge {
 			this.applyPipeline(state);
 			final GlShader shader = (GlShader) current;
 			shader.use(state, buffer);
-			this.bindTexture(0, super.resolveTexture());
 			for (final UniformSampler sampler : shader.getSamplerMap().values()) {
 				final int location = shader.getLocation(sampler.getName());
 				if (location != -1) {
