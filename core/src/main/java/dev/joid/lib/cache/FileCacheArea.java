@@ -48,7 +48,7 @@ public final class FileCacheArea {
 		return new FileCacheArea(name);
 	}
 
-	public final synchronized @NonNull FileCacheArea retention(final @NonNull Duration retention) {
+	public synchronized @NonNull FileCacheArea retention(final @NonNull Duration retention) {
 		if (retention.isNegative() || retention.isZero()) {
 			throw new IllegalArgumentException("The retention " + retention + " of the cache area " + this.name + " is not positive, pass a duration above 0");
 		}

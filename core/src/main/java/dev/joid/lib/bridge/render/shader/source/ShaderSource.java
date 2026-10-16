@@ -46,27 +46,27 @@ public final class ShaderSource {
 		this.features = EnumSet.noneOf(ShaderFeature.class);
 	}
 
-	public final @NonNull List<ShaderVariable> getInputs() {
+	public @NonNull List<ShaderVariable> getInputs() {
 		return Collections.unmodifiableList(this.inputs);
 	}
 
-	public final @NonNull Set<ShaderBuiltin> getBuiltins() {
+	public @NonNull Set<ShaderBuiltin> getBuiltins() {
 		return Collections.unmodifiableSet(this.builtins);
 	}
 
-	public final @NonNull Set<ShaderFeature> getFeatures() {
+	public @NonNull Set<ShaderFeature> getFeatures() {
 		return Collections.unmodifiableSet(this.features);
 	}
 
-	public final @NonNull List<ShaderVariable> getOutputs() {
+	public @NonNull List<ShaderVariable> getOutputs() {
 		return Collections.unmodifiableList(this.outputs);
 	}
 
-	public final @NonNull List<ShaderVariable> getUniforms() {
+	public @NonNull List<ShaderVariable> getUniforms() {
 		return Collections.unmodifiableList(this.uniforms);
 	}
 
-	public final @NonNull List<ShaderVariable> getSamplers() {
+	public @NonNull List<ShaderVariable> getSamplers() {
 		return Collections.unmodifiableList(this.samplers);
 	}
 

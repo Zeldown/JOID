@@ -86,7 +86,7 @@ public final class UniformBlock {
 		return this;
 	}
 
-	public final @NonNull Map<String, UniformMember> getMemberMap() {
+	public @NonNull Map<String, UniformMember> getMemberMap() {
 		return Collections.unmodifiableMap(this.memberMap);
 	}
 
