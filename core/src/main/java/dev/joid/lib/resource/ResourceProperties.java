@@ -12,7 +12,7 @@ public final class ResourceProperties {
 
 	private Boolean       mipmap;
 	private double[]      textureCoords;
-	private TextureFilter interpolation = TextureFilter.NEAREST;
+	private TextureFilter interpolation = TextureFilter.LINEAR;
 
 	public static @NonNull ResourceProperties create() {
 		return new ResourceProperties();

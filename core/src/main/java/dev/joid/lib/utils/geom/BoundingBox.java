@@ -1,6 +1,7 @@
 package dev.joid.lib.utils.geom;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
@@ -19,15 +20,15 @@ public final class BoundingBox {
 		this.maxY = maxY;
 	}
 
-	public static BoundingBox create(final double x, final double y, final double width, final double height) {
+	public static @NonNull BoundingBox create(final double x, final double y, final double width, final double height) {
 		return new BoundingBox(x, y, x + width, y + height);
 	}
 
-	public BoundingBox copy() {
+	public @NonNull BoundingBox copy() {
 		return new BoundingBox(this.minX, this.minY, this.maxX, this.maxY);
 	}
 
-	public BoundingBox expand(final double value) {
+	public @NonNull BoundingBox expand(final double value) {
 		this.minX -= value;
 		this.minY -= value;
 
@@ -37,7 +38,7 @@ public final class BoundingBox {
 		return this;
 	}
 
-	public BoundingBox contract(final double value) {
+	public @NonNull BoundingBox contract(final double value) {
 		this.minX += value;
 		this.minY += value;
 

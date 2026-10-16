@@ -21,18 +21,18 @@ public class ResourcePropertiesTest {
 	}
 
 	@Test
-	public void startsNearestWithoutTextureCoordinates() {
+	public void startsLinearWithoutTextureCoordinates() {
 		final ResourceProperties properties = ResourceProperties.create();
-		Assert.assertSame(TextureFilter.NEAREST, properties.getInterpolation());
+		Assert.assertSame(TextureFilter.LINEAR, properties.getInterpolation());
 		Assert.assertNull(properties.getTextureCoords());
 	}
 
 	@Test
 	public void switchesTheInterpolation() {
 		final ResourceProperties properties = ResourceProperties.create();
-		Assert.assertSame(TextureFilter.LINEAR, properties.linear().getInterpolation());
 		Assert.assertSame(TextureFilter.NEAREST, properties.nearest().getInterpolation());
-		Assert.assertSame(TextureFilter.LINEAR, properties.interpolation(TextureFilter.LINEAR).getInterpolation());
+		Assert.assertSame(TextureFilter.LINEAR, properties.linear().getInterpolation());
+		Assert.assertSame(TextureFilter.NEAREST, properties.interpolation(TextureFilter.NEAREST).getInterpolation());
 	}
 
 	@Test
@@ -53,17 +53,17 @@ public class ResourcePropertiesTest {
 	@Test
 	public void changesACopyIndependently() {
 		final ResourceProperties properties = ResourceProperties.create();
-		properties.copy().linear().mipmap(true);
-		Assert.assertSame(TextureFilter.NEAREST, properties.getInterpolation());
+		properties.copy().nearest().mipmap(true);
+		Assert.assertSame(TextureFilter.LINEAR, properties.getInterpolation());
 		Assert.assertNull(properties.getMipmap());
 	}
 
 	@Test
 	public void takesEveryPropertyOfAnother() {
-		final ResourceProperties other = ResourceProperties.create().linear().textureCoords(0D, 0D, 1D, 1D);
+		final ResourceProperties other = ResourceProperties.create().nearest().textureCoords(0D, 0D, 1D, 1D);
 		final ResourceProperties properties = ResourceProperties.create();
 		Assert.assertSame(properties, properties.copy(other));
-		Assert.assertSame(TextureFilter.LINEAR, properties.getInterpolation());
+		Assert.assertSame(TextureFilter.NEAREST, properties.getInterpolation());
 		Assert.assertNull(properties.getMipmap());
 		Assert.assertArrayEquals(new double[] {0D, 0D, 1D, 1D}, properties.getTextureCoords(), 0D);
 	}

@@ -18,7 +18,7 @@ import lombok.NonNull;
 
 public final class Resource {
 
-	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create().linear();
+	private static final ResourceBuilder DEFAULT_BUILDER = ResourceBuilder.create();
 
 	private final ResourceData            data;
 	@Getter private final ResourceBuilder builder;

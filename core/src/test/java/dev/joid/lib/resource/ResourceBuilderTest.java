@@ -47,11 +47,11 @@ public class ResourceBuilderTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void startsNearestOnTheDefaultCache() {
+	public void startsLinearOnTheDefaultCache() {
 		final ResourceBuilder builder = ResourceBuilder.create();
 		Assert.assertTrue(builder.getCache() instanceof MemoryResourceCache);
 		Assert.assertSame(ResourceBuilder.create().getCache(), builder.getCache());
-		Assert.assertSame(TextureFilter.NEAREST, builder.getProperties().getInterpolation());
+		Assert.assertSame(TextureFilter.LINEAR, builder.getProperties().getInterpolation());
 		Assert.assertNull(builder.getProperties().getMipmap());
 		Assert.assertNull(builder.getProperties().getTextureCoords());
 	}
@@ -79,13 +79,13 @@ public class ResourceBuilderTest {
 	public void changesEveryPropertyInANewBuilder() {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create();
-		final ResourceBuilder changed = builder.linear().mipmap(true).textureCoords(1D, 2D, 3D, 4D).cache(cache);
+		final ResourceBuilder changed = builder.nearest().mipmap(true).textureCoords(1D, 2D, 3D, 4D).cache(cache);
 		Assert.assertNotSame(builder, changed);
-		Assert.assertSame(TextureFilter.LINEAR, changed.getProperties().getInterpolation());
+		Assert.assertSame(TextureFilter.NEAREST, changed.getProperties().getInterpolation());
 		Assert.assertEquals(Boolean.TRUE, changed.getProperties().getMipmap());
 		Assert.assertArrayEquals(new double[] {1D, 2D, 3D, 4D}, changed.getProperties().getTextureCoords(), 0D);
 		Assert.assertSame(cache, changed.getCache());
-		Assert.assertSame(TextureFilter.NEAREST, builder.getProperties().getInterpolation());
+		Assert.assertSame(TextureFilter.LINEAR, builder.getProperties().getInterpolation());
 		Assert.assertNull(builder.getProperties().getMipmap());
 		Assert.assertNull(builder.getProperties().getTextureCoords());
 		Assert.assertSame(ResourceBuilder.create().getCache(), builder.getCache());
@@ -102,8 +102,8 @@ public class ResourceBuilderTest {
 	@Test
 	public void givesACopyOfItsProperties() {
 		final ResourceBuilder builder = ResourceBuilder.create();
-		builder.getProperties().linear().mipmap(true);
-		Assert.assertSame(TextureFilter.NEAREST, builder.getProperties().getInterpolation());
+		builder.getProperties().nearest().mipmap(true);
+		Assert.assertSame(TextureFilter.LINEAR, builder.getProperties().getInterpolation());
 		Assert.assertNull(builder.getProperties().getMipmap());
 	}
 

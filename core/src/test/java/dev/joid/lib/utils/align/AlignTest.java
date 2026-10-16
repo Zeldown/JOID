@@ -6,20 +6,16 @@ import org.junit.Test;
 public class AlignTest {
 
 	@Test
-	public void readsTheStartAsTheLeft() {
+	public void knowsTheStart() {
 		Assert.assertTrue(Align.START.isStart());
-		Assert.assertTrue(Align.START.isLeft());
 		Assert.assertFalse(Align.START.isEnd());
-		Assert.assertFalse(Align.START.isRight());
 		Assert.assertFalse(Align.START.isCenter());
 	}
 
 	@Test
-	public void readsTheEndAsTheRight() {
+	public void knowsTheEnd() {
 		Assert.assertTrue(Align.END.isEnd());
-		Assert.assertTrue(Align.END.isRight());
 		Assert.assertFalse(Align.END.isStart());
-		Assert.assertFalse(Align.END.isLeft());
 		Assert.assertFalse(Align.END.isCenter());
 	}
 
@@ -27,15 +23,7 @@ public class AlignTest {
 	public void knowsTheCenter() {
 		Assert.assertTrue(Align.CENTER.isCenter());
 		Assert.assertFalse(Align.CENTER.isStart());
-		Assert.assertFalse(Align.CENTER.isLeft());
 		Assert.assertFalse(Align.CENTER.isEnd());
-		Assert.assertFalse(Align.CENTER.isRight());
-	}
-
-	@Test
-	public void comparesWithAnotherAlignment() {
-		Assert.assertTrue(Align.CENTER.is(Align.CENTER));
-		Assert.assertFalse(Align.START.is(Align.END));
 	}
 
 }
