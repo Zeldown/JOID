@@ -3,7 +3,6 @@ package dev.joid.test.contract;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,15 +45,9 @@ public abstract class BitmapFontContractSuite {
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.pushState();
 		render.getModelView().identity();
 		render.getProjection().ortho(0D, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, 0D, 0D, 10000D);
 		render.getState().load(RenderState.create().viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT).blend(BlendState.NORMAL).depthWrite(false));
-	}
-
-	@After
-	public void restoreState() {
-		BridgeHandler.RENDER.get().popState();
 	}
 
 	@AfterClass

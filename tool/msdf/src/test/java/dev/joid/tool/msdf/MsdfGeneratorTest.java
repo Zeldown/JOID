@@ -99,6 +99,15 @@ public class MsdfGeneratorTest {
 	}
 
 	@Test
+	public void printsTheUsageForAnUnknownOption() throws Exception {
+		final File output = Files.createTempDirectory("joid-msdf-").toFile();
+		final String printed = MsdfGeneratorTest.capture(() -> MsdfGenerator.main(new String[] {"--font", MsdfFonts.copy(MsdfFonts.REGULAR).getAbsolutePath(), "--output", output.getAbsolutePath(), "--chrset", "[65, 65]"}));
+		Assert.assertTrue(printed, printed.startsWith("Usage: msdf --font"));
+		Assert.assertFalse(new File(output, "font.msdf").exists());
+		Files.delete(output.toPath());
+	}
+
+	@Test
 	public void refusesAnOptionWithoutValue() throws Exception {
 		try {
 			MsdfGenerator.main(new String[] {"--output", "out", "--font"});

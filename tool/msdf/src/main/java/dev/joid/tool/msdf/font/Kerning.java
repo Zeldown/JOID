@@ -22,9 +22,12 @@ public final class Kerning {
 	}
 
 	public static Kerning read(final FontFile file, final Font font, final int[] codepoints) {
-		final Map<Integer, Integer> glyphs = new HashMap<>();
+		final Map<Integer, Integer> glyphs = new LinkedHashMap<>();
 		for (final int codepoint : codepoints) {
-			glyphs.put(codepoint, Glyphs.code(font, codepoint));
+			final int glyph = Glyphs.code(font, codepoint);
+			if (glyph != 0) {
+				glyphs.put(codepoint, glyph);
+			}
 		}
 
 		final int[] sorted = new int[glyphs.size()];
@@ -37,8 +40,8 @@ public final class Kerning {
 		final Kerning reader = new Kerning(file, sorted);
 		reader.parse();
 
-		for (final int first : codepoints) {
-			for (final int second : codepoints) {
+		for (final int first : glyphs.keySet()) {
+			for (final int second : glyphs.keySet()) {
 				final Integer value = reader.pairs.get((long) glyphs.get(first) << 32 | glyphs.get(second) & 0xFFFFFFFFL);
 				if (value != null && value != 0) {
 					reader.kerning.put((long) first << 32 | second & 0xFFFFFFFFL, value);

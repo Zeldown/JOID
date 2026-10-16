@@ -28,8 +28,7 @@ jobs:
       - name: Get the tag name
         id: set-tag
         run: |
-          TAG_NAME=${GITHUB_REF_NAME//[-]/ }
-          TAG_NAME=${TAG_NAME:1}
+          TAG_NAME=${GITHUB_REF_NAME:1}
           echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
 
           COMMIT_SHA=$(git rev-parse HEAD)
@@ -39,11 +38,11 @@ jobs:
         id: update
         run: |
           sed -i "s/^    version = \".*\"/    version = \"${TAG_NAME}\"/g" build.gradle
-          sed -i "s/version-\([^[:space:]-]*\) \([^[:space:]-]*\)-/version-${TAG_NAME} (${COMMIT_SHA})-/g" README.md
-          OLD_VERSION=$(sed -n 's/.*"version": "\([0-9]\+\.[0-9]\+\.[0-9]\+\)".*/\1/p' documentation/nav.json)
+          sed -i "s/version-[^[:space:]]* ([0-9a-f]*)-/version-${TAG_NAME//-/--} (${COMMIT_SHA})-/g" README.md
+          OLD_VERSION=$(sed -n 's/.*"version": "\([0-9]\+\.[0-9]\+\.[0-9]\+[^"]*\)".*/\1/p' documentation/nav.json)
           [ -n "$OLD_VERSION" ] || { echo "No version found in documentation/nav.json"; exit 1; }
           find documentation/content -name "*.md" ! -path "documentation/content/changelog/*" -exec sed -i "s/\b${OLD_VERSION//./\\.}\b/${TAG_NAME}/g" {} +
-          sed -i "s/\"version\": \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\": \"${TAG_NAME}\"/g" documentation/nav.json
+          sed -i "s/\"version\": \"[0-9]\+\.[0-9]\+\.[0-9]\+[^\"]*\"/\"version\": \"${TAG_NAME}\"/g" documentation/nav.json
           git add README.md
           git add build.gradle
           git add documentation/nav.json

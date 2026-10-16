@@ -5,6 +5,7 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -34,7 +35,7 @@ public final class MsdfGenerator {
 
 	public static void main(final String[] arguments) throws Exception {
 		final Map<String, String> options = MsdfGenerator.options(arguments);
-		if (!options.containsKey("font")) {
+		if (!options.containsKey("font") || !Arrays.asList("font", "output", "charset", "range", "width", "height", "size").containsAll(options.keySet())) {
 			System.out.println("Usage: msdf --font <file.ttf|file.otf> [--output <directory>] [--charset <file|ranges>] [--range <pixels>] [--width <pixels>] [--height <pixels>] [--size <pixels>]");
 			return;
 		}

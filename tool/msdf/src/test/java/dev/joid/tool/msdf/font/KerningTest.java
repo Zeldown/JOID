@@ -123,6 +123,14 @@ public class KerningTest {
 	}
 
 	@Test
+	public void ignoresTheCodepointsMissingFromTheFont() throws Exception {
+		final byte[] data = MsdfFonts.build("GPOS", KerningTest.gpos(KerningTest.lookup(2, new int[] {2, 24, 4, 0, 34, 42, 2, 2, 0, -10, -20, -80, 2, 1, 2, 4, 0, 1, 2, 1, 1, 2, 1, 3, 3, 1})));
+		final Map<Long, Integer> kerning = Kerning.read(FontFile.read(data), Glyphs.load(MsdfFonts.read(MsdfFonts.REGULAR)), new int[] {'A', 'V', 'x', 0x4E00}).getKerning();
+		Assert.assertEquals(5, kerning.size());
+		Assert.assertTrue(kerning.keySet().stream().noneMatch(pair -> pair >> 32 == 0x4E00 || pair.intValue() == 0x4E00));
+	}
+
+	@Test
 	public void readsOnlyTheKernFeature() throws Exception {
 		Assert.assertTrue(KerningTest.kerning(MsdfFonts.build("GPOS", KerningTest.gpos("liga", new int[] {0}, KerningTest.lookup(2, KerningTest.pair(2, 3, -80))))).isEmpty());
 	}

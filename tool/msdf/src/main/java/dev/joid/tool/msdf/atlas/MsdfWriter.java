@@ -64,8 +64,9 @@ public final class MsdfWriter {
 				MsdfWriter.kerning(data, kerning.getKerning());
 
 				data.write(MsdfWriter.scanlines(pixels, width, height));
+			} finally {
+				deflater.end();
 			}
-			deflater.end();
 		}
 	}
 
