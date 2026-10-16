@@ -28,7 +28,7 @@ public abstract class SnapshotSuite {
 			return;
 		}
 
-		SnapshotReport.write(new File(SnapshotSettings.getOutput(), "report.html"), "JOID snapshots - " + SnapshotSuite.runner.getRenderer(), SnapshotSuite.ENTRIES);
+		SnapshotReport.write(new File(SnapshotSettings.getOutput(), "report.html"), "JOID snapshots - " + SnapshotSuite.runner.getRenderer(), 0, SnapshotSuite.ENTRIES);
 		SnapshotSuite.ENTRIES.clear();
 		SnapshotSuite.runner.stop();
 		SnapshotSuite.runner = null;

@@ -70,6 +70,12 @@ public class SnapshotRunnerCommandTest {
 	}
 
 	@Test
+	public void typesTheSpacesAtTheEndOfTheText() {
+		SnapshotRunnerCommandTest.runner.execute("ui " + TypeUI.class.getName(), "\ttype   shout  ");
+		Assert.assertEquals("  shout  ", JOID.getUi(TypeUI.class).getText().toString());
+	}
+
+	@Test
 	public void createsAUIWhateverTheVisibilityOfItsConstructor() {
 		SnapshotRunnerCommandTest.runner.execute("ui " + PrivateUI.class.getName());
 		Assert.assertNotNull(JOID.getUi(PrivateUI.class));
@@ -143,6 +149,18 @@ public class SnapshotRunnerCommandTest {
 				this.dragX = event.getMouseX();
 				this.dragY = event.getMouseY();
 			});
+		}
+
+	}
+
+	public static final class TypeUI extends UI {
+
+		@Getter
+		private final StringBuilder text = new StringBuilder();
+
+		@Override
+		public void init() {
+			super.handleCharTyped(event -> this.text.appendCodePoint(event.getCodepoint()));
 		}
 
 	}

@@ -21,6 +21,7 @@ public final class SnapshotComparison {
 		}
 		Arrays.sort(shots);
 
+		final int tolerance = 1;
 		final List<SnapshotEntry> entries = new ArrayList<>();
 		final List<String> failures = new ArrayList<>();
 		for (int i = 2; i < arguments.length; i++) {
@@ -36,7 +37,7 @@ public final class SnapshotComparison {
 
 				final SnapshotImage expected = SnapshotImage.read(shot);
 				final SnapshotImage actual = SnapshotImage.read(candidate);
-				final SnapshotDifference difference = actual.compare(expected, 1);
+				final SnapshotDifference difference = actual.compare(expected, tolerance);
 				if (difference.getPixels() == 0) {
 					identical++;
 					entries.add(SnapshotEntry.create(name, SnapshotStatus.IDENTICAL, 0, candidate, shot));
@@ -53,7 +54,7 @@ public final class SnapshotComparison {
 			System.out.println(candidates.getName() + ": " + identical + "/" + shots.length + " snapshots identical to " + reference.getName());
 		}
 
-		SnapshotReport.write(report, "JOID cross-backend comparison", entries);
+		SnapshotReport.write(report, "JOID cross-backend comparison", tolerance, entries);
 		if (!failures.isEmpty()) {
 			failures.forEach(System.err::println);
 			System.err.println("Report: " + report.toPath().toUri().toASCIIString());

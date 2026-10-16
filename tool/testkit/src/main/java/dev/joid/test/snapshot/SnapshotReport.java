@@ -19,7 +19,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SnapshotReport {
 
-	public static void write(final @NonNull File file, final @NonNull String title, final @NonNull List<SnapshotEntry> entries) {
+	public static void write(final @NonNull File file, final @NonNull String title, final int tolerance, final @NonNull List<SnapshotEntry> entries) {
 		final File data = new File(file.getParentFile(), "report");
 		data.mkdirs();
 
@@ -37,7 +37,7 @@ public final class SnapshotReport {
 		json.append("]");
 
 		final String safeTitle = title.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-		SnapshotReport.writeText(file, SnapshotReport.readTemplate().replace("__TITLE__", safeTitle).replace("__ENTRIES__", json.toString()));
+		SnapshotReport.writeText(file, SnapshotReport.readTemplate().replace("__TITLE__", safeTitle).replace("__TOLERANCE__", String.valueOf(tolerance)).replace("__ENTRIES__", json.toString()));
 	}
 
 	private static String readTemplate() {

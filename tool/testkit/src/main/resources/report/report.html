@@ -298,6 +298,7 @@ canvas {
 </main>
 <script>
 const ENTRIES = __ENTRIES__;
+const TOLERANCE = __TOLERANCE__;
 const MODES = ["side", "swipe", "onion", "blink", "difference", "highlight", "reference", "render"];
 const CONTROLS = {
 	swipe: {label: "Position", min: 0, max: 100, step: 1, unit: "%"},
@@ -309,7 +310,7 @@ const CONTROLS = {
 
 const shots = new Map();
 const pending = new Set();
-const params = {swipe: 50, onion: 50, blink: 600, difference: 64, highlight: 0};
+const params = {swipe: 50, onion: 50, blink: 600, difference: 64, highlight: TOLERANCE};
 const state = {index: -1, mode: "side", filter: "all", query: "", zoom: 1, centerX: 0, centerY: 0, region: -1, blink: false, fitted: false};
 
 const canvas = document.getElementById("canvas");
@@ -453,7 +454,7 @@ function analyze(shot) {
 	for (let y = 0; y < shot.height; y++) {
 		for (let x = 0; x < shot.width; x++) {
 			const delta = channelDelta(shot, x, y).reduce((current, value) => Math.max(current, Math.abs(value)), 0);
-			if (delta === 0) {
+			if (delta <= TOLERANCE) {
 				continue;
 			}
 

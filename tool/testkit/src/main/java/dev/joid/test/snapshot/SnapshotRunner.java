@@ -117,8 +117,8 @@ public final class SnapshotRunner {
 
 		final Map<String, SnapshotImage> shots = new LinkedHashMap<>();
 		for (final String line : commands) {
-			final String command = line.trim();
-			if (command.isEmpty() || command.startsWith("#")) {
+			final String command = line.replaceFirst("^\\s+", "");
+			if (command.trim().isEmpty() || command.startsWith("#")) {
 				continue;
 			}
 
