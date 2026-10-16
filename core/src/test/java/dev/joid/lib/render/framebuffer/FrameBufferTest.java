@@ -157,7 +157,7 @@ public class FrameBufferTest {
 		Assert.assertSame(frameBuffer.getHandle().getTexture(), capture.getState().getTexture());
 		Assert.assertSame(TextureFilter.LINEAR, capture.getState().getTextureFilter());
 		Assert.assertSame(TextureWrap.CLAMP_TO_BORDER, capture.getState().getTextureWrap());
-		Assert.assertSame(BlendState.NORMAL, capture.getState().getBlend());
+		Assert.assertSame(BlendState.PREMULTIPLIED, capture.getState().getBlend());
 		Assert.assertEquals(10D, capture.getLeft(), 0D);
 		Assert.assertEquals(110D, capture.getRight(), 0D);
 		Assert.assertEquals(20D, capture.getTop(), 0D);

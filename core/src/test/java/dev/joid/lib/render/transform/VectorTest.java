@@ -112,6 +112,19 @@ public class VectorTest {
 	}
 
 	@Test
+	public void addsAnOffsetEveryFrameWithoutPilingUp() {
+		final double[] value = {1D};
+		final Vector vector = Vector.create(() -> value[0], () -> 2D, () -> 3D);
+		for (int i = 0; i < 100000; i++) {
+			vector.add(1D, 0D, -1D);
+		}
+		value[0] = 2D;
+		Assert.assertEquals(100002D, vector.getX(), 0D);
+		Assert.assertEquals(2D, vector.getY(), 0D);
+		Assert.assertEquals(-99997D, vector.getZ(), 0D);
+	}
+
+	@Test
 	public void keepsFollowingItsSuppliersAfterASuppliedOffset() {
 		final double[] value = {1D};
 		final Vector vector = Vector.create(() -> value[0], () -> 2D, () -> 3D);

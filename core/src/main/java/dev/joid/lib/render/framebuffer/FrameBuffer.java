@@ -51,7 +51,7 @@ public class FrameBuffer {
 		}
 
 		BridgeHandler.RENDER.get().withState(render -> {
-			render.getState().blend(BlendState.NORMAL);
+			render.getState().blend(BlendState.PREMULTIPLIED);
 			render.getState().texture(this.handle.getTexture()).textureFilter(this.filter).textureWrap(TextureWrap.CLAMP_TO_BORDER);
 
 			final Tessellator tess = Tessellator.inst();

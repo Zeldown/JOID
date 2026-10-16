@@ -2,6 +2,8 @@ package dev.joid.lib.render.transform;
 
 import java.util.function.Supplier;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -111,7 +113,10 @@ public final class Vector {
 	}
 
 	public @NonNull Vector add(final double x, final double y, final double z) {
-		return this.add(() -> x, () -> y, () -> z);
+		this.xSupplier = Vector.shift(this.xSupplier, x);
+		this.ySupplier = Vector.shift(this.ySupplier, y);
+		this.zSupplier = Vector.shift(this.zSupplier, z);
+		return this;
 	}
 
 	public @NonNull Vector add(final @NonNull Supplier<Double> xSupplier, final @NonNull Supplier<Double> ySupplier, final @NonNull Supplier<Double> zSupplier) {
@@ -122,6 +127,28 @@ public final class Vector {
 		this.ySupplier = () -> currentYSupplier.get() + ySupplier.get();
 		this.zSupplier = () -> currentZSupplier.get() + zSupplier.get();
 		return this;
+	}
+
+	private static Supplier<Double> shift(final Supplier<Double> supplier, final double offset) {
+		if (supplier instanceof Shift) {
+			final Shift shift = (Shift) supplier;
+			return new Shift(shift.source, shift.offset + offset);
+		}
+
+		return new Shift(supplier, offset);
+	}
+
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class Shift implements Supplier<Double> {
+
+		private final Supplier<Double> source;
+		private final double           offset;
+
+		@Override
+		public Double get() {
+			return this.source.get() + this.offset;
+		}
+
 	}
 
 }
