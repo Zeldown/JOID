@@ -177,7 +177,7 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		if (!this.isShortcutKeyDown() || UI.isAltKeyDown()) {
+		if (!Character.isISOControl(event.getCodepoint()) && (!this.isShortcutKeyDown() || UI.isAltKeyDown())) {
 			this.insert(new String(Character.toChars(event.getCodepoint())));
 		}
 		event.consume();
@@ -223,11 +223,10 @@ public abstract class FieldNode<V> extends Node {
 
 	@Override
 	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
-		if (event.isConsumed() || event.getNotchesY() == 0D || !this.focused || !super.isHovered() || !this.canStep()) {
+		if (event.isConsumed() || event.getNotchesY() == 0D || !this.focused || !super.isHovered() || !this.stepValue(event.getNotchesY() > 0D ? 1 : -1)) {
 			return;
 		}
 
-		this.stepValue(event.getNotchesY() > 0D ? 1 : -1);
 		event.consume();
 	}
 
@@ -241,8 +240,6 @@ public abstract class FieldNode<V> extends Node {
 	@Override
 	public void detach() {
 		this.focusedValue.update(false);
-		this.inputting = false;
-		this.selecting = false;
 	}
 
 	public final V getValue() {
@@ -345,7 +342,10 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T maxTextLength(final @NonNull Supplier<Integer> maxTextLength) {
-		return super.follow("maxTextLength", maxTextLength, value -> this.maxTextLength = value);
+		return super.follow("maxTextLength", maxTextLength, value -> {
+			this.maxTextLength = value;
+			this.revalidate();
+		});
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T markup(final boolean markup) {
@@ -603,7 +603,7 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		final Color color = this.info.getColor();
-		return this.getShownInfo().withColor(new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), 0.5F));
+		return this.getShownInfo().withColor(new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), color.getAlphaF() * 0.5F));
 	}
 
 	protected final @NonNull Color getShownCursorColor() {
@@ -615,6 +615,8 @@ public abstract class FieldNode<V> extends Node {
 		if (!focused) {
 			this.commit();
 			this.selectionValue.update(FieldSelection.create(0, 0));
+			this.inputting = false;
+			this.selecting = false;
 		}
 
 		this.focused = focused;
@@ -738,8 +740,8 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		if (key == Key.V && this.isShortcutKeyDown() && this.insert(BridgeHandler.WINDOW.get().getClipboard())) {
-			this.commit();
+		if (key == Key.V && this.isShortcutKeyDown()) {
+			this.insert(BridgeHandler.WINDOW.get().getClipboard());
 		}
 	}
 
@@ -815,23 +817,18 @@ public abstract class FieldNode<V> extends Node {
 		return parsed != null && parsed.equals(this.correct(parsed));
 	}
 
-	private boolean canStep() {
-		final V value = this.getValue();
-		final V from = value != null ? value : this.fallback;
-		return from != null && this.increment(from, 0) != null;
-	}
-
-	private void stepValue(final int count) {
+	private boolean stepValue(final int count) {
 		final V value = this.getValue();
 		final V from = value != null ? value : this.fallback;
 		if (from == null) {
-			return;
+			return false;
 		}
 
 		final V next = this.increment(from, count);
 		if (next != null) {
 			this.write(next, true);
 		}
+		return next != null;
 	}
 
 	private @NonNull String limit(final @NonNull String text) {

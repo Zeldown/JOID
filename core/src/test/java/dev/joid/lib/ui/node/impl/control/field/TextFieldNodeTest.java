@@ -226,6 +226,7 @@ public class TextFieldNodeTest {
 		Assert.assertEquals("abc", TextFieldNode.create(100D, 100D, 200D).maxTextLength(3).text("abcdef").getText());
 		Assert.assertEquals("", TextFieldNode.create(100D, 100D, 200D).maxTextLength(0).text("abcdef").getText());
 		Assert.assertEquals("abcdef", TextFieldNode.create(100D, 100D, 200D).maxTextLength(-1).text("abcdef").getText());
+		Assert.assertEquals("abc", TextFieldNode.create(100D, 100D, 200D).text("abcdef").maxTextLength(3).getText());
 	}
 
 	@Test
@@ -973,6 +974,17 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void stopsRepeatingOnceItLosesItsFocus() {
+		final TextFieldNode field = this.field("abc").cursorPosition(3);
+		this.bridges.getWindow().getKeys().add(Key.BACKSPACE);
+		this.press(field, Key.BACKSPACE);
+		this.press(field, Key.ESCAPE);
+		this.elapse(500L);
+		Assert.assertEquals("ab", field.getText());
+		Assert.assertFalse(TextFieldNodeTest.<Boolean>read(field, FieldNode.class, "inputting"));
+	}
+
+	@Test
 	public void repeatsAHeldDeleteUntilTheTextIsEmpty() {
 		final TextFieldNode field = this.field("abc");
 		this.bridges.getWindow().getKeys().add(Key.DELETE);
@@ -1050,6 +1062,13 @@ public class TextFieldNodeTest {
 		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).<TextFieldNode>text("abcd").alignX(Align.CENTER)));
 		Assert.assertEquals(180D, this.font.last().getX(), 0D);
 		Assert.assertEquals(120D, this.font.last().getY(), 0D);
+	}
+
+	@Test
+	public void drawsItsPlaceholderAtHalfTheOpacityOfItsText() {
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F, new Color(0.2F, 0.4F, 0.6F, 0.4F))).placeholder("Search")));
+		Assert.assertEquals("Search", this.font.last().getText());
+		Assert.assertEquals(0.2F, this.font.last().getAlpha(), 1E-6F);
 	}
 
 	@Test

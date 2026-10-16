@@ -26,7 +26,7 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width) {
-		return new IntegerFieldNode(x, y, width, 0);
+		return new IntegerFieldNode(x, y, width, 0D);
 	}
 
 	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width, final double height) {

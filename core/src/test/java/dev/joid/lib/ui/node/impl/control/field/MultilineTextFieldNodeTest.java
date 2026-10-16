@@ -196,6 +196,15 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void breaksOneLineForAnEnterFollowedByItsCarriageReturn() {
+		final MultilineTextFieldNode field = this.field("ab").cursorPosition(2);
+		this.press(field, Key.ENTER);
+		this.type(field, "\r");
+		Assert.assertEquals("ab\n", field.getText());
+		Assert.assertEquals(3, field.getCursorPosition());
+	}
+
+	@Test
 	public void refusesWhatItsAcceptRefusesWithoutMovingItsCursor() {
 		final MultilineTextFieldNode field = this.field("ab").accept(text -> !text.contains("\n\n")).cursorPosition(2);
 		this.press(field, Key.ENTER);
@@ -257,10 +266,10 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void turnsATypedCarriageReturnIntoALineBreak() {
+	public void dropsATypedCarriageReturnLikeTheOtherControlCharacters() {
 		final MultilineTextFieldNode field = this.field("");
 		this.type(field, "a\rb\tc\u0007\u007f€");
-		Assert.assertEquals("a\nbc€", field.getText());
+		Assert.assertEquals("abc€", field.getText());
 	}
 
 	@Test

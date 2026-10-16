@@ -441,16 +441,18 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
-	public void commitsAPasteAtOnce() {
+	public void correctsAPasteOnBlurLikeWhatIsTyped() {
 		final List<String> changes = new ArrayList<>();
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).value(4).onChange(event -> changes.add(event.getText()))).cursorPosition(1);
 		this.bridges.getWindow().setClipboard("25");
 		this.control(field, Key.V);
-		Assert.assertEquals("100", field.getText());
-		Assert.assertEquals(Arrays.asList("425", "100"), changes);
+		Assert.assertEquals("425", field.getText());
 		this.bridges.getWindow().setClipboard("x1");
 		this.control(field, Key.V);
+		Assert.assertEquals("425", field.getText());
+		field.blur();
 		Assert.assertEquals("100", field.getText());
+		Assert.assertEquals(Arrays.asList("425", "100"), changes);
 	}
 
 	@Test
