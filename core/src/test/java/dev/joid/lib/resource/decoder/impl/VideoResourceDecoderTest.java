@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -515,6 +517,43 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void seeksWhileItsAssetIsCopied() throws InterruptedException {
+		final CountDownLatch copying = new CountDownLatch(1);
+		final CountDownLatch copied = new CountDownLatch(1);
+		final VideoResourceDecoder decoder = this.decoder(new InputStream() {
+			@Override
+			public int read() throws IOException {
+				copying.countDown();
+				try {
+					copied.await();
+				} catch (final InterruptedException exception) {
+					throw new IOException(exception);
+				}
+				return -1;
+			}
+		});
+		final ResourceData data = new ResourceData("slow.mkv", decoder);
+		final Thread decoding = new Thread(() -> data.generate(false));
+		final Thread seeking = new Thread(() -> decoder.seek(0.5D));
+		final boolean devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(false);
+		final boolean blocked;
+		try {
+			decoding.start();
+			copying.await();
+			seeking.start();
+			seeking.join(1000L);
+			blocked = seeking.isAlive();
+			copied.countDown();
+			decoding.join();
+			seeking.join();
+		} finally {
+			JOIDEnv.devMode(devMode);
+		}
+		Assert.assertFalse(blocked);
+	}
+
+	@Test
 	public void stopsItsDecodeThread() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.frames();
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
@@ -568,7 +607,7 @@ public class VideoResourceDecoderTest {
 		final List<RecordingTexture> textures = VideoResourceDecoderTest.textures(decoder);
 		decoder.clear(data);
 		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "textures"));
-		Assert.assertTrue(((boolean) VideoResourceDecoderTest.field(decoder, "released")));
+		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
 		for (final RecordingTexture texture : textures) {
 			Assert.assertTrue(texture.isDeleted());
 		}
@@ -588,6 +627,21 @@ public class VideoResourceDecoderTest {
 		this.play(decoder, reloaded, 7);
 		Assert.assertTrue(decoder.isPlaying());
 		Assert.assertEquals(reloaded.getWidth(), reloaded.getTextures()[0].getWidth());
+		Assert.assertEquals(40, VideoResourceDecoderTest.shade(reloaded), 3);
+	}
+
+	@Test
+	public void playsOnceDecodedAgainWhenAskedRightAfterAClear() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 3);
+		decoder.clear(data);
+		decoder.play();
+		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertFalse(decoder.isPlaying());
+		final ResourceData reloaded = VideoResourceDecoderTest.load(decoder);
+		Assert.assertTrue(decoder.isPlaying());
+		this.play(decoder, reloaded, 7);
 		Assert.assertEquals(40, VideoResourceDecoderTest.shade(reloaded), 3);
 	}
 
@@ -623,12 +677,11 @@ public class VideoResourceDecoderTest {
 	public void failsAnUnreadableVideo() {
 		final VideoResourceDecoder decoder = this.decoder(new ByteArrayInputStream("not a video".getBytes(StandardCharsets.UTF_8)));
 		final ResourceData data = new ResourceData("notes.mkv", decoder);
-		decoder.prepare(data);
 		final boolean devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(false);
 		final String error;
 		try {
-			error = VideoResourceDecoderTest.capture(() -> decoder.decode(data));
+			error = VideoResourceDecoderTest.capture(() -> data.generate(false));
 		} finally {
 			JOIDEnv.devMode(devMode);
 		}
@@ -637,6 +690,19 @@ public class VideoResourceDecoderTest {
 		Assert.assertTrue(data.isFailed());
 		Assert.assertNull(data.getData());
 		Assert.assertFalse(decoder.isPlaying());
+	}
+
+	@Test
+	public void leavesTheFailureOfItsDecodeToItsResourceData() {
+		final VideoResourceDecoder decoder = this.decoder(new ByteArrayInputStream("not a video".getBytes(StandardCharsets.UTF_8)));
+		final ResourceData data = new ResourceData("notes.mkv", decoder);
+		decoder.prepare(data);
+		try {
+			decoder.decode(data);
+			Assert.fail("An unreadable video must throw from its decode");
+		} catch (final IllegalStateException expected) {
+			Assert.assertFalse(data.isFailed());
+		}
 	}
 
 	@Test

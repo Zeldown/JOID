@@ -3,6 +3,7 @@ package dev.joid.lib.resource.decoder.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
@@ -28,6 +29,7 @@ import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
+import dev.joid.lib.utils.thread.ThreadUtils;
 import dev.joid.lib.video.VideoAudioPlayer;
 import dev.joid.lib.video.VideoNatives;
 import lombok.AccessLevel;
@@ -135,8 +137,15 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		try {
 			VideoNatives.install().join();
 		} catch (final CompletionException exception) {
-			resource.fail(exception.getCause());
-			return;
+			throw (RuntimeException) exception.getCause();
+		}
+
+		if (this.file == null) {
+			try {
+				this.file = this.origin.share();
+			} catch (final IOException exception) {
+				throw new UncheckedIOException("The video " + this.describe() + " cannot be read", exception);
+			}
 		}
 
 		synchronized (this.grabberLock) {
@@ -145,10 +154,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			}
 
 			try {
-				if (this.file == null) {
-					this.file = this.origin.share();
-				}
-
 				this.grabber = this.open();
 
 				resource.width(this.videoWidth);
@@ -174,8 +179,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					final int[] pixels = this.frameToPixels(firstFrame, this.grabber.getImageWidth(), resource.getHeight());
 					resource.data(new int[][] { pixels });
 				}
-			} catch (final Exception | LinkageError exception) {
-				resource.fail(exception);
+			} catch (final Exception exception) {
+				throw new IllegalStateException("The video " + this.describe() + " cannot be decoded", exception);
 			}
 		}
 	}
@@ -251,6 +256,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.textures[1].delete();
 			this.textures = null;
 		}
+
+		this.released = false;
 	}
 
 	@Override
@@ -635,7 +642,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			return;
 		}
 
-		this.decodeThread = new Thread(() -> {
+		this.decodeThread = ThreadUtils.daemonThread(() -> {
 			try {
 				double lastTime = 0D;
 				while (this.running.get() && !Thread.currentThread().isInterrupted()) {
@@ -704,8 +711,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			} catch (final Exception exception) {
 				JOIDLog.warn("The video " + this.describe() + " stops decoding (" + exception + "), check that the file can still be read", exception);
 			}
-		}, "joid-video-decode");
-		this.decodeThread.setDaemon(true);
+		}, "ResourceVideo/" + this.describe());
 		this.decodeThread.start();
 	}
 

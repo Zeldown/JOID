@@ -35,7 +35,6 @@ public final class VideoAudioPlayer {
 
 	private int     pendingOffset;
 	private short[] pendingSamples;
-	private boolean needsFlush = true;
 
 	private float   posX;
 	private float   posY;
@@ -72,7 +71,7 @@ public final class VideoAudioPlayer {
 
 		this.playing = true;
 		this.buffersQueued = false;
-		this.needsFlush = true;
+		this.clearQueue();
 	}
 
 	public void pause() {
@@ -103,12 +102,6 @@ public final class VideoAudioPlayer {
 		}
 
 		if (!this.buffersQueued) {
-			if (this.needsFlush) {
-				this.clearQueue();
-				this.needsFlush = false;
-				return;
-			}
-
 			if (this.sampleQueue.size() < 16) {
 				return;
 			}

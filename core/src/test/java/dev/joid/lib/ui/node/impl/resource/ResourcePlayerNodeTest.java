@@ -348,7 +348,7 @@ public class ResourcePlayerNodeTest {
 		this.bridges.open(ui).frames(2);
 		final VideoResourceDecoder video = player.getVideo();
 		ui.dispose();
-		Assert.assertTrue(ResourcePlayerNodeTest.<Boolean>read(video, "released"));
+		Assert.assertNull(ResourcePlayerNodeTest.read(video, "grabber"));
 		Assert.assertFalse(player.isPlaying());
 	}
 
@@ -384,7 +384,7 @@ public class ResourcePlayerNodeTest {
 		final VideoResourceDecoder previous = player.getVideo();
 		this.bridges.open(new NodeUI(player)).frames(2);
 		player.resource(ResourcePlayerNodeTest.blink());
-		Assert.assertTrue(ResourcePlayerNodeTest.<Boolean>read(previous, "released"));
+		Assert.assertNull(ResourcePlayerNodeTest.read(previous, "grabber"));
 		Assert.assertNull(player.getVideo());
 	}
 
