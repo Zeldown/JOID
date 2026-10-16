@@ -47,7 +47,7 @@ public class ResourcePlayerNodeEventTest {
 		this.bridges.open(new NodeUI(player)).frames(2);
 		player.pause();
 		this.bridges.frames(2);
-		player.resume();
+		player.play();
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(player, player), received);
 	}

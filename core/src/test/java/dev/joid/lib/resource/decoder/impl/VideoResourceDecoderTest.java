@@ -384,7 +384,7 @@ public class VideoResourceDecoderTest {
 		Assert.assertTrue(decoder.isSettled());
 		this.play(decoder, data, 20);
 		Assert.assertEquals(40, VideoResourceDecoderTest.shade(data), 3);
-		Assert.assertSame(decoder, decoder.resume());
+		Assert.assertSame(decoder, decoder.play());
 		this.play(decoder, data, 3);
 		Assert.assertTrue(decoder.isPlaying());
 		Assert.assertEquals(60, VideoResourceDecoderTest.shade(data), 3);
@@ -397,17 +397,7 @@ public class VideoResourceDecoderTest {
 		this.play(decoder, data, 6);
 		decoder.pause();
 		this.play(decoder, data, 30);
-		decoder.pause().resume();
-		this.play(decoder, data, 1);
-		Assert.assertEquals(40, VideoResourceDecoderTest.shade(data), 3);
-	}
-
-	@Test
-	public void resumesOnlyAPausedPlayback() throws InterruptedException {
-		final VideoResourceDecoder decoder = this.frames();
-		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		this.play(decoder, data, 6);
-		decoder.resume();
+		decoder.pause().play();
 		this.play(decoder, data, 1);
 		Assert.assertEquals(40, VideoResourceDecoderTest.shade(data), 3);
 	}
@@ -433,7 +423,7 @@ public class VideoResourceDecoderTest {
 		decoder.pause().seek(0.7D);
 		this.play(decoder, data, 10);
 		Assert.assertEquals(0.7D, decoder.getCurrentTime(), 1E-9D);
-		decoder.resume();
+		decoder.play();
 		this.play(decoder, data, 7);
 		Assert.assertEquals(180, VideoResourceDecoderTest.shade(data), 3);
 	}
@@ -475,7 +465,7 @@ public class VideoResourceDecoderTest {
 		this.play(decoder, data, 6);
 		decoder.pause().seek(0.5D);
 		this.play(decoder, data, 10);
-		decoder.resume();
+		decoder.play();
 		this.play(decoder, data, 7);
 		Assert.assertTrue(decoder.isPlaying());
 		Assert.assertEquals(140, VideoResourceDecoderTest.shade(data), 3);
@@ -726,7 +716,7 @@ public class VideoResourceDecoderTest {
 		Assert.assertTrue(VideoAudioPlayerTest.queueSize(((VideoAudioPlayer) VideoResourceDecoderTest.field(decoder, "audioPlayer"))) > 0);
 		this.audio.calls.clear();
 		decoder.pause();
-		decoder.resume();
+		decoder.play();
 		decoder.seek(0.2D);
 		decoder.stop();
 		decoder.release();
@@ -783,20 +773,6 @@ public class VideoResourceDecoderTest {
 		Assert.assertEquals("create 8000x1", this.audio.calls.get(0));
 		this.play(decoder, data, 60);
 		Assert.assertTrue(VideoAudioPlayerTest.queueSize(((VideoAudioPlayer) VideoResourceDecoderTest.field(decoder, "audioPlayer"))) > 0);
-	}
-
-	@Test
-	public void resumesNothingOnceStopped() throws InterruptedException {
-		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv"));
-		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		this.play(decoder, data, 10);
-		decoder.pause().stop();
-		Assert.assertFalse(decoder.isPaused());
-		this.audio.calls.clear();
-		decoder.resume();
-		this.play(decoder, data, 10);
-		Assert.assertFalse(decoder.isPlaying());
-		Assert.assertEquals(Collections.emptyList(), this.audio.calls);
 	}
 
 	@Test

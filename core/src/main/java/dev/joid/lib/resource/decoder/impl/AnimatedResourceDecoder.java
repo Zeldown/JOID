@@ -113,7 +113,11 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	@Override
 	public @NonNull AnimatedResourceDecoder play() {
 		if (this.running) {
-			return this.paused ? this.resume() : this;
+			if (this.paused) {
+				this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
+				this.paused = false;
+			}
+			return this;
 		}
 
 		this.position = this.seeked ? this.position : 0L;
@@ -137,15 +141,6 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 		if (this.running && !this.paused) {
 			this.pauseTime = BridgeHandler.CLOCK.get().nanoTime();
 			this.paused = true;
-		}
-		return this;
-	}
-
-	@Override
-	public @NonNull AnimatedResourceDecoder resume() {
-		if (this.paused) {
-			this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
-			this.paused = false;
 		}
 		return this;
 	}

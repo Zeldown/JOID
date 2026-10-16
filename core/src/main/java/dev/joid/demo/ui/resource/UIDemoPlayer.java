@@ -58,7 +58,7 @@ public class UIDemoPlayer extends UIDemo {
 			if (event.getNode().isPlaying()) {
 				event.getNode().pause();
 			} else {
-				event.getNode().resume();
+				event.getNode().play();
 			}
 		})
 		.attach(this);
@@ -91,7 +91,7 @@ public class UIDemoPlayer extends UIDemo {
 			if (event.getNode().isPlaying()) {
 				event.getNode().pause();
 			} else {
-				event.getNode().resume();
+				event.getNode().play();
 			}
 		})
 		.attach(this);
@@ -162,7 +162,7 @@ public class UIDemoPlayer extends UIDemo {
 			if (video.isPlaying()) {
 				video.pause();
 			} else {
-				video.resume();
+				video.play();
 			}
 		})
 		.attach(this);

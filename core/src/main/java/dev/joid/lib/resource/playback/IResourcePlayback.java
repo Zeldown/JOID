@@ -7,7 +7,6 @@ public interface IResourcePlayback {
 	public @NonNull IResourcePlayback play();
 	public @NonNull IResourcePlayback stop();
 	public @NonNull IResourcePlayback pause();
-	public @NonNull IResourcePlayback resume();
 	public @NonNull IResourcePlayback seek(final double seconds);
 
 	public @NonNull IResourcePlayback loop(final boolean loop);

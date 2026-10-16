@@ -166,16 +166,6 @@ public class ResourcePlayerNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T resume() {
-		if (!this.resourceStarted) {
-			this.pendingPlaying = true;
-			return (T) this;
-		}
-
-		this.requirePlayback().resume();
-		return (T) this;
-	}
-
 	public final <T extends ResourcePlayerNode> @NonNull T stop() {
 		if (!this.resourceStarted) {
 			this.pendingTime = null;

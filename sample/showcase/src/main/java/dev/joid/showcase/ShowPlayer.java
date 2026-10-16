@@ -77,7 +77,7 @@ public class ShowPlayer extends ShowUI {
 			if (this.player.isPlaying()) {
 				this.player.pause();
 			} else {
-				this.player.resume();
+				this.player.play();
 			}
 		})
 		.layer((node, mouseX, mouseY) -> this.icon(42D, 42D, card.hoverValue(1F)))

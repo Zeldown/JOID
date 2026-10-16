@@ -47,7 +47,7 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void controlsNothingWithoutResource() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(10D, 20D, 30D, 40D);
-		Assert.assertSame(player, player.play().pause().resume().seek(1D).restart().stop());
+		Assert.assertSame(player, player.play().pause().play().seek(1D).restart().stop());
 		Assert.assertSame(player, player.location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
 		Assert.assertFalse(player.isPlaying());
 		Assert.assertFalse(player.isPaused());
@@ -204,7 +204,7 @@ public class ResourcePlayerNodeTest {
 		Assert.assertTrue(player.isPaused());
 		Assert.assertFalse(player.isPlaying());
 		Assert.assertEquals(0.2D, player.getProgress(), 1E-9D);
-		Assert.assertSame(player, player.resume());
+		Assert.assertSame(player, player.play());
 		this.bridges.frames(3);
 		Assert.assertTrue(player.isPlaying());
 		Assert.assertEquals(0.4D, player.getProgress(), 1E-9D);
@@ -230,7 +230,7 @@ public class ResourcePlayerNodeTest {
 		Assert.assertTrue(player.isPaused());
 		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
 		Assert.assertEquals(120, ((RecordingTexture) ResourcePlayerNodeTest.<Resource>read(player, "fork").getResourceData().getTextures()[0]).getPixels()[0] & 0xFF, 3);
-		player.resume();
+		player.play();
 		this.settle(player, 7);
 		Assert.assertTrue(player.isPlaying());
 		Assert.assertEquals(0.6D, player.getProgress(), 1E-9D);

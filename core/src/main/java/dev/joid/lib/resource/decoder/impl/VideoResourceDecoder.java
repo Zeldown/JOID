@@ -302,7 +302,13 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	@Override
 	public @NonNull VideoResourceDecoder play() {
 		if (this.running.get()) {
-			return this.paused.get() ? this.resume() : this;
+			if (this.paused.getAndSet(false)) {
+				this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
+				if (this.audioPlayer != null) {
+					this.audioPlayer.resume();
+				}
+			}
+			return this;
 		}
 
 		if (this.grabber == null && !this.released) {
@@ -345,19 +351,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 		if (this.audioPlayer != null) {
 			this.audioPlayer.pause();
-		}
-		return this;
-	}
-
-	@Override
-	public @NonNull VideoResourceDecoder resume() {
-		if (!this.paused.getAndSet(false)) {
-			return this;
-		}
-
-		this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
-		if (this.audioPlayer != null) {
-			this.audioPlayer.resume();
 		}
 		return this;
 	}
