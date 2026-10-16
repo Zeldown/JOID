@@ -1,5 +1,7 @@
 package dev.joid.demo.ui.animation;
 
+import java.util.stream.Stream;
+
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.animation.animator.TweenAnimator;
@@ -45,6 +47,7 @@ public class UIDemoTween extends UIDemo {
 		final IntegerSignal starts = new IntegerSignal(0);
 		final IntegerSignal laps = new IntegerSignal(0);
 		final TweenAnimator events = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(Tween.INFINITY, 0F).onStart(event -> starts.increment()).onIterationEnd(event -> laps.increment()).start();
+		super.onClose(event -> Stream.of(back, circ, expo, quint, horizontal, vertical, paused, waypoints, events).forEach(TweenAnimator::clear));
 		this.manager.killAll();
 		this.value = 0F;
 		Tween.to(() -> this.value, value -> this.value = value, 1000F).target(1F).ease(TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(this.manager);

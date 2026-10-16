@@ -33,6 +33,7 @@ public class UIDemoModel extends UIDemo {
 		final DoubleSignal zoom = new DoubleSignal(1D);
 		final DoubleSignal yaw = new DoubleSignal(0D);
 		final IntegerSignal refusedTurns = new IntegerSignal(0);
+		super.onClose(event -> spin.clear());
 
 		RectNode
 		.create(100, 40, 400, 260)

@@ -33,7 +33,7 @@ public class UIDemoMarkup extends UIDemo {
 		.create(80, 30, 320, 190)
 		.color(UIDemoMarkup.PLACEHOLDER)
 		.body(rect -> {
-			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold</b> regular <w=100>thin</w> <w=300>light</w> <w=600>semi bold</w> <w=900>black</w> <w=800>extra <b>bold</b> back</w>", markup)).mode(TextMode.SPLIT).attach(rect);
+			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold</b> regular <w=100>thin</w> <w=300>light</w> <w=600>semi bold</w> <w=900>black</w> <w=800>extra bold</w>", markup)).mode(TextMode.SPLIT).attach(rect);
 			TextNode.create(160, 205).text(Text.create("Weights", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

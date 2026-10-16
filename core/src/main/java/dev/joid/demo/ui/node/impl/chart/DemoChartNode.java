@@ -55,6 +55,11 @@ public class DemoChartNode extends ChartNode {
 			Point last = null;
 			double ox = left;
 			for (final String label : super.getLabels()) {
+				if (!entry.getValue().has(label)) {
+					ox += offset;
+					continue;
+				}
+
 				final double oy = top + height - height * (entry.getValue().get(label).doubleValue() - min) / (max - min);
 				final Point point = Point.create(ox, oy);
 				if (last != null) {

@@ -1,5 +1,7 @@
 package dev.joid.demo.ui.animation;
 
+import java.util.stream.Stream;
+
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.animation.animator.TweenAnimator;
@@ -40,6 +42,7 @@ public class UIDemoAnimation extends UIDemo {
 		final TweenAnimator size = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(Tween.INFINITY, 0F).start();
 		final TweenAnimator rotation = TweenAnimator.create(0F).sequence(2000F, 1F).repeat(Tween.INFINITY, 0F).start();
 		final TweenAnimator once = TweenAnimator.create(0F);
+		super.onClose(event -> Stream.of(linear, quad, bounce, elastic, repeat, delay, sequence, slow, color, size, rotation, once).forEach(TweenAnimator::clear));
 
 		RectNode
 		.create(100, 40, 400, 260)

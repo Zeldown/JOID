@@ -1,8 +1,10 @@
 package dev.joid.demo.asset.locator.impl;
 
+import java.net.URL;
+
 import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
-import dev.joid.lib.asset.impl.StreamAsset;
+import dev.joid.lib.asset.impl.ClasspathAsset;
 import dev.joid.lib.asset.locator.IAssetLocator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,7 +26,12 @@ public final class DemoAssetLocator implements IAssetLocator {
 
 	@Override
 	public @NonNull Asset locate(final @NonNull Object handle) {
-		return StreamAsset.create(JOID.class.getResourceAsStream("/assets/demo/" + ((String) handle).substring(5)));
+		final String path = "assets/demo/" + ((String) handle).substring(5);
+		final URL url = JOID.class.getResource("/" + path);
+		if (url == null) {
+			throw new IllegalArgumentException("The asset " + handle + " is not in the demo assets, check its path");
+		}
+		return ClasspathAsset.create(path, url);
 	}
 
 }
