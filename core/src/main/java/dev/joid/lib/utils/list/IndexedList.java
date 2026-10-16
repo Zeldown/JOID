@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 
 import lombok.NonNull;
 
-public final class IndexedList<E extends IndexedElement> implements Iterable<E> {
+public final class IndexedList<E extends IIndexedElement> implements Iterable<E> {
 
 	private final List<E> orderedList;
 	private final List<E> orderedView;
@@ -22,7 +22,7 @@ public final class IndexedList<E extends IndexedElement> implements Iterable<E> 
 		this.reversedList = Collections.unmodifiableList(Lists.reverse(orderedList));
 	}
 
-	public static <E extends IndexedElement> @NonNull IndexedList<E> concurrent() {
+	public static <E extends IIndexedElement> @NonNull IndexedList<E> concurrent() {
 		return new IndexedList<>(new CopyOnWriteArrayList<>());
 	}
 
@@ -99,7 +99,7 @@ public final class IndexedList<E extends IndexedElement> implements Iterable<E> 
 		int index = Integer.MIN_VALUE;
 		for (final E element : this.orderedList) {
 			if (element.getIndex() < index) {
-				this.orderedList.sort(Comparator.comparingInt(IndexedElement::getIndex));
+				this.orderedList.sort(Comparator.comparingInt(IIndexedElement::getIndex));
 				return;
 			}
 

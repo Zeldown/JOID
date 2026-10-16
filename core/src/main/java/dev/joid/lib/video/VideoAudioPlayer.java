@@ -16,7 +16,7 @@ import lombok.Setter;
 public final class VideoAudioPlayer {
 
 	@Setter
-	private static AudioListenerPosition audioListenerPosition;
+	private static IAudioListenerPosition audioListenerPosition;
 
 	private final String                      name;
 	private final int                         channels;

@@ -1,10 +1,10 @@
 package dev.joid.lib.ui.event.impl.ui;
 
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.IConsumableEvent;
 import dev.joid.lib.ui.event.UIEvent;
 
-public abstract class UIInputEvent<U extends UI> extends UIEvent<U> implements ConsumableEvent {
+public abstract class UIInputEvent<U extends UI> extends UIEvent<U> implements IConsumableEvent {
 
 	private boolean consumed;
 

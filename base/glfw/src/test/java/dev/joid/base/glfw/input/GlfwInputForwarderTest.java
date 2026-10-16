@@ -26,7 +26,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.IConsumableEvent;
 import lombok.NonNull;
 
 public class GlfwInputForwarderTest {
@@ -189,7 +189,7 @@ public class GlfwInputForwarderTest {
 			super.handleCharTyped(event -> this.record("char " + new String(Character.toChars(event.getCodepoint())), event));
 		}
 
-		private void record(final String event, final ConsumableEvent input) {
+		private void record(final String event, final IConsumableEvent input) {
 			this.trace.add(event);
 			if (this.cancel) {
 				input.consume();

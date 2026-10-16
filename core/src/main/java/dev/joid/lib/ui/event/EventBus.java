@@ -131,7 +131,7 @@ public final class EventBus {
 	}
 
 	private static boolean isStopped(final Event event) {
-		return event instanceof CancellableEvent && ((CancellableEvent) event).isCancelled() || event instanceof ConsumableEvent && ((ConsumableEvent) event).isConsumed();
+		return event instanceof ICancellableEvent && ((ICancellableEvent) event).isCancelled() || event instanceof IConsumableEvent && ((IConsumableEvent) event).isConsumed();
 	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)

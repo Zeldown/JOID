@@ -74,9 +74,9 @@ import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.ui.core.transition.PopTransition;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.TransitionStep;
-import dev.joid.lib.ui.event.ConsumableEvent;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.IConsumableEvent;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
@@ -2198,7 +2198,7 @@ public class UITest {
 			this.trace.add("hover " + content + " " + mouseX + " " + mouseY);
 		}
 
-		private void consume(final ConsumableEvent event) {
+		private void consume(final IConsumableEvent event) {
 			if (this.cancel) {
 				event.consume();
 			}

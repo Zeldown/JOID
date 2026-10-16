@@ -1,6 +1,6 @@
 package dev.joid.lib.utils.list;
 
-public interface IndexedElement {
+public interface IIndexedElement {
 
 	public int getIndex();
 

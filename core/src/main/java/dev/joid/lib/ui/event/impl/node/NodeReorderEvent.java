@@ -1,6 +1,6 @@
 package dev.joid.lib.ui.event.impl.node;
 
-import dev.joid.lib.ui.event.CancellableEvent;
+import dev.joid.lib.ui.event.ICancellableEvent;
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
@@ -21,7 +21,7 @@ public abstract class NodeReorderEvent<N extends Node> extends NodeEvent<N> {
 	}
 
 	@Getter
-	public static final class Pre<N extends Node> extends NodeReorderEvent<N> implements CancellableEvent {
+	public static final class Pre<N extends Node> extends NodeReorderEvent<N> implements ICancellableEvent {
 
 		private boolean cancelled;
 

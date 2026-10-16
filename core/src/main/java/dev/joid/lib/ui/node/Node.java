@@ -51,11 +51,11 @@ import dev.joid.lib.ui.binding.InteractiveValue;
 import dev.joid.lib.ui.binding.NodeBindings;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.store.UIStore;
-import dev.joid.lib.ui.event.ConsumableEvent;
 import dev.joid.lib.ui.event.Event;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.IConsumableEvent;
 import dev.joid.lib.ui.event.NodeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeAnimateEvent;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
@@ -476,7 +476,7 @@ public abstract class Node implements INode {
 		return input.isConsumed();
 	}
 
-	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull ConsumableEvent source) {
+	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull IConsumableEvent source) {
 		if (!this.isVisible() || !this.isInteractive()) {
 			return;
 		}
@@ -514,7 +514,7 @@ public abstract class Node implements INode {
 		return input.isConsumed();
 	}
 
-	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull ConsumableEvent source) {
+	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull IConsumableEvent source) {
 		if (this.isVisible() && this.isInteractive()) {
 			this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, source), this.isEnabled(), Node.HANDLE_MOUSE_DRAGGED, (node, event) -> node.fireMouseDragged(mouseX, mouseY, button, deltaTime, event), this::mouseDragged);
 		}
@@ -537,7 +537,7 @@ public abstract class Node implements INode {
 		return input.isConsumed();
 	}
 
-	public final void fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull ConsumableEvent source) {
+	public final void fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull IConsumableEvent source) {
 		if (!this.isVisible() || !this.isInteractive()) {
 			return;
 		}
@@ -571,7 +571,7 @@ public abstract class Node implements INode {
 		return input.isConsumed();
 	}
 
-	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull ConsumableEvent source) {
+	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull IConsumableEvent source) {
 		if (this.dragging && button.isLeft()) {
 			this.stopDragging();
 		}
@@ -589,7 +589,7 @@ public abstract class Node implements INode {
 		return input.isConsumed();
 	}
 
-	public final void fireCharTyped(final int codepoint, final @NonNull ConsumableEvent source) {
+	public final void fireCharTyped(final int codepoint, final @NonNull IConsumableEvent source) {
 		if (!this.isVisible()) {
 			return;
 		}
@@ -608,7 +608,7 @@ public abstract class Node implements INode {
 		return input.isConsumed();
 	}
 
-	public final void fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull ConsumableEvent source) {
+	public final void fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull IConsumableEvent source) {
 		if (!this.isVisible()) {
 			return;
 		}
@@ -628,7 +628,7 @@ public abstract class Node implements INode {
 		return input.isConsumed();
 	}
 
-	public final void fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull ConsumableEvent source) {
+	public final void fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull IConsumableEvent source) {
 		this.dispatch(NodeKeyEvent.create(this, physicalKey, key, source), true, Node.HANDLE_KEY_RELEASED, (node, event) -> node.fireKeyReleased(physicalKey, key, event), this::keyReleased);
 	}
 

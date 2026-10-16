@@ -278,7 +278,7 @@ public class IndexedListTest {
 
 	@Getter
 	@AllArgsConstructor
-	private static final class Element implements IndexedElement {
+	private static final class Element implements IIndexedElement {
 
 		private int index;
 

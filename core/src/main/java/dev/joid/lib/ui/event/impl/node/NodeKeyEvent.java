@@ -1,7 +1,7 @@
 package dev.joid.lib.ui.event.impl.node;
 
 import dev.joid.lib.input.key.Key;
-import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.IConsumableEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 import lombok.NonNull;
@@ -12,13 +12,13 @@ public final class NodeKeyEvent<N extends Node> extends NodeInputEvent<N> {
 	@NonNull private final Key key;
 	@NonNull private final Key physicalKey;
 
-	private NodeKeyEvent(final N node, final Key physicalKey, final Key key, final ConsumableEvent source) {
+	private NodeKeyEvent(final N node, final Key physicalKey, final Key key, final IConsumableEvent source) {
 		super(node, source);
 		this.key = key;
 		this.physicalKey = physicalKey;
 	}
 
-	public static <N extends Node> @NonNull NodeKeyEvent<N> create(final @NonNull N node, final @NonNull Key physicalKey, final @NonNull Key key, final ConsumableEvent source) {
+	public static <N extends Node> @NonNull NodeKeyEvent<N> create(final @NonNull N node, final @NonNull Key physicalKey, final @NonNull Key key, final IConsumableEvent source) {
 		return new NodeKeyEvent<>(node, physicalKey, key, source);
 	}
 

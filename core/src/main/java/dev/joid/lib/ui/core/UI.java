@@ -68,12 +68,12 @@ import dev.joid.lib.ui.node.property.DraggableProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.annotation.AnnotationValues;
-import dev.joid.lib.utils.list.IndexedElement;
+import dev.joid.lib.utils.list.IIndexedElement;
 import dev.joid.lib.utils.list.IndexedList;
 import lombok.Getter;
 import lombok.NonNull;
 
-public abstract class UI implements IUI, IndexedElement {
+public abstract class UI implements IUI, IIndexedElement {
 
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_RELEASED   = EventType.create("handleKeyReleased");

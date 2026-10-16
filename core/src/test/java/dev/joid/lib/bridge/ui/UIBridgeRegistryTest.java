@@ -17,7 +17,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.event.ConsumableEvent;
+import dev.joid.lib.ui.event.IConsumableEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -397,7 +397,7 @@ public class UIBridgeRegistryTest {
 			this.trace.add("update " + this.name);
 		}
 
-		private void record(final String event, final ConsumableEvent input) {
+		private void record(final String event, final IConsumableEvent input) {
 			this.trace.add(event + " " + this.name);
 			if (this.cancel) {
 				input.consume();

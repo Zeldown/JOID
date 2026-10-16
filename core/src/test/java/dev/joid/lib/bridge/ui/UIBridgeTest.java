@@ -38,9 +38,9 @@ import dev.joid.lib.ui.core.data.UIDataOverlayRender;
 import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.core.data.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.PopTransition;
-import dev.joid.lib.ui.event.ConsumableEvent;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
+import dev.joid.lib.ui.event.IConsumableEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.shortcut.Shortcut;
@@ -1163,7 +1163,7 @@ public class UIBridgeTest {
 			this.trace.add("update " + this.name);
 		}
 
-		private void cancel(final ConsumableEvent event) {
+		private void cancel(final IConsumableEvent event) {
 			if (this.cancel) {
 				event.consume();
 			}

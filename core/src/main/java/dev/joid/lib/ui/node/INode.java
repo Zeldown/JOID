@@ -5,10 +5,10 @@ import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
-import dev.joid.lib.utils.list.IndexedElement;
+import dev.joid.lib.utils.list.IIndexedElement;
 import lombok.NonNull;
 
-public interface INode extends IndexedElement {
+public interface INode extends IIndexedElement {
 
 	default public void update() {}
 	default public void layout() {}

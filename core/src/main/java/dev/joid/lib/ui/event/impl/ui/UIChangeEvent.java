@@ -1,7 +1,7 @@
 package dev.joid.lib.ui.event.impl.ui;
 
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.event.CancellableEvent;
+import dev.joid.lib.ui.event.ICancellableEvent;
 import dev.joid.lib.ui.event.UIEvent;
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,7 +19,7 @@ public abstract class UIChangeEvent<U extends UI, V> extends UIEvent<U> {
 	}
 
 	@Getter
-	public static final class Pre<U extends UI, V> extends UIChangeEvent<U, V> implements CancellableEvent {
+	public static final class Pre<U extends UI, V> extends UIChangeEvent<U, V> implements ICancellableEvent {
 
 		private boolean cancelled;
 

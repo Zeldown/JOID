@@ -10,10 +10,10 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.event.CancellableEvent;
 import dev.joid.lib.ui.event.Event;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.ICancellableEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -93,7 +93,7 @@ public final class InteractiveValue<V> {
 		final ValueEvents<V> events = this.getEvents(next);
 		if (events != null && this.bindings.isSubscribed()) {
 			final Event event = this.bindings.fire(events.beforeType, () -> events.before.apply(previous, next));
-			if (event != null && ((CancellableEvent) event).isCancelled()) {
+			if (event != null && ((ICancellableEvent) event).isCancelled()) {
 				return false;
 			}
 		}
