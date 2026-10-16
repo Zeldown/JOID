@@ -404,7 +404,7 @@ public class ReorderableFlexNodeTest {
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();
 		final RectNode third = ReorderableFlexNodeTest.item();
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third).onReorderEnd(event -> ends.addAll(Arrays.asList(event.getOldIndex(), event.getNewIndex())));
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third).onReorderEnd(event -> ends.addAll(Arrays.asList(event.getPrevious(), event.getIndex())));
 		this.bridges.open(new NodeUI(flex));
 		this.press(150D, 120D);
 		this.bridges.move(150D, 150D).frames(60);
@@ -421,7 +421,7 @@ public class ReorderableFlexNodeTest {
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();
 		final int zindex = first.getZindex();
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second).onReorderEnd(event -> ends.addAll(Arrays.asList(event.getOldIndex(), event.getNewIndex())));
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second).onReorderEnd(event -> ends.addAll(Arrays.asList(event.getPrevious(), event.getIndex())));
 		this.bridges.open(new NodeUI(flex));
 		this.press(150D, 120D);
 		Assert.assertTrue(flex.isDragging(first));
@@ -623,7 +623,7 @@ public class ReorderableFlexNodeTest {
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();
 		final RectNode third = ReorderableFlexNodeTest.item();
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third).pin(first).onReorder(event -> moves.add(event.getNewIndex()));
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third).pin(first).onReorder(event -> moves.add(event.getIndex()));
 		this.bridges.open(new NodeUI(flex));
 		this.press(150D, 240D);
 		this.bridges.move(150D, 145D).frames(60);

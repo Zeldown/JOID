@@ -1,8 +1,8 @@
 package dev.joid.demo.ui.core.hook.store;
 
 import dev.joid.lib.ui.core.hook.store.UIStore;
-import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
-import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
+import dev.joid.lib.ui.core.hook.store.UIStoreData;
+import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-@UIStoreData(id = "DemoGlobalStore", scope = StoreScope.GLOBAL)
+@UIStoreData(id = "DemoGlobalStore", scope = UIStoreScope.GLOBAL)
 public class DemoGlobalStore extends UIStore {
 
 	private long time;

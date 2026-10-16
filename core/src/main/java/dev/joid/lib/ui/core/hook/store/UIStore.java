@@ -2,7 +2,6 @@ package dev.joid.lib.ui.core.hook.store;
 
 import com.google.gson.JsonObject;
 
-import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import lombok.NonNull;
 
 public abstract class UIStore {

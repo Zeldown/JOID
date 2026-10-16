@@ -68,9 +68,9 @@ import dev.joid.lib.ui.core.data.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.data.UIDataScale;
 import dev.joid.lib.ui.core.hook.property.UIProperty;
 import dev.joid.lib.ui.core.hook.store.UIStore;
+import dev.joid.lib.ui.core.hook.store.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
-import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
-import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
+import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 import dev.joid.lib.ui.core.transition.PopTransition;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.TransitionStep;
@@ -2465,7 +2465,7 @@ public class UITest {
 
 	}
 
-	@UIStoreData(id = "uicore-global", scope = StoreScope.GLOBAL)
+	@UIStoreData(id = "uicore-global", scope = UIStoreScope.GLOBAL)
 	public static final class GlobalStore extends UIStore {}
 
 	@AllArgsConstructor

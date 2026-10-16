@@ -1,4 +1,4 @@
-package dev.joid.lib.ui.core.hook.store.scope;
+package dev.joid.lib.ui.core.hook.store;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum StoreScope {
+public enum UIStoreScope {
 
 	LOCAL(false),
 	GLOBAL(true),

@@ -8,8 +8,6 @@ import java.util.function.Supplier;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOIDEnv;
-import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
-import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.utils.json.JsonFiles;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -29,7 +27,7 @@ public final class UIStoreHook {
 		final T store = factory.get();
 		store.init();
 
-		if (data.scope() == StoreScope.PERMANENT) {
+		if (data.scope() == UIStoreScope.PERMANENT) {
 			final JsonObject json = JsonFiles.read(UIStoreHook.getFile(store), "the store starts from init()");
 			if (json != null) {
 				store.fromJson(json);
@@ -54,7 +52,7 @@ public final class UIStoreHook {
 	}
 
 	public static void saveStore(final @NonNull UIStore store) {
-		if (store.getData().scope() != StoreScope.PERMANENT) {
+		if (store.getData().scope() != UIStoreScope.PERMANENT) {
 			return;
 		}
 

@@ -38,9 +38,9 @@ import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.core.data.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.hook.property.UIProperty;
 import dev.joid.lib.ui.core.hook.store.UIStore;
+import dev.joid.lib.ui.core.hook.store.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
-import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
-import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
+import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 import dev.joid.lib.ui.core.transition.PopTransition;
 import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
@@ -682,7 +682,7 @@ public class JOIDTest {
 
 	}
 
-	@UIStoreData(id = "exit", scope = StoreScope.PERMANENT)
+	@UIStoreData(id = "exit", scope = UIStoreScope.PERMANENT)
 	public static final class ExitStore extends UIStore {
 
 		private final List<Thread> savers = new ArrayList<>();

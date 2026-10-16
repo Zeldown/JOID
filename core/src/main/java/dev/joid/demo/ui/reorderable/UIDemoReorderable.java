@@ -107,7 +107,7 @@ public class UIDemoReorderable extends UIDemo {
 			.vertical(20, 20, 200)
 			.onReorderStart(event -> starts.increment())
 			.onReorder(event -> moves.increment())
-			.onReorderEnd(event -> last.set(event.getOldIndex() + " -> " + event.getNewIndex()))
+			.onReorderEnd(event -> last.set(event.getPrevious() + " -> " + event.getIndex()))
 			.margin(6D)
 			.body(flex -> {
 				for (int i = 0; i < 5; i++) {

@@ -10,14 +10,14 @@ import lombok.NonNull;
 public abstract class NodeReorderEvent<N extends Node> extends NodeEvent<N> {
 
 	private final Node child;
-	private final int  oldIndex;
-	private final int  newIndex;
+	private final int  index;
+	private final int  previous;
 
-	private NodeReorderEvent(final N node, final Node child, final int oldIndex, final int newIndex) {
+	private NodeReorderEvent(final N node, final Node child, final int previous, final int index) {
 		super(node);
 		this.child = child;
-		this.oldIndex = oldIndex;
-		this.newIndex = newIndex;
+		this.previous = previous;
+		this.index = index;
 	}
 
 	@Getter
@@ -25,12 +25,12 @@ public abstract class NodeReorderEvent<N extends Node> extends NodeEvent<N> {
 
 		private boolean cancelled;
 
-		private Pre(final N node, final Node child, final int oldIndex, final int newIndex) {
-			super(node, child, oldIndex, newIndex);
+		private Pre(final N node, final Node child, final int previous, final int index) {
+			super(node, child, previous, index);
 		}
 
-		public static <N extends Node> @NonNull Pre<N> create(final @NonNull N node, final @NonNull Node child, final int oldIndex, final int newIndex) {
-			return new Pre<>(node, child, oldIndex, newIndex);
+		public static <N extends Node> @NonNull Pre<N> create(final @NonNull N node, final @NonNull Node child, final int previous, final int index) {
+			return new Pre<>(node, child, previous, index);
 		}
 
 		@Override
@@ -43,12 +43,12 @@ public abstract class NodeReorderEvent<N extends Node> extends NodeEvent<N> {
 
 	public static final class Post<N extends Node> extends NodeReorderEvent<N> {
 
-		private Post(final N node, final Node child, final int oldIndex, final int newIndex) {
-			super(node, child, oldIndex, newIndex);
+		private Post(final N node, final Node child, final int previous, final int index) {
+			super(node, child, previous, index);
 		}
 
-		public static <N extends Node> @NonNull Post<N> create(final @NonNull N node, final @NonNull Node child, final int oldIndex, final int newIndex) {
-			return new Post<>(node, child, oldIndex, newIndex);
+		public static <N extends Node> @NonNull Post<N> create(final @NonNull N node, final @NonNull Node child, final int previous, final int index) {
+			return new Post<>(node, child, previous, index);
 		}
 
 	}

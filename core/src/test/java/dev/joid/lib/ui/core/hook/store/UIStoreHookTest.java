@@ -26,8 +26,6 @@ import com.google.gson.reflect.TypeToken;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
-import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -325,7 +323,7 @@ public class UIStoreHookTest {
 
 	}
 
-	@UIStoreData(id = "global", scope = StoreScope.GLOBAL)
+	@UIStoreData(id = "global", scope = UIStoreScope.GLOBAL)
 	public static class GlobalStore extends UIStore {
 
 		private int inits;
@@ -343,7 +341,7 @@ public class UIStoreHookTest {
 
 	}
 
-	@UIStoreData(id = "permanent", scope = StoreScope.PERMANENT)
+	@UIStoreData(id = "permanent", scope = UIStoreScope.PERMANENT)
 	public static class PermanentStore extends UIStore {
 
 		private String value = "default";
@@ -380,7 +378,7 @@ public class UIStoreHookTest {
 
 	}
 
-	@UIStoreData(id = "signal", scope = StoreScope.PERMANENT)
+	@UIStoreData(id = "signal", scope = UIStoreScope.PERMANENT)
 	public static class SignalStore extends UIStore {
 
 		private static final Gson GSON = new GsonBuilder().create();
@@ -401,7 +399,7 @@ public class UIStoreHookTest {
 
 	}
 
-	@UIStoreData(id = "list", scope = StoreScope.PERMANENT)
+	@UIStoreData(id = "list", scope = UIStoreScope.PERMANENT)
 	public static class ListStore extends UIStore {
 
 		private static final Gson GSON = new GsonBuilder().create();
@@ -448,7 +446,7 @@ public class UIStoreHookTest {
 
 	}
 
-	@UIStoreData(scope = StoreScope.PERMANENT)
+	@UIStoreData(scope = UIStoreScope.PERMANENT)
 	public static class UnnamedStore extends UIStore {}
 
 }
