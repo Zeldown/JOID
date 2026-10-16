@@ -357,11 +357,22 @@ public class DrawResourceTest {
 
 	@Test
 	public void mipmapsATextureRegionOnlyBelowItsOwnSize() {
-		final Resource resource = DrawResourceTest.atlas(16, 8, 32, 16);
+		final Resource resource = ResourceBuilder.create().cache(null).linear().compute("atlas", () -> new ResourceData("atlas", new SizedDecoder(true)).region(16, 8, 32, 16)).blocking();
+		resource.prepareBind();
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 32D, 16D, resource);
 		Assert.assertNull(resource.getProperties().getMipmap());
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 16D, 8D, resource);
 		Assert.assertEquals(Boolean.TRUE, resource.getProperties().getMipmap());
+	}
+
+	@Test
+	public void leavesTheMipmapsOfAProvidedTextureToItsOwner() {
+		final RecordingTexture texture = new RecordingTexture();
+		texture.allocate(64, 32);
+		final Resource resource = ResourceBuilder.create().cache(null).linear().of(texture);
+		DrawUtils.RESOURCE.drawResource(0D, 0D, 16D, 8D, resource);
+		Assert.assertNull(resource.getProperties().getMipmap());
+		Assert.assertFalse(texture.isMipmapped());
 	}
 
 	private Capture single() {
