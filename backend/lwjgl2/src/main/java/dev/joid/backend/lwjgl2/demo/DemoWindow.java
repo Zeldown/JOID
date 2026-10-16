@@ -1,6 +1,7 @@
 package dev.joid.backend.lwjgl2.demo;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
@@ -24,6 +25,7 @@ public class DemoWindow extends DemoUIBridge {
 		Display.setResizable(true);
 		Display.setTitle("JOID - Demo (LWJGL 2)");
 		Display.create(new PixelFormat().withDepthBits(24).withStencilBits(8));
+		Keyboard.enableRepeatEvents(true);
 		JOID.onReady(() -> BridgeHandler.UI.register(this));
 		this.backend.register();
 		this.input = Lwjgl2InputForwarder.create();

@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.lwjgl.input.Keyboard;
 
-import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
@@ -67,7 +66,15 @@ public class Lwjgl2InputForwarderTest {
 		this.keyPressed(Keyboard.KEY_BACK, '\b');
 		this.keyPressed(Keyboard.KEY_RETURN, '\r');
 		this.keyPressed(Keyboard.KEY_NUMPAD1, '1');
-		Assert.assertEquals(Arrays.asList("key BACKSPACE", "key ENTER", "key " + Lwjgl2WindowBridge.getKey(Keyboard.KEY_NUMPAD1)), this.trace);
+		Assert.assertEquals(Arrays.asList("key BACKSPACE", "key ENTER", "key " + Lwjgl2Keys.getPhysicalKey(Keyboard.KEY_NUMPAD1)), this.trace);
+	}
+
+	@Test
+	public void typesTheRepeatedCharacterWithoutPressingTheKeyAgain() throws Exception {
+		this.ui.handleCharTyped(event -> this.trace.add("char " + (char) event.getCodepoint()));
+		this.keyPressed(Keyboard.KEY_Q, 'a');
+		this.keyPressed(Keyboard.KEY_Q, 'a', true);
+		Assert.assertEquals(Arrays.asList("key A", "char a", "char a"), this.trace);
 	}
 
 	@Test
@@ -84,9 +91,13 @@ public class Lwjgl2InputForwarderTest {
 	}
 
 	private void keyPressed(final int code, final char character) throws Exception {
-		final Method press = Lwjgl2InputForwarder.class.getDeclaredMethod("keyPressed", int.class, char.class);
+		this.keyPressed(code, character, false);
+	}
+
+	private void keyPressed(final int code, final char character, final boolean repeat) throws Exception {
+		final Method press = Lwjgl2InputForwarder.class.getDeclaredMethod("keyPressed", int.class, char.class, boolean.class);
 		press.setAccessible(true);
-		press.invoke(this.input, code, character);
+		press.invoke(this.input, code, character, repeat);
 	}
 
 	public static final class TraceUI extends UI {

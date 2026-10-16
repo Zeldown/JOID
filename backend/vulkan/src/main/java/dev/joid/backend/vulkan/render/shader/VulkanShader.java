@@ -17,6 +17,7 @@ import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.shader.Shader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderTranslation;
+import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
 import lombok.Getter;
 import lombok.NonNull;
@@ -74,13 +75,12 @@ public final class VulkanShader extends Shader {
 			return;
 		}
 
-		final int samplers = super.getSamplerMap().size();
 		final VulkanContext context = ((VulkanRenderBridge) super.getBridge()).getContext();
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkDescriptorSetLayoutBinding.Buffer bindings = VkDescriptorSetLayoutBinding.calloc(samplers + 1, stack);
+			final VkDescriptorSetLayoutBinding.Buffer bindings = VkDescriptorSetLayoutBinding.calloc(super.getSamplerMap().size() + 1, stack);
 			bindings.get().binding(0).descriptorType(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(1).stageFlags(VK10.VK_SHADER_STAGE_VERTEX_BIT | VK10.VK_SHADER_STAGE_FRAGMENT_BIT);
-			for (int i = 0; i < samplers; i++) {
-				bindings.get().binding(i + 1).descriptorType(VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER).descriptorCount(1).stageFlags(VK10.VK_SHADER_STAGE_VERTEX_BIT | VK10.VK_SHADER_STAGE_FRAGMENT_BIT);
+			for (final UniformSampler sampler : super.getSamplerMap().values()) {
+				bindings.get().binding(sampler.getUnit()).descriptorType(VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER).descriptorCount(1).stageFlags(VK10.VK_SHADER_STAGE_VERTEX_BIT | VK10.VK_SHADER_STAGE_FRAGMENT_BIT);
 			}
 			bindings.flip();
 

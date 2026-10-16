@@ -9,7 +9,6 @@ import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
 
 import dev.joid.base.openal.binding.IAlBinding;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

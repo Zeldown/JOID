@@ -27,7 +27,6 @@ public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
 
 	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
-		Lwjgl2Natives.install();
 		return Lwjgl2WindowBridge.create();
 	}
 

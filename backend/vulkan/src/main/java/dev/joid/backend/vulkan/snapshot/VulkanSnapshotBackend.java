@@ -30,6 +30,10 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public void destroy() {
+		if (this.host.isFrameActive()) {
+			this.host.endFrame();
+		}
+
 		this.backend.destroy();
 		this.host.destroy();
 		this.window.destroy();

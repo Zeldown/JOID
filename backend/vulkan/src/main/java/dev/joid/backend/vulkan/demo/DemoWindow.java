@@ -11,6 +11,7 @@ import lombok.NonNull;
 
 public class DemoWindow extends GlfwDemoWindow {
 
+	private VulkanBackend    backend;
 	private VulkanWindowHost host;
 
 	public static void main(final String[] args) {
@@ -30,10 +31,10 @@ public class DemoWindow extends GlfwDemoWindow {
 
 	@Override
 	protected @NonNull Backend<?> registerBackend(final long window) {
-		this.host = VulkanWindowHost.create(window);
-		final VulkanBackend backend = VulkanBackend.create(window, this.host).register();
+		this.host    = VulkanWindowHost.create(window);
+		this.backend = VulkanBackend.create(window, this.host).register();
 		this.host.beginFrame();
-		return backend;
+		return this.backend;
 	}
 
 	@Override
@@ -42,6 +43,12 @@ public class DemoWindow extends GlfwDemoWindow {
 		if (!GLFW.glfwWindowShouldClose(super.getWindow())) {
 			this.host.beginFrame();
 		}
+	}
+
+	@Override
+	protected void destroyBackend() {
+		this.backend.destroy();
+		this.host.destroy();
 	}
 
 }

@@ -54,6 +54,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 			this.present();
 		}
 
+		this.destroyBackend();
 		BridgeHandler.WINDOW.getBridge(GlfwWindowBridge.class).destroy();
 		GLFW.glfwDestroyWindow(this.window);
 		GLFW.glfwTerminate();
@@ -67,5 +68,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 	protected abstract @NonNull Backend<?> registerBackend(final long window);
 
 	protected abstract void present();
+
+	protected void destroyBackend() {}
 
 }

@@ -3,7 +3,6 @@ package dev.joid.backend.lwjgl2.input;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
-import dev.joid.backend.lwjgl2.window.Lwjgl2WindowBridge;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.input.mouse.MouseButton;
 import lombok.AccessLevel;
@@ -35,24 +34,26 @@ public final class Lwjgl2InputForwarder {
 		}
 
 		while (Keyboard.next()) {
-			if (!Keyboard.getEventKeyState()) {
+			if (Keyboard.getEventKeyState()) {
+				this.keyPressed(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.isRepeatEvent());
+			} else {
 				this.keyReleased(Keyboard.getEventKey());
-				continue;
-			}
-
-			this.keyPressed(Keyboard.getEventKey(), Keyboard.getEventCharacter());
-			if (Keyboard.getEventCharacter() != Keyboard.CHAR_NONE) {
-				BridgeHandler.UI.charTyped(Keyboard.getEventCharacter());
 			}
 		}
 	}
 
-	private void keyPressed(final int code, final char character) {
-		BridgeHandler.UI.keyPressed(Lwjgl2WindowBridge.getKey(code), Lwjgl2WindowBridge.getKey(code, character));
+	private void keyPressed(final int code, final char character, final boolean repeat) {
+		if (!repeat) {
+			BridgeHandler.UI.keyPressed(Lwjgl2Keys.getPhysicalKey(code), Lwjgl2Keys.getKey(code, character));
+		}
+
+		if (character != Keyboard.CHAR_NONE) {
+			BridgeHandler.UI.charTyped(character);
+		}
 	}
 
 	private void keyReleased(final int code) {
-		BridgeHandler.UI.keyReleased(Lwjgl2WindowBridge.getKey(code));
+		BridgeHandler.UI.keyReleased(Lwjgl2Keys.getPhysicalKey(code));
 	}
 
 }
