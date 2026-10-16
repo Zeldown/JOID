@@ -45,7 +45,7 @@ public final class Resource {
 	}
 
 	public @NonNull Resource properties(final @NonNull ResourceProperties properties) {
-		this.properties = properties;
+		this.properties = properties.copy();
 		return this;
 	}
 
@@ -310,7 +310,7 @@ public final class Resource {
 	}
 
 	private @NonNull Resource derive(final @NonNull ResourceData data) {
-		final Resource derived = new Resource(this.builder, data).properties(this.properties.copy());
+		final Resource derived = new Resource(this.builder, data).properties(this.properties);
 		derived.blocking = this.blocking;
 		return derived;
 	}

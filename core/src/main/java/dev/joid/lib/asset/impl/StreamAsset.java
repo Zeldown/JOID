@@ -31,11 +31,14 @@ public final class StreamAsset extends Asset {
 	@Override
 	public synchronized @NonNull InputStream open() throws IOException {
 		if (this.bytes == null) {
-			this.bytes = IOUtils.toByteArray(this.stream);
 			try {
-				this.stream.close();
-			} catch (final IOException exception) {
-				JOIDLog.warn("The stream " + super.getUniqueId() + " cannot be closed (" + exception.getMessage() + "), its content is read anyway: check the stream");
+				this.bytes = IOUtils.toByteArray(this.stream);
+			} finally {
+				try {
+					this.stream.close();
+				} catch (final IOException exception) {
+					JOIDLog.warn("The stream " + super.getUniqueId() + " cannot be closed (" + exception.getMessage() + "), its content is read anyway: check the stream");
+				}
 			}
 		}
 		return new ByteArrayInputStream(this.bytes);

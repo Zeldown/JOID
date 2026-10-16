@@ -61,6 +61,20 @@ public class StreamAssetTest {
 		StreamAsset.create(new FailingStream()).peek(4);
 	}
 
+	@Test
+	public void closesAStreamThatFailsWhileRead() {
+		final BrokenStream stream = new BrokenStream();
+		final StreamAsset asset = StreamAsset.create(stream);
+		for (int attempt = 0; attempt < 2; attempt++) {
+			try {
+				asset.open();
+				Assert.fail("A stream that fails while read must fail every open");
+			} catch (final IOException expected) {
+				Assert.assertTrue(stream.closed);
+			}
+		}
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesANullStream() {
 		StreamAsset.create(null);
@@ -75,6 +89,32 @@ public class StreamAssetTest {
 		@Override
 		public String toString() {
 			return "stream";
+		}
+
+	}
+
+	private static final class BrokenStream extends InputStream {
+
+		private boolean started;
+		private boolean closed;
+
+		@Override
+		public int read() throws IOException {
+			if (this.closed) {
+				throw new IOException("closed");
+			}
+
+			if (this.started) {
+				throw new IOException("unreadable");
+			}
+
+			this.started = true;
+			return 'j';
+		}
+
+		@Override
+		public void close() {
+			this.closed = true;
 		}
 
 	}

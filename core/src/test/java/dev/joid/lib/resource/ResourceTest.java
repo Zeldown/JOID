@@ -72,11 +72,15 @@ public class ResourceTest {
 	}
 
 	@Test
-	public void replacesItsProperties() {
-		final ResourceProperties properties = ResourceProperties.create().linear();
+	public void replacesItsPropertiesWithACopy() {
+		final ResourceProperties properties = ResourceProperties.create().nearest();
 		final Resource resource = ResourceTest.resource(null);
+		final Resource other = ResourceTest.resource(null).properties(properties);
 		Assert.assertSame(resource, resource.properties(properties));
-		Assert.assertSame(properties, resource.getProperties());
+		Assert.assertSame(TextureFilter.NEAREST, resource.getProperties().getInterpolation());
+		resource.linear();
+		Assert.assertSame(TextureFilter.NEAREST, other.getProperties().getInterpolation());
+		Assert.assertSame(TextureFilter.NEAREST, properties.getInterpolation());
 	}
 
 	@Test

@@ -55,7 +55,7 @@ public final class ResourceProperties {
 		return copy;
 	}
 
-	public @NonNull ResourceProperties copy(final @NonNull ResourceProperties properties) {
+	public @NonNull ResourceProperties set(final @NonNull ResourceProperties properties) {
 		this.mipmap = properties.mipmap;
 		this.interpolation = properties.interpolation;
 		this.textureCoords = properties.textureCoords;

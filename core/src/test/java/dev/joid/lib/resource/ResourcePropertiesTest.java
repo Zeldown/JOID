@@ -17,7 +17,7 @@ public class ResourcePropertiesTest {
 		final ResourceProperties properties = ResourceProperties.create().mipmap(false);
 		Assert.assertFalse(properties.getMipmap());
 		Assert.assertFalse(properties.copy().getMipmap());
-		Assert.assertTrue(ResourceProperties.create().copy(properties.mipmap(true)).getMipmap());
+		Assert.assertTrue(ResourceProperties.create().set(properties.mipmap(true)).getMipmap());
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class ResourcePropertiesTest {
 	public void takesEveryPropertyOfAnother() {
 		final ResourceProperties other = ResourceProperties.create().nearest().textureCoords(0D, 0D, 1D, 1D);
 		final ResourceProperties properties = ResourceProperties.create();
-		Assert.assertSame(properties, properties.copy(other));
+		Assert.assertSame(properties, properties.set(other));
 		Assert.assertSame(TextureFilter.NEAREST, properties.getInterpolation());
 		Assert.assertNull(properties.getMipmap());
 		Assert.assertArrayEquals(new double[] {0D, 0D, 1D, 1D}, properties.getTextureCoords(), 0D);
@@ -74,8 +74,8 @@ public class ResourcePropertiesTest {
 	}
 
 	@Test(expected = NullPointerException.class)
-	public void refusesToCopyNullProperties() {
-		ResourceProperties.create().copy(null);
+	public void refusesToSetNullProperties() {
+		ResourceProperties.create().set(null);
 	}
 
 }
