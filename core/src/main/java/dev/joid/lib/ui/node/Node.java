@@ -1850,7 +1850,7 @@ public abstract class Node implements INode {
 					this.drawSkeleton(mouseX, mouseY);
 				}
 			};
-			ShaderPipeline.render(this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.toShaderPasses(selfShaderEffects), selfDraw);
+			ShaderPipeline.render(this.getX(), this.getY(), this.getWidth(), this.getHeight(), selfDraw, this.toShaderPasses(selfShaderEffects));
 			this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
 			if (this.mounted && this.label != null && !this.label.isEmpty()) {
 				DrawUtils.TEXT.drawText(this.x + (this.width - this.label.getWidth()) / 2D, this.y + (this.height - this.label.getHeight()) / 2D, this.label.getWidth(), this.label.getHeight(), this.label, TextMode.NORMAL);
@@ -1880,7 +1880,7 @@ public abstract class Node implements INode {
 		};
 
 		Runnable effectDraw = () -> {
-			ShaderPipeline.render(this.getX(), this.getY(), this.getWidth(), this.getHeight(), this.toShaderPasses(subtreeShaderEffects), maskDraw);
+			ShaderPipeline.render(this.getX(), this.getY(), this.getWidth(), this.getHeight(), maskDraw, this.toShaderPasses(subtreeShaderEffects));
 
 			if (this.isScrollbarShown()) {
 				this.scrollbar.render(mouseX, mouseY);

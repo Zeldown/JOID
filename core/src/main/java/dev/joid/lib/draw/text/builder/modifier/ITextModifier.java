@@ -10,7 +10,7 @@ import lombok.NonNull;
 @FunctionalInterface
 public interface ITextModifier {
 
-	public String modify(final String text);
+	public @NonNull String modify(final @NonNull String text);
 
 	public default @NonNull String modify(final @NonNull String text, final @NonNull TextInfo info) {
 		final List<ITextMarkup> markups = info.getMarkups();

@@ -281,7 +281,7 @@ public class ShaderPipelineTest {
 		final RecordingPass array = new RecordingPass("array", 0F, this.log);
 		final RecordingPass texture = new RecordingPass("texture", 0F, this.log);
 		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), this::drawBox, array);
-		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), new ArrayList<>(Arrays.asList(texture)), this::drawBox);
+		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), this::drawBox, new ArrayList<>(Arrays.asList(texture)));
 		Assert.assertEquals(10D, array.getContext().getX(), 0D);
 		Assert.assertEquals(20D, array.getContext().getY(), 0D);
 		Assert.assertEquals(100D, texture.getContext().getWidth(), 0D);
@@ -290,7 +290,7 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void drawsWithoutPassesDirectly() {
-		ShaderPipeline.render(10D, 20D, 100D, 50D, new ArrayList<>(), this::drawBox);
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new ArrayList<>());
 		Assert.assertEquals(1, this.render.getCaptures().size());
 		Assert.assertTrue(this.render.getFrameBuffers().isEmpty());
 	}
@@ -313,7 +313,7 @@ public class ShaderPipelineTest {
 	@Test
 	public void rendersAReadOnlyListOfPasses() {
 		final List<IShaderPass> passes = Collections.unmodifiableList(Arrays.asList(new RecordingPass("border", 0F, this.log), new RecordingPass("rounded", 0F, this.log)));
-		ShaderPipeline.render(10D, 20D, 100D, 50D, passes, () -> {});
+		ShaderPipeline.render(10D, 20D, 100D, 50D, () -> {}, passes);
 		Assert.assertEquals(Arrays.asList("border texture", "border unbind", "rounded texture", "rounded unbind"), this.log);
 	}
 

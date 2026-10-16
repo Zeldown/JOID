@@ -51,15 +51,9 @@ public final class DrawText {
 			return FontBounds.empty();
 		}
 
+		final double ox = text.getAlignX().isCenter() ? x + width / 2 : text.getAlignX().isEnd() ? x + width : x;
 		if (mode == TextMode.NORMAL || mode == TextMode.OVERFLOW) {
-			double ox = x;
 			double oy = y;
-
-			if (text.getAlignX().isCenter()) {
-				ox = x + width / 2;
-			} else if (text.getAlignX().isEnd()) {
-				ox = x + width;
-			}
 
 			if (text.getAlignY().isCenter()) {
 				oy = y + height / 2;
@@ -123,14 +117,7 @@ public final class DrawText {
 			return FontBounds.empty();
 		}
 
-		double ox = x;
 		double oy = y;
-
-		if (text.getAlignX().isCenter()) {
-			ox = x + width / 2;
-		} else if (text.getAlignX().isEnd()) {
-			ox = x + width;
-		}
 
 		if (text.getAlignY().isCenter()) {
 			oy = y + height / 2;

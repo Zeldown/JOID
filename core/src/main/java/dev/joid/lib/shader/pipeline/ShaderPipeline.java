@@ -22,10 +22,10 @@ public final class ShaderPipeline {
 	private static int pipelineDepth = 0;
 
 	public static void render(final double x, final double y, final double width, final double height, final @NonNull Runnable baseDraw, final @NonNull IShaderPass... passes) {
-		ShaderPipeline.render(x, y, width, height, Arrays.asList(passes), baseDraw);
+		ShaderPipeline.render(x, y, width, height, baseDraw, Arrays.asList(passes));
 	}
 
-	public static void render(final double x, final double y, final double width, final double height, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
+	public static void render(final double x, final double y, final double width, final double height, final @NonNull Runnable baseDraw, final @NonNull List<IShaderPass> passes) {
 		if (passes.isEmpty()) {
 			baseDraw.run();
 			return;
