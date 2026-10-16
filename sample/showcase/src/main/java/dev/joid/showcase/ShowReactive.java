@@ -29,9 +29,9 @@ public class ShowReactive extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-300, 200, 900, ShowUI.VIOLET.withAlpha(0.45F), 9D, 0D, 50D);
-		this.blob(1300, -300, 900, ShowUI.CYAN.withAlpha(0.22F), 9D, 0.4D, 50D);
-		this.blob(1100, 700, 700, ShowUI.PINK.withAlpha(0.22F), 9D, 0.7D, 50D);
+		ShowUI.blob(-300, 200, 900, ShowUI.VIOLET.withAlpha(0.45F), 0D, 50D).attach(this);
+		ShowUI.blob(1300, -300, 900, ShowUI.CYAN.withAlpha(0.22F), 0.4D, 50D).attach(this);
+		ShowUI.blob(1100, 700, 700, ShowUI.PINK.withAlpha(0.22F), 0.7D, 50D).attach(this);
 
 		this.mixer();
 		this.stage();
@@ -65,9 +65,9 @@ public class ShowReactive extends ShowUI {
 			final Color to = warm[i];
 			RectNode
 			.create(156 + i * 125, 842, 110, 72)
-			.color(() -> Color.transition(from, to, this.warmth.get().floatValue()))
+			.color(Color.transition(from, to, this.warmth.get().floatValue()))
 			.effect(RoundedNodeEffect.create(18F))
-			.effect(ShadowNodeEffect.create(from, 10F).color(() -> Color.transition(from, to, this.warmth.get().floatValue()).withAlpha(0.7F)).blur(() -> 4F + 30F * this.energy.get().floatValue()))
+			.effect(ShadowNodeEffect.create(from, 10F).color(Color.transition(from, to, this.warmth.get().floatValue()).withAlpha(0.7F)).blur(4F + 30F * this.energy.get().floatValue()))
 			.attach(this);
 		}
 	}
@@ -95,7 +95,7 @@ public class ShowReactive extends ShowUI {
 		.width(200D + 220D * this.space.get())
 		.height(200D + 220D * this.space.get())
 		.effect(CircleNodeEffect.create())
-		.effect(ShadowNodeEffect.create(ShowUI.CYAN, 20F).color(() -> Color.transition(ShowUI.CYAN, ShowUI.PINK, this.warmth.get().floatValue())).blur(() -> 20F + 90F * this.energy.get().floatValue()))
+		.effect(ShadowNodeEffect.create(ShowUI.CYAN, 20F).color(Color.transition(ShowUI.CYAN, ShowUI.PINK, this.warmth.get().floatValue())).blur(20F + 90F * this.energy.get().floatValue()))
 		.attach(this);
 
 		TextNode.create(910, 160).text(Text.create(String.valueOf(Math.round(this.energy.get() * 100D)), ShowUI.font(FontWeight.BLACK, 96F, ShowUI.TEXT))).attach(this);
@@ -105,7 +105,7 @@ public class ShowReactive extends ShowUI {
 			final int index = i;
 			RectNode
 			.create(898 + i * 24, 0, 14, 0)
-			.color(() -> ShowUI.vertical(Color.transition(ShowUI.FUCHSIA, ShowUI.AMBER, this.warmth.get().floatValue()), Color.transition(ShowUI.VIOLET, ShowUI.ORANGE, this.warmth.get().floatValue()).withAlpha(0.35F)))
+			.color(ShowUI.vertical(Color.transition(ShowUI.FUCHSIA, ShowUI.AMBER, this.warmth.get().floatValue()), Color.transition(ShowUI.VIOLET, ShowUI.ORANGE, this.warmth.get().floatValue()).withAlpha(0.35F)))
 			.<RectNode>height(() -> this.bar(index))
 			.<RectNode>y(() -> 915D - this.bar(index))
 			.effect(RoundedNodeEffect.create(7F))

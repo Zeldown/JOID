@@ -32,8 +32,8 @@ public class ShowDrag extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-300, -300, 900, ShowUI.VIOLET.withAlpha(0.35F), 8D, 0D, 50D);
-		this.blob(1350, 450, 900, ShowUI.CYAN.withAlpha(0.18F), 8D, 0.5D, 50D);
+		ShowUI.blob(-300, -300, 900, ShowUI.VIOLET.withAlpha(0.35F), 0D, 50D).attach(this);
+		ShowUI.blob(1350, 450, 900, ShowUI.CYAN.withAlpha(0.18F), 0.5D, 50D).attach(this);
 
 		ShowUI.glass(420, 90, 1080, 460, 36F).attach(this);
 		CircleNode.create(475, 130, 360).color(this.accent.get().withAlpha(0.5F)).effect(BlurNodeEffect.create(80F)).attach(this);

@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.markup.DemoTextMarkup;
+import dev.joid.internal.JOID;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -46,10 +47,10 @@ public class ShowHero extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-260, -320, 1000, ShowUI.VIOLET.withAlpha(0.55F), 6D, 0D, 60D);
-		this.blob(1480, -260, 760, ShowUI.CYAN.withAlpha(0.32F), 6D, 0.3D, 50D);
-		this.blob(1080, 640, 720, ShowUI.PINK.withAlpha(0.30F), 6D, 0.6D, 70D);
-		this.blob(560, 820, 420, ShowUI.AMBER.withAlpha(0.16F), 6D, 0.85D, 40D);
+		ShowUI.blob(-260, -320, 1000, ShowUI.VIOLET.withAlpha(0.55F), 0D, 60D).attach(this);
+		ShowUI.blob(1480, -260, 760, ShowUI.CYAN.withAlpha(0.32F), 0.3D, 50D).attach(this);
+		ShowUI.blob(1080, 640, 720, ShowUI.PINK.withAlpha(0.30F), 0.6D, 70D).attach(this);
+		ShowUI.blob(560, 820, 420, ShowUI.AMBER.withAlpha(0.16F), 0.85D, 40D).attach(this);
 
 		this.brand();
 		this.headline();
@@ -76,7 +77,7 @@ public class ShowHero extends ShowUI {
 		.color(Color.WHITE.withAlpha(0.08F))
 		.effect(RoundedNodeEffect.create(20F))
 		.body(pill -> {
-			TextNode.create(46, 20).text(Text.create("8.0.0", ShowUI.font(FontWeight.SEMI_BOLD, 18F, ShowUI.MUTED))).anchor(Align.CENTER).attach(pill);
+			TextNode.create(46, 20).text(Text.create(JOID.VERSION, ShowUI.font(FontWeight.SEMI_BOLD, 18F, ShowUI.MUTED))).anchor(Align.CENTER).attach(pill);
 		})
 		.attach(this);
 	}

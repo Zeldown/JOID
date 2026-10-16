@@ -27,7 +27,7 @@ public final class DemoScrambleTextEffect implements ITextEffect {
 		int candidates = 0;
 		for (int i = 0; i < DemoScrambleTextEffect.POOL.length(); i++) {
 			final char candidate = DemoScrambleTextEffect.POOL.charAt(i);
-			if (glyph.hasGlyph(candidate) && Math.abs(glyph.getAdvance(candidate) - advance) <= advance * 0.25D) {
+			if (DemoScrambleTextEffect.isCandidate(glyph, candidate, advance)) {
 				candidates++;
 			}
 		}
@@ -41,12 +41,15 @@ public final class DemoScrambleTextEffect implements ITextEffect {
 		int remaining = (int) ((seed >>> 33) % candidates);
 		for (int i = 0; i < DemoScrambleTextEffect.POOL.length(); i++) {
 			final char candidate = DemoScrambleTextEffect.POOL.charAt(i);
-			final double candidateAdvance = glyph.getAdvance(candidate);
-			if (glyph.hasGlyph(candidate) && Math.abs(candidateAdvance - advance) <= advance * 0.25D && remaining-- == 0) {
-				glyph.codepoint(candidate).offset(glyph.getOffsetX() + (advance - candidateAdvance) / 2D, glyph.getOffsetY());
+			if (DemoScrambleTextEffect.isCandidate(glyph, candidate, advance) && remaining-- == 0) {
+				glyph.codepoint(candidate).offset(glyph.getOffsetX() + (advance - glyph.getAdvance(candidate)) / 2D, glyph.getOffsetY());
 				return;
 			}
 		}
+	}
+
+	private static boolean isCandidate(final ITextGlyph glyph, final char candidate, final double advance) {
+		return glyph.hasGlyph(candidate) && Math.abs(glyph.getAdvance(candidate) - advance) <= advance * 0.25D;
 	}
 
 }

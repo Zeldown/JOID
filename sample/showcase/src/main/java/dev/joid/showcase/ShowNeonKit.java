@@ -8,13 +8,11 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.Node;
-import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
 import dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode;
 import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
-import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
@@ -24,9 +22,9 @@ public class ShowNeonKit implements IShowKit {
 	@Override
 	public void backdrop(final Node layer) {
 		RectNode.create(0, 0, 1920, 1080).color(ShowUI.diagonal(ShowUI.NIGHT, ShowUI.DUSK)).attach(layer);
-		this.blob(layer, -260, 420, 900, ShowUI.VIOLET.withAlpha(0.42F), 0D);
-		this.blob(layer, 1250, -320, 900, ShowUI.CYAN.withAlpha(0.22F), 0.4D);
-		this.blob(layer, 1300, 640, 760, ShowUI.PINK.withAlpha(0.24F), 0.7D);
+		ShowUI.blob(-260, 420, 900, ShowUI.VIOLET.withAlpha(0.42F), 0D, 50D).attach(layer);
+		ShowUI.blob(1250, -320, 900, ShowUI.CYAN.withAlpha(0.22F), 0.4D, 50D).attach(layer);
+		ShowUI.blob(1300, 640, 760, ShowUI.PINK.withAlpha(0.24F), 0.7D, 50D).attach(layer);
 	}
 
 	@Override
@@ -102,16 +100,6 @@ public class ShowNeonKit implements IShowKit {
 	@Override
 	public TextFieldNode field(final double x, final double y, final double width) {
 		return ShowFieldNode.create(x, y, width, ShowUI.CYAN).info(ShowUI.font(FontWeight.MEDIUM, 25F, ShowUI.TEXT)).marginHorizontal(24D);
-	}
-
-	private void blob(final Node layer, final double x, final double y, final double size, final Color color, final double phase) {
-		CircleNode
-		.create(x, y, size)
-		.color(color)
-		.<CircleNode>x(() -> x + IShowKit.wave(phase) * 50D)
-		.<CircleNode>y(() -> y + IShowKit.wave(phase + 0.25D) * 30D)
-		.effect(BlurNodeEffect.create((float) (size / 6D)))
-		.attach(layer);
 	}
 
 }

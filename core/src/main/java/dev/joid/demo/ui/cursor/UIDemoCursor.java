@@ -93,7 +93,7 @@ public class UIDemoCursor extends UIDemo {
 			.create(100, 40, 120, 120)
 			.color(locked.get() ? UIDemoCursor.INK.withAlpha(0.4F) : UIDemoCursor.INK)
 			.cursor(locked.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER)
-			.onClick(event -> locked.set(!locked.get()))
+			.onClick(event -> locked.set(!locked.peek()))
 			.attach(rect);
 			TextNode.create(160, 215).text(Text.create("Reactive", info)).anchorX(Align.CENTER).attach(rect);
 		})

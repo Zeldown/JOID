@@ -35,8 +35,8 @@ public class ShowPlayer extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-250, 500, 900, ShowUI.AMBER.withAlpha(0.22F), 9D, 0D, 50D);
-		this.blob(1350, -300, 900, ShowUI.PINK.withAlpha(0.22F), 9D, 0.5D, 50D);
+		ShowUI.blob(-250, 500, 900, ShowUI.AMBER.withAlpha(0.22F), 0D, 50D).attach(this);
+		ShowUI.blob(1350, -300, 900, ShowUI.PINK.withAlpha(0.22F), 0.5D, 50D).attach(this);
 		CircleNode.create(560, 140, 800).color(ShowUI.ORANGE.withAlpha(0.25F)).effect(BlurNodeEffect.create(120F)).attach(this);
 
 		final Resource clip = Resource.of("assets/showcase/honey.mp4");
@@ -85,10 +85,10 @@ public class ShowPlayer extends ShowUI {
 		RectNode
 		.create(176, 712, 1060, 40)
 		.color(Color.TRANSPARENT)
-		.onClick(event -> this.scrub.set(this.ratio(event.getMouseX())))
+		.onClick(event -> this.scrub.set(ShowPlayer.ratio(event.getNode(), event.getMouseX())))
 		.handleMouseDragged(event -> {
 			if (this.scrub.get() >= 0D) {
-				this.scrub.set(this.ratio(event.getMouseX()));
+				this.scrub.set(ShowPlayer.ratio(event.getNode(), event.getMouseX()));
 			}
 		})
 		.handleMouseReleased(event -> {
@@ -128,8 +128,8 @@ public class ShowPlayer extends ShowUI {
 		return this.scrub.get() >= 0D ? this.scrub.get() : this.progress.get();
 	}
 
-	private double ratio(final double mouseX) {
-		return Math.max(0D, Math.min(1D, (mouseX - 416D) / 1060D));
+	private static double ratio(final Node node, final double mouseX) {
+		return Math.max(0D, Math.min(1D, (mouseX - node.getAbsoluteX()) / node.getWidth()));
 	}
 
 	private static String clock(final double seconds) {

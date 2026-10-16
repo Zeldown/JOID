@@ -49,13 +49,13 @@ public class UIDemoAudio extends UIDemo {
 		RectNode
 		.create(80, 570, 100, 36)
 		.color(UIDemoAudio.INK)
-		.onClick(event -> volume.set(Math.max(0F, volume.get() - 0.25F)))
+		.onClick(event -> volume.set(Math.max(0F, volume.peek() - 0.25F)))
 		.label(Text.create("-", button))
 		.attach(this);
 		RectNode
 		.create(190, 570, 100, 36)
 		.color(UIDemoAudio.INK)
-		.onClick(event -> volume.set(Math.min(1F, volume.get() + 0.25F)))
+		.onClick(event -> volume.set(Math.min(1F, volume.peek() + 0.25F)))
 		.label(Text.create("+", button))
 		.attach(this);
 		TextNode.create(300, 576).text(Text.create(Math.round(volume.get() * 100F) + " %", label)).attach(this);

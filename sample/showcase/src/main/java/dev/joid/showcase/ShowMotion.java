@@ -25,8 +25,8 @@ public class ShowMotion extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-250, -250, 900, ShowUI.VIOLET.withAlpha(0.38F), 9D, 0D, 50D);
-		this.blob(1300, 500, 900, ShowUI.CYAN.withAlpha(0.20F), 9D, 0.5D, 50D);
+		ShowUI.blob(-250, -250, 900, ShowUI.VIOLET.withAlpha(0.38F), 0D, 50D).attach(this);
+		ShowUI.blob(1300, 500, 900, ShowUI.CYAN.withAlpha(0.20F), 0.5D, 50D).attach(this);
 
 		ShowUI.glass(110, 100, 1700, 880, 32F).attach(this);
 		TextNode.create(156, 144).text(Text.create("Motion", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);

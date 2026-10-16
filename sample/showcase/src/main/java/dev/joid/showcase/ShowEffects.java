@@ -1,5 +1,7 @@
 package dev.joid.showcase;
 
+import dev.joid.lib.animation.animator.TweenAnimator;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
@@ -25,22 +27,15 @@ public class ShowEffects extends ShowUI {
 
 	private static final String[] NAMES = {"Rounded corners", "Gradient", "Inner border", "Drop shadow", "Glow", "Blur", "Tilt"};
 
-	private final double[]        levels   = new double[ShowEffects.NAMES.length];
+	private final TweenAnimator[] levels   = new TweenAnimator[ShowEffects.NAMES.length];
 	private final BooleanSignal[] switches = new BooleanSignal[ShowEffects.NAMES.length];
-
-	@Override
-	public void update() {
-		for (int i = 0; i < this.levels.length; i++) {
-			this.levels[i] = super.lerpByFramerate(this.levels[i], this.switches[i].get() ? 1D : 0D, 7D / 60D, 0.001D);
-		}
-	}
 
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-300, 300, 900, ShowUI.VIOLET.withAlpha(0.40F), 9D, 0D, 50D);
-		this.blob(1250, -350, 900, ShowUI.PINK.withAlpha(0.22F), 9D, 0.4D, 50D);
-		this.blob(1200, 650, 800, ShowUI.CYAN.withAlpha(0.18F), 9D, 0.7D, 50D);
+		ShowUI.blob(-300, 300, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
+		ShowUI.blob(1250, -350, 900, ShowUI.PINK.withAlpha(0.22F), 0.4D, 50D).attach(this);
+		ShowUI.blob(1200, 650, 800, ShowUI.CYAN.withAlpha(0.18F), 0.7D, 50D).attach(this);
 
 		this.panel();
 		this.card();
@@ -53,12 +48,14 @@ public class ShowEffects extends ShowUI {
 		final Color[] dots = {ShowUI.VIOLET, ShowUI.PINK, ShowUI.SKY, ShowUI.AMBER, ShowUI.FUCHSIA, ShowUI.CYAN, ShowUI.EMERALD};
 		for (int i = 0; i < ShowEffects.NAMES.length; i++) {
 			this.switches[i] = new BooleanSignal(false);
+			this.levels[i] = TweenAnimator.create(0F);
 			final double y = 300D + i * 88D;
 			final BooleanSignal on = this.switches[i];
+			final TweenAnimator level = this.levels[i];
 			final Color dot = dots[i];
-			CircleNode.create(158, y + 15D, 12).color(() -> on.get() ? dot : Color.WHITE.withAlpha(0.18F)).effect(ShadowNodeEffect.create(dot, 10F).color(() -> dot.withAlpha(on.get() ? 0.9F : 0F))).attach(this);
+			CircleNode.create(158, y + 15D, 12).color(on.get() ? dot : Color.WHITE.withAlpha(0.18F)).effect(ShadowNodeEffect.create(dot, 10F).color(dot.withAlpha(on.get() ? 0.9F : 0F))).attach(this);
 			TextNode.create(188, y + 21D).text(Text.create(ShowEffects.NAMES[i], ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);
-			ShowSwitchNode.create(650, y, dot).toggle(on).attach(this);
+			ShowSwitchNode.create(650, y, dot).toggle(on).onChange(event -> level.sequence(400F, event.getValue() ? 1F : 0F, TweenEquations.QUAD_OUT).start()).attach(this);
 		}
 	}
 
@@ -91,7 +88,7 @@ public class ShowEffects extends ShowUI {
 	}
 
 	private float level(final int index) {
-		return (float) this.levels[index];
+		return this.levels[index].get();
 	}
 
 }

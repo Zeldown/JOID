@@ -4,6 +4,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.lib.animation.animator.TweenAnimator;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
@@ -170,13 +172,15 @@ public class ShowPaperKit implements IShowKit {
 
 	public static class Field extends TextFieldNode {
 
-		private double focus;
+		private final TweenAnimator focus;
 
 		protected Field(final double x, final double y, final double width) {
 			super(x, y, width, 68);
+			this.focus = TweenAnimator.create(0F);
+			super.onFocus(event -> this.focus.sequence(250F, 1F, TweenEquations.QUAD_OUT).start());
+			super.onBlur(event -> this.focus.sequence(250F, 0F, TweenEquations.QUAD_OUT).start());
 			super.background(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-				this.focus = super.getUi().lerpByFramerate(this.focus, super.isFocused() ? 1D : 0D, 0.2D, 0.001D);
-				DrawUtils.SHAPE.drawRect(8D, 8D, node.getWidth(), node.getHeight(), ShowPaperKit.INK.to(ShowPaperKit.TOMATO, (float) this.focus));
+				DrawUtils.SHAPE.drawRect(8D, 8D, node.getWidth(), node.getHeight(), ShowPaperKit.INK.to(ShowPaperKit.TOMATO, this.focus.get()));
 				ShowPaperKit.box(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 3D);
 			}));
 		}

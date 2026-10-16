@@ -142,7 +142,7 @@ public class UIDemoChart extends UIDemo {
 			.color(UIDemoChart.INK)
 			.onClick(event -> {
 				week.increment();
-				chart.data("Week", ChartData.create().add("Mon", 1 + week.get() % 3).add("Tue", 3 - week.get() % 3).add("Wed", 2 + week.get() % 2).add("Thu", 4 - week.get() % 4));
+				chart.data("Week", ChartData.create().add("Mon", 1 + week.peek() % 3).add("Tue", 3 - week.peek() % 3).add("Wed", 2 + week.peek() % 2).add("Thu", 4 - week.peek() % 4));
 			})
 			.label(Text.create("Next", label))
 			.attach(rect);

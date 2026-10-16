@@ -95,7 +95,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(240, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick(event -> squares.set(squares.get() % 6 + 1))
+			.onClick(event -> squares.set(squares.peek() % 6 + 1))
 			.label(Text.create("+1", label))
 			.attach(rect);
 			FlexNode
@@ -120,7 +120,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoWatch.INK)
-			.onClick(event -> grown.set((grown.get() + 1) % 5))
+			.onClick(event -> grown.set((grown.peek() + 1) % 5))
 			.label(Text.create("Grow", label))
 			.attach(rect);
 			RectNode
@@ -319,7 +319,7 @@ public class UIDemoWatch extends UIDemo {
 			.create(180, 40, 180, 50)
 			.color(UIDemoWatch.INK)
 			.onClick(event -> {
-				if (listening.get()) {
+				if (listening.peek()) {
 					sent.removeOnChange(listener);
 				} else {
 					sent.onChange(listener);

@@ -21,8 +21,8 @@ public class ShowModel extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-300, -250, 900, ShowUI.VIOLET.withAlpha(0.40F), 9D, 0D, 50D);
-		this.blob(1300, 550, 900, ShowUI.PINK.withAlpha(0.20F), 9D, 0.5D, 50D);
+		ShowUI.blob(-300, -250, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
+		ShowUI.blob(1300, 550, 900, ShowUI.PINK.withAlpha(0.20F), 0.5D, 50D).attach(this);
 
 		final ObjModel model = ObjModel.load("teapot", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
 		ShowUI.glass(110, 100, 1700, 880, 32F).attach(this);

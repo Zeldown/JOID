@@ -2,6 +2,7 @@ package dev.joid.showcase;
 
 import java.util.Locale;
 
+import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.builder.Text;
@@ -19,27 +20,21 @@ public class ShowDesign extends ShowUI {
 
 	private final DoubleSignal  volume   = new DoubleSignal(0.3D);
 	private final BooleanSignal paper    = new BooleanSignal(false);
+	private final TweenAnimator level    = TweenAnimator.create(0F);
 	private final BooleanSignal notify   = new BooleanSignal(false);
 	private final BooleanSignal autoplay = new BooleanSignal(true);
 	private final StringSignal  name     = new StringSignal("Ada Lovelace");
 
-	private long   last;
-	private long   saved;
-	private double level;
-
-	@Override
-	public void update() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final double delta = this.last == 0L ? 0D : (now - this.last) / 1000D;
-		this.last = now;
-		final double target = this.paper.get() ? 1D : 0D;
-		this.level = target > this.level ? Math.min(target, this.level + delta / 1.1D) : Math.max(target, this.level - delta / 1.1D);
-	}
+	private long saved;
 
 	@Override
 	protected void scene() {
-		final RectNode neon = RectNode.create(0, 0, 1920, 1080).color(Color.TRANSPARENT).visible(() -> this.right() - this.left() < 1920D);
-		neon.body(layer -> this.screen(new ShowNeonKit(), layer)).attach(this);
+		RectNode
+		.create(0, 0, 1920, 1080)
+		.color(Color.TRANSPARENT)
+		.visible(() -> this.right() - this.left() < 1920D)
+		.body(layer -> this.screen(new ShowNeonKit(), layer))
+		.attach(this);
 
 		RectNode
 		.create(0, 0, 1920, 1080)
@@ -57,9 +52,9 @@ public class ShowDesign extends ShowUI {
 		.create(0, 0, 6, 1080)
 		.color(Color.WHITE)
 		.<RectNode>x(() -> this.front() - 3D)
-		.visible(() -> this.level > 0.001D && this.level < 0.999D)
+		.visible(() -> this.level.get() > 0.001F && this.level.get() < 0.999F)
 		.interactive(false)
-		.effect(ShadowNodeEffect.create(ShowUI.FUCHSIA, 40F).color(() -> ShowUI.FUCHSIA.to(ShowPaperKit.TOMATO, (float) this.level)))
+		.effect(ShadowNodeEffect.create(ShowUI.FUCHSIA, 40F).color(() -> ShowUI.FUCHSIA.to(ShowPaperKit.TOMATO, this.level.get())))
 		.attach(this);
 	}
 
@@ -70,8 +65,8 @@ public class ShowDesign extends ShowUI {
 		TextNode.create(150, 386).text(Text.create("Two kits.", kit.accent())).attach(layer);
 		TextNode.create(156, 590).text(Text.create("One screen class, one set of signals.", kit.hint())).attach(layer);
 		TextNode.create(156, 632).text(Text.create("The kit decides every pixel.", kit.hint())).attach(layer);
-		kit.choice(156, 720, "Neon", () -> !this.paper.get()).onClick(event -> this.paper.set(false)).attach(layer);
-		kit.choice(366, 720, "Paper", () -> this.paper.get()).onClick(event -> this.paper.set(true)).attach(layer);
+		kit.choice(156, 720, "Neon", () -> !this.paper.get()).onClick(event -> this.paper(false)).attach(layer);
+		kit.choice(366, 720, "Paper", () -> this.paper.get()).onClick(event -> this.paper(true)).attach(layer);
 
 		kit.panel(980, 140, 800, 800).attach(layer);
 		TextNode.create(1040, 186).text(Text.create("Settings", kit.title())).attach(layer);
@@ -101,12 +96,18 @@ public class ShowDesign extends ShowUI {
 		this.volume.set(0.3D);
 	}
 
+	private void paper(final boolean paper) {
+		this.paper.set(paper);
+		this.level.sequence(1100F, paper ? 1F : 0F).start();
+	}
+
 	private boolean isSaved() {
 		return this.saved != 0L && BridgeHandler.CLOCK.get().currentTimeMillis() - this.saved < 1600L;
 	}
 
 	private double eased() {
-		return this.level * this.level * (3D - 2D * this.level);
+		final double progress = this.level.get();
+		return progress * progress * (3D - 2D * progress);
 	}
 
 	private double front() {

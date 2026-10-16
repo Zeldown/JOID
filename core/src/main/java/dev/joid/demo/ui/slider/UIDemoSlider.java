@@ -100,13 +100,13 @@ public class UIDemoSlider extends UIDemo {
 			RectNode
 			.create(40, 170, 80, 50)
 			.color(UIDemoSlider.INK)
-			.onClick(event -> volume.set(Math.max(0, volume.get() - 1)))
+			.onClick(event -> volume.set(Math.max(0, volume.peek() - 1)))
 			.label(Text.create("-1", label))
 			.attach(rect);
 			RectNode
 			.create(140, 170, 80, 50)
 			.color(UIDemoSlider.INK)
-			.onClick(event -> volume.set(Math.min(10, volume.get() + 1)))
+			.onClick(event -> volume.set(Math.min(10, volume.peek() + 1)))
 			.label(Text.create("+1", label))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Two-way signal", info)).anchorX(Align.CENTER).attach(rect);
@@ -132,7 +132,7 @@ public class UIDemoSlider extends UIDemo {
 			RectNode
 			.create(40, 120, 120, 50)
 			.color(UIDemoSlider.INK)
-			.onClick(event -> target.set((target.get() + 5) % 15))
+			.onClick(event -> target.set((target.peek() + 5) % 15))
 			.label(Text.create("Next", label))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Followed value", info)).anchorX(Align.CENTER).attach(rect);

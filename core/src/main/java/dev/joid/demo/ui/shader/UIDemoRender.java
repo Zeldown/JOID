@@ -218,7 +218,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), new DemoInvertShaderPass(1F)))
+			.layer((node, mouseX, mouseY) -> ShaderPipeline.render(0D, 0D, node.getWidth(), node.getHeight(), () -> DrawUtils.RESOURCE.drawResource(0D, 0D, 200D, 200D, image), DemoInvertShaderPass.create(1F)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Custom pass", info)).anchorX(Align.CENTER).attach(rect);
 		})

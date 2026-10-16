@@ -1,5 +1,7 @@
 package dev.joid.showcase;
 
+import java.util.regex.Pattern;
+
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.lib.color.Color;
@@ -20,6 +22,8 @@ import dev.joid.lib.utils.geom.Point;
 
 public class ShowForm extends ShowUI {
 
+	private static final Pattern EMAIL = Pattern.compile("[^@ ]+@[^@ ]+\\.[a-z]{2,}");
+
 	private final StringSignal bio   = new StringSignal("I write <b>the first</b> <c=f472b6>programs</c>");
 	private final StringSignal name  = new StringSignal("");
 	private final StringSignal email = new StringSignal("");
@@ -27,9 +31,9 @@ public class ShowForm extends ShowUI {
 	@Override
 	protected void scene() {
 		this.backdrop();
-		this.blob(-300, 350, 900, ShowUI.VIOLET.withAlpha(0.40F), 9D, 0D, 50D);
-		this.blob(1300, -300, 900, ShowUI.SKY.withAlpha(0.20F), 9D, 0.4D, 50D);
-		this.blob(1250, 700, 700, ShowUI.PINK.withAlpha(0.20F), 9D, 0.7D, 50D);
+		ShowUI.blob(-300, 350, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
+		ShowUI.blob(1300, -300, 900, ShowUI.SKY.withAlpha(0.20F), 0.4D, 50D).attach(this);
+		ShowUI.blob(1250, 700, 700, ShowUI.PINK.withAlpha(0.20F), 0.7D, 50D).attach(this);
 
 		this.form();
 		this.profile();
@@ -49,7 +53,7 @@ public class ShowForm extends ShowUI {
 		CircleNode
 		.create(752, 488, 36)
 		.color(ShowUI.EMERALD)
-		.visible(() -> this.isValid())
+		.visible(this.isValid())
 		.interactive(false)
 		.effect(ShadowNodeEffect.create(ShowUI.EMERALD, 14F))
 		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(ShowUI.NIGHT, 3.5F, Point.create(10D, 18D), Point.create(16D, 24D), Point.create(27D, 11D)))
@@ -60,11 +64,11 @@ public class ShowForm extends ShowUI {
 
 		RectNode
 		.create(158, 770, 654, 76)
-		.color(() -> this.isValid() ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.withAlpha(0.08F))
+		.color(this.isValid() ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.withAlpha(0.08F))
 		.effect(RoundedNodeEffect.create(20F))
-		.effect(ShadowNodeEffect.create(ShowUI.VIOLET, 30F).color(() -> ShowUI.FUCHSIA.withAlpha(this.isValid() ? 0.7F : 0F)))
+		.effect(ShadowNodeEffect.create(ShowUI.VIOLET, 30F).color(ShowUI.FUCHSIA.withAlpha(this.isValid() ? 0.7F : 0F)))
 		.body(button -> {
-			TextNode.create(327, 38).text(() -> Text.create("Create account", ShowUI.font(FontWeight.BOLD, 24F, this.isValid() ? Color.WHITE : ShowUI.FAINT))).anchor(Align.CENTER).attach(button);
+			TextNode.create(327, 38).text(Text.create("Create account", ShowUI.font(FontWeight.BOLD, 24F, this.isValid() ? Color.WHITE : ShowUI.FAINT))).anchor(Align.CENTER).attach(button);
 		})
 		.attach(this);
 	}
@@ -79,16 +83,16 @@ public class ShowForm extends ShowUI {
 		.effect(CircleNodeEffect.create())
 		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.withAlpha(0.8F), 36F))
 		.body(avatar -> {
-			TextNode.create(100, 100).text(() -> Text.create(ShowForm.initials(this.name.get()), ShowUI.font(FontWeight.BLACK, 72F, Color.WHITE))).anchor(Align.CENTER).attach(avatar);
+			TextNode.create(100, 100).text(Text.create(ShowForm.initials(this.name.get()), ShowUI.font(FontWeight.BLACK, 72F, Color.WHITE))).anchor(Align.CENTER).attach(avatar);
 		})
 		.attach(this);
-		TextNode.create(1405, 560).text(() -> Text.create(this.name.get().isEmpty() ? "Your name" : this.name.get(), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 64F, this.name.get().isEmpty() ? ShowUI.FAINT : ShowUI.TEXT))).anchorX(Align.CENTER).attach(this);
-		TextNode.create(1405, 660).text(() -> Text.create(this.email.get().isEmpty() ? "you@example.com" : this.email.get(), ShowUI.font(FontWeight.MEDIUM, 24F, ShowUI.MUTED))).anchorX(Align.CENTER).attach(this);
-		TextNode.create(1405, 730).text(() -> Text.create(this.bio.get(), ShowUI.font(FontWeight.MEDIUM, 28F, ShowUI.TEXT).markups(DemoTextMarkup.inst()))).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1405, 560).text(Text.create(this.name.get().isEmpty() ? "Your name" : this.name.get(), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 64F, this.name.get().isEmpty() ? ShowUI.FAINT : ShowUI.TEXT))).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1405, 660).text(Text.create(this.email.get().isEmpty() ? "you@example.com" : this.email.get(), ShowUI.font(FontWeight.MEDIUM, 24F, ShowUI.MUTED))).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1405, 730).text(Text.create(this.bio.get(), ShowUI.font(FontWeight.MEDIUM, 28F, ShowUI.TEXT).markups(DemoTextMarkup.inst()))).anchorX(Align.CENTER).attach(this);
 		RectNode
 		.create(1300, 810, 210, 48)
 		.color(ShowUI.EMERALD.withAlpha(0.16F))
-		.visible(() -> this.isValid())
+		.visible(this.isValid())
 		.effect(RoundedNodeEffect.create(24F))
 		.body(chip -> {
 			TextNode.create(105, 24).text(Text.create("Verified email", ShowUI.font(FontWeight.BOLD, 19F, ShowUI.EMERALD))).anchor(Align.CENTER).attach(chip);
@@ -97,7 +101,7 @@ public class ShowForm extends ShowUI {
 	}
 
 	private boolean isValid() {
-		return this.email.get().matches("[^@ ]+@[^@ ]+\\.[a-z]{2,}") && !this.name.get().trim().isEmpty();
+		return ShowForm.EMAIL.matcher(this.email.get()).matches() && !this.name.get().trim().isEmpty();
 	}
 
 	private static String initials(final String name) {

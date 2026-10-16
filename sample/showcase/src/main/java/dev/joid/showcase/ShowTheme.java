@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import dev.joid.lib.animation.animator.TweenAnimator;
+import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
@@ -32,14 +34,8 @@ public class ShowTheme extends ShowUI {
 	private static final Color MUTED_LIGHT  = Color.decode("#6B6880").lock();
 	private static final Color ACTIVE_LIGHT = Color.decode("#5B21B6").lock();
 
-	private final BooleanSignal dark = new BooleanSignal(false);
-
-	private double level;
-
-	@Override
-	public void update() {
-		this.level = super.lerpByFramerate(this.level, this.dark.get() ? 1D : 0D, 0.1D, 0.001D);
-	}
+	private final BooleanSignal dark  = new BooleanSignal(false);
+	private final TweenAnimator level = TweenAnimator.create(0F);
 
 	@Override
 	protected void scene() {
@@ -61,7 +57,7 @@ public class ShowTheme extends ShowUI {
 		for (int i = 0; i < items.length; i++) {
 			final boolean active = i == 0;
 			final String item = items[i];
-			RectNode.create(32, 170 + i * 68, 236, 54).color(() -> active ? ShowUI.VIOLET.withAlpha(0.14F + 0.1F * (float) this.level) : Color.TRANSPARENT).effect(RoundedNodeEffect.create(16F)).attach(this);
+			RectNode.create(32, 170 + i * 68, 236, 54).color(() -> active ? ShowUI.VIOLET.withAlpha(0.14F + 0.1F * this.level.get()) : Color.TRANSPARENT).effect(RoundedNodeEffect.create(16F)).attach(this);
 			RectNode.create(56, 189 + i * 68, 16, 16).color(() -> active ? ShowUI.VIOLET : this.muted()).effect(RoundedNodeEffect.create(5F)).attach(this);
 			TextNode.create(92, 197 + i * 68).text(() -> Text.create(item, ShowUI.font(FontWeight.SEMI_BOLD, 21F, active ? this.tone(ShowTheme.ACTIVE_LIGHT, ShowTheme.ACTIVE_DARK) : this.muted()))).anchorY(Align.CENTER).attach(this);
 		}
@@ -69,7 +65,7 @@ public class ShowTheme extends ShowUI {
 		TextNode.create(360, 60).text(() -> Text.create("Good evening, Ada", ShowUI.font(FontWeight.EXTRA_BOLD, 46F, this.text()))).attach(this);
 		TextNode.create(362, 124).text(() -> Text.create("One signal drives every color on this screen.", ShowUI.font(FontWeight.MEDIUM, 21F, this.muted()))).attach(this);
 		TextNode.create(1700, 98).text(() -> Text.create(this.dark.get() ? "Dark" : "Light", ShowUI.font(FontWeight.SEMI_BOLD, 21F, this.muted()))).anchorX(Align.END).anchorY(Align.CENTER).attach(this);
-		ShowThemeNode.create(1730, 70).toggle(this.dark).attach(this);
+		ShowThemeNode.create(1730, 70).toggle(this.dark).onChange(event -> this.level.sequence(400F, event.getValue() ? 1F : 0F, TweenEquations.QUAD_OUT).start()).attach(this);
 
 		this.stat(0, "Listeners", "48,210", "+12.4 %", ShowUI.VIOLET);
 		this.stat(1, "Minutes played", "1.2 M", "+8.1 %", ShowUI.PINK);
@@ -110,7 +106,7 @@ public class ShowTheme extends ShowUI {
 		.create(x, y, width, height)
 		.color(() -> this.tone(Color.WHITE, ShowTheme.CARD_DARK))
 		.effect(RoundedNodeEffect.create(28F))
-		.effect(ShadowNodeEffect.create(Color.BLACK, 40F).offsetY(14D).color(() -> Color.BLACK.withAlpha(0.07F + 0.33F * (float) this.level)));
+		.effect(ShadowNodeEffect.create(Color.BLACK, 40F).offsetY(14D).color(() -> Color.BLACK.withAlpha(0.07F + 0.33F * this.level.get())));
 	}
 
 	private void chart(final double x, final double y, final double width, final double height) {
@@ -142,7 +138,7 @@ public class ShowTheme extends ShowUI {
 	}
 
 	private Color tone(final Color light, final Color dark) {
-		return light.to(dark, (float) this.level);
+		return light.to(dark, this.level.get());
 	}
 
 }

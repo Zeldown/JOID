@@ -78,14 +78,13 @@ public abstract class ShowUI extends UI {
 		RectNode.create(0, 0, 1920, 1080).color(ShowUI.diagonal(ShowUI.NIGHT, ShowUI.DUSK)).attach(this);
 	}
 
-	protected CircleNode blob(final double x, final double y, final double size, final Color color, final double period, final double phase, final double range) {
+	protected static CircleNode blob(final double x, final double y, final double size, final Color color, final double phase, final double range) {
 		return CircleNode
 		.create(x, y, size)
 		.color(color)
-		.<CircleNode>x(() -> x + this.wave(period, phase) * range)
-		.<CircleNode>y(() -> y + this.wave(period, phase + 0.25D) * range * 0.6D)
-		.effect(BlurNodeEffect.create((float) (size / 6D)))
-		.attach(this);
+		.<CircleNode>x(() -> x + IShowKit.wave(phase) * range)
+		.<CircleNode>y(() -> y + IShowKit.wave(phase + 0.25D) * range * 0.6D)
+		.effect(BlurNodeEffect.create((float) (size / 6D)));
 	}
 
 	protected static RectNode glass(final double x, final double y, final double width, final double height, final float radius) {
