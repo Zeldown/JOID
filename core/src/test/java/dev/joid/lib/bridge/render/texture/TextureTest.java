@@ -110,6 +110,19 @@ public class TextureTest {
 		Assert.assertFalse(texture.isAllocated());
 	}
 
+	@Test
+	public void refusesToAllocateOnceDeleted() {
+		final HookTexture texture = new HookTexture();
+		texture.allocate(2, 2).delete();
+		try {
+			texture.allocate(4, 4);
+			Assert.fail("A deleted texture must stay deleted");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The texture is deleted, create a new one with IRenderBridge.createTexture()", expected.getMessage());
+		}
+		Assert.assertEquals(Arrays.asList("allocate 2x2 1", "delete"), texture.getCalls());
+	}
+
 	@Getter
 	private static final class HookTexture extends Texture {
 

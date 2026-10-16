@@ -29,6 +29,10 @@ public abstract class Texture implements ITexture {
 
 	@Override
 	public final @NonNull Texture allocate(final int width, final int height) {
+		if (this.deleted) {
+			throw new IllegalStateException("The texture is deleted, create a new one with IRenderBridge.createTexture()");
+		}
+
 		final MipmapChain chain = MipmapChain.of(width, height, this.mipmapped).limit(this.getMaxLevels(width, height));
 		if (this.isAllocated() && this.width == width && this.height == height && this.levels == chain.getLevels()) {
 			return this;
