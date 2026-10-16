@@ -42,7 +42,7 @@ public abstract class BorrowedTextureContractSuite {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.getModelView().identity();
 		render.getProjection().ortho(0D, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE, 0D, 0D, 10000D);
-		render.getState().load(new RenderState().viewport(0, 0, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
+		render.getState().load(RenderState.create().viewport(0, 0, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
 	}
 
 	@AfterClass
@@ -89,7 +89,7 @@ public abstract class BorrowedTextureContractSuite {
 		}
 
 		try {
-			texture.upload(new int[16], 4, 4);
+			texture.upload(new int[16]);
 			Assert.fail();
 		} catch (final UnsupportedOperationException expected) {
 			Assert.assertTrue(expected.getMessage().startsWith("A borrowed texture belongs to its host"));

@@ -37,8 +37,8 @@ public class ShaderPassContextTest {
 
 	@Test
 	public void keepsTheExpandedAreaOfARotatedDraw() {
-		final MatrixStack projection = new MatrixStack();
-		final MatrixStack modelView = new MatrixStack();
+		final MatrixStack projection = MatrixStack.create();
+		final MatrixStack modelView = MatrixStack.create();
 		projection.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		modelView.rotate(30D, 0D, 0D, 1D);
 		final ShaderPassContext context = ShaderPassContext.create(10.3D, 20.6D, 100D, 50D, 5D, PixelGrid.of(projection.getMatrix(), modelView.getMatrix(), 3840, 2160));

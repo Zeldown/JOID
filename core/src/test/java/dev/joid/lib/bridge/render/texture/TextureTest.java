@@ -42,8 +42,8 @@ public class TextureTest {
 	@Test
 	public void uploadsWithTheLevelsOfTheMipmapState() {
 		final HookTexture texture = new HookTexture();
-		texture.allocate(8, 8).upload(new int[64], 8, 8);
-		texture.mipmap(true).upload(new int[64], 8, 8);
+		texture.allocate(8, 8).upload(new int[64]);
+		texture.mipmap(true).upload(new int[64]);
 		Assert.assertEquals(Arrays.asList("allocate 8x8 1", "upload 8x8 1", "generate 8x8 4 from 1", "upload 8x8 4"), texture.getCalls());
 		Assert.assertEquals(4, texture.getLevels());
 	}
@@ -68,7 +68,7 @@ public class TextureTest {
 	public void capsTheLevelsAtTheLimitOfItsBackend() {
 		final HookTexture texture = new HookTexture();
 		texture.maxLevels = 5;
-		texture.mipmap(true).allocate(256, 16).upload(new int[256 * 16], 256, 16);
+		texture.mipmap(true).allocate(256, 16).upload(new int[256 * 16]);
 		texture.mipmap(false).mipmap(true);
 		Assert.assertEquals(Arrays.asList("allocate 256x16 5", "upload 256x16 5", "generate 256x16 5 from 5"), texture.getCalls());
 		Assert.assertEquals(5, texture.getLevels());

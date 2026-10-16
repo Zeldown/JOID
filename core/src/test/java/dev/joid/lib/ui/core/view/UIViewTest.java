@@ -82,8 +82,8 @@ public class UIViewTest {
 	@Test
 	public void rendersExactlyWhatItMaps() {
 		final UIView view = UIView.create(960D, 540D).resize(2560D, 1440D).interfaceScale(0.5D).zoom(1.2D);
-		final MatrixStack projection = new MatrixStack();
-		final MatrixStack modelView = new MatrixStack();
+		final MatrixStack projection = MatrixStack.create();
+		final MatrixStack modelView = MatrixStack.create();
 		final double[] measured = new double[4];
 		view.render(UIViewTest.bridge(projection, modelView), true, () -> {
 			final PixelGrid grid = PixelGrid.of(projection.getMatrix(), modelView.getMatrix(), 2560, 1440);
@@ -97,7 +97,7 @@ public class UIViewTest {
 		Assert.assertEquals(view.toScreenHeight(1D), measured[1], 1E-5D);
 		Assert.assertEquals(view.toScreenX(123D), measured[2], 1E-3D);
 		Assert.assertEquals(view.toScreenY(456D), measured[3], 1E-3D);
-		Assert.assertArrayEquals(new MatrixStack().getMatrix(), modelView.getMatrix(), 0F);
+		Assert.assertArrayEquals(MatrixStack.create().getMatrix(), modelView.getMatrix(), 0F);
 	}
 
 	@Test
@@ -138,8 +138,8 @@ public class UIViewTest {
 
 	@Test
 	public void restoresTheMatricesWhenTheDrawFails() {
-		final MatrixStack projection = new MatrixStack();
-		final MatrixStack modelView = new MatrixStack();
+		final MatrixStack projection = MatrixStack.create();
+		final MatrixStack modelView = MatrixStack.create();
 		projection.ortho(0D, 640D, 360D, 0D, 0D, 1D);
 		final float[] projected = projection.getMatrix().clone();
 		try {
@@ -149,16 +149,16 @@ public class UIViewTest {
 			Assert.fail("The failure of the draw must reach the caller");
 		} catch (final IllegalStateException expected) {
 			Assert.assertArrayEquals(projected, projection.getMatrix(), 0F);
-			Assert.assertArrayEquals(new MatrixStack().getMatrix(), modelView.getMatrix(), 0F);
+			Assert.assertArrayEquals(MatrixStack.create().getMatrix(), modelView.getMatrix(), 0F);
 		}
 	}
 
 	@Test
 	public void keepsTheBoundProjectionWhenAsked() {
-		final MatrixStack projection = new MatrixStack();
+		final MatrixStack projection = MatrixStack.create();
 		projection.ortho(0D, 640D, 360D, 0D, 0D, 1D);
 		final float[] projected = projection.getMatrix().clone();
-		UIView.create(960D, 540D).resize(1920D, 1080D).render(UIViewTest.bridge(projection, new MatrixStack()), false, () -> Assert.assertArrayEquals(projected, projection.getMatrix(), 0F));
+		UIView.create(960D, 540D).resize(1920D, 1080D).render(UIViewTest.bridge(projection, MatrixStack.create()), false, () -> Assert.assertArrayEquals(projected, projection.getMatrix(), 0F));
 	}
 
 	@Test

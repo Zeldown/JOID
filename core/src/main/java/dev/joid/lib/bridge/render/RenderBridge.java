@@ -35,10 +35,10 @@ public abstract class RenderBridge implements IRenderBridge {
 	private ITexture emptyTexture;
 
 	protected RenderBridge() {
-		this.modelView  = new MatrixStack();
-		this.projection = new MatrixStack();
+		this.modelView  = MatrixStack.create();
+		this.projection = MatrixStack.create();
 		this.stateStack = new ArrayDeque<>();
-		this.state      = new RenderState();
+		this.state      = RenderState.create();
 	}
 
 	@Override
@@ -172,7 +172,7 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	protected final @NonNull ITexture getEmptyTexture() {
 		if (this.emptyTexture == null) {
-			this.emptyTexture = this.createTexture().allocate(1, 1).upload(new int[] {0xFFFFFFFF}, 1, 1);
+			this.emptyTexture = this.createTexture().allocate(1, 1).upload(new int[] {0xFFFFFFFF});
 		}
 		return this.emptyTexture;
 	}

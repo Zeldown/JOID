@@ -13,8 +13,8 @@ public class PipelineKeyTest {
 
 	@Test
 	public void equalsAKeyOfAnEqualBlend() {
-		final RenderState first = new RenderState();
-		final RenderState second = new RenderState();
+		final RenderState first = RenderState.create();
+		final RenderState second = RenderState.create();
 		first.blend(BlendState.create(BlendState.Equation.ADD, BlendState.Factor.ONE, BlendState.Factor.ONE_MINUS_SRC_ALPHA));
 		second.blend(BlendState.PREMULTIPLIED);
 		Assert.assertEquals(PipelineKey.create(PipelineKeyTest.SHADER, first, Primitive.TRIANGLES), PipelineKey.create(PipelineKeyTest.SHADER, second, Primitive.TRIANGLES));
@@ -23,8 +23,8 @@ public class PipelineKeyTest {
 
 	@Test
 	public void differsFromAKeyOfAnotherBlend() {
-		final RenderState first = new RenderState();
-		final RenderState second = new RenderState();
+		final RenderState first = RenderState.create();
+		final RenderState second = RenderState.create();
 		first.blend(BlendState.NORMAL);
 		second.blend(BlendState.PREMULTIPLIED);
 		Assert.assertNotEquals(PipelineKey.create(PipelineKeyTest.SHADER, first, Primitive.TRIANGLES), PipelineKey.create(PipelineKeyTest.SHADER, second, Primitive.TRIANGLES));
@@ -32,20 +32,20 @@ public class PipelineKeyTest {
 
 	@Test
 	public void differsFromAKeyOfAnotherShader() {
-		final RenderState state = new RenderState();
+		final RenderState state = RenderState.create();
 		Assert.assertNotEquals(PipelineKey.create(PipelineKeyTest.SHADER, state, Primitive.TRIANGLES), PipelineKey.create(new RecordingShader(), state, Primitive.TRIANGLES));
 	}
 
 	@Test
 	public void ignoresTheFactorsOfADisabledBlend() {
-		final RenderState state = new RenderState();
+		final RenderState state = RenderState.create();
 		state.blend(BlendState.DISABLED);
 		Assert.assertSame(BlendState.DISABLED, PipelineKey.create(PipelineKeyTest.SHADER, state, Primitive.TRIANGLES).getBlend());
 	}
 
 	@Test
 	public void writesNoDepthWithoutTheDepthTest() {
-		final RenderState state = new RenderState();
+		final RenderState state = RenderState.create();
 		state.depthTest(false);
 		state.depthWrite(true);
 		Assert.assertFalse(PipelineKey.create(PipelineKeyTest.SHADER, state, Primitive.TRIANGLES).isDepthWrite());
@@ -55,13 +55,13 @@ public class PipelineKeyTest {
 
 	@Test
 	public void separatesTrianglesFromLines() {
-		final RenderState state = new RenderState();
+		final RenderState state = RenderState.create();
 		Assert.assertNotEquals(PipelineKey.create(PipelineKeyTest.SHADER, state, Primitive.TRIANGLES), PipelineKey.create(PipelineKeyTest.SHADER, state, Primitive.LINES));
 	}
 
 	@Test
 	public void writesTheStencilWithoutBlendNorDepth() {
-		final RenderState state = new RenderState();
+		final RenderState state = RenderState.create();
 		state.blend(BlendState.NORMAL);
 		state.colorWrite(false);
 		state.depthTest(true);

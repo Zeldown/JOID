@@ -65,7 +65,7 @@ public abstract class RenderBridgeContractSuite {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.getModelView().identity();
 		render.getProjection().ortho(0D, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, 0D, 0D, 10000D);
-		render.getState().load(new RenderState().viewport(0, 0, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
+		render.getState().load(RenderState.create().viewport(0, 0, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
 	}
 
 	@AfterClass
@@ -182,7 +182,7 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void samplesTheTextureOfASampler() {
-		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.GREEN}, 1, 1);
+		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.GREEN});
 		final IShader shader = RenderBridgeContractSuite.shader("uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}");
 		shader.sampler("u_Mask", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
@@ -340,7 +340,7 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void uploadsArgbTextures() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final ITexture texture = render.createTexture().allocate(2, 2).upload(new int[] {RenderBridgeContractSuite.RED, RenderBridgeContractSuite.GREEN, RenderBridgeContractSuite.BLUE, RenderBridgeContractSuite.WHITE}, 2, 2);
+		final ITexture texture = render.createTexture().allocate(2, 2).upload(new int[] {RenderBridgeContractSuite.RED, RenderBridgeContractSuite.GREEN, RenderBridgeContractSuite.BLUE, RenderBridgeContractSuite.WHITE});
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, true, 0));
@@ -358,9 +358,9 @@ public abstract class RenderBridgeContractSuite {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final int[] pixels = RenderBridgeContractSuite.checkerboard();
 
-		final ITexture plain = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
-		final ITexture mipmapped = render.createTexture().mipmap(true).allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS);
-		final ITexture late = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels, RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).mipmap(true);
+		final ITexture plain = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels);
+		final ITexture mipmapped = render.createTexture().mipmap(true).allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels);
+		final ITexture late = render.createTexture().allocate(RenderBridgeContractSuite.ATLAS, RenderBridgeContractSuite.ATLAS).upload(pixels).mipmap(true);
 
 		final double plainDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(plain));
 		final double mipmapDeviation = RenderBridgeContractSuite.deviation(RenderBridgeContractSuite.minify(mipmapped));
@@ -381,7 +381,7 @@ public abstract class RenderBridgeContractSuite {
 	public void samplesATransparentBorderBeyondTheTexture() {
 		final int[] pixels = new int[16];
 		Arrays.fill(pixels, RenderBridgeContractSuite.RED);
-		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(4, 4).upload(pixels, 4, 4);
+		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(4, 4).upload(pixels);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.getState().blend(BlendState.DISABLED).texture(texture).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_BORDER);
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, -0.5F, 1.5F));
@@ -399,7 +399,7 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void deletesTexturesTwice() {
-		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.WHITE}, 1, 1);
+		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.WHITE});
 		texture.delete();
 		texture.delete();
 	}
@@ -550,7 +550,7 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void resetsToAnOpaqueWhiteTexture() {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final ITexture texture = render.createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.RED}, 1, 1);
+		final ITexture texture = render.createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.RED});
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE).texture(null);
 			bridge.getState().color(0F, 0F, 1F, 1F);

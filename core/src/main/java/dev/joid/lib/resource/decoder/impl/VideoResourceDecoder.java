@@ -180,8 +180,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			return;
 		}
 
-		this.textures[0].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0), resource.getWidth(), resource.getHeight());
-		this.textures[1].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0), resource.getWidth(), resource.getHeight());
+		this.textures[0].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
+		this.textures[1].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
 
 		if (this.autoplay) {
 			this.play();
@@ -592,7 +592,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.textures[1].allocate(resource.getWidth(), resource.getHeight());
 			this.texturesAllocated = true;
 		}
-		this.textures[nextBuffer].upload(frame.getPixels(), resource.getWidth(), resource.getHeight());
+		this.textures[nextBuffer].upload(frame.getPixels());
 		this.currentBuffer = nextBuffer;
 		this.displayedFrameIndex = (int) Math.round(frame.getMediaTime() * this.frameRate);
 		this.seeked = false;

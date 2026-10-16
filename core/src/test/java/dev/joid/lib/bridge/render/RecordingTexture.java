@@ -27,10 +27,8 @@ public final class RecordingTexture implements ITexture {
 	}
 
 	@Override
-	public @NonNull ITexture upload(final @NonNull int[] pixels, final int width, final int height) {
+	public @NonNull ITexture upload(final @NonNull int[] pixels) {
 		this.pixels = pixels.clone();
-		this.width = width;
-		this.height = height;
 		return this;
 	}
 

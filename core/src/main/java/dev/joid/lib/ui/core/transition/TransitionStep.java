@@ -71,12 +71,9 @@ public class TransitionStep {
 		}
 	}
 
-	public void enable() {
-		this.enabled = true;
-	}
-
-	public void disable() {
-		this.enabled = false;
+	public final <T extends TransitionStep> @NonNull T enabled(final boolean enabled) {
+		this.enabled = enabled;
+		return (T) this;
 	}
 
 	private void update() {

@@ -1164,8 +1164,8 @@ public class UITest {
 	public void leavesTheDisabledStatesOfItsTransitionAside() {
 		final TraceUI ui = new TraceUI(this.trace);
 		final RecordingTransition transition = new RecordingTransition(this.trace);
-		transition.getIn().disable();
-		transition.getOut().disable();
+		transition.getIn().enabled(false);
+		transition.getOut().enabled(false);
 		ui.transition(transition);
 		this.bridges.open(ui);
 		Assert.assertEquals(Collections.singletonList("update"), this.trace);
@@ -1176,7 +1176,7 @@ public class UITest {
 	public void playsATransitionWithoutOutStep() {
 		final TraceUI ui = new TraceUI(this.trace);
 		final RecordingTransition transition = new RecordingTransition(this.trace);
-		transition.getOut().disable();
+		transition.getOut().enabled(false);
 		ui.transition(transition);
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("in init", "update", "in pre", "in post"), this.trace);
@@ -1189,7 +1189,7 @@ public class UITest {
 	public void playsATransitionWithoutInStep() {
 		final TraceUI ui = new TraceUI(this.trace);
 		final RecordingTransition transition = new RecordingTransition(this.trace);
-		transition.getIn().disable();
+		transition.getIn().enabled(false);
 		ui.transition(transition);
 		this.bridges.open(ui);
 		Assert.assertEquals(Arrays.asList("out init", "update"), this.trace);

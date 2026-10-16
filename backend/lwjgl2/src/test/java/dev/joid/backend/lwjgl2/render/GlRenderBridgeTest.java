@@ -45,9 +45,9 @@ public class GlRenderBridgeTest {
 		GL11.glTranslatef(5F, 7F, -2000F);
 		FixedMatrixImport.create(bridge).apply();
 
-		final MatrixStack projection = new MatrixStack();
+		final MatrixStack projection = MatrixStack.create();
 		projection.ortho(0D, 320D, 240D, 0D, 1000D, 3000D);
-		final MatrixStack modelView = new MatrixStack();
+		final MatrixStack modelView = MatrixStack.create();
 		modelView.translate(5D, 7D, -2000D);
 		Assert.assertArrayEquals(projection.getMatrix(), bridge.getProjection().getMatrix(), 1E-6F);
 		Assert.assertArrayEquals(modelView.getMatrix(), bridge.getModelView().getMatrix(), 0F);

@@ -266,7 +266,7 @@ public final class ResourceData {
 				continue;
 			}
 
-			this.textures[i].allocate(this.width, this.height).upload(this.data[i], this.width, this.height);
+			this.textures[i].allocate(this.width, this.height).upload(this.data[i]);
 		}
 	}
 
@@ -365,7 +365,7 @@ public final class ResourceData {
 			for (int i = 0; i < pixels.length; i++) {
 				pixels[i] = (i / 8 + i % 8) % 2 == 0 ? 0xFFFF00FF : 0xFF000000;
 			}
-			this.missingTexture = BridgeHandler.RENDER.get().createTexture().allocate(8, 8).upload(pixels, 8, 8);
+			this.missingTexture = BridgeHandler.RENDER.get().createTexture().allocate(8, 8).upload(pixels);
 		}
 		return this.missingTexture;
 	}
@@ -401,7 +401,7 @@ public final class ResourceData {
 	}
 
 	public static @NonNull ITexture placeholder() {
-		return BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0}, 1, 1);
+		return BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {0});
 	}
 
 	public static void releaseCollected() {

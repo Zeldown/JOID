@@ -128,7 +128,7 @@ public class ResourceResolverTest {
 		}
 
 		@Override
-		public @NonNull ITexture upload(final @NonNull int[] pixels, final int width, final int height) {
+		public @NonNull ITexture upload(final @NonNull int[] pixels) {
 			return this;
 		}
 

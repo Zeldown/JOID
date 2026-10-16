@@ -38,7 +38,7 @@ public final class RenderState {
 	private IFrameBuffer  frameBuffer;
 	private TextureFilter textureFilter;
 
-	public RenderState() {
+	private RenderState() {
 		this.red   = 1F;
 		this.green = 1F;
 		this.blue  = 1F;
@@ -52,6 +52,10 @@ public final class RenderState {
 
 		this.textureFilter = TextureFilter.NEAREST;
 		this.textureWrap   = TextureWrap.REPEAT;
+	}
+
+	public static @NonNull RenderState create() {
+		return new RenderState();
 	}
 
 	public @NonNull RenderState color(final float red, final float green, final float blue, final float alpha) {
@@ -146,7 +150,7 @@ public final class RenderState {
 	}
 
 	public @NonNull RenderState copy() {
-		return new RenderState().load(this);
+		return RenderState.create().load(this);
 	}
 
 	public @NonNull RenderState load(final @NonNull RenderState state) {

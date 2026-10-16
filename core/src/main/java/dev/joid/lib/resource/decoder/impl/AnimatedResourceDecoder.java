@@ -67,7 +67,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		this.texture.allocate(this.animation.getWidth(), this.animation.getHeight()).upload(this.animation.getFrames().get(0).getPixels(), this.animation.getWidth(), this.animation.getHeight());
+		this.texture.allocate(this.animation.getWidth(), this.animation.getHeight()).upload(this.animation.getFrames().get(0).getPixels());
 		this.displayed = 0;
 		if (this.autoplay) {
 			this.play();
@@ -90,7 +90,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 		final int index = this.animation.indexAt(this.getTime() % duration);
 		if (index != this.displayed) {
-			this.texture.upload(this.animation.getFrames().get(index).getPixels(), this.animation.getWidth(), this.animation.getHeight());
+			this.texture.upload(this.animation.getFrames().get(index).getPixels());
 			this.displayed = index;
 		}
 	}

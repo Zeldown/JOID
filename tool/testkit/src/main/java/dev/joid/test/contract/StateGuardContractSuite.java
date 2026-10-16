@@ -193,7 +193,7 @@ public abstract class StateGuardContractSuite {
 		try {
 			render.getModelView().identity();
 			render.getProjection().ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
-			render.getState().load(new RenderState().viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
+			render.getState().load(RenderState.create().viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
 			render.clearColor(0F, 0F, 0F, 1F);
 			StateGuardContractSuite.drawTexture(render);
 			StateGuardContractSuite.drawTranslucent(render);
@@ -221,7 +221,7 @@ public abstract class StateGuardContractSuite {
 	}
 
 	private static void drawTexture(final IRenderBridge render) {
-		final ITexture texture = render.createTexture().allocate(2, 2).upload(new int[] {0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFFFFFFFF}, 2, 2);
+		final ITexture texture = render.createTexture().allocate(2, 2).upload(new int[] {0xFFFF0000, 0xFF00FF00, 0xFF0000FF, 0xFFFFFFFF});
 		render.getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(0F, 0F, 16F, 16F, -1F, true, 0));
 		render.getState().texture(null);
@@ -271,7 +271,7 @@ public abstract class StateGuardContractSuite {
 	}
 
 	private static void drawSampler(final IRenderBridge render) {
-		final ITexture texture = render.createTexture().allocate(1, 1).upload(new int[] {0xFF808000}, 1, 1);
+		final ITexture texture = render.createTexture().allocate(1, 1).upload(new int[] {0xFF808000});
 		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}");
 		final IShader shader = render.createShader(vertex, ShaderSource.parse(ShaderStage.FRAGMENT, "uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}"), BlendState.NORMAL);
 		shader.sampler("u_Mask", texture, TextureFilter.LINEAR, TextureWrap.REPEAT);
@@ -290,7 +290,7 @@ public abstract class StateGuardContractSuite {
 			pixels[i] = (i % 64 + i / 64 & 1) == 0 ? 0xFFFFFFFF : 0xFF000000;
 		}
 
-		final ITexture texture = render.createTexture().mipmap(true).allocate(64, 64).upload(pixels, 64, 64);
+		final ITexture texture = render.createTexture().mipmap(true).allocate(64, 64).upload(pixels);
 		render.getState().texture(texture).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(48F, 16F, 8F, 8F, -1F, true, 0));
 		render.getState().texture(null);

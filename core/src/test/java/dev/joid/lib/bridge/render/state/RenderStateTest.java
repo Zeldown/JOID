@@ -20,14 +20,14 @@ public class RenderStateTest {
 	@Test
 	public void loadsEveryPropertyIntoTheSameInstance() {
 		final RenderState source = RenderStateTest.create();
-		final RenderState target = new RenderState();
+		final RenderState target = RenderState.create();
 		Assert.assertSame(target, target.load(source));
 		RenderStateTest.assertSameProperties(source, target);
 	}
 
 	@Test
 	public void keepsItsCopyApart() {
-		final RenderState state = new RenderState();
+		final RenderState state = RenderState.create();
 		final RenderState copy = state.copy();
 		state.lineWidth(5F).blend(BlendState.NORMAL);
 		Assert.assertEquals(1F, copy.getLineWidth(), 0F);
@@ -36,11 +36,11 @@ public class RenderStateTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingStencilState() {
-		new RenderState().stencil(null);
+		RenderState.create().stencil(null);
 	}
 
 	private static RenderState create() {
-		return new RenderState()
+		return RenderState.create()
 		.color(0.1F, 0.2F, 0.3F, 0.4F)
 		.cull(true)
 		.lineWidth(3F)

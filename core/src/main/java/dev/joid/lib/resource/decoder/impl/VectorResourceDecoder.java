@@ -81,7 +81,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		this.texture.allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0), resource.getWidth(), resource.getHeight());
+		this.texture.allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
 		this.store(resource, this.texture);
 	}
 
@@ -116,7 +116,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		if (async) {
 			this.schedule(exactWidth, exactHeight);
 		} else {
-			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(exactWidth, exactHeight).upload(VectorResourceDecoder.render(this.document, exactWidth, exactHeight), exactWidth, exactHeight));
+			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(exactWidth, exactHeight).upload(VectorResourceDecoder.render(this.document, exactWidth, exactHeight)));
 		}
 	}
 
@@ -124,7 +124,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	public void update(final @NonNull ResourceData resource) {
 		final Raster raster = this.pending.getAndSet(null);
 		if (raster != null && raster.document == this.document) {
-			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(raster.width, raster.height).upload(raster.pixels, raster.width, raster.height));
+			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(raster.width, raster.height).upload(raster.pixels));
 		}
 	}
 

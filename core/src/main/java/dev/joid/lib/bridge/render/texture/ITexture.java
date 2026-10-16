@@ -8,7 +8,7 @@ public interface ITexture {
 
 	public @NonNull ITexture allocate(final int width, final int height);
 
-	public @NonNull ITexture upload(final @NonNull int[] pixels, final int width, final int height);
+	public @NonNull ITexture upload(final @NonNull int[] pixels);
 
 	public int getWidth();
 	public int getHeight();

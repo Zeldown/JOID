@@ -9,12 +9,12 @@ public class MatrixStackTest {
 
 	@Test
 	public void startsFromTheIdentity() {
-		Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F}, new MatrixStack().getMatrix(), 0F);
+		Assert.assertArrayEquals(new float[] {1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F, 0F, 0F, 0F, 0F, 1F}, MatrixStack.create().getMatrix(), 0F);
 	}
 
 	@Test
 	public void restoresThePushedMatrixOnPop() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.translate(1D, 2D, 3D);
 		stack.push();
 		stack.scale(2D, 2D, 2D);
@@ -25,7 +25,7 @@ public class MatrixStackTest {
 
 	@Test
 	public void restoresItsMatrixAfterABodyThatFails() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		try {
 			stack.with(matrix -> {
 				matrix.translate(5D, 0D, 0D);
@@ -41,7 +41,7 @@ public class MatrixStackTest {
 
 	@Test
 	public void popsBackToADepth() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.translate(1D, 0D, 0D);
 		stack.push();
 		stack.translate(2D, 0D, 0D);
@@ -60,22 +60,22 @@ public class MatrixStackTest {
 
 	@Test(expected = NoSuchElementException.class)
 	public void refusesToPopAnEmptyStack() {
-		new MatrixStack().pop();
+		MatrixStack.create().pop();
 	}
 
 	@Test
 	public void goesBackToTheIdentity() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.translate(1D, 2D, 3D);
 		stack.rotate(30D, 0D, 0D, 1D);
 		stack.identity();
-		Assert.assertArrayEquals(new MatrixStack().getMatrix(), stack.getMatrix(), 0F);
+		Assert.assertArrayEquals(MatrixStack.create().getMatrix(), stack.getMatrix(), 0F);
 	}
 
 	@Test
 	public void loadsACopyOfTheGivenMatrix() {
 		final float[] matrix = {2F, 0F, 0F, 0F, 0F, 3F, 0F, 0F, 0F, 0F, 1F, 0F, 4F, 5F, 0F, 1F};
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.load(matrix);
 		matrix[12] = 9F;
 		stack.translate(1D, 1D, 0D);
@@ -84,14 +84,14 @@ public class MatrixStackTest {
 
 	@Test
 	public void scalesEveryAxis() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.scale(2D, 3D, 4D);
 		Assert.assertArrayEquals(new float[] {2F, 0F, 0F, 0F, 0F, 3F, 0F, 0F, 0F, 0F, 4F, 0F, 0F, 0F, 0F, 1F}, stack.getMatrix(), 0F);
 	}
 
 	@Test
 	public void translatesInItsOwnSpace() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.scale(2D, 3D, 4D);
 		stack.translate(1D, 1D, 1D);
 		Assert.assertEquals(2F, stack.getMatrix()[12], 0F);
@@ -102,7 +102,7 @@ public class MatrixStackTest {
 
 	@Test
 	public void turnsTheXAxisOntoTheYAxisAQuarterTurnAroundZ() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.rotate(90D, 0D, 0D, 5D);
 		final float[] matrix = stack.getMatrix();
 		Assert.assertEquals(0F, matrix[0], 1E-6F);
@@ -114,7 +114,7 @@ public class MatrixStackTest {
 
 	@Test
 	public void rotatesAfterItsTranslation() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.translate(10D, 0D, 0D);
 		stack.rotate(90D, 0D, 0D, 1D);
 		stack.translate(5D, 0D, 0D);
@@ -124,14 +124,14 @@ public class MatrixStackTest {
 
 	@Test
 	public void ignoresARotationWithoutAxis() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.rotate(45D, 0D, 0D, 0D);
-		Assert.assertArrayEquals(new MatrixStack().getMatrix(), stack.getMatrix(), 0F);
+		Assert.assertArrayEquals(MatrixStack.create().getMatrix(), stack.getMatrix(), 0F);
 	}
 
 	@Test
 	public void mapsTheCanvasOntoTheClipSpace() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final float[] matrix = stack.getMatrix();
 		Assert.assertEquals(-1F, matrix[12], 1E-6F);
@@ -144,7 +144,7 @@ public class MatrixStackTest {
 
 	@Test
 	public void multipliesOnTheRight() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.translate(10D, 0D, 0D);
 		stack.multiply(new float[] {2F, 0F, 0F, 0F, 0F, 2F, 0F, 0F, 0F, 0F, 2F, 0F, 1F, 0F, 0F, 1F});
 		Assert.assertArrayEquals(new float[] {2F, 0F, 0F, 0F, 0F, 2F, 0F, 0F, 0F, 0F, 2F, 0F, 11F, 0F, 0F, 1F}, stack.getMatrix(), 0F);
@@ -152,7 +152,7 @@ public class MatrixStackTest {
 
 	@Test
 	public void invertsAndTransposesItsScaleForTheNormals() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.translate(40D, 50D, 60D);
 		stack.scale(2D, 4D, 1D);
 		Assert.assertArrayEquals(new float[] {0.5F, 0F, 0F, 0F, 0.25F, 0F, 0F, 0F, 1F}, stack.getNormalMatrix(), 1E-6F);
@@ -160,7 +160,7 @@ public class MatrixStackTest {
 
 	@Test
 	public void keepsItsRotationForTheNormals() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.rotate(90D, 0D, 0D, 1D);
 		final float[] matrix = stack.getMatrix();
 		Assert.assertArrayEquals(new float[] {matrix[0], matrix[1], matrix[2], matrix[4], matrix[5], matrix[6], matrix[8], matrix[9], matrix[10]}, stack.getNormalMatrix(), 1E-6F);
@@ -168,7 +168,7 @@ public class MatrixStackTest {
 
 	@Test
 	public void flattensTheNormalsOfASingularMatrix() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.scale(0D, 1D, 1D);
 		Assert.assertArrayEquals(new float[9], stack.getNormalMatrix(), 0F);
 	}

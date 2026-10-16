@@ -1027,11 +1027,11 @@ public abstract class UI implements IUI, IndexedElement {
 
 		final Transition transition = PopTransition.create();
 		if (!popupTransition.isIn()) {
-			transition.getIn().disable();
+			transition.getIn().enabled(false);
 		}
 
 		if (!popupTransition.isOut()) {
-			transition.getOut().disable();
+			transition.getOut().enabled(false);
 		}
 		return transition;
 	}

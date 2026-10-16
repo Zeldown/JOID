@@ -7,7 +7,7 @@ public class DepthRangeTest {
 
 	@Test
 	public void mapsTheNearPlaneToZeroAndTheFarPlaneToOne() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final float[] matrix = DepthRange.toZeroToOne(stack.getMatrix());
 		Assert.assertEquals(0F, DepthRangeTest.depth(matrix, 0F), 1E-6F);
@@ -17,7 +17,7 @@ public class DepthRangeTest {
 
 	@Test
 	public void keepsTheOtherRows() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final float[] matrix = DepthRange.toZeroToOne(stack.getMatrix());
 		for (int column = 0; column < 4; column++) {
@@ -29,7 +29,7 @@ public class DepthRangeTest {
 
 	@Test
 	public void leavesTheProjectionUntouched() {
-		final MatrixStack stack = new MatrixStack();
+		final MatrixStack stack = MatrixStack.create();
 		stack.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final float[] projection = stack.getMatrix().clone();
 		DepthRange.toZeroToOne(stack.getMatrix());

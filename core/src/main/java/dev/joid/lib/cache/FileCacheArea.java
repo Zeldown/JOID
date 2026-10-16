@@ -38,10 +38,14 @@ public final class FileCacheArea {
 	private boolean          declared;
 	@Getter private Duration retention;
 
-	public FileCacheArea(final String name) {
+	private FileCacheArea(final String name) {
 		this.name = name;
 		this.lockMap = new ConcurrentHashMap<>();
 		this.retention = Duration.ofDays(30L);
+	}
+
+	public static @NonNull FileCacheArea create(final @NonNull String name) {
+		return new FileCacheArea(name);
 	}
 
 	public final synchronized @NonNull FileCacheArea retention(final @NonNull Duration retention) {

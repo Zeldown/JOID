@@ -25,7 +25,7 @@ public abstract class BorrowedTexture<H> implements ITexture {
 	}
 
 	@Override
-	public final @NonNull BorrowedTexture<H> upload(final @NonNull int[] pixels, final int width, final int height) {
+	public final @NonNull BorrowedTexture<H> upload(final @NonNull int[] pixels) {
 		throw new UnsupportedOperationException("A borrowed texture belongs to its host: JOID reads it but never writes it, create a texture with IRenderBridge.createTexture() to draw your own pixels");
 	}
 

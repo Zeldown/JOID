@@ -49,7 +49,7 @@ public abstract class BitmapFontContractSuite {
 		render.pushState();
 		render.getModelView().identity();
 		render.getProjection().ortho(0D, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, 0D, 0D, 10000D);
-		render.getState().load(new RenderState().viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT).blend(BlendState.NORMAL).depthWrite(false));
+		render.getState().load(RenderState.create().viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT).blend(BlendState.NORMAL).depthWrite(false));
 	}
 
 	@After
@@ -124,7 +124,7 @@ public abstract class BitmapFontContractSuite {
 
 	private static SnapshotImage render(final Atlas atlas, final double scale) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final ITexture texture = render.createTexture().allocate(2 * atlas.texels, atlas.texels).upload(atlas.pixels(), 2 * atlas.texels, atlas.texels);
+		final ITexture texture = render.createTexture().allocate(2 * atlas.texels, atlas.texels).upload(atlas.pixels());
 		final Font font = new Font(new Renderer(atlas, texture));
 		try {
 			return ContractDraw.frame(BitmapFontContractSuite.backend, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, bridge -> bridge.getModelView().with(matrix -> {

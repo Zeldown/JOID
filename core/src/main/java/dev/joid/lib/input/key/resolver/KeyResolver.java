@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class KeyResolver {
+public final class KeyResolver {
 
 	private static final Registry<IKeyResolver> RESOLVERS = Registry.create();
 

@@ -42,8 +42,8 @@ public abstract class Texture implements ITexture {
 	}
 
 	@Override
-	public final @NonNull Texture upload(final @NonNull int[] pixels, final int width, final int height) {
-		this.uploadPixels(pixels, MipmapChain.of(width, height, this.mipmapped).limit(this.getMaxLevels(width, height)));
+	public final @NonNull Texture upload(final @NonNull int[] pixels) {
+		this.uploadPixels(pixels, MipmapChain.of(this.width, this.height, this.mipmapped).limit(this.getMaxLevels(this.width, this.height)));
 		return this;
 	}
 

@@ -48,7 +48,7 @@ public class BorrowedTextureTest {
 		}
 
 		try {
-			texture.upload(new int[16], 4, 4);
+			texture.upload(new int[16]);
 			Assert.fail();
 		} catch (final UnsupportedOperationException expected) {
 			Assert.assertEquals("A borrowed texture belongs to its host: JOID reads it but never writes it, create a texture with IRenderBridge.createTexture() to draw your own pixels", expected.getMessage());

@@ -97,7 +97,7 @@ public class TransitionTest {
 	@Test
 	public void ignoresItsStartOnceDisabled() {
 		final TransitionStep step = TransitionTest.step();
-		step.disable();
+		step.enabled(false);
 		step.start();
 		this.bridges.getClock().advance(50L);
 		this.frame(step);
@@ -109,8 +109,8 @@ public class TransitionTest {
 	@Test
 	public void startsAgainOnceEnabled() {
 		final TransitionStep step = TransitionTest.step();
-		step.disable();
-		step.enable();
+		step.enabled(false);
+		step.enabled(true);
 		step.start();
 		this.frame(step);
 		this.bridges.getClock().advance(100L);
