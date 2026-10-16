@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MsdfAtlas {
+public final class MsdfAtlas {
 
 	private final int   width;
 	private final int   height;

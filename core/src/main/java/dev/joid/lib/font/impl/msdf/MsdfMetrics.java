@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MsdfMetrics {
+public final class MsdfMetrics {
 
 	private final float lineHeight;
 	private final float ascender;

@@ -12,7 +12,6 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
-import dev.joid.lib.ui.node.Node;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -21,10 +20,6 @@ import lombok.NonNull;
 public final class ShaderPipeline {
 
 	private static int pipelineDepth = 0;
-
-	public static void render(final @NonNull Node node, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
-		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), passes, baseDraw);
-	}
 
 	public static void render(final double x, final double y, final double width, final double height, final @NonNull Runnable baseDraw, final @NonNull IShaderPass... passes) {
 		ShaderPipeline.render(x, y, width, height, Arrays.asList(passes), baseDraw);

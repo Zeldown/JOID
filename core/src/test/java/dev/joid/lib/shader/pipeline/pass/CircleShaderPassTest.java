@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.CircleShader;
-import dev.joid.lib.shader.impl.RoundedShaderType;
+import dev.joid.lib.shader.impl.ShaderFillType;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -45,7 +45,7 @@ public class CircleShaderPassTest {
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(15F, (Float) values.get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {40F, 50F}, (float[]) values.get("center"), 0F);
-		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), values.get("type"));
+		Assert.assertEquals(ShaderFillType.TEXTURE.ordinal(), values.get("type"));
 	}
 
 	@Test

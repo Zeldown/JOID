@@ -1,6 +1,5 @@
 package dev.joid.lib.draw.text;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,8 +9,6 @@ import dev.joid.lib.draw.text.builder.TextElement;
 import dev.joid.lib.draw.text.builder.TextOverflow;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.font.TextStyle;
-import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.utils.align.Align;
 import lombok.AccessLevel;
@@ -235,26 +232,7 @@ public final class DrawText {
 	}
 
 	private static @NonNull int[] tags(final @NonNull TextElement element, final @NonNull String text) {
-		final int[] tags = new int[text.length()];
-		Arrays.fill(tags, -1);
-
-		final List<ITextMarkup> markups = element.getInfo().getMarkups();
-		if (markups.isEmpty()) {
-			return tags;
-		}
-
-		final TextStyle style = element.getInfo().getStyle().derive();
-		for (int index = 0; index < text.length();) {
-			final int consumed = TextMarkup.parse(markups, text, index, style);
-			if (consumed > 0) {
-				Arrays.fill(tags, index, index + consumed, index);
-				index += consumed;
-				continue;
-			}
-
-			index += Character.charCount(text.codePointAt(index));
-		}
-		return tags;
+		return TextMarkup.tags(element.getInfo().getMarkups(), text, element.getInfo().getStyle().derive());
 	}
 
 	private static @NonNull String opened(final @NonNull String text, final @NonNull int[] tags, final int end) {

@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class MsdfGlyph {
+public final class MsdfGlyph {
 
 	private final int codepoint;
 	private final float advance;

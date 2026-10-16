@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.RoundedShader;
-import dev.joid.lib.shader.impl.RoundedShaderType;
+import dev.joid.lib.shader.impl.ShaderFillType;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
@@ -122,7 +122,7 @@ public class RoundedNodeEffectTest {
 		Assert.assertEquals(100D, quad.getLeft(), 1E-3D);
 		Assert.assertEquals(300D, quad.getRight(), 1E-3D);
 		Assert.assertEquals(150D, quad.getBottom(), 1E-3D);
-		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), this.shader.getValues().get("u_Type"));
+		Assert.assertEquals(ShaderFillType.TEXTURE.ordinal(), this.shader.getValues().get("u_Type"));
 		Assert.assertArrayEquals(new float[] {110F, 110F, 290F, 140F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);
 		Assert.assertFalse(this.shader.isBound());
 	}

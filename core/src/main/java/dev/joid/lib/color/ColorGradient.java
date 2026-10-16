@@ -11,7 +11,7 @@ import lombok.NonNull;
 @Getter
 @EqualsAndHashCode
 @AllArgsConstructor
-public class ColorGradient {
+public final class ColorGradient {
 
 	private final Color startColor;
 	private final Color endColor;

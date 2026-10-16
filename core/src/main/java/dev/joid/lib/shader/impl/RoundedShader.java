@@ -23,10 +23,10 @@ public final class RoundedShader extends ShaderProgram {
 	}
 
 	public void bind(final float radius, final float x1, final float y1, final float x2, final float y2) {
-		this.bind(radius, x1, y1, x2, y2, RoundedShaderType.AUTO);
+		this.bind(radius, x1, y1, x2, y2, ShaderFillType.AUTO);
 	}
 
-	public void bind(final float radius, final float x1, final float y1, final float x2, final float y2, final @NonNull RoundedShaderType type) {
+	public void bind(final float radius, final float x1, final float y1, final float x2, final float y2, final @NonNull ShaderFillType type) {
 		this.bind();
 		this.getShader()
 		.uniform("u_Radius", radius)

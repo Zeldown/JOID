@@ -3,7 +3,6 @@ package dev.joid.lib.draw.text.builder.modifier;
 import java.util.List;
 
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import lombok.NonNull;
@@ -19,19 +18,14 @@ public interface ITextModifier {
 			return this.modify(text);
 		}
 
-		final TextStyle style = info.getStyle().derive();
+		final int[] tags = TextMarkup.tags(markups, text, info.getStyle().derive());
 		final StringBuilder builder = new StringBuilder();
 		int start = 0;
-		for (int index = 0; index < text.length();) {
-			final int consumed = TextMarkup.parse(markups, text, index, style);
-			if (consumed > 0) {
-				builder.append(start < index ? this.modify(text.substring(start, index)) : "").append(text, index, index + consumed);
-				index += consumed;
-				start = index;
-				continue;
+		for (int index = 0; index < text.length(); index++) {
+			if (tags[index] != -1) {
+				builder.append(start < index ? this.modify(text.substring(start, index)) : "").append(text.charAt(index));
+				start = index + 1;
 			}
-
-			index += Character.charCount(text.codePointAt(index));
 		}
 
 		return builder.append(start < text.length() ? this.modify(text.substring(start)) : "").toString();

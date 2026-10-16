@@ -1,6 +1,6 @@
 package dev.joid.lib.shader.impl;
 
-public enum RoundedShaderType {
+public enum ShaderFillType {
 
 	AUTO,
 	TEXTURE,

@@ -10,17 +10,17 @@ public class ScaleTest {
 	@Test
 	public void keepsTheSizeByDefault() {
 		final Scale scale = Scale.create();
-		Assert.assertEquals(1D, scale.getX(), 0D);
-		Assert.assertEquals(1D, scale.getY(), 0D);
-		Assert.assertEquals(1D, scale.getZ(), 0D);
+		Assert.assertEquals(1D, scale.getWidth(), 0D);
+		Assert.assertEquals(1D, scale.getHeight(), 0D);
+		Assert.assertEquals(1D, scale.getDepth(), 0D);
 	}
 
 	@Test
 	public void scalesEachAxis() {
 		final Scale scale = Scale.create(2D, 0.5D, 3D);
-		Assert.assertEquals(2D, scale.getX(), 0D);
-		Assert.assertEquals(0.5D, scale.getY(), 0D);
-		Assert.assertEquals(3D, scale.getZ(), 0D);
+		Assert.assertEquals(2D, scale.getWidth(), 0D);
+		Assert.assertEquals(0.5D, scale.getHeight(), 0D);
+		Assert.assertEquals(3D, scale.getDepth(), 0D);
 	}
 
 	@Test
@@ -29,10 +29,10 @@ public class ScaleTest {
 		final Supplier<Double> width = () -> factor[0];
 		final Scale scale = Scale.create(width, () -> factor[0] * 2D, () -> factor[0] * 3D);
 		factor[0] = 2D;
-		Assert.assertSame(width, scale.getXSupplier());
-		Assert.assertEquals(2D, scale.getX(), 0D);
-		Assert.assertEquals(4D, scale.getY(), 0D);
-		Assert.assertEquals(6D, scale.getZ(), 0D);
+		Assert.assertSame(width, scale.getWidthSupplier());
+		Assert.assertEquals(2D, scale.getWidth(), 0D);
+		Assert.assertEquals(4D, scale.getHeight(), 0D);
+		Assert.assertEquals(6D, scale.getDepth(), 0D);
 	}
 
 	@Test
@@ -40,12 +40,12 @@ public class ScaleTest {
 		final Scale width = Scale.WIDTH(2D);
 		final Scale height = Scale.HEIGHT(3D);
 		final Scale depth = Scale.DEPTH(4D);
-		Assert.assertEquals(2D, width.getX(), 0D);
-		Assert.assertEquals(2D, width.getY() + width.getZ(), 0D);
-		Assert.assertEquals(3D, height.getY(), 0D);
-		Assert.assertEquals(2D, height.getX() + height.getZ(), 0D);
-		Assert.assertEquals(4D, depth.getZ(), 0D);
-		Assert.assertEquals(2D, depth.getX() + depth.getY(), 0D);
+		Assert.assertEquals(2D, width.getWidth(), 0D);
+		Assert.assertEquals(2D, width.getHeight() + width.getDepth(), 0D);
+		Assert.assertEquals(3D, height.getHeight(), 0D);
+		Assert.assertEquals(2D, height.getWidth() + height.getDepth(), 0D);
+		Assert.assertEquals(4D, depth.getDepth(), 0D);
+		Assert.assertEquals(2D, depth.getWidth() + depth.getHeight(), 0D);
 	}
 
 	@Test
@@ -55,21 +55,21 @@ public class ScaleTest {
 		final Scale height = Scale.HEIGHT(() -> factor[0]);
 		final Scale depth = Scale.DEPTH(() -> factor[0]);
 		factor[0] = 5D;
-		Assert.assertEquals(5D, width.getX(), 0D);
-		Assert.assertEquals(2D, width.getY() + width.getZ(), 0D);
-		Assert.assertEquals(5D, height.getY(), 0D);
-		Assert.assertEquals(2D, height.getX() + height.getZ(), 0D);
-		Assert.assertEquals(5D, depth.getZ(), 0D);
-		Assert.assertEquals(2D, depth.getX() + depth.getY(), 0D);
+		Assert.assertEquals(5D, width.getWidth(), 0D);
+		Assert.assertEquals(2D, width.getHeight() + width.getDepth(), 0D);
+		Assert.assertEquals(5D, height.getHeight(), 0D);
+		Assert.assertEquals(2D, height.getWidth() + height.getDepth(), 0D);
+		Assert.assertEquals(5D, depth.getDepth(), 0D);
+		Assert.assertEquals(2D, depth.getWidth() + depth.getHeight(), 0D);
 	}
 
 	@Test
 	public void replacesEachAxis() {
 		final Scale scale = Scale.create();
 		Assert.assertSame(scale, scale.width(2D).height(3D).depth(4D));
-		Assert.assertEquals(2D, scale.getX(), 0D);
-		Assert.assertEquals(3D, scale.getY(), 0D);
-		Assert.assertEquals(4D, scale.getZ(), 0D);
+		Assert.assertEquals(2D, scale.getWidth(), 0D);
+		Assert.assertEquals(3D, scale.getHeight(), 0D);
+		Assert.assertEquals(4D, scale.getDepth(), 0D);
 	}
 
 	@Test
@@ -78,9 +78,9 @@ public class ScaleTest {
 		final Scale scale = Scale.create();
 		Assert.assertSame(scale, scale.width(() -> factor[0]).height(() -> factor[0] + 1D).depth(() -> factor[0] + 2D));
 		factor[0] = 3D;
-		Assert.assertEquals(3D, scale.getX(), 0D);
-		Assert.assertEquals(4D, scale.getY(), 0D);
-		Assert.assertEquals(5D, scale.getZ(), 0D);
+		Assert.assertEquals(3D, scale.getWidth(), 0D);
+		Assert.assertEquals(4D, scale.getHeight(), 0D);
+		Assert.assertEquals(5D, scale.getDepth(), 0D);
 	}
 
 }

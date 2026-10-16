@@ -89,9 +89,7 @@ public class ObjGroupTest {
 	}
 
 	private static ObjFace face(final ObjVertex... vertices) {
-		final ObjFace face = new ObjFace();
-		face.setVertices(vertices);
-		return face;
+		return ObjFace.create(vertices, null, null);
 	}
 
 }

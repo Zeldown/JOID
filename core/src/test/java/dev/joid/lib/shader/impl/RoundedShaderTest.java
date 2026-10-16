@@ -37,7 +37,7 @@ public class RoundedShaderTest {
 		Assert.assertSame(this.shader, this.bridges.getRender().getState().getShader());
 		Assert.assertEquals(6F, (Float) values.get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {1F, 2F, 3F, 4F}, (float[]) values.get("u_InnerRect"), 0F);
-		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), values.get("u_Type"));
+		Assert.assertEquals(ShaderFillType.AUTO.ordinal(), values.get("u_Type"));
 	}
 
 	@Test
@@ -50,10 +50,10 @@ public class RoundedShaderTest {
 
 	@Test
 	public void bindsTheRequestedType() {
-		RoundedShader.inst().bind(6F, 1F, 2F, 3F, 4F, RoundedShaderType.TEXTURE);
-		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), this.shader.getValues().get("u_Type"));
-		RoundedShader.inst().bind(6F, 1F, 2F, 3F, 4F, RoundedShaderType.COLOR);
-		Assert.assertEquals(RoundedShaderType.COLOR.ordinal(), this.shader.getValues().get("u_Type"));
+		RoundedShader.inst().bind(6F, 1F, 2F, 3F, 4F, ShaderFillType.TEXTURE);
+		Assert.assertEquals(ShaderFillType.TEXTURE.ordinal(), this.shader.getValues().get("u_Type"));
+		RoundedShader.inst().bind(6F, 1F, 2F, 3F, 4F, ShaderFillType.COLOR);
+		Assert.assertEquals(ShaderFillType.COLOR.ordinal(), this.shader.getValues().get("u_Type"));
 	}
 
 	@Test

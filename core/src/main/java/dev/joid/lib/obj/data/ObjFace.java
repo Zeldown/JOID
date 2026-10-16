@@ -3,23 +3,28 @@ package dev.joid.lib.obj.data;
 import dev.joid.lib.render.tessellator.Tessellator;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 @Getter
-@Setter
 public final class ObjFace {
 
-	private ObjVertex[]            vertices;
-	private ObjVertex              faceNormal;
-	private ObjVertex[]            vertexNormals;
-	private ObjTextureCoordinate[] textureCoordinates;
+	private final ObjVertex[]            vertices;
+	private final ObjVertex              faceNormal;
+	private final ObjVertex[]            vertexNormals;
+	private final ObjTextureCoordinate[] textureCoordinates;
+
+	private ObjFace(final ObjVertex[] vertices, final ObjTextureCoordinate[] textureCoordinates, final ObjVertex[] vertexNormals) {
+		this.vertices           = vertices;
+		this.vertexNormals      = vertexNormals;
+		this.textureCoordinates = textureCoordinates;
+		this.faceNormal         = this.normal();
+	}
+
+	public static @NonNull ObjFace create(final @NonNull ObjVertex @NonNull [] vertices, final ObjTextureCoordinate[] textureCoordinates, final ObjVertex[] vertexNormals) {
+		return new ObjFace(vertices, textureCoordinates, vertexNormals);
+	}
 
 	public void render(final @NonNull Tessellator tessellator) {
 		final float textureOffset = 0.0005F;
-		if (this.faceNormal == null) {
-			this.faceNormal = this.normal();
-		}
-
 		final boolean smooth = this.vertexNormals != null && this.vertexNormals.length == this.vertices.length;
 		if (!smooth) {
 			tessellator.setNormal(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
@@ -69,7 +74,7 @@ public final class ObjFace {
 		}
 	}
 
-	public @NonNull ObjVertex normal() {
+	private @NonNull ObjVertex normal() {
 		final double x1 = this.vertices[1].getX() - this.vertices[0].getX();
 		final double y1 = this.vertices[1].getY() - this.vertices[0].getY();
 		final double z1 = this.vertices[1].getZ() - this.vertices[0].getZ();

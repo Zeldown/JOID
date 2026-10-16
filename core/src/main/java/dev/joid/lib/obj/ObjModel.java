@@ -246,12 +246,7 @@ public final class ObjModel implements IDrawableModel {
 			}
 		}
 
-		final ObjFace face = new ObjFace();
-		face.setVertices(faceVertices);
-		face.setVertexNormals(faceNormals);
-		face.setTextureCoordinates(faceCoordinates);
-		face.setFaceNormal(face.normal());
-		return face;
+		return ObjFace.create(faceVertices, faceCoordinates, faceNormals);
 	}
 
 }

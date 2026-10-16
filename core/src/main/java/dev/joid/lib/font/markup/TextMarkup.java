@@ -1,5 +1,6 @@
 package dev.joid.lib.font.markup;
 
+import java.util.Arrays;
 import java.util.List;
 
 import dev.joid.lib.font.TextStyle;
@@ -34,6 +35,26 @@ public final class TextMarkup {
 		}
 
 		return 0;
+	}
+
+	public static @NonNull int[] tags(final @NonNull List<ITextMarkup> markups, final @NonNull String text, final @NonNull TextStyle style) {
+		final int[] tags = new int[text.length()];
+		Arrays.fill(tags, -1);
+		if (markups.isEmpty()) {
+			return tags;
+		}
+
+		for (int index = 0; index < text.length();) {
+			final int consumed = TextMarkup.parse(markups, text, index, style);
+			if (consumed > 0) {
+				Arrays.fill(tags, index, index + consumed, index);
+				index += consumed;
+				continue;
+			}
+
+			index += Character.charCount(text.codePointAt(index));
+		}
+		return tags;
 	}
 
 }

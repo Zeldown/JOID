@@ -34,15 +34,15 @@ public class CircleShaderTest {
 		Assert.assertSame(this.shader, this.bridges.getRender().getState().getShader());
 		Assert.assertEquals(12F, (Float) this.shader.getValues().get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {30F, 40F}, (float[]) this.shader.getValues().get("center"), 0F);
-		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), this.shader.getValues().get("type"));
+		Assert.assertEquals(ShaderFillType.AUTO.ordinal(), this.shader.getValues().get("type"));
 	}
 
 	@Test
 	public void bindsTheRequestedType() {
-		CircleShader.inst().bind(12F, 30F, 40F, RoundedShaderType.TEXTURE);
-		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), this.shader.getValues().get("type"));
-		CircleShader.inst().bind(12F, 30F, 40F, RoundedShaderType.COLOR);
-		Assert.assertEquals(RoundedShaderType.COLOR.ordinal(), this.shader.getValues().get("type"));
+		CircleShader.inst().bind(12F, 30F, 40F, ShaderFillType.TEXTURE);
+		Assert.assertEquals(ShaderFillType.TEXTURE.ordinal(), this.shader.getValues().get("type"));
+		CircleShader.inst().bind(12F, 30F, 40F, ShaderFillType.COLOR);
+		Assert.assertEquals(ShaderFillType.COLOR.ordinal(), this.shader.getValues().get("type"));
 	}
 
 	@Test

@@ -24,7 +24,7 @@ import dev.joid.lib.render.tessellator.TessellatorAccess;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.shader.impl.RoundedShader;
-import dev.joid.lib.shader.impl.RoundedShaderType;
+import dev.joid.lib.shader.impl.ShaderFillType;
 import dev.joid.lib.shader.impl.ShadowShader;
 import dev.joid.lib.utils.geom.Point;
 
@@ -208,7 +208,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(draw.getTop() * 1080D / 768D + 8D, inner[1], 1E-3D);
 		Assert.assertEquals(draw.getRight() * 1920D / 1366D - 8D, inner[2], 1E-3D);
 		Assert.assertEquals(draw.getBottom() * 1080D / 768D - 8D, inner[3], 1E-3D);
-		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), shader.getValues().get("u_Type"));
+		Assert.assertEquals(ShaderFillType.AUTO.ordinal(), shader.getValues().get("u_Type"));
 		Assert.assertEquals(1, shader.getValues().get("u_Aligned"));
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
@@ -310,7 +310,7 @@ public class DrawShapeTest {
 		Assert.assertEquals(70.6D * 768D / 1080D, draw.getBottom(), 1E-4D);
 		Assert.assertEquals(10F, (Float) shader.getValues().get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {50.3F, 60.6F}, (float[]) shader.getValues().get("center"), 0F);
-		Assert.assertEquals(RoundedShaderType.AUTO.ordinal(), shader.getValues().get("type"));
+		Assert.assertEquals(ShaderFillType.AUTO.ordinal(), shader.getValues().get("type"));
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 

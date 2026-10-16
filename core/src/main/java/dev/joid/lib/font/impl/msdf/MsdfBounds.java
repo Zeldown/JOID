@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @AllArgsConstructor
-public class MsdfBounds {
+public final class MsdfBounds {
 
 	private final float left;
 	private final float bottom;

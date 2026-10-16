@@ -8,20 +8,20 @@ import lombok.NonNull;
 @Getter
 public final class Scale {
 
-	private Supplier<Double> xSupplier;
-	private Supplier<Double> ySupplier;
-	private Supplier<Double> zSupplier;
+	private Supplier<Double> widthSupplier;
+	private Supplier<Double> heightSupplier;
+	private Supplier<Double> depthSupplier;
 
 	private Scale(final double width, final double height, final double depth) {
-		this.xSupplier = () -> width;
-		this.ySupplier = () -> height;
-		this.zSupplier = () -> depth;
+		this.widthSupplier  = () -> width;
+		this.heightSupplier = () -> height;
+		this.depthSupplier  = () -> depth;
 	}
 
 	private Scale(final Supplier<Double> widthSupplier, final Supplier<Double> heightSupplier, final Supplier<Double> depthSupplier) {
-		this.xSupplier = widthSupplier;
-		this.ySupplier = heightSupplier;
-		this.zSupplier = depthSupplier;
+		this.widthSupplier  = widthSupplier;
+		this.heightSupplier = heightSupplier;
+		this.depthSupplier  = depthSupplier;
 	}
 
 	public static @NonNull Scale create() {
@@ -60,45 +60,45 @@ public final class Scale {
 		return new Scale(() -> 1D, () -> 1D, depthSupplier);
 	}
 
-	public double getX() {
-		return this.xSupplier.get();
+	public double getWidth() {
+		return this.widthSupplier.get();
 	}
 
-	public double getY() {
-		return this.ySupplier.get();
+	public double getHeight() {
+		return this.heightSupplier.get();
 	}
 
-	public double getZ() {
-		return this.zSupplier.get();
+	public double getDepth() {
+		return this.depthSupplier.get();
 	}
 
 	public @NonNull Scale width(final double width) {
-		this.xSupplier = () -> width;
+		this.widthSupplier = () -> width;
 		return this;
 	}
 
 	public @NonNull Scale width(final @NonNull Supplier<Double> widthSupplier) {
-		this.xSupplier = widthSupplier;
+		this.widthSupplier = widthSupplier;
 		return this;
 	}
 
 	public @NonNull Scale height(final double height) {
-		this.ySupplier = () -> height;
+		this.heightSupplier = () -> height;
 		return this;
 	}
 
 	public @NonNull Scale height(final @NonNull Supplier<Double> heightSupplier) {
-		this.ySupplier = heightSupplier;
+		this.heightSupplier = heightSupplier;
 		return this;
 	}
 
 	public @NonNull Scale depth(final double depth) {
-		this.zSupplier = () -> depth;
+		this.depthSupplier = () -> depth;
 		return this;
 	}
 
 	public @NonNull Scale depth(final @NonNull Supplier<Double> depthSupplier) {
-		this.zSupplier = depthSupplier;
+		this.depthSupplier = depthSupplier;
 		return this;
 	}
 

@@ -1,7 +1,7 @@
 package dev.joid.lib.shader.pipeline.pass;
 
 import dev.joid.lib.shader.impl.CircleShader;
-import dev.joid.lib.shader.impl.RoundedShaderType;
+import dev.joid.lib.shader.impl.ShaderFillType;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import lombok.AccessLevel;
@@ -30,7 +30,7 @@ public class CircleShaderPass implements IShaderPass {
 			return;
 		}
 
-		CircleShader.inst().bind(this.radius, this.centerX, this.centerY, RoundedShaderType.TEXTURE);
+		CircleShader.inst().bind(this.radius, this.centerX, this.centerY, ShaderFillType.TEXTURE);
 	}
 
 }

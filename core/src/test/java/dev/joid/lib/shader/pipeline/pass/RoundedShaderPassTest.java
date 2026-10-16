@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.RoundedShader;
-import dev.joid.lib.shader.impl.RoundedShaderType;
+import dev.joid.lib.shader.impl.ShaderFillType;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -37,7 +37,7 @@ public class RoundedShaderPassTest {
 		Assert.assertTrue(this.shader.isBound());
 		Assert.assertEquals(6F, (Float) values.get("u_Radius"), 0F);
 		Assert.assertArrayEquals(new float[] {1F, 2F, 3F, 4F}, (float[]) values.get("u_InnerRect"), 0F);
-		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), values.get("u_Type"));
+		Assert.assertEquals(ShaderFillType.TEXTURE.ordinal(), values.get("u_Type"));
 	}
 
 	@Test

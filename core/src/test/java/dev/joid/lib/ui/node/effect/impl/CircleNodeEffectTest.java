@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.CircleShader;
-import dev.joid.lib.shader.impl.RoundedShaderType;
+import dev.joid.lib.shader.impl.ShaderFillType;
 import dev.joid.lib.shader.pipeline.pass.CircleShaderPass;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -56,7 +56,7 @@ public class CircleNodeEffectTest {
 		Assert.assertEquals(180D, quad.getRight(), 1E-3D);
 		Assert.assertEquals(20F, (Float) this.shader.getValues().get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {140F, 120F}, (float[]) this.shader.getValues().get("center"), 0F);
-		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), this.shader.getValues().get("type"));
+		Assert.assertEquals(ShaderFillType.TEXTURE.ordinal(), this.shader.getValues().get("type"));
 	}
 
 	@AllArgsConstructor

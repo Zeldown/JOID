@@ -55,53 +55,54 @@ public final class MsdfBinarySource extends MsdfSource {
 			throw new IOException("The file does not start with JOIDMSDF, it is not a font made by the msdf tool of JOID: generate it with that tool");
 		}
 
-		final DataInputStream input = new DataInputStream(new InflaterInputStream(stream));
-		final int version = input.readUnsignedByte();
-		if (version != MsdfWriter.VERSION) {
-			throw new IOException("The msdf font version " + version + " is not supported, only the version " + MsdfWriter.VERSION + " loads: generate it again with the msdf tool of JOID");
-		}
-
-		final FontWeight weight = FontWeight.of(input.readUnsignedShort());
-		final boolean italic = input.readBoolean();
-		final String name = input.readUTF();
-		final int width = input.readInt();
-		final int height = input.readInt();
-		final float distanceRange = input.readFloat();
-		final float size = input.readFloat();
-		final MsdfAtlas atlas = new MsdfAtlas(width, height, size, distanceRange);
-		final MsdfMetrics metrics = new MsdfMetrics(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
-
-		final int glyphCount = input.readInt();
-		final Map<Integer, MsdfGlyph> glyphs = new HashMap<>(glyphCount * 2);
-		for (int i = 0; i < glyphCount; i++) {
-			final int codepoint = input.readInt();
-			final float advance = input.readFloat();
-			if (!input.readBoolean()) {
-				glyphs.put(codepoint, new MsdfGlyph(codepoint, advance, null, null));
-				continue;
+		try (DataInputStream input = new DataInputStream(new InflaterInputStream(stream))) {
+			final int version = input.readUnsignedByte();
+			if (version != MsdfWriter.VERSION) {
+				throw new IOException("The msdf font version " + version + " is not supported, only the version " + MsdfWriter.VERSION + " loads: generate it again with the msdf tool of JOID");
 			}
 
-			final MsdfBounds planeBounds = new MsdfBounds(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
-			glyphs.put(codepoint, new MsdfGlyph(codepoint, advance, planeBounds, new MsdfBounds(input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort())));
-		}
+			final FontWeight weight = FontWeight.of(input.readUnsignedShort());
+			final boolean italic = input.readBoolean();
+			final String name = input.readUTF();
+			final int width = input.readInt();
+			final int height = input.readInt();
+			final float distanceRange = input.readFloat();
+			final float size = input.readFloat();
+			final MsdfAtlas atlas = new MsdfAtlas(width, height, size, distanceRange);
+			final MsdfMetrics metrics = new MsdfMetrics(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
 
-		final int unitsPerEm = input.readUnsignedShort();
-		final int groups = MsdfBinarySource.variable(input);
-		final Map<Long, Float> kerningPairs = new HashMap<>();
-		int first = 0;
-		for (int group = 0; group < groups; group++) {
-			first += MsdfBinarySource.variable(input);
-			final int pairs = MsdfBinarySource.variable(input);
+			final int glyphCount = input.readInt();
+			final Map<Integer, MsdfGlyph> glyphs = new HashMap<>(glyphCount * 2);
+			for (int i = 0; i < glyphCount; i++) {
+				final int codepoint = input.readInt();
+				final float advance = input.readFloat();
+				if (!input.readBoolean()) {
+					glyphs.put(codepoint, new MsdfGlyph(codepoint, advance, null, null));
+					continue;
+				}
 
-			int second = 0;
-			for (int pair = 0; pair < pairs; pair++) {
-				second += MsdfBinarySource.variable(input);
-				final int value = MsdfBinarySource.variable(input);
-				kerningPairs.put(MsdfFontFace.pair(first, second), (value >>> 1 ^ -(value & 1)) / (float) unitsPerEm);
+				final MsdfBounds planeBounds = new MsdfBounds(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
+				glyphs.put(codepoint, new MsdfGlyph(codepoint, advance, planeBounds, new MsdfBounds(input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort())));
 			}
-		}
 
-		return MsdfFontFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), name, weight, italic);
+			final int unitsPerEm = input.readUnsignedShort();
+			final int groups = MsdfBinarySource.variable(input);
+			final Map<Long, Float> kerningPairs = new HashMap<>();
+			int first = 0;
+			for (int group = 0; group < groups; group++) {
+				first += MsdfBinarySource.variable(input);
+				final int pairs = MsdfBinarySource.variable(input);
+
+				int second = 0;
+				for (int pair = 0; pair < pairs; pair++) {
+					second += MsdfBinarySource.variable(input);
+					final int value = MsdfBinarySource.variable(input);
+					kerningPairs.put(MsdfFontFace.pair(first, second), (value >>> 1 ^ -(value & 1)) / (float) unitsPerEm);
+				}
+			}
+
+			return MsdfFontFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), name, weight, italic);
+		}
 	}
 
 	private static int paeth(final int left, final int up, final int corner) {
