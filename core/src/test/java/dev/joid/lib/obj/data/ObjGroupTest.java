@@ -10,7 +10,6 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.vertex.Primitive;
-import dev.joid.lib.render.tessellator.DrawMode;
 
 public class ObjGroupTest {
 
@@ -21,24 +20,19 @@ public class ObjGroupTest {
 	public void startsWithoutNameNorFaces() {
 		final ObjGroup group = new ObjGroup();
 		Assert.assertEquals("", group.getName());
-		Assert.assertNull(group.getDrawMode());
 		Assert.assertTrue(group.getFaces().isEmpty());
 	}
 
 	@Test
-	public void takesItsNameAndDrawMode() {
+	public void takesItsName() {
 		Assert.assertEquals("part", new ObjGroup("part").getName());
-		Assert.assertNull(new ObjGroup("part").getDrawMode());
-		Assert.assertSame(DrawMode.QUADS, new ObjGroup("part", DrawMode.QUADS).getDrawMode());
 	}
 
 	@Test
-	public void changesItsNameAndDrawMode() {
+	public void changesItsName() {
 		final ObjGroup group = new ObjGroup("part");
 		group.setName("renamed");
-		group.setDrawMode(DrawMode.TRIANGLES);
 		Assert.assertEquals("renamed", group.getName());
-		Assert.assertSame(DrawMode.TRIANGLES, group.getDrawMode());
 	}
 
 	@Test
@@ -57,7 +51,7 @@ public class ObjGroupTest {
 
 	@Test
 	public void drawsItsFacesInOneCall() {
-		final ObjGroup group = new ObjGroup("pair", DrawMode.TRIANGLES);
+		final ObjGroup group = new ObjGroup("pair");
 		group.addFace(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F)));
 		group.addFace(ObjGroupTest.face(new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
 		group.render();
@@ -68,18 +62,8 @@ public class ObjGroupTest {
 	}
 
 	@Test
-	public void splitsItsQuadsIntoTriangles() {
-		final ObjGroup group = new ObjGroup("quad", DrawMode.QUADS);
-		group.addFace(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
-		group.render();
-		final List<Draw> draws = this.bridges.getRender().getDraws();
-		Assert.assertSame(Primitive.TRIANGLES, draws.get(0).getPrimitive());
-		Assert.assertEquals(6, draws.get(0).getXs().length);
-	}
-
-	@Test
 	public void drawsNothingWithoutFaces() {
-		new ObjGroup("empty", DrawMode.TRIANGLES).render();
+		new ObjGroup("empty").render();
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 

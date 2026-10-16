@@ -94,7 +94,7 @@ public final class ObjFace {
 	}
 
 	public ObjVertex[] getVertices() {
-		return this.vertices == null ? null : this.vertices.clone();
+		return this.vertices.clone();
 	}
 
 	public ObjVertex[] getVertexNormals() {

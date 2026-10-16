@@ -10,7 +10,6 @@ import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.function.ToDoubleFunction;
 import java.util.regex.Pattern;
-import java.util.stream.IntStream;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.asset.Asset;
@@ -20,7 +19,6 @@ import dev.joid.lib.obj.data.ObjFace;
 import dev.joid.lib.obj.data.ObjGroup;
 import dev.joid.lib.obj.data.ObjTextureCoordinate;
 import dev.joid.lib.obj.data.ObjVertex;
-import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.resource.Resource;
 import lombok.Getter;
 import lombok.NonNull;
@@ -181,13 +179,6 @@ public final class ObjModel implements IDrawableModel {
 		}
 
 		final String[] tokens = line.substring(line.indexOf(" ") + 1).split(" ");
-		final DrawMode drawMode = tokens.length == 4 ? DrawMode.QUADS : DrawMode.TRIANGLES;
-		if (group.getDrawMode() == null) {
-			group.setDrawMode(drawMode);
-		} else if (group.getDrawMode() != drawMode) {
-			throw this.malformed(line, lineCount, drawMode == DrawMode.QUADS ? "has 4 vertices while the faces before it in its group are triangles, keep quads in their own group" : "has " + tokens.length + " vertices while the faces before it in its group have 4, keep quads in their own group");
-		}
-
 		if (!group.getFaces().isEmpty() && (group.getFaces().get(0).getTextureCoordinates() != null) != textured) {
 			throw this.malformed(line, lineCount, textured ? "has texture coordinates while the faces before it in its group have none, keep one face format per group" : "has no texture coordinates while the faces before it in its group have some, keep one face format per group");
 		}
@@ -208,12 +199,8 @@ public final class ObjModel implements IDrawableModel {
 		}
 
 		final List<ObjFace> faces = new ArrayList<>();
-		if (tokens.length <= 4) {
-			faces.add(ObjModel.face(vertices, textureCoordinates, vertexNormals, IntStream.range(0, tokens.length).toArray()));
-		} else {
-			for (int i = 1; i < tokens.length - 1; i++) {
-				faces.add(ObjModel.face(vertices, textureCoordinates, vertexNormals, 0, i, i + 1));
-			}
+		for (int i = 1; i < tokens.length - 1; i++) {
+			faces.add(ObjModel.face(vertices, textureCoordinates, vertexNormals, 0, i, i + 1));
 		}
 		return faces;
 	}

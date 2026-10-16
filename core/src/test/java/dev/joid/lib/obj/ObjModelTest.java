@@ -24,7 +24,6 @@ import dev.joid.lib.obj.data.ObjFace;
 import dev.joid.lib.obj.data.ObjGroup;
 import dev.joid.lib.obj.data.ObjTextureCoordinate;
 import dev.joid.lib.obj.data.ObjVertex;
-import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.resource.Resource;
 
 import lombok.NonNull;
@@ -50,8 +49,7 @@ public class ObjModelTest {
 		Assert.assertEquals(1, model.getGroups().size());
 		Assert.assertSame(model.getGroups().get(0), ObjModelTest.lastGroup(model));
 		Assert.assertEquals("Cube", ObjModelTest.lastGroup(model).getName());
-		Assert.assertSame(DrawMode.QUADS, ObjModelTest.lastGroup(model).getDrawMode());
-		Assert.assertEquals(6, ObjModelTest.lastGroup(model).getFaces().size());
+		Assert.assertEquals(12, ObjModelTest.lastGroup(model).getFaces().size());
 	}
 
 	@Test
@@ -62,7 +60,6 @@ public class ObjModelTest {
 		Assert.assertEquals(1.2434D, model.getDepth(), 1E-4D);
 		Assert.assertEquals(model.getVertices().size(), model.getVertexNormals().size());
 		Assert.assertEquals(model.getVertices().size(), model.getTextureCoordinates().size());
-		Assert.assertSame(DrawMode.TRIANGLES, ObjModelTest.lastGroup(model).getDrawMode());
 		for (final ObjFace face : ObjModelTest.lastGroup(model).getFaces()) {
 			Assert.assertEquals(3, face.getVertexNormals().length);
 			Assert.assertEquals(3, face.getTextureCoordinates().length);
@@ -136,7 +133,6 @@ public class ObjModelTest {
 		final ObjModel model = ObjModelTest.triangle("f 1 2 3");
 		Assert.assertEquals(1, model.getGroups().size());
 		Assert.assertEquals("Default", model.getGroups().get(0).getName());
-		Assert.assertSame(DrawMode.TRIANGLES, model.getGroups().get(0).getDrawMode());
 	}
 
 	@Test
@@ -144,11 +140,9 @@ public class ObjModelTest {
 		final ObjModel model = ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "o first", "f 1 2 3", "g second.part", "f 1 2 4 3", "f 1 2 4 3");
 		Assert.assertEquals(2, model.getGroups().size());
 		Assert.assertEquals("first", model.getGroups().get(0).getName());
-		Assert.assertSame(DrawMode.TRIANGLES, model.getGroups().get(0).getDrawMode());
 		Assert.assertEquals(1, model.getGroups().get(0).getFaces().size());
 		Assert.assertEquals("second.part", model.getGroups().get(1).getName());
-		Assert.assertSame(DrawMode.QUADS, model.getGroups().get(1).getDrawMode());
-		Assert.assertEquals(2, model.getGroups().get(1).getFaces().size());
+		Assert.assertEquals(4, model.getGroups().get(1).getFaces().size());
 		Assert.assertSame(model.getGroups().get(1), ObjModelTest.lastGroup(model));
 	}
 
@@ -195,13 +189,15 @@ public class ObjModelTest {
 	}
 
 	@Test
-	public void refusesQuadsInAGroupOfTriangles() {
-		try {
-			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 3", "f 1 2 4 3");
-			Assert.fail("A quad must not join a group of triangles");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 4 3\" has 4 vertices while the faces before it in its group are triangles, keep quads in their own group, fix this line in the model file", expected.getMessage());
-		}
+	public void cutsTheTrianglesQuadsAndPolygonsOfAGroupIntoTriangles() {
+		final ObjModel model = ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 1 1 0", "v 0 1 0", "v -1 0 0", "f 1 2 3", "f 1 2 3 4", "f 1 2 3 4 5", "f 1 2 3");
+		final List<ObjVertex> vertices = model.getVertices();
+		final List<ObjFace> faces = ObjModelTest.lastGroup(model).getFaces();
+		Assert.assertEquals(1, model.getGroups().size());
+		Assert.assertEquals(7, faces.size());
+		Assert.assertArrayEquals(new ObjVertex[] {vertices.get(0), vertices.get(1), vertices.get(2)}, faces.get(1).getVertices());
+		Assert.assertArrayEquals(new ObjVertex[] {vertices.get(0), vertices.get(2), vertices.get(3)}, faces.get(2).getVertices());
+		Assert.assertArrayEquals(new ObjVertex[] {vertices.get(0), vertices.get(3), vertices.get(4)}, faces.get(5).getVertices());
 	}
 
 	@Test
@@ -221,16 +217,6 @@ public class ObjModelTest {
 			Assert.fail("A face without texture must not join a textured group");
 		} catch (final RuntimeException expected) {
 			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 3\" has no texture coordinates while the faces before it in its group have some, keep one face format per group, fix this line in the model file", expected.getMessage());
-		}
-	}
-
-	@Test
-	public void refusesTrianglesInAGroupOfQuads() {
-		try {
-			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "v 1 1 0", "f 1 2 4 3", "f 1 2 3");
-			Assert.fail("A triangle must not join a group of quads");
-		} catch (final RuntimeException expected) {
-			Assert.assertEquals("The OBJ model test cannot be read: its line 6 \"f 1 2 3\" has 3 vertices while the faces before it in its group have 4, keep quads in their own group, fix this line in the model file", expected.getMessage());
 		}
 	}
 
@@ -258,7 +244,6 @@ public class ObjModelTest {
 	public void cutsAFaceOfMoreThanFourVerticesIntoAFanOfTriangles() {
 		final ObjModel model = ObjModelTest.load("v 0 0 0", "v 2 0 0", "v 3 1 0", "v 1 2 0", "v -1 1 0", "vt 0 0", "vt 1 0", "vt 1 1", "vt 0 1", "vt 0 0.5", "f 1/1 2/2 3/3 4/4 5/5");
 		final List<ObjFace> faces = ObjModelTest.lastGroup(model).getFaces();
-		Assert.assertSame(DrawMode.TRIANGLES, ObjModelTest.lastGroup(model).getDrawMode());
 		Assert.assertEquals(3, faces.size());
 		final List<ObjVertex> vertices = model.getVertices();
 		for (int i = 0; i < faces.size(); i++) {
@@ -267,16 +252,6 @@ public class ObjModelTest {
 			Assert.assertArrayEquals(new ObjTextureCoordinate[] {model.getTextureCoordinates().get(0), model.getTextureCoordinates().get(i + 1), model.getTextureCoordinates().get(i + 2)}, face.getTextureCoordinates());
 			Assert.assertNull(face.getVertexNormals());
 			Assert.assertEquals(1F, face.getFaceNormal().getZ(), 0F);
-		}
-	}
-
-	@Test
-	public void refusesAPolygonInAGroupOfQuads() {
-		try {
-			ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 1 1 0", "v 0 1 0", "v -1 0 0", "f 1 2 3 4", "f 1 2 3 4 5");
-			Assert.fail("A polygon cut into triangles must not join a group of quads");
-		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("The OBJ model test cannot be read: its line 7 \"f 1 2 3 4 5\" has 5 vertices while the faces before it in its group have 4, keep quads in their own group, fix this line in the model file", expected.getMessage());
 		}
 	}
 

@@ -13,8 +13,7 @@ import lombok.Setter;
 @Getter
 public final class ObjGroup {
 
-	@Setter private String   name;
-	@Setter private DrawMode drawMode;
+	@Setter private String name;
 
 	private final List<ObjFace> faces;
 
@@ -23,13 +22,8 @@ public final class ObjGroup {
 	}
 
 	public ObjGroup(final @NonNull String name) {
-		this(name, null);
-	}
-
-	public ObjGroup(final @NonNull String name, final DrawMode drawMode) {
-		this.name     = name;
-		this.drawMode = drawMode;
-		this.faces    = new ArrayList<>();
+		this.name  = name;
+		this.faces = new ArrayList<>();
 	}
 
 	public void addFace(final @NonNull ObjFace face) {
@@ -39,7 +33,7 @@ public final class ObjGroup {
 	public void render() {
 		if (this.faces.size() > 0) {
 			final Tessellator tessellator = Tessellator.inst();
-			tessellator.start(this.drawMode);
+			tessellator.start(DrawMode.TRIANGLES);
 			for (final ObjFace face : this.faces) {
 				face.render(tessellator);
 			}
