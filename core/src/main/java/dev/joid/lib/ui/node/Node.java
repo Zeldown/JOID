@@ -87,6 +87,7 @@ import dev.joid.lib.ui.shortcut.Shortcut;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.align.Axis;
+import dev.joid.lib.utils.geom.BoundingBox;
 import dev.joid.lib.utils.geom.Point;
 import dev.joid.lib.utils.list.IndexedList;
 import lombok.AccessLevel;
@@ -889,7 +890,7 @@ public abstract class Node implements INode {
 				this.draggedNode.position(PositionProperty.ABSOLUTE);
 				this.draggedNode.layoutX = this.draggedNode.layoutY = 0D;
 				this.draggedNode.shiftX = this.draggedNode.shiftY = 0D;
-				this.draggedNode.moveTo(this.targetDragX, this.targetDragY);
+				this.draggedNode.dragTo(this.targetDragX, this.targetDragY);
 			}
 		});
 		return (T) this;
@@ -1751,16 +1752,11 @@ public abstract class Node implements INode {
 			}
 
 			if (this.draggable.getAreaType() != DraggableAreaType.FREE && (this.draggable.getAreaType() != DraggableAreaType.PARENT || this.parent != null) && (this.dragging || this.draggable.getType() == DraggableType.MOVE)) {
-				final double[] bounds = this.draggable.getBounds(this);
-				final double boundX = bounds[0];
-				final double boundY = bounds[1];
-				final double boundWidth = bounds[2];
-				final double boundHeight = bounds[3];
-
+				final BoundingBox bounds = this.draggable.getBounds(this);
 				final double targetX = this.targetDragX;
 				final double targetY = this.targetDragY;
-				this.targetDragX = Math.max(boundX, Math.min(this.targetDragX, boundX + boundWidth - this.width));
-				this.targetDragY = Math.max(boundY, Math.min(this.targetDragY, boundY + boundHeight - this.height));
+				this.targetDragX = Math.max(bounds.getMinX(), Math.min(this.targetDragX, bounds.getMaxX() - this.width));
+				this.targetDragY = Math.max(bounds.getMinY(), Math.min(this.targetDragY, bounds.getMaxY() - this.height));
 
 				if (this.targetDragX != targetX || this.targetDragY != targetY) {
 					this.dragged = true;
@@ -1785,7 +1781,7 @@ public abstract class Node implements INode {
 				} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
 					final double newAbsoluteX = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
 					final double newAbsoluteY = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
-					this.draggedNode.moveTo(newAbsoluteX, newAbsoluteY);
+					this.draggedNode.dragTo(newAbsoluteX, newAbsoluteY);
 				}
 			}
 		}
@@ -1841,7 +1837,7 @@ public abstract class Node implements INode {
 					this.drawSkeleton(mouseX, mouseY);
 				}
 			};
-			ShaderPipeline.render(this.getX(), this.getY(), this.getWidth(), this.getHeight(), selfDraw, this.toShaderPasses(selfShaderEffects));
+			ShaderPipeline.render(this.x, this.y, this.width, this.height, selfDraw, this.toShaderPasses(selfShaderEffects));
 			this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
 			if (this.mounted && this.label != null && !this.label.isEmpty()) {
 				DrawUtils.TEXT.drawText(this.x + (this.width - this.label.getWidth()) / 2D, this.y + (this.height - this.label.getHeight()) / 2D, this.label.getWidth(), this.label.getHeight(), this.label, TextMode.NORMAL);
@@ -1867,7 +1863,7 @@ public abstract class Node implements INode {
 		};
 
 		Runnable effectDraw = () -> {
-			ShaderPipeline.render(this.getX(), this.getY(), this.getWidth(), this.getHeight(), maskDraw, this.toShaderPasses(subtreeShaderEffects));
+			ShaderPipeline.render(this.x, this.y, this.width, this.height, maskDraw, this.toShaderPasses(subtreeShaderEffects));
 
 			if (this.isScrollbarShown()) {
 				this.scrollbar.render(mouseX, mouseY);
@@ -2080,12 +2076,6 @@ public abstract class Node implements INode {
 				((Node) this.scrollbar).endHover(true);
 			}
 		}
-	}
-
-	private void moveTo(final double x, final double y) {
-		this.defaultX = x - this.layoutX - this.shiftX + this.getPivotX();
-		this.defaultY = y - this.layoutY - this.shiftY + this.getPivotY();
-		this.place();
 	}
 
 	private boolean dragTo(final double x, final double y) {

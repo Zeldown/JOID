@@ -10,6 +10,7 @@ import dev.joid.internal.JOIDLog;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.utils.geom.BoundingBox;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -24,24 +25,24 @@ public final class DraggableProperty {
 	private DraggableAreaType areaType;
 
 	@Getter(AccessLevel.NONE)
-	private double[] area;
+	private BoundingBox area;
 
-	private List<Node>        snapNodes;
+	private final List<Node>  snapNodes;
 	private DraggableSnapType snapType;
 
-	private DraggableProperty(final DraggableAreaType areaType, final double[] area, final Node areaNode) {
+	private DraggableProperty(final DraggableAreaType areaType, final BoundingBox area, final Node areaNode) {
 		this.enabled   = node -> true;
 		this.type      = DraggableType.MOVE;
 		this.areaType  = areaType;
 		this.area      = area;
 		this.areaNode  = areaNode;
 		this.snapType  = DraggableSnapType.NEAREST;
-		this.snapNodes = null;
+		this.snapNodes = new ArrayList<>();
 	}
 
 	public static @NonNull DraggableProperty free() { return new DraggableProperty(DraggableAreaType.FREE, null, null); }
 
-	public static @NonNull DraggableProperty custom(final double x, final double y, final double width, final double height) { return new DraggableProperty(DraggableAreaType.CUSTOM, new double[] {x, y, width, height}, null); }
+	public static @NonNull DraggableProperty custom(final double x, final double y, final double width, final double height) { return new DraggableProperty(DraggableAreaType.CUSTOM, BoundingBox.create(x, y, width, height), null); }
 
 	public static @NonNull DraggableProperty parent() { return new DraggableProperty(DraggableAreaType.PARENT, null, null); }
 
@@ -97,52 +98,27 @@ public final class DraggableProperty {
 		return null;
 	}
 
-	public double[] getBounds(final @NonNull Node node) {
-		double boundX = 0D;
-		double boundY = 0D;
-		double boundWidth = 0D;
-		double boundHeight = 0D;
-
+	public @NonNull BoundingBox getBounds(final @NonNull Node node) {
 		switch (this.areaType) {
 		case CUSTOM:
-			boundX = this.area[0];
-			boundY = this.area[1];
-			boundWidth = this.area[2];
-			boundHeight = this.area[3];
-			break;
+			return this.area.copy();
 		case PARENT:
 			if (node.getParent() == null) {
 				throw new IllegalStateException("The node " + JOIDLog.nameOf(node.getClass()) + " is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()");
 			}
-			boundX = node.getParent().getAbsoluteX();
-			boundY = node.getParent().getAbsoluteY();
-			boundWidth = node.getParent().getWidth();
-			boundHeight = node.getParent().getHeight();
-			break;
+			return BoundingBox.create(node.getParent().getAbsoluteX(), node.getParent().getAbsoluteY(), node.getParent().getWidth(), node.getParent().getHeight());
 		case NODE:
-			boundX = this.areaNode.getAbsoluteX();
-			boundY = this.areaNode.getAbsoluteY();
-			boundWidth = this.areaNode.getWidth();
-			boundHeight = this.areaNode.getHeight();
-			break;
+			return BoundingBox.create(this.areaNode.getAbsoluteX(), this.areaNode.getAbsoluteY(), this.areaNode.getWidth(), this.areaNode.getHeight());
 		case UI:
-			boundX = 0D;
-			boundY = 0D;
-			boundWidth = UIView.DESIGN_WIDTH;
-			boundHeight = UIView.DESIGN_HEIGHT;
-			break;
+			return BoundingBox.create(0D, 0D, UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT);
 		case SCREEN:
 			final UI ui = node.getUi();
-			boundX = ui.getView().toUiX(0D);
-			boundY = ui.getView().toUiY(0D);
-			boundWidth = ui.getView().toUiX(ui.getWindowWidth()) - boundX;
-			boundHeight = ui.getView().toUiY(ui.getWindowHeight()) - boundY;
-			break;
-		case FREE:
+			final double x = ui.getView().toUiX(0D);
+			final double y = ui.getView().toUiY(0D);
+			return BoundingBox.create(x, y, ui.getView().toUiX(ui.getWindowWidth()) - x, ui.getView().toUiY(ui.getWindowHeight()) - y);
+		default:
 			throw new IllegalStateException("A free draggable area has no bounds, check getAreaType() before calling getBounds() or pick a bounded area such as DraggableProperty.parent()");
 		}
-
-		return new double[] {boundX, boundY, boundWidth, boundHeight};
 	}
 
 	public @NonNull DraggableProperty enabled(final @NonNull Predicate<@NonNull Node> enabled) {
@@ -156,10 +132,6 @@ public final class DraggableProperty {
 	}
 
 	public @NonNull DraggableProperty snap(final @NonNull Node @NonNull... snapNodes) {
-		if (this.snapNodes == null) {
-			this.snapNodes = new ArrayList<>();
-		}
-
 		this.snapNodes.addAll(Arrays.asList(snapNodes));
 		return this;
 	}
@@ -173,17 +145,17 @@ public final class DraggableProperty {
 		return this.enabled.test(node);
 	}
 
-	public List<Node> getSnapNodes() {
-		return this.snapNodes == null ? null : Collections.unmodifiableList(this.snapNodes);
+	public @NonNull List<@NonNull Node> getSnapNodes() {
+		return Collections.unmodifiableList(this.snapNodes);
 	}
 
 	public boolean hasSnapping() {
-		return this.snapNodes != null && !this.snapNodes.isEmpty();
+		return !this.snapNodes.isEmpty();
 	}
 
 	public @NonNull DraggableProperty copy() {
 		final DraggableProperty copy = new DraggableProperty(this.areaType, this.area, this.areaNode).type(this.type).enabled(this.enabled).snapType(this.snapType);
-		return copy.snap(this.snapNodes == null ? new Node[0] : this.snapNodes.toArray(new Node[0]));
+		return copy.snap(this.snapNodes.toArray(new Node[0]));
 	}
 
 	public enum DraggableType {

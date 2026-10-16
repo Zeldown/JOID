@@ -18,6 +18,7 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableAreaType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableType;
+import dev.joid.lib.utils.geom.BoundingBox;
 
 import lombok.AllArgsConstructor;
 
@@ -34,6 +35,7 @@ public class DraggablePropertyTest {
 		Assert.assertSame(DraggableSnapType.NEAREST, draggable.getSnapType());
 		Assert.assertNull(draggable.getAreaNode());
 		Assert.assertFalse(draggable.hasSnapping());
+		Assert.assertTrue(draggable.getSnapNodes().isEmpty());
 		Assert.assertTrue(draggable.isEnabled(RectNode.create(0D, 0D, 10D, 10D)));
 	}
 
@@ -49,7 +51,7 @@ public class DraggablePropertyTest {
 
 	@Test
 	public void staysInsideACustomArea() {
-		Assert.assertArrayEquals(new double[] {10D, 20D, 300D, 200D}, DraggableProperty.custom(10D, 20D, 300D, 200D).getBounds(RectNode.create(0D, 0D, 10D, 10D)), 0D);
+		Assert.assertArrayEquals(new double[] {10D, 20D, 300D, 200D}, DraggablePropertyTest.bounds(DraggableProperty.custom(10D, 20D, 300D, 200D).getBounds(RectNode.create(0D, 0D, 10D, 10D))), 0D);
 	}
 
 	@Test
@@ -57,7 +59,7 @@ public class DraggablePropertyTest {
 		final RectNode parent = RectNode.create(100D, 50D, 300D, 200D);
 		final RectNode child = RectNode.create(10D, 10D, 20D, 20D);
 		parent.append(child);
-		Assert.assertArrayEquals(new double[] {100D, 50D, 300D, 200D}, DraggableProperty.parent().getBounds(child), 0D);
+		Assert.assertArrayEquals(new double[] {100D, 50D, 300D, 200D}, DraggablePropertyTest.bounds(DraggableProperty.parent().getBounds(child)), 0D);
 	}
 
 	@Test
@@ -78,12 +80,12 @@ public class DraggablePropertyTest {
 		final DraggableProperty draggable = DraggableProperty.node(area);
 		Assert.assertSame(DraggableAreaType.NODE, draggable.getAreaType());
 		Assert.assertSame(area, draggable.getAreaNode());
-		Assert.assertArrayEquals(new double[] {110D, 70D, 80D, 60D}, draggable.getBounds(RectNode.create(0D, 0D, 10D, 10D)), 0D);
+		Assert.assertArrayEquals(new double[] {110D, 70D, 80D, 60D}, DraggablePropertyTest.bounds(draggable.getBounds(RectNode.create(0D, 0D, 10D, 10D))), 0D);
 	}
 
 	@Test
 	public void staysInsideTheDesignedUi() {
-		Assert.assertArrayEquals(new double[] {0D, 0D, 1920D, 1080D}, DraggableProperty.ui().getBounds(RectNode.create(0D, 0D, 10D, 10D)), 0D);
+		Assert.assertArrayEquals(new double[] {0D, 0D, 1920D, 1080D}, DraggablePropertyTest.bounds(DraggableProperty.ui().getBounds(RectNode.create(0D, 0D, 10D, 10D))), 0D);
 	}
 
 	@Test
@@ -91,7 +93,7 @@ public class DraggablePropertyTest {
 		this.bridges.resize(2560, 1080);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D);
 		this.bridges.open(new NodeUI(node)).frame();
-		Assert.assertArrayEquals(new double[] {-320D, 0D, 2560D, 1080D}, DraggableProperty.screen().getBounds(node), 1E-9D);
+		Assert.assertArrayEquals(new double[] {-320D, 0D, 2560D, 1080D}, DraggablePropertyTest.bounds(DraggableProperty.screen().getBounds(node)), 1E-9D);
 	}
 
 	@Test
@@ -146,7 +148,7 @@ public class DraggablePropertyTest {
 		final DraggableProperty draggable = DraggableProperty.custom(10D, 20D, 300D, 200D).enabled(node -> false).snapType(DraggableSnapType.OVERLAP).snap(target);
 		final DraggableProperty copy = draggable.copy();
 		Assert.assertNotSame(draggable, copy);
-		Assert.assertArrayEquals(new double[] {10D, 20D, 300D, 200D}, copy.getBounds(target), 0D);
+		Assert.assertArrayEquals(new double[] {10D, 20D, 300D, 200D}, DraggablePropertyTest.bounds(copy.getBounds(target)), 0D);
 		Assert.assertFalse(copy.isEnabled(target));
 		Assert.assertSame(DraggableSnapType.OVERLAP, copy.getSnapType());
 		Assert.assertEquals(Arrays.asList(target), copy.getSnapNodes());
@@ -260,6 +262,10 @@ public class DraggablePropertyTest {
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(x, y).frame();
 		this.bridges.getUi().mouseMoved();
+	}
+
+	private static double[] bounds(final BoundingBox bounds) {
+		return new double[] {bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight()};
 	}
 
 	@AllArgsConstructor
