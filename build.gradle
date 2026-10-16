@@ -38,7 +38,7 @@ ext {
         task.relocate 'org.apache.commons.io', 'dev.joid.shaded.commons.io'
         task.relocate 'org.apache.commons.lang3', 'dev.joid.shaded.commons.lang3'
         task.relocate 'com.google.thirdparty', 'dev.joid.shaded.guava.thirdparty'
-        task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+        task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/LICENSE*', 'META-INF/NOTICE*', 'META-INF/AL2.0', 'META-INF/LGPL2.1'
     }
 
     variants = ['prod', 'dev', 'demo']
@@ -106,6 +106,10 @@ subprojects {
         from(rootProject.file('NOTICE')) {
             into 'META-INF'
         }
+
+        from(rootProject.file('licenses')) {
+            into 'META-INF/licenses'
+        }
     }
 
     eclipse.project.name = "JOID-${name}"
@@ -172,7 +176,7 @@ assemble.dependsOn collectArtifacts
 
 task checkJars {
     group = 'JOID'
-    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, that the jars carry the version of JOID, and that NOTICE credits each of them.'
+    description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, that the jars carry the version of JOID, that NOTICE credits each of them, and that each jar holds one LICENSE, its NOTICE and the license text of each library it embeds under another license than Apache 2.0.'
     dependsOn ':tool-testkit:jar'
     dependsOn variants.collectMany { variant -> variantModules.collect { module -> "$module:${variant}Jar" } }
     doLast {
@@ -181,6 +185,7 @@ task checkJars {
         def shaded = ['dev/joid/shaded/asm/', 'dev/joid/shaded/gson/', 'dev/joid/shaded/guava/', 'dev/joid/shaded/jsvg/', 'dev/joid/shaded/twelvemonkeys/', 'dev/joid/shaded/commons/io/', 'dev/joid/shaded/commons/lang3/']
         def libraries = ['org/objectweb/asm/', 'com/google/gson/', 'com/google/common/', 'com/google/thirdparty/', 'com/github/weisj/', 'com/twelvemonkeys/', 'org/apache/commons/io/', 'org/apache/commons/lang3/', 'javax/vecmath/']
         def credits = ['org.ow2.asm': 'ASM', 'com.google.guava': 'Guava', 'org.bytedeco': 'JavaCV and JavaCPP', 'net.java.dev.jna': 'JNA', 'com.github.weisj': 'JSVG', 'commons-io': 'Apache Commons IO', 'com.google.code.gson': 'Gson', 'com.twelvemonkeys': 'TwelveMonkeys ImageIO', 'org.apache.commons': 'Apache Commons Lang']
+        def licenses = ['org.ow2.asm': ['ASM-BSD-3-Clause.txt'], 'com.github.weisj': ['JSVG-MIT.txt'], 'com.twelvemonkeys': ['TwelveMonkeys-BSD-3-Clause.txt'], 'org.lwjgl.lwjgl': ['LWJGL2-BSD-3-Clause.txt', 'OpenAL-Soft-LGPL-2.txt']]
         def notice = rootProject.file('NOTICE').readLines('UTF-8').collect { line -> line.trim() }
         def failures = []
         subprojects.collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null }.collectMany { configuration -> configuration.resolvedConfiguration.resolvedArtifacts.collect { artifact -> artifact.moduleVersion.id } }.unique { id -> "${id.group}:${id.name}" }.each { id ->
@@ -215,8 +220,14 @@ task checkJars {
                         failures << "${jar.name} gives the version $version instead of ${project.version} in $path"
                     }
                 }
-                ['META-INF/LICENSE', 'META-INF/NOTICE'].findAll { name -> !entries.contains(name) }.each { name ->
-                    failures << "${jar.name} misses $name"
+                ['META-INF/LICENSE', 'META-INF/NOTICE'].findAll { name -> entries.count(name) != 1 }.each { name ->
+                    failures << "${jar.name} holds ${entries.count(name)} $name instead of one"
+                }
+                def groups = ([project(module)] + project(module).embeddedModules).collectMany { embedded -> ['shade', 'natives'].collect { name -> embedded.configurations.findByName(name) }.findAll { configuration -> configuration != null } }.collectMany { configuration -> configuration.resolvedConfiguration.resolvedArtifacts.collect { artifact -> artifact.moduleVersion.id.group } }
+                licenses.findAll { group, texts -> groups.any { embedded -> embedded == group || embedded.startsWith(group + '.') } }.each { group, texts ->
+                    texts.findAll { text -> !entries.contains('META-INF/licenses/' + text) }.each { text ->
+                        failures << "${jar.name} embeds $group but misses META-INF/licenses/$text"
+                    }
                 }
                 shaded.findAll { prefix -> !holds(prefix) }.each { prefix ->
                     failures << "${jar.name} misses $prefix"
