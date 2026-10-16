@@ -127,19 +127,10 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 	}
 
 	protected void begin() {
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (this.shader == null) {
-			this.shader = this.source.create(BlendState.NORMAL);
-		}
-
-		if (!this.shader.isActive()) {
-			throw new IllegalStateException("The font shader of " + this.getClass().getSimpleName() + " cannot be compiled by " + render.getClass().getSimpleName() + ", the error printed by JOID when it was created tells why");
-		}
-
 		this.color = null;
 		this.pixelX = 0F;
 		this.pixelY = 0F;
-		this.grid = render.getPixelGrid();
+		this.grid = BridgeHandler.RENDER.get().getPixelGrid();
 
 		Color.reset();
 		this.shader.bind();
@@ -204,9 +195,26 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return (GlyphFont<F>) styleFont;
 	}
 
+	private boolean canDraw() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		if (this.shader == null) {
+			this.shader = this.source.create(BlendState.NORMAL);
+		}
+
+		if (!this.shader.isActive()) {
+			JOIDLog.devWarnOnce("GlyphTextRenderer.unavailable." + System.identityHashCode(this), () -> "The font shader of " + this.getClass().getSimpleName() + " cannot be compiled by " + render.getClass().getSimpleName() + ", what it draws is skipped: the error printed by JOID when it was created tells why");
+			return false;
+		}
+		return true;
+	}
+
 	private @NonNull FontBounds draw(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
 		if (layout.getPlacements().isEmpty()) {
 			return FontBounds.empty();
+		}
+
+		if (!this.canDraw()) {
+			return FontBounds.create(layout.getWidth(), this.getLineHeight(info));
 		}
 
 		final PixelGrid grid = this.isGridAligned() ? BridgeHandler.RENDER.get().getPixelGrid() : null;

@@ -1,6 +1,9 @@
 package dev.joid.lib.font.impl.glyph;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,6 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingShader;
@@ -233,6 +237,27 @@ public class GlyphTextRendererTest {
 		};
 		final GlyphLayout<Face> layout = GlyphTextRendererTest.layout("%A", GlyphTextRendererTest.info().markups(foreign));
 		Assert.assertSame(GlyphTextRendererTest.REGULAR, layout.getPlacements().get(0).getFace());
+	}
+
+	@Test
+	public void skipsItsTextsWithOneWarningWhileItsShaderIsUnavailable() {
+		final Renderer renderer = new Renderer(false);
+		final TextInfo info = TextInfo.create(new Font(FontFamily.of(GlyphTextRendererTest.REGULAR), renderer), 10F);
+		renderer.drawText(0D, 0D, "A", info);
+		((RecordingShader) renderer.getShader()).setActive(false);
+		renderer.drawn.clear();
+		final boolean devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(true);
+		try {
+			final String error = GlyphTextRendererTest.capture(() -> {
+				Assert.assertEquals(info.getWidth("A"), renderer.drawText(0D, 0D, "A", info).getWidth(), 1E-6D);
+				renderer.drawText(0D, 0D, "B", info);
+			});
+			Assert.assertEquals("[JOID] The font shader of Renderer cannot be compiled by CapturingRenderBridge, what it draws is skipped: the error printed by JOID when it was created tells why" + System.lineSeparator(), error);
+		} finally {
+			JOIDEnv.devMode(devMode);
+		}
+		Assert.assertTrue(renderer.drawn.isEmpty());
 	}
 
 	@Test
@@ -464,6 +489,18 @@ public class GlyphTextRendererTest {
 		Assert.assertEquals(0.5D, drawn.get(0).getX(), 1E-6D);
 		Assert.assertEquals(0.3D, drawn.get(1).getX(), 1E-6D);
 		Assert.assertEquals(8.4D, drawn.get(1).getBaseline(), 1E-6D);
+	}
+
+	private static String capture(final Runnable runnable) {
+		final PrintStream error = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setErr(new PrintStream(output, true));
+			runnable.run();
+		} finally {
+			System.setErr(error);
+		}
+		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	private static TextInfo info() {

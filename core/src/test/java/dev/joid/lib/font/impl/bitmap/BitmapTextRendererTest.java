@@ -168,12 +168,14 @@ public class BitmapTextRendererTest {
 		renderer.drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void refusesAnUnusableShader() {
+	@Test
+	public void drawsNothingWithAnUnusableShader() {
 		final Font font = new Font(new Renderer(Atlas.ASCII, this.texture(Atlas.ASCII)));
 		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
 		((RecordingShader) this.render.getLast().getShader()).setActive(false);
+		this.render.getCaptures().clear();
 		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
+		Assert.assertTrue(this.render.getCaptures().isEmpty());
 	}
 
 	private Capture draw(final Atlas atlas, final double scale, final String text, final float size) {
