@@ -291,6 +291,7 @@ public class ComputedSignalTest {
 		final List<String> received = new ArrayList<>();
 		final Signal<String> name = new Signal<>("joid").onChange(received::add);
 		final ComputedSignal<String> upper = name.map(String::toUpperCase);
+		upper.onChange(received::add);
 		Assert.assertEquals("JOID", upper.get());
 		name.silent(signal -> signal.set("ui"));
 		Assert.assertEquals("UI", upper.get());

@@ -10,6 +10,7 @@ import dev.joid.lib.signal.replay.SignalReplayNode;
 import dev.joid.lib.ui.core.UI;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @RequiredArgsConstructor
@@ -24,6 +25,9 @@ public class ReplayScenarioUI extends UI {
 	private int     last;
 	private int     count;
 	private boolean flip;
+
+	@Setter
+	private int shift;
 
 	@Override
 	public void init() {
@@ -64,6 +68,9 @@ public class ReplayScenarioUI extends UI {
 				break;
 			case "later":
 				SignalReplayNode.create().text("i" + this.names.get(this.clicks.get())).attach(this);
+				break;
+			case "before":
+				SignalReplayNode.create().text("b" + this.names.get(this.shift) + this.clicks.get()).attach(this);
 				break;
 			case "equals":
 				SignalReplayNode.create().tag(new Tag(this.clicks.get())).attach(this);

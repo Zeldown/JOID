@@ -6,6 +6,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.signal.replay.SignalReplayBinding;
 import lombok.NonNull;
 
 public class ComputedSignal<T> extends Signal<T> {
@@ -165,7 +166,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	protected void markStale(final SignalContext context) {
-		if (super.hasListeners()) {
+		if (super.hasListeners() && !context.isSilent()) {
 			context.schedule(this);
 		}
 
@@ -215,7 +216,7 @@ public class ComputedSignal<T> extends Signal<T> {
 			this.computing = false;
 		}
 
-		if (this.collectedCount == 0) {
+		if (this.collectedCount == 0 && !(this.supplier instanceof SignalReplayBinding)) {
 			JOIDLog.devWarnOnce("ComputedSignal.from." + this.supplier.getClass().getName(), () -> "A Signal.from(...) of " + ComputedSignal.ownerOf(this.supplier) + " reads no signal, so its value never changes: read a signal with get() inside it, or pass a lambda to the setter to read the value at every frame");
 		}
 

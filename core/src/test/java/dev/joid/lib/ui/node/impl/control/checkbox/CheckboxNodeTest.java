@@ -63,6 +63,17 @@ public class CheckboxNodeTest {
 	}
 
 	@Test
+	public void catchesUpWithASilentWriteOfItsSignalAtTheNextFrame() {
+		final BooleanSignal subtitles = new BooleanSignal(true);
+		final Checkbox checkbox = new Checkbox().checked(subtitles);
+		this.bridges.open(new NodeUI(checkbox)).frame();
+		subtitles.silent(signal -> signal.set(false));
+		Assert.assertTrue(checkbox.isChecked());
+		this.bridges.frame();
+		Assert.assertFalse(checkbox.isChecked());
+	}
+
+	@Test
 	public void catchesUpWithItsSignalOnceAttachedAgain() {
 		final BooleanSignal subtitles = new BooleanSignal(true);
 		final Checkbox checkbox = new Checkbox().checked(subtitles);

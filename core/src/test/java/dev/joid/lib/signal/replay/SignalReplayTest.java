@@ -195,6 +195,21 @@ public class SignalReplayTest {
 	}
 
 	@Test
+	public void warnsOnlyOfTheReplayWhenItFailsBeforeReadingASignal() {
+		final ReplayScenarioUI ui = new ReplayScenarioUI("before");
+		Assert.assertEquals("", this.open(ui));
+		Assert.assertEquals("bAda0", SignalReplayTest.node(ui, 0).getText().get());
+		ui.setShift(1);
+		final String output = SignalReplayTest.capture(true, () -> {
+			ui.getClicks().set(5);
+			SignalReplayTest.node(ui, 0).getText().get();
+		});
+		Assert.assertEquals("bAda0", SignalReplayTest.node(ui, 0).getText().get());
+		Assert.assertTrue(output, output.contains(" text(...) reads clicks but cannot follow it: replaying the expression failed (java.lang.IndexOutOfBoundsException"));
+		Assert.assertEquals(output, 1, output.split("\n").length);
+	}
+
+	@Test
 	public void staysSilentWithoutASetterAfterTheRead() {
 		final ReplayScenarioUI ui = new ReplayScenarioUI("silent");
 		Assert.assertEquals("", this.open(ui));

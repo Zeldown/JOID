@@ -203,10 +203,6 @@ public final class NodeBindings {
 		}
 
 		private void pull() {
-			if (this.writer != null) {
-				return;
-			}
-
 			final V next = this.source.get();
 			if (!Objects.equals(this.value, next)) {
 				this.value = next;
