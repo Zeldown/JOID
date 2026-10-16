@@ -1,13 +1,16 @@
 package dev.joid.lib.draw.raster;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.clock.ManualClockBridge;
+import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.RecordingFrameBuffer;
@@ -15,18 +18,24 @@ import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.render.framebuffer.FrameBufferPool;
 
 public class ExternalRasterTest {
 
 	@Rule
 	public final CapturingRenderBridge render = new CapturingRenderBridge(1920, 1080);
 
+	@After
+	public void restoreTheClock() {
+		BridgeHandler.CLOCK.register(SystemClockBridge.create());
+	}
+
 	@Test
 	public void drawsIntoItsTargetAtThePixelSize() {
 		final List<String> calls = new ArrayList<>();
 		DrawUtils.RASTER.drawRaster(10D, 20D, 32D, 16D, (width, height) -> {
 			calls.add(width + "x" + height);
-			Assert.assertSame(ExternalRasterTest.target(), this.render.getState().getFrameBuffer());
+			Assert.assertSame(this.target(), this.render.getState().getFrameBuffer());
 			Assert.assertEquals(32, this.render.getState().getViewportWidth());
 			Assert.assertEquals(16, this.render.getState().getViewportHeight());
 		});
@@ -37,7 +46,7 @@ public class ExternalRasterTest {
 	@Test
 	public void drawsItsTargetAsAPremultipliedQuad() {
 		DrawUtils.RASTER.drawRaster(10D, 20D, 32D, 16D, (width, height) -> {});
-		final IFrameBuffer target = ExternalRasterTest.target();
+		final IFrameBuffer target = this.target();
 		final Capture capture = this.render.getLast();
 		Assert.assertSame(target.getTexture(), capture.getState().getTexture());
 		Assert.assertSame(BlendState.PREMULTIPLIED, capture.getState().getBlend());
@@ -74,13 +83,26 @@ public class ExternalRasterTest {
 	@Test
 	public void keepsItsTargetForSmallerDrawsAndGrowsItForLargerOnes() {
 		DrawUtils.RASTER.drawRaster(0D, 0D, 100D, 30D, (width, height) -> {});
-		final IFrameBuffer first = ExternalRasterTest.target();
+		final IFrameBuffer first = this.target();
 		DrawUtils.RASTER.drawRaster(0D, 0D, 20D, 10D, (width, height) -> {});
-		Assert.assertSame(first, ExternalRasterTest.target());
+		Assert.assertSame(first, this.target());
 		DrawUtils.RASTER.drawRaster(0D, 0D, 300D, 10D, (width, height) -> {});
-		Assert.assertNotSame(first, ExternalRasterTest.target());
+		Assert.assertNotSame(first, this.target());
 		Assert.assertTrue(((RecordingFrameBuffer) first).isDeleted());
-		Assert.assertTrue(ExternalRasterTest.target().getWidth() >= 300);
+		Assert.assertTrue(this.target().getWidth() >= 300);
+	}
+
+	@Test
+	public void releasesItsTargetLeftUnusedForFiveSeconds() {
+		final ManualClockBridge clock = ManualClockBridge.create(1000L);
+		BridgeHandler.CLOCK.register(clock);
+		DrawUtils.RASTER.drawRaster(0D, 0D, 100D, 30D, (width, height) -> {});
+		clock.advance(4999L);
+		FrameBufferPool.releaseUnused();
+		Assert.assertFalse(((RecordingFrameBuffer) this.target()).isDeleted());
+		clock.advance(1L);
+		FrameBufferPool.releaseUnused();
+		Assert.assertTrue(((RecordingFrameBuffer) this.target()).isDeleted());
 	}
 
 	@Test
@@ -91,14 +113,9 @@ public class ExternalRasterTest {
 		Assert.assertTrue(this.render.getCaptures().isEmpty());
 	}
 
-	private static IFrameBuffer target() {
-		try {
-			final Field field = ExternalRaster.class.getDeclaredField("target");
-			field.setAccessible(true);
-			return (IFrameBuffer) field.get(DrawUtils.RASTER);
-		} catch (final ReflectiveOperationException exception) {
-			throw new AssertionError(exception);
-		}
+	private IFrameBuffer target() {
+		final List<IFrameBuffer> frameBuffers = this.render.getFrameBuffers();
+		return frameBuffers.get(frameBuffers.size() - 1);
 	}
 
 }

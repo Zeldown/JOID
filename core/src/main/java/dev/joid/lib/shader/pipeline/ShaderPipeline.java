@@ -1,10 +1,7 @@
 package dev.joid.lib.shader.pipeline;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
@@ -12,19 +9,18 @@ import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
+import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.ui.node.Node;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShaderPipeline {
 
-	private static int                                    pipelineDepth = 0;
-	private static final Map<Integer, PooledFrameBuffers> FBO_POOL      = new HashMap<>();
+	private static int pipelineDepth = 0;
 
 	public static void render(final @NonNull Node node, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
 		ShaderPipeline.render(node.getX(), node.getY(), node.getWidth(), node.getHeight(), passes, baseDraw);
@@ -49,25 +45,6 @@ public final class ShaderPipeline {
 			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, BridgeHandler.RENDER.get().getPixelGrid()), passes, baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
-		}
-	}
-
-	public static void cleanup() {
-		for (final PooledFrameBuffers pooled : ShaderPipeline.FBO_POOL.values()) {
-			pooled.delete();
-		}
-		ShaderPipeline.FBO_POOL.clear();
-	}
-
-	public static void releaseUnused() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final Iterator<PooledFrameBuffers> iterator = ShaderPipeline.FBO_POOL.values().iterator();
-		while (iterator.hasNext()) {
-			final PooledFrameBuffers pooled = iterator.next();
-			if (now - pooled.lastUse >= 5000L) {
-				pooled.delete();
-				iterator.remove();
-			}
 		}
 	}
 
@@ -101,7 +78,7 @@ public final class ShaderPipeline {
 			return;
 		}
 
-		final IFrameBuffer[] fbos = ShaderPipeline.allocate(area.getTextureWidth(), area.getTextureHeight()).frameBuffers;
+		final IFrameBuffer[] fbos = FrameBufferPool.allocate(ShaderPipeline.pipelineDepth, 2, area.getTextureWidth(), area.getTextureHeight());
 		final ShaderPassContext context = area.withFrameBuffer(fbos[0].getWidth(), fbos[0].getHeight());
 		BridgeHandler.RENDER.get().withState(render -> {
 			ShaderPipeline.drawInto(fbos[0], context, () -> {
@@ -142,45 +119,6 @@ public final class ShaderPipeline {
 		} finally {
 			pass.unbind();
 		}
-	}
-
-	private static PooledFrameBuffers allocate(final int width, final int height) {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final PooledFrameBuffers pooled = ShaderPipeline.FBO_POOL.get(ShaderPipeline.pipelineDepth);
-		final boolean owned = pooled != null;
-		if (owned && pooled.frameBuffers[0].getWidth() >= width && pooled.frameBuffers[0].getHeight() >= height) {
-			pooled.lastUse = now;
-			return pooled;
-		}
-
-		final int targetWidth = ShaderPipeline.capacity(owned ? pooled.frameBuffers[0].getWidth() : 0, width);
-		final int targetHeight = ShaderPipeline.capacity(owned ? pooled.frameBuffers[0].getHeight() : 0, height);
-		if (owned) {
-			pooled.delete();
-		}
-
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		final PooledFrameBuffers created = new PooledFrameBuffers(new IFrameBuffer[] {render.createFrameBuffer(targetWidth, targetHeight), render.createFrameBuffer(targetWidth, targetHeight)}, now);
-		ShaderPipeline.FBO_POOL.put(ShaderPipeline.pipelineDepth, created);
-		return created;
-	}
-
-	private static int capacity(final int current, final int required) {
-		return current >= required ? current : Math.max(required, Math.min(4096, current * 2));
-	}
-
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private static final class PooledFrameBuffers {
-
-		private final IFrameBuffer[] frameBuffers;
-
-		private long lastUse;
-
-		private void delete() {
-			this.frameBuffers[0].delete();
-			this.frameBuffers[1].delete();
-		}
-
 	}
 
 }

@@ -13,9 +13,9 @@ import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.resource.ResourceData;
-import dev.joid.lib.shader.pipeline.ShaderPipeline;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataOverlayObject;
 import dev.joid.lib.ui.node.Node;
@@ -147,7 +147,7 @@ public abstract class UIBridge implements IUIBridge {
 		final int projectionDepth = render.getProjection().getDepth();
 		try {
 			ResourceData.releaseCollected();
-			ShaderPipeline.releaseUnused();
+			FrameBufferPool.releaseUnused();
 			this.drawLayers(filter);
 			this.updateCursor();
 		} catch (final Exception exception) {

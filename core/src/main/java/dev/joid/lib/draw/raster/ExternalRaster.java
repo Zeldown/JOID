@@ -7,6 +7,7 @@ import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -15,8 +16,6 @@ import lombok.NonNull;
 public final class ExternalRaster {
 
 	private static final ExternalRaster INSTANCE = new ExternalRaster();
-
-	private IFrameBuffer target;
 
 	public static @NonNull ExternalRaster inst() {
 		return ExternalRaster.INSTANCE;
@@ -35,29 +34,13 @@ public final class ExternalRaster {
 		final double bottom = grid.snapBottom(y, y + height);
 		final int pixelWidth = Math.min(4096, grid.toPixelWidth(Math.abs(right - left)));
 		final int pixelHeight = Math.min(4096, grid.toPixelHeight(Math.abs(bottom - top)));
-		final IFrameBuffer target = this.allocate(render, pixelWidth, pixelHeight);
+		final IFrameBuffer target = FrameBufferPool.allocate(this, 1, pixelWidth, pixelHeight)[0];
 
 		ExternalRaster.fill(target, pixelWidth, pixelHeight, drawable);
 
 		final double u = (double) pixelWidth / target.getWidth();
 		final double v = (double) pixelHeight / target.getHeight();
 		DrawUtils.RESOURCE.drawTexture(left, top, right - left, bottom - top, target.getTexture(), 0D, v, u, 0D, grid.isAligned() ? TextureFilter.NEAREST : TextureFilter.LINEAR, BlendState.PREMULTIPLIED);
-	}
-
-	private IFrameBuffer allocate(final IRenderBridge render, final int width, final int height) {
-		final boolean owned = this.target != null;
-		if (owned && this.target.getWidth() >= width && this.target.getHeight() >= height) {
-			return this.target;
-		}
-
-		final int targetWidth = ExternalRaster.capacity(owned ? this.target.getWidth() : 0, width);
-		final int targetHeight = ExternalRaster.capacity(owned ? this.target.getHeight() : 0, height);
-		if (owned) {
-			this.target.delete();
-		}
-
-		this.target = render.createFrameBuffer(targetWidth, targetHeight);
-		return this.target;
 	}
 
 	private static void fill(final IFrameBuffer target, final int width, final int height, final IExternalRasterDrawable drawable) {
@@ -69,10 +52,6 @@ public final class ExternalRaster {
 			render.clearDepth();
 			render.raster(target, width, height, () -> drawable.draw(width, height));
 		})));
-	}
-
-	private static int capacity(final int current, final int required) {
-		return current >= required ? current : Math.min(4096, Math.max(required, Math.max(64, current * 2)));
 	}
 
 }

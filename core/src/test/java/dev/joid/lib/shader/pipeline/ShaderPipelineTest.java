@@ -25,6 +25,7 @@ import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 import lombok.Getter;
@@ -39,12 +40,12 @@ public class ShaderPipelineTest {
 
 	@Before
 	public void emptyThePool() {
-		ShaderPipeline.cleanup();
+		FrameBufferPool.cleanup();
 	}
 
 	@After
 	public void releaseThePool() {
-		ShaderPipeline.cleanup();
+		FrameBufferPool.cleanup();
 		BridgeHandler.CLOCK.register(SystemClockBridge.create());
 	}
 
@@ -246,7 +247,7 @@ public class ShaderPipelineTest {
 	@Test
 	public void deletesThePooledFrameBuffers() {
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		ShaderPipeline.cleanup();
+		FrameBufferPool.cleanup();
 		for (final IFrameBuffer frameBuffer : this.render.getFrameBuffers()) {
 			Assert.assertTrue(((RecordingFrameBuffer) frameBuffer).isDeleted());
 		}
@@ -264,10 +265,10 @@ public class ShaderPipelineTest {
 		clock.advance(3000L);
 		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
 		clock.advance(4999L);
-		ShaderPipeline.releaseUnused();
+		FrameBufferPool.releaseUnused();
 		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
 		clock.advance(1L);
-		ShaderPipeline.releaseUnused();
+		FrameBufferPool.releaseUnused();
 		Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
 		Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(1)).isDeleted());
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
