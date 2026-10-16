@@ -22,8 +22,12 @@ public class DemoUIBridge extends WindowUIBridge {
 
 	public void start() {
 		super.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE));
-		JOID.open(new UIDemoChoice());
+		this.openMenu();
 		super.load();
+	}
+
+	protected void openMenu() {
+		JOID.open(new UIDemoChoice());
 	}
 
 	public final <T extends DemoUIBridge> @NonNull T interfaceScale(final double interfaceScale) {

@@ -14,11 +14,10 @@ public class ShowcaseWindow extends DemoWindow {
 	}
 
 	@Override
-	public void start() {
+	protected void openMenu() {
 		GLFW.glfwSetWindowTitle(super.getWindow(), "JOID - Showcase (Vulkan)");
 		GLFW.glfwMaximizeWindow(super.getWindow());
 		JOID.open(new ShowMenu());
-		super.load();
 	}
 
 }
