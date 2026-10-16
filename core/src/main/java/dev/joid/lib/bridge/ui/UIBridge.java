@@ -47,14 +47,12 @@ public abstract class UIBridge implements IUIBridge {
 
 	public final void load() {
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
-		final double width = window.getWidth();
-		final double height = window.getHeight();
-		this.uiList.forEach(ui -> ui.load(width, height, ui.getView().getZoom()));
+		this.load(window.getWidth(), window.getHeight());
 	}
 
 	public final void resize(final int width, final int height) {
 		BridgeHandler.RENDER.get().screen(width, height);
-		this.load();
+		this.load(width, height);
 	}
 
 	public final void frame() {
@@ -230,6 +228,10 @@ public abstract class UIBridge implements IUIBridge {
 			}
 		}
 		return false;
+	}
+
+	private void load(final double width, final double height) {
+		this.uiList.forEach(ui -> ui.load(width, height, ui.getView().getZoom()));
 	}
 
 	private boolean isShown(final UI ui) {

@@ -70,7 +70,10 @@ public abstract class Shader implements IShader {
 
 	@Override
 	public final void bind() {
-		this.previousBlend = this.bridge.getState().getBlend();
+		if (!this.bound) {
+			this.previousBlend = this.bridge.getState().getBlend();
+		}
+
 		this.bridge.getState().shader(this).blend(this.blend);
 		this.bound = true;
 	}

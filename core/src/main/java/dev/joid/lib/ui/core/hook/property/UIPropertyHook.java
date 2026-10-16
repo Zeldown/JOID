@@ -4,9 +4,9 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -25,7 +25,7 @@ public final class UIPropertyHook {
 
 	private static final Gson GSON = new GsonBuilder().create();
 
-	private static final Map<String, List<Field>> PROPERTY_MAP = new HashMap<>();
+	private static final Map<String, List<Field>> PROPERTY_MAP = new ConcurrentHashMap<>();
 
 	public static void load(final @NonNull UI ui) {
 		final List<Field> fields = UIPropertyHook.getFields(ui);

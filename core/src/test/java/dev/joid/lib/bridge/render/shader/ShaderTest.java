@@ -61,6 +61,18 @@ public class ShaderTest {
 	}
 
 	@Test
+	public void restoresTheBlendOfItsFirstBindOnceItsNestedBindsEnd() {
+		final RecordingRenderBridge render = new RecordingRenderBridge();
+		final TestShader shader = new TestShader(render, BlendState.PREMULTIPLIED);
+		render.getState().blend(BlendState.NORMAL);
+		shader.bind();
+		shader.bind();
+		shader.unbind();
+		shader.unbind();
+		Assert.assertSame(BlendState.NORMAL, render.getState().getBlend());
+	}
+
+	@Test
 	public void keepsTheBlendOfAnUnbindWithoutBind() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.getState().blend(BlendState.NORMAL);

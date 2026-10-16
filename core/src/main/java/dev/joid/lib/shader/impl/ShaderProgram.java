@@ -82,12 +82,13 @@ public abstract class ShaderProgram {
 
 		final RenderState state = BridgeHandler.RENDER.get().getState();
 		final IShader previous = state.getShader();
+		final BlendState blend = state.getBlend();
 		bind.run();
 		try {
 			body.run();
 		} finally {
 			this.unbind();
-			state.shader(previous);
+			state.shader(previous).blend(blend);
 		}
 	}
 

@@ -32,6 +32,16 @@ public class UIViewTest {
 	}
 
 	@Test
+	public void keepsItsSizeForAnEmptyWindow() {
+		final UIView view = UIView.create(960D, 540D).resize(0D, 0D);
+		Assert.assertEquals(1920D, view.getVisibleWidth(), 1E-9D);
+		Assert.assertEquals(123D, view.toUiX(123D), 1E-9D);
+		view.resize(3840D, 2160D).resize(3840D, 0D);
+		Assert.assertEquals(2160D, view.getHeight(), 0D);
+		Assert.assertEquals(1920D, view.toUiX(3840D), 1E-9D);
+	}
+
+	@Test
 	public void followsTheWindowSize() {
 		final UIView view = UIView.create(960D, 540D).resize(3840D, 2160D);
 		Assert.assertEquals(1920D, view.toUiX(3840D), 1E-9D);

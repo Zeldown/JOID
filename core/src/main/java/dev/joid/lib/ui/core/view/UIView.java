@@ -25,6 +25,8 @@ public final class UIView {
 		this.anchorY = anchorY;
 		this.zoom = 1D;
 		this.interfaceScale = 1D;
+		this.width = UIView.DESIGN_WIDTH;
+		this.height = UIView.DESIGN_HEIGHT;
 		this.viewportWidth = UIView.DESIGN_WIDTH;
 		this.viewportHeight = UIView.DESIGN_HEIGHT;
 	}
@@ -102,6 +104,10 @@ public final class UIView {
 	}
 
 	public @NonNull UIView resize(final double width, final double height) {
+		if (width <= 0D || height <= 0D) {
+			return this;
+		}
+
 		final double fit = Math.min(width / UIView.DESIGN_WIDTH, height / UIView.DESIGN_HEIGHT);
 		this.width = width;
 		this.height = height;

@@ -117,26 +117,18 @@ public final class JOID {
 	}
 
 	public static void close(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge == null) {
-			return;
-		}
-
 		ThreadUtils.runOnRenderThread(() -> {
-			if (bridge.isOpen(ui) && ui.fireClose()) {
+			final IUIBridge bridge = BridgeHandler.UI.get(ui);
+			if (bridge != null && bridge.isOpen(ui) && ui.fireClose()) {
 				bridge.close(ui);
 			}
 		});
 	}
 
 	public static void forceClose(final @NonNull UI ui) {
-		final IUIBridge bridge = BridgeHandler.UI.get(ui);
-		if (bridge == null) {
-			return;
-		}
-
 		ThreadUtils.runOnRenderThread(() -> {
-			if (bridge.isOpen(ui)) {
+			final IUIBridge bridge = BridgeHandler.UI.get(ui);
+			if (bridge != null && bridge.isOpen(ui)) {
 				ui.dispose();
 				bridge.close(ui);
 			}

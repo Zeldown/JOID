@@ -896,6 +896,8 @@ public class UIBridgeTest {
 		this.bridges.getUi().resize(800, 600);
 		Assert.assertEquals(800, this.bridges.getRender().getState().getViewportWidth());
 		Assert.assertEquals(600, this.bridges.getRender().getState().getViewportHeight());
+		Assert.assertEquals(800D, menu.getWindowWidth(), 0D);
+		Assert.assertEquals(600D, menu.getWindowHeight(), 0D);
 		Assert.assertEquals(1, menu.inits);
 	}
 

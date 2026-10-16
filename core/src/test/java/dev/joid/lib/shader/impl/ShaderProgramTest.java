@@ -20,6 +20,8 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
+import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.state.RenderState;
 
 public class ShaderProgramTest {
 
@@ -162,6 +164,16 @@ public class ShaderProgramTest {
 		}
 	}
 
+	@Test
+	public void givesBackTheShaderAndBlendOfItsCallerAfterADraw() {
+		final SourceShader shader = new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source());
+		final RenderState state = this.bridges.getRender().getState();
+		state.blend(BlendState.PREMULTIPLIED);
+		shader.draw(() -> state.blend(BlendState.NORMAL));
+		Assert.assertNull(state.getShader());
+		Assert.assertSame(BlendState.PREMULTIPLIED, state.getBlend());
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingSource() {
 		new SourceShader(null, ShaderProgramTest.source());
@@ -193,6 +205,10 @@ public class ShaderProgramTest {
 
 		private SourceShader(final Object vertex, final Object fragment) {
 			super.load(vertex, fragment);
+		}
+
+		private void draw(final Runnable body) {
+			super.use(this::bind, body);
 		}
 
 	}
