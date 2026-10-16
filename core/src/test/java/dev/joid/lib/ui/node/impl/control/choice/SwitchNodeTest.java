@@ -311,14 +311,14 @@ public class SwitchNodeTest {
 	}
 
 	@Test
-	public void picksTheShareOfItsWidthUnderAClickWithoutParts() {
-		final PlainSwitch node = new PlainSwitch();
+	public void picksTheOptionUnderAClickWhereverItsSkinPlacesIt() {
+		final VerticalSwitch node = new VerticalSwitch();
 		this.bridges.open(new SingleUI(node)).frame();
-		this.click(219D, 120D);
+		this.click(110D, 150D);
 		Assert.assertEquals("high", node.getValue());
-		this.click(101D, 120D);
-		Assert.assertEquals("low", node.getValue());
-		this.click(300D, 120D);
+		this.click(110D, 115D);
+		Assert.assertEquals("medium", node.getValue());
+		this.click(110D, 105D);
 		Assert.assertEquals("low", node.getValue());
 	}
 
@@ -346,7 +346,7 @@ public class SwitchNodeTest {
 	@RequiredArgsConstructor
 	public static final class SingleUI extends UI {
 
-		private final BaseSwitchNode<String> node;
+		private final SwitchNode<String> node;
 
 		@Override
 		public void init() {
@@ -388,11 +388,22 @@ public class SwitchNodeTest {
 
 	}
 
-	public static final class PlainSwitch extends BaseSwitchNode<String> {
+	public static final class VerticalSwitch extends SwitchNode<String> {
 
-		public PlainSwitch() {
-			super(100D, 100D, 120D, 40D);
+		public VerticalSwitch() {
+			super(100D, 100D, 40D, 120D);
 			super.values("low", "medium", "high");
+			super.option((state, index) -> RectNode.create(0D, 0D, 10D, 10D));
+		}
+
+		@Override
+		public void layout() {
+			final double[] heights = {10D, 20D, 90D};
+			double offset = 0D;
+			for (int i = 0; i < heights.length; i++) {
+				super.getOptionList().get(i).layoutPosition(0D, offset).layoutSize(super.getWidth(), heights[i]);
+				offset += heights[i];
+			}
 		}
 
 	}
