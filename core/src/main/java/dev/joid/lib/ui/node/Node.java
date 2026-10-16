@@ -483,7 +483,7 @@ public abstract class Node implements INode {
 
 		this.dispatch(NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, source), this.isEnabled(), Node.HANDLE_MOUSE_SCROLL, (node, event) -> node.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event), event -> {
 			if (!event.isConsumed() && this.isHovered()) {
-				final double speed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2D : this.scrollSpeed;
+				final double speed = UI.isCtrlKeyDown() ? this.scrollSpeed * 2D : this.scrollSpeed;
 				if (notchesY != 0D && this.hasOverflowY()) {
 					if (this.canScroll(this.scrollYValue, this.maxScrollY, notchesY)) {
 						this.scrollYValue.set(this.scrollYValue.get() + (notchesY > 0D ? 30D : -30D) * speed);
@@ -572,7 +572,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull ConsumableEvent source) {
-		if (this.dragging) {
+		if (this.dragging && button.isLeft()) {
 			this.stopDragging();
 		}
 
@@ -1756,17 +1756,8 @@ public abstract class Node implements INode {
 
 				final double targetX = this.targetDragX;
 				final double targetY = this.targetDragY;
-				if (this.targetDragX < boundX) {
-					this.targetDragX = boundX;
-				} else if (this.targetDragX + this.width > boundX + boundWidth) {
-					this.targetDragX = boundX + boundWidth - this.width;
-				}
-
-				if (this.targetDragY < boundY) {
-					this.targetDragY = boundY;
-				} else if (this.targetDragY + this.height > boundY + boundHeight) {
-					this.targetDragY = boundY + boundHeight - this.height;
-				}
+				this.targetDragX = Math.max(boundX, Math.min(this.targetDragX, boundX + boundWidth - this.width));
+				this.targetDragY = Math.max(boundY, Math.min(this.targetDragY, boundY + boundHeight - this.height));
 
 				if (this.targetDragX != targetX || this.targetDragY != targetY) {
 					this.dragged = true;
@@ -1830,11 +1821,8 @@ public abstract class Node implements INode {
 		}
 
 		final Runnable content = () -> {
-			if (this.overflow != OverflowProperty.NONE) {
-				this.drawList.forEach(child -> child.overflowArea = this);
-			} else if (this.overflowArea != null) {
-				this.drawList.forEach(child -> child.overflowArea = this.overflowArea);
-			}
+			final Node area = this.overflow != OverflowProperty.NONE ? this : this.overflowArea;
+			this.drawList.forEach(child -> child.overflowArea = area);
 
 			if (this.skeleton != null && !this.mounted) {
 				this.skeleton.render(mouseX, mouseY);
@@ -1865,10 +1853,6 @@ public abstract class Node implements INode {
 					this.layerList.forEach(layer -> layer.draw(this, localX, localY));
 				});
 			}
-
-			if (this.draggedNode != null) {
-				this.renderDraggedNode(mouseX, mouseY);
-			}
 			this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
 		};
 		final Runnable maskDraw = () -> {
@@ -1894,6 +1878,10 @@ public abstract class Node implements INode {
 			effectDraw = () -> effect.draw(this, body);
 		}
 		effectDraw.run();
+
+		if (this.draggedNode != null) {
+			this.renderDraggedNode(mouseX, mouseY);
+		}
 	}
 
 	private @NonNull List<IShaderPass> toShaderPasses(final List<NodeEffect<Node>> effects) {

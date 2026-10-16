@@ -96,6 +96,16 @@ public class NodeHoverElementTest {
 	}
 
 	@Test
+	public void updatesTheNodeOnEveryFrameItIsShown() {
+		final int[] updates = {0};
+		final RectNode tooltip = RectNode.create(10D, -5D, 40D, 20D).onUpdate(event -> updates[0]++);
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).hover(NodeHoverElement.follow(tooltip));
+		this.bridges.open(new NodeUI(rect)).frames(30);
+		this.bridges.move(150D, 160D).frames(5);
+		Assert.assertTrue(updates[0] >= 4);
+	}
+
+	@Test
 	public void detachesTheNodeOnceItsElementIsRemoved() {
 		final RectNode first = RectNode.create(10D, -5D, 40D, 20D);
 		final RectNode second = RectNode.create(10D, 20D, 40D, 20D);

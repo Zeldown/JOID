@@ -36,6 +36,8 @@ import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.render.transform.Transformation;
+import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
@@ -53,6 +55,7 @@ import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.NodeHoverElement;
@@ -626,6 +629,18 @@ public class NodeTest {
 		this.bridges.open(ui).frame();
 		Assert.assertSame(child, ui.getNodeAt(160D, 160D));
 		Assert.assertNull(ui.getNodeAt(220D, 220D));
+	}
+
+	@Test
+	public void hoversTheChildrenOutsideAnAreaThatStopsClipping() {
+		final RectNode child = RectNode.create(50D, 50D, 100D, 100D);
+		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN).append(child);
+		final NodeUI ui = new NodeUI(area);
+		this.bridges.open(ui).frame();
+		area.overflow(OverflowProperty.NONE);
+		this.bridges.frame();
+		Assert.assertNull(child.getOverflowArea());
+		Assert.assertSame(child, ui.getNodeAt(220D, 220D));
 	}
 
 	@Test
@@ -1203,6 +1218,9 @@ public class NodeTest {
 		this.bridges.getWindow().getKeys().clear();
 		this.bridges.scroll(1D);
 		Assert.assertEquals(-60D, row.getTargetScrollX(), 0D);
+		this.bridges.getWindow().getKeys().add(Key.RIGHT_CONTROL);
+		this.bridges.scroll(-1D);
+		Assert.assertEquals(-120D, row.getTargetScrollX(), 0D);
 	}
 
 	@Test
@@ -1688,6 +1706,27 @@ public class NodeTest {
 	}
 
 	@Test
+	public void restsAtTheStartOfAParentNarrowerThanItself() {
+		final RectNode node = RectNode.create(0D, 0D, 300D, 50D).draggable(DraggableProperty.parent());
+		this.bridges.open(new NodeUI(ContainerNode.create(100D, 100D, 200D, 200D).append(node))).frames(100);
+		Assert.assertEquals(0D, node.getX(), 0D);
+		Assert.assertFalse(node.isDragged());
+		this.bridges.frame();
+		Assert.assertEquals(0D, node.getX(), 0D);
+		Assert.assertFalse(node.isDragged());
+	}
+
+	@Test
+	public void keepsDraggingWhenAnotherButtonIsReleased() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free());
+		this.press(node, 110D, 110D);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
+		Assert.assertTrue(node.isDragging());
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		Assert.assertFalse(node.isDragging());
+	}
+
+	@Test
 	public void movesIntoTheNodeItIsBoundTo() {
 		final RectNode zone = RectNode.create(300D, 300D, 200D, 200D);
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.node(zone));
@@ -1774,6 +1813,24 @@ public class NodeTest {
 		Assert.assertEquals(2, draws.size());
 		Assert.assertEquals(310D, draws.get(0).getLeft(), 1E-3D);
 		Assert.assertEquals(510D, draws.get(1).getLeft(), 1E-3D);
+		Assert.assertEquals(410D, draws.get(1).getTop(), 1E-3D);
+	}
+
+	@Test
+	public void drawsTheDraggedCopyOutsideTheEffectsOfTheOriginal() {
+		final RectNode node = RectNode
+		.create(10D, 10D, 50D, 50D)
+		.color(new Color(0.2F, 0.4F, 0.6F, 1F))
+		.effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(30D, 0D))))
+		.draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.press(ContainerNode.create(300D, 200D, 500D, 500D).append(node), 320D, 220D);
+		this.bridges.move(520D, 420D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
+		Assert.assertEquals(2, draws.size());
+		Assert.assertEquals(340D, draws.get(0).getLeft(), 1E-3D);
+		Assert.assertEquals(540D, draws.get(1).getLeft(), 1E-3D);
 		Assert.assertEquals(410D, draws.get(1).getTop(), 1E-3D);
 	}
 

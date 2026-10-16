@@ -16,6 +16,7 @@ public class NodeHoverElement extends PositionedHoverElement {
 					node.load(parentNode.getUi());
 				}
 
+				node.fireUpdate();
 				BridgeHandler.RENDER.get().getModelView().translate(-node.getX(), -node.getY(), 0);
 				node.render(mouseX, mouseY);
 			}
