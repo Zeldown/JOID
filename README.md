@@ -135,9 +135,4 @@ Getting started · Core concepts · Essentials · Tutorial · Components · Guid
 
 Start with the [Quick Start](https://documentation.joid.dev/#/getting-started/quick-start) for a first window in a few minutes, then read the [Core Concepts](https://documentation.joid.dev/#/concepts/canvas) in order, starting with the virtual canvas: the documentation is a learning path where each page relies only on the ones before it. The site also lives in the [`documentation/`](documentation) folder: serve it with any static HTTP server (`cd documentation && npx serve .`).
 
-## Credits
-
-- [Universal Tween Engine](https://github.com/AurelienRibon/universal-tween-engine) by **Aurélien Ribon**: tween animation engine (Apache-2.0, bundled in `lib/animation/tween`)
-- [JavaCV / FFmpeg](https://github.com/bytedeco/javacv) by **Bytedeco**: video decoding (Apache-2.0; the FFmpeg builds carry their own terms)
-
 JOID is released under the [Apache License 2.0](LICENSE).
