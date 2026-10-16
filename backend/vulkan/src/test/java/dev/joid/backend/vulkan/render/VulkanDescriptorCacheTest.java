@@ -9,10 +9,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK10;
+import org.lwjgl.vulkan.VkDescriptorPoolCreateInfo;
+import org.lwjgl.vulkan.VkDescriptorPoolSize;
+import org.lwjgl.vulkan.VkDescriptorSetAllocateInfo;
 import org.lwjgl.vulkan.VkDescriptorSetLayoutBinding;
 import org.lwjgl.vulkan.VkDescriptorSetLayoutCreateInfo;
 import org.lwjgl.vulkan.VkDevice;
@@ -70,21 +74,17 @@ public class VulkanDescriptorCacheTest {
 		allocate.setAccessible(true);
 		final Field pools = VulkanDescriptorCache.class.getDeclaredField("poolList");
 		pools.setAccessible(true);
+		final List<Long> poolList = (List<Long>) pools.get(cache);
+		final long older = VulkanDescriptorCacheTest.createPool(device);
+		final long newer = VulkanDescriptorCacheTest.createPool(device);
+		poolList.add(older);
+		poolList.add(newer);
 		try {
-			final long[] first = (long[]) allocate.invoke(cache, layout);
-			for (int index = 1; index < 1024; index++) {
-				allocate.invoke(cache, layout);
-			}
-
-			allocate.invoke(cache, layout);
-			Assert.assertEquals(2, ((List<?>) pools.get(cache)).size());
-			VK10.vkFreeDescriptorSets(device, first[1], first[0]);
-			for (int index = 1; index < 1024; index++) {
-				allocate.invoke(cache, layout);
-			}
-
-			Assert.assertEquals(first[1], ((long[]) allocate.invoke(cache, layout))[1]);
-			Assert.assertEquals(2, ((List<?>) pools.get(cache)).size());
+			VK10.vkFreeDescriptorSets(device, older, VulkanDescriptorCacheTest.allocate(device, older, layout));
+			VulkanDescriptorCacheTest.allocate(device, newer, layout);
+			Assume.assumeTrue("The driver fills a descriptor pool beyond its maxSets, no pool is ever full", VulkanDescriptorCacheTest.isFull(device, layout));
+			Assert.assertEquals(older, ((long[]) allocate.invoke(cache, layout))[1]);
+			Assert.assertEquals(2, poolList.size());
 		} finally {
 			cache.destroy();
 			VK10.vkDestroyDescriptorSetLayout(device, layout, null);
@@ -100,6 +100,34 @@ public class VulkanDescriptorCacheTest {
 		final Field sets = VulkanDescriptorCache.class.getDeclaredField("setMap");
 		sets.setAccessible(true);
 		return ((Map<List<Long>, ?>) sets.get(cache)).keySet().stream().anyMatch(key -> key.contains(view));
+	}
+
+	private static long createPool(final VkDevice device) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkDescriptorPoolSize.Buffer sizes = VkDescriptorPoolSize.calloc(1, stack);
+			sizes.get(0).type(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(1);
+			final LongBuffer pool = stack.mallocLong(1);
+			VulkanContext.check(VK10.vkCreateDescriptorPool(device, VkDescriptorPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).maxSets(1).pPoolSizes(sizes), null, pool), "vkCreateDescriptorPool");
+			return pool.get(0);
+		}
+	}
+
+	private static long allocate(final VkDevice device, final long pool, final long layout) {
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final LongBuffer set = stack.mallocLong(1);
+			VulkanContext.check(VK10.vkAllocateDescriptorSets(device, VkDescriptorSetAllocateInfo.calloc(stack).sType$Default().descriptorPool(pool).pSetLayouts(stack.longs(layout)), set), "vkAllocateDescriptorSets");
+			return set.get(0);
+		}
+	}
+
+	private static boolean isFull(final VkDevice device, final long layout) {
+		final long pool = VulkanDescriptorCacheTest.createPool(device);
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			VulkanDescriptorCacheTest.allocate(device, pool, layout);
+			return VK10.vkAllocateDescriptorSets(device, VkDescriptorSetAllocateInfo.calloc(stack).sType$Default().descriptorPool(pool).pSetLayouts(stack.longs(layout)), stack.mallocLong(1)) != VK10.VK_SUCCESS;
+		} finally {
+			VK10.vkDestroyDescriptorPool(device, pool, null);
+		}
 	}
 
 	private static long createLayout(final VkDevice device) {
