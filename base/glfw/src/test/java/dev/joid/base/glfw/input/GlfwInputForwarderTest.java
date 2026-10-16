@@ -116,12 +116,13 @@ public class GlfwInputForwarderTest {
 	}
 
 	@Test
-	public void leavesTheKeyRepeatToTheUi() {
+	public void keepsTheRepeatsOfAConsumedKey() {
 		this.ui.cancel = true;
 		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_BACKSPACE, GLFW.GLFW_PRESS);
 		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_BACKSPACE, GLFW.GLFW_REPEAT);
 		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_BACKSPACE, GLFW.GLFW_REPEAT);
-		Assert.assertEquals(Arrays.asList("key BACKSPACE", "passed key", "passed key"), this.trace);
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_BACKSPACE, GLFW.GLFW_RELEASE);
+		Assert.assertEquals(Collections.singletonList("key BACKSPACE"), this.trace);
 	}
 
 	@Test
@@ -134,11 +135,12 @@ public class GlfwInputForwarderTest {
 	@Test
 	public void passesTheEventsTheUiLeftToThePreviousCallbacks() {
 		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_PRESS);
+		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_REPEAT);
 		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_RELEASE);
 		GlfwInputForwarderTest.character('a');
 		GlfwInputForwarderTest.button(0, GLFW.GLFW_PRESS);
 		GlfwInputForwarderTest.scroll(0D, 1D);
-		Assert.assertEquals(Arrays.asList("key F3", "passed key", "passed key", "char a", "passed char", "pressed LEFT", "passed button", "scrolled 1.0", "passed scroll"), this.trace);
+		Assert.assertEquals(Arrays.asList("key F3", "passed key", "passed key", "passed key", "char a", "passed char", "pressed LEFT", "passed button", "scrolled 1.0", "passed scroll"), this.trace);
 	}
 
 	private static void key(final int code, final int action) {
@@ -224,7 +226,7 @@ public class GlfwInputForwarderTest {
 		}
 
 		@Override
-		public boolean isKeyDown(final @NonNull Key key) {
+		public boolean isKeyDown(final @NonNull Key physicalKey) {
 			return false;
 		}
 

@@ -4,13 +4,20 @@ import java.util.function.Supplier;
 
 import org.lwjgl.vulkan.VK10;
 
+import dev.joid.backend.vulkan.render.VulkanRenderBridge;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import lombok.NonNull;
 
 public final class VulkanBorrowedTexture extends BorrowedTexture<VulkanImage> implements IVulkanTexture {
 
+	private final VulkanRenderBridge bridge;
+
+	private VulkanImage image;
+
 	private VulkanBorrowedTexture(final Supplier<VulkanImage> image) {
 		super(image);
+		this.bridge = VulkanBorrowedTexture.findBridge();
 	}
 
 	public static @NonNull VulkanBorrowedTexture create(final @NonNull VulkanImage image) {
@@ -24,6 +31,12 @@ public final class VulkanBorrowedTexture extends BorrowedTexture<VulkanImage> im
 	@Override
 	public long getView() {
 		final VulkanImage image = super.getHandle();
+		if (image != this.image) {
+			if (this.image != null) {
+				this.bridge.releaseHandle(this.image.getView());
+			}
+			this.image = image;
+		}
 		return image != null ? image.getView() : VK10.VK_NULL_HANDLE;
 	}
 
@@ -45,6 +58,14 @@ public final class VulkanBorrowedTexture extends BorrowedTexture<VulkanImage> im
 	@Override
 	protected boolean isMipmapped(final @NonNull VulkanImage image) {
 		return image.getLevels() > 1;
+	}
+
+	private static @NonNull VulkanRenderBridge findBridge() {
+		final VulkanRenderBridge bridge = BridgeHandler.RENDER.getBridge(VulkanRenderBridge.class);
+		if (bridge == null) {
+			throw new IllegalStateException("No Vulkan render bridge is registered, register the Vulkan backend before VulkanBorrowedTexture.create(...)");
+		}
+		return bridge;
 	}
 
 }

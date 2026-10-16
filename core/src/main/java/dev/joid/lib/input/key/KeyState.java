@@ -33,4 +33,8 @@ public final class KeyState {
 		return KeyLayout.isLayoutKey(key) ? this.heldMap.containsValue(key) : window.isKeyDown(key);
 	}
 
+	public @NonNull Key getKey(final @NonNull Key physicalKey) {
+		return this.heldMap.getOrDefault(physicalKey, physicalKey);
+	}
+
 }

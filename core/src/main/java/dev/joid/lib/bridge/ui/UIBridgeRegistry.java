@@ -131,6 +131,11 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 		return consumed;
 	}
 
+	public boolean isKeyConsumed(final @NonNull Key physicalKey) {
+		final Key key = this.keyState.getKey(physicalKey);
+		return this.dispatch(bridge -> bridge.isKeyConsumed(key));
+	}
+
 	public IUIBridge get(final @NonNull UI ui) {
 		final IUIBridge holder = super.find(bridge -> bridge.isOpen(ui));
 		return holder != null ? holder : super.find(bridge -> bridge.canHandle(ui));

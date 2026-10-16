@@ -126,6 +126,10 @@ public abstract class UIBridge implements IUIBridge {
 		return this.consumedKeySet.remove(key);
 	}
 
+	public final boolean isKeyConsumed(final @NonNull Key key) {
+		return this.consumedKeySet.contains(key);
+	}
+
 	public final void update() {
 		for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
 			ui.fireUpdate();

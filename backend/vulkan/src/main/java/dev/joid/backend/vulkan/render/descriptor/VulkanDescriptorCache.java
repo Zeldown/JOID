@@ -81,18 +81,24 @@ public final class VulkanDescriptorCache {
 	}
 
 	private long[] allocate(final long layout) {
-		if (this.poolList.isEmpty()) {
-			this.poolList.add(this.createPool());
+		for (int index = this.poolList.size() - 1; index >= 0; index--) {
+			final long[] set = this.allocate(this.poolList.get(index), layout);
+			if (set != null) {
+				return set;
+			}
 		}
 
+		final long pool = this.createPool();
+		this.poolList.add(pool);
+		return this.allocate(pool, layout);
+	}
+
+	private long[] allocate(final long pool, final long layout) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer set = stack.mallocLong(1);
-			long pool = this.poolList.get(this.poolList.size() - 1);
-			int result = VK10.vkAllocateDescriptorSets(this.context.getDevice(), VkDescriptorSetAllocateInfo.calloc(stack).sType$Default().descriptorPool(pool).pSetLayouts(stack.longs(layout)), set);
+			final int result = VK10.vkAllocateDescriptorSets(this.context.getDevice(), VkDescriptorSetAllocateInfo.calloc(stack).sType$Default().descriptorPool(pool).pSetLayouts(stack.longs(layout)), set);
 			if (result == VK11.VK_ERROR_OUT_OF_POOL_MEMORY || result == VK10.VK_ERROR_FRAGMENTED_POOL) {
-				pool = this.createPool();
-				this.poolList.add(pool);
-				result = VK10.vkAllocateDescriptorSets(this.context.getDevice(), VkDescriptorSetAllocateInfo.calloc(stack).sType$Default().descriptorPool(pool).pSetLayouts(stack.longs(layout)), set);
+				return null;
 			}
 
 			VulkanContext.check(result, "vkAllocateDescriptorSets");

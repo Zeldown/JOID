@@ -285,6 +285,20 @@ public class UIBridgeRegistryTest {
 		Assert.assertFalse(registry.keyReleased(Key.A));
 	}
 
+	@Test
+	public void knowsTheHeldKeysABridgeConsumed() {
+		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final TraceUI ui = this.open(registry, "ui", 0);
+		ui.cancel = true;
+		Assert.assertTrue(registry.keyPressed(Key.Q, Key.A));
+		Assert.assertTrue(registry.isKeyConsumed(Key.Q));
+		ui.cancel = false;
+		Assert.assertFalse(registry.keyPressed(Key.W, Key.Z));
+		Assert.assertFalse(registry.isKeyConsumed(Key.W));
+		registry.keyReleased(Key.Q);
+		Assert.assertFalse(registry.isKeyConsumed(Key.Q));
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesToRouteAMissingUi() {
 		UIBridgeRegistry.create().get((UI) null);
