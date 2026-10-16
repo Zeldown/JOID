@@ -890,7 +890,7 @@ public abstract class Node implements INode {
 				this.draggedNode.position(PositionProperty.ABSOLUTE);
 				this.draggedNode.layoutX = this.draggedNode.layoutY = 0D;
 				this.draggedNode.shiftX = this.draggedNode.shiftY = 0D;
-				this.draggedNode.dragTo(this.targetDragX, this.targetDragY);
+				this.draggedNode.moveTo(this.targetDragX, this.targetDragY);
 			}
 		});
 		return (T) this;
@@ -1770,7 +1770,7 @@ public abstract class Node implements INode {
 					final double diffX = this.getAbsoluteX() - this.x;
 					final double diffY = this.getAbsoluteY() - this.y;
 
-					if (!this.dragTo(newAbsoluteX - diffX, newAbsoluteY - diffY)) {
+					if (!this.moveTo(newAbsoluteX - diffX, newAbsoluteY - diffY)) {
 						this.targetDragX = this.getAbsoluteX();
 						this.targetDragY = this.getAbsoluteY();
 					}
@@ -1781,7 +1781,7 @@ public abstract class Node implements INode {
 				} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
 					final double newAbsoluteX = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
 					final double newAbsoluteY = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
-					this.draggedNode.dragTo(newAbsoluteX, newAbsoluteY);
+					this.draggedNode.moveTo(newAbsoluteX, newAbsoluteY);
 				}
 			}
 		}
@@ -2047,7 +2047,7 @@ public abstract class Node implements INode {
 		}
 
 		if (this.dragged && this.draggable != null && this.draggable.getType() == DraggableType.MOVE) {
-			this.dragTo(this.x + (this.targetDragX - this.getAbsoluteX()), this.y + (this.targetDragY - this.getAbsoluteY()));
+			this.moveTo(this.x + (this.targetDragX - this.getAbsoluteX()), this.y + (this.targetDragY - this.getAbsoluteY()));
 		}
 
 		this.dragged = false;
@@ -2078,7 +2078,7 @@ public abstract class Node implements INode {
 		}
 	}
 
-	private boolean dragTo(final double x, final double y) {
+	private boolean moveTo(final double x, final double y) {
 		return this.positionValue.change(Point.create(x - this.layoutX - this.shiftX + this.getPivotX(), y - this.layoutY - this.shiftY + this.getPivotY()));
 	}
 
