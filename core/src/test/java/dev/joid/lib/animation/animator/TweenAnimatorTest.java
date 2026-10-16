@@ -262,6 +262,15 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
+	public void waitsItsDelayBeforePlaying() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).delay(2F).start();
+		animator.update(2F);
+		Assert.assertEquals(0F, animator.get(), 0F);
+		animator.update(0.5F);
+		Assert.assertEquals(5F, animator.get(), 0F);
+	}
+
+	@Test
 	public void repeatsItsTimeline() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).repeat(1, 0F).start();
 		animator.update(1F);

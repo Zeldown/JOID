@@ -106,6 +106,12 @@ public class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
+	public @NonNull TweenAnimator delay(final float delay) {
+		this.requireTimeline();
+		this.timeline.delay(delay);
+		return this;
+	}
+
 	public @NonNull TweenAnimator repeat(final int count, final float delay) {
 		this.requireTimeline();
 		this.timeline.repeat(count, delay);
