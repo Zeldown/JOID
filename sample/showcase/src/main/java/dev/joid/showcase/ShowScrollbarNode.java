@@ -1,19 +1,21 @@
 package dev.joid.showcase;
 
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.control.scrollbar.ScrollbarNode;
-import dev.joid.lib.ui.node.impl.layout.ContainerNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ShowScrollbarNode extends ScrollbarNode {
 
 	protected ShowScrollbarNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE.withAlpha(0.06F), (float) node.getWidth() / 2F)));
-		super.thumb(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-			DrawUtils.SHAPE.drawShadow(0D, 0D, node.getWidth(), node.getHeight(), ShowUI.VIOLET.withAlpha(0.6F), (float) node.getWidth() / 2F, 12F);
-			DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), ShowUI.vertical(ShowUI.FUCHSIA, ShowUI.VIOLET), (float) node.getWidth() / 2F);
-		}));
+		super.track(RectNode.create(0, 0, 0, 0).color(Color.WHITE.withAlpha(0.06F)).effect(RoundedNodeEffect.create((float) width / 2F)));
+		super.thumb(RectNode
+		.create(0, 0, 0, 0)
+		.color(ShowUI.vertical(ShowUI.FUCHSIA, ShowUI.VIOLET))
+		.effect(RoundedNodeEffect.create((float) width / 2F))
+		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.withAlpha(0.6F), 12F)));
 	}
 
 	public static ShowScrollbarNode create(final double x, final double y, final double width, final double height) {

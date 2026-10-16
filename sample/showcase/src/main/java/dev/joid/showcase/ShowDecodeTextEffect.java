@@ -4,17 +4,22 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.effect.ITextGlyph;
-
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
-@AllArgsConstructor
-public class ShowDecodeTextEffect implements ITextEffect {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShowDecodeTextEffect implements ITextEffect {
 
 	private static final String POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@";
 
 	private final long   start;
 	private final Color  accent;
 	private final double stagger;
+
+	public static @NonNull ShowDecodeTextEffect create(final long start, final @NonNull Color accent, final double stagger) {
+		return new ShowDecodeTextEffect(start, accent, stagger);
+	}
 
 	@Override
 	public void apply(final ITextGlyph glyph) {

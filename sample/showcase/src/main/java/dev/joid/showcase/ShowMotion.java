@@ -2,7 +2,6 @@ package dev.joid.showcase;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.Tween;
@@ -48,7 +47,6 @@ public class ShowMotion extends ShowUI {
 		final TweenAnimator clock = TweenAnimator.create(0F).sequence(1500F, 1F);
 		clock.getTimeline().delay(300F + index * 90F).repeatYoyo(Tween.INFINITY, 700F);
 		clock.start();
-		super.onClose(event -> Stream.of(eased, clock).forEach(TweenAnimator::clear));
 
 		TextNode.create(160, y - 16D).text(Text.create(name, ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);
 		TextNode.create(160, y + 18D).text(Text.create(constant, ShowUI.font(FontWeight.MEDIUM, 15F, ShowUI.FAINT).letterSpacing(0.1F))).anchorY(Align.CENTER).attach(this);
@@ -58,6 +56,7 @@ public class ShowMotion extends ShowUI {
 		.color(Color.BLACK.withAlpha(0.22F))
 		.effect(RoundedNodeEffect.create(14F))
 		.layer((node, mouseX, mouseY) -> this.curve(14D, 12D, 122D, 60D, equation, clock.get(), from, to))
+		.onDetach(event -> clock.clear())
 		.attach(this);
 
 		RectNode.create(640, y - 4D, 856, 8).color(Color.WHITE.withAlpha(0.08F)).effect(RoundedNodeEffect.create(4F)).attach(this);
@@ -73,6 +72,7 @@ public class ShowMotion extends ShowUI {
 		.<RectNode>x(() -> 640D + 800D * eased.get())
 		.effect(CircleNodeEffect.create())
 		.effect(ShadowNodeEffect.create(to.withAlpha(0.9F), 26F))
+		.onDetach(event -> eased.clear())
 		.attach(this);
 	}
 

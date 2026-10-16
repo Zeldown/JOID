@@ -89,7 +89,7 @@ public class ShowNeonKit implements IShowKit {
 
 	@Override
 	public ToggleNode<Boolean, Boolean> toggle(final double x, final double y) {
-		return ShowSwitchNode.create(x, y, ShowUI.VIOLET);
+		return ShowToggleNode.create(x, y, ShowUI.VIOLET);
 	}
 
 	@Override

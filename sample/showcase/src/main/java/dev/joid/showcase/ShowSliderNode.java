@@ -1,9 +1,12 @@
 package dev.joid.showcase;
 
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
+import dev.joid.lib.ui.node.impl.shape.CircleNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ShowSliderNode extends DoubleSliderNode {
 
@@ -14,16 +17,27 @@ public class ShowSliderNode extends DoubleSliderNode {
 		super(x, y, width, 36);
 		this.from = from;
 		this.to = to;
-		super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-			final double center = 18D + super.getProgress() * (node.getWidth() - 36D);
-			DrawUtils.SHAPE.drawRoundedRect(0D, 13D, node.getWidth(), 10D, Color.WHITE.withAlpha(0.12F), 5F);
-			DrawUtils.SHAPE.drawShadow(0D, 13D, center, 10D, this.to.withAlpha(0.6F), 5F, 14F);
-			DrawUtils.SHAPE.drawRoundedRect(0D, 13D, center, 10D, this.from.toGradient(this.to), 5F);
+		super.track(ContainerNode.create(0, 0, 0, 0).body(track -> {
+			RectNode
+			.create(0, 13, 0, 10)
+			.color(Color.WHITE.withAlpha(0.12F))
+			.<RectNode>width(track::getWidth)
+			.effect(RoundedNodeEffect.create(5F))
+			.attach(track);
+			RectNode
+			.create(0, 13, 0, 10)
+			.color(this.from.toGradient(this.to))
+			.<RectNode>width(() -> 18D + super.getProgress() * (track.getWidth() - 36D))
+			.effect(RoundedNodeEffect.create(5F))
+			.effect(ShadowNodeEffect.create(this.to.withAlpha(0.6F), 14F))
+			.attach(track);
 		}));
-		super.thumb(ContainerNode.create(0, 0, 36, 36).layer((node, mouseX, mouseY) -> {
-			DrawUtils.SHAPE.drawShadow(0D, 0D, 36D, 36D, this.to.withAlpha(0.9F), 18F, 18F);
-			DrawUtils.SHAPE.drawCircle(18D, 18D, Color.WHITE, 18D);
-			DrawUtils.SHAPE.drawCircle(18D, 18D, this.to, 7D);
+		super.thumb(CircleNode
+		.create(0, 0, 36)
+		.color(Color.WHITE)
+		.effect(ShadowNodeEffect.create(this.to.withAlpha(0.9F), 18F))
+		.body(thumb -> {
+			CircleNode.create(11, 11, 14).color(this.to).attach(thumb);
 		}));
 	}
 

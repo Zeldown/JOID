@@ -47,18 +47,18 @@ public class ShowType extends ShowUI {
 			for (int i = 0; i < sizes.length; i++) {
 				final float progress = i / (float) (sizes.length - 1);
 				final Color color = i == sizes.length - 1 ? ShowUI.FUCHSIA.toGradient(ShowUI.CYAN) : ShowUI.MUTED.to(ShowUI.TEXT, progress);
-				final TextInfo info = ShowUI.font(weights[i], sizes[i], color).effects(new ShowRiseTextEffect(start + 150L + i * 90L, 18D));
+				final TextInfo info = ShowUI.font(weights[i], sizes[i], color).effects(ShowRiseTextEffect.create(start + 150L + i * 90L, 18D));
 				TextNode.create(120, y).text(Text.create("Crisp at " + sizes[i] + " px", info)).attach(container);
 				y += sizes[i] * 1.22D + 20D;
 			}
 
-			TextNode.create(1040, 170).text(Text.create("<i>Design</i> once,", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 80F, ShowUI.TEXT).markups(DemoTextMarkup.inst()).effects(new ShowRiseTextEffect(start + 300L, 35D)))).attach(container);
-			TextNode.create(1040, 272).text(Text.create("render <c=fbbf24><b>anywhere</b></c>.", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 80F, ShowUI.TEXT).markups(DemoTextMarkup.inst()).effects(new ShowRiseTextEffect(start + 650L, 35D)))).attach(container);
+			TextNode.create(1040, 170).text(Text.create("<i>Design</i> once,", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 80F, ShowUI.TEXT).markups(DemoTextMarkup.inst()).effects(ShowRiseTextEffect.create(start + 300L, 35D)))).attach(container);
+			TextNode.create(1040, 272).text(Text.create("render <c=fbbf24><b>anywhere</b></c>.", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 80F, ShowUI.TEXT).markups(DemoTextMarkup.inst()).effects(ShowRiseTextEffect.create(start + 650L, 35D)))).attach(container);
 			TextNode.create(1040, 430).text(Text.create("Hello, world", TextInfo.create(DemoFont.PACIFICO, 92F, Color.WHITE).effects(DemoWaveTextEffect.inst(), DemoRainbowTextEffect.inst()))).attach(container);
-			TextNode.create(1044, 610).text(Text.create("DECODING SIGNAL " + JOID.VERSION, ShowUI.font(FontWeight.EXTRA_BOLD, 46F, ShowUI.CYAN).letterSpacing(0.08F).effects(new ShowDecodeTextEffect(start + 500L, ShowUI.PINK, 70D)))).attach(container);
+			TextNode.create(1044, 610).text(Text.create("DECODING SIGNAL " + JOID.VERSION, ShowUI.font(FontWeight.EXTRA_BOLD, 46F, ShowUI.CYAN).letterSpacing(0.08F).effects(ShowDecodeTextEffect.create(start + 500L, ShowUI.PINK, 70D)))).attach(container);
 			TextNode.create(1044, 716).text(Text.create("<b>Bold</b>, <i>italic</i>, <u>underlined</u>, <h>highlighted</h>, <c=f472b6>colored</c>", ShowUI.font(FontWeight.REGULAR, 32F, ShowUI.TEXT).markups(DemoTextMarkup.inst()))).attach(container);
-			TextNode.create(1044, 810).text(Text.create("One distance-field atlas per font:", ShowUI.font(FontWeight.MEDIUM, 30F, ShowUI.MUTED).effects(new ShowRiseTextEffect(start + 900L, 14D)))).attach(container);
-			TextNode.create(1044, 856).text(Text.create("every size, every weight, every zoom level.", ShowUI.font(FontWeight.MEDIUM, 30F, ShowUI.MUTED).effects(new ShowRiseTextEffect(start + 1100L, 14D)))).attach(container);
+			TextNode.create(1044, 810).text(Text.create("One distance-field atlas per font:", ShowUI.font(FontWeight.MEDIUM, 30F, ShowUI.MUTED).effects(ShowRiseTextEffect.create(start + 900L, 14D)))).attach(container);
+			TextNode.create(1044, 856).text(Text.create("every size, every weight, every zoom level.", ShowUI.font(FontWeight.MEDIUM, 30F, ShowUI.MUTED).effects(ShowRiseTextEffect.create(start + 1100L, 14D)))).attach(container);
 		})
 		.attach(this);
 

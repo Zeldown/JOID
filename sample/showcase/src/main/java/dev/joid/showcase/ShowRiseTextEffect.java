@@ -4,14 +4,19 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.font.effect.ITextEffect;
 import dev.joid.lib.font.effect.ITextGlyph;
-
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
-@AllArgsConstructor
-public class ShowRiseTextEffect implements ITextEffect {
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShowRiseTextEffect implements ITextEffect {
 
 	private final long   start;
 	private final double stagger;
+
+	public static @NonNull ShowRiseTextEffect create(final long start, final double stagger) {
+		return new ShowRiseTextEffect(start, stagger);
+	}
 
 	@Override
 	public void apply(final ITextGlyph glyph) {

@@ -3,9 +3,12 @@ package dev.joid.showcase;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
-import dev.joid.lib.ui.node.impl.layout.ContainerNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ShowFieldNode extends TextFieldNode {
 
@@ -19,16 +22,14 @@ public class ShowFieldNode extends TextFieldNode {
 		super(x, y, width, 68);
 		this.accent = accent;
 		this.focus  = TweenAnimator.create(0F);
-		super.onFocus(event -> this.focus.sequence(250F, 1F, TweenEquations.QUAD_OUT).start());
-		super.onBlur(event -> this.focus.sequence(250F, 0F, TweenEquations.QUAD_OUT).start());
-		super.background(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-			final float f = this.focus.get();
-			if (f > 0.01F) {
-				DrawUtils.SHAPE.drawShadow(0D, 0D, node.getWidth(), node.getHeight(), this.accent.withAlpha(0.55F * f), 18F, 22F);
-			}
-			DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), ShowFieldNode.FILL.to(ShowFieldNode.FILL_FOCUSED, f), 18F);
-			DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE.withAlpha(0.14F).to(this.accent, f), 18F, 2D);
-		}));
+		super.<ShowFieldNode>onFocus(event -> event.getNode().focus.sequence(250F, 1F, TweenEquations.QUAD_OUT).start());
+		super.<ShowFieldNode>onBlur(event -> event.getNode().focus.sequence(250F, 0F, TweenEquations.QUAD_OUT).start());
+		super.background(RectNode
+		.create(0, 0, 0, 0)
+		.color(() -> ShowFieldNode.FILL.to(ShowFieldNode.FILL_FOCUSED, this.focus.get()))
+		.effect(RoundedNodeEffect.create(18F))
+		.effect(ShadowNodeEffect.create(() -> this.accent.withAlpha(0.55F * this.focus.get()), () -> 22F))
+		.effect(BorderNodeEffect.create(this.accent, 2F).mode(BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.14F).to(this.accent, this.focus.get()))));
 	}
 
 	public static ShowFieldNode create(final double x, final double y, final double width, final Color accent) {

@@ -4,20 +4,19 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import dev.joid.demo.DemoFont;
-import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
 import dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode;
 import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
-import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
 public class ShowPaperKit implements IShowKit {
@@ -32,11 +31,11 @@ public class ShowPaperKit implements IShowKit {
 
 	@Override
 	public void backdrop(final Node layer) {
-		RectNode.create(0, 0, 1920, 1080).color(ShowPaperKit.PAPER).layer((node, mouseX, mouseY) -> {
+		RectNode.create(0, 0, 1920, 1080).color(ShowPaperKit.PAPER).body(paper -> {
 			for (int y = 54; y < 1080; y += 54) {
-				DrawUtils.SHAPE.drawRect(0D, y, 1920D, 2D, ShowPaperKit.RULE);
+				RectNode.create(0, y, 1920, 2).color(ShowPaperKit.RULE).attach(paper);
 			}
-			DrawUtils.SHAPE.drawRect(96D, 0D, 3D, 1080D, ShowPaperKit.TOMATO.withAlpha(0.45F));
+			RectNode.create(96, 0, 3, 1080).color(ShowPaperKit.TOMATO.withAlpha(0.45F)).attach(paper);
 		}).attach(layer);
 		CircleNode.create(1610, -150, 520).color(ShowPaperKit.BUTTER).<CircleNode>y(() -> -150D + IShowKit.wave(0D) * 18D).attach(layer);
 		CircleNode.create(800, 900, 260).color(ShowPaperKit.TOMATO).<CircleNode>x(() -> 800D + IShowKit.wave(0.3D) * 24D).attach(layer);
@@ -69,9 +68,9 @@ public class ShowPaperKit implements IShowKit {
 
 	@Override
 	public RectNode panel(final double x, final double y, final double width, final double height) {
-		return RectNode.create(x, y, width, height).color(Color.TRANSPARENT).layer((node, mouseX, mouseY) -> {
-			DrawUtils.SHAPE.drawRect(16D, 16D, width, height, ShowPaperKit.INK);
-			ShowPaperKit.box(0D, 0D, width, height, ShowPaperKit.CARD, 4D);
+		return RectNode.create(x, y, width, height).color(Color.TRANSPARENT).body(panel -> {
+			RectNode.create(16, 16, width, height).color(ShowPaperKit.INK).attach(panel);
+			RectNode.create(0, 0, width, height).color(ShowPaperKit.CARD).effect(BorderNodeEffect.create(ShowPaperKit.INK, 4F).mode(BorderMode.IN)).attach(panel);
 		});
 	}
 
@@ -85,13 +84,14 @@ public class ShowPaperKit implements IShowKit {
 		return RectNode
 		.create(x, y, 180, 64)
 		.color(Color.TRANSPARENT)
-		.layer((node, mouseX, mouseY) -> {
-			final boolean on = selected.getAsBoolean();
-			if (on) {
-				DrawUtils.SHAPE.drawRect(8D, 8D, 180D, 64D, ShowPaperKit.INK);
-			}
-			ShowPaperKit.box(0D, 0D, 180D, 64D, on ? ShowPaperKit.TOMATO : ShowPaperKit.CARD, 3D);
-			DrawUtils.TEXT.drawText(90D, 32D, Text.create(label.toUpperCase(), ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.14F)).align(Align.CENTER));
+		.body(chip -> {
+			RectNode.create(8, 8, 180, 64).color(ShowPaperKit.INK).visible(selected::getAsBoolean).attach(chip);
+			RectNode
+			.create(0, 0, 180, 64)
+			.color(() -> selected.getAsBoolean() ? ShowPaperKit.TOMATO : ShowPaperKit.CARD)
+			.effect(BorderNodeEffect.create(ShowPaperKit.INK, 3F).mode(BorderMode.IN))
+			.attach(chip);
+			TextNode.create(90, 32).text(Text.create(label.toUpperCase(), ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.14F))).anchor(Align.CENTER).attach(chip);
 		});
 	}
 
@@ -100,95 +100,35 @@ public class ShowPaperKit implements IShowKit {
 		return RectNode
 		.create(x, y, width, 72)
 		.color(Color.TRANSPARENT)
-		.layer((button, mouseX, mouseY) -> {
-			final double push = button.hoverValue(4F);
-			DrawUtils.SHAPE.drawRect(10D, 10D, width, 72D, ShowPaperKit.INK);
-			ShowPaperKit.box(push, push, width, 72D, primary ? ShowPaperKit.TOMATO : ShowPaperKit.CARD, 3D);
-			DrawUtils.TEXT.drawText(push + width / 2D, push + 36D, Text.create(label.get().toUpperCase(), ShowUI.font(FontWeight.BOLD, 21F, ShowPaperKit.INK).letterSpacing(0.14F)).align(Align.CENTER));
+		.body(button -> {
+			RectNode.create(10, 10, width, 72).color(ShowPaperKit.INK).attach(button);
+			RectNode
+			.create(0, 0, width, 72)
+			.color(primary ? ShowPaperKit.TOMATO : ShowPaperKit.CARD)
+			.effect(BorderNodeEffect.create(ShowPaperKit.INK, 3F).mode(BorderMode.IN))
+			.<RectNode>x(() -> (double) button.hoverValue(4F))
+			.<RectNode>y(() -> (double) button.hoverValue(4F))
+			.body(face -> {
+				TextNode.create(width / 2D, 36).text(() -> Text.create(label.get().toUpperCase(), ShowUI.font(FontWeight.BOLD, 21F, ShowPaperKit.INK).letterSpacing(0.14F))).anchor(Align.CENTER).attach(face);
+			})
+			.attach(button);
 		})
 		.hoverDuration(120L);
 	}
 
 	@Override
 	public ToggleNode<Boolean, Boolean> toggle(final double x, final double y) {
-		return Toggle.create(x, y);
+		return ShowPaperToggleNode.create(x, y);
 	}
 
 	@Override
 	public DoubleSliderNode slider(final double x, final double y, final double width) {
-		return Slider.create(x, y, width);
+		return ShowPaperSliderNode.create(x, y, width);
 	}
 
 	@Override
 	public TextFieldNode field(final double x, final double y, final double width) {
-		return Field.create(x, y, width).info(ShowUI.font(FontWeight.SEMI_BOLD, 25F, ShowPaperKit.INK)).marginHorizontal(24D);
-	}
-
-	private static void box(final double x, final double y, final double width, final double height, final Color fill, final double stroke) {
-		DrawUtils.SHAPE.drawRect(x, y, width, height, ShowPaperKit.INK);
-		DrawUtils.SHAPE.drawRect(x + stroke, y + stroke, width - stroke * 2D, height - stroke * 2D, fill);
-	}
-
-	public static class Toggle extends ToggleNode<Boolean, Boolean> {
-
-		protected Toggle(final double x, final double y) {
-			super(x, y, 76, 42);
-			super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-				DrawUtils.SHAPE.drawRect(5D, 5D, 76D, 42D, ShowPaperKit.INK);
-				ShowPaperKit.box(0D, 0D, 76D, 42D, ShowPaperKit.CARD.to(ShowPaperKit.TOMATO, super.getKnobProgress()), 3D);
-			}));
-			super.knob(ContainerNode.create(0, 0, 42, 42).layer((node, mouseX, mouseY) -> ShowPaperKit.box(7D, 7D, 28D, 28D, ShowPaperKit.CARD.to(ShowPaperKit.INK, super.getKnobProgress()), 3D)));
-		}
-
-		public static Toggle create(final double x, final double y) {
-			return new Toggle(x, y);
-		}
-
-	}
-
-	public static class Slider extends DoubleSliderNode {
-
-		protected Slider(final double x, final double y, final double width) {
-			super(x, y, width, 36);
-			super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-				final double center = 18D + super.getProgress() * (node.getWidth() - 36D);
-				ShowPaperKit.box(0D, 10D, node.getWidth(), 16D, ShowPaperKit.CARD, 3D);
-				ShowPaperKit.box(0D, 10D, center, 16D, ShowPaperKit.TOMATO, 3D);
-				for (int i = 1; i < 10; i++) {
-					DrawUtils.SHAPE.drawRect(node.getWidth() * i / 10D - 1D, 30D, 2D, 8D, ShowPaperKit.INK.withAlpha(0.35F));
-				}
-			}));
-			super.thumb(ContainerNode.create(0, 0, 36, 36).layer((node, mouseX, mouseY) -> {
-				DrawUtils.SHAPE.drawRect(5D, 5D, 36D, 36D, ShowPaperKit.INK);
-				ShowPaperKit.box(0D, 0D, 36D, 36D, ShowPaperKit.BUTTER, 3D);
-			}));
-		}
-
-		public static Slider create(final double x, final double y, final double width) {
-			return new Slider(x, y, width);
-		}
-
-	}
-
-	public static class Field extends TextFieldNode {
-
-		private final TweenAnimator focus;
-
-		protected Field(final double x, final double y, final double width) {
-			super(x, y, width, 68);
-			this.focus = TweenAnimator.create(0F);
-			super.onFocus(event -> this.focus.sequence(250F, 1F, TweenEquations.QUAD_OUT).start());
-			super.onBlur(event -> this.focus.sequence(250F, 0F, TweenEquations.QUAD_OUT).start());
-			super.background(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-				DrawUtils.SHAPE.drawRect(8D, 8D, node.getWidth(), node.getHeight(), ShowPaperKit.INK.to(ShowPaperKit.TOMATO, this.focus.get()));
-				ShowPaperKit.box(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 3D);
-			}));
-		}
-
-		public static Field create(final double x, final double y, final double width) {
-			return new Field(x, y, width);
-		}
-
+		return ShowPaperFieldNode.create(x, y, width).info(ShowUI.font(FontWeight.SEMI_BOLD, 25F, ShowPaperKit.INK)).marginHorizontal(24D);
 	}
 
 }

@@ -56,7 +56,7 @@ public class ShowReactive extends ShowUI {
 
 		TextNode.create(158, 734).text(Text.create("Halo", ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).attach(this);
 		TextNode.create(158, 770).text(Text.create(this.halo.get() ? "On, glowing behind the orb" : "Off", ShowUI.font(FontWeight.MEDIUM, 18F, ShowUI.MUTED))).attach(this);
-		ShowSwitchNode.create(690, 736, ShowUI.VIOLET).toggle(this.halo).attach(this);
+		ShowToggleNode.create(690, 736, ShowUI.VIOLET).toggle(this.halo).attach(this);
 
 		final Color[] cool = {ShowUI.VIOLET, ShowUI.SKY, ShowUI.CYAN, ShowUI.EMERALD, ShowUI.FUCHSIA};
 		final Color[] warm = {ShowUI.PINK, ShowUI.ORANGE, ShowUI.AMBER, ShowUI.ROSE, ShowUI.HONEY};

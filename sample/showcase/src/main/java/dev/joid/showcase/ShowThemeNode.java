@@ -1,9 +1,12 @@
 package dev.joid.showcase;
 
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
+import dev.joid.lib.ui.node.impl.shape.CircleNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
 
@@ -14,14 +17,21 @@ public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
 	protected ShowThemeNode(final double x, final double y) {
 		super(x, y, 112, 56);
 		super.speed(0.15F);
-		super.track(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, 112D, 56D, this.getTrackColor(), 28F)));
-		super.knob(ContainerNode.create(0, 0, 56, 56).layer((node, mouseX, mouseY) -> {
-			final float k = super.getKnobProgress();
-			DrawUtils.SHAPE.drawShadow(6D, 6D, 44D, 44D, ShowUI.AMBER.to(ShowUI.VIOLET, k).withAlpha(0.7F), 22F, 18F);
-			DrawUtils.SHAPE.drawCircle(28D, 28D, ShowUI.AMBER.to(ShowThemeNode.MOON, k), 20D);
-			if (k > 0.01F) {
-				DrawUtils.SHAPE.drawCircle(28D + 9D * k, 28D - 7D * k, this.getTrackColor(), 15D * k);
-			}
+		super.track(RectNode.create(0, 0, 0, 0).color(this::getTrackColor).effect(RoundedNodeEffect.create((float) super.dh(2))));
+		super.knob(ContainerNode.create(0, 0, super.getHeight(), super.getHeight()).body(knob -> {
+			CircleNode
+			.create(8, 8, 40)
+			.color(() -> ShowUI.AMBER.to(ShowThemeNode.MOON, super.getKnobProgress()))
+			.effect(ShadowNodeEffect.create(() -> ShowUI.AMBER.to(ShowUI.VIOLET, super.getKnobProgress()).withAlpha(0.7F), () -> 18F))
+			.attach(knob);
+			CircleNode
+			.create(28, 28, 0)
+			.color(this::getTrackColor)
+			.<CircleNode>x(() -> 28D - 6D * super.getKnobProgress())
+			.<CircleNode>y(() -> 28D - 22D * super.getKnobProgress())
+			.<CircleNode>width(() -> 30D * super.getKnobProgress())
+			.<CircleNode>height(() -> 30D * super.getKnobProgress())
+			.attach(knob);
 		}));
 	}
 
