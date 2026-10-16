@@ -12,6 +12,7 @@ import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -107,6 +108,13 @@ public class UrlAssetTest {
 		} catch (final IOException expected) {
 			Assert.assertFalse(expected instanceof SSLException);
 			Assert.assertEquals(0, expected.getSuppressed().length);
+		}
+	}
+
+	@Test(timeout = 60000L, expected = SocketTimeoutException.class)
+	public void givesUpOnAServerThatNeverAnswers() throws IOException {
+		try (ServerSocket mute = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
+			UrlAsset.create("http://127.0.0.1:" + mute.getLocalPort() + "/image.png").read();
 		}
 	}
 
