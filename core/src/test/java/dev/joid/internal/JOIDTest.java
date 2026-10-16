@@ -150,13 +150,17 @@ public class JOIDTest {
 
 		final Method shutdown = JOID.class.getDeclaredMethod("shutdown");
 		shutdown.setAccessible(true);
-		shutdown.invoke(null);
+		try {
+			shutdown.invoke(null);
+			Assert.assertFalse(store.destroyed);
+		} finally {
+			UIStoreHook.destroyStore(store);
+		}
 
 		final File property = new File(new File(this.folder.getRoot(), "property"), SettingsUI.class.getName() + ".property");
 		final File saved = new File(new File(this.folder.getRoot(), "store"), "exit.store");
 		Assert.assertEquals("{\"volume\":3}", new String(Files.readAllBytes(property.toPath()), StandardCharsets.UTF_8));
 		Assert.assertEquals("{\"value\":\"kept\"}", new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
-		Assert.assertFalse(store.destroyed);
 		Assert.assertTrue(this.bridges.getUi().isOpen(settings));
 	}
 

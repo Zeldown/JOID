@@ -88,6 +88,7 @@ subprojects {
 
     tasks.withType(Test) {
         systemProperty 'joid.data', file("$buildDir/data").absolutePath
+        systemProperty 'joid.cache', file("$buildDir/cache").absolutePath
         systemProperty 'joid.version', project.version
     }
 

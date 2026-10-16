@@ -40,6 +40,20 @@ public class SnapshotRunnerTest {
 	}
 
 	@Test
+	public void leavesNoBridgeWhenItsBackendCannotStart() {
+		final List<IUIBridge> uis = new ArrayList<>(BridgeHandler.UI.getBridgeList());
+		final List<IRenderBridge> renders = new ArrayList<>(BridgeHandler.RENDER.getBridgeList());
+		try {
+			SnapshotRunner.start(new FailingBackend());
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("No window", exception.getMessage());
+		}
+		Assert.assertEquals(uis, BridgeHandler.UI.getBridgeList());
+		Assert.assertEquals(renders, BridgeHandler.RENDER.getBridgeList());
+	}
+
+	@Test
 	public void restoresTheAssetLocatorsAndTheDevModeOnStop() {
 		final boolean devMode = JOIDEnv.isDevMode();
 		SnapshotRunner.start(new HeadlessBackend()).stop();
@@ -68,6 +82,32 @@ public class SnapshotRunnerTest {
 		@Override
 		public @NonNull String getRenderer() {
 			return "headless";
+		}
+
+	}
+
+	public static final class FailingBackend implements ISnapshotBackend {
+
+		@Override
+		public void destroy() {}
+
+		@Override
+		public void create(final int width, final int height) {
+			BridgeHandler.RENDER.register(new RecordingRenderBridge());
+			throw new IllegalStateException("No window");
+		}
+
+		@Override
+		public void present() {}
+
+		@Override
+		public @NonNull SnapshotImage capture(final int width, final int height) {
+			throw new IllegalStateException("No window");
+		}
+
+		@Override
+		public @NonNull String getRenderer() {
+			return "failing";
 		}
 
 	}

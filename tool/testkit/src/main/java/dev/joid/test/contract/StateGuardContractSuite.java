@@ -280,6 +280,7 @@ public abstract class StateGuardContractSuite {
 			render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(32F, 16F, 16F, 16F, -1F, false, 0));
 		} finally {
 			shader.unbind();
+			shader.delete();
 			texture.delete();
 		}
 	}

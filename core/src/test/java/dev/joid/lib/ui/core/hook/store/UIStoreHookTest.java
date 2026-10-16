@@ -53,6 +53,7 @@ public class UIStoreHookTest {
 		UIStoreHook.destroyStore(new GlobalStore());
 		UIStoreHook.destroyStore(new PermanentStore());
 		UIStoreHook.destroyStore(new SignalStore());
+		UIStoreHook.destroyStore(new ListStore());
 		JOIDEnv.dataDir(this.previous);
 		if (this.created) {
 			new File("config").delete();

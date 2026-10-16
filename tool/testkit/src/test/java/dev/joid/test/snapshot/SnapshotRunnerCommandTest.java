@@ -2,6 +2,9 @@ package dev.joid.test.snapshot;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -13,6 +16,7 @@ import dev.joid.internal.font.DevFont;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.input.key.Key;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
@@ -73,6 +77,14 @@ public class SnapshotRunnerCommandTest {
 	public void typesTheSpacesAtTheEndOfTheText() {
 		SnapshotRunnerCommandTest.runner.execute("ui " + TypeUI.class.getName(), "\ttype   shout  ");
 		Assert.assertEquals("  shout  ", JOID.getUi(TypeUI.class).getText().toString());
+	}
+
+	@Test
+	public void holdsEachKeyWhileItTypesIt() {
+		SnapshotRunnerCommandTest.runner.execute("ui " + HeldUI.class.getName(), "type ab");
+		Assert.assertEquals(Arrays.asList(true, true), JOID.getUi(HeldUI.class).getHeld());
+		Assert.assertFalse(Key.A.isDown());
+		Assert.assertFalse(Key.B.isDown());
 	}
 
 	@Test
@@ -161,6 +173,18 @@ public class SnapshotRunnerCommandTest {
 		@Override
 		public void init() {
 			super.handleCharTyped(event -> this.text.appendCodePoint(event.getCodepoint()));
+		}
+
+	}
+
+	public static final class HeldUI extends UI {
+
+		@Getter
+		private final List<Boolean> held = new ArrayList<>();
+
+		@Override
+		public void init() {
+			super.handleKeyPressed(event -> this.held.add(event.getKey().isDown()));
 		}
 
 	}

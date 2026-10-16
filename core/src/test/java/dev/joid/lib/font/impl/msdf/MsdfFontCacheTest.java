@@ -134,11 +134,6 @@ public class MsdfFontCacheTest {
 	}
 
 	@Test
-	public void defaultsToADirectoryOfTheSystemCache() {
-		Assert.assertEquals("joid", this.previous.getName());
-	}
-
-	@Test
 	public void findsNothingBeforeTheFirstGeneration() throws IOException {
 		Assert.assertNull(MsdfFontCache.find(MsdfFontCacheTest.font()));
 		Assert.assertEquals(0, this.entries().length);

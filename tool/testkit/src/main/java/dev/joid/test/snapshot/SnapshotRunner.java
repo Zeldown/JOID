@@ -68,7 +68,12 @@ public final class SnapshotRunner {
 	public static @NonNull SnapshotRunner start(final @NonNull ISnapshotBackend backend) {
 		final SnapshotRunner runner = new SnapshotRunner(backend);
 		BridgeHandler.UI.register(runner.bridge);
-		backend.create(1920, 1080);
+		try {
+			backend.create(1920, 1080);
+		} catch (final RuntimeException exception) {
+			runner.restorers.forEach(Runnable::run);
+			throw exception;
+		}
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
 		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
@@ -201,9 +206,13 @@ public final class SnapshotRunner {
 			final char character = Character.isBmpCodePoint(codepoint) ? (char) codepoint : 0;
 			final boolean shift = SnapshotRunner.isShifted(character) && this.window.getKeys().add(Key.LEFT_SHIFT);
 			final Key key = SnapshotRunner.getKey(character);
+			final boolean held = this.window.getKeys().add(key);
 			BridgeHandler.UI.keyPressed(key, key);
 			BridgeHandler.UI.charTyped(codepoint);
 			BridgeHandler.UI.keyReleased(key);
+			if (held) {
+				this.window.getKeys().remove(key);
+			}
 			if (shift) {
 				this.window.getKeys().remove(Key.LEFT_SHIFT);
 			}
