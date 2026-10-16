@@ -372,6 +372,15 @@ public class ColorTest {
 	}
 
 	@Test
+	public void changesOneComponentOfAnAnimatedColor() {
+		this.bridges.getClock().advance(1000L);
+		Assert.assertEquals(Color.RAINBOW(1000L).withAlpha(0.5F), Color.RAINBOW.copy().alpha(0.5F).update());
+		Assert.assertEquals(Color.RAINBOW(1000L).withRed(1F), Color.RAINBOW.copy().red(1F).update());
+		Assert.assertEquals(Color.RAINBOW(1000L).withGreen(0F), Color.RAINBOW.copy().green(0F).update());
+		Assert.assertEquals(Color.RAINBOW(1000L).withBlue(0F), Color.RAINBOW.copy().blue(0F).update());
+	}
+
+	@Test
 	public void derivesTheFrameOfItsUpdate() {
 		this.bridges.getClock().advance(1000L);
 		Assert.assertEquals(Color.RAINBOW(1000L).scale(0.5F), Color.RAINBOW.scale(0.5F).update());
@@ -414,13 +423,13 @@ public class ColorTest {
 	}
 
 	@Test
-	public void keepsTheUpdateOfTheClosestColor() {
-		final UnaryOperator<Color> first = color -> color.withRed(1F);
-		final UnaryOperator<Color> second = color -> color.withBlue(1F);
-		final Color from = new Color(1F, 0F, 0F, 1F, first);
-		final Color to = new Color(0F, 0F, 1F, 1F, second);
-		Assert.assertEquals(new Color(1F, 0F, 0.5F, 1F), Color.transition(from, to, 0.5F).update());
-		Assert.assertEquals(new Color(0.25F, 0F, 1F, 1F), Color.transition(from, to, 0.75F).update());
+	public void blendsTheFramesOfAnimatedColors() {
+		this.bridges.getClock().advance(1000L);
+		Assert.assertEquals(Color.transition(Color.RAINBOW(1000L), Color.RED, 0.25F), Color.RAINBOW.to(Color.RED, 0.25F).update());
+		Assert.assertEquals(Color.transition(Color.WHITE, Color.RAINBOW(1000L), 0.75F), Color.WHITE.to(Color.RAINBOW, 0.75F).update());
+		final Color transition = Color.RAINBOW.to(Color.RED, 0.75F);
+		this.bridges.getClock().advance(500L);
+		Assert.assertEquals(Color.transition(Color.RAINBOW(1500L), Color.RED, 0.75F), transition.update());
 	}
 
 	@Test

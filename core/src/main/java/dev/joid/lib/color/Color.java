@@ -165,6 +165,11 @@ public final class Color extends LockableValue<Color> {
 			return color2.copy();
 		}
 
+		if (color1.update != null || color2.update != null) {
+			final Color frame = Color.transition(color1.update(), color2.update(), progress);
+			return new Color(frame.r, frame.g, frame.b, frame.a, color -> Color.transition(color1.update(), color2.update(), progress), frame.gradient);
+		}
+
 		final float inv = 1F - progress;
 
 		if (color1.isGradient() && color2.isGradient()) {
@@ -195,8 +200,7 @@ public final class Color extends LockableValue<Color> {
 				color1.r * inv + color2.r * progress,
 				color1.g * inv + color2.g * progress,
 				color1.b * inv + color2.b * progress,
-				color1.a * inv + color2.a * progress,
-				progress > 0.5F ? color2.update : color1.update
+				color1.a * inv + color2.a * progress
 				);
 	}
 
@@ -328,19 +332,19 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color red(final float red) {
-		return this.mutate("withRed", () -> this.assign(this.withRed(red)));
+		return this.mutate("withRed", () -> this.assign(this.copy().withRed(red)));
 	}
 
 	public @NonNull Color blue(final float blue) {
-		return this.mutate("withBlue", () -> this.assign(this.withBlue(blue)));
+		return this.mutate("withBlue", () -> this.assign(this.copy().withBlue(blue)));
 	}
 
 	public @NonNull Color alpha(final float alpha) {
-		return this.mutate("withAlpha", () -> this.assign(this.withAlpha(alpha)));
+		return this.mutate("withAlpha", () -> this.assign(this.copy().withAlpha(alpha)));
 	}
 
 	public @NonNull Color green(final float green) {
-		return this.mutate("withGreen", () -> this.assign(this.withGreen(green)));
+		return this.mutate("withGreen", () -> this.assign(this.copy().withGreen(green)));
 	}
 
 	public @NonNull Color withRed(final float red) {
