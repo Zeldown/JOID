@@ -2,9 +2,6 @@ package dev.joid.lib.ui.node.impl.progress;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.resource.Resource;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
@@ -16,22 +13,16 @@ public class ProgressNode extends Node {
 	private float             progress;
 	private ProgressDirection direction;
 
-	private Color background;
-	private Color foreground;
-
-	private Resource backgroundResource;
-	private Resource foregroundResource;
+	private Node fill;
+	private Node track;
 
 	protected ProgressNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.progress   = 0F;
-		this.direction  = ProgressDirection.LEFT_TO_RIGHT;
-		this.background = Color.BLACK;
-		this.foreground = Color.WHITE;
+		this.progress  = 0F;
+		this.direction = ProgressDirection.LEFT_TO_RIGHT;
 
-		super.<ProgressNode>require("foreground resource", "call foregroundResource(...) to go with its background resource before attaching it", node -> node.backgroundResource == null || node.foregroundResource != null);
-		super.<ProgressNode>require("background resource", "call backgroundResource(...) to go with its foreground resource before attaching it", node -> node.foregroundResource == null || node.backgroundResource != null);
+		super.<ProgressNode>require("fill", "give it one with fill(...)", node -> node.fill != null);
 	}
 
 	public static @NonNull ProgressNode create(final double x, final double y, final double width, final double height) {
@@ -39,16 +30,17 @@ public class ProgressNode extends Node {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
-		if (this.backgroundResource != null && this.foregroundResource != null) {
-			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.backgroundResource);
-			super.getUi().mask(this.getProgressX(), this.getProgressY(), this.getProgressWidth(), this.getProgressHeight(), () -> {
-				DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.foregroundResource);
-			});
-		} else {
-			DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.background);
-			DrawUtils.SHAPE.drawRect(this.getProgressX(), this.getProgressY(), this.getProgressWidth(), this.getProgressHeight(), this.foreground);
+	public void layout() {
+		if (this.track != null) {
+			this.track.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}
+
+		final double shown = Math.min(1D, Math.max(0D, this.progress));
+		final double width = this.direction.isHorizontal() ? super.getWidth() * shown : super.getWidth();
+		final double height = this.direction.isHorizontal() ? super.getHeight() : super.getHeight() * shown;
+		final double x = this.direction == ProgressDirection.RIGHT_TO_LEFT ? super.getWidth() - width : 0D;
+		final double y = this.direction == ProgressDirection.BOTTOM_TO_TOP ? super.getHeight() - height : 0D;
+		this.fill.layoutPosition(x, y).layoutSize(width, height);
 	}
 
 	public final <T extends ProgressNode> @NonNull T progress(final float progress) {
@@ -67,78 +59,14 @@ public class ProgressNode extends Node {
 		return super.follow("direction", direction, value -> this.direction = value);
 	}
 
-	public final <T extends ProgressNode> @NonNull T background(final @NonNull Color background) {
-		return this.background(Signal.from(background));
+	public final <T extends ProgressNode> @NonNull T track(final @NonNull Node track) {
+		this.track = super.part(this.track, track.zindex(-1));
+		return (T) this;
 	}
 
-	public final <T extends ProgressNode> @NonNull T background(final @NonNull Supplier<@NonNull Color> background) {
-		return super.follow("background", background, value -> this.background = value);
-	}
-
-	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Color foreground) {
-		return this.foreground(Signal.from(foreground));
-	}
-
-	public final <T extends ProgressNode> @NonNull T foreground(final @NonNull Supplier<@NonNull Color> foreground) {
-		return super.follow("foreground", foreground, value -> this.foreground = value);
-	}
-
-	public final <T extends ProgressNode> @NonNull T backgroundResource(final Resource backgroundResource) {
-		return this.backgroundResource(Signal.from(backgroundResource));
-	}
-
-	public final <T extends ProgressNode> @NonNull T backgroundResource(final @NonNull Supplier<Resource> backgroundResource) {
-		return super.follow("backgroundResource", backgroundResource, value -> this.backgroundResource = value);
-	}
-
-	public final <T extends ProgressNode> @NonNull T foregroundResource(final Resource foregroundResource) {
-		return this.foregroundResource(Signal.from(foregroundResource));
-	}
-
-	public final <T extends ProgressNode> @NonNull T foregroundResource(final @NonNull Supplier<Resource> foregroundResource) {
-		return super.follow("foregroundResource", foregroundResource, value -> this.foregroundResource = value);
-	}
-
-	private float getShownProgress() {
-		return Math.min(1F, Math.max(0F, this.progress));
-	}
-
-	private double getProgressX() {
-		switch (this.direction) {
-		case RIGHT_TO_LEFT:
-			return super.getX() + super.getWidth() * (1D - this.getShownProgress());
-		default:
-			return super.getX();
-		}
-	}
-
-	private double getProgressY() {
-		switch (this.direction) {
-		case BOTTOM_TO_TOP:
-			return super.getY() + super.getHeight() * (1D - this.getShownProgress());
-		default:
-			return super.getY();
-		}
-	}
-
-	private double getProgressWidth() {
-		switch (this.direction) {
-		case LEFT_TO_RIGHT:
-		case RIGHT_TO_LEFT:
-			return super.getWidth() * this.getShownProgress();
-		default:
-			return super.getWidth();
-		}
-	}
-
-	private double getProgressHeight() {
-		switch (this.direction) {
-		case TOP_TO_BOTTOM:
-		case BOTTOM_TO_TOP:
-			return super.getHeight() * this.getShownProgress();
-		default:
-			return super.getHeight();
-		}
+	public final <T extends ProgressNode> @NonNull T fill(final @NonNull Node fill) {
+		this.fill = super.part(this.fill, fill);
+		return (T) this;
 	}
 
 	public static enum ProgressDirection {
@@ -147,6 +75,10 @@ public class ProgressNode extends Node {
 		RIGHT_TO_LEFT,
 		TOP_TO_BOTTOM,
 		BOTTOM_TO_TOP;
+
+		public final boolean isHorizontal() {
+			return this == ProgressDirection.LEFT_TO_RIGHT || this == ProgressDirection.RIGHT_TO_LEFT;
+		}
 
 	}
 

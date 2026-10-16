@@ -21,11 +21,13 @@ import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
+import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 
 @UIData(background = true)
@@ -136,8 +138,8 @@ public class UIDemoResource extends UIDemo {
 
 		ProgressNode
 		.create(55, 770, 200, 40)
-		.backgroundResource(Resource.of("https://placehold.co/200x40.png"))
-		.foregroundResource(Resource.of("https://placehold.co/200x40/999999/FFFFFF.png"))
+		.track(ResourceNode.create(0, 0, 0, 0).resource(Resource.of("https://placehold.co/200x40.png")))
+		.fill(ContainerNode.create(0, 0, 0, 0).overflow(OverflowProperty.HIDDEN).append(ResourceNode.create(0, 0, 200, 40).resource(Resource.of("https://placehold.co/200x40/999999/FFFFFF.png"))))
 		.progress(0.6F)
 		.attach(this);
 		TextNode.create(155, 865).text(Text.create("Progress image", caption)).anchorX(Align.CENTER).attach(this);

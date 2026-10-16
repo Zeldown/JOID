@@ -76,7 +76,6 @@ public class NodeSetterTest {
 		Assert.assertSame(TextMode.SPLIT, ui.getText().getMode());
 		Assert.assertEquals(0.25F, ui.getProgress().getProgress(), 0F);
 		Assert.assertSame(ProgressDirection.RIGHT_TO_LEFT, ui.getProgress().getDirection());
-		Assert.assertSame(Color.GREEN, ui.getProgress().getForeground());
 		Assert.assertEquals(0.9F, ui.getPlayer().getVolume(), 1E-6F);
 		Assert.assertTrue(ui.getPlayer().isLoop());
 		Assert.assertEquals(Point.create(1D, 0D, 1D), ui.getPlayer().getLocation());
@@ -192,7 +191,7 @@ public class NodeSetterTest {
 		final Color[] color = {Color.GRAY};
 		final float[] progress = {0F};
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).color(() -> color[0]).width(() -> width[0]);
-		final ProgressNode bar = ProgressNode.create(0D, 0D, 100D, 10D).progress(() -> progress[0]);
+		final ProgressNode bar = ProgressNode.create(0D, 0D, 100D, 10D).fill(RectNode.create(0D, 0D, 0D, 0D)).progress(() -> progress[0]);
 		this.bridges.open(new NodeUI(rect, bar));
 		width[0] = 30D;
 		color[0] = Color.GREEN;

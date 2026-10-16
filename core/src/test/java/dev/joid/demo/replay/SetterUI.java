@@ -101,7 +101,7 @@ public class SetterUI extends UI {
 		.create(0D, 0D, 100D, 10D)
 		.progress(this.step.get() / 4F)
 		.direction(this.step.get() > 0 ? ProgressDirection.RIGHT_TO_LEFT : ProgressDirection.LEFT_TO_RIGHT)
-		.foreground(this.step.get() > 0 ? Color.GREEN : Color.WHITE)
+		.fill(RectNode.create(0D, 0D, 0D, 0D))
 		.attach(this);
 		this.player = ResourcePlayerNode
 		.create(0D, 0D)

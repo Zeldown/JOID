@@ -104,7 +104,7 @@ public class UIDemoPlayer extends UIDemo {
 		.loop(true)
 		.onProgress(event -> progress.set((float) event.getProgress()))
 		.attach(this);
-		ProgressNode.create(800, 574, 320, 12).background(Color.WHITE).foreground(UIDemoPlayer.INK).progress(progress).attach(this);
+		ProgressNode.create(800, 574, 320, 12).track(RectNode.create(0, 0, 0, 0).color(Color.WHITE)).fill(RectNode.create(0, 0, 0, 0).color(UIDemoPlayer.INK)).progress(progress).attach(this);
 		TextNode.create(960, 625).text(Text.create("Progress", caption)).anchorX(Align.CENTER).attach(this);
 
 		final ResourcePlayerNode seeked = ResourcePlayerNode

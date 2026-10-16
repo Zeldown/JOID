@@ -24,6 +24,7 @@ import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.model.ModelNode;
+import dev.joid.lib.ui.node.impl.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
@@ -166,8 +167,12 @@ public class ShowHero extends ShowUI {
 			.attach(card);
 			TextNode.create(32, 282).text(Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.BOLD, 46F, ShowUI.TEXT))).attach(card);
 			TextNode.create(34, 340).text(Text.create("Slow motion  ·  honey and light", ShowUI.font(FontWeight.MEDIUM, 19F, ShowUI.MUTED))).attach(card);
-			RectNode.create(32, 372, 476, 6).color(Color.WHITE.withAlpha(0.18F)).effect(RoundedNodeEffect.create(3F)).attach(card);
-			RectNode.create(32, 372, 0, 6).color(ShowUI.AMBER.toGradient(ShowUI.PINK)).width(476D * this.progress.get()).effect(RoundedNodeEffect.create(3F)).attach(card);
+			ProgressNode
+			.create(32, 372, 476, 6)
+			.track(RectNode.create(0, 0, 0, 0).color(Color.WHITE.withAlpha(0.18F)).effect(RoundedNodeEffect.create(3F)))
+			.fill(RectNode.create(0, 0, 0, 0).color(ShowUI.AMBER.toGradient(ShowUI.PINK)).effect(RoundedNodeEffect.create(3F)))
+			.progress(() -> this.progress.get().floatValue())
+			.attach(card);
 			CircleNode
 			.create(536, 300, 64)
 			.color(Color.WHITE)

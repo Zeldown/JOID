@@ -8,15 +8,11 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
-import dev.joid.lib.bridge.render.RecordingTexture;
-import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.resource.Resource;
-import dev.joid.lib.resource.ResourceBuilder;
-import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.progress.ProgressNode.ProgressDirection;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.AllArgsConstructor;
 
 public class ProgressNodeTest {
@@ -25,25 +21,23 @@ public class ProgressNodeTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void startsEmptyFromTheLeftInBlackAndWhite() {
+	public void startsEmptyFromTheLeftWithoutParts() {
 		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D);
 		Assert.assertEquals(0F, progress.getProgress(), 0F);
 		Assert.assertSame(ProgressDirection.LEFT_TO_RIGHT, progress.getDirection());
-		Assert.assertSame(Color.BLACK, progress.getBackground());
-		Assert.assertSame(Color.WHITE, progress.getForeground());
-		Assert.assertNull(progress.getBackgroundResource());
-		Assert.assertNull(progress.getForegroundResource());
+		Assert.assertNull(progress.getTrack());
+		Assert.assertNull(progress.getFill());
 	}
 
 	@Test
 	public void fillsFromTheLeft() {
-		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.25F));
+		this.open(ProgressNodeTest.bar().progress(0.25F));
 		this.assertFill(100D, 100D, 150D, 150D);
 	}
 
 	@Test
 	public void fillsNoMoreThanItsBox() {
-		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D).progress(1.5F);
+		final ProgressNode progress = ProgressNodeTest.bar().progress(1.5F);
 		this.open(progress);
 		this.assertFill(100D, 100D, 300D, 150D);
 		Assert.assertEquals(1.5F, progress.getProgress(), 0F);
@@ -51,90 +45,57 @@ public class ProgressNodeTest {
 
 	@Test
 	public void fillsFromTheRight() {
-		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.25F).direction(ProgressDirection.RIGHT_TO_LEFT));
+		this.open(ProgressNodeTest.bar().progress(0.25F).direction(ProgressDirection.RIGHT_TO_LEFT));
 		this.assertFill(250D, 100D, 300D, 150D);
 	}
 
 	@Test
 	public void fillsFromTheTop() {
-		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.4F).direction(ProgressDirection.TOP_TO_BOTTOM));
+		this.open(ProgressNodeTest.bar().progress(0.4F).direction(ProgressDirection.TOP_TO_BOTTOM));
 		this.assertFill(100D, 100D, 300D, 120D);
 	}
 
 	@Test
 	public void fillsFromTheBottom() {
-		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.4F).direction(ProgressDirection.BOTTOM_TO_TOP));
+		this.open(ProgressNodeTest.bar().progress(0.4F).direction(ProgressDirection.BOTTOM_TO_TOP));
 		this.assertFill(100D, 130D, 300D, 150D);
 	}
 
 	@Test
-	public void drawsItsBackgroundUnderTheFill() {
-		this.open(ProgressNode.create(100D, 100D, 200D, 50D).progress(0.5F).background(new Color(0.2F, 0.4F, 0.6F, 1F)).foreground(new Color(0.6F, 0.4F, 0.2F, 1F)));
+	public void drawsItsTrackUnderTheFill() {
+		this.open(ProgressNodeTest.bar().progress(0.5F));
 		final List<Draw> draws = this.bridges.getRender().getDraws();
-		final Draw background = this.single(0.2F, 0.4F, 0.6F);
-		Assert.assertEquals(100D, background.getLeft(), 1E-3D);
-		Assert.assertEquals(300D, background.getRight(), 1E-3D);
-		Assert.assertTrue(draws.indexOf(background) < draws.indexOf(this.single(0.6F, 0.4F, 0.2F)));
+		Assert.assertTrue(draws.indexOf(this.single(0F, 0F, 0F)) < draws.indexOf(this.single(1F, 1F, 1F)));
 	}
 
 	@Test
-	public void replacesEachColor() {
-		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D).progress(0.5F);
-		final Color background = new Color(0.2F, 0.4F, 0.6F, 1F);
-		final Color foreground = new Color(0.6F, 0.4F, 0.2F, 1F);
-		Assert.assertSame(progress, progress.background(background).foreground(foreground));
-		Assert.assertSame(background, progress.getBackground());
-		Assert.assertSame(foreground, progress.getForeground());
+	public void fillsWithoutTrack() {
+		this.open(ProgressNode.create(100D, 100D, 200D, 50D).fill(RectNode.create(0D, 0D, 0D, 0D).color(Color.WHITE)).progress(0.5F));
+		Assert.assertEquals(200D, this.single(1F, 1F, 1F).getRight(), 1E-3D);
+		Assert.assertTrue(this.bridges.getRender().getDraws(0F, 0F, 0F).isEmpty());
 	}
 
 	@Test
-	public void refusesABackgroundResourceWithoutForegroundResource() {
+	public void replacesEachPart() {
+		final RectNode track = RectNode.create(0D, 0D, 0D, 0D);
+		final RectNode fill = RectNode.create(0D, 0D, 0D, 0D);
+		final ProgressNode progress = ProgressNodeTest.bar();
+		final Node previous = progress.getFill();
+		Assert.assertSame(progress, progress.track(track).fill(fill));
+		Assert.assertSame(track, progress.getTrack());
+		Assert.assertSame(fill, progress.getFill());
+		Assert.assertEquals(2, progress.getChildren().size());
+		Assert.assertFalse(progress.getChildren().contains(previous));
+	}
+
+	@Test
+	public void refusesToShowWithoutFill() {
 		try {
-			this.open(ProgressNode.create(100D, 100D, 200D, 50D).backgroundResource(ProgressNodeTest.resource()));
-			Assert.fail("The resources of a progress bar go by pair");
+			this.open(ProgressNode.create(100D, 100D, 200D, 50D));
+			Assert.fail("A progress bar needs a fill");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The ProgressNode has no foreground resource, call foregroundResource(...) to go with its background resource before attaching it", expected.getMessage());
+			Assert.assertEquals("The ProgressNode has no fill, give it one with fill(...)", expected.getMessage());
 		}
-	}
-
-	@Test
-	public void refusesAForegroundResourceWithoutBackgroundResource() {
-		try {
-			this.open(ProgressNode.create(100D, 100D, 200D, 50D).foregroundResource(ProgressNodeTest.resource()));
-			Assert.fail("The resources of a progress bar go by pair");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The ProgressNode has no background resource, call backgroundResource(...) to go with its foreground resource before attaching it", expected.getMessage());
-		}
-	}
-
-	@Test
-	public void masksTheForegroundResourceToTheProgress() {
-		final Resource background = ProgressNodeTest.resource();
-		final Resource foreground = ProgressNodeTest.resource();
-		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D).progress(0.25F).direction(ProgressDirection.RIGHT_TO_LEFT).backgroundResource(background).foregroundResource(foreground);
-		Assert.assertSame(background, progress.getBackgroundResource());
-		Assert.assertSame(foreground, progress.getForegroundResource());
-		this.open(progress);
-		final List<Draw> draws = this.bridges.getRender().getDraws();
-		final Draw mask = this.single(1F, 0F, 0F);
-		final int index = draws.indexOf(mask);
-		Assert.assertEquals(250D, mask.getLeft(), 1E-3D);
-		Assert.assertEquals(300D, mask.getRight(), 1E-3D);
-		Assert.assertEquals(100D, draws.get(index - 1).getLeft(), 1E-3D);
-		Assert.assertEquals(300D, draws.get(index - 1).getRight(), 1E-3D);
-		Assert.assertEquals(100D, draws.get(index + 1).getLeft(), 1E-3D);
-		Assert.assertEquals(300D, draws.get(index + 1).getRight(), 1E-3D);
-		Assert.assertEquals(index + 2, draws.size());
-	}
-
-	@Test
-	public void replacesEachResource() {
-		final Resource background = ProgressNodeTest.resource();
-		final Resource foreground = ProgressNodeTest.resource();
-		final ProgressNode progress = ProgressNode.create(100D, 100D, 200D, 50D);
-		Assert.assertSame(progress, progress.backgroundResource(background).foregroundResource(foreground));
-		Assert.assertSame(background, progress.getBackgroundResource());
-		Assert.assertSame(foreground, progress.getForegroundResource());
 	}
 
 	private void open(final ProgressNode progress) {
@@ -156,8 +117,8 @@ public class ProgressNodeTest {
 		return draws.get(0);
 	}
 
-	private static Resource resource() {
-		return ResourceBuilder.create().cache(null).compute("progress", () -> new ResourceData("progress", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)}));
+	private static ProgressNode bar() {
+		return ProgressNode.create(100D, 100D, 200D, 50D).track(RectNode.create(0D, 0D, 0D, 0D).color(Color.BLACK)).fill(RectNode.create(0D, 0D, 0D, 0D).color(Color.WHITE));
 	}
 
 	@AllArgsConstructor

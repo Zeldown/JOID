@@ -189,10 +189,10 @@ public class UIDemoSimple extends UIDemo {
 		.create(1160, 720, 320, 260)
 		.color(UIDemoSimple.PLACEHOLDER)
 		.body(rect -> {
-			ProgressNode.create(40, 40, 160, 30).background(Color.WHITE).foreground(UIDemoSimple.INK).progress(0.25F).attach(rect);
-			ProgressNode.create(40, 100, 160, 30).background(Color.WHITE).foreground(UIDemoSimple.INK).direction(ProgressDirection.RIGHT_TO_LEFT).progress(0.5F).attach(rect);
-			ProgressNode.create(220, 40, 25, 180).background(Color.WHITE).foreground(UIDemoSimple.INK).direction(ProgressDirection.TOP_TO_BOTTOM).progress(0.75F).attach(rect);
-			ProgressNode.create(255, 40, 25, 180).background(Color.WHITE).foreground(UIDemoSimple.INK).direction(ProgressDirection.BOTTOM_TO_TOP).progress(0.6F).attach(rect);
+			ProgressNode.create(40, 40, 160, 30).track(RectNode.create(0, 0, 0, 0).color(Color.WHITE)).fill(RectNode.create(0, 0, 0, 0).color(UIDemoSimple.INK)).progress(0.25F).attach(rect);
+			ProgressNode.create(40, 100, 160, 30).track(RectNode.create(0, 0, 0, 0).color(Color.WHITE)).fill(RectNode.create(0, 0, 0, 0).color(UIDemoSimple.INK)).direction(ProgressDirection.RIGHT_TO_LEFT).progress(0.5F).attach(rect);
+			ProgressNode.create(220, 40, 25, 180).track(RectNode.create(0, 0, 0, 0).color(Color.WHITE)).fill(RectNode.create(0, 0, 0, 0).color(UIDemoSimple.INK)).direction(ProgressDirection.TOP_TO_BOTTOM).progress(0.75F).attach(rect);
+			ProgressNode.create(255, 40, 25, 180).track(RectNode.create(0, 0, 0, 0).color(Color.WHITE)).fill(RectNode.create(0, 0, 0, 0).color(UIDemoSimple.INK)).direction(ProgressDirection.BOTTOM_TO_TOP).progress(0.6F).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Progress", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

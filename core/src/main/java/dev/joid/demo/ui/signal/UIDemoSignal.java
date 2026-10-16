@@ -118,8 +118,8 @@ public class UIDemoSignal extends UIDemo {
 			DemoIntegerSliderNode.create(40, 40, 320, 40).range(0, 10).value(volume).attach(rect);
 			ProgressNode
 			.create(40, 110, 320, 20)
-			.background(Color.WHITE)
-			.foreground(UIDemoSignal.INK)
+			.track(RectNode.create(0, 0, 0, 0).color(Color.WHITE))
+			.fill(RectNode.create(0, 0, 0, 0).color(UIDemoSignal.INK))
 			.progress(volume.get() / 10F)
 			.attach(rect);
 			RectNode
