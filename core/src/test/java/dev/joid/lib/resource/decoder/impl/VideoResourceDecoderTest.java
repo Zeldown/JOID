@@ -564,6 +564,22 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void decodesAndPlaysAgainOnceCleared() throws InterruptedException, IOException {
+		final File file = this.folder.newFile("frames.mkv");
+		Files.write(file.toPath(), VideoResourceDecoderTest.bytes("frames.mkv"));
+		final VideoResourceDecoder decoder = this.decoder(file);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 3);
+		decoder.clear(data);
+		final ResourceData reloaded = VideoResourceDecoderTest.load(decoder);
+		Assert.assertNotNull(reloaded.getData(0));
+		this.play(decoder, reloaded, 7);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(reloaded.getWidth(), reloaded.getTextures()[0].getWidth());
+		Assert.assertEquals(40, VideoResourceDecoderTest.shade(reloaded), 3);
+	}
+
+	@Test
 	public void reopensAReleasedVideoOnPlay() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.frames();
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
@@ -676,6 +692,33 @@ public class VideoResourceDecoderTest {
 		Assert.assertEquals(0F, decoder.getVolume(), 0F);
 		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
 		Assert.assertTrue(this.audio.calls.isEmpty());
+	}
+
+	@Test
+	public void startsItsAudioOnceUnmuted() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv")).volume(0F);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 10);
+		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
+		decoder.volume(1F);
+		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
+		Assert.assertEquals("create 8000x1", this.audio.calls.get(0));
+		this.play(decoder, data, 60);
+		Assert.assertTrue(VideoAudioPlayerTest.queueSize(((VideoAudioPlayer) VideoResourceDecoderTest.field(decoder, "audioPlayer"))) > 0);
+	}
+
+	@Test
+	public void resumesNothingOnceStopped() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv"));
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 10);
+		decoder.pause().stop();
+		Assert.assertFalse(decoder.isPaused());
+		this.audio.calls.clear();
+		decoder.resume();
+		this.play(decoder, data, 10);
+		Assert.assertFalse(decoder.isPlaying());
+		Assert.assertEquals(Collections.emptyList(), this.audio.calls);
 	}
 
 	@Test

@@ -109,6 +109,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	@Override
 	public @NonNull VideoResourceDecoder stop() {
 		this.running.set(false);
+		this.paused.set(false);
 		this.seeked = false;
 		this.joinDecodeThread();
 
@@ -120,6 +121,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
+		this.released = false;
+		this.texturesAllocated = false;
 		this.textures = new ITexture[] {ResourceData.placeholder(), ResourceData.placeholder()};
 		resource.texture(this.textures[0]);
 	}
@@ -331,10 +334,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public @NonNull VideoResourceDecoder resume() {
-		if (this.paused.getAndSet(false)) {
-			this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
+		if (!this.paused.getAndSet(false)) {
+			return this;
 		}
 
+		this.startTime += BridgeHandler.CLOCK.get().nanoTime() - this.pauseTime;
 		if (this.audioPlayer != null) {
 			this.audioPlayer.resume();
 		}
@@ -350,6 +354,14 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	public @NonNull VideoResourceDecoder volume(final float volume) {
 		this.volume = volume;
+		synchronized (this.grabberLock) {
+			if (volume > 0F && this.audioPlayer == null && this.grabber != null) {
+				this.createAudioPlayer();
+				if (this.audioPlayer != null && this.isPlaying()) {
+					this.audioPlayer.play();
+				}
+			}
+		}
 		return this;
 	}
 
