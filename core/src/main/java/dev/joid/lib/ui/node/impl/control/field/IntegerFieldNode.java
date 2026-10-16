@@ -22,7 +22,6 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 		this.step = 1;
 
 		super.fallback(0);
-		super.accept(text -> text.matches(this.min < 0 ? "-?[0-9]*" : "[0-9]*"));
 	}
 
 	public static @NonNull IntegerFieldNode create(final double x, final double y, final double width) {
@@ -54,6 +53,11 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	@Override
 	protected final @NonNull String format(final @NonNull Integer value) {
 		return Integer.toString(value);
+	}
+
+	@Override
+	protected final boolean accepts(final @NonNull String text) {
+		return text.matches(this.min < 0 ? "-?[0-9]*" : "[0-9]*");
 	}
 
 	@Override

@@ -595,6 +595,15 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
+	public void keepsItsPinsInItsCopy() {
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item(), ReorderableFlexNodeTest.item());
+		final ReorderableFlexNode pinned = flex.pin(flex.getChildren().get(0)).copy();
+		Assert.assertTrue(pinned.isPinned(pinned.getChildren().get(0)));
+		Assert.assertFalse(pinned.isPinned(pinned.getChildren().get(1)));
+		Assert.assertFalse(pinned.isPinned(flex.getChildren().get(0)));
+	}
+
+	@Test
 	public void neverDragsAPinnedChild() {
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, ReorderableFlexNodeTest.item()).pin(first);
@@ -797,7 +806,7 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
-	public void leavesAParentScrollingOnTheOtherAxisAlone() {
+	public void scrollsTheGrandParentOverAParentScrollingOnTheOtherAxis() {
 		final RectNode first = RectNode.create(0D, 0D, 400D, 50D);
 		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(0D, 0D, 400D).margin(10D).append(first, RectNode.create(0D, 0D, 400D, 50D));
 		final RectNode parent = RectNode.create(100D, 100D, 200D, 150D).overflow(OverflowProperty.SCROLL).append(flex);
@@ -810,7 +819,7 @@ public class ReorderableFlexNodeTest {
 		Assert.assertTrue(flex.isDragging(first));
 		Assert.assertEquals(0D, parent.getTargetScrollX(), 0D);
 		Assert.assertEquals(0D, parent.getTargetScrollY(), 0D);
-		Assert.assertEquals(0D, grandParent.getTargetScrollY(), 0D);
+		Assert.assertTrue(grandParent.getTargetScrollY() < 0D);
 	}
 
 	@Test

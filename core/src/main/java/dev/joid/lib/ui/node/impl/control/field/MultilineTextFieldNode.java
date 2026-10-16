@@ -59,17 +59,17 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			}
 
 			if (super.isFocused()) {
-				final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPosition());
-				final double cursorX = textX + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPosition()));
-				DrawUtils.SHAPE.drawRect(cursorX, textY + lineHeight * cursorLineCol[0], 2D, lineHeight, super.getShownCursorColor());
+				final int cursorLine = this.getLineIndex(layout, super.getCursorPosition());
+				final double cursorX = textX + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLine), super.getCursorPosition()));
+				DrawUtils.SHAPE.drawRect(cursorX, textY + lineHeight * cursorLine, 2D, lineHeight, super.getShownCursorColor());
 			}
 
 			final FieldSelection selection = super.getSelection();
 			if (!selection.isEmpty() && !lines.isEmpty()) {
 				final int start = selection.getStart();
 				final int end = selection.getEnd();
-				final int startLine = this.getLineAndColumn(layout, start)[0];
-				final int endLine = this.getLineAndColumn(layout, end)[0];
+				final int startLine = this.getLineIndex(layout, start);
+				final int endLine = this.getLineIndex(layout, end);
 				for (int i = startLine; i <= endLine; i++) {
 					final FieldLine line = lines.get(i);
 					final int from = i == startLine ? Math.min(start, line.getEnd()) : line.getStart();
@@ -102,13 +102,13 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		if (key == Key.UP || key == Key.DOWN) {
 			final FieldLayout layout = this.getLayout();
 			final List<FieldLine> lines = layout.getLines();
-			final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPosition());
-			final int newLineIdx = cursorLineCol[0] + (key == Key.UP ? -1 : 1);
+			final int cursorLine = this.getLineIndex(layout, super.getCursorPosition());
+			final int newLineIdx = cursorLine + (key == Key.UP ? -1 : 1);
 			if (newLineIdx < 0 || newLineIdx >= lines.size()) {
 				return true;
 			}
 
-			final double cursorX = this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPosition());
+			final double cursorX = this.getX(layout, lines.get(cursorLine), super.getCursorPosition());
 			final int newCursorPos = this.getPosition(layout, lines.get(newLineIdx), cursorX);
 			super.placeCursor(newCursorPos, key == Key.DOWN);
 			return true;
@@ -152,10 +152,10 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	@Override
 	protected final void followCursorForward() {
 		final double lineHeight = this.getLineHeight();
-		final String beforeCursor = super.getText().substring(0, super.getCursorPosition());
-		final int cursorLine = this.getLayout(beforeCursor).getLines().size() - 1;
+		final FieldLayout layout = this.getLayout();
+		final int cursorLine = this.getLineIndex(layout, super.getCursorPosition());
 		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * cursorLine;
-		final double margin = Math.min(super.getCursorMargin(), lineHeight * (this.getLayout().getLines().size() - 1 - cursorLine));
+		final double margin = Math.min(super.getCursorMargin(), lineHeight * (layout.getLines().size() - 1 - cursorLine));
 		if (cursorY + lineHeight + margin - this.yOffset > super.getY() + super.getHeight() - super.getMarginBottom()) {
 			this.yOffset = cursorY + lineHeight + margin - super.getY() - super.getHeight() + super.getMarginBottom();
 		}
@@ -168,9 +168,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			return;
 		}
 
-		final double lineHeight = this.getLineHeight();
-		final String beforeCursor = super.getText().substring(0, super.getCursorPosition());
-		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (this.getLayout(beforeCursor).getLines().size() - 1);
+		final double cursorY = super.getY() + super.getMarginTop() + this.getLineHeight() * this.getLineIndex(this.getLayout(), super.getCursorPosition());
 		if (cursorY - this.yOffset < super.getY() + super.getMarginTop() + super.getCursorMargin()) {
 			this.yOffset = cursorY - super.getY() - super.getMarginTop() - super.getCursorMargin();
 		}
@@ -264,21 +262,16 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 	}
 
-	private int[] getLineAndColumn(final @NonNull FieldLayout layout, final int pos) {
+	private int getLineIndex(final @NonNull FieldLayout layout, final int pos) {
 		final List<FieldLine> lines = layout.getLines();
-		if (lines.isEmpty()) {
-			return new int[] {0, 0};
-		}
-
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
 			final FieldLine line = lines.get(lineIdx);
 			if (pos >= line.getStart() && pos <= line.getEnd()) {
-				return new int[] {lineIdx, pos - line.getStart()};
+				return lineIdx;
 			}
 		}
 
-		final FieldLine lastLine = lines.get(lines.size() - 1);
-		return new int[] {lines.size() - 1, lastLine.getEnd() - lastLine.getStart()};
+		return Math.max(0, lines.size() - 1);
 	}
 
 	private double getX(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final int pos) {

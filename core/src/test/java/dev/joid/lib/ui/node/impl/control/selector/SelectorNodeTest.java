@@ -87,11 +87,20 @@ public class SelectorNodeTest {
 	}
 
 	@Test
+	public void leavesTheNextNodeOfAFlexInPlaceWhenItOpensUpwards() {
+		final RectNode next = RectNode.create(0D, 0D, 200D, 40D);
+		this.bridges.open(new NodeUI(FlexNode.vertical(0D, 0D, 200D).append(this.selector.direction(SelectorDirection.UP), next))).frame();
+		this.selector.active(true);
+		this.bridges.frame();
+		Assert.assertEquals(40D, next.getY(), 0D);
+	}
+
+	@Test
 	public void opensUpwards() {
 		Assert.assertSame(this.selector, this.selector.direction(SelectorDirection.UP).active(true));
 		this.bridges.open(new NodeUI(this.selector)).frames(2);
-		Assert.assertEquals(120D, this.selector.getHeight(), 0D);
-		Assert.assertEquals(20D, this.selector.getY(), 0D);
+		Assert.assertEquals(40D, this.selector.getHeight(), 0D);
+		Assert.assertEquals(100D, this.selector.getY(), 0D);
 		this.assertDrawn(0.1F, 0.3F, 0.5F, 100D, 140D);
 		this.assertDrawn(0.3F, 0.5F, 0.7F, 60D, 100D);
 		this.assertDrawn(0.5F, 0.7F, 0.9F, 20D, 60D);
@@ -102,7 +111,6 @@ public class SelectorNodeTest {
 		this.bridges.open(new NodeUI(this.selector.direction(SelectorDirection.UP))).frame();
 		this.click(150D, 120D);
 		Assert.assertTrue(this.selector.isActive());
-		Assert.assertEquals(20D, this.selector.getY(), 0D);
 		this.click(150D, 40D);
 		Assert.assertEquals("third", this.selector.getValue());
 		Assert.assertFalse(this.selector.isActive());

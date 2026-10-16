@@ -319,6 +319,14 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void followsTheCursorDownIntoAWrappedWord() {
+		final MultilineTextFieldNode field = this.field(94D, "0\n1\n2\n3\n4\n5\n6\n7\nhello world\nx\ny\nz").cursorPosition(19);
+		this.press(field, Key.DOWN);
+		Assert.assertEquals(25, field.getCursorPosition());
+		Assert.assertEquals(44D, MultilineTextFieldNodeTest.<Double>read(field, MultilineTextFieldNode.class, "yOffset"), 1E-9D);
+	}
+
+	@Test
 	public void jumpsOverWholeWordsAndLineBreaksWithControl() {
 		final MultilineTextFieldNode field = this.field("one\ntwo three");
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);

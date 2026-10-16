@@ -21,9 +21,6 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 
 	private Function<V, Node> option;
 
-	private double raise;
-	private double raisedLayoutY;
-
 	protected SelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
@@ -36,25 +33,21 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 
 	@Override
 	public void update() {
-		super.layoutSize(super.getWidth(), this.getShownHeight());
+		super.layoutSize(super.getWidth(), this.direction.isDown() ? this.getShownHeight() : super.getDefaultHeight());
 	}
 
 	@Override
 	public void layout() {
 		final double size = super.getDefaultHeight();
 		final double height = this.getShownHeight();
-		final double raise = this.direction.isDown() ? 0D : height - size;
-		final double layoutY = super.getLayoutY() == this.raisedLayoutY ? super.getLayoutY() + this.raise : super.getLayoutY();
-		this.raise = raise;
-		this.raisedLayoutY = layoutY - raise;
-		super.layoutPosition(super.getLayoutX(), this.raisedLayoutY).layoutSize(super.getWidth(), height);
-		this.field.layoutPosition(0D, 0D).layoutSize(super.getWidth(), height);
+		super.layoutSize(super.getWidth(), this.direction.isDown() ? height : size);
+		this.field.layoutPosition(0D, this.direction.isDown() ? 0D : size - height).layoutSize(super.getWidth(), height);
 
 		final List<V> values = super.getValueList();
 		for (int i = 0; i < this.optionList.size(); i++) {
 			final Node option = this.optionList.get(i);
 			final double rank = super.getOptionRank(values.get(i));
-			option.visible(super.isActive() || this.isSelected(option)).layoutPosition(0D, this.direction.isDown() ? rank * size : raise - rank * size).layoutSize(super.getWidth(), size);
+			option.visible(super.isActive() || this.isSelected(option)).layoutPosition(0D, this.direction.isDown() ? rank * size : -rank * size).layoutSize(super.getWidth(), size);
 		}
 	}
 

@@ -29,7 +29,7 @@ public class ReorderableFlexNode extends FlexNode {
 	private static final EventType<NodeReorderEvent.Pre<?>>  BEFORE_REORDER = EventType.create("beforeReorder");
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER_START  = EventType.create("onReorderStart");
 
-	private final transient Set<Node>         pinnedNodes;
+	private final Set<Node>                   pinnedNodes;
 	private final transient List<Node>        logicalOrder;
 	private final transient Map<Node, Double> childCurrent;
 
@@ -458,10 +458,11 @@ public class ReorderableFlexNode extends FlexNode {
 
 		final double zone = 60D;
 		final double speed = 2D * super.getUi().getFrameTime() / (1000D / 60D);
+		final boolean vertical = super.getDirection() == Axis.VERTICAL;
 		Node parent = super.getParent();
 		while (parent != null) {
-			if (parent.getOverflow() == OverflowProperty.SCROLL && (parent.hasOverflowX() || parent.hasOverflowY())) {
-				if (super.getDirection() == Axis.VERTICAL && parent.hasOverflowY()) {
+			if (parent.getOverflow() == OverflowProperty.SCROLL && (vertical ? parent.hasOverflowY() : parent.hasOverflowX())) {
+				if (vertical) {
 					final double parentTop = parent.getAbsoluteY();
 					final double parentBottom = parentTop + parent.getHeight();
 					if (mouseY < parentTop + zone) {
@@ -471,7 +472,7 @@ public class ReorderableFlexNode extends FlexNode {
 						final double depth = Math.min(1D, (mouseY - (parentBottom - zone)) / zone);
 						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() - speed * depth * depth);
 					}
-				} else if (super.getDirection() == Axis.HORIZONTAL && parent.hasOverflowX()) {
+				} else {
 					final double parentLeft = parent.getAbsoluteX();
 					final double parentRight = parentLeft + parent.getWidth();
 					if (mouseX < parentLeft + zone) {

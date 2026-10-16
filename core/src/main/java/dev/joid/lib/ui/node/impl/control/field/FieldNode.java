@@ -146,6 +146,10 @@ public abstract class FieldNode<V> extends Node {
 		return value;
 	}
 
+	protected boolean accepts(final @NonNull String text) {
+		return true;
+	}
+
 	protected V increment(final @NonNull V value, final int count) {
 		return null;
 	}
@@ -757,7 +761,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private boolean edit(final @NonNull String newText) {
-		if (newText.equals(this.text) || !this.accept.test(newText)) {
+		if (newText.equals(this.text) || !this.accepts(newText) || !this.accept.test(newText)) {
 			return false;
 		}
 
@@ -813,7 +817,7 @@ public abstract class FieldNode<V> extends Node {
 			return true;
 		}
 
-		final V parsed = this.accept.test(text) ? this.parse(this.normalize.apply(text)) : null;
+		final V parsed = this.accepts(text) && this.accept.test(text) ? this.parse(this.normalize.apply(text)) : null;
 		return parsed != null && parsed.equals(this.correct(parsed));
 	}
 

@@ -80,6 +80,21 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void keepsAcceptingOnlyIntegersWithItsOwnFilter() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).accept(text -> text.length() < 3));
+		this.type(field, "1a23");
+		Assert.assertEquals("12", field.getText());
+	}
+
+	@Test
+	public void filtersACopyWithItsOwnMinimum() {
+		final IntegerFieldNode original = IntegerFieldNode.create(0D, 0D, 100D).min(0);
+		final IntegerFieldNode copy = this.focused(original.<IntegerFieldNode>copy().min(-10));
+		this.type(copy, "-");
+		Assert.assertEquals("-", copy.getText());
+	}
+
+	@Test
 	public void refusesAMinusInFrontOfANumberWhileNegativeValuesAreNotAllowed() {
 		final IntegerFieldNode positive = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(9));
 		this.type(positive, "5");
