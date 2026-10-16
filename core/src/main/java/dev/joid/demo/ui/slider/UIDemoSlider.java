@@ -37,7 +37,7 @@ public class UIDemoSlider extends UIDemo {
 		final IntegerSignal refused = new IntegerSignal(0);
 
 		RectNode
-		.create(80, 210, 320, 260)
+		.create(80, 40, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoIntegerSliderNode
@@ -52,7 +52,7 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(440, 210, 320, 260)
+		.create(440, 40, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoIntegerSliderNode.create(40, 40, 240, 40).values(0, 25, 50, 75, 100).value(percent).attach(rect);
@@ -62,7 +62,7 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(800, 210, 320, 260)
+		.create(800, 40, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoDoubleSliderNode.create(40, 40, 240, 40).range(0D, 1D, 0.25D).value(ratio).attach(rect);
@@ -72,7 +72,7 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(1160, 210, 320, 260)
+		.create(1160, 40, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoStringSliderNode.create(40, 40, 240, 40).values("Low", "Medium", "High").value(level).attach(rect);
@@ -82,7 +82,7 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(1520, 210, 320, 260)
+		.create(1520, 40, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoStringSliderNode.create(40, 40, 240, 40).values(Align.values()).value(align).attach(rect);
@@ -92,7 +92,7 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(80, 550, 320, 260)
+		.create(80, 380, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).value(volume).attach(rect);
@@ -114,7 +114,7 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(440, 550, 320, 260)
+		.create(440, 380, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).value(shared).attach(rect);
@@ -125,7 +125,7 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(800, 550, 320, 260)
+		.create(800, 380, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).value(target).attach(rect);
@@ -140,7 +140,7 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(1160, 550, 320, 260)
+		.create(1160, 380, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoIntegerSliderNode
@@ -160,11 +160,20 @@ public class UIDemoSlider extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(1520, 550, 320, 260)
+		.create(1520, 380, 320, 260)
 		.color(UIDemoSlider.PLACEHOLDER)
 		.body(rect -> {
 			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).value(4).enabled(false).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Disabled", info)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
+
+		RectNode
+		.create(800, 720, 320, 260)
+		.color(UIDemoSlider.PLACEHOLDER)
+		.body(rect -> {
+			DemoIntegerSliderNode.create(40, 40, 240, 40).range(0, 10).inset(40D).value(0).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Inset 40", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

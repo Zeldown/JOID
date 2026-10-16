@@ -233,7 +233,7 @@ public class UIDemoOverflow extends UIDemo {
 			.create(20, 20, 340, 160)
 			.color(Color.WHITE)
 			.overflow(OverflowProperty.SCROLL)
-			.scrollbar(DemoScrollbarNode.create(348, 0, 12, 160))
+			.scrollbar(DemoScrollbarNode.create(348, 0, 12, 160).minThumb(60D))
 			.onScrollToEnd(event -> {
 				for (int i = 0; i < 4; i++) {
 					RectNode.create(0, 0, 320, 40).color(UIDemoOverflow.INK).attach(event.getNode().getChild(0, FlexNode.class));

@@ -10,7 +10,6 @@ import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.animation.tween.TweenPaths;
-import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
@@ -29,7 +28,6 @@ public class UIDemoTween extends UIDemo {
 	private final TweenManager manager = new TweenManager();
 
 	private float value;
-	private long  lastUpdate;
 
 	@Override
 	public void init() {
@@ -47,10 +45,10 @@ public class UIDemoTween extends UIDemo {
 		final IntegerSignal starts = new IntegerSignal(0);
 		final IntegerSignal laps = new IntegerSignal(0);
 		final TweenAnimator events = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(Tween.INFINITY, 0F).onStart(event -> starts.increment()).onIterationEnd(event -> laps.increment()).start();
+		final TweenAnimator delayed = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_INOUT).delay(1000F).repeatYoyo(Tween.INFINITY, 0F).start();
 		this.manager.killAll();
 		this.value = 0F;
 		Tween.to(() -> this.value, value -> this.value = value, 1000F).target(1F).ease(TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(this.manager);
-		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 
 		RectNode
 		.create(100, 40, 400, 260)
@@ -173,7 +171,7 @@ public class UIDemoTween extends UIDemo {
 		.attach(this);
 
 		RectNode
-		.create(760, 720, 400, 260)
+		.create(540, 720, 400, 260)
 		.color(UIDemoTween.PLACEHOLDER)
 		.body(rect -> {
 			RectNode
@@ -187,13 +185,26 @@ public class UIDemoTween extends UIDemo {
 			TextNode.create(200, 275).text(Text.create("Tween events", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
+
+		RectNode
+		.create(980, 720, 400, 260)
+		.color(UIDemoTween.PLACEHOLDER)
+		.body(rect -> {
+			RectNode
+			.create(40, 100, 320, 60)
+			.color(Color.WHITE)
+			.body(line -> {
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(delayed).onDetach(event -> delayed.clear()).attach(line);
+			})
+			.attach(rect);
+			TextNode.create(200, 275).text(Text.create("Start delay", caption)).anchorX(Align.CENTER).attach(rect);
+		})
+		.attach(this);
 	}
 
 	@Override
 	public void update() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.manager.update(now - this.lastUpdate);
-		this.lastUpdate = now;
+		this.manager.update((float) super.getFrameTime());
 	}
 
 }

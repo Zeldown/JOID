@@ -1,5 +1,7 @@
 package dev.joid.demo.ui.textfield;
 
+import java.util.Locale;
+
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.font.markup.DemoTextMarkup;
 import dev.joid.demo.ui.UIDemo;
@@ -21,6 +23,7 @@ import dev.joid.lib.utils.align.Align;
 public class UIDemoTextField extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153).lock();
+	private static final Color ACCENT      = new Color(255, 85, 85).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
 	@Override
@@ -69,7 +72,8 @@ public class UIDemoTextField extends UIDemo {
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
 			DemoTextFieldNode.create(40, 40, 240, 50).info(markup).marginHorizontal(12D).markup(true).text("<b>bold</b> <c=ff5555>red</c>").attach(rect);
-			TextNode.create(160, 275).text(Text.create("Markup", info)).anchorX(Align.CENTER).attach(rect);
+			DemoTextFieldNode.create(40, 120, 240, 50).info(markup).marginHorizontal(12D).text("<b>bold</b> <c=ff5555>red</c>").attach(rect);
+			TextNode.create(160, 275).text(Text.create("Markup and raw", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -77,8 +81,16 @@ public class UIDemoTextField extends UIDemo {
 		.create(800, 40, 320, 260)
 		.color(UIDemoTextField.PLACEHOLDER)
 		.body(rect -> {
-			DemoTextFieldNode.create(40, 40, 240, 50).info(markup).marginHorizontal(12D).text("<b>bold</b> <c=ff5555>red</c>").attach(rect);
-			TextNode.create(160, 275).text(Text.create("Raw tags", info)).anchorX(Align.CENTER).attach(rect);
+			DemoTextFieldNode
+			.create(40, 40, 240, 50)
+			.info(info)
+			.marginHorizontal(12D)
+			.placeholder("Placeholder")
+			.placeholderColor(UIDemoTextField.ACCENT)
+			.cursorColor(UIDemoTextField.ACCENT)
+			.selectionColor(UIDemoTextField.ACCENT.withAlpha(0.3F))
+			.attach(rect);
+			TextNode.create(160, 275).text(Text.create("Colors", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 
@@ -112,7 +124,7 @@ public class UIDemoTextField extends UIDemo {
 		.body(rect -> {
 			DemoTextFieldNode
 			.create(40, 40, 240, 50)
-			.normalize(text -> text.trim().toUpperCase())
+			.normalize(text -> text.trim().toUpperCase(Locale.ROOT))
 			.info(info)
 			.marginHorizontal(12D)
 			.placeholder("Upper case")

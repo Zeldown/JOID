@@ -121,48 +121,48 @@ wait 300
 shot inter-textfield-line
 ui dev.joid.demo.ui.slider.UIDemoSlider
 wait 800
-move 240 270
+move 240 100
 wait 100
 press LEFT
-moveto 340 270 600
+moveto 340 100 600
 wait 200
 release LEFT
 wait 100
-move 680 270
+move 680 100
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 260 745
+move 260 575
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 260 745
+move 260 575
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 640 610
+move 640 440
 wait 100
 press LEFT
-moveto 520 610 400
+moveto 520 440 400
 wait 200
 release LEFT
 wait 100
-move 900 695
+move 900 525
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 1260 610
+move 1260 440
 wait 100
 press LEFT
-moveto 1440 610 400
+moveto 1440 440 400
 wait 200
 release LEFT
 wait 100
-move 1600 610
+move 1600 440
 wait 100
 press LEFT
 release LEFT
