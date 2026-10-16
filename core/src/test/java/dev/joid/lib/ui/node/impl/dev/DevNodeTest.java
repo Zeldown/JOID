@@ -186,6 +186,15 @@ public class DevNodeTest {
 	}
 
 	@Test
+	public void inspectsNothingBehindItsPanel() {
+		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(0D, 0D, 1920D, 1080D)));
+		this.bridges.move(1890D, 1050D).frames(2);
+		Assert.assertNull(DevNodeTest.peek(panel, "inspectedNode"));
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
+	}
+
+	@Test
 	public void placesTheInfoBoxAboveTheInspectedNode() {
 		DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frames(60);

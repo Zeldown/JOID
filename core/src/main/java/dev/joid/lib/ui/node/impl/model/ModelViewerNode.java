@@ -131,7 +131,7 @@ public class ModelViewerNode extends BaseModelNode {
 		final double rotationPitch = this.rotationPitch - (event.getMouseY() - this.draggedMouseY) / 5D;
 		this.draggedMouseX = event.getMouseX();
 		this.draggedMouseY = event.getMouseY();
-		this.rotationValue.change(Point.create(rotationYaw, rotationPitch));
+		this.rotationValue.set(Point.create(rotationYaw, rotationPitch));
 	}
 
 	@Override

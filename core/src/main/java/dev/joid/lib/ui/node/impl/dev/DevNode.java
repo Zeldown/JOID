@@ -3,7 +3,6 @@ package dev.joid.lib.ui.node.impl.dev;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Supplier;
@@ -99,7 +98,7 @@ public final class DevNode extends Node {
 	}
 
 	@Override
-	public void init(final UI ui) {
+	public void init(final @NonNull UI ui) {
 		super.clearChildren();
 
 		FlexNode
@@ -351,17 +350,8 @@ public final class DevNode extends Node {
 			if (!this.inspectedNodeLocked.peek()) {
 				this.inspectedNode.set(null);
 				final List<Node> nodeList = super.getUi().getNodeListAt(mouseX, mouseY);
-				if (UI.isCtrlKeyDown()) {
-					Collections.reverse(nodeList);
-				}
-
-				for (final Node node : nodeList) {
-					if (node instanceof DevNode || this.isAncestorOf(node)) {
-						continue;
-					}
-
-					this.inspectedNode.set(node);
-					break;
+				if (!nodeList.isEmpty() && !(nodeList.get(0) instanceof DevNode) && !this.isAncestorOf(nodeList.get(0))) {
+					this.inspectedNode.set(nodeList.get(UI.isCtrlKeyDown() ? nodeList.size() - 1 : 0));
 				}
 			}
 
