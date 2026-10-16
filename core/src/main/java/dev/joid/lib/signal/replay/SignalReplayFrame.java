@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -664,6 +665,10 @@ public final class SignalReplayFrame {
 		}
 
 		final Method method = (Method) this.method.member(instruction);
+		if (instruction.getOpcode() == Opcodes.INVOKESPECIAL && SignalReplayFrame.isOverridden(method, receiver.getClass())) {
+			throw new SignalReplayException(SignalReplayFailure.UNSUPPORTED_INSTRUCTION, "INVOKESPECIAL " + instruction.name);
+		}
+
 		final Object target = Modifier.isStatic(method.getModifiers()) ? null : receiver;
 		final long readTotal = SignalContext.current().getReadTotal();
 		final Object result = this.call(() -> method.invoke(target, SignalReplayFrame.convert(arguments, method.getParameterTypes())));
@@ -841,6 +846,21 @@ public final class SignalReplayFrame {
 
 	private static boolean isUnknown(final Object value) {
 		return value instanceof SignalReplayUnknown || value instanceof SignalReplayParts && ((SignalReplayParts) value).hasHoles();
+	}
+
+	private static boolean isOverridden(final Method method, final Class<?> type) {
+		if (Modifier.isPrivate(method.getModifiers())) {
+			return false;
+		}
+
+		for (Class<?> current = type; current != null && current != method.getDeclaringClass(); current = current.getSuperclass()) {
+			for (final Method declared : current.getDeclaredMethods()) {
+				if (declared.getName().equals(method.getName()) && Arrays.equals(declared.getParameterTypes(), method.getParameterTypes())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	private static String describe(final Object unknown) {

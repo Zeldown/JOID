@@ -33,6 +33,7 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.showcase.ReplayShowcaseFixture;
 import example.replay.LabelNode;
 import example.replay.LabelUI;
+import example.replay.OverridingLabelUI;
 
 public class SignalReplayTest {
 
@@ -364,6 +365,15 @@ public class SignalReplayTest {
 		Assert.assertEquals("", this.open(ui));
 		ui.getClicks().set(3);
 		Assert.assertEquals("> Prefixed 0", SignalReplayTest.node(ui, 4).getText().get());
+	}
+
+	@Test
+	public void keepsASuperCallToAnOverriddenMethodFixed() {
+		final OverridingLabelUI ui = new OverridingLabelUI();
+		Assert.assertEquals("[JOID] OverridingLabelUI.java:N text(...) reads getClicks() but cannot follow it: the instruction INVOKESPECIAL label is not supported. The value stays \"a0\". Use map(...) or a lambda.\n", this.open(ui));
+		ui.getClicks().set(2);
+		Assert.assertEquals("a0", SignalReplayTest.node(ui, 0).getText().get());
+		Assert.assertEquals("p2", SignalReplayTest.node(ui, 1).getText().get());
 	}
 
 	@Test
