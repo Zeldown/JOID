@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -218,8 +217,6 @@ public abstract class UI implements IUI, IndexedElement {
 				this.loaded = true;
 			}
 			this.eventBus.reset();
-			this.shortcutList.forEach(Shortcut::detach);
-			this.keptShortcutList.forEach(this::addShortcut);
 			this.scoped(() -> {
 				if (!this.closed) {
 					for (final Node node : this.nodeList) {
@@ -228,8 +225,10 @@ public abstract class UI implements IUI, IndexedElement {
 						}
 					}
 					this.taskList.forEach(Task::detach);
+					this.shortcutList.forEach(Shortcut::detach);
 				}
 				this.keptTaskList.forEach(this::addTask);
+				this.keptShortcutList.forEach(this::addShortcut);
 				this.nodeList.clear();
 
 				SignalReplay.reset();
@@ -573,6 +572,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
 		this.taskList.forEach(Task::detach);
+		this.shortcutList.forEach(Shortcut::detach);
 		this.bindings.unsubscribe();
 		this.closed = true;
 		this.initialized = false;
@@ -583,9 +583,7 @@ public abstract class UI implements IUI, IndexedElement {
 		}
 
 		UIStoreHook.saveAll();
-		for (final Entry<Class<? extends UIStore>, UIStore> storeEntry : this.storeMap.entrySet()) {
-			UIStoreHook.destroyStore(storeEntry.getValue());
-		}
+		this.storeMap.values().forEach(UIStoreHook::destroyStore);
 		this.storeMap.clear();
 
 		UIPropertyHook.save(this);

@@ -14,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -175,6 +176,15 @@ public class ShortcutTest {
 		Assert.assertNull(shortcut.getUi());
 		Assert.assertTrue(ui.getShortcutList().isEmpty());
 		Assert.assertTrue(this.trace.isEmpty());
+	}
+
+	@Test
+	public void stopsWhenItsUiCloses() {
+		final ShortcutUI ui = this.open();
+		final Shortcut shortcut = Shortcut.create(Key.S).attach(ui);
+		JOID.close(ui);
+		Assert.assertFalse(shortcut.isAttached());
+		Assert.assertTrue(ui.getShortcutList().isEmpty());
 	}
 
 	@Test

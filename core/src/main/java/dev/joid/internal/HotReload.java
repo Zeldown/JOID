@@ -120,7 +120,10 @@ public final class HotReload {
 
 				try {
 					Thread.sleep(1000L);
-				} catch (final Exception exception) {}
+				} catch (final InterruptedException exception) {
+					Thread.currentThread().interrupt();
+					return;
+				}
 
 				JOIDLog.info(this.change.getName() + " changed, the UIs that use it reload");
 				this.change = null;

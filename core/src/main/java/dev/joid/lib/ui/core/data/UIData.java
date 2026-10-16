@@ -3,13 +3,14 @@ package dev.joid.lib.ui.core.data;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import dev.joid.lib.utils.align.Align;
 
 @Inherited
 @Target(ElementType.TYPE)
-@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface UIData {
 
 	public boolean active()          default true;

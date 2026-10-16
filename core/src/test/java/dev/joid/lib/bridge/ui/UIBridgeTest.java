@@ -936,7 +936,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.bridges.getRender().getDraws().clear();
-		new TooltipBridge(null).drawHover(menu, "Play", 100D, 100D);
+		new DemoUIBridge().drawHover(menu, "Play", 100D, 100D);
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
@@ -1046,15 +1046,8 @@ public class UIBridgeTest {
 
 	public static final class TooltipBridge extends DemoUIBridge {
 
-		private final TextInfo info;
-
 		public TooltipBridge(final TextInfo info) {
-			this.info = info;
-		}
-
-		@Override
-		public TextInfo getHoverInfo() {
-			return this.info;
+			super.hoverInfo(info);
 		}
 
 	}
