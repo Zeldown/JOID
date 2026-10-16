@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.DoubleStream;
 
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
@@ -27,19 +28,15 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 	}
 
 	public final Number getMax() {
-		final double min = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0D);
-		final double max = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0D);
-		return ChartNode.scaleMax(min, max);
+		return ChartNode.scaleMax(this.getValues().min().orElse(0D), this.getValues().max().orElse(0D));
 	}
 
 	public final Number getMin() {
-		final double min = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).min().orElse(0D);
-		final double max = this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).max().orElse(0D);
-		return ChartNode.scaleMin(min, max);
+		return ChartNode.scaleMin(this.getValues().min().orElse(0D), this.getValues().max().orElse(0D));
 	}
 
 	public final Number getAverage() {
-		return this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue()).average().orElse(0D);
+		return this.getValues().average().orElse(0D);
 	}
 
 	public final <T extends RadarChartNode<DATA>> @NonNull T data(final @NonNull DATA data) {
@@ -47,7 +44,7 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends RadarChartNode<DATA>> @NonNull T remove(final @NonNull DATA data) {
+	public final <T extends RadarChartNode<DATA>> @NonNull T removeData(final @NonNull DATA data) {
 		this.dataList.remove(data);
 		return (T) this;
 	}
@@ -55,6 +52,10 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 	public final <T extends RadarChartNode<DATA>> @NonNull T clear() {
 		this.dataList.clear();
 		return (T) this;
+	}
+
+	private @NonNull DoubleStream getValues() {
+		return this.dataList.stream().filter(data -> !data.isEmpty()).mapToDouble(data -> data.getValue().doubleValue());
 	}
 
 	public static class RadarChartData {

@@ -8,7 +8,7 @@ import dev.joid.lib.ui.node.impl.control.choice.SwitchNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.NonNull;
 
-public class DemoSwitchNode extends SwitchNode {
+public class DemoSwitchNode<V> extends SwitchNode<V> {
 
 	private static final Color INK = new Color(153, 153, 153).lock();
 
@@ -20,8 +20,8 @@ public class DemoSwitchNode extends SwitchNode {
 		.label(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 20, value.equals(super.getValue()) ? Color.WHITE : DemoSwitchNode.INK))));
 	}
 
-	public static @NonNull DemoSwitchNode create(final double x, final double y, final double width, final double height) {
-		return new DemoSwitchNode(x, y, width, height);
+	public static <V> @NonNull DemoSwitchNode<V> create(final double x, final double y, final double width, final double height) {
+		return new DemoSwitchNode<>(x, y, width, height);
 	}
 
 }

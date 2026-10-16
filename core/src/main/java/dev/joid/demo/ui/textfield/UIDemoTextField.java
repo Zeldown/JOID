@@ -112,12 +112,12 @@ public class UIDemoTextField extends UIDemo {
 		.body(rect -> {
 			DemoTextFieldNode
 			.create(40, 40, 240, 50)
-			.format(text -> text.trim().toUpperCase())
+			.normalize(text -> text.trim().toUpperCase())
 			.info(info)
 			.marginHorizontal(12D)
 			.placeholder("Upper case")
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Format", info)).anchorX(Align.CENTER).attach(rect);
+			TextNode.create(160, 275).text(Text.create("Normalize", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

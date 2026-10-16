@@ -189,8 +189,8 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void formatsAGivenTextAtOnce() {
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).format(String::toUpperCase);
+	public void normalizesAGivenTextAtOnce() {
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).normalize(String::toUpperCase);
 		Assert.assertEquals("AB", field.text("ab").getText());
 		Assert.assertEquals("CD\nE", field.text("cd\ne").getText());
 	}
@@ -1179,7 +1179,7 @@ public class MultilineTextFieldNodeTest {
 	public void dropsTheControlCharactersOfEveryText() {
 		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).text("a\u00a7b\tc\u20ac\nd");
 		Assert.assertEquals("a\u00a7bc\u20ac\nd", field.getText());
-		Assert.assertEquals("x\ny", field.format(text -> "x\r\ny\t").text("z").getText());
+		Assert.assertEquals("x\ny", field.normalize(text -> "x\r\ny\t").text("z").getText());
 	}
 
 	@Test

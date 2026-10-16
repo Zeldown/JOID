@@ -43,7 +43,7 @@ public class RadarChartNodeTest {
 		final RadarChartData speed = RadarChartData.create("speed", 3);
 		final RadarChartData power = RadarChartData.create("power", 5);
 		final StarChartNode chart = new StarChartNode(0D, 0D, 200D, 200D).data(speed).data(power);
-		Assert.assertSame(chart, chart.remove(speed));
+		Assert.assertSame(chart, chart.removeData(speed));
 		Assert.assertEquals(Arrays.asList(power), chart.getDataList());
 	}
 

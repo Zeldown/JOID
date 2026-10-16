@@ -61,7 +61,7 @@ public abstract class FieldNode<V> extends Node {
 
 	@Getter private boolean               allowEmpty;
 	@Getter private Predicate<String>     accept;
-	@Getter private UnaryOperator<String> format;
+	@Getter private UnaryOperator<String> normalize;
 
 	private V fallback;
 
@@ -103,7 +103,7 @@ public abstract class FieldNode<V> extends Node {
 		this.placeholder    = "";
 		this.focused        = false;
 		this.accept         = text -> true;
-		this.format         = UnaryOperator.identity();
+		this.normalize      = UnaryOperator.identity();
 		this.maxTextLength  = -1;
 		this.selection      = FieldSelection.create(0, 0);
 		this.selectionColor = new Color(50, 152, 253, 100);
@@ -327,8 +327,8 @@ public abstract class FieldNode<V> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T format(final @NonNull UnaryOperator<@NonNull String> format) {
-		this.format = format;
+	public final <T extends FieldNode<V>> @NonNull T normalize(final @NonNull UnaryOperator<@NonNull String> normalize) {
+		this.normalize = normalize;
 		return (T) this;
 	}
 
@@ -802,7 +802,7 @@ public abstract class FieldNode<V> extends Node {
 			return null;
 		}
 
-		final V parsed = this.parse(this.format.apply(text));
+		final V parsed = this.parse(this.normalize.apply(text));
 		return parsed == null ? this.fallback : this.correct(parsed);
 	}
 
@@ -811,7 +811,7 @@ public abstract class FieldNode<V> extends Node {
 			return true;
 		}
 
-		final V parsed = this.accept.test(text) ? this.parse(this.format.apply(text)) : null;
+		final V parsed = this.accept.test(text) ? this.parse(this.normalize.apply(text)) : null;
 		return parsed != null && parsed.equals(this.correct(parsed));
 	}
 

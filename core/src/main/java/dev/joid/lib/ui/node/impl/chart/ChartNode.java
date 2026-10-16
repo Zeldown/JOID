@@ -28,29 +28,21 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getMax() {
-		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0D);
-		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0D);
-		return ChartNode.scaleMax(min, max);
+		return ChartNode.scaleMax(this.getDataMin(), this.getDataMax());
 	}
 
 	public final Number getMax(final String data) {
-		final ChartData series = this.getData(data);
-		final double min = series == null ? 0D : series.getMin().doubleValue();
-		final double max = series == null ? 0D : series.getMax().doubleValue();
-		return ChartNode.scaleMax(min, max);
+		final ChartData series = this.getSeries(data);
+		return ChartNode.scaleMax(series.getMin().doubleValue(), series.getMax().doubleValue());
 	}
 
 	public final Number getMin() {
-		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0D);
-		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0D);
-		return ChartNode.scaleMin(min, max);
+		return ChartNode.scaleMin(this.getDataMin(), this.getDataMax());
 	}
 
 	public final Number getMin(final String data) {
-		final ChartData series = this.getData(data);
-		final double min = series == null ? 0D : series.getMin().doubleValue();
-		final double max = series == null ? 0D : series.getMax().doubleValue();
-		return ChartNode.scaleMin(min, max);
+		final ChartData series = this.getSeries(data);
+		return ChartNode.scaleMin(series.getMin().doubleValue(), series.getMax().doubleValue());
 	}
 
 	public final Number getAverage() {
@@ -58,8 +50,7 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getAverage(final String data) {
-		final ChartData series = this.getData(data);
-		return series == null ? 0D : series.getAverage();
+		return this.getSeries(data).getAverage();
 	}
 
 	public final @NonNull Set<String> getLabels() {
@@ -99,13 +90,26 @@ public abstract class ChartNode extends Node {
 		return (T) this;
 	}
 
-	public final <T extends ChartNode> @NonNull T remove(final @NonNull String data) {
+	public final <T extends ChartNode> @NonNull T removeData(final @NonNull String data) {
 		if (this.xAxis == null) {
-			throw new IllegalStateException(this.getClass().getSimpleName() + " has no X axis to remove the data " + data + " from, call xAxis(...) before remove(...)");
+			throw new IllegalStateException(this.getClass().getSimpleName() + " has no X axis to remove the data " + data + " from, call xAxis(...) before removeData(...)");
 		}
 
 		this.xAxis.remove(data);
 		return (T) this;
+	}
+
+	private double getDataMin() {
+		return this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0D);
+	}
+
+	private double getDataMax() {
+		return this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0D);
+	}
+
+	private @NonNull ChartData getSeries(final String data) {
+		final ChartData series = this.getData(data);
+		return series == null ? ChartData.create() : series;
 	}
 
 	protected static double scaleMin(final double min, final double max) {

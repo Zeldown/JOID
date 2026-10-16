@@ -161,7 +161,7 @@ public class UIDemoControl extends UIDemo {
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
 			DemoSwitchNode
-			.create(40, 30, 240, 50)
+			.<String>create(40, 30, 240, 50)
 			.values("One", "Two", "Three")
 			.onChange(event -> switchState.set(event.getValue()))
 			.attach(rect);
@@ -174,7 +174,7 @@ public class UIDemoControl extends UIDemo {
 		.create(440, 530, 320, 180)
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
-			DemoSwitchNode.create(40, 30, 240, 50).values("One", "Two", "Three").valueIndex(2).attach(rect);
+			DemoSwitchNode.<Integer>create(40, 30, 240, 50).values(1, 2, 3).valueIndex(2).attach(rect);
 			TextNode.create(160, 195).text(Text.create("Index", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
@@ -183,8 +183,8 @@ public class UIDemoControl extends UIDemo {
 		.create(800, 530, 320, 180)
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
-			DemoSwitchNode.create(40, 30, 240, 50).values("One", "Two", "Three").value(sharedState).attach(rect);
-			DemoSwitchNode.create(40, 90, 240, 50).values("One", "Two", "Three").value(sharedState).attach(rect);
+			DemoSwitchNode.<String>create(40, 30, 240, 50).values("One", "Two", "Three").value(sharedState).attach(rect);
+			DemoSwitchNode.<String>create(40, 90, 240, 50).values("One", "Two", "Three").value(sharedState).attach(rect);
 			TextNode.create(40, 150).text(Text.create("State: " + sharedState.get(), info)).attach(rect);
 			TextNode.create(160, 195).text(Text.create("Shared signal", info)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -194,8 +194,8 @@ public class UIDemoControl extends UIDemo {
 		.create(1160, 530, 320, 180)
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
-			final DemoSwitchNode refused = DemoSwitchNode
-			.create(40, 30, 240, 50)
+			final DemoSwitchNode<String> refused = DemoSwitchNode
+			.<String>create(40, 30, 240, 50)
 			.values("One", "Two", "Three")
 			.beforeChange(event -> {
 				if ("Three".equals(event.getValue())) {
@@ -219,7 +219,7 @@ public class UIDemoControl extends UIDemo {
 		.create(1520, 530, 320, 180)
 		.color(UIDemoControl.PLACEHOLDER)
 		.body(rect -> {
-			DemoSwitchNode.create(40, 30, 240, 50).values("One", "Two", "Three").valueIndex(1).enabled(false).attach(rect);
+			DemoSwitchNode.<String>create(40, 30, 240, 50).values("One", "Two", "Three").valueIndex(1).enabled(false).attach(rect);
 			TextNode.create(160, 195).text(Text.create("Disabled", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

@@ -33,7 +33,7 @@ public class ResourceNodeTest {
 		Assert.assertNull(node.getHoveredResource());
 		Assert.assertSame(Color.WHITE, node.getColor());
 		Assert.assertNull(node.getHoveredColor());
-		Assert.assertSame(StretchType.STRETCH, node.getStretchType());
+		Assert.assertSame(StretchType.STRETCH, node.getStretch());
 		Assert.assertEquals(0D, node.getWidth(), 0D);
 		Assert.assertEquals(0D, node.getHeight(), 0D);
 	}
@@ -113,7 +113,7 @@ public class ResourceNodeTest {
 	public void containsItsResourceInItsBounds() {
 		final ResourceNode node = ResourceNode.create(100D, 100D, 200D, 50D).resource(ResourceNodeTest.resource(20, 10)).color(ResourceNodeTest.TINT).stretch(StretchType.CONTAIN);
 		this.bridges.open(new NodeUI(node));
-		Assert.assertSame(StretchType.CONTAIN, node.getStretchType());
+		Assert.assertSame(StretchType.CONTAIN, node.getStretch());
 		this.assertBounds(this.single(ResourceNodeTest.TINT), 150D, 100D, 250D, 150D);
 	}
 

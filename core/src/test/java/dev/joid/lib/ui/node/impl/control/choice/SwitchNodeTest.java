@@ -341,7 +341,7 @@ public class SwitchNodeTest {
 
 	}
 
-	public static final class Switch extends SwitchNode {
+	public static final class Switch extends SwitchNode<String> {
 
 		private int loads;
 

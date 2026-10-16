@@ -182,16 +182,16 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void formatsAGivenTextAtOnce() {
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).format(String::toUpperCase);
+	public void normalizesAGivenTextAtOnce() {
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).normalize(String::toUpperCase);
 		Assert.assertEquals("AB", field.text("ab").getText());
 		Assert.assertEquals("CD", field.text("cd").getText());
 	}
 
 	@Test
-	public void formatsWhatIsTypedOnlyOnCommit() {
+	public void normalizesWhatIsTypedOnlyOnCommit() {
 		final List<Object> changes = new ArrayList<>();
-		final TextFieldNode field = this.field("ab").<TextFieldNode>format(String::toUpperCase).<TextFieldNode>onChange(event -> changes.addAll(Arrays.asList(event.getText(), event.getValue(), event.isValid()))).cursorPosition(2);
+		final TextFieldNode field = this.field("ab").<TextFieldNode>normalize(String::toUpperCase).<TextFieldNode>onChange(event -> changes.addAll(Arrays.asList(event.getText(), event.getValue(), event.isValid()))).cursorPosition(2);
 		this.type(field, "c");
 		Assert.assertEquals("abc", field.getText());
 		Assert.assertEquals("ABC", field.getValue());
@@ -1324,7 +1324,7 @@ public class TextFieldNodeTest {
 	public void dropsTheControlCharactersOfEveryText() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).text("a\u00a7b\tc\u20ac\nd");
 		Assert.assertEquals("a\u00a7bc\u20acd", field.getText());
-		Assert.assertEquals("xy\u20ac", field.format(text -> "x\ty\u20ac").text("z").getText());
+		Assert.assertEquals("xy\u20ac", field.normalize(text -> "x\ty\u20ac").text("z").getText());
 	}
 
 	@Test

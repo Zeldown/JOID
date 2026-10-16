@@ -45,14 +45,14 @@ public class ResourcePlayerNode extends Node {
 	@Getter private Float maxDistance;
 	@Getter private Float referenceDistance;
 
-	@Getter private StretchType stretchType;
+	@Getter private StretchType stretch;
 
 	protected ResourcePlayerNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.volume      = 1F;
-		this.autoplay    = true;
-		this.stretchType = StretchType.STRETCH;
+		this.volume   = 1F;
+		this.autoplay = true;
+		this.stretch  = StretchType.STRETCH;
 
 		super.<ResourcePlayerNode>wait(node -> node.isReady());
 		super.<ResourcePlayerNode>require("resource", "call resource(...) before attaching it", node -> node.resource != null);
@@ -119,7 +119,7 @@ public class ResourcePlayerNode extends Node {
 		}
 
 		Color.WHITE.bind();
-		this.stretchType.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
+		this.stretch.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
 	}
 
 	@Override
@@ -216,12 +216,12 @@ public class ResourcePlayerNode extends Node {
 		});
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull StretchType stretchType) {
-		return this.stretch(Signal.from(stretchType));
+	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull StretchType stretch) {
+		return this.stretch(Signal.from(stretch));
 	}
 
-	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretchType) {
-		return super.follow("stretchType", stretchType, value -> this.stretchType = value);
+	public final <T extends ResourcePlayerNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretch) {
+		return super.follow("stretch", stretch, value -> this.stretch = value);
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T autoplay(final boolean autoplay) {

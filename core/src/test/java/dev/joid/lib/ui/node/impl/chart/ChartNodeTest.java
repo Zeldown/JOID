@@ -74,7 +74,7 @@ public class ChartNodeTest {
 	@Test
 	public void removesASeries() {
 		final BarChartNode chart = new BarChartNode(0D, 0D, 300D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).data("api", ChartData.create().add("Mon", 120)).data("web", ChartData.create().add("Mon", 80));
-		Assert.assertSame(chart, chart.remove("api"));
+		Assert.assertSame(chart, chart.removeData("api"));
 		Assert.assertNull(chart.getData("api"));
 		Assert.assertEquals(1, chart.getDataMap().size());
 	}
@@ -120,10 +120,10 @@ public class ChartNodeTest {
 	@Test
 	public void refusesToRemoveDataWithoutAnXAxis() {
 		try {
-			new BarChartNode(0D, 0D, 300D, 200D).remove("api");
+			new BarChartNode(0D, 0D, 300D, 200D).removeData("api");
 			Assert.fail("A removal without an X axis must be refused");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("BarChartNode has no X axis to remove the data api from, call xAxis(...) before remove(...)", expected.getMessage());
+			Assert.assertEquals("BarChartNode has no X axis to remove the data api from, call xAxis(...) before removeData(...)", expected.getMessage());
 		}
 	}
 

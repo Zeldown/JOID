@@ -36,7 +36,7 @@ public class ResourcePlayerNodeTest {
 		Assert.assertFalse(player.isLoop());
 		Assert.assertTrue(player.isAutoplay());
 		Assert.assertEquals(1F, player.getVolume(), 0F);
-		Assert.assertSame(StretchType.STRETCH, player.getStretchType());
+		Assert.assertSame(StretchType.STRETCH, player.getStretch());
 		Assert.assertNull(player.getPlayback());
 		Assert.assertNull(player.getVideo());
 		Assert.assertEquals(0D, player.getWidth(), 0D);
@@ -117,7 +117,7 @@ public class ResourcePlayerNodeTest {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 40D, 80D).resource(ResourcePlayerNodeTest.blink());
 		Assert.assertSame(player, player.stretch(StretchType.CONTAIN));
 		this.bridges.open(new NodeUI(player));
-		Assert.assertSame(StretchType.CONTAIN, player.getStretchType());
+		Assert.assertSame(StretchType.CONTAIN, player.getStretch());
 		this.assertBounds(this.white(), 100D, 120D, 140D, 160D);
 	}
 

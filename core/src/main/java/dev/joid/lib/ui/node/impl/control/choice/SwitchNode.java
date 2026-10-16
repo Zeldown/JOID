@@ -9,18 +9,18 @@ import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
-public abstract class SwitchNode extends BaseSwitchNode {
+public abstract class SwitchNode<V> extends BaseSwitchNode<V> {
 
 	private final List<Node> optionList;
 
-	private BiFunction<String, Integer, Node> option;
+	private BiFunction<V, Integer, Node> option;
 
 	protected SwitchNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
 		this.optionList = new ArrayList<>();
 
-		super.<SwitchNode>require("option", "give it one with option(...)", node -> node.option != null);
+		super.<SwitchNode<V>>require("option", "give it one with option(...)", node -> node.option != null);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public abstract class SwitchNode extends BaseSwitchNode {
 			return;
 		}
 
-		final List<String> values = super.getValueList();
+		final List<V> values = super.getValueList();
 		for (int i = 0; i < values.size(); i++) {
 			final Node option = this.option.apply(values.get(i), i);
 			this.optionList.add(option);
@@ -66,7 +66,7 @@ public abstract class SwitchNode extends BaseSwitchNode {
 		return Collections.unmodifiableList(this.optionList);
 	}
 
-	public final <T extends SwitchNode> @NonNull T option(final @NonNull BiFunction<@NonNull String, @NonNull Integer, @NonNull Node> option) {
+	public final <T extends SwitchNode<V>> @NonNull T option(final @NonNull BiFunction<@NonNull V, @NonNull Integer, @NonNull Node> option) {
 		this.option = option;
 		this.createOptions();
 		return (T) this;

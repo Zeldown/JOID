@@ -26,7 +26,7 @@ public class ResourceNode extends Node {
 
 	private Boolean linear;
 
-	private StretchType stretchType;
+	private StretchType stretch;
 
 	protected ResourceNode(final double x, final double y) {
 		this(x, y, 0, 0);
@@ -35,8 +35,8 @@ public class ResourceNode extends Node {
 	protected ResourceNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.color       = Color.WHITE;
-		this.stretchType = StretchType.STRETCH;
+		this.color   = Color.WHITE;
+		this.stretch = StretchType.STRETCH;
 
 		super.<ResourceNode>wait(node -> node.isReady());
 		super.<ResourceNode>require("resource", "call resource(...) before attaching it", node -> node.resource != null);
@@ -132,16 +132,16 @@ public class ResourceNode extends Node {
 		});
 	}
 
-	public final <T extends ResourceNode> @NonNull T stretch(final @NonNull StretchType stretchType) {
-		return this.stretch(Signal.from(stretchType));
+	public final <T extends ResourceNode> @NonNull T stretch(final @NonNull StretchType stretch) {
+		return this.stretch(Signal.from(stretch));
 	}
 
-	public final <T extends ResourceNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretchType) {
-		return super.follow("stretchType", stretchType, value -> this.stretchType = value);
+	public final <T extends ResourceNode> @NonNull T stretch(final @NonNull Supplier<@NonNull StretchType> stretch) {
+		return super.follow("stretch", stretch, value -> this.stretch = value);
 	}
 
 	private void drawResource(final @NonNull Resource resource) {
-		this.stretchType.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
+		this.stretch.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
 	}
 
 	private boolean isReady() {
