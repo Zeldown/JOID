@@ -182,6 +182,16 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
+	public void sharesTheDataOfAFileStillInUseAfterItsExpiry() throws IOException, InterruptedException {
+		final File file = this.folder.newFile("still.png");
+		Files.write(file.toPath(), Asset.of(ResourceBuilderTest.stream("/animation/still.png")).read());
+		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create().expiry(20L));
+		final Resource first = builder.of(file);
+		Thread.sleep(100L);
+		Assert.assertSame(first.getResourceData(), builder.of(file).getResourceData());
+	}
+
+	@Test
 	public void decodesAnAssetAsIs() {
 		final HeldAsset asset = new HeldAsset("local", false, Asset.of(ResourceBuilderTest.stream("/vector/icon.svg")));
 		asset.release.countDown();

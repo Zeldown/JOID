@@ -52,6 +52,28 @@ public class MemoryResourceCacheTest {
 		Assert.assertEquals(20L, cache.getExpiry());
 		cache.put("image", new ResourceData("image", null));
 		Thread.sleep(100L);
+		Assert.assertTrue(cache.getDataList().isEmpty());
+	}
+
+	@Test
+	public void findsItsDataStillInUseAfterItsExpiry() throws InterruptedException {
+		final MemoryResourceCache cache = MemoryResourceCache.create().expiry(20L);
+		final ResourceData data = new ResourceData("image", null);
+		cache.put("image", data);
+		Thread.sleep(100L);
+		Assert.assertSame(data, cache.get("image"));
+		Assert.assertEquals(Collections.singletonList(data), cache.getDataList());
+	}
+
+	@Test
+	public void forgetsItsRemovedDataEvenInUse() {
+		final MemoryResourceCache cache = MemoryResourceCache.create();
+		final ResourceData data = new ResourceData("image", null);
+		cache.put("image", data);
+		cache.remove("image");
+		Assert.assertNull(cache.get("image"));
+		cache.put("image", data);
+		cache.clear();
 		Assert.assertNull(cache.get("image"));
 	}
 

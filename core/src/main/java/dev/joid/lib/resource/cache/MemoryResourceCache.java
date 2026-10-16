@@ -16,6 +16,8 @@ public final class MemoryResourceCache implements IResourceCache {
 	@Getter private int size;
 	@Getter private long expiry;
 
+	private final Cache<String, ResourceData> live = CacheBuilder.newBuilder().weakValues().build();
+
 	private Cache<String, ResourceData> cache;
 
 	private MemoryResourceCache() {
@@ -43,21 +45,33 @@ public final class MemoryResourceCache implements IResourceCache {
 	@Override
 	public void put(final @NonNull String uniqueId, final @NonNull ResourceData data) {
 		this.cache.put(uniqueId, data);
+		this.live.put(uniqueId, data);
 	}
 
 	@Override
 	public void remove(final @NonNull String uniqueId) {
 		this.cache.invalidate(uniqueId);
+		this.live.invalidate(uniqueId);
 	}
 
 	@Override
 	public void clear() {
 		this.cache.invalidateAll();
+		this.live.invalidateAll();
 	}
 
 	@Override
 	public ResourceData get(final @NonNull String uniqueId) {
-		return this.cache.getIfPresent(uniqueId);
+		final ResourceData cached = this.cache.getIfPresent(uniqueId);
+		if (cached != null) {
+			return cached;
+		}
+
+		final ResourceData data = this.live.getIfPresent(uniqueId);
+		if (data != null) {
+			this.cache.put(uniqueId, data);
+		}
+		return data;
 	}
 
 	@Override

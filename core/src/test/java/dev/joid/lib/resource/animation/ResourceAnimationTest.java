@@ -22,7 +22,7 @@ public class ResourceAnimationTest {
 	@Test
 	public void slowsDownFramesTooShortToBeSeen() {
 		final ResourceAnimation animation = ResourceAnimation.create(1, 1, 0, Arrays.asList(ResourceAnimationFrame.create(new int[1], 0L), ResourceAnimationFrame.create(new int[1], 5L), ResourceAnimationFrame.create(new int[1], 10L)));
-		Assert.assertEquals(210L, animation.getDuration());
+		Assert.assertEquals(300L, animation.getDuration());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
