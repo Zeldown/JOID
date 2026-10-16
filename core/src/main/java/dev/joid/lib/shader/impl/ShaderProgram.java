@@ -59,6 +59,7 @@ public abstract class ShaderProgram {
 	public void delete() {
 		if (this.shader != null) {
 			this.shader.delete();
+			this.shader = null;
 		}
 	}
 

@@ -130,7 +130,7 @@ public final class Text {
 	}
 
 	public @NonNull Text add(final @NonNull Text builder) {
-		this.elementList.addAll(builder.getElementList());
+		builder.getElementList().forEach(element -> this.elementList.add(element.copy()));
 		return this;
 	}
 

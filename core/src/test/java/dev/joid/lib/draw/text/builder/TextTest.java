@@ -324,6 +324,15 @@ public class TextTest {
 	}
 
 	@Test
+	public void keepsTheElementsOfAnAddedText() {
+		final Text added = Text.create("ab", TextTest.info());
+		final Text text = Text.create().add(added);
+		text.text(0, "cd");
+		Assert.assertEquals("ab", added.getText());
+		Assert.assertEquals("cd", text.getText());
+	}
+
+	@Test
 	public void keepsItsElementsWhenItsCopyGrows() {
 		final Text text = Text.create("ab", TextTest.info());
 		text.copy().add(TextElement.create("cd", TextTest.info()));

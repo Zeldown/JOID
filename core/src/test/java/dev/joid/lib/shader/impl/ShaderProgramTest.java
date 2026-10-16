@@ -61,7 +61,8 @@ public class ShaderProgramTest {
 		final RecordingShader recording = (RecordingShader) shader.getShader();
 		shader.delete();
 		Assert.assertFalse(recording.isActive());
-		Assert.assertSame(recording, shader.getShader());
+		Assert.assertNotSame(recording, shader.getShader());
+		Assert.assertTrue(shader.isAvailable());
 		new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source()).delete();
 	}
 
