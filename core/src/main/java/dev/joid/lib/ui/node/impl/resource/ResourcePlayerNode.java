@@ -67,18 +67,29 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	@Override
+	public void update() {
+		if (!this.isReady()) {
+			return;
+		}
+
+		if (this.fork.isFailed()) {
+			super.fit(64D, 64D);
+			return;
+		}
+
+		final double videoWidth = this.fork.getWidth();
+		final double videoHeight = this.fork.getHeight();
+		final double scale = super.getDefaultWidth() != 0D ? super.getWidth() / videoWidth : super.getDefaultHeight() != 0D ? super.getHeight() / videoHeight : 1D;
+		super.fit(videoWidth * scale, videoHeight * scale);
+	}
+
+	@Override
 	public void draw(final double mouseX, final double mouseY) {
 		if (this.fork.isFailed()) {
 			Color.WHITE.bind();
 			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
 			return;
 		}
-
-		final double videoWidth = this.fork.getWidth();
-		final double videoHeight = this.fork.getHeight();
-
-		final double scale = super.getDefaultWidth() != 0D ? super.getWidth() / videoWidth : super.getDefaultHeight() != 0D ? super.getHeight() / videoHeight : 1D;
-		super.fit(videoWidth * scale, videoHeight * scale);
 
 		if (!this.resourceStarted) {
 			this.resourceStarted = true;
@@ -211,7 +222,6 @@ public class ResourcePlayerNode extends Node {
 			this.release();
 			this.clearFork();
 			this.resource = value;
-			this.fork = ResourcePlayerNode.fork(value);
 			this.resourceStarted = false;
 		});
 	}

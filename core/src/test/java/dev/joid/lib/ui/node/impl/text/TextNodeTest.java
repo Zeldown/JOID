@@ -20,6 +20,8 @@ import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.layout.FlexNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.utils.align.Align;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -60,6 +62,17 @@ public class TextNodeTest {
 		this.bridges.getUi().add(new NodeUI(node));
 		Assert.assertEquals(50D, node.getWidth(), 0D);
 		Assert.assertEquals(20D, node.getHeight(), 0D);
+	}
+
+	@Test
+	public void movesTheNextNodeOfAFlexOnTheFrameItsTextChanges() {
+		final TextNode node = TextNode.create(0D, 0D).text(this.text("hello"));
+		final RectNode next = RectNode.create(0D, 0D, 10D, 20D);
+		this.bridges.open(new NodeUI(FlexNode.horizontal(0D, 0D, 20D).append(node, next)));
+		Assert.assertEquals(50D, next.getX(), 0D);
+		node.text(this.text("hello world"));
+		this.bridges.frame();
+		Assert.assertEquals(110D, next.getX(), 0D);
 	}
 
 	@Test

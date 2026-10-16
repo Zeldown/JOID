@@ -19,6 +19,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.control.selector.SelectorNode.SelectorDirection;
+import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 import lombok.AllArgsConstructor;
@@ -73,6 +74,16 @@ public class SelectorNodeTest {
 		this.bridges.open(new NodeUI(this.selector)).frame();
 		this.click(150D, 120D);
 		this.assertDrawn(0.2F, 0.4F, 0.6F, 100D, 220D);
+	}
+
+	@Test
+	public void pushesTheNextNodeOfAFlexOnTheFrameItOpens() {
+		final RectNode next = RectNode.create(0D, 0D, 200D, 40D);
+		this.bridges.open(new NodeUI(FlexNode.vertical(0D, 0D, 200D).append(this.selector, next))).frame();
+		Assert.assertEquals(40D, next.getY(), 0D);
+		this.selector.active(true);
+		this.bridges.frame();
+		Assert.assertEquals(120D, next.getY(), 0D);
 	}
 
 	@Test

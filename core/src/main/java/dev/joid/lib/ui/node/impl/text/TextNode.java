@@ -39,6 +39,11 @@ public class TextNode extends Node {
 	}
 
 	@Override
+	public void update() {
+		this.measure();
+	}
+
+	@Override
 	public void draw(final double mouseX, final double mouseY) {
 		if (this.hasText()) {
 			final FontBounds bounds = DrawUtils.TEXT.drawText(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.text, this.mode);

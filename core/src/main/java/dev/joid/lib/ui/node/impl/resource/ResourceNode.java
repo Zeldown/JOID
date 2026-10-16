@@ -29,7 +29,7 @@ public class ResourceNode extends Node {
 	private StretchType stretch;
 
 	protected ResourceNode(final double x, final double y) {
-		this(x, y, 0, 0);
+		this(x, y, 0D, 0D);
 	}
 
 	protected ResourceNode(final double x, final double y, final double width, final double height) {
@@ -51,6 +51,22 @@ public class ResourceNode extends Node {
 	}
 
 	@Override
+	public void update() {
+		this.resource.prepareBind();
+		if (this.resource.isFailed()) {
+			super.fit(64D, 64D);
+			return;
+		}
+
+		final double resourceWidth = this.resource.getWidth();
+		final double resourceHeight = this.resource.getHeight();
+		if (resourceWidth != 0D && resourceHeight != 0D) {
+			final double scale = super.getDefaultWidth() != 0D ? super.getWidth() / resourceWidth : super.getDefaultHeight() != 0D ? super.getHeight() / resourceHeight : 1D;
+			super.fit(resourceWidth * scale, resourceHeight * scale);
+		}
+	}
+
+	@Override
 	public void draw(final double mouseX, final double mouseY) {
 		this.resource.prepareBind();
 		if (this.hoveredResource != null) {
@@ -63,14 +79,9 @@ public class ResourceNode extends Node {
 			return;
 		}
 
-		final double resourceWidth = this.resource.getWidth();
-		final double resourceHeight = this.resource.getHeight();
-		if (resourceWidth == 0D || resourceHeight == 0D) {
+		if (this.resource.getWidth() == 0 || this.resource.getHeight() == 0) {
 			return;
 		}
-
-		final double scale = super.getDefaultWidth() != 0D ? super.getWidth() / resourceWidth : super.getDefaultHeight() != 0D ? super.getHeight() / resourceHeight : 1D;
-		super.fit(resourceWidth * scale, resourceHeight * scale);
 
 		final BoundingBox canvas = BoundingBox.create(super.getX(), super.getY(), super.getWidth(), super.getHeight());
 		final Color primary = this.hoveredResource == null ? super.hoverColor(this.color, this.hoveredColor) : this.color;

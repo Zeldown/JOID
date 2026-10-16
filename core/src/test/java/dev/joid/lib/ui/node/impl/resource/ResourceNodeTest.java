@@ -16,6 +16,8 @@ import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.layout.FlexNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 
 public class ResourceNodeTest {
@@ -85,6 +87,23 @@ public class ResourceNodeTest {
 		Assert.assertEquals(10D, node.getHeight(), 0D);
 		this.bridges.frame();
 		this.assertBounds(this.single(ResourceNodeTest.TINT), 100D, 100D, 120D, 110D);
+	}
+
+	@Test
+	public void movesTheNextNodeOfAFlexOnItsFirstFrame() {
+		final RectNode next = RectNode.create(0D, 0D, 10D, 10D);
+		this.bridges.open(new NodeUI(FlexNode.horizontal(0D, 0D, 10D).append(ResourceNode.create(0D, 0D).resource(ResourceNodeTest.resource(20, 10)), next)));
+		Assert.assertEquals(20D, next.getX(), 0D);
+	}
+
+	@Test
+	public void showsAFailedResourceWithoutSizeAtTheSizeOfItsMissingTexture() {
+		final Resource missing = ResourceBuilder.create().cache(null).of("missing/absent.png").blocking();
+		Assert.assertTrue(missing.isFailed());
+		final ResourceNode node = ResourceNode.create(100D, 100D).resource(missing);
+		this.bridges.open(new NodeUI(node)).frame();
+		Assert.assertEquals(64D, node.getWidth(), 0D);
+		Assert.assertEquals(64D, node.getHeight(), 0D);
 	}
 
 	@Test

@@ -35,9 +35,14 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 	}
 
 	@Override
+	public void update() {
+		super.layoutSize(super.getWidth(), this.getShownHeight());
+	}
+
+	@Override
 	public void layout() {
 		final double size = super.getDefaultHeight();
-		final double height = super.isActive() ? size * this.optionList.size() : size;
+		final double height = this.getShownHeight();
 		final double raise = this.direction.isDown() ? 0D : height - size;
 		final double layoutY = super.getLayoutY() == this.raisedLayoutY ? super.getLayoutY() + this.raise : super.getLayoutY();
 		this.raise = raise;
@@ -110,6 +115,10 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 
 	public final <T extends SelectorNode<V>> @NonNull T direction(final @NonNull Supplier<@NonNull SelectorDirection> direction) {
 		return super.follow("direction", direction, value -> this.direction = value);
+	}
+
+	private double getShownHeight() {
+		return super.isActive() ? super.getDefaultHeight() * this.optionList.size() : super.getDefaultHeight();
 	}
 
 	public static enum SelectorDirection {

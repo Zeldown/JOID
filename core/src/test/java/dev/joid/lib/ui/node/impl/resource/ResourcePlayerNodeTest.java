@@ -72,6 +72,23 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void showsAFailedResourceWithoutSizeAtTheSizeOfItsMissingTexture() {
+		final Resource missing = ResourceBuilder.create().cache(null).of("missing/absent.png").blocking();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D).resource(missing);
+		this.bridges.open(new NodeUI(player)).frame();
+		Assert.assertEquals(64D, player.getWidth(), 0D);
+		Assert.assertEquals(64D, player.getHeight(), 0D);
+	}
+
+	@Test
+	public void forksItsResourceOnlyOnceAttached() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D).resource(ResourceBuilder.create().cache(null).of(new RecordingTexture().allocate(4, 4)));
+		Assert.assertNull(ResourcePlayerNodeTest.read(player, "fork"));
+		this.bridges.open(new NodeUI(player));
+		Assert.assertNotNull(ResourcePlayerNodeTest.read(player, "fork"));
+	}
+
+	@Test
 	public void drawsASkeletonForAResourceWithoutDecoderYet() {
 		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
 		this.bridges.open(new NodeUI(ResourcePlayerNode.create(300D, 300D, 50D, 40D).resource(pending)));
@@ -133,11 +150,12 @@ public class ResourcePlayerNodeTest {
 		final Resource resource = ResourcePlayerNodeTest.blink();
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(resource);
 		Assert.assertSame(resource, player.getResource());
+		Assert.assertNull(player.getPlayback());
+		this.bridges.open(new NodeUI(player));
 		Assert.assertNotSame(resource, ResourcePlayerNodeTest.<Resource>read(player, "fork"));
 		Assert.assertNotSame(resource.getDecoder(), player.getPlayback());
 		Assert.assertSame(ResourcePlayerNodeTest.<Resource>read(player, "fork").getDecoder(), player.getPlayback());
 		Assert.assertNull(player.getVideo());
-		this.bridges.open(new NodeUI(player));
 		Assert.assertTrue(player.isPlaying());
 		Assert.assertTrue(ResourcePlayerNodeTest.<Boolean>read(player, "resourceStarted"));
 		Assert.assertEquals(0.24D, player.getDuration(), 1E-9D);
@@ -171,8 +189,8 @@ public class ResourcePlayerNodeTest {
 	public void loopsWhenAsked() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
 		Assert.assertSame(player, player.loop(true));
-		Assert.assertTrue(player.getPlayback().isLoop());
 		this.bridges.open(new NodeUI(player)).frames(40);
+		Assert.assertTrue(player.getPlayback().isLoop());
 		Assert.assertTrue(player.isLoop());
 		Assert.assertTrue(player.isPlaying());
 	}
@@ -293,9 +311,8 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void appliesItsVolumeToItsVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).volume(0.25F).resource(ResourcePlayerNodeTest.video());
-		final VideoResourceDecoder video = player.getVideo();
-		Assert.assertEquals(1F, video.getVolume(), 0F);
 		this.bridges.open(new NodeUI(player));
+		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertEquals(0.25F, player.getVolume(), 0F);
 		Assert.assertEquals(0.25F, video.getVolume(), 0F);
 		Assert.assertSame(player, player.volume(0.5F));
@@ -305,9 +322,8 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void givesItsAudioGroupToItsVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).audioGroup("music").resource(ResourcePlayerNodeTest.video());
-		final VideoResourceDecoder video = player.getVideo();
-		Assert.assertNull(video.getAudioGroup());
 		this.bridges.open(new NodeUI(player));
+		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertEquals("music", player.getAudioGroup());
 		Assert.assertEquals("music", video.getAudioGroup());
 		final Signal<String> group = new Signal<>("voice");
@@ -321,6 +337,7 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void placesTheAudioOfItsVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
+		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertSame(player, player.location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
 		Assert.assertEquals(1F, ResourcePlayerNodeTest.<Float>read(video, "locationX"), 0F);
@@ -381,8 +398,8 @@ public class ResourcePlayerNodeTest {
 	@Test
 	public void releasesItsPreviousVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
-		final VideoResourceDecoder previous = player.getVideo();
 		this.bridges.open(new NodeUI(player)).frames(2);
+		final VideoResourceDecoder previous = player.getVideo();
 		player.resource(ResourcePlayerNodeTest.blink());
 		Assert.assertNull(ResourcePlayerNodeTest.read(previous, "grabber"));
 		Assert.assertNull(player.getVideo());

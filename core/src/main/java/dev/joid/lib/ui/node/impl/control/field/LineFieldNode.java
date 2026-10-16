@@ -34,10 +34,14 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	@Override
+	public void update() {
+		super.fit(super.getWidth(), super.getInfo().ah(super.getMarginTop() + super.getMarginBottom()));
+	}
+
+	@Override
 	protected void drawField() {
 		final String text = super.getText();
 		final TextInfo info = super.getInfo();
-		super.fit(super.getWidth(), info.ah(super.getMarginTop() + super.getMarginBottom()));
 		if (this.xOffset > super.getShownInfo().getWidth(text)) {
 			this.followCursorBackward();
 		}

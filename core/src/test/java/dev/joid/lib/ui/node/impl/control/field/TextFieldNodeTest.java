@@ -91,6 +91,14 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void sizesItsBackgroundOnItsFirstFrame() {
+		final RectNode background = RectNode.create(0D, 0D, 0D, 0D);
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D).info(this.info()).background(background)));
+		Assert.assertEquals(200D, background.getWidth(), 0D);
+		Assert.assertEquals(40D, background.getHeight(), 0D);
+	}
+
+	@Test
 	public void keepsTheHeightItWasGiven() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D, 30D).info(this.info());
 		this.bridges.open(new NodeUI(field));
@@ -959,6 +967,17 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void stopsRepeatingOnceItLosesItsFocus() {
+		final TextFieldNode field = this.field("abc").cursorPosition(3);
+		this.bridges.getWindow().getKeys().add(Key.BACKSPACE);
+		this.press(field, Key.BACKSPACE);
+		this.press(field, Key.ESCAPE);
+		this.elapse(500L);
+		Assert.assertEquals("ab", field.getText());
+		Assert.assertFalse(TextFieldNodeTest.<Boolean>read(field, FieldNode.class, "inputting"));
+	}
+
+	@Test
 	public void repeatsAHeldBackspaceUntilTheTextIsEmpty() {
 		final TextFieldNode field = this.field("abc").cursorPosition(3);
 		this.bridges.getWindow().getKeys().add(Key.BACKSPACE);
@@ -971,17 +990,6 @@ public class TextFieldNodeTest {
 		this.elapse(100L);
 		Assert.assertFalse(TextFieldNodeTest.<Boolean>read(field, FieldNode.class, "inputting"));
 		Assert.assertEquals(0, field.getCursorPosition());
-	}
-
-	@Test
-	public void stopsRepeatingOnceItLosesItsFocus() {
-		final TextFieldNode field = this.field("abc").cursorPosition(3);
-		this.bridges.getWindow().getKeys().add(Key.BACKSPACE);
-		this.press(field, Key.BACKSPACE);
-		this.press(field, Key.ESCAPE);
-		this.elapse(500L);
-		Assert.assertEquals("ab", field.getText());
-		Assert.assertFalse(TextFieldNodeTest.<Boolean>read(field, FieldNode.class, "inputting"));
 	}
 
 	@Test
@@ -1058,17 +1066,17 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
-	public void centersItsTextHorizontally() {
-		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).<TextFieldNode>text("abcd").alignX(Align.CENTER)));
-		Assert.assertEquals(180D, this.font.last().getX(), 0D);
-		Assert.assertEquals(120D, this.font.last().getY(), 0D);
-	}
-
-	@Test
 	public void drawsItsPlaceholderAtHalfTheOpacityOfItsText() {
 		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F, new Color(0.2F, 0.4F, 0.6F, 0.4F))).placeholder("Search")));
 		Assert.assertEquals("Search", this.font.last().getText());
 		Assert.assertEquals(0.2F, this.font.last().getAlpha(), 1E-6F);
+	}
+
+	@Test
+	public void centersItsTextHorizontally() {
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D, 60D).info(this.info()).<TextFieldNode>text("abcd").alignX(Align.CENTER)));
+		Assert.assertEquals(180D, this.font.last().getX(), 0D);
+		Assert.assertEquals(120D, this.font.last().getY(), 0D);
 	}
 
 	@Test

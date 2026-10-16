@@ -26,6 +26,7 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.ui.node.NodeTest.NodeUI;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.video.VideoNativesException;
@@ -179,9 +180,9 @@ public class ResourceFailureTest {
 	@Test
 	public void drawsAFailedResourceEmpty() {
 		final Resource resource = ResourceBuilder.create().cache(null).of(new BytesAsset("photo.heic", false, ResourceFailureTest.HEIC));
+		this.bridges.open(new NodeUI(ResourcePlayerNode.create(10D, 10D, 100D, 100D).resource(resource)));
 		DrawUtils.RESOURCE.drawResource(10D, 10D, 100D, 100D, resource);
 		ResourceNode.create(10D, 10D, 100D, 100D).resource(resource).draw(0D, 0D);
-		ResourcePlayerNode.create(10D, 10D, 100D, 100D).resource(resource).draw(0D, 0D);
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
@@ -191,9 +192,9 @@ public class ResourceFailureTest {
 		JOIDEnv.devMode(true);
 		try {
 			ResourceFailureTest.capture(() -> {
+				this.bridges.open(new NodeUI(ResourcePlayerNode.create(10D, 10D, 100D, 100D).resource(resource)));
 				DrawUtils.RESOURCE.drawResource(10D, 10D, 100D, 100D, 0D, 0D, 50D, 50D, resource);
 				ResourceNode.create(10D, 10D, 100D, 100D).resource(resource).draw(0D, 0D);
-				ResourcePlayerNode.create(10D, 10D, 100D, 100D).resource(resource).draw(0D, 0D);
 			});
 		} finally {
 			JOIDEnv.devMode(false);
