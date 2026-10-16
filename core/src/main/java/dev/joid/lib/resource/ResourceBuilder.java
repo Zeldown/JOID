@@ -36,7 +36,7 @@ public final class ResourceBuilder {
 	}
 
 	public static @NonNull ResourceBuilder create() {
-		return new ResourceBuilder(ResourceBuilder.DEFAULT_CACHE, new ResourceProperties());
+		return new ResourceBuilder(ResourceBuilder.DEFAULT_CACHE, ResourceProperties.create());
 	}
 
 	public @NonNull ResourceBuilder cache(final IResourceCache cache) {

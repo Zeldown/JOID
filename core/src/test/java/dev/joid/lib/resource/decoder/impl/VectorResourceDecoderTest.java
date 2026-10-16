@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Assert;
@@ -59,7 +60,7 @@ public class VectorResourceDecoderTest {
 		Assert.assertEquals(24, texture.getWidth());
 		Assert.assertEquals(24, texture.getHeight());
 		Assert.assertEquals(24 * 24, texture.getPixels().length);
-		Assert.assertEquals(1, decoder.getTextures().size());
+		Assert.assertEquals(1, VectorResourceDecoderTest.textures(decoder).size());
 	}
 
 	@Test
@@ -83,7 +84,7 @@ public class VectorResourceDecoderTest {
 		Assert.assertEquals(48, texture.getWidth());
 		Assert.assertEquals(32, texture.getHeight());
 		Assert.assertEquals(48 * 32, texture.getPixels().length);
-		Assert.assertEquals(2, decoder.getTextures().size());
+		Assert.assertEquals(2, VectorResourceDecoderTest.textures(decoder).size());
 	}
 
 	@Test
@@ -95,7 +96,7 @@ public class VectorResourceDecoderTest {
 		decoder.request(data, 24, 24, false, false);
 		Assert.assertSame(intrinsic, data.getTextures()[0]);
 		Assert.assertSame(intrinsic, VectorResourceDecoderTest.field(decoder, "texture"));
-		Assert.assertEquals(2, decoder.getTextures().size());
+		Assert.assertEquals(2, VectorResourceDecoderTest.textures(decoder).size());
 	}
 
 	@Test
@@ -202,10 +203,10 @@ public class VectorResourceDecoderTest {
 		for (int size = 10; size < 17; size++) {
 			decoder.request(data, size, size, false, false);
 		}
-		Assert.assertEquals(8, decoder.getTextures().size());
+		Assert.assertEquals(8, VectorResourceDecoderTest.textures(decoder).size());
 		Assert.assertFalse(intrinsic.isDeleted());
 		decoder.request(data, 17, 17, false, false);
-		Assert.assertEquals(8, decoder.getTextures().size());
+		Assert.assertEquals(8, VectorResourceDecoderTest.textures(decoder).size());
 		Assert.assertTrue(intrinsic.isDeleted());
 	}
 
@@ -219,7 +220,7 @@ public class VectorResourceDecoderTest {
 		decoder.clear(data);
 		Assert.assertTrue(intrinsic.isDeleted());
 		Assert.assertTrue(larger.isDeleted());
-		Assert.assertTrue(decoder.getTextures().isEmpty());
+		Assert.assertTrue(VectorResourceDecoderTest.textures(decoder).isEmpty());
 		Assert.assertNull(VectorResourceDecoderTest.field(decoder, "document"));
 		decoder.request(data, 64, 64, false, false);
 		Assert.assertSame(larger, data.getTextures()[0]);
@@ -236,7 +237,7 @@ public class VectorResourceDecoderTest {
 		decoder.clear(data);
 		pending.set(raster);
 		decoder.update(data);
-		Assert.assertTrue(decoder.getTextures().isEmpty());
+		Assert.assertTrue(VectorResourceDecoderTest.textures(decoder).isEmpty());
 	}
 
 	@Test
@@ -334,6 +335,10 @@ public class VectorResourceDecoderTest {
 			Thread.sleep(1L);
 		}
 		Assert.assertFalse(((boolean) VectorResourceDecoderTest.field(decoder, "rendering")));
+	}
+
+	private static Map<?, ?> textures(final VectorResourceDecoder decoder) {
+		return (Map<?, ?>) VectorResourceDecoderTest.field(decoder, "textures");
 	}
 
 	private static Object field(final Object target, final String name) {

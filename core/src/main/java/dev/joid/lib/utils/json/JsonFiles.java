@@ -30,8 +30,8 @@ public final class JsonFiles {
 		final String json;
 		try {
 			json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-		} catch (final IOException e) {
-			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + e + "), it is left untouched and " + consequence);
+		} catch (final IOException exception) {
+			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + exception + "), it is left untouched and " + consequence);
 			return null;
 		}
 
@@ -41,16 +41,16 @@ public final class JsonFiles {
 			if (object != null) {
 				return object;
 			}
-		} catch (final JsonParseException e) {
-			failure = e.toString();
+		} catch (final JsonParseException exception) {
+			failure = exception.toString();
 		}
 
 		final File corrupt = new File(file.getPath() + ".corrupt");
 		try {
 			Files.move(file.toPath(), corrupt.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + failure + "), it is kept as " + corrupt.getAbsolutePath() + " and " + consequence);
-		} catch (final IOException e) {
-			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + failure + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + e + "), it is left untouched and " + consequence);
+		} catch (final IOException exception) {
+			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + failure + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + exception + "), it is left untouched and " + consequence);
 		}
 		return null;
 	}
@@ -62,11 +62,11 @@ public final class JsonFiles {
 			temporary = Files.createTempFile(directory, file.getName(), ".tmp");
 			Files.write(temporary, json.getBytes(StandardCharsets.UTF_8));
 			Files.move(temporary, file.toPath(), StandardCopyOption.ATOMIC_MOVE);
-		} catch (final IOException e) {
+		} catch (final IOException exception) {
 			if (temporary != null) {
 				temporary.toFile().delete();
 			}
-			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be saved (" + e + "), check that the data folder can be written");
+			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be saved (" + exception + "), check that the data folder can be written");
 		}
 	}
 

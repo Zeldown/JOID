@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BoundingBox {
+public final class BoundingBox {
 
 	private double minX;
 	private double minY;

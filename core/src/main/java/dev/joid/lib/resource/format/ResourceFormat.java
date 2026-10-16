@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ResourceFormat {
+public final class ResourceFormat {
 
 	private static final Registry<IResourceFormat> FORMATS = Registry.create();
 

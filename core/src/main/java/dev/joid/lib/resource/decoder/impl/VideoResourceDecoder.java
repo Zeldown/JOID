@@ -30,9 +30,10 @@ import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
 import dev.joid.lib.video.VideoAudioPlayer;
 import dev.joid.lib.video.VideoNatives;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 public final class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
@@ -215,7 +216,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		final double time = this.getPlaybackTime();
 		DecodedFrame frame = null;
 		DecodedFrame next = this.frameQueue.peek();
-		while (next != null && next.getTime() <= time) {
+		while (next != null && next.time <= time) {
 			frame = this.frameQueue.poll();
 			next = this.frameQueue.peek();
 		}
@@ -436,7 +437,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		if (next == null) {
 			return this.ended;
 		}
-		return this.ended || this.frameQueue.remainingCapacity() == 0 || next.getTime() > this.getPlaybackTime();
+		return this.ended || this.frameQueue.remainingCapacity() == 0 || next.time > this.getPlaybackTime();
 	}
 
 	@Override
@@ -473,8 +474,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				}
 
 				this.createAudioPlayer();
-			} catch (final Exception e) {
-				JOIDLog.warn("The video " + this.describe() + " cannot be reopened (" + e.getMessage() + "), check that the file can still be read");
+			} catch (final Exception exception) {
+				JOIDLog.warn("The video " + this.describe() + " cannot be reopened (" + exception.getMessage() + "), check that the file can still be read");
 			}
 		}
 	}
@@ -578,8 +579,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				if (this.grabber != null) {
 					this.seekGrabber(microseconds);
 				}
-			} catch (final Exception e) {
-				JOIDLog.warn("The video " + this.describe() + " cannot seek to " + microseconds + "us (" + e + "), check that the file can still be read", e);
+			} catch (final Exception exception) {
+				JOIDLog.warn("The video " + this.describe() + " cannot seek to " + microseconds + "us (" + exception + "), check that the file can still be read", exception);
 			}
 
 			final long now = BridgeHandler.CLOCK.get().nanoTime();
@@ -604,9 +605,9 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			this.textures[1].allocate(resource.getWidth(), resource.getHeight());
 			this.texturesAllocated = true;
 		}
-		this.textures[nextBuffer].upload(frame.getPixels());
+		this.textures[nextBuffer].upload(frame.pixels);
 		this.currentBuffer = nextBuffer;
-		this.displayedFrameIndex = (int) Math.round(frame.getMediaTime() * this.frameRate);
+		this.displayedFrameIndex = (int) Math.round(frame.mediaTime * this.frameRate);
 		this.seeked = false;
 		resource.texture(this.textures[this.currentBuffer]);
 	}
@@ -691,8 +692,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					}
 				}
 			} catch (final InterruptedException ignored) {
-			} catch (final Exception e) {
-				JOIDLog.warn("The video " + this.describe() + " stops decoding (" + e + "), check that the file can still be read", e);
+			} catch (final Exception exception) {
+				JOIDLog.warn("The video " + this.describe() + " stops decoding (" + exception + "), check that the file can still be read", exception);
 			}
 		}, "joid-video-decode");
 		this.decodeThread.setDaemon(true);
@@ -734,9 +735,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		});
 	}
 
-	@Getter
-	@RequiredArgsConstructor
-	public static final class DecodedFrame {
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class DecodedFrame {
 
 		private final double time;
 		private final int[]  pixels;

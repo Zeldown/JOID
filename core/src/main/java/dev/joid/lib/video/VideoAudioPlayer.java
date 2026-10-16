@@ -65,8 +65,8 @@ public final class VideoAudioPlayer {
 				final IAudioSource source = BridgeHandler.AUDIO.get().createSource(this.sampleRate, this.channels);
 				source.group(this.group);
 				this.source = source;
-			} catch (final Exception e) {
-				JOIDLog.warnOnce("VideoAudioPlayer.source." + this.name, "The video " + this.name + " plays without sound (" + e + "), register an audio bridge and check the audio device");
+			} catch (final Exception exception) {
+				JOIDLog.warnOnce("VideoAudioPlayer.source." + this.name, "The video " + this.name + " plays without sound (" + exception + "), register an audio bridge and check the audio device");
 			}
 		}
 

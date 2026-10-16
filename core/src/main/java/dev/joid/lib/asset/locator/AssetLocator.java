@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AssetLocator {
+public final class AssetLocator {
 
 	private static final Registry<IAssetLocator> LOCATORS = Registry.create();
 

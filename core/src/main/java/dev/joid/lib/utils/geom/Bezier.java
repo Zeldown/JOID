@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Bezier {
+public final class Bezier {
 
 	public static @NonNull Point quadratic(final double t, final @NonNull Point start, final @NonNull Point control, final @NonNull Point end) {
 		return Point.create((1 - t) * ((1 - t) * start.getX() + t * control.getX()) + t * ((1 - t) * control.getX() + t * end.getX()), (1 - t) * ((1 - t) * start.getY() + t * control.getY()) + t * ((1 - t) * control.getY() + t * end.getY()));

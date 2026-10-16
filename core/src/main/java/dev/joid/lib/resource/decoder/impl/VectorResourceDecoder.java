@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -137,10 +136,6 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		this.textures.clear();
 		this.document = null;
 		this.pending.set(null);
-	}
-
-	public final @NonNull Map<Long, ITexture> getTextures() {
-		return Collections.unmodifiableMap(this.textures);
 	}
 
 	@Override

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ResourceResolver {
+public final class ResourceResolver {
 
 	private static final Registry<IResourceResolver> RESOLVERS = Registry.create();
 
