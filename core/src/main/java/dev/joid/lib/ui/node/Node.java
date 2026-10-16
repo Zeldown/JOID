@@ -369,7 +369,7 @@ public abstract class Node implements INode {
 					}
 
 					this.place();
-					this.placeParts(mouseX, mouseY);
+					this.layout();
 					this.updateHover(mouseX, mouseY);
 					this.scrollContent(render);
 					this.animateDrag();

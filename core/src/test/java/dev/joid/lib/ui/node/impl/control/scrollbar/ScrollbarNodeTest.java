@@ -48,10 +48,10 @@ public class ScrollbarNodeTest {
 		final RectNode content = ScrollbarNodeTest.column(bar);
 		this.press(content, 515D, 110D);
 		Assert.assertTrue(bar.isDragging());
-		this.bridges.move(515D, 150D).frame();
+		this.bridges.drag(515D, 150D).frame();
 		Assert.assertEquals(40D, bar.getThumb().getY(), 1E-9D);
 		Assert.assertEquals(-120D, content.getTargetScrollY(), 1E-6D);
-		this.bridges.move(515D, 900D).frame();
+		this.bridges.drag(515D, 900D).frame();
 		Assert.assertEquals(200D / 3D, bar.getThumb().getY(), 1E-9D);
 		Assert.assertEquals(-200D, content.getTargetScrollY(), 1E-6D);
 	}
@@ -63,10 +63,10 @@ public class ScrollbarNodeTest {
 		RectNode.create(0D, 0D, 400D, 100D).color(new Color(0.1F, 0.3F, 0.5F, 1F)).attach(content);
 		RectNode.create(400D, 0D, 400D, 100D).color(new Color(0.3F, 0.5F, 0.7F, 1F)).attach(content);
 		this.press(content, 120D, 215D);
-		this.bridges.move(300D, 215D).frame();
+		this.bridges.drag(300D, 215D).frame();
 		Assert.assertEquals(180D, bar.getThumb().getX(), 1E-9D);
 		Assert.assertEquals(-360D, content.getTargetScrollX(), 1E-6D);
-		this.bridges.move(0D, 215D).frame();
+		this.bridges.drag(0D, 215D).frame();
 		Assert.assertEquals(0D, bar.getThumb().getX(), 1E-9D);
 		Assert.assertEquals(0D, content.getTargetScrollX(), 1E-6D);
 	}
@@ -77,7 +77,7 @@ public class ScrollbarNodeTest {
 		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
 		final RectNode content = ScrollbarNodeTest.column(bar).scrollY(scroll);
 		this.press(content, 515D, 110D);
-		this.bridges.move(515D, 150D).frame();
+		this.bridges.drag(515D, 150D).frame();
 		Assert.assertEquals(-120D, scroll.peek(), 1E-6D);
 	}
 
@@ -86,7 +86,7 @@ public class ScrollbarNodeTest {
 		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
 		final RectNode content = ScrollbarNodeTest.column(bar).beforeScroll(event -> event.cancel());
 		this.press(content, 515D, 110D);
-		this.bridges.move(515D, 150D).frame();
+		this.bridges.drag(515D, 150D).frame();
 		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
 	}
 
@@ -96,7 +96,7 @@ public class ScrollbarNodeTest {
 		final RectNode content = ScrollbarNodeTest.column(bar);
 		this.press(content, 515D, 110D);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
-		this.bridges.move(515D, 150D).frame();
+		this.bridges.drag(515D, 150D).frame();
 		Assert.assertFalse(bar.isDragging());
 		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
 	}
@@ -130,7 +130,7 @@ public class ScrollbarNodeTest {
 		Assert.assertFalse(bar.isHorizontal());
 		this.press(content, 515D, 110D);
 		Assert.assertTrue(content.hasOverflowX());
-		this.bridges.move(515D, 150D).frame();
+		this.bridges.drag(515D, 150D).frame();
 		Assert.assertEquals(40D, bar.getThumb().getY(), 1E-9D);
 		Assert.assertEquals(0D, bar.getThumb().getX(), 0D);
 		Assert.assertEquals(-120D, content.getTargetScrollY(), 1E-6D);
@@ -186,13 +186,13 @@ public class ScrollbarNodeTest {
 		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
 		final RectNode content = ScrollbarNodeTest.list(bar);
 		this.press(content, 515D, 105D);
-		this.bridges.move(515D, 195D).frame();
+		this.bridges.drag(515D, 195D).frame();
 		Assert.assertEquals(1D, bar.getProgress(), 1E-9D);
 		Assert.assertEquals(-9900D, content.getTargetScrollY(), 1E-6D);
 		Assert.assertEquals(90D, bar.getThumb().getY(), 1E-9D);
-		this.bridges.move(515D, 150D).frame();
+		this.bridges.drag(515D, 150D).frame();
 		Assert.assertEquals(0.5D, bar.getProgress(), 1E-9D);
-		this.bridges.move(515D, 0D).frame();
+		this.bridges.drag(515D, 0D).frame();
 		Assert.assertEquals(0D, bar.getProgress(), 0D);
 		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
 	}
@@ -214,7 +214,7 @@ public class ScrollbarNodeTest {
 		this.bridges.open(new NodeUI(bar)).frame();
 		this.bridges.move(415D, 10D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		this.bridges.move(415D, 60D).frame();
+		this.bridges.drag(415D, 60D).frame();
 		Assert.assertTrue(bar.isDragging());
 		Assert.assertEquals(0D, bar.getThumb().getY(), 0D);
 		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);

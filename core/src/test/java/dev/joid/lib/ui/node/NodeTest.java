@@ -1614,7 +1614,7 @@ public class NodeTest {
 		final ContainerNode row = NodeTest.row().scrollbar(bar);
 		this.press(row, 120D, 215D);
 		Assert.assertTrue(bar.isDragging());
-		this.bridges.move(300D, 215D).frames(2);
+		this.bridges.drag(300D, 215D).frame();
 		Assert.assertEquals(-300D, row.getTargetScrollX(), 1E-6D);
 		Assert.assertEquals(-300D * (1D - Math.pow(2D / 3D, 0.96D)), row.getScrollX(), 1E-6D);
 	}

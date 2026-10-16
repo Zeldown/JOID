@@ -151,7 +151,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void placeParts(final double mouseX, final double mouseY) {
+	public void layout() {
 		if (this.background != null) {
 			this.background.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}

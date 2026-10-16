@@ -35,7 +35,7 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 	}
 
 	@Override
-	public void placeParts(final double mouseX, final double mouseY) {
+	public void layout() {
 		final double size = super.getDefaultHeight();
 		final double height = super.isActive() ? size * this.optionList.size() : size;
 		final double raise = this.direction.isDown() ? 0D : height - size;

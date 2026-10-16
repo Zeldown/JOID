@@ -29,7 +29,7 @@ public abstract class ToggleNode<F, S> extends BaseToggleNode<F, S> {
 	}
 
 	@Override
-	public void placeParts(final double mouseX, final double mouseY) {
+	public void layout() {
 		if (this.track != null) {
 			this.track.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}

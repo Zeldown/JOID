@@ -25,22 +25,6 @@ public abstract class BaseScrollbarNode extends Node {
 	}
 
 	@Override
-	public void placeParts(final double mouseX, final double mouseY) {
-		if (!this.dragging || !this.isOverflowing()) {
-			return;
-		}
-
-		final double room = this.getLength() - this.getThumbLength();
-		final double start = (this.isHorizontal() ? mouseX - super.getAbsoluteX() : mouseY - super.getAbsoluteY()) - this.grab;
-		this.dragProgress = room <= 0D ? 0D : Math.min(1D, Math.max(0D, start / room));
-		if (this.isHorizontal()) {
-			this.scrollNode.scrollTo(-this.scrollNode.getMaxScrollX() * this.dragProgress, this.scrollNode.getTargetScrollY());
-		} else {
-			this.scrollNode.scrollTo(this.scrollNode.getTargetScrollX(), -this.scrollNode.getMaxScrollY() * this.dragProgress);
-		}
-	}
-
-	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {
 		this.draw(mouseX, mouseY);
 	}
@@ -57,6 +41,7 @@ public abstract class BaseScrollbarNode extends Node {
 		this.grab         = mouse >= start && mouse <= start + length ? mouse - start : length / 2D;
 		this.dragProgress = this.getProgress();
 		this.dragging     = true;
+		this.slide(event.getMouseX(), event.getMouseY());
 		event.consume();
 	}
 
@@ -64,6 +49,13 @@ public abstract class BaseScrollbarNode extends Node {
 	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
 		if (event.getButton().isLeft()) {
 			this.dragging = false;
+		}
+	}
+
+	@Override
+	public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
+		if (this.dragging) {
+			this.slide(event.getMouseX(), event.getMouseY());
 		}
 	}
 
@@ -117,6 +109,21 @@ public abstract class BaseScrollbarNode extends Node {
 
 	public final <T extends BaseScrollbarNode> @NonNull T minThumb(final @NonNull Supplier<Double> minThumb) {
 		return super.follow("minThumb", minThumb, value -> this.minThumb = value);
+	}
+
+	private void slide(final double mouseX, final double mouseY) {
+		if (!this.isOverflowing()) {
+			return;
+		}
+
+		final double room = this.getLength() - this.getThumbLength();
+		final double start = (this.isHorizontal() ? mouseX - super.getAbsoluteX() : mouseY - super.getAbsoluteY()) - this.grab;
+		this.dragProgress = room <= 0D ? 0D : Math.min(1D, Math.max(0D, start / room));
+		if (this.isHorizontal()) {
+			this.scrollNode.scrollTo(-this.scrollNode.getMaxScrollX() * this.dragProgress, this.scrollNode.getTargetScrollY());
+		} else {
+			this.scrollNode.scrollTo(this.scrollNode.getTargetScrollX(), -this.scrollNode.getMaxScrollY() * this.dragProgress);
+		}
 	}
 
 	private double getLength() {
