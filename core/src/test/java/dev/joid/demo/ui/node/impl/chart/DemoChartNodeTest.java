@@ -38,6 +38,21 @@ public class DemoChartNodeTest {
 		}
 	}
 
+	@Test
+	public void drawsAnAxisWithASingleLabel() {
+		final MsdfFont previous = DemoFont.MONTSERRAT;
+		DemoFont.MONTSERRAT = DevFont.MONTSERRAT;
+		try {
+			final DemoChartNode chart = DemoChartNode.create(0D, 0D, 400D, 200D).xAxis(ChartAxis.x("weekday", "Mon")).yAxis(ChartAxis.y("requests")).data("api", ChartData.create().add("Mon", 50));
+			this.bridges.open(new ChartUI(chart));
+			this.bridges.getRender().beginFrame();
+			chart.draw(0D, 0D);
+			Assert.assertTrue(this.bridges.getRender().getDraws().stream().allMatch(draw -> Double.isFinite(draw.getLeft()) && Double.isFinite(draw.getRight())));
+		} finally {
+			DemoFont.MONTSERRAT = previous;
+		}
+	}
+
 	public static final class ChartUI extends UI {
 
 		private final DemoChartNode chart;

@@ -8,7 +8,7 @@ wait 500
 shot popup-stacked
 ui dev.joid.demo.ui.UIDemoChoice
 wait 1500
-move 1515 75
+move 1075 75
 press LEFT
 release LEFT
 wait 500

@@ -5,6 +5,7 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.NonNull;
 
 public class ShowPaperSliderNode extends DoubleSliderNode {
 
@@ -34,7 +35,7 @@ public class ShowPaperSliderNode extends DoubleSliderNode {
 		}));
 	}
 
-	public static ShowPaperSliderNode create(final double x, final double y, final double width) {
+	public static @NonNull ShowPaperSliderNode create(final double x, final double y, final double width) {
 		return new ShowPaperSliderNode(x, y, width);
 	}
 

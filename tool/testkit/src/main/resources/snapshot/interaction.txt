@@ -596,7 +596,7 @@ wait 800
 shot inter-effect
 ui dev.joid.demo.ui.UIDemoChoice
 wait 1500
-move 1180 75
+move 740 75
 wait 800
 shot inter-choice-hover
 ui dev.joid.demo.ui.signal.UIDemoSignal

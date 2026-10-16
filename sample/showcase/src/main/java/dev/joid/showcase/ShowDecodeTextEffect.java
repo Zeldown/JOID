@@ -22,7 +22,7 @@ public final class ShowDecodeTextEffect implements ITextEffect {
 	}
 
 	@Override
-	public void apply(final ITextGlyph glyph) {
+	public void apply(final @NonNull ITextGlyph glyph) {
 		if (Character.isWhitespace(glyph.getCodepoint())) {
 			return;
 		}

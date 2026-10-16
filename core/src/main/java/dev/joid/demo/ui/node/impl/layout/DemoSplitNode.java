@@ -2,7 +2,6 @@ package dev.joid.demo.ui.node.impl.layout;
 
 import java.util.List;
 
-import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
@@ -17,21 +16,7 @@ public class DemoSplitNode extends Node {
 	}
 
 	@Override
-	public void init(final @NonNull UI ui) {
-		this.split();
-	}
-
-	@Override
-	public void update() {
-		this.split();
-	}
-
-	@Override
-	public void draw(final double mouseX, final double mouseY) {
-		this.split();
-	}
-
-	private void split() {
+	public void layout() {
 		final List<Node> children = super.getChildren();
 		final double width = (super.getWidth() - 10D * (children.size() - 1)) / children.size();
 		for (int i = 0; i < children.size(); i++) {

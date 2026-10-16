@@ -1,6 +1,7 @@
 package dev.joid.demo.ui.node.effect.impl;
 
-import dev.joid.demo.shader.impl.DemoInvertShader;
+import dev.joid.demo.shader.pipeline.pass.DemoInvertShaderPass;
+import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import lombok.AccessLevel;
@@ -17,8 +18,13 @@ public class DemoInvertNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public void draw(final @NonNull Node node, final @NonNull Runnable body) {
-		DemoInvertShader.use(this.amount, body);
+	public boolean isShaderEffect() {
+		return true;
+	}
+
+	@Override
+	public IShaderPass toShaderPass(final @NonNull Node node) {
+		return DemoInvertShaderPass.create(this.amount);
 	}
 
 }

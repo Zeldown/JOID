@@ -8,6 +8,7 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.NonNull;
 
 public class ShowPaperFieldNode extends TextFieldNode {
 
@@ -35,7 +36,7 @@ public class ShowPaperFieldNode extends TextFieldNode {
 		}));
 	}
 
-	public static ShowPaperFieldNode create(final double x, final double y, final double width) {
+	public static @NonNull ShowPaperFieldNode create(final double x, final double y, final double width) {
 		return new ShowPaperFieldNode(x, y, width);
 	}
 

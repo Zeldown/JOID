@@ -19,7 +19,7 @@ public final class ShowRiseTextEffect implements ITextEffect {
 	}
 
 	@Override
-	public void apply(final ITextGlyph glyph) {
+	public void apply(final @NonNull ITextGlyph glyph) {
 		final double elapsed = BridgeHandler.CLOCK.get().currentTimeMillis() - this.start - glyph.getIndex() * this.stagger;
 		final float progress = (float) Math.max(0D, Math.min(1D, elapsed / 700D));
 		final float eased = TweenEquations.EXPO_OUT.compute(progress);

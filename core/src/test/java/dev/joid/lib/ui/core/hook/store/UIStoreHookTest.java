@@ -21,7 +21,6 @@ import org.junit.rules.TemporaryFolder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import dev.joid.internal.JOIDEnv;
@@ -365,17 +364,17 @@ public class UIStoreHookTest {
 		}
 
 		@Override
-		public void fromJson(final @NonNull String json) {
+		public void fromJson(final @NonNull JsonObject json) {
 			this.loaded = true;
 			this.order = (this.order + " fromJson").trim();
-			this.value = JsonParser.parseString(json).getAsJsonObject().get("value").getAsString();
+			this.value = json.get("value").getAsString();
 		}
 
 		@Override
-		public @NonNull String toJson() {
+		public @NonNull JsonObject toJson() {
 			final JsonObject json = new JsonObject();
 			json.addProperty("value", this.value);
-			return json.toString();
+			return json;
 		}
 
 	}
@@ -388,15 +387,15 @@ public class UIStoreHookTest {
 		private IntegerSignal count = new IntegerSignal(3);
 
 		@Override
-		public void fromJson(final @NonNull String json) {
-			this.count = SignalStore.GSON.fromJson(JsonParser.parseString(json).getAsJsonObject().get("count"), IntegerSignal.class);
+		public void fromJson(final @NonNull JsonObject json) {
+			this.count = SignalStore.GSON.fromJson(json.get("count"), IntegerSignal.class);
 		}
 
 		@Override
-		public @NonNull String toJson() {
+		public @NonNull JsonObject toJson() {
 			final JsonObject json = new JsonObject();
 			json.add("count", SignalStore.GSON.toJsonTree(this.count));
-			return json.toString();
+			return json;
 		}
 
 	}
@@ -409,15 +408,15 @@ public class UIStoreHookTest {
 		private ListSignal<String> names = new ListSignal<>(Collections.singletonList("a"));
 
 		@Override
-		public void fromJson(final @NonNull String json) {
-			this.names = ListStore.GSON.fromJson(JsonParser.parseString(json).getAsJsonObject().get("names"), new TypeToken<ListSignal<String>>() {}.getType());
+		public void fromJson(final @NonNull JsonObject json) {
+			this.names = ListStore.GSON.fromJson(json.get("names"), new TypeToken<ListSignal<String>>() {}.getType());
 		}
 
 		@Override
-		public @NonNull String toJson() {
+		public @NonNull JsonObject toJson() {
 			final JsonObject json = new JsonObject();
 			json.add("names", ListStore.GSON.toJsonTree(this.names));
-			return json.toString();
+			return json;
 		}
 
 	}

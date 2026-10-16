@@ -40,7 +40,7 @@ public class DemoChartNode extends ChartNode {
 		final double top = super.getY() + 15D;
 		final double width = super.getWidth() - 65D;
 		final double height = super.getHeight() - 40D;
-		final double offset = width / (super.getLabels().size() - 1);
+		final double offset = super.getLabels().size() > 1 ? width / (super.getLabels().size() - 1) : 0D;
 
 		DrawUtils.TEXT.drawText(super.getX() + 8D, top, super.getYAxis().format(max), info, Align.START, Align.CENTER);
 		DrawUtils.TEXT.drawText(super.getX() + 8D, top + height, super.getYAxis().format(min), info, Align.START, Align.CENTER);

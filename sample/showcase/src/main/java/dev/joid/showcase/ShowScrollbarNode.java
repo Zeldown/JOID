@@ -5,6 +5,7 @@ import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.control.scrollbar.ScrollbarNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.NonNull;
 
 public class ShowScrollbarNode extends ScrollbarNode {
 
@@ -18,7 +19,7 @@ public class ShowScrollbarNode extends ScrollbarNode {
 		.effect(ShadowNodeEffect.create(ShowUI.VIOLET.withAlpha(0.6F), 12F)));
 	}
 
-	public static ShowScrollbarNode create(final double x, final double y, final double width, final double height) {
+	public static @NonNull ShowScrollbarNode create(final double x, final double y, final double width, final double height) {
 		return new ShowScrollbarNode(x, y, width, height);
 	}
 

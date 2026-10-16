@@ -7,6 +7,7 @@ import dev.joid.lib.ui.node.impl.control.slider.DoubleSliderNode;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.NonNull;
 
 public class ShowSliderNode extends DoubleSliderNode {
 
@@ -41,7 +42,7 @@ public class ShowSliderNode extends DoubleSliderNode {
 		}));
 	}
 
-	public static ShowSliderNode create(final double x, final double y, final double width, final Color from, final Color to) {
+	public static @NonNull ShowSliderNode create(final double x, final double y, final double width, final @NonNull Color from, final @NonNull Color to) {
 		return new ShowSliderNode(x, y, width, from, to);
 	}
 

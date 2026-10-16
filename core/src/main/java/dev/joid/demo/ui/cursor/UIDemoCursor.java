@@ -1,5 +1,7 @@
 package dev.joid.demo.ui.cursor;
 
+import java.util.Locale;
+
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.impl.control.field.DemoTextFieldNode;
@@ -29,17 +31,17 @@ public class UIDemoCursor extends UIDemo {
 		final IntegerSignal through = new IntegerSignal(0);
 		final IntegerSignal blocked = new IntegerSignal(0);
 		final IntegerSignal bubbled = new IntegerSignal(0);
-		final String[] captions = {"Default", "Pointer", "Text", "Crosshair", "Move", "Not allowed", "Resize EW", "Resize NS", "Resize NWSE", "Resize NESW"};
 		final Cursor[] cursors = Cursor.values();
 
 		for (int i = 0; i < cursors.length; i++) {
 			final int index = i;
+			final String caption = cursors[index].name().charAt(0) + cursors[index].name().substring(1).toLowerCase(Locale.ROOT).replace('_', ' ');
 			RectNode
 			.create(80 + index % 5 * 360, 20 + index / 5 * 260, 320, 200)
 			.color(UIDemoCursor.PLACEHOLDER)
 			.body(rect -> {
 				RectNode.create(100, 40, 120, 120).color(UIDemoCursor.INK).hoveredColor(Color.WHITE).cursor(cursors[index]).attach(rect);
-				TextNode.create(160, 215).text(Text.create(captions[index], info)).anchorX(Align.CENTER).attach(rect);
+				TextNode.create(160, 215).text(Text.create(caption, info)).anchorX(Align.CENTER).attach(rect);
 			})
 			.attach(this);
 		}
@@ -93,7 +95,7 @@ public class UIDemoCursor extends UIDemo {
 			.create(100, 40, 120, 120)
 			.color(locked.get() ? UIDemoCursor.INK.withAlpha(0.4F) : UIDemoCursor.INK)
 			.cursor(locked.get() ? Cursor.NOT_ALLOWED : Cursor.POINTER)
-			.onClick(event -> locked.set(!locked.peek()))
+			.onClick(event -> locked.toggle())
 			.attach(rect);
 			TextNode.create(160, 215).text(Text.create("Reactive", info)).anchorX(Align.CENTER).attach(rect);
 		})

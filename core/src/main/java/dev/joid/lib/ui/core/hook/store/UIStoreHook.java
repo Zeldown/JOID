@@ -32,7 +32,7 @@ public final class UIStoreHook {
 		if (data.scope() == StoreScope.PERMANENT) {
 			final JsonObject json = JsonFiles.read(UIStoreHook.getFile(store), "the store starts from init()");
 			if (json != null) {
-				store.fromJson(json.toString());
+				store.fromJson(json);
 			}
 		}
 
@@ -58,7 +58,7 @@ public final class UIStoreHook {
 			return;
 		}
 
-		JsonFiles.write(UIStoreHook.getFile(store), store.toJson());
+		JsonFiles.write(UIStoreHook.getFile(store), store.toJson().toString());
 	}
 
 	public static void saveAll() {

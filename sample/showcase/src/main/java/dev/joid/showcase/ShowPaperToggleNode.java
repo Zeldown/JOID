@@ -5,6 +5,7 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.NonNull;
 
 public class ShowPaperToggleNode extends ToggleNode<Boolean, Boolean> {
 
@@ -29,7 +30,7 @@ public class ShowPaperToggleNode extends ToggleNode<Boolean, Boolean> {
 		}));
 	}
 
-	public static ShowPaperToggleNode create(final double x, final double y) {
+	public static @NonNull ShowPaperToggleNode create(final double x, final double y) {
 		return new ShowPaperToggleNode(x, y);
 	}
 

@@ -87,13 +87,13 @@ public class ShowPlayer extends ShowUI {
 		.color(Color.TRANSPARENT)
 		.onClick(event -> this.scrub.set(ShowPlayer.ratio(event.getNode(), event.getMouseX())))
 		.handleMouseDragged(event -> {
-			if (this.scrub.get() >= 0D) {
+			if (this.scrub.peek() >= 0D) {
 				this.scrub.set(ShowPlayer.ratio(event.getNode(), event.getMouseX()));
 			}
 		})
 		.handleMouseReleased(event -> {
-			if (this.scrub.get() >= 0D) {
-				this.player.seek(this.scrub.get() * this.player.getDuration());
+			if (this.scrub.peek() >= 0D) {
+				this.player.seek(this.scrub.peek() * this.player.getDuration());
 				this.scrub.set(-1D);
 			}
 		})

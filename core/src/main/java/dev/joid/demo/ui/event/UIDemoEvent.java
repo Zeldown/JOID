@@ -100,7 +100,7 @@ public class UIDemoEvent extends UIDemo {
 			.hoveredColor(Color.WHITE)
 			.handleMouseScroll(event -> {
 				if (event.getNode().isHovered()) {
-					scrolled.set(scrolled.get() + (int) Math.signum(event.getNotchesY()));
+					scrolled.add((int) Math.signum(event.getNotchesY()));
 				}
 			})
 			.attach(rect);
@@ -250,7 +250,7 @@ public class UIDemoEvent extends UIDemo {
 			RectNode
 			.create(40, 40, 120, 50)
 			.color(UIDemoEvent.INK)
-			.onClick(event -> clicks.set(clicks.get() + (UI.isShiftKeyDown() ? 10 : 1)))
+			.onClick(event -> clicks.add(UI.isShiftKeyDown() ? 10 : 1))
 			.label(Text.create("Click", label))
 			.attach(rect);
 			TextNode.create(40, 120).text(Text.create("Count: " + clicks.get(), info)).attach(rect);

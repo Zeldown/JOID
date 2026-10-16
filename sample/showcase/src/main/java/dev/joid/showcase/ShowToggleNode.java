@@ -7,6 +7,7 @@ import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.NonNull;
 
 public class ShowToggleNode extends ToggleNode<Boolean, Boolean> {
 
@@ -25,7 +26,7 @@ public class ShowToggleNode extends ToggleNode<Boolean, Boolean> {
 		}));
 	}
 
-	public static ShowToggleNode create(final double x, final double y, final Color on) {
+	public static @NonNull ShowToggleNode create(final double x, final double y, final @NonNull Color on) {
 		return new ShowToggleNode(x, y, on);
 	}
 

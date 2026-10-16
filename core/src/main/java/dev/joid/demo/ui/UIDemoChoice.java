@@ -59,7 +59,6 @@ public class UIDemoChoice extends UI {
 	private static final List<DemoEntry> LIST = new ArrayList<>();
 
 	static {
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoChoice.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSimple.class));
 		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOption.class));
 		UIDemoChoice.LIST.add(DemoEntry.create("UIDemoOverlay", () -> {

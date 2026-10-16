@@ -9,6 +9,7 @@ import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.NonNull;
 
 public class ShowFieldNode extends TextFieldNode {
 
@@ -32,7 +33,7 @@ public class ShowFieldNode extends TextFieldNode {
 		.effect(BorderNodeEffect.create(this.accent, 2F).mode(BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.14F).to(this.accent, this.focus.get()))));
 	}
 
-	public static ShowFieldNode create(final double x, final double y, final double width, final Color accent) {
+	public static @NonNull ShowFieldNode create(final double x, final double y, final double width, final @NonNull Color accent) {
 		return new ShowFieldNode(x, y, width, accent);
 	}
 

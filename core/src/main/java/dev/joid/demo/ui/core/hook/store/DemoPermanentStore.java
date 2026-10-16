@@ -1,7 +1,6 @@
 package dev.joid.demo.ui.core.hook.store;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.gson.JsonObject;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.hook.store.UIStore;
@@ -18,19 +17,18 @@ import lombok.Setter;
 @UIStoreData(id = "DemoPermanentStore", scope = StoreScope.PERMANENT)
 public class DemoPermanentStore extends UIStore {
 
-	private static final Pattern TIME = Pattern.compile("\"time\"\\s*:\\s*(\\d+)");
-
 	private long time;
 
 	@Override
-	public void fromJson(final @NonNull String json) {
-		final Matcher matcher = DemoPermanentStore.TIME.matcher(json);
-		this.time = matcher.find() ? Long.parseLong(matcher.group(1)) : BridgeHandler.CLOCK.get().currentTimeMillis();
+	public void fromJson(final @NonNull JsonObject json) {
+		this.time = json.has("time") ? json.get("time").getAsLong() : BridgeHandler.CLOCK.get().currentTimeMillis();
 	}
 
 	@Override
-	public @NonNull String toJson() {
-		return "{\"time\":" + this.time + "}";
+	public @NonNull JsonObject toJson() {
+		final JsonObject json = new JsonObject();
+		json.addProperty("time", this.time);
+		return json;
 	}
 
 }

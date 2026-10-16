@@ -155,7 +155,7 @@ public class UIDemoEventFlow extends UIDemo {
 			RectNode
 			.create(140, 45, 120, 50)
 			.color(UIDemoEventFlow.INK)
-			.onClick(event -> guarded.set(!guarded.peek()))
+			.onClick(event -> guarded.toggle())
 			.label(Text.create("Code", label))
 			.attach(rect);
 			TextNode.create(40, 140).text(Text.create("Refused: " + refused.get(), info)).attach(rect);
