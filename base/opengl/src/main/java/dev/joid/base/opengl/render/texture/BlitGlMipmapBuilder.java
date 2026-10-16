@@ -16,7 +16,7 @@ public final class BlitGlMipmapBuilder implements IGlMipmapBuilder {
 	}
 
 	@Override
-	public void build(final @NonNull GlRenderBridge bridge, final @NonNull GlTexture texture, final @NonNull MipmapChain chain) {
+	public void build(final GlRenderBridge bridge, final GlTexture texture, final MipmapChain chain) {
 		final IGlFrameBufferBinding frameBuffer = bridge.getFrameBufferBinding();
 		final int source = frameBuffer.genFramebuffer();
 		final int target = frameBuffer.genFramebuffer();

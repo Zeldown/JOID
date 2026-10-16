@@ -1,9 +1,7 @@
 package dev.joid.base.openal;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -25,7 +23,7 @@ public final class AlAudioBridge implements IAudioBridge {
 
 	private AlAudioBridge(final IAlBinding binding) {
 		this.binding        = binding;
-		this.sourceSet      = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+		this.sourceSet      = Collections.newSetFromMap(new WeakHashMap<>());
 		this.groupVolumeMap = new HashMap<>();
 		this.gain           = (gain, group) -> gain;
 		this.ownContext     = true;
@@ -64,7 +62,7 @@ public final class AlAudioBridge implements IAudioBridge {
 		return source;
 	}
 
-	public void releaseSource(final @NonNull AlAudioSource source) {
+	public void releaseSource(final AlAudioSource source) {
 		this.sourceSet.remove(source);
 	}
 
@@ -73,11 +71,7 @@ public final class AlAudioBridge implements IAudioBridge {
 	}
 
 	private void syncSources() {
-		final List<AlAudioSource> sourceList;
-		synchronized (this.sourceSet) {
-			sourceList = new ArrayList<>(this.sourceSet);
-		}
-		sourceList.forEach(AlAudioSource::sync);
+		this.sourceSet.forEach(AlAudioSource::sync);
 	}
 
 }

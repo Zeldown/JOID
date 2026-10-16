@@ -39,7 +39,7 @@ public final class GlStateJournal {
 		this.unitTextures       = new int[32];
 	}
 
-	public static @NonNull GlStateJournal create(final @NonNull IGlBinding binding, final @NonNull GlCapabilities capabilities, final @NonNull GlFrameBufferFamily family) {
+	public static @NonNull GlStateJournal create(final IGlBinding binding, final GlCapabilities capabilities, final GlFrameBufferFamily family) {
 		return new GlStateJournal(binding, capabilities, family);
 	}
 
@@ -96,11 +96,11 @@ public final class GlStateJournal {
 		this.activeUnit = unit - GlConstants.TEXTURE0;
 	}
 
-	public void touch(final @NonNull GlStateKey key) {
+	public void touch(final GlStateKey key) {
 		this.touch(key, 0, 0);
 	}
 
-	public void touch(final @NonNull GlStateKey key, final int container) {
+	public void touch(final GlStateKey key, final int container) {
 		this.touch(key, container, 0);
 	}
 

@@ -22,7 +22,7 @@ public final class GlFrameBuffer extends FrameBufferHandle<GlTexture> {
 		this.depth  = depth;
 	}
 
-	public static @NonNull GlFrameBuffer create(final @NonNull GlRenderBridge bridge, final int width, final int height) {
+	public static @NonNull GlFrameBuffer create(final GlRenderBridge bridge, final int width, final int height) {
 		final IGlFrameBufferBinding frameBuffer = bridge.getFrameBufferBinding();
 		final GlTexture texture = GlTexture.create(bridge);
 		texture.allocate(width, height);

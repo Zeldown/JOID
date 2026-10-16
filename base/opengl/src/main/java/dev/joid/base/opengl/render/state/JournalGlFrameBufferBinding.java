@@ -11,7 +11,7 @@ public final class JournalGlFrameBufferBinding implements IGlFrameBufferBinding 
 	private final IGlFrameBufferBinding binding;
 	private final GlStateJournal        journal;
 
-	public static @NonNull JournalGlFrameBufferBinding create(final @NonNull IGlFrameBufferBinding binding, final @NonNull GlStateJournal journal) {
+	public static @NonNull JournalGlFrameBufferBinding create(final IGlFrameBufferBinding binding, final GlStateJournal journal) {
 		return new JournalGlFrameBufferBinding(binding, journal);
 	}
 

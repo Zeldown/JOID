@@ -182,7 +182,7 @@ public final class VulkanContext {
 		}
 	}
 
-	public void submit(final @NonNull Consumer<VkCommandBuffer> recorder) {
+	public void submit(final Consumer<VkCommandBuffer> recorder) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final PointerBuffer handle = stack.mallocPointer(1);
 			VulkanContext.check(VK10.vkAllocateCommandBuffers(this.device, VkCommandBufferAllocateInfo.calloc(stack).sType$Default().commandPool(this.commandPool).level(VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY).commandBufferCount(1), handle), "vkAllocateCommandBuffers");
@@ -196,11 +196,11 @@ public final class VulkanContext {
 		}
 	}
 
-	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout) {
+	public static void transition(final VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout) {
 		VulkanContext.transition(buffer, image, aspect, oldLayout, newLayout, 0, 1);
 	}
 
-	public static void transition(final @NonNull VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout, final int baseLevel, final int levels) {
+	public static void transition(final VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout, final int baseLevel, final int levels) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageMemoryBarrier.Buffer barrier = VkImageMemoryBarrier.calloc(1, stack)
 					.sType$Default()
@@ -216,7 +216,7 @@ public final class VulkanContext {
 		}
 	}
 
-	public static long createCommandPool(final @NonNull VkDevice device, final int queueFamilyIndex) {
+	public static long createCommandPool(final VkDevice device, final int queueFamilyIndex) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer commandPool = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkCreateCommandPool(device, VkCommandPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT).queueFamilyIndex(queueFamilyIndex), null, commandPool), "vkCreateCommandPool");
@@ -224,7 +224,7 @@ public final class VulkanContext {
 		}
 	}
 
-	public static long createImageView(final @NonNull VkDevice device, final long image, final int format, final int aspect, final int levels) {
+	public static long createImageView(final VkDevice device, final long image, final int format, final int aspect, final int levels) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageViewCreateInfo info = VkImageViewCreateInfo.calloc(stack)
 					.sType$Default()
@@ -239,7 +239,7 @@ public final class VulkanContext {
 		}
 	}
 
-	public static void check(final int result, final @NonNull String action) {
+	public static void check(final int result, final String action) {
 		if (result != VK10.VK_SUCCESS) {
 			throw new IllegalStateException(action + " failed with the Vulkan error " + result + ", update the graphics driver or run with the Vulkan validation layers to find the call at fault");
 		}

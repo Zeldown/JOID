@@ -6,7 +6,6 @@ import dev.joid.base.opengl.render.GlEnums;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.Getter;
-import lombok.NonNull;
 
 @Getter
 public abstract class GlVertexInput {
@@ -14,7 +13,7 @@ public abstract class GlVertexInput {
 	private final int        buffer;
 	private final IGlBinding binding;
 
-	protected GlVertexInput(final @NonNull IGlBinding binding) {
+	protected GlVertexInput(final IGlBinding binding) {
 		this.binding = binding;
 		this.buffer  = binding.genBuffer();
 	}

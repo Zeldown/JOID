@@ -11,16 +11,15 @@ import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexComponent;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlEnums {
 
-	public static int mode(final @NonNull Primitive primitive) {
+	public static int mode(final Primitive primitive) {
 		return primitive == Primitive.LINES ? GlConstants.LINES : GlConstants.TRIANGLES;
 	}
 
-	public static int type(final @NonNull VertexComponent component) {
+	public static int type(final VertexComponent component) {
 		switch (component) {
 		case UNSIGNED_BYTE:
 			return GlConstants.UNSIGNED_BYTE;
@@ -31,7 +30,7 @@ public final class GlEnums {
 		}
 	}
 
-	public static int wrap(final @NonNull TextureWrap wrap) {
+	public static int wrap(final TextureWrap wrap) {
 		switch (wrap) {
 		case CLAMP_TO_EDGE:
 			return GlConstants.CLAMP_TO_EDGE;
@@ -42,15 +41,15 @@ public final class GlEnums {
 		}
 	}
 
-	public static int magFilter(final @NonNull TextureSampling sampling) {
+	public static int magFilter(final TextureSampling sampling) {
 		return sampling.getFilter() == TextureFilter.LINEAR ? GlConstants.LINEAR : GlConstants.NEAREST;
 	}
 
-	public static int minFilter(final @NonNull TextureSampling sampling) {
+	public static int minFilter(final TextureSampling sampling) {
 		return sampling.isMipmapFiltered() ? GlConstants.LINEAR_MIPMAP_LINEAR : GlEnums.magFilter(sampling);
 	}
 
-	public static int equation(final @NonNull BlendState.Equation equation) {
+	public static int equation(final BlendState.Equation equation) {
 		switch (equation) {
 		case SUBTRACT:
 			return GlConstants.FUNC_SUBTRACT;
@@ -65,7 +64,7 @@ public final class GlEnums {
 		}
 	}
 
-	public static int factor(final @NonNull BlendState.Factor factor) {
+	public static int factor(final BlendState.Factor factor) {
 		switch (factor) {
 		case ZERO:
 			return GlConstants.ZERO;
@@ -90,7 +89,7 @@ public final class GlEnums {
 		}
 	}
 
-	public static int function(final @NonNull StencilFunction function) {
+	public static int function(final StencilFunction function) {
 		switch (function) {
 		case NEVER:
 			return GlConstants.NEVER;
@@ -111,7 +110,7 @@ public final class GlEnums {
 		}
 	}
 
-	public static int operation(final @NonNull StencilOperation operation) {
+	public static int operation(final StencilOperation operation) {
 		switch (operation) {
 		case ZERO:
 			return GlConstants.ZERO;

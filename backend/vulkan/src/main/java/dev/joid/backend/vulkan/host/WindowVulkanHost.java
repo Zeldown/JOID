@@ -233,7 +233,6 @@ public final class WindowVulkanHost implements IVulkanHost {
 		return this.views[this.imageIndex];
 	}
 
-	@Override
 	public long getTargetImage() {
 		return this.images[this.imageIndex];
 	}
@@ -329,17 +328,12 @@ public final class WindowVulkanHost implements IVulkanHost {
 		final IntBuffer modes = stack.mallocInt(count.get(0));
 		KHRSurface.vkGetPhysicalDeviceSurfacePresentModesKHR(this.physicalDevice, this.surface, count, modes);
 
-		int selected = KHRSurface.VK_PRESENT_MODE_FIFO_KHR;
 		for (int i = 0; i < modes.capacity(); i++) {
-			if (modes.get(i) == KHRSurface.VK_PRESENT_MODE_IMMEDIATE_KHR) {
-				return KHRSurface.VK_PRESENT_MODE_IMMEDIATE_KHR;
-			}
-
 			if (modes.get(i) == KHRSurface.VK_PRESENT_MODE_MAILBOX_KHR) {
-				selected = KHRSurface.VK_PRESENT_MODE_MAILBOX_KHR;
+				return KHRSurface.VK_PRESENT_MODE_MAILBOX_KHR;
 			}
 		}
-		return selected;
+		return KHRSurface.VK_PRESENT_MODE_FIFO_KHR;
 	}
 
 	private void destroySwapchainResources() {

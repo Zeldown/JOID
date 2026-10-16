@@ -23,7 +23,7 @@ public final class GlTexture extends Texture implements IGlTexture {
 		this.id     = id;
 	}
 
-	public static @NonNull GlTexture create(final @NonNull GlRenderBridge bridge) {
+	public static @NonNull GlTexture create(final GlRenderBridge bridge) {
 		return new GlTexture(bridge, bridge.getBinding().genTexture());
 	}
 

@@ -39,7 +39,7 @@ public final class AlAudioSource implements IAudioSource {
 		this.gain             = 1F;
 	}
 
-	public static @NonNull AlAudioSource create(final @NonNull AlAudioBridge bridge, final int sampleRate, final int channels) {
+	public static @NonNull AlAudioSource create(final AlAudioBridge bridge, final int sampleRate, final int channels) {
 		return new AlAudioSource(bridge, sampleRate, channels);
 	}
 

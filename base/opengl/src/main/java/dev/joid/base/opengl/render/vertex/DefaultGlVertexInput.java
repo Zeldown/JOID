@@ -9,7 +9,7 @@ public final class DefaultGlVertexInput extends GlVertexInput {
 		super(binding);
 	}
 
-	public static @NonNull DefaultGlVertexInput create(final @NonNull IGlBinding binding) {
+	public static @NonNull DefaultGlVertexInput create(final IGlBinding binding) {
 		return new DefaultGlVertexInput(binding);
 	}
 

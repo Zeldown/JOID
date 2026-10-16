@@ -25,7 +25,7 @@ public final class GlStateGuard {
 		this.binding      = JournalGlBinding.create(binding, this.journal);
 	}
 
-	public static @NonNull GlStateGuard create(final @NonNull IGlBinding binding, final @NonNull GlCapabilities capabilities) {
+	public static @NonNull GlStateGuard create(final IGlBinding binding, final GlCapabilities capabilities) {
 		return new GlStateGuard(binding, capabilities);
 	}
 
@@ -42,7 +42,7 @@ public final class GlStateGuard {
 		}
 	}
 
-	public void run(final @NonNull Runnable action) {
+	public void run(final Runnable action) {
 		this.enter();
 		try {
 			action.run();
@@ -51,7 +51,7 @@ public final class GlStateGuard {
 		}
 	}
 
-	public <T> T call(final @NonNull Supplier<T> action) {
+	public <T> T call(final Supplier<T> action) {
 		this.enter();
 		try {
 			return action.get();
@@ -60,7 +60,7 @@ public final class GlStateGuard {
 		}
 	}
 
-	public void suspend(final @NonNull Runnable draw) {
+	public void suspend(final Runnable draw) {
 		if (this.depth == 0) {
 			draw.run();
 			return;

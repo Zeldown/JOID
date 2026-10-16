@@ -47,7 +47,7 @@ public final class VulkanDescriptorCache {
 		this.setMap.clear();
 	}
 
-	public long get(final @NonNull VulkanShader shader, final long uniformBuffer, final @NonNull long[] images) {
+	public long get(final VulkanShader shader, final long uniformBuffer, final long[] images) {
 		final List<Long> key = new ArrayList<>(images.length + 2);
 		key.add(shader.getDescriptorSetLayout());
 		key.add(uniformBuffer);
@@ -66,7 +66,7 @@ public final class VulkanDescriptorCache {
 		return set[0];
 	}
 
-	public void invalidate(final long handle, final @NonNull Consumer<Runnable> disposer) {
+	public void invalidate(final long handle, final Consumer<Runnable> disposer) {
 		final Iterator<Map.Entry<List<Long>, long[]>> iterator = this.setMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			final Map.Entry<List<Long>, long[]> entry = iterator.next();

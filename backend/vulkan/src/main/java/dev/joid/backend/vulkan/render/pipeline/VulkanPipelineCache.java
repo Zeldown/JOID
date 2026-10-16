@@ -56,7 +56,7 @@ public final class VulkanPipelineCache {
 		this.pipelineMap.clear();
 	}
 
-	public long get(final @NonNull PipelineKey key, final boolean offscreen, final long renderPass) {
+	public long get(final PipelineKey key, final boolean offscreen, final long renderPass) {
 		final long[] variants = this.pipelineMap.computeIfAbsent(key, pipelineKey -> new long[2]);
 		final int index = offscreen ? 1 : 0;
 		if (variants[index] == VK10.VK_NULL_HANDLE) {
@@ -65,7 +65,7 @@ public final class VulkanPipelineCache {
 		return variants[index];
 	}
 
-	public void invalidate(final @NonNull VulkanShader shader, final @NonNull Consumer<Runnable> disposer) {
+	public void invalidate(final VulkanShader shader, final Consumer<Runnable> disposer) {
 		final Iterator<Map.Entry<PipelineKey, long[]>> iterator = this.pipelineMap.entrySet().iterator();
 		while (iterator.hasNext()) {
 			final Map.Entry<PipelineKey, long[]> entry = iterator.next();

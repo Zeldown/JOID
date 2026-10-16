@@ -36,7 +36,7 @@ public final class GlShader extends Shader {
 		this.locationMap = new HashMap<>();
 	}
 
-	public static @NonNull GlShader create(final @NonNull GlRenderBridge bridge, final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
+	public static @NonNull GlShader create(final GlRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
 		return new GlShader(bridge, vertex, fragment, blend);
 	}
 
@@ -45,7 +45,7 @@ public final class GlShader extends Shader {
 		super.builtins(state, buffer, super.getBridge().getProjection().getRawMatrix(), super.getBridge().getModelView()).upload(this::upload);
 	}
 
-	public int getLocation(final @NonNull String name) {
+	public int getLocation(final String name) {
 		return this.locationMap.computeIfAbsent(name, key -> this.binding.getUniformLocation(this.program, key));
 	}
 

@@ -110,7 +110,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		this.samplers         = this.createSamplers();
 	}
 
-	public static @NonNull VulkanRenderBridge create(final IVulkanHost host) {
+	public static @NonNull VulkanRenderBridge create(final @NonNull IVulkanHost host) {
 		return new VulkanRenderBridge(host);
 	}
 
@@ -135,11 +135,11 @@ public final class VulkanRenderBridge extends RenderBridge {
 		this.context.destroy();
 	}
 
-	public void dispose(final @NonNull Runnable destroyer) {
+	public void dispose(final Runnable destroyer) {
 		this.garbage.computeIfAbsent(this.frame, frame -> new ArrayList<>()).add(destroyer);
 	}
 
-	public void record(final @NonNull Consumer<VkCommandBuffer> recorder) {
+	public void record(final Consumer<VkCommandBuffer> recorder) {
 		if (!super.isFrameActive()) {
 			this.context.submit(recorder);
 			return;

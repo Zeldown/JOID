@@ -29,7 +29,7 @@ public final class GlCapabilities {
 	private final Set<String> extensionSet;
 	private final int         maxTextureSize;
 
-	public static @NonNull GlCapabilities read(final @NonNull IGlBinding binding) {
+	public static @NonNull GlCapabilities read(final IGlBinding binding) {
 		final String name = binding.getString(GlConstants.VERSION);
 		if (name == null) {
 			throw new IllegalStateException("No OpenGL context is current: create the context of JOID and make it current before registering the backend");
@@ -66,7 +66,7 @@ public final class GlCapabilities {
 		return this;
 	}
 
-	public boolean hasExtension(final @NonNull String name) {
+	public boolean hasExtension(final String name) {
 		return this.extensionSet.contains(name);
 	}
 

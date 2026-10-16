@@ -39,7 +39,7 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 	}
 
 	@Override
-	public void build(final @NonNull GlRenderBridge bridge, final @NonNull GlTexture texture, final @NonNull MipmapChain chain) {
+	public void build(final GlRenderBridge bridge, final GlTexture texture, final MipmapChain chain) {
 		JOIDLog.devWarnOnce("DrawGlMipmapBuilder." + System.identityHashCode(this), () -> "This OpenGL context cannot blit framebuffers (" + bridge.getCapabilities().getName() + "): mipmaps are drawn, which may not give exactly the pixels of the other backends");
 
 		final IGlBinding binding = bridge.getBinding();

@@ -24,7 +24,7 @@ public final class JournalGlBinding implements IGlBinding {
 		this.coreFrameBufferBinding = JournalGlFrameBufferBinding.create(binding.getFrameBufferBinding(GlFrameBufferFamily.CORE), journal);
 	}
 
-	public static @NonNull JournalGlBinding create(final @NonNull IGlBinding binding, final @NonNull GlStateJournal journal) {
+	public static @NonNull JournalGlBinding create(final IGlBinding binding, final GlStateJournal journal) {
 		return new JournalGlBinding(binding, journal);
 	}
 

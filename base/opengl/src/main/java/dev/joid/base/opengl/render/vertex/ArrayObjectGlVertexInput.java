@@ -17,7 +17,7 @@ public final class ArrayObjectGlVertexInput extends GlVertexInput {
 		super.pointAttributes();
 	}
 
-	public static @NonNull ArrayObjectGlVertexInput create(final @NonNull IGlBinding binding) {
+	public static @NonNull ArrayObjectGlVertexInput create(final IGlBinding binding) {
 		return new ArrayObjectGlVertexInput(binding);
 	}
 
