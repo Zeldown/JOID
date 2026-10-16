@@ -1,6 +1,7 @@
 package dev.joid.lib.utils.thread;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -48,6 +49,23 @@ public class RenderThreadFutureTest {
 		} catch (final ExecutionException expected) {
 			Assert.assertEquals("The font cannot be read", expected.getCause().getMessage());
 		}
+	}
+
+	@Test
+	public void givesItsCallbacksTheFailureOfItsSourceWhenJoinedOnTheRenderThread() {
+		final CompletableFuture<String> source = new CompletableFuture<>();
+		final RenderThreadFuture<String> future = RenderThreadFuture.of(source);
+		final Throwable[] received = new Throwable[1];
+		future.whenComplete((value, error) -> received[0] = error);
+		source.completeExceptionally(new IllegalStateException("The font cannot be read"));
+		this.thread.renderThread(true);
+		try {
+			future.join();
+			Assert.fail("The failure of the source must reach the caller");
+		} catch (final CompletionException expected) {
+			Assert.assertEquals("The font cannot be read", expected.getCause().getMessage());
+		}
+		Assert.assertTrue(String.valueOf(received[0]), received[0] instanceof IllegalStateException);
 	}
 
 }

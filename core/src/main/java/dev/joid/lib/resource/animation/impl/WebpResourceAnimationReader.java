@@ -41,6 +41,10 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 			final String name = new String(bytes, offset, 4, StandardCharsets.US_ASCII);
 			final int size = WebpResourceAnimationReader.read(bytes, offset + 4, 4);
 			final int data = offset + 8;
+			if (size < 0 || size > bytes.length - data) {
+				throw new IOException("The WebP chunk " + name + " runs past the end of the file, the file is damaged: export it again");
+			}
+
 			switch (name) {
 			case "VP8X":
 				width = WebpResourceAnimationReader.read(bytes, data + 4, 3) + 1;

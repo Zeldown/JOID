@@ -3,16 +3,19 @@ package dev.joid.lib.asset.impl;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicLong;
 
 import dev.joid.lib.asset.Asset;
 import lombok.NonNull;
 
 public final class StreamAsset extends Asset {
 
+	private static final AtomicLong COUNTER = new AtomicLong();
+
 	private final BufferedInputStream stream;
 
 	private StreamAsset(final InputStream stream) {
-		super(stream.toString());
+		super("stream_" + StreamAsset.COUNTER.incrementAndGet());
 		this.stream = stream instanceof BufferedInputStream ? (BufferedInputStream) stream : new BufferedInputStream(stream);
 	}
 

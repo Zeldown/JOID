@@ -55,7 +55,7 @@ public final class RenderThreadFuture<T> extends CompletableFuture<T> {
 		try {
 			this.settle(this.source.join(), null);
 		} catch (final CompletionException exception) {
-			this.settle(null, exception);
+			this.settle(null, exception.getCause());
 		}
 	}
 

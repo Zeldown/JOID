@@ -29,9 +29,11 @@ public class StreamAssetTest {
 	}
 
 	@Test
-	public void isIdentifiedByItsStream() {
-		final ByteArrayInputStream stream = new ByteArrayInputStream(StreamAssetTest.CONTENT);
-		Assert.assertEquals(stream.toString(), StreamAsset.create(stream).getUniqueId());
+	public void givesEachStreamItsOwnId() {
+		final String first = StreamAsset.create(new NamedStream()).getUniqueId();
+		final String second = StreamAsset.create(new NamedStream()).getUniqueId();
+		Assert.assertNotEquals(first, second);
+		Assert.assertTrue(first, first.startsWith("stream_"));
 	}
 
 	@Test
@@ -68,6 +70,19 @@ public class StreamAssetTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesANullStream() {
 		StreamAsset.create(null);
+	}
+
+	private static final class NamedStream extends ByteArrayInputStream {
+
+		private NamedStream() {
+			super(StreamAssetTest.CONTENT);
+		}
+
+		@Override
+		public String toString() {
+			return "stream";
+		}
+
 	}
 
 	private static final class FailingStream extends InputStream {

@@ -21,10 +21,9 @@ public class StreamAssetLocatorTest {
 
 	@Test
 	public void locatesAStreamAsset() {
-		final ByteArrayInputStream stream = new ByteArrayInputStream(new byte[0]);
-		final Asset asset = new StreamAssetLocator().locate(stream);
+		final Asset asset = new StreamAssetLocator().locate(new ByteArrayInputStream(new byte[0]));
 		Assert.assertTrue(asset instanceof StreamAsset);
-		Assert.assertEquals(stream.toString(), asset.getUniqueId());
+		Assert.assertTrue(asset.getUniqueId(), asset.getUniqueId().startsWith("stream_"));
 	}
 
 }
