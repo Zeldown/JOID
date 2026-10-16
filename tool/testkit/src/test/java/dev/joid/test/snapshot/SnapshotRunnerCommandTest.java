@@ -14,6 +14,7 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
@@ -123,6 +124,14 @@ public class SnapshotRunnerCommandTest {
 		Assert.assertTrue(JOID.getUi(FailedResourceUI.class).getResource().isFailed());
 	}
 
+	@Test
+	public void decodesTheResourcesOfEachUIAfresh() {
+		SnapshotRunnerCommandTest.runner.execute("ui " + IconUI.class.getName());
+		final ResourceData data = JOID.getUi(IconUI.class).getResource().getResourceData();
+		SnapshotRunnerCommandTest.runner.execute("ui " + IconUI.class.getName());
+		Assert.assertNotSame(data, JOID.getUi(IconUI.class).getResource().getResourceData());
+	}
+
 	public static final class TraceUI extends UI {
 
 		@Getter private double dragX;
@@ -172,6 +181,18 @@ public class SnapshotRunnerCommandTest {
 
 		@Getter
 		private final Resource resource = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3}));
+
+		@Override
+		public void init() {
+			ResourceNode.create(0, 0, 10, 10).resource(this.resource).attach(this);
+		}
+
+	}
+
+	public static final class IconUI extends UI {
+
+		@Getter
+		private final Resource resource = Resource.of("assets/dev/textures/icons/eye.png");
 
 		@Override
 		public void init() {

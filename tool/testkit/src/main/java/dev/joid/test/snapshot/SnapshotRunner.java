@@ -32,6 +32,7 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
+import dev.joid.lib.resource.cache.IResourceCache;
 import dev.joid.lib.ui.core.UI;
 import lombok.NonNull;
 
@@ -257,6 +258,7 @@ public final class SnapshotRunner {
 	}
 
 	private void show(final String type, final boolean open) {
+		SnapshotRunner.getCaches().forEach(IResourceCache::clear);
 		final UI ui;
 		try {
 			final Constructor<?> constructor = Class.forName(type).getDeclaredConstructor();
@@ -367,8 +369,12 @@ public final class SnapshotRunner {
 		return SnapshotRunner.getCachedData().map(ResourceData::getDecoder).allMatch(decoder -> decoder == null || decoder.isSettled());
 	}
 
+	private static Stream<IResourceCache> getCaches() {
+		return ResourceBuilder.getBuilders().stream().map(ResourceBuilder::getCache).filter(Objects::nonNull).distinct();
+	}
+
 	private static Stream<ResourceData> getCachedData() {
-		return ResourceBuilder.getBuilders().stream().map(ResourceBuilder::getCache).filter(Objects::nonNull).distinct().flatMap(cache -> cache.getDataList().stream()).flatMap(data -> Stream.concat(Stream.of(data), data.getForks().stream())).distinct();
+		return SnapshotRunner.getCaches().flatMap(cache -> cache.getDataList().stream()).flatMap(data -> Stream.concat(Stream.of(data), data.getForks().stream())).distinct();
 	}
 
 	private static boolean isShifted(final char character) {
