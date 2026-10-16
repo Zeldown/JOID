@@ -284,6 +284,18 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void playsOnceDecodedWhenAskedBefore() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames().autoplay(false);
+		Assert.assertSame(decoder, decoder.play());
+		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertFalse(decoder.isPlaying());
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		Assert.assertTrue(decoder.isPlaying());
+		this.play(decoder, data, 7);
+		Assert.assertEquals(40, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	@Test
 	public void ignoresAPauseBeforePlaying() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.frames().autoplay(false);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
@@ -731,21 +743,6 @@ public class VideoResourceDecoderTest {
 		this.play(decoder, data, 100);
 		Assert.assertFalse(decoder.isPlaying());
 		Assert.assertTrue(this.audio.calls.contains("stop"));
-	}
-
-	@Test
-	public void opensItsFileOnPlayWithoutDecoding() throws IOException {
-		final File file = this.folder.newFile("voiced.mkv");
-		Files.write(file.toPath(), VideoResourceDecoderTest.bytes("voiced.mkv"));
-		final VideoResourceDecoder decoder = new VideoResourceDecoder(file).location(1F, 2F, 3F);
-		this.decoders.add(decoder);
-		decoder.play();
-		Assert.assertTrue(decoder.isPlaying());
-		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "grabber"));
-		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "frameQueue"));
-		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
-		Assert.assertEquals("create 8000x1", this.audio.calls.get(0));
-		decoder.stop();
 	}
 
 	@Test

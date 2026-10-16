@@ -68,6 +68,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private long pauseTime;
 
 	private volatile boolean released;
+	private boolean          playRequested;
 
 	private int        currentBuffer;
 	private ITexture[] textures;
@@ -109,6 +110,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public @NonNull VideoResourceDecoder stop() {
+		this.playRequested = false;
 		this.running.set(false);
 		this.paused.set(false);
 		this.seeked = false;
@@ -186,8 +188,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 		this.textures[0].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
 		this.textures[1].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
+		this.texturesAllocated = true;
 
-		if (this.autoplay) {
+		if (this.autoplay || this.playRequested) {
+			this.playRequested = false;
 			this.play();
 		}
 	}
@@ -292,6 +296,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	public @NonNull VideoResourceDecoder play() {
 		if (this.running.get()) {
 			return this.paused.get() ? this.resume() : this;
+		}
+
+		if (this.grabber == null && !this.released) {
+			this.playRequested = true;
+			return this;
 		}
 
 		this.joinDecodeThread();
