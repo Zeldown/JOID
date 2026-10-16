@@ -206,31 +206,6 @@ public class UIStoreHookTest {
 	}
 
 	@Test
-	public void savesAndDestroysTheSharedStoresAtShutdown() throws IOException {
-		final GlobalStore global = UIStoreHook.useStore(GlobalStore.class, GlobalStore::new);
-		final PermanentStore permanent = UIStoreHook.useStore(PermanentStore.class, PermanentStore::new);
-		final LocalStore local = UIStoreHook.useStore(LocalStore.class, LocalStore::new);
-		permanent.value = "exit";
-		UIStoreHook.shutdown();
-		UIStoreHook.shutdown();
-		Assert.assertEquals("{\"value\":\"exit\"}", this.read());
-		Assert.assertEquals(1, global.destroys);
-		Assert.assertTrue(permanent.destroyed);
-		Assert.assertEquals(0, local.destroys);
-		Assert.assertNotSame(global, UIStoreHook.useStore(GlobalStore.class, GlobalStore::new));
-	}
-
-	@Test
-	public void destroysEveryStoreAtShutdownWhenOneFails() {
-		final BrokenStore broken = UIStoreHook.useStore(BrokenStore.class, BrokenStore::new);
-		final GlobalStore global = UIStoreHook.useStore(GlobalStore.class, GlobalStore::new);
-		final String error = UIStoreHookTest.capture(UIStoreHook::shutdown);
-		Assert.assertEquals("[JOID] The store broken failed in destroy() at shutdown (java.lang.IllegalStateException: broken destroy), the other stores are still destroyed" + System.lineSeparator(), error);
-		Assert.assertTrue(broken.destroyed);
-		Assert.assertEquals(1, global.destroys);
-	}
-
-	@Test
 	public void forgetsADestroyedGlobalStore() {
 		final GlobalStore store = UIStoreHook.useStore(GlobalStore.class, GlobalStore::new);
 		UIStoreHook.destroyStore(store);
@@ -469,19 +444,6 @@ public class UIStoreHookTest {
 
 		public BareStore() {
 			throw new IllegalStateException("built without annotation");
-		}
-
-	}
-
-	@UIStoreData(id = "broken", scope = StoreScope.GLOBAL)
-	public static class BrokenStore extends UIStore {
-
-		private boolean destroyed;
-
-		@Override
-		public void destroy() {
-			this.destroyed = true;
-			throw new IllegalStateException("broken destroy");
 		}
 
 	}

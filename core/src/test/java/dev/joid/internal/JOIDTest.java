@@ -38,6 +38,7 @@ import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
+import dev.joid.lib.ui.core.transition.PopTransition;
 import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
@@ -152,7 +153,7 @@ public class JOIDTest {
 		final File saved = new File(new File(this.folder.getRoot(), "store"), "exit.store");
 		Assert.assertEquals("{\"volume\":3}", new String(Files.readAllBytes(property.toPath()), StandardCharsets.UTF_8));
 		Assert.assertEquals("kept", new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
-		Assert.assertTrue(store.destroyed);
+		Assert.assertFalse(store.destroyed);
 		Assert.assertTrue(this.bridges.getUi().isOpen(settings));
 	}
 
@@ -275,6 +276,22 @@ public class JOIDTest {
 	}
 
 	@Test
+	public void forcesAUiOpenWithoutOpeningTheWaitingOne() {
+		final MenuUI menu = new MenuUI();
+		final MenuUI waiting = new MenuUI();
+		final MenuUI next = new MenuUI();
+		menu.transition(PopTransition.create());
+		JOID.open(menu);
+		this.bridges.frames(30);
+		JOID.open(waiting);
+		Assert.assertTrue(menu.getTransition().getOut().isRunning());
+		JOID.forceOpen(next);
+		this.bridges.frames(30);
+		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
+		Assert.assertEquals(0, waiting.inits);
+	}
+
+	@Test
 	public void refusesToOpenAUiWithoutBridge() {
 		BridgeHandler.UI.unregister(this.bridges.getUi());
 		try {
@@ -304,6 +321,28 @@ public class JOIDTest {
 		Assert.assertEquals(0, menu.closes);
 		Assert.assertEquals(0, menu.detaches);
 		Assert.assertFalse(menu.isClosed());
+	}
+
+	@Test
+	public void closesAUiThatWaitsForTheExitOfTheOpenedOne() {
+		final MenuUI menu = new MenuUI();
+		final MenuUI waiting = new MenuUI();
+		final MenuUI forced = new MenuUI();
+		menu.transition(PopTransition.create());
+		JOID.open(menu);
+		this.bridges.frames(30);
+		JOID.open(waiting);
+		JOID.close(waiting);
+		this.bridges.frames(30);
+		Assert.assertTrue(this.bridges.getUi().getUiList().isEmpty());
+		Assert.assertEquals(0, waiting.inits);
+		JOID.open(menu);
+		this.bridges.frames(30);
+		JOID.open(forced);
+		JOID.forceClose(forced);
+		this.bridges.frames(30);
+		Assert.assertTrue(this.bridges.getUi().getUiList().isEmpty());
+		Assert.assertEquals(0, forced.inits);
 	}
 
 	@Test

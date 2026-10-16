@@ -69,6 +69,12 @@ public abstract class StackUIBridge extends UIBridge {
 
 	@Override
 	public void close(final @NonNull UI ui) {
+		if (ui == this.pending) {
+			this.pending  = null;
+			this.deferred = false;
+			return;
+		}
+
 		if (ui != this.leaving) {
 			this.remove(ui);
 			return;
@@ -79,7 +85,9 @@ public abstract class StackUIBridge extends UIBridge {
 		this.pending = null;
 		try {
 			this.remove(ui);
-			this.open(next);
+			if (next != null) {
+				this.open(next);
+			}
 		} finally {
 			this.deferred = this.pending != null;
 		}

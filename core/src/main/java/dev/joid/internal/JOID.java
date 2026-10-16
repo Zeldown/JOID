@@ -119,7 +119,7 @@ public final class JOID {
 	public static void close(final @NonNull UI ui) {
 		ThreadUtils.runOnRenderThread(() -> {
 			final IUIBridge bridge = BridgeHandler.UI.get(ui);
-			if (bridge != null && bridge.isOpen(ui) && ui.fireClose()) {
+			if (bridge != null && (!bridge.isOpen(ui) || ui.fireClose())) {
 				bridge.close(ui);
 			}
 		});
@@ -128,10 +128,14 @@ public final class JOID {
 	public static void forceClose(final @NonNull UI ui) {
 		ThreadUtils.runOnRenderThread(() -> {
 			final IUIBridge bridge = BridgeHandler.UI.get(ui);
-			if (bridge != null && bridge.isOpen(ui)) {
-				ui.dispose();
-				bridge.close(ui);
+			if (bridge == null) {
+				return;
 			}
+
+			if (bridge.isOpen(ui)) {
+				ui.dispose();
+			}
+			bridge.close(ui);
 		});
 	}
 
@@ -146,7 +150,7 @@ public final class JOID {
 		ThreadUtils.runOnRenderThread(() -> {
 			for (final UI currentUi : new ArrayList<>(bridge.getUiList())) {
 				currentUi.dispose();
-				bridge.close(currentUi);
+				bridge.remove(currentUi);
 			}
 
 			bridge.open(ui);
@@ -160,7 +164,7 @@ public final class JOID {
 				UIPropertyHook.save(ui);
 			}
 		}
-		UIStoreHook.shutdown();
+		UIStoreHook.saveAll();
 	}
 
 	private static @NonNull IUIBridge getOpeningBridge(final @NonNull UI ui) {

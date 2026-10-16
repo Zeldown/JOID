@@ -279,8 +279,8 @@ public abstract class UI implements IUI, IndexedElement {
 		final double my = this.getMouseY();
 		final UIMouseScrollEvent<UI> event = UIMouseScrollEvent.create(this, mx, my, notchesX, notchesY);
 		return this.fireInput(UI.HANDLE_MOUSE_SCROLL, "mouseScroll", event, node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event), () -> {
-			if (!event.isConsumed() && JOIDEnv.isDevMode() && Key.LEFT_ALT.isDown() && notchesY != 0D) {
-				this.zoomValue.change(this.zoom + notchesY * (Key.LEFT_SHIFT.isDown() ? 0.12D : 0.012D));
+			if (!event.isConsumed() && JOIDEnv.isDevMode() && this.data.zoomable() && UI.isAltKeyDown() && notchesY != 0D) {
+				this.zoomValue.change(this.zoom + notchesY * (UI.isShiftKeyDown() ? 0.12D : 0.012D));
 				event.consume();
 			}
 		});
@@ -369,8 +369,8 @@ public abstract class UI implements IUI, IndexedElement {
 			}
 
 			if (JOIDEnv.isDevMode() && !event.isConsumed()) {
-				if (key == Key.R && Key.LEFT_CONTROL.isDown() || key == Key.F5) {
-					if (!Key.LEFT_SHIFT.isDown()) {
+				if (key == Key.R && UI.isCtrlKeyDown() || key == Key.F5) {
+					if (!UI.isShiftKeyDown()) {
 						this.reload();
 					} else {
 						try {
@@ -408,6 +408,14 @@ public abstract class UI implements IUI, IndexedElement {
 
 	public final void fireUpdate() {
 		this.dispatch("update", () -> {
+			this.bindings.pull();
+			if (this.transition != null && this.transition.getOut().isRunning() && this.drawnFrame + 1L < UI.frameNumber) {
+				this.transition.getOut().stop();
+				this.dispose();
+				this.getBridge().close(this);
+				return;
+			}
+
 			this.nodeList.forEach(Node::fireUpdate);
 			this.update();
 		});
@@ -645,7 +653,7 @@ public abstract class UI implements IUI, IndexedElement {
 			this.refreshTransition();
 
 			this.initialized = false;
-			this.load(this.view.getWidth(), this.view.getHeight(), this.view.getZoom());
+			this.load(this.view.getWidth(), this.view.getHeight());
 		});
 	}
 

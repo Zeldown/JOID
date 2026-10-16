@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.core.hook.store;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -9,7 +8,6 @@ import java.util.function.Supplier;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOIDEnv;
-import dev.joid.internal.JOIDLog;
 import dev.joid.lib.ui.core.hook.store.data.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.scope.StoreScope;
 import dev.joid.lib.utils.json.JsonFiles;
@@ -66,18 +64,6 @@ public final class UIStoreHook {
 	public static void saveAll() {
 		for (final UIStore store : UIStoreHook.GLOBAL_CACHE.values()) {
 			UIStoreHook.saveStore(store);
-		}
-	}
-
-	public static void shutdown() {
-		UIStoreHook.saveAll();
-		for (final UIStore store : new ArrayList<>(UIStoreHook.GLOBAL_CACHE.values())) {
-			UIStoreHook.GLOBAL_CACHE.remove(store.getClass());
-			try {
-				store.destroy();
-			} catch (final RuntimeException exception) {
-				JOIDLog.warn("The store " + UIStoreHook.getId(store) + " failed in destroy() at shutdown (" + exception + "), the other stores are still destroyed");
-			}
 		}
 	}
 

@@ -47,7 +47,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	public final void load() {
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
-		this.load(window.getWidth(), window.getHeight());
+		this.uiList.forEach(ui -> ui.load(window.getWidth(), window.getHeight()));
 	}
 
 	public final boolean mouseMoved() {
@@ -210,10 +210,6 @@ public abstract class UIBridge implements IUIBridge {
 			}
 		}
 		return false;
-	}
-
-	private void load(final double width, final double height) {
-		this.uiList.forEach(ui -> ui.load(width, height, ui.getView().getZoom()));
 	}
 
 	private boolean isShown(final UI ui) {
