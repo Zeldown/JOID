@@ -1,5 +1,6 @@
 package dev.joid.showcase;
 
+import java.util.Locale;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -91,7 +92,7 @@ public class ShowPaperKit implements IShowKit {
 			.color(() -> selected.getAsBoolean() ? ShowPaperKit.TOMATO : ShowPaperKit.CARD)
 			.effect(BorderNodeEffect.create(ShowPaperKit.INK, 3F).mode(BorderMode.IN))
 			.attach(chip);
-			TextNode.create(90, 32).text(Text.create(label.toUpperCase(), ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.14F))).anchor(Align.CENTER).attach(chip);
+			TextNode.create(90, 32).text(Text.create(label.toUpperCase(Locale.ROOT), ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.14F))).anchor(Align.CENTER).attach(chip);
 		});
 	}
 
@@ -109,7 +110,7 @@ public class ShowPaperKit implements IShowKit {
 			.<RectNode>x(() -> (double) button.hoverValue(4F))
 			.<RectNode>y(() -> (double) button.hoverValue(4F))
 			.body(face -> {
-				TextNode.create(width / 2D, 36).text(() -> Text.create(label.get().toUpperCase(), ShowUI.font(FontWeight.BOLD, 21F, ShowPaperKit.INK).letterSpacing(0.14F))).anchor(Align.CENTER).attach(face);
+				TextNode.create(width / 2D, 36).text(() -> Text.create(label.get().toUpperCase(Locale.ROOT), ShowUI.font(FontWeight.BOLD, 21F, ShowPaperKit.INK).letterSpacing(0.14F))).anchor(Align.CENTER).attach(face);
 			})
 			.attach(button);
 		})

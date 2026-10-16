@@ -23,7 +23,7 @@ public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
 			CircleNode
 			.create(8, 8, 40)
 			.color(() -> ShowUI.AMBER.to(ShowThemeNode.MOON, super.getKnobProgress()))
-			.effect(ShadowNodeEffect.create(() -> ShowUI.AMBER.to(ShowUI.VIOLET, super.getKnobProgress()).withAlpha(0.7F), () -> 18F))
+			.effect(ShadowNodeEffect.create(ShowUI.AMBER, 18F).color(() -> ShowUI.AMBER.to(ShowUI.VIOLET, super.getKnobProgress()).withAlpha(0.7F)))
 			.attach(knob);
 			CircleNode
 			.create(28, 28, 0)

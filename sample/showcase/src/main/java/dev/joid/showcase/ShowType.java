@@ -31,7 +31,7 @@ public class ShowType extends ShowUI {
 
 	@Override
 	protected void scene() {
-		this.backdrop();
+		super.backdrop();
 		ShowUI.blob(1250, -350, 900, ShowUI.FUCHSIA.withAlpha(0.28F), 0D, 50D).attach(this);
 		ShowUI.blob(-350, 600, 900, ShowUI.CYAN.withAlpha(0.20F), 0.5D, 50D).attach(this);
 
@@ -73,7 +73,7 @@ public class ShowType extends ShowUI {
 	}
 
 	private double zoom() {
-		return this.ease(TweenEquations.QUINT_INOUT, 2.2D, 3.6D) - this.ease(TweenEquations.QUINT_INOUT, 5.0D, 6.3D);
+		return super.ease(TweenEquations.QUINT_INOUT, 2.2D, 3.6D) - super.ease(TweenEquations.QUINT_INOUT, 5.0D, 6.3D);
 	}
 
 }

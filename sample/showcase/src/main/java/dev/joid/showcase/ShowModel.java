@@ -20,7 +20,7 @@ public class ShowModel extends ShowUI {
 
 	@Override
 	protected void scene() {
-		this.backdrop();
+		super.backdrop();
 		ShowUI.blob(-300, -250, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
 		ShowUI.blob(1300, 550, 900, ShowUI.PINK.withAlpha(0.20F), 0.5D, 50D).attach(this);
 

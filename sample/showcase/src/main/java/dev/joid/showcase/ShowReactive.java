@@ -28,7 +28,7 @@ public class ShowReactive extends ShowUI {
 
 	@Override
 	protected void scene() {
-		this.backdrop();
+		super.backdrop();
 		ShowUI.blob(-300, 200, 900, ShowUI.VIOLET.withAlpha(0.45F), 0D, 50D).attach(this);
 		ShowUI.blob(1300, -300, 900, ShowUI.CYAN.withAlpha(0.22F), 0.4D, 50D).attach(this);
 		ShowUI.blob(1100, 700, 700, ShowUI.PINK.withAlpha(0.22F), 0.7D, 50D).attach(this);
@@ -115,7 +115,7 @@ public class ShowReactive extends ShowUI {
 
 	private double bar(final int index) {
 		final double u = index / 35D;
-		final double shape = 0.55D + 0.45D * Math.sin(this.t() * 5.2D + index * 0.55D) * Math.cos(this.t() * 2.1D - index * 0.21D);
+		final double shape = 0.55D + 0.45D * Math.sin(super.t() * 5.2D + index * 0.55D) * Math.cos(super.t() * 2.1D - index * 0.21D);
 		return 14D + (40D + 110D * Math.sin(u * Math.PI)) * this.energy.get() * Math.max(0.1D, shape) * 1.4D;
 	}
 
@@ -125,7 +125,7 @@ public class ShowReactive extends ShowUI {
 			final double r = radius + ring * (26D + 40D * this.space.get());
 			final List<Point> points = new ArrayList<>();
 			for (int i = 0; i <= 120; i++) {
-				final double angle = i / 120D * Math.PI * 2D + this.t() * 0.3D * ring;
+				final double angle = i / 120D * Math.PI * 2D + super.t() * 0.3D * ring;
 				points.add(Point.create(1335D + Math.cos(angle) * r, 500D + Math.sin(angle) * r));
 			}
 			DrawUtils.SHAPE.drawLine(Color.WHITE.withAlpha(0.16F / ring + 0.04F), 2F, points.toArray(new Point[0]));

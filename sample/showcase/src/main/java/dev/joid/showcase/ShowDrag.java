@@ -31,7 +31,7 @@ public class ShowDrag extends ShowUI {
 
 	@Override
 	protected void scene() {
-		this.backdrop();
+		super.backdrop();
 		ShowUI.blob(-300, -300, 900, ShowUI.VIOLET.withAlpha(0.35F), 0D, 50D).attach(this);
 		ShowUI.blob(1350, 450, 900, ShowUI.CYAN.withAlpha(0.18F), 0.5D, 50D).attach(this);
 
@@ -65,8 +65,8 @@ public class ShowDrag extends ShowUI {
 			RectNode
 			.create(1300 + i * 18, 0, 10, 0)
 			.color(this.accent.get())
-			.<RectNode>height(() -> 10D + 34D * Math.abs(Math.sin(this.t() * 4.2D + index * 1.3D)))
-			.<RectNode>y(() -> 372D - 10D - 34D * Math.abs(Math.sin(this.t() * 4.2D + index * 1.3D)))
+			.<RectNode>height(() -> 10D + 34D * Math.abs(Math.sin(super.t() * 4.2D + index * 1.3D)))
+			.<RectNode>y(() -> 372D - 10D - 34D * Math.abs(Math.sin(super.t() * 4.2D + index * 1.3D)))
 			.visible(!this.title.get().isEmpty())
 			.effect(RoundedNodeEffect.create(5F))
 			.attach(this);

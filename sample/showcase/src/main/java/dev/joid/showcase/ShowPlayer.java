@@ -30,11 +30,9 @@ public class ShowPlayer extends ShowUI {
 	private final DoubleSignal  progress = new DoubleSignal(0D);
 	private final BooleanSignal playing  = new BooleanSignal(true);
 
-	private ResourcePlayerNode player;
-
 	@Override
 	protected void scene() {
-		this.backdrop();
+		super.backdrop();
 		ShowUI.blob(-250, 500, 900, ShowUI.AMBER.withAlpha(0.22F), 0D, 50D).attach(this);
 		ShowUI.blob(1350, -300, 900, ShowUI.PINK.withAlpha(0.22F), 0.5D, 50D).attach(this);
 		CircleNode.create(560, 140, 800).color(ShowUI.ORANGE.withAlpha(0.25F)).effect(BlurNodeEffect.create(120F)).attach(this);
@@ -46,7 +44,7 @@ public class ShowPlayer extends ShowUI {
 		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.6F), 70F).offsetY(34D))
 		.effect(RoundedNodeEffect.create(34F).scope(NodeEffectScope.CHILDREN))
 		.body(card -> {
-			this.player = ResourcePlayerNode
+			final ResourcePlayerNode player = ResourcePlayerNode
 			.create(0, 0, 1440, 810)
 			.resource(clip)
 			.stretch(StretchType.COVER)
@@ -60,7 +58,7 @@ public class ShowPlayer extends ShowUI {
 			RectNode.create(0, 500, 1440, 310).color(() -> ShowUI.vertical(Color.BLACK.withAlpha(0F), Color.BLACK.withAlpha(0.35F + 0.5F * card.hoverValue(1F)))).attach(card);
 			TextNode.create(56, 48).text(() -> Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.BOLD, 54F, ShowUI.TEXT.withAlpha(card.hoverValue(1F))))).attach(card);
 			TextNode.create(60, 120).text(() -> Text.create("Slow motion  ·  honey and light", ShowUI.font(FontWeight.MEDIUM, 22F, ShowUI.MUTED.withAlpha(card.hoverValue(1F))))).attach(card);
-			this.controls(card);
+			this.controls(card, player);
 		})
 		.hoverDuration(350L)
 		.attach(this);
@@ -68,16 +66,16 @@ public class ShowPlayer extends ShowUI {
 		TextNode.create(960, 960).text(Text.create("Video and audio streams, decoded off the render thread, drawn like any node.", ShowUI.font(FontWeight.MEDIUM, 22F, ShowUI.MUTED))).anchorX(Align.CENTER).attach(this);
 	}
 
-	private void controls(final Node card) {
+	private void controls(final Node card, final ResourcePlayerNode player) {
 		CircleNode
 		.create(56, 690, 84)
 		.color(() -> Color.WHITE.withAlpha(0.92F * card.hoverValue(1F) + 0.08F))
 		.effect(ShadowNodeEffect.create(ShowUI.AMBER, 26F).color(() -> ShowUI.AMBER.withAlpha(0.8F * card.hoverValue(1F))))
 		.onClick(event -> {
-			if (this.player.isPlaying()) {
-				this.player.pause();
+			if (player.isPlaying()) {
+				player.pause();
 			} else {
-				this.player.play();
+				player.play();
 			}
 		})
 		.layer((node, mouseX, mouseY) -> this.icon(42D, 42D, card.hoverValue(1F)))
@@ -93,13 +91,13 @@ public class ShowPlayer extends ShowUI {
 		})
 		.handleMouseReleased(event -> {
 			if (this.scrub.peek() >= 0D) {
-				this.player.seek(this.scrub.peek() * this.player.getDuration());
+				player.seek(this.scrub.peek() * player.getDuration());
 				this.scrub.set(-1D);
 			}
 		})
 		.layer((node, mouseX, mouseY) -> this.bar(0D, 20D, 1060D, card.hoverValue(1F)))
 		.attach(card);
-		TextNode.create(1384, 732).text(() -> Text.create(ShowPlayer.clock(this.shown() * Math.max(1D, this.player.getDuration())) + " / " + ShowPlayer.clock(this.player.getDuration()), ShowUI.font(FontWeight.SEMI_BOLD, 22F, ShowUI.TEXT.withAlpha(0.4F + 0.6F * card.hoverValue(1F))))).anchorX(Align.END).anchorY(Align.CENTER).attach(card);
+		TextNode.create(1384, 732).text(() -> Text.create(ShowPlayer.clock(this.shown() * Math.max(1D, player.getDuration())) + " / " + ShowPlayer.clock(player.getDuration()), ShowUI.font(FontWeight.SEMI_BOLD, 22F, ShowUI.TEXT.withAlpha(0.4F + 0.6F * card.hoverValue(1F))))).anchorX(Align.END).anchorY(Align.CENTER).attach(card);
 	}
 
 	private void icon(final double x, final double y, final float hover) {

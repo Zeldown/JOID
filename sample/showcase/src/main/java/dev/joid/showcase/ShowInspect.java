@@ -15,14 +15,14 @@ public class ShowInspect extends ShowLists {
 		RectNode
 		.create(440, 80, 1040, 920)
 		.color(() -> ShowUI.vertical(this.veil(0D), this.veil(0.25D)))
-		.visible(() -> this.t() < 0.8D)
+		.visible(() -> super.t() < 0.8D)
 		.interactive(false)
 		.effect(RoundedNodeEffect.create(34F))
 		.attach(this);
 	}
 
 	private Color veil(final double delay) {
-		return ShowInspect.VEIL.withAlpha((float) (1D - this.ease(TweenEquations.QUAD_INOUT, 0.1D + delay, 0.55D + delay)));
+		return ShowInspect.VEIL.withAlpha((float) (1D - super.ease(TweenEquations.QUAD_INOUT, 0.1D + delay, 0.55D + delay)));
 	}
 
 }

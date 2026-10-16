@@ -29,7 +29,7 @@ public class ShowFieldNode extends TextFieldNode {
 		.create(0, 0, 0, 0)
 		.color(() -> ShowFieldNode.FILL.to(ShowFieldNode.FILL_FOCUSED, this.focus.get()))
 		.effect(RoundedNodeEffect.create(18F))
-		.effect(ShadowNodeEffect.create(() -> this.accent.withAlpha(0.55F * this.focus.get()), () -> 22F))
+		.effect(ShadowNodeEffect.create(this.accent, 22F).color(() -> this.accent.withAlpha(0.55F * this.focus.get())))
 		.effect(BorderNodeEffect.create(this.accent, 2F).mode(BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.14F).to(this.accent, this.focus.get()))));
 	}
 

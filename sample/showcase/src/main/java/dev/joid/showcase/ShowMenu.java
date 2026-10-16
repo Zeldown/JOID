@@ -8,6 +8,7 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
+import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
@@ -15,11 +16,12 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 
+@UIData(closeable = false)
 public class ShowMenu extends ShowUI {
 
 	@Override
 	protected void scene() {
-		this.backdrop();
+		super.backdrop();
 		ShowUI.blob(-260, -320, 1000, ShowUI.VIOLET.withAlpha(0.45F), 0D, 60D).attach(this);
 		ShowUI.blob(1480, -260, 760, ShowUI.CYAN.withAlpha(0.24F), 0.3D, 50D).attach(this);
 		ShowUI.blob(1000, 700, 760, ShowUI.PINK.withAlpha(0.20F), 0.6D, 60D).attach(this);

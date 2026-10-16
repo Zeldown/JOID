@@ -27,12 +27,11 @@ public class ShowEffects extends ShowUI {
 
 	private static final String[] NAMES = {"Rounded corners", "Gradient", "Inner border", "Drop shadow", "Glow", "Blur", "Tilt"};
 
-	private final TweenAnimator[] levels   = new TweenAnimator[ShowEffects.NAMES.length];
-	private final BooleanSignal[] switches = new BooleanSignal[ShowEffects.NAMES.length];
+	private final TweenAnimator[] levels = new TweenAnimator[ShowEffects.NAMES.length];
 
 	@Override
 	protected void scene() {
-		this.backdrop();
+		super.backdrop();
 		ShowUI.blob(-300, 300, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
 		ShowUI.blob(1250, -350, 900, ShowUI.PINK.withAlpha(0.22F), 0.4D, 50D).attach(this);
 		ShowUI.blob(1200, 650, 800, ShowUI.CYAN.withAlpha(0.18F), 0.7D, 50D).attach(this);
@@ -47,10 +46,9 @@ public class ShowEffects extends ShowUI {
 		TextNode.create(158, 226).text(Text.create("Stack them on any node, animate any value.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 		final Color[] dots = {ShowUI.VIOLET, ShowUI.PINK, ShowUI.SKY, ShowUI.AMBER, ShowUI.FUCHSIA, ShowUI.CYAN, ShowUI.EMERALD};
 		for (int i = 0; i < ShowEffects.NAMES.length; i++) {
-			this.switches[i] = new BooleanSignal(false);
 			this.levels[i] = TweenAnimator.create(0F);
 			final double y = 300D + i * 88D;
-			final BooleanSignal on = this.switches[i];
+			final BooleanSignal on = new BooleanSignal(false);
 			final TweenAnimator level = this.levels[i];
 			final Color dot = dots[i];
 			CircleNode.create(158, y + 15D, 12).color(on.get() ? dot : Color.WHITE.withAlpha(0.18F)).effect(ShadowNodeEffect.create(dot, 10F).color(dot.withAlpha(on.get() ? 0.9F : 0F))).attach(this);
@@ -67,11 +65,11 @@ public class ShowEffects extends ShowUI {
 		.effect(RoundedNodeEffect.create(() -> 2F + 34F * this.level(0)).scope(NodeEffectScope.CHILDREN))
 		.effect(BorderNodeEffect.create(Color.WHITE, 2F).mode(BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.45F * this.level(2))))
 		.effect(ShadowNodeEffect.create(Color.BLACK, 40F).color(this::shadow).blur(() -> 6F + 54F * Math.max(this.level(3), this.level(4)) + 20F * this.level(4)).offsetY(() -> 34D * this.level(3) * (1D - this.level(4))))
-		.effect(TransformNodeEffect.create(Transformation.create().rotate(() -> this.level(6) * (-7D + 2D * this.wave(4D, 0D)), Rotation.ROLL)))
+		.effect(TransformNodeEffect.create(Transformation.create().rotate(() -> this.level(6) * (-7D + 2D * super.wave(4D, 0D)), Rotation.ROLL)))
 		.body(card -> {
-			CircleNode.create(330, -160, 420).color(() -> ShowUI.AMBER.withAlpha(0.85F * this.level(1))).effect(BlurNodeEffect.create(1F).radius(() -> 1F + 60F * this.level(5))).attach(card);
-			CircleNode.create(-120, 160, 380).color(() -> ShowUI.CYAN.withAlpha(0.7F * this.level(1))).effect(BlurNodeEffect.create(1F).radius(() -> 1F + 60F * this.level(5))).attach(card);
-			CircleNode.create(260, 220, 300).color(() -> ShowUI.FUCHSIA.withAlpha(0.8F * this.level(1))).effect(BlurNodeEffect.create(1F).radius(() -> 1F + 50F * this.level(5))).attach(card);
+			CircleNode.create(330, -160, 420).color(() -> ShowUI.AMBER.withAlpha(0.85F * this.level(1))).effect(BlurNodeEffect.create(() -> 1F + 60F * this.level(5))).attach(card);
+			CircleNode.create(-120, 160, 380).color(() -> ShowUI.CYAN.withAlpha(0.7F * this.level(1))).effect(BlurNodeEffect.create(() -> 1F + 60F * this.level(5))).attach(card);
+			CircleNode.create(260, 220, 300).color(() -> ShowUI.FUCHSIA.withAlpha(0.8F * this.level(1))).effect(BlurNodeEffect.create(() -> 1F + 50F * this.level(5))).attach(card);
 			TextNode.create(44, 40).text(Text.create("JOID", ShowUI.font(FontWeight.BLACK, 34F, Color.WHITE))).attach(card);
 			TextNode.create(556, 46).text(Text.create("PLATINUM", ShowUI.font(FontWeight.BOLD, 16F, Color.WHITE.withAlpha(0.8F)).letterSpacing(0.3F))).anchorX(Align.END).attach(card);
 			RectNode.create(44, 128, 76, 58).color(ShowUI.diagonal(ShowUI.HONEY, ShowEffects.GOLD)).effect(RoundedNodeEffect.create(12F)).attach(card);
