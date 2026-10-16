@@ -136,7 +136,7 @@ public final class ResourceBuilder {
 
 	private static @NonNull ResourceData detect(final @NonNull String uniqueId, final @NonNull Supplier<Asset> assetSource) {
 		final ResourceData data = new ResourceData(uniqueId, null).assetSource(assetSource);
-		data.detectDecoder();
+		data.detectDecoder(true);
 		return data;
 	}
 

@@ -381,18 +381,41 @@ public class ResourceDataTest {
 	}
 
 	@Test
-	public void forgetsTheListenersOfAResourceNoLongerUsed() throws InterruptedException {
+	public void keepsTheListenersOfAResourceNoLongerUsedUntilItsLoad() throws InterruptedException {
 		final List<String> loads = new ArrayList<>();
 		final ResourceData data = new ResourceData("image", new Decoder());
 		final WeakReference<Resource> reference = new WeakReference<>(ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load")));
+		for (int i = 0; i < 5; i++) {
+			System.gc();
+			Thread.sleep(10L);
+		}
+		data.generate(false);
+		Assert.assertEquals(Collections.singletonList("load"), loads);
 		final long deadline = System.currentTimeMillis() + 5000L;
 		while (reference.get() != null && System.currentTimeMillis() < deadline) {
 			System.gc();
 			Thread.sleep(10L);
 		}
-		data.generate(false);
 		Assert.assertNull(reference.get());
-		Assert.assertTrue(loads.isEmpty());
+	}
+
+	@Test
+	public void keepsTheListenersOfAResourceNoLongerUsedUntilItsFailure() throws InterruptedException {
+		final List<String> errors = new ArrayList<>();
+		final ResourceData data = new ResourceData("image", null);
+		final WeakReference<Resource> reference = new WeakReference<>(ResourceDataTest.resource(data).onError((failed, error) -> errors.add(error.getMessage())));
+		for (int i = 0; i < 5; i++) {
+			System.gc();
+			Thread.sleep(10L);
+		}
+		data.fail(new IllegalStateException("missing"));
+		Assert.assertEquals(Collections.singletonList("missing"), errors);
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (reference.get() != null && System.currentTimeMillis() < deadline) {
+			System.gc();
+			Thread.sleep(10L);
+		}
+		Assert.assertNull(reference.get());
 	}
 
 	@Test

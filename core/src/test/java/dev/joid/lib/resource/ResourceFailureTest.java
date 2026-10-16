@@ -111,6 +111,33 @@ public class ResourceFailureTest {
 	}
 
 	@Test
+	public void loadsABlockingRemoteImageInItsFirstFrameOnceReloaded() throws IOException {
+		final byte[][] bytes = {ResourceFailureTest.HEIC};
+		final Resource resource = ResourceBuilder.create().cache(null).of(new Asset("https://joid.invalid/late.png") {
+
+			@Override
+			public @NonNull InputStream open() {
+				return new ByteArrayInputStream(bytes[0]);
+			}
+
+			@Override
+			public boolean isRemote() {
+				return true;
+			}
+
+		}).blocking();
+		resource.prepareBind();
+		Assert.assertTrue(resource.isFailed());
+		final ByteArrayOutputStream image = new ByteArrayOutputStream();
+		ImageIO.write(new BufferedImage(3, 2, BufferedImage.TYPE_INT_ARGB), "png", image);
+		bytes[0] = image.toByteArray();
+		resource.reload();
+		resource.prepareBind();
+		Assert.assertTrue(resource.isLoaded());
+		Assert.assertEquals(3, resource.getWidth());
+	}
+
+	@Test
 	public void failsARemoteImageOnItsTaskThread() {
 		final Resource resource = ResourceBuilder.create().cache(null).of(new BytesAsset("https://joid.invalid/photo.heic", true, ResourceFailureTest.HEIC));
 		resource.getResourceData().await();

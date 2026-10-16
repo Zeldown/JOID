@@ -3,6 +3,7 @@ package dev.joid.lib.resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
@@ -35,6 +36,7 @@ public final class ResourceData {
 
 	private final List<Thread>      tasks     = new CopyOnWriteArrayList<>();
 	private final Set<Resource>     resources = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+	private final Set<Resource>     waiting   = new HashSet<>();
 	private final Set<ResourceData> forks     = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	@Getter private String                    uniqueId;
@@ -192,7 +194,7 @@ public final class ResourceData {
 		} catch (final ExecutionException silent) {}
 	}
 
-	public void detectDecoder() {
+	public void detectDecoder(final boolean async) {
 		final Asset asset;
 		try {
 			asset = this.assetSource.get();
@@ -201,7 +203,7 @@ public final class ResourceData {
 			return;
 		}
 
-		if (asset.isRemote()) {
+		if (async && asset.isRemote()) {
 			this.dispatch(() -> this.detectDecoder(asset));
 		} else {
 			this.detectDecoder(asset);
@@ -210,7 +212,7 @@ public final class ResourceData {
 
 	public void generate(final boolean async) {
 		if (this.error == null && this.decoder == null && this.assetSource != null && !this.isDispatching()) {
-			this.detectDecoder();
+			this.detectDecoder(async);
 		}
 
 		if (this.error != null) {
@@ -313,10 +315,14 @@ public final class ResourceData {
 		for (final Resource resource : this.getResources()) {
 			resource.fireError(error);
 		}
+		this.waiting.clear();
 	}
 
 	public synchronized void listen(final @NonNull Resource resource) {
 		this.resources.add(resource);
+		if (!this.loaded && this.error == null) {
+			this.waiting.add(resource);
+		}
 	}
 
 	public boolean isFailed() {
@@ -485,6 +491,7 @@ public final class ResourceData {
 		for (final Resource resource : this.getResources()) {
 			resource.fireLoad();
 		}
+		this.waiting.clear();
 	}
 
 	private boolean isBorrowed() {
