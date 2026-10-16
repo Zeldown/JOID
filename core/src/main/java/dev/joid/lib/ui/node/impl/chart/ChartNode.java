@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis.XChartAxis;
@@ -83,7 +84,7 @@ public abstract class ChartNode extends Node {
 
 	public final <T extends ChartNode> @NonNull T data(final @NonNull String dataName, final @NonNull ChartData data) {
 		if (this.xAxis == null) {
-			throw new IllegalStateException(this.getClass().getSimpleName() + " has no X axis to hold the data " + dataName + ", call xAxis(...) before data(...)");
+			throw new IllegalStateException("The " + JOIDLog.nameOf(this.getClass()) + " has no X axis to hold the data " + dataName + ", call xAxis(...) before data(...)");
 		}
 
 		this.xAxis.data(dataName, data);
@@ -92,7 +93,7 @@ public abstract class ChartNode extends Node {
 
 	public final <T extends ChartNode> @NonNull T removeData(final @NonNull String data) {
 		if (this.xAxis == null) {
-			throw new IllegalStateException(this.getClass().getSimpleName() + " has no X axis to remove the data " + data + " from, call xAxis(...) before removeData(...)");
+			throw new IllegalStateException("The " + JOIDLog.nameOf(this.getClass()) + " has no X axis to remove the data " + data + " from, call xAxis(...) before removeData(...)");
 		}
 
 		this.xAxis.remove(data);

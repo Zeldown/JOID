@@ -100,9 +100,11 @@ public final class DevNode extends Node {
 	@Override
 	public void init(final @NonNull UI ui) {
 		super.clearChildren();
+		final double lockedWidth = super.getDefaultWidth() + 200D;
+		final double lockedHeight = 220D;
 
 		FlexNode
-		.horizontal(15, super.getHeight() - super.getDefaultHeight() + 15, super.getDefaultHeight() - 30)
+		.horizontal(15, 0, super.getDefaultHeight() - 30)
 		.margin(10)
 		.body(flex -> {
 			ResourceNode
@@ -134,23 +136,24 @@ public final class DevNode extends Node {
 			.hover(() -> "[G] Grid")
 			.attach(flex);
 		})
+		.y(() -> super.getHeight() - super.getDefaultHeight() + 15D)
 		.attach(this);
 
 		RectNode
-		.create(122, super.getHeight() - super.getDefaultHeight(), 2, super.getDefaultHeight())
+		.create(122, 0, 2, super.getDefaultHeight())
 		.color(DevNode.LIGHT_BLACK)
+		.y(() -> super.getHeight() - super.getDefaultHeight())
 		.attach(this);
 
 		RectNode
-		.create(0, super.getHeight() - super.getDefaultHeight(), super.getWidth(), 2)
+		.create(0, lockedHeight, lockedWidth, 2)
 		.color(DevNode.LIGHT_BLACK)
 		.visible(this.inspectedNodeLocked)
 		.attach(this);
 
 		ContainerNode
-		.create(0, 0, super.getWidth(), super.getHeight() - super.getDefaultHeight())
+		.create(0, 0, lockedWidth, lockedHeight)
 		.body(node -> {
-			node.width(super.getWidth()).height(super.getHeight() - super.getDefaultHeight());
 			final Node inspectedNode = this.lockedNode.peek();
 			if (inspectedNode == null) {
 				return;
@@ -167,7 +170,7 @@ public final class DevNode extends Node {
 			.body(flex -> {
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(inspectedNode.getClass().getSimpleName(), TextInfo.create(DevFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE)).alignX(Align.START).alignY(Align.CENTER))
+				.text(Text.create(JOIDLog.nameOf(inspectedNode.getClass()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE)).alignX(Align.START).alignY(Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 
@@ -185,7 +188,7 @@ public final class DevNode extends Node {
 			.attach(node);
 
 			ContainerNode
-			.create(0, 53, super.getWidth(), super.getHeight() - super.getDefaultHeight() - 53)
+			.create(0, 53, lockedWidth, lockedHeight - 53)
 			.overflow(OverflowProperty.SCROLL)
 			.body(container -> {
 				FlexNode
@@ -273,7 +276,7 @@ public final class DevNode extends Node {
 					for (final Node child : inspectedNode.getChildren()) {
 						TextNode
 						.create(20, 0)
-						.text(Text.create(child.getClass().getSimpleName(), valueInfo))
+						.text(Text.create(JOIDLog.nameOf(child.getClass()), valueInfo))
 						.onClick(event -> {
 							this.inspectedNode.set(child);
 							this.inspectedNodeLocked.set(true);
@@ -324,7 +327,7 @@ public final class DevNode extends Node {
 								.width(scroll.aw(-20))
 								.attach(scroll);
 							} catch (final Exception e) {
-								JOIDLog.warn("The dev panel cannot read the field " + field.getName() + " of " + inspectedNode.getClass().getSimpleName() + " (" + e + "), the panel leaves it out", e);
+								JOIDLog.warn("The dev panel cannot read the field " + field.getName() + " of " + JOIDLog.nameOf(inspectedNode.getClass()) + " (" + e + "), the panel leaves it out", e);
 							}
 						}
 					}
@@ -338,10 +341,18 @@ public final class DevNode extends Node {
 		.attach(this);
 
 		TextNode
-		.create(123 + super.aw(-123) / 2, super.getHeight() - super.getDefaultHeight() + super.getDefaultHeight() / 2)
+		.create(0, 0)
 		.text(Text.create(() -> String.format(Locale.ROOT, "%.0f fps", super.getUi().getFps()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE)).align(Align.CENTER))
 		.anchor(Align.CENTER)
+		.x(() -> 123D + super.aw(-123D) / 2D)
+		.y(() -> super.getHeight() - super.getDefaultHeight() / 2D)
 		.attach(this);
+	}
+
+	@Override
+	public void update() {
+		final boolean locked = this.inspectedNodeLocked.peek();
+		super.layoutSize(super.getDefaultWidth() + (locked ? 200D : 0D), super.getDefaultHeight() + (locked ? 220D : 0D));
 	}
 
 	@Override
@@ -370,14 +381,6 @@ public final class DevNode extends Node {
 			if (this.inspectedNode.peek() != null) {
 				this.drawInfoBox(this.inspectX, this.inspectY, this.inspectWidth, this.inspectHeight, this.inspectedNode.peek());
 			}
-		}
-
-		if (super.getHeight() == super.getDefaultHeight() && this.inspectedNodeLocked.peek()) {
-			super.layoutSize(super.getDefaultWidth() + 200, super.getDefaultHeight() + 220);
-			this.init(super.getUi());
-		} else if (super.getHeight() != super.getDefaultHeight() && !this.inspectedNodeLocked.peek()) {
-			super.layoutSize(super.getDefaultWidth(), super.getDefaultHeight());
-			this.init(super.getUi());
 		}
 
 		if (this.gridSignal.peek()) {
@@ -458,7 +461,7 @@ public final class DevNode extends Node {
 		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x, y + height), Point.create(x + width, y + height));
 
 		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE).shadow().shadow(Color.BLACK.withAlpha(0.7F));
-		final Text nodeNameText = Text.create(node.getClass().getSimpleName(), textInfo);
+		final Text nodeNameText = Text.create(JOIDLog.nameOf(node.getClass()), textInfo);
 		final Text nodeTimeText = Text.create(String.format(Locale.ROOT, "%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
 
 		final double margin = 15;

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.binding.InteractiveValue;
 import dev.joid.lib.ui.event.EventListener;
@@ -45,7 +46,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 
 	public final V getValue() {
 		if (this.valueList.isEmpty()) {
-			throw new IllegalStateException("The " + this.getClass().getSimpleName() + " has no values, call values(...) before getValue()");
+			throw new IllegalStateException("The " + JOIDLog.nameOf(this.getClass()) + " has no values, call values(...) before getValue()");
 		}
 
 		return this.value;
@@ -112,7 +113,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 
 	private void configure(final @NonNull List<V> values) {
 		if (values.isEmpty()) {
-			throw new IllegalArgumentException("The " + this.getClass().getSimpleName() + " needs at least one value, pass them to values(...)");
+			throw new IllegalArgumentException("The " + JOIDLog.nameOf(this.getClass()) + " needs at least one value, pass them to values(...)");
 		}
 
 		if (values.equals(this.valueList) && this.pendingIndex < 0) {
@@ -135,7 +136,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 
 	private V requireOption(final @NonNull List<V> values, final V value) {
 		if (!values.isEmpty() && !values.contains(value)) {
-			throw new IllegalArgumentException("The value " + value + " is not an option of the " + this.getClass().getSimpleName() + " " + values + ", pass one of them or add it with values(...)");
+			throw new IllegalArgumentException("The value " + value + " is not an option of the " + JOIDLog.nameOf(this.getClass()) + " " + values + ", pass one of them or add it with values(...)");
 		}
 
 		return value;
@@ -143,7 +144,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 
 	private int requireIndex(final @NonNull List<V> values, final int index) {
 		if (!values.isEmpty() && (index < 0 || index >= values.size())) {
-			throw new IllegalArgumentException("The index " + index + " is out of the values " + values + " of the " + this.getClass().getSimpleName() + ", pass an index from 0 to " + (values.size() - 1));
+			throw new IllegalArgumentException("The index " + index + " is out of the values " + values + " of the " + JOIDLog.nameOf(this.getClass()) + ", pass an index from 0 to " + (values.size() - 1));
 		}
 
 		return index;

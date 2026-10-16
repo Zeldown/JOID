@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -229,7 +230,7 @@ public class ReorderableFlexNode extends FlexNode {
 	public final int getChildIndex(final @NonNull Node child) {
 		final int index = (this.reorderedNode != null ? this.logicalOrder : super.getChildren()).indexOf(child);
 		if (index == -1) {
-			throw new IllegalArgumentException("The node " + child.getClass().getSimpleName() + " is not a child of this " + this.getClass().getSimpleName() + ", attach it to the flex first");
+			throw new IllegalArgumentException("The node " + JOIDLog.nameOf(child.getClass()) + " is not a child of this " + JOIDLog.nameOf(this.getClass()) + ", attach it to the flex first");
 		}
 		return index;
 	}
