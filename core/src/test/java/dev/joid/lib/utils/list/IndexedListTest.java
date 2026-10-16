@@ -35,21 +35,6 @@ public class IndexedListTest {
 	}
 
 	@Test
-	public void sortsItsElementsByIndexInALinkedList() {
-		final Element first = new Element(0);
-		final Element second = new Element(1);
-		final Element third = new Element(2);
-		final IndexedList<Element> list = IndexedList.linked();
-		list.add(third);
-		list.add(first);
-		list.add(second);
-		first.index = 3;
-		Assert.assertEquals(Arrays.asList(second, third, first), list.ordered());
-		Assert.assertSame(second, list.getFirst());
-		Assert.assertSame(first, list.getLast());
-	}
-
-	@Test
 	public void keepsTheInsertionOrderOfEqualIndexes() {
 		final Element first = new Element(1);
 		final Element second = new Element(1);
@@ -130,6 +115,8 @@ public class IndexedListTest {
 		final IndexedList<Element> list = IndexedListTest.of(first, second, third);
 		first.index = 5;
 		Assert.assertEquals(Arrays.asList(second, third, first), list.ordered());
+		Assert.assertSame(second, list.getFirst());
+		Assert.assertSame(first, list.getLast());
 	}
 
 	@Test

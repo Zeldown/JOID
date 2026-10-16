@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -18,6 +19,8 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.ui.UIBridgeCursorTest.NodeUI;
+import dev.joid.lib.bridge.ui.UIBridgeRegistryTest.MenuUI;
+import dev.joid.lib.bridge.ui.UIBridgeRegistryTest.RoutingBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
@@ -64,6 +67,32 @@ public class UIBridgeTest {
 		this.trace.clear();
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(Collections.singletonList(ui), this.bridges.getUi().getUiList());
+	}
+
+	@Test
+	public void listsItsUisWhileAnotherThreadOpensAndClosesThem() throws InterruptedException {
+		final RoutingBridge bridge = new RoutingBridge(UI.class);
+		final AtomicReference<RuntimeException> failure = new AtomicReference<>();
+		final Thread reader = new Thread(() -> {
+			try {
+				for (int i = 0; i < 200_000; i++) {
+					new ArrayList<>(bridge.getUiList());
+				}
+			} catch (final RuntimeException exception) {
+				failure.set(exception);
+			}
+		});
+		final UI menu = new MenuUI();
+		final UI hud = new MenuUI();
+		reader.start();
+		while (reader.isAlive()) {
+			bridge.open(menu);
+			bridge.open(hud);
+			bridge.close(menu);
+			bridge.close(hud);
+		}
+		reader.join();
+		Assert.assertNull(failure.get());
 	}
 
 	@Test
