@@ -8,6 +8,8 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 
+import javax.net.ssl.SSLException;
+
 import dev.joid.lib.asset.Asset;
 import lombok.Getter;
 import lombok.NonNull;
@@ -28,7 +30,15 @@ public final class UrlAsset extends Asset {
 
 	@Override
 	public File getFile() {
-		return this.url.startsWith("file:") ? new File(URI.create(this.url)) : null;
+		if (!this.url.startsWith("file:")) {
+			return null;
+		}
+
+		try {
+			return new File(URI.create(this.url));
+		} catch (final IllegalArgumentException exception) {
+			return null;
+		}
 	}
 
 	@Override
@@ -40,11 +50,7 @@ public final class UrlAsset extends Asset {
 	public @NonNull InputStream open() throws IOException {
 		try {
 			return UrlAsset.connect(this.url);
-		} catch (final IOException exception) {
-			if (!this.url.startsWith("https:")) {
-				throw exception;
-			}
-
+		} catch (final SSLException exception) {
 			try {
 				return UrlAsset.connect(this.url.replaceFirst("^https:", "http:"));
 			} catch (final IOException fallback) {

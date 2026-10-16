@@ -21,6 +21,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
 
+import javax.net.ssl.SSLException;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -81,6 +83,31 @@ public class UrlAssetTest {
 		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.peek(4));
 		Assert.assertEquals(file.getAbsoluteFile(), asset.getFile().getAbsoluteFile());
 		Assert.assertFalse(asset.isRemote());
+	}
+
+	@Test
+	public void readsAFileUrlWithASpaceThroughAStream() throws IOException {
+		final File file = this.folder.newFile("my image.png");
+		Files.write(file.toPath(), "joid file asset".getBytes(StandardCharsets.UTF_8));
+		final UrlAsset asset = UrlAsset.create("file:" + file.getAbsolutePath().replace(File.separatorChar, '/'));
+		Assert.assertNull(asset.getFile());
+		Assert.assertArrayEquals("joid file asset".getBytes(StandardCharsets.UTF_8), asset.read());
+	}
+
+	@Test
+	public void keepsAFailureThatIsNotSecureWithoutFallback() throws IOException {
+		final int port;
+		try (ServerSocket closed = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
+			port = closed.getLocalPort();
+		}
+
+		try {
+			UrlAsset.create("https://" + InetAddress.getLoopbackAddress().getHostAddress() + ":" + port + "/image.png").read();
+			Assert.fail("A closed port must fail");
+		} catch (final IOException expected) {
+			Assert.assertFalse(expected instanceof SSLException);
+			Assert.assertEquals(0, expected.getSuppressed().length);
+		}
 	}
 
 	@Test
