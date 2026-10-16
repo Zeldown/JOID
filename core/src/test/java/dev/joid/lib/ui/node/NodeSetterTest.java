@@ -92,6 +92,12 @@ public class NodeSetterTest {
 		Assert.assertFalse(ui.getBorder().isFill());
 		Assert.assertEquals(1D, ui.getShadow().getOffsetX(), 0D);
 		Assert.assertEquals(3F, ui.getShadow().getBlur(), 0F);
+		Assert.assertEquals(3F, ui.getBlur().getRadius(), 0F);
+		Assert.assertEquals(4F, ui.getRounded().getRadius(), 0F);
+		Assert.assertEquals(2F, ui.getOutline().getWidth(), 0F);
+		Assert.assertSame(Color.RED, ui.getOutline().getColor(ui.getFlex()));
+		Assert.assertEquals(3F, ui.getGlow().getBlur(), 0F);
+		Assert.assertSame(Color.RED, ui.getGlow().getColor());
 		Assert.assertEquals(10, ui.getRadar().getValue().intValue());
 		Assert.assertEquals("Label 1", ui.getRadar().getLabel());
 		ui.getStep().set(4);

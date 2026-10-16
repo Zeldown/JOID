@@ -123,7 +123,7 @@ public class NodeDragEventTest {
 	public void ignoresAReleaseAwayFromAnOverlapTarget() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode target = RectNode.create(1200D, 700D, 200D, 100D);
-		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).draggable(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, target)).onDragSnap(event -> received.add(event.getTarget()));
+		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).draggable(DraggableProperty.free().snapType(DraggableSnapType.OVERLAP).snap(target)).onDragSnap(event -> received.add(event.getTarget()));
 		this.bridges.open(new NodeUI(target, rect)).frames(30);
 		this.bridges.move(150D, 150D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);

@@ -25,7 +25,7 @@ public class ShadowNodeEffect extends NodeEffect<Node> {
 	}
 
 	public static @NonNull ShadowNodeEffect create(final @NonNull Color color, final float blur) {
-		return new ShadowNodeEffect(() -> color, () -> blur);
+		return new ShadowNodeEffect(Signal.from(color), Signal.from(blur));
 	}
 
 	public static @NonNull ShadowNodeEffect create(final @NonNull Supplier<@NonNull Color> colorSupplier, final @NonNull Supplier<Float> blurSupplier) {

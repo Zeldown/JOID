@@ -10,7 +10,9 @@ import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
+import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.impl.chart.RadarChartNode.RadarChartData;
 import dev.joid.lib.ui.node.impl.control.checkbox.CheckboxNodeTest.Checkbox;
@@ -55,12 +57,16 @@ public class SetterUI extends UI {
 	private Checkbox           checkbox;
 	private Selector           selector;
 	private TextFieldNode      field;
+	private BlurNodeEffect     blur;
 	private IntegerSlider      slider;
 	private RadarChartData     radar;
 	private ProgressNode       progress;
+	private ShadowNodeEffect   glow;
 	private BorderNodeEffect   border;
 	private ShadowNodeEffect   shadow;
+	private BorderNodeEffect   outline;
 	private ResourcePlayerNode player;
+	private RoundedNodeEffect  rounded;
 
 	@Override
 	public void init() {
@@ -142,6 +148,10 @@ public class SetterUI extends UI {
 		.create(Color.BLACK, 2F)
 		.offsetX(this.step.get() * 1D)
 		.blur(2F + this.step.get());
+		this.blur = BlurNodeEffect.create(2F + this.step.get());
+		this.rounded = RoundedNodeEffect.create(this.step.get() * 4F);
+		this.outline = BorderNodeEffect.create(this.step.get() > 0 ? Color.RED : Color.WHITE, 1F + this.step.get());
+		this.glow = ShadowNodeEffect.create(this.step.get() > 0 ? Color.RED : Color.BLACK, 2F + this.step.get());
 		this.radar = RadarChartData
 		.create("a")
 		.value(this.step.get() * 10)

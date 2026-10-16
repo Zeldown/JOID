@@ -84,7 +84,7 @@ public abstract class NodeEffect<T extends Node> implements Cloneable {
 		return (E) this;
 	}
 
-	public static enum NodeEffectScope {
+	public enum NodeEffectScope {
 
 		SELF,
 		CHILDREN;

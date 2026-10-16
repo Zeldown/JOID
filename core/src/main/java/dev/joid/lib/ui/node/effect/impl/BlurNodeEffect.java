@@ -21,7 +21,7 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 	}
 
 	public static @NonNull BlurNodeEffect create(final float radius) {
-		return new BlurNodeEffect(() -> radius);
+		return new BlurNodeEffect(Signal.from(radius));
 	}
 
 	public static @NonNull BlurNodeEffect create(final @NonNull Supplier<Float> radiusSupplier) {

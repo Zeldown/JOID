@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public class DraggableProperty {
+public final class DraggableProperty {
 
 	private DraggableType     type;
 	private Predicate<Node>   enabled;
@@ -97,7 +97,7 @@ public class DraggableProperty {
 		return null;
 	}
 
-	public final double[] getBounds(final @NonNull Node node) {
+	public double[] getBounds(final @NonNull Node node) {
 		double boundX = 0D;
 		double boundY = 0D;
 		double boundWidth = 0D;
@@ -145,17 +145,17 @@ public class DraggableProperty {
 		return new double[] {boundX, boundY, boundWidth, boundHeight};
 	}
 
-	public final @NonNull DraggableProperty enabled(final @NonNull Predicate<@NonNull Node> enabled) {
+	public @NonNull DraggableProperty enabled(final @NonNull Predicate<@NonNull Node> enabled) {
 		this.enabled = enabled;
 		return this;
 	}
 
-	public final @NonNull DraggableProperty type(final @NonNull DraggableType type) {
+	public @NonNull DraggableProperty type(final @NonNull DraggableType type) {
 		this.type = type;
 		return this;
 	}
 
-	public final @NonNull DraggableProperty snap(final @NonNull Node @NonNull... snapNodes) {
+	public @NonNull DraggableProperty snap(final @NonNull Node @NonNull... snapNodes) {
 		if (this.snapNodes == null) {
 			this.snapNodes = new ArrayList<>();
 		}
@@ -164,26 +164,26 @@ public class DraggableProperty {
 		return this;
 	}
 
-	public final @NonNull DraggableProperty snap(final @NonNull DraggableSnapType snapType, final @NonNull Node @NonNull... snapNodes) {
+	public @NonNull DraggableProperty snapType(final @NonNull DraggableSnapType snapType) {
 		this.snapType = snapType;
-		return this.snap(snapNodes);
+		return this;
 	}
 
-	public final boolean isEnabled(final @NonNull Node node) {
+	public boolean isEnabled(final @NonNull Node node) {
 		return this.enabled.test(node);
 	}
 
-	public final List<Node> getSnapNodes() {
+	public List<Node> getSnapNodes() {
 		return this.snapNodes == null ? null : Collections.unmodifiableList(this.snapNodes);
 	}
 
-	public final boolean hasSnapping() {
+	public boolean hasSnapping() {
 		return this.snapNodes != null && !this.snapNodes.isEmpty();
 	}
 
-	public final @NonNull DraggableProperty copy() {
-		final DraggableProperty copy = new DraggableProperty(this.areaType, this.area, this.areaNode).type(this.type).enabled(this.enabled);
-		return copy.snap(this.snapType, this.snapNodes == null ? new Node[0] : this.snapNodes.toArray(new Node[0]));
+	public @NonNull DraggableProperty copy() {
+		final DraggableProperty copy = new DraggableProperty(this.areaType, this.area, this.areaNode).type(this.type).enabled(this.enabled).snapType(this.snapType);
+		return copy.snap(this.snapNodes == null ? new Node[0] : this.snapNodes.toArray(new Node[0]));
 	}
 
 	public enum DraggableType {

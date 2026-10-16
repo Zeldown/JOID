@@ -85,7 +85,7 @@ public class ShowDrag extends ShowUI {
 		RectNode
 		.create(150 + index * 330, 668, 230, 300)
 		.color(Color.TRANSPARENT)
-		.draggable(DraggableProperty.ui().snap(DraggableSnapType.OVERLAP, slot))
+		.draggable(DraggableProperty.ui().snapType(DraggableSnapType.OVERLAP).snap(slot))
 		.onDragSnap(event -> {
 			Signal.batch(() -> {
 				this.title.set(name);

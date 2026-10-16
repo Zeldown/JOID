@@ -123,7 +123,7 @@ public class DraggablePropertyTest {
 	public void snapsToTheFirstOverlappedNode() {
 		final RectNode left = RectNode.create(0D, 0D, 10D, 10D);
 		final RectNode right = RectNode.create(100D, 0D, 10D, 10D);
-		final DraggableProperty draggable = DraggableProperty.free().snap(DraggableSnapType.OVERLAP, left, right);
+		final DraggableProperty draggable = DraggableProperty.free().snapType(DraggableSnapType.OVERLAP).snap(left, right);
 		Assert.assertSame(DraggableSnapType.OVERLAP, draggable.getSnapType());
 		Assert.assertSame(right, draggable.getSnapping(RectNode.create(95D, 5D, 10D, 10D)));
 		Assert.assertNull(draggable.getSnapping(RectNode.create(50D, 5D, 10D, 10D)));
@@ -134,7 +134,7 @@ public class DraggablePropertyTest {
 	public void addsItsSnapsWithOrWithoutAType() {
 		final RectNode left = RectNode.create(0D, 0D, 10D, 10D);
 		final RectNode right = RectNode.create(100D, 0D, 10D, 10D);
-		final DraggableProperty draggable = DraggableProperty.free().snap(left).snap(DraggableSnapType.OVERLAP, right).snap(DraggableSnapType.NEAREST);
+		final DraggableProperty draggable = DraggableProperty.free().snap(left).snapType(DraggableSnapType.OVERLAP).snap(right).snapType(DraggableSnapType.NEAREST);
 		Assert.assertSame(DraggableSnapType.NEAREST, draggable.getSnapType());
 		Assert.assertEquals(Arrays.asList(left, right), draggable.getSnapNodes());
 		Assert.assertFalse(DraggableProperty.free().snap().hasSnapping());
@@ -143,7 +143,7 @@ public class DraggablePropertyTest {
 	@Test
 	public void copiesItsAreaAndSnaps() {
 		final RectNode target = RectNode.create(0D, 0D, 10D, 10D);
-		final DraggableProperty draggable = DraggableProperty.custom(10D, 20D, 300D, 200D).enabled(node -> false).snap(DraggableSnapType.OVERLAP, target);
+		final DraggableProperty draggable = DraggableProperty.custom(10D, 20D, 300D, 200D).enabled(node -> false).snapType(DraggableSnapType.OVERLAP).snap(target);
 		final DraggableProperty copy = draggable.copy();
 		Assert.assertNotSame(draggable, copy);
 		Assert.assertArrayEquals(new double[] {10D, 20D, 300D, 200D}, copy.getBounds(target), 0D);
@@ -201,7 +201,7 @@ public class DraggablePropertyTest {
 	@Test
 	public void sendsANodeBackWithoutAnOverlappedSnap() {
 		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, target));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snapType(DraggableSnapType.OVERLAP).snap(target));
 		this.drag(node, 310D, 310D);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(100);

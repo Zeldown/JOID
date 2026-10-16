@@ -29,7 +29,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	}
 
 	public static @NonNull RoundedNodeEffect create(final float radius) {
-		return new RoundedNodeEffect(() -> radius);
+		return new RoundedNodeEffect(Signal.from(radius));
 	}
 
 	public static @NonNull RoundedNodeEffect create(final @NonNull Supplier<Float> radiusSupplier) {

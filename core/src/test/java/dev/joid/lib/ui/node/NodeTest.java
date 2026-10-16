@@ -1759,7 +1759,7 @@ public class NodeTest {
 	public void dropsANodeOnTheTargetItOverlaps() {
 		final List<Node> snaps = new ArrayList<>();
 		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, target)).onDragSnap(event -> snaps.add(event.getTarget()));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snapType(DraggableSnapType.OVERLAP).snap(target)).onDragSnap(event -> snaps.add(event.getTarget()));
 		this.press(node, 110D, 110D);
 		this.bridges.move(430D, 430D).frame();
 		this.bridges.getUi().mouseMoved();
@@ -1775,7 +1775,7 @@ public class NodeTest {
 	public void snapsTheDraggedCopyOfANode() {
 		final List<Node> snaps = new ArrayList<>();
 		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP, target)).onDragSnap(event -> snaps.add(event.getTarget()));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().type(DraggableType.COPY).snapType(DraggableSnapType.OVERLAP).snap(target)).onDragSnap(event -> snaps.add(event.getTarget()));
 		this.press(node, 110D, 110D);
 		this.bridges.move(430D, 430D).frame();
 		this.bridges.getUi().mouseMoved();
@@ -1790,7 +1790,7 @@ public class NodeTest {
 	@Test
 	public void sendsADroppedNodeBackWithoutTargetUnderIt() {
 		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
-		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snap(DraggableSnapType.OVERLAP, target));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free().snapType(DraggableSnapType.OVERLAP).snap(target));
 		this.press(node, 110D, 110D);
 		this.bridges.move(310D, 110D).frame();
 		this.bridges.getUi().mouseMoved();
@@ -1944,7 +1944,7 @@ public class NodeTest {
 	public void showsTheDroppedCopyAndItsSnapToTheDragEnd() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
-		final DraggableProperty draggable = DraggableProperty.free().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP, target);
+		final DraggableProperty draggable = DraggableProperty.free().type(DraggableType.COPY).snapType(DraggableSnapType.OVERLAP).snap(target);
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(draggable).onDragDrop(event -> received.addAll(Arrays.asList(event.getNode().getDraggedNode().getX(), event.getNode().getDraggable().getSnapping(event.getNode().getDraggedNode()))));
 		this.press(node, 110D, 110D);
 		this.bridges.move(430D, 430D).frame();
@@ -3945,7 +3945,7 @@ public class NodeTest {
 		private float glow;
 
 		private GlowBorderEffect() {
-			super(Color.BLACK, 2F);
+			super(() -> Color.BLACK, () -> 2F);
 		}
 
 		public static GlowBorderEffect create() {

@@ -129,7 +129,7 @@ public class UIDemoDraggable extends UIDemo {
 		.create(540, 380, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			final DraggableProperty overlap = DraggableProperty.free().type(DraggableType.COPY).snap(DraggableSnapType.OVERLAP);
+			final DraggableProperty overlap = DraggableProperty.free().type(DraggableType.COPY).snapType(DraggableSnapType.OVERLAP);
 			overlap.snap(RectNode.create(40, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
 			overlap.snap(RectNode.create(160, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
 			overlap.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
