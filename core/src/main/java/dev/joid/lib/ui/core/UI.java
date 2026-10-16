@@ -218,24 +218,27 @@ public abstract class UI implements IUI, IIndexedElement {
 				this.loaded = true;
 			}
 			this.eventBus.reset();
-			this.scoped(() -> {
-				if (!this.closed) {
-					for (final Node node : this.nodeList) {
-						if (node != this.devNode) {
-							node.fireDetach();
+			try {
+				this.scoped(() -> {
+					if (!this.closed) {
+						for (final Node node : this.nodeList) {
+							if (node != this.devNode) {
+								node.fireDetach();
+							}
 						}
+						this.taskList.forEach(Task::detach);
+						this.shortcutList.forEach(Shortcut::detach);
 					}
-					this.taskList.forEach(Task::detach);
-					this.shortcutList.forEach(Shortcut::detach);
-				}
-				this.keptTaskList.forEach(this::addTask);
-				this.keptShortcutList.forEach(this::addShortcut);
-				this.nodeList.clear();
+					this.keptTaskList.forEach(this::addTask);
+					this.keptShortcutList.forEach(this::addShortcut);
+					this.nodeList.clear();
 
-				SignalReplay.reset();
-				SignalReplay.run(this, null, this::init);
-			});
-			this.initialized = true;
+					SignalReplay.reset();
+					SignalReplay.run(this, null, this::init);
+				});
+			} finally {
+				this.initialized = true;
+			}
 
 			if (this.transition != null) {
 				if (this.transition.getIn().isEnabled()) {
@@ -370,15 +373,7 @@ public abstract class UI implements IUI, IIndexedElement {
 
 			if (JOIDEnv.isDevMode() && !event.isConsumed()) {
 				if (key == Key.R && UI.isCtrlKeyDown() || key == Key.F5) {
-					if (!UI.isShiftKeyDown()) {
-						this.reload();
-					} else {
-						try {
-							this.renew();
-						} catch (final IllegalStateException exception) {
-							JOIDLog.warn(exception.getMessage());
-						}
-					}
+					this.reloadInDev(UI.isShiftKeyDown() ? this::renew : this::reload);
 					event.consume();
 				} else if (key == Key.F3 && this.devNode != null) {
 					final boolean enabled = this.nodeList.contains(this.devNode);
@@ -605,12 +600,13 @@ public abstract class UI implements IUI, IIndexedElement {
 	public final void draw(final double mouseX, final double mouseY) {
 		if (this.reloadPending) {
 			this.reloadPending = false;
+			this.reloadInDev(() -> {
+				final long start = System.nanoTime();
+				this.reload();
+				final long end = System.nanoTime();
 
-			final long start = System.nanoTime();
-			this.reload();
-			final long end = System.nanoTime();
-
-			JOIDLog.info(this.getClass().getSimpleName() + " reloaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
+				JOIDLog.info(this.getClass().getSimpleName() + " reloaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
+			});
 		}
 
 		this.drawnFrame = UI.frameNumber;
@@ -806,6 +802,16 @@ public abstract class UI implements IUI, IIndexedElement {
 			HotReload.watch(this, () -> this.reloadPending = true);
 		} else {
 			HotReload.unwatch(this);
+		}
+	}
+
+	private void reloadInDev(final Runnable reload) {
+		try {
+			reload.run();
+		} catch (final IllegalStateException exception) {
+			JOIDLog.warn(exception.getMessage());
+		} catch (final RuntimeException exception) {
+			JOIDLog.warn("The reload of " + JOIDLog.nameOf(this.getClass()) + " failed (" + exception + "), fix init() then reload it again", exception);
 		}
 	}
 

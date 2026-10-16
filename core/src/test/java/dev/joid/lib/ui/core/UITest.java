@@ -808,6 +808,45 @@ public class UITest {
 	}
 
 	@Test
+	public void reloadsAgainWithControlRAfterAFailedInit() {
+		JOIDEnv.devMode(true);
+		final RetryUI ui = new RetryUI();
+		this.bridges.open(ui);
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		RetryUI.failing = true;
+		try {
+			final String output = UITest.err(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+			Assert.assertTrue(output, output.startsWith("[JOID] The reload of RetryUI failed (java.lang.NullPointerException: Init failed), fix init() then reload it again"));
+		} finally {
+			RetryUI.failing = false;
+		}
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
+		Assert.assertEquals(3, ui.inits);
+		Assert.assertTrue(ui.isInitialized());
+	}
+
+	@Test
+	public void reloadsARenewedUiWhoseInitFailedWithControlR() {
+		JOIDEnv.devMode(true);
+		final RetryUI ui = new RetryUI();
+		this.bridges.open(ui);
+		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
+		RetryUI.failing = true;
+		try {
+			final String output = UITest.err(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+			Assert.assertTrue(output, output.startsWith("[JOID] The reload of RetryUI failed (java.lang.NullPointerException: Init failed), fix init() then reload it again"));
+		} finally {
+			RetryUI.failing = false;
+		}
+		final RetryUI renewed = (RetryUI) this.bridges.getUi().getUiList().get(0);
+		Assert.assertNotSame(ui, renewed);
+		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
+		Assert.assertEquals(2, renewed.inits);
+		Assert.assertTrue(renewed.isInitialized());
+	}
+
+	@Test
 	public void refusesToRenewAUIWithoutConstructorWithoutArgument() {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
@@ -2303,6 +2342,23 @@ public class UITest {
 		@Override
 		public void init() {
 			this.inits++;
+		}
+
+	}
+
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class RetryUI extends UI {
+
+		private static boolean failing;
+
+		private int inits;
+
+		@Override
+		public void init() {
+			this.inits++;
+			if (RetryUI.failing) {
+				throw new NullPointerException("Init failed");
+			}
 		}
 
 	}
