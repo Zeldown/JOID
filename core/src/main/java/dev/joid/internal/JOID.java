@@ -5,6 +5,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
@@ -159,6 +162,26 @@ public final class JOID {
 	}
 
 	private static void shutdown() {
+		final AtomicBoolean saved = new AtomicBoolean();
+		final CountDownLatch latch = new CountDownLatch(1);
+		ThreadUtils.runOnRenderThread(() -> {
+			JOID.save(saved);
+			latch.countDown();
+		});
+
+		try {
+			latch.await(200L, TimeUnit.MILLISECONDS);
+		} catch (final InterruptedException exception) {
+			Thread.currentThread().interrupt();
+		}
+		JOID.save(saved);
+	}
+
+	private static void save(final AtomicBoolean saved) {
+		if (!saved.compareAndSet(false, true)) {
+			return;
+		}
+
 		for (final IUIBridge bridge : new ArrayList<>(BridgeHandler.UI.getBridgeList())) {
 			for (final UI ui : new ArrayList<>(bridge.getUiList())) {
 				UIPropertyHook.save(ui);

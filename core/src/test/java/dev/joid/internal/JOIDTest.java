@@ -29,6 +29,7 @@ import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.bridge.ui.UIBridgeRegistryTest.RoutingBridge;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
@@ -157,6 +158,45 @@ public class JOIDTest {
 		Assert.assertEquals("{\"value\":\"kept\"}", new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
 		Assert.assertFalse(store.destroyed);
 		Assert.assertTrue(this.bridges.getUi().isOpen(settings));
+	}
+
+	@Test
+	public void savesOnTheRenderThreadOnShutdown() throws InterruptedException {
+		JOIDEnv.dataDir(this.folder.getRoot());
+		final FrameThreadBridge render = FrameThreadBridge.create();
+		final ExitStore store = UIStoreHook.useStore(ExitStore.class, ExitStore::new);
+		store.savers.clear();
+		BridgeHandler.THREAD.register(render);
+		try {
+			final Thread shutdown = JOIDTest.shutdown();
+			shutdown.start();
+			while (shutdown.isAlive()) {
+				render.runTasks();
+			}
+		} finally {
+			BridgeHandler.THREAD.unregister(render);
+			UIStoreHook.destroyStore(store);
+		}
+		Assert.assertEquals(Collections.singletonList(Thread.currentThread()), store.savers);
+	}
+
+	@Test
+	public void savesOnceOnShutdownWhenTheRenderThreadDoesNotAnswer() throws InterruptedException {
+		JOIDEnv.dataDir(this.folder.getRoot());
+		final FrameThreadBridge render = FrameThreadBridge.create();
+		final ExitStore store = UIStoreHook.useStore(ExitStore.class, ExitStore::new);
+		store.savers.clear();
+		BridgeHandler.THREAD.register(render);
+		final Thread shutdown = JOIDTest.shutdown();
+		try {
+			shutdown.start();
+			shutdown.join();
+			render.runTasks();
+		} finally {
+			BridgeHandler.THREAD.unregister(render);
+			UIStoreHook.destroyStore(store);
+		}
+		Assert.assertEquals(Collections.singletonList(shutdown), store.savers);
 	}
 
 	@Test
@@ -537,6 +577,18 @@ public class JOIDTest {
 		}
 	}
 
+	private static Thread shutdown() {
+		return new Thread(() -> {
+			try {
+				final Method shutdown = JOID.class.getDeclaredMethod("shutdown");
+				shutdown.setAccessible(true);
+				shutdown.invoke(null);
+			} catch (final ReflectiveOperationException exception) {
+				throw new IllegalStateException(exception);
+			}
+		});
+	}
+
 	private static void quietly(final JOID joid) {
 		final PrintStream previous = System.out;
 		System.setOut(new PrintStream(new ByteArrayOutputStream(), true));
@@ -629,6 +681,8 @@ public class JOIDTest {
 	@UIStoreData(id = "exit", scope = StoreScope.PERMANENT)
 	public static final class ExitStore extends UIStore {
 
+		private final List<Thread> savers = new ArrayList<>();
+
 		private String  value = "default";
 		private boolean destroyed;
 
@@ -639,6 +693,7 @@ public class JOIDTest {
 
 		@Override
 		public @NonNull JsonObject toJson() {
+			this.savers.add(Thread.currentThread());
 			final JsonObject json = new JsonObject();
 			json.addProperty("value", this.value);
 			return json;
