@@ -49,6 +49,31 @@ public class TextureTest {
 	}
 
 	@Test
+	public void refusesPixelsBeforeItsAllocation() {
+		final HookTexture texture = new HookTexture();
+		try {
+			texture.upload(new int[64]);
+			Assert.fail("An upload before allocate must fail");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The texture is not allocated, call allocate(width, height) before upload(pixels)", expected.getMessage());
+		}
+		Assert.assertTrue(texture.getCalls().isEmpty());
+	}
+
+	@Test
+	public void refusesFewerPixelsThanItsTexels() {
+		final HookTexture texture = new HookTexture();
+		texture.allocate(8, 8);
+		try {
+			texture.upload(new int[63]);
+			Assert.fail("A short upload must fail");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The texture of 8x8 needs 64 pixels and got 63, pass one pixel per texel", expected.getMessage());
+		}
+		Assert.assertEquals(Arrays.asList("allocate 8x8 1"), texture.getCalls());
+	}
+
+	@Test
 	public void generatesTheLevelsOnlyOnceAllocated() {
 		final HookTexture texture = new HookTexture();
 		texture.mipmap(true).mipmap(false).mipmap(true);

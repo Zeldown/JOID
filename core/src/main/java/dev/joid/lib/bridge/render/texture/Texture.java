@@ -43,6 +43,14 @@ public abstract class Texture implements ITexture {
 
 	@Override
 	public final @NonNull Texture upload(final @NonNull int[] pixels) {
+		if (!this.isAllocated()) {
+			throw new IllegalStateException("The texture is not allocated, call allocate(width, height) before upload(pixels)");
+		}
+
+		if (pixels.length < this.width * this.height) {
+			throw new IllegalArgumentException("The texture of " + this.width + "x" + this.height + " needs " + this.width * this.height + " pixels and got " + pixels.length + ", pass one pixel per texel");
+		}
+
 		this.uploadPixels(pixels, MipmapChain.of(this.width, this.height, this.mipmapped).limit(this.getMaxLevels(this.width, this.height)));
 		return this;
 	}
