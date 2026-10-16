@@ -137,6 +137,9 @@ task renderBaseline(type: JavaExec) {
         delete workingDir
         workingDir.mkdirs()
     }
+    if (macOs) {
+        jvmArgs '-XstartOnFirstThread'
+    }
 }
 
 task crossBackendTest(type: JavaExec) {
@@ -164,10 +167,4 @@ task runDemo(type: JavaExec) {
     main = 'com.example.joid.backend.demo.DemoWindow'
     classpath = sourceSets.demo.runtimeClasspath
     systemProperty 'joid.data', file("$buildDir/data").absolutePath
-}
-
-if (macOs) {
-    tasks.withType(JavaForkOptions) {
-        jvmArgs '-XstartOnFirstThread'
-    }
 }

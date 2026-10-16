@@ -45,6 +45,8 @@ The render bridge contract — vertex layout, projection conventions, textures, 
 
 Every run writes an interactive `report.html` next to the renders, and its link is printed at the end of the build when a test fails.
 
+On macOS, `renderBaseline` starts its JVM with `-XstartOnFirstThread`, which GLFW needs. When your engine runs on GLFW too, add `jvmArgs '-XstartOnFirstThread'` to `runDemo` and to the test tasks; leave it out for an AWT or Swing engine, which it would block.
+
 ## License
 
 JOID is licensed under the [Apache License 2.0](https://github.com/Zeldown/JOID/blob/main/LICENSE), and so is this template. Your backend stays yours: license it as you want, as long as you keep the JOID notices in what you redistribute.
