@@ -182,6 +182,22 @@ public class DrawTextTest {
 	}
 
 	@Test
+	public void cutsTheLastWordWiderThanTheLine() {
+		final TextInfo info = TextInfo.create(DrawTextTest.montserrat, 20F);
+		final double width = info.getWidth("i WW");
+		final List<String> lines = DrawTextTest.draw().getLines(width, "i WWW", info);
+		Assert.assertEquals(Arrays.asList("i", "WW", "W"), lines);
+		for (final String line : lines) {
+			Assert.assertTrue(line, info.getWidth(line) <= width);
+		}
+	}
+
+	@Test
+	public void neverWrapsInsideASurrogatePair() {
+		Assert.assertEquals(Arrays.asList("a", "\uD83D\uDE00", "b"), DrawTextTest.draw().getLines(15D, "a\uD83D\uDE00b", this.info));
+	}
+
+	@Test
 	public void keepsAShortTextOnOneLine() {
 		Assert.assertEquals(Collections.singletonList("ab cd"), DrawTextTest.draw().getLines(100D, "ab cd", this.info));
 	}
@@ -363,6 +379,12 @@ public class DrawTextTest {
 	public void neverCutsInsideATag() {
 		DrawTextTest.draw().drawText(0D, 0D, 55D, 30D, "a<c red>bcdef", this.info.copy().markups(DrawTextTest.MARKUP), Align.START, Align.START, TextOverflow.ELLIPSIS, TextMode.OVERFLOW);
 		Assert.assertEquals(Collections.singletonList("a<c red>b...@0.0,0.0"), this.font.drawn);
+	}
+
+	@Test
+	public void neverCutsInsideASurrogatePair() {
+		DrawTextTest.draw().drawText(0D, 0D, 55D, 30D, "a\uD83D\uDE00bcd", this.info, Align.START, Align.START, TextOverflow.ELLIPSIS, TextMode.OVERFLOW);
+		Assert.assertEquals(Collections.singletonList("a...@0.0,0.0"), this.font.drawn);
 	}
 
 	private Text text() {

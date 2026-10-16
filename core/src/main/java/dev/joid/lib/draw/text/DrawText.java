@@ -73,7 +73,7 @@ public final class DrawText {
 					final double overflowStrWidth = element.getInfo().getWidth(overflowStr);
 					int fit = 0;
 					for (int i = 0; i <= elementText.length(); i++) {
-						if (i < elementText.length() && tags[i] != -1 && tags[i] != i) {
+						if (i < elementText.length() && (tags[i] != -1 && tags[i] != i || Character.isLowSurrogate(elementText.charAt(i)))) {
 							continue;
 						}
 
@@ -164,7 +164,7 @@ public final class DrawText {
 			String opened = "";
 			int lastSplit = 0;
 			for (int i = 0; i < elementText.length(); i++) {
-				if (tags[i] != -1) {
+				if (tags[i] != -1 || Character.isLowSurrogate(elementText.charAt(i))) {
 					continue;
 				}
 
@@ -198,6 +198,7 @@ public final class DrawText {
 						currentText = text.copyProperties().modifier(null);
 						lastSplit = elementText.charAt(foundSplit) == ' ' ? foundSplit + 1 : foundSplit;
 						opened = DrawText.opened(elementText, tags, lastSplit);
+						i--;
 					}
 				}
 			}
