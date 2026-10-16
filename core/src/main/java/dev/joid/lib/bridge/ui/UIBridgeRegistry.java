@@ -21,7 +21,7 @@ import dev.joid.lib.ui.core.UI;
 import lombok.Getter;
 import lombok.NonNull;
 
-public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
+public final class UIBridgeRegistry extends BridgeRegistry<UIBridge> {
 
 	private final List<Runnable>                   frameList;
 	private final Map<MouseButton, List<UIBridge>> pressedMap;
@@ -44,7 +44,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 	}
 
 	public void frame() {
-		final List<UIBridge> bridgeList = this.getUIBridgeList();
+		final List<UIBridge> bridgeList = super.getBridgeList();
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final int width = window.getWidth();
@@ -162,18 +162,8 @@ public final class UIBridgeRegistry extends BridgeRegistry<IUIBridge> {
 		return false;
 	}
 
-	private List<UIBridge> getUIBridgeList() {
-		final List<UIBridge> bridgeList = new ArrayList<>();
-		for (final IUIBridge bridge : super.getBridgeList()) {
-			if (bridge instanceof UIBridge) {
-				bridgeList.add((UIBridge) bridge);
-			}
-		}
-		return bridgeList;
-	}
-
 	private List<UIBridge> getInputList() {
-		final List<UIBridge> inputList = this.getUIBridgeList();
+		final List<UIBridge> inputList = new ArrayList<>(super.getBridgeList());
 		Collections.reverse(inputList);
 		return inputList;
 	}

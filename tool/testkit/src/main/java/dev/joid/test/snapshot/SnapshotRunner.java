@@ -227,7 +227,7 @@ public final class SnapshotRunner {
 
 	private void zoom(final double level) {
 		for (final UI ui : this.bridge.getUiList()) {
-			ui.load(this.window.getWidth(), this.window.getHeight(), level);
+			ui.zoom(level);
 		}
 	}
 

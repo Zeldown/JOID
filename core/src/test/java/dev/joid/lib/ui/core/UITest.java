@@ -196,7 +196,8 @@ public class UITest {
 		Assert.assertEquals(1366D, ui.getWindowWidth(), 0D);
 		Assert.assertEquals(768D, ui.getWindowHeight(), 0D);
 		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
-		ui.load(1920D, 1080D, 0.5D);
+		ui.zoom(0.5D);
+		ui.load(1920D, 1080D);
 		Assert.assertEquals(1, ui.inits);
 		Assert.assertEquals(1920D, ui.getWindowWidth(), 0D);
 		Assert.assertEquals(1080D, ui.getWindowHeight(), 0D);

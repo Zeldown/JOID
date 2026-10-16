@@ -101,12 +101,13 @@ public abstract class UI implements IUI, IIndexedElement {
 	@NonNull private final EventBus                   eventBus;
 	@NonNull private final IndexedList<@NonNull Node> nodeList;
 
-	private final List<Task>               taskList;
-	private final NodeBindings             bindings;
-	private final List<Task>               keptTaskList;
-	private final List<Shortcut>           shortcutList;
-	private final List<Shortcut>           keptShortcutList;
-	private final InteractiveValue<Double> zoomValue;
+	private final List<Task>                             taskList;
+	private final NodeBindings                           bindings;
+	private final List<Task>                             keptTaskList;
+	private final List<Shortcut>                         shortcutList;
+	private final List<Shortcut>                         keptShortcutList;
+	private final InteractiveValue<Double>               zoomValue;
+	private final Map<Class<? extends UIStore>, UIStore> storeMap;
 
 	@Getter
 	private final UIView view;
@@ -121,7 +122,6 @@ public abstract class UI implements IUI, IIndexedElement {
 	private Transition transition;
 
 	private PopupTransition                              popupTransition;
-	private Map<Class<? extends UIStore>, UIStore>       storeMap;
 	private Map<Class<? extends Annotation>, Annotation> annotationMap;
 
 	private double zoom;
@@ -197,15 +197,11 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final void load(final double finalWidth, final double finalHeight) {
-		this.load(finalWidth, finalHeight, this.view.getZoom());
-	}
-
-	public final void load(final double finalWidth, final double finalHeight, final double zoomLevel) {
 		final long start = System.nanoTime();
 
 		this.bindings.subscribe(this.loaded);
 		this.view.resize(finalWidth, finalHeight);
-		this.zoomValue.update(zoomLevel);
+		this.zoomValue.update(this.view.getZoom());
 
 		if (!this.initialized) {
 			UIPropertyHook.load(this);

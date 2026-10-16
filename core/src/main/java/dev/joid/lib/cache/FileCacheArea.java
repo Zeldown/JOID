@@ -181,12 +181,12 @@ public final class FileCacheArea {
 		return found;
 	}
 
-	private @NonNull File[] list(final String key) {
+	private File[] list(final String key) {
 		final File[] files = this.getDirectory().listFiles((parent, name) -> name.equals(key) || (name.startsWith(key + "~") && name.substring(key.length() + 1).matches("[0-9]+")));
 		return files != null ? files : new File[0];
 	}
 
-	private @NonNull File write(final String description, final IFileCacheWriter writer) throws IOException {
+	private File write(final String description, final IFileCacheWriter writer) throws IOException {
 		final File directory = this.getDirectory();
 		try {
 			Files.createDirectories(directory.toPath());
@@ -209,7 +209,7 @@ public final class FileCacheArea {
 		return temporary;
 	}
 
-	private @NonNull File publish(final String key, final File temporary) throws IOException {
+	private File publish(final String key, final File temporary) throws IOException {
 		final File existing = this.find(key);
 		if (existing != null) {
 			FileUtils.deleteQuietly(temporary);
@@ -244,11 +244,11 @@ public final class FileCacheArea {
 		}
 	}
 
-	private @NonNull File newTemporary() {
+	private File newTemporary() {
 		return new File(this.getDirectory(), "." + UUID.randomUUID() + ".tmp");
 	}
 
-	private @NonNull Object lock(final String key) {
+	private Object lock(final String key) {
 		return this.lockMap.computeIfAbsent(key, ignored -> new Object());
 	}
 
@@ -259,7 +259,7 @@ public final class FileCacheArea {
 		return name;
 	}
 
-	private static @NonNull Duration readRetention(final File directory) {
+	private static Duration readRetention(final File directory) {
 		try {
 			final Duration retention = Duration.parse(new String(Files.readAllBytes(new File(directory, FileCacheArea.MARKER).toPath()), StandardCharsets.UTF_8).trim());
 			return retention.isNegative() || retention.isZero() ? Duration.ofDays(30L) : retention;
@@ -276,7 +276,7 @@ public final class FileCacheArea {
 		file.setLastModified(System.currentTimeMillis());
 	}
 
-	private static @NonNull String hash(final File file) throws IOException {
+	private static String hash(final File file) throws IOException {
 		final MessageDigest digest;
 		try {
 			digest = MessageDigest.getInstance("SHA-1");
@@ -293,7 +293,7 @@ public final class FileCacheArea {
 		return String.format(Locale.ROOT, "%040x", new BigInteger(1, digest.digest()));
 	}
 
-	private static @NonNull String describe(final Duration duration) {
+	private static String describe(final Duration duration) {
 		if (duration.toDays() > 0L && duration.equals(Duration.ofDays(duration.toDays()))) {
 			return duration.toDays() + (duration.toDays() == 1L ? " day" : " days");
 		}

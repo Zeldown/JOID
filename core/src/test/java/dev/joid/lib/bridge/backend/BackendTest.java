@@ -21,7 +21,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
-import dev.joid.lib.bridge.ui.IUIBridge;
+import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
@@ -63,7 +63,7 @@ public class BackendTest {
 			BridgeHandler.WINDOW.unregister(this.backend.window);
 			BridgeHandler.RENDER.unregister(this.backend.render);
 			BridgeHandler.THREAD.unregister(this.backend.thread);
-			for (final IUIBridge bridge : BridgeHandler.UI.getBridgeList()) {
+			for (final UIBridge bridge : BridgeHandler.UI.getBridgeList()) {
 				if (bridge instanceof WindowUIBridge) {
 					BridgeHandler.UI.unregister(bridge);
 				}

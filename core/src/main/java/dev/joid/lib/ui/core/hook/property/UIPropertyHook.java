@@ -78,16 +78,16 @@ public final class UIPropertyHook {
 		JsonFiles.write(UIPropertyHook.getFile(ui), UIPropertyHook.GSON.toJson(json));
 	}
 
-	private static @NonNull File getFile(final @NonNull UI ui) {
+	private static File getFile(final UI ui) {
 		return new File(new File(JOIDEnv.getDataDir(), "property"), ui.getClass().getName() + ".property");
 	}
 
-	private static @NonNull String getKey(final @NonNull Field field) {
+	private static String getKey(final Field field) {
 		final UIProperty property = field.getAnnotation(UIProperty.class);
 		return property.value().isEmpty() ? field.getName() : property.value();
 	}
 
-	private static @NonNull List<Field> getFields(final @NonNull UI ui) {
+	private static List<Field> getFields(final UI ui) {
 		final String className = ui.getClass().getName();
 		if (!JOIDEnv.isDevMode() && UIPropertyHook.PROPERTY_MAP.containsKey(className)) {
 			return UIPropertyHook.PROPERTY_MAP.get(className);
@@ -116,7 +116,7 @@ public final class UIPropertyHook {
 		return fields;
 	}
 
-	private static JsonObject read(final @NonNull UI ui) {
+	private static JsonObject read(final UI ui) {
 		return JsonFiles.read(UIPropertyHook.getFile(ui), "the properties of " + ui.getClass().getSimpleName() + " keep their default values");
 	}
 

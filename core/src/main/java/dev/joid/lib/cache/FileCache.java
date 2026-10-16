@@ -48,7 +48,7 @@ public final class FileCache {
 		return freed;
 	}
 
-	private static @NonNull String describe(final long bytes) {
+	private static String describe(final long bytes) {
 		if (bytes >= 1L << 30) {
 			return String.format(Locale.ROOT, "%.1f GB", bytes / (double) (1L << 30));
 		}

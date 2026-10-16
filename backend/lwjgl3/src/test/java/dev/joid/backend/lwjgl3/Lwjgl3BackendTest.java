@@ -11,8 +11,8 @@ import org.junit.Test;
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.backend.lwjgl3.snapshot.SnapshotProfile;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.ui.IUIBridge;
 import dev.joid.lib.bridge.ui.StackUIBridge;
+import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.color.Color;
 
@@ -25,7 +25,7 @@ public class Lwjgl3BackendTest {
 
 	@Test
 	public void registersAWindowUIBridgeThatClearsToItsBackground() {
-		final List<IUIBridge> previous = Lwjgl3BackendTest.unregisterUIBridges();
+		final List<UIBridge> previous = Lwjgl3BackendTest.unregisterUIBridges();
 		final Lwjgl3SnapshotBackend backend = new Lwjgl3SnapshotBackend();
 		try {
 			backend.create(64, 64);
@@ -46,7 +46,7 @@ public class Lwjgl3BackendTest {
 
 	@Test
 	public void keepsTheUIBridgeRegisteredBefore() {
-		final List<IUIBridge> previous = Lwjgl3BackendTest.unregisterUIBridges();
+		final List<UIBridge> previous = Lwjgl3BackendTest.unregisterUIBridges();
 		final Lwjgl3SnapshotBackend backend = new Lwjgl3SnapshotBackend();
 		final StackUIBridge bridge = new StackUIBridge() {};
 		BridgeHandler.UI.register(bridge);
@@ -75,9 +75,9 @@ public class Lwjgl3BackendTest {
 		}
 	}
 
-	private static List<IUIBridge> unregisterUIBridges() {
-		final List<IUIBridge> bridgeList = new ArrayList<>();
-		IUIBridge bridge;
+	private static List<UIBridge> unregisterUIBridges() {
+		final List<UIBridge> bridgeList = new ArrayList<>();
+		UIBridge bridge;
 		while ((bridge = BridgeHandler.UI.find(current -> true)) != null) {
 			BridgeHandler.UI.unregister(bridge);
 			bridgeList.add(0, bridge);

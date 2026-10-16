@@ -1,5 +1,6 @@
 package dev.joid.lib.bridge.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import dev.joid.lib.bridge.IBridge;
@@ -21,6 +22,13 @@ public interface IUIBridge extends IBridge {
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz);
 
 	@NonNull public List<@NonNull UI> getUiList();
+
+	public default void closeAll() {
+		for (final UI ui : new ArrayList<>(this.getUiList())) {
+			ui.dispose();
+			this.remove(ui);
+		}
+	}
 
 	public default double getInterfaceScale(final @NonNull UI ui) {
 		return 1D;

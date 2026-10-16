@@ -40,7 +40,7 @@ public final class AudioDownmix {
 		return stereo;
 	}
 
-	private static @NonNull float[][] weights(final int channels) {
+	private static float[][] weights(final int channels) {
 		final float half = 0.70710677F;
 		final float[] left = {1F, 0F};
 		final float[] right = {0F, 1F};

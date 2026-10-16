@@ -116,13 +116,6 @@ public abstract class StackUIBridge extends UIBridge {
 		}
 	}
 
-	public void closeAll() {
-		for (final UI ui : new ArrayList<>(super.getUiList())) {
-			ui.dispose();
-			this.remove(ui);
-		}
-	}
-
 	@Override
 	public boolean canHandle(final @NonNull UI ui) {
 		return true;

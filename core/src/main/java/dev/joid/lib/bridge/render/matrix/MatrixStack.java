@@ -100,7 +100,7 @@ public final class MatrixStack {
 		};
 	}
 
-	public void multiply(final float[] other) {
+	public void multiply(final @NonNull float[] other) {
 		final float[] result = new float[16];
 		for (int column = 0; column < 4; column++) {
 			for (int row = 0; row < 4; row++) {
@@ -118,15 +118,15 @@ public final class MatrixStack {
 		return this.stack.size();
 	}
 
-	public float[] getMatrix() {
+	public @NonNull float[] getMatrix() {
 		return this.matrix.clone();
 	}
 
-	public float[] getRawMatrix() {
+	public @NonNull float[] getRawMatrix() {
 		return this.matrix;
 	}
 
-	public float[] getNormalMatrix() {
+	public @NonNull float[] getNormalMatrix() {
 		final float[] m = this.matrix;
 		final float c00 = m[5] * m[10] - m[9] * m[6];
 		final float c01 = m[9] * m[2] - m[1] * m[10];

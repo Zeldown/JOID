@@ -75,12 +75,12 @@ public final class UIStoreHook {
 		return data;
 	}
 
-	private static @NonNull String getId(final @NonNull UIStore store) {
+	private static String getId(final UIStore store) {
 		final String id = store.getData().id();
 		return id.isEmpty() ? store.getClass().getName() : id;
 	}
 
-	private static @NonNull File getFile(final @NonNull UIStore store) {
+	private static File getFile(final UIStore store) {
 		return new File(new File(JOIDEnv.getDataDir(), "store"), UIStoreHook.getId(store) + ".store");
 	}
 

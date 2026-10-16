@@ -151,11 +151,7 @@ public final class JOID {
 	public static @NonNull IUIBridge forceOpen(final @NonNull UI ui) {
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
 		ThreadUtils.runOnRenderThread(() -> {
-			for (final UI currentUi : new ArrayList<>(bridge.getUiList())) {
-				currentUi.dispose();
-				bridge.remove(currentUi);
-			}
-
+			bridge.closeAll();
 			bridge.open(ui);
 		});
 		return bridge;
@@ -190,7 +186,7 @@ public final class JOID {
 		UIStoreHook.saveAll();
 	}
 
-	private static @NonNull IUIBridge getOpeningBridge(final @NonNull UI ui) {
+	private static IUIBridge getOpeningBridge(final UI ui) {
 		final IUIBridge bridge = BridgeHandler.UI.get(ui);
 		if (bridge == null) {
 			throw new IllegalStateException("No IUIBridge can open " + ui.getClass().getSimpleName() + ": register one whose canHandle accepts it");
