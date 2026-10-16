@@ -383,6 +383,15 @@ public class ResourceTest {
 	}
 
 	@Test
+	public void leavesItsCacheUnderItsFirstIdOnceRenamed() {
+		final MemoryResourceCache cache = MemoryResourceCache.create();
+		final Resource resource = ResourceBuilder.create().cache(cache).compute("image", () -> new ResourceData("image", null)).uniqueId("renamed");
+		resource.clear();
+		Assert.assertNull(cache.get("image"));
+		Assert.assertTrue(cache.getDataList().isEmpty());
+	}
+
+	@Test
 	public void loadsAgainOnceCleared() {
 		final Decoder decoder = new Decoder(true);
 		final Resource resource = ResourceTest.resource(decoder);

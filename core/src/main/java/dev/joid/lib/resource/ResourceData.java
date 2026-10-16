@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDEnv;
@@ -34,10 +33,9 @@ public final class ResourceData {
 	private static final Queue<ResourceData> COLLECTED      = new ConcurrentLinkedQueue<>();
 	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
-	private final List<Thread>              tasks          = new CopyOnWriteArrayList<>();
-	private final List<Runnable>            loadListeners  = new CopyOnWriteArrayList<>();
-	private final List<Consumer<Throwable>> errorListeners = new CopyOnWriteArrayList<>();
-	private final Set<ResourceData>         forks          = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+	private final List<Thread>      tasks     = new CopyOnWriteArrayList<>();
+	private final Set<Resource>     resources = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+	private final Set<ResourceData> forks     = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	@Getter private String                    uniqueId;
 	@Getter private volatile IResourceDecoder decoder;
@@ -312,26 +310,13 @@ public final class ResourceData {
 			JOIDLog.warn("The resource " + this.uniqueId + " cannot be read: " + ResourceData.describe(error, !this.isBorrowed()) + ". It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.");
 		}
 
-		for (final Consumer<Throwable> listener : this.errorListeners) {
-			ThreadUtils.runOnRenderThread(() -> listener.accept(error));
+		for (final Resource resource : this.getResources()) {
+			resource.fireError(error);
 		}
 	}
 
-	public synchronized @NonNull ResourceData onLoad(final @NonNull Runnable listener) {
-		this.loadListeners.add(listener);
-		if (this.loaded) {
-			ThreadUtils.runOnRenderThread(listener);
-		}
-		return this;
-	}
-
-	public synchronized @NonNull ResourceData onError(final @NonNull Consumer<@NonNull Throwable> listener) {
-		this.errorListeners.add(listener);
-		if (this.error != null) {
-			final Throwable error = this.error;
-			ThreadUtils.runOnRenderThread(() -> listener.accept(error));
-		}
-		return this;
+	public synchronized void listen(final @NonNull Resource resource) {
+		this.resources.add(resource);
 	}
 
 	public boolean isFailed() {
@@ -345,6 +330,12 @@ public final class ResourceData {
 	public @NonNull List<@NonNull ResourceData> getForks() {
 		synchronized (this.forks) {
 			return new ArrayList<>(this.forks);
+		}
+	}
+
+	private @NonNull List<@NonNull Resource> getResources() {
+		synchronized (this.resources) {
+			return new ArrayList<>(this.resources);
 		}
 	}
 
@@ -491,8 +482,8 @@ public final class ResourceData {
 		}
 
 		this.loaded = true;
-		for (final Runnable listener : this.loadListeners) {
-			ThreadUtils.runOnRenderThread(listener);
+		for (final Resource resource : this.getResources()) {
+			resource.fireLoad();
 		}
 	}
 

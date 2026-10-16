@@ -1,5 +1,7 @@
 package dev.joid.lib.resource;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -8,9 +10,9 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.resource.cache.IResourceCache;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
+import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -20,6 +22,9 @@ public final class Resource {
 
 	private final ResourceData            data;
 	@Getter private final ResourceBuilder builder;
+
+	private final List<Consumer<Resource>>              loadListeners  = new CopyOnWriteArrayList<>();
+	private final List<BiConsumer<Resource, Throwable>> errorListeners = new CopyOnWriteArrayList<>();
 
 	@Getter private boolean            blocking;
 	@Getter private ResourceProperties properties;
@@ -85,13 +90,38 @@ public final class Resource {
 	}
 
 	public @NonNull Resource onLoad(final @NonNull Consumer<@NonNull Resource> callback) {
-		this.data.onLoad(() -> callback.accept(this));
+		synchronized (this.data) {
+			this.loadListeners.add(callback);
+			this.data.listen(this);
+			if (this.data.isLoaded()) {
+				ThreadUtils.runOnRenderThread(() -> callback.accept(this));
+			}
+		}
 		return this;
 	}
 
 	public @NonNull Resource onError(final @NonNull BiConsumer<@NonNull Resource, @NonNull Throwable> callback) {
-		this.data.onError(error -> callback.accept(this, error));
+		synchronized (this.data) {
+			this.errorListeners.add(callback);
+			this.data.listen(this);
+			final Throwable error = this.data.getError();
+			if (error != null) {
+				ThreadUtils.runOnRenderThread(() -> callback.accept(this, error));
+			}
+		}
 		return this;
+	}
+
+	public void fireLoad() {
+		for (final Consumer<Resource> listener : this.loadListeners) {
+			ThreadUtils.runOnRenderThread(() -> listener.accept(this));
+		}
+	}
+
+	public void fireError(final @NonNull Throwable error) {
+		for (final BiConsumer<Resource, Throwable> listener : this.errorListeners) {
+			ThreadUtils.runOnRenderThread(() -> listener.accept(this, error));
+		}
 	}
 
 	public @NonNull Resource reset() {
@@ -276,11 +306,7 @@ public final class Resource {
 
 	public void clear() {
 		this.data.clear();
-
-		final IResourceCache cache = this.builder.getCache();
-		if (cache != null && cache.get(this.data.getUniqueId()) == this.data) {
-			cache.remove(this.data.getUniqueId());
-		}
+		this.builder.remove(this.data);
 	}
 
 	private @NonNull Resource derive(final @NonNull ResourceData data) {

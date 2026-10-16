@@ -90,7 +90,7 @@ public class ResourceFailureTest {
 	public void failsAMissingPath() {
 		final List<Throwable> errors = new ArrayList<>();
 		final Resource resource = ResourceBuilder.create().cache(null).of("joid-missing/missing.png").blocking();
-		resource.getResourceData().onError(errors::add);
+		resource.onError((failed, error) -> errors.add(error));
 		resource.prepareBind();
 		Assert.assertTrue(resource.isFailed());
 		Assert.assertEquals(1, errors.size());

@@ -1,5 +1,6 @@
 package dev.joid.lib.resource;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -300,11 +301,12 @@ public class ResourceDataTest {
 	public void reportsItsFailureOnTheRenderThread() {
 		final QueueThreadBridge thread = new QueueThreadBridge();
 		final List<String> errors = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", null).onError(error -> errors.add(error.getMessage()));
+		final ResourceData data = new ResourceData("image", null);
+		final Resource resource = ResourceDataTest.resource(data).onError((failed, error) -> errors.add(error.getMessage()));
 		BridgeHandler.THREAD.register(thread);
 		try {
 			data.fail(new IllegalStateException("missing"));
-			data.onError(error -> errors.add("late " + error.getMessage()));
+			resource.onError((failed, error) -> errors.add("late " + error.getMessage()));
 			Assert.assertTrue(errors.isEmpty());
 			thread.run();
 			Assert.assertEquals(Arrays.asList("missing", "late missing"), errors);
@@ -316,11 +318,12 @@ public class ResourceDataTest {
 	@Test
 	public void notifiesItsLoadOnceDecoded() {
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder()).onLoad(() -> loads.add("load"));
+		final ResourceData data = new ResourceData("image", new Decoder());
+		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
 		Assert.assertTrue(loads.isEmpty());
 		data.generate(false);
 		Assert.assertEquals(Collections.singletonList("load"), loads);
-		data.onLoad(() -> loads.add("late"));
+		resource.onLoad(loaded -> loads.add("late"));
 		Assert.assertEquals(Arrays.asList("load", "late"), loads);
 	}
 
@@ -328,11 +331,12 @@ public class ResourceDataTest {
 	public void notifiesItsLoadOnTheRenderThread() {
 		final QueueThreadBridge thread = new QueueThreadBridge();
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder()).onLoad(() -> loads.add("load"));
+		final ResourceData data = new ResourceData("image", new Decoder());
+		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
 		BridgeHandler.THREAD.register(thread);
 		try {
 			data.generate(false);
-			data.onLoad(() -> loads.add("late"));
+			resource.onLoad(loaded -> loads.add("late"));
 			Assert.assertTrue(loads.isEmpty());
 			thread.run();
 			Assert.assertEquals(Arrays.asList("load", "late"), loads);
@@ -344,20 +348,51 @@ public class ResourceDataTest {
 	@Test
 	public void notifiesTheLoadOfAGivenTexture() {
 		final List<String> loads = new ArrayList<>();
-		new ResourceData("image", null).texture(new Texture(4, 2)).onLoad(() -> loads.add("load")).generate(false);
+		final ResourceData data = new ResourceData("image", null).texture(new Texture(4, 2));
+		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
+		data.generate(false);
+		Assert.assertTrue(resource.isLoaded());
 		Assert.assertEquals(Collections.singletonList("load"), loads);
 	}
 
 	@Test
 	public void notifiesItsLoadOncePerLoad() {
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder()).onLoad(() -> loads.add("load"));
+		final ResourceData data = new ResourceData("image", new Decoder());
+		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
 		ResourceDataTest.load(ResourceDataTest.load(data));
+		Assert.assertTrue(resource.isLoaded());
 		Assert.assertEquals(1, loads.size());
 		data.reload(new Decoder());
 		Assert.assertEquals(1, loads.size());
 		data.generate(false);
 		Assert.assertEquals(2, loads.size());
+	}
+
+	@Test
+	public void notifiesOnlyTheResourcesThatListen() {
+		final List<String> loads = new ArrayList<>();
+		final ResourceData data = new ResourceData("image", new Decoder());
+		final Resource listening = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("listening"));
+		final Resource copy = listening.copy();
+		data.generate(false);
+		Assert.assertEquals(Collections.singletonList("listening"), loads);
+		Assert.assertTrue(copy.isLoaded());
+	}
+
+	@Test
+	public void forgetsTheListenersOfAResourceNoLongerUsed() throws InterruptedException {
+		final List<String> loads = new ArrayList<>();
+		final ResourceData data = new ResourceData("image", new Decoder());
+		final WeakReference<Resource> reference = new WeakReference<>(ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load")));
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (reference.get() != null && System.currentTimeMillis() < deadline) {
+			System.gc();
+			Thread.sleep(10L);
+		}
+		data.generate(false);
+		Assert.assertNull(reference.get());
+		Assert.assertTrue(loads.isEmpty());
 	}
 
 	@Test
@@ -370,9 +405,10 @@ public class ResourceDataTest {
 				throw new IllegalStateException("broken");
 			}
 
-		}).onLoad(() -> loads.add("load"));
+		});
+		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
 		data.generate(false);
-		Assert.assertTrue(data.isFailed());
+		Assert.assertTrue(resource.isFailed());
 		Assert.assertTrue(loads.isEmpty());
 	}
 
@@ -489,6 +525,10 @@ public class ResourceDataTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesANullId() {
 		new ResourceData(null, null);
+	}
+
+	private static Resource resource(final ResourceData data) {
+		return new Resource(ResourceBuilder.create().cache(null), data);
 	}
 
 	public static ResourceData load(final ResourceData data) {

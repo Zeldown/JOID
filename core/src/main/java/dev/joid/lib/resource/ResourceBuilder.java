@@ -102,6 +102,18 @@ public final class ResourceBuilder {
 		return this.properties.copy();
 	}
 
+	public void remove(final @NonNull ResourceData data) {
+		if (this.cache == null) {
+			return;
+		}
+
+		final String uniqueId = this.computed.getOrDefault(data, data.getUniqueId());
+		if (this.cache.get(uniqueId) == data) {
+			this.cache.remove(uniqueId);
+		}
+		this.computed.remove(data);
+	}
+
 	public void reload() {
 		if (this.cache == null) {
 			return;
