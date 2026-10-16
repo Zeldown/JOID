@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.node.effect.impl;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -10,10 +9,8 @@ import dev.joid.lib.shader.pipeline.pass.BlurShaderPass;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
-import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class BlurNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Float> radiusSupplier;
@@ -36,6 +33,11 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
+	public boolean shouldApply(final @NonNull Node node) {
+		return this.radiusSupplier.get() > 0F;
+	}
+
+	@Override
 	public boolean isShaderEffect() {
 		return true;
 	}
@@ -43,10 +45,6 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 	@Override
 	public List<IShaderPass> toShaderPasses(final @NonNull Node node) {
 		final float radius = this.radiusSupplier.get();
-		if (radius <= 0F) {
-			return Collections.emptyList();
-		}
-
 		return Arrays.asList(BlurShaderPass.create(radius, true), BlurShaderPass.create(radius, false));
 	}
 

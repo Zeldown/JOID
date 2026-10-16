@@ -32,6 +32,7 @@ import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.color.Color;
@@ -269,7 +270,7 @@ public abstract class Node implements INode {
 		this.shortcutList    = new CopyOnWriteArrayList<>();
 		this.waitingList     = new ArrayList<>();
 		this.requirementList = new ArrayList<>();
-		this.positionValue   = InteractiveValue.create(this.bindings, "position", () -> Point.create(this.defaultX, this.defaultY), this::locate).events(Node.BEFORE_MOVE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), Node.MOVE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
+		this.positionValue   = InteractiveValue.create(this.bindings, "move", () -> Point.create(this.defaultX, this.defaultY), this::locate).events(Node.BEFORE_MOVE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), Node.MOVE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
 		this.scrollXValue    = this.createScrollValue(Axis.HORIZONTAL);
 		this.scrollYValue    = this.createScrollValue(Axis.VERTICAL);
 		this.animatorMap     = new HashMap<>();
@@ -368,177 +369,10 @@ public abstract class Node implements INode {
 					}
 
 					this.place();
-
-					final boolean wasHovered = this.hovered;
-					this.hovered = this.computeHovered();
-					final boolean hoverShown = this.hovered && this.isEnabled();
-					if (hoverShown != this.hoverShown) {
-						this.hoverShown = hoverShown;
-						this.hoverAnimator.sequence(this.hoverDuration, hoverShown ? 1F : 0F, this.hoverEquation).start();
-					}
-
-					if (!wasHovered && this.hovered) {
-						this.fire(Node.HOVER_START, () -> NodeHoverEvent.create(this, mouseX, mouseY));
-					}
-
-					if (wasHovered && !this.hovered) {
-						this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, mouseX, mouseY));
-					}
-
-					if (this.hovered) {
-						this.fire(Node.HOVER, () -> NodeHoverEvent.create(this, mouseX, mouseY));
-					}
-
-					boolean scrollsX = false;
-					boolean scrollsY = false;
-					final boolean measured = this.scrollMeasured;
-					if (this.overflow == OverflowProperty.SCROLL) {
-						double offsetX = Double.POSITIVE_INFINITY;
-						double offsetY = Double.POSITIVE_INFINITY;
-						this.maxScrollX = this.maxScrollY = 0D;
-						for (final Node child : this.drawList) {
-							if (child.position != PositionProperty.ABSOLUTE) {
-								offsetX = Math.min(offsetX, child.getPlacedX());
-								offsetY = Math.min(offsetY, child.getPlacedY());
-								this.maxScrollX = Math.max(this.maxScrollX, child.getPlacedX() + child.getContentWidth() - this.width);
-								this.maxScrollY = Math.max(this.maxScrollY, child.getPlacedY() + child.getContentHeight() - this.height);
-							}
-						}
-
-						if (this.hasOverflowX()) {
-							this.maxScrollX += offsetX;
-							scrollsX = true;
-						}
-
-						if (this.hasOverflowY()) {
-							this.maxScrollY += offsetY;
-							scrollsY = true;
-						}
-
-						this.scrollMeasured = true;
-					}
-
-					final double targetScrollX = this.targetScrollX;
-					final double targetScrollY = this.targetScrollY;
-					this.scrollXValue.update(targetScrollX);
-					this.scrollYValue.update(targetScrollY);
-					this.scrollEndX = this.scrollEndX && this.targetScrollX == -this.maxScrollX;
-					this.scrollEndY = this.scrollEndY && this.targetScrollY == -this.maxScrollY;
-					if (!measured && this.scrollMeasured && this.scrollEndX && this.targetScrollX == targetScrollX) {
-						this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, Axis.HORIZONTAL, targetScrollX, targetScrollX));
-					}
-
-					if (!measured && this.scrollMeasured && this.scrollEndY && this.targetScrollY == targetScrollY) {
-						this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, Axis.VERTICAL, targetScrollY, targetScrollY));
-					}
-
-					if (this.targetScrollX != this.scrollX) {
-						final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-						this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, speed / 3D, speed);
-					}
-
-					if (this.targetScrollY != this.scrollY) {
-						final double speed = this.scrollbar != null && this.scrollbar.isDragging() ? 1D : 0.2D;
-						this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, speed / 3D, speed);
-					}
-
-					if (this.scrollEndX && this.scrollX == this.targetScrollX) {
-						this.scrollEndX = false;
-						this.fire(Node.SCROLL_END_REACHED, () -> NodeScrollEvent.Post.create(this, Axis.HORIZONTAL, this.scrollX, this.scrollX));
-					}
-
-					if (this.scrollEndY && this.scrollY == this.targetScrollY) {
-						this.scrollEndY = false;
-						this.fire(Node.SCROLL_END_REACHED, () -> NodeScrollEvent.Post.create(this, Axis.VERTICAL, this.scrollY, this.scrollY));
-					}
-
-					if (this.overflow == OverflowProperty.SCROLL) {
-						final PixelGrid grid = render.getPixelGrid();
-						final double offsetX = scrollsX ? grid.quantizeX(this.scrollX) : 0D;
-						final double offsetY = scrollsY ? grid.quantizeY(this.scrollY) : 0D;
-						for (final Node child : this.drawList) {
-							if (child.position != PositionProperty.ABSOLUTE) {
-								child.shiftX = offsetX;
-								child.shiftY = offsetY;
-								child.place();
-							}
-						}
-					}
-
-					if (this.dragging && BridgeHandler.WINDOW.get().isMouseGrabbed()) {
-						this.stopDragging();
-					}
-
-					if (this.draggable != null && this.draggable.isEnabled(this)) {
-						if (!this.dragging && !this.dragged) {
-							this.targetDragX = this.getAbsoluteX();
-							this.targetDragY = this.getAbsoluteY();
-						}
-
-						if (this.draggable.getAreaType() != DraggableAreaType.FREE && (this.draggable.getAreaType() != DraggableAreaType.PARENT || this.parent != null) && (this.dragging || this.draggable.getType() == DraggableType.MOVE)) {
-							final double[] bounds = this.draggable.getBounds(this);
-							final double boundX = bounds[0];
-							final double boundY = bounds[1];
-							final double boundWidth = bounds[2];
-							final double boundHeight = bounds[3];
-
-							final double targetX = this.targetDragX;
-							final double targetY = this.targetDragY;
-							if (this.targetDragX < boundX) {
-								this.targetDragX = boundX;
-							} else if (this.targetDragX + this.width > boundX + boundWidth) {
-								this.targetDragX = boundX + boundWidth - this.width;
-							}
-
-							if (this.targetDragY < boundY) {
-								this.targetDragY = boundY;
-							} else if (this.targetDragY + this.height > boundY + boundHeight) {
-								this.targetDragY = boundY + boundHeight - this.height;
-							}
-
-							if (this.targetDragX != targetX || this.targetDragY != targetY) {
-								this.dragged = true;
-							}
-						}
-
-						if (this.dragged) {
-							if (this.draggable.getType() == DraggableType.MOVE) {
-								final double newAbsoluteX = this.ui.lerpByFramerate(this.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
-								final double newAbsoluteY = this.ui.lerpByFramerate(this.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
-								final double diffX = this.getAbsoluteX() - this.x;
-								final double diffY = this.getAbsoluteY() - this.y;
-
-								if (!this.dragTo(newAbsoluteX - diffX, newAbsoluteY - diffY)) {
-									this.targetDragX = this.getAbsoluteX();
-									this.targetDragY = this.getAbsoluteY();
-								}
-							} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
-								final double newAbsoluteX = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
-								final double newAbsoluteY = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
-								this.draggedNode.moveTo(newAbsoluteX, newAbsoluteY);
-							}
-
-							if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
-								this.dragged = false;
-							}
-						}
-					}
-
-					if (this.x != this.drawnX || this.y != this.drawnY) {
-						if (!this.moving) {
-							this.restX = this.drawnX;
-							this.restY = this.drawnY;
-							this.moving = true;
-						}
-					} else {
-						this.moving = false;
-					}
-
-					this.drawnX = this.x;
-					this.drawnY = this.y;
-					if (this.moving) {
-						render.quantize(this.x - this.restX, this.y - this.restY);
-					}
+					this.updateHover(mouseX, mouseY);
+					this.scrollContent(render);
+					this.animateDrag();
+					this.trackMovement(render);
 
 					final boolean wasMounted = this.mounted;
 					this.mounted = this.isMounted();
@@ -547,94 +381,7 @@ public abstract class Node implements INode {
 						this.fire(Node.MOUNT, () -> NodeEvent.create(this));
 					}
 
-					final List<NodeEffect<Node>> otherEffects = new ArrayList<>();
-					final List<NodeEffect<Node>> selfShaderEffects = new ArrayList<>();
-					final List<NodeEffect<Node>> subtreeShaderEffects = new ArrayList<>();
-					for (final NodeEffect<Node> effect : this.getAppliedEffects()) {
-						if (!effect.isShaderEffect()) {
-							otherEffects.add(effect);
-						} else if (effect.getScope() == NodeEffectScope.SELF) {
-							selfShaderEffects.add(effect);
-						} else {
-							subtreeShaderEffects.add(effect);
-						}
-					}
-
-					final Runnable content = () -> {
-						if (this.overflow != OverflowProperty.NONE) {
-							this.drawList.forEach(child -> child.overflowArea = this);
-						} else if (this.overflowArea != null) {
-							this.drawList.forEach(child -> child.overflowArea = this.overflowArea);
-						}
-
-						if (this.skeleton != null && !this.mounted) {
-							this.skeleton.render(mouseX, mouseY);
-							this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-							return;
-						}
-
-						this.drawList.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
-						final Runnable selfDraw = () -> {
-							if (this.mounted) {
-								this.draw(mouseX, mouseY);
-							} else {
-								this.drawSkeleton(mouseX, mouseY);
-							}
-						};
-						if (selfShaderEffects.isEmpty()) {
-							selfDraw.run();
-						} else {
-							final List<IShaderPass> selfPasses = selfShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-							ShaderPipeline.render(this, selfPasses, selfDraw);
-						}
-						this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-						if (this.mounted && this.label != null && !this.label.isEmpty()) {
-							DrawUtils.TEXT.drawText(this.x + (this.width - this.label.getWidth()) / 2D, this.y + (this.height - this.label.getHeight()) / 2D, this.label.getWidth(), this.label.getHeight(), this.label, TextMode.NORMAL);
-						}
-
-						this.drawList.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
-						if (!this.layerList.isEmpty()) {
-							final double localX = mouseX - this.getAbsoluteX();
-							final double localY = mouseY - this.getAbsoluteY();
-							matrix.with(layerMatrix -> {
-								layerMatrix.translate(this.x, this.y, 0D);
-								this.layerList.forEach(layer -> layer.draw(this, localX, localY));
-							});
-						}
-
-						if (this.draggedNode != null) {
-							this.renderDraggedNode(mouseX, mouseY);
-						}
-						this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
-					};
-					final Runnable maskDraw = () -> {
-						if (this.overflow != OverflowProperty.NONE) {
-							this.ui.mask(this.x, this.y, this.width, this.height, content);
-						} else {
-							content.run();
-						}
-					};
-
-					Runnable effectDraw = () -> {
-						if (!subtreeShaderEffects.isEmpty()) {
-							final List<IShaderPass> subtreePasses = subtreeShaderEffects.stream().flatMap(e -> e.toShaderPasses(this).stream()).collect(Collectors.toList());
-							ShaderPipeline.render(this, subtreePasses, maskDraw);
-						} else {
-							maskDraw.run();
-						}
-
-						if (this.isScrollbarShown()) {
-							this.scrollbar.render(mouseX, mouseY);
-						} else if (this.scrollbar != null) {
-							((Node) this.scrollbar).endHover(true);
-						}
-					};
-					for (int i = otherEffects.size() - 1; i >= 0; i--) {
-						final NodeEffect<Node> effect = otherEffects.get(i);
-						final Runnable body = effectDraw;
-						effectDraw = () -> effect.draw(this, body);
-					}
-					effectDraw.run();
+					this.drawContent(matrix, mouseX, mouseY);
 				} else {
 					this.endHover(true);
 				}
@@ -936,12 +683,12 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T body(final @NonNull Consumer<@NonNull T> consumer) {
 		this.bodyConsumer = (Consumer<Node>) consumer;
-		SignalReplay.run(this, this.ui, () -> this.bodyConsumer.accept(this));
+		this.replay(() -> this.bodyConsumer.accept(this));
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T self(final @NonNull Consumer<@NonNull T> consumer) {
-		SignalReplay.run(this, this.ui, () -> consumer.accept((T) this));
+		this.replay(() -> consumer.accept((T) this));
 		return (T) this;
 	}
 
@@ -1877,10 +1624,6 @@ public abstract class Node implements INode {
 		return this.ui != null && this.ui.isOnTop() && this.ui.getHoveredPath().contains(this);
 	}
 
-	protected boolean shouldApplyEffect(final @NonNull NodeEffect<Node> effect) {
-		return effect.shouldApply(this);
-	}
-
 	private void renderDraggedNode(final double mouseX, final double mouseY) {
 		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
 			render.getState().stencil(StencilState.DISABLED);
@@ -1891,6 +1634,269 @@ public abstract class Node implements INode {
 
 			this.draggedNode.render(mouseX, mouseY);
 		}));
+	}
+
+	private void updateHover(final double mouseX, final double mouseY) {
+		final boolean wasHovered = this.hovered;
+		this.hovered = this.computeHovered();
+		final boolean hoverShown = this.hovered && this.isEnabled();
+		if (hoverShown != this.hoverShown) {
+			this.hoverShown = hoverShown;
+			this.hoverAnimator.sequence(this.hoverDuration, hoverShown ? 1F : 0F, this.hoverEquation).start();
+		}
+
+		if (!wasHovered && this.hovered) {
+			this.fire(Node.HOVER_START, () -> NodeHoverEvent.create(this, mouseX, mouseY));
+		}
+
+		if (wasHovered && !this.hovered) {
+			this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, mouseX, mouseY));
+		}
+
+		if (this.hovered) {
+			this.fire(Node.HOVER, () -> NodeHoverEvent.create(this, mouseX, mouseY));
+		}
+	}
+
+	private void scrollContent(final IRenderBridge render) {
+		boolean scrollsX = false;
+		boolean scrollsY = false;
+		final boolean measured = this.scrollMeasured;
+		if (this.overflow == OverflowProperty.SCROLL) {
+			double offsetX = Double.POSITIVE_INFINITY;
+			double offsetY = Double.POSITIVE_INFINITY;
+			this.maxScrollX = this.maxScrollY = 0D;
+			for (final Node child : this.drawList) {
+				if (child.position != PositionProperty.ABSOLUTE) {
+					offsetX = Math.min(offsetX, child.getPlacedX());
+					offsetY = Math.min(offsetY, child.getPlacedY());
+					this.maxScrollX = Math.max(this.maxScrollX, child.getPlacedX() + child.getContentWidth() - this.width);
+					this.maxScrollY = Math.max(this.maxScrollY, child.getPlacedY() + child.getContentHeight() - this.height);
+				}
+			}
+
+			if (this.hasOverflowX()) {
+				this.maxScrollX += offsetX;
+				scrollsX = true;
+			}
+
+			if (this.hasOverflowY()) {
+				this.maxScrollY += offsetY;
+				scrollsY = true;
+			}
+
+			this.scrollMeasured = true;
+		}
+
+		final double targetScrollX = this.targetScrollX;
+		final double targetScrollY = this.targetScrollY;
+		this.scrollXValue.update(targetScrollX);
+		this.scrollYValue.update(targetScrollY);
+		this.scrollEndX = this.scrollEndX && this.targetScrollX == -this.maxScrollX;
+		this.scrollEndY = this.scrollEndY && this.targetScrollY == -this.maxScrollY;
+		if (!measured && this.scrollMeasured && this.scrollEndX && this.targetScrollX == targetScrollX) {
+			this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, Axis.HORIZONTAL, targetScrollX, targetScrollX));
+		}
+
+		if (!measured && this.scrollMeasured && this.scrollEndY && this.targetScrollY == targetScrollY) {
+			this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, Axis.VERTICAL, targetScrollY, targetScrollY));
+		}
+
+		final boolean thumbDragged = this.scrollbar != null && this.scrollbar.isDragging();
+		if (this.targetScrollX != this.scrollX) {
+			this.scrollX = this.ui.lerpByFramerate(this.scrollX, this.targetScrollX, thumbDragged ? 1D / 3D : 0.2D / 3D, thumbDragged ? 1D : 0.2D);
+		}
+
+		if (this.targetScrollY != this.scrollY) {
+			this.scrollY = this.ui.lerpByFramerate(this.scrollY, this.targetScrollY, thumbDragged ? 1D / 3D : 0.2D / 3D, thumbDragged ? 1D : 0.2D);
+		}
+
+		if (this.scrollEndX && this.scrollX == this.targetScrollX) {
+			this.scrollEndX = false;
+			this.fire(Node.SCROLL_END_REACHED, () -> NodeScrollEvent.Post.create(this, Axis.HORIZONTAL, this.scrollX, this.scrollX));
+		}
+
+		if (this.scrollEndY && this.scrollY == this.targetScrollY) {
+			this.scrollEndY = false;
+			this.fire(Node.SCROLL_END_REACHED, () -> NodeScrollEvent.Post.create(this, Axis.VERTICAL, this.scrollY, this.scrollY));
+		}
+
+		if (this.overflow == OverflowProperty.SCROLL) {
+			final PixelGrid grid = render.getPixelGrid();
+			final double offsetX = scrollsX ? grid.quantizeX(this.scrollX) : 0D;
+			final double offsetY = scrollsY ? grid.quantizeY(this.scrollY) : 0D;
+			for (final Node child : this.drawList) {
+				if (child.position != PositionProperty.ABSOLUTE) {
+					child.shiftX = offsetX;
+					child.shiftY = offsetY;
+					child.place();
+				}
+			}
+		}
+	}
+
+	private void animateDrag() {
+		if (this.dragging && BridgeHandler.WINDOW.get().isMouseGrabbed()) {
+			this.stopDragging();
+		}
+
+		if (this.draggable != null && this.draggable.isEnabled(this)) {
+			if (!this.dragging && !this.dragged) {
+				this.targetDragX = this.getAbsoluteX();
+				this.targetDragY = this.getAbsoluteY();
+			}
+
+			if (this.draggable.getAreaType() != DraggableAreaType.FREE && (this.draggable.getAreaType() != DraggableAreaType.PARENT || this.parent != null) && (this.dragging || this.draggable.getType() == DraggableType.MOVE)) {
+				final double[] bounds = this.draggable.getBounds(this);
+				final double boundX = bounds[0];
+				final double boundY = bounds[1];
+				final double boundWidth = bounds[2];
+				final double boundHeight = bounds[3];
+
+				final double targetX = this.targetDragX;
+				final double targetY = this.targetDragY;
+				if (this.targetDragX < boundX) {
+					this.targetDragX = boundX;
+				} else if (this.targetDragX + this.width > boundX + boundWidth) {
+					this.targetDragX = boundX + boundWidth - this.width;
+				}
+
+				if (this.targetDragY < boundY) {
+					this.targetDragY = boundY;
+				} else if (this.targetDragY + this.height > boundY + boundHeight) {
+					this.targetDragY = boundY + boundHeight - this.height;
+				}
+
+				if (this.targetDragX != targetX || this.targetDragY != targetY) {
+					this.dragged = true;
+				}
+			}
+
+			if (this.dragged) {
+				if (this.draggable.getType() == DraggableType.MOVE) {
+					final double newAbsoluteX = this.ui.lerpByFramerate(this.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
+					final double newAbsoluteY = this.ui.lerpByFramerate(this.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
+					final double diffX = this.getAbsoluteX() - this.x;
+					final double diffY = this.getAbsoluteY() - this.y;
+
+					if (!this.dragTo(newAbsoluteX - diffX, newAbsoluteY - diffY)) {
+						this.targetDragX = this.getAbsoluteX();
+						this.targetDragY = this.getAbsoluteY();
+					}
+				} else if (this.draggable.getType() == DraggableType.COPY && this.draggedNode != null) {
+					final double newAbsoluteX = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteX(), this.targetDragX, 1D / 6D, 0.5D);
+					final double newAbsoluteY = this.ui.lerpByFramerate(this.draggedNode.getAbsoluteY(), this.targetDragY, 1D / 6D, 0.5D);
+					this.draggedNode.moveTo(newAbsoluteX, newAbsoluteY);
+				}
+
+				if (!this.dragging && this.getAbsoluteX() == this.targetDragX && this.getAbsoluteY() == this.targetDragY) {
+					this.dragged = false;
+				}
+			}
+		}
+	}
+
+	private void trackMovement(final IRenderBridge render) {
+		if (this.x != this.drawnX || this.y != this.drawnY) {
+			if (!this.moving) {
+				this.restX = this.drawnX;
+				this.restY = this.drawnY;
+				this.moving = true;
+			}
+		} else {
+			this.moving = false;
+		}
+
+		this.drawnX = this.x;
+		this.drawnY = this.y;
+		if (this.moving) {
+			render.quantize(this.x - this.restX, this.y - this.restY);
+		}
+	}
+
+	private void drawContent(final MatrixStack matrix, final double mouseX, final double mouseY) {
+		final List<NodeEffect<Node>> otherEffects = new ArrayList<>();
+		final List<NodeEffect<Node>> selfShaderEffects = new ArrayList<>();
+		final List<NodeEffect<Node>> subtreeShaderEffects = new ArrayList<>();
+		for (final NodeEffect<Node> effect : this.getAppliedEffects()) {
+			if (!effect.isShaderEffect()) {
+				otherEffects.add(effect);
+			} else if (effect.getScope() == NodeEffectScope.SELF) {
+				selfShaderEffects.add(effect);
+			} else {
+				subtreeShaderEffects.add(effect);
+			}
+		}
+
+		final Runnable content = () -> {
+			if (this.overflow != OverflowProperty.NONE) {
+				this.drawList.forEach(child -> child.overflowArea = this);
+			} else if (this.overflowArea != null) {
+				this.drawList.forEach(child -> child.overflowArea = this.overflowArea);
+			}
+
+			if (this.skeleton != null && !this.mounted) {
+				this.skeleton.render(mouseX, mouseY);
+				this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+				return;
+			}
+
+			this.drawList.ordered().stream().filter(child -> child.zindex < 0).forEach(child -> child.render(mouseX, mouseY));
+			final Runnable selfDraw = () -> {
+				if (this.mounted) {
+					this.draw(mouseX, mouseY);
+				} else {
+					this.drawSkeleton(mouseX, mouseY);
+				}
+			};
+			ShaderPipeline.render(this, this.toShaderPasses(selfShaderEffects), selfDraw);
+			this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+			if (this.mounted && this.label != null && !this.label.isEmpty()) {
+				DrawUtils.TEXT.drawText(this.x + (this.width - this.label.getWidth()) / 2D, this.y + (this.height - this.label.getHeight()) / 2D, this.label.getWidth(), this.label.getHeight(), this.label, TextMode.NORMAL);
+			}
+
+			this.drawList.ordered().stream().filter(child -> child.zindex >= 0).forEach(child -> child.render(mouseX, mouseY));
+			if (!this.layerList.isEmpty()) {
+				final double localX = mouseX - this.getAbsoluteX();
+				final double localY = mouseY - this.getAbsoluteY();
+				matrix.with(layerMatrix -> {
+					layerMatrix.translate(this.x, this.y, 0D);
+					this.layerList.forEach(layer -> layer.draw(this, localX, localY));
+				});
+			}
+
+			if (this.draggedNode != null) {
+				this.renderDraggedNode(mouseX, mouseY);
+			}
+			this.fire(Node.RENDER, () -> NodeDrawEvent.create(this, mouseX, mouseY));
+		};
+		final Runnable maskDraw = () -> {
+			if (this.overflow != OverflowProperty.NONE) {
+				this.ui.mask(this.x, this.y, this.width, this.height, content);
+			} else {
+				content.run();
+			}
+		};
+
+		Runnable effectDraw = () -> {
+			ShaderPipeline.render(this, this.toShaderPasses(subtreeShaderEffects), maskDraw);
+
+			if (this.isScrollbarShown()) {
+				this.scrollbar.render(mouseX, mouseY);
+			} else if (this.scrollbar != null) {
+				((Node) this.scrollbar).endHover(true);
+			}
+		};
+		for (int i = otherEffects.size() - 1; i >= 0; i--) {
+			final NodeEffect<Node> effect = otherEffects.get(i);
+			final Runnable body = effectDraw;
+			effectDraw = () -> effect.draw(this, body);
+		}
+		effectDraw.run();
+	}
+
+	private @NonNull List<IShaderPass> toShaderPasses(final List<NodeEffect<Node>> effects) {
+		return effects.stream().flatMap(effect -> effect.toShaderPasses(this).stream()).collect(Collectors.toList());
 	}
 
 	private double getContentWidth() {
@@ -1963,7 +1969,7 @@ public abstract class Node implements INode {
 	}
 
 	private @NonNull List<NodeEffect<Node>> getAppliedEffects() {
-		return this.effectMap.values().stream().filter(this::shouldApplyEffect).sorted(Comparator.comparingInt(NodeEffect::getPriority)).collect(Collectors.toList());
+		return this.effectMap.values().stream().filter(effect -> effect.shouldApply(this)).sorted(Comparator.comparingInt(NodeEffect::getPriority)).collect(Collectors.toList());
 	}
 
 	private void changeOverflow(final OverflowProperty overflow) {

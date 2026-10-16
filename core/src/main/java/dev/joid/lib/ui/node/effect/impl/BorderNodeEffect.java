@@ -10,10 +10,8 @@ import dev.joid.lib.shader.pipeline.pass.BorderShaderPass;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
-import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class BorderNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Float>       widthSupplier;
@@ -43,6 +41,10 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 
 	public @NonNull BorderMode getMode() {
 		return this.modeSupplier.get();
+	}
+
+	public @NonNull Color getColor(final @NonNull Node node) {
+		return this.colorFunction.apply(node);
 	}
 
 	@Override

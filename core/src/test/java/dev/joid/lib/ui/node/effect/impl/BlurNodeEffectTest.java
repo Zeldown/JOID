@@ -40,7 +40,7 @@ public class BlurNodeEffectTest {
 	public void replacesItsRadius() {
 		final BlurNodeEffect effect = BlurNodeEffect.create(4F);
 		Assert.assertSame(effect, effect.radius(9F));
-		Assert.assertEquals(9F, effect.getRadiusSupplier().get(), 0F);
+		Assert.assertEquals(9F, effect.getRadius(), 0F);
 		Assert.assertEquals(9F, effect.toShaderPasses(RectNode.create(0D, 0D, 10D, 10D)).get(0).expansion(), 0F);
 	}
 
@@ -63,8 +63,9 @@ public class BlurNodeEffectTest {
 
 	@Test
 	public void turnsTheBlurOffWithoutRadius() {
-		Assert.assertTrue(BlurNodeEffect.create(0F).toShaderPasses(RectNode.create(0D, 0D, 10D, 10D)).isEmpty());
-		Assert.assertTrue(BlurNodeEffect.create(-2F).toShaderPasses(RectNode.create(0D, 0D, 10D, 10D)).isEmpty());
+		Assert.assertFalse(BlurNodeEffect.create(0F).shouldApply(RectNode.create(0D, 0D, 10D, 10D)));
+		Assert.assertFalse(BlurNodeEffect.create(-2F).shouldApply(RectNode.create(0D, 0D, 10D, 10D)));
+		Assert.assertTrue(BlurNodeEffect.create(2F).shouldApply(RectNode.create(0D, 0D, 10D, 10D)));
 	}
 
 	@Test

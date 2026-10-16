@@ -87,8 +87,8 @@ public class NodeSetterTest {
 		Assert.assertEquals(2D, ui.getField().getMarginLeft(), 0D);
 		Assert.assertEquals(5D, ui.getFlex().getMargin(), 0D);
 		Assert.assertSame(Align.CENTER, ui.getFlex().getAlign());
-		Assert.assertEquals(2F, ui.getBorder().getWidthSupplier().get(), 0F);
-		Assert.assertSame(Color.RED, ui.getBorder().getColorFunction().apply(null));
+		Assert.assertEquals(2F, ui.getBorder().getWidth(), 0F);
+		Assert.assertSame(Color.RED, ui.getBorder().getColor(ui.getFlex()));
 		Assert.assertFalse(ui.getBorder().isFill());
 		Assert.assertEquals(1D, ui.getShadow().getOffsetX(), 0D);
 		Assert.assertEquals(3F, ui.getShadow().getBlur(), 0F);
@@ -301,7 +301,7 @@ public class NodeSetterTest {
 		final BlurNodeEffect blur = BlurNodeEffect.create(1F).radius(() -> radius[0]).priority(3).scope(scope);
 		radius[0] = 4F;
 		scope.set(NodeEffectScope.CHILDREN);
-		Assert.assertEquals(4F, blur.getRadiusSupplier().get(), 0F);
+		Assert.assertEquals(4F, blur.getRadius(), 0F);
 		Assert.assertEquals(3, blur.getPriority());
 		Assert.assertSame(NodeEffectScope.CHILDREN, blur.getScope());
 	}

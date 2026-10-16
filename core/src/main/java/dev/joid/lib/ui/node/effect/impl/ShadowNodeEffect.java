@@ -8,10 +8,8 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
-import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class ShadowNodeEffect extends NodeEffect<Node> {
 
 	private Supplier<Float>  blurSupplier;

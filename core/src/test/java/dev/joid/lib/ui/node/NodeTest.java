@@ -860,7 +860,7 @@ public class NodeTest {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(BlurNodeEffect.create(2F).radius(4F)).effect(RoundedNodeEffect.create(6F).scope(NodeEffectScope.CHILDREN));
 		final BlurNodeEffect blur = node.getEffect(BlurNodeEffect.class);
 		final RoundedNodeEffect rounded = node.getEffect(RoundedNodeEffect.class);
-		Assert.assertEquals(4F, blur.getRadiusSupplier().get(), 0F);
+		Assert.assertEquals(4F, blur.getRadius(), 0F);
 		Assert.assertSame(NodeEffectScope.CHILDREN, rounded.getScope());
 	}
 
@@ -905,7 +905,7 @@ public class NodeTest {
 		final SkippedEffect effect = new SkippedEffect(events);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).effect(effect);
 		this.bridges.open(new NodeUI(node)).frame();
-		Assert.assertFalse(node.shouldApplyEffect(effect));
+		Assert.assertFalse(effect.shouldApply(node));
 		Assert.assertEquals(Arrays.asList("skipped init"), events);
 	}
 
