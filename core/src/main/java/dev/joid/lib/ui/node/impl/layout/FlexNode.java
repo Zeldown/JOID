@@ -16,10 +16,14 @@ import lombok.NonNull;
 @Getter
 public class FlexNode extends Node {
 
-	private Align         align;
-	private Axis direction;
+	private Align align;
+	private Axis  direction;
 
 	private double margin;
+
+	protected FlexNode(final double x, final double y, final double width, final double height) {
+		this(x, y, width, height, Axis.VERTICAL);
+	}
 
 	protected FlexNode(final double x, final double y, final double width, final double height, final @NonNull Axis direction) {
 		super(x, y, width, height);
@@ -43,23 +47,16 @@ public class FlexNode extends Node {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
+	public void layout() {
 		this.updateFlex();
 	}
 
 	@Override
-	public void drawSkeleton(final double mouseX, final double mouseY) {
-		this.updateFlex();
-	}
+	public void drawSkeleton(final double mouseX, final double mouseY) {}
 
 	@Override
 	public void update() {
 		this.updateFlex();
-	}
-
-	@Override
-	public @NonNull Node instantiate() {
-		return new FlexNode(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.direction);
 	}
 
 	public final <T extends FlexNode> @NonNull T direction(final @NonNull Axis direction) {

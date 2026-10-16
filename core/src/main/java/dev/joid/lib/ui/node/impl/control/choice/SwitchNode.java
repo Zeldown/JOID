@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
@@ -24,25 +23,10 @@ public abstract class SwitchNode<V> extends BaseSwitchNode<V> {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
+	public void layout() {
 		final double width = super.getWidth() / this.optionList.size();
 		for (int i = 0; i < this.optionList.size(); i++) {
 			this.optionList.get(i).layoutPosition(width * i, 0D).layoutSize(width, super.getHeight());
-		}
-	}
-
-	@Override
-	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (event.isConsumed() || !event.getButton().isLeft()) {
-			return;
-		}
-
-		for (int i = 0; i < this.optionList.size(); i++) {
-			if (this.optionList.get(i).isHovered()) {
-				super.change(super.getValueList().get(i));
-				event.consume();
-				return;
-			}
 		}
 	}
 

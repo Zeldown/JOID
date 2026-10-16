@@ -311,6 +311,18 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
+	public void slidesTheOtherChildrenAtTheSpeedOfTheDraggedOne() {
+		final RectNode second = ReorderableFlexNodeTest.item();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item(), second, ReorderableFlexNodeTest.item());
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 120D);
+		this.bridges.move(150D, 1000D).frames(3);
+		final double before = flex.getChildCurrent().get(second);
+		this.bridges.frame();
+		Assert.assertEquals(Math.pow(5D / 6D, 16D / (1000D / 60D)), flex.getChildCurrent().get(second) / before, 1E-9D);
+	}
+
+	@Test
 	public void takesTheFirstSlotOnceAChildPassesHalfOfIt() {
 		final RectNode first = ReorderableFlexNodeTest.item();
 		final RectNode second = ReorderableFlexNodeTest.item();

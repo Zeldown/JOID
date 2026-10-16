@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
@@ -298,6 +299,34 @@ public class SwitchNodeTest {
 		Assert.assertEquals(3, ui.node.getChildren().size());
 	}
 
+	@Test
+	public void picksTheOptionUnderAClick() {
+		final Switch node = this.open();
+		this.click(205D, 120D);
+		Assert.assertEquals("high", node.getValue());
+		this.click(150D, 120D);
+		Assert.assertEquals("medium", node.getValue());
+		Assert.assertEquals(180D, node.getOptionList().get(1).getAbsoluteX() + node.getOptionList().get(1).getWidth(), 0D);
+		Assert.assertEquals(Arrays.asList("high", "medium"), this.changes);
+	}
+
+	@Test
+	public void picksTheShareOfItsWidthUnderAClickWithoutParts() {
+		final PlainSwitch node = new PlainSwitch();
+		this.bridges.open(new SingleUI(node)).frame();
+		this.click(219D, 120D);
+		Assert.assertEquals("high", node.getValue());
+		this.click(101D, 120D);
+		Assert.assertEquals("low", node.getValue());
+		this.click(300D, 120D);
+		Assert.assertEquals("low", node.getValue());
+	}
+
+	private void click(final double x, final double y) {
+		this.bridges.move(x, y).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+	}
+
 	private Switch open() {
 		final SwitchUI ui = new SwitchUI(this.changes);
 		this.bridges.open(ui).frame();
@@ -317,7 +346,7 @@ public class SwitchNodeTest {
 	@RequiredArgsConstructor
 	public static final class SingleUI extends UI {
 
-		private final Switch node;
+		private final BaseSwitchNode<String> node;
 
 		@Override
 		public void init() {
@@ -355,6 +384,15 @@ public class SwitchNodeTest {
 
 		public void pick(final @NonNull String state) {
 			super.change(state);
+		}
+
+	}
+
+	public static final class PlainSwitch extends BaseSwitchNode<String> {
+
+		public PlainSwitch() {
+			super(100D, 100D, 120D, 40D);
+			super.values("low", "medium", "high");
 		}
 
 	}

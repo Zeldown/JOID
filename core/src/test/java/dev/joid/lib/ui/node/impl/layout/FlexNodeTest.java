@@ -323,6 +323,15 @@ public class FlexNodeTest {
 		Assert.assertEquals(0D, second.getY(), 0D);
 	}
 
+	@Test
+	public void copiesASubclassIntoItsOwnClass() {
+		final MenuFlex copy = new MenuFlex(10D, 20D, 0D, 30D).copy();
+		Assert.assertSame(MenuFlex.class, copy.getClass());
+		Assert.assertSame(Axis.HORIZONTAL, copy.getDirection());
+		Assert.assertEquals(10D, copy.getX(), 0D);
+		Assert.assertEquals(30D, copy.getHeight(), 0D);
+	}
+
 	private Draw single(final float red, final float green, final float blue) {
 		final List<Draw> draws = this.bridges.getRender().getDraws(red, green, blue);
 		Assert.assertEquals(1, draws.size());
@@ -340,6 +349,14 @@ public class FlexNodeTest {
 		@Override
 		public void init() {
 			super.add(this.nodes);
+		}
+
+	}
+
+	public static final class MenuFlex extends FlexNode {
+
+		private MenuFlex(final double x, final double y, final double width, final double height) {
+			super(x, y, width, height, Axis.HORIZONTAL);
 		}
 
 	}

@@ -30,14 +30,12 @@ public final class GridNode extends Node {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
+	public void layout() {
 		this.updateGrid();
 	}
 
 	@Override
-	public void drawSkeleton(final double mouseX, final double mouseY) {
-		this.updateGrid();
-	}
+	public void drawSkeleton(final double mouseX, final double mouseY) {}
 
 	@Override
 	public void update() {
@@ -78,8 +76,8 @@ public final class GridNode extends Node {
 				continue;
 			}
 
-			if (ox > 0 && child.getDefaultX() + child.getWidth() + ox > super.getWidth()) {
-				ox = 0;
+			if (ox > 0D && child.getDefaultX() + child.getWidth() + ox > super.getWidth()) {
+				ox = 0D;
 				oy += rowHeight + this.verticalMargin;
 				rowHeight = 0D;
 			}

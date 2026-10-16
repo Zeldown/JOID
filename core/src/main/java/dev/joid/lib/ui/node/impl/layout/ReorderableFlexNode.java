@@ -17,6 +17,7 @@ import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeReorderEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.property.OverflowProperty;
+import dev.joid.lib.ui.node.property.PositionProperty;
 import dev.joid.lib.utils.align.Axis;
 import lombok.Getter;
 import lombok.NonNull;
@@ -45,6 +46,10 @@ public class ReorderableFlexNode extends FlexNode {
 	private double  dragStartMouseX;
 	private double  dragStartMouseY;
 
+	protected ReorderableFlexNode(final double x, final double y, final double width, final double height) {
+		this(x, y, width, height, Axis.VERTICAL);
+	}
+
 	protected ReorderableFlexNode(final double x, final double y, final double width, final double height, final @NonNull Axis direction) {
 		super(x, y, width, height, direction);
 
@@ -63,11 +68,11 @@ public class ReorderableFlexNode extends FlexNode {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
+	public void layout() {
 		if (this.reorderedNode != null && super.getChildren().contains(this.reorderedNode)) {
-			this.tickDrag(mouseX, mouseY);
+			this.tickDrag(super.getUi().getMouseX(), super.getUi().getMouseY());
 		}
-		super.draw(mouseX, mouseY);
+		super.layout();
 	}
 
 	@Override
@@ -108,11 +113,6 @@ public class ReorderableFlexNode extends FlexNode {
 	}
 
 	@Override
-	public @NonNull Node instantiate() {
-		return new ReorderableFlexNode(super.getX(), super.getY(), super.getWidth(), super.getHeight(), super.getDirection());
-	}
-
-	@Override
 	protected boolean isDraggingChild(final @NonNull Node child) {
 		return this.isDragging(child);
 	}
@@ -138,14 +138,7 @@ public class ReorderableFlexNode extends FlexNode {
 			return;
 		}
 
-		if (child == this.reorderedNode) {
-			super.layoutChild(child, this.draggedCurrent);
-			return;
-		}
-
-		final double current = super.getUi().lerpByFramerate(this.childCurrent.getOrDefault(child, offset), offset, 1D / 6D, 0.5D);
-		this.childCurrent.put(child, current);
-		super.layoutChild(child, current);
+		super.layoutChild(child, child == this.reorderedNode ? this.draggedCurrent : this.childCurrent.getOrDefault(child, offset));
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T startDrag(final @NonNull Node child) {
@@ -301,6 +294,7 @@ public class ReorderableFlexNode extends FlexNode {
 		}
 
 		this.draggedCurrent = super.getUi().lerpByFramerate(this.draggedCurrent, target, 1D / 6D, 0.5D);
+		this.slideChildren();
 
 		if (this.releasing) {
 			if (this.draggedCurrent == target) {
@@ -341,6 +335,20 @@ public class ReorderableFlexNode extends FlexNode {
 		this.move(dragged, index);
 		this.currentIndex = index;
 		super.fire(ReorderableFlexNode.REORDER, () -> NodeReorderEvent.Post.create(this, dragged, previous, index));
+	}
+
+	private void slideChildren() {
+		double offset = 0D;
+		for (final Node child : this.logicalOrder) {
+			if (child.getPosition() == PositionProperty.ABSOLUTE || !child.isVisibleProperty()) {
+				continue;
+			}
+
+			if (child != this.reorderedNode) {
+				this.childCurrent.put(child, super.getUi().lerpByFramerate(this.childCurrent.getOrDefault(child, offset), offset, 1D / 6D, 0.5D));
+			}
+			offset += this.mainSize(child) + super.getMargin();
+		}
 	}
 
 	private int freeSlot(final int index) {

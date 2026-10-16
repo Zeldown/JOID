@@ -15,14 +15,14 @@ public class CircleNode extends Node {
 	private Color color;
 	private Color hoveredColor;
 
-	protected CircleNode(final double x, final double y, final double diameter) {
-		super(x, y, diameter, diameter);
+	protected CircleNode(final double x, final double y, final double width, final double height) {
+		super(x, y, width, height);
 
 		this.color = Color.TRANSPARENT;
 	}
 
 	public static @NonNull CircleNode create(final double x, final double y, final double diameter) {
-		return new CircleNode(x, y, diameter);
+		return new CircleNode(x, y, diameter, diameter);
 	}
 
 	@Override
@@ -32,17 +32,7 @@ public class CircleNode extends Node {
 
 	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {
-		DrawUtils.SHAPE.drawCircle(
-				super.getX() + super.dw(2D),
-				super.getY() + super.dh(2D),
-				Color.LOADING(),
-				Math.min(super.getWidth(), super.getHeight()) / 2D
-				);
-	}
-
-	@Override
-	protected @NonNull Node instantiate() {
-		return new CircleNode(super.getX(), super.getY(), super.getWidth());
+		DrawUtils.SHAPE.drawCircle(super.getX() + super.dw(2D), super.getY() + super.dh(2D), Color.LOADING(), Math.min(super.getWidth(), super.getHeight()) / 2D);
 	}
 
 	public final <T extends CircleNode> @NonNull T color(final @NonNull Color color) {

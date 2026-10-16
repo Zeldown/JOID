@@ -28,6 +28,13 @@ public class CircleNodeTest {
 	}
 
 	@Test
+	public void copiesASubclassIntoItsOwnClass() {
+		final Badge copy = new Badge(10D, 20D, 50D, 50D).copy();
+		Assert.assertSame(Badge.class, copy.getClass());
+		Assert.assertEquals(50D, copy.getWidth(), 0D);
+	}
+
+	@Test
 	public void startsTransparentWithoutHoveredColor() {
 		final CircleNode circle = CircleNode.create(100D, 200D, 50D);
 		Assert.assertSame(Color.TRANSPARENT, circle.getColor());
@@ -187,6 +194,14 @@ public class CircleNodeTest {
 		@Override
 		public void init() {
 			super.add(this.nodes);
+		}
+
+	}
+
+	public static final class Badge extends CircleNode {
+
+		private Badge(final double x, final double y, final double width, final double height) {
+			super(x, y, width, height);
 		}
 
 	}
