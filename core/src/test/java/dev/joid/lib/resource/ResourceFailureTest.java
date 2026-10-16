@@ -1,5 +1,6 @@
 package dev.joid.lib.resource;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -10,6 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -91,6 +94,20 @@ public class ResourceFailureTest {
 		resource.prepareBind();
 		Assert.assertTrue(resource.isFailed());
 		Assert.assertEquals(1, errors.size());
+	}
+
+	@Test
+	public void readsAMissingPathAgainOnceReloaded() throws IOException {
+		final File file = new File(this.folder.getRoot(), "late.png");
+		final Resource resource = ResourceBuilder.create().of(file.getPath()).blocking();
+		resource.prepareBind();
+		Assert.assertTrue(resource.isFailed());
+		Assert.assertSame(resource.getResourceData(), ResourceBuilder.create().of(file.getPath()).getResourceData());
+		ImageIO.write(new BufferedImage(3, 2, BufferedImage.TYPE_INT_ARGB), "png", file);
+		resource.reload();
+		resource.prepareBind();
+		Assert.assertFalse(resource.isFailed());
+		Assert.assertEquals(3, resource.getWidth());
 	}
 
 	@Test

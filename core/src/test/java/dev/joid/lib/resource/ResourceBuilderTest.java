@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -271,6 +272,26 @@ public class ResourceBuilderTest {
 		builder.reload();
 		Assert.assertTrue(cache.getDataList().isEmpty());
 		Assert.assertEquals("image2", builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null)).getUniqueId());
+	}
+
+	@Test
+	public void forgetsTheDataItComputedOnceCollected() throws InterruptedException, ReflectiveOperationException {
+		final MemoryResourceCache cache = MemoryResourceCache.create();
+		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
+		for (int i = 0; i < 100; i++) {
+			final String uniqueId = "image_" + i;
+			builder.compute(uniqueId, () -> new ResourceData(uniqueId, null));
+		}
+		cache.clear();
+		final Field field = ResourceBuilder.class.getDeclaredField("computed");
+		field.setAccessible(true);
+		final Map<?, ?> computed = (Map<?, ?>) field.get(builder);
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (!computed.isEmpty() && System.currentTimeMillis() < deadline) {
+			System.gc();
+			Thread.sleep(10L);
+		}
+		Assert.assertTrue(computed.isEmpty());
 	}
 
 	@Test

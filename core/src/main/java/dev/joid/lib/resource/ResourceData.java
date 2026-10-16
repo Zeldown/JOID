@@ -14,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
@@ -38,6 +39,8 @@ public final class ResourceData {
 
 	@Getter private String           uniqueId;
 	@Getter private IResourceDecoder decoder;
+
+	private Supplier<IResourceDecoder> decoderSource;
 
 	private int[][]    data;
 	private ITexture[] textures;
@@ -81,6 +84,11 @@ public final class ResourceData {
 		if (this.decoder != null) {
 			this.decoder.init(this);
 		}
+		return this;
+	}
+
+	public @NonNull ResourceData decoderSource(final Supplier<IResourceDecoder> decoderSource) {
+		this.decoderSource = decoderSource;
 		return this;
 	}
 
@@ -185,6 +193,14 @@ public final class ResourceData {
 	}
 
 	public void generate(final boolean async) {
+		if (this.error == null && this.decoder == null && this.decoderSource != null) {
+			try {
+				this.decoder(this.decoderSource.get());
+			} catch (final RuntimeException exception) {
+				this.fail(exception);
+			}
+		}
+
 		if (this.error != null) {
 			this.generated = true;
 		} else if (this.decoder != null) {
@@ -387,6 +403,8 @@ public final class ResourceData {
 				}
 				decoder.clear(this);
 			});
+		} else if (this.decoderSource != null) {
+			this.error = null;
 		}
 
 		if (this.missingTexture != null) {

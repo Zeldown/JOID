@@ -3,9 +3,9 @@ package dev.joid.lib.resource;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import dev.joid.lib.asset.Asset;
@@ -22,7 +22,7 @@ public final class ResourceBuilder {
 	private static final IResourceCache       DEFAULT_CACHE = MemoryResourceCache.create();
 	private static final Set<ResourceBuilder> BUILDER_SET   = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
-	private final Set<String> uniqueIdSet;
+	private final Map<ResourceData, String> computed;
 
 	private final ResourceProperties properties;
 	@Getter private final IResourceCache cache;
@@ -30,7 +30,7 @@ public final class ResourceBuilder {
 	private ResourceBuilder(final IResourceCache cache, final @NonNull ResourceProperties properties) {
 		this.cache = cache;
 		this.properties = properties;
-		this.uniqueIdSet = ConcurrentHashMap.newKeySet();
+		this.computed = Collections.synchronizedMap(new WeakHashMap<>());
 
 		ResourceBuilder.BUILDER_SET.add(this);
 	}
@@ -76,7 +76,7 @@ public final class ResourceBuilder {
 				throw exception;
 			}
 
-			return this.compute((String) input, () -> ResourceBuilder.failed((String) input, exception));
+			return this.compute((String) input, () -> ResourceBuilder.failed((String) input, exception).decoderSource(() -> ResourceFormat.decoder(Asset.of(input))));
 		}
 
 		if (asset.isRemote()) {
@@ -101,14 +101,15 @@ public final class ResourceBuilder {
 			return new Resource(this, dataSupplier.get());
 		}
 
-		this.uniqueIdSet.add(uniqueId);
 		final ResourceData cached = this.cache.get(uniqueId);
 		if (cached != null) {
+			this.computed.put(cached, uniqueId);
 			return new Resource(this, cached);
 		}
 
 		final ResourceData data = dataSupplier.get();
 		this.cache.put(uniqueId, data);
+		this.computed.put(data, uniqueId);
 		return new Resource(this, data);
 	}
 
@@ -120,10 +121,14 @@ public final class ResourceBuilder {
 		if (this.cache == null) {
 			return;
 		}
-		for (final String uniqueId : this.uniqueIdSet) {
-			this.cache.remove(uniqueId);
+		synchronized (this.computed) {
+			for (final Map.Entry<ResourceData, String> entry : this.computed.entrySet()) {
+				if (this.cache.get(entry.getValue()) == entry.getKey()) {
+					this.cache.remove(entry.getValue());
+				}
+			}
+			this.computed.clear();
 		}
-		this.uniqueIdSet.clear();
 	}
 
 	public static @NonNull List<@NonNull ResourceBuilder> getBuilders() {
