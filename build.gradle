@@ -9,10 +9,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'io.franzbecker.gradle-lombok' version '1.8' apply false
-}
-
 apply plugin: 'base'
 
 allprojects {
@@ -68,7 +64,6 @@ ext {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'io.franzbecker.gradle-lombok'
     apply plugin: 'eclipse'
 
     sourceCompatibility = 1.8
@@ -132,7 +127,6 @@ task backendTemplate(type: Zip) {
     from(rootDir) {
         include 'gradlew'
         fileMode = 0755
-        filter(org.apache.tools.ant.filters.FixCrLfFilter, eol: org.apache.tools.ant.filters.FixCrLfFilter.CrLf.newInstance('lf'))
     }
 }
 
@@ -153,7 +147,6 @@ task msdfGenerator(type: Zip) {
         include 'msdf.sh'
         fileMode = 0755
         filter { line -> line.replace('@JOID_VERSION@', project.version.toString()) }
-        filter(org.apache.tools.ant.filters.FixCrLfFilter, eol: org.apache.tools.ant.filters.FixCrLfFilter.CrLf.newInstance('lf'))
     }
     from(rootDir) {
         include 'LICENSE', 'NOTICE'
@@ -178,7 +171,7 @@ assemble.dependsOn collectArtifacts
 task checkJars {
     group = 'JOID'
     description = 'Checks that the prod jars hold no dev tool nor demo, that only the demo jars hold the demos, that the snapshot tools of the dev jars need no demo, that the embedded libraries are relocated, that the jars carry the version of JOID, that NOTICE credits each of them, and that each jar holds one LICENSE, its NOTICE and the license text of each library it embeds under another license than Apache 2.0.'
-    dependsOn ':tool-testkit:jar'
+    dependsOn ':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':base-openal:jar', ':tool-msdf:jar'
     dependsOn variants.collectMany { variant -> variantModules.collect { module -> "$module:${variant}Jar" } }
     doLast {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
@@ -204,6 +197,11 @@ task checkJars {
         def library = "(?s)\\x01..(?:${quote(libraries + libraries.collect { name -> name.replace('/', '.') })})|L(?:${quote(libraries)})"
         finds(project(':tool-testkit').jar.archivePath, classes, demoClass).each { name ->
             failures << "joid-tool-testkit needs the demo class of $name"
+        }
+        ([':base-glfw', ':base-opengl'].collect { module -> project(module).releaseJar.archivePath } + [':tool-testkit', ':tool-msdf', ':base-openal'].collect { module -> project(module).jar.archivePath }).each { jar ->
+            finds(jar, classes, library).each { name ->
+                failures << "${jar.name}: $name refers to a library that is not relocated"
+            }
         }
         variantModules.each { module ->
             variants.each { variant ->

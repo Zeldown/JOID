@@ -28,7 +28,7 @@ dependencies {
     testCompile project(':tool-testkit')
 }
 
-['demo', 'prod'].each { variant ->
+['demo', 'dev', 'prod'].each { variant ->
     task("test${variant.capitalize()}Jar", type: JavaExec) {
         group = 'verification'
         description = "Starts JOID from the ${variant} jar in a JVM of its own, on a hidden window, and draws a UI."

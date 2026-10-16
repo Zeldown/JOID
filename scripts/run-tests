@@ -10,7 +10,7 @@ if printf '%s\n' "$files" | grep -qE '^(core/|base/|backend/|tool/|gradle/|build
 fi
 
 template=0
-if printf '%s\n' "$files" | grep -qE '^(core/|template/)'; then
+if printf '%s\n' "$files" | grep -qE '^(core/|template/|tool/testkit/|gradle/snapshots\.gradle$|gradle/variants\.gradle$|build\.gradle$)'; then
     template=1
 fi
 
@@ -68,7 +68,7 @@ for module in glfw openal opengl; do
 done
 
 if [ $template -eq 1 ]; then
-    tasks="$tasks checkTemplate"
+    tasks="$tasks checkTemplate checkJars"
 fi
 
 if [ $sources -eq 1 ]; then

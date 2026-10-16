@@ -33,7 +33,7 @@ $changed"
 done
 
 if [ $untested -eq 0 ]; then
-    echo "🔍 Every pushed commit was tested by the pre-commit hook, tests skipped"
+    echo "🔍 The tip of every pushed ref was tested by the pre-commit hook, tests skipped"
     echo ""
     exit 0
 fi
