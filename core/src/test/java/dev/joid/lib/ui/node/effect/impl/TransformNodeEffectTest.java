@@ -94,6 +94,17 @@ public class TransformNodeEffectTest {
 	}
 
 	@Test
+	public void movesTheShadowOfItsNodeWhicheverEffectComesFirst() {
+		final ShadowNodeEffect shadow = ShadowNodeEffect.create(new Color(0.1F, 0.3F, 0.5F, 1F), 8F);
+		this.bridges.open(new NodeUI(RectNode.create(100D, 100D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(shadow).effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(30D, 40D)))))).frame();
+		final Draw draw = this.single();
+		final Draw shadowDraw = this.bridges.getRender().getDraws(0.1F, 0.3F, 0.5F).get(0);
+		Assert.assertEquals(130D, draw.getLeft(), 1E-3D);
+		Assert.assertEquals((draw.getLeft() + draw.getRight()) / 2D, (shadowDraw.getLeft() + shadowDraw.getRight()) / 2D, 1E-3D);
+		Assert.assertEquals((draw.getTop() + draw.getBottom()) / 2D, (shadowDraw.getTop() + shadowDraw.getBottom()) / 2D, 1E-3D);
+	}
+
+	@Test
 	public void leavesTheNextNodesInPlace() {
 		final RectNode moved = RectNode.create(100D, 100D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(30D, 40D))));
 		final RectNode still = RectNode.create(300D, 100D, 50D, 50D).color(new Color(0.6F, 0.4F, 0.2F, 1F));

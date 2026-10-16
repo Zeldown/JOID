@@ -4,16 +4,18 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class TransformNodeEffect extends NodeEffect<Node> {
 
 	private Transformation transformation;
+
+	protected TransformNodeEffect(final @NonNull Transformation transformation) {
+		super(-100);
+		this.transformation = transformation;
+	}
 
 	public static @NonNull TransformNodeEffect create(final @NonNull Transformation transformation) {
 		return new TransformNodeEffect(transformation);

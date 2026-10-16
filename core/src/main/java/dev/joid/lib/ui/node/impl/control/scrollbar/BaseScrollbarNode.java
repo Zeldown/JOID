@@ -76,6 +76,10 @@ public abstract class BaseScrollbarNode extends Node {
 		return super.getWidth() > super.getHeight();
 	}
 
+	public final boolean isOverflowing() {
+		return this.scrollNode != null && (this.isHorizontal() ? this.scrollNode.hasOverflowX() : this.scrollNode.hasOverflowY());
+	}
+
 	public final double getProgress() {
 		if (!this.isOverflowing()) {
 			return 0D;
@@ -113,10 +117,6 @@ public abstract class BaseScrollbarNode extends Node {
 
 	public final <T extends BaseScrollbarNode> @NonNull T minThumb(final @NonNull Supplier<Double> minThumb) {
 		return super.follow("minThumb", minThumb, value -> this.minThumb = value);
-	}
-
-	private boolean isOverflowing() {
-		return this.scrollNode != null && (this.isHorizontal() ? this.scrollNode.hasOverflowX() : this.scrollNode.hasOverflowY());
 	}
 
 	private double getLength() {

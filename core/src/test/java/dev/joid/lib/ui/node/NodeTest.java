@@ -1427,6 +1427,15 @@ public class NodeTest {
 	}
 
 	@Test
+	public void announcesTheEndOfAScrollGivenExactlyOnItBeforeItsFirstMeasure() {
+		final List<String> events = new ArrayList<>();
+		final ContainerNode row = NodeTest.row().scrollX(-300D).onScrollToEnd(event -> events.add("ending " + event.getNode().getTargetScrollX())).onScrollEndReached(event -> events.add("end " + event.getNode().getScrollX()));
+		this.bridges.open(new NodeUI(row));
+		this.bridges.frames(200);
+		Assert.assertEquals(Arrays.asList("ending -300.0", "end -300.0"), events);
+	}
+
+	@Test
 	public void announcesTheEndOfAVerticalScrollWithTheOffsetsItHeadsTo() {
 		final List<Double> endings = new ArrayList<>();
 		final ContainerNode column = NodeTest.column().onScrollToEnd(event -> endings.add(event.getNode().getTargetScrollY()));

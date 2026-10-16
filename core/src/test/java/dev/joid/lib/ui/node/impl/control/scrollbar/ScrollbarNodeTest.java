@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.control.scrollbar;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -10,9 +12,12 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.render.transform.Transformation;
+import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
 import lombok.AllArgsConstructor;
@@ -213,6 +218,33 @@ public class ScrollbarNodeTest {
 		Assert.assertTrue(bar.isDragging());
 		Assert.assertEquals(0D, bar.getThumb().getY(), 0D);
 		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void letsItsContentTakeTheClicksOnceItHides() {
+		final List<String> clicks = new ArrayList<>();
+		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
+		final RectNode content = ScrollbarNodeTest.column(bar);
+		content.getChildren().get(0).onClick(event -> clicks.add("click"));
+		this.bridges.open(new NodeUI(content)).frame();
+		this.bridges.move(515D, 110D).frames(2);
+		Assert.assertTrue(bar.isHovered());
+		content.remove(content.getChildren().get(2), content.getChildren().get(1));
+		this.bridges.move(200D, 150D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertFalse(bar.isHovered());
+		Assert.assertFalse(bar.isDragging());
+		Assert.assertEquals(Arrays.asList("click"), clicks);
+	}
+
+	@Test
+	public void followsTheEffectsOfItsContent() {
+		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
+		final RectNode content = ScrollbarNodeTest.column(bar).effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(30D, 40D))));
+		this.bridges.open(new NodeUI(content)).frame();
+		final Draw thumb = this.thumb();
+		Assert.assertEquals(540D, thumb.getLeft(), 1E-3D);
+		Assert.assertEquals(140D, thumb.getTop(), 1E-3D);
 	}
 
 	@Test

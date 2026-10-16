@@ -622,6 +622,12 @@ public abstract class Node implements INode {
 						} else {
 							maskDraw.run();
 						}
+
+						if (this.isScrollbarShown()) {
+							this.scrollbar.render(mouseX, mouseY);
+						} else if (this.scrollbar != null) {
+							((Node) this.scrollbar).endHover(true);
+						}
 					};
 					for (int i = otherEffects.size() - 1; i >= 0; i--) {
 						final NodeEffect<Node> effect = otherEffects.get(i);
@@ -629,10 +635,6 @@ public abstract class Node implements INode {
 						effectDraw = () -> effect.draw(this, body);
 					}
 					effectDraw.run();
-
-					if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
-						this.scrollbar.render(mouseX, mouseY);
-					}
 				} else {
 					this.endHover(true);
 				}
@@ -1919,6 +1921,10 @@ public abstract class Node implements INode {
 		return notches > 0D ? scroll.get() < 0D : scroll.get() > -maxScroll;
 	}
 
+	private boolean isScrollbarShown() {
+		return this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && this.scrollbar.isOverflowing();
+	}
+
 	private boolean isAt(final double x, final double y) {
 		return this.isVisible() && (this.overflowArea == null || this.overflowArea.isAt(x, y)) && x > this.getAbsoluteX() && x <= this.getAbsoluteX() + this.width && y > this.getAbsoluteY() && y <= this.getAbsoluteY() + this.height;
 	}
@@ -1928,7 +1934,7 @@ public abstract class Node implements INode {
 			return;
 		}
 
-		if (this.overflow == OverflowProperty.SCROLL && this.scrollbar != null && (this.scrollbar.isHorizontal() ? this.hasOverflowX() : this.hasOverflowY())) {
+		if (this.isScrollbarShown()) {
 			nodeList.addAll(this.scrollbar.getNodeListAt(x, y));
 		}
 
@@ -1979,7 +1985,7 @@ public abstract class Node implements INode {
 	}
 
 	private <E extends NodeInputEvent<Node>> void dispatch(final E event, final boolean enabled, final EventType<?> type, final BiConsumer<Node, E> forward, final Consumer<E> handler) {
-		if (this.scrollbar != null) {
+		if (this.scrollbar != null && (this.isScrollbarShown() || this.scrollbar.isDragging())) {
 			forward.accept(this.scrollbar, event);
 		}
 
@@ -2072,6 +2078,9 @@ public abstract class Node implements INode {
 		this.hoverShown = false;
 		if (recursive) {
 			this.drawList.forEach(child -> child.endHover(true));
+			if (this.scrollbar != null) {
+				((Node) this.scrollbar).endHover(true);
+			}
 		}
 	}
 
@@ -2096,7 +2105,7 @@ public abstract class Node implements INode {
 	private void scroll(final Axis axis, final double offset) {
 		final boolean horizontal = axis.isHorizontal();
 		final double max = horizontal ? this.maxScrollX : this.maxScrollY;
-		final boolean end = max > 0D && offset <= -max;
+		final boolean end = this.scrollMeasured ? max > 0D && offset <= -max : offset < 0D;
 		if (horizontal) {
 			this.targetScrollX = offset;
 			this.scrollEndX = end;
