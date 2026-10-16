@@ -38,6 +38,10 @@ public abstract class BaseTween<T> {
 
 	public T start() {
 		this.build();
+		if (this.repeatCnt < 0 && this.duration + this.repeatDelay <= 0) {
+			throw new IllegalStateException("A tween or timeline that repeats forever needs a duration or a repeat delay above 0, give it one or a finite repeat count");
+		}
+
 		this.step = -2;
 		this.currentTime = 0;
 		this.isKilled = false;

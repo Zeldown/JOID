@@ -41,7 +41,7 @@ public final class Tween extends BaseTween<Tween> {
 		return new Tween(null, null, 0F);
 	}
 
-	public @NonNull Tween path(final TweenPath path) {
+	public @NonNull Tween path(final @NonNull TweenPath path) {
 		this.path = path;
 		return this;
 	}
@@ -62,7 +62,7 @@ public final class Tween extends BaseTween<Tween> {
 		return this;
 	}
 
-	public @NonNull Tween ease(final TweenEquation equation) {
+	public @NonNull Tween ease(final @NonNull TweenEquation equation) {
 		this.equation = equation;
 		return this;
 	}
@@ -76,7 +76,7 @@ public final class Tween extends BaseTween<Tween> {
 
 	@Override
 	protected void updateOverride(final int step, final int lastStep, final boolean isIterationStep, final float delta) {
-		if (this.setter == null || this.equation == null) {
+		if (this.setter == null) {
 			return;
 		}
 
@@ -103,7 +103,7 @@ public final class Tween extends BaseTween<Tween> {
 		final float time = this.isReverse(step) ? this.duration - this.getCurrentTime() : this.getCurrentTime();
 		final float progress = this.equation.compute(time / this.duration);
 
-		if (this.waypointCount == 0 || this.path == null) {
+		if (this.waypointCount == 0) {
 			this.setter.accept(this.start + progress * (this.target - this.start));
 			return;
 		}

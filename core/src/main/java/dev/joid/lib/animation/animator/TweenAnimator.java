@@ -283,7 +283,7 @@ public class TweenAnimator extends Signal<Float> {
 			try {
 				animator.update();
 			} catch (final RuntimeException exception) {
-				JOIDLog.warnOnce("TweenAnimator.update." + System.identityHashCode(animator) + exception, "The update of TweenAnimator failed (" + exception + "), the other animators still run: catch the exception inside the onChange listeners of the animator or the getter and setter given to Tween.to(...) to handle it", exception);
+				JOIDLog.warnOnce("TweenAnimator.update." + System.identityHashCode(animator) + exception.getClass().getName(), "The update of TweenAnimator failed (" + exception + "), the other animators still run: catch the exception inside the onChange listeners of the animator or the getter and setter given to Tween.to(...) to handle it", exception);
 			}
 		}
 	}

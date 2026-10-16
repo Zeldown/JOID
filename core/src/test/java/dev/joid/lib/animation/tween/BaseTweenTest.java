@@ -140,6 +140,22 @@ public class BaseTweenTest {
 	}
 
 	@Test
+	public void refusesToRepeatForeverWithoutDurationNorRepeatDelay() {
+		final TweenValue value = new TweenValue(0F);
+		final List<BaseTween<?>> tweenList = Arrays.asList(value.to(0F).target(10F).repeat(Tween.INFINITY, 0F), Timeline.createSequence().push(value.to(0F).target(10F)).repeatYoyo(Tween.INFINITY, 0F));
+		for (final BaseTween<?> tween : tweenList) {
+			try {
+				tween.start();
+				Assert.fail();
+			} catch (final IllegalStateException expected) {
+				Assert.assertEquals("A tween or timeline that repeats forever needs a duration or a repeat delay above 0, give it one or a finite repeat count", expected.getMessage());
+			}
+		}
+		value.to(0F).target(10F).repeat(Tween.INFINITY, 1F).start().update(2.5F);
+		Assert.assertEquals(10F, value.getValue(), 0F);
+	}
+
+	@Test
 	public void ignoresANegativeRepeatDelay() {
 		Assert.assertEquals(0F, BaseTweenTest.tween(new TweenValue(0F)).repeat(2, -1F).getRepeatDelay(), 0F);
 		Assert.assertEquals(0F, BaseTweenTest.tween(new TweenValue(0F)).repeatYoyo(2, -1F).getRepeatDelay(), 0F);

@@ -357,7 +357,7 @@ public class TweenAnimatorTest {
 		final TweenAnimator failing = TweenAnimator.create().sequence(64F, 1F);
 		final TweenAnimator other = TweenAnimator.create().sequence(64F, 1F);
 		failing.onChange(value -> {
-			throw new IllegalStateException("boom");
+			throw new IllegalStateException("boom at " + value);
 		});
 		new AnimatorUI(failing, other).load(1920D, 1080D);
 		final PrintStream previous = System.err;

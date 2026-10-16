@@ -144,11 +144,14 @@ public class TweenTest {
 		Assert.assertEquals(20F, value.getValue(), 0F);
 	}
 
-	@Test
-	public void ignoresItsWaypointsWithoutPath() {
-		final TweenValue value = new TweenValue(0F);
-		value.to(1F).target(30F).waypoint(10F).path(null).ease(TweenEquations.LINEAR).start().update(0.5F);
-		Assert.assertEquals(15F, value.getValue(), 0F);
+	@Test(expected = NullPointerException.class)
+	public void refusesAMissingPath() {
+		new TweenValue(0F).to(1F).path(null);
+	}
+
+	@Test(expected = NullPointerException.class)
+	public void refusesAMissingEquation() {
+		new TweenValue(0F).to(1F).ease(null);
 	}
 
 }
