@@ -18,10 +18,12 @@ import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
+import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
+import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import dev.joid.lib.video.VideoNativesException;
 import lombok.Getter;
@@ -37,10 +39,10 @@ public final class ResourceData {
 	private final List<Consumer<Throwable>> errorListeners = new CopyOnWriteArrayList<>();
 	private final Set<ResourceData>         forks          = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
-	@Getter private String           uniqueId;
-	@Getter private IResourceDecoder decoder;
+	@Getter private String                    uniqueId;
+	@Getter private volatile IResourceDecoder decoder;
 
-	private Supplier<IResourceDecoder> decoderSource;
+	private Supplier<Asset> assetSource;
 
 	private int[][]    data;
 	private ITexture[] textures;
@@ -87,8 +89,8 @@ public final class ResourceData {
 		return this;
 	}
 
-	public @NonNull ResourceData decoderSource(final Supplier<IResourceDecoder> decoderSource) {
-		this.decoderSource = decoderSource;
+	public @NonNull ResourceData assetSource(final Supplier<Asset> assetSource) {
+		this.assetSource = assetSource;
 		return this;
 	}
 
@@ -192,13 +194,25 @@ public final class ResourceData {
 		} catch (final ExecutionException silent) {}
 	}
 
+	public void detectDecoder() {
+		final Asset asset;
+		try {
+			asset = this.assetSource.get();
+		} catch (final RuntimeException exception) {
+			this.fail(exception);
+			return;
+		}
+
+		if (asset.isRemote()) {
+			this.dispatch(() -> this.detectDecoder(asset));
+		} else {
+			this.detectDecoder(asset);
+		}
+	}
+
 	public void generate(final boolean async) {
-		if (this.error == null && this.decoder == null && this.decoderSource != null) {
-			try {
-				this.decoder(this.decoderSource.get());
-			} catch (final RuntimeException exception) {
-				this.fail(exception);
-			}
+		if (this.error == null && this.decoder == null && this.assetSource != null && !this.isDispatching()) {
+			this.detectDecoder();
 		}
 
 		if (this.error != null) {
@@ -403,7 +417,7 @@ public final class ResourceData {
 				}
 				decoder.clear(this);
 			});
-		} else if (this.decoderSource != null) {
+		} else if (this.assetSource != null) {
 			this.error = null;
 		}
 
@@ -428,8 +442,20 @@ public final class ResourceData {
 		}
 	}
 
+	private void detectDecoder(final @NonNull Asset asset) {
+		try {
+			this.decoder(ResourceFormat.decoder(asset));
+		} catch (final RuntimeException exception) {
+			this.fail(exception);
+		}
+	}
+
 	private boolean isCurrent(final IResourceDecoder decoder, final int generation) {
 		return this.decoder == decoder && this.generation == generation;
+	}
+
+	private boolean isDispatching() {
+		return this.tasks.stream().anyMatch(Thread::isAlive);
 	}
 
 	private synchronized void release(final @NonNull Runnable release) {

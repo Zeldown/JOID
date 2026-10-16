@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -108,9 +109,9 @@ public class AssetTest {
 		Assert.assertArrayEquals("joid asset".getBytes(StandardCharsets.UTF_8), new TricklingAsset().peek(10));
 	}
 
-	@Test
-	public void peeksNothingFromAnAssetThatCannotOpen() {
-		Assert.assertEquals(0, new FailingAsset().peek(4).length);
+	@Test(expected = UncheckedIOException.class)
+	public void failsToPeekAnAssetThatCannotOpen() {
+		new FailingAsset().peek(4);
 	}
 
 	@Test(expected = IOException.class)

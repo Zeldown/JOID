@@ -379,7 +379,8 @@ public class ObjModelTest {
 			System.setErr(previous);
 		}
 		Assert.assertTrue(stream.closed);
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The file of the OBJ model tracked cannot be closed ("));
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The stream stream_"));
+		Assert.assertTrue(output.toString(), output.toString().contains(" cannot be closed ("));
 	}
 
 	@Test(expected = NullPointerException.class)

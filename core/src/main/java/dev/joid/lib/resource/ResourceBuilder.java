@@ -12,7 +12,6 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.resource.cache.IResourceCache;
 import dev.joid.lib.resource.cache.MemoryResourceCache;
-import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.Getter;
 import lombok.NonNull;
@@ -76,24 +75,10 @@ public final class ResourceBuilder {
 				throw exception;
 			}
 
-			return this.compute((String) input, () -> ResourceBuilder.failed((String) input, exception).decoderSource(() -> ResourceFormat.decoder(Asset.of(input))));
+			return this.compute((String) input, () -> ResourceBuilder.detect((String) input, () -> Asset.of(input)));
 		}
 
-		if (asset.isRemote()) {
-			return this.compute(asset.getUniqueId(), () -> {
-				final ResourceData data = new ResourceData(asset.getUniqueId(), null);
-				data.dispatch(() -> {
-					try {
-						data.decoder(ResourceFormat.decoder(asset));
-					} catch (final RuntimeException exception) {
-						data.fail(exception);
-					}
-				});
-				return data;
-			});
-		}
-
-		return this.compute(asset.getUniqueId(), () -> ResourceBuilder.read(asset));
+		return this.compute(asset.getUniqueId(), () -> ResourceBuilder.detect(asset.getUniqueId(), () -> asset));
 	}
 
 	public @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {
@@ -137,17 +122,9 @@ public final class ResourceBuilder {
 		}
 	}
 
-	private static @NonNull ResourceData read(final @NonNull Asset asset) {
-		try {
-			return new ResourceData(asset.getUniqueId(), ResourceFormat.decoder(asset));
-		} catch (final RuntimeException exception) {
-			return ResourceBuilder.failed(asset.getUniqueId(), exception);
-		}
-	}
-
-	private static @NonNull ResourceData failed(final @NonNull String uniqueId, final @NonNull RuntimeException exception) {
-		final ResourceData data = new ResourceData(uniqueId, null);
-		data.fail(exception);
+	private static @NonNull ResourceData detect(final @NonNull String uniqueId, final @NonNull Supplier<Asset> assetSource) {
+		final ResourceData data = new ResourceData(uniqueId, null).assetSource(assetSource);
+		data.detectDecoder();
 		return data;
 	}
 

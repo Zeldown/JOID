@@ -208,6 +208,40 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
+	public void detectsTheFormatAgainOnceReloadedAfterAFailedRead() throws IOException {
+		final FlakyAsset asset = new FlakyAsset("flaky", false, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")).read());
+		final Resource resource = ResourceBuilder.create().cache(null).of(asset).blocking();
+		Assert.assertTrue(resource.isFailed());
+		resource.reload();
+		resource.prepareBind();
+		Assert.assertFalse(resource.isFailed());
+		Assert.assertTrue(resource.getDecoder() instanceof AnimatedResourceDecoder);
+	}
+
+	@Test
+	public void detectsTheFormatOfARemoteAssetAgainOnATaskThreadOnceReloaded() throws IOException {
+		final FlakyAsset asset = new FlakyAsset("flaky-remote", true, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")).read());
+		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
+		resource.getResourceData().await();
+		Assert.assertTrue(resource.isFailed());
+		resource.reload();
+		resource.prepareBind();
+		resource.getResourceData().await();
+		Assert.assertTrue(resource.getDecoder() instanceof AnimatedResourceDecoder);
+		Assert.assertEquals("ResourceTask/flaky-remote", asset.readers.get(0).getName());
+	}
+
+	@Test
+	public void readsAStreamAgainOnceReloaded() {
+		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceBuilderTest.stream("/animation/still.png")).blocking();
+		resource.prepareBind();
+		resource.reload();
+		resource.prepareBind();
+		Assert.assertFalse(resource.isFailed());
+		Assert.assertTrue(resource.isLoaded());
+	}
+
+	@Test
 	public void waitsForABlockingDownloadOnlyWhenDrawn() throws InterruptedException {
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")));
 		final Resource resource = ResourceBuilder.create().cache(null).of(asset).blocking();
@@ -401,6 +435,37 @@ public class ResourceBuilderTest {
 				throw new IOException(exception);
 			}
 			this.opened.incrementAndGet();
+			this.readers.add(Thread.currentThread());
+			return new ByteArrayInputStream(this.bytes);
+		}
+
+		@Override
+		public boolean isRemote() {
+			return this.remote;
+		}
+
+	}
+
+	private static final class FlakyAsset extends Asset {
+
+		private final AtomicInteger opened  = new AtomicInteger();
+		private final List<Thread>  readers = new CopyOnWriteArrayList<>();
+
+		private final byte[]  bytes;
+		private final boolean remote;
+
+		private FlakyAsset(final String uniqueId, final boolean remote, final byte[] bytes) {
+			super(uniqueId);
+			this.remote = remote;
+			this.bytes = bytes;
+		}
+
+		@Override
+		public @NonNull InputStream open() throws IOException {
+			if (this.opened.getAndIncrement() == 0) {
+				throw new IOException("offline");
+			}
+
 			this.readers.add(Thread.currentThread());
 			return new ByteArrayInputStream(this.bytes);
 		}

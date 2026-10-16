@@ -5,10 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -194,7 +194,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 10000L)
 	public void refusesAMissingFile() {
-		MsdfFontLoaderTest.fails(FileNotFoundException.class, new File(MsdfFontLoaderTest.FOLDER.getRoot(), "missing.msdf"));
+		MsdfFontLoaderTest.fails(UncheckedIOException.class, new File(MsdfFontLoaderTest.FOLDER.getRoot(), "missing.msdf"));
 	}
 
 	@Test(timeout = 10000L)

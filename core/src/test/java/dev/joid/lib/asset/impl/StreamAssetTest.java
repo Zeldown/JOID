@@ -1,9 +1,9 @@
 package dev.joid.lib.asset.impl;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
@@ -14,16 +14,10 @@ public class StreamAssetTest {
 	private static final byte[] CONTENT = "joid stream asset".getBytes(StandardCharsets.UTF_8);
 
 	@Test
-	public void keepsABufferedStream() {
-		final BufferedInputStream stream = new BufferedInputStream(new ByteArrayInputStream(StreamAssetTest.CONTENT));
-		Assert.assertSame(stream, StreamAsset.create(stream).open());
-	}
-
-	@Test
-	public void buffersARawStream() throws IOException {
+	public void opensANewStreamEveryTime() throws IOException {
 		final ByteArrayInputStream stream = new ByteArrayInputStream(StreamAssetTest.CONTENT);
 		final StreamAsset asset = StreamAsset.create(stream);
-		Assert.assertTrue(asset.open() instanceof BufferedInputStream);
+		Assert.assertNotSame(asset.open(), asset.open());
 		Assert.assertNotSame(stream, asset.open());
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
 	}
@@ -42,17 +36,17 @@ public class StreamAssetTest {
 	}
 
 	@Test
-	public void peeksNothingOnceRead() throws IOException {
+	public void peeksAgainOnceRead() throws IOException {
 		final StreamAsset asset = StreamAsset.create(new ByteArrayInputStream(StreamAssetTest.CONTENT));
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
-		Assert.assertEquals(0, asset.peek(4).length);
+		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.peek(4));
 	}
 
-	@Test(expected = IOException.class)
-	public void cannotBeReadTwice() throws IOException {
+	@Test
+	public void canBeReadTwice() throws IOException {
 		final StreamAsset asset = StreamAsset.create(new ByteArrayInputStream(StreamAssetTest.CONTENT));
-		asset.read();
-		asset.read();
+		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
+		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
 	}
 
 	@Test
@@ -62,9 +56,9 @@ public class StreamAssetTest {
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
 	}
 
-	@Test
-	public void peeksNothingFromAFailingStream() {
-		Assert.assertEquals(0, StreamAsset.create(new FailingStream()).peek(4).length);
+	@Test(expected = UncheckedIOException.class)
+	public void failsToPeekAFailingStream() {
+		StreamAsset.create(new FailingStream()).peek(4);
 	}
 
 	@Test(expected = NullPointerException.class)

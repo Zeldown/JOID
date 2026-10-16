@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -96,15 +97,19 @@ public class UrlAssetTest {
 		Assert.assertFalse(asset.isRemote());
 	}
 
-	@Test
-	public void peeksNothingFromAMissingFileUrl() {
-		Assert.assertEquals(0, UrlAsset.create(new File(this.folder.getRoot(), "missing.png").toURI().toString()).peek(4).length);
+	@Test(expected = UncheckedIOException.class)
+	public void failsToPeekAMissingFileUrl() {
+		UrlAsset.create(new File(this.folder.getRoot(), "missing.png").toURI().toString()).peek(4);
 	}
 
 	@Test
 	public void requestsAMissingPlainHttpAssetOnce() {
-		UrlAsset.create(this.server.url("http", "/missing.png")).peek(4);
-		Assert.assertEquals(Collections.singletonList("/missing.png"), this.server.paths);
+		try {
+			UrlAsset.create(this.server.url("http", "/missing.png")).read();
+			Assert.fail("A missing asset must fail");
+		} catch (final IOException expected) {
+			Assert.assertEquals(Collections.singletonList("/missing.png"), this.server.paths);
+		}
 	}
 
 	@Test
@@ -117,9 +122,9 @@ public class UrlAssetTest {
 		UrlAsset.create(this.server.url("http", "/missing.png")).read();
 	}
 
-	@Test
-	public void peeksNothingFromAMissingAsset() {
-		Assert.assertEquals(0, UrlAsset.create(this.server.url("http", "/missing.png")).peek(4).length);
+	@Test(expected = UncheckedIOException.class)
+	public void failsToPeekAMissingAsset() {
+		UrlAsset.create(this.server.url("http", "/missing.png")).peek(4);
 	}
 
 	@Test(expected = NullPointerException.class)

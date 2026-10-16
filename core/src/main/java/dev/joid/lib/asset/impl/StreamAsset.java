@@ -1,10 +1,13 @@
 package dev.joid.lib.asset.impl;
 
-import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.io.IOUtils;
+
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.asset.Asset;
 import lombok.NonNull;
 
@@ -12,11 +15,13 @@ public final class StreamAsset extends Asset {
 
 	private static final AtomicLong COUNTER = new AtomicLong();
 
-	private final BufferedInputStream stream;
+	private final InputStream stream;
+
+	private byte[] bytes;
 
 	private StreamAsset(final InputStream stream) {
 		super("stream_" + StreamAsset.COUNTER.incrementAndGet());
-		this.stream = stream instanceof BufferedInputStream ? (BufferedInputStream) stream : new BufferedInputStream(stream);
+		this.stream = stream;
 	}
 
 	public static @NonNull StreamAsset create(final @NonNull InputStream stream) {
@@ -24,21 +29,16 @@ public final class StreamAsset extends Asset {
 	}
 
 	@Override
-	public @NonNull InputStream open() {
-		return this.stream;
-	}
-
-	@Override
-	public @NonNull byte[] peek(final int length) {
-		final byte[] header = new byte[length];
-		try {
-			this.stream.mark(length);
-			final int read = Asset.fill(this.stream, header);
-			this.stream.reset();
-			return Asset.shrink(header, read);
-		} catch (final IOException exception) {
-			return new byte[0];
+	public synchronized @NonNull InputStream open() throws IOException {
+		if (this.bytes == null) {
+			this.bytes = IOUtils.toByteArray(this.stream);
+			try {
+				this.stream.close();
+			} catch (final IOException exception) {
+				JOIDLog.warn("The stream " + super.getUniqueId() + " cannot be closed (" + exception.getMessage() + "), its content is read anyway: check the stream");
+			}
 		}
+		return new ByteArrayInputStream(this.bytes);
 	}
 
 }

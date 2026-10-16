@@ -3,6 +3,7 @@ package dev.joid.lib.asset;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
@@ -37,9 +38,9 @@ public abstract class Asset {
 	public @NonNull byte[] peek(final int length) {
 		final byte[] header = new byte[length];
 		try (InputStream stream = this.open()) {
-			return Asset.shrink(header, Asset.fill(stream, header));
+			return Asset.shrink(header, IOUtils.read(stream, header));
 		} catch (final IOException exception) {
-			return new byte[0];
+			throw new UncheckedIOException("The start of " + this.uniqueId + " cannot be read", exception);
 		}
 	}
 
@@ -49,11 +50,7 @@ public abstract class Asset {
 		}
 	}
 
-	protected static int fill(final @NonNull InputStream stream, final @NonNull byte[] buffer) throws IOException {
-		return IOUtils.read(stream, buffer);
-	}
-
-	protected static @NonNull byte[] shrink(final @NonNull byte[] buffer, final int length) {
+	private static @NonNull byte[] shrink(final @NonNull byte[] buffer, final int length) {
 		return length == buffer.length ? buffer : Arrays.copyOf(buffer, length);
 	}
 
