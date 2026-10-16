@@ -65,7 +65,7 @@ public class ResourceNode extends Node {
 
 		final double resourceWidth = this.resource.getWidth();
 		final double resourceHeight = this.resource.getHeight();
-		if (resourceWidth == 0 || resourceHeight == 0) {
+		if (resourceWidth == 0D || resourceHeight == 0D) {
 			return;
 		}
 
@@ -155,7 +155,7 @@ public class ResourceNode extends Node {
 		}
 
 		if (this.resource.isLoaded() && (this.resource.getWidth() == 0 || this.resource.getHeight() == 0)) {
-			DrawUtils.RESOURCE.drawResource(0, 0, 0, 0, this.resource);
+			DrawUtils.RESOURCE.drawResource(0D, 0D, 0D, 0D, this.resource);
 		}
 		return this.resource.isLoaded() && this.resource.getWidth() != 0 && this.resource.getHeight() != 0;
 	}

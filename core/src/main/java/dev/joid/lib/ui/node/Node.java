@@ -222,8 +222,10 @@ public abstract class Node implements INode {
 	private Cursor        cursor;
 	private boolean       hovered;
 	private long          hoverDuration;
-	private boolean       hoverShown;
 	private TweenEquation hoverEquation;
+
+	@Getter(AccessLevel.NONE)
+	private boolean hoverShown;
 
 	private double scrollX;
 	private double scrollY;
@@ -235,13 +237,15 @@ public abstract class Node implements INode {
 
 	private boolean scrollEndX;
 	private boolean scrollEndY;
+
+	@Getter(AccessLevel.NONE)
 	private boolean scrollMeasured;
 
-	private double  restX;
-	private double  restY;
-	private double  drawnX;
-	private double  drawnY;
-	private boolean moving;
+	@Getter(AccessLevel.NONE) private double  restX;
+	@Getter(AccessLevel.NONE) private double  restY;
+	@Getter(AccessLevel.NONE) private double  drawnX;
+	@Getter(AccessLevel.NONE) private double  drawnY;
+	@Getter(AccessLevel.NONE) private boolean moving;
 
 	private long        lastClickTime;
 	private MouseButton lastClickButton;
@@ -254,12 +258,12 @@ public abstract class Node implements INode {
 	private long loadCount;
 
 	protected Node(final double x, final double y) {
-		this(x, y, 0, 0);
+		this(x, y, 0D, 0D);
 	}
 
 	protected Node(final double x, final double y, final double width, final double height) {
 		this.eventBus = EventBus.create(this::describe);
-		this.bindings = NodeBindings.create(this, this.eventBus, () -> Node.nameOf(this.getClass()), this::replay);
+		this.bindings = NodeBindings.create(this, this.eventBus, () -> JOIDLog.nameOf(this.getClass()), this::replay);
 
 		this.taskList        = new CopyOnWriteArrayList<>();
 		this.shortcutList    = new CopyOnWriteArrayList<>();
@@ -356,9 +360,9 @@ public abstract class Node implements INode {
 
 				if (this.isVisible()) {
 					if (this.aspectRatio > 0D) {
-						if (this.width != 0) {
+						if (this.width != 0D) {
 							this.height = this.width / this.aspectRatio;
-						} else if (this.height != 0) {
+						} else if (this.height != 0D) {
 							this.width = this.height * this.aspectRatio;
 						}
 					}
@@ -648,7 +652,7 @@ public abstract class Node implements INode {
 			}
 
 			if (!lines.isEmpty()) {
-				hoverList.add(new TextHoverElement(lines));
+				hoverList.add(TextHoverElement.create(lines));
 			}
 		}
 
@@ -663,7 +667,7 @@ public abstract class Node implements INode {
 
 	public final void fireUpdate() {
 		this.fireAnimate();
-		this.drawList.ordered().stream().forEach(Node::fireUpdate);
+		this.drawList.ordered().forEach(Node::fireUpdate);
 		if (this.scrollbar != null) {
 			this.scrollbar.fireUpdate();
 		}
@@ -675,7 +679,7 @@ public abstract class Node implements INode {
 		try {
 			this.update();
 		} catch (final RuntimeException exception) {
-			JOIDLog.warnOnce("Node.update." + this.getClass().getName() + "." + exception.getClass().getName(),"The update of " + this.describe() + " failed (" + exception + "), the next updates still run: catch the exception inside update() to handle it", exception);
+			JOIDLog.warnOnce("Node.update." + this.getClass().getName() + "." + exception.getClass().getName(), "The update of " + this.describe() + " failed (" + exception + "), the next updates still run: catch the exception inside update() to handle it", exception);
 		}
 		this.fire(Node.UPDATE, () -> NodeEvent.create(this));
 	}
@@ -729,19 +733,19 @@ public abstract class Node implements INode {
 
 		this.dispatch(NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, source), this.isEnabled(), Node.HANDLE_MOUSE_SCROLL, (node, event) -> node.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event), event -> {
 			if (!event.isConsumed() && this.isHovered()) {
-				final double speed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2 : this.scrollSpeed;
+				final double speed = Key.LEFT_CONTROL.isDown() ? this.scrollSpeed * 2D : this.scrollSpeed;
 				if (notchesY != 0D && this.hasOverflowY()) {
 					if (this.canScroll(this.scrollYValue, this.maxScrollY, notchesY)) {
-						this.scrollYValue.set(this.scrollYValue.get() + (notchesY > 0D ? 30 : -30) * speed);
+						this.scrollYValue.set(this.scrollYValue.get() + (notchesY > 0D ? 30D : -30D) * speed);
 						event.consume();
 					}
 				} else if (notchesY != 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesY)) {
-					this.scrollXValue.set(this.scrollXValue.get() + (notchesY > 0D ? 30 : -30) * speed);
+					this.scrollXValue.set(this.scrollXValue.get() + (notchesY > 0D ? 30D : -30D) * speed);
 					event.consume();
 				}
 
 				if (notchesX != 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesX)) {
-					this.scrollXValue.set(this.scrollXValue.get() + (notchesX > 0D ? 30 : -30) * speed);
+					this.scrollXValue.set(this.scrollXValue.get() + (notchesX > 0D ? 30D : -30D) * speed);
 					event.consume();
 				}
 			}
@@ -1551,11 +1555,11 @@ public abstract class Node implements INode {
 	}
 
 	public final boolean hasOverflowX() {
-		return this.maxScrollX > 0;
+		return this.maxScrollX > 0D;
 	}
 
 	public final boolean hasOverflowY() {
-		return this.maxScrollY > 0;
+		return this.maxScrollY > 0D;
 	}
 
 	public final boolean hasListener(final @NonNull EventType<?> type) {
@@ -1663,10 +1667,10 @@ public abstract class Node implements INode {
 
 	public final @NonNull String getHierarchy() {
 		if (this.parent == null) {
-			return this.getClass().getSimpleName();
+			return JOIDLog.nameOf(this.getClass());
 		}
 
-		return this.parent.getHierarchy() + " - " + this.getClass().getSimpleName();
+		return this.parent.getHierarchy() + " - " + JOIDLog.nameOf(this.getClass());
 	}
 
 	public final @NonNull String getMappedIndex() {
@@ -1860,7 +1864,7 @@ public abstract class Node implements INode {
 				failure = exception;
 			}
 		}
-		throw new IllegalStateException("The node " + Node.nameOf(this.getClass()) + " cannot be copied (" + failure + "): declare a constructor (x, y, width, height) or override instantiate()", failure);
+		throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " cannot be copied (" + failure + "): declare a constructor (x, y, width, height) or override instantiate()", failure);
 	}
 
 	protected boolean isDraggingChild(final @NonNull Node child) {
@@ -2019,7 +2023,7 @@ public abstract class Node implements INode {
 
 	private String describe() {
 		final UI ui = this.getUi();
-		return ui == null ? Node.nameOf(this.getClass()) : Node.nameOf(this.getClass()) + " in " + Node.nameOf(ui.getClass());
+		return ui == null ? JOIDLog.nameOf(this.getClass()) : JOIDLog.nameOf(this.getClass()) + " in " + JOIDLog.nameOf(ui.getClass());
 	}
 
 	private void fireAnimate() {
@@ -2137,13 +2141,13 @@ public abstract class Node implements INode {
 
 	private void checkDraggable() {
 		if (this.draggable == null) {
-			throw new IllegalStateException("The node " + Node.nameOf(this.getClass()) + " has no DraggableProperty, call draggable(...) first");
+			throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " has no DraggableProperty, call draggable(...) first");
 		}
 	}
 
 	private void checkDragArea() {
 		if (this.draggable.getAreaType() == DraggableAreaType.PARENT && this.parent == null) {
-			throw new IllegalStateException("The node " + Node.nameOf(this.getClass()) + " is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()");
+			throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()");
 		}
 	}
 
@@ -2159,7 +2163,7 @@ public abstract class Node implements INode {
 	private void checkRequirements() {
 		for (final NodeRequirement requirement : this.requirementList) {
 			if (!requirement.present.test(this)) {
-				throw new IllegalStateException("The " + Node.nameOf(this.getClass()) + " has no " + requirement.setting + ", " + requirement.advice);
+				throw new IllegalStateException("The " + JOIDLog.nameOf(this.getClass()) + " has no " + requirement.setting + ", " + requirement.advice);
 			}
 		}
 	}
@@ -2171,7 +2175,7 @@ public abstract class Node implements INode {
 
 		for (final String axis : new String[] {"x", "y"}) {
 			if (this.bindings.isFollowed(axis)) {
-				throw new IllegalStateException("The " + Node.nameOf(this.getClass()) + " is dragged with DraggableType.MOVE but its " + axis + " is computed (a lambda or a signal that cannot be written), so a drag cannot move it: give " + axis + "(...) a value or a writable Signal, or drag a copy with DraggableType.COPY");
+				throw new IllegalStateException("The " + JOIDLog.nameOf(this.getClass()) + " is dragged with DraggableType.MOVE but its " + axis + " is computed (a lambda or a signal that cannot be written), so a drag cannot move it: give " + axis + "(...) a value or a writable Signal, or drag a copy with DraggableType.COPY");
 			}
 		}
 	}
@@ -2186,7 +2190,7 @@ public abstract class Node implements INode {
 				try {
 					property.apply(this, signal);
 				} catch (final Exception exception) {
-					JOIDLog.warnOnce("Node.watch." + this.getClass().getName() + "." + exception.getClass().getName(), "A watch of " + Node.nameOf(this.getClass()) + " cannot apply its property when its signal changes (" + exception + "), the property keeps its previous value: check the value the signal gives", exception);
+					JOIDLog.warnOnce("Node.watch." + this.getClass().getName() + "." + exception.getClass().getName(), "A watch of " + JOIDLog.nameOf(this.getClass()) + " cannot apply its property when its signal changes (" + exception + "), the property keeps its previous value: check the value the signal gives", exception);
 				}
 			}
 		});
@@ -2197,7 +2201,7 @@ public abstract class Node implements INode {
 		final JsonObject json = new JsonObject();
 		json.addProperty("index", this.getIndex());
 		json.addProperty("mappedIndex", this.getMappedIndex());
-		json.addProperty("name", this.getClass().getSimpleName());
+		json.addProperty("name", JOIDLog.nameOf(this.getClass()));
 		json.addProperty("class", this.getClass().getName());
 
 		json.addProperty("defaultX", this.defaultX);
@@ -2329,7 +2333,7 @@ public abstract class Node implements INode {
 					((Map<Object, Object>) field.get(this)).forEach((key, value) -> map.put(copies.getOrDefault(key, key), copies.getOrDefault(value, value)));
 				}
 			} catch (final Exception exception) {
-				throw new IllegalStateException("The node " + Node.nameOf(this.getClass()) + " cannot be copied: its field " + field.getName() + " cannot be set (" + exception + "), mark the field transient to leave it out of copy()", exception);
+				throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " cannot be copied: its field " + field.getName() + " cannot be set (" + exception + "), mark the field transient to leave it out of copy()", exception);
 			}
 		}
 
@@ -2342,10 +2346,6 @@ public abstract class Node implements INode {
 			Collections.addAll(fields, c.getDeclaredFields());
 		}
 		return fields;
-	}
-
-	private static @NonNull String nameOf(final @NonNull Class<?> type) {
-		return type.getSimpleName().isEmpty() ? type.getName() : type.getSimpleName();
 	}
 
 	@Override

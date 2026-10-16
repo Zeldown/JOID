@@ -28,8 +28,8 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getMax() {
-		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0);
-		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0);
+		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0D);
+		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0D);
 		return ChartNode.scaleMax(min, max);
 	}
 
@@ -41,8 +41,8 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getMin() {
-		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0);
-		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0);
+		final double min = this.getDataMap().values().stream().mapToDouble(data -> data.getMin().doubleValue()).min().orElse(0D);
+		final double max = this.getDataMap().values().stream().mapToDouble(data -> data.getMax().doubleValue()).max().orElse(0D);
 		return ChartNode.scaleMin(min, max);
 	}
 
@@ -54,7 +54,7 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final Number getAverage() {
-		return this.getDataMap().values().stream().mapToDouble(data -> data.getAverage().doubleValue()).average().orElse(0);
+		return this.getDataMap().values().stream().mapToDouble(data -> data.getAverage().doubleValue()).average().orElse(0D);
 	}
 
 	public final Number getAverage(final String data) {
@@ -211,7 +211,6 @@ public abstract class ChartNode extends Node {
 
 	}
 
-	@Getter
 	public static class ChartData {
 
 		private Map<String, Number> dataMap;
@@ -237,15 +236,15 @@ public abstract class ChartNode extends Node {
 		}
 
 		public Number getMax() {
-			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).max().orElse(0);
+			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).max().orElse(0D);
 		}
 
 		public Number getMin() {
-			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).min().orElse(0);
+			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).min().orElse(0D);
 		}
 
 		public Number getAverage() {
-			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).average().orElse(0);
+			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).average().orElse(0D);
 		}
 
 		public Number get(final String label) {
@@ -254,6 +253,10 @@ public abstract class ChartNode extends Node {
 
 		public boolean has(final String label) {
 			return this.dataMap.containsKey(label);
+		}
+
+		public @NonNull Map<String, Number> getDataMap() {
+			return Collections.unmodifiableMap(this.dataMap);
 		}
 
 		public final <T extends ChartData> @NonNull T remove(final @NonNull String label) {

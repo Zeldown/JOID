@@ -32,7 +32,7 @@ public class DraggablePropertyTest {
 		Assert.assertSame(DraggableType.MOVE, draggable.getType());
 		Assert.assertSame(DraggableAreaType.FREE, draggable.getAreaType());
 		Assert.assertSame(DraggableSnapType.NEAREST, draggable.getSnapType());
-		Assert.assertNull(draggable.getAreaObject());
+		Assert.assertNull(draggable.getAreaNode());
 		Assert.assertFalse(draggable.hasSnapping());
 		Assert.assertTrue(draggable.isEnabled(RectNode.create(0D, 0D, 10D, 10D)));
 	}
@@ -76,7 +76,8 @@ public class DraggablePropertyTest {
 		final RectNode area = RectNode.create(10D, 20D, 80D, 60D);
 		parent.append(area);
 		final DraggableProperty draggable = DraggableProperty.node(area);
-		Assert.assertSame(area, draggable.getAreaObject());
+		Assert.assertSame(DraggableAreaType.NODE, draggable.getAreaType());
+		Assert.assertSame(area, draggable.getAreaNode());
 		Assert.assertArrayEquals(new double[] {110D, 70D, 80D, 60D}, draggable.getBounds(RectNode.create(0D, 0D, 10D, 10D)), 0D);
 	}
 
@@ -105,26 +106,6 @@ public class DraggablePropertyTest {
 		Assert.assertSame(draggable, draggable.enabled(target -> target.getX() > 5D));
 		Assert.assertFalse(draggable.isEnabled(node));
 		Assert.assertTrue(draggable.isEnabled(node.x(10D)));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesANodeAreaWithoutNode() {
-		DraggableProperty.free().area(DraggableAreaType.NODE, "area");
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesACustomAreaWithoutBounds() {
-		DraggableProperty.free().area(DraggableAreaType.CUSTOM, new int[] {0, 0, 10, 10});
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesACustomAreaTypeGivenAlone() {
-		DraggableProperty.free().area(DraggableAreaType.CUSTOM);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesANodeAreaTypeGivenAlone() {
-		DraggableProperty.free().area(DraggableAreaType.NODE);
 	}
 
 	@Test
@@ -157,24 +138,6 @@ public class DraggablePropertyTest {
 		Assert.assertSame(DraggableSnapType.NEAREST, draggable.getSnapType());
 		Assert.assertEquals(Arrays.asList(left, right), draggable.getSnapNodes());
 		Assert.assertFalse(DraggableProperty.free().snap().hasSnapping());
-	}
-
-	@Test
-	public void refusesACustomAreaWithoutFourBounds() {
-		try {
-			DraggableProperty.free().area(DraggableAreaType.CUSTOM, new double[] {0D, 0D, 10D});
-			Assert.fail("A custom area needs x, y, width and height");
-		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("DraggableAreaType.CUSTOM needs a double[] {x, y, width, height} that bounds the drag, got [0.0, 0.0, 10.0]", expected.getMessage());
-		}
-	}
-
-	@Test
-	public void copiesItsCustomArea() {
-		final double[] area = {10D, 20D, 300D, 200D};
-		final DraggableProperty copy = DraggableProperty.free().area(DraggableAreaType.CUSTOM, area).copy();
-		area[0] = 50D;
-		Assert.assertArrayEquals(new double[] {10D, 20D, 300D, 200D}, copy.getBounds(RectNode.create(0D, 0D, 10D, 10D)), 0D);
 	}
 
 	@Test

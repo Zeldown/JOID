@@ -27,7 +27,7 @@ public abstract class CheckboxNode extends BaseCheckboxNode {
 	}
 
 	public final <T extends CheckboxNode> @NonNull T box(final @NonNull Node box) {
-		this.box = super.part(this.box, box);
+		this.box = super.part(this.box, box.zindex(-1));
 		return (T) this;
 	}
 

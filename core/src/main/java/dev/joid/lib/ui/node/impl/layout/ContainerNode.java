@@ -10,7 +10,7 @@ public class ContainerNode extends Node {
 	}
 
 	public static @NonNull ContainerNode create(final @NonNull Node parent) {
-		return new ContainerNode(0, 0, parent.getWidth(), parent.getHeight()).attach(parent);
+		return new ContainerNode(0D, 0D, parent.getWidth(), parent.getHeight()).attach(parent);
 	}
 
 	public static @NonNull ContainerNode create(final double x, final double y, final double width, final double height) {

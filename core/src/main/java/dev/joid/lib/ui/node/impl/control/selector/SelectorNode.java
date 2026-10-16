@@ -94,7 +94,7 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 	}
 
 	public final <T extends SelectorNode<V>> @NonNull T field(final @NonNull Node field) {
-		this.field = super.part(this.field, field);
+		this.field = super.part(this.field, field.zindex(-1));
 		return (T) this;
 	}
 

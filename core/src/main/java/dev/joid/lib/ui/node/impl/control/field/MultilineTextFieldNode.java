@@ -41,8 +41,8 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			this.followCursorBackward();
 		}
 
-		if (this.yOffset < 0) {
-			this.yOffset = 0;
+		if (this.yOffset < 0D) {
+			this.yOffset = 0D;
 		}
 
 		final double textX = super.getX() + super.getMarginLeft();
@@ -61,7 +61,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			if (super.isFocused()) {
 				final int[] cursorLineCol = this.getLineAndColumn(layout, super.getCursorPosition());
 				final double cursorX = textX + (lines.isEmpty() ? 0D : this.getX(layout, lines.get(cursorLineCol[0]), super.getCursorPosition()));
-				DrawUtils.SHAPE.drawRect(cursorX, textY + lineHeight * cursorLineCol[0], 2, lineHeight, super.getShownCursorColor());
+				DrawUtils.SHAPE.drawRect(cursorX, textY + lineHeight * cursorLineCol[0], 2D, lineHeight, super.getShownCursorColor());
 			}
 
 			final FieldSelection selection = super.getSelection();
@@ -76,7 +76,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 					final int to = i == endLine ? Math.min(end, line.getEnd()) : line.getEnd();
 					final double selectionX = this.getX(layout, line, from);
 					final double selectionWidth = this.getX(layout, line, to) - selectionX;
-					DrawUtils.SHAPE.drawRect(textX + selectionX, textY + lineHeight * i, selectionWidth <= 0D ? 2 : selectionWidth, lineHeight, super.getSelectionColor());
+					DrawUtils.SHAPE.drawRect(textX + selectionX, textY + lineHeight * i, selectionWidth <= 0D ? 2D : selectionWidth, lineHeight, super.getSelectionColor());
 				}
 			}
 		});
@@ -162,7 +162,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	@Override
 	protected final void followCursorBackward() {
 		if (super.getCursorPosition() == 0) {
-			this.yOffset = 0;
+			this.yOffset = 0D;
 			return;
 		}
 
@@ -294,7 +294,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			}
 
 			final double charWidth = super.getShownInfo().getWidth(FieldNode.opened(text, layout.getTags(), i) + text.charAt(i));
-			if (x < this.getX(layout, line, i) + charWidth / 2) {
+			if (x < this.getX(layout, line, i) + charWidth / 2D) {
 				return previous;
 			}
 

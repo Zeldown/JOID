@@ -24,7 +24,7 @@ public abstract class BaseSelectorNode<V> extends BaseChoiceNode<V> {
 	protected BaseSelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.activeValue = InteractiveValue.toggle(super.getBindings(), "active", () -> this.active, active -> this.active = active)
+		this.activeValue = InteractiveValue.create(super.getBindings(), "active", () -> this.active, (final Boolean active) -> this.active = active)
 		.events(true, BaseSelectorNode.BEFORE_OPEN, (previous, active) -> NodeChangeEvent.Pre.create(this, previous, active), BaseSelectorNode.OPEN, (previous, active) -> NodeChangeEvent.Post.create(this, previous, active))
 		.events(false, BaseSelectorNode.BEFORE_CLOSE, (previous, active) -> NodeChangeEvent.Pre.create(this, previous, active), BaseSelectorNode.CLOSE, (previous, active) -> NodeChangeEvent.Post.create(this, previous, active));
 	}

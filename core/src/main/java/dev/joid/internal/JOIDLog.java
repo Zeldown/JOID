@@ -49,4 +49,8 @@ public final class JOIDLog {
 		}
 	}
 
+	public static String nameOf(final Class<?> type) {
+		return type.getSimpleName().isEmpty() ? type.getName() : type.getSimpleName();
+	}
+
 }

@@ -27,7 +27,7 @@ public class TextHoverElementTest {
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D);
 		final HoverUI ui = new HoverUI(rect);
 		this.bridges.open(ui).frames(30);
-		new TextHoverElement(Arrays.asList("Save", "Ctrl+S")).render(rect, 150D, 160D);
+		TextHoverElement.create(Arrays.asList("Save", "Ctrl+S")).render(rect, 150D, 160D);
 		Assert.assertEquals(Collections.singletonList(Arrays.asList(Arrays.asList("Save", "Ctrl+S"), 150D, 160D)), ui.hovers);
 	}
 

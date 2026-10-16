@@ -52,7 +52,7 @@ public abstract class SliderNode<V> extends BaseSliderNode<V> {
 	}
 
 	public final <T extends SliderNode<V>> @NonNull T track(final @NonNull Node track) {
-		this.track = super.part(this.track, track);
+		this.track = super.part(this.track, track.zindex(-1));
 		return (T) this;
 	}
 

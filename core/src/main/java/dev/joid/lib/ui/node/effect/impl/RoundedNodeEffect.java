@@ -67,10 +67,10 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	public IShaderPass toShaderPass(final @NonNull Node node) {
 		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
 		final float radius = this.getRadius();
-		final float x1 = (float) (grid.snapX(node.getX()) + (this.isLeft() ? radius : 0));
-		final float y1 = (float) (grid.snapY(node.getY()) + (this.isTop() ? radius : 0));
-		final float x2 = (float) (grid.snapRight(node.getX(), node.getX() + node.getWidth()) - (this.isRight() ? radius : 0));
-		final float y2 = (float) (grid.snapBottom(node.getY(), node.getY() + node.getHeight()) - (this.isBottom() ? radius : 0));
+		final float x1 = (float) (grid.snapX(node.getX()) + (this.isLeft() ? radius : 0F));
+		final float y1 = (float) (grid.snapY(node.getY()) + (this.isTop() ? radius : 0F));
+		final float x2 = (float) (grid.snapRight(node.getX(), node.getX() + node.getWidth()) - (this.isRight() ? radius : 0F));
+		final float y2 = (float) (grid.snapBottom(node.getY(), node.getY() + node.getHeight()) - (this.isBottom() ? radius : 0F));
 		return RoundedShaderPass.create(radius, x1, y1, x2, y2);
 	}
 

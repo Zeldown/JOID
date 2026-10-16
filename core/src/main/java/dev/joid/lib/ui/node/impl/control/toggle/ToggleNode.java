@@ -43,11 +43,12 @@ public abstract class ToggleNode<F, S> extends BaseToggleNode<F, S> {
 
 	@Override
 	public void detach() {
+		super.detach();
 		this.placed = false;
 	}
 
 	public final <T extends ToggleNode<F, S>> @NonNull T track(final @NonNull Node track) {
-		this.track = super.part(this.track, track);
+		this.track = super.part(this.track, track.zindex(-1));
 		return (T) this;
 	}
 

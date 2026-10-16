@@ -59,7 +59,7 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	public static @NonNull ResourcePlayerNode create(final double x, final double y) {
-		return new ResourcePlayerNode(x, y, 0, 0);
+		return new ResourcePlayerNode(x, y, 0D, 0D);
 	}
 
 	public static @NonNull ResourcePlayerNode create(final double x, final double y, final double width, final double height) {

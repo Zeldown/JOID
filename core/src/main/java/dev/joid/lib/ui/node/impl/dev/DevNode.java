@@ -92,7 +92,7 @@ public final class DevNode extends Node {
 		Shortcut.create(Key.I).onTrigger(event -> this.toggleInspect()).attach(this);
 		Shortcut.create(Key.ENTER).onTrigger(event -> this.inspectParent()).attach(this);
 		Shortcut.create(Key.NUMPAD_ENTER).onTrigger(event -> this.inspectParent()).attach(this);
-		Shortcut.create(Key.G).onTrigger(event -> this.gridSignal.set(!this.gridSignal.peek())).attach(this);
+		Shortcut.create(Key.G).onTrigger(event -> this.toggleGrid()).attach(this);
 	}
 
 	public static @NonNull DevNode create(final double x, final double y) {
@@ -107,44 +107,34 @@ public final class DevNode extends Node {
 		.horizontal(15, super.getHeight() - super.getDefaultHeight() + 15, super.getDefaultHeight() - 30)
 		.margin(10)
 		.body(flex -> {
-			try {
-				ResourceNode
-				.create(0, 0, 24, 24)
-				.resource(Resource.of("assets/dev/textures/icons/inspect.png"))
-				.color(this.inspectSignal.map(inspect -> inspect ? DevNode.ACTION : DevNode.WHITE))
-				.hoveredColor(this.inspectSignal.map(inspect -> (inspect ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
-				.onClick(event -> {
-					this.inspectSignal.set(!this.inspectSignal.peek());
-					this.inspectedNode.set(null);
-					this.inspectedNodeLocked.set(false);
-				})
-				.hover(() -> "[I] Inspect")
-				.attach(flex);
+			ResourceNode
+			.create(0, 0, 24, 24)
+			.resource(Resource.of("assets/dev/textures/icons/inspect.png"))
+			.color(this.inspectSignal.map(inspect -> inspect ? DevNode.ACTION : DevNode.WHITE))
+			.hoveredColor(this.inspectSignal.map(inspect -> (inspect ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
+			.onClick(event -> this.toggleInspect())
+			.hover(() -> "[I] Inspect")
+			.attach(flex);
 
-				ResourceNode
-				.create(0, 0, 24, 24)
-				.resource(Resource.of("assets/dev/textures/icons/reload.png"))
-				.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()))
-				.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()).darker(0.3F))
-				.onClick(event -> {
-					event.getNode().getUi().reload();
-				})
-				.hover(() -> "[R] Reload")
-				.attach(flex);
+			ResourceNode
+			.create(0, 0, 24, 24)
+			.resource(Resource.of("assets/dev/textures/icons/reload.png"))
+			.color(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()))
+			.hoveredColor(() -> DevNode.WHITE.to(DevNode.ACTION, this.reloadAnimator.get()).darker(0.3F))
+			.onClick(event -> {
+				event.getNode().getUi().reload();
+			})
+			.hover(() -> "[R] Reload")
+			.attach(flex);
 
-				ResourceNode
-				.create(0, 0, 24, 24)
-				.resource(Resource.of("assets/dev/textures/icons/grid.png"))
-				.color(this.gridSignal.map(grid -> grid ? DevNode.ACTION : DevNode.WHITE))
-				.hoveredColor(this.gridSignal.map(grid -> (grid ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
-				.onClick(event -> {
-					this.gridSignal.set(!this.gridSignal.peek());
-				})
-				.hover(() -> "[G] Grid")
-				.attach(flex);
-			} catch (final Exception e) {
-				JOIDLog.warn("The dev panel cannot show its tool icons (" + e + "), check that the JOID jar is complete", e);
-			}
+			ResourceNode
+			.create(0, 0, 24, 24)
+			.resource(Resource.of("assets/dev/textures/icons/grid.png"))
+			.color(this.gridSignal.map(grid -> grid ? DevNode.ACTION : DevNode.WHITE))
+			.hoveredColor(this.gridSignal.map(grid -> (grid ? DevNode.ACTION : DevNode.WHITE).darker(0.3F)))
+			.onClick(event -> this.toggleGrid())
+			.hover(() -> "[G] Grid")
+			.attach(flex);
 		})
 		.attach(this);
 
@@ -447,6 +437,10 @@ public final class DevNode extends Node {
 		this.inspectSignal.set(!this.inspectSignal.peek());
 		this.inspectedNode.set(null);
 		this.inspectedNodeLocked.set(false);
+	}
+
+	private void toggleGrid() {
+		this.gridSignal.set(!this.gridSignal.peek());
 	}
 
 	private void inspectParent() {

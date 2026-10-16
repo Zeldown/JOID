@@ -170,7 +170,7 @@ public abstract class UI implements IUI, IndexedElement {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
 		}
 
-		this.eventBus = EventBus.create(() -> UI.nameOf(this.getClass()));
+		this.eventBus = EventBus.create(() -> JOIDLog.nameOf(this.getClass()));
 		this.nodeList = IndexedList.concurrent();
 		this.storeMap = new HashMap<>();
 
@@ -178,7 +178,7 @@ public abstract class UI implements IUI, IndexedElement {
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
 
-		this.bindings         = NodeBindings.create(this, this.eventBus, () -> UI.nameOf(this.getClass()), this::traced);
+		this.bindings         = NodeBindings.create(this, this.eventBus, () -> JOIDLog.nameOf(this.getClass()), this::traced);
 		this.taskList         = new CopyOnWriteArrayList<>();
 		this.keptTaskList     = new ArrayList<>();
 		this.shortcutList     = new CopyOnWriteArrayList<>();
@@ -1001,7 +1001,7 @@ public abstract class UI implements IUI, IndexedElement {
 		try {
 			this.untraced(runnable);
 		} catch (final RuntimeException exception) {
-			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + "." + exception.getClass().getName(), "The " + input + " of " + UI.nameOf(this.getClass()) + " failed (" + exception + "), the next inputs still run: catch the exception inside the handler to handle it", exception);
+			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + "." + exception.getClass().getName(), "The " + input + " of " + JOIDLog.nameOf(this.getClass()) + " failed (" + exception + "), the next inputs still run: catch the exception inside the handler to handle it", exception);
 		}
 	}
 
@@ -1012,10 +1012,6 @@ public abstract class UI implements IUI, IndexedElement {
 		} finally {
 			SignalContext.current().tracing(tracing);
 		}
-	}
-
-	private static String nameOf(final Class<?> type) {
-		return type.getSimpleName().isEmpty() ? type.getName() : type.getSimpleName();
 	}
 
 	private static Map<Class<? extends Annotation>, Annotation> annotations(final Class<?> type) {

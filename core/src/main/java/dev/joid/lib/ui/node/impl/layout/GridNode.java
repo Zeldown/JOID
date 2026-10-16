@@ -69,9 +69,9 @@ public final class GridNode extends Node {
 		return this.horizontalMargin(margin);
 	}
 
-	private final void updateGrid() {
-		double ox = 0;
-		double oy = 0;
+	private void updateGrid() {
+		double ox = 0D;
+		double oy = 0D;
 		double rowHeight = 0D;
 		for (final Node child : super.getChildren()) {
 			if (child.getPosition() == PositionProperty.ABSOLUTE || !child.isVisibleProperty()) {

@@ -1,12 +1,5 @@
 package dev.joid.lib.ui.node.impl.control.toggle;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.binding.InteractiveValue;
 import dev.joid.lib.ui.event.EventListener;
@@ -23,8 +16,6 @@ public abstract class BaseToggleNode<F, S> extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CHANGE = EventType.create("beforeChange");
-
-	private static final Map<Class<?>, Boolean> BOOLEAN_MAP = new ConcurrentHashMap<>();
 
 	@Getter(AccessLevel.NONE)
 	private final transient InteractiveValue<Boolean> toggleValue;
@@ -54,10 +45,6 @@ public abstract class BaseToggleNode<F, S> extends Node {
 			return (T) (this.toggle ? this.state.getToggle() : this.state.getBack());
 		}
 
-		if (!BaseToggleNode.isBoolean(this.getClass())) {
-			throw new IllegalStateException("The " + this.getClass().getSimpleName() + " has no state, call state(toggle, back) before getValue()");
-		}
-
 		return (T) Boolean.valueOf(this.toggle);
 	}
 
@@ -85,29 +72,6 @@ public abstract class BaseToggleNode<F, S> extends Node {
 
 	public final <T extends BaseToggleNode<F, S>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, Boolean>> listener) {
 		return this.toggleValue.on(listener);
-	}
-
-	private static boolean isBoolean(final @NonNull Class<?> clazz) {
-		return BaseToggleNode.BOOLEAN_MAP.computeIfAbsent(clazz, type -> {
-			final Map<TypeVariable<?>, Type> typeMap = new HashMap<>();
-			Class<?> current = type;
-			while (current != BaseToggleNode.class) {
-				final Type superType = current.getGenericSuperclass();
-				final Class<?> superClass = current.getSuperclass();
-				if (superType instanceof ParameterizedType) {
-					final Type[] arguments = ((ParameterizedType) superType).getActualTypeArguments();
-					final TypeVariable<?>[] parameters = superClass.getTypeParameters();
-					for (int i = 0; i < arguments.length; i++) {
-						typeMap.put(parameters[i], typeMap.getOrDefault(arguments[i], arguments[i]));
-					}
-				}
-
-				current = superClass;
-			}
-
-			final TypeVariable<?>[] parameters = BaseToggleNode.class.getTypeParameters();
-			return typeMap.get(parameters[0]) == Boolean.class && typeMap.get(parameters[1]) == Boolean.class;
-		});
 	}
 
 }

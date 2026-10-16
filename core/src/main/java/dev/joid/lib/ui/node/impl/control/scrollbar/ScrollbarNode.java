@@ -32,7 +32,7 @@ public abstract class ScrollbarNode extends BaseScrollbarNode {
 	}
 
 	public final <T extends ScrollbarNode> @NonNull T track(final @NonNull Node track) {
-		this.track = super.part(this.track, track);
+		this.track = super.part(this.track, track.zindex(-1));
 		return (T) this;
 	}
 

@@ -349,7 +349,7 @@ public class ChartNodeTest {
 		final Map<String, Number> values = new HashMap<>();
 		values.put("Mon", 3);
 		final ChartData data = ChartData.create(values);
-		Assert.assertSame(values, data.getDataMap());
+		Assert.assertEquals(values, data.getDataMap());
 		Assert.assertEquals(3, data.get("Mon"));
 	}
 

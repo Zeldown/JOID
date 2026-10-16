@@ -106,7 +106,7 @@ public class ProgressNode extends Node {
 	private double getProgressX() {
 		switch (this.direction) {
 		case RIGHT_TO_LEFT:
-			return super.getX() + super.getWidth() * (1 - this.getShownProgress());
+			return super.getX() + super.getWidth() * (1D - this.getShownProgress());
 		default:
 			return super.getX();
 		}
@@ -115,7 +115,7 @@ public class ProgressNode extends Node {
 	private double getProgressY() {
 		switch (this.direction) {
 		case BOTTOM_TO_TOP:
-			return super.getY() + super.getHeight() * (1 - this.getShownProgress());
+			return super.getY() + super.getHeight() * (1D - this.getShownProgress());
 		default:
 			return super.getY();
 		}

@@ -61,7 +61,7 @@ public abstract class FieldNode<V> extends Node {
 
 	@Getter private boolean               allowEmpty;
 	@Getter private Predicate<String>     accept;
-	@Getter private UnaryOperator<String> formatter;
+	@Getter private UnaryOperator<String> format;
 
 	private V fallback;
 
@@ -103,14 +103,14 @@ public abstract class FieldNode<V> extends Node {
 		this.placeholder    = "";
 		this.focused        = false;
 		this.accept         = text -> true;
-		this.formatter      = UnaryOperator.identity();
+		this.format         = UnaryOperator.identity();
 		this.maxTextLength  = -1;
 		this.selection      = FieldSelection.create(0, 0);
 		this.selectionColor = new Color(50, 152, 253, 100);
 
 		this.textValue = InteractiveValue.create(super.getBindings(), "text", () -> this.text, (final String text) -> this.text = text)
 		.events(FieldNode.BEFORE_CHANGE, (previous, text) -> NodeFieldChangeEvent.Pre.create(this, previous, text, this.valueOf(text), this.isValid(text)), FieldNode.CHANGE, (previous, text) -> NodeFieldChangeEvent.Post.create(this, previous, text, this.valueOf(text), this.isValid(text)));
-		this.focusedValue = InteractiveValue.toggle(super.getBindings(), "focused", () -> this.focused, this::applyFocus)
+		this.focusedValue = InteractiveValue.create(super.getBindings(), "focused", () -> this.focused, this::applyFocus)
 		.events(true, FieldNode.BEFORE_FOCUS, (previous, focused) -> NodeChangeEvent.Pre.create(this, previous, focused), FieldNode.FOCUS, (previous, focused) -> NodeChangeEvent.Post.create(this, previous, focused))
 		.events(false, FieldNode.BEFORE_BLUR, (previous, focused) -> NodeChangeEvent.Pre.create(this, previous, focused), FieldNode.BLUR, (previous, focused) -> NodeChangeEvent.Post.create(this, previous, focused));
 		this.cursorValue = InteractiveValue.create(super.getBindings(), "cursorPosition", () -> this.cursorPosition, (final Integer position) -> this.cursorPosition = position)
@@ -324,8 +324,8 @@ public abstract class FieldNode<V> extends Node {
 		return (T) this;
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T format(final @NonNull UnaryOperator<@NonNull String> formatter) {
-		this.formatter = formatter;
+	public final <T extends FieldNode<V>> @NonNull T format(final @NonNull UnaryOperator<@NonNull String> format) {
+		this.format = format;
 		return (T) this;
 	}
 
@@ -799,7 +799,7 @@ public abstract class FieldNode<V> extends Node {
 			return null;
 		}
 
-		final V parsed = this.parse(this.formatter.apply(text));
+		final V parsed = this.parse(this.format.apply(text));
 		return parsed == null ? this.fallback : this.correct(parsed);
 	}
 
@@ -808,7 +808,7 @@ public abstract class FieldNode<V> extends Node {
 			return true;
 		}
 
-		final V parsed = this.accept.test(text) ? this.parse(this.formatter.apply(text)) : null;
+		final V parsed = this.accept.test(text) ? this.parse(this.format.apply(text)) : null;
 		return parsed != null && parsed.equals(this.correct(parsed));
 	}
 

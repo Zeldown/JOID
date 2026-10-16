@@ -50,10 +50,6 @@ public final class InteractiveValue<V> {
 		return new InteractiveValue<>(bindings, property, getter, setter);
 	}
 
-	public static @NonNull InteractiveValue<Boolean> toggle(final @NonNull NodeBindings bindings, final @NonNull String property, final @NonNull Supplier<@NonNull Boolean> getter, final @NonNull Consumer<@NonNull Boolean> setter) {
-		return new InteractiveValue<>(bindings, property, getter, setter);
-	}
-
 	public @NonNull InteractiveValue<V> clamp(final @NonNull UnaryOperator<V> clamp) {
 		this.clamp = clamp;
 		return this;

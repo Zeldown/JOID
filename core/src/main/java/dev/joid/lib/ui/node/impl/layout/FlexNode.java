@@ -30,11 +30,11 @@ public class FlexNode extends Node {
 	}
 
 	public static @NonNull FlexNode vertical(final double x, final double y, final double width) {
-		return new FlexNode(x, y, width, 0, Axis.VERTICAL);
+		return new FlexNode(x, y, width, 0D, Axis.VERTICAL);
 	}
 
 	public static @NonNull FlexNode horizontal(final double x, final double y, final double height) {
-		return new FlexNode(x, y, 0, height, Axis.HORIZONTAL);
+		return new FlexNode(x, y, 0D, height, Axis.HORIZONTAL);
 	}
 
 	@Override
@@ -124,9 +124,9 @@ public class FlexNode extends Node {
 		}
 
 		if (this.direction == Axis.VERTICAL) {
-			super.layoutSize(super.getWidth(), Math.max(0, offset - this.margin));
+			super.layoutSize(super.getWidth(), Math.max(0D, offset - this.margin));
 		} else {
-			super.layoutSize(Math.max(0, offset - this.margin), super.getHeight());
+			super.layoutSize(Math.max(0D, offset - this.margin), super.getHeight());
 		}
 	}
 

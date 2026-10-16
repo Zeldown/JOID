@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.ui.node.Node;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -18,34 +20,38 @@ public class DraggableProperty {
 	private DraggableType     type;
 	private Predicate<Node>   enabled;
 
-	private Object            areaObject;
+	private Node              areaNode;
 	private DraggableAreaType areaType;
+
+	@Getter(AccessLevel.NONE)
+	private double[] area;
 
 	private List<Node>        snapNodes;
 	private DraggableSnapType snapType;
 
-	private DraggableProperty() {
-		this.enabled    = node -> true;
-		this.type       = DraggableType.MOVE;
-		this.areaType   = DraggableAreaType.FREE;
-		this.areaObject = null;
-		this.snapType   = DraggableSnapType.NEAREST;
-		this.snapNodes  = null;
+	private DraggableProperty(final DraggableAreaType areaType, final double[] area, final Node areaNode) {
+		this.enabled   = node -> true;
+		this.type      = DraggableType.MOVE;
+		this.areaType  = areaType;
+		this.area      = area;
+		this.areaNode  = areaNode;
+		this.snapType  = DraggableSnapType.NEAREST;
+		this.snapNodes = null;
 	}
 
-	public static @NonNull DraggableProperty free() { return new DraggableProperty(); }
+	public static @NonNull DraggableProperty free() { return new DraggableProperty(DraggableAreaType.FREE, null, null); }
 
-	public static @NonNull DraggableProperty custom(final double x, final double y, final double width, final double height) { return new DraggableProperty().area(DraggableAreaType.CUSTOM, new double[] {x, y, width, height}); }
+	public static @NonNull DraggableProperty custom(final double x, final double y, final double width, final double height) { return new DraggableProperty(DraggableAreaType.CUSTOM, new double[] {x, y, width, height}, null); }
 
-	public static @NonNull DraggableProperty parent() { return new DraggableProperty().area(DraggableAreaType.PARENT); }
+	public static @NonNull DraggableProperty parent() { return new DraggableProperty(DraggableAreaType.PARENT, null, null); }
 
-	public static @NonNull DraggableProperty node(final @NonNull Node node) { return new DraggableProperty().area(DraggableAreaType.NODE, node); }
+	public static @NonNull DraggableProperty node(final @NonNull Node node) { return new DraggableProperty(DraggableAreaType.NODE, null, node); }
 
-	public static @NonNull DraggableProperty ui() { return new DraggableProperty().area(DraggableAreaType.UI); }
+	public static @NonNull DraggableProperty ui() { return new DraggableProperty(DraggableAreaType.UI, null, null); }
 
-	public static @NonNull DraggableProperty screen() { return new DraggableProperty().area(DraggableAreaType.SCREEN); }
+	public static @NonNull DraggableProperty screen() { return new DraggableProperty(DraggableAreaType.SCREEN, null, null); }
 
-	public static @NonNull DraggableProperty disabled() { return new DraggableProperty().enabled(node -> false); }
+	public static @NonNull DraggableProperty disabled() { return DraggableProperty.free().enabled(node -> false); }
 
 	public Node getSnapping(final @NonNull Node node) {
 		if (!this.hasSnapping()) {
@@ -92,22 +98,21 @@ public class DraggableProperty {
 	}
 
 	public final double[] getBounds(final @NonNull Node node) {
-		double boundX = 0;
-		double boundY = 0;
-		double boundWidth = 0;
-		double boundHeight = 0;
+		double boundX = 0D;
+		double boundY = 0D;
+		double boundWidth = 0D;
+		double boundHeight = 0D;
 
 		switch (this.areaType) {
 		case CUSTOM:
-			final double[] area = (double[]) this.areaObject;
-			boundX = area[0];
-			boundY = area[1];
-			boundWidth = area[2];
-			boundHeight = area[3];
+			boundX = this.area[0];
+			boundY = this.area[1];
+			boundWidth = this.area[2];
+			boundHeight = this.area[3];
 			break;
 		case PARENT:
 			if (node.getParent() == null) {
-				throw new IllegalStateException("The node " + node.getClass().getSimpleName() + " is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()");
+				throw new IllegalStateException("The node " + JOIDLog.nameOf(node.getClass()) + " is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()");
 			}
 			boundX = node.getParent().getAbsoluteX();
 			boundY = node.getParent().getAbsoluteY();
@@ -115,15 +120,14 @@ public class DraggableProperty {
 			boundHeight = node.getParent().getHeight();
 			break;
 		case NODE:
-			final Node areaNode = (Node) this.areaObject;
-			boundX = areaNode.getAbsoluteX();
-			boundY = areaNode.getAbsoluteY();
-			boundWidth = areaNode.getWidth();
-			boundHeight = areaNode.getHeight();
+			boundX = this.areaNode.getAbsoluteX();
+			boundY = this.areaNode.getAbsoluteY();
+			boundWidth = this.areaNode.getWidth();
+			boundHeight = this.areaNode.getHeight();
 			break;
 		case UI:
-			boundX = 0;
-			boundY = 0;
+			boundX = 0D;
+			boundY = 0D;
 			boundWidth = UIView.DESIGN_WIDTH;
 			boundHeight = UIView.DESIGN_HEIGHT;
 			break;
@@ -148,25 +152,6 @@ public class DraggableProperty {
 
 	public final @NonNull DraggableProperty type(final @NonNull DraggableType type) {
 		this.type = type;
-		return this;
-	}
-
-	public final @NonNull DraggableProperty area(final @NonNull DraggableAreaType areaType) {
-		return this.area(areaType, null);
-	}
-
-	public final @NonNull DraggableProperty area(final @NonNull DraggableAreaType areaType, final Object area) {
-		this.areaType = areaType;
-		this.areaObject = area;
-
-		if (areaType == DraggableAreaType.NODE && !(area instanceof Node)) {
-			throw new IllegalArgumentException("DraggableAreaType.NODE needs the Node that bounds the drag, got " + area);
-		}
-
-		if (areaType == DraggableAreaType.CUSTOM && (!(area instanceof double[]) || ((double[]) area).length != 4)) {
-			throw new IllegalArgumentException("DraggableAreaType.CUSTOM needs a double[] {x, y, width, height} that bounds the drag, got " + (area instanceof double[] ? Arrays.toString((double[]) area) : area));
-		}
-
 		return this;
 	}
 
@@ -197,7 +182,7 @@ public class DraggableProperty {
 	}
 
 	public final @NonNull DraggableProperty copy() {
-		final DraggableProperty copy = new DraggableProperty().type(this.type).enabled(this.enabled).area(this.areaType, this.areaObject instanceof double[] ? ((double[]) this.areaObject).clone() : this.areaObject);
+		final DraggableProperty copy = new DraggableProperty(this.areaType, this.area, this.areaNode).type(this.type).enabled(this.enabled);
 		return copy.snap(this.snapType, this.snapNodes == null ? new Node[0] : this.snapNodes.toArray(new Node[0]));
 	}
 

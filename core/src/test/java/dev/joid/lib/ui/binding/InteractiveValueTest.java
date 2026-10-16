@@ -115,7 +115,7 @@ public class InteractiveValueTest {
 
 	@Test
 	public void firesTheCoupleOfEachDirectionOfAToggle() {
-		final InteractiveValue<Boolean> opened = InteractiveValue.toggle(this.bindings, "opened", () -> this.opened, value -> this.opened = value)
+		final InteractiveValue<Boolean> opened = InteractiveValue.create(this.bindings, "opened", () -> this.opened, (final Boolean value) -> this.opened = value)
 		.events(true, InteractiveValueTest.BEFORE_OPEN, (previous, value) -> NodeChangeEvent.Pre.create(this.node, previous, value), InteractiveValueTest.OPEN, (previous, value) -> NodeChangeEvent.Post.create(this.node, previous, value))
 		.events(false, InteractiveValueTest.BEFORE_CLOSE, (previous, value) -> NodeChangeEvent.Pre.create(this.node, previous, value), InteractiveValueTest.CLOSE, (previous, value) -> NodeChangeEvent.Post.create(this.node, previous, value));
 		this.bindings.subscribe(false);

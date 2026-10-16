@@ -10,12 +10,12 @@ public interface IHoverElement {
 
 	public default void detach() {}
 
-	public default double getX() { return 0; }
+	public default double getX() { return 0D; }
 
-	public default double getY() { return 0; }
+	public default double getY() { return 0D; }
 
-	public default double getWidth() { return 0; }
+	public default double getWidth() { return 0D; }
 
-	public default double getHeight() { return 0; }
+	public default double getHeight() { return 0D; }
 
 }

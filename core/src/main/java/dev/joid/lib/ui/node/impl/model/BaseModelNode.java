@@ -33,8 +33,8 @@ public abstract class BaseModelNode extends Node {
 			return;
 		}
 
-		final double modelWidth = this.model.getWidth() == 0 ? 1 : this.model.getWidth();
-		final double modelDepth = this.model.getDepth() == 0 ? 1 : this.model.getDepth();
+		final double modelWidth = this.model.getWidth() == 0D ? 1D : this.model.getWidth();
+		final double modelDepth = this.model.getDepth() == 0D ? 1D : this.model.getDepth();
 
 		final double scale = super.dw(modelWidth) * zoom;
 

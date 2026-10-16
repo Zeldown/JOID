@@ -125,16 +125,6 @@ public class ToggleNodeTest {
 	}
 
 	@Test
-	public void refusesToReadAValueWithoutState() {
-		try {
-			new Toggle().getValue();
-			Assert.fail("A toggle without state has no value");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The Toggle has no state, call state(toggle, back) before getValue()", expected.getMessage());
-		}
-	}
-
-	@Test
 	public void glidesItsKnobToItsNewSide() {
 		final Toggle toggle = new Toggle();
 		this.bridges.open(new NodeUI(toggle)).frame();

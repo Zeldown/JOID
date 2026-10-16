@@ -4,10 +4,8 @@ import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.pass.CircleShaderPass;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
-import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public class CircleNodeEffect extends NodeEffect<Node> {
 
 	protected CircleNodeEffect() {
