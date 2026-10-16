@@ -54,7 +54,7 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 		}
 	}
 
-	public final Point getPoint(final int index, final double radius) {
+	private Point getPoint(final int index, final double radius) {
 		final int size = super.getDataList().size();
 		final double theta = ((size - index) % size + size / 2) * (2 * Math.PI / size);
 		return Point.create(super.getX() + super.dw(2) + radius * Math.cos(theta), super.getY() + super.dh(2) + radius * Math.sin(theta));

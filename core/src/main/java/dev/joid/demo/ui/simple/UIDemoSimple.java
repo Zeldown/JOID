@@ -33,6 +33,7 @@ public class UIDemoSimple extends UIDemo {
 		final IntegerSignal right = new IntegerSignal(0);
 		final IntegerSignal starts = new IntegerSignal(0);
 		final IntegerSignal ends = new IntegerSignal(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
 
 		RectNode
 		.create(80, 40, 320, 260)
@@ -205,9 +206,10 @@ public class UIDemoSimple extends UIDemo {
 			.color(UIDemoSimple.INK.withAlpha(0.4F))
 			.hoveredColor(Color.WHITE)
 			.hover(() -> "Disabled: no hover color, no click")
-			.onClick(event -> System.out.println("[UIDemoSimple] never clicked"))
+			.onClick(event -> clicks.increment())
 			.enabled(false)
 			.attach(rect);
+			TextNode.create(160, 210).text(Text.create("Clicks " + clicks.get(), info)).anchorX(Align.CENTER).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Disabled", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

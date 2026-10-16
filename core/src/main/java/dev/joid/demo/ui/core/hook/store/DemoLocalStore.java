@@ -15,9 +15,4 @@ public class DemoLocalStore extends UIStore {
 
 	private long time;
 
-	@Override
-	public void init() {
-		System.out.println("[UIDemoStore] DemoLocalStore created at " + this.time);
-	}
-
 }

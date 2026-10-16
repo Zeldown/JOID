@@ -23,11 +23,6 @@ public class DemoPermanentStore extends UIStore {
 	private long time;
 
 	@Override
-	public void init() {
-		System.out.println("[UIDemoStore] DemoPermanentStore created at " + this.time);
-	}
-
-	@Override
 	public void fromJson(final @NonNull String json) {
 		final Matcher matcher = DemoPermanentStore.TIME.matcher(json);
 		this.time = matcher.find() ? Long.parseLong(matcher.group(1)) : BridgeHandler.CLOCK.get().currentTimeMillis();

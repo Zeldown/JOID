@@ -22,7 +22,7 @@ public class DemoPillToggleNode extends BaseToggleNode<Boolean, Boolean> {
 
 		this.knob = TweenAnimator.create(0F);
 
-		super.onChange(event -> this.knob.sequence(250F, event.getValue() ? 1F : 0F, TweenEquations.QUAD_OUT).start());
+		super.<DemoPillToggleNode>onChange(event -> event.getNode().knob.sequence(250F, event.getValue() ? 1F : 0F, TweenEquations.QUAD_OUT).start());
 	}
 
 	public static @NonNull DemoPillToggleNode create(final double x, final double y, final double width, final double height) {

@@ -47,7 +47,8 @@ public class UIDemoEventFlow extends UIDemo {
 		final BooleanSignal focused = new BooleanSignal(false);
 		final IntegerSignal cursor = new IntegerSignal(0);
 		final IntegerSignal letter = new IntegerSignal(0);
-		final DoubleSignal walk = new DoubleSignal(0D);
+		final BooleanSignal left = new BooleanSignal(false);
+		final BooleanSignal right = new BooleanSignal(false);
 		final DoubleSignal walkX = new DoubleSignal(40D);
 
 		super.handleKeyPressed(event -> key.set(event.getKey().name()));
@@ -56,13 +57,21 @@ public class UIDemoEventFlow extends UIDemo {
 				letter.increment();
 			}
 
-			if (event.getPhysicalKey() == Key.A || event.getPhysicalKey() == Key.D) {
-				walk.set(event.getPhysicalKey() == Key.A ? -240D : 240D);
+			if (event.getPhysicalKey() == Key.A) {
+				left.set(true);
+			}
+
+			if (event.getPhysicalKey() == Key.D) {
+				right.set(true);
 			}
 		});
 		super.handleKeyReleased(event -> {
-			if (event.getPhysicalKey() == (walk.peek() < 0D ? Key.A : Key.D)) {
-				walk.set(0D);
+			if (event.getPhysicalKey() == Key.A) {
+				left.set(false);
+			}
+
+			if (event.getPhysicalKey() == Key.D) {
+				right.set(false);
 			}
 		});
 		super.beforeClose(EventListener.priority(EventPriority.HIGH, event -> {
@@ -291,7 +300,7 @@ public class UIDemoEventFlow extends UIDemo {
 		.create(800, 720, 320, 260)
 		.color(UIDemoEventFlow.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 40, 60, 60).color(UIDemoEventFlow.INK).x(walkX).onUpdate(event -> walkX.set(Math.max(40D, Math.min(220D, walkX.peek() + walk.peek() * super.getFrameTime() / 1000D)))).attach(rect);
+			RectNode.create(40, 40, 60, 60).color(UIDemoEventFlow.INK).x(walkX).onUpdate(event -> walkX.set(Math.max(40D, Math.min(220D, walkX.peek() + ((right.peek() ? 240D : 0D) - (left.peek() ? 240D : 0D)) * super.getFrameTime() / 1000D)))).attach(rect);
 			TextNode.create(40, 130).text(Text.create("Letter Z: " + letter.get(), info)).attach(rect);
 			TextNode.create(40, 175).text(Text.create("Move: A / D", info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Letter vs position", info)).anchorX(Align.CENTER).attach(rect);

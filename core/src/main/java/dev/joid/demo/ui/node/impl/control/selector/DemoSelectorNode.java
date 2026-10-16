@@ -2,7 +2,6 @@ package dev.joid.demo.ui.node.impl.control.selector;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.impl.control.selector.SelectorNode;
@@ -19,18 +18,23 @@ public class DemoSelectorNode extends SelectorNode<String> {
 
 	protected DemoSelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
-		super.field(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> {
-			if (super.isActive()) {
-				DrawUtils.SHAPE.drawRect(-2D, -2D, node.getWidth() + 4D, node.getHeight() + 4D, DemoSelectorNode.INK);
-			}
+		super.field(ContainerNode.create(0, 0, 0, 0).body(field -> {
+			RectNode
+			.create(-2, -2, 0, 0)
+			.color(DemoSelectorNode.INK)
+			.<RectNode>width(() -> field.getWidth() + 4D)
+			.<RectNode>height(() -> field.getHeight() + 4D)
+			.visible(super::isActive)
+			.attach(field);
 		}));
 		super.option(value -> RectNode
-		.create(0, 0, width, height)
+		.create(0, 0, 0, 0)
 		.color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F))
 		.hoveredColor(DemoSelectorNode.HOVER)
 		.body(rect -> {
 			TextNode
-			.create(16, rect.dh(2))
+			.create(16, 0)
+			.<TextNode>y(() -> rect.dh(2))
 			.text(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 22, DemoSelectorNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F))).alignX(Align.START).alignY(Align.CENTER))
 			.anchorY(Align.CENTER)
 			.attach(rect);

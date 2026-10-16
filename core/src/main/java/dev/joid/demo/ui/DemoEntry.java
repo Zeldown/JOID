@@ -1,6 +1,6 @@
 package dev.joid.demo.ui;
 
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 import dev.joid.demo.ui.core.transition.DemoPushTransition;
 import dev.joid.internal.JOID;
@@ -18,7 +18,7 @@ public final class DemoEntry {
 	private final Runnable action;
 
 	private String            hover;
-	private Supplier<Boolean> state;
+	private BooleanSupplier state;
 
 	public static @NonNull DemoEntry create(final @NonNull Class<? extends UI> clazz) {
 		return new DemoEntry(clazz.getSimpleName(), () -> {
@@ -41,13 +41,13 @@ public final class DemoEntry {
 		return this;
 	}
 
-	public @NonNull DemoEntry state(final Supplier<Boolean> state) {
+	public @NonNull DemoEntry state(final BooleanSupplier state) {
 		this.state = state;
 		return this;
 	}
 
 	public boolean isActive() {
-		return this.state != null && Boolean.TRUE.equals(this.state.get());
+		return this.state != null && this.state.getAsBoolean();
 	}
 
 	public @NonNull String getText() {

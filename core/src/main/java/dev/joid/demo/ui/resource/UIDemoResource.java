@@ -16,6 +16,7 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.format.ResourceFormat;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
@@ -42,9 +43,10 @@ public class UIDemoResource extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoResource.INK);
+		final IntegerSignal errors = new IntegerSignal(0);
 		final Resource vector = Resource.of("assets/demo/textures/vector/placeholder.svg");
 		final Resource square = Resource.of("https://placehold.co/100x100.png");
-		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-image").onError((resource, error) -> System.out.println("[UIDemoResource] failed resource: " + error.getMessage()));
+		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-image").onError((resource, error) -> errors.increment());
 		final BooleanSignal second = new BooleanSignal(false);
 		final StringSignal natural = new StringSignal("");
 		final BufferedImage disc = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
@@ -79,6 +81,7 @@ public class UIDemoResource extends UIDemo {
 		ResourceNode.create(1715, 50, 100, 100).resource(broken).attach(this);
 		TextNode.create(1765, 100).text(() -> Text.create(broken.isFailed() ? "isFailed" : "Loading", caption).align(Align.CENTER)).anchor(Align.CENTER).attach(this);
 		TextNode.create(1765, 175).text(Text.create("Failed", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1765, 210).text(Text.create("onError " + errors.get(), caption)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode.create(105, 280).resource(Resource.of("https://placehold.co/100x100.png").onLoad(resource -> natural.set("onLoad " + resource.getWidth() + "x" + resource.getHeight()))).attach(this);
 		TextNode.create(155, 405).text(Text.create("Natural size", caption)).anchorX(Align.CENTER).attach(this);

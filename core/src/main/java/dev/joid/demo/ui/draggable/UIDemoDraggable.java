@@ -27,16 +27,14 @@ public class UIDemoDraggable extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
-	private final IntegerSignal drops  = new IntegerSignal(0);
-	private final IntegerSignal drags  = new IntegerSignal(0);
-	private final IntegerSignal snaps  = new IntegerSignal(0);
-	private final IntegerSignal moves  = new IntegerSignal(0);
-	private final IntegerSignal starts = new IntegerSignal(0);
-
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoDraggable.INK);
 		final TextInfo counter = TextInfo.create(DemoFont.MONTSERRAT, 22, UIDemoDraggable.INK);
+		final IntegerSignal starts = new IntegerSignal(0);
+		final IntegerSignal drags = new IntegerSignal(0);
+		final IntegerSignal snaps = new IntegerSignal(0);
+		final IntegerSignal drops = new IntegerSignal(0);
 		final Consumer<Node> grip = node -> {
 			RectNode.create(22, 28, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 			RectNode.create(22, 38, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
@@ -137,10 +135,9 @@ public class UIDemoDraggable extends UIDemo {
 			overlap.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
 			RectNode
 			.create(160, 150, 80, 80)
-			.color(this.moves.get() / 10 % 2 == 0 ? UIDemoDraggable.INK : UIDemoDraggable.PLACEHOLDER)
+			.color(UIDemoDraggable.INK)
 			.body(grip)
 			.draggable(overlap)
-			.onDrag(event -> this.moves.increment())
 			.onDragSnap(event -> RectNode.create(0, 0, 80, 80).color(UIDemoDraggable.INK).attach(event.getTarget()))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Copy", caption)).anchorX(Align.CENTER).attach(rect);
@@ -242,15 +239,15 @@ public class UIDemoDraggable extends UIDemo {
 			.color(UIDemoDraggable.INK)
 			.body(grip)
 			.draggable(slots)
-			.onDragStart(event -> this.starts.increment())
-			.onDrag(event -> this.drags.increment())
-			.onDragSnap(event -> this.snaps.increment())
-			.onDragDrop(event -> this.drops.increment())
+			.onDragStart(event -> starts.increment())
+			.onDrag(event -> drags.increment())
+			.onDragSnap(event -> snaps.increment())
+			.onDragDrop(event -> drops.increment())
 			.attach(rect);
-			TextNode.create(170, 40).text(Text.create("onDragStart " + this.starts.get(), counter)).attach(rect);
-			TextNode.create(170, 90).text(Text.create("onDrag " + this.drags.get(), counter)).attach(rect);
-			TextNode.create(170, 140).text(Text.create("onDragSnap " + this.snaps.get(), counter)).attach(rect);
-			TextNode.create(170, 190).text(Text.create("onDragDrop " + this.drops.get(), counter)).attach(rect);
+			TextNode.create(170, 40).text(Text.create("onDragStart " + starts.get(), counter)).attach(rect);
+			TextNode.create(170, 90).text(Text.create("onDrag " + drags.get(), counter)).attach(rect);
+			TextNode.create(170, 140).text(Text.create("onDragSnap " + snaps.get(), counter)).attach(rect);
+			TextNode.create(170, 190).text(Text.create("onDragDrop " + drops.get(), counter)).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Callbacks", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

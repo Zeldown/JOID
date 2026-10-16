@@ -33,7 +33,6 @@ public class UIDemoModel extends UIDemo {
 		final DoubleSignal zoom = new DoubleSignal(1D);
 		final DoubleSignal yaw = new DoubleSignal(0D);
 		final IntegerSignal refusedTurns = new IntegerSignal(0);
-		super.onClose(event -> spin.clear());
 
 		RectNode
 		.create(100, 40, 400, 260)
@@ -102,7 +101,7 @@ public class UIDemoModel extends UIDemo {
 		.create(1420, 380, 400, 260)
 		.color(UIDemoModel.PLACEHOLDER)
 		.body(rect -> {
-			ModelNode.create(100, 20, 200, 200).rotationYaw(() -> spin.get() * 360D).model(model).attach(rect);
+			ModelNode.create(100, 20, 200, 200).rotationYaw(() -> spin.get() * 360D).model(model).onDetach(event -> spin.clear()).attach(rect);
 			TextNode.create(200, 275).text(Text.create("Spin", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

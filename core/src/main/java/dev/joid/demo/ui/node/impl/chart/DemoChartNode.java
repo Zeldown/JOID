@@ -17,10 +17,12 @@ public class DemoChartNode extends ChartNode {
 	private static final Color   INK    = new Color(153, 153, 153).lock();
 	private static final Color[] SERIES = {new Color(153, 153, 153).lock(), new Color(85, 85, 85).lock()};
 
-	private boolean smooth = true;
+	private boolean smooth;
 
 	protected DemoChartNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+
+		this.smooth = true;
 	}
 
 	public static @NonNull DemoChartNode create(final double x, final double y, final double width, final double height) {
@@ -82,9 +84,9 @@ public class DemoChartNode extends ChartNode {
 		}
 	}
 
-	public final @NonNull DemoChartNode smooth(final boolean smooth) {
+	public final <T extends DemoChartNode> @NonNull T smooth(final boolean smooth) {
 		this.smooth = smooth;
-		return this;
+		return (T) this;
 	}
 
 }

@@ -47,7 +47,6 @@ public class UIDemoTween extends UIDemo {
 		final IntegerSignal starts = new IntegerSignal(0);
 		final IntegerSignal laps = new IntegerSignal(0);
 		final TweenAnimator events = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(Tween.INFINITY, 0F).onStart(event -> starts.increment()).onIterationEnd(event -> laps.increment()).start();
-		super.onClose(event -> Stream.of(back, circ, expo, quint, horizontal, vertical, paused, waypoints, events).forEach(TweenAnimator::clear));
 		this.manager.killAll();
 		this.value = 0F;
 		Tween.to(() -> this.value, value -> this.value = value, 1000F).target(1F).ease(TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(this.manager);
@@ -61,7 +60,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(back).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(back).onDetach(event -> back.clear()).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Back in out", caption)).anchorX(Align.CENTER).attach(rect);
@@ -76,7 +75,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(circ).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(circ).onDetach(event -> circ.clear()).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Circ in out", caption)).anchorX(Align.CENTER).attach(rect);
@@ -91,7 +90,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(expo).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(expo).onDetach(event -> expo.clear()).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Expo out", caption)).anchorX(Align.CENTER).attach(rect);
@@ -106,7 +105,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(quint).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(quint).onDetach(event -> quint.clear()).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Quint in out", caption)).anchorX(Align.CENTER).attach(rect);
@@ -121,7 +120,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 40, 320, 180)
 			.color(Color.WHITE)
 			.body(area -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * horizontal.get()).y(() -> 120D * vertical.get()).attach(area);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).x(() -> 260D * horizontal.get()).y(() -> 120D * vertical.get()).onDetach(event -> Stream.of(horizontal, vertical).forEach(TweenAnimator::clear)).attach(area);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Two animators", caption)).anchorX(Align.CENTER).attach(rect);
@@ -136,7 +135,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(paused).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(paused).onDetach(event -> paused.clear()).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Timeline pause", caption)).anchorX(Align.CENTER).attach(rect);
@@ -166,7 +165,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 100, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(waypoints).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(waypoints).onDetach(event -> waypoints.clear()).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Waypoints", caption)).anchorX(Align.CENTER).attach(rect);
@@ -181,7 +180,7 @@ public class UIDemoTween extends UIDemo {
 			.create(40, 60, 320, 60)
 			.color(Color.WHITE)
 			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(events).attach(line);
+				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(events).onDetach(event -> events.clear()).attach(line);
 			})
 			.attach(rect);
 			TextNode.create(40, 162).text(Text.create("Starts: " + starts.get() + ", laps: " + laps.get(), caption)).attach(rect);
