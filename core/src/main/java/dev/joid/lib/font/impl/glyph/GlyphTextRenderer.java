@@ -68,6 +68,13 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return this.getLineHeight(info);
 	}
 
+	@Override
+	public final double getBaseline(final @NonNull TextInfo info) {
+		final F base = this.getFace(info);
+		final float size = info.getFontSize();
+		return (base.getLineHeight() + base.getDescender()) * size + (this.getLineHeight(info) - base.getLineHeight() * size) / 2D;
+	}
+
 	public final @NonNull GlyphLayout<F> layout(final @NonNull String text, final @NonNull TextInfo info) {
 		final GlyphFont<F> font = this.getFont(info);
 		final List<ITextMarkup> markups = info.getMarkups();
@@ -229,9 +236,8 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 	private @NonNull List<TextGlyph<F>> glyphs(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final PixelGrid grid) {
 		final List<GlyphPlacement<F>> placements = layout.getPlacements();
 		final List<TextGlyph<F>> glyphs = new ArrayList<>(placements.size());
-		final F base = this.getFace(info);
 		final float size = info.getFontSize();
-		final double exact = y + (base.getLineHeight() + base.getDescender()) * size + (this.getLineHeight(info) - base.getLineHeight() * size) / 2D;
+		final double exact = y + this.getBaseline(info);
 		final double baseline = grid == null ? exact : grid.snapY(exact);
 		final double origin = grid == null ? x : grid.snapX(x);
 		for (int i = 0; i < placements.size(); i++) {

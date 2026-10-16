@@ -73,7 +73,7 @@ public class DrawTextTest {
 	@Test
 	public void drawsEachElementAfterThePreviousOne() {
 		final FontBounds bounds = DrawTextTest.draw().drawText(100D, 100D, this.text());
-		Assert.assertEquals(Arrays.asList("ab@100.0,100.0", "c@120.0,100.0"), this.font.drawn);
+		Assert.assertEquals(Arrays.asList("ab@100.0,120.0", "c@120.0,100.0"), this.font.drawn);
 		Assert.assertEquals(40D, bounds.getWidth(), 0D);
 		Assert.assertEquals(40D, bounds.getHeight(), 0D);
 	}
@@ -81,7 +81,7 @@ public class DrawTextTest {
 	@Test
 	public void centersTheTextOnItsPosition() {
 		DrawTextTest.draw().drawText(100D, 100D, this.text().alignX(Align.CENTER).alignY(Align.CENTER));
-		Assert.assertEquals(Arrays.asList("ab@80.0,90.0", "c@100.0,80.0"), this.font.drawn);
+		Assert.assertEquals(Arrays.asList("ab@80.0,100.0", "c@100.0,80.0"), this.font.drawn);
 	}
 
 	@Test

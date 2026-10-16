@@ -63,6 +63,10 @@ public final class TextInfo extends LockableValue<TextInfo> {
 		return this.font.getTextRenderer().getHeight(text, this);
 	}
 
+	public double getBaseline() {
+		return this.font.getTextRenderer().getBaseline(this);
+	}
+
 	public @NonNull TextStyle getStyle() {
 		return TextStyle.create(this.weight, this.italic, this.color, this.effects).font(this.font);
 	}

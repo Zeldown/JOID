@@ -59,7 +59,7 @@ public final class DrawResource {
 		final double top = grid.snapY(y);
 		final double right = grid.snapRight(x, x + width);
 		final double bottom = grid.snapBottom(y, y + height);
-		if (!failed && textureCoords == null) {
+		if (!failed) {
 			final boolean cropped = region != null;
 			final int pixelWidth = (int) Math.round((right - left) * grid.getScaleX() * (cropped ? resource.getSourceWidth() / region[2] : 1D));
 			final int pixelHeight = (int) Math.round((bottom - top) * grid.getScaleY() * (cropped ? resource.getSourceHeight() / region[3] : 1D));

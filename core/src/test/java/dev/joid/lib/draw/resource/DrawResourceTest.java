@@ -202,10 +202,18 @@ public class DrawResourceTest {
 	}
 
 	@Test
-	public void requestsNothingForASprite() {
+	public void requestsTheWholeSourceAtTheScaleOfASprite() {
 		final SizedDecoder decoder = new SizedDecoder(true);
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 100D, 50D, DrawResourceTest.decoded(decoder, TextureFilter.LINEAR).textureCoords(0D, 0D, 32D, 16D));
-		Assert.assertEquals(0, decoder.getWidth());
+		Assert.assertEquals(200, decoder.getWidth());
+		Assert.assertEquals(100, decoder.getHeight());
+	}
+
+	@Test
+	public void mipmapsASpriteDrawnSmallerThanItsTexture() {
+		final Resource resource = DrawResourceTest.image(64, 32).textureCoords(0D, 0D, 32D, 16D);
+		DrawUtils.RESOURCE.drawResource(0D, 0D, 8D, 4D, resource);
+		Assert.assertEquals(Boolean.TRUE, resource.getProperties().getMipmap());
 	}
 
 	@Test

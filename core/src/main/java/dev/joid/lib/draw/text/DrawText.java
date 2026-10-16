@@ -36,20 +36,14 @@ public final class DrawText {
 		final double runY = text.getAlignY().isCenter() ? y - text.getHeight() / 2 : text.getAlignY().isEnd() ? y - text.getHeight() : y;
 		final double runWidth = text.getWidth();
 		final double runHeight = text.getHeight();
+		final double baseline = text.getElementList().stream().mapToDouble(element -> element.getInfo().getBaseline()).max().orElse(0D);
 
 		double penX = runX;
 
 		for (final TextElement element : text.getElementList()) {
 			final String drawText = text.getText(element);
 			final TextInfo info = element.getInfo();
-			double oy = runY;
-			if (text.getAlignY().isCenter()) {
-				oy += (text.getHeight() - info.getHeight()) / 2;
-			} else if (text.getAlignY().isEnd()) {
-				oy += text.getHeight() - info.getHeight();
-			}
-
-			penX += info.getFont().getTextRenderer().drawText(penX, oy, drawText, info, runX, runY, runWidth, runHeight).getWidth();
+			penX += info.getFont().getTextRenderer().drawText(penX, runY + baseline - info.getBaseline(), drawText, info, runX, runY, runWidth, runHeight).getWidth();
 		}
 
 		return text.getBounds();
