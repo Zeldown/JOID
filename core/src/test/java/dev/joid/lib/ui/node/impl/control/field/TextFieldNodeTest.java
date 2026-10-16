@@ -978,6 +978,17 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void submitsOnceWhileEnterIsHeld() {
+		final List<String> entered = new ArrayList<>();
+		final TextFieldNode field = this.field("hello").onSubmit(event -> entered.add(event.getNode().getText()));
+		this.bridges.getWindow().getKeys().add(Key.ENTER);
+		this.press(field, Key.ENTER);
+		this.elapse(600L);
+		Assert.assertEquals(Collections.singletonList("hello"), entered);
+		Assert.assertFalse(TextFieldNodeTest.<Boolean>read(field, FieldNode.class, "inputting"));
+	}
+
+	@Test
 	public void repeatsAHeldBackspaceUntilTheTextIsEmpty() {
 		final TextFieldNode field = this.field("abc").cursorPosition(3);
 		this.bridges.getWindow().getKeys().add(Key.BACKSPACE);

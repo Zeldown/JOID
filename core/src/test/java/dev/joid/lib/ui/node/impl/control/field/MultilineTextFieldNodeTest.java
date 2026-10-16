@@ -909,6 +909,28 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void repeatsAHeldEnter() {
+		final MultilineTextFieldNode field = this.field("ab").cursorPosition(2);
+		this.bridges.getWindow().getKeys().add(Key.ENTER);
+		this.press(field, Key.ENTER);
+		Assert.assertEquals("ab\n", field.getText());
+		this.elapse(500L);
+		Assert.assertEquals("ab\n\n", field.getText());
+		this.elapse(100L);
+		Assert.assertEquals("ab\n\n\n", field.getText());
+	}
+
+	@Test
+	public void repeatsAHeldDownArrow() {
+		final MultilineTextFieldNode field = this.field("a\nb\nc");
+		this.bridges.getWindow().getKeys().add(Key.DOWN);
+		this.press(field, Key.DOWN);
+		Assert.assertEquals(2, field.getCursorPosition());
+		this.elapse(500L);
+		Assert.assertEquals(4, field.getCursorPosition());
+	}
+
+	@Test
 	public void repeatsWholeWordsWhileControlIsHeld() {
 		final MultilineTextFieldNode field = this.field("one\ntwo three").cursorPosition(13);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.BACKSPACE, Key.LEFT_CONTROL));
