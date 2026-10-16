@@ -1,11 +1,14 @@
 package dev.joid.lib.signal.impl.iterable;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -209,6 +212,38 @@ public class ListSignalTest {
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
 		}
+	}
+
+	@Test
+	public void keepsAWriteMadeWhileAnotherThreadSealsItsList() throws ReflectiveOperationException, InterruptedException {
+		final CountDownLatch sealing = new CountDownLatch(1);
+		final CountDownLatch written = new CountDownLatch(1);
+		final ListSignal<String> signal = new ListSignal<String>(Collections.singletonList("a")) {
+
+			@Override
+			protected List<String> seal(final List<String> value) {
+				if (Thread.currentThread().getName().equals("sealer")) {
+					sealing.countDown();
+					try {
+						written.await(1L, TimeUnit.SECONDS);
+					} catch (final InterruptedException exception) {
+						Thread.currentThread().interrupt();
+					}
+				}
+				return super.seal(value);
+			}
+
+		};
+		final Field sealed = Signal.class.getDeclaredField("sealedValue");
+		sealed.setAccessible(true);
+		sealed.set(signal, null);
+		final Thread sealer = ThreadUtils.daemonThread(signal::peek, "sealer");
+		sealer.start();
+		sealing.await();
+		signal.set(Arrays.asList("a", "b"));
+		written.countDown();
+		sealer.join();
+		Assert.assertEquals(Arrays.asList("a", "b"), signal.peek());
 	}
 
 	private static void assertReadOnly(final List<String> list) {

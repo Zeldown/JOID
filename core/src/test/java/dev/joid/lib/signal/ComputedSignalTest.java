@@ -299,6 +299,17 @@ public class ComputedSignalTest {
 	}
 
 	@Test
+	public void notifiesASignalDerivedTwiceAfterASilentChange() {
+		final List<String> received = new ArrayList<>();
+		final Signal<String> name = new Signal<>("a");
+		final ComputedSignal<String> label = name.map(String::toUpperCase).map(value -> value + "!");
+		label.onChange(received::add);
+		name.silent(signal -> signal.set("b"));
+		name.set("c");
+		Assert.assertEquals(Collections.singletonList("C!"), received);
+	}
+
+	@Test
 	public void notifiesAChangeMadeOnAnotherThread() throws InterruptedException {
 		final List<String> received = Collections.synchronizedList(new ArrayList<>());
 		final Signal<String> name = new Signal<>("joid");
@@ -429,6 +440,20 @@ public class ComputedSignalTest {
 		}
 		Assert.assertEquals(Collections.singletonList(2), received);
 		Assert.assertEquals(2, inverse.get().intValue());
+	}
+
+	@Test
+	public void notifiesASignalDerivedFromAFailedSignalAgain() {
+		final List<String> received = new ArrayList<>();
+		final IntegerSignal count = new IntegerSignal(1);
+		count.map(value -> 10 / value).map(value -> "x" + value).onChange(received::add);
+		try {
+			count.set(0);
+			Assert.fail();
+		} catch (final ArithmeticException exception) {
+			count.set(5);
+		}
+		Assert.assertEquals(Collections.singletonList("x2"), received);
 	}
 
 	@Test

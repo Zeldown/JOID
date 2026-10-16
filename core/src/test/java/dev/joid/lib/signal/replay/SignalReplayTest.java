@@ -174,6 +174,9 @@ public class SignalReplayTest {
 		Assert.assertTrue(output, output.startsWith("[JOID] The replay of a signal read failed on an internal error, the value \"" + SignalReplayTest.node(ui, 0).getTag().get() + "\" stays fixed\njava.lang.IllegalStateException: Tag 0 cannot be compared\n"));
 		Assert.assertTrue(output, output.contains("\tat dev.joid.demo.replay.ReplayScenarioUI$Tag.equals("));
 		Assert.assertEquals("", this.open(new ReplayScenarioUI("equals")));
+		final ReplayScenarioUI next = new ReplayScenarioUI("equals");
+		next.getClicks().set(1);
+		Assert.assertEquals("", this.open(next));
 	}
 
 	@Test
@@ -419,7 +422,7 @@ public class SignalReplayTest {
 		} finally {
 			System.setSecurityManager(previous);
 		}
-		Assert.assertEquals("[JOID] ReplayScenarioUI.java:N text(...) reads clicks but cannot follow it: the module of dev.joid.demo.replay.ReplayScenarioUI.secret refuses the access. The value stays \"p70\". Add opens dev.joid.demo.replay to dev.joid in its module-info.\n", output);
+		Assert.assertEquals("[JOID] ReplayScenarioUI.java:N text(...) reads clicks but cannot follow it: the module of dev.joid.demo.replay.ReplayScenarioUI.secret refuses the access. The value stays \"p70\". Add \"opens dev.joid.demo.replay;\" to its module-info.\n", output);
 	}
 
 	@Test

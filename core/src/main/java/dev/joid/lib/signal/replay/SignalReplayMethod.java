@@ -111,16 +111,8 @@ public final class SignalReplayMethod {
 	}
 
 	public String localName(final int variable, final int index) {
-		if (this.method.localVariables == null) {
-			return null;
-		}
-
-		for (final LocalVariableNode local : this.method.localVariables) {
-			if (local.index == variable && this.indexOf(local.start) <= index && index < this.indexOf(local.end)) {
-				return local.name;
-			}
-		}
-		return null;
+		final LocalVariableNode local = this.local(variable, index);
+		return local != null ? local.name : null;
 	}
 
 	public String describeLocal(final int variable, final int index) {
@@ -353,26 +345,35 @@ public final class SignalReplayMethod {
 	}
 
 	private boolean isValue(final int variable, final int index) {
-		if (this.method.localVariables == null) {
+		final LocalVariableNode local = this.local(variable, index);
+		if (local == null) {
 			return false;
+		}
+
+		final Type type = Type.getType(local.desc);
+		if (type.getSort() != Type.OBJECT) {
+			return false;
+		}
+
+		try {
+			final Class<?> loaded = this.type(type);
+			return loaded == String.class || loaded.isEnum() || Number.class.isAssignableFrom(loaded) && loaded.getName().startsWith("java.lang.") || loaded == Boolean.class || loaded == Character.class;
+		} catch (final SignalReplayException exception) {
+			return false;
+		}
+	}
+
+	private LocalVariableNode local(final int variable, final int index) {
+		if (this.method.localVariables == null) {
+			return null;
 		}
 
 		for (final LocalVariableNode local : this.method.localVariables) {
 			if (local.index == variable && this.indexOf(local.start) <= index && index < this.indexOf(local.end)) {
-				final Type type = Type.getType(local.desc);
-				if (type.getSort() != Type.OBJECT) {
-					return false;
-				}
-
-				try {
-					final Class<?> loaded = this.type(type);
-					return loaded == String.class || loaded.isEnum() || Number.class.isAssignableFrom(loaded) && loaded.getName().startsWith("java.lang.") || loaded == Boolean.class || loaded == Character.class;
-				} catch (final SignalReplayException exception) {
-					return false;
-				}
+				return local;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	private static int popCount(final AbstractInsnNode instruction, final Frame<SourceValue> before) {

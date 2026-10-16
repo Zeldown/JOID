@@ -201,9 +201,13 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	private void store(final T value) {
-		final T oldValue = this.value;
-		this.value = this.seal(value);
-		this.sealedValue = this.value;
+		final T oldValue;
+		synchronized (this) {
+			oldValue = this.value;
+			this.value = this.seal(value);
+			this.sealedValue = this.value;
+		}
+
 		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
 			return;
 		}

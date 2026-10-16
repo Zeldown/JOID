@@ -28,6 +28,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	private transient volatile T       value;
 	private transient boolean          computing;
 	private transient int              publishedVersion;
+	private transient long             invalidatedEpoch;
 	private transient volatile boolean stale = true;
 
 	protected ComputedSignal(final @NonNull Supplier<? extends T> supplier) {
@@ -170,7 +171,9 @@ public class ComputedSignal<T> extends Signal<T> {
 			context.schedule(this);
 		}
 
-		if (!this.stale) {
+		final long epoch = SignalContext.getEpoch();
+		if (this.invalidatedEpoch != epoch) {
+			this.invalidatedEpoch = epoch;
 			this.stale = true;
 			super.invalidate(context);
 		}

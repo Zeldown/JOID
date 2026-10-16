@@ -81,7 +81,7 @@ public final class SignalReplay {
 	}
 
 	private static void warn(final Throwable exception, final Object value) {
-		JOIDLog.devWarnOnce("SignalReplay.error." + exception, () -> "The replay of a signal read failed on an internal error, the value \"" + value + "\" stays fixed", exception);
+		JOIDLog.devWarnOnce("SignalReplay.error." + exception.getClass().getName(), () -> "The replay of a signal read failed on an internal error, the value \"" + value + "\" stays fixed", exception);
 	}
 
 	private static void enter(final Object owner, final Object parent) {
@@ -290,7 +290,7 @@ public final class SignalReplay {
 	}
 
 	private static boolean isLibrary(final String name) {
-		return name.startsWith("dev.joid.") && !name.startsWith("dev.joid.demo.") && !name.startsWith("dev.joid.showcase.") && !name.contains(".demo.");
+		return name.startsWith("dev.joid.") && !name.startsWith("dev.joid.showcase.") && !name.contains(".demo.");
 	}
 
 	private static boolean isRuntime(final String name) {

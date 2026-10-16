@@ -18,7 +18,7 @@ public enum SignalReplayFailure {
 	LOCAL_CONDITION("%s decides a condition", "Use a field, map(...) or a lambda."),
 	VALUE_DIFFERS("replaying the expression gives %s (side effects, random, time)", "Use a lambda."),
 	SIGNALS_DIFFER("replaying the expression reads other signals", "Use map(...) or a lambda."),
-	ACCESS_REFUSED("the module of %s refuses the access", "Add opens %2$s to dev.joid in its module-info."),
+	ACCESS_REFUSED("the module of %s refuses the access", "Add \"opens %2$s;\" to its module-info."),
 	REPLAY_FAILED("replaying the expression failed (%s)", "Use map(...) or a lambda.");
 
 	private final String reason;
