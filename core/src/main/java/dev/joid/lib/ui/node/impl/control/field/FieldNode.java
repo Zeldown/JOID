@@ -151,11 +151,14 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
+	public void placeParts(final double mouseX, final double mouseY) {
 		if (this.background != null) {
 			this.background.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}
+	}
 
+	@Override
+	public void draw(final double mouseX, final double mouseY) {
 		if (this.cursorPosition > this.text.length()) {
 			this.cursorValue.update(this.cursorPosition);
 		}

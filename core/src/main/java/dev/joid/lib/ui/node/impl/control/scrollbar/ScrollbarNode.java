@@ -17,8 +17,8 @@ public abstract class ScrollbarNode extends BaseScrollbarNode {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
-		super.draw(mouseX, mouseY);
+	public void placeParts(final double mouseX, final double mouseY) {
+		super.placeParts(mouseX, mouseY);
 		if (this.track != null) {
 			this.track.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}

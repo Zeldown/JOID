@@ -255,6 +255,14 @@ public class DevNodeTest {
 	}
 
 	@Test
+	public void listsTheFieldsOfTheLockedNodeInTheirOrder() {
+		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(new LabelNode()));
+		DevNodeTest.lock(this.bridges, 250D, 250D);
+		final List<String> texts = DevNodeTest.texts(panel);
+		Assert.assertTrue(texts.toString(), texts.indexOf("label: Play") < texts.indexOf("target: null"));
+	}
+
+	@Test
 	public void unlocksTheInspectionOnARightClick() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		DevNodeTest.lock(this.bridges, 250D, 250D);

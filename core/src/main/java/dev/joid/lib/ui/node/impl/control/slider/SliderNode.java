@@ -32,8 +32,7 @@ public abstract class SliderNode<V> extends BaseSliderNode<V> {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
-		super.draw(mouseX, mouseY);
+	public void placeParts(final double mouseX, final double mouseY) {
 		if (this.track != null) {
 			this.track.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}

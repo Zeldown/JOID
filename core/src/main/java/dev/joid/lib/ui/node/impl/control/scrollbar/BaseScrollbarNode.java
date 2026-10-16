@@ -25,7 +25,7 @@ public abstract class BaseScrollbarNode extends Node {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
+	public void placeParts(final double mouseX, final double mouseY) {
 		if (!this.dragging || !this.isOverflowing()) {
 			return;
 		}

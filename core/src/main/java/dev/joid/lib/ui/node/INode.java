@@ -15,6 +15,7 @@ public interface INode extends IndexedElement {
 	default public void init(final @NonNull UI ui) {}
 
 	default public void draw(final double mouseX, final double mouseY) {}
+	default public void placeParts(final double mouseX, final double mouseY) {}
 	default public void drawSkeleton(final double mouseX, final double mouseY) {}
 
 	default public void mousePressed(final @NonNull NodeMouseEvent<?> event) {}

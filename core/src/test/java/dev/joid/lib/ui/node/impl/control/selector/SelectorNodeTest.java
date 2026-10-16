@@ -69,6 +69,13 @@ public class SelectorNodeTest {
 	}
 
 	@Test
+	public void drawsItsFieldOpenOnTheFrameItOpens() {
+		this.bridges.open(new NodeUI(this.selector)).frame();
+		this.click(150D, 120D);
+		this.assertDrawn(0.2F, 0.4F, 0.6F, 100D, 220D);
+	}
+
+	@Test
 	public void opensUpwards() {
 		Assert.assertSame(this.selector, this.selector.direction(SelectorDirection.UP).active(true));
 		this.bridges.open(new NodeUI(this.selector)).frames(2);

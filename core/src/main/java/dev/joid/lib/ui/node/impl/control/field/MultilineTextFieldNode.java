@@ -153,9 +153,11 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	protected final void followCursorForward() {
 		final double lineHeight = this.getLineHeight();
 		final String beforeCursor = super.getText().substring(0, super.getCursorPosition());
-		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * (this.getLayout(beforeCursor).getLines().size() - 1);
-		if (cursorY + lineHeight - this.yOffset > super.getY() + super.getHeight() - super.getMarginBottom()) {
-			this.yOffset = cursorY + lineHeight - super.getY() - super.getHeight() + super.getMarginBottom();
+		final int cursorLine = this.getLayout(beforeCursor).getLines().size() - 1;
+		final double cursorY = super.getY() + super.getMarginTop() + lineHeight * cursorLine;
+		final double margin = Math.min(super.getCursorMargin(), lineHeight * (this.getLayout().getLines().size() - 1 - cursorLine));
+		if (cursorY + lineHeight + margin - this.yOffset > super.getY() + super.getHeight() - super.getMarginBottom()) {
+			this.yOffset = cursorY + lineHeight + margin - super.getY() - super.getHeight() + super.getMarginBottom();
 		}
 	}
 

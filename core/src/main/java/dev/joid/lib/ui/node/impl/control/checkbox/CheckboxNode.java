@@ -17,7 +17,7 @@ public abstract class CheckboxNode extends BaseCheckboxNode {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
+	public void placeParts(final double mouseX, final double mouseY) {
 		if (this.box != null) {
 			this.box.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}

@@ -182,7 +182,7 @@ public class ModelViewerNodeTest {
 	@Test
 	public void turnsWithTheDraggedMouse() {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
-		this.bridges.move(250D, 180D).frame();
+		this.bridges.drag(250D, 180D).frame();
 		Assert.assertTrue(ModelViewerNodeTest.isDragged(viewer));
 		Assert.assertEquals(10D, viewer.getRotationYaw(), 1E-9D);
 		Assert.assertEquals(4D, viewer.getRotationPitch(), 1E-9D);
@@ -197,7 +197,7 @@ public class ModelViewerNodeTest {
 		final DoubleSignal yaw = new DoubleSignal(0D);
 		final DoubleSignal pitch = new DoubleSignal(0D);
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).rotationYaw(yaw).rotationPitch(pitch).model(new FixedModel()));
-		this.bridges.move(250D, 180D).frame();
+		this.bridges.drag(250D, 180D).frame();
 		Assert.assertEquals(10D, yaw.peek(), 1E-9D);
 		Assert.assertEquals(4D, pitch.peek(), 1E-9D);
 		yaw.set(90D);
@@ -223,7 +223,7 @@ public class ModelViewerNodeTest {
 	@Test
 	public void keepsItsRotationWhenItsGestureIsRefused() {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).beforeRotate(event -> event.cancel()).model(new FixedModel()));
-		this.bridges.move(250D, 180D).frame();
+		this.bridges.drag(250D, 180D).frame();
 		viewer.rotate(30D, 20D);
 		Assert.assertEquals(0D, viewer.getRotationYaw(), 0D);
 		Assert.assertEquals(0D, viewer.getRotationPitch(), 0D);
@@ -236,7 +236,7 @@ public class ModelViewerNodeTest {
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());
 		Assert.assertSame(viewer, viewer.rotationYawRange(-5D, 5D).rotationPitchRange(-2D, 2D));
 		this.drag(viewer);
-		this.bridges.move(300D, 300D).frame();
+		this.bridges.drag(300D, 300D).frame();
 		Assert.assertEquals(5D, viewer.getRotationYaw(), 0D);
 		Assert.assertEquals(-2D, viewer.getRotationPitch(), 0D);
 		Assert.assertEquals(-5D, viewer.getMinRotationYaw(), 0D);
@@ -247,7 +247,7 @@ public class ModelViewerNodeTest {
 	public void stopsTurningOnceReleased() {
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel()));
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
-		this.bridges.move(250D, 180D).frame();
+		this.bridges.drag(250D, 180D).frame();
 		Assert.assertFalse(ModelViewerNodeTest.isDragged(viewer));
 		Assert.assertEquals(0D, viewer.getRotationYaw(), 0D);
 	}

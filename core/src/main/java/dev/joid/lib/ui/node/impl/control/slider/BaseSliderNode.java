@@ -22,13 +22,6 @@ public abstract class BaseSliderNode<V> extends BaseChoiceNode<V> {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {
-		if (this.sliding) {
-			this.slide(mouseX);
-		}
-	}
-
-	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 		if (event.isConsumed() || !event.getButton().isLeft() || !super.isHovered()) {
 			return;
@@ -48,6 +41,13 @@ public abstract class BaseSliderNode<V> extends BaseChoiceNode<V> {
 
 		this.slide(event.getMouseX());
 		this.sliding = false;
+	}
+
+	@Override
+	public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
+		if (this.sliding) {
+			this.slide(event.getMouseX());
+		}
 	}
 
 	@Override

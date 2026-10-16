@@ -66,6 +66,12 @@ public final class HeadlessBridges extends ExternalResource {
 		return this;
 	}
 
+	public @NonNull HeadlessBridges drag(final double mouseX, final double mouseY) {
+		this.move(mouseX, mouseY).frame();
+		this.ui.mouseMoved();
+		return this;
+	}
+
 	public @NonNull HeadlessBridges scroll(final double notches) {
 		return this.scroll(0D, notches);
 	}

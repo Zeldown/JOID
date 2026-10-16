@@ -222,6 +222,17 @@ public class ReorderableFlexNodeTest {
 	}
 
 	@Test
+	public void keepsItsDragOnTheReleaseOfAnotherButton() {
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, ReorderableFlexNodeTest.item());
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 120D);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
+		Assert.assertFalse(ReorderableFlexNodeTest.<Boolean>read(flex, "releasing"));
+		Assert.assertTrue(flex.isDragging(first));
+	}
+
+	@Test
 	public void ignoresAPressBesideTheChildren() {
 		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item());
 		this.bridges.open(new NodeUI(flex));

@@ -2,11 +2,10 @@ package dev.joid.lib.ui.node.impl.dev;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
@@ -283,7 +282,7 @@ public final class DevNode extends Node {
 						.attach(scroll);
 					}
 
-					final Set<Field> fields = new HashSet<>();
+					final List<Field> fields = new ArrayList<>();
 
 					Class<?> clazz = inspectedNode.getClass();
 					while (clazz != null) {

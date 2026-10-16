@@ -85,14 +85,6 @@ public class ModelViewerNode extends BaseModelNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.dragged) {
-			final double rotationYaw = this.rotationYaw + (mouseX - this.draggedMouseX) / 5D;
-			final double rotationPitch = this.rotationPitch - (mouseY - this.draggedMouseY) / 5D;
-			this.draggedMouseX = mouseX;
-			this.draggedMouseY = mouseY;
-			this.rotationValue.change(Point.create(rotationYaw, rotationPitch));
-		}
-
 		final UI ui = super.getUi();
 		this.drawnRotationYaw = ui.lerpByFramerate(this.drawnRotationYaw, this.rotationYaw, 1D / 30D, 0.1D);
 		this.drawnRotationPitch = ui.lerpByFramerate(this.drawnRotationPitch, this.rotationPitch, 1D / 30D, 0.1D);
@@ -127,6 +119,19 @@ public class ModelViewerNode extends BaseModelNode {
 		if (event.getButton().isLeft()) {
 			this.dragged = false;
 		}
+	}
+
+	@Override
+	public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
+		if (!this.dragged) {
+			return;
+		}
+
+		final double rotationYaw = this.rotationYaw + (event.getMouseX() - this.draggedMouseX) / 5D;
+		final double rotationPitch = this.rotationPitch - (event.getMouseY() - this.draggedMouseY) / 5D;
+		this.draggedMouseX = event.getMouseX();
+		this.draggedMouseY = event.getMouseY();
+		this.rotationValue.change(Point.create(rotationYaw, rotationPitch));
 	}
 
 	@Override

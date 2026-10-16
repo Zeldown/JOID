@@ -130,6 +130,11 @@ public final class NodeBindings {
 		}
 	}
 
+	public boolean isBound(final @NonNull String property) {
+		final NodeBinding<?> binding = this.bindingMap.get(property);
+		return binding != null && binding.writer != null;
+	}
+
 	public boolean isFollowed(final @NonNull String property) {
 		final NodeBinding<?> binding = this.bindingMap.get(property);
 		return binding != null && binding.writer == null;

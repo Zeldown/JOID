@@ -230,6 +230,16 @@ public class SwitchNodeTest {
 		Assert.assertEquals("high", quality.get());
 	}
 
+	@Test
+	public void takesItsFirstStateWhenItsSignalArrivesOutOfItsStates() {
+		Assert.assertEquals("off", new Switch().value(new Signal<>("eco")).values("off", "on").getValue());
+	}
+
+	@Test
+	public void takesItsFirstStateWhenItsIndexSignalArrivesOutOfItsStates() {
+		Assert.assertEquals("off", new Switch().valueIndex(new IntegerSignal(5)).values("off", "on").getValue());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnIndexGivenBeforeItsStatesThatIsOutOfThem() {
 		new Switch().valueIndex(2).values("off", "on");

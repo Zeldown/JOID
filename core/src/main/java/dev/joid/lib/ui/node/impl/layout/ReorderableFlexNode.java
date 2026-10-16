@@ -93,7 +93,7 @@ public class ReorderableFlexNode extends FlexNode {
 
 	@Override
 	public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
-		if (this.reorderedNode != null && !this.releasing) {
+		if (this.reorderedNode != null && !this.releasing && event.getButton().isLeft()) {
 			this.endDrag();
 		}
 	}

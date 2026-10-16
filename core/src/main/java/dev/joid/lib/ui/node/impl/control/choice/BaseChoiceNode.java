@@ -119,8 +119,10 @@ public abstract class BaseChoiceNode<V> extends Node {
 			return;
 		}
 
-		final V current = this.pendingIndex >= 0 ? values.get(this.requireIndex(values, this.pendingIndex)) : this.value;
-		if (this.valueList.isEmpty() && current != null) {
+		final boolean bound = super.getBindings().isBound("value");
+		final int index = bound || this.pendingIndex < 0 ? this.pendingIndex : this.requireIndex(values, this.pendingIndex);
+		final V current = index >= 0 && index < values.size() ? values.get(index) : this.value;
+		if (this.valueList.isEmpty() && current != null && !bound) {
 			this.requireOption(values, current);
 		}
 

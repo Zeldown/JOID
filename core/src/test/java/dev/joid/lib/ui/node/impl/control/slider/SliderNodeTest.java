@@ -233,7 +233,7 @@ public class SliderNodeTest {
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		this.bridges.move(150D, 125D).frames(2);
+		this.bridges.drag(150D, 125D).frames(2);
 		Assert.assertEquals(25D, slider.getThumb().getX(), 1E-9D);
 		Assert.assertEquals(2, slider.getValue().intValue());
 	}
@@ -245,7 +245,7 @@ public class SliderNodeTest {
 		this.bridges.open(new NodeUI(slider)).frame();
 		this.bridges.move(400D, 125D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		this.bridges.move(150D, 125D).frames(2);
+		this.bridges.drag(150D, 125D).frames(2);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertFalse(slider.isSliding());
 		Assert.assertEquals(2, slider.getValue().intValue());
@@ -259,6 +259,7 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(SliderNodeTest.digits()).value(5);
 		this.bridges.open(new NodeUI(slider)).frame();
 		SliderNodeTest.drag(slider);
+		slider.fireMouseDragged(425D, 125D, MouseButton.LEFT, 0L);
 		this.bridges.move(425D, 125D).frame();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(8, slider.getValue().intValue());
@@ -319,7 +320,7 @@ public class SliderNodeTest {
 		Assert.assertTrue(slider.isSliding());
 		Assert.assertEquals(5, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(7), proposals);
-		this.bridges.move(150D, 125D).frames(2);
+		this.bridges.drag(150D, 125D).frames(2);
 		Assert.assertEquals(Arrays.asList(7, 2), proposals);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.frames(3);
@@ -362,8 +363,10 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(1, 2, 3);
 		this.bridges.open(new NodeUI(slider)).frame();
 		SliderNodeTest.drag(slider);
+		slider.fireMouseDragged(0D, 125D, MouseButton.LEFT, 0L);
 		this.bridges.move(0D, 125D).frame();
 		Assert.assertEquals(0D, slider.getThumb().getX(), 1E-9D);
+		slider.fireMouseDragged(1900D, 125D, MouseButton.LEFT, 0L);
 		this.bridges.move(1900D, 125D).frame();
 		Assert.assertEquals(350D, slider.getThumb().getX(), 1E-9D);
 	}
