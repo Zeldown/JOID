@@ -340,8 +340,8 @@ public class UIDemoLayout extends UIDemo {
 		.body(rect -> {
 			GridNode
 			.create(20, 20, 280, 200)
-			.verticalMargin(4D)
-			.horizontalMargin(20D)
+			.marginVertical(4D)
+			.marginHorizontal(20D)
 			.body(grid -> {
 				RectNode.create(0, 0, 60, 40).color(UIDemoLayout.INK).attach(grid);
 				RectNode.create(0, 0, 100, 40).color(UIDemoLayout.INK).attach(grid);

@@ -13,8 +13,8 @@ import lombok.NonNull;
 @Getter
 public final class GridNode extends Node {
 
-	private double verticalMargin;
-	private double horizontalMargin;
+	private double marginVertical;
+	private double marginHorizontal;
 
 	private GridNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -42,20 +42,20 @@ public final class GridNode extends Node {
 		this.updateGrid();
 	}
 
-	public final @NonNull GridNode verticalMargin(final double verticalMargin) {
-		return this.verticalMargin(Signal.from(verticalMargin));
+	public final @NonNull GridNode marginVertical(final double marginVertical) {
+		return this.marginVertical(Signal.from(marginVertical));
 	}
 
-	public final @NonNull GridNode verticalMargin(final @NonNull Supplier<Double> verticalMargin) {
-		return super.follow("verticalMargin", verticalMargin, value -> this.verticalMargin = value);
+	public final @NonNull GridNode marginVertical(final @NonNull Supplier<Double> marginVertical) {
+		return super.follow("marginVertical", marginVertical, value -> this.marginVertical = value);
 	}
 
-	public final @NonNull GridNode horizontalMargin(final double horizontalMargin) {
-		return this.horizontalMargin(Signal.from(horizontalMargin));
+	public final @NonNull GridNode marginHorizontal(final double marginHorizontal) {
+		return this.marginHorizontal(Signal.from(marginHorizontal));
 	}
 
-	public final @NonNull GridNode horizontalMargin(final @NonNull Supplier<Double> horizontalMargin) {
-		return super.follow("horizontalMargin", horizontalMargin, value -> this.horizontalMargin = value);
+	public final @NonNull GridNode marginHorizontal(final @NonNull Supplier<Double> marginHorizontal) {
+		return super.follow("marginHorizontal", marginHorizontal, value -> this.marginHorizontal = value);
 	}
 
 	public final @NonNull GridNode margin(final double margin) {
@@ -63,8 +63,8 @@ public final class GridNode extends Node {
 	}
 
 	public final @NonNull GridNode margin(final @NonNull Supplier<Double> margin) {
-		this.verticalMargin(margin);
-		return this.horizontalMargin(margin);
+		this.marginVertical(margin);
+		return this.marginHorizontal(margin);
 	}
 
 	private void updateGrid() {
@@ -78,13 +78,13 @@ public final class GridNode extends Node {
 
 			if (ox > 0D && child.getDefaultX() + child.getWidth() + ox > super.getWidth()) {
 				ox = 0D;
-				oy += rowHeight + this.verticalMargin;
+				oy += rowHeight + this.marginVertical;
 				rowHeight = 0D;
 			}
 
 			child.layoutPosition(ox, oy);
 
-			ox += child.getWidth() + this.horizontalMargin;
+			ox += child.getWidth() + this.marginHorizontal;
 			rowHeight = Math.max(rowHeight, child.getHeight());
 		}
 

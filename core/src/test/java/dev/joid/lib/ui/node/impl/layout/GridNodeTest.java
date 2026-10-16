@@ -34,14 +34,14 @@ public class GridNodeTest {
 
 	@Test
 	public void spacesTheCellsByTheMargins() {
-		final GridNode grid = GridNode.create(0D, 0D, 350D, 100D).horizontalMargin(10D).verticalMargin(5D);
+		final GridNode grid = GridNode.create(0D, 0D, 350D, 100D).marginHorizontal(10D).marginVertical(5D);
 		final RectNode[] cells = GridNodeTest.cells(grid, 4);
 		this.bridges.open(new NodeUI(grid));
 		GridNodeTest.assertPlaced(cells[1], 110D, 0D);
 		GridNodeTest.assertPlaced(cells[2], 220D, 0D);
 		GridNodeTest.assertPlaced(cells[3], 0D, 55D);
-		Assert.assertEquals(10D, grid.getHorizontalMargin(), 0D);
-		Assert.assertEquals(5D, grid.getVerticalMargin(), 0D);
+		Assert.assertEquals(10D, grid.getMarginHorizontal(), 0D);
+		Assert.assertEquals(5D, grid.getMarginVertical(), 0D);
 	}
 
 	@Test
@@ -51,8 +51,8 @@ public class GridNodeTest {
 		this.bridges.open(new NodeUI(grid));
 		GridNodeTest.assertPlaced(cells[1], 120D, 0D);
 		GridNodeTest.assertPlaced(cells[2], 0D, 70D);
-		Assert.assertEquals(20D, grid.getHorizontalMargin(), 0D);
-		Assert.assertEquals(20D, grid.getVerticalMargin(), 0D);
+		Assert.assertEquals(20D, grid.getMarginHorizontal(), 0D);
+		Assert.assertEquals(20D, grid.getMarginVertical(), 0D);
 	}
 
 	@Test
@@ -67,7 +67,7 @@ public class GridNodeTest {
 
 	@Test
 	public void growsToContainItsRows() {
-		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).verticalMargin(5D);
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).marginVertical(5D);
 		GridNodeTest.cells(grid, 3);
 		this.bridges.open(new NodeUI(grid));
 		Assert.assertEquals(105D, grid.getHeight(), 0D);
@@ -92,7 +92,7 @@ public class GridNodeTest {
 
 	@Test
 	public void growsWithItsRowsWhenCreatedWithoutHeight() {
-		final GridNode grid = GridNode.create(0D, 0D, 250D, 0D).verticalMargin(5D).overflow(OverflowProperty.SCROLL);
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 0D).marginVertical(5D).overflow(OverflowProperty.SCROLL);
 		GridNodeTest.cells(grid, 3);
 		this.bridges.open(new NodeUI(grid));
 		Assert.assertEquals(105D, grid.getHeight(), 0D);
@@ -100,7 +100,7 @@ public class GridNodeTest {
 
 	@Test
 	public void scrollsItsOwnRows() {
-		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).verticalMargin(5D).overflow(OverflowProperty.SCROLL);
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).marginVertical(5D).overflow(OverflowProperty.SCROLL);
 		GridNodeTest.cells(grid, 3);
 		this.bridges.open(new NodeUI(grid)).frames(2);
 		Assert.assertEquals(60D, grid.getHeight(), 0D);
@@ -182,8 +182,8 @@ public class GridNodeTest {
 	@Test
 	public void returnsItselfFromEachSetter() {
 		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D);
-		Assert.assertSame(grid, grid.horizontalMargin(1D));
-		Assert.assertSame(grid, grid.verticalMargin(2D));
+		Assert.assertSame(grid, grid.marginHorizontal(1D));
+		Assert.assertSame(grid, grid.marginVertical(2D));
 		Assert.assertSame(grid, grid.margin(3D));
 	}
 
@@ -219,7 +219,7 @@ public class GridNodeTest {
 	public void startsANewRowBelowTheTallestCellOfThePreviousOne() {
 		final RectNode tall = RectNode.create(0D, 0D, 100D, 80D);
 		final RectNode wrapped = RectNode.create(0D, 0D, 100D, 50D);
-		this.bridges.open(new NodeUI(GridNode.create(0D, 0D, 250D, 60D).verticalMargin(5D).append(RectNode.create(0D, 0D, 100D, 50D), tall, wrapped)));
+		this.bridges.open(new NodeUI(GridNode.create(0D, 0D, 250D, 60D).marginVertical(5D).append(RectNode.create(0D, 0D, 100D, 50D), tall, wrapped)));
 		GridNodeTest.assertPlaced(wrapped, 0D, 85D);
 	}
 
@@ -235,7 +235,7 @@ public class GridNodeTest {
 
 	@Test
 	public void growsByTheHeightOfEveryRow() {
-		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).verticalMargin(5D).append(RectNode.create(0D, 0D, 100D, 50D), RectNode.create(0D, 0D, 100D, 80D), RectNode.create(0D, 0D, 100D, 20D));
+		final GridNode grid = GridNode.create(0D, 0D, 250D, 60D).marginVertical(5D).append(RectNode.create(0D, 0D, 100D, 50D), RectNode.create(0D, 0D, 100D, 80D), RectNode.create(0D, 0D, 100D, 20D));
 		this.bridges.open(new NodeUI(grid));
 		Assert.assertEquals(105D, grid.getHeight(), 0D);
 	}

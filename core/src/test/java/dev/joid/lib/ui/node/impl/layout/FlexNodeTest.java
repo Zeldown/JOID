@@ -186,6 +186,22 @@ public class FlexNodeTest {
 	}
 
 	@Test
+	public void keepsItsDeclaredLengthWhileTheChildrenFit() {
+		final FlexNode column = FlexNode.vertical(0D, 0D, 100D).height(200D).append(RectNode.create(0D, 0D, 100D, 50D));
+		final FlexNode row = FlexNode.horizontal(0D, 0D, 100D).width(200D).append(RectNode.create(0D, 0D, 50D, 100D), RectNode.create(0D, 0D, 300D, 100D));
+		this.bridges.open(new NodeUI(column, row));
+		Assert.assertEquals(200D, column.getHeight(), 0D);
+		Assert.assertEquals(350D, row.getWidth(), 0D);
+	}
+
+	@Test
+	public void growsWithItsChildrenWhenCreatedWithoutLengthDespiteAnOverflow() {
+		final FlexNode column = FlexNode.vertical(0D, 0D, 100D).overflow(OverflowProperty.HIDDEN).append(RectNode.create(0D, 0D, 100D, 50D));
+		this.bridges.open(new NodeUI(column));
+		Assert.assertEquals(50D, column.getHeight(), 0D);
+	}
+
+	@Test
 	public void shrinksToNothingWithoutChildren() {
 		final FlexNode column = FlexNode.vertical(0D, 0D, 300D).margin(10D);
 		final FlexNode row = FlexNode.horizontal(0D, 0D, 100D).margin(10D);
@@ -282,7 +298,7 @@ public class FlexNodeTest {
 		this.bridges.open(new NodeUI(flex));
 		Assert.assertEquals(50D, second.getX(), 0D);
 		Assert.assertEquals(0D, second.getY(), 0D);
-		Assert.assertEquals(80D, flex.getWidth(), 0D);
+		Assert.assertEquals(300D, flex.getWidth(), 0D);
 	}
 
 	@Test(expected = NullPointerException.class)

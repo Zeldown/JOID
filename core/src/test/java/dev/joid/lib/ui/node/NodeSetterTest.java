@@ -293,11 +293,11 @@ public class NodeSetterTest {
 		Assert.assertFalse(NodeSetterTest.isFollowed(field, "marginTop"));
 		Assert.assertFalse(NodeSetterTest.isFollowed(field, "marginRight"));
 		Assert.assertTrue(NodeSetterTest.isFollowed(field, "marginBottom"));
-		final GridNode grid = GridNode.create(0D, 0D, 100D, 100D).margin(() -> margin[0]).verticalMargin(3D);
-		Assert.assertEquals(3D, grid.getVerticalMargin(), 0D);
-		Assert.assertEquals(4D, grid.getHorizontalMargin(), 0D);
-		Assert.assertFalse(NodeSetterTest.isFollowed(grid, "verticalMargin"));
-		Assert.assertTrue(NodeSetterTest.isFollowed(grid, "horizontalMargin"));
+		final GridNode grid = GridNode.create(0D, 0D, 100D, 100D).margin(() -> margin[0]).marginVertical(3D);
+		Assert.assertEquals(3D, grid.getMarginVertical(), 0D);
+		Assert.assertEquals(4D, grid.getMarginHorizontal(), 0D);
+		Assert.assertFalse(NodeSetterTest.isFollowed(grid, "marginVertical"));
+		Assert.assertTrue(NodeSetterTest.isFollowed(grid, "marginHorizontal"));
 	}
 
 	@Test

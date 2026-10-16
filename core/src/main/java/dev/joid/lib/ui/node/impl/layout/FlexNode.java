@@ -116,14 +116,17 @@ public class FlexNode extends Node {
 			offset += (this.direction == Axis.VERTICAL ? child.getHeight() : child.getWidth()) + this.margin;
 		}
 
-		if (super.getOverflow() != OverflowProperty.NONE) {
+		final double content = Math.max(0D, offset - this.margin);
+		final double declared = this.direction == Axis.VERTICAL ? super.getDefaultHeight() : super.getDefaultWidth();
+		if (declared != 0D && super.getOverflow() != OverflowProperty.NONE) {
 			return;
 		}
 
+		final double size = Math.max(content, declared);
 		if (this.direction == Axis.VERTICAL) {
-			super.layoutSize(super.getWidth(), Math.max(0D, offset - this.margin));
+			super.layoutSize(super.getWidth(), size);
 		} else {
-			super.layoutSize(Math.max(0D, offset - this.margin), super.getHeight());
+			super.layoutSize(size, super.getHeight());
 		}
 	}
 

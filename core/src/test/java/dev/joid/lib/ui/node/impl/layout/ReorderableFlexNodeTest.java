@@ -138,7 +138,7 @@ public class ReorderableFlexNodeTest {
 		this.bridges.open(new NodeUI(flex));
 		Assert.assertEquals(90D, second.getX(), 0D);
 		Assert.assertEquals(0D, second.getY(), 0D);
-		Assert.assertEquals(170D, flex.getWidth(), 0D);
+		Assert.assertEquals(200D, flex.getWidth(), 0D);
 	}
 
 	@Test
