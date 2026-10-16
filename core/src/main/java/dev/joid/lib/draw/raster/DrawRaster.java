@@ -1,8 +1,5 @@
 package dev.joid.lib.draw.raster;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
@@ -16,18 +13,17 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExternalRaster {
+public final class DrawRaster {
 
-	private static final ExternalRaster INSTANCE = new ExternalRaster();
+	private static final DrawRaster INSTANCE = new DrawRaster();
 
-	private final List<Object> keys = new ArrayList<>();
-	private int                depth;
+	private int depth;
 
-	public static @NonNull ExternalRaster inst() {
-		return ExternalRaster.INSTANCE;
+	public static @NonNull DrawRaster inst() {
+		return DrawRaster.INSTANCE;
 	}
 
-	public void drawRaster(final double x, final double y, final double width, final double height, final @NonNull IExternalRasterDrawable drawable) {
+	public void drawRaster(final double x, final double y, final double width, final double height, final @NonNull IDrawableRaster drawable) {
 		if (width <= 0D || height <= 0D) {
 			return;
 		}
@@ -40,14 +36,11 @@ public final class ExternalRaster {
 		final double bottom = grid.snapBottom(y, y + height);
 		final int pixelWidth = Math.min(4096, grid.toPixelWidth(Math.abs(right - left)));
 		final int pixelHeight = Math.min(4096, grid.toPixelHeight(Math.abs(bottom - top)));
-		if (this.keys.size() == this.depth) {
-			this.keys.add(new Object());
-		}
-		final IFrameBuffer target = FrameBufferPool.allocate(this.keys.get(this.depth), 1, pixelWidth, pixelHeight)[0];
+		final IFrameBuffer target = FrameBufferPool.allocate(DrawRaster.class, this.depth, 1, pixelWidth, pixelHeight)[0];
 
 		this.depth++;
 		try {
-			ExternalRaster.fill(target, pixelWidth, pixelHeight, drawable);
+			DrawRaster.fill(target, pixelWidth, pixelHeight, drawable);
 		} finally {
 			this.depth--;
 		}
@@ -57,7 +50,7 @@ public final class ExternalRaster {
 		DrawUtils.RESOURCE.drawTexture(left, top, right - left, bottom - top, target.getTexture(), 0D, v, u, 0D, grid.isAligned() ? TextureFilter.NEAREST : TextureFilter.LINEAR, BlendState.PREMULTIPLIED);
 	}
 
-	private static void fill(final IFrameBuffer target, final int width, final int height, final IExternalRasterDrawable drawable) {
+	private static void fill(final IFrameBuffer target, final int width, final int height, final IDrawableRaster drawable) {
 		BridgeHandler.RENDER.get().withState(render -> render.getProjection().with(projection -> render.getModelView().with(modelView -> {
 			render.getState().frameBuffer(target).viewport(0, 0, width, height);
 			projection.ortho(0D, width, height, 0D, -1000D, 1000D);

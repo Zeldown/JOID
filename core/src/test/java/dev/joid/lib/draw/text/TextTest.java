@@ -1,8 +1,5 @@
-package dev.joid.lib.draw.text.builder;
+package dev.joid.lib.draw.text;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Supplier;
 
 import org.junit.Assert;
@@ -10,7 +7,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
-import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
@@ -20,6 +16,7 @@ import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
+import dev.joid.lib.font.modifier.TextModifier;
 import dev.joid.lib.utils.align.Align;
 
 public class TextTest {
@@ -88,10 +85,9 @@ public class TextTest {
 
 	@Test
 	public void keepsItsOwnListOfElements() {
-		final List<TextElement> elementList = new ArrayList<>();
-		elementList.add(TextElement.create("ab", TextTest.info()));
-		final Text text = Text.create().addAll(elementList);
-		elementList.add(TextElement.create("cd", TextTest.info()));
+		final TextElement[] elements = {TextElement.create("ab", TextTest.info())};
+		final Text text = Text.create().add(elements);
+		elements[0] = TextElement.create("cd", TextTest.info());
 		Assert.assertEquals("ab", text.getText());
 		Assert.assertEquals(1, text.getElementList().size());
 	}
@@ -188,12 +184,12 @@ public class TextTest {
 	}
 
 	@Test
-	public void appendsAnotherTextOrAListOfElements() {
+	public void appendsAnotherTextOrElements() {
 		final Text text = Text.create("ab", TextTest.info());
 		Assert.assertEquals(20D, text.getWidth(), 0D);
 		Assert.assertEquals(40D, text.add(Text.create("cd", TextTest.info())).getWidth(), 0D);
-		Assert.assertEquals(50D, text.addAll(Collections.singletonList(TextElement.create("e", TextTest.info()))).getWidth(), 0D);
-		Assert.assertEquals("abcde", text.getText());
+		Assert.assertEquals(60D, text.add(TextElement.create("e", TextTest.info()), TextElement.create("f", TextTest.info())).getWidth(), 0D);
+		Assert.assertEquals("abcdef", text.getText());
 	}
 
 	@Test

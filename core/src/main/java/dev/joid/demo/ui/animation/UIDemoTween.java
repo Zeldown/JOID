@@ -12,7 +12,7 @@ import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.animation.tween.TweenPaths;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;

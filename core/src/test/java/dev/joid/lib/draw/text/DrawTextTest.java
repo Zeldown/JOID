@@ -12,10 +12,6 @@ import org.junit.Test;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.draw.text.builder.TextElement;
-import dev.joid.lib.draw.text.builder.TextOverflow;
-import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
@@ -26,6 +22,7 @@ import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
+import dev.joid.lib.font.modifier.TextModifier;
 import dev.joid.lib.utils.align.Align;
 
 public class DrawTextTest {

@@ -2,8 +2,8 @@ package dev.joid.demo.replay;
 
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.draw.text.TextMode;
-import dev.joid.lib.draw.text.builder.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;

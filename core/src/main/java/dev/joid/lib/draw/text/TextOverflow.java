@@ -1,4 +1,4 @@
-package dev.joid.lib.draw.text.builder;
+package dev.joid.lib.draw.text;
 
 import lombok.Getter;
 

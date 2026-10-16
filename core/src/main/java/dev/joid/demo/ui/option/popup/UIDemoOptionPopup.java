@@ -3,7 +3,7 @@ package dev.joid.demo.ui.option.popup;
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;

@@ -1,7 +1,7 @@
 package dev.joid.lib.draw;
 
 import dev.joid.lib.draw.model.DrawModel;
-import dev.joid.lib.draw.raster.ExternalRaster;
+import dev.joid.lib.draw.raster.DrawRaster;
 import dev.joid.lib.draw.resource.DrawResource;
 import dev.joid.lib.draw.shape.DrawShape;
 import dev.joid.lib.draw.text.DrawText;
@@ -15,14 +15,14 @@ public final class DrawUtils {
 	public static final DrawShape      SHAPE;
 	public static final DrawModel      MODEL;
 	public static final DrawResource   RESOURCE;
-	public static final ExternalRaster RASTER;
+	public static final DrawRaster   RASTER;
 
 	static {
 		RESOURCE = DrawResource.inst();
 		SHAPE    = DrawShape.inst();
 		TEXT     = DrawText.inst();
 		MODEL    = DrawModel.inst();
-		RASTER   = ExternalRaster.inst();
+		RASTER   = DrawRaster.inst();
 	}
 
 }

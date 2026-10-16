@@ -1,4 +1,4 @@
-package dev.joid.lib.draw.text.builder;
+package dev.joid.lib.draw.text;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -6,10 +6,10 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.lib.draw.text.builder.modifier.TextModifier;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.ITextConverter;
 import dev.joid.lib.font.converter.TextConverter;
+import dev.joid.lib.font.modifier.TextModifier;
 
 import lombok.NonNull;
 

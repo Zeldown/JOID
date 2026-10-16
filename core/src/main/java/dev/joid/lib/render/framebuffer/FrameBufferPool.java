@@ -1,7 +1,9 @@
 package dev.joid.lib.render.framebuffer;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import dev.joid.lib.bridge.BridgeHandler;
@@ -15,11 +17,12 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FrameBufferPool {
 
-	private static final Map<Object, PooledFrameBuffers> POOL = new HashMap<>();
+	private static final Map<List<Object>, PooledFrameBuffers> POOL = new HashMap<>();
 
-	public static @NonNull IFrameBuffer[] allocate(final @NonNull Object owner, final int count, final int width, final int height) {
+	public static @NonNull IFrameBuffer[] allocate(final @NonNull Object owner, final int depth, final int count, final int width, final int height) {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final PooledFrameBuffers pooled = FrameBufferPool.POOL.get(owner);
+		final List<Object> key = Arrays.asList(owner, depth);
+		final PooledFrameBuffers pooled = FrameBufferPool.POOL.get(key);
 		final boolean owned = pooled != null;
 		if (owned && pooled.frameBuffers[0].getWidth() >= width && pooled.frameBuffers[0].getHeight() >= height) {
 			pooled.lastUse = now;
@@ -38,7 +41,7 @@ public final class FrameBufferPool {
 			frameBuffers[i] = render.createFrameBuffer(targetWidth, targetHeight);
 		}
 
-		FrameBufferPool.POOL.put(owner, new PooledFrameBuffers(frameBuffers, now));
+		FrameBufferPool.POOL.put(key, new PooledFrameBuffers(frameBuffers, now));
 		return frameBuffers;
 	}
 

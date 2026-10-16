@@ -9,7 +9,7 @@ import dev.joid.demo.ui.node.impl.control.field.DemoTextFieldNode;
 import dev.joid.demo.ui.node.impl.control.slider.DemoIntegerSliderNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.iterable.ListSignal;

@@ -2,7 +2,7 @@ package dev.joid.demo.ui.node.impl.control.choice;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.node.impl.control.choice.SwitchNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;

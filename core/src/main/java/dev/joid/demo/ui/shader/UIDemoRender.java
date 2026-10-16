@@ -11,7 +11,7 @@ import dev.joid.lib.bridge.render.state.BlendState.Equation;
 import dev.joid.lib.bridge.render.state.BlendState.Factor;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;

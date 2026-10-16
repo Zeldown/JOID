@@ -5,7 +5,7 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.impl.control.checkbox.DemoCheckboxNode;
 import dev.joid.demo.ui.node.impl.control.selector.DemoSelectorNode;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;

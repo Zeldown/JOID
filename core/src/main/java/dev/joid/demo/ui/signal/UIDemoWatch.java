@@ -7,7 +7,7 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.impl.control.checkbox.DemoCheckboxNode;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.ComputedSignal;
 import dev.joid.lib.signal.ISignalListener;

@@ -5,7 +5,7 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.demo.ui.node.effect.impl.DemoInvertNodeEffect;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.resource.Resource;

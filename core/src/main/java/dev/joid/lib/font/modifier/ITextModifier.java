@@ -1,4 +1,4 @@
-package dev.joid.lib.draw.text.builder.modifier;
+package dev.joid.lib.font.modifier;
 
 import java.util.List;
 

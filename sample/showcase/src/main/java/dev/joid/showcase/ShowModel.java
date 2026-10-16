@@ -4,7 +4,7 @@ import java.util.Locale;
 import java.util.function.Supplier;
 
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.Resource;

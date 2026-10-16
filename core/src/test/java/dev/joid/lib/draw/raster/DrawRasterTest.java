@@ -20,7 +20,7 @@ import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.render.framebuffer.FrameBufferPool;
 
-public class ExternalRasterTest {
+public class DrawRasterTest {
 
 	@Rule
 	public final CapturingRenderBridge render = new CapturingRenderBridge(1920, 1080);

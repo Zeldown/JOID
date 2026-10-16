@@ -10,7 +10,7 @@ import dev.joid.demo.resource.format.impl.DemoCheckerResourceFormat;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;

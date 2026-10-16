@@ -73,7 +73,7 @@ public final class ShaderPipeline {
 			return;
 		}
 
-		final IFrameBuffer[] fbos = FrameBufferPool.allocate(ShaderPipeline.pipelineDepth, 2, area.getTextureWidth(), area.getTextureHeight());
+		final IFrameBuffer[] fbos = FrameBufferPool.allocate(ShaderPipeline.class, ShaderPipeline.pipelineDepth, 2, area.getTextureWidth(), area.getTextureHeight());
 		final ShaderPassContext context = area.withFrameBuffer(fbos[0].getWidth(), fbos[0].getHeight());
 		BridgeHandler.RENDER.get().withState(render -> {
 			ShaderPipeline.drawInto(fbos[0], context, () -> {

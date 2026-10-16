@@ -16,7 +16,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.hook.property.UIProperty;

@@ -5,7 +5,7 @@ import java.util.List;
 
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.TextMode;
-import dev.joid.lib.draw.text.builder.TextOverflow;
+import dev.joid.lib.draw.text.TextOverflow;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;

@@ -17,7 +17,7 @@ import dev.joid.demo.ui.option.popup.UIDemoSlidePopup;
 import dev.joid.demo.ui.option.popup.UIDemoTintedPopup;
 import dev.joid.internal.JOID;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;

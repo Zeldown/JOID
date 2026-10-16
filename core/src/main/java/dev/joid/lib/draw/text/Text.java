@@ -1,4 +1,4 @@
-package dev.joid.lib.draw.text.builder;
+package dev.joid.lib.draw.text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.modifier.ITextModifier;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
@@ -127,18 +127,13 @@ public final class Text {
 		return this;
 	}
 
-	public @NonNull Text addAll(final @NonNull List<@NonNull TextElement> elementList) {
-		this.elementList.addAll(elementList);
+	public @NonNull Text add(final @NonNull Text text) {
+		text.getElementList().forEach(element -> this.elementList.add(element.copy()));
 		return this;
 	}
 
-	public @NonNull Text add(final @NonNull Text builder) {
-		builder.getElementList().forEach(element -> this.elementList.add(element.copy()));
-		return this;
-	}
-
-	public @NonNull Text add(final @NonNull TextElement element) {
-		this.elementList.add(element);
+	public @NonNull Text add(final @NonNull TextElement @NonNull... elements) {
+		Collections.addAll(this.elementList, elements);
 		return this;
 	}
 

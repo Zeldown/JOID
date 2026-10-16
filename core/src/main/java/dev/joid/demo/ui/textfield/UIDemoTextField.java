@@ -7,7 +7,7 @@ import dev.joid.demo.ui.node.impl.control.field.DemoIntegerFieldNode;
 import dev.joid.demo.ui.node.impl.control.field.DemoMultilineTextFieldNode;
 import dev.joid.demo.ui.node.impl.control.field.DemoTextFieldNode;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;

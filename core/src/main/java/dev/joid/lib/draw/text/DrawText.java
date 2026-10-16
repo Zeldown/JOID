@@ -4,9 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import dev.joid.lib.draw.text.builder.Text;
-import dev.joid.lib.draw.text.builder.TextElement;
-import dev.joid.lib.draw.text.builder.TextOverflow;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.markup.TextMarkup;

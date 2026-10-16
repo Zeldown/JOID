@@ -1,10 +1,10 @@
-package dev.joid.lib.draw.text.builder;
+package dev.joid.lib.draw.text;
 
 import java.util.function.Supplier;
 
-import dev.joid.lib.draw.text.builder.modifier.ITextModifier;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.TextConverter;
+import dev.joid.lib.font.modifier.ITextModifier;
 import dev.joid.lib.signal.Signal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

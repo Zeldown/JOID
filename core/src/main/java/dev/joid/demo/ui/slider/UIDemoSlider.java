@@ -6,7 +6,7 @@ import dev.joid.demo.ui.node.impl.control.slider.DemoDoubleSliderNode;
 import dev.joid.demo.ui.node.impl.control.slider.DemoIntegerSliderNode;
 import dev.joid.demo.ui.node.impl.control.slider.DemoStringSliderNode;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;

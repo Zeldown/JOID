@@ -6,7 +6,7 @@ import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.text.builder.Text;
+import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Transformation;
