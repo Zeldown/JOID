@@ -32,15 +32,15 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	public boolean contains(final E e) {
-		return this.get().contains(e);
+		return super.get().contains(e);
 	}
 
 	public boolean isEmpty() {
-		return this.get().isEmpty();
+		return super.get().isEmpty();
 	}
 
 	public int size() {
-		return this.get().size();
+		return super.get().size();
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	private @NonNull SetSignal<E> mutate(final @NonNull Consumer<Set<E>> mutation) {
-		this.transform(current -> {
+		super.transform(current -> {
 			final Set<E> set = new LinkedHashSet<>(current);
 			mutation.accept(set);
 			return set;

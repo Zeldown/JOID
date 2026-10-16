@@ -36,19 +36,19 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public boolean contains(final E e) {
-		return this.get().contains(e);
+		return super.get().contains(e);
 	}
 
 	public E get(final int index) {
-		return this.get().get(index);
+		return super.get().get(index);
 	}
 
 	public int indexOf(final E e) {
-		return this.get().indexOf(e);
+		return super.get().indexOf(e);
 	}
 
 	public boolean isEmpty() {
-		return this.get().isEmpty();
+		return super.get().isEmpty();
 	}
 
 	public @NonNull ListSignal<E> set(final int index, final E element) {
@@ -56,7 +56,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	public int size() {
-		return this.get().size();
+		return super.get().size();
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	private @NonNull ListSignal<E> mutate(final @NonNull Consumer<List<E>> mutation) {
-		this.transform(current -> {
+		super.transform(current -> {
 			final List<E> list = new ArrayList<>(current);
 			mutation.accept(list);
 			return list;

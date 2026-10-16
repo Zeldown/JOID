@@ -26,23 +26,23 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public boolean containsKey(final K key) {
-		return this.get().containsKey(key);
+		return super.get().containsKey(key);
 	}
 
 	public Set<Entry<K, V>> entrySet() {
-		return this.get().entrySet();
+		return super.get().entrySet();
 	}
 
 	public V get(final K key) {
-		return this.get().get(key);
+		return super.get().get(key);
 	}
 
 	public boolean isEmpty() {
-		return this.get().isEmpty();
+		return super.get().isEmpty();
 	}
 
 	public Set<K> keySet() {
-		return this.get().keySet();
+		return super.get().keySet();
 	}
 
 	public @NonNull MapSignal<K, V> put(final K key, final V value) {
@@ -54,11 +54,11 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public int size() {
-		return this.get().size();
+		return super.get().size();
 	}
 
 	public Collection<V> values() {
-		return this.get().values();
+		return super.get().values();
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	private @NonNull MapSignal<K, V> mutate(final @NonNull Consumer<Map<K, V>> mutation) {
-		this.transform(current -> {
+		super.transform(current -> {
 			final Map<K, V> map = new LinkedHashMap<>(current);
 			mutation.accept(map);
 			return map;
