@@ -474,6 +474,18 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void followsAnAnimatedColorFadingIntoAGradient() {
+		this.bridges.resize(1920, 1080);
+		final float[] red = {0.2F};
+		final Color color = new Color(0F, 0F, 0F, 1F, frame -> new Color(red[0], 0F, 0F, 1F)).to(new Color(0F, 0F, 1F, 1F).toGradient(new Color(0F, 1F, 0F, 1F)), 0.5F);
+		red[0] = 0.6F;
+		DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, color);
+		DrawUtils.SHAPE.drawRoundedRect(10D, 20D, 100D, 50D, color, 4F);
+		Assert.assertArrayEquals(new float[] {0.3F, 0F, 0.5F, 1F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientStart"), 1E-6F);
+		Assert.assertArrayEquals(new float[] {0.3F, 0F, 0.5F, 1F}, (float[]) ((RecordingShader) RoundedShader.inst().getShader()).getValues().get("u_GradientStart"), 1E-6F);
+	}
+
+	@Test
 	public void spansTheGradientOverEveryPoint() {
 		this.bridges.resize(1920, 1080);
 		DrawUtils.SHAPE.drawPolygon(Color.BLUE.toGradient(Color.GREEN), Point.create(100D, 220D), Point.create(300D, 200D), Point.create(150D, 400D));

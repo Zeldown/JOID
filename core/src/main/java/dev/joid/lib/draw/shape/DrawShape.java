@@ -65,7 +65,8 @@ public final class DrawShape {
 		}
 
 		final double spread = blur * 1.5D;
-		final Color shadow = color.isGradient() ? color.getGradient().getStartColor() : color;
+		final Color resolved = color.update();
+		final Color shadow = resolved.isGradient() ? resolved.getGradient().getStartColor() : resolved;
 		ShadowShader.use(radius, blur, (float) x, (float) y, (float) (x + width), (float) (y + height), () -> {
 			ShadowShader.inst().sides(roundedLeft, roundedTop, roundedRight, roundedBottom);
 			this.drawPoints(DrawMode.POLYGON, shadow, false, Point.create(x - spread, y + height + spread), Point.create(x + width + spread, y + height + spread), Point.create(x + width + spread, y - spread), Point.create(x - spread, y - spread));
@@ -73,12 +74,13 @@ public final class DrawShape {
 	}
 
 	public void drawCircle(final double x, final double y, final @NonNull Color color, final double radius) {
+		final Color resolved = color.update();
 		CircleShader.use((float) radius, (float) x, (float) y, () -> {
-			if (color.isGradient()) {
-				CircleShader.inst().gradient(color.getGradient(), BoundingBox.create(x - radius, y - radius, radius * 2D, radius * 2D));
+			if (resolved.isGradient()) {
+				CircleShader.inst().gradient(resolved.getGradient(), BoundingBox.create(x - radius, y - radius, radius * 2D, radius * 2D));
 			}
 
-			this.drawPoints(DrawMode.POLYGON, color.isGradient() ? Color.WHITE : color, false, Point.create(x - radius, y + radius), Point.create(x + radius, y + radius), Point.create(x + radius, y - radius), Point.create(x - radius, y - radius));
+			this.drawPoints(DrawMode.POLYGON, resolved.isGradient() ? Color.WHITE : resolved, false, Point.create(x - radius, y + radius), Point.create(x + radius, y + radius), Point.create(x + radius, y - radius), Point.create(x - radius, y - radius));
 		});
 	}
 
@@ -102,10 +104,11 @@ public final class DrawShape {
 		final double innerTop = grid.snapHeight(y, stroke);
 		final double innerRight = grid.snapWidth(x + width, -stroke);
 		final double innerBottom = grid.snapHeight(y + height, -stroke);
-		final Color edge = color.isGradient() ? Color.WHITE : color;
+		final Color resolved = color.update();
+		final Color edge = resolved.isGradient() ? Color.WHITE : resolved;
 		final Color horizontal = DrawShape.cover(edge, stroke * grid.getScaleY());
 		final Color vertical = DrawShape.cover(edge, stroke * grid.getScaleX());
-		color.bind(() -> {
+		resolved.bind(() -> {
 			this.drawEdges(left, top, right, innerTop, horizontal);
 			this.drawEdges(left, innerTop, innerLeft, innerBottom, vertical);
 			this.drawEdges(left, innerBottom, right, bottom, horizontal);
@@ -221,17 +224,18 @@ public final class DrawShape {
 		final double right = grid.snapRight(x, x + width);
 		final double bottom = grid.snapBottom(y, y + height);
 		final float corner = (float) Math.min(radius, Math.min(Math.abs(right - left), Math.abs(bottom - top)) / 2D);
+		final Color resolved = color.update();
 		RoundedShader.use(corner, (float) (left + (roundedLeft ? corner : 0)), (float) (top + (roundedTop ? corner : 0)), (float) (right - (roundedRight ? corner : 0)), (float) (bottom - (roundedBottom ? corner : 0)), () -> {
 			RoundedShader.inst().aligned(grid.isAligned());
 			RoundedShader.inst().stroke((float) stroke);
-			if (color.isGradient()) {
-				RoundedShader.inst().gradient(color.getGradient(), BoundingBox.create(left, top, right - left, bottom - top));
+			if (resolved.isGradient()) {
+				RoundedShader.inst().gradient(resolved.getGradient(), BoundingBox.create(left, top, right - left, bottom - top));
 			}
 
 			if (grid.isAligned()) {
-				this.drawRect(left, top, right - left, bottom - top, color.isGradient() ? Color.WHITE : color);
+				this.drawRect(left, top, right - left, bottom - top, resolved.isGradient() ? Color.WHITE : resolved);
 			} else {
-				this.drawQuad(left - 1D, top - 1D, right + 1D, bottom + 1D, color.isGradient() ? Color.WHITE : color);
+				this.drawQuad(left - 1D, top - 1D, right + 1D, bottom + 1D, resolved.isGradient() ? Color.WHITE : resolved);
 			}
 		});
 	}
@@ -252,25 +256,27 @@ public final class DrawShape {
 		final double minY = Math.min(top, bottom);
 		final double maxX = Math.max(left, right);
 		final double maxY = Math.max(top, bottom);
+		final Color resolved = color.update();
 		RoundedShader.use(0F, (float) (minX + 0.5D), (float) (minY + 0.5D), (float) (maxX - 0.5D), (float) (maxY - 0.5D), () -> {
 			RoundedShader.inst().aligned(false);
-			if (color.isGradient()) {
-				RoundedShader.inst().gradient(color.getGradient(), BoundingBox.create(minX, minY, maxX - minX, maxY - minY));
+			if (resolved.isGradient()) {
+				RoundedShader.inst().gradient(resolved.getGradient(), BoundingBox.create(minX, minY, maxX - minX, maxY - minY));
 			}
 
-			this.drawQuad(minX - 1D, minY - 1D, maxX + 1D, maxY + 1D, color.isGradient() ? Color.WHITE : color);
+			this.drawQuad(minX - 1D, minY - 1D, maxX + 1D, maxY + 1D, resolved.isGradient() ? Color.WHITE : resolved);
 		});
 	}
 
 	private void drawOutline(final double left, final double top, final double right, final double bottom, final @NonNull Color color, final double stroke) {
+		final Color resolved = color.update();
 		RoundedShader.use(0F, (float) (left + 0.5D), (float) (top + 0.5D), (float) (right - 0.5D), (float) (bottom - 0.5D), () -> {
 			RoundedShader.inst().aligned(false);
 			RoundedShader.inst().stroke((float) Math.max(stroke - 0.5D, 1E-3D));
-			if (color.isGradient()) {
-				RoundedShader.inst().gradient(color.getGradient(), BoundingBox.create(left, top, right - left, bottom - top));
+			if (resolved.isGradient()) {
+				RoundedShader.inst().gradient(resolved.getGradient(), BoundingBox.create(left, top, right - left, bottom - top));
 			}
 
-			this.drawQuad(left - 1D, top - 1D, right + 1D, bottom + 1D, color.isGradient() ? Color.WHITE : color);
+			this.drawQuad(left - 1D, top - 1D, right + 1D, bottom + 1D, resolved.isGradient() ? Color.WHITE : resolved);
 		});
 	}
 

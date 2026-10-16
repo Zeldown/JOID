@@ -106,6 +106,20 @@ public class ExternalRasterTest {
 	}
 
 	@Test
+	public void drawsANestedRasterIntoItsOwnTarget() {
+		final List<IFrameBuffer> targets = new ArrayList<>();
+		DrawUtils.RASTER.drawRaster(0D, 0D, 100D, 30D, (width, height) -> {
+			final IFrameBuffer outer = this.render.getState().getFrameBuffer();
+			DrawUtils.RASTER.drawRaster(0D, 0D, 200D, 20D, (innerWidth, innerHeight) -> targets.add(this.render.getState().getFrameBuffer()));
+			Assert.assertSame(outer, this.render.getState().getFrameBuffer());
+			targets.add(outer);
+		});
+		Assert.assertNotSame(targets.get(0), targets.get(1));
+		Assert.assertFalse(((RecordingFrameBuffer) targets.get(1)).isDeleted());
+		Assert.assertSame(targets.get(1).getTexture(), this.render.getLast().getState().getTexture());
+	}
+
+	@Test
 	public void drawsNothingWithoutArea() {
 		final List<String> calls = new ArrayList<>();
 		DrawUtils.RASTER.drawRaster(0D, 0D, 0D, 10D, (width, height) -> calls.add("draw"));

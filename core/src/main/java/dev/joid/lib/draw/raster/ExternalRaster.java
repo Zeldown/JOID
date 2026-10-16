@@ -1,5 +1,8 @@
 package dev.joid.lib.draw.raster;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
@@ -16,6 +19,9 @@ import lombok.NonNull;
 public final class ExternalRaster {
 
 	private static final ExternalRaster INSTANCE = new ExternalRaster();
+
+	private final List<Object> keys = new ArrayList<>();
+	private int                depth;
 
 	public static @NonNull ExternalRaster inst() {
 		return ExternalRaster.INSTANCE;
@@ -34,9 +40,17 @@ public final class ExternalRaster {
 		final double bottom = grid.snapBottom(y, y + height);
 		final int pixelWidth = Math.min(4096, grid.toPixelWidth(Math.abs(right - left)));
 		final int pixelHeight = Math.min(4096, grid.toPixelHeight(Math.abs(bottom - top)));
-		final IFrameBuffer target = FrameBufferPool.allocate(this, 1, pixelWidth, pixelHeight)[0];
+		if (this.keys.size() == this.depth) {
+			this.keys.add(new Object());
+		}
+		final IFrameBuffer target = FrameBufferPool.allocate(this.keys.get(this.depth), 1, pixelWidth, pixelHeight)[0];
 
-		ExternalRaster.fill(target, pixelWidth, pixelHeight, drawable);
+		this.depth++;
+		try {
+			ExternalRaster.fill(target, pixelWidth, pixelHeight, drawable);
+		} finally {
+			this.depth--;
+		}
 
 		final double u = (double) pixelWidth / target.getWidth();
 		final double v = (double) pixelHeight / target.getHeight();

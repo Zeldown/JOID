@@ -237,14 +237,15 @@ public final class Color extends LockableValue<Color> {
 
 	public void bind(final @NonNull Runnable runnable, final @NonNull BoundingBox canvas, final boolean hasTexture) {
 		final RenderState state = BridgeHandler.RENDER.get().getState();
-		if (this.isGradient()) {
-			this.gradient.use(hasTexture, runnable, canvas);
+		final Color color = this.update();
+		if (color.isGradient()) {
+			color.gradient.use(hasTexture, runnable, canvas);
 		} else {
 			final float red = state.getRed();
 			final float green = state.getGreen();
 			final float blue = state.getBlue();
 			final float alpha = state.getAlpha();
-			this.bind();
+			color.bind();
 			try {
 				runnable.run();
 			} finally {
