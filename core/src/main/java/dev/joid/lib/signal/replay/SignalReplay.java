@@ -151,7 +151,7 @@ public final class SignalReplay {
 		final SignalReplayMatch match = state.pick(call.getKey(), matchList);
 		state.putBack(match.getRemainingList(readList));
 		final List<Signal<?>> consumedList = match.getReadList(readList);
-		return consumedList.isEmpty() ? null : SignalReplayBinding.create(call, match, readList, value);
+		return consumedList.isEmpty() ? null : SignalReplayBinding.create(call, match, consumedList, value);
 	}
 
 	private static SignalReplayCall locate(final StackTraceElement[] stack, final State state) {

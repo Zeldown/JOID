@@ -24,8 +24,8 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 	private T       value;
 	private boolean started;
 
-	public static <T> SignalReplayBinding<T> create(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> readList, final T value) {
-		final SignalReplayBinding<T> binding = new SignalReplayBinding<>(call, match.getSlice(), match.getSelf(), match.isDefinitions(), match.getHoleMap(), match.getPositionalMap(), match.getReadList(readList), SignalContext.getEpoch());
+	public static <T> SignalReplayBinding<T> create(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> consumedList, final T value) {
+		final SignalReplayBinding<T> binding = new SignalReplayBinding<>(call, match.getSlice(), match.getSelf(), match.isDefinitions(), match.getHoleMap(), match.getPositionalMap(), consumedList, SignalContext.getEpoch());
 		binding.value = value;
 		return binding;
 	}

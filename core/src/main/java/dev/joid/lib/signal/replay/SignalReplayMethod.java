@@ -165,12 +165,7 @@ public final class SignalReplayMethod {
 	}
 
 	public Object member(final AbstractInsnNode instruction) {
-		Object member = this.memberMap.get(instruction);
-		if (member == null) {
-			member = this.resolve(instruction);
-			this.memberMap.put(instruction, member);
-		}
-		return member;
+		return this.memberMap.computeIfAbsent(instruction, this::resolve);
 	}
 
 	public Class<?> type(final Type type) {
@@ -205,17 +200,14 @@ public final class SignalReplayMethod {
 	}
 
 	private Class<?> load(final String internalName) {
-		Class<?> loaded = this.classMap.get(internalName);
-		if (loaded == null) {
-			final String name = BridgeHandler.SIGNAL_REPLAY.get().mapClass(internalName).replace('/', '.');
+		return this.classMap.computeIfAbsent(internalName, key -> {
+			final String name = BridgeHandler.SIGNAL_REPLAY.get().mapClass(key).replace('/', '.');
 			try {
-				loaded = Class.forName(name, false, this.replayClass.getLoader());
+				return Class.forName(name, false, this.replayClass.getLoader());
 			} catch (final ClassNotFoundException | LinkageError exception) {
 				throw new SignalReplayException(SignalReplayFailure.MEMBER_NOT_FOUND, "the class " + name);
 			}
-			this.classMap.put(internalName, loaded);
-		}
-		return loaded;
+		});
 	}
 
 	private Object resolve(final AbstractInsnNode instruction) {

@@ -1,5 +1,6 @@
 package dev.joid.lib.signal;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -208,7 +209,7 @@ public class Signal<T> implements Supplier<T> {
 			this.sealedValue = this.value;
 		}
 
-		if (oldValue == null && this.value == null || oldValue != null && oldValue.equals(this.value)) {
+		if (Objects.equals(oldValue, this.value)) {
 			return;
 		}
 
