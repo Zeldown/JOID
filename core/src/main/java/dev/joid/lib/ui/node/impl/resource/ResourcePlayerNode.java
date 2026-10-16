@@ -103,7 +103,7 @@ public class ResourcePlayerNode extends Node {
 				}
 
 				if (this.pendingTime != null) {
-					playback.seek(this.pendingTime);
+					this.seek(this.pendingTime);
 				}
 			}
 
@@ -199,7 +199,11 @@ public class ResourcePlayerNode extends Node {
 			return (T) this;
 		}
 
-		this.requirePlayback().seek(seconds);
+		final IResourcePlayback playback = this.requirePlayback();
+		if (!playback.isPlaying() && !playback.isPaused()) {
+			playback.play().pause();
+		}
+		playback.seek(seconds);
 		return (T) this;
 	}
 

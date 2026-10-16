@@ -237,6 +237,18 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void showsTheFrameOfASeekBeforeItsFirstPlay() throws InterruptedException {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video()).pause();
+		this.bridges.open(new NodeUI(player));
+		this.settle(player, 3);
+		player.seek(0.5D);
+		this.settle(player, 10);
+		Assert.assertFalse(player.isPlaying());
+		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
+		Assert.assertEquals(120, ((RecordingTexture) ResourcePlayerNodeTest.<Resource>read(player, "fork").getResourceData().getTextures()[0]).getPixels()[0] & 0xFF, 3);
+	}
+
+	@Test
 	public void showsTheFrameOfASeekWhilePlaying() throws InterruptedException {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));
