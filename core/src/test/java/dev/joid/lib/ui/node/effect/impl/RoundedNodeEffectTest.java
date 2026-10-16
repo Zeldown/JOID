@@ -13,6 +13,8 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.RoundedShaderType;
+import dev.joid.lib.shader.pipeline.IShaderPass;
+import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -123,6 +125,18 @@ public class RoundedNodeEffectTest {
 		Assert.assertEquals(RoundedShaderType.TEXTURE.ordinal(), this.shader.getValues().get("u_Type"));
 		Assert.assertArrayEquals(new float[] {110F, 110F, 290F, 140F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);
 		Assert.assertFalse(this.shader.isBound());
+	}
+
+	@Test
+	public void capsTheRadiusAtHalfTheSmallestSide() {
+		final IShaderPass pass = RoundedNodeEffect.create(999F).toShaderPass(RectNode.create(100D, 100D, 200D, 50D));
+		pass.bind(ShaderPassContext.create(100D, 100D, 200D, 50D, 0D, this.bridges.getRender().getPixelGrid()));
+		try {
+			Assert.assertEquals(25F, (Float) this.shader.getValues().get("u_Radius"), 0F);
+			Assert.assertArrayEquals(new float[] {125F, 125F, 275F, 125F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);
+		} finally {
+			pass.unbind();
+		}
 	}
 
 	@AllArgsConstructor

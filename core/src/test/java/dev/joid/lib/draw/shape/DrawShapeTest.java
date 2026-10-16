@@ -82,14 +82,14 @@ public class DrawShapeTest {
 	@Test
 	public void anchorsABorderOnItsBox() {
 		DrawUtils.SHAPE.drawRect(10.3D, 10.3D, 100D, 50D, new Color(0F, 0F, 1F, 1F));
-		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 110.3D, 60.3D, new Color(1F, 0F, 0F, 1F), 3D);
+		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 100D, 50D, new Color(1F, 0F, 0F, 1F), 3D);
 		final Draw box = this.single(0F, 0F, 1F);
 		final List<Draw> sides = this.bridges.getRender().getDraws(1F, 0F, 0F);
 		Assert.assertEquals(4, sides.size());
-		Assert.assertEquals(box.getTop(), sides.get(0).getBottom(), 1E-3D);
-		Assert.assertEquals(box.getLeft(), sides.get(1).getRight(), 1E-3D);
-		Assert.assertEquals(box.getBottom(), sides.get(2).getTop(), 1E-3D);
-		Assert.assertEquals(box.getRight(), sides.get(3).getLeft(), 1E-3D);
+		Assert.assertEquals(box.getTop(), sides.get(0).getTop(), 1E-3D);
+		Assert.assertEquals(box.getLeft(), sides.get(1).getLeft(), 1E-3D);
+		Assert.assertEquals(box.getBottom(), sides.get(2).getBottom(), 1E-3D);
+		Assert.assertEquals(box.getRight(), sides.get(3).getRight(), 1E-3D);
 		for (final Draw side : sides) {
 			Assert.assertEquals(2D, Math.min(side.getBottom() - side.getTop(), side.getRight() - side.getLeft()), 1E-3D);
 		}
@@ -224,6 +224,15 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void capsTheRadiusAtHalfTheSmallestSide() {
+		this.bridges.resize(1920, 1080);
+		final RecordingShader shader = (RecordingShader) RoundedShader.inst().getShader();
+		DrawUtils.SHAPE.drawRoundedRect(10D, 20D, 100D, 40D, new Color(0F, 0F, 1F, 1F), 999F);
+		Assert.assertEquals(20F, (Float) shader.getValues().get("u_Radius"), 0F);
+		Assert.assertArrayEquals(new float[] {30F, 40F, 90F, 40F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-3F);
+	}
+
+	@Test
 	public void strokesTheRoundedBorderInsideItsBox() {
 		this.bridges.resize(1920, 1080);
 		final RecordingShader shader = (RecordingShader) RoundedShader.inst().getShader();
@@ -308,14 +317,14 @@ public class DrawShapeTest {
 	@Test
 	public void outlinesABoxWithAFadedPixelAndClosedCorners() {
 		DrawUtils.SHAPE.drawRect(10.3D, 10.3D, 100D, 50D, new Color(0F, 0F, 1F, 1F));
-		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 110.3D, 60.3D, new Color(0F, 1F, 1F, 1F));
+		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 100D, 50D, new Color(0F, 1F, 1F, 1F));
 		final Draw box = this.single(0F, 0F, 1F);
 		final List<Draw> sides = this.bridges.getRender().getDraws(0F, 1F, 1F);
 		Assert.assertEquals(4, sides.size());
-		Assert.assertEquals(box.getLeft() - 1D, sides.get(0).getLeft(), 1E-3D);
-		Assert.assertEquals(box.getRight() + 1D, sides.get(0).getRight(), 1E-3D);
-		Assert.assertEquals(box.getTop(), sides.get(1).getTop(), 1E-3D);
-		Assert.assertEquals(box.getBottom(), sides.get(1).getBottom(), 1E-3D);
+		Assert.assertEquals(box.getLeft(), sides.get(0).getLeft(), 1E-3D);
+		Assert.assertEquals(box.getRight(), sides.get(0).getRight(), 1E-3D);
+		Assert.assertEquals(box.getTop() + 1D, sides.get(1).getTop(), 1E-3D);
+		Assert.assertEquals(box.getBottom() - 1D, sides.get(1).getBottom(), 1E-3D);
 		Assert.assertEquals(1D, sides.get(0).getBottom() - sides.get(0).getTop(), 1E-3D);
 		Assert.assertEquals(1D, sides.get(1).getRight() - sides.get(1).getLeft(), 1E-3D);
 		Assert.assertEquals(768F / 1080F, sides.get(2).getAlpha(), 1E-4F);
@@ -325,22 +334,23 @@ public class DrawShapeTest {
 	@Test
 	public void fillsTheCornersOfABorder() {
 		DrawUtils.SHAPE.drawRect(10.3D, 10.3D, 100D, 50D, new Color(0F, 0F, 1F, 1F));
-		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 110.3D, 60.3D, new Color(0F, 1F, 1F, 1F), 3D);
+		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 100D, 50D, new Color(0F, 1F, 1F, 1F), 3D);
 		final Draw box = this.single(0F, 0F, 1F);
 		final List<Draw> sides = this.bridges.getRender().getDraws(0F, 1F, 1F);
 		Assert.assertEquals(4, sides.size());
-		Assert.assertEquals(box.getLeft() - 2D, sides.get(0).getLeft(), 1E-3D);
-		Assert.assertEquals(box.getRight() + 2D, sides.get(0).getRight(), 1E-3D);
-		Assert.assertEquals(box.getTop() - 2D, sides.get(0).getTop(), 1E-3D);
-		Assert.assertEquals(box.getTop(), sides.get(0).getBottom(), 1E-3D);
-		Assert.assertEquals(box.getLeft() - 2D, sides.get(1).getLeft(), 1E-3D);
-		Assert.assertEquals(box.getLeft(), sides.get(1).getRight(), 1E-3D);
-		Assert.assertEquals(box.getTop(), sides.get(1).getTop(), 1E-3D);
-		Assert.assertEquals(box.getBottom(), sides.get(1).getBottom(), 1E-3D);
-		Assert.assertEquals(box.getBottom() + 2D, sides.get(2).getBottom(), 1E-3D);
-		Assert.assertEquals(box.getRight() + 2D, sides.get(2).getRight(), 1E-3D);
-		Assert.assertEquals(box.getRight(), sides.get(3).getLeft(), 1E-3D);
-		Assert.assertEquals(box.getRight() + 2D, sides.get(3).getRight(), 1E-3D);
+		Assert.assertEquals(box.getLeft(), sides.get(0).getLeft(), 1E-3D);
+		Assert.assertEquals(box.getRight(), sides.get(0).getRight(), 1E-3D);
+		Assert.assertEquals(box.getTop(), sides.get(0).getTop(), 1E-3D);
+		Assert.assertEquals(box.getTop() + 2D, sides.get(0).getBottom(), 1E-3D);
+		Assert.assertEquals(box.getLeft(), sides.get(1).getLeft(), 1E-3D);
+		Assert.assertEquals(box.getLeft() + 2D, sides.get(1).getRight(), 1E-3D);
+		Assert.assertEquals(box.getTop() + 2D, sides.get(1).getTop(), 1E-3D);
+		Assert.assertEquals(box.getBottom() - 2D, sides.get(1).getBottom(), 1E-3D);
+		Assert.assertEquals(box.getBottom() - 2D, sides.get(2).getTop(), 1E-3D);
+		Assert.assertEquals(box.getBottom(), sides.get(2).getBottom(), 1E-3D);
+		Assert.assertEquals(box.getRight(), sides.get(2).getRight(), 1E-3D);
+		Assert.assertEquals(box.getRight() - 2D, sides.get(3).getLeft(), 1E-3D);
+		Assert.assertEquals(box.getRight(), sides.get(3).getRight(), 1E-3D);
 		for (final Draw side : sides) {
 			Assert.assertEquals(1F, side.getAlpha(), 0F);
 		}
@@ -353,7 +363,7 @@ public class DrawShapeTest {
 		try {
 			this.bridges.getRender().getModelView().translate(200D, 0D, 0D);
 			this.bridges.getRender().getModelView().rotate(90D, 0D, 0D, 1D);
-			DrawUtils.SHAPE.drawBorder(10D, 20D, 110D, 70D, new Color(0F, 1F, 1F, 1F), 3D);
+			DrawUtils.SHAPE.drawBorder(10D, 20D, 100D, 50D, new Color(0F, 1F, 1F, 1F), 3D);
 		} finally {
 			this.bridges.getRender().getModelView().pop();
 		}
@@ -363,10 +373,10 @@ public class DrawShapeTest {
 		Assert.assertSame(shader, draw.getShader());
 		Assert.assertEquals(0F, (Float) shader.getValues().get("u_Radius"), 0F);
 		Assert.assertEquals(2.5F, (Float) shader.getValues().get("u_Stroke"), 0F);
-		Assert.assertArrayEquals(new float[] {7.5F, 17.5F, 112.5F, 72.5F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-4F);
+		Assert.assertArrayEquals(new float[] {10.5F, 20.5F, 109.5F, 69.5F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-4F);
 		Assert.assertEquals(0, shader.getValues().get("u_Aligned"));
-		Assert.assertEquals(6F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[0]), 0F);
-		Assert.assertEquals(74F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[1]), 0F);
+		Assert.assertEquals(9F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[0]), 0F);
+		Assert.assertEquals(71F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[1]), 0F);
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
 	}
 
@@ -604,9 +614,9 @@ public class DrawShapeTest {
 	@Test
 	public void spansTheGradientOverAWholeBorder() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawBorder(10D, 20D, 110D, 70D, Color.BLUE.toGradient(Color.GREEN), 3D);
+		DrawUtils.SHAPE.drawBorder(10D, 20D, 100D, 50D, Color.BLUE.toGradient(Color.GREEN), 3D);
 		Assert.assertEquals(4, this.bridges.getRender().getDraws().size());
-		Assert.assertArrayEquals(new float[] {7F, 17F, 113F, 73F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 1E-3F);
+		Assert.assertArrayEquals(new float[] {10F, 20F, 110F, 70F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 1E-3F);
 	}
 
 	@Test

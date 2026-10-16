@@ -82,35 +82,35 @@ public final class DrawShape {
 		});
 	}
 
-	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color) {
-		this.drawBorder(x, y, x2, y2, color, 1D);
+	public void drawBorder(final double x, final double y, final double width, final double height, final @NonNull Color color) {
+		this.drawBorder(x, y, width, height, color, 1D);
 	}
 
-	public void drawBorder(final double x, final double y, final double x2, final double y2, final @NonNull Color color, final double stroke) {
+	public void drawBorder(final double x, final double y, final double width, final double height, final @NonNull Color color, final double stroke) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final PixelGrid grid = render.getPixelGrid();
 		if (!grid.isAligned() && render.getState().getShader() == null && RoundedShader.inst().isAvailable()) {
-			this.drawOutline(Math.min(x, x2) - stroke, Math.min(y, y2) - stroke, Math.max(x, x2) + stroke, Math.max(y, y2) + stroke, color, stroke);
+			this.drawOutline(Math.min(x, x + width), Math.min(y, y + height), Math.max(x, x + width), Math.max(y, y + height), color, stroke);
 			return;
 		}
 
 		final double left = grid.snapX(x);
 		final double top = grid.snapY(y);
-		final double right = grid.snapX(x2);
-		final double bottom = grid.snapY(y2);
-		final double outerLeft = grid.snapWidth(x, -stroke);
-		final double outerTop = grid.snapHeight(y, -stroke);
-		final double outerRight = grid.snapWidth(x2, stroke);
-		final double outerBottom = grid.snapHeight(y2, stroke);
+		final double right = grid.snapX(x + width);
+		final double bottom = grid.snapY(y + height);
+		final double innerLeft = grid.snapWidth(x, stroke);
+		final double innerTop = grid.snapHeight(y, stroke);
+		final double innerRight = grid.snapWidth(x + width, -stroke);
+		final double innerBottom = grid.snapHeight(y + height, -stroke);
 		final Color edge = color.isGradient() ? Color.WHITE : color;
 		final Color horizontal = DrawShape.cover(edge, stroke * grid.getScaleY());
 		final Color vertical = DrawShape.cover(edge, stroke * grid.getScaleX());
 		color.bind(() -> {
-			this.drawEdges(outerLeft, outerTop, outerRight, top, horizontal);
-			this.drawEdges(outerLeft, top, left, bottom, vertical);
-			this.drawEdges(outerLeft, bottom, outerRight, outerBottom, horizontal);
-			this.drawEdges(right, top, outerRight, bottom, vertical);
-		}, BoundingBox.create(Math.min(outerLeft, outerRight), Math.min(outerTop, outerBottom), Math.abs(outerRight - outerLeft), Math.abs(outerBottom - outerTop)));
+			this.drawEdges(left, top, right, innerTop, horizontal);
+			this.drawEdges(left, innerTop, innerLeft, innerBottom, vertical);
+			this.drawEdges(left, innerBottom, right, bottom, horizontal);
+			this.drawEdges(innerRight, innerTop, right, innerBottom, vertical);
+		}, BoundingBox.create(Math.min(left, right), Math.min(top, bottom), Math.abs(right - left), Math.abs(bottom - top)));
 	}
 
 	public void drawPolygon(final @NonNull Color color, final @NonNull Point @NonNull... points) {
@@ -220,7 +220,8 @@ public final class DrawShape {
 		final double top = grid.snapY(y);
 		final double right = grid.snapRight(x, x + width);
 		final double bottom = grid.snapBottom(y, y + height);
-		RoundedShader.use(radius, (float) (left + (roundedLeft ? radius : 0)), (float) (top + (roundedTop ? radius : 0)), (float) (right - (roundedRight ? radius : 0)), (float) (bottom - (roundedBottom ? radius : 0)), () -> {
+		final float corner = (float) Math.min(radius, Math.min(Math.abs(right - left), Math.abs(bottom - top)) / 2D);
+		RoundedShader.use(corner, (float) (left + (roundedLeft ? corner : 0)), (float) (top + (roundedTop ? corner : 0)), (float) (right - (roundedRight ? corner : 0)), (float) (bottom - (roundedBottom ? corner : 0)), () -> {
 			RoundedShader.inst().aligned(grid.isAligned());
 			RoundedShader.inst().stroke((float) stroke);
 			if (color.isGradient()) {
