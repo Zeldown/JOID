@@ -976,6 +976,15 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void cutsAWordThatFollowsTheSpaceStartingItsLine() {
+		this.field(54D, " abcdefgh");
+		final List<Drawn> drawn = this.draw();
+		Assert.assertEquals(2, drawn.size());
+		Assert.assertEquals(" abcd", drawn.get(0).getText());
+		Assert.assertEquals("efgh", drawn.get(1).getText());
+	}
+
+	@Test
 	public void drawsEachLineOfItsTextBelowThePrevious() {
 		this.field("ab\ncd");
 		final List<Drawn> drawn = this.draw();

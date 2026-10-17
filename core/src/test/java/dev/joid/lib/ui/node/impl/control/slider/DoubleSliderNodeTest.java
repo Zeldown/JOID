@@ -36,9 +36,14 @@ public class DoubleSliderNodeTest {
 		new Slider().values(0.25D, 0.5D).value(0.75D);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void refusesAnEmptyRange() {
-		new Slider().range(1D, 0D, 0.25D);
+		try {
+			new Slider().range(1D, 0D, 0.25D);
+			Assert.fail("A min above the max leaves the range empty");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The min 1.0 of the slider range is above its max 0.0, pass a min of at most 0.0", expected.getMessage());
+		}
 	}
 
 	@Test

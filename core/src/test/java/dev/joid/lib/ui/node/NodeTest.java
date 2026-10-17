@@ -1152,6 +1152,24 @@ public class NodeTest {
 	}
 
 	@Test
+	public void sendsTheReleaseToItsChildrenWhileItsSkeletonIsShown() {
+		final List<String> events = new ArrayList<>();
+		final boolean[] ready = {true};
+		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 50D, 50D).handleKeyReleased(event -> events.add("child key released"));
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).append(child).wait(rect -> ready[0]).skeleton(rect -> new RecordingNode("skeleton", events, 0D, 0D, 50D, 50D));
+		this.bridges.open(new NodeUI(node));
+		this.bridges.move(110D, 110D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getUi().keyPressed(Key.A, Key.A);
+		ready[0] = false;
+		this.bridges.frame();
+		events.clear();
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.getUi().keyReleased(Key.A, Key.A);
+		Assert.assertEquals(Arrays.asList("skeleton released", "child released", "child key released"), events);
+	}
+
+	@Test
 	public void loadsItsSkeletonInItsUi() {
 		final RectNode early = RectNode.create(0D, 0D, 10D, 10D).skeleton(rect -> RectNode.create(0D, 0D, 10D, 10D));
 		final ContainerNode container = ContainerNode.create(0D, 0D, 500D, 500D).append(early);
@@ -1201,6 +1219,19 @@ public class NodeTest {
 		this.bridges.frames(2);
 		Assert.assertEquals(50D, area.getMaxScrollY(), 0D);
 		Assert.assertEquals(100D, area.getMaxScrollX(), 0D);
+	}
+
+	@Test
+	public void drawsAGrandchildScrolledIntoViewPastItsParent() {
+		final ContainerNode area = ContainerNode.create(100D, 100D, 400D, 300D).overflow(OverflowProperty.SCROLL);
+		final RectNode card = RectNode.create(0D, 0D, 200D, 250D);
+		RectNode.create(0D, 600D, 500D, 90D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).attach(card);
+		card.attach(area);
+		this.bridges.open(new NodeUI(area));
+		this.bridges.frames(2);
+		area.scrollY(-area.getMaxScrollY()).updateScroll();
+		this.bridges.frame();
+		Assert.assertEquals(310D, this.draw(0.2F, 0.4F, 0.6F).getTop(), 1E-3D);
 	}
 
 	@Test

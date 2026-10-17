@@ -20,6 +20,10 @@ public abstract class IntegerSliderNode extends SliderNode<Integer> {
 			throw new IllegalArgumentException("The step " + step + " of the slider range must be positive, pass a step of 1 or more");
 		}
 
+		if (min > max) {
+			throw new IllegalArgumentException("The min " + min + " of the slider range is above its max " + max + ", pass a min of at most " + max);
+		}
+
 		final List<Integer> values = new ArrayList<>();
 		for (long i = min; i <= max; i += step) {
 			values.add((int) i);

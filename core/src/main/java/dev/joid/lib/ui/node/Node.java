@@ -1343,7 +1343,7 @@ public abstract class Node implements INode {
 		}
 
 		if (this.overflowArea != null && this.overflowArea.overflow != OverflowProperty.NONE) {
-			if (this.getAbsoluteX() + this.width < this.overflowArea.getAbsoluteX() || this.getAbsoluteX() > this.overflowArea.getAbsoluteX() + this.overflowArea.width || this.getAbsoluteY() + this.height < this.overflowArea.getAbsoluteY() || this.getAbsoluteY() > this.overflowArea.getAbsoluteY() + this.overflowArea.height) {
+			if (this.getAbsoluteX() + this.getContentWidth() < this.overflowArea.getAbsoluteX() || this.getAbsoluteX() > this.overflowArea.getAbsoluteX() + this.overflowArea.width || this.getAbsoluteY() + this.getContentHeight() < this.overflowArea.getAbsoluteY() || this.getAbsoluteY() > this.overflowArea.getAbsoluteY() + this.overflowArea.height) {
 				return false;
 			}
 		}
@@ -1983,7 +1983,9 @@ public abstract class Node implements INode {
 
 		if (this.skeleton != null && !this.mounted) {
 			forward.accept(this.skeleton, event);
-			return;
+			if (type != Node.HANDLE_MOUSE_RELEASED && type != Node.HANDLE_KEY_RELEASED) {
+				return;
+			}
 		}
 
 		this.drawList.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> forward.accept(child, event));

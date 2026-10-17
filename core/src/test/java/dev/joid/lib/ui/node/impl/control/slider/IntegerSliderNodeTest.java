@@ -43,9 +43,14 @@ public class IntegerSliderNodeTest {
 		new Slider().range(1, 5).value(9);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void refusesAnEmptyRange() {
-		new Slider().range(5, 1);
+		try {
+			new Slider().range(5, 1);
+			Assert.fail("A min above the max leaves the range empty");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The min 5 of the slider range is above its max 1, pass a min of at most 1", expected.getMessage());
+		}
 	}
 
 	@Test(expected = IllegalArgumentException.class)

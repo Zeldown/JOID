@@ -225,7 +225,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 				}
 
 				int split = -1;
-				for (int j = i; j >= start; j--) {
+				for (int j = i; j > start; j--) {
 					if (text.charAt(j) == ' ' && tags[j] == -1) {
 						split = j;
 						break;
