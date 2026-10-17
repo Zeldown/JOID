@@ -134,6 +134,19 @@ public class ResourceTest {
 	}
 
 	@Test
+	public void releasesItsLoadedDecoderOnceReplaced() {
+		final Decoder previous = new Decoder(true);
+		final Decoder decoder = new Decoder(true);
+		final Resource resource = ResourceTest.resource(previous);
+		resource.bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
+		resource.decoder(decoder);
+		resource.bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
+		Assert.assertEquals("clear", previous.calls.get(previous.calls.size() - 1));
+		Assert.assertEquals(Arrays.asList("init", "prepare", "decode", "upload", "update"), decoder.calls);
+		Assert.assertSame(decoder.texture, this.bridges.getRender().getState().getTexture());
+	}
+
+	@Test
 	public void readsItsSizeAndPixelsFromItsData() {
 		final int[] first = {1, 2};
 		final int[] second = {3, 4};

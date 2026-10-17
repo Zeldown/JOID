@@ -85,7 +85,7 @@ public final class Resource {
 	}
 
 	public @NonNull Resource decoder(final IResourceDecoder decoder) {
-		this.data.decoder(decoder);
+		this.data.reload(decoder);
 		return this;
 	}
 

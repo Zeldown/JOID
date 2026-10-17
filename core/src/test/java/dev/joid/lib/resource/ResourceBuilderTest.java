@@ -218,6 +218,27 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
+	public void keepsTheDecoderGivenWhileARemoteAssetIsDetected() throws InterruptedException {
+		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
+		final RasterResourceDecoder decoder = new RasterResourceDecoder(Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
+		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
+		final Thread releaser = new Thread(() -> {
+			try {
+				Thread.sleep(50L);
+			} catch (final InterruptedException ignored) {}
+			asset.release.countDown();
+		});
+		releaser.start();
+		resource.decoder(decoder);
+		releaser.join();
+		resource.getResourceData().await();
+		Assert.assertSame(decoder, resource.getDecoder());
+		resource.prepareBind();
+		resource.getResourceData().await();
+		Assert.assertTrue(resource.isLoaded());
+	}
+
+	@Test
 	public void detectsTheFormatAgainOnceReloadedAfterAFailedRead() throws IOException {
 		final FlakyAsset asset = new FlakyAsset("flaky", false, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")).read());
 		final Resource resource = ResourceBuilder.create().cache(null).of(asset).blocking();

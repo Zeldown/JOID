@@ -287,6 +287,40 @@ public class ResourceDataTest {
 	}
 
 	@Test
+	public void releasesEveryClearOnceItsDecodeEnds() {
+		final QueueThreadBridge thread = new QueueThreadBridge();
+		final CountDownLatch release = new CountDownLatch(1);
+		final Decoder decoder = new Decoder() {
+
+			@Override
+			public void decode(final @NonNull ResourceData resource) {
+				try {
+					release.await();
+				} catch (final InterruptedException ignored) {}
+				super.decode(resource);
+			}
+
+		};
+		final ResourceData data = new ResourceData("image", decoder);
+		BridgeHandler.THREAD.register(thread);
+		try {
+			data.generate(true);
+			data.clear();
+			release.countDown();
+			data.await();
+			data.clear();
+			thread.run();
+			Assert.assertEquals(2, Collections.frequency(decoder.calls, "clear"));
+			data.generate(true);
+			data.await();
+			thread.run();
+			Assert.assertEquals("decode", decoder.calls.get(decoder.calls.size() - 1));
+		} finally {
+			BridgeHandler.THREAD.unregister(thread);
+		}
+	}
+
+	@Test
 	public void listsTheForksOfItsDecoder() {
 		final ResourceData data = new ResourceData("video", null);
 		final Decoder decoder = new Decoder();

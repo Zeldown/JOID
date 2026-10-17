@@ -441,7 +441,10 @@ public final class ResourceData {
 
 	private void detectDecoder(final @NonNull Asset asset) {
 		try {
-			this.decoder(ResourceFormat.decoder(asset));
+			final IResourceDecoder decoder = ResourceFormat.decoder(asset);
+			if (this.decoder == null) {
+				this.decoder(decoder);
+			}
 		} catch (final RuntimeException exception) {
 			this.fail(exception);
 		}
@@ -469,17 +472,19 @@ public final class ResourceData {
 	}
 
 	private synchronized void endDecoding() {
-		final Runnable release = this.pendingRelease;
-		this.pendingRelease = null;
-		if (release == null) {
+		if (this.pendingRelease == null) {
 			this.decodingRunning = false;
 			return;
 		}
 
-		ThreadUtils.runOnRenderThread(() -> {
-			release.run();
-			this.decodingRunning = false;
-		});
+		ThreadUtils.runOnRenderThread(this::finishDecoding);
+	}
+
+	private synchronized void finishDecoding() {
+		final Runnable release = this.pendingRelease;
+		this.pendingRelease = null;
+		this.decodingRunning = false;
+		release.run();
 	}
 
 	private synchronized void fireLoad() {
