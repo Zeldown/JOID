@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.TextConverter;
-import dev.joid.lib.font.modifier.ITextModifier;
+import dev.joid.lib.font.modifier.TextModifier;
 import dev.joid.lib.signal.Signal;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,7 +17,7 @@ public final class TextElement {
 
 	private TextInfo      info;
 	private Supplier<?>   text;
-	private ITextModifier modifier;
+	private TextModifier modifier;
 
 	public static @NonNull TextElement create(final @NonNull Object text, final @NonNull TextInfo info) {
 		return new TextElement(info, Signal.from(text), null);
@@ -41,7 +41,7 @@ public final class TextElement {
 		return this;
 	}
 
-	public @NonNull TextElement modifier(final ITextModifier modifier) {
+	public @NonNull TextElement modifier(final TextModifier modifier) {
 		this.modifier = modifier;
 		return this;
 	}

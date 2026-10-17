@@ -4,7 +4,7 @@ import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.clock.IClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
+import dev.joid.lib.bridge.signal.ISignalReplayBridge;
 import dev.joid.lib.bridge.thread.DirectThreadBridge;
 import dev.joid.lib.bridge.thread.IThreadBridge;
 import dev.joid.lib.bridge.ui.UIBridgeRegistry;
@@ -21,12 +21,12 @@ public final class BridgeHandler {
 	public static final BridgeRegistry<IWindowBridge>         WINDOW        = BridgeRegistry.create("WINDOW");
 	public static final BridgeRegistry<IRenderBridge>         RENDER        = BridgeRegistry.create("RENDER");
 	public static final BridgeRegistry<IThreadBridge>         THREAD        = BridgeRegistry.create("THREAD");
-	public static final BridgeRegistry<ISignalReplayRemapper> SIGNAL_REPLAY = BridgeRegistry.create("SIGNAL_REPLAY");
+	public static final BridgeRegistry<ISignalReplayBridge> SIGNAL_REPLAY = BridgeRegistry.create("SIGNAL_REPLAY");
 
 	static {
 		BridgeHandler.CLOCK.register(SystemClockBridge.create());
 		BridgeHandler.THREAD.register(DirectThreadBridge.create());
-		BridgeHandler.SIGNAL_REPLAY.register(new ISignalReplayRemapper() {});
+		BridgeHandler.SIGNAL_REPLAY.register(new ISignalReplayBridge() {});
 	}
 
 }

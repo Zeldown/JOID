@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.font.modifier.ITextModifier;
+import dev.joid.lib.font.modifier.TextModifier;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
@@ -23,7 +23,7 @@ public final class Text {
 	@Getter private Align         alignX;
 	@Getter private Align         alignY;
 	@Getter private TextOverflow  overflow;
-	@Getter private ITextModifier modifier;
+	@Getter private TextModifier modifier;
 
 	private double       width;
 	private double       height;
@@ -178,7 +178,7 @@ public final class Text {
 		return this;
 	}
 
-	public @NonNull Text modifier(final ITextModifier modifier) {
+	public @NonNull Text modifier(final TextModifier modifier) {
 		this.modifier = modifier;
 		return this;
 	}

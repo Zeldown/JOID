@@ -3,7 +3,7 @@ package dev.joid.lib.bridge.signal;
 import dev.joid.lib.bridge.IBridge;
 import lombok.NonNull;
 
-public interface ISignalReplayRemapper extends IBridge {
+public interface ISignalReplayBridge extends IBridge {
 
 	public default @NonNull String mapClass(final @NonNull String name) {
 		return name;

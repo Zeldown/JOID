@@ -23,7 +23,7 @@ public final class DrawRaster {
 		return DrawRaster.INSTANCE;
 	}
 
-	public void drawRaster(final double x, final double y, final double width, final double height, final @NonNull IDrawableRaster drawable) {
+	public void drawRaster(final double x, final double y, final double width, final double height, final @NonNull DrawableRaster drawable) {
 		if (width <= 0D || height <= 0D) {
 			return;
 		}
@@ -50,7 +50,7 @@ public final class DrawRaster {
 		DrawUtils.RESOURCE.drawTexture(left, top, right - left, bottom - top, target.getTexture(), 0D, v, u, 0D, grid.isAligned() ? TextureFilter.NEAREST : TextureFilter.LINEAR, BlendState.PREMULTIPLIED);
 	}
 
-	private static void fill(final IFrameBuffer target, final int width, final int height, final IDrawableRaster drawable) {
+	private static void fill(final IFrameBuffer target, final int width, final int height, final DrawableRaster drawable) {
 		BridgeHandler.RENDER.get().withState(render -> render.getProjection().with(projection -> render.getModelView().with(modelView -> {
 			render.getState().frameBuffer(target).viewport(0, 0, width, height);
 			projection.ortho(0D, width, height, 0D, -1000D, 1000D);

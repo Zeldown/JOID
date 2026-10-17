@@ -32,7 +32,7 @@ import org.objectweb.asm.tree.analysis.SourceInterpreter;
 import org.objectweb.asm.tree.analysis.SourceValue;
 
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
+import dev.joid.lib.bridge.signal.ISignalReplayBridge;
 import dev.joid.lib.signal.Signal;
 import lombok.Getter;
 
@@ -211,11 +211,11 @@ public final class SignalReplayMethod {
 	}
 
 	private Object resolve(final AbstractInsnNode instruction) {
-		final ISignalReplayRemapper remapper = BridgeHandler.SIGNAL_REPLAY.get();
+		final ISignalReplayBridge bridge = BridgeHandler.SIGNAL_REPLAY.get();
 		if (instruction instanceof FieldInsnNode) {
 			final FieldInsnNode field = (FieldInsnNode) instruction;
 			final Class<?> owner = this.type(Type.getObjectType(field.owner));
-			final String name = remapper.mapField(field.owner, field.name, field.desc);
+			final String name = bridge.mapField(field.owner, field.name, field.desc);
 			for (Class<?> type = owner; type != null; type = type.getSuperclass()) {
 				try {
 					return this.access(type.getDeclaredField(name));
@@ -247,7 +247,7 @@ public final class SignalReplayMethod {
 			}
 		}
 
-		final String name = remapper.mapMethod(call.owner, call.name, call.desc);
+		final String name = bridge.mapMethod(call.owner, call.name, call.desc);
 		for (Class<?> type = owner; type != null; type = type.getSuperclass()) {
 			try {
 				return this.access(type.getDeclaredMethod(name, parameterTypes));

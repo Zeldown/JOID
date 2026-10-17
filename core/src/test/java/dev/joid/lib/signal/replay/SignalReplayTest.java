@@ -23,7 +23,7 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.bridge.signal.ISignalReplayRemapper;
+import dev.joid.lib.bridge.signal.ISignalReplayBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -474,20 +474,20 @@ public class SignalReplayTest {
 	}
 
 	@Test
-	public void warnsWhenAMemberIsRenamedWithoutRemapper() throws IOException {
+	public void warnsWhenAMemberIsRenamedWithoutSignalReplayBridge() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenRenamed", true, true, "get", "obtain");
 		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = new IntegerSignal(0);
-		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads clicks but cannot follow it: the method dev.joid.lib.signal.impl.primitive.IntegerSignal.obtain(...) does not exist at runtime. The value stays \"Hidden 0\". Configure the ISignalReplayRemapper of the bridge or use map(...).\n", SignalReplayTest.hidden(loader, node, clicks));
+		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads clicks but cannot follow it: the method dev.joid.lib.signal.impl.primitive.IntegerSignal.obtain(...) does not exist at runtime. The value stays \"Hidden 0\". Configure the ISignalReplayBridge or use map(...).\n", SignalReplayTest.hidden(loader, node, clicks));
 	}
 
 	@Test
-	public void mapsTheRenamedMembersThroughTheBridgeRemapper() throws IOException {
+	public void mapsTheRenamedMembersThroughTheSignalReplayBridge() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenRemapped", true, true, "get", "obtain");
 		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = new IntegerSignal(0);
 		final List<String> mapped = new ArrayList<>();
-		final ISignalReplayRemapper remapper = new ISignalReplayRemapper() {
+		final ISignalReplayBridge bridge = new ISignalReplayBridge() {
 
 			@Override
 			public String mapMethod(final String owner, final String name, final String descriptor) {
@@ -496,11 +496,11 @@ public class SignalReplayTest {
 			}
 
 		};
-		BridgeHandler.SIGNAL_REPLAY.register(remapper);
+		BridgeHandler.SIGNAL_REPLAY.register(bridge);
 		try {
 			Assert.assertEquals("", SignalReplayTest.hidden(loader, node, clicks));
 		} finally {
-			BridgeHandler.SIGNAL_REPLAY.unregister(remapper);
+			BridgeHandler.SIGNAL_REPLAY.unregister(bridge);
 		}
 		clicks.set(2);
 		Assert.assertEquals("Hidden 2", node.getText().get());
