@@ -18,9 +18,6 @@ public class ContainerNode extends Node {
 	}
 
 	@Override
-	public void draw(final double mouseX, final double mouseY) {}
-
-	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {}
 
 }

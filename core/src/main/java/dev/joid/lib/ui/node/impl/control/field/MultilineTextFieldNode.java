@@ -203,10 +203,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	private @NonNull FieldLayout getLayout() {
-		return this.getLayout(super.getText());
-	}
-
-	private @NonNull FieldLayout getLayout(final @NonNull String text) {
+		final String text = super.getText();
 		final TextInfo info = super.getShownInfo();
 		final int[] tags = FieldNode.tags(text, info);
 		final List<FieldLine> lines = new ArrayList<>();

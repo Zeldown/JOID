@@ -253,9 +253,7 @@ public class ReorderableFlexNode extends FlexNode {
 			this.dragStartMouseY = mouseY;
 
 			this.logicalOrder.clear();
-			for (final Node c : super.getChildren()) {
-				this.logicalOrder.add(c);
-			}
+			this.logicalOrder.addAll(super.getChildren());
 
 			this.childCurrent.clear();
 			double offset = 0D;

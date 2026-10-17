@@ -123,12 +123,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 
 	@Override
 	protected final void followCursorBackward() {
-		if (super.getCursorPosition() == 0) {
-			this.xOffset = 0D;
-			return;
-		}
-
-		if (!this.isScrolling(super.getText())) {
+		if (super.getCursorPosition() == 0 || !this.isScrolling(super.getText())) {
 			this.xOffset = 0D;
 			return;
 		}
