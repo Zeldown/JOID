@@ -52,7 +52,7 @@ public abstract class BaseTween<T> {
 		return (T) this;
 	}
 
-	public T start(final TweenManager manager) {
+	public T start(final @NonNull TweenManager manager) {
 		manager.add(this);
 		return (T) this;
 	}
@@ -79,25 +79,11 @@ public abstract class BaseTween<T> {
 	}
 
 	public T repeat(final int count, final float delay) {
-		if (this.isStarted) {
-			throw new IllegalStateException("The repetitions of a tween or timeline cannot change once it is started, call repeat(...) before start()");
-		}
-
-		this.repeatCnt = count;
-		this.repeatDelay = delay >= 0 ? delay : 0;
-		this.isYoyo = false;
-		return (T) this;
+		return this.repeat(count, delay, false, "repeat");
 	}
 
 	public T repeatYoyo(final int count, final float delay) {
-		if (this.isStarted) {
-			throw new IllegalStateException("The repetitions of a tween or timeline cannot change once it is started, call repeatYoyo(...) before start()");
-		}
-
-		this.repeatCnt = count;
-		this.repeatDelay = delay >= 0 ? delay : 0;
-		this.isYoyo = true;
-		return (T) this;
+		return this.repeat(count, delay, true, "repeatYoyo");
 	}
 
 	public T onStart(final @NonNull EventListener<TweenEvent> listener) {
@@ -358,6 +344,17 @@ public abstract class BaseTween<T> {
 
 	private void testCompletion() {
 		this.isFinished = this.isInitialized && this.repeatCnt >= 0 && (this.step > this.repeatCnt * 2 || this.step < 0);
+	}
+
+	private T repeat(final int count, final float delay, final boolean yoyo, final String method) {
+		if (this.isStarted) {
+			throw new IllegalStateException("The repetitions of a tween or timeline cannot change once it is started, call " + method + "(...) before start()");
+		}
+
+		this.repeatCnt = count;
+		this.repeatDelay = delay >= 0 ? delay : 0;
+		this.isYoyo = yoyo;
+		return (T) this;
 	}
 
 	private T listen(final EventType<TweenEvent> type, final EventListener<TweenEvent> listener) {

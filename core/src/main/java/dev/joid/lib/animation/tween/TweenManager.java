@@ -3,6 +3,8 @@ package dev.joid.lib.animation.tween;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.NonNull;
+
 public class TweenManager {
 
 	private final Object             lock    = new Object();
@@ -10,7 +12,7 @@ public class TweenManager {
 
 	private boolean isPaused;
 
-	public TweenManager add(final BaseTween<?> object) {
+	public TweenManager add(final @NonNull BaseTween<?> object) {
 		synchronized (this.lock) {
 			if (!this.objects.contains(object)) {
 				this.objects.add(object);

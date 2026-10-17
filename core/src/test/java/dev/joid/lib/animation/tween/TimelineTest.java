@@ -113,8 +113,8 @@ public class TimelineTest {
 	}
 
 	@Test(expected = UnsupportedOperationException.class)
-	public void exposesReadOnlyChildrenOnceBuilt() {
-		Timeline.createSequence().push(Tween.mark()).build().getChildren().clear();
+	public void exposesReadOnlyChildren() {
+		Timeline.createSequence().push(Tween.mark()).getChildren().clear();
 	}
 
 	@Test

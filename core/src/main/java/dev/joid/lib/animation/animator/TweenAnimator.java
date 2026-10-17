@@ -57,8 +57,7 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator start() {
-		this.requireTimeline();
-		this.timeline.start(this.manager);
+		this.requireTimeline().start(this.manager);
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.automatic = true;
 		TweenAnimator.RUNNING_SET.add(this);
@@ -102,20 +101,17 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator delay(final float delay) {
-		this.requireTimeline();
-		this.timeline.delay(delay);
+		this.requireTimeline().delay(delay);
 		return this;
 	}
 
 	public @NonNull TweenAnimator repeat(final int count, final float delay) {
-		this.requireTimeline();
-		this.timeline.repeat(count, delay);
+		this.requireTimeline().repeat(count, delay);
 		return this;
 	}
 
 	public @NonNull TweenAnimator repeatYoyo(final int count, final float delay) {
-		this.requireTimeline();
-		this.timeline.repeatYoyo(count, delay);
+		this.requireTimeline().repeatYoyo(count, delay);
 		return this;
 	}
 
@@ -124,61 +120,51 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator push(final float duration, final float value) {
-		this.push(duration, value, TweenEquations.LINEAR);
-		return this;
+		return this.push(duration, value, TweenEquations.LINEAR);
 	}
 
 	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
-		this.requireTimeline();
-		this.timeline.push(this.tween(duration).target(value).ease(equation));
+		this.requireTimeline().push(this.tween(duration).target(value).ease(equation));
 		return this;
 	}
 
 	public @NonNull TweenAnimator onStart(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline();
-		this.timeline.onStart(listener);
+		this.requireTimeline().onStart(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onIterationStart(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline();
-		this.timeline.onIterationStart(listener);
+		this.requireTimeline().onIterationStart(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline();
-		this.timeline.onIterationEnd(listener);
+		this.requireTimeline().onIterationEnd(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onComplete(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline();
-		this.timeline.onComplete(listener);
+		this.requireTimeline().onComplete(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onReverseStart(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline();
-		this.timeline.onReverseStart(listener);
+		this.requireTimeline().onReverseStart(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onReverseIterationStart(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline();
-		this.timeline.onReverseIterationStart(listener);
+		this.requireTimeline().onReverseIterationStart(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onReverseIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline();
-		this.timeline.onReverseIterationEnd(listener);
+		this.requireTimeline().onReverseIterationEnd(listener);
 		return this;
 	}
 
 	public @NonNull TweenAnimator onReverseComplete(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline();
-		this.timeline.onReverseComplete(listener);
+		this.requireTimeline().onReverseComplete(listener);
 		return this;
 	}
 
@@ -273,10 +259,11 @@ public class TweenAnimator extends Signal<Float> {
 		}
 	}
 
-	private void requireTimeline() {
+	private Timeline requireTimeline() {
 		if (this.timeline == null) {
 			throw new IllegalStateException("The animator has no timeline, call sequence(...) first");
 		}
+		return this.timeline;
 	}
 
 	private static void updateRunning() {

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.NonNull;
+
 public final class Timeline extends BaseTween<Timeline> {
 
 	private final Mode               mode;
@@ -38,20 +40,16 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	public List<BaseTween<?>> getChildren() {
-		if (this.isBuilt) {
-			return Collections.unmodifiableList(this.current.children);
-		} else {
-			return this.current.children;
-		}
+		return Collections.unmodifiableList(this.current.children);
 	}
 
-	public Timeline push(final Tween tween) {
+	public Timeline push(final @NonNull Tween tween) {
 		this.requireOpen();
 		this.current.children.add(tween);
 		return this;
 	}
 
-	public Timeline push(final Timeline timeline) {
+	public Timeline push(final @NonNull Timeline timeline) {
 		this.requireOpen();
 		if (timeline.current != timeline) {
 			throw new IllegalArgumentException("The pushed timeline still has an open beginSequence() or beginParallel(), close each one with end() before pushing it");
