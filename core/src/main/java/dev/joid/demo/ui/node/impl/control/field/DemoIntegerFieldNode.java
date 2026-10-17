@@ -16,10 +16,6 @@ public class DemoIntegerFieldNode extends IntegerFieldNode {
 		super.background(RectNode.create(0, 0, 0, 0).color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F)).effect(BorderNodeEffect.create(DemoIntegerFieldNode.INK, 2F).mode(BorderMode.IN).width(() -> super.isFocused() ? 2F : 0F)));
 	}
 
-	public static @NonNull DemoIntegerFieldNode create(final double x, final double y, final double width) {
-		return new DemoIntegerFieldNode(x, y, width, 0);
-	}
-
 	public static @NonNull DemoIntegerFieldNode create(final double x, final double y, final double width, final double height) {
 		return new DemoIntegerFieldNode(x, y, width, height);
 	}

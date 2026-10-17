@@ -45,34 +45,21 @@ public class UIDemoStore extends UIDemo {
 		final DemoLocalStore local = super.useStore(DemoLocalStore.class, () -> new DemoLocalStore(now));
 		final DemoGlobalStore global = super.useStore(DemoGlobalStore.class, () -> new DemoGlobalStore(now));
 		final DemoPermanentStore permanent = super.useStore(DemoPermanentStore.class, () -> new DemoPermanentStore(now));
+		final long[] times = {local.getTime(), global.getTime(), permanent.getTime()};
+		final String[] captions = {"Local store", "Global store", "Permanent store"};
 		this.cache = "Not cached";
 
-		RectNode
-		.create(300, 400, 400, 200)
-		.color(UIDemoStore.PLACEHOLDER)
-		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + local.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Local store", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(760, 400, 400, 200)
-		.color(UIDemoStore.PLACEHOLDER)
-		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + global.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Global store", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1220, 400, 400, 200)
-		.color(UIDemoStore.PLACEHOLDER)
-		.body(rect -> {
-			TextNode.create(200, 100).text(Text.create("Created at " + permanent.getTime(), info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
-			TextNode.create(200, 215).text(Text.create("Permanent store", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
+		for (int i = 0; i < times.length; i++) {
+			final int index = i;
+			RectNode
+			.create(300 + index * 460, 400, 400, 200)
+			.color(UIDemoStore.PLACEHOLDER)
+			.body(rect -> {
+				TextNode.create(200, 100).text(Text.create("Created at " + times[index], info).alignX(Align.CENTER)).anchor(Align.CENTER).attach(rect);
+				TextNode.create(200, 215).text(Text.create(captions[index], info)).anchorX(Align.CENTER).attach(rect);
+			})
+			.attach(this);
+		}
 
 		RectNode
 		.create(530, 680, 400, 200)

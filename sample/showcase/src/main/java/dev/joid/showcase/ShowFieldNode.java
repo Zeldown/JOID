@@ -16,21 +16,19 @@ public class ShowFieldNode extends TextFieldNode {
 	private static final Color FILL         = Color.decode("#151327").lock();
 	private static final Color FILL_FOCUSED = Color.decode("#1D1838").lock();
 
-	private final Color         accent;
 	private final TweenAnimator focus;
 
 	protected ShowFieldNode(final double x, final double y, final double width, final Color accent) {
 		super(x, y, width, 68);
-		this.accent = accent;
-		this.focus  = TweenAnimator.create(0F);
+		this.focus = TweenAnimator.create(0F);
 		super.<ShowFieldNode>onFocus(event -> event.getNode().focus.sequence(250F, 1F, TweenEquations.QUAD_OUT).start());
 		super.<ShowFieldNode>onBlur(event -> event.getNode().focus.sequence(250F, 0F, TweenEquations.QUAD_OUT).start());
 		super.background(RectNode
 		.create(0, 0, 0, 0)
 		.color(() -> ShowFieldNode.FILL.to(ShowFieldNode.FILL_FOCUSED, this.focus.get()))
 		.effect(RoundedNodeEffect.create(18F))
-		.effect(ShadowNodeEffect.create(this.accent, 22F).color(() -> this.accent.withAlpha(0.55F * this.focus.get())))
-		.effect(BorderNodeEffect.create(this.accent, 2F).mode(BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.14F).to(this.accent, this.focus.get()))));
+		.effect(ShadowNodeEffect.create(accent, 22F).color(() -> accent.withAlpha(0.55F * this.focus.get())))
+		.effect(BorderNodeEffect.create(accent, 2F).mode(BorderMode.IN).color(() -> Color.WHITE.withAlpha(0.14F).to(accent, this.focus.get()))));
 	}
 
 	public static @NonNull ShowFieldNode create(final double x, final double y, final double width, final @NonNull Color accent) {

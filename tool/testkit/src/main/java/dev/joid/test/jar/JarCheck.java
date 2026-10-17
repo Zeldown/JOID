@@ -17,7 +17,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JarCheck {
 
-	public static void run(final @NonNull String variant, final @NonNull Supplier<Backend<?>> register, final @NonNull Runnable present) {
+	public static void run(final @NonNull String variant, final @NonNull Supplier<Backend> register, final @NonNull Runnable present) {
 		final PrintStream console = System.err;
 		final ByteArrayOutputStream errors = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(errors, true));
@@ -39,7 +39,7 @@ public final class JarCheck {
 		System.exit(status);
 	}
 
-	private static UI open(final String variant, final Backend<?> backend, final Runnable present) throws ReflectiveOperationException {
+	private static UI open(final String variant, final Backend backend, final Runnable present) throws ReflectiveOperationException {
 		if (JOIDEnv.isDevMode() == "prod".equals(variant) || JOIDEnv.isDemoMode() != "demo".equals(variant)) {
 			throw new IllegalStateException("The " + variant + " jar runs with the dev mode " + JOIDEnv.isDevMode() + " and the demo mode " + JOIDEnv.isDemoMode() + ": check what excludeVariant leaves in it");
 		}

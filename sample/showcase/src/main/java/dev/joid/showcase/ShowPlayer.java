@@ -52,6 +52,7 @@ public class ShowPlayer extends ShowUI {
 		CircleNode.create(560, 140, 800).color(ShowUI.ORANGE.withAlpha(0.25F)).effect(BlurNodeEffect.create(120F)).attach(this);
 
 		final Resource clip = Resource.of("assets/showcase/honey.mp4");
+
 		RectNode
 		.create(240, 96, 1440, 810)
 		.color(ShowUI.NIGHT)

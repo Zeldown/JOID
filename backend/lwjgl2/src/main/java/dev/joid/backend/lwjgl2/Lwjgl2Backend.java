@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Lwjgl2Backend extends Backend<Lwjgl2Backend> {
+public final class Lwjgl2Backend extends Backend {
 
 	public static @NonNull Lwjgl2Backend create() {
 		return new Lwjgl2Backend();

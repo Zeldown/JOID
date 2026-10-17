@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
-public abstract class Backend<T extends Backend<T>> {
+public abstract class Backend {
 
 	private final String version;
 
@@ -29,22 +29,22 @@ public abstract class Backend<T extends Backend<T>> {
 		this.audio   = true;
 	}
 
-	public final @NonNull T audio(final boolean audio) {
+	public final <T extends Backend> @NonNull T audio(final boolean audio) {
 		this.audio = audio;
 		return (T) this;
 	}
 
-	public final @NonNull T dataDir(final @NonNull File dataDir) {
+	public final <T extends Backend> @NonNull T dataDir(final @NonNull File dataDir) {
 		this.dataDir = dataDir;
 		return (T) this;
 	}
 
-	public final @NonNull T cacheDir(final @NonNull File cacheDir) {
+	public final <T extends Backend> @NonNull T cacheDir(final @NonNull File cacheDir) {
 		this.cacheDir = cacheDir;
 		return (T) this;
 	}
 
-	public final @NonNull T register() {
+	public final <T extends Backend> @NonNull T register() {
 		if (this.registered) {
 			throw new IllegalStateException(this.getClass().getSimpleName() + " is already registered, call register() only once");
 		}
@@ -79,7 +79,7 @@ public abstract class Backend<T extends Backend<T>> {
 		return (T) this;
 	}
 
-	public final @NonNull T frame() {
+	public final <T extends Backend> @NonNull T frame() {
 		BridgeHandler.UI.frame();
 		return (T) this;
 	}

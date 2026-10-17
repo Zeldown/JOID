@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import lombok.NonNull;
 
-public final class VulkanBackend extends Backend<VulkanBackend> {
+public final class VulkanBackend extends Backend {
 
 	private final long        window;
 	private final IVulkanHost host;

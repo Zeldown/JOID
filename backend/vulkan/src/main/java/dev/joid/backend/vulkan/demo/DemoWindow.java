@@ -30,7 +30,7 @@ public class DemoWindow extends GlfwDemoWindow {
 	}
 
 	@Override
-	protected @NonNull Backend<?> registerBackend(final long window) {
+	protected @NonNull Backend registerBackend(final long window) {
 		this.host    = WindowVulkanHost.create(window);
 		this.backend = VulkanBackend.create(window, this.host).register();
 		this.host.beginFrame();

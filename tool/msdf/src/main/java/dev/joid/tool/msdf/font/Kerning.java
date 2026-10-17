@@ -30,14 +30,7 @@ public final class Kerning {
 			}
 		}
 
-		final int[] sorted = new int[glyphs.size()];
-		int index = 0;
-		for (final int glyph : glyphs.values()) {
-			sorted[index++] = glyph;
-		}
-
-		Arrays.sort(sorted);
-		final Kerning reader = new Kerning(file, sorted);
+		final Kerning reader = new Kerning(file, glyphs.values().stream().mapToInt(Integer::intValue).sorted().toArray());
 		reader.parse();
 
 		for (final int first : glyphs.keySet()) {

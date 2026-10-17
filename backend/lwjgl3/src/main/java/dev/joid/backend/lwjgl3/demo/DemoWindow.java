@@ -26,7 +26,7 @@ public class DemoWindow extends GlfwDemoWindow {
 	}
 
 	@Override
-	protected @NonNull Backend<?> registerBackend(final long window) {
+	protected @NonNull Backend registerBackend(final long window) {
 		GLFW.glfwMakeContextCurrent(window);
 		GL.createCapabilities();
 		return Lwjgl3Backend.create(window).register();

@@ -13,7 +13,7 @@ import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import lombok.NonNull;
 
-public final class Lwjgl3Backend extends Backend<Lwjgl3Backend> {
+public final class Lwjgl3Backend extends Backend {
 
 	private final long window;
 

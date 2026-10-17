@@ -32,12 +32,16 @@ public class ShowPaperKit implements IShowKit {
 
 	@Override
 	public void backdrop(final Node layer) {
-		RectNode.create(0, 0, 1920, 1080).color(ShowPaperKit.PAPER).body(paper -> {
+		RectNode
+		.create(0, 0, 1920, 1080)
+		.color(ShowPaperKit.PAPER)
+		.body(paper -> {
 			for (int y = 54; y < 1080; y += 54) {
 				RectNode.create(0, y, 1920, 2).color(ShowPaperKit.RULE).attach(paper);
 			}
 			RectNode.create(96, 0, 3, 1080).color(ShowPaperKit.TOMATO.withAlpha(0.45F)).attach(paper);
-		}).attach(layer);
+		})
+		.attach(layer);
 		CircleNode.create(1610, -150, 520).color(ShowPaperKit.BUTTER).<CircleNode>y(() -> -150D + IShowKit.wave(0D) * 18D).attach(layer);
 		CircleNode.create(800, 900, 260).color(ShowPaperKit.TOMATO).<CircleNode>x(() -> 800D + IShowKit.wave(0.3D) * 24D).attach(layer);
 	}
@@ -69,7 +73,10 @@ public class ShowPaperKit implements IShowKit {
 
 	@Override
 	public RectNode panel(final double x, final double y, final double width, final double height) {
-		return RectNode.create(x, y, width, height).color(Color.TRANSPARENT).body(panel -> {
+		return RectNode
+		.create(x, y, width, height)
+		.color(Color.TRANSPARENT)
+		.body(panel -> {
 			RectNode.create(16, 16, width, height).color(ShowPaperKit.INK).attach(panel);
 			RectNode.create(0, 0, width, height).color(ShowPaperKit.CARD).effect(BorderNodeEffect.create(ShowPaperKit.INK, 4F).mode(BorderMode.IN)).attach(panel);
 		});

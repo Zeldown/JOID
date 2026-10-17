@@ -68,7 +68,6 @@ dependencies {
     }
 }
 
-/* Packaging */
 task demoJar(type: Jar) {
     group = 'build'
     description = 'Builds the demo jar, with the JOID core, its dev tools, its demos and the demo window.'
@@ -102,7 +101,6 @@ task prodJar(type: Jar) {
 
 assemble.dependsOn demoJar, devJar, prodJar
 
-/* Tests */
 apply from: 'gradle/snapshots.gradle'
 
 task testDemoJar(type: Test) {
@@ -170,7 +168,6 @@ gradle.buildFinished {
     }
 }
 
-/* Demo */
 task runDemo(type: JavaExec) {
     group = 'JOID'
     description = 'Launches the demo window.'

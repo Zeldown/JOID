@@ -138,7 +138,7 @@ public class UIBridgeCursorTest {
 	@Test
 	public void givesTheTextCursorToTextFieldsOnly() {
 		Assert.assertEquals(Cursor.TEXT, DemoTextFieldNode.create(0, 0, 100).getCursor());
-		Assert.assertEquals(Cursor.TEXT, DemoIntegerFieldNode.create(0, 0, 100).getCursor());
+		Assert.assertEquals(Cursor.TEXT, DemoIntegerFieldNode.create(0, 0, 100, 0).getCursor());
 		Assert.assertEquals(Cursor.TEXT, DemoMultilineTextFieldNode.create(0, 0, 100, 100).getCursor());
 		Assert.assertNull(RectNode.create(0, 0, 100, 100).getCursor());
 	}

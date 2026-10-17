@@ -9,7 +9,7 @@ import com.example.joid.backend.audio.ExampleAudioBridge;
 import com.example.joid.backend.render.ExampleRenderBridge;
 import com.example.joid.backend.window.ExampleWindowBridge;
 
-public final class ExampleBackend extends Backend<ExampleBackend> {
+public final class ExampleBackend extends Backend {
 
 	private ExampleBackend() {}
 

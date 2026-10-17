@@ -93,9 +93,14 @@ public class ShowTheme extends ShowUI {
 	private void stat(final int index, final String label, final String value, final String delta, final Color accent) {
 		final double x = 360D + index * 500D;
 		this.card(x, 190, 460, 200).attach(this);
-		RectNode.create(x + 40D, 230, 44, 44).color(accent.withAlpha(0.18F)).effect(RoundedNodeEffect.create(14F)).body(icon -> {
+		RectNode
+		.create(x + 40D, 230, 44, 44)
+		.color(accent.withAlpha(0.18F))
+		.effect(RoundedNodeEffect.create(14F))
+		.body(icon -> {
 			RectNode.create(14, 14, 16, 16).color(accent).effect(CircleNodeEffect.create()).attach(icon);
-		}).attach(this);
+		})
+		.attach(this);
 		TextNode.create(x + 100D, 252).text(() -> Text.create(label, ShowUI.font(FontWeight.SEMI_BOLD, 20F, this.muted()))).anchorY(Align.CENTER).attach(this);
 		TextNode.create(x + 38D, 300).text(() -> Text.create(value, ShowUI.font(FontWeight.BLACK, 50F, this.text()))).attach(this);
 		TextNode.create(x + 420D, 330).text(Text.create(delta, ShowUI.font(FontWeight.BOLD, 20F, ShowUI.EMERALD))).anchorX(Align.END).anchorY(Align.CENTER).attach(this);

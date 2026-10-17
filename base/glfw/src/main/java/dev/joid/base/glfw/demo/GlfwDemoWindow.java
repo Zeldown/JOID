@@ -16,7 +16,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 	@Getter
 	private final long window;
 
-	private final Backend<?> backend;
+	private final Backend backend;
 
 	protected GlfwDemoWindow() {
 		GLFWErrorCallback.createPrint(System.err).set();
@@ -65,7 +65,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 	protected abstract void configureWindow();
 
-	protected abstract @NonNull Backend<?> registerBackend(final long window);
+	protected abstract @NonNull Backend registerBackend(final long window);
 
 	protected abstract void present();
 

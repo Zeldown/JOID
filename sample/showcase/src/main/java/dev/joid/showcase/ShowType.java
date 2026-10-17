@@ -30,11 +30,13 @@ public class ShowType extends ShowUI {
 	protected void scene() {
 		final double pivotX = 128D;
 		final double pivotY = 236D;
+
 		super.backdrop();
 		ShowUI.blob(1250, -350, 900, ShowUI.FUCHSIA.withAlpha(0.28F), 0D, 50D).attach(this);
 		ShowUI.blob(-350, 600, 900, ShowUI.CYAN.withAlpha(0.20F), 0.5D, 50D).attach(this);
 
 		final long start = BridgeHandler.CLOCK.get().currentTimeMillis();
+
 		ContainerNode
 		.create(0, 0, 1920, 1080)
 		.effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(() -> this.zoom() * (700D - pivotX), () -> this.zoom() * (470D - pivotY))).scale(Scale.create(() -> 1D + 5D * this.zoom(), () -> 1D + 5D * this.zoom(), () -> 1D), Vector.create(pivotX, pivotY))).scope(NodeEffectScope.CHILDREN))

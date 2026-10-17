@@ -267,7 +267,7 @@ public class BackendTest {
 		current.addAll(readyList);
 	}
 
-	public static final class TraceBackend extends Backend<TraceBackend> {
+	public static final class TraceBackend extends Backend {
 
 		private final List<String>          trace;
 		private final IAudioBridge          audio  = (sampleRate, channels) -> null;

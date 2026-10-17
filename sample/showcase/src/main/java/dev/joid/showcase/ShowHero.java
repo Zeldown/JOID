@@ -80,6 +80,7 @@ public class ShowHero extends ShowUI {
 		TextNode.create(112, 236).text(Text.create("Your design.", ShowUI.font(FontWeight.BLACK, 118F, ShowUI.TEXT))).attach(this);
 		TextNode.create(112, 372).text(() -> Text.create("Any engine.", ShowUI.font(FontWeight.BLACK, 118F, this.shimmer()))).attach(this);
 		final TextInfo sub = ShowUI.font(FontWeight.MEDIUM, 30F, ShowUI.MUTED).lineHeight(1.45F);
+
 		TextNode.create(120, 540).text(Text.create("A design-neutral UI engine for Java: retained nodes,", sub)).attach(this);
 		TextNode.create(120, 584).text(Text.create("reactive signals and GPU effects on any renderer.", sub)).attach(this);
 		final String[] names = {"LWJGL 2", "LWJGL 3", "Vulkan", "Your engine"};
@@ -133,6 +134,7 @@ public class ShowHero extends ShowUI {
 
 	private void video() {
 		final Resource clip = Resource.of("assets/showcase/honey.mp4");
+
 		RectNode
 		.create(1010, 96, 620, 400)
 		.color(ShowUI.NIGHT)
@@ -229,6 +231,7 @@ public class ShowHero extends ShowUI {
 
 	private void model() {
 		final ObjModel model = ObjModel.load("showcase", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
+
 		RectNode
 		.create(1550, 560, 300, 340)
 		.color(ShowUI.vertical(Color.WHITE.withAlpha(0.12F), Color.WHITE.withAlpha(0.04F)))

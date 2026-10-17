@@ -115,7 +115,6 @@ subprojects {
     eclipse.project.name = "JOID-${name}"
 }
 
-/* Build */
 task backendTemplate(type: Zip) {
     group = 'JOID'
     description = 'Packages the template of a backend developed in its own repository.'
@@ -126,11 +125,8 @@ task backendTemplate(type: Zip) {
         rename 'gitignore', '.gitignore'
     }
     from(rootDir) {
-        include 'gradlew.bat', 'gradle/wrapper/**', 'gradle/snapshots.gradle', 'LICENSE', 'NOTICE'
-    }
-    from(rootDir) {
-        include 'gradlew'
-        fileMode = 0755
+        include 'gradlew', 'gradlew.bat', 'gradle/wrapper/**', 'gradle/snapshots.gradle', 'LICENSE', 'NOTICE'
+        filesMatching('gradlew') { details -> details.mode = 0755 }
     }
 }
 
@@ -144,12 +140,7 @@ task msdfGenerator(type: Zip) {
     from { project(':tool-msdf').jar.archivePath }
     from(project(':tool-msdf').file('charset.txt'))
     from(project(':tool-msdf').file('dist')) {
-        include 'README.md', 'msdf.bat'
-        filter { line -> line.replace('@JOID_VERSION@', project.version.toString()) }
-    }
-    from(project(':tool-msdf').file('dist')) {
-        include 'msdf.sh'
-        fileMode = 0755
+        filesMatching('msdf.sh') { details -> details.mode = 0755 }
         filter { line -> line.replace('@JOID_VERSION@', project.version.toString()) }
     }
     from(rootDir) {
@@ -269,7 +260,6 @@ task checkJars {
     }
 }
 
-/* Tests */
 task updateSnapshots {
     group = 'JOID'
     description = 'Runs the snapshot tests of the LWJGL 2, LWJGL 3 and Vulkan backends and replaces their reference snapshots.'
@@ -349,7 +339,6 @@ gradle.buildFinished {
     }
 }
 
-/* Scripts */
 task installLocalGitHook(type: Copy) {
     group = 'JOID'
     description = 'Installs the pre-commit and pre-push git hooks, outside a continuous integration and only when they changed.'
