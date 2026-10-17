@@ -84,7 +84,7 @@ public class ResourceDataTest {
 	}
 
 	@Test
-	public void runsAnAsyncTaskOnItsOwnDaemonThread() {
+	public void runsAnAsyncTaskOnItsOwnDaemonThread() throws InterruptedException {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final ResourceData data = ResourceData.create("image", null);
 		data.dispatch(() -> threads.add(Thread.currentThread()));
@@ -92,6 +92,7 @@ public class ResourceDataTest {
 		Assert.assertFalse(data.isDispatching());
 		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
 		Assert.assertTrue(threads.get(0).isDaemon());
+		threads.get(0).join(5000L);
 		Assert.assertFalse(threads.get(0).isAlive());
 		data.await();
 	}
