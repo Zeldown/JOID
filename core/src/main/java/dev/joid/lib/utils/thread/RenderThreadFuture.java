@@ -7,15 +7,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import dev.joid.lib.bridge.BridgeHandler;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RenderThreadFuture<T> extends CompletableFuture<T> {
 
 	private final CompletableFuture<T> source;
-
-	private RenderThreadFuture(final CompletableFuture<T> source) {
-		this.source = source;
-	}
 
 	public static <T> @NonNull RenderThreadFuture<T> from(final @NonNull CompletableFuture<T> source) {
 		final RenderThreadFuture<T> future = new RenderThreadFuture<>(source);

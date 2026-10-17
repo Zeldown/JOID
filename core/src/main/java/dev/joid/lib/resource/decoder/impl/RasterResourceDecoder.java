@@ -12,21 +12,16 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.utils.image.ImageUtils;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class RasterResourceDecoder implements IResourceDecoder {
 
 	private final Asset          asset;
 	private final BufferedImage  source;
 	private final ImageReaderSpi reader;
-
-	private BufferedImage image;
-
-	protected RasterResourceDecoder(final Asset asset, final BufferedImage image, final ImageReaderSpi reader) {
-		this.asset = asset;
-		this.source = image;
-		this.reader = reader;
-	}
 
 	public static @NonNull RasterResourceDecoder create(final @NonNull Asset asset) {
 		return new RasterResourceDecoder(asset, null, null);
@@ -47,13 +42,10 @@ public class RasterResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
-		if (this.image == null) {
-			this.image = this.source != null ? this.source : RasterResourceDecoder.read(this.asset, this.reader);
-		}
-
-		final int width = this.image.getWidth();
-		final int height = this.image.getHeight();
-		final int[] pixels = this.image.getRGB(0, 0, width, height, null, 0, width);
+		final BufferedImage image = this.source != null ? this.source : RasterResourceDecoder.read(this.asset, this.reader);
+		final int width = image.getWidth();
+		final int height = image.getHeight();
+		final int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);
 		ImageUtils.bleedAlpha(pixels, width, height);
 		resource.width(width).height(height).data(new int[][] {pixels});
 	}
@@ -61,13 +53,10 @@ public class RasterResourceDecoder implements IResourceDecoder {
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
 		resource.uploadTextures();
-		this.clear(resource);
 	}
 
 	@Override
-	public void clear(final @NonNull ResourceData resource) {
-		this.image = null;
-	}
+	public void clear(final @NonNull ResourceData resource) {}
 
 	private static @NonNull BufferedImage read(final Asset asset, final ImageReaderSpi reader) {
 		final BufferedImage image;

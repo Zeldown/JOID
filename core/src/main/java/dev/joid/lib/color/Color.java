@@ -204,7 +204,7 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public static @NonNull Color RAINBOW() {
-		return Color.rgb(java.awt.Color.HSBtoRGB(BridgeHandler.CLOCK.get().currentTimeMillis() % 3000L / 3000F, 0.8F, 0.8F));
+		return Color.RAINBOW(BridgeHandler.CLOCK.get().currentTimeMillis());
 	}
 
 	public static @NonNull Color RAINBOW(final long time) {

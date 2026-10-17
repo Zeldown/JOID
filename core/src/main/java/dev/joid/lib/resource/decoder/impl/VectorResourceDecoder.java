@@ -30,26 +30,22 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class VectorResourceDecoder implements IResourceDecoder {
 
 	private static final double          BUCKET = 1.25D;
 	private static final ExecutorService RASTER = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("ResourceVector"));
 
 	@Getter private final Asset           asset;
-	private final Map<Long, ITexture>     textures;
-	private final AtomicReference<Raster> pending;
+	private final AtomicReference<Raster> pending  = new AtomicReference<>();
+	private final Map<Long, ITexture>     textures = new LinkedHashMap<>(8, 0.75F, true);
 
 	private ITexture    texture;
 	private SVGDocument document;
 
 	private volatile boolean rendering;
-
-	protected VectorResourceDecoder(final Asset asset) {
-		this.asset = asset;
-		this.textures = new LinkedHashMap<>(8, 0.75F, true);
-		this.pending = new AtomicReference<>();
-	}
 
 	public static @NonNull VectorResourceDecoder create(final @NonNull Asset asset) {
 		return new VectorResourceDecoder(asset);

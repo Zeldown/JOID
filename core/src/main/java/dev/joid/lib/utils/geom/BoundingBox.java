@@ -1,24 +1,20 @@
 package dev.joid.lib.utils.geom;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BoundingBox {
 
 	private double minX;
 	private double minY;
 	private double maxX;
 	private double maxY;
-
-	private BoundingBox(final double minX, final double minY, final double maxX, final double maxY) {
-		this.minX = minX;
-		this.minY = minY;
-		this.maxX = maxX;
-		this.maxY = maxY;
-	}
 
 	public static @NonNull BoundingBox create(final double x, final double y, final double width, final double height) {
 		return new BoundingBox(x, y, x + width, y + height);

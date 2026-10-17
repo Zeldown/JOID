@@ -10,8 +10,11 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.utils.geom.Point;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VideoAudioPlayer {
 
 	private static AudioListenerPosition audioListenerPosition;
@@ -30,14 +33,8 @@ public final class VideoAudioPlayer {
 	private int     pendingOffset;
 	private short[] pendingSamples;
 
-	private VideoAudioPlayer(final VideoResourceDecoder owner, final int sampleRate, final int channels) {
-		this.owner = owner;
-		this.sampleRate = sampleRate;
-		this.channels = channels;
-	}
-
 	public static @NonNull VideoAudioPlayer create(final VideoResourceDecoder owner, final int sampleRate, final int channels) {
-		return new VideoAudioPlayer(owner, sampleRate, channels);
+		return new VideoAudioPlayer(channels, sampleRate, owner);
 	}
 
 	public static void audioListenerPosition(final AudioListenerPosition audioListenerPosition) {

@@ -9,17 +9,17 @@ import java.util.Arrays;
 import org.apache.commons.io.IOUtils;
 
 import dev.joid.lib.asset.locator.AssetLocator;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Asset {
 
+	@NonNull
 	private final String uniqueId;
-
-	protected Asset(final @NonNull String uniqueId) {
-		this.uniqueId = uniqueId;
-	}
 
 	public static @NonNull Asset of(final @NonNull Object handle) {
 		return AssetLocator.locate(handle);
