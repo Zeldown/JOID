@@ -79,7 +79,7 @@ public class RasterResourceDecoder implements IResourceDecoder {
 		}
 
 		if (image == null) {
-			throw new IllegalArgumentException(asset.getUniqueId() + " is not an image that ImageIO can decode");
+			throw new IllegalArgumentException(asset.getUniqueId() + " is not an image that ImageIO can decode, convert it to PNG, JPEG or WebP");
 		}
 		return image;
 	}

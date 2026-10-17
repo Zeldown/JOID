@@ -79,8 +79,8 @@ public class DrawTextTest {
 	public void spacesEachElementByTheLetterSpacingOfThePreviousOne() {
 		final Text text = Text.create(TextElement.create("ab", this.info.copy().letterSpacing(0.5F)), TextElement.create("c", this.info));
 		DrawTextTest.draw().drawText(100D, 100D, text);
-		Assert.assertEquals(Arrays.asList("ab@100.0,100.0", "c@125.0,100.0"), this.font.drawn);
-		Assert.assertEquals(35D, text.getWidth(), 0D);
+		Assert.assertEquals(Arrays.asList("ab@100.0,100.0", "c@130.0,100.0"), this.font.drawn);
+		Assert.assertEquals(40D, text.getWidth(), 0D);
 	}
 
 	@Test
@@ -162,6 +162,12 @@ public class DrawTextTest {
 	}
 
 	@Test
+	public void cutsALongTextWithTheLetterSpacingOfItsOverflowMark() {
+		DrawTextTest.draw().drawText(0D, 0D, 69D, 30D, Text.create("abcdef", this.info.copy().letterSpacing(0.5F)).overflow(TextOverflow.ELLIPSIS), TextMode.OVERFLOW);
+		Assert.assertEquals(Collections.singletonList("a...@0.0,0.0"), this.font.drawn);
+	}
+
+	@Test
 	public void drawsNothingWhenNoLetterFits() {
 		final FontBounds bounds = DrawTextTest.draw().drawText(0D, 0D, 5D, 30D, Text.create("abc", this.info), TextMode.OVERFLOW);
 		Assert.assertTrue(this.font.drawn.isEmpty());
@@ -237,6 +243,12 @@ public class DrawTextTest {
 		Assert.assertSame(this.info, lines.get(0).get(0).getInfo());
 		Assert.assertEquals("cd", lines.get(1).getText());
 		Assert.assertSame(large, lines.get(1).get(0).getInfo());
+	}
+
+	@Test
+	public void wrapsWithTheLetterSpacingBetweenTwoElements() {
+		final List<Text> lines = DrawTextTest.draw().getLines(47D, Text.create(TextElement.create("ab", this.info.copy().letterSpacing(0.5F)), TextElement.create("cd", this.info)));
+		Assert.assertEquals(Arrays.asList("ab", "cd"), lines.stream().map(Text::getText).collect(Collectors.toList()));
 	}
 
 	@Test
@@ -428,6 +440,7 @@ public class DrawTextTest {
 			final List<ITextMarkup> markups = info.getMarkups();
 			final TextStyle style = info.getStyle().derive();
 			double width = 0D;
+			int glyphs = 0;
 			for (int index = 0; index < text.length();) {
 				final int consumed = TextMarkup.parse(markups, text, index, style);
 				if (consumed > 0) {
@@ -436,9 +449,10 @@ public class DrawTextTest {
 				}
 
 				width += style.getWeight() == FontWeight.BOLD ? info.getFontSize() * 2D : info.getFontSize();
+				glyphs++;
 				index++;
 			}
-			return width;
+			return glyphs == 0 ? width : width + (glyphs - 1) * info.getLetterSpacing() * info.getFontSize();
 		}
 
 		@Override

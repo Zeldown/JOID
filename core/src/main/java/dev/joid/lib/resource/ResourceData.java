@@ -272,7 +272,7 @@ public final class ResourceData {
 		this.loaded = false;
 		this.data = null;
 		if (JOIDEnv.isDevMode()) {
-			JOIDLog.warn("The resource " + this.uniqueId + " cannot be read: " + ResourceData.describe(error, !this.isBorrowed()) + ". It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.");
+			JOIDLog.warn("The resource " + this.uniqueId + " cannot be read: " + ResourceData.describe(error) + ". It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.");
 		}
 
 		for (final Resource resource : this.getResources()) {
@@ -475,7 +475,7 @@ public final class ResourceData {
 		} catch (final ExecutionException silent) {}
 	}
 
-	private static @NonNull String describe(final @NonNull Throwable error, final boolean decodable) {
+	private static @NonNull String describe(final @NonNull Throwable error) {
 		Throwable cause = error;
 		while (cause.getCause() != null && cause.getCause() != cause) {
 			cause = cause.getCause();
@@ -489,7 +489,7 @@ public final class ResourceData {
 		if (cause instanceof IOException) {
 			return reason + ", check that the file or the URL exists and can be read";
 		}
-		return decodable ? reason + ", convert it to PNG, JPEG or WebP" : reason;
+		return reason;
 	}
 
 	@Override

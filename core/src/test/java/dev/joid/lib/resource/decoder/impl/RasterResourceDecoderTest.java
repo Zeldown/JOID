@@ -62,7 +62,7 @@ public class RasterResourceDecoderTest {
 			RasterResourceDecoder.create(new BytesAsset("notes.txt", "not an image".getBytes(StandardCharsets.UTF_8))).decode(ResourceData.create("notes.txt", null));
 			Assert.fail("The image must not decode");
 		} catch (final IllegalArgumentException expected) {
-			Assert.assertEquals("notes.txt is not an image that ImageIO can decode", expected.getMessage());
+			Assert.assertEquals("notes.txt is not an image that ImageIO can decode, convert it to PNG, JPEG or WebP", expected.getMessage());
 		}
 	}
 

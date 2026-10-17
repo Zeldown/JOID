@@ -71,7 +71,6 @@ public final class DrawText {
 				for (final TextElement element : text.getElementList()) {
 					final String elementText = text.getText(element);
 					final int[] tags = DrawText.tags(element, elementText);
-					final double overflowStrWidth = element.getInfo().getWidth(overflowStr);
 					int fit = 0;
 					for (int i = 0; i <= elementText.length(); i++) {
 						if (i < elementText.length() && (tags[i] != -1 && tags[i] != i || Character.isLowSurrogate(elementText.charAt(i)))) {
@@ -79,8 +78,7 @@ public final class DrawText {
 						}
 
 						final String subText = elementText.substring(0, i);
-						final double subTextWidth = element.getInfo().getWidth(subText);
-						if (overflowWidth + subTextWidth + overflowStrWidth > width && !subText.isEmpty()) {
+						if (overflowWidth + element.getInfo().getWidth(subText + overflowStr) > width && !subText.isEmpty()) {
 							overflowText.add(element.copyWithText(elementText.substring(0, fit)).modifier(null));
 							overflow = true;
 							break;
@@ -159,6 +157,7 @@ public final class DrawText {
 		final List<Text> textList = new LinkedList<>();
 
 		Text currentText = text.copyProperties().modifier(null);
+		double spacing = 0D;
 		for (final TextElement element : text.getElementList()) {
 			final String elementText = text.getText(element).replace("<br>", String.valueOf('\n'));
 			final int[] tags = DrawText.tags(element, elementText);
@@ -174,6 +173,7 @@ public final class DrawText {
 					currentText.add(element.copyWithText(opened + elementText.substring(lastSplit, i)).modifier(null));
 					textList.add(currentText);
 					currentText = text.copyProperties().modifier(null).add(element.copyWithText("").modifier(null));
+					spacing = 0D;
 					if (elementText.startsWith("\r\n", i)) {
 						i++;
 					}
@@ -184,7 +184,7 @@ public final class DrawText {
 
 				final String part = opened + elementText.substring(lastSplit, i + 1);
 				final double elementWidth = element.getInfo().getWidth(part);
-				if (currentText.getWidth() + elementWidth > width) {
+				if (currentText.getWidth() + spacing + elementWidth > width) {
 					int foundSplit = currentText.getText().isEmpty() ? i : lastSplit;
 					for (int j = i; j > lastSplit; j--) {
 						if (elementText.charAt(j) == ' ' && tags[j] == -1) {
@@ -197,6 +197,7 @@ public final class DrawText {
 						currentText.add(element.copyWithText(opened + elementText.substring(lastSplit, foundSplit)).modifier(null));
 						textList.add(currentText);
 						currentText = text.copyProperties().modifier(null);
+						spacing = 0D;
 						lastSplit = elementText.charAt(foundSplit) == ' ' ? foundSplit + 1 : foundSplit;
 						opened = DrawText.opened(elementText, tags, lastSplit);
 						i--;
@@ -206,6 +207,7 @@ public final class DrawText {
 
 			if (lastSplit < elementText.length()) {
 				currentText.add(element.copyWithText(opened + elementText.substring(lastSplit)).modifier(null));
+				spacing = element.getInfo().getLetterSpacing() * element.getInfo().getFontSize();
 			}
 		}
 

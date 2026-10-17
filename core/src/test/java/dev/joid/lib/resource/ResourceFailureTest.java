@@ -64,7 +64,7 @@ public class ResourceFailureTest {
 		Assert.assertFalse(resource.isLoaded());
 		Assert.assertNull(resource.getDecoder());
 		Assert.assertEquals(1, errors.size());
-		Assert.assertEquals("photo.heic is a HEIF or AVIF image, which JOID cannot decode", errors.get(0).getMessage());
+		Assert.assertEquals("photo.heic is a HEIF or AVIF image, which JOID cannot decode, convert it to PNG, JPEG or WebP", errors.get(0).getMessage());
 	}
 
 	@Test
@@ -154,6 +154,8 @@ public class ResourceFailureTest {
 			final String missing = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new File(this.folder.getRoot(), "missing.png")).blocking().prepareBind());
 			Assert.assertTrue(missing, missing.startsWith("[JOID] The resource "));
 			Assert.assertTrue(missing, missing.endsWith(", check that the file or the URL exists and can be read. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production." + System.lineSeparator()));
+			final String path = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of("joid-missing/missing.png").blocking().prepareBind());
+			Assert.assertTrue(path, path.endsWith("cannot be read: The asset joid-missing/missing.png is not found in the classpath nor as a file, check the path or give a URL with its scheme (https:, file:, jar:). It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production." + System.lineSeparator()));
 			final String damaged = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new BytesAsset("broken.webp", false, new byte[] {'R', 'I', 'F', 'F', 30, 0, 0, 0, 'W', 'E', 'B', 'P', 'V', 'P', '8', 'X', 10, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'A', 'N', 'M', 'F', (byte) 0xF8, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF})).blocking().prepareBind());
 			Assert.assertFalse(damaged, damaged.contains("exists"));
 			Assert.assertTrue(damaged, damaged.contains("The WebP chunk ANMF runs past the end of the file, the file is damaged: export it again"));
