@@ -3,6 +3,8 @@ package dev.joid.lib.bridge.render.matrix;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.utils.geom.BoundingBox;
+
 public class PixelGridTest {
 
 	@Test
@@ -262,6 +264,35 @@ public class PixelGridTest {
 		final PixelGrid grid = PixelGrid.of(PixelGridTest.perspective(), modelView.getMatrix(), 1920, 1080);
 		Assert.assertFalse(grid.isAligned());
 		Assert.assertEquals(0.3D, grid.snapX(0.3D), 0D);
+	}
+
+	@Test
+	public void boundsTheViewWidenedByAMargin() {
+		final BoundingBox area = PixelGridTest.grid(MatrixStack.create(), 1920, 1080).getVisibleArea(10D);
+		Assert.assertEquals(-10D, area.getMinX(), 1E-3D);
+		Assert.assertEquals(-10D, area.getMinY(), 1E-3D);
+		Assert.assertEquals(1930D, area.getMaxX(), 1E-3D);
+		Assert.assertEquals(1090D, area.getMaxY(), 1E-3D);
+	}
+
+	@Test
+	public void boundsTheViewOfAZoomInLocalUnits() {
+		final MatrixStack modelView = MatrixStack.create();
+		modelView.translate(960D, 540D, 0D);
+		modelView.scale(6D, 6D, 1D);
+		final BoundingBox area = PixelGridTest.grid(modelView, 1920, 1080).getVisibleArea(0D);
+		Assert.assertEquals(-160D, area.getMinX(), 1E-3D);
+		Assert.assertEquals(-90D, area.getMinY(), 1E-3D);
+		Assert.assertEquals(160D, area.getMaxX(), 1E-3D);
+		Assert.assertEquals(90D, area.getMaxY(), 1E-3D);
+	}
+
+	@Test
+	public void leavesTheViewOfATiltedPerspectivePanelUnbounded() {
+		final MatrixStack modelView = MatrixStack.create();
+		modelView.translate(0D, 0D, -10D);
+		modelView.rotate(60D, 1D, 0D, 0D);
+		Assert.assertNull(PixelGrid.of(PixelGridTest.perspective(), modelView.getMatrix(), 1920, 1080).getVisibleArea(0D));
 	}
 
 	private static float[] perspective() {

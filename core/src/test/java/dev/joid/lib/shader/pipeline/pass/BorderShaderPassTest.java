@@ -36,6 +36,7 @@ public class BorderShaderPassTest {
 		Assert.assertEquals(1, this.shader.getValues().get("u_Fill"));
 		Assert.assertEquals(BorderMode.OUT.ordinal(), this.shader.getValues().get("u_Mode"));
 		Assert.assertEquals(5F, pass.expansion(), 0F);
+		Assert.assertEquals(13D, pass.reach(2D), 0D);
 	}
 
 	@Test
@@ -94,9 +95,9 @@ public class BorderShaderPassTest {
 
 	private ShaderPassContext context() {
 		try {
-			final Method create = ShaderPassContext.class.getDeclaredMethod("create", double.class, double.class, double.class, double.class, double.class, PixelGrid.class);
+			final Method create = ShaderPassContext.class.getDeclaredMethod("create", double.class, double.class, double.class, double.class, double.class, double.class, PixelGrid.class);
 			create.setAccessible(true);
-			return (ShaderPassContext) create.invoke(null, 10D, 20D, 100D, 50D, 5D, this.bridges.getRender().getPixelGrid());
+			return (ShaderPassContext) create.invoke(null, 10D, 20D, 100D, 50D, 5D, 0D, this.bridges.getRender().getPixelGrid());
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}

@@ -37,4 +37,9 @@ public class BlurShaderPass implements IShaderPass {
 		return this.radius;
 	}
 
+	@Override
+	public double reach(final double scale) {
+		return Math.max(this.radius * scale, 32D) + 1D;
+	}
+
 }

@@ -57,4 +57,9 @@ public class BorderShaderPass implements IShaderPass {
 		return this.width + 2F;
 	}
 
+	@Override
+	public double reach(final double scale) {
+		return this.width * scale * 2D + 1D;
+	}
+
 }

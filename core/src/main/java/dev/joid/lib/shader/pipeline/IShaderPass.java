@@ -11,4 +11,8 @@ public interface IShaderPass {
 		return 0F;
 	}
 
+	public default double reach(final double scale) {
+		return this.expansion() * scale + 1D;
+	}
+
 }

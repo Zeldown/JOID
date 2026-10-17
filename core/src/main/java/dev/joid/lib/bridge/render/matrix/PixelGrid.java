@@ -1,5 +1,6 @@
 package dev.joid.lib.bridge.render.matrix;
 
+import dev.joid.lib.utils.geom.BoundingBox;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +12,15 @@ public final class PixelGrid {
 
 	private final double  unitX;
 	private final double  unitY;
+	private final double  skewX;
+	private final double  skewY;
 	private final double  scaleX;
 	private final double  scaleY;
 	private final double  originX;
 	private final double  originY;
+	private final int     viewportWidth;
+	private final int     viewportHeight;
+	private final boolean flat;
 	private final boolean aligned;
 
 	public static @NonNull PixelGrid of(final @NonNull float[] projection, final @NonNull float[] modelView, final int viewportWidth, final int viewportHeight) {
@@ -31,7 +37,30 @@ public final class PixelGrid {
 		final double scaleY = Math.hypot(yx, yy);
 		final boolean flat = Math.abs(PixelGrid.product(projection, modelView, 3, 0)) <= 1E-9D * Math.abs(depth) && Math.abs(PixelGrid.product(projection, modelView, 3, 1)) <= 1E-9D * Math.abs(depth);
 		final boolean aligned = flat && xx != 0D && yy != 0D && Math.abs(xy) <= 1E-6D * scaleX && Math.abs(yx) <= 1E-6D * scaleY;
-		return new PixelGrid(xx, yy, scaleX, scaleY, originX, originY, aligned);
+		return new PixelGrid(xx, yy, yx, xy, scaleX, scaleY, originX, originY, viewportWidth, viewportHeight, flat, aligned);
+	}
+
+	public BoundingBox getVisibleArea(final double margin) {
+		final double determinant = this.unitX * this.unitY - this.skewX * this.skewY;
+		if (!this.flat || determinant == 0D) {
+			return null;
+		}
+
+		double minX = Double.POSITIVE_INFINITY;
+		double minY = Double.POSITIVE_INFINITY;
+		double maxX = Double.NEGATIVE_INFINITY;
+		double maxY = Double.NEGATIVE_INFINITY;
+		for (int corner = 0; corner < 4; corner++) {
+			final double screenX = (corner % 2 == 0 ? -margin : this.viewportWidth + margin) - this.originX;
+			final double screenY = (corner < 2 ? -margin : this.viewportHeight + margin) - this.originY;
+			final double x = (this.unitY * screenX - this.skewX * screenY) / determinant;
+			final double y = (this.unitX * screenY - this.skewY * screenX) / determinant;
+			minX = Math.min(minX, x);
+			minY = Math.min(minY, y);
+			maxX = Math.max(maxX, x);
+			maxY = Math.max(maxY, y);
+		}
+		return BoundingBox.create(minX, minY, maxX - minX, maxY - minY);
 	}
 
 	public double snapX(final double x) {

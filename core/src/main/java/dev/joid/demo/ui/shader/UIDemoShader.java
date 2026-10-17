@@ -8,9 +8,15 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.render.tessellator.DrawMode;
+import dev.joid.lib.render.transform.Scale;
+import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.MaskNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
+import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
@@ -151,19 +157,36 @@ public class UIDemoShader extends UIDemo {
 		TextNode.create(1765, 575).text(Text.create("Gradient text", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
-		.create(630, 640, 200, 120)
+		.create(515, 640, 200, 120)
 		.layer((node, mouseX, mouseY) -> super.mask(40D, 20D, 120D, 80D, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), UIDemoShader.INK)))
 		.attach(this);
-		TextNode.create(730, 775).text(Text.create("Mask", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(615, 775).text(Text.create("Mask", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
-		.create(860, 640, 200, 120)
+		.create(745, 640, 200, 120)
 		.layer((node, mouseX, mouseY) -> super.mask(mask, 40D, 0D, 120D, 120D, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), UIDemoShader.INK)))
 		.attach(this);
-		TextNode.create(960, 775).text(Text.create("Image mask", caption)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(845, 775).text(Text.create("Image mask", caption)).anchorX(Align.CENTER).attach(this);
 
-		ResourceNode.create(1090, 640, 200, 120).resource(image).stretch(StretchType.COVER).effect(DemoInvertNodeEffect.create(1F)).attach(this);
-		TextNode.create(1190, 775).text(Text.create("Custom effect", caption)).anchorX(Align.CENTER).attach(this);
+		ResourceNode.create(975, 640, 200, 120).resource(image).stretch(StretchType.COVER).effect(DemoInvertNodeEffect.create(1F)).attach(this);
+		TextNode.create(1075, 775).text(Text.create("Custom effect", caption)).anchorX(Align.CENTER).attach(this);
+
+		RectNode
+		.create(1205, 640, 200, 120)
+		.color(UIDemoShader.PLACEHOLDER)
+		.effect(MaskNodeEffect.create())
+		.body(rect -> {
+			ResourceNode
+			.create(0, 0, 200, 120)
+			.resource(image)
+			.stretch(StretchType.COVER)
+			.effect(BlurNodeEffect.create(2F))
+			.effect(ShadowNodeEffect.create(UIDemoShader.INK, 16F))
+			.effect(TransformNodeEffect.create(Transformation.create().scale(Scale.create(12D, 12D, 1D))))
+			.attach(rect);
+		})
+		.attach(this);
+		TextNode.create(1305, 775).text(Text.create("Zoomed effects", caption)).anchorX(Align.CENTER).attach(this);
 	}
 
 }

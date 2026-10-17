@@ -6,6 +6,7 @@ import java.util.List;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
+import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
@@ -33,11 +34,15 @@ public final class ShaderPipeline {
 
 		ShaderPipeline.pipelineDepth++;
 		try {
+			final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
+			final double scale = Math.max(grid.getScaleX(), grid.getScaleY());
 			float expansion = 0F;
+			double margin = 0D;
 			for (final IShaderPass pass : passes) {
 				expansion = Math.max(expansion, pass.expansion());
+				margin += pass.reach(scale);
 			}
-			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, BridgeHandler.RENDER.get().getPixelGrid()), passes, baseDraw);
+			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, margin, grid), passes, baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}
