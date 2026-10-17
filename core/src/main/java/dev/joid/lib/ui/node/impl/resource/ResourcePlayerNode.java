@@ -26,7 +26,8 @@ public class ResourcePlayerNode extends Node {
 	private static final EventType<NodeEvent<?>>         PAUSE    = EventType.create("onPause");
 	private static final EventType<NodeProgressEvent<?>> PROGRESS = EventType.create("onProgress");
 
-	@Getter private Resource resource;
+	@Getter
+	private Resource resource;
 
 	private transient Resource fork;
 	private transient boolean  wasPlaying;
@@ -45,7 +46,8 @@ public class ResourcePlayerNode extends Node {
 	@Getter private Float maxDistance;
 	@Getter private Float referenceDistance;
 
-	@Getter private StretchType stretch;
+	@Getter
+	private StretchType stretch;
 
 	protected ResourcePlayerNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

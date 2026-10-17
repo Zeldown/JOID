@@ -19,7 +19,8 @@ public abstract class BaseSelectorNode<V> extends BaseChoiceNode<V> {
 
 	private final transient InteractiveValue<Boolean> activeValue;
 
-	@Getter private boolean active;
+	@Getter
+	private boolean active;
 
 	protected BaseSelectorNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.node.impl.layout;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,9 +34,11 @@ public class ReorderableFlexNode extends FlexNode {
 	private final transient List<Node>        logicalOrder;
 	private final transient Map<Node, Double> childCurrent;
 
-	@Getter private boolean autoDrag;
+	@Getter
+	private boolean autoDrag;
 
-	@Getter private Node reorderedNode;
+	@Getter
+	private Node reorderedNode;
 
 	private int     initialIndex;
 	private int     currentIndex;
@@ -177,16 +180,12 @@ public class ReorderableFlexNode extends FlexNode {
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T pin(final @NonNull Node @NonNull... children) {
-		for (final Node child : children) {
-			this.pinnedNodes.add(child);
-		}
+		Collections.addAll(this.pinnedNodes, children);
 		return (T) this;
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T unpin(final @NonNull Node @NonNull... children) {
-		for (final Node child : children) {
-			this.pinnedNodes.remove(child);
-		}
+		this.pinnedNodes.removeAll(Arrays.asList(children));
 		return (T) this;
 	}
 

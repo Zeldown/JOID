@@ -65,9 +65,11 @@ public abstract class FieldNode<V> extends Node {
 
 	private V fallback;
 
-	@Getter private boolean markup;
+	@Getter
+	private boolean markup;
 
-	@Getter private Node background;
+	@Getter
+	private Node background;
 
 	@Getter private Color cursorColor;
 	@Getter private Color selectionColor;
@@ -615,6 +617,30 @@ public abstract class FieldNode<V> extends Node {
 		return color.withAlpha(color.getAlphaF() * (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F));
 	}
 
+	protected final double getLineX(final @NonNull String text, final @NonNull int[] tags, final int start, final int end, final @NonNull String prefix, final int position) {
+		final int clamped = Math.max(start, Math.min(position, end));
+		final int shown = clamped < text.length() && tags[clamped] != -1 ? tags[clamped] : clamped;
+		return this.getShownInfo().getWidth(prefix + text.substring(start, Math.max(start, shown)));
+	}
+
+	protected final int getLinePosition(final @NonNull String text, final @NonNull int[] tags, final int start, final int end, final @NonNull String prefix, final double x) {
+		int previous = start;
+		for (int i = start; i < end; i++) {
+			if (tags[i] != -1) {
+				continue;
+			}
+
+			final double charWidth = this.getShownInfo().getWidth(FieldNode.opened(text, tags, i) + text.charAt(i));
+			if (x < this.getLineX(text, tags, start, end, prefix, i) + charWidth / 2D) {
+				return previous;
+			}
+
+			previous = i + 1;
+		}
+
+		return previous;
+	}
+
 	private void applyFocus(final boolean focused) {
 		if (!focused) {
 			this.commit();
@@ -752,8 +778,8 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	private void replace(final String newText, final boolean refusable) {
-		final String text = this.limit(newText == null ? "" : newText);
+	private void replace(final @NonNull String newText, final boolean refusable) {
+		final String text = this.limit(newText);
 		if (!text.equals(this.text)) {
 			this.rewrite(text, refusable);
 		}

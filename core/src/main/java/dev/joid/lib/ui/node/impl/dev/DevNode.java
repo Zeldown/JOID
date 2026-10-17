@@ -60,7 +60,8 @@ public final class DevNode extends Node {
 	private final ComputedSignal<Node> lockedNode;
 	private final BooleanSignal        inspectedNodeLocked;
 
-	@Getter private final TweenAnimator reloadAnimator;
+	@Getter
+	private final TweenAnimator reloadAnimator;
 
 	private double inspectX;
 	private double inspectY;

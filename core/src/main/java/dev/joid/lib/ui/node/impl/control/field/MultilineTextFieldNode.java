@@ -268,28 +268,11 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	private double getX(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final int pos) {
-		final int clamped = Math.max(line.getStart(), Math.min(pos, line.getEnd()));
-		final int end = clamped < layout.getText().length() && layout.getTags()[clamped] != -1 ? layout.getTags()[clamped] : clamped;
-		return super.getShownInfo().getWidth(line.getPrefix() + layout.getText().substring(line.getStart(), Math.max(line.getStart(), end)));
+		return super.getLineX(layout.getText(), layout.getTags(), line.getStart(), line.getEnd(), line.getPrefix(), pos);
 	}
 
 	private int getPosition(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final double x) {
-		final String text = layout.getText();
-		int previous = line.getStart();
-		for (int i = line.getStart(); i < line.getEnd(); i++) {
-			if (layout.getTags()[i] != -1) {
-				continue;
-			}
-
-			final double charWidth = super.getShownInfo().getWidth(FieldNode.opened(text, layout.getTags(), i) + text.charAt(i));
-			if (x < this.getX(layout, line, i) + charWidth / 2D) {
-				return previous;
-			}
-
-			previous = i + 1;
-		}
-
-		return previous;
+		return super.getLinePosition(layout.getText(), layout.getTags(), line.getStart(), line.getEnd(), line.getPrefix(), x);
 	}
 
 	@Getter

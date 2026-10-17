@@ -147,21 +147,22 @@ public abstract class Node implements INode {
 	@Getter(AccessLevel.PROTECTED)
 	private final transient NodeBindings bindings;
 
-	@Getter(AccessLevel.NONE) private final transient List<Task>                taskList;
-	@Getter(AccessLevel.NONE) private final transient List<Shortcut>            shortcutList;
-	@Getter(AccessLevel.NONE) private final transient List<Predicate<Node>>     waitingList;
-	@Getter(AccessLevel.NONE) private final transient List<NodeRequirement>     requirementList;
-	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Point>   positionValue;
-	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Double>  scrollXValue;
-	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Double>  scrollYValue;
-	@Getter(AccessLevel.NONE) private final transient Map<TweenAnimator, Float> animatorMap;
+	@Getter(AccessLevel.NONE) private final transient List<Task>               taskList;
+	@Getter(AccessLevel.NONE) private final transient List<Shortcut>           shortcutList;
+	@Getter(AccessLevel.NONE) private final transient List<NodeRequirement>    requirementList;
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Point>  positionValue;
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Double> scrollXValue;
+	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Double> scrollYValue;
 
-	@Getter(AccessLevel.NONE) private final List<Node>                      children;
-	@Getter(AccessLevel.NONE) private final IndexedList<Node>               drawList;
-	@Getter(AccessLevel.NONE) private final LinkedList<NodeLayer>           layerList;
-	@Getter(AccessLevel.NONE) private final List<IHoverElement>             hoverElementList;
-	@Getter(AccessLevel.NONE) private final Map<Class<?>, NodeEffect<Node>> effectMap;
-	@Getter(AccessLevel.NONE) private final List<Supplier<List<String>>>    hoverSupplierList;
+	@Getter(AccessLevel.NONE) private final transient List<Node>                      children;
+	@Getter(AccessLevel.NONE) private final transient IndexedList<Node>               drawList;
+	@Getter(AccessLevel.NONE) private final transient Map<Class<?>, NodeEffect<Node>> effectMap;
+
+	@Getter(AccessLevel.NONE) private final LinkedList<NodeLayer>        layerList;
+	@Getter(AccessLevel.NONE) private final List<Predicate<Node>>        waitingList;
+	@Getter(AccessLevel.NONE) private final List<IHoverElement>          hoverElementList;
+	@Getter(AccessLevel.NONE) private final Map<TweenAnimator, Float>    animatorMap;
+	@Getter(AccessLevel.NONE) private final List<Supplier<List<String>>> hoverSupplierList;
 
 	private double defaultWidth;
 	private double defaultHeight;
@@ -180,8 +181,8 @@ public abstract class Node implements INode {
 	private double layoutX;
 	private double layoutY;
 
-	private double shiftX;
-	private double shiftY;
+	private transient double shiftX;
+	private transient double shiftY;
 
 	private double x;
 	private double y;
@@ -197,16 +198,17 @@ public abstract class Node implements INode {
 	private PositionProperty position;
 	private OverflowProperty overflow;
 
-	private double            dragX;
-	private double            dragY;
-	private boolean           dragged;
-	private Node              draggedNode;
-	private boolean           dragging;
-	private double            startDragX;
-	private double            startDragY;
-	private double            targetDragX;
-	private double            targetDragY;
 	private DraggableProperty draggable;
+
+	private transient double  dragX;
+	private transient double  dragY;
+	private transient boolean dragged;
+	private transient Node    draggedNode;
+	private transient boolean dragging;
+	private transient double  startDragX;
+	private transient double  startDragY;
+	private transient double  targetDragX;
+	private transient double  targetDragY;
 
 	private int    zindex;
 	private double zlevel;
@@ -215,50 +217,51 @@ public abstract class Node implements INode {
 
 	private Text label;
 
-	private boolean mounted;
-	private boolean attached;
+	private transient boolean mounted;
+	private transient boolean attached;
 
 	@Getter(AccessLevel.NONE)
-	private boolean pulled;
+	private transient boolean pulled;
 
 	private Cursor        cursor;
-	private boolean       hovered;
 	private long          hoverDuration;
 	private TweenEquation hoverEquation;
 
+	private transient boolean hovered;
+
 	@Getter(AccessLevel.NONE)
-	private boolean hoverShown;
+	private transient boolean hoverShown;
 
 	private double scrollX;
 	private double scrollY;
-	private double maxScrollX;
-	private double maxScrollY;
 	private double scrollSpeed;
 	private double targetScrollX;
 	private double targetScrollY;
 
-	private boolean scrollEndX;
-	private boolean scrollEndY;
+	private transient double  maxScrollX;
+	private transient double  maxScrollY;
+	private transient boolean scrollEndX;
+	private transient boolean scrollEndY;
 
-	@Getter(AccessLevel.NONE) private boolean scrollMeasured;
-	@Getter(AccessLevel.NONE) private boolean scrollEndGuessX;
-	@Getter(AccessLevel.NONE) private boolean scrollEndGuessY;
+	@Getter(AccessLevel.NONE) private transient boolean scrollMeasured;
+	@Getter(AccessLevel.NONE) private transient boolean scrollEndGuessX;
+	@Getter(AccessLevel.NONE) private transient boolean scrollEndGuessY;
 
-	@Getter(AccessLevel.NONE) private double  restX;
-	@Getter(AccessLevel.NONE) private double  restY;
-	@Getter(AccessLevel.NONE) private double  drawnX;
-	@Getter(AccessLevel.NONE) private double  drawnY;
-	@Getter(AccessLevel.NONE) private boolean moving;
+	@Getter(AccessLevel.NONE) private transient double  restX;
+	@Getter(AccessLevel.NONE) private transient double  restY;
+	@Getter(AccessLevel.NONE) private transient double  drawnX;
+	@Getter(AccessLevel.NONE) private transient double  drawnY;
+	@Getter(AccessLevel.NONE) private transient boolean moving;
 
-	private long        lastClickTime;
-	private MouseButton lastClickButton;
+	private transient long        lastClickTime;
+	private transient MouseButton lastClickButton;
 
-	private Key  lastKey;
-	private long lastKeyTime;
-	private int  lastCodepoint;
+	private transient Key  lastKey;
+	private transient long lastKeyTime;
+	private transient int  lastCodepoint;
 
-	private long renderTime;
-	private long loadCount;
+	private transient long renderTime;
+	private transient long loadCount;
 
 	protected Node(final double x, final double y) {
 		this(x, y, 0D, 0D);
@@ -643,7 +646,6 @@ public abstract class Node implements INode {
 				node.parent.remove(node);
 			} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
 				node.ui.remove(node);
-				node.clearOverflowArea(node.overflowArea);
 			}
 
 			node.parent = this;
@@ -2240,53 +2242,6 @@ public abstract class Node implements INode {
 
 		copy.effectMap.clear();
 		this.effectMap.forEach((type, effect) -> copy.effectMap.put(type, effect.copy()));
-		copy.layerList.clear();
-		copy.layerList.addAll(this.layerList);
-		copy.hoverElementList.clear();
-		copy.hoverElementList.addAll(this.hoverElementList);
-		copy.hoverSupplierList.clear();
-		copy.hoverSupplierList.addAll(this.hoverSupplierList);
-
-		copy.defaultX = this.defaultX;
-		copy.defaultY = this.defaultY;
-		copy.layoutX = this.layoutX;
-		copy.layoutY = this.layoutY;
-
-		copy.x = this.x;
-		copy.y = this.y;
-		copy.width = this.width;
-		copy.height = this.height;
-		copy.defaultWidth = this.defaultWidth;
-		copy.defaultHeight = this.defaultHeight;
-
-		copy.visible = this.visible;
-		copy.enabled = this.enabled;
-		copy.interactive = this.interactive;
-		copy.position = this.position;
-		copy.overflow = this.overflow;
-		copy.anchorX = this.anchorX;
-		copy.anchorY = this.anchorY;
-
-		copy.draggable = this.draggable;
-		copy.zindex = this.zindex;
-		copy.zlevel = this.zlevel;
-
-		copy.aspectRatio = this.aspectRatio;
-		copy.label = this.label;
-
-		copy.cursor = this.cursor;
-		copy.hoverDuration = this.hoverDuration;
-		copy.hoverEquation = this.hoverEquation;
-		copy.scrollSpeed = this.scrollSpeed;
-
-		copy.scrollX = this.scrollX;
-		copy.scrollY = this.scrollY;
-		copy.targetScrollX = this.targetScrollX;
-		copy.targetScrollY = this.targetScrollY;
-
-		copy.waitingList.clear();
-		copy.waitingList.addAll(this.waitingList);
-		copy.animatorMap.putAll(this.animatorMap);
 
 		final Map<Object, Object> copies = new IdentityHashMap<>();
 		copy.drawList.clear();
@@ -2313,7 +2268,7 @@ public abstract class Node implements INode {
 		}
 
 		for (final Field field : this.getFields(this.getClass())) {
-			if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers()) || field.getDeclaringClass() == Node.class) {
+			if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
 				continue;
 			}
 

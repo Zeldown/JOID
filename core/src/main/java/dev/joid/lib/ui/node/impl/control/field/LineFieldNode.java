@@ -89,22 +89,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	protected final int getPositionAt(final double mouseX, final double mouseY) {
 		final String text = super.getText();
 		final int[] tags = FieldNode.tags(text, super.getShownInfo());
-		final double x = mouseX - this.getTextX(super.getAbsoluteX(), text);
-		int previous = 0;
-		for (int i = 0; i < text.length(); i++) {
-			if (tags[i] != -1) {
-				continue;
-			}
-
-			final double charWidth = super.getShownInfo().getWidth(FieldNode.opened(text, tags, i) + text.charAt(i));
-			if (x < this.getX(text, tags, i) + charWidth / 2D) {
-				return previous;
-			}
-
-			previous = i + 1;
-		}
-
-		return previous;
+		return super.getLinePosition(text, tags, 0, text.length(), "", mouseX - this.getTextX(super.getAbsoluteX(), text));
 	}
 
 	@Override
@@ -181,8 +166,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	}
 
 	private double getX(final @NonNull String text, final @NonNull int[] tags, final int position) {
-		final int end = position < text.length() && tags[position] != -1 ? tags[position] : position;
-		return super.getShownInfo().getWidth(text.substring(0, end));
+		return super.getLineX(text, tags, 0, text.length(), "", position);
 	}
 
 }

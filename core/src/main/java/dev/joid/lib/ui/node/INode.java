@@ -10,21 +10,21 @@ import lombok.NonNull;
 
 public interface INode extends IIndexedElement {
 
-	default public void update() {}
-	default public void layout() {}
-	default public void detach() {}
-	default public void init(final @NonNull UI ui) {}
+	public default void update() {}
+	public default void layout() {}
+	public default void detach() {}
+	public default void init(final @NonNull UI ui) {}
 
-	default public void draw(final double mouseX, final double mouseY) {}
-	default public void drawSkeleton(final double mouseX, final double mouseY) {}
+	public default void draw(final double mouseX, final double mouseY) {}
+	public default void drawSkeleton(final double mouseX, final double mouseY) {}
 
-	default public void mousePressed(final @NonNull NodeMouseEvent<?> event) {}
-	default public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {}
-	default public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {}
-	default public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {}
+	public default void mousePressed(final @NonNull NodeMouseEvent<?> event) {}
+	public default void mouseReleased(final @NonNull NodeMouseEvent<?> event) {}
+	public default void mouseDragged(final @NonNull NodeMouseEvent<?> event) {}
+	public default void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {}
 
-	default public void charTyped(final @NonNull NodeCharEvent<?> event) {}
-	default public void keyPressed(final @NonNull NodeKeyEvent<?> event) {}
-	default public void keyReleased(final @NonNull NodeKeyEvent<?> event) {}
+	public default void charTyped(final @NonNull NodeCharEvent<?> event) {}
+	public default void keyPressed(final @NonNull NodeKeyEvent<?> event) {}
+	public default void keyReleased(final @NonNull NodeKeyEvent<?> event) {}
 
 }
