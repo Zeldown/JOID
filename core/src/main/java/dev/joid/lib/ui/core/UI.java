@@ -51,7 +51,6 @@ import dev.joid.lib.ui.core.transition.PopTransition;
 import dev.joid.lib.ui.core.transition.Transition;
 import dev.joid.lib.ui.core.transition.TransitionStep;
 import dev.joid.lib.ui.core.view.UIView;
-import dev.joid.lib.ui.event.Event;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventType;
@@ -266,7 +265,7 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleMouseScroll(final @NonNull EventListener<UIMouseScrollEvent<T>> listener) {
-		return this.listen(UI.HANDLE_MOUSE_SCROLL, listener);
+		return this.bindings.listen(UI.HANDLE_MOUSE_SCROLL, listener);
 	}
 
 	public final boolean fireMouseScroll(final double notchesX, final double notchesY) {
@@ -286,7 +285,7 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleMousePressed(final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.listen(UI.HANDLE_MOUSE_PRESSED, listener);
+		return this.bindings.listen(UI.HANDLE_MOUSE_PRESSED, listener);
 	}
 
 	public final boolean fireMousePressed(final @NonNull MouseButton button) {
@@ -301,7 +300,7 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleMouseReleased(final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.listen(UI.HANDLE_MOUSE_RELEASED, listener);
+		return this.bindings.listen(UI.HANDLE_MOUSE_RELEASED, listener);
 	}
 
 	public final boolean fireMouseReleased(final @NonNull MouseButton button) {
@@ -316,7 +315,7 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleMouseDragged(final @NonNull EventListener<UIMouseEvent<T>> listener) {
-		return this.listen(UI.HANDLE_MOUSE_DRAGGED, listener);
+		return this.bindings.listen(UI.HANDLE_MOUSE_DRAGGED, listener);
 	}
 
 	public final boolean fireMouseDragged(final @NonNull MouseButton button, final long deltaTime) {
@@ -331,7 +330,7 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleCharTyped(final @NonNull EventListener<UICharEvent<T>> listener) {
-		return this.listen(UI.HANDLE_CHAR_TYPED, listener);
+		return this.bindings.listen(UI.HANDLE_CHAR_TYPED, listener);
 	}
 
 	public final boolean fireCharTyped(final int codepoint) {
@@ -344,7 +343,7 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleKeyPressed(final @NonNull EventListener<UIKeyEvent<T>> listener) {
-		return this.listen(UI.HANDLE_KEY_PRESSED, listener);
+		return this.bindings.listen(UI.HANDLE_KEY_PRESSED, listener);
 	}
 
 	public final boolean fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key) {
@@ -385,7 +384,7 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T handleKeyReleased(final @NonNull EventListener<UIKeyEvent<T>> listener) {
-		return this.listen(UI.HANDLE_KEY_RELEASED, listener);
+		return this.bindings.listen(UI.HANDLE_KEY_RELEASED, listener);
 	}
 
 	public final boolean fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key) {
@@ -413,11 +412,11 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T beforeClose(final @NonNull EventListener<UICloseEvent.Pre<T>> listener) {
-		return this.listen(UI.BEFORE_CLOSE, listener);
+		return this.bindings.listen(UI.BEFORE_CLOSE, listener);
 	}
 
 	public final <T extends UI> @NonNull T onClose(final @NonNull EventListener<UICloseEvent.Post<T>> listener) {
-		return this.listen(UI.CLOSE, listener);
+		return this.bindings.listen(UI.CLOSE, listener);
 	}
 
 	public final boolean fireClose() {
@@ -425,7 +424,7 @@ public abstract class UI implements IUI, IIndexedElement {
 			return false;
 		}
 
-		final UICloseEvent.Pre<UI> event = this.fire(UI.BEFORE_CLOSE, () -> UICloseEvent.Pre.create(this));
+		final UICloseEvent.Pre<UI> event = this.bindings.fire(UI.BEFORE_CLOSE, () -> UICloseEvent.Pre.create(this));
 		if (event != null && event.isCancelled()) {
 			return false;
 		}
@@ -590,7 +589,7 @@ public abstract class UI implements IUI, IIndexedElement {
 		this.storeMap.clear();
 
 		UIPropertyHook.save(this);
-		this.fire(UI.CLOSE, () -> UICloseEvent.Post.create(this));
+		this.bindings.fire(UI.CLOSE, () -> UICloseEvent.Post.create(this));
 	}
 
 	public final void draw(final double mouseX, final double mouseY) {
@@ -681,7 +680,7 @@ public abstract class UI implements IUI, IIndexedElement {
 		return value + diff * (1D - Math.pow(1D - Math.min(1D, speed), this.frameTime / (1000D / 60D)));
 	}
 
-	public final void add(final @NonNull Node @NonNull ... nodes) {
+	public final <T extends UI> @NonNull T add(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
 			if (node.getParent() != null) {
 				node.getParent().remove(node);
@@ -694,15 +693,17 @@ public abstract class UI implements IUI, IIndexedElement {
 			}
 			this.nodeList.add(node);
 		}
+		return (T) this;
 	}
 
-	public final void remove(final @NonNull Node @NonNull ... nodes) {
+	public final <T extends UI> @NonNull T remove(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
 			if (this.nodeList.contains(node)) {
 				node.fireDetach();
 				this.nodeList.remove(node);
 			}
 		}
+		return (T) this;
 	}
 
 	public final <T extends UI> @NonNull T addTask(final @NonNull Task task) {
@@ -970,41 +971,18 @@ public abstract class UI implements IUI, IIndexedElement {
 		}
 	}
 
-	private <T extends UI> T listen(final EventType<?> type, final EventListener<?> listener) {
-		this.eventBus.listen(type, listener);
-		return (T) this;
-	}
-
-	private <E extends Event> E fire(final EventType<? super E> type, final Supplier<E> event) {
-		if (!this.eventBus.has(type)) {
-			return null;
-		}
-
-		final E fired = event.get();
-		this.traced(() -> this.eventBus.fire(type, fired));
-		return fired;
-	}
-
 	private <E extends UIInputEvent<UI>> boolean fireInput(final EventType<?> type, final String input, final E event, final Consumer<Node> dispatch, final Runnable builtin) {
 		if (!event.isConsumed()) {
 			this.dispatch(input, () -> this.nodeList.reversed().forEach(dispatch));
 		}
-		this.fireListeners(type, event);
-		builtin.run();
-		this.fireMonitor(type, event);
-		return event.isConsumed();
-	}
-
-	private void fireListeners(final EventType<?> type, final Event event) {
 		if (this.eventBus.has(type)) {
 			this.traced(() -> this.eventBus.fireListeners(type, event));
 		}
-	}
-
-	private void fireMonitor(final EventType<?> type, final Event event) {
+		builtin.run();
 		if (this.eventBus.has(type)) {
 			this.traced(() -> this.eventBus.fireMonitor(type, event));
 		}
+		return event.isConsumed();
 	}
 
 	private void traced(final Runnable runnable) {

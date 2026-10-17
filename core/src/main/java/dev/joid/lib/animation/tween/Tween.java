@@ -29,7 +29,7 @@ public final class Tween extends BaseTween<Tween> {
 		this.getter   = getter;
 		this.setter   = setter;
 		this.duration = duration;
-		this.path     = TweenPaths.catmullRom;
+		this.path     = TweenPaths.CATMULL_ROM;
 		this.equation = TweenEquations.LINEAR;
 	}
 
@@ -81,26 +81,26 @@ public final class Tween extends BaseTween<Tween> {
 		}
 
 		if (!isIterationStep && step > lastStep) {
-			this.setter.accept(this.isReverse(lastStep) ? this.start : this.target);
+			this.setter.accept(super.isReverse(lastStep) ? this.start : this.target);
 			return;
 		}
 
 		if (!isIterationStep && step < lastStep) {
-			this.setter.accept(this.isReverse(lastStep) ? this.target : this.start);
+			this.setter.accept(super.isReverse(lastStep) ? this.target : this.start);
 			return;
 		}
 
 		if (this.duration < 0.00000000001F && delta > -0.00000000001F) {
-			this.setter.accept(this.isReverse(step) ? this.target : this.start);
+			this.setter.accept(super.isReverse(step) ? this.target : this.start);
 			return;
 		}
 
 		if (this.duration < 0.00000000001F && delta < 0.00000000001F) {
-			this.setter.accept(this.isReverse(step) ? this.start : this.target);
+			this.setter.accept(super.isReverse(step) ? this.start : this.target);
 			return;
 		}
 
-		final float time = this.isReverse(step) ? this.duration - this.getCurrentTime() : this.getCurrentTime();
+		final float time = super.isReverse(step) ? this.duration - super.getCurrentTime() : super.getCurrentTime();
 		final float progress = this.equation.compute(time / this.duration);
 
 		if (this.waypointCount == 0) {

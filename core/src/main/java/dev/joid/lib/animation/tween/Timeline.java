@@ -116,33 +116,33 @@ public final class Timeline extends BaseTween<Timeline> {
 	@Override
 	protected void updateOverride(final int step, final int lastStep, final boolean isIterationStep, final float delta) {
 		if (!isIterationStep && step > lastStep) {
-			this.updateForward(this.isReverse(lastStep) ? -delta - 1 : delta + 1);
+			this.updateForward(super.isReverse(lastStep) ? -delta - 1 : delta + 1);
 			return;
 		}
 
 		if (!isIterationStep && step < lastStep) {
-			this.updateBackward(this.isReverse(lastStep) ? -delta + 1 : delta - 1);
+			this.updateBackward(super.isReverse(lastStep) ? -delta + 1 : delta - 1);
 			return;
 		}
 
 		if (step > lastStep) {
-			if (this.isReverse(step)) {
+			if (super.isReverse(step)) {
 				this.forceEndValues();
 			} else {
 				this.forceStartValues();
 			}
 			this.updateForward(0F);
 		} else if (step < lastStep) {
-			if (this.isReverse(step)) {
+			if (super.isReverse(step)) {
 				this.forceStartValues();
 			} else {
 				this.forceEndValues();
 			}
 			this.updateBackward(0F);
 		} else if (delta >= 0) {
-			this.updateForward(this.isReverse(step) ? -delta : delta);
+			this.updateForward(super.isReverse(step) ? -delta : delta);
 		} else {
-			this.updateBackward(this.isReverse(step) ? -delta : delta);
+			this.updateBackward(super.isReverse(step) ? -delta : delta);
 		}
 	}
 

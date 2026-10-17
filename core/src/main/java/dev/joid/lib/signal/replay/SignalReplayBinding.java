@@ -1,7 +1,6 @@
 package dev.joid.lib.signal.replay;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
@@ -12,20 +11,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SignalReplayBinding<T> implements Supplier<T> {
 
-	private final SignalReplayCall       call;
-	private final SignalReplaySlice      slice;
-	private final Object                 self;
-	private final boolean                definitions;
-	private final Map<String, String>    holeMap;
-	private final Map<Object, Signal<?>> positionalMap;
-	private final List<Signal<?>>        readList;
-	private final long                   epoch;
+	private final SignalReplayCall  call;
+	private final SignalReplayMatch match;
+	private final List<Signal<?>>   readList;
+	private final long              epoch;
 
 	private T       value;
 	private boolean started;
 
 	public static <T> SignalReplayBinding<T> create(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> consumedList, final T value) {
-		final SignalReplayBinding<T> binding = new SignalReplayBinding<>(call, match.getSlice(), match.getSelf(), match.isDefinitions(), match.getHoleMap(), match.getPositionalMap(), consumedList, SignalContext.getEpoch());
+		final SignalReplayBinding<T> binding = new SignalReplayBinding<>(call, match, consumedList, SignalContext.getEpoch());
 		binding.value = value;
 		return binding;
 	}
@@ -44,13 +39,13 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 		}
 
 		try {
-			final Object result = SignalReplayRun.replay(this.self, this.definitions, this.holeMap, this.positionalMap).run(this.slice);
+			final Object result = SignalReplayRun.replay(this.match.getSelf(), this.match.isDefinitions(), this.match.getHoleMap(), this.match.getPositionalMap()).run(this.match.getSlice());
 			if (result instanceof SignalReplayUnknown || result instanceof SignalReplayParts) {
 				throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, "a local variable is now used in another way");
 			}
-			this.value = (T) this.slice.convert(result);
+			this.value = (T) this.match.getSlice().convert(result);
 		} catch (final SignalReplayException exception) {
-			SignalReplay.warn(this.call, this.slice.getSignalNameList(), this.readList.size(), exception.getFailure() == SignalReplayFailure.REPLAY_FAILED ? exception : new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getMessage()), this.value);
+			SignalReplay.warn(this.call, this.match.getSlice().getSignalNameList(), this.readList.size(), exception.getFailure() == SignalReplayFailure.REPLAY_FAILED ? exception : new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getMessage()), this.value);
 		}
 		return this.value;
 	}

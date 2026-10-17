@@ -15,26 +15,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BridgeHandler {
 
-	public static final UIBridgeRegistry                      UI;
-	public static final BridgeRegistry<IAudioBridge>          AUDIO;
-	public static final BridgeRegistry<IClockBridge>          CLOCK;
-	public static final BridgeRegistry<IWindowBridge>         WINDOW;
-	public static final BridgeRegistry<IRenderBridge>         RENDER;
-	public static final BridgeRegistry<IThreadBridge>         THREAD;
-	public static final BridgeRegistry<ISignalReplayRemapper> SIGNAL_REPLAY;
+	public static final UIBridgeRegistry                      UI            = UIBridgeRegistry.create();
+	public static final BridgeRegistry<IAudioBridge>          AUDIO         = BridgeRegistry.create("AUDIO");
+	public static final BridgeRegistry<IClockBridge>          CLOCK         = BridgeRegistry.create("CLOCK");
+	public static final BridgeRegistry<IWindowBridge>         WINDOW        = BridgeRegistry.create("WINDOW");
+	public static final BridgeRegistry<IRenderBridge>         RENDER        = BridgeRegistry.create("RENDER");
+	public static final BridgeRegistry<IThreadBridge>         THREAD        = BridgeRegistry.create("THREAD");
+	public static final BridgeRegistry<ISignalReplayRemapper> SIGNAL_REPLAY = BridgeRegistry.create("SIGNAL_REPLAY");
 
 	static {
-		UI            = UIBridgeRegistry.create();
-		WINDOW        = BridgeRegistry.create("WINDOW");
-		RENDER        = BridgeRegistry.create("RENDER");
-		AUDIO         = BridgeRegistry.create("AUDIO");
-		CLOCK         = BridgeRegistry.create("CLOCK");
-		THREAD        = BridgeRegistry.create("THREAD");
-		SIGNAL_REPLAY = BridgeRegistry.create("SIGNAL_REPLAY");
-
-		CLOCK.register(SystemClockBridge.create());
-		THREAD.register(DirectThreadBridge.create());
-		SIGNAL_REPLAY.register(new ISignalReplayRemapper() {});
+		BridgeHandler.CLOCK.register(SystemClockBridge.create());
+		BridgeHandler.THREAD.register(DirectThreadBridge.create());
+		BridgeHandler.SIGNAL_REPLAY.register(new ISignalReplayRemapper() {});
 	}
 
 }

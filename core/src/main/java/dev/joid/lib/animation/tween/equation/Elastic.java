@@ -40,7 +40,7 @@ public abstract class Elastic extends TweenEquation {
 					return 1F;
 				}
 
-				float s;
+				final float s;
 				if (a < 1F) {
 					a = 1F;
 					s = p / 4F;
@@ -84,7 +84,7 @@ public abstract class Elastic extends TweenEquation {
 					return 1F;
 				}
 
-				float s;
+				final float s;
 				if (a < 1F) {
 					a = 1F;
 					s = p / 4F;
@@ -129,7 +129,7 @@ public abstract class Elastic extends TweenEquation {
 					return 1F;
 				}
 
-				float s;
+				final float s;
 				if (a < 1F) {
 					a = 1F;
 					s = p / 4F;

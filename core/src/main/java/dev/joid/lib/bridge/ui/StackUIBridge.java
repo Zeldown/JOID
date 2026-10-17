@@ -120,11 +120,6 @@ public abstract class StackUIBridge extends UIBridge {
 	}
 
 	@Override
-	public boolean canHandle(final @NonNull UI ui) {
-		return true;
-	}
-
-	@Override
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz) {
 		return true;
 	}

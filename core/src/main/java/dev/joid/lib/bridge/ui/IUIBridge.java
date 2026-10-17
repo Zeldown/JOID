@@ -18,10 +18,13 @@ public interface IUIBridge extends IBridge {
 	public boolean isOpen(final @NonNull UI ui);
 	public boolean isOnTop(final @NonNull UI ui);
 
-	public boolean canHandle(final @NonNull UI ui);
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz);
 
 	@NonNull public List<@NonNull UI> getUiList();
+
+	public default boolean canHandle(final @NonNull UI ui) {
+		return this.canHandle(ui.getClass());
+	}
 
 	public default void closeAll() {
 		for (final UI ui : new ArrayList<>(this.getUiList())) {

@@ -34,27 +34,11 @@ public final class UIDataObject {
 	private Color backgroundColorCache = Color.decode(this.backgroundColor);
 
 	public double getAnchorPositionX() {
-		switch (this.anchorX) {
-		case CENTER:
-			return UIView.DESIGN_WIDTH / 2D;
-		case END:
-			return UIView.DESIGN_WIDTH;
-		case START:
-		default:
-			return 0D;
-		}
+		return UIDataObject.position(this.anchorX, UIView.DESIGN_WIDTH);
 	}
 
 	public double getAnchorPositionY() {
-		switch (this.anchorY) {
-		case CENTER:
-			return UIView.DESIGN_HEIGHT / 2D;
-		case END:
-			return UIView.DESIGN_HEIGHT;
-		case START:
-		default:
-			return 0D;
-		}
+		return UIDataObject.position(this.anchorY, UIView.DESIGN_HEIGHT);
 	}
 
 	public @NonNull Color getBackgroundColor() {
@@ -65,6 +49,10 @@ public final class UIDataObject {
 		this.backgroundColorCache = Color.decode(backgroundColor);
 		this.backgroundColor = backgroundColor;
 		return this;
+	}
+
+	private static double position(final Align align, final double size) {
+		return align.isStart() ? 0D : align.isCenter() ? size / 2D : size;
 	}
 
 }

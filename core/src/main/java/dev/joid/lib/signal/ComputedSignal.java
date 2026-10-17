@@ -93,9 +93,7 @@ public class ComputedSignal<T> extends Signal<T> {
 
 	@Override
 	public T peek() {
-		if (!this.constant) {
-			this.refresh();
-		}
+		this.refresh();
 		return this.value;
 	}
 
