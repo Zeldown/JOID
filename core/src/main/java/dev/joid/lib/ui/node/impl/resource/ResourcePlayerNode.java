@@ -166,6 +166,10 @@ public class ResourcePlayerNode extends Node {
 		return (T) this;
 	}
 
+	public final <T extends ResourcePlayerNode> @NonNull T toggle() {
+		return this.isPlaying() ? this.pause() : this.play();
+	}
+
 	public final <T extends ResourcePlayerNode> @NonNull T stop() {
 		if (!this.resourceStarted) {
 			this.pendingTime = null;

@@ -54,13 +54,7 @@ public class UIDemoPlayer extends UIDemo {
 		.create(1160, 40, 320, 180)
 		.resource(Resource.of("assets/demo/textures/image/placeholder-animated.webp"))
 		.loop(true)
-		.<ResourcePlayerNode>onClick(event -> {
-			if (event.getNode().isPlaying()) {
-				event.getNode().pause();
-			} else {
-				event.getNode().play();
-			}
-		})
+		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		TextNode.create(1320, 285).text(Text.create("Click to pause", caption)).anchorX(Align.CENTER).attach(this);
 
@@ -87,13 +81,7 @@ public class UIDemoPlayer extends UIDemo {
 		.loop(true)
 		.onPlay(event -> plays.increment())
 		.onPause(event -> pauses.increment())
-		.<ResourcePlayerNode>onClick(event -> {
-			if (event.getNode().isPlaying()) {
-				event.getNode().pause();
-			} else {
-				event.getNode().play();
-			}
-		})
+		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		TextNode.create(440, 574).text(Text.create("Play: " + plays.get() + "  Pause: " + pauses.get(), label)).attach(this);
 		TextNode.create(600, 625).text(Text.create("Callbacks", caption)).anchorX(Align.CENTER).attach(this);
@@ -158,13 +146,7 @@ public class UIDemoPlayer extends UIDemo {
 
 		Shortcut
 		.create(Key.SPACE)
-		.onTrigger(event -> {
-			if (video.isPlaying()) {
-				video.pause();
-			} else {
-				video.play();
-			}
-		})
+		.onTrigger(event -> video.toggle())
 		.attach(this);
 
 		Shortcut

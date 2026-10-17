@@ -92,13 +92,7 @@ public class ShowPlayer extends ShowUI {
 		.create(56, 690, 84)
 		.color(() -> Color.WHITE.withAlpha(0.92F * card.hoverValue(1F) + 0.08F))
 		.effect(ShadowNodeEffect.create(ShowUI.AMBER, 26F).color(() -> ShowUI.AMBER.withAlpha(0.8F * card.hoverValue(1F))))
-		.onClick(event -> {
-			if (player.isPlaying()) {
-				player.pause();
-			} else {
-				player.play();
-			}
-		})
+		.onClick(event -> player.toggle())
 		.layer((node, mouseX, mouseY) -> this.icon(42D, 42D, card.hoverValue(1F)))
 		.attach(card);
 		RectNode

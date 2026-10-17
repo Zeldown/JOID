@@ -212,6 +212,18 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void togglesItsPlayback() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
+		this.bridges.open(new NodeUI(player)).frames(3);
+		Assert.assertSame(player, player.toggle());
+		Assert.assertTrue(player.isPaused());
+		Assert.assertSame(player, player.toggle());
+		Assert.assertTrue(player.isPlaying());
+		player.stop().toggle();
+		Assert.assertTrue(player.isPlaying());
+	}
+
+	@Test
 	public void seeksItsPlayback() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
 		this.bridges.open(new NodeUI(player));

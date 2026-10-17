@@ -38,13 +38,7 @@ public class UIDemoAudio extends UIDemo {
 		.loop(true)
 		.autoplay(false)
 		.volume(volume)
-		.<ResourcePlayerNode>onClick(event -> {
-			if (event.getNode().isPlaying()) {
-				event.getNode().pause();
-			} else {
-				event.getNode().play();
-			}
-		})
+		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		RectNode
 		.create(80, 570, 100, 36)
@@ -67,13 +61,7 @@ public class UIDemoAudio extends UIDemo {
 		.loop(true)
 		.autoplay(false)
 		.location(() -> Point.create(0D, 0D, far.get() ? 30D : 0D))
-		.<ResourcePlayerNode>onClick(event -> {
-			if (event.getNode().isPlaying()) {
-				event.getNode().pause();
-			} else {
-				event.getNode().play();
-			}
-		})
+		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		RectNode
 		.create(440, 570, 100, 36)
@@ -97,13 +85,7 @@ public class UIDemoAudio extends UIDemo {
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 30D))
 		.referenceDistance(40F)
-		.<ResourcePlayerNode>onClick(event -> {
-			if (event.getNode().isPlaying()) {
-				event.getNode().pause();
-			} else {
-				event.getNode().play();
-			}
-		})
+		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		TextNode.create(800, 576).text(Text.create("z: 30, full up to 40", label)).attach(this);
 		TextNode.create(960, 625).text(Text.create("Reference distance", caption)).anchorX(Align.CENTER).attach(this);
@@ -115,13 +97,7 @@ public class UIDemoAudio extends UIDemo {
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 30D))
 		.maxDistance(20F)
-		.<ResourcePlayerNode>onClick(event -> {
-			if (event.getNode().isPlaying()) {
-				event.getNode().pause();
-			} else {
-				event.getNode().play();
-			}
-		})
+		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		TextNode.create(1160, 576).text(Text.create("z: 30, silent from 20", label)).attach(this);
 		TextNode.create(1320, 625).text(Text.create("Max distance", caption)).anchorX(Align.CENTER).attach(this);
@@ -132,13 +108,7 @@ public class UIDemoAudio extends UIDemo {
 		.loop(true)
 		.autoplay(false)
 		.location(Point.create(0D, 0D, 0D))
-		.<ResourcePlayerNode>onClick(event -> {
-			if (event.getNode().isPlaying()) {
-				event.getNode().pause();
-			} else {
-				event.getNode().play();
-			}
-		})
+		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		RectNode
 		.create(1520, 570, 100, 36)
