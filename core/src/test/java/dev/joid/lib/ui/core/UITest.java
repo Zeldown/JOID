@@ -905,6 +905,22 @@ public class UITest {
 	}
 
 	@Test
+	public void namesTheErrorOfItsConstructorWhenItCannotBeRenewed() {
+		final FailingConstructorUI ui = new FailingConstructorUI();
+		this.bridges.open(ui);
+		FailingConstructorUI.failing = true;
+		try {
+			ui.renew();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The UI " + FailingConstructorUI.class.getName() + " cannot be renewed: its constructor without argument failed (java.lang.IllegalArgumentException: Constructor failed), fix the constructor from this error", exception.getMessage());
+		} finally {
+			FailingConstructorUI.failing = false;
+		}
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
+	}
+
+	@Test
 	public void refusesToRenewAClosedUI() {
 		final RenewUI ui = new RenewUI();
 		try {
@@ -957,6 +973,26 @@ public class UITest {
 		Assert.assertTrue(ui.getNodeList().contains(panel));
 		this.bridges.frames(3);
 		Assert.assertTrue(panel.getReloadAnimator().get() > 0F);
+	}
+
+	@Test
+	public void keepsItsDevPanelAcrossAFailedReload() {
+		JOIDEnv.devMode(true);
+		final RetryUI ui = new RetryUI();
+		this.bridges.open(ui);
+		this.bridges.getUi().keyPressed(Key.F3, Key.F3);
+		final Node panel = ui.getDevNode();
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		RetryUI.failing = true;
+		try {
+			UITest.err(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+		} finally {
+			RetryUI.failing = false;
+		}
+		Assert.assertTrue(ui.getNodeList().contains(panel));
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
+		Assert.assertSame(panel, ui.getDevNode());
+		Assert.assertTrue(ui.getNodeList().contains(panel));
 	}
 
 	@Test
@@ -2421,6 +2457,23 @@ public class UITest {
 			if (RetryUI.failing) {
 				throw new NullPointerException("Init failed");
 			}
+		}
+
+	}
+
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class FailingConstructorUI extends UI {
+
+		private static boolean failing;
+
+		public FailingConstructorUI() {
+			if (FailingConstructorUI.failing) {
+				throw new IllegalArgumentException("Constructor failed");
+			}
+		}
+
+		@Override
+		public void init() {
 		}
 
 	}

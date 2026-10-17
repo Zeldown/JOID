@@ -2,6 +2,7 @@ package dev.joid.lib.ui.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -237,6 +238,9 @@ public abstract class UI implements IIndexedElement {
 			} finally {
 				this.initialized = true;
 				this.closed = false;
+				if (devNodeEnabled) {
+					this.scoped(() -> this.devNode.attach(this));
+				}
 			}
 
 			if (this.transition != null) {
@@ -250,12 +254,8 @@ public abstract class UI implements IIndexedElement {
 				}
 			}
 
-			if (JOIDEnv.isDevMode()) {
-				if (devNodeEnabled) {
-					this.scoped(() -> this.devNode.attach(this));
-				} else {
-					this.devNode = DevNode.create(1900, 1060).visible(this::isOnTop).enabled(this::isOnTop).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
-				}
+			if (JOIDEnv.isDevMode() && !devNodeEnabled) {
+				this.devNode = DevNode.create(1900, 1060).visible(this::isOnTop).enabled(this::isOnTop).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
 			}
 
 			if (JOIDEnv.isDevMode() && this.debug.profiler()) {
@@ -640,6 +640,8 @@ public abstract class UI implements IIndexedElement {
 			renewed = constructor.newInstance();
 		} catch (final NoSuchMethodException exception) {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead", exception);
+		} catch (final InvocationTargetException exception) {
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be renewed: its constructor without argument failed (" + exception.getCause() + "), fix the constructor from this error", exception.getCause());
 		} catch (final ReflectiveOperationException | RuntimeException exception) {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be renewed: its constructor without argument failed (" + exception + "), fix the constructor from this error", exception);
 		}

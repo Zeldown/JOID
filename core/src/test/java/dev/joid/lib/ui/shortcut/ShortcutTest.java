@@ -268,7 +268,7 @@ public class ShortcutTest {
 			JOIDEnv.devMode(previous);
 		}
 		final String printed = new String(output.toByteArray(), StandardCharsets.UTF_8);
-		Assert.assertTrue(printed, printed.startsWith("[JOID] No key resolver knows the shortcut binding unknown binding of type java.lang.String"));
+		Assert.assertTrue(printed, printed.startsWith("[JOID] No key resolver knows the shortcut binding unknown binding of type java.lang.String yet, the shortcut fires only once an IKeyResolver that knows it is registered"));
 		Assert.assertEquals(printed, printed.indexOf("[JOID]"), printed.lastIndexOf("[JOID]"));
 		Assert.assertTrue(this.trace.isEmpty());
 	}

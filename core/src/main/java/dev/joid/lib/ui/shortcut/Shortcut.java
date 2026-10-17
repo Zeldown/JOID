@@ -29,7 +29,7 @@ public final class Shortcut {
 
 	private Shortcut(final Object binding) {
 		if (!KeyResolver.supports(binding)) {
-			JOIDLog.devWarnOnce("Shortcut.binding." + binding.getClass().getName() + "." + binding, () -> "No key resolver knows the shortcut binding " + binding + " of type " + binding.getClass().getName() + ", the shortcut never fires: pass a Key or register an IKeyResolver first");
+			JOIDLog.devWarnOnce("Shortcut.binding." + binding.getClass().getName() + "." + binding, () -> "No key resolver knows the shortcut binding " + binding + " of type " + binding.getClass().getName() + " yet, the shortcut fires only once an IKeyResolver that knows it is registered: pass a Key or register an IKeyResolver with KeyResolver.register(...)");
 		}
 
 		this.binding = binding;
