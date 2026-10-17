@@ -1042,6 +1042,14 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void drawsTheCursorAfterAHangingSpaceOnTheNextLine() {
+		this.field(44D, "abcd ").cursorPosition(5);
+		this.bridges.frame();
+		Assert.assertEquals(2D, this.cursor().getLeft(), 0.001D);
+		Assert.assertEquals(22D, this.cursor().getTop(), 0.001D);
+	}
+
+	@Test
 	public void pulsesTheOpacityOfItsCursor() {
 		this.field("ab");
 		this.bridges.getClock().time(234L);
@@ -1105,15 +1113,18 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
-	public void highlightsAWrappedTextUpToItsHangingSpace() {
+	public void highlightsAWrappedTextAndTheLineAfterItsHangingSpace() {
 		final MultilineTextFieldNode field = this.field(44D, "abcd ");
 		this.control(field, Key.A);
 		this.bridges.frame();
 		final List<Draw> selections = this.selections();
-		Assert.assertEquals(1, selections.size());
+		Assert.assertEquals(2, selections.size());
 		Assert.assertEquals(2D, selections.get(0).getLeft(), 0.001D);
 		Assert.assertEquals(42D, selections.get(0).getRight(), 0.001D);
 		Assert.assertEquals(2D, selections.get(0).getTop(), 0.001D);
+		Assert.assertEquals(2D, selections.get(1).getLeft(), 0.001D);
+		Assert.assertEquals(4D, selections.get(1).getRight(), 0.001D);
+		Assert.assertEquals(22D, selections.get(1).getTop(), 0.001D);
 	}
 
 	@Test

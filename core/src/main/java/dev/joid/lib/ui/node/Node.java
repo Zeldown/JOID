@@ -328,6 +328,9 @@ public abstract class Node implements INode {
 			this.bindings.subscribe(this.loadCount > 0);
 			this.replay(() -> this.init(this.ui));
 			this.fire(Node.INIT, () -> NodeEvent.create(this));
+		} catch (final RuntimeException exception) {
+			this.fireDetach();
+			throw exception;
 		} finally {
 			context.clearReads();
 			context.putBackReads(readList);
@@ -871,10 +874,13 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T draggable(final @NonNull Supplier<@NonNull DraggableProperty> draggable) {
 		return this.follow("draggable", draggable, value -> {
 			this.checkMovable(value);
+			final DraggableProperty previous = this.draggable;
 			this.draggable = value;
-			this.dragging  = false;
-			this.dragged   = false;
-			this.draggedNode = null;
+			if (previous == null || previous.getType() != value.getType() || !value.isEnabled(this)) {
+				this.dragging  = false;
+				this.dragged   = false;
+				this.draggedNode = null;
+			}
 		});
 	}
 

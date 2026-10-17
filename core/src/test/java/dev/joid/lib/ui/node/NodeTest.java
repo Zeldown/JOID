@@ -1951,6 +1951,24 @@ public class NodeTest {
 	}
 
 	@Test
+	public void keepsDraggingWhileItsDraggableGivesTheSameBehaviour() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty::free);
+		this.press(node, 110D, 110D);
+		this.bridges.frame();
+		Assert.assertTrue(node.isDragging());
+	}
+
+	@Test
+	public void stopsDraggingOnceItsDraggableTurnsDisabled() {
+		final BooleanSignal locked = new BooleanSignal(false);
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(() -> locked.get() ? DraggableProperty.disabled() : DraggableProperty.free());
+		this.press(node, 110D, 110D);
+		locked.set(true);
+		this.bridges.frame();
+		Assert.assertFalse(node.isDragging());
+	}
+
+	@Test
 	public void ignoresAPressWithAnotherButton() {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free());
 		this.bridges.open(new NodeUI(node));
@@ -2287,6 +2305,22 @@ public class NodeTest {
 		ui.add(parent);
 		Assert.assertTrue(child.isAttached());
 		Assert.assertEquals(Arrays.asList("child init"), events);
+	}
+
+	@Test
+	public void detachesAChildWhoseInitFails() {
+		final Signal<Integer> signal = new Signal<>(0);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D);
+		this.bridges.open(new NodeUI(parent));
+		final BrokenNode child = new BrokenNode().watch(signal);
+		try {
+			parent.append(child);
+			Assert.fail("The init of the child fails");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The init of this node fails on purpose", expected.getMessage());
+		}
+		Assert.assertFalse(child.isAttached());
+		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
 	}
 
 	@Test
@@ -3952,6 +3986,19 @@ public class NodeTest {
 		@Override
 		public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 			throw new IllegalStateException("The press on this node fails on purpose");
+		}
+
+	}
+
+	public static final class BrokenNode extends Node {
+
+		public BrokenNode() {
+			super(0D, 0D, 10D, 10D);
+		}
+
+		@Override
+		public void init(final @NonNull UI ui) {
+			throw new IllegalStateException("The init of this node fails on purpose");
 		}
 
 	}

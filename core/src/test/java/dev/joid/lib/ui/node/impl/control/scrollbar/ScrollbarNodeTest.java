@@ -16,6 +16,7 @@ import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -145,6 +146,21 @@ public class ScrollbarNodeTest {
 		Assert.assertTrue(bar.isDragging());
 		this.bridges.frame();
 		Assert.assertEquals(-190D, content.getTargetScrollY(), 1E-6D);
+	}
+
+	@Test
+	public void leavesAPressAlreadyTaken() {
+		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
+		final RectNode content = ScrollbarNodeTest.column(bar);
+		this.bridges.open(new NodeUI(content)).frame();
+		this.bridges.move(515D, 180D).frames(2);
+		final NodeMouseEvent<?> consumedPress = NodeMouseEvent.create(bar, 515D, 180D, MouseButton.LEFT, 0L, null);
+		consumedPress.consume();
+		bar.mousePressed(consumedPress);
+		Assert.assertTrue(bar.isHovered());
+		Assert.assertFalse(bar.isDragging());
+		this.bridges.frame();
+		Assert.assertEquals(0D, content.getTargetScrollY(), 0D);
 	}
 
 	@Test

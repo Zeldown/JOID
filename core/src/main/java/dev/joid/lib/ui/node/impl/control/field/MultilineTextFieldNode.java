@@ -216,7 +216,6 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		while (true) {
 			final int newLine = text.indexOf('\n', paragraphStart);
 			final int paragraphEnd = newLine < 0 ? text.length() : newLine;
-			boolean wrapped = false;
 			int start = paragraphStart;
 			String prefix = FieldNode.opened(text, tags, start);
 			for (int i = paragraphStart; i < paragraphEnd; i++) {
@@ -243,13 +242,10 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 					lines.add(new FieldLine(start, split, prefix));
 					start = text.charAt(split) == ' ' ? split + 1 : split;
 					prefix = FieldNode.opened(text, tags, start);
-					wrapped = true;
 				}
 			}
 
-			if (newLine >= 0 || start < paragraphEnd || paragraphStart > 0 && !wrapped) {
-				lines.add(new FieldLine(start, paragraphEnd, prefix));
-			}
+			lines.add(new FieldLine(start, paragraphEnd, prefix));
 
 			if (newLine < 0) {
 				return layout;

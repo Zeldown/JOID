@@ -31,7 +31,7 @@ public abstract class BaseScrollbarNode extends Node {
 
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
-		if (this.dragging || !event.getButton().isLeft() || !super.isHovered()) {
+		if (this.dragging || event.isConsumed() || !event.getButton().isLeft() || !super.isHovered()) {
 			return;
 		}
 
