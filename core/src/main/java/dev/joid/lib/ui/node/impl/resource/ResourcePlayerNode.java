@@ -135,11 +135,7 @@ public class ResourcePlayerNode extends Node {
 
 	@Override
 	public void detach() {
-		this.release();
-		this.clearFork();
-		this.wasPlaying = false;
-		this.lastProgress = 0D;
-		this.resourceStarted = false;
+		this.reset();
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T play() {
@@ -217,10 +213,8 @@ public class ResourcePlayerNode extends Node {
 
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
 		return super.follow("resource", resource, value -> {
-			this.release();
-			this.clearFork();
+			this.reset();
 			this.resource = value;
-			this.resourceStarted = false;
 		});
 	}
 
@@ -378,6 +372,14 @@ public class ResourcePlayerNode extends Node {
 
 		this.fork.prepareBind();
 		return this.fork.isFailed() || this.fork.isLoaded() && this.fork.getWidth() != 0 && this.fork.getHeight() != 0;
+	}
+
+	private void reset() {
+		this.release();
+		this.clearFork();
+		this.wasPlaying = false;
+		this.lastProgress = 0D;
+		this.resourceStarted = false;
 	}
 
 	private void clearFork() {

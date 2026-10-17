@@ -240,8 +240,9 @@ public abstract class Node implements INode {
 	private boolean scrollEndX;
 	private boolean scrollEndY;
 
-	@Getter(AccessLevel.NONE)
-	private boolean scrollMeasured;
+	@Getter(AccessLevel.NONE) private boolean scrollMeasured;
+	@Getter(AccessLevel.NONE) private boolean scrollEndGuessX;
+	@Getter(AccessLevel.NONE) private boolean scrollEndGuessY;
 
 	@Getter(AccessLevel.NONE) private double  restX;
 	@Getter(AccessLevel.NONE) private double  restY;
@@ -1661,7 +1662,6 @@ public abstract class Node implements INode {
 	private void scrollContent(final IRenderBridge render) {
 		boolean scrollsX = false;
 		boolean scrollsY = false;
-		final boolean measured = this.scrollMeasured;
 		if (this.overflow == OverflowProperty.SCROLL) {
 			double offsetX = Double.POSITIVE_INFINITY;
 			double offsetY = Double.POSITIVE_INFINITY;
@@ -1694,12 +1694,16 @@ public abstract class Node implements INode {
 		this.scrollYValue.update(targetScrollY);
 		this.scrollEndX = this.scrollEndX && this.targetScrollX == -this.maxScrollX;
 		this.scrollEndY = this.scrollEndY && this.targetScrollY == -this.maxScrollY;
-		if (!measured && this.scrollMeasured && this.scrollEndX && this.targetScrollX == targetScrollX) {
+		if (this.scrollMeasured && this.scrollEndGuessX && this.scrollEndX && this.targetScrollX == targetScrollX) {
 			this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, Axis.HORIZONTAL, targetScrollX, targetScrollX));
 		}
 
-		if (!measured && this.scrollMeasured && this.scrollEndY && this.targetScrollY == targetScrollY) {
+		if (this.scrollMeasured && this.scrollEndGuessY && this.scrollEndY && this.targetScrollY == targetScrollY) {
 			this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, Axis.VERTICAL, targetScrollY, targetScrollY));
+		}
+
+		if (this.scrollMeasured) {
+			this.scrollEndGuessX = this.scrollEndGuessY = false;
 		}
 
 		final boolean thumbDragged = this.scrollbar != null && this.scrollbar.isDragging();
@@ -1965,6 +1969,7 @@ public abstract class Node implements INode {
 			this.scrollYValue.update(0D);
 			this.scrollX = this.scrollY = 0D;
 			this.scrollEndX = this.scrollEndY = false;
+			this.scrollEndGuessX = this.scrollEndGuessY = false;
 			this.scrollMeasured = false;
 		}
 
@@ -2090,9 +2095,11 @@ public abstract class Node implements INode {
 		if (horizontal) {
 			this.targetScrollX = offset;
 			this.scrollEndX = end;
+			this.scrollEndGuessX = !this.scrollMeasured && end;
 		} else {
 			this.targetScrollY = offset;
 			this.scrollEndY = end;
+			this.scrollEndGuessY = !this.scrollMeasured && end;
 		}
 	}
 
@@ -2176,7 +2183,7 @@ public abstract class Node implements INode {
 				try {
 					property.apply(this, signal);
 				} catch (final Exception exception) {
-					JOIDLog.warnOnce("Node.watch." + this.getClass().getName() + "." + exception.getClass().getName(), "A watch of " + JOIDLog.nameOf(this.getClass()) + " cannot apply its property when its signal changes (" + exception + "), the property keeps its previous value: check the value the signal gives", exception);
+					JOIDLog.warnOnce("Node.watch." + this.getClass().getName() + "." + exception.getClass().getName(), "A watch of " + JOIDLog.nameOf(this.getClass()) + " cannot apply its property when its signal changes (" + exception + "), the remaining properties of this watch still apply: check the value the signal gives or the body it replays", exception);
 				}
 			}
 		});

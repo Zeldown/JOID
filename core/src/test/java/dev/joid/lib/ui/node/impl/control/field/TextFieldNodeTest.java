@@ -30,6 +30,7 @@ import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.utils.align.Align;
+import dev.joid.lib.utils.geom.Point;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -1081,6 +1082,15 @@ public class TextFieldNodeTest {
 		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F, new Color(0.2F, 0.4F, 0.6F, 0.4F))).placeholder("Search")));
 		Assert.assertEquals("Search", this.font.last().getText());
 		Assert.assertEquals(0.2F, this.font.last().getAlpha(), 1E-6F);
+	}
+
+	@Test
+	public void keepsTheGradientOfItsTextOnItsPlaceholderAndItsCursor() {
+		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.create(0D, 0D), Point.create(1D, 0D));
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F, gradient)).placeholder("Search");
+		Assert.assertTrue(field.getPlaceholderInfo().getColor().isGradient());
+		Assert.assertEquals(0.5F, field.getPlaceholderInfo().getColor().getAlphaF(), 1E-6F);
+		Assert.assertTrue(field.getShownCursorColor().isGradient());
 	}
 
 	@Test

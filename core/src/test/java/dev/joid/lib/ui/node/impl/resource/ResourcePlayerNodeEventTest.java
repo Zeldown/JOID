@@ -53,6 +53,16 @@ public class ResourcePlayerNodeEventTest {
 	}
 
 	@Test
+	public void firesAgainForANewResourceGivenWhilePlaying() {
+		final List<Object> received = new ArrayList<>();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeEventTest.blink()).onPlay(event -> received.add(event.getNode()));
+		this.bridges.open(new NodeUI(player)).frames(5);
+		player.resource(ResourcePlayerNodeEventTest.blink());
+		this.bridges.frames(2);
+		Assert.assertEquals(Arrays.asList(player, player), received);
+	}
+
+	@Test
 	public void firesAsSoonAsTheNodePauses() {
 		final List<Object> received = new ArrayList<>();
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeEventTest.blink()).onPause(event -> received.add(event.getNode()));
@@ -128,6 +138,17 @@ public class ResourcePlayerNodeEventTest {
 		this.bridges.open(new NodeUI(player)).frames(5);
 		player.restart();
 		this.bridges.frames(5);
+		Assert.assertTrue(received.isEmpty());
+	}
+
+	@Test
+	public void staysQuietForANewResourceWaitingForPlay() {
+		final List<Object> received = new ArrayList<>();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeEventTest.blink()).onEnd(event -> received.add("end")).onStop(event -> received.add("stop"));
+		this.bridges.open(new NodeUI(player)).frames(5);
+		player.autoplay(false).resource(ResourcePlayerNodeEventTest.blink());
+		this.bridges.frames(5);
+		Assert.assertFalse(player.isPlaying());
 		Assert.assertTrue(received.isEmpty());
 	}
 

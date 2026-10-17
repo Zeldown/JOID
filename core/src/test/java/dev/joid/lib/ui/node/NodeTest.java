@@ -3201,6 +3201,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		final String error = NodeTest.capture(() -> signal.set(1));
 		Assert.assertTrue(error, error.contains("Body failed"));
+		Assert.assertTrue(error, error.contains("the remaining properties of this watch still apply"));
 		Assert.assertTrue(node.getChildren().isEmpty());
 	}
 
@@ -3579,6 +3580,20 @@ public class NodeTest {
 		column.scrollY(-300D);
 		this.bridges.frames(2);
 		Assert.assertEquals(Arrays.asList(-300D), endings);
+	}
+
+	@Test
+	public void announcesTheEndOnceWhenItsListenerAddsAChildThatKeepsItsContentSize() {
+		final List<Double> endings = new ArrayList<>();
+		final ContainerNode row = NodeTest.row().onScrollToEnd(event -> {
+			endings.add(event.getNode().getTargetScrollX());
+			RectNode.create(0D, 0D, 10D, 10D).attach(event.getNode());
+		});
+		this.bridges.open(new NodeUI(row));
+		row.scrollX(-1000D);
+		this.bridges.frames(200);
+		Assert.assertEquals(Arrays.asList(-300D), endings);
+		Assert.assertEquals(3, row.getChildren().size());
 	}
 
 	@Test

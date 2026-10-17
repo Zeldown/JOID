@@ -607,12 +607,12 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		final Color color = this.info.getColor();
-		return this.getShownInfo().withColor(new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), color.getAlphaF() * 0.5F));
+		return this.getShownInfo().withColor(color.withAlpha(color.getAlphaF() * 0.5F));
 	}
 
 	protected final @NonNull Color getShownCursorColor() {
 		final Color color = this.cursorColor != null ? this.cursorColor : this.info.getColor();
-		return new Color(color.getRedF(), color.getGreenF(), color.getBlueF(), color.getAlphaF() * (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F));
+		return color.withAlpha(color.getAlphaF() * (float) ((Math.sin(2D * Math.PI * (BridgeHandler.CLOCK.get().currentTimeMillis() % 2000) / 1000) + 1D) / 2F));
 	}
 
 	private void applyFocus(final boolean focused) {
