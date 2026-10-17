@@ -161,13 +161,6 @@ task crossBackendTest(type: JavaExec) {
 
 renderBaseline.mustRunAfter test
 
-gradle.buildFinished {
-    def report = file("$buildDir/snapshots/cross/report.html")
-    if (crossBackendTest.state.failure != null && report.exists()) {
-        println "Cross backend report: ${report.toPath().toUri().toASCIIString()}"
-    }
-}
-
 task runDemo(type: JavaExec) {
     group = 'JOID'
     description = 'Launches the demo window.'

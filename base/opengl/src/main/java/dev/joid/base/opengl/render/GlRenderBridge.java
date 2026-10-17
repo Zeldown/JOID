@@ -39,6 +39,8 @@ public class GlRenderBridge extends RenderBridge {
 	private final IGlMipmapBuilder      mipmapBuilder;
 	private final IGlFrameBufferBinding frameBufferBinding;
 
+	private int screenFrameBuffer;
+
 	protected GlRenderBridge(final @NonNull IGlBinding binding) {
 		this.capabilities       = GlCapabilities.read(binding).require();
 		this.guard              = GlStateGuard.create(binding, this.capabilities);
@@ -54,6 +56,7 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	protected void beginFrameCommands() {
+		this.screenFrameBuffer = this.binding.getInteger(GlConstants.DRAW_FRAMEBUFFER_BINDING);
 		this.guard.enter();
 	}
 
@@ -168,7 +171,7 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	private void applyTarget(final RenderState state) {
-		this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, state.getFrameBuffer() == null ? 0 : ((GlFrameBuffer) state.getFrameBuffer()).getId());
+		this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, state.getFrameBuffer() == null ? this.screenFrameBuffer : ((GlFrameBuffer) state.getFrameBuffer()).getId());
 		this.binding.viewport(state.getViewportX(), state.getViewportY(), state.getViewportWidth(), state.getViewportHeight());
 	}
 

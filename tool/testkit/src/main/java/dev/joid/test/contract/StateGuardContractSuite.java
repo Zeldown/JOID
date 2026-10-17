@@ -84,7 +84,7 @@ public abstract class StateGuardContractSuite {
 	}
 
 	@Test
-	public void drawsWhateverTheFrameBufferSetBeforeJoid() {
+	public void drawsWhateverTheReadFrameBufferSetBeforeJoid() {
 		this.check(StateTrap.FRAMEBUFFER);
 	}
 

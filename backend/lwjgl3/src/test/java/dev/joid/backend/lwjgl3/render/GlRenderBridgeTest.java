@@ -2,18 +2,22 @@ package dev.joid.backend.lwjgl3.render;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.ByteBuffer;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL30C;
 
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
+import dev.joid.base.opengl.capability.GlFrameBufferFamily;
 import dev.joid.base.opengl.capability.GlProfile;
 import dev.joid.base.opengl.render.GlRenderBridge;
+import dev.joid.base.opengl.render.framebuffer.GlFrameBuffer;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
 import dev.joid.base.opengl.render.texture.BlitGlMipmapBuilder;
 import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
@@ -75,6 +79,29 @@ public class GlRenderBridgeTest {
 		GL30C.glBindFramebuffer(GL30C.GL_READ_FRAMEBUFFER, 0);
 		GL30C.glDeleteFramebuffers(read);
 		Assert.assertEquals(read, bound);
+	}
+
+	@Test
+	public void drawsTheScreenIntoTheFrameBufferThatTheHostBound() {
+		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
+		Assume.assumeTrue(bridge.getCapabilities().getFrameBufferFamily() == GlFrameBufferFamily.CORE);
+		final GlFrameBuffer host = (GlFrameBuffer) bridge.createFrameBuffer(8, 8);
+		final ByteBuffer pixel = BufferUtils.createByteBuffer(4);
+		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, host.getId());
+		bridge.beginFrame();
+		try {
+			bridge.screen(8, 8);
+			bridge.clearColor(1F, 0F, 0F, 1F);
+		} finally {
+			bridge.endFrame();
+		}
+
+		final int bound = GL11C.glGetInteger(GL30C.GL_DRAW_FRAMEBUFFER_BINDING);
+		GL11C.glReadPixels(0, 0, 1, 1, GL11C.GL_RGBA, GL11C.GL_UNSIGNED_BYTE, pixel);
+		GL30C.glBindFramebuffer(GL30C.GL_FRAMEBUFFER, 0);
+		host.delete();
+		Assert.assertEquals(host.getId(), bound);
+		Assert.assertEquals(255, pixel.get(0) & 0xFF);
 	}
 
 	@Test

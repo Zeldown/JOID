@@ -336,13 +336,6 @@ task validateShaders {
     }
 }
 
-gradle.buildFinished {
-    def report = file('build/snapshots/cross/report.html')
-    if (crossBackendTest.state.failure != null && report.exists()) {
-        println "Cross backend report: ${report.toPath().toUri().toASCIIString()}"
-    }
-}
-
 task installLocalGitHook(type: Copy) {
     group = 'JOID'
     description = 'Installs the pre-commit and pre-push git hooks, outside a continuous integration and only when they changed.'

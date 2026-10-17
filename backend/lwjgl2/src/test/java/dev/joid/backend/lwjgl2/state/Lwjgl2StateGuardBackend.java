@@ -117,8 +117,8 @@ public final class Lwjgl2StateGuardBackend implements IStateGuardBackend {
 			GL11.glPixelStorei(GL11.GL_PACK_SKIP_PIXELS, 3);
 			break;
 		case FRAMEBUFFER:
-			GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, GL30.glGenFramebuffers());
-			GL30.glFramebufferTexture2D(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, Lwjgl2StateGuardBackend.texture(GL11.GL_NEAREST, GL12.GL_CLAMP_TO_EDGE), 0);
+			GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, GL30.glGenFramebuffers());
+			GL30.glFramebufferTexture2D(GL30.GL_READ_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, GL11.GL_TEXTURE_2D, Lwjgl2StateGuardBackend.texture(GL11.GL_NEAREST, GL12.GL_CLAMP_TO_EDGE), 0);
 			GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, GL30.glGenRenderbuffers());
 			break;
 		case PIXEL_BUFFER:
@@ -204,6 +204,8 @@ public final class Lwjgl2StateGuardBackend implements IStateGuardBackend {
 			return this.getCapabilities().hasVertexArrays();
 		case SAMPLER_OBJECTS:
 			return this.getCapabilities().hasSamplerObjects();
+		case FRAMEBUFFER:
+			return this.getCapabilities().hasFrameBufferBlit();
 		default:
 			return true;
 		}
