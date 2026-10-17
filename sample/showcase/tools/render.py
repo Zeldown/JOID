@@ -44,7 +44,7 @@ def render(lines, out):
 	os.makedirs(out, exist_ok=True)
 	scenario = os.path.join(WORK, "scenario.txt")
 	open(scenario, "w", encoding="utf-8").write("\n".join(lines) + "\n")
-	r = subprocess.run([java(), "-Xmx3g", "-Djoid.config=" + os.path.join(WORK, "config"), "-Djoid.snapshot.cache=" + os.path.join(ROOT, ".snapshots", "cache"),
+	r = subprocess.run([java(), "-Xmx3g", "-Djoid.data=" + os.path.join(WORK, "data"), "-Djoid.cache=" + os.path.join(WORK, "cache"),
 		"-cp", path, PACKAGE + "ShowcaseRender", scenario, out], cwd=WORK, capture_output=True, text=True, encoding="utf-8", errors="replace")
 	if r.returncode:
 		sys.exit("render failed:\n" + r.stdout[-4000:] + r.stderr[-4000:])
