@@ -95,6 +95,10 @@ public class FlexNode extends Node {
 		}
 	}
 
+	protected final boolean isLaidOut(final @NonNull Node child) {
+		return child.getPosition() != PositionProperty.ABSOLUTE && child.isVisibleProperty();
+	}
+
 	private void changeDirection(final Axis direction) {
 		if (this.direction != direction) {
 			for (final Node child : super.getChildren()) {
@@ -108,7 +112,7 @@ public class FlexNode extends Node {
 	private void updateFlex() {
 		double offset = 0D;
 		for (final Node child : this.getLayoutOrder()) {
-			if (child.getPosition() == PositionProperty.ABSOLUTE || !child.isVisibleProperty()) {
+			if (!this.isLaidOut(child)) {
 				continue;
 			}
 

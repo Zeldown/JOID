@@ -21,6 +21,7 @@ import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.utils.geom.Point;
 
@@ -427,6 +428,22 @@ public class ResourcePlayerNodeTest {
 		this.bridges.frame();
 		Assert.assertEquals(1, (int) ResourcePlayerNodeTest.<Integer>read(ResourcePlayerNodeTest.<Resource>read(player, "fork").getDecoder(), "displayed"));
 		Assert.assertEquals(-1, (int) ResourcePlayerNodeTest.<Integer>read(resource.getDecoder(), "displayed"));
+	}
+
+	@Test
+	public void keepsPlayingOnceItsCopyIsDetached() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(player);
+		this.bridges.open(new NodeUI(parent)).frames(3);
+		final ResourcePlayerNode copy = player.copy();
+		parent.append(copy);
+		this.bridges.frame();
+		Assert.assertNotSame(player.getPlayback(), copy.getPlayback());
+		parent.remove(copy);
+		this.bridges.frames(2);
+		Assert.assertTrue(player.isPlaying());
+		Assert.assertEquals(0.4D, player.getProgress(), 1E-9D);
+		Assert.assertEquals(1, this.bridges.getRender().getDraws(1F, 1F, 1F).size());
 	}
 
 	@Test

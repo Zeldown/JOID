@@ -18,6 +18,7 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
+import dev.joid.lib.ui.node.property.PositionProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.align.Axis;
 
@@ -502,6 +503,37 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(Arrays.asList(third, first, hidden), flex.getChildren());
 		Assert.assertEquals(0D, third.getY(), 0D);
 		Assert.assertEquals(110D, flex.getHeight(), 0D);
+	}
+
+	@Test
+	public void skipsTheAbsoluteChildrenWhileDragging() {
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final RectNode absolute = RectNode.create(300D, 0D, 200D, 30D).position(PositionProperty.ABSOLUTE);
+		final RectNode third = ReorderableFlexNodeTest.item();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, absolute, third);
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 170D);
+		Assert.assertTrue(flex.isDragging(third));
+		this.bridges.frame();
+		Assert.assertEquals(60D, third.getY(), 0D);
+		this.bridges.move(150D, 110D).frames(60);
+		Assert.assertEquals(0, ReorderableFlexNodeTest.<Integer>read(flex, "currentIndex").intValue());
+		Assert.assertEquals(60D, first.getY(), 0D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(60);
+		Assert.assertEquals(Arrays.asList(third, first, absolute), flex.getChildren());
+		Assert.assertEquals(0D, third.getY(), 0D);
+		Assert.assertEquals(110D, flex.getHeight(), 0D);
+	}
+
+	@Test
+	public void ignoresAPressOverAnAbsoluteChild() {
+		final RectNode absolute = RectNode.create(100D, 300D, 200D, 50D).position(PositionProperty.ABSOLUTE);
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item(), absolute);
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 320D);
+		Assert.assertTrue(absolute.isHovered());
+		Assert.assertNull(flex.getReorderedNode());
 	}
 
 	@Test

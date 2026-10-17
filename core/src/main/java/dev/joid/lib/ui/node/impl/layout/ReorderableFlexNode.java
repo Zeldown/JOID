@@ -18,7 +18,6 @@ import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeReorderEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.property.OverflowProperty;
-import dev.joid.lib.ui.node.property.PositionProperty;
 import dev.joid.lib.utils.align.Axis;
 import lombok.Getter;
 import lombok.NonNull;
@@ -83,7 +82,7 @@ public class ReorderableFlexNode extends FlexNode {
 		}
 
 		for (final Node child : super.getChildren()) {
-			if (child.isHovered()) {
+			if (super.isLaidOut(child) && child.isHovered()) {
 				if (this.pinnedNodes.contains(child)) {
 					return;
 				}
@@ -262,7 +261,7 @@ public class ReorderableFlexNode extends FlexNode {
 			double offset = 0D;
 			for (final Node c : super.getChildren()) {
 				this.childCurrent.put(c, offset);
-				if (c.isVisibleProperty()) {
+				if (super.isLaidOut(c)) {
 					offset += this.mainSize(c) + super.getMargin();
 				}
 			}
@@ -287,11 +286,10 @@ public class ReorderableFlexNode extends FlexNode {
 
 		final double target;
 		if (this.releasing) {
-			target = this.computeDraggedTarget();
+			target = this.extent(this.logicalOrder.subList(0, this.logicalOrder.indexOf(dragged)));
 		} else {
 			final double localMouse = vertical ? mouseY - super.getAbsoluteY() : mouseX - super.getAbsoluteX();
-			final double extent = this.computeFullExtent();
-			target = Math.max(0D, Math.min(Math.max(0D, extent - draggedSize), localMouse - this.dragOffset));
+			target = Math.max(0D, Math.min(Math.max(0D, this.extent(super.getChildren()) - super.getMargin() - draggedSize), localMouse - this.dragOffset));
 		}
 
 		this.draggedCurrent = super.getUi().lerpByFramerate(this.draggedCurrent, target, 1D / 6D, 0.5D);
@@ -312,11 +310,11 @@ public class ReorderableFlexNode extends FlexNode {
 			}
 
 			final double cSize = this.mainSize(c);
-			final double cMiddle = c.isVisibleProperty() ? off + (cSize + super.getMargin()) / 2D : off;
+			final double cMiddle = super.isLaidOut(c) ? off + (cSize + super.getMargin()) / 2D : off;
 			if (cMiddle <= this.draggedCurrent) {
 				newIndex++;
 			}
-			if (c.isVisibleProperty()) {
+			if (super.isLaidOut(c)) {
 				off += cSize + super.getMargin();
 			}
 		}
@@ -341,7 +339,7 @@ public class ReorderableFlexNode extends FlexNode {
 	private void slideChildren() {
 		double offset = 0D;
 		for (final Node child : this.logicalOrder) {
-			if (child.getPosition() == PositionProperty.ABSOLUTE || !child.isVisibleProperty()) {
+			if (!super.isLaidOut(child)) {
 				continue;
 			}
 
@@ -387,16 +385,6 @@ public class ReorderableFlexNode extends FlexNode {
 		}
 	}
 
-	private double computeDraggedTarget() {
-		double off = 0D;
-		for (final Node c : this.logicalOrder.subList(0, this.logicalOrder.indexOf(this.reorderedNode))) {
-			if (c.isVisibleProperty()) {
-				off += this.mainSize(c) + super.getMargin();
-			}
-		}
-		return off;
-	}
-
 	private void finishReorder(final boolean kept) {
 		final Node node = this.reorderedNode;
 		final int oldIndex = this.initialIndex;
@@ -417,14 +405,14 @@ public class ReorderableFlexNode extends FlexNode {
 		super.fire(ReorderableFlexNode.REORDER_END, () -> NodeReorderEvent.Post.create(this, node, oldIndex, newIndex));
 	}
 
-	private double computeFullExtent() {
-		double off = 0D;
-		for (final Node child : super.getChildren()) {
-			if (child.isVisibleProperty()) {
-				off += this.mainSize(child) + super.getMargin();
+	private double extent(final @NonNull List<Node> children) {
+		double extent = 0D;
+		for (final Node child : children) {
+			if (super.isLaidOut(child)) {
+				extent += this.mainSize(child) + super.getMargin();
 			}
 		}
-		return Math.max(0D, off - super.getMargin());
+		return extent;
 	}
 
 	private double mainSize(final @NonNull Node child) {

@@ -28,10 +28,10 @@ public class ResourcePlayerNode extends Node {
 
 	@Getter private Resource resource;
 
-	private Resource fork;
-	private boolean  wasPlaying;
-	private double   lastProgress;
-	private boolean  resourceStarted;
+	private transient Resource fork;
+	private transient boolean  wasPlaying;
+	private transient double   lastProgress;
+	private transient boolean  resourceStarted;
 
 	private Double  pendingTime;
 	private Boolean pendingPlaying;
