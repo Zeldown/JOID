@@ -12,7 +12,6 @@ import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
-import dev.joid.base.opengl.capability.GlFrameBufferFamily;
 
 public class GlStateJournalTest {
 
@@ -66,7 +65,7 @@ public class GlStateJournalTest {
 				return null;
 			}
 		});
-		return GlStateJournal.create(binding, GlCapabilities.read(binding), GlFrameBufferFamily.EXT);
+		return GlStateJournal.create(binding, GlCapabilities.read(binding));
 	}
 
 	private static <T> T fake(final Class<T> type, final Answer answer) {

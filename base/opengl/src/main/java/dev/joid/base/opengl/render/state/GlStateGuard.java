@@ -20,7 +20,7 @@ public final class GlStateGuard {
 	private int depth;
 
 	private GlStateGuard(final IGlBinding binding, final GlCapabilities capabilities) {
-		this.journal      = GlStateJournal.create(binding, capabilities, capabilities.getFrameBufferFamily());
+		this.journal      = GlStateJournal.create(binding, capabilities);
 		this.capabilities = capabilities;
 		this.binding      = JournalGlBinding.create(binding, this.journal);
 	}

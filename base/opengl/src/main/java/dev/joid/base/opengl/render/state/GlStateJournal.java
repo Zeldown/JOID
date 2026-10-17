@@ -10,7 +10,6 @@ import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
-import dev.joid.base.opengl.capability.GlFrameBufferFamily;
 import dev.joid.base.opengl.capability.GlProfile;
 import lombok.NonNull;
 
@@ -29,18 +28,18 @@ public final class GlStateJournal {
 	private int     vertexArray;
 	private boolean recording;
 
-	private GlStateJournal(final IGlBinding binding, final GlCapabilities capabilities, final GlFrameBufferFamily family) {
+	private GlStateJournal(final IGlBinding binding, final GlCapabilities capabilities) {
 		this.binding            = binding;
 		this.capabilities       = capabilities;
-		this.frameBufferBinding = binding.getFrameBufferBinding(family);
+		this.frameBufferBinding = binding.getFrameBufferBinding(capabilities.getFrameBufferFamily());
 		this.entryList          = new ArrayList<>();
 		this.textureSet         = new HashSet<>();
 		this.vertexArraySet     = new HashSet<>();
 		this.unitTextures       = new int[32];
 	}
 
-	public static @NonNull GlStateJournal create(final IGlBinding binding, final GlCapabilities capabilities, final GlFrameBufferFamily family) {
-		return new GlStateJournal(binding, capabilities, family);
+	public static @NonNull GlStateJournal create(final IGlBinding binding, final GlCapabilities capabilities) {
+		return new GlStateJournal(binding, capabilities);
 	}
 
 	public void start() {

@@ -24,28 +24,22 @@ public final class DemoScrambleTextEffect implements ITextEffect {
 
 		final String pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		final double advance = glyph.getAdvance(glyph.getCodepoint());
-		int candidates = 0;
+		final StringBuilder candidates = new StringBuilder();
 		for (int i = 0; i < pool.length(); i++) {
 			final char candidate = pool.charAt(i);
 			if (DemoScrambleTextEffect.isCandidate(glyph, candidate, advance)) {
-				candidates++;
+				candidates.append(candidate);
 			}
 		}
 
-		if (candidates == 0) {
+		if (candidates.length() == 0) {
 			return;
 		}
 
 		final long step = BridgeHandler.CLOCK.get().currentTimeMillis() / 80L;
 		final long seed = (step * 0x9E3779B97F4A7C15L + glyph.getIndex()) * 0xBF58476D1CE4E5B9L;
-		int remaining = (int) ((seed >>> 33) % candidates);
-		for (int i = 0; i < pool.length(); i++) {
-			final char candidate = pool.charAt(i);
-			if (DemoScrambleTextEffect.isCandidate(glyph, candidate, advance) && remaining-- == 0) {
-				glyph.codepoint(candidate).offset(glyph.getOffsetX() + (advance - glyph.getAdvance(candidate)) / 2D, glyph.getOffsetY());
-				return;
-			}
-		}
+		final char candidate = candidates.charAt((int) ((seed >>> 33) % candidates.length()));
+		glyph.codepoint(candidate).offset(glyph.getOffsetX() + (advance - glyph.getAdvance(candidate)) / 2D, glyph.getOffsetY());
 	}
 
 	private static boolean isCandidate(final ITextGlyph glyph, final char candidate, final double advance) {
