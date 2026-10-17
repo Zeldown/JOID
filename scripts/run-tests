@@ -9,7 +9,7 @@ changed() {
 }
 
 jars=0
-if changed '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$|NOTICE$|licenses/)'; then
+if changed '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$|gradle\.properties$|gradlew|NOTICE$|licenses/)'; then
     jars=1
 fi
 
@@ -66,7 +66,7 @@ fi
 trap restore EXIT
 
 all=0
-if changed '^(core/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
+if changed '^(core/|tool/|gradle/|build\.gradle$|settings\.gradle$|gradle\.properties$|gradlew)'; then
     all=1
 fi
 

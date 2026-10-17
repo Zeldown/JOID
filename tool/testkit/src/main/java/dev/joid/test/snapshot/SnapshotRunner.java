@@ -303,10 +303,14 @@ public final class SnapshotRunner {
 	}
 
 	private void awaitPlayback() {
-		for (int attempt = 0; attempt < 3000 && !SnapshotRunner.isSettled(); attempt++) {
+		for (int attempt = 0; attempt < 3000; attempt++) {
+			if (SnapshotRunner.isSettled()) {
+				return;
+			}
 			SnapshotRunner.sleep(10L);
 			this.render(false);
 		}
+		throw new IllegalStateException("A resource never settled in 30s: it kept decoding or rendering, check that the resources of the scenario stop decoding");
 	}
 
 	private void awaitResources() {

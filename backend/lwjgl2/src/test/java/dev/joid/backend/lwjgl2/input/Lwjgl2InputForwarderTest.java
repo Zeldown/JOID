@@ -55,6 +55,16 @@ public class Lwjgl2InputForwarderTest {
 	}
 
 	@Test
+	public void keepsTheKeyTypedWithoutModifierWhileAModifierIsHeld() throws Exception {
+		this.keyPressed(Keyboard.KEY_M, ',');
+		this.window.keys.add(Key.LEFT_SHIFT);
+		this.keyPressed(Keyboard.KEY_LSHIFT, '\0');
+		this.keyPressed(Keyboard.KEY_M, '?');
+		this.keyPressed(Keyboard.KEY_PERIOD, '/');
+		Assert.assertEquals(Arrays.asList("key COMMA", "key LEFT_SHIFT", "key COMMA", "key PERIOD"), this.trace);
+	}
+
+	@Test
 	public void keepsThePositionOfTheDigits() throws Exception {
 		this.keyPressed(Keyboard.KEY_1, '&');
 		this.keyPressed(Keyboard.KEY_2, 'é');

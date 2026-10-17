@@ -81,12 +81,15 @@ cache folder:
   https://ffmpeg.org
   Licensed under the GNU Lesser General Public License, version 2.1 or later
 
-The dev jars also embed the following fonts, licensed under the SIL Open
-Font License, Version 1.1, whose text sits next to each font file:
+The dev and demo jars also embed the following font, licensed under the SIL
+Open Font License, Version 1.1, whose text sits next to the font file:
 
   Montserrat
   https://github.com/JulietaUla/Montserrat
   Copyright 2011 The Montserrat Project Authors
+
+The demo jars also embed the following fonts, under the same license, whose
+text sits next to each font file:
 
   Pacifico
   https://github.com/googlefonts/Pacifico

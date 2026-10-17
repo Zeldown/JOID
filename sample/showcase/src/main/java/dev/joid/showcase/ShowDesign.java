@@ -32,19 +32,18 @@ public class ShowDesign extends ShowUI {
 		RectNode
 		.create(0, 0, 1920, 1080)
 		.color(Color.TRANSPARENT)
-		.visible(() -> this.right() - this.left() < 1920D)
+		.visible(() -> this.front() < 1920D)
 		.body(layer -> this.screen(new ShowNeonKit(), layer))
 		.attach(this);
 
 		RectNode
 		.create(0, 0, 1920, 1080)
 		.color(Color.TRANSPARENT)
-		.<RectNode>x(() -> this.left())
-		.<RectNode>width(() -> this.right() - this.left())
-		.visible(() -> this.right() - this.left() > 0.5D)
+		.<RectNode>width(() -> this.front())
+		.visible(() -> this.front() > 0.5D)
 		.overflow(OverflowProperty.HIDDEN)
 		.body(clip -> {
-			RectNode.create(0, 0, 1920, 1080).color(Color.TRANSPARENT).<RectNode>x(() -> -this.left()).body(layer -> this.screen(new ShowPaperKit(), layer)).attach(clip);
+			RectNode.create(0, 0, 1920, 1080).color(Color.TRANSPARENT).body(layer -> this.screen(new ShowPaperKit(), layer)).attach(clip);
 		})
 		.attach(this);
 
@@ -111,15 +110,7 @@ public class ShowDesign extends ShowUI {
 	}
 
 	private double front() {
-		return 1920D * (this.paper.get() ? this.eased() : 1D - this.eased());
-	}
-
-	private double left() {
-		return this.paper.get() ? 0D : this.front();
-	}
-
-	private double right() {
-		return this.paper.get() ? this.front() : 1920D;
+		return 1920D * this.eased();
 	}
 
 }

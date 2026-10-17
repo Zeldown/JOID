@@ -19,6 +19,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceData;
+import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
@@ -143,6 +144,19 @@ public class SnapshotRunnerCommandTest {
 	}
 
 	@Test
+	public void failsAWaitWhenAResourceNeverSettles() {
+		Resource.of(new ByteArrayInputStream(new byte[] {0})).decoder(new RestlessDecoder());
+		try {
+			SnapshotRunnerCommandTest.runner.execute("wait 16");
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("A resource never settled in 30s: it kept decoding or rendering, check that the resources of the scenario stop decoding", exception.getMessage());
+		} finally {
+			SnapshotRunnerCommandTest.runner.execute("ui " + TraceUI.class.getName());
+		}
+	}
+
+	@Test
 	public void decodesTheResourcesOfEachUIAfresh() {
 		SnapshotRunnerCommandTest.runner.execute("ui " + IconUI.class.getName());
 		final ResourceData data = JOID.getUi(IconUI.class).getResource().getResourceData();
@@ -239,6 +253,27 @@ public class SnapshotRunnerCommandTest {
 		@Override
 		public void init() {
 			ResourceNode.create(0, 0, 10, 10).resource(this.resource).attach(this);
+		}
+
+	}
+
+	private static final class RestlessDecoder implements IResourceDecoder {
+
+		@Override
+		public void clear(final @NonNull ResourceData resource) {}
+
+		@Override
+		public void decode(final @NonNull ResourceData resource) {}
+
+		@Override
+		public void upload(final @NonNull ResourceData resource) {}
+
+		@Override
+		public void prepare(final @NonNull ResourceData resource) {}
+
+		@Override
+		public boolean isSettled() {
+			return false;
 		}
 
 	}

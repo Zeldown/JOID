@@ -8,6 +8,7 @@ import org.lwjgl.input.Keyboard;
 
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.key.KeyLayout;
+import dev.joid.lib.ui.core.UI;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -15,8 +16,9 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2Keys {
 
-	private static final Key[]             KEY_ARRAY = new Key[Keyboard.KEYBOARD_SIZE];
-	private static final Map<Key, Integer> CODE_MAP  = new EnumMap<>(Key.class);
+	private static final Key[]             KEY_ARRAY  = new Key[Keyboard.KEYBOARD_SIZE];
+	private static final Map<Key, Key>     LAYOUT_MAP = new EnumMap<>(Key.class);
+	private static final Map<Key, Integer> CODE_MAP   = new EnumMap<>(Key.class);
 
 	static {
 		Arrays.fill(Lwjgl2Keys.KEY_ARRAY, Key.UNKNOWN);
@@ -144,8 +146,17 @@ public final class Lwjgl2Keys {
 			return Key.values()[Key.A.ordinal() + character - 0x01];
 		}
 
+		if (UI.isShiftKeyDown() || UI.isCtrlKeyDown() || UI.isAltKeyDown()) {
+			return Lwjgl2Keys.LAYOUT_MAP.getOrDefault(position, position);
+		}
+
 		final Key key = KeyLayout.fromCharacter(character);
-		return key == null ? position : key;
+		if (key == null) {
+			return position;
+		}
+
+		Lwjgl2Keys.LAYOUT_MAP.put(position, key);
+		return key;
 	}
 
 	public static @NonNull Key getPhysicalKey(final int code) {
