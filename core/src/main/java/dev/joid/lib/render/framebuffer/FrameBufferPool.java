@@ -65,7 +65,7 @@ public final class FrameBufferPool {
 	}
 
 	private static int capacity(final int current, final int required) {
-		return current >= required ? current : Math.max(required, Math.min(4096, current * 2));
+		return current >= required ? current : Math.max(1, Integer.highestOneBit(required - 1) << 1);
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)

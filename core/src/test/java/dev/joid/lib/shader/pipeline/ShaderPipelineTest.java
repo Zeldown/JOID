@@ -63,8 +63,8 @@ public class ShaderPipelineTest {
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, pass);
 		Assert.assertEquals(Arrays.asList("mask texture", "mask unbind"), this.log);
 		Assert.assertEquals(2, this.render.getFrameBuffers().size());
-		Assert.assertEquals(100, this.render.getFrameBuffers().get(0).getWidth());
-		Assert.assertEquals(50, this.render.getFrameBuffers().get(0).getHeight());
+		Assert.assertEquals(128, this.render.getFrameBuffers().get(0).getWidth());
+		Assert.assertEquals(64, this.render.getFrameBuffers().get(0).getHeight());
 		Assert.assertEquals(2, this.render.getCaptures().size());
 	}
 
@@ -99,7 +99,7 @@ public class ShaderPipelineTest {
 		Assert.assertEquals(70D, composite.getBottom(), 1E-3D);
 		Assert.assertEquals(70F, composite.getY(0), 1E-3F);
 		Assert.assertEquals(0F, composite.getV(0), 0F);
-		Assert.assertEquals(1F, composite.getV(2), 0F);
+		Assert.assertEquals(50F / 64F, composite.getV(2), 0F);
 		Assert.assertSame(TextureWrap.CLAMP_TO_BORDER, composite.getState().getTextureWrap());
 	}
 
@@ -119,8 +119,8 @@ public class ShaderPipelineTest {
 		Assert.assertEquals(111D, composite.getRight(), 1E-3D);
 		Assert.assertEquals(19D, composite.getTop(), 1E-3D);
 		Assert.assertEquals(71D, composite.getBottom(), 1E-3D);
-		Assert.assertEquals(-0.01F, composite.getU(0), 1E-6F);
-		Assert.assertEquals(-0.02F, composite.getV(0), 1E-6F);
+		Assert.assertEquals(-1F / 128F, composite.getU(0), 1E-6F);
+		Assert.assertEquals(-1F / 64F, composite.getV(0), 1E-6F);
 	}
 
 	@Test
@@ -164,8 +164,8 @@ public class ShaderPipelineTest {
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, blur, border);
 		Assert.assertEquals(10D, border.getContext().getExpansion(), 0D);
 		Assert.assertSame(blur.getContext(), border.getContext());
-		Assert.assertEquals(120, this.render.getFrameBuffers().get(0).getWidth());
-		Assert.assertEquals(70, this.render.getFrameBuffers().get(0).getHeight());
+		Assert.assertEquals(120, border.getContext().getTextureWidth());
+		Assert.assertEquals(70, border.getContext().getTextureHeight());
 		Assert.assertEquals(0D, this.render.getLast().getLeft(), 1E-3D);
 		Assert.assertEquals(80D, this.render.getLast().getBottom(), 1E-3D);
 	}
@@ -183,9 +183,8 @@ public class ShaderPipelineTest {
 		this.render.getProjection().ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		final RecordingPass pass = new RecordingPass("mask", 0F, this.log);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, pass);
-		Assert.assertEquals(72, this.render.getFrameBuffers().get(0).getWidth());
-		Assert.assertEquals(36, this.render.getFrameBuffers().get(0).getHeight());
 		Assert.assertEquals(72, pass.getContext().getTextureWidth());
+		Assert.assertEquals(36, pass.getContext().getTextureHeight());
 		Assert.assertEquals(72, this.render.getCaptures().get(0).getState().getViewportWidth());
 	}
 
@@ -216,22 +215,40 @@ public class ShaderPipelineTest {
 		final Capture content = captures.get(captures.size() - 2);
 		Assert.assertEquals(60, content.getState().getViewportWidth());
 		Assert.assertEquals(25, content.getState().getViewportHeight());
-		Assert.assertEquals(0.6F, this.render.getLast().getU(1), 1E-6F);
-		Assert.assertEquals(0.5F, this.render.getLast().getV(2), 1E-6F);
-		Assert.assertEquals(1F / 100F, pass.getContext().getTexelWidth(), 0F);
-		Assert.assertEquals(1F / 50F, pass.getContext().getTexelHeight(), 0F);
+		Assert.assertEquals(60F / 128F, this.render.getLast().getU(1), 1E-6F);
+		Assert.assertEquals(25F / 64F, this.render.getLast().getV(2), 1E-6F);
+		Assert.assertEquals(1F / 128F, pass.getContext().getTexelWidth(), 0F);
+		Assert.assertEquals(1F / 64F, pass.getContext().getTexelHeight(), 0F);
 	}
 
 	@Test
-	public void growsItsFrameBuffersByDoublingTheSideThatNoLongerFits() {
+	public void growsItsFrameBuffersToThePowerOfTwoThatHoldsTheSideThatNoLongerFits() {
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
 		ShaderPipeline.render(10D, 20D, 120D, 40D, this::drawBox, new RecordingPass("mask", 0F, this.log));
+		Assert.assertEquals(2, this.render.getFrameBuffers().size());
+		ShaderPipeline.render(10D, 20D, 300D, 40D, this::drawBox, new RecordingPass("mask", 0F, this.log));
 		final List<IFrameBuffer> frameBuffers = this.render.getFrameBuffers();
 		Assert.assertEquals(4, frameBuffers.size());
 		Assert.assertTrue(((RecordingFrameBuffer) frameBuffers.get(0)).isDeleted());
 		Assert.assertTrue(((RecordingFrameBuffer) frameBuffers.get(1)).isDeleted());
-		Assert.assertEquals(200, frameBuffers.get(2).getWidth());
-		Assert.assertEquals(50, frameBuffers.get(2).getHeight());
+		Assert.assertEquals(512, frameBuffers.get(2).getWidth());
+		Assert.assertEquals(64, frameBuffers.get(2).getHeight());
+	}
+
+	@Test
+	public void scalesTheSamplingOfAPassExactlyWhateverFrameBufferThePoolHolds() {
+		final RecordingPass small = new RecordingPass("small", 0F, this.log);
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, small);
+		final float texel = small.getContext().getTexelWidth();
+		final float u = this.render.getLast().getU(1);
+		FrameBufferPool.cleanup();
+		ShaderPipeline.render(10D, 20D, 1000D, 600D, this::drawBox, new RecordingPass("large", 0F, this.log));
+		final RecordingPass reused = new RecordingPass("reused", 0F, this.log);
+		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, reused);
+		final float scale = (float) reused.getContext().getFrameBufferWidth() / small.getContext().getFrameBufferWidth();
+		Assert.assertEquals(8F, scale, 0F);
+		Assert.assertEquals(texel, reused.getContext().getTexelWidth() * scale, 0F);
+		Assert.assertEquals(u, this.render.getLast().getU(1) * scale, 0F);
 	}
 
 	@Test
