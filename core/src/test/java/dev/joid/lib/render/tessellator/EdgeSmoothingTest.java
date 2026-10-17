@@ -15,16 +15,16 @@ public class EdgeSmoothingTest {
 
 	@Test
 	public void tellsAConvexPolygonFromAConcaveOne() {
-		Assert.assertTrue(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(10D, 0D), Point.create(5D, 8D)));
-		Assert.assertTrue(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(5D, 0D), Point.create(10D, 0D), Point.create(10D, 10D), Point.create(0D, 10D)));
-		Assert.assertFalse(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(10D, 0D), Point.create(5D, 2D), Point.create(10D, 10D), Point.create(0D, 10D)));
-		Assert.assertFalse(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(10D, 0D)));
-		Assert.assertFalse(EdgeSmoothing.isConvex(Point.create(0D, 0D), Point.create(5D, 0D), Point.create(10D, 0D)));
+		Assert.assertTrue(EdgeSmoothing.isConvex(Point.of(0D, 0D), Point.of(10D, 0D), Point.of(5D, 8D)));
+		Assert.assertTrue(EdgeSmoothing.isConvex(Point.of(0D, 0D), Point.of(5D, 0D), Point.of(10D, 0D), Point.of(10D, 10D), Point.of(0D, 10D)));
+		Assert.assertFalse(EdgeSmoothing.isConvex(Point.of(0D, 0D), Point.of(10D, 0D), Point.of(5D, 2D), Point.of(10D, 10D), Point.of(0D, 10D)));
+		Assert.assertFalse(EdgeSmoothing.isConvex(Point.of(0D, 0D), Point.of(10D, 0D)));
+		Assert.assertFalse(EdgeSmoothing.isConvex(Point.of(0D, 0D), Point.of(5D, 0D), Point.of(10D, 0D)));
 	}
 
 	@Test
 	public void fadesTheEdgesOverOneUnitCenteredOnThem() {
-		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, Point.create(10D, 70D), Point.create(110D, 70D), Point.create(110D, 20D), Point.create(10D, 20D));
+		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, Point.of(10D, 70D), Point.of(110D, 70D), Point.of(110D, 20D), Point.of(10D, 20D));
 		final int[] buffer = TessellatorAccess.rawBuffer(Tessellator.inst());
 		Assert.assertEquals(10.5F, Float.intBitsToFloat(buffer[0]), 0F);
 		Assert.assertEquals(69.5F, Float.intBitsToFloat(buffer[1]), 0F);
@@ -38,7 +38,7 @@ public class EdgeSmoothingTest {
 
 	@Test
 	public void lowersTheCoreOfAShapeThinnerThanOneUnit() {
-		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, Point.create(10D, 20.5D), Point.create(110D, 20.5D), Point.create(110D, 20D), Point.create(10D, 20D));
+		EdgeSmoothing.polygon(1F, 0F, 0F, 1F, Point.of(10D, 20.5D), Point.of(110D, 20.5D), Point.of(110D, 20D), Point.of(10D, 20D));
 		final int[] buffer = TessellatorAccess.rawBuffer(Tessellator.inst());
 		Assert.assertEquals(20.25F, Float.intBitsToFloat(buffer[1]), 1E-4F);
 		Assert.assertEquals(127, buffer[5] >>> 24);

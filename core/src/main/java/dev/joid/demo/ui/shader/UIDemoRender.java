@@ -33,7 +33,7 @@ public class UIDemoRender extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
-	private static final BlendState MULTIPLY = BlendState.create(Equation.ADD, Factor.DST_COLOR, Factor.ZERO);
+	private static final BlendState MULTIPLY = BlendState.of(Equation.ADD, Factor.DST_COLOR, Factor.ZERO);
 
 	@Override
 	public void init() {
@@ -146,7 +146,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawDashedLine(UIDemoRender.INK, 12, 4F, Point.create(0D, 160D), Point.create(100D, 40D), Point.create(200D, 160D)))
+			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawDashedLine(UIDemoRender.INK, 12, 4F, Point.of(0D, 160D), Point.of(100D, 40D), Point.of(200D, 160D)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Dashed line", info)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -242,7 +242,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(UIDemoRender.INK, 14F, Point.create(10D, 180D), Point.create(100D, 20D), Point.create(60D, 180D), Point.create(190D, 120D)))
+			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(UIDemoRender.INK, 14F, Point.of(10D, 180D), Point.of(100D, 20D), Point.of(60D, 180D), Point.of(190D, 120D)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Line joins", info)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -254,7 +254,7 @@ public class UIDemoRender extends UIDemo {
 		.body(rect -> {
 			ContainerNode
 			.create(60, 30, 200, 200)
-			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE.toGradient(UIDemoRender.INK), 10F, Point.create(10D, 180D), Point.create(100D, -100D), Point.create(190D, 180D)))
+			.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE.toGradient(UIDemoRender.INK), 10F, Point.of(10D, 180D), Point.of(100D, -100D), Point.of(190D, 180D)))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Gradient curve", info)).anchorX(Align.CENTER).attach(rect);
 		})

@@ -24,9 +24,9 @@ public class ShowForm extends ShowUI {
 
 	private static final Pattern EMAIL = Pattern.compile("[^@ ]+@[^@ ]+\\.[a-z]{2,}");
 
-	private final StringSignal bio   = new StringSignal("I write <b>the first</b> <c=f472b6>programs</c>");
-	private final StringSignal name  = new StringSignal("");
-	private final StringSignal email = new StringSignal("");
+	private final StringSignal bio   = StringSignal.create("I write <b>the first</b> <c=f472b6>programs</c>");
+	private final StringSignal name  = StringSignal.create("");
+	private final StringSignal email = StringSignal.create("");
 
 	@Override
 	protected void scene() {
@@ -56,7 +56,7 @@ public class ShowForm extends ShowUI {
 		.visible(this.isValid())
 		.interactive(false)
 		.effect(ShadowNodeEffect.create(ShowUI.EMERALD, 14F))
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(ShowUI.NIGHT, 3.5F, Point.create(10D, 18D), Point.create(16D, 24D), Point.create(27D, 11D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(ShowUI.NIGHT, 3.5F, Point.of(10D, 18D), Point.of(16D, 24D), Point.of(27D, 11D)))
 		.attach(this);
 
 		TextNode.create(160, 580).text(Text.create("Bio, with markup", ShowUI.font(FontWeight.SEMI_BOLD, 19F, ShowUI.MUTED))).attach(this);

@@ -76,9 +76,9 @@ public class ShowMotion extends ShowUI {
 		final List<Point> points = new ArrayList<>();
 		for (int i = 0; i <= 60; i++) {
 			final float t = i / 60F;
-			points.add(Point.create(x + t * width, y + height - equation.compute(t) * height));
+			points.add(Point.of(x + t * width, y + height - equation.compute(t) * height));
 		}
-		DrawUtils.SHAPE.drawLine(Color.WHITE.withAlpha(0.10F), 2F, Point.create(x, y + height), Point.create(x + width, y + height));
+		DrawUtils.SHAPE.drawLine(Color.WHITE.withAlpha(0.10F), 2F, Point.of(x, y + height), Point.of(x + width, y + height));
 		DrawUtils.SHAPE.drawLine(from.toGradient(to), 3F, points.toArray(new Point[0]));
 		DrawUtils.SHAPE.drawCircle(x + time * width, y + height - equation.compute(time) * height, Color.WHITE, 6D);
 	}

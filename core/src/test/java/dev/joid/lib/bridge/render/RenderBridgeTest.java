@@ -225,7 +225,7 @@ public class RenderBridgeTest {
 	public void storesItsStencil() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		Assert.assertSame(StencilState.DISABLED, render.getState().getStencil());
-		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT));
+		render.getState().stencil(StencilState.of(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT));
 		final StencilState stencil = render.getState().getStencil();
 		Assert.assertTrue(stencil.isEnabled());
 		Assert.assertSame(StencilFunction.EQUAL, stencil.getFunction());
@@ -234,7 +234,7 @@ public class RenderBridgeTest {
 		Assert.assertSame(StencilOperation.ZERO, stencil.getFail());
 		Assert.assertSame(StencilOperation.REPLACE, stencil.getDepthFail());
 		Assert.assertSame(StencilOperation.INCREMENT, stencil.getPass());
-		Assert.assertEquals(StencilState.create(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT), stencil);
+		Assert.assertEquals(StencilState.of(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.REPLACE, StencilOperation.INCREMENT), stencil);
 	}
 
 	@Test

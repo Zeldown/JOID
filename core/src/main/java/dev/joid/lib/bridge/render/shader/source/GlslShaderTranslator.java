@@ -118,7 +118,7 @@ public class GlslShaderTranslator {
 		}
 
 		if (this.stencil != StencilEmulation.Pass.NONE) {
-			samplerList.add(ShaderVariable.create("sampler2D", GlslShaderTranslator.STENCIL, "", false));
+			samplerList.add(ShaderVariable.of("sampler2D", GlslShaderTranslator.STENCIL, "", false));
 		}
 		return samplerList;
 	}
@@ -173,7 +173,7 @@ public class GlslShaderTranslator {
 		final List<ShaderVariable> uniformList = new ArrayList<>();
 		for (final ShaderBuiltin builtin : ShaderBuiltin.values()) {
 			if (builtin.getKind() == ShaderBuiltin.Kind.UNIFORM && (vertex.getBuiltins().contains(builtin) || fragment.getBuiltins().contains(builtin))) {
-				uniformList.add(ShaderVariable.create(builtin.getType(), builtin.getIdentifier(), "", false));
+				uniformList.add(ShaderVariable.of(builtin.getType(), builtin.getIdentifier(), "", false));
 			}
 		}
 
@@ -203,25 +203,25 @@ public class GlslShaderTranslator {
 
 	private List<ShaderVariable> getInternals(final ShaderSource vertex, final ShaderSource fragment, final StencilEmulation.Pass stencil) {
 		final List<ShaderVariable> internalList = new ArrayList<>();
-		internalList.add(ShaderVariable.create("int", GlslShaderTranslator.ALPHA_TEST, "", false));
-		internalList.add(ShaderVariable.create("float", GlslShaderTranslator.ALPHA_THRESHOLD, "", false));
+		internalList.add(ShaderVariable.of("int", GlslShaderTranslator.ALPHA_TEST, "", false));
+		internalList.add(ShaderVariable.of("float", GlslShaderTranslator.ALPHA_THRESHOLD, "", false));
 		if (vertex.isLine()) {
-			internalList.add(ShaderVariable.create("float", GlslShaderTranslator.LINE_WIDTH, "", false));
-			internalList.add(ShaderVariable.create("vec2", GlslShaderTranslator.LINE_VIEWPORT, "", false));
+			internalList.add(ShaderVariable.of("float", GlslShaderTranslator.LINE_WIDTH, "", false));
+			internalList.add(ShaderVariable.of("vec2", GlslShaderTranslator.LINE_VIEWPORT, "", false));
 		}
 		if (this.clampToBorder) {
 			for (final ShaderVariable sampler : this.getSamplers(vertex, fragment)) {
-				internalList.add(ShaderVariable.create("vec3", GlslShaderTranslator.BORDER + sampler.getName(), "", false));
+				internalList.add(ShaderVariable.of("vec3", GlslShaderTranslator.BORDER + sampler.getName(), "", false));
 			}
 		}
 		if (stencil != StencilEmulation.Pass.NONE) {
 			for (final String name : new String[] {GlslShaderTranslator.STENCIL_TEST, GlslShaderTranslator.STENCIL_FUNCTION, GlslShaderTranslator.STENCIL_REFERENCE, GlslShaderTranslator.STENCIL_MASK, GlslShaderTranslator.STENCIL_FAIL, GlslShaderTranslator.STENCIL_PASS}) {
-				internalList.add(ShaderVariable.create("int", name, "", false));
+				internalList.add(ShaderVariable.of("int", name, "", false));
 			}
 		}
 		if (vertex.getBuiltins().contains(ShaderBuiltin.COLOR)) {
-			internalList.add(ShaderVariable.create("vec4", GlslShaderTranslator.CURRENT_COLOR, "", false));
-			internalList.add(ShaderVariable.create("int", GlslShaderTranslator.VERTEX_COLOR, "", false));
+			internalList.add(ShaderVariable.of("vec4", GlslShaderTranslator.CURRENT_COLOR, "", false));
+			internalList.add(ShaderVariable.of("int", GlslShaderTranslator.VERTEX_COLOR, "", false));
 		}
 		return internalList;
 	}
@@ -300,7 +300,7 @@ public class GlslShaderTranslator {
 	private void appendLineVaryings(final StringBuilder builder, final int location, final boolean output) {
 		final String[] varyings = {"joid_LineAcross", "joid_LineAlong"};
 		for (int i = 0; i < varyings.length; i++) {
-			builder.append(this.declareVarying(ShaderVariable.create("float", varyings[i], "", false), location + i, output));
+			builder.append(this.declareVarying(ShaderVariable.of("float", varyings[i], "", false), location + i, output));
 		}
 	}
 

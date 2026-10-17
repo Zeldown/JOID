@@ -42,7 +42,7 @@ public class UniformBlockLayoutTest {
 		final StringBuilder use = new StringBuilder();
 		final List<ShaderVariable> variables = new ArrayList<>();
 		for (final String[] member : UniformBlockLayoutTest.MEMBERS) {
-			variables.add(ShaderVariable.create(member[0], member[1], member[2], false));
+			variables.add(ShaderVariable.of(member[0], member[1], member[2], false));
 			source.append('\t').append(member[0]).append(' ').append(member[1]).append(member[2]).append(";\n");
 			use.append(" + float(").append(member[1]).append(member[2].isEmpty() ? "" : "[0]").append(member[0].startsWith("mat") ? "[0][0]" : member[0].endsWith("vec2") || member[0].endsWith("vec3") || member[0].endsWith("vec4") ? ".x" : "").append(')');
 		}

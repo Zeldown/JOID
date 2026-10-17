@@ -11,25 +11,25 @@ public class BooleanSignalTest {
 
 	@Test
 	public void startsFalse() {
-		final BooleanSignal signal = new BooleanSignal();
+		final BooleanSignal signal = BooleanSignal.create();
 		Assert.assertFalse(signal.get());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
-		final BooleanSignal signal = new BooleanSignal(true);
+		final BooleanSignal signal = BooleanSignal.create(true);
 		Assert.assertTrue(signal.get());
 	}
 
 	@Test
 	public void resetsToTheGivenValue() {
-		Assert.assertTrue(new BooleanSignal(true).set(false).reset().get());
+		Assert.assertTrue(BooleanSignal.create(true).set(false).reset().get());
 	}
 
 	@Test
 	public void togglesItsValue() {
 		final List<Boolean> received = new ArrayList<>();
-		final BooleanSignal signal = new BooleanSignal();
+		final BooleanSignal signal = BooleanSignal.create();
 		signal.onChange(received::add);
 		signal.toggle();
 		Assert.assertTrue(signal.get());
@@ -40,22 +40,22 @@ public class BooleanSignalTest {
 
 	@Test
 	public void togglesFromItsDefault() {
-		final BooleanSignal signal = new BooleanSignal(true);
+		final BooleanSignal signal = BooleanSignal.create(true);
 		signal.toggle();
 		Assert.assertFalse(signal.get());
 	}
 
 	@Test
 	public void chainsItsToggles() {
-		final BooleanSignal signal = new BooleanSignal(false);
+		final BooleanSignal signal = BooleanSignal.create(false);
 		Assert.assertSame(signal, signal.toggle().toggle().toggle());
 		Assert.assertTrue(signal.get());
 	}
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("BooleanSignal{true}", new BooleanSignal(true).toString());
-		Assert.assertEquals("BooleanSignal{false}", new BooleanSignal().toString());
+		Assert.assertEquals("BooleanSignal{true}", BooleanSignal.create(true).toString());
+		Assert.assertEquals("BooleanSignal{false}", BooleanSignal.create().toString());
 	}
 
 }

@@ -36,10 +36,10 @@ import dev.joid.lib.utils.geom.Point;
 
 public class ShowPlayer extends ShowUI {
 
-	private final DoubleSignal  hover    = new DoubleSignal(0D);
-	private final DoubleSignal  scrub    = new DoubleSignal(-1D);
-	private final DoubleSignal  progress = new DoubleSignal(0D);
-	private final BooleanSignal playing  = new BooleanSignal(true);
+	private final DoubleSignal  hover    = DoubleSignal.create(0D);
+	private final DoubleSignal  scrub    = DoubleSignal.create(-1D);
+	private final DoubleSignal  progress = DoubleSignal.create(0D);
+	private final BooleanSignal playing  = BooleanSignal.create(true);
 	private final TweenAnimator reveal   = TweenAnimator.create(0F);
 
 	private long   peekTime;
@@ -174,7 +174,7 @@ public class ShowPlayer extends ShowUI {
 
 	private void play(final double x, final double y, final float hover) {
 		if (!this.playing.get()) {
-			DrawUtils.SHAPE.drawPolygon(ShowPlayer.ink(hover), Point.create(x - 9D, y - 17D), Point.create(x - 9D, y + 17D), Point.create(x + 17D, y));
+			DrawUtils.SHAPE.drawPolygon(ShowPlayer.ink(hover), Point.of(x - 9D, y - 17D), Point.of(x - 9D, y + 17D), Point.of(x + 17D, y));
 		}
 	}
 

@@ -197,7 +197,7 @@ public final class VideoAudioPlayer {
 	}
 
 	private float computeDistanceVolume(final Point location) {
-		final Point listener = VideoAudioPlayer.audioListenerPosition == null ? Point.create(0D, 0D) : VideoAudioPlayer.audioListenerPosition.getListenerPosition();
+		final Point listener = VideoAudioPlayer.audioListenerPosition == null ? Point.of(0D, 0D) : VideoAudioPlayer.audioListenerPosition.getListenerPosition();
 		final double dx = listener.getX() - location.getX();
 		final double dy = listener.getY() - location.getY();
 		final double dz = listener.getZ() - location.getZ();

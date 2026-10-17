@@ -115,7 +115,7 @@ public class ModelViewerNodeTest {
 
 	@Test
 	public void writesTheWheelIntoItsZoomSignal() {
-		final DoubleSignal zoom = new DoubleSignal(1D);
+		final DoubleSignal zoom = DoubleSignal.create(1D);
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom).model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
 		this.bridges.move(200D, 200D).frames(2).scroll(1D);
@@ -126,7 +126,7 @@ public class ModelViewerNodeTest {
 
 	@Test
 	public void writesItsZoomRangeBackIntoItsSignal() {
-		final DoubleSignal zoom = new DoubleSignal(5D);
+		final DoubleSignal zoom = DoubleSignal.create(5D);
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom);
 		Assert.assertEquals(2D, viewer.getZoom(), 0D);
 		Assert.assertEquals(2D, zoom.peek(), 0D);
@@ -134,7 +134,7 @@ public class ModelViewerNodeTest {
 
 	@Test
 	public void forgetsItsZoomSignalOnceGivenAValue() {
-		final DoubleSignal zoom = new DoubleSignal(1.5D);
+		final DoubleSignal zoom = DoubleSignal.create(1.5D);
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom).zoom(0.8D).model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
 		zoom.set(1.2D);
@@ -160,7 +160,7 @@ public class ModelViewerNodeTest {
 
 	@Test
 	public void keepsItsZoomWhenItsGestureIsRefused() {
-		final DoubleSignal zoom = new DoubleSignal(1D);
+		final DoubleSignal zoom = DoubleSignal.create(1D);
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom).beforeZoom(event -> event.cancel()).model(new FixedModel());
 		this.bridges.open(new NodeUI(viewer)).frame();
 		viewer.zoomTo(1.5D);
@@ -194,8 +194,8 @@ public class ModelViewerNodeTest {
 
 	@Test
 	public void writesTheDragIntoItsRotationSignals() {
-		final DoubleSignal yaw = new DoubleSignal(0D);
-		final DoubleSignal pitch = new DoubleSignal(0D);
+		final DoubleSignal yaw = DoubleSignal.create(0D);
+		final DoubleSignal pitch = DoubleSignal.create(0D);
 		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).rotationYaw(yaw).rotationPitch(pitch).model(new FixedModel()));
 		this.bridges.drag(250D, 180D).frame();
 		Assert.assertEquals(10D, yaw.peek(), 1E-9D);
@@ -216,7 +216,7 @@ public class ModelViewerNodeTest {
 		this.bridges.open(new NodeUI(viewer)).frame();
 		Assert.assertSame(viewer, viewer.rotate(30D, 20D));
 		viewer.rotationPitch(10D);
-		Assert.assertEquals(Arrays.asList(Point.create(30D, 20D), Point.create(0D, 0D), Point.create(30D, 20D)), events);
+		Assert.assertEquals(Arrays.asList(Point.of(30D, 20D), Point.of(0D, 0D), Point.of(30D, 20D)), events);
 		Assert.assertEquals(10D, viewer.getRotationPitch(), 0D);
 	}
 

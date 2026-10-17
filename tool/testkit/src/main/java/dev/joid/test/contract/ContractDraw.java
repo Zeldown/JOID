@@ -73,7 +73,7 @@ public final class ContractDraw {
 			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 3, (byte) (color >> 24));
 			buffer.put(offset + VertexAttribute.NORMAL.getOffset() + 2, (byte) 127);
 		}
-		return VertexBuffer.create(buffer, corners.length, texture, color != 0, normal);
+		return VertexBuffer.of(buffer, corners.length, texture, color != 0, normal);
 	}
 
 }

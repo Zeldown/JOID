@@ -286,7 +286,7 @@ public class MsdfTextRendererTest {
 
 	@Test
 	public void paintsAGradientOverTheRun() {
-		final Color gradient = new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.8F, 0.6F, 0.4F, 1F), Point.create(0D, 0D), Point.create(1D, 1D));
+		final Color gradient = new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.8F, 0.6F, 0.4F, 1F), Point.of(0D, 0D), Point.of(1D, 1D));
 		MsdfTextRenderer.inst().drawText(100D, 100D, "Ax", MsdfTextRendererTest.sampleInfo().color(gradient));
 		final Map<String, Object> uniforms = this.render.getLast().getUniforms();
 		Assert.assertEquals(1, uniforms.get("u_HasGradient"));

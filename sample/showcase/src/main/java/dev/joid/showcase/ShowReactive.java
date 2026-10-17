@@ -21,10 +21,10 @@ import dev.joid.lib.utils.geom.Point;
 
 public class ShowReactive extends ShowUI {
 
-	private final DoubleSignal  space  = new DoubleSignal(0.3D);
-	private final DoubleSignal  warmth = new DoubleSignal(0.2D);
-	private final BooleanSignal halo   = new BooleanSignal(false);
-	private final DoubleSignal  energy = new DoubleSignal(0.35D);
+	private final DoubleSignal  space  = DoubleSignal.create(0.3D);
+	private final DoubleSignal  warmth = DoubleSignal.create(0.2D);
+	private final BooleanSignal halo   = BooleanSignal.create(false);
+	private final DoubleSignal  energy = DoubleSignal.create(0.35D);
 
 	@Override
 	protected void scene() {
@@ -126,7 +126,7 @@ public class ShowReactive extends ShowUI {
 			final List<Point> points = new ArrayList<>();
 			for (int i = 0; i <= 120; i++) {
 				final double angle = i / 120D * Math.PI * 2D + super.t() * 0.3D * ring;
-				points.add(Point.create(1335D + Math.cos(angle) * r, 500D + Math.sin(angle) * r));
+				points.add(Point.of(1335D + Math.cos(angle) * r, 500D + Math.sin(angle) * r));
 			}
 			DrawUtils.SHAPE.drawLine(Color.WHITE.withAlpha(0.16F / ring + 0.04F), 2F, points.toArray(new Point[0]));
 		}

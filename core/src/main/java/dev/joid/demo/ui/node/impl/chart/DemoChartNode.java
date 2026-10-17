@@ -63,10 +63,10 @@ public class DemoChartNode extends ChartNode {
 				}
 
 				final double oy = top + height - height * (entry.getValue().get(label).doubleValue() - min) / (max - min);
-				final Point point = Point.create(ox, oy);
+				final Point point = Point.of(ox, oy);
 				if (last != null) {
 					if (this.smooth) {
-						DrawUtils.SHAPE.drawCurvedLine(color, 2F, last, Point.create(last.getX() + offset / 3D, last.getY()), Point.create(ox - offset / 3D, oy), point);
+						DrawUtils.SHAPE.drawCurvedLine(color, 2F, last, Point.of(last.getX() + offset / 3D, last.getY()), Point.of(ox - offset / 3D, oy), point);
 					} else {
 						DrawUtils.SHAPE.drawLine(color, 2F, last, point);
 					}

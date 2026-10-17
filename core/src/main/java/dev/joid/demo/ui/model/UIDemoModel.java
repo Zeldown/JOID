@@ -30,9 +30,9 @@ public class UIDemoModel extends UIDemo {
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final ObjModel model = ObjModel.of("demo", "assets/demo/models/model.obj", Resource.of("assets/demo/models/texture.png"));
 		final TweenAnimator spin = TweenAnimator.create(0F).sequence(4000F, 1F).repeat(Tween.INFINITY, 0F).start();
-		final DoubleSignal zoom = new DoubleSignal(1D);
-		final DoubleSignal yaw = new DoubleSignal(0D);
-		final IntegerSignal refusedTurns = new IntegerSignal(0);
+		final DoubleSignal zoom = DoubleSignal.create(1D);
+		final DoubleSignal yaw = DoubleSignal.create(0D);
+		final IntegerSignal refusedTurns = IntegerSignal.create(0);
 
 		RectNode
 		.create(100, 40, 400, 260)

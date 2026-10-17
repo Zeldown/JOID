@@ -143,7 +143,7 @@ public final class ShaderSource {
 		}
 
 		final String array = declaration.group(5) == null ? "" : declaration.group(5).replaceAll("\\s", "");
-		final ShaderVariable variable = ShaderVariable.create(declaration.group(3), name, array, declaration.group(1) != null);
+		final ShaderVariable variable = ShaderVariable.of(declaration.group(3), name, array, declaration.group(1) != null);
 		if ("uniform".equals(declaration.group(2))) {
 			(variable.getType().startsWith("sampler") ? this.samplers : this.uniforms).add(variable);
 		} else if ("in".equals(declaration.group(2))) {

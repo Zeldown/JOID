@@ -28,8 +28,8 @@ public class ComputedSignalTest {
 
 	@Test
 	public void computesItsValueFromTheSignalsItReads() {
-		final Signal<String> name = new Signal<>("joid");
-		final IntegerSignal count = new IntegerSignal(2);
+		final Signal<String> name = Signal.create("joid");
+		final IntegerSignal count = IntegerSignal.create(2);
 		final ComputedSignal<String> text = Signal.from(() -> name.get() + " x" + count.get());
 		Assert.assertEquals("joid x2", text.get());
 		name.set("ui");
@@ -40,7 +40,7 @@ public class ComputedSignalTest {
 	@Test
 	public void waitsForAReadBeforeComputing() {
 		final AtomicInteger evaluations = new AtomicInteger();
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final ComputedSignal<Integer> doubled = Signal.from(() -> {
 			evaluations.incrementAndGet();
 			return count.get() * 2;
@@ -56,8 +56,8 @@ public class ComputedSignalTest {
 	@Test
 	public void keepsItsValueUntilADependencyChanges() {
 		final AtomicInteger evaluations = new AtomicInteger();
-		final IntegerSignal count = new IntegerSignal(1);
-		final Signal<String> other = new Signal<>("joid");
+		final IntegerSignal count = IntegerSignal.create(1);
+		final Signal<String> other = Signal.create("joid");
 		final ComputedSignal<Integer> doubled = Signal.from(() -> {
 			evaluations.incrementAndGet();
 			return count.get() * 2;
@@ -76,9 +76,9 @@ public class ComputedSignalTest {
 	@Test
 	public void followsOnlyTheSignalsOfItsLastComputation() {
 		final AtomicInteger evaluations = new AtomicInteger();
-		final BooleanSignal left = new BooleanSignal(true);
-		final Signal<String> first = new Signal<>("a");
-		final Signal<String> second = new Signal<>("b");
+		final BooleanSignal left = BooleanSignal.create(true);
+		final Signal<String> first = Signal.create("a");
+		final Signal<String> second = Signal.create("b");
 		final ComputedSignal<String> chosen = Signal.from(() -> {
 			evaluations.incrementAndGet();
 			return left.get() ? first.get() : second.get();
@@ -101,7 +101,7 @@ public class ComputedSignalTest {
 	public void computesADiamondOnceWithConsistentValues() {
 		final List<String> computed = new ArrayList<>();
 		final List<String> received = new ArrayList<>();
-		final IntegerSignal source = new IntegerSignal(1);
+		final IntegerSignal source = IntegerSignal.create(1);
 		final ComputedSignal<Integer> doubled = source.map(value -> value * 2);
 		final ComputedSignal<Integer> tripled = source.map(value -> value * 3);
 		final ComputedSignal<String> sum = Signal.from(() -> {
@@ -120,7 +120,7 @@ public class ComputedSignalTest {
 	public void stopsAtAnEqualValue() {
 		final AtomicInteger evaluations = new AtomicInteger();
 		final List<String> received = new ArrayList<>();
-		final IntegerSignal source = new IntegerSignal(1);
+		final IntegerSignal source = IntegerSignal.create(1);
 		final ComputedSignal<Boolean> odd = source.map(value -> value % 2 == 1);
 		final ComputedSignal<String> text = odd.map(value -> {
 			evaluations.incrementAndGet();
@@ -138,7 +138,7 @@ public class ComputedSignalTest {
 	@Test
 	public void notifiesItsSubscribersWhenItsValueChanges() {
 		final List<Integer> received = new ArrayList<>();
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		count.map(value -> value * 10).onChange(received::add);
 		count.increment();
 		count.set(2);
@@ -150,7 +150,7 @@ public class ComputedSignalTest {
 	public void stopsNotifyingOnceUnsubscribed() {
 		final List<Integer> received = new ArrayList<>();
 		final SignalListener<Integer> subscriber = received::add;
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10).onChange(subscriber);
 		count.increment();
 		tenfold.removeOnChange(subscriber);
@@ -163,7 +163,7 @@ public class ComputedSignalTest {
 	@Test
 	public void stopsFollowingOnceItsListenerRemovesItself() {
 		final AtomicInteger calls = new AtomicInteger();
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10);
 		tenfold.onChange(new SignalListener<Integer>() {
 
@@ -184,8 +184,8 @@ public class ComputedSignalTest {
 	@Test
 	public void notifiesOnceForABatch() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> first = new Signal<>("a");
-		final Signal<String> second = new Signal<>("b");
+		final Signal<String> first = Signal.create("a");
+		final Signal<String> second = Signal.create("b");
 		Signal.from(() -> first.get() + second.get()).onChange(received::add);
 		Signal.batch(() -> {
 			first.set("c");
@@ -197,7 +197,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void readsTheLatestValueInsideABatch() {
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final ComputedSignal<Integer> doubled = count.map(value -> value * 2).onChange(value -> {});
 		Signal.batch(() -> {
 			count.set(2);
@@ -209,7 +209,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void chainsMaps() {
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final ComputedSignal<String> text = count.map(value -> value + 1).map(value -> value * 10).map(value -> "Total: " + value);
 		Assert.assertEquals("Total: 20", text.get());
 		count.set(4);
@@ -218,8 +218,8 @@ public class ComputedSignalTest {
 
 	@Test
 	public void combinesComputedSignals() {
-		final IntegerSignal price = new IntegerSignal(3);
-		final IntegerSignal quantity = new IntegerSignal(2);
+		final IntegerSignal price = IntegerSignal.create(3);
+		final IntegerSignal quantity = IntegerSignal.create(2);
 		final ComputedSignal<Integer> total = Signal.from(() -> price.get() * quantity.get());
 		final ComputedSignal<String> text = Signal.from(() -> "Total: " + total.get());
 		quantity.increment();
@@ -229,7 +229,7 @@ public class ComputedSignalTest {
 	@Test
 	public void followsTheMutationsOfAListSignal() {
 		final List<Integer> received = new ArrayList<>();
-		final ListSignal<String> list = new ListSignal<>(new ArrayList<>(Collections.singletonList("a")));
+		final ListSignal<String> list = ListSignal.create(new ArrayList<>(Collections.singletonList("a")));
 		final ComputedSignal<Integer> size = Signal.from(list::size).onChange(received::add);
 		list.add("b");
 		list.set(0, "c");
@@ -242,7 +242,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void followsTheMutationsOfAMapSignal() {
-		final MapSignal<String, Integer> map = new MapSignal<>(new HashMap<>());
+		final MapSignal<String, Integer> map = MapSignal.create(new HashMap<>());
 		final ComputedSignal<Integer> total = Signal.from(() -> map.values().stream().mapToInt(Integer::intValue).sum());
 		map.put("a", 1);
 		map.put("b", 2);
@@ -253,7 +253,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void followsTheMutationsOfASetSignal() {
-		final SetSignal<String> set = new SetSignal<>(new HashSet<>());
+		final SetSignal<String> set = SetSignal.create(new HashSet<>());
 		final ComputedSignal<Boolean> containsJoid = Signal.from(() -> set.contains("joid"));
 		Assert.assertFalse(containsJoid.get());
 		set.add("joid");
@@ -265,7 +265,7 @@ public class ComputedSignalTest {
 	@Test
 	public void followsTheOperationsOfAPrimitiveSignal() {
 		final List<String> received = new ArrayList<>();
-		final StringSignal name = new StringSignal("joid");
+		final StringSignal name = StringSignal.create("joid");
 		name.map(String::length).map(length -> name.peek() + ":" + length).onChange(received::add);
 		name.append("-ui");
 		name.toUpperCase();
@@ -276,7 +276,7 @@ public class ComputedSignalTest {
 	@Test
 	public void followsAManualPublish() {
 		final List<StringBuilder> received = new ArrayList<>();
-		final Signal<StringBuilder> builder = new Signal<>(new StringBuilder("a"));
+		final Signal<StringBuilder> builder = Signal.create(new StringBuilder("a"));
 		final ComputedSignal<String> text = builder.map(StringBuilder::toString);
 		builder.onChange(received::add);
 		Assert.assertEquals("a", text.get());
@@ -289,7 +289,7 @@ public class ComputedSignalTest {
 	@Test
 	public void staysConsistentAfterASilentChange() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> name = new Signal<>("joid").onChange(received::add);
+		final Signal<String> name = Signal.create("joid").onChange(received::add);
 		final ComputedSignal<String> upper = name.map(String::toUpperCase);
 		upper.onChange(received::add);
 		Assert.assertEquals("JOID", upper.get());
@@ -301,7 +301,7 @@ public class ComputedSignalTest {
 	@Test
 	public void notifiesASignalDerivedTwiceAfterASilentChange() {
 		final List<String> received = new ArrayList<>();
-		final Signal<String> name = new Signal<>("a");
+		final Signal<String> name = Signal.create("a");
 		final ComputedSignal<String> label = name.map(String::toUpperCase).map(value -> value + "!");
 		label.onChange(received::add);
 		name.silent(signal -> signal.set("b"));
@@ -312,7 +312,7 @@ public class ComputedSignalTest {
 	@Test
 	public void notifiesAChangeMadeOnAnotherThread() throws InterruptedException {
 		final List<String> received = Collections.synchronizedList(new ArrayList<>());
-		final Signal<String> name = new Signal<>("joid");
+		final Signal<String> name = Signal.create("joid");
 		name.map(String::toUpperCase).onChange(received::add);
 		final Thread thread = new Thread(() -> name.set("ui"));
 		thread.start();
@@ -323,8 +323,8 @@ public class ComputedSignalTest {
 	@Test
 	public void followsOnlyTheReadsOfItsOwnThread() {
 		final AtomicInteger evaluations = new AtomicInteger();
-		final IntegerSignal mine = new IntegerSignal(1);
-		final IntegerSignal other = new IntegerSignal(1);
+		final IntegerSignal mine = IntegerSignal.create(1);
+		final IntegerSignal other = IntegerSignal.create(1);
 		final ComputedSignal<Integer> doubled = Signal.from(() -> {
 			evaluations.incrementAndGet();
 			final Thread thread = new Thread(other::get);
@@ -344,7 +344,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void isASupplier() {
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final Supplier<String> supplier = count.map(value -> "Clicks: " + value);
 		count.increment();
 		Assert.assertEquals("Clicks: 2", supplier.get());
@@ -352,7 +352,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void refusesToBeWrittenLikeAPlainSignal() {
-		final Signal<Integer> source = new Signal<>(2);
+		final Signal<Integer> source = Signal.create(2);
 		final ComputedSignal<Integer> doubled = source.map(value -> value * 2);
 		Assert.assertFalse(doubled.isWritable());
 		Assert.assertTrue(source.isWritable());
@@ -387,7 +387,7 @@ public class ComputedSignalTest {
 	@Test
 	public void warnsOnceInDevModeWhenItReadsNoSignal() {
 		final boolean devMode = JOIDEnv.isDevMode();
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		try {
 			JOIDEnv.devMode(true);
 			final ComputedSignal<Integer> fixed = Signal.from(() -> 42);
@@ -416,7 +416,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void computesAgainAfterAFailure() {
-		final IntegerSignal count = new IntegerSignal(0);
+		final IntegerSignal count = IntegerSignal.create(0);
 		final ComputedSignal<Integer> inverse = count.map(value -> 10 / value);
 		try {
 			inverse.get();
@@ -430,7 +430,7 @@ public class ComputedSignalTest {
 	@Test
 	public void notifiesAgainAfterAFailure() {
 		final List<Integer> received = new ArrayList<>();
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final ComputedSignal<Integer> inverse = count.map(value -> 10 / value).onChange(received::add);
 		try {
 			count.set(0);
@@ -445,7 +445,7 @@ public class ComputedSignalTest {
 	@Test
 	public void notifiesASignalDerivedFromAFailedSignalAgain() {
 		final List<String> received = new ArrayList<>();
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		count.map(value -> 10 / value).map(value -> "x" + value).onChange(received::add);
 		try {
 			count.set(0);
@@ -458,7 +458,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void startsEmptyForANullValue() {
-		final Signal<String> name = new Signal<>();
+		final Signal<String> name = Signal.create(null);
 		final ComputedSignal<String> upper = name.map(value -> value == null ? null : value.toUpperCase());
 		Assert.assertNull(upper.get());
 		name.set("joid");
@@ -474,18 +474,18 @@ public class ComputedSignalTest {
 		Assert.assertEquals("joid", name.peek());
 		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());
 		Assert.assertFalse(Signal.from(() -> "joid").isConstant());
-		Assert.assertFalse(new IntegerSignal(1).map(value -> value * 2).isConstant());
+		Assert.assertFalse(IntegerSignal.create(1).map(value -> value * 2).isConstant());
 	}
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("ComputedSignal{2}", new IntegerSignal(1).map(value -> value * 2).toString());
+		Assert.assertEquals("ComputedSignal{2}", IntegerSignal.create(1).map(value -> value * 2).toString());
 		Assert.assertEquals("ComputedSignal{null}", Signal.from(() -> null).toString());
 	}
 
 	@Test
 	public void releasesAComputedSignalNoLongerReferenced() {
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final WeakReference<ComputedSignal<Integer>> reference = new WeakReference<>(count.map(value -> value * 2));
 		Assert.assertEquals(2, reference.get().get().intValue());
 		SignalContext.current().takeReads();
@@ -498,7 +498,7 @@ public class ComputedSignalTest {
 
 	@Test
 	public void staysFastOnAChange() {
-		final IntegerSignal count = new IntegerSignal(0);
+		final IntegerSignal count = IntegerSignal.create(0);
 		final ComputedSignal<String> color = count.map(value -> value >= 3 ? "green" : "gray");
 		final ComputedSignal<String> text = count.map(value -> "Clicks: " + value);
 		final ComputedSignal<String> message = count.map(value -> value == 0 ? "Nobody clicked yet" : "Thanks!");

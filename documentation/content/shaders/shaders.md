@@ -125,7 +125,7 @@ if (!shader.isActive()) {
 }
 ```
 
-`ShaderSource.read(stage, handle)` reads an asset handle in UTF-8. `BlendState` is `NORMAL`, `PREMULTIPLIED`, `DISABLED` or `create(...)`.
+`ShaderSource.read(stage, handle)` reads an asset handle in UTF-8. `BlendState` is `NORMAL`, `PREMULTIPLIED`, `DISABLED` or `of(...)`.
 
 ## Setting uniforms
 

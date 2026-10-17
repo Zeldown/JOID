@@ -16,34 +16,34 @@ public class StencilEmulationTest {
 
 	@Test
 	public void testsNothingWhenTheStencilTestIsOff() {
-		final StencilEmulation emulation = StencilEmulation.create(StencilEmulationTest.createState(false, StencilOperation.REPLACE), true);
+		final StencilEmulation emulation = StencilEmulation.from(StencilEmulationTest.createState(false, StencilOperation.REPLACE), true);
 		Assert.assertFalse(emulation.isTest());
 		Assert.assertFalse(emulation.isWrite());
 	}
 
 	@Test
 	public void testsNothingOutsideTheScreen() {
-		final StencilEmulation emulation = StencilEmulation.create(StencilEmulationTest.createState(true, StencilOperation.REPLACE), false);
+		final StencilEmulation emulation = StencilEmulation.from(StencilEmulationTest.createState(true, StencilOperation.REPLACE), false);
 		Assert.assertFalse(emulation.isTest());
 		Assert.assertFalse(emulation.isWrite());
 	}
 
 	@Test
 	public void writesOnlyWhenAnOperationChangesTheStencil() {
-		Assert.assertFalse(StencilEmulation.create(StencilEmulationTest.createState(true, StencilOperation.KEEP), true).isWrite());
-		Assert.assertTrue(StencilEmulation.create(StencilEmulationTest.createState(true, StencilOperation.INCREMENT), true).isWrite());
+		Assert.assertFalse(StencilEmulation.from(StencilEmulationTest.createState(true, StencilOperation.KEEP), true).isWrite());
+		Assert.assertTrue(StencilEmulation.from(StencilEmulationTest.createState(true, StencilOperation.INCREMENT), true).isWrite());
 	}
 
 	@Test
 	public void writesWhenOnlyTheFailOperationChangesTheStencil() {
 		final RenderState state = StencilEmulationTest.createState(StencilFunction.ALWAYS, 0, 0xFF, StencilOperation.ZERO, StencilOperation.KEEP);
-		Assert.assertTrue(StencilEmulation.create(state, true).isWrite());
+		Assert.assertTrue(StencilEmulation.from(state, true).isWrite());
 	}
 
 	@Test
 	public void keepsEightBitsOfTheReferenceAndTheMask() {
 		final RenderState state = StencilEmulationTest.createState(StencilFunction.ALWAYS, 0x1FF, 0xFFFFFFFF, StencilOperation.KEEP, StencilOperation.KEEP);
-		final StencilEmulation emulation = StencilEmulation.create(state, true);
+		final StencilEmulation emulation = StencilEmulation.from(state, true);
 		Assert.assertEquals(0xFF, emulation.getReference());
 		Assert.assertEquals(0xFF, emulation.getMask());
 	}
@@ -54,7 +54,7 @@ public class StencilEmulationTest {
 		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n");
 		final UniformBlock block = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST).createBlock(vertex, fragment);
 		final RenderState state = StencilEmulationTest.createState(StencilFunction.NOT_EQUAL, 3, 0xFF, StencilOperation.KEEP, StencilOperation.INVERT);
-		StencilEmulation.create(state, true).write(block);
+		StencilEmulation.from(state, true).write(block);
 		block.pack();
 		Assert.assertEquals(1, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_TEST));
 		Assert.assertEquals(6, StencilEmulationTest.read(block, GlslShaderTranslator.STENCIL_FUNCTION));
@@ -76,13 +76,13 @@ public class StencilEmulationTest {
 
 	private static RenderState createState(final boolean test, final StencilOperation pass) {
 		final RenderState state = RenderState.create();
-		state.stencil(test ? StencilState.create(StencilFunction.ALWAYS, 0, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, pass) : StencilState.DISABLED);
+		state.stencil(test ? StencilState.of(StencilFunction.ALWAYS, 0, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, pass) : StencilState.DISABLED);
 		return state;
 	}
 
 	private static RenderState createState(final StencilFunction function, final int reference, final int mask, final StencilOperation fail, final StencilOperation pass) {
 		final RenderState state = RenderState.create();
-		state.stencil(StencilState.create(function, reference, mask, fail, StencilOperation.KEEP, pass));
+		state.stencil(StencilState.of(function, reference, mask, fail, StencilOperation.KEEP, pass));
 		return state;
 	}
 

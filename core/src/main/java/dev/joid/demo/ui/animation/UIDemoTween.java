@@ -45,8 +45,8 @@ public class UIDemoTween extends UIDemo {
 		paused.timeline(Timeline.createSequence().push(paused.tween(600F).target(1F).ease(TweenEquations.QUAD_OUT)).pushPause(600F).push(paused.tween(600F).target(0F).ease(TweenEquations.QUAD_IN))).repeat(Tween.INFINITY, 300F).start();
 		final TweenAnimator waypoints = TweenAnimator.create(0F);
 		waypoints.timeline(Timeline.createSequence().push(waypoints.tween(2000F).waypoint(1F).waypoint(0.2F).target(1F).ease(TweenEquations.QUAD_INOUT).path(TweenPaths.CATMULL_ROM))).repeatYoyo(Tween.INFINITY, 0F).start();
-		final IntegerSignal starts = new IntegerSignal(0);
-		final IntegerSignal laps = new IntegerSignal(0);
+		final IntegerSignal starts = IntegerSignal.create(0);
+		final IntegerSignal laps = IntegerSignal.create(0);
 		final TweenAnimator events = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(Tween.INFINITY, 0F).onStart(event -> starts.increment()).onIterationEnd(event -> laps.increment()).start();
 		final TweenAnimator delayed = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_INOUT).delay(1000F).repeatYoyo(Tween.INFINITY, 0F).start();
 		this.manager.killAll();

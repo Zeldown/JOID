@@ -328,8 +328,8 @@ public class NodeTest {
 
 	@Test
 	public void showsItselfOnceEverySignalHasAValue() {
-		final Signal<String> first = new Signal<>();
-		final Signal<Integer> second = new Signal<>(3);
+		final Signal<String> first = Signal.create(null);
+		final Signal<Integer> second = Signal.create(3);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(Signal.from(() -> first.get() != null && second.get() != null));
 		Assert.assertFalse(node.isVisible());
 		this.bridges.open(new NodeUI(node));
@@ -343,7 +343,7 @@ public class NodeTest {
 
 	@Test
 	public void hidesItselfWhileABooleanSignalIsFalse() {
-		final BooleanSignal shown = new BooleanSignal(false);
+		final BooleanSignal shown = BooleanSignal.create(false);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).visible(shown);
 		Assert.assertFalse(node.isVisible());
 		this.bridges.open(new NodeUI(node));
@@ -583,7 +583,7 @@ public class NodeTest {
 
 	@Test
 	public void followsABooleanSignalForItsInteractivity() {
-		final BooleanSignal interactive = new BooleanSignal(false);
+		final BooleanSignal interactive = BooleanSignal.create(false);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).interactive(interactive);
 		Assert.assertFalse(node.isInteractive());
 		this.bridges.open(new NodeUI(node));
@@ -1065,7 +1065,7 @@ public class NodeTest {
 
 	@Test
 	public void countsNoLoadOnTheRefreshOfAFollowedProperty() {
-		final DoubleSignal x = new DoubleSignal(0D);
+		final DoubleSignal x = DoubleSignal.create(0D);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).x(x);
 		this.bridges.open(new NodeUI(node)).frames(2);
 		Assert.assertEquals(1L, node.getLoadCount());
@@ -1591,7 +1591,7 @@ public class NodeTest {
 
 	@Test
 	public void writesTheWheelIntoItsScrollSignal() {
-		final DoubleSignal scroll = new DoubleSignal(0D);
+		final DoubleSignal scroll = DoubleSignal.create(0D);
 		final ContainerNode column = NodeTest.column().scrollY(scroll);
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		this.bridges.scroll(-1D);
@@ -1602,7 +1602,7 @@ public class NodeTest {
 
 	@Test
 	public void writesItsScrollLimitBackIntoItsSignal() {
-		final DoubleSignal scroll = new DoubleSignal(-1000D);
+		final DoubleSignal scroll = DoubleSignal.create(-1000D);
 		final ContainerNode column = NodeTest.column().scrollY(scroll);
 		this.bridges.open(new NodeUI(column)).frames(2);
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
@@ -1611,7 +1611,7 @@ public class NodeTest {
 
 	@Test
 	public void forgetsItsScrollSignalOnceGivenAValue() {
-		final DoubleSignal scroll = new DoubleSignal(-100D);
+		final DoubleSignal scroll = DoubleSignal.create(-100D);
 		final ContainerNode column = NodeTest.column().scrollY(scroll).scrollY(-50D);
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		scroll.set(-150D);
@@ -1632,7 +1632,7 @@ public class NodeTest {
 
 	@Test
 	public void keepsItsScrollWhenItsGestureIsRefused() {
-		final DoubleSignal scroll = new DoubleSignal(0D);
+		final DoubleSignal scroll = DoubleSignal.create(0D);
 		final ContainerNode column = NodeTest.column().scrollY(scroll).beforeScroll(event -> event.cancel());
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
 		column.scrollTo(0D, -120D);
@@ -1960,7 +1960,7 @@ public class NodeTest {
 
 	@Test
 	public void stopsDraggingOnceItsDraggableTurnsDisabled() {
-		final BooleanSignal locked = new BooleanSignal(false);
+		final BooleanSignal locked = BooleanSignal.create(false);
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(() -> locked.get() ? DraggableProperty.disabled() : DraggableProperty.free());
 		this.press(node, 110D, 110D);
 		locked.set(true);
@@ -2065,8 +2065,8 @@ public class NodeTest {
 
 	@Test
 	public void writesItsDragIntoItsPositionSignals() {
-		final DoubleSignal x = new DoubleSignal(100D);
-		final DoubleSignal y = new DoubleSignal(100D);
+		final DoubleSignal x = DoubleSignal.create(100D);
+		final DoubleSignal y = DoubleSignal.create(100D);
 		final RectNode node = RectNode.create(0D, 0D, 50D, 50D).x(x).y(y).draggable(DraggableProperty.free());
 		this.press(node, 110D, 110D);
 		this.drop(310D, 210D);
@@ -2087,7 +2087,7 @@ public class NodeTest {
 			Assert.assertEquals("The RectNode is dragged with DraggableType.MOVE but its x is computed (a lambda or a signal that cannot be written), so a drag cannot move it: give x(...) a value or a writable Signal, or drag a copy with DraggableType.COPY", expected.getMessage());
 		}
 		try {
-			RectNode.create(0D, 100D, 50D, 50D).draggable(DraggableProperty.free()).y(new DoubleSignal(5D).map(value -> value * 2D));
+			RectNode.create(0D, 100D, 50D, 50D).draggable(DraggableProperty.free()).y(DoubleSignal.create(5D).map(value -> value * 2D));
 			Assert.fail("A computed position cannot be given to a node dragged with MOVE");
 		} catch (final IllegalStateException expected) {
 			Assert.assertTrue(expected.getMessage().contains("its y is computed"));
@@ -2097,7 +2097,7 @@ public class NodeTest {
 
 	@Test
 	public void forgetsItsPositionSignalOnceGivenAValue() {
-		final DoubleSignal x = new DoubleSignal(100D);
+		final DoubleSignal x = DoubleSignal.create(100D);
 		final RectNode node = RectNode.create(0D, 100D, 50D, 50D).x(x).x(60D).draggable(DraggableProperty.free());
 		this.press(node, 70D, 110D);
 		this.drop(270D, 110D);
@@ -2114,7 +2114,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(node));
 		Assert.assertSame(node, node.move(200D, 150D));
 		node.x(250D);
-		Assert.assertEquals(Arrays.asList(Point.create(200D, 150D), Point.create(100D, 100D), Point.create(200D, 150D)), events);
+		Assert.assertEquals(Arrays.asList(Point.of(200D, 150D), Point.of(100D, 100D), Point.of(200D, 150D)), events);
 		Assert.assertEquals(250D, node.getX(), 0D);
 		Assert.assertEquals(150D, node.getY(), 0D);
 	}
@@ -2126,12 +2126,12 @@ public class NodeTest {
 		this.press(node, 110D, 110D);
 		this.drop(310D, 110D);
 		Assert.assertEquals("before", moves.get(0));
-		Assert.assertEquals(Point.create(300D, 100D), moves.get(moves.size() - 1));
+		Assert.assertEquals(Point.of(300D, 100D), moves.get(moves.size() - 1));
 	}
 
 	@Test
 	public void keepsItsPlaceWhenItsMoveIsRefused() {
-		final DoubleSignal x = new DoubleSignal(100D);
+		final DoubleSignal x = DoubleSignal.create(100D);
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).x(x).draggable(DraggableProperty.free()).beforeMove(event -> event.cancel());
 		this.press(node, 110D, 110D);
 		this.drop(310D, 210D);
@@ -2309,7 +2309,7 @@ public class NodeTest {
 
 	@Test
 	public void detachesAChildWhoseInitFails() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D);
 		this.bridges.open(new NodeUI(parent));
 		final BrokenNode child = new BrokenNode().watch(signal);
@@ -2474,7 +2474,7 @@ public class NodeTest {
 
 	@Test
 	public void keepsItsBodyWhenItsSelfConsumerRuns() {
-		final Signal<Integer> count = new Signal<>(1);
+		final Signal<Integer> count = Signal.create(1);
 		final int[] runs = {0, 0};
 		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).watch(count, WatchProperty.BODY).body(() -> runs[0]++).self(rect -> runs[1]++);
 		final Consumer<Node> body = node.getBodyConsumer();
@@ -2619,7 +2619,7 @@ public class NodeTest {
 
 	@Test
 	public void copiesTheCurrentValuesWithoutTheirSources() {
-		final DoubleSignal width = new DoubleSignal(10D);
+		final DoubleSignal width = DoubleSignal.create(10D);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).width(width);
 		final RectNode copy = node.copy();
 		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 100D, 100D).append(node, copy))).frame();
@@ -2655,7 +2655,7 @@ public class NodeTest {
 
 	@Test
 	public void leavesTheSignalsOfTheOriginalOutOfItsCopy() {
-		final Signal<Integer> signal = new Signal<>(1);
+		final Signal<Integer> signal = Signal.create(1);
 		final List<Object> values = new ArrayList<>();
 		final BindingNode copy = new BindingNode().link("value", signal, values).copy();
 		this.bridges.open(new NodeUI(copy));
@@ -2666,7 +2666,7 @@ public class NodeTest {
 
 	@Test
 	public void leavesTheWatchesOfTheOriginalOutOfItsCopy() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] watches = {0};
 		final RectNode copy = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> watches[0]++).copy();
 		this.bridges.open(new NodeUI(copy));
@@ -2676,7 +2676,7 @@ public class NodeTest {
 
 	@Test
 	public void keepsTheGhostOfACopyDragOutOfTheSignals() {
-		final Signal<Integer> signal = new Signal<>(1);
+		final Signal<Integer> signal = Signal.create(1);
 		final List<Object> values = new ArrayList<>();
 		final BindingNode node = new BindingNode().link("value", signal, values).draggable(DraggableProperty.free().type(DraggableType.COPY));
 		this.press(node, 5D, 5D);
@@ -2693,7 +2693,7 @@ public class NodeTest {
 
 	@Test
 	public void givesTheGhostOfACopyDragTheParentOfTheOriginal() {
-		final DoubleSignal width = new DoubleSignal(50D);
+		final DoubleSignal width = DoubleSignal.create(50D);
 		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).width(width).draggable(DraggableProperty.free().type(DraggableType.COPY));
 		final ContainerNode parent = ContainerNode.create(100D, 100D, 300D, 300D).append(node);
 		this.press(parent, 120D, 120D);
@@ -2755,7 +2755,7 @@ public class NodeTest {
 	@Test
 	public void endsTheHoverOfANodeHiddenUnderTheMouse() {
 		final List<String> events = new ArrayList<>();
-		final BooleanSignal shown = new BooleanSignal(true);
+		final BooleanSignal shown = BooleanSignal.create(true);
 		final RectNode child = RectNode.create(10D, 10D, 50D, 50D).onHoverEnd(event -> events.add("child end"));
 		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).visible(shown).append(child).onHoverEnd(event -> events.add("node end"));
 		this.bridges.open(new NodeUI(node)).move(120D, 120D).frames(20);
@@ -2859,7 +2859,7 @@ public class NodeTest {
 
 	@Test
 	public void onlyCallsItsWatchCallbacksForAWatchWithoutProperty() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final List<WatchProperty> watched = new ArrayList<>();
 		final int[] inits = {0};
 		final int[] watches = {0};
@@ -2878,7 +2878,7 @@ public class NodeTest {
 
 	@Test
 	public void appliesItsWatchPropertiesInTheirOrder() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final List<String> applied = new ArrayList<>();
 		final RectNode node = RectNode
 		.create(0D, 0D, 10D, 10D)
@@ -2895,7 +2895,7 @@ public class NodeTest {
 
 	@Test
 	public void appliesItsWatchPropertiesBeforeItsWatchListeners() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final List<String> applied = new ArrayList<>();
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).body(rect -> applied.add("body")).watch(signal, WatchProperty.BODY).onWatch(event -> applied.add("watch"));
 		this.bridges.open(new NodeUI(node));
@@ -2906,7 +2906,7 @@ public class NodeTest {
 
 	@Test
 	public void stopsWatchingOnceItsUiIsClosed() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D).watch(signal));
 		this.bridges.open(ui);
 		signal.set(1);
@@ -2918,7 +2918,7 @@ public class NodeTest {
 
 	@Test
 	public void startsAWatchMadeOutsideAnyUiOnceAttached() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] watches = {0};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> watches[0]++);
 		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
@@ -2944,7 +2944,7 @@ public class NodeTest {
 
 	@Test
 	public void checksItsConditionBeforeApplyingAChange() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final boolean[] kept = {true};
 		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).append(RectNode.create(0D, 0D, 10D, 10D)).watch(signal, () -> kept[0], WatchProperty.CLEAR_CHILDREN);
 		this.bridges.open(new NodeUI(node));
@@ -2956,7 +2956,7 @@ public class NodeTest {
 
 	@Test
 	public void forgetsTheWatchesOfTheNodesDroppedByAReload() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final ReloadedUI ui = new ReloadedUI(signal);
 		this.bridges.open(ui);
 		ui.reload();
@@ -2968,7 +2968,7 @@ public class NodeTest {
 
 	@Test
 	public void stopsWatchingOnceRemoved() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] reloads = {0};
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
@@ -2981,7 +2981,7 @@ public class NodeTest {
 
 	@Test
 	public void stopsWatchingInTheWholeClearedTree() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] reloads = {0};
 		final RectNode grandchild = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++);
 		final ContainerNode child = ContainerNode.create(0D, 0D, 50D, 50D).watch(signal).onWatch(event -> reloads[0]++).append(grandchild);
@@ -2995,7 +2995,7 @@ public class NodeTest {
 
 	@Test
 	public void ignoresAPublishThatReachesItAfterItsDetach() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] reloads = {0};
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
@@ -3010,7 +3010,7 @@ public class NodeTest {
 
 	@Test
 	public void watchesAgainOnceAttachedAgain() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] reloads = {0};
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
@@ -3026,7 +3026,7 @@ public class NodeTest {
 
 	@Test
 	public void catchesUpWithAChangeMissedWhileDetached() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] watches = {0};
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> watches[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
@@ -3043,7 +3043,7 @@ public class NodeTest {
 
 	@Test
 	public void watchesAgainOnceItsUiIsOpenedAgain() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] reloads = {0};
 		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++));
 		this.bridges.open(ui);
@@ -3058,9 +3058,9 @@ public class NodeTest {
 
 	@Test
 	public void keepsOneBindingPerProperty() {
-		final Signal<String> title = new Signal<>("first");
-		final Signal<Integer> count = new Signal<>(1);
-		final Signal<String> other = new Signal<>("other");
+		final Signal<String> title = Signal.create("first");
+		final Signal<Integer> count = Signal.create(1);
+		final Signal<String> other = Signal.create("other");
 		final List<Object> values = new ArrayList<>();
 		final BindingNode node = new BindingNode().link("title", title, values).link("count", count, values);
 		this.bridges.open(new NodeUI(node));
@@ -3080,8 +3080,8 @@ public class NodeTest {
 
 	@Test
 	public void rebindsOnceAcrossADetach() {
-		final Signal<Integer> first = new Signal<>(0);
-		final Signal<Integer> second = new Signal<>(10);
+		final Signal<Integer> first = Signal.create(0);
+		final Signal<Integer> second = Signal.create(10);
 		final List<Object> values = new ArrayList<>();
 		final BindingNode node = new BindingNode().link("value", first, values);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
@@ -3103,7 +3103,7 @@ public class NodeTest {
 
 	@Test
 	public void detachesItsScrollbarAndItsSkeleton() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final Bar bar = new Bar(90D, 0D, 10D, 100D, 20D).watch(signal);
 		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).overflow(OverflowProperty.SCROLL).scrollbar(bar).skeleton(rect -> RectNode.create(0D, 0D, 10D, 10D).watch(signal));
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 200D, 200D).append(node);
@@ -3204,7 +3204,7 @@ public class NodeTest {
 
 	@Test
 	public void waitsForItsConditionsAcrossADetach() {
-		final Signal<String> title = new Signal<>();
+		final Signal<String> title = Signal.create(null);
 		final int[] mounts = {0};
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).wait(rect -> title.get() != null).onMount(event -> mounts[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
@@ -3237,7 +3237,7 @@ public class NodeTest {
 
 	@Test
 	public void watchesWhileItsConditionHolds() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final boolean[] kept = {true};
 		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).append(RectNode.create(0D, 0D, 10D, 10D)).watch(signal, () -> kept[0], WatchProperty.CLEAR_CHILDREN);
 		this.bridges.open(new NodeUI(node));
@@ -3256,7 +3256,7 @@ public class NodeTest {
 
 	@Test
 	public void appliesTheOtherPropertiesWhenOneFails() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final int[] bodies = {0};
 		final RectNode node = RectNode.create(0D, 0D, 100D, 100D).body(rect -> {
 			if (bodies[0]++ > 0) {
@@ -3560,7 +3560,7 @@ public class NodeTest {
 
 	@Test
 	public void stopsWatchingOnceItsOwnUiIsClosed() {
-		final Signal<Integer> signal = new Signal<>(0);
+		final Signal<Integer> signal = Signal.create(0);
 		final NodeUI first = new NodeUI(RectNode.create(0D, 0D, 10D, 10D).watch(signal));
 		this.bridges.open(first);
 		JOID.close(first);
@@ -3915,7 +3915,7 @@ public class NodeTest {
 
 	public static final class WatchingUI extends UI {
 
-		private final Signal<Integer> signal = new Signal<>(0);
+		private final Signal<Integer> signal = Signal.create(0);
 
 		private int watches;
 

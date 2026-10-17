@@ -56,7 +56,7 @@ public class ImplicitConversionTest {
 	}
 
 	private static String convert(final String body) {
-		return ImplicitConversion.apply(body, Arrays.asList(ShaderVariable.create("int", "u_Type", "", false), ShaderVariable.create("float", "u_Weights", "[3]", false), ShaderVariable.create("float", "x", "", false)));
+		return ImplicitConversion.apply(body, Arrays.asList(ShaderVariable.of("int", "u_Type", "", false), ShaderVariable.of("float", "u_Weights", "[3]", false), ShaderVariable.of("float", "x", "", false)));
 	}
 
 }

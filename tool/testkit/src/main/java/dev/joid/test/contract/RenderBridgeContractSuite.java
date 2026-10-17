@@ -264,9 +264,9 @@ public abstract class RenderBridgeContractSuite {
 	public void appliesTheStencilStateOfEachDraw() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.clearStencil();
-			bridge.getState().colorWrite(false).stencil(StencilState.create(StencilFunction.ALWAYS, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE));
+			bridge.getState().colorWrite(false).stencil(StencilState.of(StencilFunction.ALWAYS, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE));
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.RED));
-			bridge.getState().colorWrite(true).stencil(StencilState.create(StencilFunction.EQUAL, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+			bridge.getState().colorWrite(true).stencil(StencilState.of(StencilFunction.EQUAL, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
 			bridge.getState().stencil(StencilState.DISABLED);
 		});
@@ -294,7 +294,7 @@ public abstract class RenderBridgeContractSuite {
 	public void drawsAWideLineAsWideAsItsWidth() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.getState().lineWidth(6F);
-			DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, Point.create(8D, 32D), Point.create(56D, 32D));
+			DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, Point.of(8D, 32D), Point.of(56D, 32D));
 		});
 		ContractDraw.assertPixel(image, 32, 27, RenderBridgeContractSuite.BLACK);
 		ContractDraw.assertPixel(image, 32, 30, RenderBridgeContractSuite.WHITE);
@@ -306,7 +306,7 @@ public abstract class RenderBridgeContractSuite {
 	public void joinsTheSegmentsOfAWideLine() {
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.getState().lineWidth(6F);
-			DrawUtils.SHAPE.drawShape(DrawMode.LINE_STRIP, Color.WHITE, Point.create(8D, 32D), Point.create(32D, 32D), Point.create(32D, 56D));
+			DrawUtils.SHAPE.drawShape(DrawMode.LINE_STRIP, Color.WHITE, Point.of(8D, 32D), Point.of(32D, 32D), Point.of(32D, 56D));
 		});
 		ContractDraw.assertPixel(image, 32, 31, RenderBridgeContractSuite.WHITE);
 		ContractDraw.assertPixel(image, 34, 29, RenderBridgeContractSuite.WHITE);
@@ -321,7 +321,7 @@ public abstract class RenderBridgeContractSuite {
 			bridge.getState().lineWidth(6F);
 			shader.bind();
 			try {
-				DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, Point.create(8D, 32D), Point.create(56D, 32D));
+				DrawUtils.SHAPE.drawShape(DrawMode.LINES, Color.WHITE, Point.of(8D, 32D), Point.of(56D, 32D));
 			} finally {
 				shader.unbind();
 			}
@@ -691,7 +691,7 @@ public abstract class RenderBridgeContractSuite {
 			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 2, (byte) color);
 			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 3, (byte) (color >> 24));
 		}
-		return VertexBuffer.create(buffer, points.length, false, true, false);
+		return VertexBuffer.of(buffer, points.length, false, true, false);
 	}
 
 }

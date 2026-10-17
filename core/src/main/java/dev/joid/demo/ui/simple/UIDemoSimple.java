@@ -29,11 +29,11 @@ public class UIDemoSimple extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSimple.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal left = new IntegerSignal(0);
-		final IntegerSignal right = new IntegerSignal(0);
-		final IntegerSignal starts = new IntegerSignal(0);
-		final IntegerSignal ends = new IntegerSignal(0);
-		final IntegerSignal clicks = new IntegerSignal(0);
+		final IntegerSignal left = IntegerSignal.create(0);
+		final IntegerSignal right = IntegerSignal.create(0);
+		final IntegerSignal starts = IntegerSignal.create(0);
+		final IntegerSignal ends = IntegerSignal.create(0);
+		final IntegerSignal clicks = IntegerSignal.create(0);
 
 		RectNode
 		.create(80, 40, 320, 260)

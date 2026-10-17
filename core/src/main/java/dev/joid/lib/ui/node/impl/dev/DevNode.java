@@ -78,11 +78,11 @@ public final class DevNode extends Node {
 		super(x, y, 275, 53);
 		super.anchor(Align.END);
 
-		this.inspectSignal = new BooleanSignal(true);
-		this.gridSignal = new BooleanSignal(false);
+		this.inspectSignal = BooleanSignal.create(true);
+		this.gridSignal = BooleanSignal.create(false);
 
-		this.inspectedNode = new Signal<>();
-		this.inspectedNodeLocked = new BooleanSignal();
+		this.inspectedNode = Signal.create(null);
+		this.inspectedNodeLocked = BooleanSignal.create();
 		this.lockedNode = Signal.from(() -> this.inspectedNodeLocked.get() ? this.inspectedNode.get() : null);
 
 		this.reloadAnimator = TweenAnimator.create(0F);
@@ -376,8 +376,8 @@ public final class DevNode extends Node {
 		if (this.gridSignal.peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
 			final TextInfo gridInfo = TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F));
-			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(UIView.DESIGN_WIDTH / 2D - 1D, 0), Point.create(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
-			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.create(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
+			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.of(UIView.DESIGN_WIDTH / 2D - 1D, 0), Point.of(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
+			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.of(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.of(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
 
 			DrawUtils.SHAPE.drawRect(0, mouseY, mouseX, 3, gridColor);
 			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", gridInfo).alignX(Align.CENTER));
@@ -446,10 +446,10 @@ public final class DevNode extends Node {
 
 	private void drawInfoBox(final double x, final double y, final double width, final double height, final Node node) {
 		DrawUtils.SHAPE.drawRect(x, y, width, height, DevNode.ACTION.withAlpha(0.3F));
-		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x, y), Point.create(x + width, y));
-		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x, y), Point.create(x, y + height));
-		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x + width, y), Point.create(x + width, y + height));
-		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x, y + height), Point.create(x + width, y + height));
+		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.of(x, y), Point.of(x + width, y));
+		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.of(x, y), Point.of(x, y + height));
+		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.of(x + width, y), Point.of(x + width, y + height));
+		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.of(x, y + height), Point.of(x + width, y + height));
 
 		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15F, DevNode.WHITE).shadow().shadow(Color.BLACK.withAlpha(0.7F));
 		final Text nodeNameText = Text.create(JOIDLog.nameOf(node.getClass()), textInfo);

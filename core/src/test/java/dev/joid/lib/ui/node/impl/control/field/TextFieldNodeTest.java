@@ -270,7 +270,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void writesItsFocusIntoItsSignal() {
-		final Signal<Boolean> focused = new Signal<>(false);
+		final Signal<Boolean> focused = Signal.create(false);
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(focused);
 		this.bridges.open(new NodeUI(field));
 		this.click(124D, 120D);
@@ -286,7 +286,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void forgetsItsFocusSignalOnceGivenAValue() {
-		final Signal<Boolean> focused = new Signal<>(false);
+		final Signal<Boolean> focused = Signal.create(false);
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(focused).focused(true);
 		this.bridges.open(new NodeUI(field));
 		Assert.assertTrue(field.isFocused());
@@ -315,7 +315,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void staysUnfocusedWhenItsFocusIsRefused() {
-		final Signal<Boolean> focused = new Signal<>(false);
+		final Signal<Boolean> focused = Signal.create(false);
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("hello").focused(focused).beforeFocus(event -> event.cancel());
 		this.bridges.open(new NodeUI(field));
 		this.click(124D, 120D);
@@ -616,7 +616,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void writesItsCursorMovesIntoItsSignal() {
-		final Signal<Integer> cursor = new Signal<>(1);
+		final Signal<Integer> cursor = Signal.create(1);
 		final TextFieldNode field = this.field("abc").cursorPosition(cursor);
 		this.press(field, Key.RIGHT);
 		Assert.assertEquals(2, cursor.get().intValue());
@@ -893,7 +893,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void keepsItsTypedTextOnEscape() {
-		final Signal<String> signal = new Signal<>("hello");
+		final Signal<String> signal = Signal.create("hello");
 		final TextFieldNode field = this.field("").text(signal).cursorPosition(5);
 		field.focused(false).focused(true);
 		this.type(field, " world");
@@ -1086,7 +1086,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void keepsTheGradientOfItsTextOnItsPlaceholderAndItsCursor() {
-		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.create(0D, 0D), Point.create(1D, 0D));
+		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.of(0D, 0D), Point.of(1D, 0D));
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F, gradient)).placeholder("Search");
 		Assert.assertTrue(field.getPlaceholderInfo().getColor().isGradient());
 		Assert.assertEquals(0.5F, field.getPlaceholderInfo().getColor().getAlphaF(), 1E-6F);
@@ -1438,7 +1438,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void bindsItsTextToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
-		final Signal<String> signal = new Signal<>("hi");
+		final Signal<String> signal = Signal.create("hi");
 		final TextFieldNode field = this.field("").onChange(event -> changes.add(event.getText())).text(signal);
 		Assert.assertEquals("hi", field.getText());
 		this.type(field.cursorPosition(2), "!");
@@ -1457,8 +1457,8 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void followsOnlyItsLastSignal() {
-		final Signal<String> name = new Signal<>("Alex");
-		final Signal<String> nickname = new Signal<>("Al");
+		final Signal<String> name = Signal.create("Alex");
+		final Signal<String> nickname = Signal.create("Al");
 		final TextFieldNode field = this.field("").text(name).text(nickname);
 		Assert.assertEquals("Al", field.getText());
 		this.type(field.cursorPosition(2), "ex");
@@ -1471,7 +1471,7 @@ public class TextFieldNodeTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesASignalItCannotWrite() {
-		TextFieldNode.create(100D, 100D, 200D).text(new Signal<>("Alex").map(String::toUpperCase));
+		TextFieldNode.create(100D, 100D, 200D).text(Signal.create("Alex").map(String::toUpperCase));
 	}
 
 	@Test

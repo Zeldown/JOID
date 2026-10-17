@@ -36,7 +36,7 @@ public class ShowHero extends ShowUI {
 
 	private static final Color TOAST = Color.decode("#1E1B3A").lock();
 
-	private final DoubleSignal progress = new DoubleSignal(0D);
+	private final DoubleSignal progress = DoubleSignal.create(0D);
 
 	@Override
 	protected void scene() {
@@ -105,7 +105,7 @@ public class ShowHero extends ShowUI {
 
 	private Color shimmer() {
 		final float shift = (float) (super.wave(6D, 0D) * 0.35D);
-		return ShowUI.FUCHSIA.toGradient(ShowUI.CYAN, Point.create(-0.1D + shift, 0D), Point.create(0.9D + shift, 0D));
+		return ShowUI.FUCHSIA.toGradient(ShowUI.CYAN, Point.of(-0.1D + shift, 0D), Point.of(0.9D + shift, 0D));
 	}
 
 	private void queue() {
@@ -175,7 +175,7 @@ public class ShowHero extends ShowUI {
 			.layer((node, mouseX, mouseY) -> {
 				final double cx = 35D;
 				final double cy = 32D;
-				DrawUtils.SHAPE.drawPolygon(ShowUI.NIGHT, Point.create(cx - 7D, cy - 12D), Point.create(cx - 7D, cy + 12D), Point.create(cx + 13D, cy));
+				DrawUtils.SHAPE.drawPolygon(ShowUI.NIGHT, Point.of(cx - 7D, cy - 12D), Point.of(cx - 7D, cy + 12D), Point.of(cx + 13D, cy));
 			})
 			.attach(card);
 		})
@@ -215,13 +215,13 @@ public class ShowHero extends ShowUI {
 		for (int i = 0; i <= count; i++) {
 			final double u = i / (double) count;
 			final double value = 0.45D + 0.22D * Math.sin(u * 7D + super.t() * Math.PI / 3D) + 0.14D * Math.sin(u * 13D - super.t() * Math.PI * 2D / 3D) + 0.18D * u;
-			line.add(Point.create(x + u * width, y + height - value * height));
+			line.add(Point.of(x + u * width, y + height - value * height));
 		}
 		for (int i = 0; i < count; i++) {
 			area.add(line.get(i));
 			area.add(line.get(i + 1));
-			area.add(Point.create(line.get(i + 1).getX(), y + height));
-			area.add(Point.create(line.get(i).getX(), y + height));
+			area.add(Point.of(line.get(i + 1).getX(), y + height));
+			area.add(Point.of(line.get(i).getX(), y + height));
 		}
 		DrawUtils.SHAPE.drawShape(DrawMode.QUADS, ShowUI.vertical(ShowUI.FUCHSIA.withAlpha(0.45F), ShowUI.FUCHSIA.withAlpha(0F)), area.toArray(new Point[0]));
 		DrawUtils.SHAPE.drawLine(ShowUI.FUCHSIA.toGradient(ShowUI.CYAN), 4F, line.toArray(new Point[0]));

@@ -34,16 +34,16 @@ public class UIDemoSignal extends UIDemo {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSignal.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final long opened = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final IntegerSignal clicks = new IntegerSignal(0);
-		final IntegerSignal mapped = new IntegerSignal(0);
-		final IntegerSignal left = new IntegerSignal(0);
-		final IntegerSignal right = new IntegerSignal(0);
-		final IntegerSignal volume = new IntegerSignal(5);
-		final BooleanSignal muted = new BooleanSignal(false);
-		final Signal<String> name = new Signal<>("Ada");
-		final BooleanSignal shown = new BooleanSignal(false);
-		final IntegerSignal heat = new IntegerSignal(0);
-		final ListSignal<String> items = new ListSignal<>(Arrays.asList("First item", "Second item"));
+		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal mapped = IntegerSignal.create(0);
+		final IntegerSignal left = IntegerSignal.create(0);
+		final IntegerSignal right = IntegerSignal.create(0);
+		final IntegerSignal volume = IntegerSignal.create(5);
+		final BooleanSignal muted = BooleanSignal.create(false);
+		final Signal<String> name = Signal.create("Ada");
+		final BooleanSignal shown = BooleanSignal.create(false);
+		final IntegerSignal heat = IntegerSignal.create(0);
+		final ListSignal<String> items = ListSignal.create(Arrays.asList("First item", "Second item"));
 
 		RectNode
 		.create(100, 40, 400, 260)

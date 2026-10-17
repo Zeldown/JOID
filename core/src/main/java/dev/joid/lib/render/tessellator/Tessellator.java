@@ -119,7 +119,7 @@ public final class Tessellator {
 			Tessellator.byteBuffer.position(0);
 			Tessellator.byteBuffer.limit(count * VertexBuffer.STRIDE);
 
-			render.draw(this.isLineMode() ? Primitive.LINES : Primitive.TRIANGLES, VertexBuffer.create(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
+			render.draw(this.isLineMode() ? Primitive.LINES : Primitive.TRIANGLES, VertexBuffer.of(Tessellator.byteBuffer, count, this.hasTexture, this.hasColor, this.hasNormals));
 		}
 
 		if (this.rawBufferSize > 0x20000 && this.rawBufferIndex < this.rawBufferSize >> 3) {
@@ -252,7 +252,7 @@ public final class Tessellator {
 		Tessellator.byteBuffer.position(0);
 		Tessellator.byteBuffer.limit(count * VertexBuffer.STRIDE);
 
-		final VertexBuffer buffer = VertexBuffer.create(Tessellator.byteBuffer, count, true, this.hasColor, true);
+		final VertexBuffer buffer = VertexBuffer.of(Tessellator.byteBuffer, count, true, this.hasColor, true);
 		final IShader shader = render.getState().getShader();
 		if (shader == null) {
 			LineShader.SHADER.bind();

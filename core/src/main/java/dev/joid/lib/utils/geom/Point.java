@@ -17,11 +17,11 @@ public final class Point {
 	private final double y;
 	private final double z;
 
-	public static @NonNull Point create(final double x, final double y) {
+	public static @NonNull Point of(final double x, final double y) {
 		return new Point(x, y, 0D);
 	}
 
-	public static @NonNull Point create(final double x, final double y, final double z) {
+	public static @NonNull Point of(final double x, final double y, final double z) {
 		return new Point(x, y, z);
 	}
 

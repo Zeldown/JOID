@@ -230,7 +230,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		final VulkanFrameBuffer target = (VulkanFrameBuffer) state.getFrameBuffer();
 		this.beginPass(target);
 
-		final long pipeline = this.pipelineCache.get(PipelineKey.create(shader, state, primitive), target != null, target == null ? this.screenClearPass : this.context.getOffscreenRenderPass());
+		final long pipeline = this.pipelineCache.get(PipelineKey.of(shader, state, primitive), target != null, target == null ? this.screenClearPass : this.context.getOffscreenRenderPass());
 		if (pipeline != this.boundPipeline) {
 			VK10.vkCmdBindPipeline(this.host.getCommandBuffer(), VK10.VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline);
 			this.boundPipeline = pipeline;

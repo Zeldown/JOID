@@ -345,7 +345,7 @@ public class ShaderTest {
 	}
 
 	private static VertexBuffer vertices(final boolean color) {
-		return VertexBuffer.create(ByteBuffer.allocateDirect(VertexBuffer.STRIDE), 1, false, color, false);
+		return VertexBuffer.of(ByteBuffer.allocateDirect(VertexBuffer.STRIDE), 1, false, color, false);
 	}
 
 	private static TestShader create() {

@@ -11,12 +11,20 @@ import lombok.NonNull;
 
 public class ListSignal<E> extends Signal<List<E>> {
 
-	public ListSignal() {
+	protected ListSignal() {
 		super(Collections.emptyList());
 	}
 
-	public ListSignal(final @NonNull Collection<E> value) {
+	protected ListSignal(final @NonNull Collection<E> value) {
 		super(new ArrayList<>(value));
+	}
+
+	public static <E> @NonNull ListSignal<E> create() {
+		return new ListSignal<>();
+	}
+
+	public static <E> @NonNull ListSignal<E> create(final @NonNull Collection<E> value) {
+		return new ListSignal<>(value);
 	}
 
 	public @NonNull ListSignal<E> clear() {

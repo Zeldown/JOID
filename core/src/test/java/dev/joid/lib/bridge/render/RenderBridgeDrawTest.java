@@ -71,7 +71,7 @@ public class RenderBridgeDrawTest {
 	}
 
 	private static VertexBuffer triangle(final int count) {
-		return VertexBuffer.create(ByteBuffer.allocateDirect(Math.max(count, 1) * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder()), count, false, false, false);
+		return VertexBuffer.of(ByteBuffer.allocateDirect(Math.max(count, 1) * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder()), count, false, false, false);
 	}
 
 }

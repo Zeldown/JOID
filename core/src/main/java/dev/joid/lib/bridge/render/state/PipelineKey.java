@@ -22,15 +22,15 @@ public final class PipelineKey {
 	private final Primitive  primitive;
 	private final boolean    stencil;
 
-	public static @NonNull PipelineKey create(final @NonNull IShader shader, final @NonNull RenderState state, final @NonNull Primitive primitive) {
-		return PipelineKey.create(shader, state.getBlend(), state.isColorWrite(), state.isDepthTest(), state.isDepthWrite(), state.isCull(), primitive, false);
+	public static @NonNull PipelineKey of(final @NonNull IShader shader, final @NonNull RenderState state, final @NonNull Primitive primitive) {
+		return PipelineKey.of(shader, state.getBlend(), state.isColorWrite(), state.isDepthTest(), state.isDepthWrite(), state.isCull(), primitive, false);
 	}
 
 	public static @NonNull PipelineKey stencil(final @NonNull IShader shader, final @NonNull RenderState state, final @NonNull Primitive primitive) {
-		return PipelineKey.create(shader, BlendState.DISABLED, true, false, false, state.isCull(), primitive, true);
+		return PipelineKey.of(shader, BlendState.DISABLED, true, false, false, state.isCull(), primitive, true);
 	}
 
-	private static PipelineKey create(final IShader shader, final BlendState blend, final boolean colorWrite, final boolean depthTest, final boolean depthWrite, final boolean cull, final Primitive primitive, final boolean stencil) {
+	private static PipelineKey of(final IShader shader, final BlendState blend, final boolean colorWrite, final boolean depthTest, final boolean depthWrite, final boolean cull, final Primitive primitive, final boolean stencil) {
 		return new PipelineKey(shader, blend.isEnabled() ? blend : BlendState.DISABLED, colorWrite, depthTest, depthTest && depthWrite, cull, primitive, stencil);
 	}
 

@@ -219,7 +219,7 @@ public class RadarChartNodeTest {
 			for (int i = 0; i < size; i++) {
 				final double radius = super.getDataList().get(i).getValue().doubleValue() / super.getMax().doubleValue() * super.dh(2D);
 				final double angle = 2D * Math.PI * i / size - Math.PI / 2D;
-				points[i] = Point.create(super.getX() + super.dw(2D) + radius * Math.cos(angle), super.getY() + super.dh(2D) + radius * Math.sin(angle));
+				points[i] = Point.of(super.getX() + super.dw(2D) + radius * Math.cos(angle), super.getY() + super.dh(2D) + radius * Math.sin(angle));
 			}
 			DrawUtils.SHAPE.drawPolygon(new Color(0.2F, 0.4F, 0.6F, 1F), points);
 		}

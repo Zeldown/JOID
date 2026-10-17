@@ -74,7 +74,7 @@ public class ScrollbarNodeTest {
 
 	@Test
 	public void writesItsDragIntoTheScrollSignalOfItsContent() {
-		final DoubleSignal scroll = new DoubleSignal(0D);
+		final DoubleSignal scroll = DoubleSignal.create(0D);
 		final Bar bar = new Bar(410D, 0D, 10D, 100D, 20D);
 		final RectNode content = ScrollbarNodeTest.column(bar).scrollY(scroll);
 		this.press(content, 515D, 110D);

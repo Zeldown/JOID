@@ -21,7 +21,7 @@ public final class StencilEmulation {
 	private final StencilOperation fail;
 	private final StencilOperation pass;
 
-	public static @NonNull StencilEmulation create(final @NonNull RenderState state, final boolean screen) {
+	public static @NonNull StencilEmulation from(final @NonNull RenderState state, final boolean screen) {
 		final StencilState stencil = state.getStencil();
 		final boolean test = screen && stencil.isEnabled();
 		final boolean write = test && (stencil.getFail() != StencilOperation.KEEP || stencil.getPass() != StencilOperation.KEEP);

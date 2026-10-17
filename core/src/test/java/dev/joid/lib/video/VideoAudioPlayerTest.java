@@ -334,7 +334,7 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void playsAtFullVolumeNearTheListener() {
 		final VideoAudioPlayer player = this.queued();
-		VideoAudioPlayer.audioListenerPosition(() -> Point.create(3D, 4D, 0D));
+		VideoAudioPlayer.audioListenerPosition(() -> Point.of(3D, 4D, 0D));
 		this.video.location(0F, 0F, 0F);
 		player.update(0D);
 		Assert.assertEquals(0.3F, this.audio.source().lastGain(), 1E-6F);
@@ -343,7 +343,7 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void fadesWithTheDistanceToTheListener() {
 		final VideoAudioPlayer player = this.queued();
-		VideoAudioPlayer.audioListenerPosition(() -> Point.create(0D, 0D, 27.5D));
+		VideoAudioPlayer.audioListenerPosition(() -> Point.of(0D, 0D, 27.5D));
 		this.video.location(0F, 0F, 0F);
 		player.update(0D);
 		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
@@ -352,7 +352,7 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void fadesBetweenItsOwnDistances() {
 		final VideoAudioPlayer player = this.queued();
-		VideoAudioPlayer.audioListenerPosition(() -> Point.create(1D, 2D, 9D));
+		VideoAudioPlayer.audioListenerPosition(() -> Point.of(1D, 2D, 9D));
 		this.video.location(1F, 2F, 3F);
 		this.video.referenceDistance(2F);
 		this.video.maxDistance(10F);
@@ -364,7 +364,7 @@ public class VideoAudioPlayerTest {
 	public void pausesBeyondItsMaximumDistance() {
 		final VideoAudioPlayer player = this.queued();
 		final RecordingAudioSource source = this.audio.source();
-		VideoAudioPlayer.audioListenerPosition(() -> Point.create(0D, 60D, 0D));
+		VideoAudioPlayer.audioListenerPosition(() -> Point.of(0D, 60D, 0D));
 		this.video.location(0F, 0F, 0F);
 		VideoAudioPlayerTest.push(player, 3, 10);
 		source.calls.clear();

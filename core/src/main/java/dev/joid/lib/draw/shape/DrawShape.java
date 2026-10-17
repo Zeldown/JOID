@@ -69,7 +69,7 @@ public final class DrawShape {
 		final Color shadow = resolved.isGradient() ? resolved.getGradient().getStartColor() : resolved;
 		ShadowShader.use(radius, blur, (float) x, (float) y, (float) (x + width), (float) (y + height), () -> {
 			ShadowShader.inst().sides(roundedLeft, roundedTop, roundedRight, roundedBottom);
-			this.drawPoints(DrawMode.POLYGON, shadow, false, Point.create(x - spread, y + height + spread), Point.create(x + width + spread, y + height + spread), Point.create(x + width + spread, y - spread), Point.create(x - spread, y - spread));
+			this.drawPoints(DrawMode.POLYGON, shadow, false, Point.of(x - spread, y + height + spread), Point.of(x + width + spread, y + height + spread), Point.of(x + width + spread, y - spread), Point.of(x - spread, y - spread));
 		});
 	}
 
@@ -80,7 +80,7 @@ public final class DrawShape {
 				CircleShader.inst().gradient(resolved.getGradient(), BoundingBox.create(x - radius, y - radius, radius * 2D, radius * 2D));
 			}
 
-			this.drawPoints(DrawMode.POLYGON, resolved.isGradient() ? Color.WHITE : resolved, false, Point.create(x - radius, y + radius), Point.create(x + radius, y + radius), Point.create(x + radius, y - radius), Point.create(x - radius, y - radius));
+			this.drawPoints(DrawMode.POLYGON, resolved.isGradient() ? Color.WHITE : resolved, false, Point.of(x - radius, y + radius), Point.of(x + radius, y + radius), Point.of(x + radius, y - radius), Point.of(x - radius, y - radius));
 		});
 	}
 
@@ -147,8 +147,8 @@ public final class DrawShape {
 			for (double offset = 0D; offset < length; offset += pattern * 2D) {
 				final double from = offset / length;
 				final double to = Math.min(length, offset + pattern) / length;
-				dashes.add(Point.create(start.getX() + (end.getX() - start.getX()) * from, start.getY() + (end.getY() - start.getY()) * from));
-				dashes.add(Point.create(start.getX() + (end.getX() - start.getX()) * to, start.getY() + (end.getY() - start.getY()) * to));
+				dashes.add(Point.of(start.getX() + (end.getX() - start.getX()) * from, start.getY() + (end.getY() - start.getY()) * from));
+				dashes.add(Point.of(start.getX() + (end.getX() - start.getX()) * to, start.getY() + (end.getY() - start.getY()) * to));
 			}
 		}
 
@@ -248,7 +248,7 @@ public final class DrawShape {
 		}
 
 		if (render.getState().getShader() != null || !RoundedShader.inst().isAvailable()) {
-			this.drawPoints(DrawMode.POLYGON, color, true, Point.create(left, bottom), Point.create(right, bottom), Point.create(right, top), Point.create(left, top));
+			this.drawPoints(DrawMode.POLYGON, color, true, Point.of(left, bottom), Point.of(right, bottom), Point.of(right, top), Point.of(left, top));
 			return;
 		}
 
@@ -269,7 +269,7 @@ public final class DrawShape {
 	}
 
 	private void drawQuad(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
-		this.drawPoints(DrawMode.POLYGON, color, false, Point.create(left, bottom), Point.create(right, bottom), Point.create(right, top), Point.create(left, top));
+		this.drawPoints(DrawMode.POLYGON, color, false, Point.of(left, bottom), Point.of(right, bottom), Point.of(right, top), Point.of(left, top));
 	}
 
 	private void drawPoints(final @NonNull DrawMode mode, final @NonNull Color color, final boolean smooth, final @NonNull Point @NonNull... points) {

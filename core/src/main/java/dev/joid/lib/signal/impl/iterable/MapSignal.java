@@ -13,12 +13,20 @@ import lombok.NonNull;
 
 public class MapSignal<K, V> extends Signal<Map<K, V>> {
 
-	public MapSignal() {
+	protected MapSignal() {
 		super(Collections.emptyMap());
 	}
 
-	public MapSignal(final @NonNull Map<K, V> value) {
+	protected MapSignal(final @NonNull Map<K, V> value) {
 		super(value);
+	}
+
+	public static <K, V> @NonNull MapSignal<K, V> create() {
+		return new MapSignal<>();
+	}
+
+	public static <K, V> @NonNull MapSignal<K, V> create(final @NonNull Map<K, V> value) {
+		return new MapSignal<>(value);
 	}
 
 	public @NonNull MapSignal<K, V> clear() {

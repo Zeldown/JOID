@@ -118,11 +118,11 @@ public abstract class ShowUI extends UI {
 	}
 
 	protected static Color vertical(final Color top, final Color bottom) {
-		return top.toGradient(bottom, Point.create(0D, 0D), Point.create(0D, 1D));
+		return top.toGradient(bottom, Point.of(0D, 0D), Point.of(0D, 1D));
 	}
 
 	protected static Color diagonal(final Color from, final Color to) {
-		return from.toGradient(to, Point.create(0D, 0D), Point.create(1D, 1D));
+		return from.toGradient(to, Point.of(0D, 0D), Point.of(1D, 1D));
 	}
 
 }

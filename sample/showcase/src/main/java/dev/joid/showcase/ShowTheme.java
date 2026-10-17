@@ -34,7 +34,7 @@ public class ShowTheme extends ShowUI {
 	private static final Color MUTED_LIGHT  = Color.decode("#6B6880").lock();
 	private static final Color ACTIVE_LIGHT = Color.decode("#5B21B6").lock();
 
-	private final BooleanSignal dark  = new BooleanSignal(false);
+	private final BooleanSignal dark  = BooleanSignal.create(false);
 	private final TweenAnimator level = TweenAnimator.create(0F);
 
 	@Override
@@ -125,7 +125,7 @@ public class ShowTheme extends ShowUI {
 			final double bar = values[i] * (height - 40D);
 			final double bx = x + i * slot + slot * 0.2D;
 			DrawUtils.SHAPE.drawRoundedRect(bx, y + height - 40D - bar, slot * 0.6D, bar, ShowUI.vertical(ShowUI.FUCHSIA, ShowUI.VIOLET.withAlpha(0.35F)), 10F, true, true, true, false);
-			points.add(Point.create(bx + slot * 0.3D, y + height - 40D - bar - 26D));
+			points.add(Point.of(bx + slot * 0.3D, y + height - 40D - bar - 26D));
 		}
 		DrawUtils.SHAPE.drawLine(this.tone(ShowTheme.CURVE_LIGHT, ShowUI.TEXT).withAlpha(0.7F), 3F, points.toArray(new Point[0]));
 	}

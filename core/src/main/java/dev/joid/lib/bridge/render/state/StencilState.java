@@ -21,7 +21,7 @@ public final class StencilState {
 	private final StencilOperation depthFail;
 	private final StencilOperation pass;
 
-	public static @NonNull StencilState create(final @NonNull StencilFunction function, final int reference, final int mask, final @NonNull StencilOperation fail, final @NonNull StencilOperation depthFail, final @NonNull StencilOperation pass) {
+	public static @NonNull StencilState of(final @NonNull StencilFunction function, final int reference, final int mask, final @NonNull StencilOperation fail, final @NonNull StencilOperation depthFail, final @NonNull StencilOperation pass) {
 		return new StencilState(true, function, reference, mask, fail, depthFail, pass);
 	}
 

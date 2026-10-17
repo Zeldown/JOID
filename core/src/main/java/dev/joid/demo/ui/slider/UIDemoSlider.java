@@ -26,15 +26,15 @@ public class UIDemoSlider extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSlider.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal integer = new IntegerSignal(4);
-		final IntegerSignal percent = new IntegerSignal(25);
-		final DoubleSignal ratio = new DoubleSignal(0.5D);
-		final StringSignal level = new StringSignal("Medium");
-		final StringSignal align = new StringSignal("CENTER");
-		final IntegerSignal volume = new IntegerSignal(3);
-		final IntegerSignal shared = new IntegerSignal(7);
-		final IntegerSignal target = new IntegerSignal(0);
-		final IntegerSignal refused = new IntegerSignal(0);
+		final IntegerSignal integer = IntegerSignal.create(4);
+		final IntegerSignal percent = IntegerSignal.create(25);
+		final DoubleSignal ratio = DoubleSignal.create(0.5D);
+		final StringSignal level = StringSignal.create("Medium");
+		final StringSignal align = StringSignal.create("CENTER");
+		final IntegerSignal volume = IntegerSignal.create(3);
+		final IntegerSignal shared = IntegerSignal.create(7);
+		final IntegerSignal target = IntegerSignal.create(0);
+		final IntegerSignal refused = IntegerSignal.create(0);
 
 		RectNode
 		.create(80, 40, 320, 260)

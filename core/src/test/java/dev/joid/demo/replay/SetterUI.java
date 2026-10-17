@@ -41,8 +41,8 @@ import lombok.Getter;
 public class SetterUI extends UI {
 
 	private final TextInfo      info  = TextInfo.create(new TextFont(), 10F);
-	private final IntegerSignal step  = new IntegerSignal(0);
-	private final BooleanSignal muted = new BooleanSignal(false);
+	private final IntegerSignal step  = IntegerSignal.create(0);
+	private final BooleanSignal muted = BooleanSignal.create(false);
 
 	private Switch             named;
 	private RectNode           rect;
@@ -107,7 +107,7 @@ public class SetterUI extends UI {
 		.create(0D, 0D)
 		.volume(1F - this.step.get() / 10F)
 		.loop(this.step.get() > 0)
-		.location(Point.create(this.step.get(), 0D, 1D))
+		.location(Point.of(this.step.get(), 0D, 1D))
 		.resource(ResourceBuilder.create().cache(null).of(new RecordingTexture().allocate(4, 4)))
 		.attach(this);
 		this.model = ModelNode

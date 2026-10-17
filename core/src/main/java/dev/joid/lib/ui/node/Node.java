@@ -275,7 +275,7 @@ public abstract class Node implements INode {
 		this.shortcutList    = new CopyOnWriteArrayList<>();
 		this.waitingList     = new ArrayList<>();
 		this.requirementList = new ArrayList<>();
-		this.positionValue   = InteractiveValue.create(this.bindings, "move", () -> Point.create(this.defaultX, this.defaultY), this::locate).events(Node.BEFORE_MOVE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), Node.MOVE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
+		this.positionValue   = InteractiveValue.create(this.bindings, "move", () -> Point.of(this.defaultX, this.defaultY), this::locate).events(Node.BEFORE_MOVE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), Node.MOVE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
 		this.scrollXValue    = this.createScrollValue(Axis.HORIZONTAL);
 		this.scrollYValue    = this.createScrollValue(Axis.VERTICAL);
 		this.animatorMap     = new HashMap<>();
@@ -762,16 +762,16 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T x(final @NonNull Signal<Double> x) {
 		if (x.isWritable()) {
-			this.bind("x", x, value -> this.positionValue.update(Point.create(value, this.defaultY)), Point::getX);
+			this.bind("x", x, value -> this.positionValue.update(Point.of(value, this.defaultY)), Point::getX);
 		} else {
-			this.follow("x", x, value -> this.positionValue.update(Point.create(value, this.defaultY)));
+			this.follow("x", x, value -> this.positionValue.update(Point.of(value, this.defaultY)));
 		}
 		this.checkMovable(this.draggable);
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T x(final @NonNull Supplier<Double> x) {
-		this.follow("x", x, value -> this.positionValue.update(Point.create(value, this.defaultY)));
+		this.follow("x", x, value -> this.positionValue.update(Point.of(value, this.defaultY)));
 		this.checkMovable(this.draggable);
 		return (T) this;
 	}
@@ -782,22 +782,22 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T y(final @NonNull Signal<Double> y) {
 		if (y.isWritable()) {
-			this.bind("y", y, value -> this.positionValue.update(Point.create(this.defaultX, value)), Point::getY);
+			this.bind("y", y, value -> this.positionValue.update(Point.of(this.defaultX, value)), Point::getY);
 		} else {
-			this.follow("y", y, value -> this.positionValue.update(Point.create(this.defaultX, value)));
+			this.follow("y", y, value -> this.positionValue.update(Point.of(this.defaultX, value)));
 		}
 		this.checkMovable(this.draggable);
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T y(final @NonNull Supplier<Double> y) {
-		this.follow("y", y, value -> this.positionValue.update(Point.create(this.defaultX, value)));
+		this.follow("y", y, value -> this.positionValue.update(Point.of(this.defaultX, value)));
 		this.checkMovable(this.draggable);
 		return (T) this;
 	}
 
 	public final <T extends Node> @NonNull T move(final double x, final double y) {
-		this.positionValue.change(Point.create(x, y));
+		this.positionValue.change(Point.of(x, y));
 		return (T) this;
 	}
 
@@ -2083,7 +2083,7 @@ public abstract class Node implements INode {
 	}
 
 	private boolean moveTo(final double x, final double y) {
-		return this.positionValue.change(Point.create(x - this.layoutX - this.shiftX + this.getPivotX(), y - this.layoutY - this.shiftY + this.getPivotY()));
+		return this.positionValue.change(Point.of(x - this.layoutX - this.shiftX + this.getPivotX(), y - this.layoutY - this.shiftY + this.getPivotY()));
 	}
 
 	private void locate(final Point position) {

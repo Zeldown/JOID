@@ -51,7 +51,7 @@ public class RenderStateTest {
 		.colorWrite(false)
 		.depthWrite(false)
 		.lineSmooth(true)
-		.stencil(StencilState.create(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.INVERT, StencilOperation.REPLACE))
+		.stencil(StencilState.of(StencilFunction.EQUAL, 2, 0x0F, StencilOperation.ZERO, StencilOperation.INVERT, StencilOperation.REPLACE))
 		.viewport(1, 2, 30, 40)
 		.shader(new RecordingShader())
 		.texture(new RecordingTexture())

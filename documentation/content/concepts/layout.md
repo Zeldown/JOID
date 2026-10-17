@@ -204,7 +204,7 @@ RectNode
 When the items change, `watch(signal, WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY)` removes the children and runs the `body` lambda again:
 
 ```java
-private final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
+private final ListSignal<String> items = ListSignal.create(new ArrayList<>());
 ```
 
 ```java

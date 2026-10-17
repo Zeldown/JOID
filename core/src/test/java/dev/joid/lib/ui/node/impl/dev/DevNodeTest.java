@@ -460,7 +460,7 @@ public class DevNodeTest {
 
 	@Test
 	public void neverHighlightsTheUpdatedNodes() {
-		final DoubleSignal x = new DoubleSignal(200D);
+		final DoubleSignal x = DoubleSignal.create(200D);
 		final DevUI ui = new DevUI(RectNode.create(200D, 200D, 300D, 150D).x(x));
 		DevNodeTest.open(this.bridges, ui);
 		this.bridges.getUi().keyPressed(Key.U, Key.U);

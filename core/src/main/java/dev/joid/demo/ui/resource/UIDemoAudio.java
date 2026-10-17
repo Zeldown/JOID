@@ -26,10 +26,10 @@ public class UIDemoAudio extends UIDemo {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoAudio.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 20, UIDemoAudio.INK);
 		final TextInfo button = TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE);
-		final FloatSignal volume = new FloatSignal(1F);
-		final BooleanSignal far = new BooleanSignal(false);
-		final BooleanSignal away = new BooleanSignal(false);
-		VideoAudioPlayer.audioListenerPosition(() -> Point.create(0D, 0D, away.get() ? 30D : 0D));
+		final FloatSignal volume = FloatSignal.create(1F);
+		final BooleanSignal far = BooleanSignal.create(false);
+		final BooleanSignal away = BooleanSignal.create(false);
+		VideoAudioPlayer.audioListenerPosition(() -> Point.of(0D, 0D, away.get() ? 30D : 0D));
 		super.onClose(event -> VideoAudioPlayer.audioListenerPosition(null));
 
 		ResourcePlayerNode
@@ -60,7 +60,7 @@ public class UIDemoAudio extends UIDemo {
 		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
-		.location(() -> Point.create(0D, 0D, far.get() ? 30D : 0D))
+		.location(() -> Point.of(0D, 0D, far.get() ? 30D : 0D))
 		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		RectNode
@@ -83,7 +83,7 @@ public class UIDemoAudio extends UIDemo {
 		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
-		.location(Point.create(0D, 0D, 30D))
+		.location(Point.of(0D, 0D, 30D))
 		.referenceDistance(40F)
 		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
@@ -95,7 +95,7 @@ public class UIDemoAudio extends UIDemo {
 		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
-		.location(Point.create(0D, 0D, 30D))
+		.location(Point.of(0D, 0D, 30D))
 		.maxDistance(20F)
 		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
@@ -107,7 +107,7 @@ public class UIDemoAudio extends UIDemo {
 		.resource(Resource.of("assets/demo/videos/video.mp4"))
 		.loop(true)
 		.autoplay(false)
-		.location(Point.create(0D, 0D, 0D))
+		.location(Point.of(0D, 0D, 0D))
 		.<ResourcePlayerNode>onClick(event -> event.getNode().toggle())
 		.attach(this);
 		RectNode

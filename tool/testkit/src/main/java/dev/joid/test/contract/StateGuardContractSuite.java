@@ -257,10 +257,10 @@ public abstract class StateGuardContractSuite {
 	private static void drawMasked(final IRenderBridge render) {
 		render.clearStencil();
 		render.getState().colorWrite(false);
-		render.getState().stencil(StencilState.create(StencilFunction.ALWAYS, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE));
+		render.getState().stencil(StencilState.of(StencilFunction.ALWAYS, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.REPLACE));
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(0F, 16F, 8F, 16F, -1F, false, 0xFFFFFFFF));
 		render.getState().colorWrite(true);
-		render.getState().stencil(StencilState.create(StencilFunction.EQUAL, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		render.getState().stencil(StencilState.of(StencilFunction.EQUAL, 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 		render.draw(Primitive.TRIANGLES, StateGuardContractSuite.quad(0F, 16F, 16F, 16F, -1F, false, 0xFF00FFFF));
 		render.getState().stencil(StencilState.DISABLED);
 	}

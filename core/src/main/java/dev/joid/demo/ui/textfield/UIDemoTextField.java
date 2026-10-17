@@ -30,15 +30,15 @@ public class UIDemoTextField extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoTextField.INK);
 		final TextInfo markup = info.copy().markups(DemoTextMarkup.inst());
-		final StringSignal typed = new StringSignal("");
-		final StringSignal key = new StringSignal("-");
-		final StringSignal character = new StringSignal("-");
-		final BooleanSignal valid = new BooleanSignal(true);
-		final IntegerSignal number = new IntegerSignal(7);
-		final StringSignal empty = new StringSignal("null");
-		final IntegerSignal focuses = new IntegerSignal(0);
-		final IntegerSignal blurs = new IntegerSignal(0);
-		final IntegerSignal enters = new IntegerSignal(0);
+		final StringSignal typed = StringSignal.create("");
+		final StringSignal key = StringSignal.create("-");
+		final StringSignal character = StringSignal.create("-");
+		final BooleanSignal valid = BooleanSignal.create(true);
+		final IntegerSignal number = IntegerSignal.create(7);
+		final StringSignal empty = StringSignal.create("null");
+		final IntegerSignal focuses = IntegerSignal.create(0);
+		final IntegerSignal blurs = IntegerSignal.create(0);
+		final IntegerSignal enters = IntegerSignal.create(0);
 
 		RectNode
 		.create(80, 40, 320, 260)

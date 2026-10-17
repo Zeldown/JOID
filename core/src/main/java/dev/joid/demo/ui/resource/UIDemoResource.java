@@ -45,12 +45,12 @@ public class UIDemoResource extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoResource.INK);
-		final IntegerSignal errors = new IntegerSignal(0);
+		final IntegerSignal errors = IntegerSignal.create(0);
 		final Resource vector = Resource.of("assets/demo/textures/vector/placeholder.svg");
 		final Resource square = Resource.of("https://placehold.co/100x100.png");
 		final Resource broken = Resource.of(new ByteArrayInputStream(new byte[] {0, 1, 2, 3})).uniqueId("broken-image").onError((resource, error) -> errors.increment());
-		final BooleanSignal second = new BooleanSignal(false);
-		final StringSignal natural = new StringSignal("");
+		final BooleanSignal second = BooleanSignal.create(false);
+		final StringSignal natural = StringSignal.create("");
 		final BufferedImage disc = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
 		for (int x = 0; x < 100; x++) {
 			for (int y = 0; y < 100; y++) {

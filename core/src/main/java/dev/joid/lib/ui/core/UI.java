@@ -805,11 +805,11 @@ public abstract class UI implements IIndexedElement {
 				render.clearStencil();
 			}
 
-			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
+			render.getState().stencil(StencilState.of(StencilFunction.EQUAL, this.maskDepth - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
 			render.getState().colorWrite(false);
 			shape.run();
 		});
-		BridgeHandler.RENDER.get().getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+		BridgeHandler.RENDER.get().getState().stencil(StencilState.of(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
 
 	private void stopMask() {
@@ -819,7 +819,7 @@ public abstract class UI implements IIndexedElement {
 			render.getState().stencil(StencilState.DISABLED);
 			render.clearStencil();
 		} else {
-			render.getState().stencil(StencilState.create(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+			render.getState().stencil(StencilState.of(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 		}
 	}
 

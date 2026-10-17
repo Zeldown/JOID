@@ -59,7 +59,7 @@ public class InteractiveValueTest {
 
 	@Test
 	public void writesItsGesturesIntoItsSignalAndFollowsIt() {
-		final Signal<Integer> signal = new Signal<>(2);
+		final Signal<Integer> signal = Signal.create(2);
 		final InteractiveValue<Integer> amount = this.amount();
 		amount.bind(signal);
 		this.bindings.subscribe(false);

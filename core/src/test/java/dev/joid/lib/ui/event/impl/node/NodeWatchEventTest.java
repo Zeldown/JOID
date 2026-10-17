@@ -25,7 +25,7 @@ public class NodeWatchEventTest {
 	@Test
 	public void receivesTheValueAndItsProperties() {
 		final List<Object> received = new ArrayList<>();
-		final Signal<Integer> signal = new Signal<>(1);
+		final Signal<Integer> signal = Signal.create(1);
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).watch(signal, () -> true, WatchProperty.CLEAR_CHILDREN).onWatch(event -> received.addAll(Arrays.asList(event.getNode(), event.getValue(), event.getProperties())));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		Assert.assertTrue(received.isEmpty());
@@ -37,7 +37,7 @@ public class NodeWatchEventTest {
 	public void firesOnceThePropertiesAreApplied() {
 		final AtomicInteger bodies = new AtomicInteger();
 		final List<Object> received = new ArrayList<>();
-		final Signal<Integer> signal = new Signal<>(1);
+		final Signal<Integer> signal = Signal.create(1);
 		final RectNode rect = RectNode.create(100D, 100D, 200D, 100D).body(node -> bodies.incrementAndGet()).watch(signal, () -> true, WatchProperty.BODY).onWatch(event -> received.add(bodies.get()));
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		signal.set(2);
@@ -47,7 +47,7 @@ public class NodeWatchEventTest {
 	@Test
 	public void waitsForTheNodeToJoinAUi() {
 		final List<Object> received = new ArrayList<>();
-		final Signal<Integer> signal = new Signal<>(1);
+		final Signal<Integer> signal = Signal.create(1);
 		RectNode.create(100D, 100D, 200D, 100D).watch(signal).onWatch(event -> received.add(event.getNode()));
 		signal.set(2);
 		Assert.assertTrue(received.isEmpty());

@@ -51,7 +51,7 @@ public class CheckboxNodeTest {
 	@Test
 	public void staysInSyncWithItsSignal() {
 		final List<Boolean> changes = new ArrayList<>();
-		final BooleanSignal subtitles = new BooleanSignal(true);
+		final BooleanSignal subtitles = BooleanSignal.create(true);
 		final Checkbox checkbox = new Checkbox().checked(subtitles).onChange(event -> changes.add(event.getValue()));
 		Assert.assertTrue(checkbox.isChecked());
 		this.bridges.open(new NodeUI(checkbox)).frame();
@@ -64,7 +64,7 @@ public class CheckboxNodeTest {
 
 	@Test
 	public void catchesUpWithASilentWriteOfItsSignalAtTheNextFrame() {
-		final BooleanSignal subtitles = new BooleanSignal(true);
+		final BooleanSignal subtitles = BooleanSignal.create(true);
 		final Checkbox checkbox = new Checkbox().checked(subtitles);
 		this.bridges.open(new NodeUI(checkbox)).frame();
 		subtitles.silent(signal -> signal.set(false));
@@ -75,7 +75,7 @@ public class CheckboxNodeTest {
 
 	@Test
 	public void catchesUpWithItsSignalOnceAttachedAgain() {
-		final BooleanSignal subtitles = new BooleanSignal(true);
+		final BooleanSignal subtitles = BooleanSignal.create(true);
 		final Checkbox checkbox = new Checkbox().checked(subtitles);
 		final ContainerNode container = ContainerNode.create(0D, 0D, 200D, 200D).append(checkbox);
 		this.bridges.open(new NodeUI(container)).frame();
@@ -90,8 +90,8 @@ public class CheckboxNodeTest {
 
 	@Test
 	public void followsOnlyItsLastSignal() {
-		final BooleanSignal subtitles = new BooleanSignal(false);
-		final BooleanSignal captions = new BooleanSignal(false);
+		final BooleanSignal subtitles = BooleanSignal.create(false);
+		final BooleanSignal captions = BooleanSignal.create(false);
 		final Checkbox checkbox = new Checkbox().checked(subtitles).checked(captions);
 		final ContainerNode container = ContainerNode.create(0D, 0D, 200D, 200D).append(checkbox);
 		this.bridges.open(new NodeUI(container)).frame();
@@ -113,7 +113,7 @@ public class CheckboxNodeTest {
 
 	@Test
 	public void refusesASignalItCannotWrite() {
-		final BooleanSignal subtitles = new BooleanSignal(true);
+		final BooleanSignal subtitles = BooleanSignal.create(true);
 		try {
 			new Checkbox().checked(subtitles.map(value -> !value));
 			Assert.fail("A computed signal cannot drive a value the user changes");
@@ -125,7 +125,7 @@ public class CheckboxNodeTest {
 	@Test
 	public void replacesItsSignalWithAnySetter() {
 		final List<Boolean> changes = new ArrayList<>();
-		final BooleanSignal subtitles = new BooleanSignal(false);
+		final BooleanSignal subtitles = BooleanSignal.create(false);
 		final Checkbox checkbox = new Checkbox().checked(subtitles).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(checkbox));
 		checkbox.checked(true);
@@ -154,7 +154,7 @@ public class CheckboxNodeTest {
 	@Test
 	public void letsItsListenersRefuseOnlyTheUser() {
 		final List<Boolean> changes = new ArrayList<>();
-		final BooleanSignal subtitles = new BooleanSignal(false);
+		final BooleanSignal subtitles = BooleanSignal.create(false);
 		final Checkbox checkbox = new Checkbox().<Checkbox>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(checkbox)).frame();
 		checkbox.checked(true);

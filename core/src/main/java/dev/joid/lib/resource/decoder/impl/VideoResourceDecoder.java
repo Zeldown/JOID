@@ -382,7 +382,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	}
 
 	public @NonNull VideoResourceDecoder location(final float x, final float y, final float z) {
-		this.location = Point.create(x, y, z);
+		this.location = Point.of(x, y, z);
 		return this;
 	}
 

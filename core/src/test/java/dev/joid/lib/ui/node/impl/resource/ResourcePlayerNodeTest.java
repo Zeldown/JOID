@@ -49,7 +49,7 @@ public class ResourcePlayerNodeTest {
 	public void controlsNothingWithoutResource() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(10D, 20D, 30D, 40D);
 		Assert.assertSame(player, player.play().pause().play().seek(1D).restart().stop());
-		Assert.assertSame(player, player.location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
+		Assert.assertSame(player, player.location(Point.of(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
 		Assert.assertFalse(player.isPlaying());
 		Assert.assertFalse(player.isPaused());
 	}
@@ -351,7 +351,7 @@ public class ResourcePlayerNodeTest {
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertEquals("music", player.getAudioGroup());
 		Assert.assertEquals("music", video.getAudioGroup());
-		final Signal<String> group = new Signal<>("voice");
+		final Signal<String> group = Signal.create("voice");
 		Assert.assertSame(player, player.audioGroup(group));
 		Assert.assertEquals("voice", video.getAudioGroup());
 		group.set("ambient");
@@ -364,7 +364,7 @@ public class ResourcePlayerNodeTest {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
-		Assert.assertSame(player, player.location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
+		Assert.assertSame(player, player.location(Point.of(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
 		Assert.assertEquals(1D, video.getLocation().getX(), 0D);
 		Assert.assertEquals(2D, video.getLocation().getY(), 0D);
 		Assert.assertEquals(3D, video.getLocation().getZ(), 0D);
@@ -523,7 +523,7 @@ public class ResourcePlayerNodeTest {
 
 	@Test
 	public void placesTheAudioOfAVideoGivenAfterwards() {
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F).resource(ResourcePlayerNodeTest.video());
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(Point.of(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertEquals(1D, video.getLocation().getX(), 0D);

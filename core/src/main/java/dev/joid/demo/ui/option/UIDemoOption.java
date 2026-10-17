@@ -43,10 +43,10 @@ public class UIDemoOption extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOption.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal ticks = new IntegerSignal(0);
-		final DoubleSignal zoom = new DoubleSignal(1D);
-		final BooleanSignal locked = new BooleanSignal(false);
-		final IntegerSignal refusedZooms = new IntegerSignal(0);
+		final IntegerSignal ticks = IntegerSignal.create(0);
+		final DoubleSignal zoom = DoubleSignal.create(1D);
+		final BooleanSignal locked = BooleanSignal.create(false);
+		final IntegerSignal refusedZooms = IntegerSignal.create(0);
 		final List<Supplier<UI>> popups = Arrays.asList(UIDemoFixedScalePopup::new, UIDemoLimitedScalePopup::new, UIDemoCornerPopup::new, UIDemoTintedPopup::new, UIDemoLockedPopup::new, UIDemoFixedZoomPopup::new, UIDemoDebugOffPopup::new, UIDemoInstantPopup::new, UIDemoPopInPopup::new, UIDemoSlidePopup::new);
 		final String[] captions = {"Scale ignored", "Scale limit", "Corner anchor", "Tinted backdrop", "Not closeable", "Not zoomable", "Debug off", "No transition", "Pop in only", "Custom transition"};
 		Task.create(1000L).every(1000L).onRun(event -> ticks.increment()).attach(this);

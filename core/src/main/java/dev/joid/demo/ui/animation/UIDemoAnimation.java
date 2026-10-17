@@ -27,7 +27,7 @@ public class UIDemoAnimation extends UIDemo {
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoAnimation.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal plays = new IntegerSignal(0);
+		final IntegerSignal plays = IntegerSignal.create(0);
 		final TweenAnimator[] lines = {
 			TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).start(),
 			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(),

@@ -88,8 +88,8 @@ public class RectNodeTest {
 
 	@Test
 	public void followsAColorSignal() {
-		final IntegerSignal clicks = new IntegerSignal(0);
-		final Signal<Color> color = new Signal<>(new Color(0.2F, 0.4F, 0.6F, 1F));
+		final IntegerSignal clicks = IntegerSignal.create(0);
+		final Signal<Color> color = Signal.create(new Color(0.2F, 0.4F, 0.6F, 1F));
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(color);
 		final RectNode mapped = RectNode.create(100D, 300D, 200D, 50D).color(clicks.map(value -> value >= 3 ? Color.GREEN : Color.GRAY));
 		this.bridges.open(new NodeUI(rect, mapped)).frame();
@@ -184,7 +184,7 @@ public class RectNodeTest {
 	@Test
 	public void drawsAGradientInItsDirection() {
 		final RecordingShader shader = (RecordingShader) GradientShader.inst().getShader();
-		this.bridges.open(new NodeUI(RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.6F, 0.4F, 0.2F, 1F), Point.create(0D, 0D), Point.create(0D, 1D))))).frame();
+		this.bridges.open(new NodeUI(RectNode.create(100D, 200D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.6F, 0.4F, 0.2F, 1F), Point.of(0D, 0D), Point.of(0D, 1D))))).frame();
 		Assert.assertArrayEquals(new float[] {0F, 0F}, (float[]) shader.getValues().get("u_GradientStartPos"), 0F);
 		Assert.assertArrayEquals(new float[] {0F, 1F}, (float[]) shader.getValues().get("u_GradientEndPos"), 0F);
 	}

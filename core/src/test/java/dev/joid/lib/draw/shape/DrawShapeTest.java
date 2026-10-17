@@ -382,7 +382,7 @@ public class DrawShapeTest {
 
 	@Test
 	public void keepsAnAxisAlignedPolygonOnItsExactPoints() {
-		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.create(10.3D, 20.6D), Point.create(110.3D, 20.6D), Point.create(110.3D, 70.6D), Point.create(10.3D, 70.6D));
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.of(10.3D, 20.6D), Point.of(110.3D, 20.6D), Point.of(110.3D, 70.6D), Point.of(10.3D, 70.6D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertSame(Primitive.TRIANGLES, draw.getPrimitive());
 		Assert.assertEquals(6, draw.getXs().length);
@@ -394,7 +394,7 @@ public class DrawShapeTest {
 
 	@Test
 	public void smoothsTheSlantedEdgesOfAPolygon() {
-		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 0.8F), Point.create(10D, 20D), Point.create(110D, 20D), Point.create(60D, 70D));
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 0.8F), Point.of(10D, 20D), Point.of(110D, 20D), Point.of(60D, 70D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertSame(Primitive.TRIANGLES, draw.getPrimitive());
 		Assert.assertEquals(21, draw.getXs().length);
@@ -409,7 +409,7 @@ public class DrawShapeTest {
 		this.bridges.getRender().getModelView().push();
 		try {
 			this.bridges.getRender().getModelView().rotate(10D, 0D, 0D, 1D);
-			DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.create(10D, 20D), Point.create(110D, 20D), Point.create(110D, 70D), Point.create(10D, 70D));
+			DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.of(10D, 20D), Point.of(110D, 20D), Point.of(110D, 70D), Point.of(10D, 70D));
 		} finally {
 			this.bridges.getRender().getModelView().pop();
 		}
@@ -419,14 +419,14 @@ public class DrawShapeTest {
 
 	@Test
 	public void keepsAConcavePolygonOnItsExactPoints() {
-		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(100D, 0D), Point.create(50D, 20D), Point.create(100D, 100D), Point.create(0D, 100D));
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.of(0D, 0D), Point.of(100D, 0D), Point.of(50D, 20D), Point.of(100D, 100D), Point.of(0D, 100D));
 		Assert.assertEquals(9, this.single(0F, 1F, 0F).getXs().length);
 	}
 
 	@Test
 	public void drawsEveryModeWithTheColorOfTheShape() {
 		final int[] counts = {6, 10, 12, 6, 6, 48};
-		final Point[] points = {Point.create(0D, 0D), Point.create(10D, 0D), Point.create(20D, 10D), Point.create(10D, 20D), Point.create(0D, 20D), Point.create(-10D, 10D)};
+		final Point[] points = {Point.of(0D, 0D), Point.of(10D, 0D), Point.of(20D, 10D), Point.of(10D, 20D), Point.of(0D, 20D), Point.of(-10D, 10D)};
 		for (final DrawMode mode : DrawMode.values()) {
 			DrawUtils.SHAPE.drawShape(mode, new Color(0.2F, 0.4F, 0.6F, 0.8F), points);
 			final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
@@ -439,7 +439,7 @@ public class DrawShapeTest {
 
 	@Test
 	public void releasesTheBlendingAndTheTextureAfterAShape() {
-		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(10D, 0D), Point.create(10D, 10D));
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.of(0D, 0D), Point.of(10D, 0D), Point.of(10D, 10D));
 		Assert.assertSame(BlendState.DISABLED, this.bridges.getRender().getState().getBlend());
 		Assert.assertNull(this.bridges.getRender().getState().getTexture());
 	}
@@ -449,7 +449,7 @@ public class DrawShapeTest {
 		final ITexture texture = this.bridges.getRender().createTexture();
 		this.bridges.getRender().getState().blend(BlendState.PREMULTIPLIED);
 		this.bridges.getRender().getState().texture(texture).textureFilter(TextureFilter.LINEAR).textureWrap(TextureWrap.CLAMP_TO_EDGE);
-		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(10D, 0D), Point.create(10D, 10D));
+		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.of(0D, 0D), Point.of(10D, 0D), Point.of(10D, 10D));
 		DrawUtils.SHAPE.drawRawRect(0D, 0D, 10D, 10D);
 		Assert.assertSame(BlendState.PREMULTIPLIED, this.bridges.getRender().getState().getBlend());
 		Assert.assertSame(texture, this.bridges.getRender().getState().getTexture());
@@ -459,7 +459,7 @@ public class DrawShapeTest {
 	@Test
 	public void paintsAGradientOverTheShape() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.8F, 0.6F, 0.4F, 0.5F), Point.create(0D, 0D), Point.create(0D, 1D)));
+		DrawUtils.SHAPE.drawRect(10D, 20D, 100D, 50D, new Color(0.2F, 0.4F, 0.6F, 1F).toGradient(new Color(0.8F, 0.6F, 0.4F, 0.5F), Point.of(0D, 0D), Point.of(0D, 1D)));
 		final RecordingShader shader = (RecordingShader) GradientShader.inst().getShader();
 		final Map<String, Object> values = shader.getValues();
 		Assert.assertEquals(1, this.bridges.getRender().getDraws().size());
@@ -488,7 +488,7 @@ public class DrawShapeTest {
 	@Test
 	public void spansTheGradientOverEveryPoint() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawPolygon(Color.BLUE.toGradient(Color.GREEN), Point.create(100D, 220D), Point.create(300D, 200D), Point.create(150D, 400D));
+		DrawUtils.SHAPE.drawPolygon(Color.BLUE.toGradient(Color.GREEN), Point.of(100D, 220D), Point.of(300D, 200D), Point.of(150D, 400D));
 		Assert.assertArrayEquals(new float[] {100F, 200F, 300F, 400F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 0F);
 	}
 
@@ -506,7 +506,7 @@ public class DrawShapeTest {
 
 	@Test
 	public void smoothsALineOnItsExactPoints() {
-		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), Point.create(10D, 20D), Point.create(110D, 20D), Point.create(110D, 80D));
+		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), Point.of(10D, 20D), Point.of(110D, 20D), Point.of(110D, 80D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertSame(Primitive.TRIANGLES, draw.getPrimitive());
 		Assert.assertEquals(24, draw.getXs().length);
@@ -519,7 +519,7 @@ public class DrawShapeTest {
 
 	@Test
 	public void widensALineForItsDrawOnly() {
-		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, Point.create(10D, 20D), Point.create(110D, 20D));
+		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, Point.of(10D, 20D), Point.of(110D, 20D));
 		Assert.assertEquals(4F, this.single(0F, 1F, 0F).getLineWidth(), 0F);
 		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
 		Assert.assertFalse(this.bridges.getRender().getState().isLineSmooth());
@@ -528,11 +528,11 @@ public class DrawShapeTest {
 	@Test
 	public void restoresTheLineStateAfterALine() {
 		this.bridges.getRender().getState().lineWidth(3F).lineSmooth(true);
-		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), Point.create(10D, 20D), Point.create(110D, 20D));
-		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, Point.create(10D, 20D), Point.create(110D, 20D));
-		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 2F, Point.create(0D, 50D), Point.create(100D, 50D));
-		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, Point.create(0D, 0D), Point.create(5D, 5D), Point.create(10D, 0D));
-		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, Point.create(0D, 0D), Point.create(0D, 5D), Point.create(10D, 5D), Point.create(10D, 0D));
+		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), Point.of(10D, 20D), Point.of(110D, 20D));
+		DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, Point.of(10D, 20D), Point.of(110D, 20D));
+		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 2F, Point.of(0D, 50D), Point.of(100D, 50D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, Point.of(0D, 0D), Point.of(5D, 5D), Point.of(10D, 0D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, Point.of(0D, 0D), Point.of(0D, 5D), Point.of(10D, 5D), Point.of(10D, 0D));
 		Assert.assertEquals(3F, this.bridges.getRender().getState().getLineWidth(), 0F);
 		Assert.assertTrue(this.bridges.getRender().getState().isLineSmooth());
 	}
@@ -541,7 +541,7 @@ public class DrawShapeTest {
 	public void restoresTheLineStateWhenALineFails() {
 		this.bridges.getRender().getState().lineWidth(3F);
 		try {
-			DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, Point.create(10D, 20D), null);
+			DrawUtils.SHAPE.drawLine(new Color(0F, 1F, 0F, 1F), 4F, Point.of(10D, 20D), null);
 			Assert.fail();
 		} catch (final NullPointerException exception) {
 			Assert.assertEquals(3F, this.bridges.getRender().getState().getLineWidth(), 0F);
@@ -552,7 +552,7 @@ public class DrawShapeTest {
 	@Test
 	public void refusesADashPatternThatIsNotPositive() {
 		try {
-			DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 0, 2F, Point.create(0D, 50D), Point.create(100D, 50D));
+			DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 0, 2F, Point.of(0D, 50D), Point.of(100D, 50D));
 			Assert.fail("A dash pattern of 0 must be refused");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("The dash pattern 0 is not positive, pass a length above 0", expected.getMessage());
@@ -562,7 +562,7 @@ public class DrawShapeTest {
 	@Test
 	public void cutsADashedLineIntoEqualDashesAndGaps() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 2F, Point.create(0D, 50D), Point.create(100D, 50D));
+		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 2F, Point.of(0D, 50D), Point.of(100D, 50D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertEquals(90, draw.getXs().length);
 		for (int dash = 0; dash < 5; dash++) {
@@ -577,7 +577,7 @@ public class DrawShapeTest {
 	@Test
 	public void dashesEverySegmentAndClipsTheLastDash() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 1F, Point.create(0D, 0D), Point.create(25D, 0D), Point.create(25D, 25D));
+		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 1F, Point.of(0D, 0D), Point.of(25D, 0D), Point.of(25D, 25D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertEquals(72, draw.getXs().length);
 		Assert.assertEquals(20D, draw.getXs()[18], 1E-3D);
@@ -588,8 +588,8 @@ public class DrawShapeTest {
 
 	@Test
 	public void drawsNoDashWithoutLength() {
-		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 3F, Point.create(5D, 5D), Point.create(5D, 5D));
-		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 3F, Point.create(5D, 5D));
+		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 3F, Point.of(5D, 5D), Point.of(5D, 5D));
+		DrawUtils.SHAPE.drawDashedLine(new Color(0F, 1F, 0F, 1F), 10, 3F, Point.of(5D, 5D));
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
 	}
@@ -597,7 +597,7 @@ public class DrawShapeTest {
 	@Test
 	public void followsAQuadraticCurve() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(50D, 50D), Point.create(100D, 0D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.of(0D, 0D), Point.of(50D, 50D), Point.of(100D, 0D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertEquals(12 + 142 * 6, draw.getXs().length);
 		Assert.assertEquals(0D, draw.getXs()[0], 1E-3D);
@@ -609,7 +609,7 @@ public class DrawShapeTest {
 	@Test
 	public void followsACubicCurve() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(0D, 50D), Point.create(100D, 50D), Point.create(100D, 0D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.of(0D, 0D), Point.of(0D, 50D), Point.of(100D, 50D), Point.of(100D, 0D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertEquals(12 + 200 * 6, draw.getXs().length);
 		Assert.assertEquals(37.5D, draw.getBottom(), 1E-2D);
@@ -618,7 +618,7 @@ public class DrawShapeTest {
 	@Test
 	public void spansTheGradientOverAWholeCurve() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawCurvedLine(Color.BLUE.toGradient(Color.GREEN), Point.create(0D, 0D), Point.create(50D, 50D), Point.create(100D, 0D));
+		DrawUtils.SHAPE.drawCurvedLine(Color.BLUE.toGradient(Color.GREEN), Point.of(0D, 0D), Point.of(50D, 50D), Point.of(100D, 0D));
 		Assert.assertEquals(1, this.bridges.getRender().getDraws().size());
 		Assert.assertArrayEquals(new float[] {0F, 0F, 100F, 25F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 1E-3F);
 	}
@@ -634,10 +634,10 @@ public class DrawShapeTest {
 	@Test
 	public void widensACurveForItsDrawOnly() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 3F, Point.create(0D, 0D), Point.create(5D, 5D), Point.create(10D, 0D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 3F, Point.of(0D, 0D), Point.of(5D, 5D), Point.of(10D, 0D));
 		Assert.assertEquals(3F, this.bridges.getRender().getDraws().get(0).getLineWidth(), 0F);
 		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
-		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, Point.create(0D, 0D), Point.create(0D, 5D), Point.create(10D, 5D), Point.create(10D, 0D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), 5F, Point.of(0D, 0D), Point.of(0D, 5D), Point.of(10D, 5D), Point.of(10D, 0D));
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(5F, draws.get(draws.size() - 1).getLineWidth(), 0F);
 		Assert.assertEquals(1F, this.bridges.getRender().getState().getLineWidth(), 0F);
@@ -645,14 +645,14 @@ public class DrawShapeTest {
 
 	@Test
 	public void spansTheGradientOverAShapeOnNegativeCoordinates() {
-		DrawUtils.SHAPE.drawPolygon(Color.BLUE.toGradient(Color.GREEN), Point.create(-300D, -380D), Point.create(-100D, -400D), Point.create(-150D, -200D));
+		DrawUtils.SHAPE.drawPolygon(Color.BLUE.toGradient(Color.GREEN), Point.of(-300D, -380D), Point.of(-100D, -400D), Point.of(-150D, -200D));
 		Assert.assertArrayEquals(new float[] {-300F, -400F, -100F, -200F}, (float[]) ((RecordingShader) GradientShader.inst().getShader()).getValues().get("u_GradientCanvas"), 0F);
 	}
 
 	@Test
 	public void endsAShortCurveOnItsEndPoint() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(1.5D, 3D), Point.create(3D, 0D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.of(0D, 0D), Point.of(1.5D, 3D), Point.of(3D, 0D));
 		final Draw draw = this.single(0F, 1F, 0F);
 		Assert.assertEquals(3D, draw.getXs()[draw.getXs().length - 1], 1E-3D);
 		Assert.assertEquals(0D, draw.getYs()[draw.getYs().length - 1], 1E-3D);
@@ -661,7 +661,7 @@ public class DrawShapeTest {
 	@Test
 	public void drawsACurveThatComesBackToItsStart() {
 		this.bridges.resize(1920, 1080);
-		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.create(0D, 0D), Point.create(50D, 50D), Point.create(0D, 0D));
+		DrawUtils.SHAPE.drawCurvedLine(new Color(0F, 1F, 0F, 1F), Point.of(0D, 0D), Point.of(50D, 50D), Point.of(0D, 0D));
 		double right = 0D;
 		for (final Draw draw : this.bridges.getRender().getDraws(0F, 1F, 0F)) {
 			right = Math.max(right, draw.getRight());

@@ -61,7 +61,7 @@ public class VertexFillTest {
 		for (int i = 0; i < count; i++) {
 			buffer.putFloat(i * VertexBuffer.STRIDE + VertexAttribute.POSITION.getOffset(), i);
 		}
-		return VertexBuffer.create(buffer, count, texture, color, normal);
+		return VertexBuffer.of(buffer, count, texture, color, normal);
 	}
 
 }

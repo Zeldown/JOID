@@ -33,23 +33,23 @@ public class UIDemoEventFlow extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoEventFlow.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final StringSignal order = new StringSignal("none");
-		final IntegerSignal clicks = new IntegerSignal(0);
-		final IntegerSignal heard = new IntegerSignal(0);
-		final IntegerSignal monitored = new IntegerSignal(0);
-		final BooleanSignal guarded = new BooleanSignal(false);
-		final IntegerSignal refused = new IntegerSignal(0);
-		final StringSignal key = new StringSignal("none");
-		final BooleanSignal locked = new BooleanSignal(true);
-		final IntegerSignal kept = new IntegerSignal(0);
-		final DoubleSignal moveX = new DoubleSignal(40D);
-		final DoubleSignal scroll = new DoubleSignal(0D);
-		final BooleanSignal focused = new BooleanSignal(false);
-		final IntegerSignal cursor = new IntegerSignal(0);
-		final IntegerSignal letter = new IntegerSignal(0);
-		final BooleanSignal left = new BooleanSignal(false);
-		final BooleanSignal right = new BooleanSignal(false);
-		final DoubleSignal walkX = new DoubleSignal(40D);
+		final StringSignal order = StringSignal.create("none");
+		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal heard = IntegerSignal.create(0);
+		final IntegerSignal monitored = IntegerSignal.create(0);
+		final BooleanSignal guarded = BooleanSignal.create(false);
+		final IntegerSignal refused = IntegerSignal.create(0);
+		final StringSignal key = StringSignal.create("none");
+		final BooleanSignal locked = BooleanSignal.create(true);
+		final IntegerSignal kept = IntegerSignal.create(0);
+		final DoubleSignal moveX = DoubleSignal.create(40D);
+		final DoubleSignal scroll = DoubleSignal.create(0D);
+		final BooleanSignal focused = BooleanSignal.create(false);
+		final IntegerSignal cursor = IntegerSignal.create(0);
+		final IntegerSignal letter = IntegerSignal.create(0);
+		final BooleanSignal left = BooleanSignal.create(false);
+		final BooleanSignal right = BooleanSignal.create(false);
+		final DoubleSignal walkX = DoubleSignal.create(40D);
 
 		super.handleKeyPressed(event -> key.set(event.getKey().name()));
 		super.handleKeyPressed(event -> {

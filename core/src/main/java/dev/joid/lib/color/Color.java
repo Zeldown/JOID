@@ -127,8 +127,8 @@ public final class Color extends LockableValue<Color> {
 
 		if (lower.startsWith("gradient(")) {
 			final List<String> parts = Color.arguments(text, 9, 2, 6);
-			final Point startPoint = parts.size() == 2 ? Point.create(0D, 0D) : Point.create(Double.parseDouble(parts.get(2)), Double.parseDouble(parts.get(3)));
-			final Point endPoint = parts.size() == 2 ? Point.create(1D, 0D) : Point.create(Double.parseDouble(parts.get(4)), Double.parseDouble(parts.get(5)));
+			final Point startPoint = parts.size() == 2 ? Point.of(0D, 0D) : Point.of(Double.parseDouble(parts.get(2)), Double.parseDouble(parts.get(3)));
+			final Point endPoint = parts.size() == 2 ? Point.of(1D, 0D) : Point.of(Double.parseDouble(parts.get(4)), Double.parseDouble(parts.get(5)));
 			return new Color(new ColorGradient(Color.decode(parts.get(0)), Color.decode(parts.get(1)), startPoint, endPoint));
 		}
 
@@ -177,8 +177,8 @@ public final class Color extends LockableValue<Color> {
 			final ColorGradient g2 = color2.gradient;
 			final Color start = Color.lerp(g1.getStartColor(), g2.getStartColor(), progress);
 			final Color end = Color.lerp(g1.getEndColor(), g2.getEndColor(), progress);
-			final Point startPoint = Point.create(g1.getStartPoint().getX() * inv + g2.getStartPoint().getX() * progress, g1.getStartPoint().getY() * inv + g2.getStartPoint().getY() * progress);
-			final Point endPoint = Point.create(g1.getEndPoint().getX() * inv + g2.getEndPoint().getX() * progress, g1.getEndPoint().getY() * inv + g2.getEndPoint().getY() * progress);
+			final Point startPoint = Point.of(g1.getStartPoint().getX() * inv + g2.getStartPoint().getX() * progress, g1.getStartPoint().getY() * inv + g2.getStartPoint().getY() * progress);
+			final Point endPoint = Point.of(g1.getEndPoint().getX() * inv + g2.getEndPoint().getX() * progress, g1.getEndPoint().getY() * inv + g2.getEndPoint().getY() * progress);
 			return new Color(new ColorGradient(start, end, startPoint, endPoint));
 		}
 
@@ -325,7 +325,7 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color toGradient(final @NonNull Color target) {
-		return this.toGradient(target, Point.create(0D, 0D), Point.create(1D, 0D));
+		return this.toGradient(target, Point.of(0D, 0D), Point.of(1D, 0D));
 	}
 
 	public @NonNull Color toGradient(final @NonNull Color target, final @NonNull Point startPoint, final @NonNull Point endPoint) {

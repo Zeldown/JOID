@@ -148,7 +148,7 @@ public class UniformBlockTest {
 	@Test
 	public void namesAnUnsupportedType() {
 		try {
-			UniformBlock.create(Collections.singletonList(ShaderVariable.create("dmat4", "x", "", false)), "");
+			UniformBlock.create(Collections.singletonList(ShaderVariable.of("dmat4", "x", "", false)), "");
 			Assert.fail("An unsupported type must be refused");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("The uniform type dmat4 is not supported, use int, uint, bool, float, vec2 to vec4, ivec2 to ivec4, uvec2 to uvec4, bvec2 to bvec4 or mat2 to mat4", expected.getMessage());
@@ -158,7 +158,7 @@ public class UniformBlockTest {
 	@Test
 	public void namesAnUnresolvedArrayLength() {
 		try {
-			UniformBlock.create(Collections.singletonList(ShaderVariable.create("float", "x", "[SIZE]", false)), "");
+			UniformBlock.create(Collections.singletonList(ShaderVariable.of("float", "x", "[SIZE]", false)), "");
 			Assert.fail("An unresolved array length must be refused");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("The length SIZE of the uniform array x is neither a number nor a #define of the shader, write a number or #define SIZE in the shader source", expected.getMessage());
@@ -173,7 +173,7 @@ public class UniformBlockTest {
 	private static UniformBlock create() {
 		final List<ShaderVariable> variables = new ArrayList<>();
 		for (final String[] member : UniformBlockTest.MEMBERS) {
-			variables.add(ShaderVariable.create(member[0], member[1], member[2], false));
+			variables.add(ShaderVariable.of(member[0], member[1], member[2], false));
 		}
 		return UniformBlock.create(variables, "#define COUNT 5\n");
 	}

@@ -14,7 +14,7 @@ public final class ShaderVariable {
 	private final String  array;
 	private final boolean flat;
 
-	public static @NonNull ShaderVariable create(final @NonNull String type, final @NonNull String name, final @NonNull String array, final boolean flat) {
+	public static @NonNull ShaderVariable of(final @NonNull String type, final @NonNull String name, final @NonNull String array, final boolean flat) {
 		return new ShaderVariable(type, name, array, flat);
 	}
 

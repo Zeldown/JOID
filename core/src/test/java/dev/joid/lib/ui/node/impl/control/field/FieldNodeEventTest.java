@@ -66,7 +66,7 @@ public class FieldNodeEventTest {
 	@Test
 	public void refusesOnlyTheUser() {
 		final List<String> proposals = new ArrayList<>();
-		final StringSignal text = new StringSignal("supplied");
+		final StringSignal text = StringSignal.create("supplied");
 		final TextFieldNode field = this.field().beforeChange(event -> {
 			proposals.add(event.getText());
 			event.cancel();
@@ -83,7 +83,7 @@ public class FieldNodeEventTest {
 
 	@Test
 	public void followsItsSignalWhateverItsBeforeChangeListeners() {
-		final StringSignal signal = new StringSignal("ab");
+		final StringSignal signal = StringSignal.create("ab");
 		final List<String> changes = new ArrayList<>();
 		final TextFieldNode field = this.field().text(signal).<TextFieldNode>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getText()));
 		this.bridges.open(new NodeUI(field));

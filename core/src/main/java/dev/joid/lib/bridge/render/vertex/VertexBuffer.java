@@ -19,7 +19,7 @@ public final class VertexBuffer {
 	private final boolean    color;
 	private final boolean    normal;
 
-	public static @NonNull VertexBuffer create(final @NonNull ByteBuffer buffer, final int count, final boolean texture, final boolean color, final boolean normal) {
+	public static @NonNull VertexBuffer of(final @NonNull ByteBuffer buffer, final int count, final boolean texture, final boolean color, final boolean normal) {
 		return new VertexBuffer(buffer, count, texture, color, normal);
 	}
 

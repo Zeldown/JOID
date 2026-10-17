@@ -44,10 +44,10 @@ public class UIDemoShader extends UIDemo {
 		RectNode.create(285, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK)).attach(this);
 		TextNode.create(385, 175).text(Text.create("Gradient", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(515, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.create(0D, 0D), Point.create(0D, 1D))).attach(this);
+		RectNode.create(515, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.of(0D, 0D), Point.of(0D, 1D))).attach(this);
 		TextNode.create(615, 175).text(Text.create("Vertical gradient", caption)).anchorX(Align.CENTER).attach(this);
 
-		RectNode.create(745, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.create(0D, 0D), Point.create(1D, 1D))).attach(this);
+		RectNode.create(745, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.of(0D, 0D), Point.of(1D, 1D))).attach(this);
 		TextNode.create(845, 175).text(Text.create("Diagonal gradient", caption)).anchorX(Align.CENTER).attach(this);
 
 		RectNode.create(1045, 30, 60, 140).color(Color.WHITE).attach(this);
@@ -107,53 +107,53 @@ public class UIDemoShader extends UIDemo {
 
 		ContainerNode
 		.create(1665, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(UIDemoShader.INK, Point.create(100D, 0D), Point.create(200D, 120D), Point.create(0D, 120D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(UIDemoShader.INK, Point.of(100D, 0D), Point.of(200D, 120D), Point.of(0D, 120D)))
 		.attach(this);
 		TextNode.create(1765, 375).text(Text.create("Polygon", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(55, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.create(0D, 110D), Point.create(200D, 10D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.of(0D, 110D), Point.of(200D, 10D)))
 		.attach(this);
 		TextNode.create(155, 575).text(Text.create("Line", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(285, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.create(0D, 100D), Point.create(50D, 20D), Point.create(100D, 100D), Point.create(150D, 20D), Point.create(200D, 100D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.of(0D, 100D), Point.of(50D, 20D), Point.of(100D, 100D), Point.of(150D, 20D), Point.of(200D, 100D)))
 		.attach(this);
 		TextNode.create(385, 575).text(Text.create("Polyline", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(515, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(0D, 110D), Point.create(100D, -90D), Point.create(200D, 110D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.of(0D, 110D), Point.of(100D, -90D), Point.of(200D, 110D)))
 		.attach(this);
 		TextNode.create(615, 575).text(Text.create("Curve", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(745, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.create(0D, 60D), Point.create(70D, -60D), Point.create(130D, 180D), Point.create(200D, 60D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.of(0D, 60D), Point.of(70D, -60D), Point.of(130D, 180D), Point.of(200D, 60D)))
 		.attach(this);
 		TextNode.create(845, 575).text(Text.create("Bezier", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(975, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, UIDemoShader.INK, Point.create(100D, 0D), Point.create(200D, 60D), Point.create(100D, 120D), Point.create(0D, 60D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, UIDemoShader.INK, Point.of(100D, 0D), Point.of(200D, 60D), Point.of(100D, 120D), Point.of(0D, 60D)))
 		.attach(this);
 		TextNode.create(1075, 575).text(Text.create("Line loop", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1205, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, UIDemoShader.INK, Point.create(0D, 0D), Point.create(90D, 120D), Point.create(0D, 120D), Point.create(110D, 0D), Point.create(200D, 0D), Point.create(200D, 120D)))
+		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, UIDemoShader.INK, Point.of(0D, 0D), Point.of(90D, 120D), Point.of(0D, 120D), Point.of(110D, 0D), Point.of(200D, 0D), Point.of(200D, 120D)))
 		.attach(this);
 		TextNode.create(1305, 575).text(Text.create("Triangles", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode
 		.create(1435, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> GradientShader.use(Point.create(0D, 0D), Point.create(1D, 0D), UIDemoShader.PLACEHOLDER, UIDemoShader.INK, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(0D, 0D, node.getWidth(), node.getHeight())))
+		.layer((node, mouseX, mouseY) -> GradientShader.use(Point.of(0D, 0D), Point.of(1D, 0D), UIDemoShader.PLACEHOLDER, UIDemoShader.INK, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(0D, 0D, node.getWidth(), node.getHeight())))
 		.attach(this);
 		TextNode.create(1535, 575).text(Text.create("Shader bound", caption)).anchorX(Align.CENTER).attach(this);
 
-		TextNode.create(1765, 470).text(Text.create("Gradient", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.RED.toGradient(Color.YELLOW, Point.create(0D, 0D), Point.create(1D, 0D))))).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1765, 470).text(Text.create("Gradient", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.RED.toGradient(Color.YELLOW, Point.of(0D, 0D), Point.of(1D, 0D))))).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1765, 575).text(Text.create("Gradient text", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode

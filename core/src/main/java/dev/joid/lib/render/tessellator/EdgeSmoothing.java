@@ -37,7 +37,7 @@ public final class EdgeSmoothing {
 
 	public static void rect(final double left, final double top, final double right, final double bottom, final @NonNull double[] uv, final float red, final float green, final float blue, final float alpha) {
 		final double[] mapping = {uv[0], (uv[2] - uv[0]) / (right - left), 0D, uv[1], 0D, (uv[3] - uv[1]) / (bottom - top), left, top};
-		EdgeSmoothing.draw(red, green, blue, alpha, mapping, Point.create(left, bottom), Point.create(right, bottom), Point.create(right, top), Point.create(left, top));
+		EdgeSmoothing.draw(red, green, blue, alpha, mapping, Point.of(left, bottom), Point.of(right, bottom), Point.of(right, top), Point.of(left, top));
 	}
 
 	private static void draw(final float red, final float green, final float blue, final float alpha, final double[] mapping, final @NonNull Point @NonNull... points) {

@@ -22,7 +22,7 @@ public class ShowLists extends ShowUI {
 	private static final Color DRAGGED = Color.decode("#2B2647").lock();
 
 	private final List<String> order = new ArrayList<>();
-	private final StringSignal next  = new StringSignal();
+	private final StringSignal next  = StringSignal.create();
 
 	@Override
 	protected void scene() {

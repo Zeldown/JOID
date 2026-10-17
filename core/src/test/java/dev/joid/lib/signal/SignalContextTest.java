@@ -27,7 +27,7 @@ public class SignalContextTest {
 
 	@Test
 	public void tracesNothingByDefault() throws InterruptedException {
-		final Signal<String> signal = new Signal<>("a");
+		final Signal<String> signal = Signal.create("a");
 		final List<List<Signal<?>>> readList = new ArrayList<>();
 		final Thread thread = new Thread(() -> {
 			signal.get();
@@ -40,8 +40,8 @@ public class SignalContextTest {
 
 	@Test
 	public void recordsTheReadsInTheirOrder() {
-		final Signal<String> first = new Signal<>("a");
-		final Signal<String> second = new Signal<>("b");
+		final Signal<String> first = Signal.create("a");
+		final Signal<String> second = Signal.create("b");
 		first.get();
 		second.get();
 		first.get();
@@ -53,7 +53,7 @@ public class SignalContextTest {
 	public void keepsOnlyTheLatestReads() {
 		final List<Signal<Integer>> signalList = new ArrayList<>();
 		for (int index = 0; index < 100; index++) {
-			final Signal<Integer> signal = new Signal<>(index);
+			final Signal<Integer> signal = Signal.create(index);
 			signalList.add(signal);
 			signal.get();
 		}
@@ -66,13 +66,13 @@ public class SignalContextTest {
 
 	@Test
 	public void ignoresAPeek() {
-		new Signal<>("a").peek();
+		Signal.create("a").peek();
 		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());
 	}
 
 	@Test
 	public void ignoresTheReadsWhileTracingIsOff() {
-		final Signal<String> signal = new Signal<>("a");
+		final Signal<String> signal = Signal.create("a");
 		final boolean previous = SignalContext.current().tracing(false);
 		try {
 			signal.get();
@@ -87,8 +87,8 @@ public class SignalContextTest {
 
 	@Test
 	public void readsUntrackedWithoutFollowingNorTracing() {
-		final IntegerSignal count = new IntegerSignal(1);
-		final IntegerSignal bonus = new IntegerSignal(10);
+		final IntegerSignal count = IntegerSignal.create(1);
+		final IntegerSignal bonus = IntegerSignal.create(10);
 		final ComputedSignal<Integer> total = Signal.from(() -> count.get() + SignalContext.current().untracked(bonus::get));
 		Assert.assertEquals(11, total.get().intValue());
 		bonus.set(20);
@@ -102,7 +102,7 @@ public class SignalContextTest {
 
 	@Test
 	public void leavesTheReadsOfAComputationToIt() {
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final ComputedSignal<Integer> doubled = count.map(value -> value * 2);
 		doubled.get();
 		Assert.assertEquals(Collections.singletonList(doubled), SignalContext.current().takeReads());
@@ -110,9 +110,9 @@ public class SignalContextTest {
 
 	@Test
 	public void putsBackReadsBeforeTheRecentOnes() {
-		final Signal<String> first = new Signal<>("a");
-		final Signal<String> second = new Signal<>("b");
-		final Signal<String> third = new Signal<>("c");
+		final Signal<String> first = Signal.create("a");
+		final Signal<String> second = Signal.create("b");
+		final Signal<String> third = Signal.create("c");
 		first.get();
 		second.get();
 		final List<Signal<?>> readList = SignalContext.current().takeReads();
@@ -123,8 +123,8 @@ public class SignalContextTest {
 
 	@Test
 	public void keepsTheReadsOfEachThreadApart() throws InterruptedException {
-		final Signal<String> mine = new Signal<>("a");
-		final Signal<String> other = new Signal<>("b");
+		final Signal<String> mine = Signal.create("a");
+		final Signal<String> other = Signal.create("b");
 		final List<List<Signal<?>>> otherReads = new ArrayList<>();
 		mine.get();
 		final Thread thread = new Thread(() -> {
@@ -140,7 +140,7 @@ public class SignalContextTest {
 
 	@Test
 	public void clearsTheReadsWithoutTakingThem() {
-		new Signal<>("a").get();
+		Signal.create("a").get();
 		Assert.assertTrue(SignalContext.current().hasReads());
 		SignalContext.current().clearReads();
 		Assert.assertFalse(SignalContext.current().hasReads());
@@ -149,7 +149,7 @@ public class SignalContextTest {
 
 	@Test
 	public void countsEveryReadEvenInsideAComputation() {
-		final IntegerSignal count = new IntegerSignal(1);
+		final IntegerSignal count = IntegerSignal.create(1);
 		final long total = SignalContext.current().getReadTotal();
 		count.map(value -> value * 2).get();
 		Assert.assertEquals(total + 2, SignalContext.current().getReadTotal());
@@ -158,7 +158,7 @@ public class SignalContextTest {
 	@Test
 	public void movesTheEpochOnEveryChange() {
 		final long epoch = SignalContext.getEpoch();
-		new Signal<>("a").set("b").fireChange();
+		Signal.create("a").set("b").fireChange();
 		Assert.assertTrue(SignalContext.getEpoch() >= epoch + 2);
 	}
 

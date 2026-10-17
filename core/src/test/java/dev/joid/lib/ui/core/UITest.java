@@ -657,7 +657,7 @@ public class UITest {
 
 	@Test
 	public void writesItsZoomKeysIntoItsSignal() {
-		final DoubleSignal zoom = new DoubleSignal(0.5D);
+		final DoubleSignal zoom = DoubleSignal.create(0.5D);
 		final TraceUI ui = new TraceUI(this.trace).zoom(zoom);
 		this.bridges.open(ui);
 		Assert.assertEquals(0.5D, ui.getZoom(), 0D);
@@ -671,7 +671,7 @@ public class UITest {
 
 	@Test
 	public void catchesUpWithASilentWriteOfItsZoomSignalAtTheNextFrame() {
-		final DoubleSignal zoom = new DoubleSignal(0.5D);
+		final DoubleSignal zoom = DoubleSignal.create(0.5D);
 		final TraceUI ui = new TraceUI(this.trace).zoom(zoom);
 		this.bridges.open(ui);
 		zoom.silent(signal -> signal.set(0.8D));
@@ -682,7 +682,7 @@ public class UITest {
 
 	@Test
 	public void writesItsZoomBoundsBackIntoItsSignal() {
-		final DoubleSignal zoom = new DoubleSignal(3D);
+		final DoubleSignal zoom = DoubleSignal.create(3D);
 		final TraceUI ui = new TraceUI(this.trace).zoom(zoom);
 		Assert.assertEquals(1D, ui.getZoom(), 0D);
 		Assert.assertEquals(1D, zoom.peek(), 0D);
@@ -690,7 +690,7 @@ public class UITest {
 
 	@Test
 	public void forgetsItsZoomSignalOnceGivenAValue() {
-		final DoubleSignal zoom = new DoubleSignal(0.5D);
+		final DoubleSignal zoom = DoubleSignal.create(0.5D);
 		final TraceUI ui = new TraceUI(this.trace).zoom(zoom).zoom(0.8D);
 		this.bridges.open(ui);
 		zoom.set(0.3D);
@@ -728,7 +728,7 @@ public class UITest {
 
 	@Test
 	public void keepsItsZoomWhenItsGestureIsRefused() {
-		final DoubleSignal zoom = new DoubleSignal(0.5D);
+		final DoubleSignal zoom = DoubleSignal.create(0.5D);
 		final TraceUI ui = new TraceUI(this.trace).zoom(zoom).beforeZoom(event -> event.cancel());
 		this.bridges.open(ui);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);

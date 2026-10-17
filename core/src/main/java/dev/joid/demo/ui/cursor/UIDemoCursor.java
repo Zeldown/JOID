@@ -27,10 +27,10 @@ public class UIDemoCursor extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoCursor.INK);
 		final TextInfo small = TextInfo.create(DemoFont.MONTSERRAT, 18, UIDemoCursor.INK);
-		final BooleanSignal locked = new BooleanSignal(false);
-		final IntegerSignal through = new IntegerSignal(0);
-		final IntegerSignal blocked = new IntegerSignal(0);
-		final IntegerSignal bubbled = new IntegerSignal(0);
+		final BooleanSignal locked = BooleanSignal.create(false);
+		final IntegerSignal through = IntegerSignal.create(0);
+		final IntegerSignal blocked = IntegerSignal.create(0);
+		final IntegerSignal bubbled = IntegerSignal.create(0);
 		final Cursor[] cursors = Cursor.values();
 
 		for (int i = 0; i < cursors.length; i++) {
