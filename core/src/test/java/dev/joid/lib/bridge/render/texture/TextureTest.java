@@ -111,11 +111,17 @@ public class TextureTest {
 	}
 
 	@Test
-	public void refusesToAllocateOnceDeleted() {
+	public void refusesToAllocateOrUploadOnceDeleted() {
 		final HookTexture texture = new HookTexture();
 		texture.allocate(2, 2).delete();
 		try {
 			texture.allocate(4, 4);
+			Assert.fail("A deleted texture must stay deleted");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The texture is deleted, create a new one with IRenderBridge.createTexture()", expected.getMessage());
+		}
+		try {
+			texture.upload(new int[4]);
 			Assert.fail("A deleted texture must stay deleted");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The texture is deleted, create a new one with IRenderBridge.createTexture()", expected.getMessage());

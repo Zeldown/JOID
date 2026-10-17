@@ -47,6 +47,10 @@ public abstract class Texture implements ITexture {
 
 	@Override
 	public final @NonNull Texture upload(final @NonNull int[] pixels) {
+		if (this.deleted) {
+			throw new IllegalStateException("The texture is deleted, create a new one with IRenderBridge.createTexture()");
+		}
+
 		if (!this.isAllocated()) {
 			throw new IllegalStateException("The texture is not allocated, call allocate(width, height) before upload(pixels)");
 		}

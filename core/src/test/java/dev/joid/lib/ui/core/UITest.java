@@ -835,6 +835,23 @@ public class UITest {
 	}
 
 	@Test
+	public void printsTheTraceOfAStateErrorOfInitWhenControlRReloads() {
+		JOIDEnv.devMode(true);
+		final StateFailureUI ui = new StateFailureUI();
+		this.bridges.open(ui);
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		StateFailureUI.failing = true;
+		try {
+			final String output = UITest.err(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+			Assert.assertTrue(output, output.startsWith("[JOID] Init state failed"));
+			Assert.assertTrue(output, output.contains("java.lang.IllegalStateException: Init state failed"));
+			Assert.assertTrue(output, output.contains("\tat " + StateFailureUI.class.getName() + ".init("));
+		} finally {
+			StateFailureUI.failing = false;
+		}
+	}
+
+	@Test
 	public void reloadsARenewedUiWhoseInitFailedWithControlR() {
 		JOIDEnv.devMode(true);
 		final RetryUI ui = new RetryUI();
@@ -882,7 +899,7 @@ public class UITest {
 		} finally {
 			System.setErr(previous);
 		}
-		Assert.assertEquals("[JOID] The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead", output.toString().trim());
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead"));
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(1, ui.inits);
 	}
@@ -2403,6 +2420,19 @@ public class UITest {
 			this.inits++;
 			if (RetryUI.failing) {
 				throw new NullPointerException("Init failed");
+			}
+		}
+
+	}
+
+	public static final class StateFailureUI extends UI {
+
+		private static boolean failing;
+
+		@Override
+		public void init() {
+			if (StateFailureUI.failing) {
+				throw new IllegalStateException("Init state failed");
 			}
 		}
 

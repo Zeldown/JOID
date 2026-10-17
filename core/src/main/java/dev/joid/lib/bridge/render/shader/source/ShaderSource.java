@@ -86,14 +86,15 @@ public final class ShaderSource {
 		boolean comment = false;
 		for (final String line : code.split("\r?\n", -1)) {
 			final StringBuilder stripped = new StringBuilder();
+			final boolean opened = comment;
 			comment = ShaderSource.stripComments(line, comment, stripped);
 
 			final Matcher declaration = ShaderSource.DECLARATION.matcher(stripped);
-			if (ShaderSource.VERSION.matcher(stripped).matches()) {
-				body.append('\n');
-			} else if (declaration.matches()) {
-				source.declare(declaration);
-				body.append('\n');
+			if (ShaderSource.VERSION.matcher(stripped).matches() || declaration.matches()) {
+				if (declaration.matches()) {
+					source.declare(declaration);
+				}
+				body.append(opened ? "*/" : "").append(comment ? "/*" : "").append('\n');
 			} else {
 				body.append(line).append('\n');
 				instructions.append(stripped).append('\n');

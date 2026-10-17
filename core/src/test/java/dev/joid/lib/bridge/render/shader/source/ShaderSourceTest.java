@@ -58,6 +58,15 @@ public class ShaderSourceTest {
 	}
 
 	@Test
+	public void keepsTheCommentsThatADeclarationOpensOrCloses() {
+		final String[] lines = ShaderSource.parse(ShaderStage.FRAGMENT, "uniform float u_Time; /* time\n   in seconds */\n/* wave\n*/ uniform float u_Wave;\n\nvoid main() {\n}").getBody().split("\n", -1);
+		Assert.assertEquals("/*", lines[0]);
+		Assert.assertEquals("   in seconds */", lines[1]);
+		Assert.assertEquals("/* wave", lines[2]);
+		Assert.assertEquals("*/", lines[3]);
+	}
+
+	@Test
 	public void detectsUsedBuiltins() {
 		final ShaderSource source = ShaderSource.parse(ShaderStage.VERTEX, "// uNormalMatrix is unused\nvoid main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0); /* aNormal */\n}\n");
 		Assert.assertEquals(EnumSet.of(ShaderBuiltin.POSITION, ShaderBuiltin.PROJECTION_MATRIX, ShaderBuiltin.MODEL_VIEW_MATRIX), source.getBuiltins());

@@ -30,10 +30,7 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 		if (!this.started) {
 			this.started = true;
 			if (this.epoch == SignalContext.getEpoch()) {
-				final SignalContext context = SignalContext.current();
-				for (final Signal<?> signal : this.readList) {
-					context.read(signal);
-				}
+				this.readKnown();
 				return this.value;
 			}
 		}
@@ -45,9 +42,17 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 			}
 			this.value = (T) this.match.getSlice().convert(result);
 		} catch (final SignalReplayException exception) {
+			this.readKnown();
 			SignalReplay.warn(this.call, this.match.getSlice().getSignalNameList(), this.readList.size(), exception.getFailure() == SignalReplayFailure.REPLAY_FAILED ? exception : new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getMessage()), this.value);
 		}
 		return this.value;
+	}
+
+	private void readKnown() {
+		final SignalContext context = SignalContext.current();
+		for (final Signal<?> signal : this.readList) {
+			context.read(signal);
+		}
 	}
 
 }
