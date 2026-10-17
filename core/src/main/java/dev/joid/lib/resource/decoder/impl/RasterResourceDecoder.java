@@ -51,12 +51,11 @@ public class RasterResourceDecoder implements IResourceDecoder {
 			this.image = this.source != null ? this.source : RasterResourceDecoder.read(this.asset, this.reader);
 		}
 
-		resource.width(this.image.getWidth());
-		resource.height(this.image.getHeight());
-
-		resource.data(new int[1][resource.getWidth() * resource.getHeight()]);
-		this.image.getRGB(0, 0, resource.getWidth(), resource.getHeight(), resource.getData(0), 0, resource.getWidth());
-		ImageUtils.bleedAlpha(resource.getData(0), resource.getWidth(), resource.getHeight());
+		final int width = this.image.getWidth();
+		final int height = this.image.getHeight();
+		final int[] pixels = this.image.getRGB(0, 0, width, height, null, 0, width);
+		ImageUtils.bleedAlpha(pixels, width, height);
+		resource.width(width).height(height).data(new int[][] {pixels});
 	}
 
 	@Override

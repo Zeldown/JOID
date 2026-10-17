@@ -78,6 +78,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private boolean    texturesAllocated;
 
 	@Getter private int    videoWidth;
+	@Getter private int    videoHeight;
 	@Getter private int    totalFrames;
 	@Getter private double duration;
 	@Getter private double frameRate;
@@ -157,7 +158,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				this.grabber = this.open();
 
 				resource.width(this.videoWidth);
-				resource.height(this.grabber.getImageHeight());
+				resource.height(this.videoHeight);
 
 				this.frameRate = this.grabber.getVideoFrameRate();
 				if (this.frameRate <= 0D) {
@@ -176,7 +177,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 				final Frame firstFrame = this.grabber.grabImage();
 				if (firstFrame != null) {
-					final int[] pixels = this.frameToPixels(firstFrame, this.grabber.getImageWidth(), resource.getHeight());
+					final int[] pixels = this.frameToPixels(firstFrame, this.grabber.getImageWidth(), this.videoHeight);
 					resource.data(new int[][] { pixels });
 				}
 			} catch (final Exception exception) {
@@ -187,8 +188,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		this.textures[0].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
-		this.textures[1].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
+		this.textures[0].allocate(this.videoWidth, this.videoHeight).upload(resource.getData(0));
+		this.textures[1].allocate(this.videoWidth, this.videoHeight).upload(resource.getData(0));
 		this.texturesAllocated = true;
 
 		if (this.autoplay || this.playRequested) {
@@ -423,9 +424,9 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		}
 
 		if (next == null) {
-			return this.ended;
+			return this.ended || this.isAudioFull();
 		}
-		return this.ended || this.frameQueue.remainingCapacity() == 0 || next.time > this.getPlaybackTime();
+		return this.ended || this.isAudioFull() || this.frameQueue.remainingCapacity() == 0 || next.time > this.getPlaybackTime();
 	}
 
 	@Override
@@ -486,6 +487,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		}
 	}
 
+	private boolean isAudioFull() {
+		final VideoAudioPlayer audioPlayer = this.audioPlayer;
+		return audioPlayer != null && audioPlayer.isFull();
+	}
+
 	private void seekGrabber(final long microseconds) throws Exception {
 		final long start = this.grabber.getFormatContext().start_time();
 		this.grabber.setTimestamp(microseconds - (start == avutil.AV_NOPTS_VALUE ? 0L : Math.min(0L, start)), true);
@@ -512,11 +518,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		grabber.start();
 
 		this.videoWidth = grabber.getImageWidth();
+		this.videoHeight = grabber.getImageHeight();
 		if (this.videoWidth % 8 != 0) {
-			final int height = grabber.getImageHeight();
 			grabber.stop();
 			grabber.setImageWidth((this.videoWidth + 7) / 8 * 8);
-			grabber.setImageHeight(height);
+			grabber.setImageHeight(this.videoHeight);
 			grabber.start();
 		}
 
@@ -578,8 +584,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private void show(final ResourceData resource, final DecodedFrame frame) {
 		final int nextBuffer = 1 - this.currentBuffer;
 		if (!this.texturesAllocated) {
-			this.textures[0].allocate(resource.getWidth(), resource.getHeight());
-			this.textures[1].allocate(resource.getWidth(), resource.getHeight());
+			this.textures[0].allocate(this.videoWidth, this.videoHeight);
+			this.textures[1].allocate(this.videoWidth, this.videoHeight);
 			this.texturesAllocated = true;
 		}
 		this.textures[nextBuffer].upload(frame.pixels);
@@ -609,6 +615,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			try {
 				double lastTime = 0D;
 				while (this.running.get() && !Thread.currentThread().isInterrupted()) {
+					if (this.isAudioFull()) {
+						Thread.sleep(5L);
+						continue;
+					}
+
 					final DecodedFrame decoded;
 					final int seek;
 					synchronized (this.grabberLock) {

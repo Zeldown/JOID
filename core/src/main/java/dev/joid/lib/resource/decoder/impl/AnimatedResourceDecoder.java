@@ -158,6 +158,10 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	@Override
 	public @NonNull AnimatedResourceDecoder loop(final boolean loop) {
+		if (this.running && this.animation != null) {
+			final long duration = this.animation.getDuration();
+			this.startTime += this.getTime() / duration * duration * 1000000L;
+		}
 		this.plays = loop ? 0 : 1;
 		return this;
 	}

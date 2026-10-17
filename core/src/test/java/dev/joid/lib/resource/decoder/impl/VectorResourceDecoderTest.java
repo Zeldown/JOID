@@ -64,6 +64,21 @@ public class VectorResourceDecoderTest {
 	}
 
 	@Test
+	public void uploadsTheWholeDocumentOfARegion() {
+		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
+		final ResourceData data = ResourceData.create("icon.svg", decoder).region(4, 4, 8, 6);
+		decoder.prepare(data);
+		decoder.decode(data);
+		decoder.upload(data);
+		final RecordingTexture texture = (RecordingTexture) data.getTextures()[0];
+		Assert.assertEquals(24, texture.getWidth());
+		Assert.assertEquals(24, texture.getHeight());
+		Assert.assertEquals(24 * 24, texture.getPixels().length);
+		Assert.assertEquals(255, texture.getPixels()[12 * 24 + 12] >>> 24);
+		Assert.assertEquals(8, data.getWidth());
+	}
+
+	@Test
 	public void ignoresRequestsBeforeItsUpload() {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
 		final ResourceData data = ResourceData.create("icon.svg", decoder);

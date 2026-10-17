@@ -209,10 +209,9 @@ public final class Text {
 			return;
 		}
 
-		this.measured     = key;
-		this.width        = 0D;
-		this.height       = this.elementList.stream().mapToDouble(element -> element.getInfo().getHeight(this.getText(element))).max().orElse(0D);
+		final double height = this.elementList.stream().mapToDouble(element -> element.getInfo().getHeight(this.getText(element))).max().orElse(0D);
 
+		double   width    = 0D;
 		TextInfo previous = null;
 		for (final TextElement element : this.elementList) {
 			final String text = this.getText(element);
@@ -220,9 +219,13 @@ public final class Text {
 				continue;
 			}
 
-			this.width += (previous == null ? 0D : previous.getLetterSpacing() * previous.getFontSize()) + element.getInfo().getWidth(text);
+			width += (previous == null ? 0D : previous.getLetterSpacing() * previous.getFontSize()) + element.getInfo().getWidth(text);
 			previous = element.getInfo();
 		}
+
+		this.width    = width;
+		this.height   = height;
+		this.measured = key;
 	}
 
 	private @NonNull List<Object> measureKey() {

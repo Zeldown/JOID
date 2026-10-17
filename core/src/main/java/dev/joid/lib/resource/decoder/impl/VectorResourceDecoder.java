@@ -74,14 +74,14 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		}
 
 		final FloatSize size = this.document.size();
-		resource.width(Math.max(1, (int) Math.ceil(size.width)));
-		resource.height(Math.max(1, (int) Math.ceil(size.height)));
-		resource.data(new int[][] {VectorResourceDecoder.render(this.document, resource.getWidth(), resource.getHeight())});
+		final int width = Math.max(1, (int) Math.ceil(size.width));
+		final int height = Math.max(1, (int) Math.ceil(size.height));
+		resource.width(width).height(height).data(new int[][] {VectorResourceDecoder.render(this.document, width, height)});
 	}
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		this.texture.allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
+		resource.uploadTextures();
 		this.store(resource, this.texture);
 	}
 

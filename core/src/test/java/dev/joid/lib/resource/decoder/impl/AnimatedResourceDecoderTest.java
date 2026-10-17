@@ -149,6 +149,40 @@ public class AnimatedResourceDecoderTest {
 	}
 
 	@Test
+	public void finishesItsCurrentLoopOnceItStopsLooping() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng().loop(true);
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		this.advance(decoder, data, 500L);
+		decoder.loop(false);
+		this.advance(decoder, data, 10L);
+		Assert.assertTrue(decoder.isPlaying());
+		Assert.assertEquals(0, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
+		Assert.assertEquals(0.03D, decoder.getCurrentTime(), 1E-9D);
+		this.advance(decoder, data, 200L);
+		Assert.assertTrue(decoder.isPlaying());
+		this.advance(decoder, data, 10L);
+		Assert.assertFalse(decoder.isPlaying());
+		Assert.assertEquals(2, ((int) AnimatedResourceDecoderTest.field(decoder, "displayed")));
+		Assert.assertEquals(0.239D, decoder.getCurrentTime(), 1E-9D);
+	}
+
+	@Test
+	public void finishesItsCurrentLoopOnceItStopsLoopingWhilePaused() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng().loop(true);
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		this.advance(decoder, data, 500L);
+		decoder.pause().loop(false);
+		this.advance(decoder, data, 1000L);
+		Assert.assertEquals(0.02D, decoder.getCurrentTime(), 1E-9D);
+		decoder.play();
+		this.advance(decoder, data, 210L);
+		Assert.assertTrue(decoder.isPlaying());
+		this.advance(decoder, data, 10L);
+		Assert.assertFalse(decoder.isPlaying());
+		Assert.assertEquals(0.239D, decoder.getCurrentTime(), 1E-9D);
+	}
+
+	@Test
 	public void stopsOnTheCurrentFrame() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
 		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);

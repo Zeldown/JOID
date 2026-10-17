@@ -1,5 +1,6 @@
 package dev.joid.lib.draw.text;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import org.junit.Assert;
@@ -161,6 +162,26 @@ public class TextTest {
 		Assert.assertEquals(40D, text.modifier(value -> value + value).getWidth(), 0D);
 		Assert.assertEquals(20D, text.modifier(null).getWidth(), 0D);
 		Assert.assertEquals("ab", text.getText());
+	}
+
+	@Test
+	public void remeasuresAfterAFailedMeasure() {
+		final AtomicBoolean failing = new AtomicBoolean(true);
+		final Text text = Text.create("ab", TextTest.info()).modifier(value -> {
+			if (failing.get()) {
+				throw new IllegalStateException("The modifier failed");
+			}
+			return value;
+		});
+		try {
+			text.getWidth();
+			Assert.fail("The modifier fails");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The modifier failed", expected.getMessage());
+		}
+		failing.set(false);
+		Assert.assertEquals(20D, text.getWidth(), 0D);
+		Assert.assertEquals(20D, text.getHeight(), 0D);
 	}
 
 	@Test

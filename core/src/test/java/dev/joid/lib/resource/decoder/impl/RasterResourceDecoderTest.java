@@ -100,6 +100,23 @@ public class RasterResourceDecoderTest {
 	}
 
 	@Test
+	public void uploadsTheWholeImageOfARegion() {
+		final BufferedImage image = new BufferedImage(4, 2, BufferedImage.TYPE_INT_ARGB);
+		image.setRGB(3, 1, 0xFF336699);
+		final RasterResourceDecoder decoder = RasterResourceDecoder.create(image);
+		final ResourceData data = ResourceData.create("atlas", decoder).region(1, 0, 2, 1);
+		decoder.prepare(data);
+		decoder.decode(data);
+		decoder.upload(data);
+		final RecordingTexture texture = (RecordingTexture) data.getTextures()[0];
+		Assert.assertEquals(4, texture.getWidth());
+		Assert.assertEquals(2, texture.getHeight());
+		Assert.assertEquals(8, texture.getPixels().length);
+		Assert.assertEquals(0xFF336699, texture.getPixels()[7]);
+		Assert.assertEquals(2, data.getWidth());
+	}
+
+	@Test
 	public void readsItsAssetAgainOnceUploaded() {
 		final BytesAsset asset = new BytesAsset("still.png", RasterResourceDecoderTest.bytes("/animation/still.png"));
 		final RasterResourceDecoder decoder = RasterResourceDecoder.create(asset);

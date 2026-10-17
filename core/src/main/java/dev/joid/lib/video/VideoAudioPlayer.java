@@ -105,7 +105,7 @@ public final class VideoAudioPlayer {
 
 		final float volume = this.owner.getVolume() * 0.3F;
 		if (!this.buffersQueued) {
-			if (this.getQueuedSamples() < this.sampleRate * this.channels / 5) {
+			if (this.sampleQueue.remainingCapacity() > 0 && this.getQueuedSamples() < this.sampleRate * this.channels / 5) {
 				return;
 			}
 
@@ -143,6 +143,10 @@ public final class VideoAudioPlayer {
 		final short[] data = new short[buffer.remaining()];
 		buffer.get(data);
 		this.offer(data, skip * this.channels);
+	}
+
+	public boolean isFull() {
+		return this.source != null && this.sampleQueue.remainingCapacity() == 0;
 	}
 
 	public void cleanup() {

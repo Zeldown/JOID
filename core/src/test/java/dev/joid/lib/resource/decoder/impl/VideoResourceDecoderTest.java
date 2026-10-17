@@ -21,6 +21,7 @@ import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -43,6 +44,8 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.video.VideoAudioPlayer;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 public class VideoResourceDecoderTest {
@@ -270,6 +273,24 @@ public class VideoResourceDecoderTest {
 		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[0], data.getTextures()[0]);
 		Assert.assertTrue(decoder.isAutoplay());
 		Assert.assertTrue(decoder.isPlaying());
+	}
+
+	@Test
+	public void decodesAndShowsTheWholeVideoOfARegion() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = ResourceData.create("frames.mkv", decoder).region(4, 2, 8, 4);
+		decoder.prepare(data);
+		decoder.decode(data);
+		Assert.assertEquals(16 * 8, data.getData()[0].length);
+		decoder.upload(data);
+		this.play(decoder, data, 7);
+		for (final RecordingTexture texture : VideoResourceDecoderTest.textures(decoder)) {
+			Assert.assertEquals(16, texture.getWidth());
+			Assert.assertEquals(8, texture.getHeight());
+			Assert.assertEquals(16 * 8, texture.getPixels().length);
+		}
+		Assert.assertEquals(40, VideoResourceDecoderTest.shade(data), 3);
+		Assert.assertEquals(8, data.getWidth());
 	}
 
 	@Test
@@ -711,6 +732,26 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void keepsEveryAudioSampleBehindAStillImage() throws Exception {
+		final String path = "/dev/joid/lib/resource/decoder/impl/still.mkv";
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream(path));
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		final ArrayBlockingQueue<?> queue = (ArrayBlockingQueue<?>) VideoResourceDecoderTest.field(VideoResourceDecoderTest.field(decoder, "audioPlayer"), "sampleQueue");
+		final long full = System.currentTimeMillis() + 5000L;
+		while (queue.remainingCapacity() > 0 && System.currentTimeMillis() < full) {
+			Thread.sleep(1L);
+		}
+		Thread.sleep(200L);
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (!((boolean) VideoResourceDecoderTest.field(decoder, "ended")) && System.currentTimeMillis() < deadline) {
+			decoder.update(data);
+			Thread.sleep(1L);
+		}
+		decoder.update(data);
+		Assert.assertEquals(Math.ceil(VideoResourceDecoderTest.audioEnd(path) * 8000D), this.audio.samples.get(), 1024D);
+	}
+
+	@Test
 	public void playsTheAudioThatPrecedesItsFirstImage() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm"));
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
@@ -1010,23 +1051,22 @@ public class VideoResourceDecoderTest {
 
 	private static final class RecordingAudioBridge implements IAudioBridge {
 
-		private final List<String> calls = new CopyOnWriteArrayList<>();
+		private final AtomicInteger samples = new AtomicInteger();
+		private final List<String>  calls   = new CopyOnWriteArrayList<>();
 
 		@Override
 		public @NonNull IAudioSource createSource(final int sampleRate, final int channels) {
 			this.calls.add("create " + sampleRate + "x" + channels);
-			return new RecordingAudioSource(this.calls);
+			return new RecordingAudioSource(this.calls, this.samples);
 		}
 
 	}
 
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class RecordingAudioSource implements IAudioSource {
 
-		private final List<String> calls;
-
-		private RecordingAudioSource(final List<String> calls) {
-			this.calls = calls;
-		}
+		private final List<String>  calls;
+		private final AtomicInteger samples;
 
 		@Override
 		public void play() {
@@ -1054,6 +1094,7 @@ public class VideoResourceDecoderTest {
 		@Override
 		public void write(final @NonNull short[] samples) {
 			this.calls.add("write");
+			this.samples.addAndGet(samples.length);
 		}
 
 		@Override
