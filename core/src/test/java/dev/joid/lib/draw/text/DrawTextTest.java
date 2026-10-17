@@ -76,6 +76,14 @@ public class DrawTextTest {
 	}
 
 	@Test
+	public void spacesEachElementByTheLetterSpacingOfThePreviousOne() {
+		final Text text = Text.create(TextElement.create("ab", this.info.copy().letterSpacing(0.5F)), TextElement.create("c", this.info));
+		DrawTextTest.draw().drawText(100D, 100D, text);
+		Assert.assertEquals(Arrays.asList("ab@100.0,100.0", "c@125.0,100.0"), this.font.drawn);
+		Assert.assertEquals(35D, text.getWidth(), 0D);
+	}
+
+	@Test
 	public void centersTheTextOnItsPosition() {
 		DrawTextTest.draw().drawText(100D, 100D, this.text().alignX(Align.CENTER).alignY(Align.CENTER));
 		Assert.assertEquals(Arrays.asList("ab@80.0,100.0", "c@100.0,80.0"), this.font.drawn);

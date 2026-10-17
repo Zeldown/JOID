@@ -163,6 +163,26 @@ public class DrawResourceTest {
 	}
 
 	@Test
+	public void tintsARotatedImageUnderTheBoundShaderWithTheCurrentColor() {
+		this.render.getState().shader(new RecordingShader()).color(1F, 0.5F, 0F, 0.5F);
+		this.render.getModelView().push();
+		try {
+			this.render.getModelView().rotate(30D, 0D, 0D, 1D);
+			DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 50D, DrawResourceTest.image(64, 32));
+		} finally {
+			this.render.getModelView().pop();
+		}
+
+		final Capture capture = this.single();
+		int alpha = 0;
+		for (int i = 0; i < capture.getCount(); i++) {
+			Assert.assertEquals(0x007FFF, capture.getColor(i) & 0xFFFFFF);
+			alpha = Math.max(alpha, capture.getColor(i) >>> 24);
+		}
+		Assert.assertEquals(127, alpha);
+	}
+
+	@Test
 	public void samplesARegionOfTheResource() {
 		DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 50D, 16D, 8D, 32D, 16D, DrawResourceTest.image(64, 32));
 		final Capture capture = this.single();

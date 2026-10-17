@@ -4,6 +4,7 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
@@ -83,7 +84,8 @@ public final class DrawResource {
 					DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 1D);
 				}));
 			} else {
-				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> EdgeSmoothing.rect(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 1F, 1F, 1F, 1F));
+				final RenderState state = render.getState();
+				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> EdgeSmoothing.rect(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha()));
 			}
 		}));
 	}

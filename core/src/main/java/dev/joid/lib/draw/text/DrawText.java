@@ -33,11 +33,15 @@ public final class DrawText {
 		final double baseline = text.getElementList().stream().mapToDouble(element -> element.getInfo().getBaseline()).max().orElse(0D);
 
 		double penX = runX;
+		TextInfo previous = null;
 
 		for (final TextElement element : text.getElementList()) {
 			final String drawText = text.getText(element);
 			final TextInfo info = element.getInfo();
+			final boolean empty = drawText.isEmpty();
+			penX += previous == null || empty ? 0D : previous.getLetterSpacing() * previous.getFontSize();
 			penX += info.getFont().getTextRenderer().drawText(penX, runY + baseline - info.getBaseline(), drawText, info, runX, runY, runWidth, runHeight).getWidth();
+			previous = empty ? previous : info;
 		}
 
 		return text.getBounds();
@@ -89,7 +93,7 @@ public final class DrawText {
 						break;
 					}
 
-					overflowWidth += element.getInfo().getWidth(elementText);
+					overflowWidth += elementText.isEmpty() ? 0D : element.getInfo().getWidth(elementText) + element.getInfo().getLetterSpacing() * element.getInfo().getFontSize();
 					overflowText.add(element.copyWithText(elementText).modifier(null));
 				}
 

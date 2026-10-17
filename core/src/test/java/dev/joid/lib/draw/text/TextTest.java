@@ -388,6 +388,14 @@ public class TextTest {
 	}
 
 	@Test
+	public void spacesTheLettersOfTwoElementsAtTheirJunction() {
+		final TextInfo info = TextTest.montserrat().letterSpacing(0.1F);
+		final double plain = Text.create("ab", TextTest.montserrat()).getWidth() + Text.create("cd", TextTest.montserrat()).getWidth();
+		Assert.assertEquals(plain + 30D, Text.create(TextElement.create("ab", info), TextElement.create("cd", info)).getWidth(), 0.0001D);
+		Assert.assertEquals(plain + 30D, Text.create(TextElement.create("ab", info), TextElement.create("", info), TextElement.create("cd", info)).getWidth(), 0.0001D);
+	}
+
+	@Test
 	public void takesItsLineHeightAsAFractionOfTheFontSize() {
 		Assert.assertEquals(150D, Text.create("abc", TextTest.montserrat().lineHeight(1.5F)).getHeight(), 0D);
 		Assert.assertEquals(80D, Text.create("abc", TextTest.montserrat().lineHeight(0.8F)).getBounds().getHeight(), 0.0001D);

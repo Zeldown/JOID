@@ -210,8 +210,19 @@ public final class Text {
 		}
 
 		this.measured     = key;
-		this.width        = this.elementList.stream().mapToDouble(element -> element.getInfo().getWidth(this.getText(element))).sum();
-		this.height       = this.elementList.stream().mapToDouble(element -> element.getInfo().getHeight(this.getText(element))).max().orElse(0);
+		this.width        = 0D;
+		this.height       = this.elementList.stream().mapToDouble(element -> element.getInfo().getHeight(this.getText(element))).max().orElse(0D);
+
+		TextInfo previous = null;
+		for (final TextElement element : this.elementList) {
+			final String text = this.getText(element);
+			if (text.isEmpty()) {
+				continue;
+			}
+
+			this.width += (previous == null ? 0D : previous.getLetterSpacing() * previous.getFontSize()) + element.getInfo().getWidth(text);
+			previous = element.getInfo();
+		}
 	}
 
 	private @NonNull List<Object> measureKey() {
