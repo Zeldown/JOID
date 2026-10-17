@@ -19,7 +19,7 @@ public final class UrlAsset extends Asset {
 
 	private final String url;
 
-	private UrlAsset(final @NonNull String url) {
+	private UrlAsset(final String url) {
 		super(url);
 		this.url = url;
 	}
@@ -60,7 +60,7 @@ public final class UrlAsset extends Asset {
 		}
 	}
 
-	private static @NonNull InputStream connect(final @NonNull String url) throws IOException {
+	private static @NonNull InputStream connect(final String url) throws IOException {
 		final URLConnection connection = new URL(url).openConnection();
 		connection.setConnectTimeout(10000);
 		connection.setReadTimeout(30000);

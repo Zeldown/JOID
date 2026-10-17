@@ -17,7 +17,7 @@ public final class ResourceAnimation {
 	private final List<ResourceAnimationFrame> frames;
 	private final long[]               ends;
 
-	private ResourceAnimation(final int width, final int height, final int plays, final @NonNull List<ResourceAnimationFrame> frames) {
+	private ResourceAnimation(final int width, final int height, final int plays, final List<ResourceAnimationFrame> frames) {
 		this.width = width;
 		this.height = height;
 		this.plays = plays;

@@ -50,7 +50,7 @@ public abstract class Asset {
 		}
 	}
 
-	private static @NonNull byte[] shrink(final @NonNull byte[] buffer, final int length) {
+	private static @NonNull byte[] shrink(final byte[] buffer, final int length) {
 		return length == buffer.length ? buffer : Arrays.copyOf(buffer, length);
 	}
 

@@ -7,21 +7,19 @@ import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class FrameBuffer {
 
-	private final IFrameBuffer  handle;
-	private final TextureFilter filter;
+	@NonNull private final IFrameBuffer  handle;
+	@NonNull private final TextureFilter filter;
 
 	private boolean filled;
-
-	protected FrameBuffer(final @NonNull IFrameBuffer handle, final @NonNull TextureFilter filter) {
-		this.handle = handle;
-		this.filter = filter;
-	}
 
 	public static @NonNull FrameBuffer create(final int width, final int height, final @NonNull TextureFilter filter) {
 		return new FrameBuffer(BridgeHandler.RENDER.get().createFrameBuffer(width, height), filter);

@@ -21,7 +21,6 @@ import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.Frame;
@@ -232,7 +231,6 @@ public class VideoResourceDecoderTest {
 		}
 		Assert.assertTrue(decoder.isPlaying());
 		Assert.assertTrue(((double) VideoResourceDecoderTest.field(decoder, "loopOffset")) > 0D);
-		Assert.assertTrue(((AtomicInteger) VideoResourceDecoderTest.field(decoder, "decodedFrameIndex")).get() > 0);
 	}
 
 	@Test
@@ -315,18 +313,6 @@ public class VideoResourceDecoderTest {
 		this.play(decoder, data, 3);
 		decoder.stop().pause();
 		Assert.assertFalse(decoder.isPaused());
-		Assert.assertFalse(decoder.isPlaying());
-	}
-
-	@Test
-	public void uploadsNothingWithoutPicture() {
-		final VideoResourceDecoder decoder = this.frames();
-		final ResourceData data = ResourceData.create("frames.mkv", decoder);
-		decoder.prepare(data);
-		decoder.upload(data);
-		data.data(new int[1][]);
-		decoder.upload(data);
-		Assert.assertEquals(1, data.getTextures()[0].getWidth());
 		Assert.assertFalse(decoder.isPlaying());
 	}
 
@@ -675,7 +661,7 @@ public class VideoResourceDecoderTest {
 		} finally {
 			JOIDEnv.devMode(devMode);
 		}
-		decoder.upload(data);
+		data.upload();
 		Assert.assertEquals("", error);
 		Assert.assertTrue(data.isFailed());
 		Assert.assertNull(data.getData());
@@ -908,7 +894,7 @@ public class VideoResourceDecoderTest {
 	public void skipsTheFramesBetweenItsKeyFrameAndASeek() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/predicted.mkv"));
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		VideoResourceDecoderTest.buffer(decoder, 6);
+		VideoResourceDecoderTest.buffer(decoder);
 		decoder.seek(0.6D);
 		this.play(decoder, data, 1);
 		Assert.assertEquals(6, decoder.getDisplayedFrameIndex());
@@ -1005,9 +991,9 @@ public class VideoResourceDecoderTest {
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
-	private static void buffer(final VideoResourceDecoder decoder, final int frames) throws InterruptedException {
+	private static void buffer(final VideoResourceDecoder decoder) throws InterruptedException {
 		final long deadline = System.currentTimeMillis() + 5000L;
-		while (((AtomicInteger) VideoResourceDecoderTest.field(decoder, "decodedFrameIndex")).get() < frames && System.currentTimeMillis() < deadline) {
+		while (((ArrayBlockingQueue<?>) VideoResourceDecoderTest.field(decoder, "frameQueue")).remainingCapacity() > 0 && System.currentTimeMillis() < deadline) {
 			Thread.sleep(1L);
 		}
 	}

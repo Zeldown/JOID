@@ -70,7 +70,7 @@ public class RasterResourceDecoder implements IResourceDecoder {
 		this.image = null;
 	}
 
-	private static @NonNull BufferedImage read(final @NonNull Asset asset, final ImageReaderSpi reader) {
+	private static @NonNull BufferedImage read(final Asset asset, final ImageReaderSpi reader) {
 		final BufferedImage image;
 		try (InputStream stream = asset.open()) {
 			image = reader == null ? ImageIO.read(stream) : ImageUtils.read(stream, reader);

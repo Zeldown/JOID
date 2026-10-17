@@ -26,7 +26,7 @@ public final class ResourceBuilder {
 	private final ResourceProperties properties;
 	@Getter private final IResourceCache cache;
 
-	private ResourceBuilder(final IResourceCache cache, final @NonNull ResourceProperties properties) {
+	private ResourceBuilder(final IResourceCache cache, final ResourceProperties properties) {
 		this.cache = cache;
 		this.properties = properties;
 		this.computed = Collections.synchronizedMap(new WeakHashMap<>());
@@ -134,7 +134,7 @@ public final class ResourceBuilder {
 		}
 	}
 
-	private static @NonNull ResourceData detect(final @NonNull String uniqueId, final @NonNull Supplier<Asset> assetSource) {
+	private static @NonNull ResourceData detect(final String uniqueId, final Supplier<Asset> assetSource) {
 		final ResourceData data = ResourceData.create(uniqueId, null).assetSource(assetSource);
 		data.detectDecoder(true);
 		return data;

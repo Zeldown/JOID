@@ -1,7 +1,6 @@
 package dev.joid.lib.video;
 
 import java.nio.Buffer;
-import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -136,44 +135,14 @@ public final class VideoAudioPlayer {
 	}
 
 	public void pushSamples(final Buffer[] samples, final int skip) {
-		if (samples.length == 0 || samples[0] == null) {
+		if (samples.length == 0 || !(samples[0] instanceof ShortBuffer)) {
 			return;
 		}
 
-		if (samples[0] instanceof FloatBuffer) {
-			final int channelCount = samples.length;
-			final FloatBuffer first = (FloatBuffer) samples[0];
-			final int samplesPerChannel = first.remaining();
-			final short[] interleaved = new short[samplesPerChannel * channelCount];
-
-			for (int i = 0; i < samplesPerChannel; i++) {
-				for (int ch = 0; ch < channelCount; ch++) {
-					final float val = Math.max(-1F, Math.min(1F, ((FloatBuffer) samples[ch]).get()));
-					interleaved[i * channelCount + ch] = (short) (val * 32767F);
-				}
-			}
-
-			this.offer(interleaved, skip * this.channels);
-		} else if (samples[0] instanceof ShortBuffer) {
-			if (samples.length > 1) {
-				final int channelCount = samples.length;
-				final int samplesPerChannel = ((ShortBuffer) samples[0]).remaining();
-				final short[] interleaved = new short[samplesPerChannel * channelCount];
-
-				for (int i = 0; i < samplesPerChannel; i++) {
-					for (int ch = 0; ch < channelCount; ch++) {
-						interleaved[i * channelCount + ch] = ((ShortBuffer) samples[ch]).get();
-					}
-				}
-
-				this.offer(interleaved, skip * channelCount);
-			} else {
-				final ShortBuffer sb = (ShortBuffer) samples[0];
-				final short[] data = new short[sb.remaining()];
-				sb.get(data);
-				this.offer(data, skip * this.channels);
-			}
-		}
+		final ShortBuffer buffer = (ShortBuffer) samples[0];
+		final short[] data = new short[buffer.remaining()];
+		buffer.get(data);
+		this.offer(data, skip * this.channels);
 	}
 
 	public void cleanup() {

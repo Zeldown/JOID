@@ -403,7 +403,7 @@ public final class ResourceData {
 		}
 	}
 
-	private void detectDecoder(final @NonNull Asset asset) {
+	private void detectDecoder(final Asset asset) {
 		try {
 			final IResourceDecoder decoder = ResourceFormat.decoder(asset);
 			if (this.decoder == null) {
@@ -418,7 +418,7 @@ public final class ResourceData {
 		return this.decoder == decoder && this.generation == generation;
 	}
 
-	private synchronized void release(final @NonNull Runnable release) {
+	private synchronized void release(final Runnable release) {
 		if (!this.decodingRunning) {
 			release.run();
 			return;
@@ -475,7 +475,7 @@ public final class ResourceData {
 		} catch (final ExecutionException silent) {}
 	}
 
-	private static @NonNull String describe(final @NonNull Throwable error) {
+	private static @NonNull String describe(final Throwable error) {
 		Throwable cause = error;
 		while (cause.getCause() != null && cause.getCause() != cause) {
 			cause = cause.getCause();

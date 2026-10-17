@@ -2,10 +2,13 @@ package dev.joid.lib.render.transform;
 
 import java.util.function.Supplier;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Rotation {
 
 	public static final Rotation YAW   = new Rotation(1D, 0D, 0D);
@@ -13,17 +16,11 @@ public final class Rotation {
 	public static final Rotation PITCH = new Rotation(0D, 1D, 0D);
 
 	private final Supplier<Double> yawSupplier;
-	private final Supplier<Double> rollSupplier;
 	private final Supplier<Double> pitchSupplier;
+	private final Supplier<Double> rollSupplier;
 
 	private Rotation(final double yaw, final double pitch, final double roll) {
 		this(() -> yaw, () -> pitch, () -> roll);
-	}
-
-	private Rotation(final Supplier<Double> yawSupplier, final Supplier<Double> pitchSupplier, final Supplier<Double> rollSupplier) {
-		this.yawSupplier = yawSupplier;
-		this.rollSupplier = rollSupplier;
-		this.pitchSupplier = pitchSupplier;
 	}
 
 	public static @NonNull Rotation create() {

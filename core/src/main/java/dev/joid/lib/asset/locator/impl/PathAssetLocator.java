@@ -35,7 +35,7 @@ public class PathAssetLocator implements IAssetLocator {
 		throw new IllegalArgumentException("The asset " + path + " is not found in the classpath nor as a file, check the path or give a URL with its scheme (https:, file:, jar:)");
 	}
 
-	private static URL find(final @NonNull String name) {
+	private static URL find(final String name) {
 		final ClassLoader context = Thread.currentThread().getContextClassLoader();
 		final URL url = context == null ? null : context.getResource(name);
 		return url != null ? url : PathAssetLocator.class.getClassLoader().getResource(name);

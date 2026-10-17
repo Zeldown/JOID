@@ -45,11 +45,10 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Getter private final Asset        asset;
 	private final VideoResourceDecoder origin;
-	private final Object               grabberLock       = new Object();
-	private final AtomicInteger        seeks             = new AtomicInteger(0);
-	private final AtomicBoolean        paused            = new AtomicBoolean(false);
-	private final AtomicBoolean        running           = new AtomicBoolean(false);
-	private final AtomicInteger        decodedFrameIndex = new AtomicInteger(0);
+	private final Object               grabberLock = new Object();
+	private final AtomicInteger        seeks       = new AtomicInteger(0);
+	private final AtomicBoolean        paused      = new AtomicBoolean(false);
+	private final AtomicBoolean        running     = new AtomicBoolean(false);
 
 	private File   file;
 	private String codec;
@@ -188,10 +187,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	@Override
 	public void upload(final @NonNull ResourceData resource) {
-		if (resource.getData(0) == null) {
-			return;
-		}
-
 		this.textures[0].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
 		this.textures[1].allocate(resource.getWidth(), resource.getHeight()).upload(resource.getData(0));
 		this.texturesAllocated = true;
@@ -282,7 +277,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 			if (this.grabber != null) {
 				try {
-					this.grabber.stop();
 					this.grabber.release();
 				} catch (final Exception ignored) {}
 				this.grabber = null;
@@ -538,7 +532,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			return grabber;
 		}
 
-		grabber.stop();
 		grabber.release();
 		return this.open();
 	}
@@ -630,7 +623,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 								this.loopOffset = lastTime + 1D / this.frameRate;
 								this.seekGrabber(0L);
 								this.seekTime = 0D;
-								this.decodedFrameIndex.set(0);
 								continue;
 							}
 							this.ended = true;
@@ -651,7 +643,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 							lastTime = this.loopOffset + mediaTime;
 							decoded = new DecodedFrame(lastTime, this.frameToPixels(frame, this.grabber.getImageWidth(), this.grabber.getImageHeight()), mediaTime);
-							this.decodedFrameIndex.incrementAndGet();
 						}
 					}
 
@@ -685,7 +676,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		this.decodeThread.start();
 	}
 
-	private int[] frameToPixels(final @NonNull Frame frame, final int width, final int height) {
+	private int[] frameToPixels(final Frame frame, final int width, final int height) {
 		if (frame.image == null || frame.image[0] == null) {
 			return new int[this.videoWidth * height];
 		}
@@ -712,7 +703,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		return pixels;
 	}
 
-	private static @NonNull File extract(final @NonNull Asset asset) throws IOException {
+	private static @NonNull File extract(final Asset asset) throws IOException {
 		return VideoResourceDecoder.AREA.store(file -> {
 			try (InputStream stream = asset.open()) {
 				Files.copy(stream, file.toPath());

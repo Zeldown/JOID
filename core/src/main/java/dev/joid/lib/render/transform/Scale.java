@@ -2,10 +2,13 @@ package dev.joid.lib.render.transform;
 
 import java.util.function.Supplier;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Scale {
 
 	private Supplier<Double> widthSupplier;
@@ -14,12 +17,6 @@ public final class Scale {
 
 	private Scale(final double width, final double height, final double depth) {
 		this(() -> width, () -> height, () -> depth);
-	}
-
-	private Scale(final Supplier<Double> widthSupplier, final Supplier<Double> heightSupplier, final Supplier<Double> depthSupplier) {
-		this.widthSupplier  = widthSupplier;
-		this.heightSupplier = heightSupplier;
-		this.depthSupplier  = depthSupplier;
 	}
 
 	public static @NonNull Scale create() {

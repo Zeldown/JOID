@@ -1,8 +1,11 @@
 package dev.joid.lib.font;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public enum FontWeight {
 
 	THIN(100),
@@ -17,10 +20,6 @@ public enum FontWeight {
 
 	@Getter
 	private final int value;
-
-	private FontWeight(final int value) {
-		this.value = value;
-	}
 
 	public static @NonNull FontWeight of(final int value) {
 		final FontWeight[] weights = FontWeight.values();

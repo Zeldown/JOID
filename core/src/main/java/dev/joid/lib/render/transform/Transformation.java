@@ -6,15 +6,14 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Transformation {
 
-	private final List<Operation> operations;
-
-	private Transformation() {
-		this.operations = new LinkedList<>();
-	}
+	private final List<Operation> operations = new LinkedList<>();
 
 	public static @NonNull Transformation create() {
 		return new Transformation();

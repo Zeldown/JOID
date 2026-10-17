@@ -314,7 +314,7 @@ public final class Resource {
 		this.builder.remove(this.data);
 	}
 
-	private @NonNull Resource derive(final @NonNull ResourceData data) {
+	private @NonNull Resource derive(final ResourceData data) {
 		final Resource derived = new Resource(this.builder, data).properties(this.properties);
 		derived.blocking = this.blocking;
 		return derived;

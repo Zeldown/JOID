@@ -8,17 +8,16 @@ import java.util.stream.Collectors;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.font.FontWeight;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FontFamily<F extends IFontFace> {
 
 	@Getter
 	private final List<F> faces;
-
-	private FontFamily(final List<F> faces) {
-		this.faces = faces;
-	}
 
 	@SafeVarargs
 	public static <F extends IFontFace> @NonNull FontFamily<F> of(final @NonNull F @NonNull... faces) {

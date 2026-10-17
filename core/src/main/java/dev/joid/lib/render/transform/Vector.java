@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Vector {
 
 	private Supplier<Double> xSupplier;
@@ -16,12 +17,6 @@ public final class Vector {
 
 	private Vector(final double x, final double y, final double z) {
 		this(() -> x, () -> y, () -> z);
-	}
-
-	private Vector(final Supplier<Double> xSupplier, final Supplier<Double> ySupplier, final Supplier<Double> zSupplier) {
-		this.xSupplier = xSupplier;
-		this.ySupplier = ySupplier;
-		this.zSupplier = zSupplier;
 	}
 
 	public static @NonNull Vector create() {

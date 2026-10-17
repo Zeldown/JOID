@@ -6,19 +6,17 @@ import java.util.List;
 
 import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ObjGroup {
 
 	private final String        name;
-	private final List<ObjFace> faces;
-
-	private ObjGroup(final String name) {
-		this.name  = name;
-		this.faces = new ArrayList<>();
-	}
+	private final List<ObjFace> faces = new ArrayList<>();
 
 	public static @NonNull ObjGroup create(final @NonNull String name) {
 		return new ObjGroup(name);
