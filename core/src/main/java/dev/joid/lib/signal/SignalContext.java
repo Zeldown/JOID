@@ -29,13 +29,12 @@ public final class SignalContext {
 	private int               depth;
 	private int               readIndex;
 	private int               readCount;
-	private boolean           silent;
 	private boolean           tracing;
 	private boolean           flushing;
 	private ComputedSignal<?> observer;
 
-	@Getter
-	private long readTotal;
+	@Getter private long    readTotal;
+	@Getter private boolean silent;
 
 	public static SignalContext current() {
 		return SignalContext.CURRENT.get();
@@ -85,10 +84,6 @@ public final class SignalContext {
 		final boolean previous = this.silent;
 		this.silent = silent;
 		return previous;
-	}
-
-	public boolean isSilent() {
-		return this.silent;
 	}
 
 	public boolean tracing(final boolean tracing) {

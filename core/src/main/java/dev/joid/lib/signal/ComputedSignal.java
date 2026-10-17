@@ -7,11 +7,12 @@ import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.signal.replay.SignalReplayBinding;
+import lombok.Getter;
 import lombok.NonNull;
 
 public class ComputedSignal<T> extends Signal<T> {
 
-	private final transient boolean               constant;
+	@Getter private final transient boolean       constant;
 	private final transient Supplier<? extends T> supplier;
 
 	private transient int[]       versions;
@@ -90,10 +91,6 @@ public class ComputedSignal<T> extends Signal<T> {
 	@Override
 	public boolean isWritable() {
 		return false;
-	}
-
-	public boolean isConstant() {
-		return this.constant;
 	}
 
 	@Override

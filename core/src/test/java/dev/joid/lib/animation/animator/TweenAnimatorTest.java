@@ -18,7 +18,6 @@ import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
-import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.clock.SystemClockBridge;
@@ -48,7 +47,6 @@ public class TweenAnimatorTest {
 		Assert.assertEquals(1F, animator.getSpeed(), 0F);
 		Assert.assertEquals(0L, TweenAnimatorTest.lastUpdate(animator));
 		Assert.assertNull(animator.getTimeline());
-		Assert.assertNotNull(TweenAnimatorTest.manager(animator));
 	}
 
 	@Test
@@ -179,7 +177,6 @@ public class TweenAnimatorTest {
 		animator.sequence(1F, 20F).start();
 		Assert.assertTrue(previous.isFinished());
 		animator.update(0.5F);
-		Assert.assertEquals(1, TweenAnimatorTest.manager(animator).size());
 		Assert.assertEquals(10F, animator.get(), 0F);
 	}
 
@@ -199,9 +196,9 @@ public class TweenAnimatorTest {
 	public void killsItsTimelineWhenItClears() {
 		final List<BaseTween<?>> ends = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).onComplete(event -> ends.add(event.getTween())).start();
-		final TweenManager manager = TweenAnimatorTest.manager(animator);
+		final Timeline timeline = animator.getTimeline();
 		animator.clear();
-		Assert.assertEquals(0, manager.size());
+		Assert.assertTrue(timeline.isFinished());
 		animator.update(2F);
 		Assert.assertTrue(ends.isEmpty());
 	}
@@ -566,10 +563,6 @@ public class TweenAnimatorTest {
 
 	private static long lastUpdate(final TweenAnimator animator) {
 		return (long) TweenAnimatorTest.field(animator, "lastUpdate");
-	}
-
-	private static TweenManager manager(final TweenAnimator animator) {
-		return (TweenManager) TweenAnimatorTest.field(animator, "manager");
 	}
 
 	private static Object field(final TweenAnimator animator, final String name) {

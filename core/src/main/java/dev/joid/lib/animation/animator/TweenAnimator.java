@@ -12,7 +12,6 @@ import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquation;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenEvent;
-import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalListener;
@@ -28,8 +27,6 @@ public class TweenAnimator extends Signal<Float> {
 		BridgeHandler.UI.onFrame(TweenAnimator::updateRunning);
 	}
 
-	private final TweenManager manager;
-
 	@Getter
 	private float speed;
 
@@ -42,7 +39,6 @@ public class TweenAnimator extends Signal<Float> {
 
 	protected TweenAnimator(final float value) {
 		this.value = value;
-		this.manager = new TweenManager();
 		this.speed = 1F;
 	}
 
@@ -55,16 +51,14 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator start() {
-		this.requireTimeline().start(this.manager);
+		this.requireTimeline().start();
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		TweenAnimator.RUNNING_SET.add(this);
 		return this;
 	}
 
 	public @NonNull TweenAnimator clear() {
-		this.release();
-		this.manager.killAll();
-		this.manager.update(0F);
+		this.killTimeline();
 		this.speed      = 1F;
 		this.timeline   = null;
 		this.lastUpdate = 0L;
@@ -243,7 +237,11 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	private void advance(final float delta) {
-		Signal.batch(() -> this.manager.update(delta * this.speed));
+		if (this.timeline == null) {
+			return;
+		}
+
+		Signal.batch(() -> this.timeline.update(delta * this.speed));
 		if (this.timeline != null && this.timeline.isFinished()) {
 			this.timeline = null;
 			this.release();
