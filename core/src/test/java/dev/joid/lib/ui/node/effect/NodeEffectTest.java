@@ -52,7 +52,6 @@ public class NodeEffectTest {
 		final PlainEffect effect = new PlainEffect();
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D);
 		Assert.assertTrue(effect.shouldApply(node));
-		Assert.assertFalse(effect.isShaderEffect());
 		Assert.assertNull(effect.toShaderPass(node));
 		Assert.assertTrue(effect.toShaderPasses(node).isEmpty());
 	}
@@ -60,7 +59,6 @@ public class NodeEffectTest {
 	@Test
 	public void wrapsItsShaderPassInAList() {
 		final ShaderEffect effect = new ShaderEffect(this.trace);
-		Assert.assertTrue(effect.isShaderEffect());
 		Assert.assertEquals(Collections.singletonList(effect.pass), effect.toShaderPasses(RectNode.create(0D, 0D, 10D, 10D)));
 	}
 
@@ -253,11 +251,6 @@ public class NodeEffectTest {
 
 		private ShaderEffect(final List<String> trace) {
 			this.pass = new TracePass(trace);
-		}
-
-		@Override
-		public boolean isShaderEffect() {
-			return true;
 		}
 
 		@Override

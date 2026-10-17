@@ -126,7 +126,7 @@ public class UIDemoWatch extends UIDemo {
 			RectNode
 			.create(40, 130, 60, 50)
 			.color(UIDemoWatch.INK)
-			.watch(grown, WatchProperty.custom((node, signal) -> node.width(60D + grown.peek() * 60D)))
+			.watch(grown, (node, signal) -> node.width(60D + grown.peek() * 60D))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Custom property", info)).anchorX(Align.CENTER).attach(rect);
 		})

@@ -29,11 +29,6 @@ public class BlurNodeEffectTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void blursThroughTheShaderPipeline() {
-		Assert.assertTrue(BlurNodeEffect.create(4F).isShaderEffect());
-	}
-
-	@Test
 	public void blursHorizontallyThenVertically() {
 		final List<IShaderPass> passes = BlurNodeEffect.create(4F).toShaderPasses(RectNode.create(0D, 0D, 10D, 10D));
 		Assert.assertEquals(2, passes.size());

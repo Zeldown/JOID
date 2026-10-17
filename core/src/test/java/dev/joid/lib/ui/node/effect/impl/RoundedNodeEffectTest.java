@@ -42,7 +42,6 @@ public class RoundedNodeEffectTest {
 		Assert.assertTrue(effect.isRight());
 		Assert.assertTrue(effect.isTop());
 		Assert.assertTrue(effect.isBottom());
-		Assert.assertTrue(effect.isShaderEffect());
 	}
 
 	@Test

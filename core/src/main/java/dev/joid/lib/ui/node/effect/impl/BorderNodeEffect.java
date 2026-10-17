@@ -53,11 +53,6 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public boolean isShaderEffect() {
-		return true;
-	}
-
-	@Override
 	public IShaderPass toShaderPass(final @NonNull Node node) {
 		return BorderShaderPass.create(this.colorFunction.apply(node), this.widthSupplier.get()).fill(this.fillSupplier.get()).mode(this.modeSupplier.get());
 	}

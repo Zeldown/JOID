@@ -40,7 +40,6 @@ public class BorderNodeEffectTest {
 	@Test
 	public void drawsAFilledOuterBorderByDefault() {
 		final BorderNodeEffect effect = BorderNodeEffect.create(new Color(0.2F, 0.4F, 0.6F, 1F), 3F);
-		Assert.assertTrue(effect.isShaderEffect());
 		Assert.assertTrue(effect.isFill());
 		Assert.assertSame(BorderMode.OUT, effect.getMode());
 		Assert.assertEquals(3F, effect.getWidth(), 0F);

@@ -44,7 +44,7 @@ public abstract class PositionedHoverElement implements IHoverElement {
 		final double elementWidth = this.element.getWidth();
 		final double elementHeight = this.element.getHeight();
 
-		if (elementWidth > 0 && elementHeight > 0) {
+		if (elementWidth > 0D && elementHeight > 0D) {
 			final double left = ui.getView().toUiX(0D);
 			final double top = ui.getView().toUiY(0D);
 			final double right = ui.getView().toUiX(ui.getWindowWidth());
@@ -56,7 +56,7 @@ public abstract class PositionedHoverElement implements IHoverElement {
 		final double elementX = x;
 		final double elementY = y;
 		BridgeHandler.RENDER.get().getModelView().with(matrix -> {
-			matrix.translate(elementX, elementY, 0);
+			matrix.translate(elementX, elementY, 0D);
 			this.element.render(node, mouseX, mouseY);
 		});
 	}

@@ -37,10 +37,6 @@ public abstract class NodeEffect<T extends Node> implements Cloneable {
 		return true;
 	}
 
-	public boolean isShaderEffect() {
-		return false;
-	}
-
 	public IShaderPass toShaderPass(final @NonNull T node) {
 		return null;
 	}

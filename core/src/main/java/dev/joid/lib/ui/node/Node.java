@@ -1150,12 +1150,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T clearEffects() {
-		final List<NodeEffect<Node>> removed = new ArrayList<>(this.effectMap.values());
-		this.effectMap.clear();
-		if (this.attached) {
-			removed.forEach(effect -> effect.detach(this));
-		}
-		return (T) this;
+		return this.removeEffect(NodeEffect.class);
 	}
 
 	public final <T extends Node> @NonNull T animate(final @NonNull TweenAnimator animator) {
@@ -1626,10 +1621,6 @@ public abstract class Node implements INode {
 		return false;
 	}
 
-	protected boolean computeHovered() {
-		return this.ui != null && this.ui.isOnTop() && this.ui.getHoveredPath().contains(this);
-	}
-
 	private void renderDraggedNode(final double mouseX, final double mouseY) {
 		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
 			render.getState().stencil(StencilState.DISABLED);
@@ -1647,7 +1638,7 @@ public abstract class Node implements INode {
 
 	private void updateHover(final double mouseX, final double mouseY) {
 		final boolean wasHovered = this.hovered;
-		this.hovered = this.computeHovered();
+		this.hovered = this.ui != null && this.ui.isOnTop() && this.ui.getHoveredPath().contains(this);
 		final boolean hoverShown = this.hovered && this.isEnabled();
 		if (hoverShown != this.hoverShown) {
 			this.hoverShown = hoverShown;
@@ -1810,16 +1801,14 @@ public abstract class Node implements INode {
 	}
 
 	private void drawContent(final MatrixStack matrix, final double mouseX, final double mouseY) {
-		final List<NodeEffect<Node>> otherEffects = new ArrayList<>();
-		final List<NodeEffect<Node>> selfShaderEffects = new ArrayList<>();
-		final List<NodeEffect<Node>> subtreeShaderEffects = new ArrayList<>();
-		for (final NodeEffect<Node> effect : this.getAppliedEffects()) {
-			if (!effect.isShaderEffect()) {
-				otherEffects.add(effect);
-			} else if (effect.getScope() == NodeEffectScope.SELF) {
-				selfShaderEffects.add(effect);
+		final List<NodeEffect<Node>> effects = this.getAppliedEffects();
+		final List<NodeEffect<Node>> selfEffects = new ArrayList<>();
+		final List<NodeEffect<Node>> subtreeEffects = new ArrayList<>();
+		for (final NodeEffect<Node> effect : effects) {
+			if (effect.getScope() == NodeEffectScope.SELF) {
+				selfEffects.add(effect);
 			} else {
-				subtreeShaderEffects.add(effect);
+				subtreeEffects.add(effect);
 			}
 		}
 
@@ -1841,7 +1830,7 @@ public abstract class Node implements INode {
 					this.drawSkeleton(mouseX, mouseY);
 				}
 			};
-			ShaderPipeline.render(this.x, this.y, this.width, this.height, selfDraw, this.toShaderPasses(selfShaderEffects));
+			ShaderPipeline.render(this.x, this.y, this.width, this.height, selfDraw, this.toShaderPasses(selfEffects));
 			this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
 			if (this.mounted && this.label != null && !this.label.isEmpty()) {
 				DrawUtils.TEXT.drawText(this.x + (this.width - this.label.getWidth()) / 2D, this.y + (this.height - this.label.getHeight()) / 2D, this.label.getWidth(), this.label.getHeight(), this.label, TextMode.NORMAL);
@@ -1867,7 +1856,7 @@ public abstract class Node implements INode {
 		};
 
 		Runnable effectDraw = () -> {
-			ShaderPipeline.render(this.x, this.y, this.width, this.height, maskDraw, this.toShaderPasses(subtreeShaderEffects));
+			ShaderPipeline.render(this.x, this.y, this.width, this.height, maskDraw, this.toShaderPasses(subtreeEffects));
 
 			if (this.isScrollbarShown()) {
 				this.scrollbar.render(mouseX, mouseY);
@@ -1875,8 +1864,8 @@ public abstract class Node implements INode {
 				((Node) this.scrollbar).endHover(true);
 			}
 		};
-		for (int i = otherEffects.size() - 1; i >= 0; i--) {
-			final NodeEffect<Node> effect = otherEffects.get(i);
+		for (int i = effects.size() - 1; i >= 0; i--) {
+			final NodeEffect<Node> effect = effects.get(i);
 			final Runnable body = effectDraw;
 			effectDraw = () -> effect.draw(this, body);
 		}
@@ -2068,7 +2057,7 @@ public abstract class Node implements INode {
 
 		final boolean wasHovered = this.hovered;
 		this.hovered = false;
-		if (wasHovered && this.ui != null) {
+		if (wasHovered) {
 			this.fire(Node.HOVER_END, () -> NodeHoverEvent.create(this, this.ui.getMouseX(), this.ui.getMouseY()));
 		}
 
@@ -2182,10 +2171,6 @@ public abstract class Node implements INode {
 	}
 
 	private void applyWatch(final Signal<?> signal, final WatchProperty[] properties) {
-		if (this.ui == null) {
-			return;
-		}
-
 		this.replay(() -> {
 			for (final WatchProperty property : properties) {
 				try {

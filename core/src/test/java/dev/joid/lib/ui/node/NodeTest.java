@@ -703,7 +703,7 @@ public class NodeTest {
 
 	@Test
 	public void isNeverHoveredOutsideAUi() {
-		Assert.assertFalse(RectNode.create(0D, 0D, 100D, 100D).computeHovered());
+		Assert.assertFalse(RectNode.create(0D, 0D, 100D, 100D).isHovered());
 	}
 
 	@Test
@@ -2821,7 +2821,7 @@ public class NodeTest {
 			applied.add("body " + rect.getChildren().size());
 			RectNode.create(0D, 0D, 5D, 5D).attach(rect);
 		})
-		.watch(signal, WatchProperty.custom((rect, source) -> applied.add("first " + source.get())), WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY, WatchProperty.custom((rect, source) -> applied.add("last " + rect.getChildren().size())));
+		.watch(signal, (rect, source) -> applied.add("first " + source.get()), WatchProperty.CLEAR_CHILDREN, WatchProperty.BODY, (rect, source) -> applied.add("last " + rect.getChildren().size()));
 		this.bridges.open(new NodeUI(node));
 		applied.clear();
 		signal.set(3);

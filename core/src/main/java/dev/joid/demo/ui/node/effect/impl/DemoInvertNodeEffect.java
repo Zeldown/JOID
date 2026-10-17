@@ -18,11 +18,6 @@ public class DemoInvertNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public boolean isShaderEffect() {
-		return true;
-	}
-
-	@Override
 	public IShaderPass toShaderPass(final @NonNull Node node) {
 		return DemoInvertShaderPass.create(this.amount);
 	}

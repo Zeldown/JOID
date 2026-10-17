@@ -40,7 +40,6 @@ public class ShadowNodeEffectTest {
 		Assert.assertEquals(8F, effect.getBlur(), 0F);
 		Assert.assertEquals(0D, effect.getOffsetX(), 0D);
 		Assert.assertEquals(0D, effect.getOffsetY(), 0D);
-		Assert.assertFalse(effect.isShaderEffect());
 	}
 
 	@Test

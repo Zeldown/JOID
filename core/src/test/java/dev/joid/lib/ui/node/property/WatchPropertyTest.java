@@ -26,7 +26,8 @@ public class WatchPropertyTest {
 		final List<Object> received = new ArrayList<>();
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).append(RectNode.create(0D, 0D, 5D, 5D));
 		final Signal<Integer> signal = new Signal<>(2);
-		WatchProperty.custom((target, source) -> received.addAll(Arrays.asList(target, source))).apply(node, signal);
+		final WatchProperty property = (target, source) -> received.addAll(Arrays.asList(target, source));
+		property.apply(node, signal);
 		Assert.assertEquals(Arrays.asList(node, signal), received);
 		Assert.assertEquals(1, node.getChildren().size());
 	}

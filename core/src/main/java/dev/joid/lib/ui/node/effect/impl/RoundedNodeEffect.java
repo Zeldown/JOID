@@ -57,11 +57,6 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public boolean isShaderEffect() {
-		return true;
-	}
-
-	@Override
 	public IShaderPass toShaderPass(final @NonNull Node node) {
 		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
 		final double left = grid.snapX(node.getX());

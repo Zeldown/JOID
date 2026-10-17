@@ -35,7 +35,6 @@ public class CircleNodeEffectTest {
 	@Test
 	public void cutsTheNodeThroughTheShaderPipeline() {
 		final CircleNodeEffect effect = CircleNodeEffect.create();
-		Assert.assertTrue(effect.isShaderEffect());
 		Assert.assertTrue(effect.toShaderPass(RectNode.create(0D, 0D, 10D, 10D)) instanceof CircleShaderPass);
 	}
 

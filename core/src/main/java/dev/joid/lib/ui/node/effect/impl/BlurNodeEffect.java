@@ -38,11 +38,6 @@ public class BlurNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public boolean isShaderEffect() {
-		return true;
-	}
-
-	@Override
 	public List<IShaderPass> toShaderPasses(final @NonNull Node node) {
 		final float radius = this.radiusSupplier.get();
 		return Arrays.asList(BlurShaderPass.create(radius, true), BlurShaderPass.create(radius, false));

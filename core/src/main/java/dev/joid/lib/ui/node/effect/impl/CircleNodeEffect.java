@@ -17,11 +17,6 @@ public class CircleNodeEffect extends NodeEffect<Node> {
 	}
 
 	@Override
-	public boolean isShaderEffect() {
-		return true;
-	}
-
-	@Override
 	public IShaderPass toShaderPass(final @NonNull Node node) {
 		return CircleShaderPass.create((float) Math.min(node.dw(2D), node.dh(2D)), (float) node.ax(node.dw(2D)), (float) node.ay(node.dh(2D)));
 	}
