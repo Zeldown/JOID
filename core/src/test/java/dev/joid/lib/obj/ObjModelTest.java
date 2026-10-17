@@ -54,7 +54,7 @@ public class ObjModelTest {
 
 	@Test
 	public void readsTheDemoModelWithItsOwnNormalAndTextureCoordinateOnEveryVertex() {
-		final ObjModel model = ObjModel.load("demo", ObjModel.class.getResourceAsStream("/assets/demo/models/model.obj"), ObjModelTest.TEXTURE);
+		final ObjModel model = ObjModel.of("demo", ObjModel.class.getResourceAsStream("/assets/demo/models/model.obj"), ObjModelTest.TEXTURE);
 		Assert.assertEquals(2D, model.getWidth(), 1E-4D);
 		Assert.assertEquals(0.9792D, model.getHeight(), 1E-4D);
 		Assert.assertEquals(1.2434D, model.getDepth(), 1E-4D);
@@ -308,15 +308,15 @@ public class ObjModelTest {
 	public void readsAModelFromAnyAssetHandle() throws IOException {
 		final File file = this.folder.newFile("triangle.obj");
 		Files.write(file.toPath(), "v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3\n".getBytes(StandardCharsets.UTF_8));
-		Assert.assertEquals(3, ObjModel.load("file", file, ObjModelTest.TEXTURE).getVertices().size());
-		Assert.assertEquals(3, ObjModel.load("url", file.toURI().toString(), ObjModelTest.TEXTURE).getVertices().size());
+		Assert.assertEquals(3, ObjModel.of("file", file, ObjModelTest.TEXTURE).getVertices().size());
+		Assert.assertEquals(3, ObjModel.of("url", file.toURI().toString(), ObjModelTest.TEXTURE).getVertices().size());
 	}
 
 	@Test
 	public void wrapsAReadFailure() {
 		final IOException failure = new IOException("unreadable");
 		try {
-			ObjModel.load("broken", new FailingStream(failure), ObjModelTest.TEXTURE);
+			ObjModel.of("broken", new FailingStream(failure), ObjModelTest.TEXTURE);
 			Assert.fail("A read failure must reach the caller");
 		} catch (final UncheckedIOException expected) {
 			Assert.assertEquals("The OBJ model broken cannot be read (unreadable), check that the file exists and can be read", expected.getMessage());
@@ -327,7 +327,7 @@ public class ObjModelTest {
 	@Test
 	public void closesItsStream() {
 		final TrackedStream stream = new TrackedStream("v 1 2 3", false);
-		ObjModel.load("tracked", stream, ObjModelTest.TEXTURE);
+		ObjModel.of("tracked", stream, ObjModelTest.TEXTURE);
 		Assert.assertTrue(stream.closed);
 	}
 
@@ -335,7 +335,7 @@ public class ObjModelTest {
 	public void closesItsStreamAfterAFailure() {
 		final TrackedStream stream = new TrackedStream("v 1 2", false);
 		try {
-			ObjModel.load("tracked", stream, ObjModelTest.TEXTURE);
+			ObjModel.of("tracked", stream, ObjModelTest.TEXTURE);
 			Assert.fail("A vertex with two coordinates must be refused");
 		} catch (final RuntimeException expected) {
 			Assert.assertTrue(stream.closed);
@@ -349,7 +349,7 @@ public class ObjModelTest {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
 		try {
-			Assert.assertEquals(1, ObjModel.load("tracked", stream, ObjModelTest.TEXTURE).getVertices().size());
+			Assert.assertEquals(1, ObjModel.of("tracked", stream, ObjModelTest.TEXTURE).getVertices().size());
 		} finally {
 			System.setErr(previous);
 		}
@@ -360,12 +360,12 @@ public class ObjModelTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingTexture() {
-		ObjModel.load("cube", new ByteArrayInputStream(new byte[0]), null);
+		ObjModel.of("cube", new ByteArrayInputStream(new byte[0]), null);
 	}
 
 	@Test
 	public void loadsAnEmptyFile() {
-		final ObjModel model = ObjModel.load("empty", new ByteArrayInputStream(new byte[0]), ObjModelTest.TEXTURE);
+		final ObjModel model = ObjModel.of("empty", new ByteArrayInputStream(new byte[0]), ObjModelTest.TEXTURE);
 		Assert.assertEquals("empty", model.getName());
 		Assert.assertSame(ObjModelTest.TEXTURE, model.getTexture());
 		Assert.assertTrue(model.getVertices().isEmpty());
@@ -401,7 +401,7 @@ public class ObjModelTest {
 
 	@Test
 	public void drawsNothingWithoutGroup() {
-		ObjModel.load("empty", new ByteArrayInputStream(new byte[0]), ObjModelTest.TEXTURE).render();
+		ObjModel.of("empty", new ByteArrayInputStream(new byte[0]), ObjModelTest.TEXTURE).render();
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 		Assert.assertNull(this.bridges.getRender().getState().getTexture());
 	}
@@ -456,7 +456,7 @@ public class ObjModelTest {
 	}
 
 	private static ObjModel cube() {
-		return ObjModel.load("cube", ObjModelTest.class.getResourceAsStream("/dev/joid/lib/obj/cube.obj"), ObjModelTest.TEXTURE);
+		return ObjModel.of("cube", ObjModelTest.class.getResourceAsStream("/dev/joid/lib/obj/cube.obj"), ObjModelTest.TEXTURE);
 	}
 
 	private static ObjModel triangle(final String face) {
@@ -464,7 +464,7 @@ public class ObjModelTest {
 	}
 
 	private static ObjModel load(final String... lines) {
-		return ObjModel.load("test", new ByteArrayInputStream(String.join("\n", lines).getBytes(StandardCharsets.UTF_8)), ObjModelTest.TEXTURE);
+		return ObjModel.of("test", new ByteArrayInputStream(String.join("\n", lines).getBytes(StandardCharsets.UTF_8)), ObjModelTest.TEXTURE);
 	}
 
 	private static final class FailingStream extends InputStream {

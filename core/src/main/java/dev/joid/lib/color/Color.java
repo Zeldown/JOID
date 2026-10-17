@@ -218,7 +218,7 @@ public final class Color extends LockableValue<Color> {
 
 	public static @NonNull Color LOADING() {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final float color = (float) ((Math.sin(2D * Math.PI * (now % 4000L) / 2000D) + 1) / 50F) + 0.15F;
+		final float color = (float) ((Math.sin(2D * Math.PI * (now % 4000L) / 2000D) + 1D) / 50F) + 0.15F;
 		return new Color(color, color, color);
 	}
 
@@ -255,7 +255,7 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public int getRGB() {
-		return ((int)(this.a * 255F) & 0xFF) << 24 | ((int)(this.r * 255) & 0xFF) << 16 | ((int)(this.g * 255) & 0xFF) << 8 | ((int)(this.b * 255) & 0xFF) << 0;
+		return ((int)(this.a * 255F) & 0xFF) << 24 | ((int)(this.r * 255F) & 0xFF) << 16 | ((int)(this.g * 255F) & 0xFF) << 8 | ((int)(this.b * 255F) & 0xFF) << 0;
 	}
 
 	public int getRed() {

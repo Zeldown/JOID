@@ -145,7 +145,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			try {
 				this.file = this.origin.share();
 			} catch (final IOException exception) {
-				throw new UncheckedIOException("The video " + this.describe() + " cannot be read", exception);
+				throw new UncheckedIOException("The video " + this.asset.getUniqueId() + " cannot be read", exception);
 			}
 		}
 
@@ -181,7 +181,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					resource.data(new int[][] { pixels });
 				}
 			} catch (final Exception exception) {
-				throw new IllegalStateException("The video " + this.describe() + " cannot be decoded", exception);
+				throw new IllegalStateException("The video " + this.asset.getUniqueId() + " cannot be decoded", exception);
 			}
 		}
 	}
@@ -271,13 +271,8 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 		if (this.decodeThread != null) {
 			this.decodeThread.interrupt();
-			try {
-				this.decodeThread.join(1000L);
-			} catch (final InterruptedException interrupted) {
-				Thread.currentThread().interrupt();
-			}
-			this.decodeThread = null;
 		}
+		this.joinDecodeThread();
 
 		synchronized (this.grabberLock) {
 			if (this.audioPlayer != null) {
@@ -474,7 +469,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 				this.createAudioPlayer();
 			} catch (final Exception exception) {
-				JOIDLog.warn("The video " + this.describe() + " cannot be reopened (" + exception.getMessage() + "), check that the file can still be read");
+				JOIDLog.warn("The video " + this.asset.getUniqueId() + " cannot be reopened (" + exception.getMessage() + "), check that the file can still be read");
 			}
 		}
 	}
@@ -505,10 +500,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	private int getSkippedSamples(final long timestamp) {
 		final long start = (long) (this.seekTime * 1000000D);
 		return (int) Math.ceil((start - timestamp) * this.grabber.getSampleRate() / 1000000D);
-	}
-
-	private String describe() {
-		return this.asset.getUniqueId();
 	}
 
 	private FFmpegFrameGrabber open() throws Exception {
@@ -573,7 +564,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 					this.seekGrabber(microseconds);
 				}
 			} catch (final Exception exception) {
-				JOIDLog.warn("The video " + this.describe() + " cannot seek to " + microseconds + "us (" + exception + "), check that the file can still be read", exception);
+				JOIDLog.warn("The video " + this.asset.getUniqueId() + " cannot seek to " + microseconds + "us (" + exception + "), check that the file can still be read", exception);
 			}
 
 			final long now = BridgeHandler.CLOCK.get().nanoTime();
@@ -688,9 +679,9 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				}
 			} catch (final InterruptedException ignored) {
 			} catch (final Exception exception) {
-				JOIDLog.warn("The video " + this.describe() + " stops decoding (" + exception + "), check that the file can still be read", exception);
+				JOIDLog.warn("The video " + this.asset.getUniqueId() + " stops decoding (" + exception + "), check that the file can still be read", exception);
 			}
-		}, "ResourceVideo/" + this.describe());
+		}, "ResourceVideo/" + this.asset.getUniqueId());
 		this.decodeThread.start();
 	}
 

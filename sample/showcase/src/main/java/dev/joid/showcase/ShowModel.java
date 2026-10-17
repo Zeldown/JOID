@@ -24,7 +24,7 @@ public class ShowModel extends ShowUI {
 		ShowUI.blob(-300, -250, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
 		ShowUI.blob(1300, 550, 900, ShowUI.PINK.withAlpha(0.20F), 0.5D, 50D).attach(this);
 
-		final ObjModel model = ObjModel.load("teapot", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
+		final ObjModel model = ObjModel.of("teapot", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
 
 		ShowUI.glass(110, 100, 1700, 880, 32F).attach(this);
 		CircleNode.create(330, 220, 640).color(ShowUI.FUCHSIA.withAlpha(0.32F)).effect(BlurNodeEffect.create(110F)).attach(this);

@@ -202,11 +202,9 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		graphics.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 		graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		if (document != null) {
-			final FloatSize size = document.size();
-			graphics.scale(width / size.width, height / size.height);
-			document.render((Component) null, graphics, new ViewBox(size));
-		}
+		final FloatSize size = document.size();
+		graphics.scale(width / size.width, height / size.height);
+		document.render((Component) null, graphics, new ViewBox(size));
 		graphics.dispose();
 
 		final int[] pixels = image.getRGB(0, 0, width, height, null, 0, width);

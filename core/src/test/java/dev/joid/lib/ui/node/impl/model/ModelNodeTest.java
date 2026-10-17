@@ -128,7 +128,7 @@ public class ModelNodeTest {
 	}
 
 	private static ObjModel cube() {
-		return ObjModel.load("cube", ModelNodeTest.class.getResourceAsStream("/dev/joid/lib/ui/node/impl/model/cube.obj"), ResourceBuilder.create().cache(null).compute("cube", () -> ResourceData.create("cube", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)})));
+		return ObjModel.of("cube", ModelNodeTest.class.getResourceAsStream("/dev/joid/lib/ui/node/impl/model/cube.obj"), ResourceBuilder.create().cache(null).compute("cube", () -> ResourceData.create("cube", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)})));
 	}
 
 	@AllArgsConstructor

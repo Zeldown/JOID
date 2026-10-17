@@ -48,7 +48,7 @@ public final class ObjModel implements IDrawableModel {
 		this.load(handle);
 	}
 
-	public static @NonNull ObjModel load(final @NonNull String name, final @NonNull Object handle, final @NonNull Resource texture) {
+	public static @NonNull ObjModel of(final @NonNull String name, final @NonNull Object handle, final @NonNull Resource texture) {
 		return new ObjModel(name, handle, texture);
 	}
 

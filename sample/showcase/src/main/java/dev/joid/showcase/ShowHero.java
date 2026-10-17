@@ -230,7 +230,7 @@ public class ShowHero extends ShowUI {
 	}
 
 	private void model() {
-		final ObjModel model = ObjModel.load("showcase", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
+		final ObjModel model = ObjModel.of("showcase", "assets/demo/models/model.obj", Resource.of("assets/showcase/teapot.png"));
 
 		RectNode
 		.create(1550, 560, 300, 340)

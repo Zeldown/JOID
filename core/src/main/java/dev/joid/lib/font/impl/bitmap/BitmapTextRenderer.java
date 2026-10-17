@@ -6,7 +6,6 @@ import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
-import dev.joid.lib.font.impl.glyph.GlyphFont;
 import dev.joid.lib.font.impl.glyph.GlyphTextRenderer;
 import dev.joid.lib.font.impl.glyph.IFontFace;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
@@ -49,7 +48,7 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 		super.bindColor(glyph.getColor());
 
 		final PixelGrid grid = super.getGrid();
-		final double unit = glyph.getSize() / BitmapTextRenderer.getBitmapSize(glyph);
+		final double unit = glyph.getSize() / ((BitmapFont<?>) glyph.getFont()).getBitmapSize();
 		final double width = cell.getWidth() * unit;
 		final double height = cell.getHeight() * unit;
 		final float pixelX = (float) (cell.getTexelWidth() / (width * grid.getScaleX()));
@@ -102,15 +101,6 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 		this.texture = texture;
 		BridgeHandler.RENDER.get().getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		super.getShader().uniform("texel", 1F / texture.getWidth(), 1F / texture.getHeight());
-	}
-
-	private static int getBitmapSize(final @NonNull TextGlyph<?> glyph) {
-		final GlyphFont<?> font = glyph.getFont();
-		if (!(font instanceof BitmapFont)) {
-			throw new IllegalStateException("The font " + font.getClass().getName() + " is drawn by a BitmapTextRenderer but is not a BitmapFont, draw it with its own font.getTextRenderer()");
-		}
-
-		return ((BitmapFont<?>) font).getBitmapSize();
 	}
 
 }

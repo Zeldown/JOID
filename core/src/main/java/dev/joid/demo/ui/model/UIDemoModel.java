@@ -28,7 +28,7 @@ public class UIDemoModel extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoModel.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final ObjModel model = ObjModel.load("demo", "assets/demo/models/model.obj", Resource.of("assets/demo/models/texture.png"));
+		final ObjModel model = ObjModel.of("demo", "assets/demo/models/model.obj", Resource.of("assets/demo/models/texture.png"));
 		final TweenAnimator spin = TweenAnimator.create(0F).sequence(4000F, 1F).repeat(Tween.INFINITY, 0F).start();
 		final DoubleSignal zoom = new DoubleSignal(1D);
 		final DoubleSignal yaw = new DoubleSignal(0D);

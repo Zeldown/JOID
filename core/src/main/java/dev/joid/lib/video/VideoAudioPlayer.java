@@ -37,7 +37,7 @@ public final class VideoAudioPlayer {
 		this.channels = channels;
 	}
 
-	public static @NonNull VideoAudioPlayer create(final @NonNull VideoResourceDecoder owner, final int sampleRate, final int channels) {
+	public static @NonNull VideoAudioPlayer create(final VideoResourceDecoder owner, final int sampleRate, final int channels) {
 		return new VideoAudioPlayer(owner, sampleRate, channels);
 	}
 
@@ -135,7 +135,7 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	public void pushSamples(final @NonNull Buffer[] samples, final int skip) {
+	public void pushSamples(final Buffer[] samples, final int skip) {
 		if (samples.length == 0 || samples[0] == null) {
 			return;
 		}
@@ -223,7 +223,7 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	private float computeDistanceVolume(final @NonNull Point location) {
+	private float computeDistanceVolume(final Point location) {
 		final Point listener = VideoAudioPlayer.audioListenerPosition == null ? Point.create(0D, 0D) : VideoAudioPlayer.audioListenerPosition.getListenerPosition();
 		final double dx = listener.getX() - location.getX();
 		final double dy = listener.getY() - location.getY();

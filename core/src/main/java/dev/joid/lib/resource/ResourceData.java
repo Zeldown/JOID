@@ -70,10 +70,7 @@ public final class ResourceData {
 
 	private ResourceData(final String uniqueId, final IResourceDecoder decoder) {
 		this.uniqueId = uniqueId;
-		this.decoder  = decoder;
-		if (this.decoder != null) {
-			this.decoder.init(this);
-		}
+		this.decoder(decoder);
 	}
 
 	public static @NonNull ResourceData create(final @NonNull String uniqueId, final IResourceDecoder decoder) {

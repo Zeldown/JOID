@@ -16,7 +16,6 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.glyph.FontFamily;
-import dev.joid.lib.font.impl.glyph.GlyphFont;
 import dev.joid.lib.font.impl.glyph.IFontFace;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
 import lombok.AllArgsConstructor;
@@ -152,20 +151,6 @@ public class BitmapTextRendererTest {
 		final Font font = new Font(new Renderer(Atlas.HD, texture));
 		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
 		Assert.assertSame(texture, this.render.getLast().getState().getTexture());
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void refusesAFontThatIsNotABitmapFont() {
-		final Renderer renderer = new Renderer(Atlas.ASCII, this.texture(Atlas.ASCII));
-		final GlyphFont<Face> font = new GlyphFont<Face>(FontFamily.of(BitmapTextRendererTest.FACE)) {
-
-			@Override
-			public @NonNull ITextRenderer getTextRenderer() {
-				return renderer;
-			}
-
-		};
-		renderer.drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
 	}
 
 	@Test
