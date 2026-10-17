@@ -33,6 +33,17 @@ public interface IUIBridge extends IBridge {
 		}
 	}
 
+	public default void forceOpen(final @NonNull UI ui) {
+		this.closeAll();
+		this.open(ui);
+	}
+
+	public default void replace(final @NonNull UI ui, final @NonNull UI replacement) {
+		ui.dispose();
+		this.remove(ui);
+		this.add(replacement);
+	}
+
 	public default double getInterfaceScale(final @NonNull UI ui) {
 		return 1D;
 	}

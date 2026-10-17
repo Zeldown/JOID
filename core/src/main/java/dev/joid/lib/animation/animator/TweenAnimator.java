@@ -16,7 +16,6 @@ import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalListener;
-import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
 import lombok.Getter;
 import lombok.NonNull;
@@ -59,14 +58,10 @@ public class TweenAnimator extends Signal<Float> {
 
 	public @NonNull TweenAnimator start() {
 		this.requireTimeline();
-		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.timeline.start(this.manager);
-		this.automatic = UI.getCurrent() != null || BridgeHandler.UI.find(bridge -> !bridge.getUiList().isEmpty()) != null;
-		if (this.automatic) {
-			TweenAnimator.RUNNING_SET.add(this);
-		} else {
-			TweenAnimator.RUNNING_SET.remove(this);
-		}
+		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.automatic = true;
+		TweenAnimator.RUNNING_SET.add(this);
 		return this;
 	}
 
@@ -188,18 +183,14 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator update() {
-		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final long delta = now - this.lastUpdate;
-		this.lastUpdate = now;
-		return this.update(delta);
+		this.release();
+		this.advance();
+		return this;
 	}
 
 	public @NonNull TweenAnimator update(final float delta) {
-		Signal.batch(() -> this.manager.update(delta * this.speed));
-		if (this.timeline != null && this.timeline.isFinished()) {
-			this.timeline = null;
-			this.release();
-		}
+		this.release();
+		this.advance(delta);
 		return this;
 	}
 
@@ -267,6 +258,21 @@ public class TweenAnimator extends Signal<Float> {
 		}
 	}
 
+	private void advance() {
+		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
+		final long delta = now - this.lastUpdate;
+		this.lastUpdate = now;
+		this.advance(delta);
+	}
+
+	private void advance(final float delta) {
+		Signal.batch(() -> this.manager.update(delta * this.speed));
+		if (this.timeline != null && this.timeline.isFinished()) {
+			this.timeline = null;
+			this.release();
+		}
+	}
+
 	private void requireTimeline() {
 		if (this.timeline == null) {
 			throw new IllegalStateException("The animator has no timeline, call sequence(...) first");
@@ -281,7 +287,7 @@ public class TweenAnimator extends Signal<Float> {
 
 		for (final TweenAnimator animator : animatorList) {
 			try {
-				animator.update();
+				animator.advance();
 			} catch (final RuntimeException exception) {
 				JOIDLog.warnOnce("TweenAnimator.update." + System.identityHashCode(animator) + exception.getClass().getName(), "The update of TweenAnimator failed (" + exception + "), the other animators still run: catch the exception inside the onChange listeners of the animator or the getter and setter given to Tween.to(...) to handle it", exception);
 			}

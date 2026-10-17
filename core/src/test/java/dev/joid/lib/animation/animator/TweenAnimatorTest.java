@@ -403,14 +403,31 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
-	public void waitsForAManualUpdateWhenStartedOutsideAUi() {
+	public void advancesOnceAFrameWhenStartedOutsideAUi() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F).start();
-		Assert.assertFalse(animator.isAutomatic());
+		Assert.assertTrue(animator.isAutomatic());
 		this.clock.advance(16L);
 		BridgeHandler.UI.fireFrame();
-		Assert.assertEquals(0F, animator.get(), 0F);
-		animator.update();
 		Assert.assertEquals(0.5F, animator.get(), 0F);
+		this.clock.advance(32L);
+		BridgeHandler.UI.fireFrame();
+		Assert.assertEquals(1F, animator.get(), 0F);
+		Assert.assertFalse(animator.isAutomatic());
+	}
+
+	@Test
+	public void leavesTheFramesOnceUpdatedByHand() {
+		final TweenAnimator animator = TweenAnimator.create().sequence(32F, 1F).start();
+		this.clock.advance(8L);
+		animator.update();
+		Assert.assertFalse(animator.isAutomatic());
+		Assert.assertEquals(0.25F, animator.get(), 0F);
+		this.clock.advance(16L);
+		BridgeHandler.UI.fireFrame();
+		Assert.assertEquals(0.25F, animator.get(), 0F);
+		animator.update(40F);
+		Assert.assertEquals(1F, animator.get(), 0F);
+		Assert.assertNull(animator.getTimeline());
 	}
 
 	@Test

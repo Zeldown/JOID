@@ -644,9 +644,7 @@ public abstract class UI implements IIndexedElement {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be renewed: its constructor without argument failed (" + exception + "), fix the constructor from this error", exception);
 		}
 
-		this.dispose();
-		bridge.remove(this);
-		bridge.add(renewed);
+		bridge.replace(this, renewed);
 		return renewed;
 	}
 

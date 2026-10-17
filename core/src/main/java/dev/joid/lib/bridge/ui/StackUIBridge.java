@@ -120,6 +120,19 @@ public abstract class StackUIBridge extends UIBridge {
 	}
 
 	@Override
+	public void forceOpen(final @NonNull UI ui) {
+		this.keepScreen(() -> {
+			super.closeAll();
+			this.add(ui);
+		});
+	}
+
+	@Override
+	public void replace(final @NonNull UI ui, final @NonNull UI replacement) {
+		this.keepScreen(() -> super.replace(ui, replacement));
+	}
+
+	@Override
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz) {
 		return true;
 	}
@@ -136,6 +149,20 @@ public abstract class StackUIBridge extends UIBridge {
 		this.leaving  = null;
 		this.pending  = null;
 		this.deferred = false;
+	}
+
+	private void keepScreen(final Runnable action) {
+		final boolean screen = super.hasScreen();
+		this.replacing = screen;
+		try {
+			action.run();
+		} finally {
+			this.replacing = false;
+		}
+
+		if (screen && !super.hasScreen()) {
+			this.detachScreen();
+		}
 	}
 
 }

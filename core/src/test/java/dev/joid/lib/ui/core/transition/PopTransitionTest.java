@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
@@ -38,9 +39,11 @@ public class PopTransitionTest {
 		Assert.assertTrue(in.isRunning());
 		in.render(ui, () -> {});
 		this.bridges.getClock().advance(65L);
+		BridgeHandler.UI.fireFrame();
 		in.render(ui, () -> {});
 		Assert.assertTrue(in.getAnimator().get() > 0.5F && in.getAnimator().get() < 1F);
 		this.bridges.getClock().advance(100L);
+		BridgeHandler.UI.fireFrame();
 		this.assertScale(ui, in, 1D);
 		Assert.assertEquals(1F, in.getAnimator().get(), 0F);
 	}
@@ -53,9 +56,11 @@ public class PopTransitionTest {
 		out.start();
 		this.assertScale(ui, out, 1D);
 		this.bridges.getClock().advance(65L);
+		BridgeHandler.UI.fireFrame();
 		out.render(ui, () -> {});
 		Assert.assertTrue(out.getAnimator().get() > 0F && out.getAnimator().get() < 1F);
 		this.bridges.getClock().advance(100L);
+		BridgeHandler.UI.fireFrame();
 		this.assertScale(ui, out, 0.75D);
 		Assert.assertEquals(1F, out.getAnimator().get(), 0F);
 	}

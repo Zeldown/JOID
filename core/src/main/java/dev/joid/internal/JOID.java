@@ -150,10 +150,7 @@ public final class JOID {
 
 	public static @NonNull IUIBridge forceOpen(final @NonNull UI ui) {
 		final IUIBridge bridge = JOID.getOpeningBridge(ui);
-		ThreadUtils.runOnRenderThread(() -> {
-			bridge.closeAll();
-			bridge.open(ui);
-		});
+		ThreadUtils.runOnRenderThread(() -> bridge.forceOpen(ui));
 		return bridge;
 	}
 

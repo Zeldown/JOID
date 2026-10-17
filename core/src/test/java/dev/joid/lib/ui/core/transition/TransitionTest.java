@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.animation.tween.TweenEquations;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
 
@@ -90,7 +91,7 @@ public class TransitionTest {
 		final TransitionStep step = TransitionTest.step();
 		step.getAnimator().sequence(100F, 1F).start();
 		this.bridges.getClock().advance(50L);
-		this.frame(step);
+		step.render(this.ui, () -> {});
 		Assert.assertEquals(0F, step.getAnimator().get(), 0F);
 	}
 
@@ -172,6 +173,7 @@ public class TransitionTest {
 	}
 
 	private void frame(final TransitionStep step) {
+		BridgeHandler.UI.fireFrame();
 		step.render(this.ui, () -> {});
 	}
 

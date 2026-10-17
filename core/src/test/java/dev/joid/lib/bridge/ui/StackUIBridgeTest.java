@@ -137,6 +137,40 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
+	public void skipsTheScreenCallbacksWhileItForcesAScreenOpen() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		menu.closeable = false;
+		this.bridge.open(menu);
+		this.bridge.open(new PopupUI("popup", this.trace));
+		this.bridge.forceOpen(settings);
+		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList());
+		Assert.assertTrue(menu.isClosed());
+		Assert.assertEquals(Collections.singletonList("first screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void tellsTheLastScreenClosedWhenItForcesAnOverlayOpen() {
+		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		this.bridge.open(new ScreenUI("menu", this.trace));
+		this.bridge.forceOpen(overlay);
+		Assert.assertEquals(Collections.singletonList(overlay), this.bridge.getUiList());
+		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
+	public void skipsTheScreenCallbacksWhileAUiReplacesAnother() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		this.bridge.open(menu);
+		this.bridge.replace(menu, settings);
+		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList());
+		Assert.assertTrue(menu.isClosed());
+		Assert.assertFalse(this.trace.contains("close menu"));
+		Assert.assertEquals(Collections.singletonList("first screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
 	public void keepsTheScreenCallbacksQuietWhileTheReplacedScreenPlaysItsExit() {
 		final ScreenUI menu = new ScreenUI("menu", this.trace);
 		final ScreenUI settings = new ScreenUI("settings", this.trace);
