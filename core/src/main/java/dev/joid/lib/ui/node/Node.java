@@ -1820,15 +1820,7 @@ public abstract class Node implements INode {
 
 	private void drawContent(final MatrixStack matrix, final double mouseX, final double mouseY) {
 		final List<NodeEffect<Node>> effects = this.getAppliedEffects();
-		final List<NodeEffect<Node>> selfEffects = new ArrayList<>();
-		final List<NodeEffect<Node>> subtreeEffects = new ArrayList<>();
-		for (final NodeEffect<Node> effect : effects) {
-			if (effect.getScope() == NodeEffectScope.SELF) {
-				selfEffects.add(effect);
-			} else {
-				subtreeEffects.add(effect);
-			}
-		}
+		final Map<Boolean, List<NodeEffect<Node>>> scopes = effects.stream().collect(Collectors.partitioningBy(effect -> effect.getScope() == NodeEffectScope.SELF));
 
 		final Runnable content = () -> {
 			final Node area = this.overflow != OverflowProperty.NONE ? this : this.overflowArea;
@@ -1848,7 +1840,7 @@ public abstract class Node implements INode {
 					this.drawSkeleton(mouseX, mouseY);
 				}
 			};
-			ShaderPipeline.render(this.x, this.y, this.width, this.height, selfDraw, this.toShaderPasses(selfEffects));
+			ShaderPipeline.render(this.x, this.y, this.width, this.height, selfDraw, this.toShaderPasses(scopes.get(true)));
 			this.fire(Node.DRAW, () -> NodeDrawEvent.create(this, mouseX, mouseY));
 			if (this.mounted && this.label != null && !this.label.isEmpty()) {
 				DrawUtils.TEXT.drawText(this.x + (this.width - this.label.getWidth()) / 2D, this.y + (this.height - this.label.getHeight()) / 2D, this.label.getWidth(), this.label.getHeight(), this.label, TextMode.NORMAL);
@@ -1874,7 +1866,7 @@ public abstract class Node implements INode {
 		};
 
 		Runnable effectDraw = () -> {
-			ShaderPipeline.render(this.x, this.y, this.width, this.height, maskDraw, this.toShaderPasses(subtreeEffects));
+			ShaderPipeline.render(this.x, this.y, this.width, this.height, maskDraw, this.toShaderPasses(scopes.get(false)));
 
 			if (this.isScrollbarShown()) {
 				this.scrollbar.render(mouseX, mouseY);
