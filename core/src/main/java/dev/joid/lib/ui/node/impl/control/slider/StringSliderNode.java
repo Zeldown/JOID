@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.node.impl.control.slider;
 
+import java.util.Arrays;
+
 import lombok.NonNull;
 
 public abstract class StringSliderNode extends SliderNode<String> {
@@ -9,11 +11,7 @@ public abstract class StringSliderNode extends SliderNode<String> {
 	}
 
 	public final <T extends StringSliderNode> @NonNull T values(final @NonNull Enum<?> @NonNull... values) {
-		final String[] names = new String[values.length];
-		for (int i = 0; i < values.length; i++) {
-			names[i] = values[i].name();
-		}
-		return super.values(names);
+		return super.values(Arrays.stream(values).map(Enum::name).toArray(String[]::new));
 	}
 
 	public final <T extends StringSliderNode> @NonNull T value(final @NonNull Enum<?> value) {

@@ -450,23 +450,23 @@ public final class DevNode extends Node {
 		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x + width, y), Point.create(x + width, y + height));
 		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.create(x, y + height), Point.create(x + width, y + height));
 
-		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15, DevNode.WHITE).shadow().shadow(Color.BLACK.withAlpha(0.7F));
+		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15F, DevNode.WHITE).shadow().shadow(Color.BLACK.withAlpha(0.7F));
 		final Text nodeNameText = Text.create(JOIDLog.nameOf(node.getClass()), textInfo);
 		final Text nodeTimeText = Text.create(String.format(Locale.ROOT, "%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
 
-		final double margin = 15;
-		final double padding = 10;
+		final double margin = 15D;
+		final double padding = 10D;
 
 		final double infoBoxX = x;
-		final double infoBoxY = y - 35 < 0 ? y + height + 5 : y - 35;
-		final double infoBoxWidth = margin + padding * 2 + nodeNameText.getWidth() + nodeTimeText.getWidth();
+		final double infoBoxY = y - 35D < 0D ? y + height + 5D : y - 35D;
+		final double infoBoxWidth = margin + padding * 2D + nodeNameText.getWidth() + nodeTimeText.getWidth();
 
-		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30, DevNode.BLACK.withAlpha(0.8F), 5F);
+		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30D, DevNode.BLACK.withAlpha(0.8F), 5F);
 
 		double ox = infoBoxX + padding;
-		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeNameText.alignY(Align.CENTER)).getWidth() + margin;
-		DrawUtils.SHAPE.drawCircle(ox - margin / 2 + 1, infoBoxY + 15, DevNode.WHITE, 2);
-		DrawUtils.TEXT.drawText(ox, infoBoxY + 15, nodeTimeText.alignY(Align.CENTER));
+		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15D, nodeNameText.alignY(Align.CENTER)).getWidth() + margin;
+		DrawUtils.SHAPE.drawCircle(ox - margin / 2D + 1D, infoBoxY + 15D, DevNode.WHITE, 2D);
+		DrawUtils.TEXT.drawText(ox, infoBoxY + 15D, nodeTimeText.alignY(Align.CENTER));
 	}
 
 }

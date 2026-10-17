@@ -136,10 +136,10 @@ public class FlexNode extends Node {
 
 	private double getCross(final Node child) {
 		if (this.direction == Axis.VERTICAL) {
-			return this.align.isCenter() ? super.dw(2) - child.dw(2) : this.align.isEnd() ? super.aw(-child.getWidth()) : 0D;
+			return this.align.isCenter() ? super.dw(2D) - child.dw(2D) : this.align.isEnd() ? super.aw(-child.getWidth()) : 0D;
 		}
 
-		return this.align.isCenter() ? super.dh(2) - child.dh(2) : this.align.isEnd() ? super.ah(-child.getHeight()) : 0D;
+		return this.align.isCenter() ? super.dh(2D) - child.dh(2D) : this.align.isEnd() ? super.ah(-child.getHeight()) : 0D;
 	}
 
 }

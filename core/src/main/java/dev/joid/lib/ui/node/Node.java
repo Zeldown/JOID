@@ -1201,10 +1201,6 @@ public abstract class Node implements INode {
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal) {
-		return this.watch(signal, new WatchProperty[0]);
-	}
-
 	public final <T extends Node> @NonNull T watch(final @NonNull Signal<?> signal, final @NonNull WatchProperty @NonNull... properties) {
 		return this.bindings.watch(signal, () -> true, () -> this.applyWatch(signal, properties));
 	}
