@@ -109,23 +109,7 @@ public final class SignalReplaySlice {
 	}
 
 	public Object convert(final Object value) {
-		if (this.type == null || !(value instanceof Integer)) {
-			return value;
-		}
-
-		final int number = (Integer) value;
-		switch (this.type.getSort()) {
-			case Type.BOOLEAN:
-				return number != 0;
-			case Type.CHAR:
-				return (char) number;
-			case Type.BYTE:
-				return (byte) number;
-			case Type.SHORT:
-				return (short) number;
-			default:
-				return value;
-		}
+		return this.type != null && value instanceof Integer ? SignalReplayFrame.convert(value, this.method.type(this.type)) : value;
 	}
 
 	private String describe() {

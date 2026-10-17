@@ -29,9 +29,6 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	@Getter
-	private boolean automatic;
-
-	@Getter
 	private float speed;
 
 	private long         lastUpdate;
@@ -59,7 +56,6 @@ public class TweenAnimator extends Signal<Float> {
 	public @NonNull TweenAnimator start() {
 		this.requireTimeline().start(this.manager);
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.automatic = true;
 		TweenAnimator.RUNNING_SET.add(this);
 		return this;
 	}
@@ -188,16 +184,6 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	@Override
-	public @NonNull TweenAnimator set(final Float value) {
-		throw new IllegalStateException(this.refuse("set to " + value));
-	}
-
-	@Override
-	public @NonNull TweenAnimator reset() {
-		throw new IllegalStateException(this.refuse("reset"));
-	}
-
-	@Override
 	public @NonNull TweenAnimator onChange(final @NonNull SignalListener<? super Float> listener) {
 		super.onChange(listener);
 		return this;
@@ -214,6 +200,10 @@ public class TweenAnimator extends Signal<Float> {
 		return this.value;
 	}
 
+	public boolean isAutomatic() {
+		return TweenAnimator.RUNNING_SET.contains(this);
+	}
+
 	@Override
 	public boolean isWritable() {
 		return false;
@@ -228,12 +218,12 @@ public class TweenAnimator extends Signal<Float> {
 		});
 	}
 
-	private String refuse(final String action) {
+	@Override
+	protected @NonNull String refuse(final @NonNull String action) {
 		return "The " + this + " is animated and cannot be " + action + ", use value(...) or start a tween";
 	}
 
 	private void release() {
-		this.automatic = false;
 		TweenAnimator.RUNNING_SET.remove(this);
 	}
 

@@ -1011,7 +1011,7 @@ public final class SignalReplayFrame {
 		return arguments;
 	}
 
-	private static Object convert(final Object value, final Class<?> type) {
+	public static Object convert(final Object value, final Class<?> type) {
 		if (!(value instanceof Integer)) {
 			return value;
 		}

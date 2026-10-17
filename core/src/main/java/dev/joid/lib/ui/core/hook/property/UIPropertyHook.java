@@ -93,13 +93,8 @@ public final class UIPropertyHook {
 			return UIPropertyHook.PROPERTY_MAP.get(className);
 		}
 
-		Class<?> clazz = ui.getClass();
 		final List<Field> fields = new ArrayList<>();
-		while (clazz != null) {
-			if (clazz.equals(Object.class)) {
-				break;
-			}
-
+		for (Class<?> clazz = ui.getClass(); clazz != UI.class; clazz = clazz.getSuperclass()) {
 			for (final Field field : clazz.getDeclaredFields()) {
 				if (!field.isAnnotationPresent(UIProperty.class) || Modifier.isFinal(field.getModifiers()) || Modifier.isStatic(field.getModifiers())) {
 					continue;
@@ -108,8 +103,6 @@ public final class UIPropertyHook {
 				field.setAccessible(true);
 				fields.add(field);
 			}
-
-			clazz = clazz.getSuperclass();
 		}
 
 		UIPropertyHook.PROPERTY_MAP.put(className, fields);

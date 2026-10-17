@@ -34,8 +34,6 @@ public class GlslShaderTranslator {
 
 	public static final String BORDER = "joid_Border_";
 
-	private static final String[] LINE_VARYINGS = {"joid_LineAcross", "joid_LineAlong"};
-
 	private final GlslDialect   dialect;
 	private final UniformLayout layout;
 
@@ -125,16 +123,8 @@ public class GlslShaderTranslator {
 		return samplerList;
 	}
 
-	protected boolean isUniform(final @NonNull ShaderBuiltin builtin) {
-		return true;
-	}
-
 	protected @NonNull String getLayout() {
 		return "std140";
-	}
-
-	protected @NonNull String declareBuiltin(final @NonNull ShaderBuiltin builtin) {
-		return "";
 	}
 
 	protected @NonNull String declareSampler(final @NonNull ShaderVariable sampler, final int unit) {
@@ -182,7 +172,7 @@ public class GlslShaderTranslator {
 	private List<ShaderVariable> getUniforms(final ShaderSource vertex, final ShaderSource fragment, final StencilEmulation.Pass stencil) {
 		final List<ShaderVariable> uniformList = new ArrayList<>();
 		for (final ShaderBuiltin builtin : ShaderBuiltin.values()) {
-			if (builtin.getKind() == ShaderBuiltin.Kind.UNIFORM && this.isUniform(builtin) && (vertex.getBuiltins().contains(builtin) || fragment.getBuiltins().contains(builtin))) {
+			if (builtin.getKind() == ShaderBuiltin.Kind.UNIFORM && (vertex.getBuiltins().contains(builtin) || fragment.getBuiltins().contains(builtin))) {
 				uniformList.add(ShaderVariable.create(builtin.getType(), builtin.getIdentifier(), "", false));
 			}
 		}
@@ -249,12 +239,6 @@ public class GlslShaderTranslator {
 			builder.append("#define texture texture2D\n");
 		}
 
-		for (final ShaderBuiltin builtin : source.getBuiltins()) {
-			if (builtin.getKind() == ShaderBuiltin.Kind.UNIFORM && !this.isUniform(builtin)) {
-				builder.append(this.declareBuiltin(builtin));
-			}
-		}
-
 		if (this.layout == UniformLayout.LOOSE) {
 			for (final ShaderVariable uniform : this.getUniforms(vertex, fragment, stencil)) {
 				builder.append("uniform ").append(uniform.getDeclaration()).append(";\n");
@@ -314,8 +298,9 @@ public class GlslShaderTranslator {
 	}
 
 	private void appendLineVaryings(final StringBuilder builder, final int location, final boolean output) {
-		for (int i = 0; i < GlslShaderTranslator.LINE_VARYINGS.length; i++) {
-			builder.append(this.declareVarying(ShaderVariable.create("float", GlslShaderTranslator.LINE_VARYINGS[i], "", false), location + i, output));
+		final String[] varyings = {"joid_LineAcross", "joid_LineAlong"};
+		for (int i = 0; i < varyings.length; i++) {
+			builder.append(this.declareVarying(ShaderVariable.create("float", varyings[i], "", false), location + i, output));
 		}
 	}
 

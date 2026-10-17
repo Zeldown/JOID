@@ -1001,13 +1001,8 @@ public abstract class UI implements IIndexedElement {
 		}
 
 		final Transition transition = PopTransition.create();
-		if (!popupTransition.isIn()) {
-			transition.getIn().enabled(false);
-		}
-
-		if (!popupTransition.isOut()) {
-			transition.getOut().enabled(false);
-		}
+		transition.getIn().enabled(popupTransition.isIn());
+		transition.getOut().enabled(popupTransition.isOut());
 		return transition;
 	}
 

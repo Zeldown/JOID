@@ -67,11 +67,19 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	public @NonNull Signal<T> reset() {
+		if (!this.isWritable()) {
+			throw new IllegalStateException(this.refuse("reset"));
+		}
+
 		this.set(this.defaultValue);
 		return this;
 	}
 
 	public @NonNull Signal<T> set(final T value) {
+		if (!this.isWritable()) {
+			throw new IllegalStateException(this.refuse("set to " + value));
+		}
+
 		return this.write(() -> this.store(value));
 	}
 
@@ -112,6 +120,10 @@ public class Signal<T> implements Supplier<T> {
 
 	public boolean isWritable() {
 		return true;
+	}
+
+	protected @NonNull String refuse(final @NonNull String action) {
+		return "The " + this.getClass().getSimpleName() + " is read-only and cannot be " + action;
 	}
 
 	protected T seal(final T value) {

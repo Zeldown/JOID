@@ -53,16 +53,6 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public @NonNull ComputedSignal<T> set(final T value) {
-		throw new IllegalStateException(this.refuse("set to " + value));
-	}
-
-	@Override
-	public @NonNull ComputedSignal<T> reset() {
-		throw new IllegalStateException(this.refuse("reset"));
-	}
-
-	@Override
 	public @NonNull ComputedSignal<T> onChange(final @NonNull SignalListener<? super T> listener) {
 		final boolean listened = super.hasListeners();
 		super.onChange(listener);
@@ -250,7 +240,8 @@ public class ComputedSignal<T> extends Signal<T> {
 		this.computed = true;
 	}
 
-	private String refuse(final String action) {
+	@Override
+	protected @NonNull String refuse(final @NonNull String action) {
 		return "The " + this.getClass().getSimpleName() + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
 	}
 
