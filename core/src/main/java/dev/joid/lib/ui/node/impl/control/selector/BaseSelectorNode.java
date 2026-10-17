@@ -50,7 +50,7 @@ public abstract class BaseSelectorNode<V> extends BaseChoiceNode<V> {
 		this.activeValue.update(false);
 	}
 
-	public final int getOptionRank(final V value) {
+	public final int getOptionRank(final @NonNull V value) {
 		final int index = super.getValueList().indexOf(value);
 		final int selected = super.getValueIndex();
 		return index == selected ? 0 : index < selected ? index + 1 : index;

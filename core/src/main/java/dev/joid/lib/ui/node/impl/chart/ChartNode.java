@@ -32,7 +32,7 @@ public abstract class ChartNode extends Node {
 		return ChartNode.scaleMax(this.getDataMin(), this.getDataMax());
 	}
 
-	public final Number getMax(final String data) {
+	public final Number getMax(final @NonNull String data) {
 		final ChartData series = this.getSeries(data);
 		return ChartNode.scaleMax(series.getMin().doubleValue(), series.getMax().doubleValue());
 	}
@@ -41,7 +41,7 @@ public abstract class ChartNode extends Node {
 		return ChartNode.scaleMin(this.getDataMin(), this.getDataMax());
 	}
 
-	public final Number getMin(final String data) {
+	public final Number getMin(final @NonNull String data) {
 		final ChartData series = this.getSeries(data);
 		return ChartNode.scaleMin(series.getMin().doubleValue(), series.getMax().doubleValue());
 	}
@@ -50,7 +50,7 @@ public abstract class ChartNode extends Node {
 		return this.getDataMap().values().stream().mapToDouble(data -> data.getAverage().doubleValue()).average().orElse(0D);
 	}
 
-	public final Number getAverage(final String data) {
+	public final Number getAverage(final @NonNull String data) {
 		return this.getSeries(data).getAverage();
 	}
 
@@ -58,7 +58,7 @@ public abstract class ChartNode extends Node {
 		return this.xAxis == null ? Collections.emptySet() : this.xAxis.getLabelSet();
 	}
 
-	public final ChartData getData(final String data) {
+	public final ChartData getData(final @NonNull String data) {
 		return this.xAxis == null ? null : this.xAxis.getDataMap().get(data);
 	}
 
@@ -252,11 +252,11 @@ public abstract class ChartNode extends Node {
 			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).average().orElse(0D);
 		}
 
-		public Number get(final String label) {
+		public Number get(final @NonNull String label) {
 			return this.dataMap.get(label);
 		}
 
-		public boolean has(final String label) {
+		public boolean has(final @NonNull String label) {
 			return this.dataMap.containsKey(label);
 		}
 

@@ -451,27 +451,12 @@ public class ReorderableFlexNode extends FlexNode {
 		Node parent = super.getParent();
 		while (parent != null) {
 			if (parent.getOverflow() == OverflowProperty.SCROLL && (vertical ? parent.hasOverflowY() : parent.hasOverflowX())) {
-				if (vertical) {
-					final double parentTop = parent.getAbsoluteY();
-					final double parentBottom = parentTop + parent.getHeight();
-					if (mouseY < parentTop + zone) {
-						final double depth = Math.min(1D, (parentTop + zone - mouseY) / zone);
-						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() + speed * depth * depth);
-					} else if (mouseY > parentBottom - zone) {
-						final double depth = Math.min(1D, (mouseY - (parentBottom - zone)) / zone);
-						parent.scrollTo(parent.getTargetScrollX(), parent.getTargetScrollY() - speed * depth * depth);
-					}
-				} else {
-					final double parentLeft = parent.getAbsoluteX();
-					final double parentRight = parentLeft + parent.getWidth();
-					if (mouseX < parentLeft + zone) {
-						final double depth = Math.min(1D, (parentLeft + zone - mouseX) / zone);
-						parent.scrollTo(parent.getTargetScrollX() + speed * depth * depth, parent.getTargetScrollY());
-					} else if (mouseX > parentRight - zone) {
-						final double depth = Math.min(1D, (mouseX - (parentRight - zone)) / zone);
-						parent.scrollTo(parent.getTargetScrollX() - speed * depth * depth, parent.getTargetScrollY());
-					}
-				}
+				final double mouse = vertical ? mouseY : mouseX;
+				final double start = vertical ? parent.getAbsoluteY() : parent.getAbsoluteX();
+				final double end = start + (vertical ? parent.getHeight() : parent.getWidth());
+				final double depth = mouse < start + zone ? Math.min(1D, (start + zone - mouse) / zone) : mouse > end - zone ? -Math.min(1D, (mouse - end + zone) / zone) : 0D;
+				final double delta = speed * depth * Math.abs(depth);
+				parent.scrollTo(parent.getTargetScrollX() + (vertical ? 0D : delta), parent.getTargetScrollY() + (vertical ? delta : 0D));
 				return;
 			}
 			parent = parent.getParent();

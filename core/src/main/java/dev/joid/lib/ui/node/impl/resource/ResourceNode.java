@@ -28,10 +28,6 @@ public class ResourceNode extends Node {
 
 	private StretchType stretch;
 
-	protected ResourceNode(final double x, final double y) {
-		this(x, y, 0D, 0D);
-	}
-
 	protected ResourceNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
@@ -43,7 +39,7 @@ public class ResourceNode extends Node {
 	}
 
 	public static @NonNull ResourceNode create(final double x, final double y) {
-		return new ResourceNode(x, y);
+		return new ResourceNode(x, y, 0D, 0D);
 	}
 
 	public static @NonNull ResourceNode create(final double x, final double y, final double width, final double height) {

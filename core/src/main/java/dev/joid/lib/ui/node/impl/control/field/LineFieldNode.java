@@ -51,16 +51,8 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		final boolean isPlaceholder = text.isEmpty() && !super.isFocused();
-		double tmpTextY = super.getY() + super.getMarginTop();
-
-		if (this.alignY.isCenter()) {
-			tmpTextY = super.getY() + (super.getHeight() - info.getHeight()) / 2D;
-		} else if (this.alignY.isEnd()) {
-			tmpTextY = super.getY() + super.getHeight() - info.getHeight() - super.getMarginBottom();
-		}
-
 		final double textX = this.getTextX(super.getX(), isPlaceholder ? super.getPlaceholder() : text);
-		final double textY = tmpTextY;
+		final double textY = this.alignY.isCenter() ? super.getY() + (super.getHeight() - info.getHeight()) / 2D : this.alignY.isEnd() ? super.getY() + super.getHeight() - info.getHeight() - super.getMarginBottom() : super.getY() + super.getMarginTop();
 		final int[] tags = FieldNode.tags(text, super.getShownInfo());
 		final FieldSelection selection = super.getSelection();
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY(), super.getWidth() - super.getMarginLeft() - super.getMarginRight(), super.getHeight(), () -> {

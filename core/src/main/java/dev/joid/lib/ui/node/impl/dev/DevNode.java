@@ -203,30 +203,19 @@ public final class DevNode extends Node {
 					.text(Text.create("Bounds", categoryInfo))
 					.attach(scroll);
 
-					TextNode
-					.create(10, 0)
-					.text(Text.create("position: ", labelInfo).add(Text.create(inspectedNode.getPosition(), valueInfo)))
-					.attach(scroll);
-
-					TextNode
-					.create(10, 0)
-					.text(Text.create("x: ", labelInfo).add(Text.create(inspectedNode.getX() + " / " + inspectedNode.getAbsoluteX() + " (" + inspectedNode.getDefaultX() + ")", valueInfo)))
-					.attach(scroll);
-
-					TextNode
-					.create(10, 0)
-					.text(Text.create("y: ", labelInfo).add(Text.create(inspectedNode.getY() + " / " + inspectedNode.getAbsoluteY() + " (" + inspectedNode.getDefaultY() + ")", valueInfo)))
-					.attach(scroll);
-
-					TextNode
-					.create(10, 0)
-					.text(Text.create("width: ", labelInfo).add(Text.create(inspectedNode.getWidth() + " (" + inspectedNode.getDefaultWidth() + ")", valueInfo)))
-					.attach(scroll);
-
-					TextNode
-					.create(10, 0)
-					.text(Text.create("height: ", labelInfo).add(Text.create(inspectedNode.getHeight() + " (" + inspectedNode.getDefaultHeight() + ")", valueInfo)))
-					.attach(scroll);
+					final Object[][] bounds = {
+						{"position", inspectedNode.getPosition()},
+						{"x", inspectedNode.getX() + " / " + inspectedNode.getAbsoluteX() + " (" + inspectedNode.getDefaultX() + ")"},
+						{"y", inspectedNode.getY() + " / " + inspectedNode.getAbsoluteY() + " (" + inspectedNode.getDefaultY() + ")"},
+						{"width", inspectedNode.getWidth() + " (" + inspectedNode.getDefaultWidth() + ")"},
+						{"height", inspectedNode.getHeight() + " (" + inspectedNode.getDefaultHeight() + ")"}
+					};
+					for (final Object[] bound : bounds) {
+						TextNode
+						.create(10D, 0D)
+						.text(Text.create(bound[0] + ": ", labelInfo).add(Text.create(bound[1], valueInfo)))
+						.attach(scroll);
+					}
 
 					if (!inspectedNode.getEventBus().isEmpty()) {
 						RectNode
@@ -385,20 +374,21 @@ public final class DevNode extends Node {
 
 		if (this.gridSignal.peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
+			final TextInfo gridInfo = TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F));
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(UIView.DESIGN_WIDTH / 2D - 1D, 0), Point.create(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.create(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.create(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
 
 			DrawUtils.SHAPE.drawRect(0, mouseY, mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))).alignX(Align.CENTER));
+			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", gridInfo).alignX(Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, mouseY, UIView.DESIGN_WIDTH - mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2, mouseY + 5, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))).alignX(Align.CENTER));
+			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2, mouseY + 5, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", gridInfo).alignX(Align.CENTER));
 
 			DrawUtils.SHAPE.drawRect(mouseX, 0, 3, mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))));
+			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", gridInfo));
 
 			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 3, UIView.DESIGN_HEIGHT - mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (UIView.DESIGN_HEIGHT - mouseY) / 2, Text.create((int) (UIView.DESIGN_HEIGHT - mouseY) + "px", TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F))));
+			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (UIView.DESIGN_HEIGHT - mouseY) / 2, Text.create((int) (UIView.DESIGN_HEIGHT - mouseY) + "px", gridInfo));
 		}
 
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK, 10F);
