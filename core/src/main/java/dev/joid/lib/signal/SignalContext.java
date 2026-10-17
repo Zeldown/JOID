@@ -14,7 +14,6 @@ import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SignalContext {
@@ -38,7 +37,7 @@ public final class SignalContext {
 	@Getter
 	private long readTotal;
 
-	public static @NonNull SignalContext current() {
+	public static SignalContext current() {
 		return SignalContext.CURRENT.get();
 	}
 
@@ -64,7 +63,7 @@ public final class SignalContext {
 		this.flush();
 	}
 
-	public void defer(final @NonNull Runnable task) {
+	public void defer(final Runnable task) {
 		final Runnable deferred = this.silent ? () -> Signal.silent(task) : task;
 		if (this.depth > 0) {
 			this.deferredList.add(deferred);
@@ -98,7 +97,7 @@ public final class SignalContext {
 		return previous;
 	}
 
-	public <T> T untracked(final @NonNull Supplier<? extends T> supplier) {
+	public <T> T untracked(final Supplier<? extends T> supplier) {
 		final ComputedSignal<?> observer = this.observe(null);
 		final boolean tracing = this.tracing(false);
 		try {
@@ -121,7 +120,7 @@ public final class SignalContext {
 		}
 	}
 
-	public @NonNull List<Signal<?>> takeReads() {
+	public List<Signal<?>> takeReads() {
 		final List<Signal<?>> readList = new ArrayList<>(this.readCount);
 		for (int index = this.readCount; index > 0; index--) {
 			final int position = this.readIndex - index & this.reads.length - 1;

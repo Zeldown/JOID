@@ -28,11 +28,12 @@ public class TweenAnimator extends Signal<Float> {
 		BridgeHandler.UI.onFrame(TweenAnimator::updateRunning);
 	}
 
+	private final TweenManager manager;
+
 	@Getter
 	private float speed;
 
-	private long         lastUpdate;
-	private TweenManager manager;
+	private long lastUpdate;
 
 	private volatile float value;
 

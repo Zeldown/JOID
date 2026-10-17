@@ -24,21 +24,17 @@ public final class SignalReplaySite {
 	private final SignalReplayException   failure;
 
 	public static SignalReplaySite analyze(final SignalReplayClass replayClass, final StackTraceElement caller, final String setter) {
-		try {
-			final List<SignalReplaySlice> sliceList = new ArrayList<>();
-			for (final MethodNode method : replayClass.getNode().methods) {
-				if (method.name.equals(caller.getMethodName())) {
-					SignalReplaySite.collect(replayClass, method, caller.getLineNumber(), setter, sliceList);
-				}
+		final List<SignalReplaySlice> sliceList = new ArrayList<>();
+		for (final MethodNode method : replayClass.getNode().methods) {
+			if (method.name.equals(caller.getMethodName())) {
+				SignalReplaySite.collect(replayClass, method, caller.getLineNumber(), setter, sliceList);
 			}
-
-			if (sliceList.isEmpty()) {
-				throw new SignalReplayException(SignalReplayFailure.CALL_NOT_FOUND, setter, caller.getLineNumber() >= 0 ? "on this line" : "in this method");
-			}
-			return new SignalReplaySite(sliceList, null);
-		} catch (final SignalReplayException exception) {
-			return SignalReplaySite.fail(exception);
 		}
+
+		if (sliceList.isEmpty()) {
+			throw new SignalReplayException(SignalReplayFailure.CALL_NOT_FOUND, setter, caller.getLineNumber() >= 0 ? "on this line" : "in this method");
+		}
+		return new SignalReplaySite(sliceList, null);
 	}
 
 	public static SignalReplaySite fail(final SignalReplayException exception) {

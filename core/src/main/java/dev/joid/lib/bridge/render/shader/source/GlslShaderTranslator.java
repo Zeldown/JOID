@@ -66,7 +66,7 @@ public class GlslShaderTranslator {
 
 	public final @NonNull String translateVertex(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment) {
 		this.require(vertex.getFeatures());
-		final StringBuilder builder = this.createHeader(vertex, fragment, vertex, this.stencil);
+		final StringBuilder builder = this.createHeader(vertex, fragment, this.stencil);
 		for (final ShaderBuiltin builtin : vertex.getBuiltins()) {
 			if (builtin.getKind() == ShaderBuiltin.Kind.ATTRIBUTE) {
 				builder.append(this.declareAttribute(builtin, VertexAttribute.of(builtin).getLocation()));
@@ -123,7 +123,7 @@ public class GlslShaderTranslator {
 		return samplerList;
 	}
 
-	protected @NonNull String getLayout() {
+	protected @NonNull String getBlockLayout() {
 		return "std140";
 	}
 
@@ -152,7 +152,7 @@ public class GlslShaderTranslator {
 		}
 		this.require(featureSet);
 
-		final StringBuilder builder = this.createHeader(vertex, fragment, fragment, stencil).append(this.declareOutput());
+		final StringBuilder builder = this.createHeader(vertex, fragment, stencil).append(this.declareOutput());
 		this.appendSamplers(builder, vertex, fragment, fragment);
 		builder.append(this.getBorderFunctions(true));
 		final List<String> varyings = GlslShaderTranslator.getVaryings(vertex, fragment);
@@ -233,7 +233,7 @@ public class GlslShaderTranslator {
 		return (this.dialect.hasExplicitLocations() ? "layout(location = 0) " : "") + "out vec4 fragColor;\n";
 	}
 
-	private StringBuilder createHeader(final ShaderSource vertex, final ShaderSource fragment, final ShaderSource source, final StencilEmulation.Pass stencil) {
+	private StringBuilder createHeader(final ShaderSource vertex, final ShaderSource fragment, final StencilEmulation.Pass stencil) {
 		final StringBuilder builder = new StringBuilder(this.dialect.getDeclaration()).append("\n\n").append(this.dialect.getPrecision());
 		if (!this.dialect.hasInputOutputs()) {
 			builder.append("#define texture texture2D\n");
@@ -246,7 +246,7 @@ public class GlslShaderTranslator {
 			return builder;
 		}
 
-		builder.append("layout(").append(this.getLayout()).append(") uniform ").append(GlslShaderTranslator.BLOCK).append(" {\n");
+		builder.append("layout(").append(this.getBlockLayout()).append(") uniform ").append(GlslShaderTranslator.BLOCK).append(" {\n");
 		for (final ShaderVariable uniform : this.getUniforms(vertex, fragment, stencil)) {
 			builder.append('\t').append(uniform.getDeclaration()).append(";\n");
 		}

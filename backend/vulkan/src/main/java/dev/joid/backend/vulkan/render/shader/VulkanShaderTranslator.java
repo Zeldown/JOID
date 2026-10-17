@@ -17,7 +17,7 @@ public final class VulkanShaderTranslator extends GlslShaderTranslator {
 	}
 
 	@Override
-	protected @NonNull String getLayout() {
+	protected @NonNull String getBlockLayout() {
 		return "std140, binding = 0";
 	}
 
