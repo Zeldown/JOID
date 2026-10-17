@@ -50,6 +50,7 @@ public abstract class RenderBridge implements IRenderBridge {
 		this.frameActive = true;
 		try {
 			this.beginFrameCommands();
+			this.getEmptyTexture();
 		} catch (final RuntimeException exception) {
 			this.frameActive = false;
 			throw exception;

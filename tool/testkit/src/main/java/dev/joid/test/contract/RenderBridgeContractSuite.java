@@ -1,5 +1,6 @@
 package dev.joid.test.contract;
 
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -180,6 +182,25 @@ public abstract class RenderBridgeContractSuite {
 		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.GREEN});
 		final IShader shader = ContractDraw.shader("uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}");
 		shader.sampler("u_Mask", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			shader.bind();
+			try {
+				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+			} finally {
+				shader.unbind();
+			}
+		});
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+	}
+
+	@Test
+	public void samplesEveryTextureOfTheFirstDrawOfABackend() throws ReflectiveOperationException {
+		final Field empty = RenderBridge.class.getDeclaredField("emptyTexture");
+		empty.setAccessible(true);
+		empty.set(BridgeHandler.RENDER.get(), null);
+		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.GREEN});
+		final IShader shader = ContractDraw.shader("uniform sampler2D u_First;\nuniform sampler2D u_Second;\n\nvoid main() {\n    fragColor = texture(u_First, vec2(0.5, 0.5)) * texture(u_Second, vec2(0.5, 0.5));\n}");
+		shader.sampler("u_First", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			shader.bind();
 			try {

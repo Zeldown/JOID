@@ -18,6 +18,12 @@ public class ObjFaceTest {
 	}
 
 	@Test
+	public void refusesAFaceThatIsNotATriangle() {
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> ObjFaceTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(1F, 0F), ObjVertex.of(1F, 1F), ObjVertex.of(0F, 1F)));
+		Assert.assertEquals("An ObjFace has 3 vertices, got 4: split the polygon into triangles (ObjModel does it for OBJ files)", exception.getMessage());
+	}
+
+	@Test
 	public void turnsItsNormalWithItsWinding() {
 		Assert.assertEquals(-1F, ObjFaceTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(0F, 1F), ObjVertex.of(1F, 0F)).getFaceNormal().getZ(), 0F);
 	}

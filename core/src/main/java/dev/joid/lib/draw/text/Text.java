@@ -75,9 +75,7 @@ public final class Text {
 		final StringBuilder before = new StringBuilder();
 		for (final TextElement previous : this.elementList) {
 			if (previous == element) {
-				final String start = this.modifier.modify(before.toString(), info);
-				final String text = this.modifier.modify(before.append(element.getText()).toString(), info);
-				return text.startsWith(start) ? text.substring(start.length()) : this.modifier.modify(element.getText(), info);
+				return TextModifier.modifyAfter(text -> this.modifier.modify(text, info), before, element.getText());
 			}
 
 			before.append(previous.getText());

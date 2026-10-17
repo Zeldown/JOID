@@ -20,6 +20,9 @@ public final class ObjFace {
 	}
 
 	public static @NonNull ObjFace create(final @NonNull ObjVertex @NonNull [] vertices, final ObjTextureCoordinate[] textureCoordinates, final ObjVertex[] vertexNormals) {
+		if (vertices.length != 3) {
+			throw new IllegalArgumentException("An ObjFace has 3 vertices, got " + vertices.length + ": split the polygon into triangles (ObjModel does it for OBJ files)");
+		}
 		return new ObjFace(vertices, textureCoordinates, vertexNormals);
 	}
 

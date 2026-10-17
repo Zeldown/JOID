@@ -435,7 +435,8 @@ public class TextTest {
 		final TextInfo info = TextTest.info().markups(TextTest.TAG);
 		final TextElement element = TextElement.create("<b>ab</b> cd", info).modifier(TextModifier.UPPER_CASE);
 		Assert.assertEquals("<b>AB</b> CD", Text.create("<b>ab</b> cd", info).modifier(TextModifier.UPPER_CASE).getText());
-		Assert.assertEquals("<b>ab</b>cd", Text.create("<b>ab</b> cd", info).modifier(TextModifier.CAMEL_CASE).getText());
+		Assert.assertEquals("<b>ab</b>Cd", Text.create("<b>ab</b> cd", info).modifier(TextModifier.CAMEL_CASE).getText());
+		Assert.assertEquals("Hello <b>world</b>", Text.create("hello <b>world</b>", info).modifier(TextModifier.CAPITALIZE).getText());
 		Assert.assertEquals("<b>AB</b> CD", Text.create(element).getText());
 	}
 

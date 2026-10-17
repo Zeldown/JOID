@@ -2,6 +2,7 @@ package dev.joid.lib.font.modifier;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.function.UnaryOperator;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -32,15 +33,22 @@ public interface TextModifier {
 
 		final int[] tags = TextMarkup.tags(markups, text, info.getStyle().derive());
 		final StringBuilder builder = new StringBuilder();
+		final StringBuilder plain = new StringBuilder();
 		int start = 0;
 		for (int index = 0; index < text.length(); index++) {
 			if (tags[index] != -1) {
-				builder.append(start < index ? this.modify(text.substring(start, index)) : "").append(text.charAt(index));
+				builder.append(TextModifier.modifyAfter(this::modify, plain, text.substring(start, index))).append(text.charAt(index));
 				start = index + 1;
 			}
 		}
 
-		return builder.append(start < text.length() ? this.modify(text.substring(start)) : "").toString();
+		return builder.append(TextModifier.modifyAfter(this::modify, plain, text.substring(start))).toString();
+	}
+
+	public static @NonNull String modifyAfter(final @NonNull UnaryOperator<String> modifier, final @NonNull StringBuilder before, final @NonNull String text) {
+		final String start = modifier.apply(before.toString());
+		final String modified = modifier.apply(before.append(text).toString());
+		return modified.startsWith(start) ? modified.substring(start.length()) : modifier.apply(text);
 	}
 
 	public static @NonNull String camelCase(final @NonNull String text, final boolean upperFirst) {
