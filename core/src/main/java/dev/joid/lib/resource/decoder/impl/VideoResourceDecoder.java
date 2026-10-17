@@ -455,13 +455,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 				}
 
 				this.grabber = this.open();
-
-				if (this.frameQueue == null) {
-					this.frameQueue = new ArrayBlockingQueue<>(5);
-				} else {
-					this.frameQueue.clear();
-				}
-
+				this.frameQueue = new ArrayBlockingQueue<>(5);
 				this.createAudioPlayer();
 			} catch (final Exception exception) {
 				JOIDLog.warn("The video " + this.asset.getUniqueId() + " cannot be reopened (" + exception.getMessage() + "), check that the file can still be read");

@@ -482,14 +482,7 @@ public final class ResourceData {
 		}
 
 		final String reason = cause == error ? String.valueOf(error.getMessage()) : error.getMessage() + " (" + cause + ")";
-		if (error instanceof VideoNativesException) {
-			return reason;
-		}
-
-		if (cause instanceof IOException) {
-			return reason + ", check that the file or the URL exists and can be read";
-		}
-		return reason;
+		return !(error instanceof VideoNativesException) && cause instanceof IOException ? reason + ", check that the file or the URL exists and can be read" : reason;
 	}
 
 	@Override

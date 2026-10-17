@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -15,7 +16,7 @@ public final class ResourceAnimation {
 	private final int                  height;
 	private final int                  plays;
 	private final List<ResourceAnimationFrame> frames;
-	private final long[]               ends;
+	@Getter(AccessLevel.NONE) private final long[] ends;
 
 	private ResourceAnimation(final int width, final int height, final int plays, final List<ResourceAnimationFrame> frames) {
 		this.width = width;
@@ -35,10 +36,6 @@ public final class ResourceAnimation {
 			throw new IllegalArgumentException("An animation needs at least one frame, got none: check that the file holds its frames");
 		}
 		return new ResourceAnimation(width, height, plays, frames);
-	}
-
-	public long[] getEnds() {
-		return this.ends.clone();
 	}
 
 	public long getDuration() {
