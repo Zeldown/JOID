@@ -167,21 +167,6 @@ public class Signal<T> implements Supplier<T> {
 		this.version++;
 	}
 
-	private void propagate(final boolean notify) {
-		final SignalContext context = SignalContext.current();
-		this.version++;
-		SignalContext.nextEpoch();
-		context.open();
-		try {
-			if (notify && this.hasListeners()) {
-				context.schedule(this);
-			}
-			this.invalidate(context);
-		} finally {
-			context.close();
-		}
-	}
-
 	protected final void emit(final T value) {
 		RuntimeException failure = null;
 		for (final SignalListener<? super T> listener : this.listenerSet) {
@@ -225,7 +210,18 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	protected final void fire() {
-		this.propagate(!SignalContext.current().isSilent());
+		final SignalContext context = SignalContext.current();
+		this.version++;
+		SignalContext.nextEpoch();
+		context.open();
+		try {
+			if (!context.isSilent() && this.hasListeners()) {
+				context.schedule(this);
+			}
+			this.invalidate(context);
+		} finally {
+			context.close();
+		}
 	}
 
 	@Override

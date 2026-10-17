@@ -25,23 +25,21 @@ public final class SignalReplayMatch {
 	}
 
 	public List<Signal<?>> getReadList(final List<Signal<?>> readList) {
-		final List<Signal<?>> consumedList = new ArrayList<>();
-		for (int index = 0; index < readList.size(); index++) {
-			if (this.consumed[index]) {
-				consumedList.add(readList.get(index));
-			}
-		}
-		return consumedList;
+		return this.select(readList, true);
 	}
 
 	public List<Signal<?>> getRemainingList(final List<Signal<?>> readList) {
-		final List<Signal<?>> remainingList = new ArrayList<>();
+		return this.select(readList, false);
+	}
+
+	private List<Signal<?>> select(final List<Signal<?>> readList, final boolean consumed) {
+		final List<Signal<?>> selectedList = new ArrayList<>();
 		for (int index = 0; index < readList.size(); index++) {
-			if (!this.consumed[index]) {
-				remainingList.add(readList.get(index));
+			if (this.consumed[index] == consumed) {
+				selectedList.add(readList.get(index));
 			}
 		}
-		return remainingList;
+		return selectedList;
 	}
 
 }

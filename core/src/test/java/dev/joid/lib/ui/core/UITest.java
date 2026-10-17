@@ -140,6 +140,14 @@ public class UITest {
 	}
 
 	@Test
+	public void initializesAndUpdatesNothingByDefault() {
+		final PlainUI ui = new PlainUI();
+		ui.init();
+		ui.update();
+		Assert.assertTrue(ui.getNodeList().isEmpty());
+	}
+
+	@Test
 	public void popsAPopupInAndOut() {
 		final PopupUI ui = new PopupUI(this.trace);
 		Assert.assertTrue(ui.getTransition() instanceof PopTransition);
@@ -2342,6 +2350,8 @@ public class UITest {
 	@UIDataPopup(active = true)
 	@UIDataOverlay(active = true)
 	public static final class PopupOverlayUI extends UI {}
+
+	public static final class PlainUI extends UI {}
 
 	@UIDataScale(limited = true, limit = 0.75D)
 	public static final class LimitedScaleUI extends TraceUI {

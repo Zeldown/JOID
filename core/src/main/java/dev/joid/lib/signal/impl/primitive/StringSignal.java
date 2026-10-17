@@ -23,7 +23,7 @@ public class StringSignal extends Signal<String> {
 		return this;
 	}
 
-	public @NonNull StringSignal replace(final CharSequence target, final CharSequence replacement) {
+	public @NonNull StringSignal replace(final @NonNull CharSequence target, final @NonNull CharSequence replacement) {
 		super.transform(current -> current.replace(target, replacement));
 		return this;
 	}

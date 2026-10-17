@@ -178,10 +178,8 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	protected void depend(final Signal<?> signal) {
-		for (int index = 0; index < this.collectedCount; index++) {
-			if (this.collectedDependencies[index] == signal) {
-				return;
-			}
+		if (ComputedSignal.contains(this.collectedDependencies, this.collectedCount, signal)) {
+			return;
 		}
 
 		if (this.collectedCount == this.collectedDependencies.length) {

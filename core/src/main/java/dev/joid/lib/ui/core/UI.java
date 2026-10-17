@@ -72,7 +72,7 @@ import dev.joid.lib.utils.list.IndexedList;
 import lombok.Getter;
 import lombok.NonNull;
 
-public abstract class UI implements IUI, IIndexedElement {
+public abstract class UI implements IIndexedElement {
 
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_RELEASED   = EventType.create("handleKeyReleased");
@@ -195,6 +195,9 @@ public abstract class UI implements IUI, IIndexedElement {
 		this.hoveredPath = Collections.emptyList();
 	}
 
+	public void init() {}
+	public void update() {}
+
 	public final void load(final double finalWidth, final double finalHeight) {
 		final long start = System.nanoTime();
 
@@ -269,10 +272,6 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final boolean fireMouseScroll(final double notchesX, final double notchesY) {
-		if (!this.initialized) {
-			return false;
-		}
-
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 		final UIMouseScrollEvent<UI> event = UIMouseScrollEvent.create(this, mx, my, notchesX, notchesY);
@@ -289,10 +288,6 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final boolean fireMousePressed(final @NonNull MouseButton button) {
-		if (!this.initialized) {
-			return false;
-		}
-
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
@@ -304,10 +299,6 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final boolean fireMouseReleased(final @NonNull MouseButton button) {
-		if (!this.initialized) {
-			return false;
-		}
-
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
@@ -319,10 +310,6 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final boolean fireMouseDragged(final @NonNull MouseButton button, final long deltaTime) {
-		if (!this.initialized) {
-			return false;
-		}
-
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, deltaTime);
@@ -334,10 +321,6 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final boolean fireCharTyped(final int codepoint) {
-		if (!this.initialized) {
-			return false;
-		}
-
 		final UICharEvent<UI> event = UICharEvent.create(this, codepoint);
 		return this.fireInput(UI.HANDLE_CHAR_TYPED, "charTyped", event, node -> node.fireCharTyped(codepoint, event), () -> {});
 	}
@@ -388,10 +371,6 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	public final boolean fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key) {
-		if (!this.initialized) {
-			return false;
-		}
-
 		final UIKeyEvent<UI> event = UIKeyEvent.create(this, physicalKey, key);
 		return this.fireInput(UI.HANDLE_KEY_RELEASED, "keyReleased", event, node -> node.fireKeyReleased(physicalKey, key, event), () -> {});
 	}
@@ -972,6 +951,10 @@ public abstract class UI implements IUI, IIndexedElement {
 	}
 
 	private <E extends UIInputEvent<UI>> boolean fireInput(final EventType<?> type, final String input, final E event, final Consumer<Node> dispatch, final Runnable builtin) {
+		if (!this.initialized) {
+			return false;
+		}
+
 		if (!event.isConsumed()) {
 			this.dispatch(input, () -> this.nodeList.reversed().forEach(dispatch));
 		}
