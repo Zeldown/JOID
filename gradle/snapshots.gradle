@@ -6,6 +6,7 @@ ext.snapshotTest = { Test task, File references, File output ->
     task.systemProperty 'joid.snapshot.references', references.absolutePath
     task.systemProperty 'joid.snapshot.output', output.absolutePath
     task.systemProperty 'joid.data', new File(task.workingDir, 'data').absolutePath
+    task.systemProperty 'joid.cache', new File(buildDir, 'cache').absolutePath
     task.testLogging.exceptionFormat = 'full'
     task.testLogging.events 'failed'
     task.doFirst {

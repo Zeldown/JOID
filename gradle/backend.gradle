@@ -39,6 +39,7 @@ rootProject.variants.each { variant ->
         workingDir = file("$buildDir/jarCheck/$variant")
         systemProperty 'java.awt.headless', true
         systemProperty 'joid.data', file("$buildDir/jarCheck/$variant/data").absolutePath
+        systemProperty 'joid.cache', file("$buildDir/cache").absolutePath
         doFirst {
             delete workingDir
             workingDir.mkdirs()

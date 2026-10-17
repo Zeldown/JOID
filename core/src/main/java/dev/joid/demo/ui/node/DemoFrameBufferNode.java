@@ -12,7 +12,7 @@ public class DemoFrameBufferNode extends Node {
 
 	private static final Color INK = new Color(153, 153, 153).lock();
 
-	private FrameBuffer frameBuffer;
+	private transient FrameBuffer frameBuffer;
 
 	protected DemoFrameBufferNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
