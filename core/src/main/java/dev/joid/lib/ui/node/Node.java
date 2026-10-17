@@ -2,6 +2,7 @@ package dev.joid.lib.ui.node;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1612,17 +1613,23 @@ public abstract class Node implements INode {
 	protected @NonNull Node instantiate() {
 		final Class<?>[][] types = {{double.class, double.class, double.class, double.class}, {double.class, double.class}, {}};
 		final Object[][] arguments = {{this.x, this.y, this.width, this.height}, {this.x, this.y}, {}};
-		ReflectiveOperationException failure = null;
 		for (int i = 0; i < types.length; i++) {
+			final Constructor<? extends Node> constructor;
 			try {
-				final Constructor<? extends Node> constructor = this.getClass().getDeclaredConstructor(types[i]);
+				constructor = this.getClass().getDeclaredConstructor(types[i]);
+			} catch (final NoSuchMethodException exception) {
+				continue;
+			}
+
+			try {
 				constructor.setAccessible(true);
 				return constructor.newInstance(arguments[i]);
 			} catch (final ReflectiveOperationException exception) {
-				failure = exception;
+				final Throwable cause = exception instanceof InvocationTargetException ? exception.getCause() : exception;
+				throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " cannot be copied: its constructor " + constructor + " failed (" + cause + ")", cause);
 			}
 		}
-		throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " cannot be copied (" + failure + "): declare a constructor (x, y, width, height) or override instantiate()", failure);
+		throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " cannot be copied: declare a constructor (x, y, width, height) or override instantiate()");
 	}
 
 	protected boolean isDraggingChild(final @NonNull Node child) {
@@ -2234,7 +2241,15 @@ public abstract class Node implements INode {
 	}
 
 	private @NonNull Node duplicate(final boolean listeners) {
+		final Map<Object, Object> copies = new IdentityHashMap<>();
+		final Node copy = this.duplicate(listeners, copies);
+		copies.forEach((original, duplicate) -> ((Node) original).copyFields((Node) duplicate, copies));
+		return copy;
+	}
+
+	private @NonNull Node duplicate(final boolean listeners, final @NonNull Map<Object, Object> copies) {
 		final Node copy = this.instantiate();
+		copies.put(this, copy);
 		copy.ui = this.ui;
 		copy.bindings.releaseFollows();
 
@@ -2246,30 +2261,30 @@ public abstract class Node implements INode {
 		copy.effectMap.clear();
 		this.effectMap.forEach((type, effect) -> copy.effectMap.put(type, effect.copy()));
 
-		final Map<Object, Object> copies = new IdentityHashMap<>();
 		copy.drawList.clear();
 		copy.children.clear();
 		for (final Node child : this.children) {
-			final Node childCopy = child.duplicate(listeners);
+			final Node childCopy = child.duplicate(listeners, copies);
 			childCopy.parent = copy;
 			copy.drawList.add(childCopy);
 			copy.children.add(childCopy);
-			copies.put(child, childCopy);
 		}
 
 		if (this.scrollbar != null) {
-			final Node scrollbar = ((Node) this.scrollbar).duplicate(listeners);
+			final Node scrollbar = ((Node) this.scrollbar).duplicate(listeners, copies);
 			scrollbar.parent = copy;
 			copy.scrollbar = ((BaseScrollbarNode) scrollbar).scrollNode(copy);
-			copies.put(this.scrollbar, copy.scrollbar);
 		}
 
 		if (this.skeleton != null) {
-			copy.skeleton = this.skeleton.duplicate(listeners);
+			copy.skeleton = this.skeleton.duplicate(listeners, copies);
 			copy.skeleton.parent = copy;
-			copies.put(this.skeleton, copy.skeleton);
 		}
 
+		return copy;
+	}
+
+	private void copyFields(final @NonNull Node copy, final @NonNull Map<Object, Object> copies) {
 		for (final Field field : this.getFields(this.getClass())) {
 			if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
 				continue;
@@ -2277,23 +2292,22 @@ public abstract class Node implements INode {
 
 			try {
 				field.setAccessible(true);
-				if (!Modifier.isFinal(field.getModifiers())) {
-					field.set(copy, copies.getOrDefault(field.get(this), field.get(this)));
+				final Object original = field.get(this);
+				if (!Modifier.isFinal(field.getModifiers()) || copies.containsKey(original)) {
+					field.set(copy, copies.getOrDefault(original, original));
 				} else if (Collection.class.isAssignableFrom(field.getType())) {
 					final Collection<Object> collection = (Collection<Object>) field.get(copy);
 					collection.clear();
-					((Collection<Object>) field.get(this)).forEach(element -> collection.add(copies.getOrDefault(element, element)));
+					((Collection<Object>) original).forEach(element -> collection.add(copies.getOrDefault(element, element)));
 				} else if (Map.class.isAssignableFrom(field.getType())) {
 					final Map<Object, Object> map = (Map<Object, Object>) field.get(copy);
 					map.clear();
-					((Map<Object, Object>) field.get(this)).forEach((key, value) -> map.put(copies.getOrDefault(key, key), copies.getOrDefault(value, value)));
+					((Map<Object, Object>) original).forEach((key, value) -> map.put(copies.getOrDefault(key, key), copies.getOrDefault(value, value)));
 				}
 			} catch (final Exception exception) {
 				throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " cannot be copied: its field " + field.getName() + " cannot be set (" + exception + "), mark the field transient to leave it out of copy()", exception);
 			}
 		}
-
-		return copy;
 	}
 
 	private @NonNull List<@NonNull Field> getFields(final @NonNull Class<?> clazz) {

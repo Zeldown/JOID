@@ -80,10 +80,11 @@ public class ResourceNode extends Node {
 		}
 
 		final BoundingBox canvas = BoundingBox.create(super.getX(), super.getY(), super.getWidth(), super.getHeight());
-		final Color primary = this.hoveredResource == null ? super.hoverColor(this.color, this.hoveredColor) : this.color;
+		final boolean fades = this.hoveredResource != null && this.hoveredResource != this.resource;
+		final Color primary = fades ? this.color : super.hoverColor(this.color, this.hoveredColor);
 		primary.bind(() -> this.drawResource(this.filteredResource), canvas, true);
 
-		if (this.hoveredResource != null && this.hoveredResource != this.resource) {
+		if (fades) {
 			final Color secondary = (this.hoveredColor != null ? this.hoveredColor : this.color).withAlpha(super.hoverValue(1F));
 			secondary.bind(() -> this.drawResource(this.filteredHoveredResource), canvas, true);
 		}

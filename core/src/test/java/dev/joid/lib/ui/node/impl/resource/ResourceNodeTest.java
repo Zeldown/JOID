@@ -191,6 +191,9 @@ public class ResourceNodeTest {
 		this.bridges.open(new NodeUI(ResourceNode.create(100D, 100D, 20D, 10D).resource(resource).hoveredResource(resource).color(ResourceNodeTest.TINT).hoveredColor(ResourceNodeTest.HOVER)));
 		Assert.assertEquals(1, this.draws(ResourceNodeTest.TINT).size());
 		Assert.assertTrue(this.draws(ResourceNodeTest.HOVER).isEmpty());
+		this.bridges.move(105D, 105D).frames(30);
+		Assert.assertTrue(this.draws(ResourceNodeTest.TINT).isEmpty());
+		Assert.assertEquals(1, this.draws(ResourceNodeTest.HOVER).size());
 	}
 
 	@Test

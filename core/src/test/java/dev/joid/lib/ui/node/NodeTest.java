@@ -2612,9 +2612,19 @@ public class NodeTest {
 			new NamedNode("label").copy();
 			Assert.fail("A node without known constructor cannot be copied");
 		} catch (final IllegalStateException expected) {
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The node NamedNode cannot be copied (java.lang.NoSuchMethodException: "));
-			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith("): declare a constructor (x, y, width, height) or override instantiate()"));
-			Assert.assertTrue(expected.getCause() instanceof NoSuchMethodException);
+			Assert.assertEquals("The node NamedNode cannot be copied: declare a constructor (x, y, width, height) or override instantiate()", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void reportsTheFailureOfTheConstructorOfACopy() {
+		try {
+			new FragileNode().width(-1D).copy();
+			Assert.fail("A copy whose constructor fails cannot be built");
+		} catch (final IllegalStateException expected) {
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The node FragileNode cannot be copied: its constructor "));
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith(" failed (java.lang.IllegalArgumentException: A fragile node needs a positive width)"));
+			Assert.assertEquals("A fragile node needs a positive width", expected.getCause().getMessage());
 		}
 	}
 
@@ -3737,10 +3747,13 @@ public class NodeTest {
 	}
 
 	@Test
-	public void pointsTheFieldsOfACopyAtItsOwnScrollbarAndSkeleton() {
+	public void pointsTheFieldsOfACopyAtTheNodesOfItsOwnTree() {
 		final BarredNode copy = new BarredNode().copy();
 		Assert.assertSame(copy.getScrollbar(), copy.bar);
 		Assert.assertSame(copy.getSkeleton(), copy.placeholder);
+		Assert.assertSame(copy.getChildren().get(0), copy.title);
+		Assert.assertSame(copy.getChildren().get(1).getChildren().get(0), copy.caption);
+		Assert.assertSame(copy, ((OwnedNode) copy.getChildren().get(2)).owner);
 	}
 
 	private Draw draw(final float red, final float green, final float blue) {
@@ -4039,6 +4052,21 @@ public class NodeTest {
 
 	}
 
+	public static final class FragileNode extends Node {
+
+		public FragileNode() {
+			this(0D, 0D, 10D, 10D);
+		}
+
+		public FragileNode(final double x, final double y, final double width, final double height) {
+			super(x, y, width, height);
+			if (width < 0D) {
+				throw new IllegalArgumentException("A fragile node needs a positive width");
+			}
+		}
+
+	}
+
 	public static final class NamedNode extends Node {
 
 		public NamedNode(final String name) {
@@ -4250,13 +4278,34 @@ public class NodeTest {
 
 	public static final class BarredNode extends Node {
 
-		private Bar  bar;
-		private Node placeholder;
+		private final RectNode title;
+
+		private Bar      bar;
+		private Node     placeholder;
+		private RectNode caption;
 
 		public BarredNode() {
 			super(100D, 100D, 400D, 100D);
 			this.bar = new Bar(400D, 0D, 10D, 100D, 20D);
+			this.title = RectNode.create(0D, 0D, 400D, 20D).attach(this);
+			this.caption = RectNode.create(0D, 0D, 400D, 20D).attach(RectNode.create(0D, 20D, 400D, 80D).attach(this));
+			new OwnedNode().owner(this).attach(this);
 			super.scrollbar(this.bar).skeleton(node -> this.placeholder = RectNode.create(0D, 0D, 400D, 100D));
+		}
+
+	}
+
+	public static final class OwnedNode extends Node {
+
+		private Node owner;
+
+		public OwnedNode() {
+			super(0D, 0D, 10D, 10D);
+		}
+
+		public @NonNull OwnedNode owner(final @NonNull Node owner) {
+			this.owner = owner;
+			return this;
 		}
 
 	}
