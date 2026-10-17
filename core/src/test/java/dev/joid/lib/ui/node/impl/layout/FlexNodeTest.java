@@ -128,6 +128,29 @@ public class FlexNodeTest {
 	}
 
 	@Test
+	public void leavesAChildTurnedAbsoluteWhereItIs() {
+		final RectNode child = RectNode.create(0D, 0D, 10D, 10D);
+		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(RectNode.create(0D, 0D, 10D, 30D), child);
+		this.bridges.open(new NodeUI(flex));
+		Assert.assertEquals(30D, child.getY(), 0D);
+		child.position(PositionProperty.ABSOLUTE);
+		this.bridges.frame();
+		Assert.assertEquals(0D, child.getY(), 0D);
+	}
+
+	@Test
+	public void placesAChildMovedOutOfItAtItsOwnPosition() {
+		final RectNode moved = RectNode.create(0D, 5D, 100D, 40D);
+		final FlexNode flex = FlexNode.vertical(0D, 0D, 300D).append(RectNode.create(0D, 0D, 100D, 50D), RectNode.create(0D, 0D, 100D, 70D), moved);
+		final ContainerNode box = ContainerNode.create(400D, 0D, 200D, 200D);
+		this.bridges.open(new NodeUI(flex, box));
+		Assert.assertEquals(125D, moved.getY(), 0D);
+		box.append(moved);
+		this.bridges.frame();
+		Assert.assertEquals(5D, moved.getY(), 0D);
+	}
+
+	@Test
 	public void keepsTheOwnPositionGivenToAChild() {
 		final DoubleSignal offset = new DoubleSignal(5D);
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).x(offset);

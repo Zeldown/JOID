@@ -663,6 +663,7 @@ public abstract class Node implements INode {
 				this.drawList.remove(node);
 				this.children.remove(node);
 				node.parent = null;
+				node.layoutX = node.layoutY = node.shiftX = node.shiftY = 0D;
 				node.clearOverflowArea(node.overflowArea);
 			}
 		}
@@ -815,7 +816,12 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T position(final @NonNull Supplier<@NonNull PositionProperty> position) {
-		return this.follow("position", position, value -> this.position = value);
+		return this.follow("position", position, value -> {
+			this.position = value;
+			if (value == PositionProperty.ABSOLUTE) {
+				this.layoutX = this.layoutY = this.shiftX = this.shiftY = 0D;
+			}
+		});
 	}
 
 	public final <T extends Node> @NonNull T overflow(final @NonNull OverflowProperty overflow) {
@@ -888,8 +894,6 @@ public abstract class Node implements INode {
 				this.draggedNode = this.duplicate(false);
 				this.draggedNode.parent = this.parent;
 				this.draggedNode.position(PositionProperty.ABSOLUTE);
-				this.draggedNode.layoutX = this.draggedNode.layoutY = 0D;
-				this.draggedNode.shiftX = this.draggedNode.shiftY = 0D;
 				this.draggedNode.moveTo(this.targetDragX, this.targetDragY);
 			}
 		});
@@ -2251,8 +2255,6 @@ public abstract class Node implements INode {
 		copy.defaultY = this.defaultY;
 		copy.layoutX = this.layoutX;
 		copy.layoutY = this.layoutY;
-		copy.shiftX = this.shiftX;
-		copy.shiftY = this.shiftY;
 
 		copy.x = this.x;
 		copy.y = this.y;
@@ -2289,8 +2291,6 @@ public abstract class Node implements INode {
 		copy.waitingList.clear();
 		copy.waitingList.addAll(this.waitingList);
 		copy.animatorMap.putAll(this.animatorMap);
-
-		copy.mounted = this.mounted;
 
 		final Map<Object, Object> copies = new IdentityHashMap<>();
 		copy.drawList.clear();

@@ -2147,6 +2147,20 @@ public class NodeTest {
 	}
 
 	@Test
+	public void leavesTheScrollOfItsFormerParent() {
+		final RectNode child = RectNode.create(0D, 10D, 50D, 50D);
+		final ContainerNode list = ContainerNode.create(0D, 0D, 400D, 200D).overflow(OverflowProperty.SCROLL).append(RectNode.create(0D, 0D, 400D, 1000D), child);
+		final ContainerNode panel = ContainerNode.create(500D, 0D, 200D, 200D);
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 800D, 600D).append(list, panel)));
+		list.scrollY(-50D).updateScroll();
+		this.bridges.frames(2);
+		Assert.assertEquals(-40D, child.getY(), 1E-5D);
+		panel.append(child);
+		this.bridges.frame();
+		Assert.assertEquals(10D, child.getY(), 1E-5D);
+	}
+
+	@Test
 	public void appendsItsChildrenInOneCall() {
 		final List<Node> appended = new ArrayList<>();
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).onChildAppend(event -> appended.add(event.getChild()));
@@ -3108,6 +3122,17 @@ public class NodeTest {
 		Assert.assertEquals(1, mounts[0]);
 		parent.remove(node);
 		parent.append(node);
+		this.bridges.frame();
+		Assert.assertEquals(2, mounts[0]);
+	}
+
+	@Test
+	public void mountsTheCopyOfAMountedNode() {
+		final int[] mounts = {0};
+		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).onMount(event -> mounts[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(node);
+		this.bridges.open(new NodeUI(parent)).frame();
+		parent.append(node.copy());
 		this.bridges.frame();
 		Assert.assertEquals(2, mounts[0]);
 	}
