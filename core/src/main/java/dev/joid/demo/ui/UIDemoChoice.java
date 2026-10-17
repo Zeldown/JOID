@@ -103,6 +103,7 @@ public class UIDemoChoice extends UI {
 	@Override
 	public void init() {
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 26, Color.WHITE);
+
 		super.transition(DemoPushTransition.create());
 
 		GridNode

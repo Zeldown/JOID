@@ -23,7 +23,7 @@ public final class WindowsNativeCursor extends NativeCursor {
 	}
 
 	@Override
-	protected Object load(final @NonNull Cursor cursor) {
+	protected Object load(final Cursor cursor) {
 		final Pointer pointer = this.loadCursor.invokePointer(new Object[] {null, Pointer.createConstant(WindowsNativeCursor.getId(cursor))});
 		if (pointer == null) {
 			return null;

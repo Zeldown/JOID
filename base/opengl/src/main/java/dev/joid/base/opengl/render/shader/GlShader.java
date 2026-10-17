@@ -40,7 +40,7 @@ public final class GlShader extends Shader {
 		return new GlShader(bridge, vertex, fragment, blend);
 	}
 
-	public void use(final @NonNull RenderState state, final @NonNull VertexBuffer buffer) {
+	public void use(final RenderState state, final VertexBuffer buffer) {
 		this.binding.useProgram(this.program);
 		super.builtins(state, buffer, super.getBridge().getProjection().getRawMatrix(), super.getBridge().getModelView()).upload(this::upload);
 	}

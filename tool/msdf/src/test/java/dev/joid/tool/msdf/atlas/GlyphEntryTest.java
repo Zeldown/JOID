@@ -14,8 +14,8 @@ import dev.joid.tool.msdf.geometry.Vector2;
 public class GlyphEntryTest {
 
 	@Test
-	public void isNotDrawableWithoutAShape() {
-		final GlyphEntry glyph = new GlyphEntry(' ', 0.25D, null);
+	public void isNotDrawableWithAnEmptyShape() {
+		final GlyphEntry glyph = new GlyphEntry(' ', 0.25D, new Shape());
 		Assert.assertFalse(glyph.isDrawable());
 		Assert.assertNull(glyph.getBounds());
 		Assert.assertEquals(' ', glyph.getCodepoint());

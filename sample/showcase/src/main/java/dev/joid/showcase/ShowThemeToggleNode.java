@@ -9,20 +9,20 @@ import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.NonNull;
 
-public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
+public class ShowThemeToggleNode extends ToggleNode<Boolean, Boolean> {
 
 	private static final Color MOON        = Color.decode("#F5F3FF").lock();
 	private static final Color TRACK_DARK  = Color.decode("#2A2846").lock();
 	private static final Color TRACK_LIGHT = Color.decode("#E4E4EE").lock();
 
-	protected ShowThemeNode(final double x, final double y) {
+	protected ShowThemeToggleNode(final double x, final double y) {
 		super(x, y, 112, 56);
 		super.speed(0.15F);
 		super.track(RectNode.create(0, 0, 0, 0).color(this::getTrackColor).effect(RoundedNodeEffect.create((float) super.dh(2))));
 		super.knob(ContainerNode.create(0, 0, super.getHeight(), super.getHeight()).body(knob -> {
 			CircleNode
 			.create(8, 8, 40)
-			.color(() -> ShowUI.AMBER.to(ShowThemeNode.MOON, super.getKnobProgress()))
+			.color(() -> ShowUI.AMBER.to(ShowThemeToggleNode.MOON, super.getKnobProgress()))
 			.effect(ShadowNodeEffect.create(ShowUI.AMBER, 18F).color(() -> ShowUI.AMBER.to(ShowUI.VIOLET, super.getKnobProgress()).withAlpha(0.7F)))
 			.attach(knob);
 			CircleNode
@@ -36,12 +36,12 @@ public class ShowThemeNode extends ToggleNode<Boolean, Boolean> {
 		}));
 	}
 
-	public static @NonNull ShowThemeNode create(final double x, final double y) {
-		return new ShowThemeNode(x, y);
+	public static @NonNull ShowThemeToggleNode create(final double x, final double y) {
+		return new ShowThemeToggleNode(x, y);
 	}
 
 	private Color getTrackColor() {
-		return ShowThemeNode.TRACK_LIGHT.to(ShowThemeNode.TRACK_DARK, super.getKnobProgress());
+		return ShowThemeToggleNode.TRACK_LIGHT.to(ShowThemeToggleNode.TRACK_DARK, super.getKnobProgress());
 	}
 
 }

@@ -56,7 +56,7 @@ public final class GlStateJournal {
 		for (int i = 1; i < this.size; i++) {
 			final Entry entry = this.entryList.get(i);
 			int j = i - 1;
-			while (j >= 0 && this.entryList.get(j).key.getRank() > entry.key.getRank()) {
+			while (j >= 0 && this.entryList.get(j).key.compareTo(entry.key) > 0) {
 				this.entryList.set(j + 1, this.entryList.get(j));
 				j--;
 			}

@@ -52,6 +52,7 @@ public class UIDemoEvent extends UIDemo {
 		final BooleanSignal running = BooleanSignal.create(true);
 		final Task timer = Task.create(1000L).every(1000L).onRun(event -> seconds.increment());
 		final Shortcut space = Shortcut.create(Key.SPACE).ctrl(true).onTrigger(event -> shortcuts.increment());
+
 		super.addTask(timer);
 		super.addShortcut(space);
 

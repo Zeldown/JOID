@@ -8,6 +8,7 @@ import java.util.List;
 import dev.joid.base.openal.binding.IAlBinding;
 import dev.joid.lib.bridge.audio.AudioDownmix;
 import dev.joid.lib.bridge.audio.IAudioSource;
+import lombok.Getter;
 import lombok.NonNull;
 
 public final class AlAudioSource implements IAudioSource {
@@ -20,13 +21,13 @@ public final class AlAudioSource implements IAudioSource {
 	private final Deque<Integer> freeBufferQueue;
 	private final Deque<Integer> sampleCountQueue;
 
-	private int     source;
-	private float   gain;
-	private Object  group;
-	private Object  context;
-	private boolean playing;
-	private float   appliedGain;
-	private int     bufferedSamples;
+	private int             source;
+	private float           gain;
+	private Object          group;
+	private Object          context;
+	private float           appliedGain;
+	private int             bufferedSamples;
+	@Getter private boolean playing;
 
 	private AlAudioSource(final AlAudioBridge bridge, final int sampleRate, final int channels) {
 		this.bridge           = bridge;
@@ -105,11 +106,6 @@ public final class AlAudioSource implements IAudioSource {
 		if (this.playing && !this.binding.isPlaying(this.source)) {
 			this.binding.play(this.source);
 		}
-	}
-
-	@Override
-	public boolean isPlaying() {
-		return this.playing;
 	}
 
 	@Override

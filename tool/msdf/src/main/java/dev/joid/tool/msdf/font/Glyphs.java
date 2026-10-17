@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Glyphs {
 
-	public static final double UNITS = 1000D;
+	private static final double UNITS = 1000D;
 
 	private static final FontRenderContext CONTEXT = new FontRenderContext(null, false, true);
 

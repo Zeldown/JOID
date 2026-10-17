@@ -49,6 +49,7 @@ public class UIDemoOption extends UIDemo {
 		final IntegerSignal refusedZooms = IntegerSignal.create(0);
 		final List<Supplier<UI>> popups = Arrays.asList(UIDemoFixedScalePopup::new, UIDemoLimitedScalePopup::new, UIDemoCornerPopup::new, UIDemoTintedPopup::new, UIDemoLockedPopup::new, UIDemoFixedZoomPopup::new, UIDemoDebugOffPopup::new, UIDemoInstantPopup::new, UIDemoPopInPopup::new, UIDemoSlidePopup::new);
 		final String[] captions = {"Scale ignored", "Scale limit", "Corner anchor", "Tinted backdrop", "Not closeable", "Not zoomable", "Debug off", "No transition", "Pop in only", "Custom transition"};
+
 		Task.create(1000L).every(1000L).onRun(event -> ticks.increment()).attach(this);
 		super.zoom(zoom);
 		super.beforeZoom(event -> {

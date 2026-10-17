@@ -27,7 +27,7 @@ public final class MacNativeCursor extends NativeCursor {
 	}
 
 	@Override
-	protected Object load(final @NonNull Cursor cursor) {
+	protected Object load(final Cursor cursor) {
 		for (final String name : MacNativeCursor.getSelectors(cursor)) {
 			final Pointer selector = this.registerName.invokePointer(new Object[] {name});
 			if (this.classMethod.invokePointer(new Object[] {this.cursorClass, selector}) != null) {

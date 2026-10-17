@@ -25,7 +25,7 @@ public final class X11NativeCursor extends NativeCursor {
 	}
 
 	@Override
-	protected Object load(final @NonNull Cursor cursor) throws ReflectiveOperationException {
+	protected Object load(final Cursor cursor) throws ReflectiveOperationException {
 		final Method getDisplay = Class.forName("org.lwjgl.opengl.LinuxDisplay").getDeclaredMethod("getDisplay");
 		getDisplay.setAccessible(true);
 		final Pointer display = Pointer.createConstant((Long) getDisplay.invoke(null));

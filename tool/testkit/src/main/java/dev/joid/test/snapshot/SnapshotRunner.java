@@ -76,7 +76,7 @@ public final class SnapshotRunner {
 		}
 		BridgeHandler.CLOCK.register(runner.clock);
 		BridgeHandler.WINDOW.register(runner.window);
-		BridgeHandler.AUDIO.register(new SnapshotAudioBridge());
+		BridgeHandler.AUDIO.register((sampleRate, channels) -> new SnapshotAudioSource());
 		AssetLocator.register(runner.locator);
 		if (DevFont.MONTSERRAT != null) {
 			runner.bridge.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE));

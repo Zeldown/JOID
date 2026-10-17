@@ -9,7 +9,6 @@ import org.lwjgl.opengl.Display;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.utils.platform.Platform;
-import lombok.NonNull;
 
 public abstract class NativeCursor {
 
@@ -42,7 +41,7 @@ public abstract class NativeCursor {
 		}
 	}
 
-	public final void apply(final @NonNull Cursor cursor) {
+	public final void apply(final Cursor cursor) {
 		if (cursor == this.applied || this.failed || !Display.isCreated()) {
 			return;
 		}
@@ -64,7 +63,7 @@ public abstract class NativeCursor {
 		}
 	}
 
-	protected abstract Object load(final @NonNull Cursor cursor) throws ReflectiveOperationException;
+	protected abstract Object load(final Cursor cursor) throws ReflectiveOperationException;
 
 	private Object getHandle(final Cursor cursor) throws ReflectiveOperationException {
 		if (cursor == Cursor.DEFAULT) {

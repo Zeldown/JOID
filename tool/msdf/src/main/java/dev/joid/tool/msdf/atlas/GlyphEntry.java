@@ -26,7 +26,7 @@ public final class GlyphEntry {
 		this.codepoint = codepoint;
 		this.advance = advance;
 		this.shape = shape;
-		this.bounds = shape == null || shape.isEmpty() ? null : shape.bounds();
+		this.bounds = shape.isEmpty() ? null : shape.bounds();
 	}
 
 	public boolean isDrawable() {
