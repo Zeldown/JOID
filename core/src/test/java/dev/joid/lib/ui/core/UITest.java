@@ -1149,6 +1149,40 @@ public class UITest {
 	}
 
 	@Test
+	public void staysOpenWhenItsInitFailsOnceOpenedAgain() {
+		final ReopenUI ui = new ReopenUI(this.trace);
+		this.bridges.open(ui);
+		JOID.forceClose(ui);
+		ui.failing = true;
+		try {
+			JOID.open(ui);
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("Init failed", exception.getMessage());
+		}
+		Assert.assertFalse(ui.isClosed());
+	}
+
+	@Test
+	public void detachesTheNodesOfAFailedReopeningOnTheNextReload() {
+		JOIDEnv.devMode(true);
+		final ReopenUI ui = new ReopenUI(this.trace, new TraceNode("node", this.trace, 0));
+		this.bridges.open(ui);
+		JOID.forceClose(ui);
+		ui.failing = true;
+		try {
+			JOID.open(ui);
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			ui.failing = false;
+		}
+		this.trace.clear();
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		this.bridges.getUi().keyPressed(Key.R, Key.R);
+		Assert.assertTrue(this.trace.contains("detach node"));
+	}
+
+	@Test
 	public void measuresItsFrameTimeOnTheClock() {
 		final TraceUI ui = new TraceUI(this.trace);
 		Assert.assertEquals(0D, ui.getFrameTime(), 0D);
@@ -2420,6 +2454,25 @@ public class UITest {
 		@Override
 		public void init() {
 			throw new IllegalStateException("Init failed");
+		}
+
+	}
+
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class ReopenUI extends TraceUI {
+
+		private boolean failing;
+
+		public ReopenUI(final List<String> trace, final Node... nodes) {
+			super(trace, nodes);
+		}
+
+		@Override
+		public void init() {
+			super.init();
+			if (this.failing) {
+				throw new IllegalStateException("Init failed");
+			}
 		}
 
 	}

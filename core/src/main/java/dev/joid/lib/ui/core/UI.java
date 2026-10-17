@@ -234,6 +234,7 @@ public abstract class UI implements IUI, IIndexedElement {
 				});
 			} finally {
 				this.initialized = true;
+				this.closed = false;
 			}
 
 			if (this.transition != null) {
@@ -261,7 +262,6 @@ public abstract class UI implements IUI, IIndexedElement {
 			}
 		}
 
-		this.closed = false;
 		this.refreshWatch();
 	}
 

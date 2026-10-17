@@ -161,6 +161,17 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
+	public void attachesTheScreenOfAUiWhoseInitFails() {
+		try {
+			this.bridge.open(new FailingUI("menu", this.trace));
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("Init failed", exception.getMessage());
+		}
+		Assert.assertEquals(Collections.singletonList("first screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
 	public void opensTheWaitingScreenWhenTheLeavingOneIsForcedToClose() {
 		final ScreenUI menu = new ScreenUI("menu", this.trace);
 		final ScreenUI settings = new ScreenUI("settings", this.trace);
@@ -344,6 +355,20 @@ public class StackUIBridgeTest {
 
 		public BaseUI(final String name, final List<String> trace) {
 			super(name, trace);
+		}
+
+	}
+
+	public static final class FailingUI extends ScreenUI {
+
+		public FailingUI(final String name, final List<String> trace) {
+			super(name, trace);
+		}
+
+		@Override
+		public void init() {
+			super.init();
+			throw new IllegalStateException("Init failed");
 		}
 
 	}

@@ -97,9 +97,12 @@ public abstract class StackUIBridge extends UIBridge {
 	public void add(final @NonNull UI ui) {
 		final boolean screen = !ui.getOverlay().active() && !super.hasScreen();
 		super.add(ui);
-		ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
-		if (screen && !this.replacing && !this.deferred) {
-			this.attachScreen();
+		try {
+			ui.load(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
+		} finally {
+			if (screen && !this.replacing && !this.deferred) {
+				this.attachScreen();
+			}
 		}
 	}
 

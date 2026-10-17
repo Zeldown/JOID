@@ -1,8 +1,12 @@
 package dev.joid.lib.bridge.ui;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -33,6 +37,9 @@ public abstract class UIBridge implements IUIBridge {
 	private final Set<Key>         consumedKeySet;
 	private final Set<MouseButton> consumedButtonSet;
 
+	private final Map<Key, Set<UI>>         pressedKeyMap;
+	private final Map<MouseButton, Set<UI>> pressedButtonMap;
+
 	private long        pressTime;
 	private MouseButton pressed;
 
@@ -43,6 +50,8 @@ public abstract class UIBridge implements IUIBridge {
 		this.uiList = IndexedList.concurrent();
 		this.consumedKeySet = EnumSet.noneOf(Key.class);
 		this.consumedButtonSet = EnumSet.noneOf(MouseButton.class);
+		this.pressedKeyMap = new EnumMap<>(Key.class);
+		this.pressedButtonMap = new EnumMap<>(MouseButton.class);
 	}
 
 	public final void load() {
@@ -66,7 +75,7 @@ public abstract class UIBridge implements IUIBridge {
 		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
 		this.pressedNode = this.getHoveredNode();
 		this.consumedButtonSet.remove(button);
-		final UI ui = this.dispatch(current -> current.fireMousePressed(button));
+		final UI ui = this.dispatch(this.pressedButtonMap.computeIfAbsent(button, pressed -> new LinkedHashSet<>()), current -> current.fireMousePressed(button));
 		final boolean consumed = ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 		if (consumed) {
 			this.consumedButtonSet.add(button);
@@ -81,7 +90,7 @@ public abstract class UIBridge implements IUIBridge {
 			this.pressedNode = null;
 		}
 
-		final UI ui = this.dispatch(current -> current.fireMouseReleased(button));
+		final UI ui = this.release(this.pressedButtonMap.remove(button), current -> current.fireMouseReleased(button));
 		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick()) || consumed;
 	}
 
@@ -105,7 +114,7 @@ public abstract class UIBridge implements IUIBridge {
 
 	public final boolean keyPressed(final @NonNull Key physicalKey, final @NonNull Key key) {
 		this.consumedKeySet.remove(key);
-		final UI ui = this.dispatch(current -> UIBridge.isClosedBy(current, key) || current.fireKeyPressed(physicalKey, key));
+		final UI ui = this.dispatch(this.pressedKeyMap.computeIfAbsent(key, pressed -> new LinkedHashSet<>()), current -> UIBridge.isClosedBy(current, key) || current.fireKeyPressed(physicalKey, key));
 		if (ui != null && UIBridge.isClosedBy(ui, key)) {
 			this.consumedKeySet.add(key);
 			if (!ui.fireKeyPressed(physicalKey, key) && ui.fireClose()) {
@@ -122,7 +131,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean keyReleased(final @NonNull Key physicalKey, final @NonNull Key key) {
-		this.dispatch(current -> current.fireKeyReleased(physicalKey, key));
+		this.release(this.pressedKeyMap.remove(key), current -> current.fireKeyReleased(physicalKey, key));
 		return this.consumedKeySet.remove(key);
 	}
 
@@ -269,12 +278,30 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	private UI dispatch(final Predicate<UI> input) {
+		return this.dispatch(new HashSet<>(), input);
+	}
+
+	private UI dispatch(final Set<UI> receivedSet, final Predicate<UI> input) {
 		for (final UI ui : this.getInputList()) {
+			receivedSet.add(ui);
 			if (input.test(ui) || ui.getPopup().active()) {
 				return ui;
 			}
 		}
 		return null;
+	}
+
+	private UI release(final Set<UI> pressedSet, final Predicate<UI> input) {
+		final Set<UI> releasedSet = new HashSet<>();
+		final UI ui = this.dispatch(releasedSet, input);
+		if (pressedSet != null) {
+			for (final UI pressed : pressedSet) {
+				if (!releasedSet.contains(pressed) && this.uiList.contains(pressed)) {
+					input.test(pressed);
+				}
+			}
+		}
+		return ui;
 	}
 
 	private Node getHoveredNode() {

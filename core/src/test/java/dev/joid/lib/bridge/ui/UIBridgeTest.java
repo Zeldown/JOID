@@ -223,6 +223,32 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void releasesTheUiThatReceivedThePressBelowAPopupOpenedSince() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.open(new PopupUI("popup", this.trace));
+		this.trace.clear();
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("released popup LEFT", "released menu LEFT", "released popup LEFT"), this.trace);
+	}
+
+	@Test
+	public void releasesTheKeyOfTheUiThatReceivedThePressBelowAPopupOpenedSince() {
+		final TraceUI menu = new TraceUI("menu", this.trace);
+		final TraceUI popup = new PopupUI("popup", this.trace);
+		menu.handleKeyReleased(event -> this.trace.add("keyup menu " + event.getKey()));
+		popup.handleKeyReleased(event -> this.trace.add("keyup popup " + event.getKey()));
+		this.bridges.open(menu);
+		this.bridges.getUi().keyPressed(Key.D, Key.D);
+		this.bridges.open(popup);
+		this.bridges.getUi().keyPressed(Key.D, Key.D);
+		this.trace.clear();
+		this.bridges.getUi().keyReleased(Key.D, Key.D);
+		Assert.assertEquals(Arrays.asList("keyup popup D", "keyup menu D"), this.trace);
+	}
+
+	@Test
 	public void scrollsTheTopUiFirst() {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hud);
