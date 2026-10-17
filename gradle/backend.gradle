@@ -61,3 +61,7 @@ if (org.gradle.internal.os.OperatingSystem.current().isMacOsX() && embeddedModul
 }
 
 snapshotTest(test, rootProject.file(".snapshots/${project.name}"), rootProject.file("build/snapshots/${project.name}"))
+
+if (project.hasProperty('skipSnapshots')) {
+    test.exclude 'dev/joid/backend/*/snapshot/**'
+}

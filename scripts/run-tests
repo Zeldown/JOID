@@ -4,17 +4,36 @@ mode=$1
 files=$(cat)
 tested="$(git rev-parse --git-dir)/joid-tested"
 
+changed() {
+    printf '%s\n' "$files" | grep -qE "$1"
+}
+
 sources=0
-if printf '%s\n' "$files" | grep -qE '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
+if changed '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
     sources=1
 fi
 
+jars=0
+if changed '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$|NOTICE$|licenses/)'; then
+    jars=1
+fi
+
 template=0
-if printf '%s\n' "$files" | grep -qE '^(core/|template/|tool/testkit/|gradle/snapshots\.gradle$|gradle/variants\.gradle$|build\.gradle$)'; then
+if changed '^(core/|template/|tool/testkit/|gradle/snapshots\.gradle$|gradle/variants\.gradle$|build\.gradle$)'; then
     template=1
 fi
 
-if [ $sources -eq 0 ] && [ $template -eq 0 ] && ! printf '%s\n' "$files" | grep -qE '^sample/showcase/(src/|build\.gradle$)'; then
+render=0
+if changed '^(core/src/main/java/dev/joid/(lib/(bridge|color|draw|font|obj|render|resource|shader|ui|video)|demo)/|core/src/main/resources/|base/|backend/|sample/|tool/testkit/|gradle/backend\.gradle$|gradle/snapshots\.gradle$)'; then
+    render=1
+fi
+
+showcase=0
+if changed '^sample/showcase/(src/|build\.gradle$)'; then
+    showcase=1
+fi
+
+if [ $sources -eq 0 ] && [ $jars -eq 0 ] && [ $template -eq 0 ] && [ $showcase -eq 0 ]; then
     echo "🔍 No source change, tests skipped"
     echo ""
     if [ "$mode" = "index" ] && grep -qx "$(git rev-parse HEAD^{tree})" "$tested" 2>/dev/null; then
@@ -52,7 +71,7 @@ fi
 trap restore EXIT
 
 all=0
-if printf '%s\n' "$files" | grep -qE '^(core/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
+if changed '^(core/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
     all=1
 fi
 
@@ -62,31 +81,50 @@ if [ $all -eq 1 ]; then
 fi
 
 for module in glfw openal opengl; do
-    if [ $all -eq 1 ] || printf '%s\n' "$files" | grep -q "^base/$module/"; then
+    if [ $all -eq 1 ] || changed "^base/$module/"; then
         tasks="$tasks :base-$module:check"
     fi
 done
 
-if [ $template -eq 1 ]; then
-    tasks="$tasks checkTemplate checkJars"
-fi
+if [ "$mode" = "index" ]; then
+    for module in lwjgl2 lwjgl3 vulkan; do
+        if changed "^(base/|backend/$module/)"; then
+            tasks="$tasks :backend-$module:check"
+        fi
+    done
 
-if [ $sources -eq 1 ]; then
-    echo "🔍 Testing the changes, then comparing the backends"
+    echo "🔍 pre-commit: compile & unit tests"
     echo ""
-    ./gradlew $tasks :sample-showcase:compileJava crossBackendTest --offline
+    ./gradlew compileJava compileTestJava jarCheckClasses $tasks -PskipSnapshots --offline
+    status=$?
 else
-    echo "🔍 Compiling the changes"
+    if [ $template -eq 1 ]; then
+        tasks="$tasks checkTemplate"
+    fi
+
+    if [ $jars -eq 1 ]; then
+        tasks="$tasks checkJars"
+    fi
+
+    if [ $render -eq 1 ]; then
+        tasks="$tasks crossBackendTest"
+    fi
+
+    echo "🔍 pre-push: full suite"
     echo ""
-    ./gradlew $tasks :sample-showcase:compileJava --offline
+    ./gradlew compileJava compileTestJava jarCheckClasses $tasks --offline
+    status=$?
 fi
-status=$?
 
 echo ""
 if [ $status -ne 0 ]; then
     echo "❌ Tests failed"
-    echo "   Open build/snapshots/backend-<name>/report.html or build/snapshots/cross/report.html to inspect the differences"
-    echo "   Run ./gradlew updateSnapshots if the visual change is intended"
+    if [ "$mode" != "index" ] && [ $render -eq 1 ]; then
+        echo "   Open build/snapshots/backend-<name>/report.html or build/snapshots/cross/report.html to inspect the differences"
+        echo "   Run ./gradlew updateSnapshots if the visual change is intended"
+    fi
+elif [ "$mode" = "index" ]; then
+    echo "✅ Done with the unit tests, the pre-push hook runs the full suite"
 else
     echo "✅ Done with tests"
     { tail -n 99 "$tested" 2>/dev/null; echo "$tree"; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
