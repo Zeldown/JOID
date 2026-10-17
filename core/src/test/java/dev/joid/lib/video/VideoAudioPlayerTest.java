@@ -54,7 +54,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = new VideoAudioPlayer("mute.mp4", 8000, 1);
 		final String error = VideoAudioPlayerTest.capture(player::play);
 		VideoAudioPlayerTest.push(player, 16, 1024);
-		player.update();
+		player.update(0D);
 		final int queued = VideoAudioPlayerTest.queueSize(player);
 		BridgeHandler.AUDIO.register(this.audio);
 		final String again = VideoAudioPlayerTest.capture(player::play);
@@ -78,7 +78,7 @@ public class VideoAudioPlayerTest {
 	public void waitsUntilItPlays() {
 		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		VideoAudioPlayerTest.push(player, 16, 1024);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(16, VideoAudioPlayerTest.queueSize(player));
 		Assert.assertTrue(this.audio.created.isEmpty());
 	}
@@ -88,7 +88,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		VideoAudioPlayerTest.push(player, 20, 1024);
 		player.play();
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 		Assert.assertTrue(this.audio.source().written.isEmpty());
 	}
@@ -98,7 +98,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		player.play();
 		VideoAudioPlayerTest.push(player, 16, 1024);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(4, this.audio.source().written.size());
 	}
 
@@ -106,12 +106,12 @@ public class VideoAudioPlayerTest {
 	public void waitsForSixteenChunksBeforeQueueing() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		VideoAudioPlayerTest.push(player, 15, 1024);
-		player.update();
+		player.update(0D);
 		final RecordingAudioSource source = this.audio.source();
 		Assert.assertTrue(source.written.isEmpty());
 		Assert.assertFalse(source.playing);
 		VideoAudioPlayerTest.push(player, 1, 1024);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(4, source.written.size());
 		Assert.assertEquals(4096, source.written.get(0).length);
 		Assert.assertEquals(Collections.singletonList(0.3F), source.gains);
@@ -120,14 +120,24 @@ public class VideoAudioPlayerTest {
 	}
 
 	@Test
+	public void skipsTheSamplesItsVideoPlayedWhileItsQueueFilled() {
+		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		VideoAudioPlayerTest.push(player, 16, 1024);
+		player.update(0.25D);
+		final RecordingAudioSource source = this.audio.source();
+		Assert.assertEquals((short) 2000, source.written.get(0)[0]);
+		Assert.assertEquals(16 * 1024 - 2000, source.getWrittenSamples());
+	}
+
+	@Test
 	public void splitsLargeSamplesAcrossChunksInOrder() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		VideoAudioPlayerTest.push(player, 16, 3000);
-		player.update();
+		player.update(0D);
 		final RecordingAudioSource source = this.audio.source();
 		Assert.assertEquals(8, source.written.size());
 		source.played += 5 * 4096;
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(12, source.written.size());
 		Assert.assertEquals(2944, source.written.get(11).length);
 		int expected = 0;
@@ -143,9 +153,9 @@ public class VideoAudioPlayerTest {
 	public void cutsItsChunksBetweenTwoFramesOfAMultichannelTrack() {
 		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 6);
 		player.play();
-		player.update();
+		player.update(0D);
 		VideoAudioPlayerTest.push(player, 16, 3000);
-		player.update();
+		player.update(0D);
 		final RecordingAudioSource source = this.audio.source();
 		Assert.assertEquals(8, source.written.size());
 		for (final short[] chunk : source.written) {
@@ -157,7 +167,7 @@ public class VideoAudioPlayerTest {
 	public void trimsItsLastChunk() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		VideoAudioPlayerTest.push(player, 16, 100);
-		player.update();
+		player.update(0D);
 		final RecordingAudioSource source = this.audio.source();
 		Assert.assertEquals(1, source.written.size());
 		Assert.assertEquals(1600, source.written.get(0).length);
@@ -169,9 +179,9 @@ public class VideoAudioPlayerTest {
 		final RecordingAudioSource source = this.audio.source();
 		source.playing = false;
 		source.calls.clear();
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(Collections.singletonList("play"), source.calls);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(Collections.singletonList("play"), source.calls);
 	}
 
@@ -179,7 +189,7 @@ public class VideoAudioPlayerTest {
 	public void appliesItsVolumeToTheGain() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
 		player.setVolume(0.5F);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(0.15F, this.audio.source().lastGain(), 1E-6F);
 	}
 
@@ -200,11 +210,11 @@ public class VideoAudioPlayerTest {
 		source.calls.clear();
 		source.gains.clear();
 		player.pause();
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(Collections.singletonList("pause"), source.calls);
 		Assert.assertTrue(source.gains.isEmpty());
 		player.resume();
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(Arrays.asList("pause", "play"), source.calls);
 		Assert.assertEquals(Collections.singletonList(0.3F), source.gains);
 	}
@@ -216,7 +226,7 @@ public class VideoAudioPlayerTest {
 		source.calls.clear();
 		source.gains.clear();
 		player.stop();
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(Collections.singletonList("stop"), source.calls);
 		Assert.assertTrue(source.gains.isEmpty());
 	}
@@ -245,10 +255,10 @@ public class VideoAudioPlayerTest {
 		Assert.assertEquals(0, source.getBufferedSamples());
 		final int written = source.written.size();
 		VideoAudioPlayerTest.push(player, 15, 1024);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(written, source.written.size());
 		VideoAudioPlayerTest.push(player, 1, 1024);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(written + 4, source.written.size());
 	}
 
@@ -257,7 +267,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		player.pushSamples(new Buffer[] {FloatBuffer.wrap(new float[] {1F, -1F, 0.5F}), FloatBuffer.wrap(new float[] {2F, -2F, 0F})}, 0);
 		VideoAudioPlayerTest.push(player, 15, 10);
-		player.update();
+		player.update(0D);
 		final short[] chunk = this.audio.source().written.get(0);
 		Assert.assertArrayEquals(new short[] {32767, 32767, -32767, -32767, 16383, 0}, Arrays.copyOf(chunk, 6));
 	}
@@ -267,7 +277,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3}), ShortBuffer.wrap(new short[] {4, 5, 6})}, 0);
 		VideoAudioPlayerTest.push(player, 15, 10);
-		player.update();
+		player.update(0D);
 		Assert.assertArrayEquals(new short[] {1, 4, 2, 5, 3, 6}, Arrays.copyOf(this.audio.source().written.get(0), 6));
 	}
 
@@ -276,7 +286,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {7, 8, 9, 10})}, 0);
 		VideoAudioPlayerTest.push(player, 15, 10);
-		player.update();
+		player.update(0D);
 		Assert.assertArrayEquals(new short[] {7, 8, 9, 10}, Arrays.copyOf(this.audio.source().written.get(0), 4));
 	}
 
@@ -285,7 +295,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3}), ShortBuffer.wrap(new short[] {4, 5, 6})}, 1);
 		VideoAudioPlayerTest.push(player, 15, 10);
-		player.update();
+		player.update(0D);
 		Assert.assertArrayEquals(new short[] {2, 5, 3, 6}, Arrays.copyOf(this.audio.source().written.get(0), 4));
 	}
 
@@ -293,10 +303,10 @@ public class VideoAudioPlayerTest {
 	public void skipsWholeFramesOfInterleavedFloatSamples() {
 		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 2);
 		player.play();
-		player.update();
+		player.update(0D);
 		player.pushSamples(new Buffer[] {FloatBuffer.wrap(new float[] {0.25F, 0.5F, -0.25F, -0.5F})}, 1);
 		VideoAudioPlayerTest.push(player, 15, 10);
-		player.update();
+		player.update(0D);
 		Assert.assertArrayEquals(new short[] {-8191, -16383, 0, 1}, Arrays.copyOf(this.audio.source().written.get(0), 4));
 	}
 
@@ -329,7 +339,7 @@ public class VideoAudioPlayerTest {
 	public void hearsFromTheOriginWithoutListener() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
 		player.setLocation(0F, 0F, 27.5F);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
@@ -340,7 +350,7 @@ public class VideoAudioPlayerTest {
 		player.setLocation(100F, 0F, 0F);
 		VideoAudioPlayerTest.push(player, 3, 10);
 		source.calls.clear();
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(Collections.singletonList("pause"), source.calls);
 	}
 
@@ -349,7 +359,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
 		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(3D, 4D, 0D));
 		player.setLocation(0F, 0F, 0F);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(0.3F, this.audio.source().lastGain(), 1E-6F);
 	}
 
@@ -358,7 +368,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
 		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(0D, 0D, 27.5D));
 		player.setLocation(0F, 0F, 0F);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
@@ -369,7 +379,7 @@ public class VideoAudioPlayerTest {
 		player.setLocation(1F, 2F, 3F);
 		player.setReferenceDistance(2F);
 		player.setMaxDistance(10F);
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
@@ -381,7 +391,7 @@ public class VideoAudioPlayerTest {
 		player.setLocation(0F, 0F, 0F);
 		VideoAudioPlayerTest.push(player, 3, 10);
 		source.calls.clear();
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(Collections.singletonList("pause"), source.calls);
 		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 		Assert.assertEquals(0.3F, source.lastGain(), 1E-6F);
@@ -394,7 +404,7 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 3, 10);
 		source.calls.clear();
 		player.cleanup();
-		player.update();
+		player.update(0D);
 		Assert.assertEquals(Arrays.asList("stop", "delete"), source.calls);
 		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 		player.play();
@@ -414,14 +424,14 @@ public class VideoAudioPlayerTest {
 	private static VideoAudioPlayer started() {
 		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
 		player.play();
-		player.update();
+		player.update(0D);
 		return player;
 	}
 
 	private static VideoAudioPlayer queued() {
 		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
 		VideoAudioPlayerTest.push(player, 16, 4096);
-		player.update();
+		player.update(0D);
 		return player;
 	}
 

@@ -661,6 +661,7 @@ public class VideoResourceDecoderTest {
 		final String error = VideoResourceDecoderTest.capture(decoder::play);
 		Assert.assertTrue(error, error.startsWith("[JOID] The video " + file.getPath() + " cannot be reopened ("));
 		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertFalse(decoder.isPlaying());
 	}
 
 	@Test

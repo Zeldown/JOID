@@ -96,7 +96,7 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	public void update() {
+	public void update(final double elapsed) {
 		if (!this.initialized || !this.playing || this.source == null) {
 			return;
 		}
@@ -106,6 +106,7 @@ public final class VideoAudioPlayer {
 				return;
 			}
 
+			this.skip((int) (elapsed * this.sampleRate) * this.channels);
 			this.fill();
 			this.buffersQueued = true;
 			this.source.gain(this.volume * 0.3F);
@@ -206,6 +207,20 @@ public final class VideoAudioPlayer {
 			this.sampleQueue.offer(samples);
 		} else if (skip < samples.length) {
 			this.sampleQueue.offer(Arrays.copyOfRange(samples, skip, samples.length));
+		}
+	}
+
+	private void skip(final int samples) {
+		int remaining = samples;
+		while (remaining > 0 && !this.sampleQueue.isEmpty()) {
+			final short[] next = this.sampleQueue.poll();
+			if (next.length > remaining) {
+				this.pendingSamples = next;
+				this.pendingOffset = remaining;
+				return;
+			}
+
+			remaining -= next.length;
 		}
 	}
 

@@ -206,7 +206,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	@Override
 	public void update(final @NonNull ResourceData resource) {
 		if (this.audioPlayer != null) {
-			this.audioPlayer.update();
+			this.audioPlayer.update(this.getPlaybackTime() - this.seekTime);
 		}
 
 		if (!this.running.get()) {
@@ -322,6 +322,9 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		this.joinDecodeThread();
 		if (this.grabber == null) {
 			this.reopenGrabber();
+			if (this.grabber == null) {
+				return this;
+			}
 		} else if (!this.seeked && this.decodedFrameIndex.get() > 0) {
 			this.seekInternal(0L);
 		}
