@@ -196,12 +196,7 @@ public final class Color extends LockableValue<Color> {
 			return new Color(new ColorGradient(start, end, g.getStartPoint(), g.getEndPoint()));
 		}
 
-		return new Color(
-				color1.r * inv + color2.r * progress,
-				color1.g * inv + color2.g * progress,
-				color1.b * inv + color2.b * progress,
-				color1.a * inv + color2.a * progress
-				);
+		return Color.lerp(color1, color2, progress);
 	}
 
 	public static @NonNull Color gradient(final @NonNull Color color1, final @NonNull Color color2, final @NonNull Point startPoint, final @NonNull Point endPoint) {

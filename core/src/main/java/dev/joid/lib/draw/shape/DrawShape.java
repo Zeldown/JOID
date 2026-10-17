@@ -224,21 +224,7 @@ public final class DrawShape {
 		final double right = grid.snapRight(x, x + width);
 		final double bottom = grid.snapBottom(y, y + height);
 		final float corner = (float) Math.min(radius, Math.min(Math.abs(right - left), Math.abs(bottom - top)) / 2D);
-		final double pixel = grid.getPixelSize();
-		final Color resolved = color.update();
-		RoundedShader.use(corner, (float) (left + (roundedLeft ? corner : 0F)), (float) (top + (roundedTop ? corner : 0F)), (float) (right - (roundedRight ? corner : 0F)), (float) (bottom - (roundedBottom ? corner : 0F)), () -> {
-			RoundedShader.inst().aligned(grid.isAligned());
-			RoundedShader.inst().stroke((float) stroke);
-			if (resolved.isGradient()) {
-				RoundedShader.inst().gradient(resolved.getGradient(), BoundingBox.create(left, top, right - left, bottom - top));
-			}
-
-			if (grid.isAligned()) {
-				this.drawRect(left, top, right - left, bottom - top, resolved.isGradient() ? Color.WHITE : resolved);
-			} else {
-				this.drawQuad(left - pixel, top - pixel, right + pixel, bottom + pixel, resolved.isGradient() ? Color.WHITE : resolved);
-			}
-		});
+		this.drawRoundedShape(corner, (float) (left + (roundedLeft ? corner : 0F)), (float) (top + (roundedTop ? corner : 0F)), (float) (right - (roundedRight ? corner : 0F)), (float) (bottom - (roundedBottom ? corner : 0F)), left, top, right, bottom, color, (float) stroke, grid.isAligned());
 	}
 
 	private void drawEdges(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
@@ -258,15 +244,24 @@ public final class DrawShape {
 
 	private void drawOutline(final double left, final double top, final double right, final double bottom, final @NonNull Color color, final float stroke) {
 		final double pixel = BridgeHandler.RENDER.get().getPixelGrid().getPixelSize();
+		this.drawRoundedShape(0F, (float) (left + pixel / 2D), (float) (top + pixel / 2D), (float) (right - pixel / 2D), (float) (bottom - pixel / 2D), left, top, right, bottom, color, stroke, false);
+	}
+
+	private void drawRoundedShape(final float radius, final float x1, final float y1, final float x2, final float y2, final double left, final double top, final double right, final double bottom, final @NonNull Color color, final float stroke, final boolean aligned) {
+		final double pixel = BridgeHandler.RENDER.get().getPixelGrid().getPixelSize();
 		final Color resolved = color.update();
-		RoundedShader.use(0F, (float) (left + pixel / 2D), (float) (top + pixel / 2D), (float) (right - pixel / 2D), (float) (bottom - pixel / 2D), () -> {
-			RoundedShader.inst().aligned(false);
+		RoundedShader.use(radius, x1, y1, x2, y2, () -> {
+			RoundedShader.inst().aligned(aligned);
 			RoundedShader.inst().stroke(stroke);
 			if (resolved.isGradient()) {
 				RoundedShader.inst().gradient(resolved.getGradient(), BoundingBox.create(left, top, right - left, bottom - top));
 			}
 
-			this.drawQuad(left - pixel, top - pixel, right + pixel, bottom + pixel, resolved.isGradient() ? Color.WHITE : resolved);
+			if (aligned) {
+				this.drawRect(left, top, right - left, bottom - top, resolved.isGradient() ? Color.WHITE : resolved);
+			} else {
+				this.drawQuad(left - pixel, top - pixel, right + pixel, bottom + pixel, resolved.isGradient() ? Color.WHITE : resolved);
+			}
 		});
 	}
 

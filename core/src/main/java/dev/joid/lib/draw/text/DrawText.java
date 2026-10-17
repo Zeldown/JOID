@@ -54,13 +54,7 @@ public final class DrawText {
 
 		final double ox = text.getAlignX().isCenter() ? x + width / 2D : text.getAlignX().isEnd() ? x + width : x;
 		if (mode == TextMode.NORMAL || mode == TextMode.OVERFLOW) {
-			double oy = y;
-
-			if (text.getAlignY().isCenter()) {
-				oy = y + height / 2D;
-			} else if (text.getAlignY().isEnd()) {
-				oy = y + height;
-			}
+			final double oy = text.getAlignY().isCenter() ? y + height / 2D : text.getAlignY().isEnd() ? y + height : y;
 
 			if (mode == TextMode.OVERFLOW) {
 				final Text overflowText = text.copyProperties().modifier(null);
