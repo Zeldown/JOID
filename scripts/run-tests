@@ -8,11 +8,6 @@ changed() {
     printf '%s\n' "$files" | grep -qE "$1"
 }
 
-sources=0
-if changed '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$)'; then
-    sources=1
-fi
-
 jars=0
 if changed '^(core/|base/|backend/|tool/|gradle/|build\.gradle$|settings\.gradle$|NOTICE$|licenses/)'; then
     jars=1
@@ -24,7 +19,7 @@ if changed '^(core/|template/|tool/testkit/|gradle/snapshots\.gradle$|gradle/var
 fi
 
 render=0
-if changed '^(core/src/main/java/dev/joid/(lib/(bridge|color|draw|font|obj|render|resource|shader|ui|video)|demo)/|core/src/main/resources/|base/|backend/|sample/|tool/testkit/|gradle/backend\.gradle$|gradle/snapshots\.gradle$)'; then
+if changed '^(core/src/main/|base/|backend/|tool/(msdf|testkit)/src/main/|gradle/|build\.gradle$)'; then
     render=1
 fi
 
@@ -33,7 +28,7 @@ if changed '^sample/showcase/(src/|build\.gradle$)'; then
     showcase=1
 fi
 
-if [ $sources -eq 0 ] && [ $jars -eq 0 ] && [ $template -eq 0 ] && [ $showcase -eq 0 ]; then
+if [ $jars -eq 0 ] && [ $template -eq 0 ] && [ $showcase -eq 0 ]; then
     echo "🔍 No source change, tests skipped"
     echo ""
     if [ "$mode" = "index" ] && grep -qx "$(git rev-parse HEAD^{tree})" "$tested" 2>/dev/null; then
