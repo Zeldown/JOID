@@ -323,56 +323,56 @@ wait 600
 shot inter-layout
 ui dev.joid.demo.ui.overflow.UIDemoOverflow
 wait 800
-move 300 160
+move 300 130
 wait 100
 scroll -1
 scroll -1
 scroll -1
 wait 300
-move 740 160
+move 740 130
 wait 100
 scroll -1
 scroll -1
 scroll -1
 wait 300
-move 1180 160
+move 1180 130
 wait 100
 scroll -1
 scroll -1
 scroll -1
 wait 300
-move 1030 254
+move 1030 204
 wait 100
 press LEFT
-moveto 1200 254 400
+moveto 1200 204 400
 wait 200
 release LEFT
 wait 400
-move 474 420
+move 474 315
 wait 100
 press LEFT
-moveto 474 540 400
+moveto 474 435 400
 wait 200
 release LEFT
 wait 400
-move 590 594
+move 590 469
 wait 100
 press LEFT
-moveto 800 594 400
+moveto 800 469 400
 wait 200
 release LEFT
 wait 400
-move 1180 500
+move 1180 395
 wait 100
 scroll -1
 scroll -1
 wait 300
-move 1740 495
+move 1740 390
 wait 100
 press LEFT
 release LEFT
 wait 100
-move 300 820
+move 300 640
 wait 100
 scroll -1
 scroll -1
@@ -385,7 +385,7 @@ scroll -1
 scroll -1
 scroll -1
 wait 300
-move 740 810
+move 740 630
 wait 100
 scroll -1
 scroll -1
@@ -398,7 +398,7 @@ scroll -1
 scroll -1
 scroll -1
 wait 300
-move 1180 790
+move 1180 610
 wait 100
 scroll -1
 scroll -1
@@ -407,7 +407,7 @@ wait 300
 wait 1200
 shot inter-overflow
 ui dev.joid.demo.ui.overflow.UIDemoOverflow
-move 1600 820
+move 1600 640
 wait 16
 scroll -1
 scroll -1

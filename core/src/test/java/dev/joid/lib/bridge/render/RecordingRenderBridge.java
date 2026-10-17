@@ -10,6 +10,7 @@ import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
@@ -87,7 +88,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 		}
 
 		final RenderState state = super.getState();
-		this.draws.add(new Draw(primitive, xs, ys, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha(), state.getLineWidth(), state.getShader(), state.getTextureFilter()));
+		this.draws.add(new Draw(primitive, xs, ys, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha(), state.getLineWidth(), state.getShader(), state.getTextureFilter(), state.getStencil()));
 	}
 
 	@Override
@@ -123,6 +124,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 		private final float         lineWidth;
 		private final IShader       shader;
 		private final TextureFilter textureFilter;
+		private final StencilState  stencil;
 
 		public double getLeft() {
 			double value = Double.MAX_VALUE;

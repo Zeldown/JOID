@@ -53,7 +53,10 @@ import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.state.RenderState;
+import dev.joid.lib.bridge.render.state.StencilOperation;
+import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.key.resolver.IKeyResolver;
 import dev.joid.lib.input.key.resolver.KeyResolver;
@@ -1641,7 +1644,35 @@ public class UITest {
 		Assert.assertEquals(Arrays.asList("EQUAL 2", "EQUAL 1"), stencils);
 		Assert.assertEquals(0, UITest.maskDepth(ui));
 		Assert.assertFalse(this.bridges.getRender().getState().getStencil().isEnabled());
-		Assert.assertEquals(2, this.bridges.getRender().getDraws(1F, 0F, 0F).size());
+		Assert.assertEquals(3, this.bridges.getRender().getDraws(1F, 0F, 0F).size());
+	}
+
+	@Test
+	public void drawsOverANestedMaskOnceItIsStopped() {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		this.bridges.getRender().getDraws().clear();
+		ui.mask(0D, 0D, 100D, 100D, () -> {
+			ui.mask(10D, 10D, 50D, 50D, () -> {});
+			DrawUtils.SHAPE.drawRect(0D, 0D, 100D, 100D, Color.BLUE);
+		});
+		final Draw inner = this.bridges.getRender().getDraws(1F, 0F, 0F).get(1);
+		final Draw sibling = this.bridges.getRender().getDraws(0F, 0F, 1F).get(0);
+		Assert.assertTrue(UITest.passesStencil(this.bridges.getRender().getDraws(), sibling, (inner.getLeft() + inner.getRight()) / 2D, (inner.getTop() + inner.getBottom()) / 2D));
+	}
+
+	@Test
+	public void keepsTheContentOfASiblingMaskInsideItsOwnArea() {
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		this.bridges.getRender().getDraws().clear();
+		ui.mask(0D, 0D, 100D, 100D, () -> {
+			ui.mask(10D, 10D, 30D, 30D, () -> {});
+			ui.mask(50D, 10D, 30D, 30D, () -> DrawUtils.SHAPE.drawRect(0D, 0D, 100D, 100D, Color.BLUE));
+		});
+		final Draw first = this.bridges.getRender().getDraws(1F, 0F, 0F).get(1);
+		final Draw content = this.bridges.getRender().getDraws(0F, 0F, 1F).get(0);
+		Assert.assertFalse(UITest.passesStencil(this.bridges.getRender().getDraws(), content, (first.getLeft() + first.getRight()) / 2D, (first.getTop() + first.getBottom()) / 2D));
 	}
 
 	@Test
@@ -2160,6 +2191,22 @@ public class UITest {
 
 	private static float depth() {
 		return ((RenderBridge) BridgeHandler.RENDER.get()).getModelView().getMatrix()[14];
+	}
+
+	private static boolean passesStencil(final List<Draw> draws, final Draw target, final double x, final double y) {
+		int value = 0;
+		for (final Draw draw : draws) {
+			final StencilState stencil = draw.getStencil();
+			final boolean passes = !stencil.isEnabled() || stencil.getReference() == value;
+			if (draw == target) {
+				return passes;
+			}
+
+			if (passes && x >= draw.getLeft() && x <= draw.getRight() && y >= draw.getTop() && y <= draw.getBottom()) {
+				value += stencil.getPass() == StencilOperation.INCREMENT ? 1 : stencil.getPass() == StencilOperation.DECREMENT ? -1 : 0;
+			}
+		}
+		throw new IllegalArgumentException("The draw is not in the list");
 	}
 
 	private static String stencil(final HeadlessBridges bridges) {

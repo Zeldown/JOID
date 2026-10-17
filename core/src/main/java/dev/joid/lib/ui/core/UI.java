@@ -796,33 +796,43 @@ public abstract class UI implements IIndexedElement {
 			this.startMask(shape);
 			drawing.run();
 		} finally {
-			this.stopMask();
+			this.stopMask(shape);
 		}
 	}
 
 	private void startMask(final Runnable shape) {
 		this.maskDepth++;
-		BridgeHandler.RENDER.get().withState(render -> {
-			if (this.maskDepth == 1) {
-				render.clearStencil();
-			}
+		if (this.maskDepth == 1) {
+			BridgeHandler.RENDER.get().clearStencil();
+		}
 
-			render.getState().stencil(StencilState.of(StencilFunction.EQUAL, this.maskDepth - 1, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.INCREMENT));
-			render.getState().colorWrite(false);
-			shape.run();
-		});
+		this.drawMask(shape, this.maskDepth - 1, StencilOperation.INCREMENT);
 		BridgeHandler.RENDER.get().getState().stencil(StencilState.of(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
 	}
 
-	private void stopMask() {
-		this.maskDepth--;
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		if (this.maskDepth == 0) {
-			render.getState().stencil(StencilState.DISABLED);
-			render.clearStencil();
-		} else {
-			render.getState().stencil(StencilState.of(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+	private void stopMask(final Runnable shape) {
+		try {
+			if (this.maskDepth > 1) {
+				this.drawMask(shape, this.maskDepth, StencilOperation.DECREMENT);
+			}
+		} finally {
+			this.maskDepth--;
+			final IRenderBridge render = BridgeHandler.RENDER.get();
+			if (this.maskDepth == 0) {
+				render.getState().stencil(StencilState.DISABLED);
+				render.clearStencil();
+			} else {
+				render.getState().stencil(StencilState.of(StencilFunction.EQUAL, this.maskDepth, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, StencilOperation.KEEP));
+			}
 		}
+	}
+
+	private void drawMask(final Runnable shape, final int reference, final StencilOperation operation) {
+		BridgeHandler.RENDER.get().withState(render -> {
+			render.getState().stencil(StencilState.of(StencilFunction.EQUAL, reference, 0xFF, StencilOperation.KEEP, StencilOperation.KEEP, operation));
+			render.getState().colorWrite(false);
+			shape.run();
+		});
 	}
 
 	private void drawFrame(final double mouseX, final double mouseY) {
