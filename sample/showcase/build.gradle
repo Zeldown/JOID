@@ -7,7 +7,6 @@ dependencies {
 
 jar.enabled = false
 
-/* Showcase */
 task run(type: JavaExec) {
     group = 'JOID'
     description = 'Launches the README showcase in a Vulkan window.'

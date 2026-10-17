@@ -10,19 +10,17 @@ import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.backend.Backend;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VulkanBackend extends Backend {
 
 	private final long        window;
 	private final IVulkanHost host;
 
 	private VulkanRenderBridge render;
-
-	private VulkanBackend(final long window, final IVulkanHost host) {
-		this.window = window;
-		this.host   = host;
-	}
 
 	public static @NonNull VulkanBackend create(final long window, final @NonNull IVulkanHost host) {
 		return new VulkanBackend(window, host);

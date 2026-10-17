@@ -14,12 +14,13 @@ public final class GlyphEntry {
 
 	@Setter private int x;
 	@Setter private int y;
-	@Setter private int width;
-	@Setter private int height;
-	@Setter private double top;
-	@Setter private double left;
-	@Setter private double right;
-	@Setter private double bottom;
+
+	private int    width;
+	private int    height;
+	private double top;
+	private double left;
+	private double right;
+	private double bottom;
 
 	public GlyphEntry(final int codepoint, final double advance, final Shape shape) {
 		this.codepoint = codepoint;

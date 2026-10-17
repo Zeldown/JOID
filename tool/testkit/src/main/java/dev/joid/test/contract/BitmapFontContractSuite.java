@@ -10,8 +10,6 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.bridge.render.state.BlendState;
-import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontWeight;
@@ -44,10 +42,7 @@ public abstract class BitmapFontContractSuite {
 			BitmapFontContractSuite.backend.create(BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT);
 		}
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().identity();
-		render.getProjection().ortho(0D, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, 0D, 0D, 10000D);
-		render.getState().load(RenderState.create().viewport(0, 0, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT).blend(BlendState.NORMAL).depthWrite(false));
+		ContractDraw.reset(BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT);
 	}
 
 	@AfterClass

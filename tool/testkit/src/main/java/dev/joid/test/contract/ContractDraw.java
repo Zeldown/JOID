@@ -9,6 +9,11 @@ import org.junit.Assert;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
+import dev.joid.lib.bridge.render.shader.IShader;
+import dev.joid.lib.bridge.render.shader.source.ShaderSource;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+import dev.joid.lib.bridge.render.state.BlendState;
+import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import dev.joid.test.snapshot.ISnapshotBackend;
@@ -33,6 +38,18 @@ public final class ContractDraw {
 		final SnapshotImage image = backend.capture(width, height);
 		backend.present();
 		return image;
+	}
+
+	public static void reset(final int width, final int height) {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		render.getModelView().identity();
+		render.getProjection().ortho(0D, width, height, 0D, 0D, 10000D);
+		render.getState().load(RenderState.create().viewport(0, 0, width, height).blend(BlendState.NORMAL).depthWrite(false));
+	}
+
+	public static @NonNull IShader shader(final @NonNull String fragment) {
+		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}");
+		return BridgeHandler.RENDER.get().createShader(vertex, ShaderSource.parse(ShaderStage.FRAGMENT, fragment), BlendState.NORMAL);
 	}
 
 	public static void assertPixel(final @NonNull SnapshotImage image, final int x, final int y, final int expected) {

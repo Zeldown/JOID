@@ -8,10 +8,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.render.IRenderBridge;
-import dev.joid.lib.bridge.render.state.BlendState;
-import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.BorrowedTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
@@ -39,10 +35,7 @@ public abstract class BorrowedTextureContractSuite {
 			BorrowedTextureContractSuite.backend.create(BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE);
 		}
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().identity();
-		render.getProjection().ortho(0D, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE, 0D, 0D, 10000D);
-		render.getState().load(RenderState.create().viewport(0, 0, BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
+		ContractDraw.reset(BorrowedTextureContractSuite.SIZE, BorrowedTextureContractSuite.SIZE);
 	}
 
 	@AfterClass

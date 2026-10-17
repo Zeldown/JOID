@@ -16,11 +16,12 @@ import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import lombok.NonNull;
 
 public class ShowNeonKit implements IShowKit {
 
 	@Override
-	public void backdrop(final Node layer) {
+	public void backdrop(final @NonNull Node layer) {
 		RectNode.create(0, 0, 1920, 1080).color(ShowUI.diagonal(ShowUI.NIGHT, ShowUI.DUSK)).attach(layer);
 		ShowUI.blob(-260, 420, 900, ShowUI.VIOLET.withAlpha(0.42F), 0D, 50D).attach(layer);
 		ShowUI.blob(1250, -320, 900, ShowUI.CYAN.withAlpha(0.22F), 0.4D, 50D).attach(layer);
@@ -28,42 +29,42 @@ public class ShowNeonKit implements IShowKit {
 	}
 
 	@Override
-	public TextInfo display() {
+	public @NonNull TextInfo display() {
 		return ShowUI.font(FontWeight.BLACK, 124F, ShowUI.TEXT);
 	}
 
 	@Override
-	public TextInfo accent() {
+	public @NonNull TextInfo accent() {
 		return ShowUI.font(FontWeight.BLACK, 124F, ShowUI.FUCHSIA.toGradient(ShowUI.CYAN));
 	}
 
 	@Override
-	public TextInfo title() {
+	public @NonNull TextInfo title() {
 		return ShowUI.font(FontWeight.EXTRA_BOLD, 46F, ShowUI.TEXT);
 	}
 
 	@Override
-	public TextInfo label() {
+	public @NonNull TextInfo label() {
 		return ShowUI.font(FontWeight.SEMI_BOLD, 25F, ShowUI.TEXT);
 	}
 
 	@Override
-	public TextInfo hint() {
+	public @NonNull TextInfo hint() {
 		return ShowUI.font(FontWeight.MEDIUM, 25F, ShowUI.MUTED);
 	}
 
 	@Override
-	public RectNode panel(final double x, final double y, final double width, final double height) {
+	public @NonNull RectNode panel(final double x, final double y, final double width, final double height) {
 		return ShowUI.glass(x, y, width, height, 36F);
 	}
 
 	@Override
-	public RectNode divider(final double x, final double y, final double width) {
+	public @NonNull RectNode divider(final double x, final double y, final double width) {
 		return RectNode.create(x, y, width, 1.5D).color(Color.WHITE.withAlpha(0.1F));
 	}
 
 	@Override
-	public RectNode choice(final double x, final double y, final String label, final BooleanSupplier selected) {
+	public @NonNull RectNode choice(final double x, final double y, final @NonNull String label, final @NonNull BooleanSupplier selected) {
 		return RectNode
 		.create(x, y, 180, 64)
 		.color(() -> selected.getAsBoolean() ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.withAlpha(0.08F))
@@ -75,7 +76,7 @@ public class ShowNeonKit implements IShowKit {
 	}
 
 	@Override
-	public RectNode button(final double x, final double y, final double width, final Supplier<String> label, final boolean primary) {
+	public @NonNull RectNode button(final double x, final double y, final double width, final @NonNull Supplier<String> label, final boolean primary) {
 		return RectNode
 		.create(x, y, width, 72)
 		.<RectNode>self(button -> button.color(() -> primary ? ShowUI.VIOLET.toGradient(ShowUI.PINK) : Color.WHITE.withAlpha(0.07F + button.hoverValue(0.06F))))
@@ -88,17 +89,17 @@ public class ShowNeonKit implements IShowKit {
 	}
 
 	@Override
-	public ToggleNode<Boolean, Boolean> toggle(final double x, final double y) {
+	public @NonNull ToggleNode<Boolean, Boolean> toggle(final double x, final double y) {
 		return ShowToggleNode.create(x, y, ShowUI.VIOLET);
 	}
 
 	@Override
-	public DoubleSliderNode slider(final double x, final double y, final double width) {
+	public @NonNull DoubleSliderNode slider(final double x, final double y, final double width) {
 		return ShowSliderNode.create(x, y, width, ShowUI.FUCHSIA, ShowUI.PINK);
 	}
 
 	@Override
-	public TextFieldNode field(final double x, final double y, final double width) {
+	public @NonNull TextFieldNode field(final double x, final double y, final double width) {
 		return ShowFieldNode.create(x, y, width, ShowUI.CYAN).info(ShowUI.font(FontWeight.MEDIUM, 25F, ShowUI.TEXT)).marginHorizontal(24D);
 	}
 

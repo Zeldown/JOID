@@ -8,6 +8,7 @@ import org.lwjgl.opengl.Display;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.input.cursor.Cursor;
+import dev.joid.lib.utils.platform.Platform;
 import lombok.NonNull;
 
 public abstract class NativeCursor {
@@ -22,6 +23,23 @@ public abstract class NativeCursor {
 	protected NativeCursor() {
 		this.handleMap = new EnumMap<>(Cursor.class);
 		this.applied   = Cursor.DEFAULT;
+	}
+
+	public static NativeCursor forPlatform() {
+		try {
+			Class.forName("com.sun.jna.Native");
+			switch (Platform.current()) {
+			case WINDOWS:
+				return WindowsNativeCursor.create();
+			case MACOS:
+				return MacNativeCursor.create();
+			default:
+				return X11NativeCursor.create();
+			}
+		} catch (final ReflectiveOperationException | LinkageError | RuntimeException exception) {
+			JOIDLog.devWarnOnce("NativeCursor.jna", () -> "JNA is missing or cannot be loaded, the mouse cursor stays the default one: " + exception);
+			return null;
+		}
 	}
 
 	public final void apply(final @NonNull Cursor cursor) {

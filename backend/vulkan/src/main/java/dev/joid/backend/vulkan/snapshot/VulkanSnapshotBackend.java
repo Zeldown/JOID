@@ -6,7 +6,6 @@ import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.vulkan.VK10;
 import org.lwjgl.vulkan.VkBufferImageCopy;
 import org.lwjgl.vulkan.VkCommandBuffer;
-import org.lwjgl.vulkan.VkPhysicalDeviceProperties;
 
 import dev.joid.backend.vulkan.VulkanBackend;
 import dev.joid.backend.vulkan.host.WindowVulkanHost;
@@ -86,11 +85,7 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public @NonNull String getRenderer() {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
-			VK10.vkGetPhysicalDeviceProperties(this.host.getPhysicalDevice(), properties);
-			return properties.deviceNameString();
-		}
+		return ((VulkanRenderBridge) BridgeHandler.RENDER.get()).getContext().getDeviceName();
 	}
 
 }

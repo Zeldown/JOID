@@ -90,31 +90,20 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
-		this.guard.run(() -> {
-			final RenderState state = super.getState();
-			this.applyTarget(state);
+		this.clearBuffer(GlConstants.COLOR_BUFFER_BIT, () -> {
 			this.binding.colorMask(true, true, true, true);
 			this.binding.clearColor(red, green, blue, alpha);
-			this.binding.clear(GlConstants.COLOR_BUFFER_BIT);
 		});
 	}
 
 	@Override
 	protected void clearDepthBuffer() {
-		this.guard.run(() -> {
-			this.applyTarget(super.getState());
-			this.binding.depthMask(true);
-			this.binding.clear(GlConstants.DEPTH_BUFFER_BIT);
-		});
+		this.clearBuffer(GlConstants.DEPTH_BUFFER_BIT, () -> this.binding.depthMask(true));
 	}
 
 	@Override
 	protected void clearStencilBuffer() {
-		this.guard.run(() -> {
-			this.applyTarget(super.getState());
-			this.binding.stencilMask(0xFF);
-			this.binding.clear(GlConstants.STENCIL_BUFFER_BIT);
-		});
+		this.clearBuffer(GlConstants.STENCIL_BUFFER_BIT, () -> this.binding.stencilMask(0xFF));
 	}
 
 	@Override
@@ -168,6 +157,14 @@ public class GlRenderBridge extends RenderBridge {
 		if (this.capabilities.hasSamplerObjects()) {
 			this.binding.bindSampler(unit, 0);
 		}
+	}
+
+	private void clearBuffer(final int mask, final Runnable prepare) {
+		this.guard.run(() -> {
+			this.applyTarget(super.getState());
+			prepare.run();
+			this.binding.clear(mask);
+		});
 	}
 
 	private void applyTarget(final RenderState state) {

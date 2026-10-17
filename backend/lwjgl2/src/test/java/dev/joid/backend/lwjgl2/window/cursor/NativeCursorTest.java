@@ -16,9 +16,8 @@ public class NativeCursorTest {
 
 	@Test
 	public void choosesTheCursorsOfItsPlatform() {
-		final NativeCursor cursor = NativeCursors.get();
+		final NativeCursor cursor = NativeCursor.forPlatform();
 		Assume.assumeNotNull(cursor);
-		Assert.assertSame(cursor, NativeCursors.get());
 		switch (Platform.current()) {
 		case WINDOWS:
 			Assert.assertTrue(cursor instanceof WindowsNativeCursor);
@@ -48,7 +47,7 @@ public class NativeCursorTest {
 
 	@Test
 	public void appliesNothingWithoutDisplay() {
-		final NativeCursor cursor = NativeCursors.get();
+		final NativeCursor cursor = NativeCursor.forPlatform();
 		Assume.assumeNotNull(cursor);
 		Lwjgl2Natives.install();
 		cursor.apply(Cursor.POINTER);

@@ -16,10 +16,8 @@ import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
-import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.state.BlendState;
-import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.state.StencilState;
@@ -62,10 +60,7 @@ public abstract class RenderBridgeContractSuite {
 			RenderBridgeContractSuite.backend.create(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		}
 
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.getModelView().identity();
-		render.getProjection().ortho(0D, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, 0D, 0D, 10000D);
-		render.getState().load(RenderState.create().viewport(0, 0, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
+		ContractDraw.reset(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 	}
 
 	@AfterClass
@@ -124,7 +119,7 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void skipsTheDrawsOfAShaderThatFailsToCompile() {
-		final IShader shader = RenderBridgeContractSuite.shader("void main() {\n    fragColor = undeclaredColor;\n}");
+		final IShader shader = ContractDraw.shader("void main() {\n    fragColor = undeclaredColor;\n}");
 		Assert.assertFalse("A shader that fails to compile must report isActive() == false", shader.isActive());
 
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
@@ -143,7 +138,7 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void appliesTheUniformsSetBeforeTheShaderIsBound() {
-		final IShader shader = RenderBridgeContractSuite.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
+		final IShader shader = ContractDraw.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
 		shader.uniform("tint", 0F, 1F, 0F, 1F);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			shader.bind();
@@ -158,7 +153,7 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void appliesEveryUniformType() {
-		final IShader shader = RenderBridgeContractSuite.shader("uniform float u_Float;\nuniform vec2 u_Vec2;\nuniform vec3 u_Vec3;\nuniform vec4 u_Vec4;\nuniform int u_Int;\nuniform bool u_Bool;\nuniform mat3 u_Matrix;\nuniform float u_Floats[3];\nuniform vec4 u_Colors[2];\n\nvoid main() {\n    bool valid = u_Float == 0.5 && u_Vec2 == vec2(1.0, 2.0) && u_Vec3 == vec3(3.0, 4.0, 5.0) && u_Vec4 == vec4(6.0, 7.0, 8.0, 9.0) && u_Int == 3 && u_Bool && u_Matrix[1][2] == 6.0 && u_Matrix[2][0] == 7.0 && u_Floats[2] == 12.0;\n    fragColor = valid ? u_Colors[1] : u_Colors[0];\n}");
+		final IShader shader = ContractDraw.shader("uniform float u_Float;\nuniform vec2 u_Vec2;\nuniform vec3 u_Vec3;\nuniform vec4 u_Vec4;\nuniform int u_Int;\nuniform bool u_Bool;\nuniform mat3 u_Matrix;\nuniform float u_Floats[3];\nuniform vec4 u_Colors[2];\n\nvoid main() {\n    bool valid = u_Float == 0.5 && u_Vec2 == vec2(1.0, 2.0) && u_Vec3 == vec3(3.0, 4.0, 5.0) && u_Vec4 == vec4(6.0, 7.0, 8.0, 9.0) && u_Int == 3 && u_Bool && u_Matrix[1][2] == 6.0 && u_Matrix[2][0] == 7.0 && u_Floats[2] == 12.0;\n    fragColor = valid ? u_Colors[1] : u_Colors[0];\n}");
 		shader
 		.uniform("u_Float", 0.5F)
 		.uniform("u_Vec2", 1F, 2F)
@@ -183,7 +178,7 @@ public abstract class RenderBridgeContractSuite {
 	@Test
 	public void samplesTheTextureOfASampler() {
 		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.GREEN});
-		final IShader shader = RenderBridgeContractSuite.shader("uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}");
+		final IShader shader = ContractDraw.shader("uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}");
 		shader.sampler("u_Mask", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			shader.bind();
@@ -198,7 +193,7 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void readsTheLightingOfEachDraw() {
-		final IShader shader = RenderBridgeContractSuite.shader("void main() {\n    fragColor = uLighting ? vec4(0.0, 1.0, 0.0, 1.0) : vec4(1.0, 0.0, 0.0, 1.0);\n}");
+		final IShader shader = ContractDraw.shader("void main() {\n    fragColor = uLighting ? vec4(0.0, 1.0, 0.0, 1.0) : vec4(1.0, 0.0, 0.0, 1.0);\n}");
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			shader.bind();
 			try {
@@ -320,7 +315,7 @@ public abstract class RenderBridgeContractSuite {
 
 	@Test
 	public void drawsAWideLineWithTheBoundShader() {
-		final IShader shader = RenderBridgeContractSuite.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
+		final IShader shader = ContractDraw.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
 		shader.uniform("tint", 0F, 1F, 0F, 1F);
 		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
 			bridge.getState().lineWidth(6F);
@@ -605,11 +600,6 @@ public abstract class RenderBridgeContractSuite {
 
 	private static SnapshotImage render(final Consumer<IRenderBridge> draw) {
 		return ContractDraw.frame(RenderBridgeContractSuite.backend, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, draw);
-	}
-
-	private static IShader shader(final String fragment) {
-		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}");
-		return BridgeHandler.RENDER.get().createShader(vertex, ShaderSource.parse(ShaderStage.FRAGMENT, fragment), BlendState.NORMAL);
 	}
 
 	private static void drawLitFace(final IRenderBridge bridge, final double scale) {

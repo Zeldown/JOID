@@ -10,7 +10,6 @@ import org.lwjgl.opengl.Display;
 
 import dev.joid.backend.lwjgl2.input.Lwjgl2Keys;
 import dev.joid.backend.lwjgl2.window.cursor.NativeCursor;
-import dev.joid.backend.lwjgl2.window.cursor.NativeCursors;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.cursor.Cursor;
@@ -21,6 +20,8 @@ import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2WindowBridge implements IWindowBridge {
+
+	private final NativeCursor nativeCursor = NativeCursor.forPlatform();
 
 	public static @NonNull Lwjgl2WindowBridge create() {
 		return new Lwjgl2WindowBridge();
@@ -72,9 +73,8 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 
 	@Override
 	public void setCursor(final @NonNull Cursor cursor) {
-		final NativeCursor nativeCursor = NativeCursors.get();
-		if (nativeCursor != null && !Mouse.isGrabbed()) {
-			nativeCursor.apply(cursor);
+		if (this.nativeCursor != null && !Mouse.isGrabbed()) {
+			this.nativeCursor.apply(cursor);
 		}
 	}
 

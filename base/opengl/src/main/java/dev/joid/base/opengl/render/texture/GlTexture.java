@@ -7,10 +7,13 @@ import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
 import dev.joid.lib.bridge.render.texture.Texture;
 import dev.joid.lib.bridge.render.texture.TextureSampling;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlTexture extends Texture implements IGlTexture {
 
 	private final int            id;
@@ -18,13 +21,8 @@ public final class GlTexture extends Texture implements IGlTexture {
 
 	private TextureSampling sampling;
 
-	private GlTexture(final GlRenderBridge bridge, final int id) {
-		this.bridge = bridge;
-		this.id     = id;
-	}
-
 	public static @NonNull GlTexture create(final GlRenderBridge bridge) {
-		return new GlTexture(bridge, bridge.getBinding().genTexture());
+		return new GlTexture(bridge.getBinding().genTexture(), bridge);
 	}
 
 	@Override

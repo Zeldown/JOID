@@ -15,10 +15,6 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
-import dev.joid.lib.bridge.render.shader.source.ShaderSource;
-import dev.joid.lib.bridge.render.shader.source.ShaderStage;
-import dev.joid.lib.bridge.render.state.BlendState;
-import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilFunction;
 import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.state.StencilState;
@@ -203,9 +199,7 @@ public abstract class StateGuardContractSuite {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		render.beginFrame();
 		try {
-			render.getModelView().identity();
-			render.getProjection().ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
-			render.getState().load(RenderState.create().viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE).blend(BlendState.NORMAL).depthWrite(false));
+			ContractDraw.reset(StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
 			render.clearColor(0F, 0F, 0F, 1F);
 			StateGuardContractSuite.drawTexture(render);
 			StateGuardContractSuite.drawTranslucent(render);
@@ -284,8 +278,7 @@ public abstract class StateGuardContractSuite {
 
 	private static void drawSampler(final IRenderBridge render) {
 		final ITexture texture = render.createTexture().allocate(1, 1).upload(new int[] {0xFF808000});
-		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}");
-		final IShader shader = render.createShader(vertex, ShaderSource.parse(ShaderStage.FRAGMENT, "uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}"), BlendState.NORMAL);
+		final IShader shader = ContractDraw.shader("uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}");
 		shader.sampler("u_Mask", texture, TextureFilter.LINEAR, TextureWrap.REPEAT);
 		shader.bind();
 		try {

@@ -1,6 +1,6 @@
 buildscript {
     repositories {
-    	mavenLocal()
+        mavenLocal()
         mavenCentral()
         maven { url 'https://plugins.gradle.org/m2/' }
     }
@@ -13,7 +13,7 @@ apply plugin: 'base'
 
 allprojects {
     repositories {
-    	mavenLocal()
+        mavenLocal()
         mavenCentral()
     }
 
@@ -40,8 +40,12 @@ ext {
     variants = ['prod', 'dev', 'demo']
     variantModules = [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan']
 
+    releaseTasks = {
+        [':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':tool-msdf:jar', ':base-openal:jar'].collect { path -> tasks.getByPath(path) }
+    }
+
     releaseJars = {
-        [':base-glfw', ':base-opengl'].collect { module -> project(module).releaseJar.archivePath } + [':tool-testkit', ':tool-msdf', ':base-openal'].collect { module -> project(module).jar.archivePath }
+        releaseTasks()*.archivePath
     }
 
     excludeDemo = { task ->
@@ -151,7 +155,7 @@ task msdfGenerator(type: Zip) {
 task collectArtifacts(type: Copy) {
     group = 'JOID'
     description = 'Copies every release artifact into build/libs.'
-    dependsOn ':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':base-openal:jar', ':tool-msdf:jar'
+    dependsOn { releaseTasks() }
     dependsOn variants.collectMany { variant -> variantModules.collect { module -> "$module:${variant}Jar" } }
     from { variantModules.collectMany { module -> variants.collect { variant -> project(module).tasks["${variant}Jar"].archivePath } } }
     from { releaseJars() }

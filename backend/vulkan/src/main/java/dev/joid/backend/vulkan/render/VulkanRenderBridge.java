@@ -209,35 +209,17 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	@Override
 	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
-		super.requireFrame();
-		this.beginPass((VulkanFrameBuffer) super.getState().getFrameBuffer());
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).colorAttachment(0);
-			attachment.clearValue().color().float32(0, red).float32(1, green).float32(2, blue).float32(3, alpha);
-			VK10.vkCmdClearAttachments(this.host.getCommandBuffer(), attachment, this.createClearRect(stack));
-		}
+		this.clearAttachment(VK10.VK_IMAGE_ASPECT_COLOR_BIT, value -> value.color().float32(0, red).float32(1, green).float32(2, blue).float32(3, alpha));
 	}
 
 	@Override
 	protected void clearDepthBuffer() {
-		super.requireFrame();
-		this.beginPass((VulkanFrameBuffer) super.getState().getFrameBuffer());
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_DEPTH_BIT);
-			attachment.clearValue().depthStencil().depth(1F);
-			VK10.vkCmdClearAttachments(this.host.getCommandBuffer(), attachment, this.createClearRect(stack));
-		}
+		this.clearAttachment(VK10.VK_IMAGE_ASPECT_DEPTH_BIT, value -> value.depthStencil().depth(1F));
 	}
 
 	@Override
 	protected void clearStencilBuffer() {
-		super.requireFrame();
-		this.beginPass((VulkanFrameBuffer) super.getState().getFrameBuffer());
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_STENCIL_BIT);
-			attachment.clearValue().depthStencil().stencil(0);
-			VK10.vkCmdClearAttachments(this.host.getCommandBuffer(), attachment, this.createClearRect(stack));
-		}
+		this.clearAttachment(VK10.VK_IMAGE_ASPECT_STENCIL_BIT, value -> value.depthStencil().stencil(0));
 	}
 
 	@Override
@@ -255,7 +237,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		}
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			this.applyDynamicState(stack, state, target != null, primitive == Primitive.LINES ? VK10.VK_PRIMITIVE_TOPOLOGY_LINE_LIST : VK10.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+			this.applyDynamicState(stack, state, target != null);
 			final long vertexOffset = this.writeVertices(buffer);
 			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer);
 			final long descriptorSet = this.descriptorCache.get(shader, this.uniformAllocator.getBuffer().getBuffer(), this.getImages(shader));
@@ -381,13 +363,19 @@ public final class VulkanRenderBridge extends RenderBridge {
 		destroyers.forEach(Runnable::run);
 	}
 
-	private VkClearRect.Buffer createClearRect(final MemoryStack stack) {
-		final VkClearRect.Buffer rect = VkClearRect.calloc(1, stack).baseArrayLayer(0).layerCount(1);
-		rect.rect().extent().set(this.passWidth, this.passHeight);
-		return rect;
+	private void clearAttachment(final int aspect, final Consumer<VkClearValue> value) {
+		super.requireFrame();
+		this.beginPass((VulkanFrameBuffer) super.getState().getFrameBuffer());
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(aspect);
+			value.accept(attachment.clearValue());
+			final VkClearRect.Buffer rect = VkClearRect.calloc(1, stack).baseArrayLayer(0).layerCount(1);
+			rect.rect().extent().set(this.passWidth, this.passHeight);
+			VK10.vkCmdClearAttachments(this.host.getCommandBuffer(), attachment, rect);
+		}
 	}
 
-	private void applyDynamicState(final MemoryStack stack, final RenderState state, final boolean offscreen, final int topology) {
+	private void applyDynamicState(final MemoryStack stack, final RenderState state, final boolean offscreen) {
 		final VkCommandBuffer buffer = this.host.getCommandBuffer();
 		final VkViewport.Buffer viewport = VkViewport.calloc(1, stack).x(state.getViewportX()).width(state.getViewportWidth()).minDepth(0F).maxDepth(1F);
 		if (offscreen) {
@@ -401,12 +389,10 @@ public final class VulkanRenderBridge extends RenderBridge {
 		scissor.extent().set(this.passWidth, this.passHeight);
 		VK10.vkCmdSetScissor(buffer, 0, scissor);
 
-		VK13.vkCmdSetPrimitiveTopology(buffer, topology);
 		VK13.vkCmdSetCullMode(buffer, state.isCull() ? VK10.VK_CULL_MODE_BACK_BIT : VK10.VK_CULL_MODE_NONE);
 		VK13.vkCmdSetFrontFace(buffer, offscreen ? VK10.VK_FRONT_FACE_CLOCKWISE : VK10.VK_FRONT_FACE_COUNTER_CLOCKWISE);
 		VK13.vkCmdSetDepthTestEnable(buffer, state.isDepthTest());
 		VK13.vkCmdSetDepthWriteEnable(buffer, state.isDepthWrite());
-		VK13.vkCmdSetDepthCompareOp(buffer, VK10.VK_COMPARE_OP_LESS);
 		final StencilState stencil = state.getStencil();
 		VK13.vkCmdSetStencilTestEnable(buffer, stencil.isEnabled() && !offscreen);
 		VK13.vkCmdSetStencilOp(buffer, VK10.VK_STENCIL_FACE_FRONT_AND_BACK, VulkanRenderBridge.operation(stencil.getFail()), VulkanRenderBridge.operation(stencil.getPass()), VulkanRenderBridge.operation(stencil.getDepthFail()), VulkanRenderBridge.compare(stencil.getFunction()));
@@ -426,17 +412,12 @@ public final class VulkanRenderBridge extends RenderBridge {
 		shader.builtins(state, buffer, DepthRange.toZeroToOne(super.getProjection().getRawMatrix()), super.getModelView()).pack();
 
 		final long previousBuffer = this.uniformAllocator.getBuffer().getBuffer();
-		final IntBuffer offsets = this.uploadBlock(stack, shader);
-		if (this.uniformAllocator.getBuffer().getBuffer() != previousBuffer) {
-			this.descriptorCache.invalidate(previousBuffer, this::dispose);
-		}
-		return offsets;
-	}
-
-	private IntBuffer uploadBlock(final MemoryStack stack, final VulkanShader shader) {
 		final ByteBuffer data = shader.getBlock().getData();
 		final long offset = this.uniformAllocator.allocate(data.capacity());
 		MemoryUtil.memCopy(MemoryUtil.memAddress(data), this.uniformAllocator.getBuffer().getAddress() + offset, data.capacity());
+		if (this.uniformAllocator.getBuffer().getBuffer() != previousBuffer) {
+			this.descriptorCache.invalidate(previousBuffer, this::dispose);
+		}
 		return stack.ints((int) offset);
 	}
 

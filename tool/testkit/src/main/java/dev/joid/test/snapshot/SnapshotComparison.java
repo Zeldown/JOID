@@ -35,20 +35,10 @@ public final class SnapshotComparison {
 					continue;
 				}
 
-				final SnapshotImage expected = SnapshotImage.read(shot);
-				final SnapshotImage actual = SnapshotImage.read(candidate);
-				final SnapshotDifference difference = actual.compare(expected, tolerance);
-				if (difference.getPixels() == 0) {
+				final SnapshotEntry entry = SnapshotEntry.compare(name, SnapshotImage.read(candidate), candidate, shot, tolerance, reference.getName(), failures);
+				entries.add(entry);
+				if (entry.getStatus() == SnapshotStatus.IDENTICAL) {
 					identical++;
-					entries.add(SnapshotEntry.create(name, SnapshotStatus.IDENTICAL, 0, candidate, shot));
-					continue;
-				}
-
-				entries.add(SnapshotEntry.create(name, SnapshotStatus.DIFFERENT, difference.getPixels(), candidate, shot));
-				if (actual.getWidth() != expected.getWidth() || actual.getHeight() != expected.getHeight()) {
-					failures.add(name + ": " + actual.getWidth() + "x" + actual.getHeight() + " instead of the " + expected.getWidth() + "x" + expected.getHeight() + " of " + reference.getName());
-				} else {
-					failures.add(name + ": " + difference.getPixels() + " pixels differ from " + reference.getName() + ", maximum channel delta " + difference.getMaximum());
 				}
 			}
 			System.out.println(candidates.getName() + ": " + identical + "/" + shots.length + " snapshots identical to " + reference.getName());

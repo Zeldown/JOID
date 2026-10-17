@@ -19,19 +19,21 @@ import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
+import lombok.NonNull;
 
 public class ShowPaperKit implements IShowKit {
 
 	public static final Color INK    = Color.decode("#151413").lock();
 	public static final Color CARD   = Color.decode("#FFFCF4").lock();
-	public static final Color RULE   = Color.decode("#E2D9C6").lock();
-	public static final Color MUTE   = Color.decode("#6F685C").lock();
-	public static final Color PAPER  = Color.decode("#F2ECDF").lock();
 	public static final Color TOMATO = Color.decode("#FF5533").lock();
 	public static final Color BUTTER = Color.decode("#FFD24D").lock();
 
+	private static final Color RULE  = Color.decode("#E2D9C6").lock();
+	private static final Color MUTE  = Color.decode("#6F685C").lock();
+	private static final Color PAPER = Color.decode("#F2ECDF").lock();
+
 	@Override
-	public void backdrop(final Node layer) {
+	public void backdrop(final @NonNull Node layer) {
 		RectNode
 		.create(0, 0, 1920, 1080)
 		.color(ShowPaperKit.PAPER)
@@ -47,32 +49,32 @@ public class ShowPaperKit implements IShowKit {
 	}
 
 	@Override
-	public TextInfo display() {
+	public @NonNull TextInfo display() {
 		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 136F, ShowPaperKit.INK);
 	}
 
 	@Override
-	public TextInfo accent() {
+	public @NonNull TextInfo accent() {
 		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 136F, ShowPaperKit.TOMATO);
 	}
 
 	@Override
-	public TextInfo title() {
+	public @NonNull TextInfo title() {
 		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 54F, ShowPaperKit.INK);
 	}
 
 	@Override
-	public TextInfo label() {
+	public @NonNull TextInfo label() {
 		return ShowUI.font(FontWeight.BOLD, 20F, ShowPaperKit.INK).letterSpacing(0.12F);
 	}
 
 	@Override
-	public TextInfo hint() {
+	public @NonNull TextInfo hint() {
 		return ShowUI.font(FontWeight.MEDIUM, 25F, ShowPaperKit.MUTE);
 	}
 
 	@Override
-	public RectNode panel(final double x, final double y, final double width, final double height) {
+	public @NonNull RectNode panel(final double x, final double y, final double width, final double height) {
 		return RectNode
 		.create(x, y, width, height)
 		.color(Color.TRANSPARENT)
@@ -83,12 +85,12 @@ public class ShowPaperKit implements IShowKit {
 	}
 
 	@Override
-	public RectNode divider(final double x, final double y, final double width) {
+	public @NonNull RectNode divider(final double x, final double y, final double width) {
 		return RectNode.create(x, y, width, 2D).color(ShowPaperKit.INK.withAlpha(0.18F));
 	}
 
 	@Override
-	public RectNode choice(final double x, final double y, final String label, final BooleanSupplier selected) {
+	public @NonNull RectNode choice(final double x, final double y, final @NonNull String label, final @NonNull BooleanSupplier selected) {
 		return RectNode
 		.create(x, y, 180, 64)
 		.color(Color.TRANSPARENT)
@@ -104,7 +106,7 @@ public class ShowPaperKit implements IShowKit {
 	}
 
 	@Override
-	public RectNode button(final double x, final double y, final double width, final Supplier<String> label, final boolean primary) {
+	public @NonNull RectNode button(final double x, final double y, final double width, final @NonNull Supplier<String> label, final boolean primary) {
 		return RectNode
 		.create(x, y, width, 72)
 		.color(Color.TRANSPARENT)
@@ -125,17 +127,17 @@ public class ShowPaperKit implements IShowKit {
 	}
 
 	@Override
-	public ToggleNode<Boolean, Boolean> toggle(final double x, final double y) {
+	public @NonNull ToggleNode<Boolean, Boolean> toggle(final double x, final double y) {
 		return ShowPaperToggleNode.create(x, y);
 	}
 
 	@Override
-	public DoubleSliderNode slider(final double x, final double y, final double width) {
+	public @NonNull DoubleSliderNode slider(final double x, final double y, final double width) {
 		return ShowPaperSliderNode.create(x, y, width);
 	}
 
 	@Override
-	public TextFieldNode field(final double x, final double y, final double width) {
+	public @NonNull TextFieldNode field(final double x, final double y, final double width) {
 		return ShowPaperFieldNode.create(x, y, width).info(ShowUI.font(FontWeight.SEMI_BOLD, 25F, ShowPaperKit.INK)).marginHorizontal(24D);
 	}
 
