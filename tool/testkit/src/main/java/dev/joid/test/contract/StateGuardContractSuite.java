@@ -28,6 +28,7 @@ import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import dev.joid.lib.draw.DrawUtils;
+import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import dev.joid.test.snapshot.SnapshotImage;
 import lombok.NonNull;
 
@@ -47,6 +48,7 @@ public abstract class StateGuardContractSuite {
 
 	@After
 	public void stopBackend() {
+		FrameBufferPool.cleanup();
 		this.backend.destroy();
 	}
 
@@ -160,6 +162,24 @@ public abstract class StateGuardContractSuite {
 		ContractDraw.assertPixel(image, 24, 36, 0xFF00FF00);
 		ContractDraw.assertPixel(image, 4, 4, 0xFF000000);
 		ContractDraw.assertPixel(image, 50, 50, 0xFF000000);
+	}
+
+	@Test
+	public void givesTheHostItsStateBackAroundARasterNestedInItsDrawing() {
+		final AtomicReference<Map<String, String>> before = new AtomicReference<>();
+		final AtomicReference<Map<String, String>> after = new AtomicReference<>();
+		ContractDraw.frame(this.backend, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, render -> {
+			render.getModelView().identity();
+			render.getProjection().ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
+			render.getState().viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE).frameBuffer(null);
+			DrawUtils.RASTER.drawRaster(8D, 8D, 32D, 32D, (width, height) -> {
+				this.backend.drawExternal();
+				before.set(this.backend.readState());
+				DrawUtils.RASTER.drawRaster(0D, 0D, 16D, 16D, (nestedWidth, nestedHeight) -> {});
+				after.set(this.backend.readState());
+			});
+		});
+		StateGuardContractSuite.assertState("JOID must give the host its state back after a raster nested in a host draw", before.get(), after.get());
 	}
 
 	private void check(final StateTrap trap) {

@@ -24,7 +24,7 @@ public final class GlfwSnapshotWindow {
 
 		final long window = GLFW.glfwCreateWindow(width, height, "JOID snapshot", 0L, 0L);
 		if (window == 0L) {
-			throw new IllegalStateException("GLFW cannot create the " + width + "x" + height + " snapshot window, check that the graphics driver supports the OpenGL version the window asks for");
+			throw new IllegalStateException("GLFW cannot create the " + width + "x" + height + " snapshot window, check that the graphics driver supports the graphics API the window asks for (its OpenGL version or Vulkan)");
 		}
 		return new GlfwSnapshotWindow(window);
 	}

@@ -61,17 +61,20 @@ public final class GlStateGuard {
 	}
 
 	public void suspend(final Runnable draw) {
-		if (this.depth == 0) {
-			draw.run();
-			return;
+		final int depth = this.depth;
+		if (depth > 0) {
+			this.journal.restore();
 		}
 
-		this.journal.restore();
+		this.depth = 0;
 		try {
 			draw.run();
 		} finally {
-			this.journal.start();
-			this.resetPipeline();
+			this.depth = depth;
+			if (depth > 0) {
+				this.journal.start();
+				this.resetPipeline();
+			}
 		}
 	}
 

@@ -29,7 +29,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 		this.window = GLFW.glfwCreateWindow(1920, 1080, "JOID - Demo (" + this.getBackendName() + ")", 0L, 0L);
 		if (this.window == 0L) {
-			throw new IllegalStateException("GLFW cannot create the 1920x1080 demo window of " + this.getBackendName() + ", check that the graphics driver supports the OpenGL version the window asks for");
+			throw new IllegalStateException("GLFW cannot create the 1920x1080 demo window of " + this.getBackendName() + ", check that the graphics driver supports the graphics API the window asks for (its OpenGL version or Vulkan)");
 		}
 
 		JOID.onReady(() -> BridgeHandler.UI.register(this));
