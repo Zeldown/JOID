@@ -18,8 +18,8 @@ public final class AlAudioBridge implements IAudioBridge {
 	private final Set<AlAudioSource> sourceSet;
 	private final Map<Object, Float> groupVolumeMap;
 
-	@Getter private IAudioGain gain;
-	@Getter private boolean    ownContext;
+	@Getter private AudioGain gain;
+	@Getter private boolean   ownContext;
 
 	private AlAudioBridge(final IAlBinding binding) {
 		this.binding        = binding;
@@ -33,7 +33,7 @@ public final class AlAudioBridge implements IAudioBridge {
 		return new AlAudioBridge(binding);
 	}
 
-	public @NonNull AlAudioBridge gain(final @NonNull IAudioGain gain) {
+	public @NonNull AlAudioBridge gain(final @NonNull AudioGain gain) {
 		this.gain = gain;
 		this.syncSources();
 		return this;

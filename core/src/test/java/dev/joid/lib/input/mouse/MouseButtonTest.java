@@ -7,17 +7,17 @@ public class MouseButtonTest {
 
 	@Test
 	public void mapsEachMouseButton() {
-		Assert.assertSame(MouseButton.LEFT, MouseButton.from(0));
-		Assert.assertSame(MouseButton.RIGHT, MouseButton.from(1));
-		Assert.assertSame(MouseButton.MIDDLE, MouseButton.from(2));
-		Assert.assertSame(MouseButton.BACK, MouseButton.from(3));
-		Assert.assertSame(MouseButton.FORWARD, MouseButton.from(4));
+		Assert.assertSame(MouseButton.LEFT, MouseButton.of(0));
+		Assert.assertSame(MouseButton.RIGHT, MouseButton.of(1));
+		Assert.assertSame(MouseButton.MIDDLE, MouseButton.of(2));
+		Assert.assertSame(MouseButton.BACK, MouseButton.of(3));
+		Assert.assertSame(MouseButton.FORWARD, MouseButton.of(4));
 	}
 
 	@Test
 	public void treatsAnyOtherButtonAsOther() {
-		Assert.assertSame(MouseButton.OTHER, MouseButton.from(5));
-		Assert.assertSame(MouseButton.OTHER, MouseButton.from(-1));
+		Assert.assertSame(MouseButton.OTHER, MouseButton.of(5));
+		Assert.assertSame(MouseButton.OTHER, MouseButton.of(-1));
 	}
 
 	@Test

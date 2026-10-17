@@ -29,7 +29,7 @@ public final class MipmapChain {
 		return Math.max(1, this.height >> level);
 	}
 
-	public void forEachStep(final @NonNull IMipmapStep step) {
+	public void forEachStep(final @NonNull MipmapStep step) {
 		for (int level = 1; level < this.levels; level++) {
 			step.copy(level, this.getWidth(level - 1), this.getHeight(level - 1), this.getWidth(level), this.getHeight(level));
 		}

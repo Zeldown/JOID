@@ -154,7 +154,7 @@ public class SignalTest {
 	@Test
 	public void notifiesASubscriberOnceWhenSubscribedTwice() {
 		final List<String> received = new ArrayList<>();
-		final ISignalListener<String> subscriber = received::add;
+		final SignalListener<String> subscriber = received::add;
 		new Signal<String>().onChange(subscriber).onChange(subscriber).set("a");
 		Assert.assertEquals(Collections.singletonList("a"), received);
 	}
@@ -162,7 +162,7 @@ public class SignalTest {
 	@Test
 	public void stopsNotifyingAnUnsubscribedSubscriber() throws ReflectiveOperationException {
 		final List<String> received = new ArrayList<>();
-		final ISignalListener<String> subscriber = received::add;
+		final SignalListener<String> subscriber = received::add;
 		final Signal<String> signal = new Signal<String>().onChange(subscriber).set("a").removeOnChange(subscriber).set("b");
 		Assert.assertEquals(Collections.singletonList("a"), received);
 		Assert.assertTrue(SignalTest.listeners(signal).isEmpty());
@@ -192,7 +192,7 @@ public class SignalTest {
 	public void acceptsASubscriberDuringAPublish() {
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<>();
-		final ISignalListener<String> adder = value -> signal.onChange(received::add);
+		final SignalListener<String> adder = value -> signal.onChange(received::add);
 		signal.onChange(adder).onChange(value -> signal.removeOnChange(adder)).set("a").set("b");
 		Assert.assertEquals(Collections.singletonList("b"), received);
 	}
@@ -205,7 +205,7 @@ public class SignalTest {
 		signal.onChange(value -> {});
 		final Thread worker = ThreadUtils.daemonThread(() -> {
 			while (running.get()) {
-				final ISignalListener<Integer> listener = value -> {};
+				final SignalListener<Integer> listener = value -> {};
 				signal.onChange(listener).removeOnChange(listener);
 			}
 		}, "listener");

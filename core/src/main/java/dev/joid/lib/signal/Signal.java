@@ -15,7 +15,7 @@ import lombok.NonNull;
 
 public class Signal<T> implements Supplier<T> {
 
-	private final transient Set<@NonNull ISignalListener<? super T>>         listenerSet;
+	private final transient Set<@NonNull SignalListener<? super T>>          listenerSet;
 	private final transient CopyOnWriteArrayList<@NonNull ComputedSignal<?>> observerList;
 
 	private final transient T defaultValue;
@@ -75,12 +75,12 @@ public class Signal<T> implements Supplier<T> {
 		return this.write(() -> this.store(value));
 	}
 
-	public @NonNull Signal<T> onChange(final @NonNull ISignalListener<? super T> listener) {
+	public @NonNull Signal<T> onChange(final @NonNull SignalListener<? super T> listener) {
 		this.listenerSet.add(listener);
 		return this;
 	}
 
-	public @NonNull Signal<T> removeOnChange(final @NonNull ISignalListener<? super T> listener) {
+	public @NonNull Signal<T> removeOnChange(final @NonNull SignalListener<? super T> listener) {
 		this.listenerSet.remove(listener);
 		return this;
 	}
@@ -184,7 +184,7 @@ public class Signal<T> implements Supplier<T> {
 
 	protected final void emit(final T value) {
 		RuntimeException failure = null;
-		for (final ISignalListener<? super T> listener : this.listenerSet) {
+		for (final SignalListener<? super T> listener : this.listenerSet) {
 			try {
 				listener.onChange(value);
 			} catch (final RuntimeException exception) {

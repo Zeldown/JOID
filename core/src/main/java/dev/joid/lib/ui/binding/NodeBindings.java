@@ -13,9 +13,9 @@ import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.signal.ComputedSignal;
-import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
+import dev.joid.lib.signal.SignalListener;
 import dev.joid.lib.ui.event.Event;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
@@ -195,7 +195,7 @@ public final class NodeBindings {
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private final class NodeBinding<V> implements ISignalListener<V> {
+	private final class NodeBinding<V> implements SignalListener<V> {
 
 		private final Supplier<V>         source;
 		private final Consumer<V>         applier;
@@ -253,7 +253,7 @@ public final class NodeBindings {
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private final class NodeWatch implements ISignalListener<Object> {
+	private final class NodeWatch implements SignalListener<Object> {
 
 		private final Runnable        action;
 		private final Signal<Object>  signal;

@@ -20,7 +20,7 @@ public enum MouseButton {
 
 	private final int button;
 
-	public static @NonNull MouseButton from(final int button) {
+	public static @NonNull MouseButton of(final int button) {
 		for (final MouseButton value : MouseButton.values()) {
 			if (value.button == button) {
 				return value;

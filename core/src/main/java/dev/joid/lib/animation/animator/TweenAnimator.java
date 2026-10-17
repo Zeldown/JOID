@@ -14,8 +14,8 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.animation.tween.TweenEvent;
 import dev.joid.lib.animation.tween.TweenManager;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalListener;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
 import lombok.Getter;
@@ -221,13 +221,13 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	@Override
-	public @NonNull TweenAnimator onChange(final @NonNull ISignalListener<? super Float> listener) {
+	public @NonNull TweenAnimator onChange(final @NonNull SignalListener<? super Float> listener) {
 		super.onChange(listener);
 		return this;
 	}
 
 	@Override
-	public @NonNull TweenAnimator removeOnChange(final @NonNull ISignalListener<? super Float> listener) {
+	public @NonNull TweenAnimator removeOnChange(final @NonNull SignalListener<? super Float> listener) {
 		super.removeOnChange(listener);
 		return this;
 	}

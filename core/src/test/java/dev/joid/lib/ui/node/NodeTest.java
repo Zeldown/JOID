@@ -38,8 +38,8 @@ import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalListener;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
@@ -2921,9 +2921,9 @@ public class NodeTest {
 		final RectNode child = RectNode.create(0D, 0D, 10D, 10D).watch(signal).onWatch(event -> reloads[0]++);
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
 		this.bridges.open(new NodeUI(parent));
-		final List<ISignalListener<Integer>> pending = new ArrayList<>(NodeTest.subscribers(signal));
+		final List<SignalListener<Integer>> pending = new ArrayList<>(NodeTest.subscribers(signal));
 		parent.remove(child);
-		for (final ISignalListener<Integer> subscriber : pending) {
+		for (final SignalListener<Integer> subscriber : pending) {
 			subscriber.onChange(1);
 		}
 		Assert.assertEquals(0, reloads[0]);
@@ -3704,11 +3704,11 @@ public class NodeTest {
 		}
 	}
 
-	private static <T> Set<ISignalListener<T>> subscribers(final Signal<T> signal) {
+	private static <T> Set<SignalListener<T>> subscribers(final Signal<T> signal) {
 		try {
 			final Field field = Signal.class.getDeclaredField("listenerSet");
 			field.setAccessible(true);
-			return (Set<ISignalListener<T>>) field.get(signal);
+			return (Set<SignalListener<T>>) field.get(signal);
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}

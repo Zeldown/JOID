@@ -1,6 +1,7 @@
-package dev.joid.backend.lwjgl2.binding;
+package dev.joid.backend.lwjgl3.binding;
 
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.EXTFramebufferBlit;
+import org.lwjgl.opengl.EXTFramebufferObject;
 
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
 import lombok.AccessLevel;
@@ -8,60 +9,60 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class Lwjgl2GlCoreFrameBufferBinding implements IGlFrameBufferBinding {
+public final class Lwjgl3ExtGlFrameBufferBinding implements IGlFrameBufferBinding {
 
-	public static @NonNull Lwjgl2GlCoreFrameBufferBinding create() {
-		return new Lwjgl2GlCoreFrameBufferBinding();
+	public static @NonNull Lwjgl3ExtGlFrameBufferBinding create() {
+		return new Lwjgl3ExtGlFrameBufferBinding();
 	}
 
 	@Override
 	public int genFramebuffer() {
-		return GL30.glGenFramebuffers();
+		return EXTFramebufferObject.glGenFramebuffersEXT();
 	}
 
 	@Override
 	public void deleteFramebuffer(final int framebuffer) {
-		GL30.glDeleteFramebuffers(framebuffer);
+		EXTFramebufferObject.glDeleteFramebuffersEXT(framebuffer);
 	}
 
 	@Override
 	public void bindFramebuffer(final int target, final int framebuffer) {
-		GL30.glBindFramebuffer(target, framebuffer);
+		EXTFramebufferObject.glBindFramebufferEXT(target, framebuffer);
 	}
 
 	@Override
 	public void framebufferTexture2D(final int target, final int attachment, final int textureTarget, final int texture, final int level) {
-		GL30.glFramebufferTexture2D(target, attachment, textureTarget, texture, level);
+		EXTFramebufferObject.glFramebufferTexture2DEXT(target, attachment, textureTarget, texture, level);
 	}
 
 	@Override
 	public int genRenderbuffer() {
-		return GL30.glGenRenderbuffers();
+		return EXTFramebufferObject.glGenRenderbuffersEXT();
 	}
 
 	@Override
 	public void deleteRenderbuffer(final int renderbuffer) {
-		GL30.glDeleteRenderbuffers(renderbuffer);
+		EXTFramebufferObject.glDeleteRenderbuffersEXT(renderbuffer);
 	}
 
 	@Override
 	public void bindRenderbuffer(final int target, final int renderbuffer) {
-		GL30.glBindRenderbuffer(target, renderbuffer);
+		EXTFramebufferObject.glBindRenderbufferEXT(target, renderbuffer);
 	}
 
 	@Override
 	public void renderbufferStorage(final int target, final int internalFormat, final int width, final int height) {
-		GL30.glRenderbufferStorage(target, internalFormat, width, height);
+		EXTFramebufferObject.glRenderbufferStorageEXT(target, internalFormat, width, height);
 	}
 
 	@Override
 	public void framebufferRenderbuffer(final int target, final int attachment, final int renderbufferTarget, final int renderbuffer) {
-		GL30.glFramebufferRenderbuffer(target, attachment, renderbufferTarget, renderbuffer);
+		EXTFramebufferObject.glFramebufferRenderbufferEXT(target, attachment, renderbufferTarget, renderbuffer);
 	}
 
 	@Override
 	public void blitFramebuffer(final int sourceX0, final int sourceY0, final int sourceX1, final int sourceY1, final int targetX0, final int targetY0, final int targetX1, final int targetY1, final int mask, final int filter) {
-		GL30.glBlitFramebuffer(sourceX0, sourceY0, sourceX1, sourceY1, targetX0, targetY0, targetX1, targetY1, mask, filter);
+		EXTFramebufferBlit.glBlitFramebufferEXT(sourceX0, sourceY0, sourceX1, sourceY1, targetX0, targetY0, targetX1, targetY1, mask, filter);
 	}
 
 }

@@ -38,7 +38,7 @@ public final class MsdfFontLoader {
 			futures.add(MsdfFontLoader.read(handle));
 		}
 
-		return RenderThreadFuture.of(CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).thenApply(done -> {
+		return RenderThreadFuture.from(CompletableFuture.allOf(futures.toArray(new CompletableFuture<?>[0])).thenApply(done -> {
 			final MsdfFontFace[] loaded = new MsdfFontFace[futures.size()];
 			for (int i = 0; i < loaded.length; i++) {
 				loaded[i] = futures.get(i).join();

@@ -149,7 +149,7 @@ public class ComputedSignalTest {
 	@Test
 	public void stopsNotifyingOnceUnsubscribed() {
 		final List<Integer> received = new ArrayList<>();
-		final ISignalListener<Integer> subscriber = received::add;
+		final SignalListener<Integer> subscriber = received::add;
 		final IntegerSignal count = new IntegerSignal(1);
 		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10).onChange(subscriber);
 		count.increment();
@@ -165,7 +165,7 @@ public class ComputedSignalTest {
 		final AtomicInteger calls = new AtomicInteger();
 		final IntegerSignal count = new IntegerSignal(1);
 		final ComputedSignal<Integer> tenfold = count.map(value -> value * 10);
-		tenfold.onChange(new ISignalListener<Integer>() {
+		tenfold.onChange(new SignalListener<Integer>() {
 
 			@Override
 			public void onChange(final Integer value) {

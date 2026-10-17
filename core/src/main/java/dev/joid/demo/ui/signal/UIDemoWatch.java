@@ -10,8 +10,8 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.ComputedSignal;
-import dev.joid.lib.signal.ISignalListener;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalListener;
 import dev.joid.lib.signal.impl.iterable.MapSignal;
 import dev.joid.lib.signal.impl.iterable.SetSignal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
@@ -58,7 +58,7 @@ public class UIDemoWatch extends UIDemo {
 		final IntegerSignal sent = new IntegerSignal(0);
 		final IntegerSignal received = new IntegerSignal(0);
 		final BooleanSignal listening = new BooleanSignal(true);
-		final ISignalListener<Integer> listener = value -> received.increment();
+		final SignalListener<Integer> listener = value -> received.increment();
 
 		sum.onChange(value -> updates.increment());
 		quiet.onChange(value -> notified.increment());

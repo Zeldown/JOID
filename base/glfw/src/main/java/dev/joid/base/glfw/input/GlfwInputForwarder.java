@@ -52,7 +52,7 @@ public final class GlfwInputForwarder {
 
 		final GLFWMouseButtonCallback button = GLFW.glfwSetMouseButtonCallback(window, null);
 		GLFW.glfwSetMouseButtonCallback(window, (handle, code, action, mods) -> {
-			final boolean consumed = action == GLFW.GLFW_PRESS ? BridgeHandler.UI.mousePressed(MouseButton.from(code)) : BridgeHandler.UI.mouseReleased(MouseButton.from(code));
+			final boolean consumed = action == GLFW.GLFW_PRESS ? BridgeHandler.UI.mousePressed(MouseButton.of(code)) : BridgeHandler.UI.mouseReleased(MouseButton.of(code));
 			if (!consumed && button != null) {
 				button.invoke(handle, code, action, mods);
 			}

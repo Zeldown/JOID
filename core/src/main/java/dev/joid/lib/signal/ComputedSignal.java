@@ -63,7 +63,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public @NonNull ComputedSignal<T> onChange(final @NonNull ISignalListener<? super T> listener) {
+	public @NonNull ComputedSignal<T> onChange(final @NonNull SignalListener<? super T> listener) {
 		final boolean listened = super.hasListeners();
 		super.onChange(listener);
 		this.follow();
@@ -75,7 +75,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public @NonNull ComputedSignal<T> removeOnChange(final @NonNull ISignalListener<? super T> listener) {
+	public @NonNull ComputedSignal<T> removeOnChange(final @NonNull SignalListener<? super T> listener) {
 		super.removeOnChange(listener);
 		this.follow();
 		return this;

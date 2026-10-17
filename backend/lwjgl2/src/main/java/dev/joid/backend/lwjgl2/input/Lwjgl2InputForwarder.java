@@ -22,9 +22,9 @@ public final class Lwjgl2InputForwarder {
 			if (button == -1) {
 				BridgeHandler.UI.mouseMoved();
 			} else if (Mouse.getEventButtonState()) {
-				BridgeHandler.UI.mousePressed(MouseButton.from(button));
+				BridgeHandler.UI.mousePressed(MouseButton.of(button));
 			} else {
-				BridgeHandler.UI.mouseReleased(MouseButton.from(button));
+				BridgeHandler.UI.mouseReleased(MouseButton.of(button));
 			}
 
 			final int wheel = Mouse.getEventDWheel();

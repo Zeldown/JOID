@@ -17,7 +17,7 @@ public final class RenderThreadFuture<T> extends CompletableFuture<T> {
 		this.source = source;
 	}
 
-	public static <T> @NonNull RenderThreadFuture<T> of(final @NonNull CompletableFuture<T> source) {
+	public static <T> @NonNull RenderThreadFuture<T> from(final @NonNull CompletableFuture<T> source) {
 		final RenderThreadFuture<T> future = new RenderThreadFuture<>(source);
 		source.whenComplete((value, error) -> ThreadUtils.runOnRenderThread(() -> future.settle(value, error)));
 		return future;

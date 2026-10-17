@@ -31,7 +31,7 @@ public class RenderThreadFutureTest {
 	@Test
 	public void givesTheValueOfItsSourceWithinATimeoutOnTheRenderThread() throws InterruptedException, ExecutionException, TimeoutException {
 		final CompletableFuture<String> source = new CompletableFuture<>();
-		final RenderThreadFuture<String> future = RenderThreadFuture.of(source);
+		final RenderThreadFuture<String> future = RenderThreadFuture.from(source);
 		source.complete("font");
 		this.thread.renderThread(true);
 		Assert.assertEquals("font", future.get(1L, TimeUnit.SECONDS));
@@ -40,7 +40,7 @@ public class RenderThreadFutureTest {
 	@Test
 	public void givesTheFailureOfItsSourceWithinATimeoutOnTheRenderThread() throws InterruptedException, TimeoutException {
 		final CompletableFuture<String> source = new CompletableFuture<>();
-		final RenderThreadFuture<String> future = RenderThreadFuture.of(source);
+		final RenderThreadFuture<String> future = RenderThreadFuture.from(source);
 		source.completeExceptionally(new IllegalStateException("The font cannot be read"));
 		this.thread.renderThread(true);
 		try {
@@ -54,7 +54,7 @@ public class RenderThreadFutureTest {
 	@Test
 	public void givesItsCallbacksTheFailureOfItsSourceWhenJoinedOnTheRenderThread() {
 		final CompletableFuture<String> source = new CompletableFuture<>();
-		final RenderThreadFuture<String> future = RenderThreadFuture.of(source);
+		final RenderThreadFuture<String> future = RenderThreadFuture.from(source);
 		final Throwable[] received = new Throwable[1];
 		future.whenComplete((value, error) -> received[0] = error);
 		source.completeExceptionally(new IllegalStateException("The font cannot be read"));
