@@ -138,6 +138,7 @@ public final class Resource {
 	}
 
 	public @NonNull Resource fork() {
+		this.data.awaitDetection();
 		final IResourceDecoder decoder = this.data.getDecoder();
 		final IResourceDecoder forked = decoder == null ? null : decoder.fork();
 		if (forked == null) {

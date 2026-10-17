@@ -186,7 +186,7 @@ public final class DrawText {
 				final double elementWidth = element.getInfo().getWidth(part);
 				if (currentText.getWidth() + elementWidth > width) {
 					int foundSplit = currentText.getText().isEmpty() ? i : lastSplit;
-					for (int j = i; j >= lastSplit; j--) {
+					for (int j = i; j > lastSplit; j--) {
 						if (elementText.charAt(j) == ' ' && tags[j] == -1) {
 							foundSplit = j;
 							break;

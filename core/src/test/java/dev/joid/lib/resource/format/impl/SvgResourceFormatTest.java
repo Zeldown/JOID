@@ -14,6 +14,7 @@ public class SvgResourceFormatTest {
 		Assert.assertTrue(this.supports("<svg xmlns=\"http://www.w3.org/2000/svg\"/>"));
 		Assert.assertTrue(this.supports("\uFEFF  <?xml version=\"1.0\"?>\n<!-- icon -->\n<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"x\">\n<svg>"));
 		Assert.assertTrue(this.supports("<svg>"));
+		Assert.assertTrue(this.supports("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"x\" [\n\t<!ENTITY ns_svg \"http://www.w3.org/2000/svg\">\n\t<!ENTITY ns_xlink \"http://www.w3.org/1999/xlink\">\n]>\n<svg>"));
 	}
 
 	@Test

@@ -152,8 +152,12 @@ public final class ResourceData {
 	}
 
 	public void await() {
-		ResourceData.await(this.detecting);
+		this.awaitDetection();
 		ResourceData.await(this.decoding);
+	}
+
+	public void awaitDetection() {
+		ResourceData.await(this.detecting);
 	}
 
 	public void detectDecoder(final boolean async) {

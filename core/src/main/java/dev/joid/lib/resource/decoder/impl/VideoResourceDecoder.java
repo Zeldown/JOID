@@ -324,7 +324,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 			if (this.grabber == null) {
 				return this;
 			}
-		} else if (!this.seeked && this.decodedFrameIndex.get() > 0) {
+		} else if (!this.seeked) {
 			this.seekInternal(0L);
 		}
 

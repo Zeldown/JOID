@@ -21,7 +21,7 @@ public final class FrameBufferPool {
 
 	public static @NonNull IFrameBuffer[] allocate(final @NonNull Object owner, final int depth, final int count, final int width, final int height) {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final List<Object> key = Arrays.asList(owner, depth);
+		final List<Object> key = Arrays.asList(owner, depth, count);
 		final PooledFrameBuffers pooled = FrameBufferPool.POOL.get(key);
 		final boolean owned = pooled != null;
 		if (owned && pooled.frameBuffers[0].getWidth() >= width && pooled.frameBuffers[0].getHeight() >= height) {

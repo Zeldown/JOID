@@ -490,6 +490,21 @@ public class ResourceTest {
 		Assert.assertSame(TextureFilter.LINEAR, fork.getProperties().getInterpolation());
 	}
 
+	@Test
+	public void forksItsPlaybackOnceItsDetectionEnds() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoder.create(Asset.of(ResourceTest.class.getResourceAsStream("/animation/blink.gif")), new GifResourceAnimationReader());
+		final Resource resource = ResourceTest.resource(null);
+		resource.getResourceData().dispatch(() -> {
+			try {
+				Thread.sleep(50L);
+			} catch (final InterruptedException ignored) {}
+			resource.getResourceData().decoder(decoder);
+		});
+		final Resource fork = resource.fork();
+		Assert.assertNotSame(resource, fork);
+		Assert.assertSame(decoder, ResourceTest.field(fork.getDecoder(), "origin"));
+	}
+
 	private static Resource resource(final IResourceDecoder decoder) {
 		return ResourceBuilder.create().cache(null).compute("image", () -> ResourceData.create("image", decoder)).blocking();
 	}

@@ -29,7 +29,7 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
 		final byte[] bytes = IOUtils.toByteArray(stream);
 		if (!WebpResourceAnimationReader.isWebp(bytes)) {
-			throw new IOException("The file does not start with a RIFF WEBP header, it is not a WebP image: check the file and its extension");
+			throw new IllegalArgumentException("The file does not start with a RIFF WEBP header, it is not a WebP image: check the file and its extension");
 		}
 
 		int width = 0;
@@ -42,7 +42,7 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 			final int size = WebpResourceAnimationReader.read(bytes, offset + 4, 4);
 			final int data = offset + 8;
 			if (size < 0 || size > bytes.length - data) {
-				throw new IOException("The WebP chunk " + name + " runs past the end of the file, the file is damaged: export it again");
+				throw new IllegalArgumentException("The WebP chunk " + name + " runs past the end of the file, the file is damaged: export it again");
 			}
 
 			switch (name) {
@@ -63,7 +63,7 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 		}
 
 		if (frames.isEmpty() || width <= 0 || height <= 0) {
-			throw new IOException("The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation");
+			throw new IllegalArgumentException("The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation");
 		}
 
 		final ImageReader reader = new WebPImageReaderSpi().createReaderInstance(null);

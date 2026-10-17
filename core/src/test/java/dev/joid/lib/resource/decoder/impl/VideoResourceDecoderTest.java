@@ -42,7 +42,6 @@ import dev.joid.lib.bridge.audio.IAudioSource;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.resource.ResourceData;
-import dev.joid.lib.video.VideoAudioPlayerTest;
 import dev.joid.lib.video.VideoAudioPlayer;
 
 import lombok.NonNull;
@@ -343,10 +342,10 @@ public class VideoResourceDecoderTest {
 		Assert.assertEquals(1, decoder.getDisplayedFrameIndex());
 		Assert.assertEquals(0.1D, decoder.getCurrentTime(), 1E-9D);
 		Assert.assertEquals(0.1D, decoder.getProgress(), 1E-9D);
-		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[1], data.getTextures()[0]);
+		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[0], data.getTextures()[0]);
 		this.play(decoder, data, 6);
 		Assert.assertEquals(60, VideoResourceDecoderTest.shade(data), 3);
-		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[0], data.getTextures()[0]);
+		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[1], data.getTextures()[0]);
 	}
 
 	@Test
@@ -714,7 +713,7 @@ public class VideoResourceDecoderTest {
 		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
 		Assert.assertEquals("create 8000x1", this.audio.calls.get(0));
 		this.play(decoder, data, 60);
-		Assert.assertTrue(VideoAudioPlayerTest.queueSize(((VideoAudioPlayer) VideoResourceDecoderTest.field(decoder, "audioPlayer"))) > 0);
+		Assert.assertTrue(this.audio.calls.contains("write"));
 		this.audio.calls.clear();
 		decoder.pause();
 		decoder.play();
@@ -726,6 +725,14 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void playsTheAudioThatPrecedesItsFirstImage() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm"));
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 20);
+		Assert.assertTrue(this.audio.calls.toString(), this.audio.calls.contains("write"));
+	}
+
+	@Test
 	public void givesItsAudioGroupToItsSource() {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv"));
 		Assert.assertNull(decoder.getAudioGroup());
@@ -734,7 +741,7 @@ public class VideoResourceDecoderTest {
 		Assert.assertEquals(Arrays.asList("create 8000x1", "group music"), this.audio.calls.subList(0, 2));
 		decoder.audioGroup(null);
 		decoder.update(data);
-		Assert.assertEquals("group null", this.audio.calls.get(this.audio.calls.size() - 1));
+		Assert.assertTrue(this.audio.calls.toString(), this.audio.calls.contains("group null"));
 		Assert.assertNull(decoder.getAudioGroup());
 	}
 
@@ -798,7 +805,7 @@ public class VideoResourceDecoderTest {
 		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
 		Assert.assertEquals("create 8000x1", this.audio.calls.get(0));
 		this.play(decoder, data, 60);
-		Assert.assertTrue(VideoAudioPlayerTest.queueSize(((VideoAudioPlayer) VideoResourceDecoderTest.field(decoder, "audioPlayer"))) > 0);
+		Assert.assertTrue(this.audio.calls.contains("write"));
 	}
 
 	@Test

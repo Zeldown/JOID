@@ -82,14 +82,14 @@ public class ApngResourceAnimationReader implements IResourceAnimationReader {
 		}
 
 		if (ihdr == null) {
-			throw new IOException("The PNG has no IHDR chunk before its image data, the file is damaged: export it again");
+			throw new IllegalArgumentException("The PNG has no IHDR chunk before its image data, the file is damaged: export it again");
 		}
 
 		final ByteBuffer size = ByteBuffer.wrap(ihdr);
 		final int width = size.getInt(0);
 		final int height = size.getInt(4);
 		if (!animated || controls.isEmpty()) {
-			throw new IOException("The PNG has no acTL chunk or no frame control, it is not an animated PNG: draw it as a still image or export it as an APNG");
+			throw new IllegalArgumentException("The PNG has no acTL chunk or no frame control, it is not an animated PNG: draw it as a still image or export it as an APNG");
 		}
 
 		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(width, height);

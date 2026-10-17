@@ -24,7 +24,8 @@ public class SvgResourceFormat implements IResourceFormat {
 			} else if (text.startsWith("<!--")) {
 				text = SvgResourceFormat.after(text, "-->");
 			} else if (text.startsWith("<!")) {
-				text = SvgResourceFormat.after(text, ">");
+				final int subset = text.indexOf('[');
+				text = SvgResourceFormat.after(text, subset >= 0 && subset < text.indexOf('>') ? "]>" : ">");
 			} else {
 				return text.startsWith("<svg") && (text.length() == 4 || !Character.isLetterOrDigit(text.charAt(4)));
 			}

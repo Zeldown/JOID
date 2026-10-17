@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import javax.imageio.ImageIO;
 
@@ -15,6 +16,7 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
+import dev.joid.lib.resource.decoder.impl.VectorResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import lombok.NonNull;
 
@@ -95,6 +97,16 @@ public class ResourceFormatTest {
 		Assert.assertTrue(ResourceFormat.decoder(Asset.of(new ByteArrayInputStream(ResourceFormatTest.PNG))) instanceof VideoResourceDecoder);
 		ResourceFormat.unregister(format);
 		Assert.assertTrue(ResourceFormat.decoder(Asset.of(new ByteArrayInputStream(ResourceFormatTest.PNG))) instanceof RasterResourceDecoder);
+	}
+
+	@Test
+	public void picksTheVectorDecoderForAnSvgBehindALongProlog() {
+		final StringBuilder prolog = new StringBuilder("<?xml version=\"1.0\"?>\n<!--");
+		for (int i = 0; i < 2000; i++) {
+			prolog.append(' ');
+		}
+		final byte[] svg = prolog.append("-->\n<svg xmlns=\"http://www.w3.org/2000/svg\"/>").toString().getBytes(StandardCharsets.UTF_8);
+		Assert.assertTrue(ResourceFormat.decoder(Asset.of(new ByteArrayInputStream(svg))) instanceof VectorResourceDecoder);
 	}
 
 	@Test

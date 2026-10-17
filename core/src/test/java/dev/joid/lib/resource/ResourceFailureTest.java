@@ -154,6 +154,9 @@ public class ResourceFailureTest {
 			final String missing = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new File(this.folder.getRoot(), "missing.png")).blocking().prepareBind());
 			Assert.assertTrue(missing, missing.startsWith("[JOID] The resource "));
 			Assert.assertTrue(missing, missing.endsWith(", check that the file or the URL exists and can be read. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production." + System.lineSeparator()));
+			final String damaged = ResourceFailureTest.capture(() -> ResourceBuilder.create().cache(null).of(new BytesAsset("broken.webp", false, new byte[] {'R', 'I', 'F', 'F', 30, 0, 0, 0, 'W', 'E', 'B', 'P', 'V', 'P', '8', 'X', 10, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'A', 'N', 'M', 'F', (byte) 0xF8, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF})).blocking().prepareBind());
+			Assert.assertFalse(damaged, damaged.contains("exists"));
+			Assert.assertTrue(damaged, damaged.contains("The WebP chunk ANMF runs past the end of the file, the file is damaged: export it again"));
 		} finally {
 			JOIDEnv.devMode(false);
 		}

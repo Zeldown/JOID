@@ -144,17 +144,17 @@ public class ResourceAnimationReaderTest {
 	}
 
 	@Test(timeout = 5000L)
-	public void refusesAWebpChunkWithANegativeSize() {
+	public void refusesAWebpChunkWithANegativeSize() throws IOException {
 		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), new byte[] {'R', 'I', 'F', 'F', 12, 0, 0, 0, 'W', 'E', 'B', 'P', 'J', 'U', 'N', 'K', (byte) 0xF8, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF}, "The WebP chunk JUNK runs past the end of the file, the file is damaged: export it again");
 	}
 
 	@Test
-	public void refusesAWebpChunkLongerThanTheFile() {
+	public void refusesAWebpChunkLongerThanTheFile() throws IOException {
 		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), new byte[] {'R', 'I', 'F', 'F', 16, 0, 0, 0, 'W', 'E', 'B', 'P', 'J', 'U', 'N', 'K', 64, 0, 0, 0, 0, 0, 0, 0}, "The WebP chunk JUNK runs past the end of the file, the file is damaged: export it again");
 	}
 
 	@Test
-	public void refusesWebpFramesWithoutCanvas() {
+	public void refusesWebpFramesWithoutCanvas() throws IOException {
 		ResourceAnimationReaderTest.assertRefused(new WebpResourceAnimationReader(), new byte[] {'R', 'I', 'F', 'F', 28, 0, 0, 0, 'W', 'E', 'B', 'P', 'A', 'N', 'M', 'F', 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 100, 0, 0, 0}, "The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation");
 	}
 
@@ -205,11 +205,11 @@ public class ResourceAnimationReaderTest {
 		}
 	}
 
-	private static void assertRefused(final IResourceAnimationReader reader, final byte[] bytes, final String message) {
+	private static void assertRefused(final IResourceAnimationReader reader, final byte[] bytes, final String message) throws IOException {
 		try {
 			reader.read(new ByteArrayInputStream(bytes));
 			Assert.fail("The bytes must be refused");
-		} catch (final IOException expected) {
+		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals(message, expected.getMessage());
 		}
 	}

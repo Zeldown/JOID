@@ -184,6 +184,7 @@ public class DrawTextTest {
 	@Test
 	public void cutsAWordWiderThanTheLine() {
 		Assert.assertEquals(Arrays.asList("abc", "def"), DrawTextTest.draw().getLines(35D, "abcdef", this.info));
+		Assert.assertEquals(Arrays.asList(" ab", "cde", "fgh"), DrawTextTest.draw().getLines(35D, " abcdefgh", this.info));
 	}
 
 	@Test
@@ -335,7 +336,7 @@ public class DrawTextTest {
 
 	@Test
 	public void wrapsADoubleSpaceWithoutAnEmptyLine() {
-		Assert.assertEquals(Arrays.asList("abc", " def"), DrawTextTest.draw().getLines(35D, "abc  def", this.info));
+		Assert.assertEquals(Arrays.asList("abc", " de", "f"), DrawTextTest.draw().getLines(35D, "abc  def", this.info));
 	}
 
 	@Test

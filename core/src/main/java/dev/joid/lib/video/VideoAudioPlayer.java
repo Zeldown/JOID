@@ -106,7 +106,7 @@ public final class VideoAudioPlayer {
 
 		final float volume = this.owner.getVolume() * 0.3F;
 		if (!this.buffersQueued) {
-			if (this.sampleQueue.size() < 16) {
+			if (this.getQueuedSamples() < this.sampleRate * this.channels / 5) {
 				return;
 			}
 
@@ -191,6 +191,14 @@ public final class VideoAudioPlayer {
 		this.sampleQueue.clear();
 		this.pendingSamples = null;
 		this.pendingOffset = 0;
+	}
+
+	private int getQueuedSamples() {
+		int samples = 0;
+		for (final short[] chunk : this.sampleQueue) {
+			samples += chunk.length;
+		}
+		return samples;
 	}
 
 	private void offer(final short[] samples, final int skip) {
