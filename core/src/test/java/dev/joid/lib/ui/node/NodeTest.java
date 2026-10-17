@@ -2048,6 +2048,34 @@ public class NodeTest {
 	}
 
 	@Test
+	public void followsTheMouseBackIntoItsOverflowAreaDuringTheDrag() {
+		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN);
+		final RectNode node = RectNode.create(10D, 10D, 20D, 20D).draggable(DraggableProperty.ui()).attach(area);
+		this.press(area, 115D, 115D);
+		this.bridges.move(615D, 115D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		Assert.assertFalse(node.isVisible());
+		this.bridges.move(115D, 115D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		Assert.assertTrue(node.isDragging());
+		Assert.assertTrue(node.isVisible());
+		Assert.assertEquals(10D, node.getX(), 0D);
+		Assert.assertEquals(10D, node.getY(), 0D);
+	}
+
+	@Test
+	public void keepsItsPositionWhileHiddenOutsideItsDragArea() {
+		final ContainerNode area = ContainerNode.create(100D, 100D, 100D, 100D).overflow(OverflowProperty.HIDDEN);
+		final RectNode node = RectNode.create(10D, -300D, 20D, 20D).draggable(DraggableProperty.ui()).attach(area);
+		this.bridges.open(new NodeUI(area)).frames(100);
+		Assert.assertFalse(node.isVisible());
+		Assert.assertFalse(node.isDragged());
+		Assert.assertEquals(-300D, node.getY(), 0D);
+	}
+
+	@Test
 	public void showsTheDroppedCopyAndItsSnapToTheDragEnd() {
 		final List<Object> received = new ArrayList<>();
 		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);

@@ -665,7 +665,7 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		this.firstInput = false;
-		if (!this.inputType.isDown() || (!this.handleKey(this.inputType) && !this.repeatKey(this.inputType))) {
+		if (!super.isEnabled() || !this.inputType.isDown() || (!this.handleKey(this.inputType) && !this.repeatKey(this.inputType))) {
 			this.inputting = false;
 			return;
 		}

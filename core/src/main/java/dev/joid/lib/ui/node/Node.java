@@ -392,6 +392,9 @@ public abstract class Node implements INode {
 
 					this.drawContent(matrix, mouseX, mouseY);
 				} else {
+					if (this.dragging || this.dragged) {
+						this.animateDrag();
+					}
 					this.endHover(true);
 				}
 			});

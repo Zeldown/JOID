@@ -895,6 +895,17 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void stopsRepeatingOnceDisabled() {
+		final MultilineTextFieldNode field = this.field("abc").cursorPosition(3);
+		this.bridges.getWindow().getKeys().add(Key.BACKSPACE);
+		this.press(field, Key.BACKSPACE);
+		field.enabled(false);
+		this.elapse(500L);
+		Assert.assertEquals("ab", field.getText());
+		Assert.assertFalse(MultilineTextFieldNodeTest.<Boolean>read(field, FieldNode.class, "inputting"));
+	}
+
+	@Test
 	public void repeatsAHeldDeleteUntilTheTextIsEmpty() {
 		final MultilineTextFieldNode field = this.field("a\nb");
 		this.bridges.getWindow().getKeys().add(Key.DELETE);
