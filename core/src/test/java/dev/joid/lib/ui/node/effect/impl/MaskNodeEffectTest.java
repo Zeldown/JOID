@@ -168,7 +168,7 @@ public class MaskNodeEffectTest {
 	}
 
 	private static Resource resource() {
-		return ResourceBuilder.create().cache(null).compute("mask", () -> new ResourceData("mask", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)}));
+		return ResourceBuilder.create().cache(null).compute("mask", () -> ResourceData.create("mask", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)}));
 	}
 
 	@AllArgsConstructor

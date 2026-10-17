@@ -89,7 +89,7 @@ public class BorrowedTextureTest {
 	@Test
 	public void survivesTheReleaseOfItsResource() {
 		final BorrowableImage image = new BorrowableImage(4, 4, false, true);
-		final ResourceData data = new ResourceData("borrowed", null).texture(new BorrowableTexture(() -> image));
+		final ResourceData data = ResourceData.create("borrowed", null).texture(new BorrowableTexture(() -> image));
 		data.clear();
 		Assert.assertTrue(image.valid);
 	}

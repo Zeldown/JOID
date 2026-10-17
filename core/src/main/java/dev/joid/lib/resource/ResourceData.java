@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,7 +34,6 @@ public final class ResourceData {
 	private static final Queue<ResourceData> COLLECTED      = new ConcurrentLinkedQueue<>();
 	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
-	private final List<Thread>      tasks     = new CopyOnWriteArrayList<>();
 	private final Set<Resource>     resources = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 	private final Set<Resource>     waiting   = new HashSet<>();
 	private final Set<ResourceData> forks     = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
@@ -53,6 +52,7 @@ public final class ResourceData {
 	private volatile Throwable error;
 
 	private volatile Future<?> decoding;
+	private volatile Future<?> detecting;
 
 	private volatile int     generation;
 	private volatile boolean decodingRunning;
@@ -68,12 +68,16 @@ public final class ResourceData {
 
 	private int[] region;
 
-	public ResourceData(final @NonNull String uniqueId, final IResourceDecoder decoder) {
+	private ResourceData(final String uniqueId, final IResourceDecoder decoder) {
 		this.uniqueId = uniqueId;
 		this.decoder  = decoder;
 		if (this.decoder != null) {
 			this.decoder.init(this);
 		}
+	}
+
+	public static @NonNull ResourceData create(final @NonNull String uniqueId, final IResourceDecoder decoder) {
+		return new ResourceData(uniqueId, decoder);
 	}
 
 	public @NonNull ResourceData uniqueId(final @NonNull String uniqueId) {
@@ -131,29 +135,9 @@ public final class ResourceData {
 
 	public @NonNull ResourceData reload(final IResourceDecoder decoder) {
 		this.await();
-		if (this.decoder != null) {
-			if (this.textures != null) {
-				for (final ITexture texture : this.textures) {
-					texture.delete();
-				}
-				this.textures = null;
-			}
-			this.decoder.clear(this);
-		}
-
-		if (this.missingTexture != null) {
-			this.missingTexture.delete();
-			this.missingTexture = null;
-		}
-
-		this.error     = null;
-		this.data      = null;
-		this.width     = 0;
-		this.height    = 0;
-		this.region    = null;
-		this.loaded    = false;
-		this.uploaded  = false;
-		this.generated = false;
+		this.clear();
+		this.error  = null;
+		this.region = null;
 		return this.decoder(decoder);
 	}
 
@@ -164,34 +148,12 @@ public final class ResourceData {
 	}
 
 	public void dispatch(final @NonNull Runnable task) {
-		final Thread thread = ThreadUtils.daemonThread(task, "ResourceTask/" + this.uniqueId);
-		this.tasks.add(thread);
-		thread.start();
+		this.detecting = CompletableFuture.runAsync(task, runnable -> ThreadUtils.daemonThread(runnable, "ResourceTask/" + this.uniqueId).start());
 	}
 
 	public void await() {
-		for (final Thread task : this.tasks) {
-			if (!task.isAlive()) {
-				continue;
-			}
-
-			try {
-				task.join();
-			} catch (final InterruptedException silent) {
-				Thread.currentThread().interrupt();
-			}
-		}
-
-		final Future<?> decoding = this.decoding;
-		if (decoding == null) {
-			return;
-		}
-
-		try {
-			decoding.get();
-		} catch (final InterruptedException silent) {
-			Thread.currentThread().interrupt();
-		} catch (final ExecutionException silent) {}
+		ResourceData.await(this.detecting);
+		ResourceData.await(this.decoding);
 	}
 
 	public void detectDecoder(final boolean async) {
@@ -329,8 +291,9 @@ public final class ResourceData {
 		return this.error != null;
 	}
 
-	public @NonNull List<@NonNull Thread> getTasks() {
-		return Collections.unmodifiableList(this.tasks);
+	public boolean isDispatching() {
+		final Future<?> detecting = this.detecting;
+		return detecting != null && !detecting.isDone();
 	}
 
 	public @NonNull List<@NonNull ResourceData> getForks() {
@@ -454,10 +417,6 @@ public final class ResourceData {
 		return this.decoder == decoder && this.generation == generation;
 	}
 
-	private boolean isDispatching() {
-		return this.tasks.stream().anyMatch(Thread::isAlive);
-	}
-
 	private synchronized void release(final @NonNull Runnable release) {
 		if (!this.decodingRunning) {
 			release.run();
@@ -501,6 +460,18 @@ public final class ResourceData {
 
 	private boolean isBorrowed() {
 		return this.decoder == null && this.textures != null && this.textures.length > 0 && this.textures[0] instanceof BorrowedTexture;
+	}
+
+	private static void await(final Future<?> future) {
+		if (future == null) {
+			return;
+		}
+
+		try {
+			future.get();
+		} catch (final InterruptedException silent) {
+			Thread.currentThread().interrupt();
+		} catch (final ExecutionException silent) {}
 	}
 
 	private static @NonNull String describe(final @NonNull Throwable error, final boolean decodable) {

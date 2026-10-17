@@ -52,7 +52,7 @@ public class ResourceNodeTest {
 
 	@Test
 	public void drawsASkeletonUntilItsResourceLoads() {
-		final Resource resource = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		final Resource resource = ResourceBuilder.create().cache(null).compute("pending", () -> ResourceData.create("pending", null));
 		this.bridges.open(new NodeUI(ResourceNode.create(300D, 300D, 50D, 40D).resource(resource).color(ResourceNodeTest.TINT))).frame();
 		this.assertBounds(this.skeleton(), 300D, 300D, 350D, 340D);
 		Assert.assertTrue(this.draws(ResourceNodeTest.TINT).isEmpty());
@@ -61,7 +61,7 @@ public class ResourceNodeTest {
 	@Test
 	public void mountsOnceItsResourceLoads() {
 		final int[] mounts = {0};
-		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> ResourceData.create("pending", null));
 		final ResourceNode node = ResourceNode.create(300D, 300D, 50D, 40D).resource(pending).onMount(event -> mounts[0]++);
 		this.bridges.open(new NodeUI(node)).frame();
 		Assert.assertFalse(node.isMounted());
@@ -196,7 +196,7 @@ public class ResourceNodeTest {
 	@Test
 	public void preparesItsHoveredResourceWhileItsResourceLoads() {
 		final Resource hovered = ResourceNodeTest.resource(20, 10);
-		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> ResourceData.create("pending", null));
 		final ResourceNode node = ResourceNode.create(100D, 100D, 20D, 10D).resource(pending).hoveredResource(hovered);
 		this.bridges.open(new NodeUI(node));
 		Assert.assertTrue(hovered.isGenerated());

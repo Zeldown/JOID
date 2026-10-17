@@ -220,7 +220,7 @@ public class ResourceBuilderTest {
 	@Test
 	public void keepsTheDecoderGivenWhileARemoteAssetIsDetected() throws InterruptedException {
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
-		final RasterResourceDecoder decoder = new RasterResourceDecoder(Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
+		final RasterResourceDecoder decoder = RasterResourceDecoder.create(Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
 		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
 		final Thread releaser = new Thread(() -> {
 			try {
@@ -307,9 +307,9 @@ public class ResourceBuilderTest {
 	public void computesEveryTimeWithoutCache() {
 		final AtomicInteger supplied = new AtomicInteger();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(null);
-		final Resource first = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
+		final Resource first = builder.compute("image", () -> ResourceData.create("image" + supplied.incrementAndGet(), null));
 		builder.reload();
-		final Resource second = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
+		final Resource second = builder.compute("image", () -> ResourceData.create("image" + supplied.incrementAndGet(), null));
 		Assert.assertEquals("image1", first.getUniqueId());
 		Assert.assertEquals("image2", second.getUniqueId());
 		Assert.assertEquals(2, supplied.get());
@@ -320,8 +320,8 @@ public class ResourceBuilderTest {
 		final AtomicInteger supplied = new AtomicInteger();
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
-		final Resource first = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
-		final Resource second = builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
+		final Resource first = builder.compute("image", () -> ResourceData.create("image" + supplied.incrementAndGet(), null));
+		final Resource second = builder.compute("image", () -> ResourceData.create("image" + supplied.incrementAndGet(), null));
 		Assert.assertSame(first.getResourceData(), second.getResourceData());
 		Assert.assertSame(first.getResourceData(), cache.get("image"));
 		Assert.assertSame(builder, second.getBuilder());
@@ -333,10 +333,10 @@ public class ResourceBuilderTest {
 		final AtomicInteger supplied = new AtomicInteger();
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
-		builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null));
+		builder.compute("image", () -> ResourceData.create("image" + supplied.incrementAndGet(), null));
 		builder.reload();
 		Assert.assertTrue(cache.getDataList().isEmpty());
-		Assert.assertEquals("image2", builder.compute("image", () -> new ResourceData("image" + supplied.incrementAndGet(), null)).getUniqueId());
+		Assert.assertEquals("image2", builder.compute("image", () -> ResourceData.create("image" + supplied.incrementAndGet(), null)).getUniqueId());
 	}
 
 	@Test
@@ -345,7 +345,7 @@ public class ResourceBuilderTest {
 		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
 		for (int i = 0; i < 100; i++) {
 			final String uniqueId = "image_" + i;
-			builder.compute(uniqueId, () -> new ResourceData(uniqueId, null));
+			builder.compute(uniqueId, () -> ResourceData.create(uniqueId, null));
 		}
 		cache.clear();
 		final Field field = ResourceBuilder.class.getDeclaredField("computed");
@@ -364,10 +364,10 @@ public class ResourceBuilderTest {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder first = ResourceBuilder.create().cache(cache);
 		final ResourceBuilder second = ResourceBuilder.create().cache(cache);
-		first.compute("first", () -> new ResourceData("first", null));
-		first.compute("shared", () -> new ResourceData("shared", null));
-		second.compute("second", () -> new ResourceData("second", null));
-		second.compute("shared", () -> new ResourceData("shared", null));
+		first.compute("first", () -> ResourceData.create("first", null));
+		first.compute("shared", () -> ResourceData.create("shared", null));
+		second.compute("second", () -> ResourceData.create("second", null));
+		second.compute("shared", () -> ResourceData.create("shared", null));
 		first.reload();
 		Assert.assertNull(cache.get("first"));
 		Assert.assertNull(cache.get("shared"));
@@ -393,14 +393,14 @@ public class ResourceBuilderTest {
 	public void storesItsDataInACustomCache() {
 		final MapResourceCache cache = new MapResourceCache();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
-		final Resource first = builder.compute("image", () -> new ResourceData("image", null));
-		final Resource second = builder.compute("image", () -> new ResourceData("other", null));
+		final Resource first = builder.compute("image", () -> ResourceData.create("image", null));
+		final Resource second = builder.compute("image", () -> ResourceData.create("other", null));
 		Assert.assertSame(cache, builder.getCache());
 		Assert.assertSame(first.getResourceData(), second.getResourceData());
 		Assert.assertSame(first.getResourceData(), cache.dataMap.get("image"));
 		builder.reload();
 		Assert.assertTrue(cache.dataMap.isEmpty());
-		builder.compute("image", () -> new ResourceData("image", null)).clear();
+		builder.compute("image", () -> ResourceData.create("image", null)).clear();
 		Assert.assertTrue(cache.dataMap.isEmpty());
 	}
 

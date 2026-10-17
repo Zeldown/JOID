@@ -9,6 +9,7 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.color.ColorGradient;
+import dev.joid.lib.utils.geom.BoundingBox;
 import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
 
@@ -74,6 +75,10 @@ public abstract class ShaderProgram {
 	public boolean isAvailable() {
 		final IShader current = this.getShader();
 		return current != null && current.isActive();
+	}
+
+	public final void gradient(final @NonNull ColorGradient gradient, final @NonNull BoundingBox canvas) {
+		ShaderProgram.uniformGradient(this.getShader(), gradient, (float) canvas.getMinX(), (float) canvas.getMinY(), (float) canvas.getMaxX(), (float) canvas.getMaxY());
 	}
 
 	protected final void use(final @NonNull Runnable bind, final @NonNull Runnable body) {

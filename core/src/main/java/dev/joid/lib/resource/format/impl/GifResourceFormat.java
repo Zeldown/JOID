@@ -16,7 +16,7 @@ public class GifResourceFormat implements IResourceFormat {
 
 	@Override
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-		return new AnimatedResourceDecoder(asset, new GifResourceAnimationReader());
+		return AnimatedResourceDecoder.create(asset, new GifResourceAnimationReader());
 	}
 
 }

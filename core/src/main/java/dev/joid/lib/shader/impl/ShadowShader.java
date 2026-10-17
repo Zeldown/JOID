@@ -9,7 +9,7 @@ public final class ShadowShader extends ShaderProgram {
 	private static final ShadowShader INSTANCE = new ShadowShader();
 
 	private ShadowShader() {
-		this.load(CoreShader.SHADOW.open(ShaderStage.VERTEX), CoreShader.SHADOW.open(ShaderStage.FRAGMENT));
+		super.load(CoreShader.SHADOW.open(ShaderStage.VERTEX), CoreShader.SHADOW.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull ShadowShader inst() {
@@ -21,8 +21,8 @@ public final class ShadowShader extends ShaderProgram {
 	}
 
 	public void bind(final float radius, final float blur, final float x1, final float y1, final float x2, final float y2) {
-		this.bind();
-		this.getShader()
+		super.bind();
+		super.getShader()
 		.uniform("u_Radius", radius)
 		.uniform("u_Blur", blur)
 		.uniform("u_Box", x1, y1, x2, y2)
@@ -30,7 +30,7 @@ public final class ShadowShader extends ShaderProgram {
 	}
 
 	public void sides(final boolean left, final boolean top, final boolean right, final boolean bottom) {
-		this.getShader().uniform("u_Sides", left ? 1F : 0F, top ? 1F : 0F, right ? 1F : 0F, bottom ? 1F : 0F);
+		super.getShader().uniform("u_Sides", left ? 1F : 0F, top ? 1F : 0F, right ? 1F : 0F, bottom ? 1F : 0F);
 	}
 
 }

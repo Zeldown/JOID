@@ -161,7 +161,7 @@ public class ResourceFailureTest {
 
 	@Test
 	public void warnsAboutTheVideoNativesWithTheirOwnAdvice() {
-		final ResourceData data = new ResourceData("intro.mp4", null);
+		final ResourceData data = ResourceData.create("intro.mp4", null);
 		JOIDEnv.devMode(true);
 		try {
 			final String warning = ResourceFailureTest.capture(() -> data.fail(new VideoNativesException("The FFmpeg natives of linux-x86_64 cannot be downloaded, check the connection", new IOException("offline"))));

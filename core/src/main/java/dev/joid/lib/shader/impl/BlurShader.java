@@ -9,7 +9,7 @@ public final class BlurShader extends ShaderProgram {
 	private static final BlurShader INSTANCE = new BlurShader();
 
 	private BlurShader() {
-		this.load(CoreShader.BLUR.open(ShaderStage.VERTEX), CoreShader.BLUR.open(ShaderStage.FRAGMENT));
+		super.load(CoreShader.BLUR.open(ShaderStage.VERTEX), CoreShader.BLUR.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull BlurShader inst() {
@@ -17,9 +17,9 @@ public final class BlurShader extends ShaderProgram {
 	}
 
 	public void bind(final float radius, final float dirX, final float dirY, final float texelW, final float texelH) {
-		this.bind();
+		super.bind();
 
-		this.getShader()
+		super.getShader()
 		.uniform("u_Radius", radius)
 		.uniform("u_Direction", dirX, dirY)
 		.uniform("u_TexelSize", texelW, texelH);

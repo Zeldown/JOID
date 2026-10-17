@@ -73,6 +73,21 @@ public class ResourceAnimationReaderTest {
 	}
 
 	@Test
+	public void slowsDownTheGifFramesTooShortToBeSeen() throws IOException {
+		final byte[] bytes = ResourceAnimationReaderTest.gif(ResourceAnimationReaderTest.frame(0, 1, 0xFFFF0000, "none"), ResourceAnimationReaderTest.frame(0, 1, 0xFF00FF00, "none"));
+		final ResourceAnimation animation = new GifResourceAnimationReader().read(new ByteArrayInputStream(bytes));
+		Assert.assertEquals(100L, animation.getFrames().get(0).getDuration());
+		Assert.assertEquals(100L, animation.getFrames().get(1).getDuration());
+	}
+
+	@Test
+	public void keepsTheShortFramesOfAnApng() throws IOException {
+		final byte[] control = ByteBuffer.allocate(26).putInt(0).putInt(2).putInt(1).putInt(0).putInt(0).putShort((short) 1).putShort((short) 100).array();
+		final byte[] bytes = ResourceAnimationReaderTest.png(ResourceAnimationReaderTest.chunk("IHDR", ByteBuffer.allocate(13).putInt(2).putInt(1).put((byte) 8).put((byte) 0).array()), ResourceAnimationReaderTest.chunk("acTL", ByteBuffer.allocate(8).putInt(1).putInt(0).array()), ResourceAnimationReaderTest.chunk("fcTL", control), ResourceAnimationReaderTest.chunk("IDAT", ResourceAnimationReaderTest.deflate(0, 0, 255)), ResourceAnimationReaderTest.chunk("IEND", new byte[0]));
+		Assert.assertEquals(10L, new ApngResourceAnimationReader().read(new ByteArrayInputStream(bytes)).getFrames().get(0).getDuration());
+	}
+
+	@Test
 	public void disposesAGifFrameToTheBackgroundOrToThePreviousCanvas() throws IOException {
 		final byte[] bytes = ResourceAnimationReaderTest.gif(ResourceAnimationReaderTest.frame(0, 2, 0xFFFF0000, "restoreToBackgroundColor"), ResourceAnimationReaderTest.frame(1, 1, 0xFF00FF00, "restoreToPrevious"), ResourceAnimationReaderTest.frame(0, 1, 0xFF0000FF, "none"));
 		final ResourceAnimation animation = new GifResourceAnimationReader().read(new ByteArrayInputStream(bytes));

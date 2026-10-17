@@ -26,7 +26,7 @@ public class TextureResourceResolver implements IResourceResolver {
 	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
 		final ITexture texture = (ITexture) input;
 		final String uniqueId = TextureResourceResolver.IDS.computeIfAbsent(texture, key -> "texture_" + TextureResourceResolver.COUNTER.incrementAndGet());
-		return builder.compute(uniqueId, () -> new ResourceData(uniqueId, null).texture(texture));
+		return builder.compute(uniqueId, () -> ResourceData.create(uniqueId, null).texture(texture));
 	}
 
 }

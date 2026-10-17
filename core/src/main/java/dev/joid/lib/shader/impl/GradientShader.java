@@ -12,7 +12,7 @@ public final class GradientShader extends ShaderProgram {
 	private static final GradientShader INSTANCE = new GradientShader();
 
 	private GradientShader() {
-		this.load(CoreShader.GRADIENT.open(ShaderStage.VERTEX), CoreShader.GRADIENT.open(ShaderStage.FRAGMENT));
+		super.load(CoreShader.GRADIENT.open(ShaderStage.VERTEX), CoreShader.GRADIENT.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull GradientShader inst() {

@@ -39,7 +39,7 @@ public final class ResourceFormat {
 	public static @NonNull IResourceDecoder decoder(final @NonNull Asset asset) {
 		final byte[] header = asset.peek(512);
 		final IResourceFormat format = ResourceFormat.FORMATS.find(candidate -> candidate.supports(header));
-		return format == null ? new RasterResourceDecoder(asset) : format.decoder(asset, header);
+		return format == null ? RasterResourceDecoder.create(asset) : format.decoder(asset, header);
 	}
 
 }

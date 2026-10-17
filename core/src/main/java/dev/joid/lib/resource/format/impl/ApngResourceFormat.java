@@ -19,7 +19,7 @@ public class ApngResourceFormat implements IResourceFormat {
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
 		final Boolean headerAnimated = ApngResourceAnimationReader.isAnimated(header);
 		final boolean animated = headerAnimated != null ? headerAnimated : Boolean.TRUE.equals(ApngResourceAnimationReader.isAnimated(asset.peek(1 << 16)));
-		return animated ? new AnimatedResourceDecoder(asset, new ApngResourceAnimationReader()) : new RasterResourceDecoder(asset);
+		return animated ? AnimatedResourceDecoder.create(asset, new ApngResourceAnimationReader()) : RasterResourceDecoder.create(asset);
 	}
 
 }

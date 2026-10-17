@@ -29,8 +29,8 @@ public class VectorResourceDecoderTest {
 
 	@Test
 	public void rendersTheDocumentAtItsIntrinsicSize() {
-		final VectorResourceDecoder decoder = new VectorResourceDecoder(Asset.of(VectorResourceDecoderTest.class.getResourceAsStream("/vector/icon.svg")));
-		final ResourceData data = new ResourceData("icon.svg", null);
+		final VectorResourceDecoder decoder = VectorResourceDecoder.create(Asset.of(VectorResourceDecoderTest.class.getResourceAsStream("/vector/icon.svg")));
+		final ResourceData data = ResourceData.create("icon.svg", null);
 		decoder.decode(data);
 		Assert.assertEquals(24, data.getWidth());
 		Assert.assertEquals(24, data.getHeight());
@@ -43,7 +43,7 @@ public class VectorResourceDecoderTest {
 	@Test
 	public void preparesATransparentPlaceholder() {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
-		final ResourceData data = new ResourceData("icon.svg", decoder);
+		final ResourceData data = ResourceData.create("icon.svg", decoder);
 		decoder.prepare(data);
 		final RecordingTexture texture = (RecordingTexture) VectorResourceDecoderTest.field(decoder, "texture");
 		Assert.assertSame(texture, data.getTextures()[0]);
@@ -66,7 +66,7 @@ public class VectorResourceDecoderTest {
 	@Test
 	public void ignoresRequestsBeforeItsUpload() {
 		final VectorResourceDecoder decoder = VectorResourceDecoderTest.icon();
-		final ResourceData data = new ResourceData("icon.svg", decoder);
+		final ResourceData data = ResourceData.create("icon.svg", decoder);
 		decoder.request(data, 48, 48, false, false);
 		Assert.assertNull(data.getTextures());
 		decoder.prepare(data);
@@ -269,9 +269,9 @@ public class VectorResourceDecoderTest {
 
 	@Test
 	public void refusesADocumentItCannotParse() {
-		final VectorResourceDecoder decoder = new VectorResourceDecoder(new TextAsset("notes.svg", "not a document"));
+		final VectorResourceDecoder decoder = VectorResourceDecoder.create(new TextAsset("notes.svg", "not a document"));
 		try {
-			decoder.decode(new ResourceData("notes.svg", decoder));
+			decoder.decode(ResourceData.create("notes.svg", decoder));
 			Assert.fail("The document must not decode");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("notes.svg is not an SVG document that can be parsed", expected.getMessage());
@@ -280,9 +280,9 @@ public class VectorResourceDecoderTest {
 
 	@Test
 	public void reportsADocumentThatCannotOpen() {
-		final VectorResourceDecoder decoder = new VectorResourceDecoder(new TextAsset("offline.svg", null));
+		final VectorResourceDecoder decoder = VectorResourceDecoder.create(new TextAsset("offline.svg", null));
 		try {
-			decoder.decode(new ResourceData("offline.svg", decoder));
+			decoder.decode(ResourceData.create("offline.svg", decoder));
 			Assert.fail("The document must not decode");
 		} catch (final UncheckedIOException expected) {
 			Assert.assertEquals("The SVG offline.svg cannot be read", expected.getMessage());
@@ -291,11 +291,11 @@ public class VectorResourceDecoderTest {
 	}
 
 	private static VectorResourceDecoder icon() {
-		return new VectorResourceDecoder(Asset.of(VectorResourceDecoderTest.class.getResourceAsStream("/vector/icon.svg")));
+		return VectorResourceDecoder.create(Asset.of(VectorResourceDecoderTest.class.getResourceAsStream("/vector/icon.svg")));
 	}
 
 	private static ResourceData load(final VectorResourceDecoder decoder) {
-		final ResourceData data = new ResourceData("icon.svg", decoder);
+		final ResourceData data = ResourceData.create("icon.svg", decoder);
 		decoder.prepare(data);
 		decoder.decode(data);
 		decoder.upload(data);
@@ -324,8 +324,8 @@ public class VectorResourceDecoderTest {
 	}
 
 	private static int[] size(final String document) {
-		final ResourceData data = new ResourceData("document.svg", null);
-		new VectorResourceDecoder(new TextAsset("document.svg", document)).decode(data);
+		final ResourceData data = ResourceData.create("document.svg", null);
+		VectorResourceDecoder.create(new TextAsset("document.svg", document)).decode(data);
 		return new int[] {data.getWidth(), data.getHeight()};
 	}
 

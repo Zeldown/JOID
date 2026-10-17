@@ -27,7 +27,7 @@ public class AnimatedResourceDecoderTest {
 	@Test
 	public void preparesATransparentPlaceholder() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
-		final ResourceData data = new ResourceData("blink.png", decoder);
+		final ResourceData data = ResourceData.create("blink.png", decoder);
 		decoder.prepare(data);
 		final RecordingTexture texture = (RecordingTexture) AnimatedResourceDecoderTest.field(decoder, "texture");
 		Assert.assertSame(texture, data.getTextures()[0]);
@@ -38,7 +38,7 @@ public class AnimatedResourceDecoderTest {
 	@Test
 	public void decodesTheFirstFrame() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
-		final ResourceData data = new ResourceData("blink.png", decoder);
+		final ResourceData data = ResourceData.create("blink.png", decoder);
 		decoder.decode(data);
 		Assert.assertEquals(8, data.getWidth());
 		Assert.assertEquals(8, data.getHeight());
@@ -48,9 +48,9 @@ public class AnimatedResourceDecoderTest {
 
 	@Test
 	public void reportsAnAnimationThatCannotOpen() {
-		final AnimatedResourceDecoder decoder = new AnimatedResourceDecoder(new OfflineAsset(), new GifResourceAnimationReader());
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoder.create(new OfflineAsset(), new GifResourceAnimationReader());
 		try {
-			decoder.decode(new ResourceData("offline.gif", decoder));
+			decoder.decode(ResourceData.create("offline.gif", decoder));
 			Assert.fail("The animation must not decode");
 		} catch (final UncheckedIOException expected) {
 			Assert.assertEquals("The animation offline.gif cannot be read", expected.getMessage());
@@ -316,7 +316,7 @@ public class AnimatedResourceDecoderTest {
 	@Test
 	public void ignoresUpdatesBeforeItsUpload() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
-		final ResourceData data = new ResourceData("blink.png", decoder);
+		final ResourceData data = ResourceData.create("blink.png", decoder);
 		decoder.update(data);
 		decoder.prepare(data);
 		decoder.decode(data);
@@ -357,7 +357,7 @@ public class AnimatedResourceDecoderTest {
 	@Test
 	public void readsItsAssetOnceForAllItsForks() {
 		final CountingAsset asset = new CountingAsset();
-		final AnimatedResourceDecoder decoder = new AnimatedResourceDecoder(asset, new GifResourceAnimationReader());
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoder.create(asset, new GifResourceAnimationReader());
 		AnimatedResourceDecoderTest.load(decoder.fork());
 		AnimatedResourceDecoderTest.load(decoder.fork());
 		AnimatedResourceDecoderTest.load(decoder);
@@ -368,8 +368,8 @@ public class AnimatedResourceDecoderTest {
 	public void keepsItsSourceAndReader() {
 		final Asset asset = Asset.of(AnimatedResourceDecoderTest.class.getResourceAsStream("/animation/blink.gif"));
 		final IResourceAnimationReader reader = new GifResourceAnimationReader();
-		final AnimatedResourceDecoder decoder = new AnimatedResourceDecoder(asset, reader);
-		decoder.init(new ResourceData("blink.gif", null));
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoder.create(asset, reader);
+		decoder.init(ResourceData.create("blink.gif", null));
 		Assert.assertSame(asset, decoder.getAsset());
 		Assert.assertSame(reader, AnimatedResourceDecoderTest.field(decoder, "reader"));
 		Assert.assertNull(AnimatedResourceDecoderTest.field(decoder, "animation"));
@@ -381,15 +381,15 @@ public class AnimatedResourceDecoderTest {
 	}
 
 	private static AnimatedResourceDecoder apng() {
-		return new AnimatedResourceDecoder(Asset.of(AnimatedResourceDecoderTest.class.getResourceAsStream("/animation/blink.png")), new ApngResourceAnimationReader());
+		return AnimatedResourceDecoder.create(Asset.of(AnimatedResourceDecoderTest.class.getResourceAsStream("/animation/blink.png")), new ApngResourceAnimationReader());
 	}
 
 	private static AnimatedResourceDecoder gif() {
-		return new AnimatedResourceDecoder(Asset.of(AnimatedResourceDecoderTest.class.getResourceAsStream("/animation/blink.gif")), new GifResourceAnimationReader());
+		return AnimatedResourceDecoder.create(Asset.of(AnimatedResourceDecoderTest.class.getResourceAsStream("/animation/blink.gif")), new GifResourceAnimationReader());
 	}
 
 	private static ResourceData load(final AnimatedResourceDecoder decoder) {
-		final ResourceData data = new ResourceData("animation", decoder);
+		final ResourceData data = ResourceData.create("animation", decoder);
 		decoder.prepare(data);
 		decoder.decode(data);
 		decoder.upload(data);

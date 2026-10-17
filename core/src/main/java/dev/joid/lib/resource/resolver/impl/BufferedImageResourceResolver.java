@@ -27,7 +27,7 @@ public class BufferedImageResourceResolver implements IResourceResolver {
 	public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
 		final BufferedImage image = (BufferedImage) input;
 		final String uniqueId = BufferedImageResourceResolver.IDS.computeIfAbsent(image, key -> "image_" + BufferedImageResourceResolver.COUNTER.incrementAndGet());
-		return builder.compute(uniqueId, () -> new ResourceData(uniqueId, new RasterResourceDecoder(image)));
+		return builder.compute(uniqueId, () -> ResourceData.create(uniqueId, RasterResourceDecoder.create(image)));
 	}
 
 }

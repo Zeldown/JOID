@@ -9,25 +9,20 @@ import java.util.concurrent.ArrayBlockingQueue;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioSource;
+import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
-import lombok.Setter;
 
 public final class VideoAudioPlayer {
 
-	@Setter
 	private static IAudioListenerPosition audioListenerPosition;
 
-	private final String                      name;
 	private final int                         channels;
 	private final int                         sampleRate;
+	private final VideoResourceDecoder        owner;
 	private final ArrayBlockingQueue<short[]> sampleQueue = new ArrayBlockingQueue<>(128);
 
-	private volatile Object group;
-
-	@Setter
-	private volatile float volume = 1F;
-
+	private Object       group;
 	private boolean      playing;
 	private IAudioSource source;
 	private boolean      initialized;
@@ -36,18 +31,18 @@ public final class VideoAudioPlayer {
 	private int     pendingOffset;
 	private short[] pendingSamples;
 
-	private float   posX;
-	private float   posY;
-	private float   posZ;
-	private boolean positional;
-
-	@Setter private float maxDistance       = 50F;
-	@Setter private float referenceDistance = 5F;
-
-	public VideoAudioPlayer(final String name, final int sampleRate, final int channels) {
-		this.name = name;
+	private VideoAudioPlayer(final VideoResourceDecoder owner, final int sampleRate, final int channels) {
+		this.owner = owner;
 		this.sampleRate = sampleRate;
 		this.channels = channels;
+	}
+
+	public static @NonNull VideoAudioPlayer create(final @NonNull VideoResourceDecoder owner, final int sampleRate, final int channels) {
+		return new VideoAudioPlayer(owner, sampleRate, channels);
+	}
+
+	public static void audioListenerPosition(final IAudioListenerPosition audioListenerPosition) {
+		VideoAudioPlayer.audioListenerPosition = audioListenerPosition;
 	}
 
 	public void stop() {
@@ -62,10 +57,12 @@ public final class VideoAudioPlayer {
 			this.initialized = true;
 			try {
 				final IAudioSource source = BridgeHandler.AUDIO.get().createSource(this.sampleRate, this.channels);
+				this.group = this.owner.getAudioGroup();
 				source.group(this.group);
 				this.source = source;
 			} catch (final Exception exception) {
-				JOIDLog.warnOnce("VideoAudioPlayer.source." + this.name, "The video " + this.name + " plays without sound (" + exception + "), register an audio bridge and check the audio device");
+				final String name = this.owner.getAsset().getUniqueId();
+				JOIDLog.warnOnce("VideoAudioPlayer.source." + name, "The video " + name + " plays without sound (" + exception + "), register an audio bridge and check the audio device");
 			}
 		}
 
@@ -101,6 +98,13 @@ public final class VideoAudioPlayer {
 			return;
 		}
 
+		final Object group = this.owner.getAudioGroup();
+		if (group != this.group) {
+			this.group = group;
+			this.source.group(group);
+		}
+
+		final float volume = this.owner.getVolume() * 0.3F;
 		if (!this.buffersQueued) {
 			if (this.sampleQueue.size() < 16) {
 				return;
@@ -109,13 +113,14 @@ public final class VideoAudioPlayer {
 			this.skip((int) (elapsed * this.sampleRate) * this.channels);
 			this.fill();
 			this.buffersQueued = true;
-			this.source.gain(this.volume * 0.3F);
+			this.source.gain(volume);
 			this.source.play();
 			return;
 		}
 
 		this.fill();
-		final float distanceVolume = this.positional ? this.computeDistanceVolume() : 1F;
+		final Point location = this.owner.getLocation();
+		final float distanceVolume = location == null ? 1F : this.computeDistanceVolume(location);
 		if (distanceVolume <= 0.001F) {
 			if (this.source.isPlaying()) {
 				this.source.pause();
@@ -124,7 +129,7 @@ public final class VideoAudioPlayer {
 			return;
 		}
 
-		this.source.gain(this.volume * 0.3F * distanceVolume);
+		this.source.gain(volume * distanceVolume);
 		if (!this.source.isPlaying()) {
 			this.source.play();
 		}
@@ -171,20 +176,6 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	public void setGroup(final Object group) {
-		this.group = group;
-		if (this.source != null) {
-			this.source.group(group);
-		}
-	}
-
-	public void setLocation(final float x, final float y, final float z) {
-		this.posX = x;
-		this.posY = y;
-		this.posZ = z;
-		this.positional = true;
-	}
-
 	public void cleanup() {
 		if (this.source != null) {
 			this.source.stop();
@@ -224,22 +215,24 @@ public final class VideoAudioPlayer {
 		}
 	}
 
-	private float computeDistanceVolume() {
-		final Point listenerPos = VideoAudioPlayer.audioListenerPosition == null ? Point.create(0D, 0D) : VideoAudioPlayer.audioListenerPosition.getListenerPosition();
-		final double dx = listenerPos.getX() - this.posX;
-		final double dy = listenerPos.getY() - this.posY;
-		final double dz = listenerPos.getZ() - this.posZ;
+	private float computeDistanceVolume(final @NonNull Point location) {
+		final Point listener = VideoAudioPlayer.audioListenerPosition == null ? Point.create(0D, 0D) : VideoAudioPlayer.audioListenerPosition.getListenerPosition();
+		final double dx = listener.getX() - location.getX();
+		final double dy = listener.getY() - location.getY();
+		final double dz = listener.getZ() - location.getZ();
 		final double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+		final float referenceDistance = this.owner.getReferenceDistance();
+		final float maxDistance = this.owner.getMaxDistance();
 
-		if (distance <= this.referenceDistance) {
+		if (distance <= referenceDistance) {
 			return 1F;
 		}
 
-		if (distance >= this.maxDistance) {
+		if (distance >= maxDistance) {
 			return 0F;
 		}
 
-		final float t = (float) ((distance - this.referenceDistance) / (this.maxDistance - this.referenceDistance));
+		final float t = (float) ((distance - referenceDistance) / (maxDistance - referenceDistance));
 		return (1F - t) * (1F - t);
 	}
 

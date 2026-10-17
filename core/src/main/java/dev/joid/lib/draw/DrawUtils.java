@@ -11,18 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DrawUtils {
 
-	public static final DrawText       TEXT;
-	public static final DrawShape      SHAPE;
-	public static final DrawModel      MODEL;
-	public static final DrawResource   RESOURCE;
-	public static final DrawRaster   RASTER;
-
-	static {
-		RESOURCE = DrawResource.inst();
-		SHAPE    = DrawShape.inst();
-		TEXT     = DrawText.inst();
-		MODEL    = DrawModel.inst();
-		RASTER   = DrawRaster.inst();
-	}
+	public static final DrawText     TEXT     = DrawText.inst();
+	public static final DrawShape    SHAPE    = DrawShape.inst();
+	public static final DrawModel    MODEL    = DrawModel.inst();
+	public static final DrawRaster   RASTER   = DrawRaster.inst();
+	public static final DrawResource RESOURCE = DrawResource.inst();
 
 }

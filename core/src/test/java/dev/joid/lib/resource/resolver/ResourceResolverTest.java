@@ -58,7 +58,7 @@ public class ResourceResolverTest {
 
 			@Override
 			public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object other) {
-				return builder.compute("once", () -> new ResourceData("once", null));
+				return builder.compute("once", () -> ResourceData.create("once", null));
 			}
 
 		};
@@ -110,7 +110,7 @@ public class ResourceResolverTest {
 
 		@Override
 		public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object input) {
-			return builder.compute("special", () -> new ResourceData("special", null));
+			return builder.compute("special", () -> ResourceData.create("special", null));
 		}
 
 	}

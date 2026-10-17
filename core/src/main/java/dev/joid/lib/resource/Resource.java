@@ -33,11 +33,15 @@ public final class Resource {
 	private int  requestedWidth;
 	private int  requestedHeight;
 
-	public Resource(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
+	private Resource(final ResourceBuilder builder, final ResourceData data) {
 		this.builder    = builder;
 		this.properties = builder.getProperties();
 		this.data       = data;
 		this.restTime   = Long.MIN_VALUE;
+	}
+
+	public static @NonNull Resource create(final @NonNull ResourceBuilder builder, final @NonNull ResourceData data) {
+		return new Resource(builder, data);
 	}
 
 	public static @NonNull Resource of(final @NonNull Object input) {

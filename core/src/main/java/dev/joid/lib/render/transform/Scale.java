@@ -13,9 +13,7 @@ public final class Scale {
 	private Supplier<Double> depthSupplier;
 
 	private Scale(final double width, final double height, final double depth) {
-		this.widthSupplier  = () -> width;
-		this.heightSupplier = () -> height;
-		this.depthSupplier  = () -> depth;
+		this(() -> width, () -> height, () -> depth);
 	}
 
 	private Scale(final Supplier<Double> widthSupplier, final Supplier<Double> heightSupplier, final Supplier<Double> depthSupplier) {
@@ -25,7 +23,7 @@ public final class Scale {
 	}
 
 	public static @NonNull Scale create() {
-		return new Scale(1, 1, 1);
+		return new Scale(1D, 1D, 1D);
 	}
 
 	public static @NonNull Scale create(final double width, final double height, final double depth) {
@@ -37,7 +35,7 @@ public final class Scale {
 	}
 
 	public static @NonNull Scale WIDTH(final double width) {
-		return new Scale(width, 1, 1);
+		return new Scale(width, 1D, 1D);
 	}
 
 	public static @NonNull Scale WIDTH(final @NonNull Supplier<Double> widthSupplier) {
@@ -45,7 +43,7 @@ public final class Scale {
 	}
 
 	public static @NonNull Scale HEIGHT(final double height) {
-		return new Scale(1, height, 1);
+		return new Scale(1D, height, 1D);
 	}
 
 	public static @NonNull Scale HEIGHT(final @NonNull Supplier<Double> heightSupplier) {
@@ -53,7 +51,7 @@ public final class Scale {
 	}
 
 	public static @NonNull Scale DEPTH(final double depth) {
-		return new Scale(1, 1, depth);
+		return new Scale(1D, 1D, depth);
 	}
 
 	public static @NonNull Scale DEPTH(final @NonNull Supplier<Double> depthSupplier) {

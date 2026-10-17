@@ -91,7 +91,7 @@ public class ResourcePlayerNodeTest {
 
 	@Test
 	public void drawsASkeletonForAResourceWithoutDecoderYet() {
-		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> ResourceData.create("pending", null));
 		this.bridges.open(new NodeUI(ResourcePlayerNode.create(300D, 300D, 50D, 40D).resource(pending)));
 		this.assertBounds(this.skeleton(), 300D, 300D, 350D, 340D);
 	}
@@ -365,9 +365,9 @@ public class ResourcePlayerNodeTest {
 		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertSame(player, player.location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F));
-		Assert.assertEquals(1F, ResourcePlayerNodeTest.<Float>read(video, "locationX"), 0F);
-		Assert.assertEquals(2F, ResourcePlayerNodeTest.<Float>read(video, "locationY"), 0F);
-		Assert.assertEquals(3F, ResourcePlayerNodeTest.<Float>read(video, "locationZ"), 0F);
+		Assert.assertEquals(1D, video.getLocation().getX(), 0D);
+		Assert.assertEquals(2D, video.getLocation().getY(), 0D);
+		Assert.assertEquals(3D, video.getLocation().getZ(), 0D);
 		Assert.assertEquals(2F, video.getReferenceDistance(), 0F);
 		Assert.assertEquals(9F, video.getMaxDistance(), 0F);
 	}
@@ -526,8 +526,7 @@ public class ResourcePlayerNodeTest {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).location(Point.create(1D, 2D, 3D)).referenceDistance(2F).maxDistance(9F).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));
 		final VideoResourceDecoder video = player.getVideo();
-		Assert.assertTrue(ResourcePlayerNodeTest.<Boolean>read(video, "hasLocation"));
-		Assert.assertEquals(1F, ResourcePlayerNodeTest.<Float>read(video, "locationX"), 0F);
+		Assert.assertEquals(1D, video.getLocation().getX(), 0D);
 		Assert.assertEquals(2F, video.getReferenceDistance(), 0F);
 		Assert.assertEquals(9F, video.getMaxDistance(), 0F);
 	}

@@ -1,6 +1,8 @@
 package dev.joid.lib.video;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.nio.Buffer;
@@ -19,15 +21,18 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioSource;
+import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.utils.geom.Point;
 import lombok.NonNull;
 
 public class VideoAudioPlayerTest {
 
 	private final RecordingAudioBridge audio = new RecordingAudioBridge();
+	private final VideoResourceDecoder video = VideoAudioPlayerTest.video("clip.mp4");
 
 	@Before
 	public void recordTheAudio() {
@@ -37,12 +42,12 @@ public class VideoAudioPlayerTest {
 	@After
 	public void forgetTheAudio() {
 		BridgeHandler.AUDIO.unregister(this.audio);
-		VideoAudioPlayer.setAudioListenerPosition(null);
+		VideoAudioPlayer.audioListenerPosition(null);
 	}
 
 	@Test
 	public void createsItsSourceOnceOnPlay() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 44100, 2);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 44100, 2);
 		player.play();
 		player.play();
 		Assert.assertEquals(Collections.singletonList("44100x2"), this.audio.created);
@@ -51,7 +56,7 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void playsWithoutSoundWithoutAudioBridge() {
 		BridgeHandler.AUDIO.unregister(this.audio);
-		final VideoAudioPlayer player = new VideoAudioPlayer("mute.mp4", 8000, 1);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(VideoAudioPlayerTest.video("mute.mp4"), 8000, 1);
 		final String error = VideoAudioPlayerTest.capture(player::play);
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update(0D);
@@ -67,8 +72,8 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void warnsOnceForEachVideoWithoutSound() {
 		BridgeHandler.AUDIO.unregister(this.audio);
-		final String first = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer("twice.mp4", 8000, 1).play());
-		final String second = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer("twice.mp4", 8000, 1).play());
+		final String first = VideoAudioPlayerTest.capture(() -> VideoAudioPlayer.create(VideoAudioPlayerTest.video("twice.mp4"), 8000, 1).play());
+		final String second = VideoAudioPlayerTest.capture(() -> VideoAudioPlayer.create(VideoAudioPlayerTest.video("twice.mp4"), 8000, 1).play());
 		BridgeHandler.AUDIO.register(this.audio);
 		Assert.assertTrue(first, first.startsWith("[JOID] The video twice.mp4 plays without sound ("));
 		Assert.assertEquals("", second);
@@ -76,7 +81,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void waitsUntilItPlays() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update(0D);
 		Assert.assertEquals(16, VideoAudioPlayerTest.queueSize(player));
@@ -85,7 +90,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void dropsTheSamplesPushedBeforeItPlays() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
 		VideoAudioPlayerTest.push(player, 20, 1024);
 		player.play();
 		player.update(0D);
@@ -95,7 +100,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void keepsTheSamplesPushedAfterItPlays() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
 		player.play();
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update(0D);
@@ -104,7 +109,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void waitsForSixteenChunksBeforeQueueing() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		final VideoAudioPlayer player = this.started();
 		VideoAudioPlayerTest.push(player, 15, 1024);
 		player.update(0D);
 		final RecordingAudioSource source = this.audio.source();
@@ -121,7 +126,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void skipsTheSamplesItsVideoPlayedWhileItsQueueFilled() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		final VideoAudioPlayer player = this.started();
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update(0.25D);
 		final RecordingAudioSource source = this.audio.source();
@@ -131,7 +136,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void splitsLargeSamplesAcrossChunksInOrder() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		final VideoAudioPlayer player = this.started();
 		VideoAudioPlayerTest.push(player, 16, 3000);
 		player.update(0D);
 		final RecordingAudioSource source = this.audio.source();
@@ -151,7 +156,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void cutsItsChunksBetweenTwoFramesOfAMultichannelTrack() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 6);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 6);
 		player.play();
 		player.update(0D);
 		VideoAudioPlayerTest.push(player, 16, 3000);
@@ -165,7 +170,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void trimsItsLastChunk() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		final VideoAudioPlayer player = this.started();
 		VideoAudioPlayerTest.push(player, 16, 100);
 		player.update(0D);
 		final RecordingAudioSource source = this.audio.source();
@@ -175,7 +180,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void playsASourceThatStopped() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
+		final VideoAudioPlayer player = this.queued();
 		final RecordingAudioSource source = this.audio.source();
 		source.playing = false;
 		source.calls.clear();
@@ -187,25 +192,26 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void appliesItsVolumeToTheGain() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		player.setVolume(0.5F);
+		final VideoAudioPlayer player = this.queued();
+		this.video.volume(0.5F);
 		player.update(0D);
 		Assert.assertEquals(0.15F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
 	public void givesItsGroupToItsSource() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
-		player.setGroup("music");
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		this.video.audioGroup("music");
 		player.play();
 		Assert.assertEquals("music", this.audio.source().group);
-		player.setGroup(null);
+		this.video.audioGroup(null);
+		player.update(0D);
 		Assert.assertNull(this.audio.source().group);
 	}
 
 	@Test
 	public void pausesAndResumesItsSource() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
+		final VideoAudioPlayer player = this.queued();
 		final RecordingAudioSource source = this.audio.source();
 		source.calls.clear();
 		source.gains.clear();
@@ -221,7 +227,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void stopsItsSource() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
+		final VideoAudioPlayer player = this.queued();
 		final RecordingAudioSource source = this.audio.source();
 		source.calls.clear();
 		source.gains.clear();
@@ -233,7 +239,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void controlsNothingBeforeItPlays() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
 		VideoAudioPlayerTest.push(player, 2, 10);
 		player.pause();
 		player.resume();
@@ -246,7 +252,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void flushesItsSamplesAndItsSource() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
+		final VideoAudioPlayer player = this.queued();
 		final RecordingAudioSource source = this.audio.source();
 		VideoAudioPlayerTest.push(player, 15, 1024);
 		player.flush();
@@ -264,7 +270,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void convertsFloatSamplesToInterleavedShorts() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		final VideoAudioPlayer player = this.started();
 		player.pushSamples(new Buffer[] {FloatBuffer.wrap(new float[] {1F, -1F, 0.5F}), FloatBuffer.wrap(new float[] {2F, -2F, 0F})}, 0);
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update(0D);
@@ -274,7 +280,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void interleavesPlanarShortSamples() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		final VideoAudioPlayer player = this.started();
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3}), ShortBuffer.wrap(new short[] {4, 5, 6})}, 0);
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update(0D);
@@ -283,7 +289,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void keepsPackedShortSamples() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		final VideoAudioPlayer player = this.started();
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {7, 8, 9, 10})}, 0);
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update(0D);
@@ -292,7 +298,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void skipsTheSamplesBeforeTheStart() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+		final VideoAudioPlayer player = this.started();
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3}), ShortBuffer.wrap(new short[] {4, 5, 6})}, 1);
 		VideoAudioPlayerTest.push(player, 15, 10);
 		player.update(0D);
@@ -301,7 +307,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void skipsWholeFramesOfInterleavedFloatSamples() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 2);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 2);
 		player.play();
 		player.update(0D);
 		player.pushSamples(new Buffer[] {FloatBuffer.wrap(new float[] {0.25F, 0.5F, -0.25F, -0.5F})}, 1);
@@ -312,7 +318,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void dropsAChunkThatEndsBeforeTheStart() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3})}, 3);
 		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 		player.pushSamples(new Buffer[] {FloatBuffer.wrap(new float[] {1F, 0F})}, 1);
@@ -321,7 +327,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void ignoresEmptyOrUnknownSamples() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
 		player.pushSamples(new Buffer[0], 0);
 		player.pushSamples(new Buffer[] {null}, 0);
 		player.pushSamples(new Buffer[] {ByteBuffer.allocate(4)}, 0);
@@ -330,24 +336,24 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void dropsSamplesBeyondItsQueue() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
 		VideoAudioPlayerTest.push(player, 200, 10);
 		Assert.assertEquals(128, VideoAudioPlayerTest.queueSize(player));
 	}
 
 	@Test
 	public void hearsFromTheOriginWithoutListener() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		player.setLocation(0F, 0F, 27.5F);
+		final VideoAudioPlayer player = this.queued();
+		this.video.location(0F, 0F, 27.5F);
 		player.update(0D);
 		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
 	public void pausesFarFromTheOriginWithoutListener() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
+		final VideoAudioPlayer player = this.queued();
 		final RecordingAudioSource source = this.audio.source();
-		player.setLocation(100F, 0F, 0F);
+		this.video.location(100F, 0F, 0F);
 		VideoAudioPlayerTest.push(player, 3, 10);
 		source.calls.clear();
 		player.update(0D);
@@ -356,39 +362,39 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void playsAtFullVolumeNearTheListener() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(3D, 4D, 0D));
-		player.setLocation(0F, 0F, 0F);
+		final VideoAudioPlayer player = this.queued();
+		VideoAudioPlayer.audioListenerPosition(() -> Point.create(3D, 4D, 0D));
+		this.video.location(0F, 0F, 0F);
 		player.update(0D);
 		Assert.assertEquals(0.3F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
 	public void fadesWithTheDistanceToTheListener() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(0D, 0D, 27.5D));
-		player.setLocation(0F, 0F, 0F);
+		final VideoAudioPlayer player = this.queued();
+		VideoAudioPlayer.audioListenerPosition(() -> Point.create(0D, 0D, 27.5D));
+		this.video.location(0F, 0F, 0F);
 		player.update(0D);
 		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
 	public void fadesBetweenItsOwnDistances() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
-		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(1D, 2D, 9D));
-		player.setLocation(1F, 2F, 3F);
-		player.setReferenceDistance(2F);
-		player.setMaxDistance(10F);
+		final VideoAudioPlayer player = this.queued();
+		VideoAudioPlayer.audioListenerPosition(() -> Point.create(1D, 2D, 9D));
+		this.video.location(1F, 2F, 3F);
+		this.video.referenceDistance(2F);
+		this.video.maxDistance(10F);
 		player.update(0D);
 		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
 	public void pausesBeyondItsMaximumDistance() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
+		final VideoAudioPlayer player = this.queued();
 		final RecordingAudioSource source = this.audio.source();
-		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(0D, 60D, 0D));
-		player.setLocation(0F, 0F, 0F);
+		VideoAudioPlayer.audioListenerPosition(() -> Point.create(0D, 60D, 0D));
+		this.video.location(0F, 0F, 0F);
 		VideoAudioPlayerTest.push(player, 3, 10);
 		source.calls.clear();
 		player.update(0D);
@@ -399,7 +405,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void deletesItsSourceOnCleanup() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.queued();
+		final VideoAudioPlayer player = this.queued();
 		final RecordingAudioSource source = this.audio.source();
 		VideoAudioPlayerTest.push(player, 3, 10);
 		source.calls.clear();
@@ -421,18 +427,29 @@ public class VideoAudioPlayerTest {
 		}
 	}
 
-	private static VideoAudioPlayer started() {
-		final VideoAudioPlayer player = new VideoAudioPlayer("clip.mp4", 8000, 1);
+	private VideoAudioPlayer started() {
+		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
 		player.play();
 		player.update(0D);
 		return player;
 	}
 
-	private static VideoAudioPlayer queued() {
-		final VideoAudioPlayer player = VideoAudioPlayerTest.started();
+	private VideoAudioPlayer queued() {
+		final VideoAudioPlayer player = this.started();
 		VideoAudioPlayerTest.push(player, 16, 4096);
 		player.update(0D);
 		return player;
+	}
+
+	private static VideoResourceDecoder video(final String name) {
+		return VideoResourceDecoder.create(new Asset(name) {
+
+			@Override
+			public @NonNull InputStream open() {
+				return new ByteArrayInputStream(new byte[0]);
+			}
+
+		});
 	}
 
 	private static void push(final VideoAudioPlayer player, final int count, final int length) {

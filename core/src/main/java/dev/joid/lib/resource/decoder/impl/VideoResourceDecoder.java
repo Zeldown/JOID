@@ -29,6 +29,7 @@ import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.playback.IResourcePlayback;
+import dev.joid.lib.utils.geom.Point;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import dev.joid.lib.video.VideoAudioPlayer;
 import dev.joid.lib.video.VideoNatives;
@@ -87,18 +88,11 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	@Getter private Object  audioGroup;
 	@Getter private boolean autoplay = true;
 
-	private float         locationX;
-	private float         locationY;
-	private float         locationZ;
-	private boolean       hasLocation;
+	@Getter private Point location;
 	@Getter private float maxDistance       = 50F;
 	@Getter private float referenceDistance = 5F;
 
-	public VideoResourceDecoder(final @NonNull File file) {
-		this(FileAsset.create(file));
-	}
-
-	public VideoResourceDecoder(final @NonNull Asset asset) {
+	private VideoResourceDecoder(final Asset asset) {
 		this.asset = asset;
 		this.origin = this;
 	}
@@ -108,8 +102,13 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 		this.origin = origin;
 	}
 
-	@Override
-	public void init(final @NonNull ResourceData resource) {}
+	public static @NonNull VideoResourceDecoder create(final @NonNull File file) {
+		return new VideoResourceDecoder(FileAsset.create(file));
+	}
+
+	public static @NonNull VideoResourceDecoder create(final @NonNull Asset asset) {
+		return new VideoResourceDecoder(asset);
+	}
 
 	@Override
 	public @NonNull VideoResourceDecoder stop() {
@@ -370,10 +369,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	public @NonNull VideoResourceDecoder volume(final float volume) {
 		this.volume = volume;
-		if (this.audioPlayer != null) {
-			this.audioPlayer.setVolume(volume);
-		}
-
 		synchronized (this.grabberLock) {
 			if (volume > 0F && this.audioPlayer == null && this.grabber != null) {
 				this.createAudioPlayer();
@@ -387,9 +382,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	public @NonNull VideoResourceDecoder audioGroup(final Object audioGroup) {
 		this.audioGroup = audioGroup;
-		if (this.audioPlayer != null) {
-			this.audioPlayer.setGroup(audioGroup);
-		}
 		return this;
 	}
 
@@ -400,29 +392,17 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	}
 
 	public @NonNull VideoResourceDecoder location(final float x, final float y, final float z) {
-		this.locationX = x;
-		this.locationY = y;
-		this.locationZ = z;
-		this.hasLocation = true;
-		if (this.audioPlayer != null) {
-			this.audioPlayer.setLocation(x, y, z);
-		}
+		this.location = Point.create(x, y, z);
 		return this;
 	}
 
 	public @NonNull VideoResourceDecoder referenceDistance(final float distance) {
 		this.referenceDistance = distance;
-		if (this.audioPlayer != null) {
-			this.audioPlayer.setReferenceDistance(distance);
-		}
 		return this;
 	}
 
 	public @NonNull VideoResourceDecoder maxDistance(final float distance) {
 		this.maxDistance = distance;
-		if (this.audioPlayer != null) {
-			this.audioPlayer.setMaxDistance(distance);
-		}
 		return this;
 	}
 
@@ -513,14 +493,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	private void createAudioPlayer() {
 		if (this.grabber.getAudioChannels() > 0 && this.volume > 0F && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
-			this.audioPlayer = new VideoAudioPlayer(this.describe(), this.grabber.getSampleRate(), this.grabber.getAudioChannels());
-			this.audioPlayer.setVolume(this.volume);
-			this.audioPlayer.setGroup(this.audioGroup);
-			if (this.hasLocation) {
-				this.audioPlayer.setLocation(this.locationX, this.locationY, this.locationZ);
-				this.audioPlayer.setReferenceDistance(this.referenceDistance);
-				this.audioPlayer.setMaxDistance(this.maxDistance);
-			}
+			this.audioPlayer = VideoAudioPlayer.create(this, this.grabber.getSampleRate(), this.grabber.getAudioChannels());
 		}
 	}
 

@@ -26,8 +26,8 @@ public final class DrawText {
 			return FontBounds.empty();
 		}
 
-		final double runX = text.getAlignX().isCenter() ? x - text.getWidth() / 2 : text.getAlignX().isEnd() ? x - text.getWidth() : x;
-		final double runY = text.getAlignY().isCenter() ? y - text.getHeight() / 2 : text.getAlignY().isEnd() ? y - text.getHeight() : y;
+		final double runX = text.getAlignX().isCenter() ? x - text.getWidth() / 2D : text.getAlignX().isEnd() ? x - text.getWidth() : x;
+		final double runY = text.getAlignY().isCenter() ? y - text.getHeight() / 2D : text.getAlignY().isEnd() ? y - text.getHeight() : y;
 		final double runWidth = text.getWidth();
 		final double runHeight = text.getHeight();
 		final double baseline = text.getElementList().stream().mapToDouble(element -> element.getInfo().getBaseline()).max().orElse(0D);
@@ -52,12 +52,12 @@ public final class DrawText {
 			return FontBounds.empty();
 		}
 
-		final double ox = text.getAlignX().isCenter() ? x + width / 2 : text.getAlignX().isEnd() ? x + width : x;
+		final double ox = text.getAlignX().isCenter() ? x + width / 2D : text.getAlignX().isEnd() ? x + width : x;
 		if (mode == TextMode.NORMAL || mode == TextMode.OVERFLOW) {
 			double oy = y;
 
 			if (text.getAlignY().isCenter()) {
-				oy = y + height / 2;
+				oy = y + height / 2D;
 			} else if (text.getAlignY().isEnd()) {
 				oy = y + height;
 			}
@@ -67,7 +67,7 @@ public final class DrawText {
 				final String overflowStr = text.getWidth() <= width ? "" : text.getOverflow().getOverflow();
 
 				boolean overflow = false;
-				double overflowWidth = 0;
+				double overflowWidth = 0D;
 				for (final TextElement element : text.getElementList()) {
 					final String elementText = text.getText(element);
 					final int[] tags = DrawText.tags(element, elementText);
@@ -121,9 +121,9 @@ public final class DrawText {
 		double oy = y;
 
 		if (text.getAlignY().isCenter()) {
-			oy = y + height / 2;
+			oy = y + height / 2D;
 			for (final Text line : textList) {
-				oy -= line.dh(2);
+				oy -= line.dh(2D);
 			}
 		} else if (text.getAlignY().isEnd()) {
 			oy = y + height;
@@ -132,7 +132,7 @@ public final class DrawText {
 			}
 		}
 
-		double heightSum = 0;
+		double heightSum = 0D;
 		for (final Text line : textList) {
 			if (mode == TextMode.BOX && (oy + line.getHeight() > y + height || oy < y)) {
 				oy += line.getHeight();

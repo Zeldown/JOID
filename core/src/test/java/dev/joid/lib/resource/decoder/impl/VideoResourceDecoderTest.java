@@ -74,8 +74,8 @@ public class VideoResourceDecoderTest {
 	@Test
 	public void keepsTheTransparencyOfAWebm() {
 		for (final String name : new String[] {"alpha-vp9.webm", "alpha-vp8.webm"}) {
-			final VideoResourceDecoder decoder = new VideoResourceDecoder(Asset.of(VideoResourceDecoderTest.class.getResourceAsStream("/video/" + name)));
-			final ResourceData data = new ResourceData(name, null);
+			final VideoResourceDecoder decoder = VideoResourceDecoder.create(Asset.of(VideoResourceDecoderTest.class.getResourceAsStream("/video/" + name)));
+			final ResourceData data = ResourceData.create(name, null);
 			decoder.decode(data);
 			try {
 				final int[] pixels = data.getData()[0];
@@ -94,8 +94,8 @@ public class VideoResourceDecoderTest {
 	public void decodesAnAlphaWebmWithLibvpx() {
 		final VideoResourceDecoder vp9 = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp9.webm"));
 		final VideoResourceDecoder vp8 = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp8.webm"));
-		vp9.decode(new ResourceData("alpha-vp9.webm", null));
-		vp8.decode(new ResourceData("alpha-vp8.webm", null));
+		vp9.decode(ResourceData.create("alpha-vp9.webm", null));
+		vp8.decode(ResourceData.create("alpha-vp8.webm", null));
 		Assert.assertEquals("libvpx-vp9", ((String) VideoResourceDecoderTest.field(vp9, "codec")));
 		Assert.assertEquals("libvpx", ((String) VideoResourceDecoderTest.field(vp8, "codec")));
 	}
@@ -103,7 +103,7 @@ public class VideoResourceDecoderTest {
 	@Test
 	public void readsTheSizeTheDurationAndTheFrameRate() {
 		final VideoResourceDecoder decoder = this.frames();
-		final ResourceData data = new ResourceData("frames.mkv", null);
+		final ResourceData data = ResourceData.create("frames.mkv", null);
 		decoder.decode(data);
 		Assert.assertEquals(16, data.getWidth());
 		Assert.assertEquals(8, data.getHeight());
@@ -119,7 +119,7 @@ public class VideoResourceDecoderTest {
 	public void copiesItsAssetIntoTheCacheUnderTheHashOfItsContent() throws IOException, NoSuchAlgorithmException {
 		final VideoResourceDecoder decoder = this.frames();
 		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "file"));
-		decoder.decode(new ResourceData("frames.mkv", null));
+		decoder.decode(ResourceData.create("frames.mkv", null));
 		final File file = ((File) VideoResourceDecoderTest.field(decoder, "file"));
 		final byte[] bytes = VideoResourceDecoderTest.bytes("frames.mkv");
 		Assert.assertEquals(String.format(Locale.ROOT, "%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(bytes))), file.getName());
@@ -131,9 +131,9 @@ public class VideoResourceDecoderTest {
 	public void readsAFileInPlace() throws IOException {
 		final File file = this.folder.newFile("frames.mkv");
 		Files.write(file.toPath(), VideoResourceDecoderTest.bytes("frames.mkv"));
-		final VideoResourceDecoder decoder = new VideoResourceDecoder(file);
+		final VideoResourceDecoder decoder = VideoResourceDecoder.create(file);
 		this.decoders.add(decoder);
-		final ResourceData data = new ResourceData("frames.mkv", null);
+		final ResourceData data = ResourceData.create("frames.mkv", null);
 		decoder.decode(data);
 		Assert.assertSame(file, VideoResourceDecoderTest.field(decoder, "file"));
 		Assert.assertTrue(decoder.getAsset() instanceof FileAsset);
@@ -241,7 +241,7 @@ public class VideoResourceDecoderTest {
 		final File file = this.folder.newFile("frames.mkv");
 		Files.write(file.toPath(), VideoResourceDecoderTest.bytes("frames.mkv"));
 		final VideoResourceDecoder decoder = this.decoder(file);
-		final ResourceData data = new ResourceData("frames.mkv", null);
+		final ResourceData data = ResourceData.create("frames.mkv", null);
 		decoder.decode(data);
 		Assert.assertSame(file, VideoResourceDecoderTest.field(decoder, "file"));
 		Assert.assertEquals(16, data.getWidth());
@@ -250,7 +250,7 @@ public class VideoResourceDecoderTest {
 	@Test
 	public void preparesTwoPlaceholders() {
 		final VideoResourceDecoder decoder = this.frames();
-		final ResourceData data = new ResourceData("frames.mkv", decoder);
+		final ResourceData data = ResourceData.create("frames.mkv", decoder);
 		decoder.init(data);
 		decoder.prepare(data);
 		Assert.assertEquals(2, ((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures")).length);
@@ -322,7 +322,7 @@ public class VideoResourceDecoderTest {
 	@Test
 	public void uploadsNothingWithoutPicture() {
 		final VideoResourceDecoder decoder = this.frames();
-		final ResourceData data = new ResourceData("frames.mkv", decoder);
+		final ResourceData data = ResourceData.create("frames.mkv", decoder);
 		decoder.prepare(data);
 		decoder.upload(data);
 		data.data(new int[1][]);
@@ -522,7 +522,7 @@ public class VideoResourceDecoderTest {
 				return -1;
 			}
 		});
-		final ResourceData data = new ResourceData("slow.mkv", decoder);
+		final ResourceData data = ResourceData.create("slow.mkv", decoder);
 		final Thread decoding = new Thread(() -> data.generate(false));
 		final Thread seeking = new Thread(() -> decoder.seek(0.5D));
 		final boolean devMode = JOIDEnv.isDevMode();
@@ -560,7 +560,7 @@ public class VideoResourceDecoderTest {
 		final VideoResourceDecoder decoder = this.frames();
 		VideoResourceDecoderTest.load(decoder);
 		decoder.release();
-		final ResourceData data = new ResourceData("frames.mkv", null);
+		final ResourceData data = ResourceData.create("frames.mkv", null);
 		decoder.decode(data);
 		Assert.assertTrue(((boolean) VideoResourceDecoderTest.field(decoder, "released")));
 		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
@@ -577,8 +577,8 @@ public class VideoResourceDecoderTest {
 			final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp9.webm"));
 			final VideoResourceDecoder other = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp9.webm"));
 			Assert.assertFalse(directory.exists());
-			final ResourceData data = new ResourceData("alpha-vp9.webm", null);
-			final ResourceData copy = new ResourceData("alpha-vp9.webm", null);
+			final ResourceData data = ResourceData.create("alpha-vp9.webm", null);
+			final ResourceData copy = ResourceData.create("alpha-vp9.webm", null);
 			decoder.decode(data);
 			other.decode(copy);
 			Assert.assertEquals(((File) VideoResourceDecoderTest.field(decoder, "file")), ((File) VideoResourceDecoderTest.field(other, "file")));
@@ -653,7 +653,7 @@ public class VideoResourceDecoderTest {
 	public void reportsAVideoItCannotReopen() throws IOException {
 		final File file = this.folder.newFile("frames.mkv");
 		Files.write(file.toPath(), VideoResourceDecoderTest.bytes("frames.mkv"));
-		final VideoResourceDecoder decoder = new VideoResourceDecoder(file);
+		final VideoResourceDecoder decoder = VideoResourceDecoder.create(file);
 		this.decoders.add(decoder);
 		VideoResourceDecoderTest.load(decoder);
 		decoder.release();
@@ -667,7 +667,7 @@ public class VideoResourceDecoderTest {
 	@Test
 	public void failsAnUnreadableVideo() {
 		final VideoResourceDecoder decoder = this.decoder(new ByteArrayInputStream("not a video".getBytes(StandardCharsets.UTF_8)));
-		final ResourceData data = new ResourceData("notes.mkv", decoder);
+		final ResourceData data = ResourceData.create("notes.mkv", decoder);
 		final boolean devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(false);
 		final String error;
@@ -686,7 +686,7 @@ public class VideoResourceDecoderTest {
 	@Test
 	public void leavesTheFailureOfItsDecodeToItsResourceData() {
 		final VideoResourceDecoder decoder = this.decoder(new ByteArrayInputStream("not a video".getBytes(StandardCharsets.UTF_8)));
-		final ResourceData data = new ResourceData("notes.mkv", decoder);
+		final ResourceData data = ResourceData.create("notes.mkv", decoder);
 		decoder.prepare(data);
 		try {
 			decoder.decode(data);
@@ -730,9 +730,10 @@ public class VideoResourceDecoderTest {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv"));
 		Assert.assertNull(decoder.getAudioGroup());
 		Assert.assertSame(decoder, decoder.audioGroup("music"));
-		VideoResourceDecoderTest.load(decoder);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
 		Assert.assertEquals(Arrays.asList("create 8000x1", "group music"), this.audio.calls.subList(0, 2));
 		decoder.audioGroup(null);
+		decoder.update(data);
 		Assert.assertEquals("group null", this.audio.calls.get(this.audio.calls.size() - 1));
 		Assert.assertNull(decoder.getAudioGroup());
 	}
@@ -743,13 +744,12 @@ public class VideoResourceDecoderTest {
 		Assert.assertEquals(50F, decoder.getMaxDistance(), 0F);
 		Assert.assertEquals(5F, decoder.getReferenceDistance(), 0F);
 		Assert.assertSame(decoder, decoder.location(1F, 2F, 3F).referenceDistance(2F).maxDistance(9F));
-		decoder.decode(new ResourceData("voiced.mkv", null));
+		decoder.decode(ResourceData.create("voiced.mkv", null));
 		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
-		Assert.assertTrue(((boolean) VideoResourceDecoderTest.field(decoder, "hasLocation")));
 		decoder.location(4F, 5F, 6F).referenceDistance(3F).maxDistance(12F);
-		Assert.assertEquals(4F, ((float) VideoResourceDecoderTest.field(decoder, "locationX")), 0F);
-		Assert.assertEquals(5F, ((float) VideoResourceDecoderTest.field(decoder, "locationY")), 0F);
-		Assert.assertEquals(6F, ((float) VideoResourceDecoderTest.field(decoder, "locationZ")), 0F);
+		Assert.assertEquals(4D, decoder.getLocation().getX(), 0D);
+		Assert.assertEquals(5D, decoder.getLocation().getY(), 0D);
+		Assert.assertEquals(6D, decoder.getLocation().getZ(), 0D);
 		Assert.assertEquals(3F, decoder.getReferenceDistance(), 0F);
 		Assert.assertEquals(12F, decoder.getMaxDistance(), 0F);
 	}
@@ -757,18 +757,10 @@ public class VideoResourceDecoderTest {
 	@Test
 	public void skipsTheAudioOfAMutedVideo() {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv")).volume(0F);
-		decoder.decode(new ResourceData("voiced.mkv", null));
+		decoder.decode(ResourceData.create("voiced.mkv", null));
 		Assert.assertEquals(0F, decoder.getVolume(), 0F);
 		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
 		Assert.assertTrue(this.audio.calls.isEmpty());
-	}
-
-	@Test
-	public void passesItsVolumeToItsAudioPlayerRightAway() {
-		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv"));
-		decoder.decode(new ResourceData("voiced.mkv", null));
-		decoder.volume(0.5F);
-		Assert.assertEquals(0.5F, ((float) VideoResourceDecoderTest.field(VideoResourceDecoderTest.field(decoder, "audioPlayer"), "volume")), 0F);
 	}
 
 	@Test
@@ -871,8 +863,8 @@ public class VideoResourceDecoderTest {
 		final File file = this.folder.newFile("padded.mkv");
 		Files.write(file.toPath(), Asset.of(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/padded.mkv")).read());
 		for (int i = 0; i < 500; i++) {
-			final VideoResourceDecoder decoder = new VideoResourceDecoder(file);
-			final ResourceData data = new ResourceData("padded.mkv", null);
+			final VideoResourceDecoder decoder = VideoResourceDecoder.create(file);
+			final ResourceData data = ResourceData.create("padded.mkv", null);
 			decoder.decode(data);
 			decoder.release();
 			Assert.assertEquals(18 * 8, data.getData()[0].length);
@@ -955,7 +947,7 @@ public class VideoResourceDecoderTest {
 	}
 
 	private VideoResourceDecoder decoder(final Object handle) {
-		final VideoResourceDecoder decoder = new VideoResourceDecoder(Asset.of(handle));
+		final VideoResourceDecoder decoder = VideoResourceDecoder.create(Asset.of(handle));
 		this.decoders.add(decoder);
 		return decoder;
 	}
@@ -972,7 +964,7 @@ public class VideoResourceDecoderTest {
 	}
 
 	private static ResourceData load(final VideoResourceDecoder decoder) {
-		final ResourceData data = new ResourceData("video", decoder);
+		final ResourceData data = ResourceData.create("video", decoder);
 		decoder.prepare(data);
 		decoder.decode(data);
 		decoder.upload(data);

@@ -33,7 +33,7 @@ public class SvgResourceFormat implements IResourceFormat {
 
 	@Override
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-		return new VectorResourceDecoder(asset);
+		return VectorResourceDecoder.create(asset);
 	}
 
 	private static String after(final String text, final String end) {

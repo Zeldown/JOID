@@ -83,7 +83,7 @@ public class ResourcePlayerNodeEventTest {
 	@Test
 	public void firesNothingWithoutPlayback() {
 		final List<Object> received = new ArrayList<>();
-		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> new ResourceData("pending", null));
+		final Resource pending = ResourceBuilder.create().cache(null).compute("pending", () -> ResourceData.create("pending", null));
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(pending).onPause(event -> received.add(event.getNode()));
 		this.bridges.open(new NodeUI(player));
 		player.pause();

@@ -36,7 +36,7 @@ public final class DemoCheckerResourceFormat implements IResourceFormat {
 			}
 		}
 
-		return new RasterResourceDecoder(image);
+		return RasterResourceDecoder.create(image);
 	}
 
 }

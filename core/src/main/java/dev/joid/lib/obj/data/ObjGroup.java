@@ -8,26 +8,25 @@ import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 @Getter
 public final class ObjGroup {
 
-	@Setter private String name;
-
+	private final String        name;
 	private final List<ObjFace> faces;
 
-	public ObjGroup() {
-		this("");
-	}
-
-	public ObjGroup(final @NonNull String name) {
+	private ObjGroup(final String name) {
 		this.name  = name;
 		this.faces = new ArrayList<>();
 	}
 
-	public void addFace(final @NonNull ObjFace face) {
+	public static @NonNull ObjGroup create(final @NonNull String name) {
+		return new ObjGroup(name);
+	}
+
+	public @NonNull ObjGroup face(final @NonNull ObjFace face) {
 		this.faces.add(face);
+		return this;
 	}
 
 	public void render() {

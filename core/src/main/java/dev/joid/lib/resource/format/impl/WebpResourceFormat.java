@@ -19,7 +19,7 @@ public class WebpResourceFormat implements IResourceFormat {
 
 	@Override
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-		return WebpResourceAnimationReader.isAnimated(header) ? new AnimatedResourceDecoder(asset, new WebpResourceAnimationReader()) : new RasterResourceDecoder(asset, new WebPImageReaderSpi());
+		return WebpResourceAnimationReader.isAnimated(header) ? AnimatedResourceDecoder.create(asset, new WebpResourceAnimationReader()) : RasterResourceDecoder.create(asset, new WebPImageReaderSpi());
 	}
 
 }

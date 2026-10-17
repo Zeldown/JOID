@@ -51,7 +51,7 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 				final int x = descriptor == null ? 0 : Integer.parseInt(descriptor.getAttribute("imageLeftPosition"));
 				final int y = descriptor == null ? 0 : Integer.parseInt(descriptor.getAttribute("imageTopPosition"));
 				final long delay = Long.parseLong(control.getAttribute("delayTime")) * 10L;
-				frames.add(ResourceAnimationFrame.create(canvas.compose(pixels, x, y, image.getWidth(), image.getHeight(), Blend.OVER, GifResourceAnimationReader.disposal(control)), delay));
+				frames.add(ResourceAnimationFrame.create(canvas.compose(pixels, x, y, image.getWidth(), image.getHeight(), Blend.OVER, GifResourceAnimationReader.disposal(control)), delay <= 10L ? 100L : delay));
 			}
 			return ResourceAnimation.create(width, height, plays, frames);
 		} finally {

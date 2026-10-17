@@ -92,7 +92,7 @@ public final class DrawShape {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final PixelGrid grid = render.getPixelGrid();
 		if (!grid.isAligned() && render.getState().getShader() == null && RoundedShader.inst().isAvailable()) {
-			this.drawOutline(Math.min(x, x + width), Math.min(y, y + height), Math.max(x, x + width), Math.max(y, y + height), color, stroke);
+			this.drawOutline(Math.min(x, x + width), Math.min(y, y + height), Math.max(x, x + width), Math.max(y, y + height), color, (float) Math.max(stroke - 0.5D, 1E-3D));
 			return;
 		}
 
@@ -225,7 +225,7 @@ public final class DrawShape {
 		final double bottom = grid.snapBottom(y, y + height);
 		final float corner = (float) Math.min(radius, Math.min(Math.abs(right - left), Math.abs(bottom - top)) / 2D);
 		final Color resolved = color.update();
-		RoundedShader.use(corner, (float) (left + (roundedLeft ? corner : 0)), (float) (top + (roundedTop ? corner : 0)), (float) (right - (roundedRight ? corner : 0)), (float) (bottom - (roundedBottom ? corner : 0)), () -> {
+		RoundedShader.use(corner, (float) (left + (roundedLeft ? corner : 0F)), (float) (top + (roundedTop ? corner : 0F)), (float) (right - (roundedRight ? corner : 0F)), (float) (bottom - (roundedBottom ? corner : 0F)), () -> {
 			RoundedShader.inst().aligned(grid.isAligned());
 			RoundedShader.inst().stroke((float) stroke);
 			if (resolved.isGradient()) {
@@ -252,26 +252,14 @@ public final class DrawShape {
 			return;
 		}
 
-		final double minX = Math.min(left, right);
-		final double minY = Math.min(top, bottom);
-		final double maxX = Math.max(left, right);
-		final double maxY = Math.max(top, bottom);
-		final Color resolved = color.update();
-		RoundedShader.use(0F, (float) (minX + 0.5D), (float) (minY + 0.5D), (float) (maxX - 0.5D), (float) (maxY - 0.5D), () -> {
-			RoundedShader.inst().aligned(false);
-			if (resolved.isGradient()) {
-				RoundedShader.inst().gradient(resolved.getGradient(), BoundingBox.create(minX, minY, maxX - minX, maxY - minY));
-			}
-
-			this.drawQuad(minX - 1D, minY - 1D, maxX + 1D, maxY + 1D, resolved.isGradient() ? Color.WHITE : resolved);
-		});
+		this.drawOutline(Math.min(left, right), Math.min(top, bottom), Math.max(left, right), Math.max(top, bottom), color, 0F);
 	}
 
-	private void drawOutline(final double left, final double top, final double right, final double bottom, final @NonNull Color color, final double stroke) {
+	private void drawOutline(final double left, final double top, final double right, final double bottom, final @NonNull Color color, final float stroke) {
 		final Color resolved = color.update();
 		RoundedShader.use(0F, (float) (left + 0.5D), (float) (top + 0.5D), (float) (right - 0.5D), (float) (bottom - 0.5D), () -> {
 			RoundedShader.inst().aligned(false);
-			RoundedShader.inst().stroke((float) Math.max(stroke - 0.5D, 1E-3D));
+			RoundedShader.inst().stroke(stroke);
 			if (resolved.isGradient()) {
 				RoundedShader.inst().gradient(resolved.getGradient(), BoundingBox.create(left, top, right - left, bottom - top));
 			}

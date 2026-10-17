@@ -26,7 +26,7 @@ public class ResourceDataTest {
 	@Test
 	public void initializesItsDecoder() {
 		final Decoder decoder = new Decoder();
-		final ResourceData data = new ResourceData("image", decoder);
+		final ResourceData data = ResourceData.create("image", decoder);
 		Assert.assertEquals("image", data.getUniqueId());
 		Assert.assertSame(decoder, data.getDecoder());
 		Assert.assertEquals(Collections.singletonList("init"), decoder.calls);
@@ -34,7 +34,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void startsEmpty() {
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		Assert.assertNull(data.getDecoder());
 		Assert.assertNull(data.getData());
 		Assert.assertNull(data.getTextures());
@@ -43,7 +43,7 @@ public class ResourceDataTest {
 		Assert.assertFalse(data.isGenerated());
 		Assert.assertEquals(0, data.getWidth());
 		Assert.assertEquals(0, data.getHeight());
-		Assert.assertTrue(data.getTasks().isEmpty());
+		Assert.assertFalse(data.isDispatching());
 	}
 
 	@Test
@@ -51,7 +51,7 @@ public class ResourceDataTest {
 		final Decoder decoder = new Decoder();
 		final int[][] pixels = {{1, 2}};
 		final ITexture[] textures = {new Texture(2, 1)};
-		final ResourceData data = ResourceDataTest.upload(ResourceDataTest.load(new ResourceData("image", null).uniqueId("renamed").decoder(decoder).data(pixels).textures(textures).width(2).height(1).generated(true)));
+		final ResourceData data = ResourceDataTest.upload(ResourceDataTest.load(ResourceData.create("image", null).uniqueId("renamed").decoder(decoder).data(pixels).textures(textures).width(2).height(1).generated(true)));
 		Assert.assertEquals("renamed", data.getUniqueId());
 		Assert.assertSame(decoder, data.getDecoder());
 		Assert.assertArrayEquals(pixels, data.getData());
@@ -69,7 +69,7 @@ public class ResourceDataTest {
 	public void initializesTheDecoderItIsGivenLater() {
 		final Decoder first = new Decoder();
 		final Decoder second = new Decoder();
-		final ResourceData data = new ResourceData("image", first);
+		final ResourceData data = ResourceData.create("image", first);
 		Assert.assertSame(data, data.decoder(second));
 		Assert.assertSame(second, data.getDecoder());
 		Assert.assertEquals(Collections.singletonList("init"), second.calls);
@@ -80,16 +80,16 @@ public class ResourceDataTest {
 	@Test
 	public void wrapsASingleTexture() {
 		final Texture texture = new Texture(2, 1);
-		Assert.assertArrayEquals(new ITexture[] {texture}, new ResourceData("image", null).texture(texture).getTextures());
+		Assert.assertArrayEquals(new ITexture[] {texture}, ResourceData.create("image", null).texture(texture).getTextures());
 	}
 
 	@Test
 	public void runsAnAsyncTaskOnItsOwnDaemonThread() {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		data.dispatch(() -> threads.add(Thread.currentThread()));
 		data.await();
-		Assert.assertEquals(data.getTasks(), threads);
+		Assert.assertFalse(data.isDispatching());
 		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
 		Assert.assertTrue(threads.get(0).isDaemon());
 		Assert.assertFalse(threads.get(0).isAlive());
@@ -99,7 +99,7 @@ public class ResourceDataTest {
 	@Test
 	public void keepsTheInterruptionWhileAwaiting() {
 		final CountDownLatch release = new CountDownLatch(1);
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		data.dispatch(() -> {
 			try {
 				release.await();
@@ -116,7 +116,7 @@ public class ResourceDataTest {
 	@Test
 	public void generatesThroughItsDecoder() {
 		final Decoder decoder = new Decoder();
-		final ResourceData data = ResourceDataTest.upload(new ResourceData("image", decoder));
+		final ResourceData data = ResourceDataTest.upload(ResourceData.create("image", decoder));
 		data.generate(false);
 		Assert.assertEquals(Arrays.asList("init", "prepare", "decode"), decoder.calls);
 		Assert.assertTrue(data.isGenerated());
@@ -127,7 +127,7 @@ public class ResourceDataTest {
 	@Test
 	public void decodesInTheBackgroundWhenAsync() throws InterruptedException {
 		final Decoder decoder = new Decoder();
-		final ResourceData data = new ResourceData("image", decoder);
+		final ResourceData data = ResourceData.create("image", decoder);
 		data.generate(true);
 		Assert.assertTrue(data.isGenerated());
 		Assert.assertTrue(decoder.decoded.await(5L, TimeUnit.SECONDS));
@@ -137,7 +137,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void takesTheSizeOfItsTextureWithoutDecoder() {
-		final ResourceData data = ResourceDataTest.upload(new ResourceData("image", null).texture(new Texture(4, 2)));
+		final ResourceData data = ResourceDataTest.upload(ResourceData.create("image", null).texture(new Texture(4, 2)));
 		data.generate(false);
 		Assert.assertTrue(data.isGenerated());
 		Assert.assertTrue(data.isLoaded());
@@ -148,7 +148,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void staysUngeneratedWithoutDecoderNorTexture() {
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		data.generate(false);
 		Assert.assertFalse(data.isGenerated());
 		data.textures(new ITexture[0]).generate(false);
@@ -159,7 +159,7 @@ public class ResourceDataTest {
 	@Test
 	public void uploadsNothingWithoutData() {
 		final Texture texture = new Texture(2, 1);
-		final ResourceData data = new ResourceData("image", null).texture(texture);
+		final ResourceData data = ResourceData.create("image", null).texture(texture);
 		data.upload();
 		Assert.assertFalse(data.isUploaded());
 		Assert.assertNull(texture.getPixels());
@@ -170,7 +170,7 @@ public class ResourceDataTest {
 		final int[] pixels = {1, 2};
 		final Texture first = new Texture(0, 0);
 		final Texture second = new Texture(0, 0);
-		final ResourceData data = new ResourceData("image", null).textures(new ITexture[] {first, second}).data(new int[][] {pixels, null}).width(2).height(1);
+		final ResourceData data = ResourceData.create("image", null).textures(new ITexture[] {first, second}).data(new int[][] {pixels, null}).width(2).height(1);
 		data.upload();
 		Assert.assertSame(pixels, first.getPixels());
 		Assert.assertEquals(2, first.getWidth());
@@ -184,7 +184,7 @@ public class ResourceDataTest {
 	@Test
 	public void uploadsThroughItsDecoder() {
 		final Decoder decoder = new Decoder();
-		final ResourceData data = new ResourceData("image", decoder).data(new int[][] {{1}});
+		final ResourceData data = ResourceData.create("image", decoder).data(new int[][] {{1}});
 		data.upload();
 		Assert.assertEquals(Arrays.asList("init", "upload"), decoder.calls);
 		Assert.assertTrue(data.isUploaded());
@@ -195,7 +195,7 @@ public class ResourceDataTest {
 	public void clearsItsTexturesDataAndDecoder() {
 		final Decoder decoder = new Decoder();
 		final Texture texture = new Texture(1, 1);
-		final ResourceData data = new ResourceData("image", decoder).texture(texture).data(new int[][] {{1}});
+		final ResourceData data = ResourceData.create("image", decoder).texture(texture).data(new int[][] {{1}});
 		data.clear();
 		Assert.assertTrue(texture.isDeleted());
 		Assert.assertNull(data.getData());
@@ -205,7 +205,7 @@ public class ResourceDataTest {
 	@Test
 	public void loadsAgainOnceCleared() {
 		final Decoder decoder = new Decoder();
-		final ResourceData data = new ResourceData("image", decoder).texture(new Texture(1, 1));
+		final ResourceData data = ResourceData.create("image", decoder).texture(new Texture(1, 1));
 		data.generate(false);
 		Assert.assertTrue(data.isLoaded());
 		data.clear();
@@ -221,7 +221,7 @@ public class ResourceDataTest {
 	@Test
 	public void keepsAGivenTextureOnClear() {
 		final Texture texture = new Texture(4, 2);
-		final ResourceData data = new ResourceData("image", null).texture(texture);
+		final ResourceData data = ResourceData.create("image", null).texture(texture);
 		data.generate(false);
 		data.clear();
 		Assert.assertFalse(texture.isDeleted());
@@ -234,7 +234,7 @@ public class ResourceDataTest {
 	@Test
 	public void waitsForItsBackgroundDecode() {
 		final CountDownLatch release = new CountDownLatch(1);
-		final ResourceData data = new ResourceData("image", new Decoder() {
+		final ResourceData data = ResourceData.create("image", new Decoder() {
 
 			@Override
 			public void decode(final @NonNull ResourceData resource) {
@@ -266,7 +266,7 @@ public class ResourceDataTest {
 
 		};
 		final Texture texture = new Texture(1, 1);
-		final ResourceData data = new ResourceData("image", decoder).texture(texture);
+		final ResourceData data = ResourceData.create("image", decoder).texture(texture);
 		data.generate(true);
 		final Thread clearing = new Thread(data::clear);
 		clearing.start();
@@ -301,7 +301,7 @@ public class ResourceDataTest {
 			}
 
 		};
-		final ResourceData data = new ResourceData("image", decoder);
+		final ResourceData data = ResourceData.create("image", decoder);
 		BridgeHandler.THREAD.register(thread);
 		try {
 			data.generate(true);
@@ -322,7 +322,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void listsTheForksOfItsDecoder() {
-		final ResourceData data = new ResourceData("video", null);
+		final ResourceData data = ResourceData.create("video", null);
 		final Decoder decoder = new Decoder();
 		final ResourceData fork = data.fork(decoder);
 		Assert.assertEquals("video", fork.getUniqueId());
@@ -335,7 +335,7 @@ public class ResourceDataTest {
 	public void reportsItsFailureOnTheRenderThread() {
 		final QueueThreadBridge thread = new QueueThreadBridge();
 		final List<String> errors = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		final Resource resource = ResourceDataTest.resource(data).onError((failed, error) -> errors.add(error.getMessage()));
 		BridgeHandler.THREAD.register(thread);
 		try {
@@ -352,7 +352,7 @@ public class ResourceDataTest {
 	@Test
 	public void notifiesItsLoadOnceDecoded() {
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder());
+		final ResourceData data = ResourceData.create("image", new Decoder());
 		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
 		Assert.assertTrue(loads.isEmpty());
 		data.generate(false);
@@ -365,7 +365,7 @@ public class ResourceDataTest {
 	public void notifiesItsLoadOnTheRenderThread() {
 		final QueueThreadBridge thread = new QueueThreadBridge();
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder());
+		final ResourceData data = ResourceData.create("image", new Decoder());
 		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
 		BridgeHandler.THREAD.register(thread);
 		try {
@@ -382,7 +382,7 @@ public class ResourceDataTest {
 	@Test
 	public void notifiesTheLoadOfAGivenTexture() {
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", null).texture(new Texture(4, 2));
+		final ResourceData data = ResourceData.create("image", null).texture(new Texture(4, 2));
 		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
 		data.generate(false);
 		Assert.assertTrue(resource.isLoaded());
@@ -392,7 +392,7 @@ public class ResourceDataTest {
 	@Test
 	public void notifiesItsLoadOncePerLoad() {
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder());
+		final ResourceData data = ResourceData.create("image", new Decoder());
 		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
 		ResourceDataTest.load(ResourceDataTest.load(data));
 		Assert.assertTrue(resource.isLoaded());
@@ -406,7 +406,7 @@ public class ResourceDataTest {
 	@Test
 	public void notifiesOnlyTheResourcesThatListen() {
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder());
+		final ResourceData data = ResourceData.create("image", new Decoder());
 		final Resource listening = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("listening"));
 		final Resource copy = listening.copy();
 		data.generate(false);
@@ -417,7 +417,7 @@ public class ResourceDataTest {
 	@Test
 	public void keepsTheListenersOfAResourceNoLongerUsedUntilItsLoad() throws InterruptedException {
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder());
+		final ResourceData data = ResourceData.create("image", new Decoder());
 		final WeakReference<Resource> reference = new WeakReference<>(ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load")));
 		for (int i = 0; i < 5; i++) {
 			System.gc();
@@ -436,7 +436,7 @@ public class ResourceDataTest {
 	@Test
 	public void keepsTheListenersOfAResourceNoLongerUsedUntilItsFailure() throws InterruptedException {
 		final List<String> errors = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		final WeakReference<Resource> reference = new WeakReference<>(ResourceDataTest.resource(data).onError((failed, error) -> errors.add(error.getMessage())));
 		for (int i = 0; i < 5; i++) {
 			System.gc();
@@ -455,7 +455,7 @@ public class ResourceDataTest {
 	@Test
 	public void notifiesNoLoadOfAFailedDecode() {
 		final List<String> loads = new ArrayList<>();
-		final ResourceData data = new ResourceData("image", new Decoder() {
+		final ResourceData data = ResourceData.create("image", new Decoder() {
 
 			@Override
 			public void decode(final @NonNull ResourceData resource) {
@@ -471,7 +471,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void failsOnAnErrorOfItsAsyncDecode() {
-		final ResourceData data = new ResourceData("image", new Decoder() {
+		final ResourceData data = ResourceData.create("image", new Decoder() {
 
 			@Override
 			public void decode(final @NonNull ResourceData resource) {
@@ -486,7 +486,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void reloadsAFailedResourceWithANewDecoder() {
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		data.fail(new IllegalStateException("missing"));
 		final Decoder decoder = new Decoder();
 		Assert.assertSame(data, data.reload(decoder));
@@ -502,7 +502,7 @@ public class ResourceDataTest {
 	public void releasesWhatItsDecoderMadeOnReload() {
 		final Decoder previous = new Decoder();
 		final Texture texture = new Texture(4, 2);
-		final ResourceData data = ResourceDataTest.upload(ResourceDataTest.load(new ResourceData("image", previous).texture(texture).width(4).height(2).generated(true)));
+		final ResourceData data = ResourceDataTest.upload(ResourceDataTest.load(ResourceData.create("image", previous).texture(texture).width(4).height(2).generated(true)));
 		data.reload(new Decoder());
 		Assert.assertTrue(texture.isDeleted());
 		Assert.assertNull(data.getTextures());
@@ -515,7 +515,7 @@ public class ResourceDataTest {
 	@Test
 	public void keepsAGivenTextureOnReload() {
 		final Texture texture = new Texture(4, 2);
-		final ResourceData data = new ResourceData("image", null).texture(texture);
+		final ResourceData data = ResourceData.create("image", null).texture(texture);
 		data.generate(false);
 		data.reload(null);
 		Assert.assertFalse(texture.isDeleted());
@@ -529,7 +529,7 @@ public class ResourceDataTest {
 	public void ignoresTheDecodeOfAReplacedDecoder() throws InterruptedException {
 		final CountDownLatch release = new CountDownLatch(1);
 		final CountDownLatch finished = new CountDownLatch(1);
-		final ResourceData data = new ResourceData("image", new Decoder() {
+		final ResourceData data = ResourceData.create("image", new Decoder() {
 
 			@Override
 			public void decode(final @NonNull ResourceData resource) {
@@ -554,7 +554,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void takesTheSizeOfItsRegion() {
-		final ResourceData data = new ResourceData("atlas", null).texture(new Texture(64, 32)).region(16, 8, 32, 16);
+		final ResourceData data = ResourceData.create("atlas", null).texture(new Texture(64, 32)).region(16, 8, 32, 16);
 		data.generate(false);
 		Assert.assertArrayEquals(new int[] {16, 8, 32, 16}, data.getRegion());
 		Assert.assertEquals(32, data.getWidth());
@@ -565,7 +565,7 @@ public class ResourceDataTest {
 
 	@Test
 	public void clearsWithoutTextureNorDecoder() {
-		final ResourceData data = new ResourceData("image", null).data(new int[][] {{1}});
+		final ResourceData data = ResourceData.create("image", null).data(new int[][] {{1}});
 		data.clear();
 		Assert.assertNull(data.getData());
 	}
@@ -573,7 +573,7 @@ public class ResourceDataTest {
 	@Test
 	public void releasesItsTexturesOnTheRenderThreadOnceCollected() throws Throwable {
 		final Texture texture = new Texture(1, 1);
-		new ResourceData("image", new Decoder()).texture(texture).finalize();
+		ResourceData.create("image", new Decoder()).texture(texture).finalize();
 		Assert.assertFalse(texture.isDeleted());
 		ResourceData.releaseCollected();
 		Assert.assertTrue(texture.isDeleted());
@@ -581,11 +581,11 @@ public class ResourceDataTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullId() {
-		new ResourceData(null, null);
+		ResourceData.create(null, null);
 	}
 
 	private static Resource resource(final ResourceData data) {
-		return new Resource(ResourceBuilder.create().cache(null), data);
+		return Resource.create(ResourceBuilder.create().cache(null), data);
 	}
 
 	public static ResourceData load(final ResourceData data) {

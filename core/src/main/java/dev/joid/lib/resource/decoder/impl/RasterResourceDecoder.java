@@ -22,26 +22,23 @@ public class RasterResourceDecoder implements IResourceDecoder {
 
 	private BufferedImage image;
 
-	public RasterResourceDecoder(final @NonNull Asset asset) {
+	protected RasterResourceDecoder(final Asset asset, final BufferedImage image, final ImageReaderSpi reader) {
 		this.asset = asset;
-		this.source = null;
-		this.reader = null;
-	}
-
-	public RasterResourceDecoder(final @NonNull BufferedImage image) {
-		this.asset = null;
 		this.source = image;
-		this.reader = null;
-	}
-
-	public RasterResourceDecoder(final @NonNull Asset asset, final @NonNull ImageReaderSpi reader) {
-		this.asset = asset;
-		this.source = null;
 		this.reader = reader;
 	}
 
-	@Override
-	public void init(final @NonNull ResourceData resource) {}
+	public static @NonNull RasterResourceDecoder create(final @NonNull Asset asset) {
+		return new RasterResourceDecoder(asset, null, null);
+	}
+
+	public static @NonNull RasterResourceDecoder create(final @NonNull BufferedImage image) {
+		return new RasterResourceDecoder(null, image, null);
+	}
+
+	public static @NonNull RasterResourceDecoder create(final @NonNull Asset asset, final @NonNull ImageReaderSpi reader) {
+		return new RasterResourceDecoder(asset, null, reader);
+	}
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {
@@ -67,9 +64,6 @@ public class RasterResourceDecoder implements IResourceDecoder {
 		resource.uploadTextures();
 		this.clear(resource);
 	}
-
-	@Override
-	public void update(final @NonNull ResourceData resource) {}
 
 	@Override
 	public void clear(final @NonNull ResourceData resource) {

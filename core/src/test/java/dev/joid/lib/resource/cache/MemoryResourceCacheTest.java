@@ -21,8 +21,8 @@ public class MemoryResourceCacheTest {
 	@Test
 	public void storesAndRemovesItsData() {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
-		final ResourceData first = new ResourceData("first", null);
-		final ResourceData second = new ResourceData("second", null);
+		final ResourceData first = ResourceData.create("first", null);
+		final ResourceData second = ResourceData.create("second", null);
 		cache.put("first", first);
 		cache.put("second", second);
 		Assert.assertSame(first, cache.get("first"));
@@ -39,8 +39,8 @@ public class MemoryResourceCacheTest {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		Assert.assertSame(cache, cache.size(1));
 		Assert.assertEquals(1, cache.getSize());
-		cache.put("first", new ResourceData("first", null));
-		cache.put("second", new ResourceData("second", null));
+		cache.put("first", ResourceData.create("first", null));
+		cache.put("second", ResourceData.create("second", null));
 		Assert.assertEquals(1, cache.getDataList().size());
 		Assert.assertNotNull(cache.get("second"));
 	}
@@ -50,7 +50,7 @@ public class MemoryResourceCacheTest {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		Assert.assertSame(cache, cache.expiry(20L));
 		Assert.assertEquals(20L, cache.getExpiry());
-		cache.put("image", new ResourceData("image", null));
+		cache.put("image", ResourceData.create("image", null));
 		Thread.sleep(100L);
 		Assert.assertTrue(cache.getDataList().isEmpty());
 	}
@@ -58,7 +58,7 @@ public class MemoryResourceCacheTest {
 	@Test
 	public void findsItsDataStillInUseAfterItsExpiry() throws InterruptedException {
 		final MemoryResourceCache cache = MemoryResourceCache.create().expiry(20L);
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		cache.put("image", data);
 		Thread.sleep(100L);
 		Assert.assertSame(data, cache.get("image"));
@@ -68,7 +68,7 @@ public class MemoryResourceCacheTest {
 	@Test
 	public void forgetsItsRemovedDataEvenInUse() {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		cache.put("image", data);
 		cache.remove("image");
 		Assert.assertNull(cache.get("image"));
@@ -80,7 +80,7 @@ public class MemoryResourceCacheTest {
 	@Test
 	public void keepsItsDataWhenItsSettingsChange() {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
-		final ResourceData data = new ResourceData("image", null);
+		final ResourceData data = ResourceData.create("image", null);
 		cache.put("image", data);
 		cache.size(10).expiry(60000L);
 		Assert.assertSame(data, cache.get("image"));

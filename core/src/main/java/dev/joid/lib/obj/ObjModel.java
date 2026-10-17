@@ -74,18 +74,18 @@ public final class ObjModel implements IDrawableModel {
 					this.textureCoordinates.add(this.parseTextureCoordinate(line, lineCount));
 				} else if (line.startsWith("f ")) {
 					if (group == null) {
-						group = new ObjGroup("Default");
+						group = ObjGroup.create("Default");
 					}
 
 					for (final ObjFace face : this.parseFaces(group, line, lineCount)) {
-						group.addFace(face);
+						group.face(face);
 					}
 				} else if (line.startsWith("g ") || line.startsWith("o ")) {
 					if (group != null) {
 						this.groups.add(group);
 					}
 
-					group = new ObjGroup(line.substring(2));
+					group = ObjGroup.create(line.substring(2));
 				}
 			}
 
@@ -164,10 +164,10 @@ public final class ObjModel implements IDrawableModel {
 		}
 		final String[] tokens = line.substring(line.indexOf(" ") + 1).split(" ");
 		if (tokens.length == 2) {
-			return new ObjTextureCoordinate(Float.parseFloat(tokens[0]), 1 - Float.parseFloat(tokens[1]));
+			return new ObjTextureCoordinate(Float.parseFloat(tokens[0]), 1F - Float.parseFloat(tokens[1]));
 		}
 
-		return new ObjTextureCoordinate(Float.parseFloat(tokens[0]), 1 - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
+		return new ObjTextureCoordinate(Float.parseFloat(tokens[0]), 1F - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
 	private List<ObjFace> parseFaces(final @NonNull ObjGroup group, final @NonNull String line, final int lineCount) {

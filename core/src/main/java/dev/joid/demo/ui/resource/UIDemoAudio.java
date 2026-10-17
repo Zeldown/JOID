@@ -29,8 +29,8 @@ public class UIDemoAudio extends UIDemo {
 		final FloatSignal volume = new FloatSignal(1F);
 		final BooleanSignal far = new BooleanSignal(false);
 		final BooleanSignal away = new BooleanSignal(false);
-		VideoAudioPlayer.setAudioListenerPosition(() -> Point.create(0D, 0D, away.get() ? 30D : 0D));
-		super.onClose(event -> VideoAudioPlayer.setAudioListenerPosition(null));
+		VideoAudioPlayer.audioListenerPosition(() -> Point.create(0D, 0D, away.get() ? 30D : 0D));
+		super.onClose(event -> VideoAudioPlayer.audioListenerPosition(null));
 
 		ResourcePlayerNode
 		.create(80, 380, 320, 180)

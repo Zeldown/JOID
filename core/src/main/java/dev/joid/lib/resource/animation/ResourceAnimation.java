@@ -25,7 +25,7 @@ public final class ResourceAnimation {
 		this.ends = new long[frames.size()];
 		long end = 0L;
 		for (int i = 0; i < this.ends.length; i++) {
-			end += frames.get(i).getDuration() <= 10L ? 100L : frames.get(i).getDuration();
+			end += Math.max(1L, frames.get(i).getDuration());
 			this.ends[i] = end;
 		}
 	}

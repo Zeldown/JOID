@@ -68,7 +68,7 @@ public class ResourceFormatTest {
 
 		final IResourceDecoder still = ResourceFormat.decoder(Asset.of(ResourceFormatTest.class.getResourceAsStream("/animation/still.webp")));
 		Assert.assertTrue(still instanceof RasterResourceDecoder);
-		final ResourceData data = new ResourceData("still.webp", null);
+		final ResourceData data = ResourceData.create("still.webp", null);
 		still.decode(data);
 		Assert.assertEquals(8, data.getWidth());
 		Assert.assertEquals(0xFFFF0000, data.getData()[0][0]);
@@ -86,7 +86,7 @@ public class ResourceFormatTest {
 
 			@Override
 			public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-				return new VideoResourceDecoder(asset);
+				return VideoResourceDecoder.create(asset);
 			}
 
 		};
@@ -113,7 +113,7 @@ public class ResourceFormatTest {
 		ImageIO.write(image, "bmp", output);
 		final IResourceDecoder decoder = ResourceFormat.decoder(Asset.of(new ByteArrayInputStream(output.toByteArray())));
 		Assert.assertTrue(decoder instanceof RasterResourceDecoder);
-		final ResourceData data = new ResourceData("image.bmp", null);
+		final ResourceData data = ResourceData.create("image.bmp", null);
 		decoder.decode(data);
 		Assert.assertEquals(2, data.getWidth());
 		Assert.assertEquals(1, data.getHeight());

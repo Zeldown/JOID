@@ -83,19 +83,19 @@ public final class ResourceBuilder {
 
 	public @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {
 		if (this.cache == null) {
-			return new Resource(this, dataSupplier.get());
+			return Resource.create(this, dataSupplier.get());
 		}
 
 		final ResourceData cached = this.cache.get(uniqueId);
 		if (cached != null) {
 			this.computed.put(cached, uniqueId);
-			return new Resource(this, cached);
+			return Resource.create(this, cached);
 		}
 
 		final ResourceData data = dataSupplier.get();
 		this.cache.put(uniqueId, data);
 		this.computed.put(data, uniqueId);
-		return new Resource(this, data);
+		return Resource.create(this, data);
 	}
 
 	public @NonNull ResourceProperties getProperties() {
@@ -135,7 +135,7 @@ public final class ResourceBuilder {
 	}
 
 	private static @NonNull ResourceData detect(final @NonNull String uniqueId, final @NonNull Supplier<Asset> assetSource) {
-		final ResourceData data = new ResourceData(uniqueId, null).assetSource(assetSource);
+		final ResourceData data = ResourceData.create(uniqueId, null).assetSource(assetSource);
 		data.detectDecoder(true);
 		return data;
 	}

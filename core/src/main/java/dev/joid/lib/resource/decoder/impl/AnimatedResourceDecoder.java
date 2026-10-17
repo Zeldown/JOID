@@ -36,7 +36,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	private long            pauseTime;
 	private boolean         running;
 
-	public AnimatedResourceDecoder(final @NonNull Asset asset, final @NonNull IResourceAnimationReader reader) {
+	protected AnimatedResourceDecoder(final Asset asset, final IResourceAnimationReader reader) {
 		this.asset = asset;
 		this.reader = reader;
 		this.origin = this;
@@ -48,8 +48,9 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 		this.origin = origin;
 	}
 
-	@Override
-	public void init(final @NonNull ResourceData resource) {}
+	public static @NonNull AnimatedResourceDecoder create(final @NonNull Asset asset, final @NonNull IResourceAnimationReader reader) {
+		return new AnimatedResourceDecoder(asset, reader);
+	}
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {

@@ -48,11 +48,7 @@ public final class ResourceProperties {
 	}
 
 	public @NonNull ResourceProperties copy() {
-		final ResourceProperties copy = ResourceProperties.create();
-		copy.mipmap = this.mipmap;
-		copy.interpolation = this.interpolation;
-		copy.textureCoords = this.textureCoords;
-		return copy;
+		return ResourceProperties.create().set(this);
 	}
 
 	public @NonNull ResourceProperties set(final @NonNull ResourceProperties properties) {

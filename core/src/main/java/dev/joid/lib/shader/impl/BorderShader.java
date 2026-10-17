@@ -10,7 +10,7 @@ public final class BorderShader extends ShaderProgram {
 	private static final BorderShader INSTANCE = new BorderShader();
 
 	private BorderShader() {
-		this.load(CoreShader.BORDER.open(ShaderStage.VERTEX), CoreShader.BORDER.open(ShaderStage.FRAGMENT));
+		super.load(CoreShader.BORDER.open(ShaderStage.VERTEX), CoreShader.BORDER.open(ShaderStage.FRAGMENT));
 	}
 
 	public static @NonNull BorderShader inst() {
@@ -18,10 +18,10 @@ public final class BorderShader extends ShaderProgram {
 	}
 
 	public void bind(final float borderWidth, final @NonNull Color borderColor, final float texelW, final float texelH, final boolean fill, final @NonNull BorderMode mode, final float rectX1, final float rectY1, final float rectX2, final float rectY2) {
-		this.bind();
+		super.bind();
 
 		final Color color = borderColor.update();
-		this.getShader()
+		super.getShader()
 		.uniform("u_BorderWidth", borderWidth)
 		.uniform("u_BorderColor", color.getRedF(), color.getGreenF(), color.getBlueF(), color.getAlphaF())
 		.uniform("u_TexelSize", texelW, texelH)
@@ -30,9 +30,9 @@ public final class BorderShader extends ShaderProgram {
 		.uniform("u_Rect", rectX1, rectY1, rectX2, rectY2);
 
 		if (color.isGradient()) {
-			ShaderProgram.uniformGradient(this.getShader(), color.getGradient(), rectX1, rectY1, rectX2, rectY2);
+			ShaderProgram.uniformGradient(super.getShader(), color.getGradient(), rectX1, rectY1, rectX2, rectY2);
 		} else {
-			this.getShader().uniform("u_HasGradient", 0);
+			super.getShader().uniform("u_HasGradient", 0);
 		}
 	}
 

@@ -158,10 +158,10 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public static @NonNull Color transition(final @NonNull Color color1, final @NonNull Color color2, final float progress) {
-		if (progress == 0) {
+		if (progress == 0F) {
 			return color1.copy();
 		}
-		if (progress == 1) {
+		if (progress == 1F) {
 			return color2.copy();
 		}
 
@@ -218,7 +218,7 @@ public final class Color extends LockableValue<Color> {
 
 	public static @NonNull Color LOADING() {
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
-		final float color = (float) ((Math.sin(2 * Math.PI * (now % 4000) / 2000) + 1) / 50F) + 0.15F;
+		final float color = (float) ((Math.sin(2D * Math.PI * (now % 4000L) / 2000D) + 1) / 50F) + 0.15F;
 		return new Color(color, color, color);
 	}
 
@@ -255,7 +255,7 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public int getRGB() {
-		return ((int)(this.a * 255) & 0xFF) << 24 | ((int)(this.r * 255) & 0xFF) << 16 | ((int)(this.g * 255) & 0xFF) << 8 | ((int)(this.b * 255) & 0xFF) << 0;
+		return ((int)(this.a * 255F) & 0xFF) << 24 | ((int)(this.r * 255) & 0xFF) << 16 | ((int)(this.g * 255) & 0xFF) << 8 | ((int)(this.b * 255) & 0xFF) << 0;
 	}
 
 	public int getRed() {
@@ -295,7 +295,7 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color darker(final float scale) {
-		final float factor = 1 - scale;
+		final float factor = 1F - scale;
 		return this.derive(this.r * factor, this.g * factor, this.b * factor, this.a, color -> color.darker(scale));
 	}
 
@@ -333,19 +333,19 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color red(final float red) {
-		return this.mutate("withRed", () -> this.assign(this.copy().withRed(red)));
+		return super.mutate("withRed", () -> this.assign(this.copy().withRed(red)));
 	}
 
 	public @NonNull Color blue(final float blue) {
-		return this.mutate("withBlue", () -> this.assign(this.copy().withBlue(blue)));
+		return super.mutate("withBlue", () -> this.assign(this.copy().withBlue(blue)));
 	}
 
 	public @NonNull Color alpha(final float alpha) {
-		return this.mutate("withAlpha", () -> this.assign(this.copy().withAlpha(alpha)));
+		return super.mutate("withAlpha", () -> this.assign(this.copy().withAlpha(alpha)));
 	}
 
 	public @NonNull Color green(final float green) {
-		return this.mutate("withGreen", () -> this.assign(this.copy().withGreen(green)));
+		return super.mutate("withGreen", () -> this.assign(this.copy().withGreen(green)));
 	}
 
 	public @NonNull Color withRed(final float red) {
@@ -394,7 +394,7 @@ public final class Color extends LockableValue<Color> {
 
 	private @NonNull Color constant(final @NonNull String name) {
 		this.constant = name;
-		return this.lock();
+		return super.lock();
 	}
 
 	private void assign(final @NonNull Color color) {

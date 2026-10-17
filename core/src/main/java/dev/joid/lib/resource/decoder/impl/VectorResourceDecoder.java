@@ -45,14 +45,15 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	private volatile boolean rendering;
 
-	public VectorResourceDecoder(final @NonNull Asset asset) {
+	protected VectorResourceDecoder(final Asset asset) {
 		this.asset = asset;
 		this.textures = new LinkedHashMap<>(8, 0.75F, true);
 		this.pending = new AtomicReference<>();
 	}
 
-	@Override
-	public void init(final @NonNull ResourceData resource) {}
+	public static @NonNull VectorResourceDecoder create(final @NonNull Asset asset) {
+		return new VectorResourceDecoder(asset);
+	}
 
 	@Override
 	public void prepare(final @NonNull ResourceData resource) {

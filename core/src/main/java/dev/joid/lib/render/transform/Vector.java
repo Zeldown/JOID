@@ -15,9 +15,7 @@ public final class Vector {
 	private Supplier<Double> zSupplier;
 
 	private Vector(final double x, final double y, final double z) {
-		this.xSupplier = () -> x;
-		this.ySupplier = () -> y;
-		this.zSupplier = () -> z;
+		this(() -> x, () -> y, () -> z);
 	}
 
 	private Vector(final Supplier<Double> xSupplier, final Supplier<Double> ySupplier, final Supplier<Double> zSupplier) {
@@ -27,11 +25,11 @@ public final class Vector {
 	}
 
 	public static @NonNull Vector create() {
-		return new Vector(0, 0, 0);
+		return new Vector(0D, 0D, 0D);
 	}
 
 	public static @NonNull Vector create(final double x, final double y) {
-		return new Vector(x, y, 0);
+		return new Vector(x, y, 0D);
 	}
 
 	public static @NonNull Vector create(final double x, final double y, final double z) {
@@ -47,7 +45,7 @@ public final class Vector {
 	}
 
 	public static @NonNull Vector X(final double x) {
-		return new Vector(x, 0, 0);
+		return new Vector(x, 0D, 0D);
 	}
 
 	public static @NonNull Vector X(final @NonNull Supplier<Double> xSupplier) {
@@ -55,7 +53,7 @@ public final class Vector {
 	}
 
 	public static @NonNull Vector Y(final double y) {
-		return new Vector(0, y, 0);
+		return new Vector(0D, y, 0D);
 	}
 
 	public static @NonNull Vector Y(final @NonNull Supplier<Double> ySupplier) {
@@ -63,7 +61,7 @@ public final class Vector {
 	}
 
 	public static @NonNull Vector Z(final double z) {
-		return new Vector(0, 0, z);
+		return new Vector(0D, 0D, z);
 	}
 
 	public static @NonNull Vector Z(final @NonNull Supplier<Double> zSupplier) {

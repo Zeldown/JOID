@@ -15,7 +15,7 @@ public class VideoResourceFormat implements IResourceFormat {
 
 	@Override
 	public @NonNull IResourceDecoder decoder(final @NonNull Asset asset, final @NonNull byte[] header) {
-		return new VideoResourceDecoder(asset);
+		return VideoResourceDecoder.create(asset);
 	}
 
 	private static boolean isMp4(final byte[] header) {

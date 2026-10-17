@@ -377,7 +377,7 @@ public class DrawResourceTest {
 
 	@Test
 	public void mipmapsATextureRegionOnlyBelowItsOwnSize() {
-		final Resource resource = ResourceBuilder.create().cache(null).linear().compute("atlas", () -> new ResourceData("atlas", new SizedDecoder(true)).region(16, 8, 32, 16)).blocking();
+		final Resource resource = ResourceBuilder.create().cache(null).linear().compute("atlas", () -> ResourceData.create("atlas", new SizedDecoder(true)).region(16, 8, 32, 16)).blocking();
 		resource.prepareBind();
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 32D, 16D, resource);
 		Assert.assertNull(resource.getProperties().getMipmap());
@@ -409,13 +409,13 @@ public class DrawResourceTest {
 	private static Resource atlas(final int x, final int y, final int width, final int height) {
 		final RecordingTexture texture = new RecordingTexture();
 		texture.allocate(64, 32);
-		final Resource resource = ResourceBuilder.create().cache(null).linear().compute("atlas", () -> new ResourceData("atlas", null).texture(texture).region(x, y, width, height)).blocking();
+		final Resource resource = ResourceBuilder.create().cache(null).linear().compute("atlas", () -> ResourceData.create("atlas", null).texture(texture).region(x, y, width, height)).blocking();
 		resource.prepareBind();
 		return resource;
 	}
 
 	private static Resource decoded(final IResourceDecoder decoder, final TextureFilter filter) {
-		final Resource resource = ResourceBuilder.create().cache(null).interpolation(filter).compute("decoded", () -> new ResourceData("decoded", decoder)).blocking();
+		final Resource resource = ResourceBuilder.create().cache(null).interpolation(filter).compute("decoded", () -> ResourceData.create("decoded", decoder)).blocking();
 		resource.prepareBind();
 		return resource;
 	}
@@ -432,18 +432,12 @@ public class DrawResourceTest {
 		}
 
 		@Override
-		public void init(final @NonNull ResourceData resource) {}
-
-		@Override
 		public void clear(final @NonNull ResourceData resource) {}
 
 		@Override
 		public void decode(final @NonNull ResourceData resource) {
 			resource.width(64).height(32);
 		}
-
-		@Override
-		public void update(final @NonNull ResourceData resource) {}
 
 		@Override
 		public void upload(final @NonNull ResourceData resource) {}

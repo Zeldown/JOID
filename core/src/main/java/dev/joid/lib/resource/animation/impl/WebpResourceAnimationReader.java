@@ -75,7 +75,7 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 				final Control control = frames.get(i);
 				final BufferedImage image = reader.read(i);
 				final int[] pixels = image.getRGB(0, 0, control.width, control.height, null, 0, control.width);
-				animation.add(ResourceAnimationFrame.create(canvas.compose(pixels, control.x, control.y, control.width, control.height, control.blend, control.disposal), control.duration));
+				animation.add(ResourceAnimationFrame.create(canvas.compose(pixels, control.x, control.y, control.width, control.height, control.blend, control.disposal), control.duration <= 10L ? 100L : control.duration));
 			}
 			return ResourceAnimation.create(width, height, plays, animation);
 		} finally {
