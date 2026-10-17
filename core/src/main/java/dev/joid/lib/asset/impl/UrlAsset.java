@@ -24,7 +24,7 @@ public final class UrlAsset extends Asset {
 		this.url = url;
 	}
 
-	public static @NonNull UrlAsset create(final @NonNull String url) {
+	public static @NonNull UrlAsset of(final @NonNull String url) {
 		return new UrlAsset(url);
 	}
 

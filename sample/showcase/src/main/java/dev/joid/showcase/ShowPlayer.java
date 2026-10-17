@@ -36,10 +36,10 @@ import dev.joid.lib.utils.geom.Point;
 
 public class ShowPlayer extends ShowUI {
 
-	private final DoubleSignal  hover    = DoubleSignal.create(0D);
-	private final DoubleSignal  scrub    = DoubleSignal.create(-1D);
-	private final DoubleSignal  progress = DoubleSignal.create(0D);
-	private final BooleanSignal playing  = BooleanSignal.create(true);
+	private final DoubleSignal  hover    = new DoubleSignal(0D);
+	private final DoubleSignal  scrub    = new DoubleSignal(-1D);
+	private final DoubleSignal  progress = new DoubleSignal(0D);
+	private final BooleanSignal playing  = new BooleanSignal(true);
 	private final TweenAnimator reveal   = TweenAnimator.create(0F);
 
 	private long   peekTime;

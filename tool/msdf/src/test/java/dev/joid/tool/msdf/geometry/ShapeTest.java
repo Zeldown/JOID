@@ -74,7 +74,7 @@ public class ShapeTest {
 	}
 
 	private static List<Edge> square(final double x, final double y, final double size) {
-		final List<Vector2> points = Arrays.asList(new Vector2(x, y), new Vector2(x + size, y), new Vector2(x + size, y + size), new Vector2(x, y + size));
+		final List<Vector2> points = Arrays.asList(Vector2.of(x, y), Vector2.of(x + size, y), Vector2.of(x + size, y + size), Vector2.of(x, y + size));
 		final List<Edge> contour = new ArrayList<>();
 		for (int i = 0; i < points.size(); i++) {
 			contour.add(new Edge(Arrays.asList(points.get(i), points.get((i + 1) % points.size()))));
@@ -83,7 +83,7 @@ public class ShapeTest {
 	}
 
 	private static List<Edge> clockwise(final double x, final double y, final double size) {
-		final List<Vector2> points = Arrays.asList(new Vector2(x, y), new Vector2(x, y + size), new Vector2(x + size, y + size), new Vector2(x + size, y));
+		final List<Vector2> points = Arrays.asList(Vector2.of(x, y), Vector2.of(x, y + size), Vector2.of(x + size, y + size), Vector2.of(x + size, y));
 		final List<Edge> contour = new ArrayList<>();
 		for (int i = 0; i < points.size(); i++) {
 			contour.add(new Edge(Arrays.asList(points.get(i), points.get((i + 1) % points.size()))));

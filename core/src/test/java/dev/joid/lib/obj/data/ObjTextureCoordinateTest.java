@@ -7,7 +7,7 @@ public class ObjTextureCoordinateTest {
 
 	@Test
 	public void keepsItsThreeCoordinates() {
-		final ObjTextureCoordinate coordinate = new ObjTextureCoordinate(0.25F, 0.5F, 0.75F);
+		final ObjTextureCoordinate coordinate = ObjTextureCoordinate.of(0.25F, 0.5F, 0.75F);
 		Assert.assertEquals(0.25F, coordinate.getU(), 0F);
 		Assert.assertEquals(0.5F, coordinate.getV(), 0F);
 		Assert.assertEquals(0.75F, coordinate.getW(), 0F);
@@ -15,7 +15,7 @@ public class ObjTextureCoordinateTest {
 
 	@Test
 	public void hasNoDepthWithTwoCoordinates() {
-		final ObjTextureCoordinate coordinate = new ObjTextureCoordinate(0.25F, 0.5F);
+		final ObjTextureCoordinate coordinate = ObjTextureCoordinate.of(0.25F, 0.5F);
 		Assert.assertEquals(0.25F, coordinate.getU(), 0F);
 		Assert.assertEquals(0.5F, coordinate.getV(), 0F);
 		Assert.assertEquals(0F, coordinate.getW(), 0F);

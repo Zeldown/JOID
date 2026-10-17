@@ -21,7 +21,7 @@ public class FileAssetTest {
 		final File file = this.folder.newFile("asset.bin");
 		Files.write(file.toPath(), "joid".getBytes(StandardCharsets.UTF_8));
 
-		final FileAsset asset = FileAsset.create(file);
+		final FileAsset asset = FileAsset.of(file);
 		Assert.assertSame(file, asset.getFile());
 		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.read());
 	}
@@ -29,7 +29,7 @@ public class FileAssetTest {
 	@Test
 	public void followsTheChangesOfItsFile() throws IOException {
 		final File file = this.folder.newFile("asset.bin");
-		final FileAsset asset = FileAsset.create(file);
+		final FileAsset asset = FileAsset.of(file);
 		Files.write(file.toPath(), "first".getBytes(StandardCharsets.UTF_8));
 		Assert.assertArrayEquals("first".getBytes(StandardCharsets.UTF_8), asset.read());
 		Files.write(file.toPath(), "second".getBytes(StandardCharsets.UTF_8));
@@ -38,22 +38,22 @@ public class FileAssetTest {
 
 	@Test
 	public void isIdentifiedByItsAbsolutePath() {
-		Assert.assertEquals(new File("image.png").getAbsolutePath(), FileAsset.create(new File("image.png")).getUniqueId());
+		Assert.assertEquals(new File("image.png").getAbsolutePath(), FileAsset.of(new File("image.png")).getUniqueId());
 	}
 
 	@Test
 	public void isLocal() {
-		Assert.assertFalse(FileAsset.create(new File("image.png")).isRemote());
+		Assert.assertFalse(FileAsset.of(new File("image.png")).isRemote());
 	}
 
 	@Test(expected = FileNotFoundException.class)
 	public void failsToReadAMissingFile() throws IOException {
-		FileAsset.create(new File(this.folder.getRoot(), "missing.bin")).read();
+		FileAsset.of(new File(this.folder.getRoot(), "missing.bin")).read();
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullFile() {
-		FileAsset.create(null);
+		FileAsset.of(null);
 	}
 
 }

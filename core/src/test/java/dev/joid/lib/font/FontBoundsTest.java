@@ -17,7 +17,7 @@ public class FontBoundsTest {
 
 	@Test
 	public void keepsItsSize() {
-		final FontBounds bounds = FontBounds.create(3D, 4D);
+		final FontBounds bounds = FontBounds.of(3D, 4D);
 		Assert.assertEquals(3D, bounds.getWidth(), 0D);
 		Assert.assertEquals(4D, bounds.getHeight(), 0D);
 	}

@@ -16,7 +16,7 @@ public class ITextRendererTest {
 			@Override
 			public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
 				drawn.add(text + "@" + x + "," + y);
-				return FontBounds.create(12D, 34D);
+				return FontBounds.of(12D, 34D);
 			}
 
 			@Override

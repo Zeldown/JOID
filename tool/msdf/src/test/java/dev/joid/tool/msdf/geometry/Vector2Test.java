@@ -7,8 +7,8 @@ public class Vector2Test {
 
 	@Test
 	public void computesTheUsualOperations() {
-		final Vector2 a = new Vector2(3D, 4D);
-		final Vector2 b = new Vector2(1D, -2D);
+		final Vector2 a = Vector2.of(3D, 4D);
+		final Vector2 b = Vector2.of(1D, -2D);
 		Assert.assertEquals(4D, a.add(b).getX(), 0D);
 		Assert.assertEquals(2D, a.add(b).getY(), 0D);
 		Assert.assertEquals(2D, a.subtract(b).getX(), 0D);
@@ -23,7 +23,7 @@ public class Vector2Test {
 
 	@Test
 	public void keepsTheZeroVectorWhenNormalized() {
-		final Vector2 zero = new Vector2(0D, 0D).normalize();
+		final Vector2 zero = Vector2.of(0D, 0D).normalize();
 		Assert.assertEquals(0D, zero.getX(), 0D);
 		Assert.assertEquals(0D, zero.getY(), 0D);
 	}

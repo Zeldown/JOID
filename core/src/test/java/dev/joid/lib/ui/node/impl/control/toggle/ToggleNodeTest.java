@@ -56,7 +56,7 @@ public class ToggleNodeTest {
 	@Test
 	public void staysInSyncWithItsSignal() {
 		final List<Object> changes = new ArrayList<>();
-		final BooleanSignal music = BooleanSignal.create(true);
+		final BooleanSignal music = new BooleanSignal(true);
 		final Toggle toggle = new Toggle().state("on", 0).toggle(music).onChange(event -> changes.add(event.getValue()));
 		Assert.assertTrue(toggle.isToggle());
 		this.bridges.open(new NodeUI(toggle)).frame();
@@ -69,8 +69,8 @@ public class ToggleNodeTest {
 
 	@Test
 	public void followsOnlyItsLastSignal() {
-		final BooleanSignal music = BooleanSignal.create(false);
-		final BooleanSignal sounds = BooleanSignal.create(false);
+		final BooleanSignal music = new BooleanSignal(false);
+		final BooleanSignal sounds = new BooleanSignal(false);
 		final Toggle toggle = new Toggle().state("on", 0).toggle(music).toggle(sounds);
 		this.bridges.open(new NodeUI(toggle)).frame();
 		sounds.set(true);
@@ -85,13 +85,13 @@ public class ToggleNodeTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesASignalItCannotWrite() {
-		new Toggle().state("on", 0).toggle(BooleanSignal.create(false).map(value -> !value));
+		new Toggle().state("on", 0).toggle(new BooleanSignal(false).map(value -> !value));
 	}
 
 	@Test
 	public void replacesItsSignalWithAnySetter() {
 		final List<Object> changes = new ArrayList<>();
-		final BooleanSignal music = BooleanSignal.create(false);
+		final BooleanSignal music = new BooleanSignal(false);
 		final Toggle toggle = new Toggle().state("on", 0).toggle(music).onChange(event -> changes.add(event.getValue()));
 		this.bridges.open(new NodeUI(toggle));
 		toggle.toggle(true);

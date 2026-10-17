@@ -142,7 +142,7 @@ public final class Glyphs {
 	}
 
 	private static Vector2 point(final double[] segment, final int offset) {
-		return new Vector2(segment[offset] / Glyphs.UNITS, -segment[offset + 1] / Glyphs.UNITS);
+		return Vector2.of(segment[offset] / Glyphs.UNITS, -segment[offset + 1] / Glyphs.UNITS);
 	}
 
 }

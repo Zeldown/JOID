@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ReplayLocalUI extends UI {
 
-	private final IntegerSignal            other      = IntegerSignal.create(100);
+	private final IntegerSignal            other      = new IntegerSignal(100);
 	private final List<IntegerSignal>      signalList = new ArrayList<>();
 	private final List<ListSignal<String>> listList   = new ArrayList<>();
 
@@ -59,7 +59,7 @@ public class ReplayLocalUI extends UI {
 				break;
 			}
 			case "branch": {
-				final ListSignal<String> names = ListSignal.create(Collections.emptyList());
+				final ListSignal<String> names = new ListSignal<>(Collections.emptyList());
 				this.listList.add(names);
 				SignalReplayNode.create().text(names.isEmpty() ? "none" : names.get(0) + " and " + names.get(0)).attach(this);
 				break;
@@ -75,7 +75,7 @@ public class ReplayLocalUI extends UI {
 			}
 			case "stale": {
 				final IntegerSignal saved = this.create(0);
-				final ListSignal<String> names = ListSignal.create(Collections.singletonList("Ada"));
+				final ListSignal<String> names = new ListSignal<>(Collections.singletonList("Ada"));
 				for (final String name : names.get()) {
 					SignalReplayNode.create().text(name).attach(this);
 				}
@@ -96,7 +96,7 @@ public class ReplayLocalUI extends UI {
 
 	private IntegerSignal create(final int value) {
 		this.created++;
-		final IntegerSignal signal = IntegerSignal.create(value);
+		final IntegerSignal signal = new IntegerSignal(value);
 		this.signalList.add(signal);
 		return signal;
 	}

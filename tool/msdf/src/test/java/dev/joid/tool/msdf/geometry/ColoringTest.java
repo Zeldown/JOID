@@ -13,7 +13,7 @@ public class ColoringTest {
 	public void givesAdjacentEdgesOfACornerDifferentColors() {
 		final Shape shape = new Shape();
 		final List<Edge> square = new ArrayList<>();
-		final Vector2[] points = {new Vector2(0D, 0D), new Vector2(1D, 0D), new Vector2(1D, 1D), new Vector2(0D, 1D)};
+		final Vector2[] points = {Vector2.of(0D, 0D), Vector2.of(1D, 0D), Vector2.of(1D, 1D), Vector2.of(0D, 1D)};
 		for (int i = 0; i < points.length; i++) {
 			square.add(new Edge(Arrays.asList(points[i], points[(i + 1) % points.length])));
 		}
@@ -35,7 +35,7 @@ public class ColoringTest {
 		for (int i = 0; i < segments; i++) {
 			final double from = Math.PI * 2D * i / segments;
 			final double to = Math.PI * 2D * (i + 1) / segments;
-			circle.add(new Edge(Arrays.asList(new Vector2(Math.cos(from), Math.sin(from)), new Vector2(Math.cos(to), Math.sin(to)))));
+			circle.add(new Edge(Arrays.asList(Vector2.of(Math.cos(from), Math.sin(from)), Vector2.of(Math.cos(to), Math.sin(to)))));
 		}
 		shape.add(circle);
 		Coloring.apply(shape, 3D);
@@ -51,9 +51,9 @@ public class ColoringTest {
 		final List<Vector2> arc = new ArrayList<>();
 		for (int i = 0; i <= 64; i++) {
 			final double angle = -Math.PI / 4D + Math.PI * 1.5D * i / 64D;
-			arc.add(new Vector2(Math.cos(angle), Math.sqrt(2D) + Math.sin(angle)));
+			arc.add(Vector2.of(Math.cos(angle), Math.sqrt(2D) + Math.sin(angle)));
 		}
-		final List<Edge> teardrop = new ArrayList<>(Arrays.asList(new Edge(Arrays.asList(new Vector2(0D, 0D), arc.get(0))), new Edge(arc), new Edge(Arrays.asList(arc.get(64), new Vector2(0D, 0D)))));
+		final List<Edge> teardrop = new ArrayList<>(Arrays.asList(new Edge(Arrays.asList(Vector2.of(0D, 0D), arc.get(0))), new Edge(arc), new Edge(Arrays.asList(arc.get(64), Vector2.of(0D, 0D)))));
 		shape.add(teardrop);
 		Coloring.apply(shape, 3D);
 
@@ -66,11 +66,11 @@ public class ColoringTest {
 	public void colorsEachSplineOfAHalfDisc() {
 		final Shape shape = new Shape();
 		final List<Edge> half = new ArrayList<>();
-		half.add(new Edge(Arrays.asList(new Vector2(-1D, 0D), new Vector2(1D, 0D))));
+		half.add(new Edge(Arrays.asList(Vector2.of(-1D, 0D), Vector2.of(1D, 0D))));
 		for (int i = 0; i < 32; i++) {
 			final double from = Math.PI * i / 32D;
 			final double to = Math.PI * (i + 1) / 32D;
-			half.add(new Edge(Arrays.asList(new Vector2(Math.cos(from), Math.sin(from)), new Vector2(Math.cos(to), Math.sin(to)))));
+			half.add(new Edge(Arrays.asList(Vector2.of(Math.cos(from), Math.sin(from)), Vector2.of(Math.cos(to), Math.sin(to)))));
 		}
 		shape.add(half);
 		Coloring.apply(shape, 3D);

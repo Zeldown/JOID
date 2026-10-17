@@ -36,7 +36,7 @@ public class ShowHero extends ShowUI {
 
 	private static final Color TOAST = Color.decode("#1E1B3A").lock();
 
-	private final DoubleSignal progress = DoubleSignal.create(0D);
+	private final DoubleSignal progress = new DoubleSignal(0D);
 
 	@Override
 	protected void scene() {

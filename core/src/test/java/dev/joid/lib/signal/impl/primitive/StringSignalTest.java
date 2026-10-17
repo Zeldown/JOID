@@ -11,32 +11,32 @@ public class StringSignalTest {
 
 	@Test
 	public void startsWithAnEmptyTextWithoutDefault() {
-		final StringSignal signal = StringSignal.create();
+		final StringSignal signal = new StringSignal();
 		Assert.assertEquals("", signal.get());
 		Assert.assertEquals("", signal.trim().toUpperCase().get());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
-		final StringSignal signal = StringSignal.create("joid");
+		final StringSignal signal = new StringSignal("joid");
 		Assert.assertEquals("joid", signal.get());
 	}
 
 	@Test
 	public void resetsToTheGivenValue() {
-		Assert.assertEquals("joid", StringSignal.create("joid").set("ui").reset().get());
+		Assert.assertEquals("joid", new StringSignal("joid").set("ui").reset().get());
 	}
 
 	@Test
 	public void computesFromItsDefault() {
-		final StringSignal signal = StringSignal.create("jo");
+		final StringSignal signal = new StringSignal("jo");
 		signal.append("id");
 		Assert.assertEquals("joid", signal.get());
 	}
 
 	@Test
 	public void appends() {
-		final StringSignal signal = StringSignal.create("jo");
+		final StringSignal signal = new StringSignal("jo");
 		signal.append("id");
 		Assert.assertEquals("joid", signal.get());
 		signal.append(" ui");
@@ -45,21 +45,21 @@ public class StringSignalTest {
 
 	@Test
 	public void replacesACharacter() {
-		final StringSignal signal = StringSignal.create("joid");
+		final StringSignal signal = new StringSignal("joid");
 		signal.replace('o', '0');
 		Assert.assertEquals("j0id", signal.get());
 	}
 
 	@Test
 	public void replacesASequence() {
-		final StringSignal signal = StringSignal.create("joid ui ui");
+		final StringSignal signal = new StringSignal("joid ui ui");
 		signal.replace("ui", "lib");
 		Assert.assertEquals("joid lib lib", signal.get());
 	}
 
 	@Test
 	public void changesItsCase() {
-		final StringSignal signal = StringSignal.create("Shop");
+		final StringSignal signal = new StringSignal("Shop");
 		signal.toLowerCase();
 		Assert.assertEquals("shop", signal.get());
 		signal.toUpperCase();
@@ -68,14 +68,14 @@ public class StringSignalTest {
 
 	@Test
 	public void trimsItsValue() {
-		final StringSignal signal = StringSignal.create(" \tjoid \n");
+		final StringSignal signal = new StringSignal(" \tjoid \n");
 		signal.trim();
 		Assert.assertEquals("joid", signal.get());
 	}
 
 	@Test
 	public void keepsASubstring() {
-		final StringSignal signal = StringSignal.create("joid lib ui");
+		final StringSignal signal = new StringSignal("joid lib ui");
 		signal.substring(5);
 		Assert.assertEquals("lib ui", signal.get());
 		signal.substring(0, 3);
@@ -84,13 +84,13 @@ public class StringSignalTest {
 
 	@Test(expected = StringIndexOutOfBoundsException.class)
 	public void refusesASubstringOutOfBounds() {
-		StringSignal.create("joid").substring(5);
+		new StringSignal("joid").substring(5);
 	}
 
 	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<String> received = new ArrayList<>();
-		final StringSignal signal = StringSignal.create("Shop");
+		final StringSignal signal = new StringSignal("Shop");
 		signal.onChange(received::add);
 		signal.toUpperCase();
 		signal.trim();
@@ -101,20 +101,20 @@ public class StringSignalTest {
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("StringSignal{joid}", StringSignal.create("joid").toString());
-		Assert.assertEquals("StringSignal{}", StringSignal.create().toString());
+		Assert.assertEquals("StringSignal{joid}", new StringSignal("joid").toString());
+		Assert.assertEquals("StringSignal{}", new StringSignal().toString());
 	}
 
 	@Test
 	public void appendsToAnEmptySignal() {
-		final StringSignal signal = StringSignal.create();
+		final StringSignal signal = new StringSignal();
 		signal.append("joid");
 		Assert.assertEquals("joid", signal.get());
 	}
 
 	@Test
 	public void chainsItsOperations() {
-		final StringSignal signal = StringSignal.create(" jo ");
+		final StringSignal signal = new StringSignal(" jo ");
 		Assert.assertSame(signal, signal.trim().append("id").toUpperCase());
 		Assert.assertEquals("JOID", signal.get());
 	}

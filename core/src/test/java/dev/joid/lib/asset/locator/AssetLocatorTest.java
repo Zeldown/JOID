@@ -25,7 +25,7 @@ public class AssetLocatorTest {
 
 	@Test
 	public void supportsAnAsset() {
-		Assert.assertTrue(AssetLocator.supports(FileAsset.create(new File("image.png"))));
+		Assert.assertTrue(AssetLocator.supports(FileAsset.of(new File("image.png"))));
 	}
 
 	@Test
@@ -42,7 +42,7 @@ public class AssetLocatorTest {
 
 	@Test
 	public void returnsAnAssetAsIs() {
-		final Asset asset = FileAsset.create(new File("image.png"));
+		final Asset asset = FileAsset.of(new File("image.png"));
 		Assert.assertSame(asset, AssetLocator.locate(asset));
 	}
 
@@ -64,7 +64,7 @@ public class AssetLocatorTest {
 
 			@Override
 			public @NonNull Asset locate(final @NonNull Object handle) {
-				return FileAsset.create(new File(handle.toString()));
+				return FileAsset.of(new File(handle.toString()));
 			}
 
 		};

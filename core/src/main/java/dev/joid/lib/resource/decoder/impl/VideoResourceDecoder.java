@@ -103,7 +103,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	}
 
 	public static @NonNull VideoResourceDecoder create(final @NonNull File file) {
-		return new VideoResourceDecoder(FileAsset.create(file));
+		return new VideoResourceDecoder(FileAsset.of(file));
 	}
 
 	public static @NonNull VideoResourceDecoder create(final @NonNull Asset asset) {

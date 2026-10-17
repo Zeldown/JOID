@@ -92,7 +92,7 @@ public final class TextInfo extends LockableValue<TextInfo> {
 	}
 
 	public @NonNull FontBounds getBounds(final @NonNull String text) {
-		return FontBounds.create(this.getWidth(text), this.getHeight(text));
+		return FontBounds.of(this.getWidth(text), this.getHeight(text));
 	}
 
 	public double dw(final @NonNull String text, final double value) {

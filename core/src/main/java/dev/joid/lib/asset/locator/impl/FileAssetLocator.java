@@ -16,7 +16,7 @@ public class FileAssetLocator implements IAssetLocator {
 
 	@Override
 	public @NonNull Asset locate(final @NonNull Object handle) {
-		return FileAsset.create((File) handle);
+		return FileAsset.of((File) handle);
 	}
 
 }

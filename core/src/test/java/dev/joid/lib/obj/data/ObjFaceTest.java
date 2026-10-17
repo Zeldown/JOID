@@ -11,7 +11,7 @@ public class ObjFaceTest {
 
 	@Test
 	public void computesTheNormalFromItsFirstThreeVertices() {
-		final ObjVertex normal = ObjFaceTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F)).getFaceNormal();
+		final ObjVertex normal = ObjFaceTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(1F, 0F), ObjVertex.of(0F, 1F)).getFaceNormal();
 		Assert.assertEquals(0F, normal.getX(), 0F);
 		Assert.assertEquals(0F, normal.getY(), 0F);
 		Assert.assertEquals(1F, normal.getZ(), 0F);
@@ -19,12 +19,12 @@ public class ObjFaceTest {
 
 	@Test
 	public void turnsItsNormalWithItsWinding() {
-		Assert.assertEquals(-1F, ObjFaceTest.face(new ObjVertex(0F, 0F), new ObjVertex(0F, 1F), new ObjVertex(1F, 0F)).getFaceNormal().getZ(), 0F);
+		Assert.assertEquals(-1F, ObjFaceTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(0F, 1F), ObjVertex.of(1F, 0F)).getFaceNormal().getZ(), 0F);
 	}
 
 	@Test
 	public void normalizesItsNormal() {
-		final ObjVertex normal = ObjFaceTest.face(new ObjVertex(0F, 0F), new ObjVertex(4F, 0F), new ObjVertex(0F, 0F, 3F)).getFaceNormal();
+		final ObjVertex normal = ObjFaceTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(4F, 0F), ObjVertex.of(0F, 0F, 3F)).getFaceNormal();
 		Assert.assertEquals(0F, normal.getX(), 0F);
 		Assert.assertEquals(-1F, normal.getY(), 0F);
 		Assert.assertEquals(0F, normal.getZ(), 0F);
@@ -32,7 +32,7 @@ public class ObjFaceTest {
 
 	@Test
 	public void pointsTheNormalOfADegenerateFaceAlongZ() {
-		final ObjVertex normal = ObjFaceTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 1F), new ObjVertex(2F, 2F)).getFaceNormal();
+		final ObjVertex normal = ObjFaceTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(1F, 1F), ObjVertex.of(2F, 2F)).getFaceNormal();
 		Assert.assertEquals(0F, normal.getX(), 0F);
 		Assert.assertEquals(0F, normal.getY(), 0F);
 		Assert.assertEquals(1F, normal.getZ(), 0F);
@@ -41,7 +41,7 @@ public class ObjFaceTest {
 	@Test
 	public void rendersItsVerticesWithItsNormal() {
 		final Tessellator tessellator = ObjFaceTest.tessellator();
-		final ObjFace face = ObjFaceTest.face(new ObjVertex(0F, 0F, 2F), new ObjVertex(1F, 0F, 2F), new ObjVertex(0F, 1F, 2F));
+		final ObjFace face = ObjFaceTest.face(ObjVertex.of(0F, 0F, 2F), ObjVertex.of(1F, 0F, 2F), ObjVertex.of(0F, 1F, 2F));
 		face.render(tessellator);
 		Assert.assertEquals(3, TessellatorAccess.vertexCount(tessellator));
 		Assert.assertTrue(TessellatorAccess.hasNormals(tessellator));
@@ -55,7 +55,7 @@ public class ObjFaceTest {
 	@Test
 	public void rendersEachVertexWithItsOwnNormal() {
 		final Tessellator tessellator = ObjFaceTest.tessellator();
-		final ObjFace face = ObjFace.create(ObjFaceTest.triangle(), null, new ObjVertex[] {new ObjVertex(1F, 0F, 0F), new ObjVertex(0F, 1F, 0F), new ObjVertex(0F, 0F, 1F)});
+		final ObjFace face = ObjFace.create(ObjFaceTest.triangle(), null, new ObjVertex[] {ObjVertex.of(1F, 0F, 0F), ObjVertex.of(0F, 1F, 0F), ObjVertex.of(0F, 0F, 1F)});
 		face.render(tessellator);
 		Assert.assertEquals(127, TessellatorAccess.rawBuffer(tessellator)[6]);
 		Assert.assertEquals(127 << 8, TessellatorAccess.rawBuffer(tessellator)[14]);
@@ -65,7 +65,7 @@ public class ObjFaceTest {
 	@Test
 	public void normalizesTheVertexNormals() {
 		final Tessellator tessellator = ObjFaceTest.tessellator();
-		final ObjFace face = ObjFace.create(ObjFaceTest.triangle(), null, new ObjVertex[] {new ObjVertex(0F, 4F, 0F), new ObjVertex(0F, 0F, 0F), new ObjVertex(0F, 0F, 2F)});
+		final ObjFace face = ObjFace.create(ObjFaceTest.triangle(), null, new ObjVertex[] {ObjVertex.of(0F, 4F, 0F), ObjVertex.of(0F, 0F, 0F), ObjVertex.of(0F, 0F, 2F)});
 		face.render(tessellator);
 		Assert.assertEquals(127 << 8, TessellatorAccess.rawBuffer(tessellator)[6]);
 		Assert.assertEquals(127 << 16, TessellatorAccess.rawBuffer(tessellator)[14]);
@@ -75,7 +75,7 @@ public class ObjFaceTest {
 	@Test
 	public void pullsItsTextureCoordinatesTowardsTheirCenter() {
 		final Tessellator tessellator = ObjFaceTest.tessellator();
-		final ObjFace face = ObjFace.create(ObjFaceTest.triangle(), new ObjTextureCoordinate[] {new ObjTextureCoordinate(0F, 0F), new ObjTextureCoordinate(1F, 0F), new ObjTextureCoordinate(0F, 1F)}, null);
+		final ObjFace face = ObjFace.create(ObjFaceTest.triangle(), new ObjTextureCoordinate[] {ObjTextureCoordinate.of(0F, 0F), ObjTextureCoordinate.of(1F, 0F), ObjTextureCoordinate.of(0F, 1F)}, null);
 		face.render(tessellator);
 		Assert.assertTrue(TessellatorAccess.hasTexture(tessellator));
 		Assert.assertEquals(0.0005F, ObjFaceTest.value(tessellator, 0, 3), 0.000001F);
@@ -97,7 +97,7 @@ public class ObjFaceTest {
 
 	@Test
 	public void keepsItsVertexNormals() {
-		final ObjVertex[] normals = {new ObjVertex(0F, 0F, 1F)};
+		final ObjVertex[] normals = {ObjVertex.of(0F, 0F, 1F)};
 		final ObjFace face = ObjFace.create(ObjFaceTest.triangle(), null, normals);
 		Assert.assertArrayEquals(normals, face.getVertexNormals());
 		Assert.assertNotSame(normals, face.getVertexNormals());
@@ -108,7 +108,7 @@ public class ObjFaceTest {
 	}
 
 	private static ObjVertex[] triangle() {
-		return new ObjVertex[] {new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F)};
+		return new ObjVertex[] {ObjVertex.of(0F, 0F), ObjVertex.of(1F, 0F), ObjVertex.of(0F, 1F)};
 	}
 
 	private static Tessellator tessellator() {

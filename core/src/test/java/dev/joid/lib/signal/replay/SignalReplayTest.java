@@ -382,7 +382,7 @@ public class SignalReplayTest {
 	@Test
 	public void followsTheNativeExpressionsOfTheShowcase() {
 		final SignalReplayNode node = SignalReplayNode.create();
-		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
 		Assert.assertEquals("", SignalReplayTest.capture(true, SignalReplayTest.traced(() -> ReplayShowcaseFixture.run(node, clicks))));
 		clicks.set(2);
 		Assert.assertEquals("Showcase 2", node.getText().get());
@@ -390,7 +390,7 @@ public class SignalReplayTest {
 
 	@Test
 	public void leavesNoReadBehindAFrame() {
-		final IntegerSignal clicks = IntegerSignal.create(1);
+		final IntegerSignal clicks = new IntegerSignal(1);
 		final UI ui = new UI() {
 
 			@Override
@@ -442,7 +442,7 @@ public class SignalReplayTest {
 	public void warnsWhenTheBytecodeOfTheCallSiteCannotBeRead() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenMissing", true, false, null, null);
 		final SignalReplayNode node = SignalReplayNode.create();
-		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
 		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads a signal but cannot follow it: the bytecode of dev.joid.demo.replay.ReplayHiddenMissing cannot be read. The value stays \"Hidden 0\". Use map(...) or a lambda.\n", SignalReplayTest.hidden(loader, node, clicks));
 		clicks.set(2);
 		Assert.assertEquals("Hidden 0", node.getText().get());
@@ -452,7 +452,7 @@ public class SignalReplayTest {
 	public void readsTheBytecodeThroughTheContextLoader() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenContext", true, true, null, null);
 		final SignalReplayNode node = SignalReplayNode.create();
-		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
 		Assert.assertEquals("", SignalReplayTest.hidden(loader, node, clicks));
 		clicks.set(2);
 		Assert.assertEquals("Hidden 2", node.getText().get());
@@ -462,7 +462,7 @@ public class SignalReplayTest {
 	public void searchesTheWholeMethodWithoutLineNumbers() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenLineless", false, true, null, null);
 		final SignalReplayNode node = SignalReplayNode.create();
-		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
 		Assert.assertEquals("", SignalReplayTest.hidden(loader, node, clicks));
 		clicks.set(2);
 		Assert.assertEquals("Hidden 2", node.getText().get());
@@ -472,7 +472,7 @@ public class SignalReplayTest {
 	public void warnsWhenTheCallIsNotOnTheLine() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenMoved", true, true, "text", "texture");
 		final SignalReplayNode node = SignalReplayNode.create();
-		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
 		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads a signal but cannot follow it: no call to text(...) is found on this line, the .class file on disk may no longer match the loaded class (recompiled since the launch). The value stays \"Hidden 0\". Restart the application, or use map(...) or a lambda.\n", SignalReplayTest.hidden(loader, node, clicks));
 	}
 
@@ -480,7 +480,7 @@ public class SignalReplayTest {
 	public void warnsWhenAMemberIsRenamedWithoutSignalReplayBridge() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenRenamed", true, true, "get", "obtain");
 		final SignalReplayNode node = SignalReplayNode.create();
-		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
 		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads clicks but cannot follow it: the method dev.joid.lib.signal.impl.primitive.IntegerSignal.obtain(...) does not exist at runtime. The value stays \"Hidden 0\". Configure the ISignalReplayBridge or use map(...).\n", SignalReplayTest.hidden(loader, node, clicks));
 	}
 
@@ -488,7 +488,7 @@ public class SignalReplayTest {
 	public void mapsTheRenamedMembersThroughTheSignalReplayBridge() throws IOException {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenRemapped", true, true, "get", "obtain");
 		final SignalReplayNode node = SignalReplayNode.create();
-		final IntegerSignal clicks = IntegerSignal.create(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
 		final List<String> mapped = new ArrayList<>();
 		final ISignalReplayBridge bridge = new ISignalReplayBridge() {
 

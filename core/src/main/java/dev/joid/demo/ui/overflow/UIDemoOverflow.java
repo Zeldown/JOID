@@ -26,9 +26,9 @@ public class UIDemoOverflow extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOverflow.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal items = IntegerSignal.create(6);
-		final IntegerSignal offset = IntegerSignal.create(0);
-		final IntegerSignal ends = IntegerSignal.create(0);
+		final IntegerSignal items = new IntegerSignal(6);
+		final IntegerSignal offset = new IntegerSignal(0);
+		final IntegerSignal ends = new IntegerSignal(0);
 
 		RectNode
 		.create(100, 40, 400, 260)

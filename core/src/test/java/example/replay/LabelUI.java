@@ -9,7 +9,7 @@ import lombok.Getter;
 @Getter
 public class LabelUI extends UI {
 
-	private final IntegerSignal clicks = IntegerSignal.create(0);
+	private final IntegerSignal clicks = new IntegerSignal(0);
 
 	@Override
 	public void init() {

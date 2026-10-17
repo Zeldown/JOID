@@ -55,7 +55,7 @@ public class SwitchNodeTest {
 	@Test
 	public void staysInSyncWithItsSignal() {
 		final Switch node = this.open();
-		final Signal<String> quality = Signal.create("high");
+		final Signal<String> quality = new Signal<>("high");
 		Assert.assertSame(node, node.value(quality));
 		Assert.assertEquals("high", node.getValue());
 		quality.set("medium");
@@ -72,7 +72,7 @@ public class SwitchNodeTest {
 	@Test
 	public void keepsItsSignalWhenItsSkinChoosesAState() {
 		final Switch node = this.open();
-		final Signal<String> quality = Signal.create("high");
+		final Signal<String> quality = new Signal<>("high");
 		node.<Switch>value(quality).pick("low");
 		Assert.assertEquals("low", quality.get());
 		quality.set("medium");
@@ -82,8 +82,8 @@ public class SwitchNodeTest {
 	@Test
 	public void bindsItsIndexBothWays() {
 		final Switch node = this.open();
-		final IntegerSignal level = IntegerSignal.create(2);
-		final Signal<String> quality = Signal.create("low");
+		final IntegerSignal level = new IntegerSignal(2);
+		final Signal<String> quality = new Signal<>("low");
 		node.valueIndex(level);
 		Assert.assertEquals("high", node.getValue());
 		level.set(1);
@@ -107,8 +107,8 @@ public class SwitchNodeTest {
 	@Test
 	public void followsOnlyItsLastSignal() {
 		final Switch node = this.open();
-		final Signal<String> quality = Signal.create("high");
-		final Signal<String> shadows = Signal.create("medium");
+		final Signal<String> quality = new Signal<>("high");
+		final Signal<String> shadows = new Signal<>("medium");
 		node.value(quality).value(shadows);
 		shadows.set("low");
 		Assert.assertEquals("high", quality.get());
@@ -120,7 +120,7 @@ public class SwitchNodeTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesASignalItCannotWrite() {
-		new Switch().values("low", "high").value(Signal.create("high").map(value -> value));
+		new Switch().values("low", "high").value(new Signal<>("high").map(value -> value));
 	}
 
 	@Test
@@ -226,19 +226,19 @@ public class SwitchNodeTest {
 
 	@Test
 	public void takesTheStateOfItsSignalWhenItsStatesArrive() {
-		final Signal<String> quality = Signal.create("high");
+		final Signal<String> quality = new Signal<>("high");
 		Assert.assertEquals("high", new Switch().value(quality).values("low", "medium", "high").getValue());
 		Assert.assertEquals("high", quality.get());
 	}
 
 	@Test
 	public void takesItsFirstStateWhenItsSignalArrivesOutOfItsStates() {
-		Assert.assertEquals("off", new Switch().value(Signal.create("eco")).values("off", "on").getValue());
+		Assert.assertEquals("off", new Switch().value(new Signal<>("eco")).values("off", "on").getValue());
 	}
 
 	@Test
 	public void takesItsFirstStateWhenItsIndexSignalArrivesOutOfItsStates() {
-		Assert.assertEquals("off", new Switch().valueIndex(IntegerSignal.create(5)).values("off", "on").getValue());
+		Assert.assertEquals("off", new Switch().valueIndex(new IntegerSignal(5)).values("off", "on").getValue());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

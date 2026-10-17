@@ -36,20 +36,20 @@ public class UIDemoEvent extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoEvent.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final IntegerSignal pressed = IntegerSignal.create(0);
-		final IntegerSignal released = IntegerSignal.create(0);
-		final DoubleSignal knob = DoubleSignal.create(0D);
-		final IntegerSignal scrolled = IntegerSignal.create(0);
-		final DoubleSignal hoverX = DoubleSignal.create(120D);
-		final DoubleSignal hoverY = DoubleSignal.create(90D);
-		final IntegerSignal inits = IntegerSignal.create(0);
-		final IntegerSignal appended = IntegerSignal.create(0);
-		final IntegerSignal detached = IntegerSignal.create(0);
-		final IntegerSignal clicks = IntegerSignal.create(0);
-		final IntegerSignal shortcuts = IntegerSignal.create(0);
-		final IntegerSignal forced = IntegerSignal.create(0);
-		final IntegerSignal seconds = IntegerSignal.create(0);
-		final BooleanSignal running = BooleanSignal.create(true);
+		final IntegerSignal pressed = new IntegerSignal(0);
+		final IntegerSignal released = new IntegerSignal(0);
+		final DoubleSignal knob = new DoubleSignal(0D);
+		final IntegerSignal scrolled = new IntegerSignal(0);
+		final DoubleSignal hoverX = new DoubleSignal(120D);
+		final DoubleSignal hoverY = new DoubleSignal(90D);
+		final IntegerSignal inits = new IntegerSignal(0);
+		final IntegerSignal appended = new IntegerSignal(0);
+		final IntegerSignal detached = new IntegerSignal(0);
+		final IntegerSignal clicks = new IntegerSignal(0);
+		final IntegerSignal shortcuts = new IntegerSignal(0);
+		final IntegerSignal forced = new IntegerSignal(0);
+		final IntegerSignal seconds = new IntegerSignal(0);
+		final BooleanSignal running = new BooleanSignal(true);
 		final Task timer = Task.create(1000L).every(1000L).onRun(event -> seconds.increment());
 		final Shortcut space = Shortcut.create(Key.SPACE).ctrl(true).onTrigger(event -> shortcuts.increment());
 

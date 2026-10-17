@@ -12,7 +12,7 @@ public final class ResourceAnimationFrame {
 	private final int[] pixels;
 	private final long  duration;
 
-	public static @NonNull ResourceAnimationFrame create(final @NonNull int[] pixels, final long duration) {
+	public static @NonNull ResourceAnimationFrame of(final @NonNull int[] pixels, final long duration) {
 		return new ResourceAnimationFrame(pixels, duration);
 	}
 

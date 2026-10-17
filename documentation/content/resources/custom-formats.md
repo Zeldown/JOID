@@ -195,9 +195,9 @@ public class StripAnimationReader implements IResourceAnimationReader {
 		final List<ResourceAnimationFrame> frames = new ArrayList<>();
 		for (int i = 0; i < this.frameCount; i++) {
 			final int[] pixels = strip.getRGB(i * width, 0, width, height, null, 0, width);
-			frames.add(ResourceAnimationFrame.create(canvas.compose(pixels, 0, 0, width, height, Blend.SOURCE, Disposal.NONE), this.frameDuration));
+			frames.add(ResourceAnimationFrame.of(canvas.compose(pixels, 0, 0, width, height, Blend.SOURCE, Disposal.NONE), this.frameDuration));
 		}
-		return ResourceAnimation.create(width, height, 0, frames);
+		return ResourceAnimation.of(width, height, 0, frames);
 	}
 
 }
@@ -206,7 +206,7 @@ public class StripAnimationReader implements IResourceAnimationReader {
 ```java
 final File file = new File("sprites/coin.png");
 final String uniqueId = "strip:" + file.getAbsolutePath();
-final Resource coin = ResourceBuilder.create().async().nearest().compute(uniqueId, () -> new ResourceData(uniqueId, new AnimatedResourceDecoder(FileAsset.create(file), new StripAnimationReader(8, 80L))));
+final Resource coin = ResourceBuilder.create().async().nearest().compute(uniqueId, () -> new ResourceData(uniqueId, new AnimatedResourceDecoder(FileAsset.of(file), new StripAnimationReader(8, 80L))));
 ResourceNode.create(100, 100, 128, 128).resource(coin).attach(this);
 ```
 

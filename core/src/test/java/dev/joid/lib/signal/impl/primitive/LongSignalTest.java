@@ -11,31 +11,31 @@ public class LongSignalTest {
 
 	@Test
 	public void startsAtZero() {
-		final LongSignal signal = LongSignal.create();
+		final LongSignal signal = new LongSignal();
 		Assert.assertEquals(0L, signal.get().longValue());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
-		final LongSignal signal = LongSignal.create(5L);
+		final LongSignal signal = new LongSignal(5L);
 		Assert.assertEquals(5L, signal.get().longValue());
 	}
 
 	@Test
 	public void resetsToTheGivenValue() {
-		Assert.assertEquals(5L, LongSignal.create(5L).set(8L).reset().get().longValue());
+		Assert.assertEquals(5L, new LongSignal(5L).set(8L).reset().get().longValue());
 	}
 
 	@Test
 	public void computesFromItsDefault() {
-		final LongSignal signal = LongSignal.create(5L);
+		final LongSignal signal = new LongSignal(5L);
 		signal.increment();
 		Assert.assertEquals(6L, signal.get().longValue());
 	}
 
 	@Test
 	public void incrementsAndDecrements() {
-		final LongSignal signal = LongSignal.create(1L);
+		final LongSignal signal = new LongSignal(1L);
 		signal.increment();
 		Assert.assertEquals(2L, signal.get().longValue());
 		signal.decrement();
@@ -46,7 +46,7 @@ public class LongSignalTest {
 
 	@Test
 	public void addsAndSubtracts() {
-		final LongSignal signal = LongSignal.create(1L);
+		final LongSignal signal = new LongSignal(1L);
 		signal.add(10000000000L);
 		Assert.assertEquals(10000000001L, signal.get().longValue());
 		signal.subtract(4L);
@@ -55,7 +55,7 @@ public class LongSignalTest {
 
 	@Test
 	public void multipliesAndDividesWholeNumbers() {
-		final LongSignal signal = LongSignal.create(7L);
+		final LongSignal signal = new LongSignal(7L);
 		signal.multiply(3L);
 		Assert.assertEquals(21L, signal.get().longValue());
 		signal.divide(4L);
@@ -66,7 +66,7 @@ public class LongSignalTest {
 
 	@Test
 	public void refusesADivisionByZero() {
-		final LongSignal signal = LongSignal.create(7L);
+		final LongSignal signal = new LongSignal(7L);
 		try {
 			signal.divide(0L);
 			Assert.fail("A division by zero must be refused");
@@ -79,7 +79,7 @@ public class LongSignalTest {
 	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Long> received = new ArrayList<>();
-		final LongSignal signal = LongSignal.create();
+		final LongSignal signal = new LongSignal();
 		signal.onChange(received::add);
 		signal.increment();
 		signal.add(2L);
@@ -89,15 +89,15 @@ public class LongSignalTest {
 
 	@Test
 	public void chainsItsOperations() {
-		final LongSignal signal = LongSignal.create(1L);
+		final LongSignal signal = new LongSignal(1L);
 		Assert.assertSame(signal, signal.increment().add(2L).multiply(3L).subtract(2L).divide(2L).decrement());
 		Assert.assertEquals(4L, signal.get().longValue());
 	}
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("LongSignal{5}", LongSignal.create(5L).toString());
-		Assert.assertEquals("LongSignal{0}", LongSignal.create().toString());
+		Assert.assertEquals("LongSignal{5}", new LongSignal(5L).toString());
+		Assert.assertEquals("LongSignal{0}", new LongSignal().toString());
 	}
 
 }

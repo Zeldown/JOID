@@ -41,8 +41,8 @@ import lombok.Getter;
 public class SetterUI extends UI {
 
 	private final TextInfo      info  = TextInfo.create(new TextFont(), 10F);
-	private final IntegerSignal step  = IntegerSignal.create(0);
-	private final BooleanSignal muted = BooleanSignal.create(false);
+	private final IntegerSignal step  = new IntegerSignal(0);
+	private final BooleanSignal muted = new BooleanSignal(false);
 
 	private Switch             named;
 	private RectNode           rect;

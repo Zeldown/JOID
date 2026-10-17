@@ -383,7 +383,7 @@ public class UIStoreHookTest {
 
 		private static final Gson GSON = new GsonBuilder().create();
 
-		private IntegerSignal count = IntegerSignal.create(3);
+		private IntegerSignal count = new IntegerSignal(3);
 
 		@Override
 		public void fromJson(final @NonNull JsonObject json) {
@@ -404,7 +404,7 @@ public class UIStoreHookTest {
 
 		private static final Gson GSON = new GsonBuilder().create();
 
-		private ListSignal<String> names = ListSignal.create(Collections.singletonList("a"));
+		private ListSignal<String> names = new ListSignal<>(Collections.singletonList("a"));
 
 		@Override
 		public void fromJson(final @NonNull JsonObject json) {

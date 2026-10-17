@@ -68,8 +68,8 @@ public final class MsdfBinarySource extends MsdfSource {
 			final int height = input.readInt();
 			final float distanceRange = input.readFloat();
 			final float size = input.readFloat();
-			final MsdfAtlas atlas = new MsdfAtlas(width, height, size, distanceRange);
-			final MsdfMetrics metrics = new MsdfMetrics(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
+			final MsdfAtlas atlas = MsdfAtlas.of(width, height, size, distanceRange);
+			final MsdfMetrics metrics = MsdfMetrics.of(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
 
 			final int glyphCount = input.readInt();
 			final Map<Integer, MsdfGlyph> glyphs = new HashMap<>(glyphCount * 2);
@@ -77,12 +77,12 @@ public final class MsdfBinarySource extends MsdfSource {
 				final int codepoint = input.readInt();
 				final float advance = input.readFloat();
 				if (!input.readBoolean()) {
-					glyphs.put(codepoint, new MsdfGlyph(codepoint, advance, null, null));
+					glyphs.put(codepoint, MsdfGlyph.of(codepoint, advance, null, null));
 					continue;
 				}
 
-				final MsdfBounds planeBounds = new MsdfBounds(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
-				glyphs.put(codepoint, new MsdfGlyph(codepoint, advance, planeBounds, new MsdfBounds(input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort())));
+				final MsdfBounds planeBounds = MsdfBounds.of(input.readFloat(), input.readFloat(), input.readFloat(), input.readFloat());
+				glyphs.put(codepoint, MsdfGlyph.of(codepoint, advance, planeBounds, MsdfBounds.of(input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort(), input.readUnsignedShort())));
 			}
 
 			final int unitsPerEm = input.readUnsignedShort();

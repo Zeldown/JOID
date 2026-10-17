@@ -47,7 +47,7 @@ public class ShowEffects extends ShowUI {
 		for (int i = 0; i < names.length; i++) {
 			this.levels[i] = TweenAnimator.create(0F);
 			final double y = 300D + i * 88D;
-			final BooleanSignal on = BooleanSignal.create(false);
+			final BooleanSignal on = new BooleanSignal(false);
 			final TweenAnimator level = this.levels[i];
 			final Color dot = dots[i];
 			CircleNode.create(158, y + 15D, 12).color(on.get() ? dot : Color.WHITE.withAlpha(0.18F)).effect(ShadowNodeEffect.create(dot, 10F).color(dot.withAlpha(on.get() ? 0.9F : 0F))).attach(this);

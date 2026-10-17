@@ -11,31 +11,31 @@ public class IntegerSignalTest {
 
 	@Test
 	public void startsAtZero() {
-		final IntegerSignal signal = IntegerSignal.create();
+		final IntegerSignal signal = new IntegerSignal();
 		Assert.assertEquals(0, signal.get().intValue());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
-		final IntegerSignal signal = IntegerSignal.create(5);
+		final IntegerSignal signal = new IntegerSignal(5);
 		Assert.assertEquals(5, signal.get().intValue());
 	}
 
 	@Test
 	public void resetsToTheGivenValue() {
-		Assert.assertEquals(5, IntegerSignal.create(5).set(8).reset().get().intValue());
+		Assert.assertEquals(5, new IntegerSignal(5).set(8).reset().get().intValue());
 	}
 
 	@Test
 	public void computesFromItsDefault() {
-		final IntegerSignal signal = IntegerSignal.create(5);
+		final IntegerSignal signal = new IntegerSignal(5);
 		signal.increment();
 		Assert.assertEquals(6, signal.get().intValue());
 	}
 
 	@Test
 	public void incrementsAndDecrements() {
-		final IntegerSignal signal = IntegerSignal.create(1);
+		final IntegerSignal signal = new IntegerSignal(1);
 		signal.increment();
 		Assert.assertEquals(2, signal.get().intValue());
 		signal.decrement();
@@ -46,7 +46,7 @@ public class IntegerSignalTest {
 
 	@Test
 	public void addsAndSubtracts() {
-		final IntegerSignal signal = IntegerSignal.create(1);
+		final IntegerSignal signal = new IntegerSignal(1);
 		signal.add(10);
 		Assert.assertEquals(11, signal.get().intValue());
 		signal.subtract(4);
@@ -55,7 +55,7 @@ public class IntegerSignalTest {
 
 	@Test
 	public void multipliesAndDividesWholeNumbers() {
-		final IntegerSignal signal = IntegerSignal.create(7);
+		final IntegerSignal signal = new IntegerSignal(7);
 		signal.multiply(3);
 		Assert.assertEquals(21, signal.get().intValue());
 		signal.divide(4);
@@ -66,7 +66,7 @@ public class IntegerSignalTest {
 
 	@Test
 	public void refusesADivisionByZero() {
-		final IntegerSignal signal = IntegerSignal.create(7);
+		final IntegerSignal signal = new IntegerSignal(7);
 		try {
 			signal.divide(0);
 			Assert.fail("A division by zero must be refused");
@@ -79,7 +79,7 @@ public class IntegerSignalTest {
 	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Integer> received = new ArrayList<>();
-		final IntegerSignal signal = IntegerSignal.create();
+		final IntegerSignal signal = new IntegerSignal();
 		signal.onChange(received::add);
 		signal.increment();
 		signal.add(2);
@@ -89,15 +89,15 @@ public class IntegerSignalTest {
 
 	@Test
 	public void chainsItsOperations() {
-		final IntegerSignal signal = IntegerSignal.create(1);
+		final IntegerSignal signal = new IntegerSignal(1);
 		Assert.assertSame(signal, signal.increment().add(2).multiply(3).subtract(2).divide(2).decrement());
 		Assert.assertEquals(4, signal.get().intValue());
 	}
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("IntegerSignal{5}", IntegerSignal.create(5).toString());
-		Assert.assertEquals("IntegerSignal{0}", IntegerSignal.create().toString());
+		Assert.assertEquals("IntegerSignal{5}", new IntegerSignal(5).toString());
+		Assert.assertEquals("IntegerSignal{0}", new IntegerSignal().toString());
 	}
 
 }

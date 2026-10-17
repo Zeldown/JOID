@@ -81,7 +81,7 @@ public final class Shape {
 		for (final Edge edge : contour) {
 			final List<Vector2> points = new ArrayList<>();
 			for (int i = edge.getX().length - 1; i >= 0; i--) {
-				points.add(new Vector2(edge.getX()[i], edge.getY()[i]));
+				points.add(Vector2.of(edge.getX()[i], edge.getY()[i]));
 			}
 
 			final Edge flipped = new Edge(points);

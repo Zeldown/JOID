@@ -91,7 +91,7 @@ public final class Text {
 	}
 
 	public @NonNull FontBounds getBounds() {
-		return FontBounds.create(this.getWidth(), this.getHeight());
+		return FontBounds.of(this.getWidth(), this.getHeight());
 	}
 
 	public @NonNull TextElement get(final int index) {

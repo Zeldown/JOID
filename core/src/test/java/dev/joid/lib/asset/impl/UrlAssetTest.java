@@ -50,7 +50,7 @@ public class UrlAssetTest {
 
 	@Test
 	public void isARemoteAsset() {
-		final UrlAsset asset = UrlAsset.create("https://example.invalid/image.png");
+		final UrlAsset asset = UrlAsset.of("https://example.invalid/image.png");
 		Assert.assertEquals("https://example.invalid/image.png", asset.getUrl());
 		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());
 		Assert.assertTrue(asset.isRemote());
@@ -59,19 +59,19 @@ public class UrlAssetTest {
 
 	@Test
 	public void downloadsItsContent() throws IOException {
-		Assert.assertArrayEquals("joid remote asset".getBytes(StandardCharsets.UTF_8), UrlAsset.create(this.server.url("http", "/image.png")).read());
+		Assert.assertArrayEquals("joid remote asset".getBytes(StandardCharsets.UTF_8), UrlAsset.of(this.server.url("http", "/image.png")).read());
 		Assert.assertEquals(Collections.singletonList("/image.png"), this.server.paths);
 	}
 
 	@Test
 	public void introducesItselfAsABrowser() throws IOException {
-		UrlAsset.create(this.server.url("http", "/image.png")).read();
+		UrlAsset.of(this.server.url("http", "/image.png")).read();
 		Assert.assertTrue(this.server.agents.get(0), this.server.agents.get(0).startsWith("Mozilla/5.0"));
 	}
 
 	@Test
 	public void fallsBackToPlainHttp() throws IOException {
-		Assert.assertArrayEquals("joid remote asset".getBytes(StandardCharsets.UTF_8), UrlAsset.create(this.server.url("https", "/image.png")).read());
+		Assert.assertArrayEquals("joid remote asset".getBytes(StandardCharsets.UTF_8), UrlAsset.of(this.server.url("https", "/image.png")).read());
 		Assert.assertEquals(Collections.singletonList("/image.png"), this.server.paths);
 	}
 
@@ -79,7 +79,7 @@ public class UrlAssetTest {
 	public void readsAFileUrl() throws IOException {
 		final File file = this.folder.newFile("image.png");
 		Files.write(file.toPath(), "joid file asset".getBytes(StandardCharsets.UTF_8));
-		final UrlAsset asset = UrlAsset.create(file.toURI().toString());
+		final UrlAsset asset = UrlAsset.of(file.toURI().toString());
 		Assert.assertArrayEquals("joid file asset".getBytes(StandardCharsets.UTF_8), asset.read());
 		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.peek(4));
 		Assert.assertEquals(file.getAbsoluteFile(), asset.getFile().getAbsoluteFile());
@@ -90,7 +90,7 @@ public class UrlAssetTest {
 	public void readsAFileUrlWithASpaceThroughAStream() throws IOException {
 		final File file = this.folder.newFile("my image.png");
 		Files.write(file.toPath(), "joid file asset".getBytes(StandardCharsets.UTF_8));
-		final UrlAsset asset = UrlAsset.create("file:" + file.getAbsolutePath().replace(File.separatorChar, '/'));
+		final UrlAsset asset = UrlAsset.of("file:" + file.getAbsolutePath().replace(File.separatorChar, '/'));
 		Assert.assertNull(asset.getFile());
 		Assert.assertArrayEquals("joid file asset".getBytes(StandardCharsets.UTF_8), asset.read());
 	}
@@ -103,7 +103,7 @@ public class UrlAssetTest {
 		}
 
 		try {
-			UrlAsset.create("https://" + InetAddress.getLoopbackAddress().getHostAddress() + ":" + port + "/image.png").read();
+			UrlAsset.of("https://" + InetAddress.getLoopbackAddress().getHostAddress() + ":" + port + "/image.png").read();
 			Assert.fail("A closed port must fail");
 		} catch (final IOException expected) {
 			Assert.assertFalse(expected instanceof SSLException);
@@ -114,7 +114,7 @@ public class UrlAssetTest {
 	@Test(timeout = 60000L, expected = SocketTimeoutException.class)
 	public void givesUpOnAServerThatNeverAnswers() throws IOException {
 		try (ServerSocket mute = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
-			UrlAsset.create("http://127.0.0.1:" + mute.getLocalPort() + "/image.png").read();
+			UrlAsset.of("http://127.0.0.1:" + mute.getLocalPort() + "/image.png").read();
 		}
 	}
 
@@ -126,7 +126,7 @@ public class UrlAssetTest {
 			output.write("joid jar asset".getBytes(StandardCharsets.UTF_8));
 			output.closeEntry();
 		}
-		final UrlAsset asset = UrlAsset.create("jar:" + file.toURI() + "!/image.png");
+		final UrlAsset asset = UrlAsset.of("jar:" + file.toURI() + "!/image.png");
 		Assert.assertArrayEquals("joid jar asset".getBytes(StandardCharsets.UTF_8), asset.read());
 		Assert.assertNull(asset.getFile());
 		Assert.assertFalse(asset.isRemote());
@@ -134,13 +134,13 @@ public class UrlAssetTest {
 
 	@Test(expected = UncheckedIOException.class)
 	public void failsToPeekAMissingFileUrl() {
-		UrlAsset.create(new File(this.folder.getRoot(), "missing.png").toURI().toString()).peek(4);
+		UrlAsset.of(new File(this.folder.getRoot(), "missing.png").toURI().toString()).peek(4);
 	}
 
 	@Test
 	public void requestsAMissingPlainHttpAssetOnce() {
 		try {
-			UrlAsset.create(this.server.url("http", "/missing.png")).read();
+			UrlAsset.of(this.server.url("http", "/missing.png")).read();
 			Assert.fail("A missing asset must fail");
 		} catch (final IOException expected) {
 			Assert.assertEquals(Collections.singletonList("/missing.png"), this.server.paths);
@@ -149,28 +149,28 @@ public class UrlAssetTest {
 
 	@Test
 	public void peeksTheStartOfItsContent() {
-		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), UrlAsset.create(this.server.url("http", "/image.png")).peek(4));
+		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), UrlAsset.of(this.server.url("http", "/image.png")).peek(4));
 	}
 
 	@Test(expected = FileNotFoundException.class)
 	public void failsToReadAMissingAsset() throws IOException {
-		UrlAsset.create(this.server.url("http", "/missing.png")).read();
+		UrlAsset.of(this.server.url("http", "/missing.png")).read();
 	}
 
 	@Test(expected = UncheckedIOException.class)
 	public void failsToPeekAMissingAsset() {
-		UrlAsset.create(this.server.url("http", "/missing.png")).peek(4);
+		UrlAsset.of(this.server.url("http", "/missing.png")).peek(4);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullUrl() {
-		UrlAsset.create(null);
+		UrlAsset.of(null);
 	}
 
 	@Test
 	public void reportsTheSecureFailureWhenThePlainFallbackFailsToo() {
 		try {
-			UrlAsset.create(this.server.url("https", "/missing.png")).read();
+			UrlAsset.of(this.server.url("https", "/missing.png")).read();
 			Assert.fail("A missing asset must fail");
 		} catch (final IOException expected) {
 			Assert.assertFalse(expected instanceof FileNotFoundException);
@@ -180,7 +180,7 @@ public class UrlAssetTest {
 
 	@Test
 	public void fallsBackWithoutTouchingThePath() throws IOException {
-		UrlAsset.create(this.server.url("https", "/https/image.png")).read();
+		UrlAsset.of(this.server.url("https", "/https/image.png")).read();
 		Assert.assertEquals(Collections.singletonList("/https/image.png"), this.server.paths);
 	}
 

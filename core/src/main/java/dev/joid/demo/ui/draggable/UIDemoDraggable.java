@@ -31,10 +31,10 @@ public class UIDemoDraggable extends UIDemo {
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoDraggable.INK);
 		final TextInfo counter = TextInfo.create(DemoFont.MONTSERRAT, 22, UIDemoDraggable.INK);
-		final IntegerSignal starts = IntegerSignal.create(0);
-		final IntegerSignal drags = IntegerSignal.create(0);
-		final IntegerSignal snaps = IntegerSignal.create(0);
-		final IntegerSignal drops = IntegerSignal.create(0);
+		final IntegerSignal starts = new IntegerSignal(0);
+		final IntegerSignal drags = new IntegerSignal(0);
+		final IntegerSignal snaps = new IntegerSignal(0);
+		final IntegerSignal drops = new IntegerSignal(0);
 		final Consumer<Node> grip = node -> {
 			RectNode.create(22, 28, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 			RectNode.create(22, 38, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);

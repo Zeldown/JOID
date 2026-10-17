@@ -31,7 +31,7 @@ public final class DemoAssetLocator implements IAssetLocator {
 		if (url == null) {
 			throw new IllegalArgumentException("The asset " + handle + " is not in the demo assets, check its path");
 		}
-		return ClasspathAsset.create(path, url);
+		return ClasspathAsset.of(path, url);
 	}
 
 }

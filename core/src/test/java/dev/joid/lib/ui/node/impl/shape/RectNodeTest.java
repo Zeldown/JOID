@@ -88,8 +88,8 @@ public class RectNodeTest {
 
 	@Test
 	public void followsAColorSignal() {
-		final IntegerSignal clicks = IntegerSignal.create(0);
-		final Signal<Color> color = Signal.create(new Color(0.2F, 0.4F, 0.6F, 1F));
+		final IntegerSignal clicks = new IntegerSignal(0);
+		final Signal<Color> color = new Signal<>(new Color(0.2F, 0.4F, 0.6F, 1F));
 		final RectNode rect = RectNode.create(100D, 200D, 200D, 50D).color(color);
 		final RectNode mapped = RectNode.create(100D, 300D, 200D, 50D).color(clicks.map(value -> value >= 3 ? Color.GREEN : Color.GRAY));
 		this.bridges.open(new NodeUI(rect, mapped)).frame();

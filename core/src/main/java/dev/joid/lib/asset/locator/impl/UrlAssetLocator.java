@@ -18,7 +18,7 @@ public class UrlAssetLocator implements IAssetLocator {
 
 	@Override
 	public @NonNull Asset locate(final @NonNull Object handle) {
-		return UrlAsset.create((String) handle);
+		return UrlAsset.of((String) handle);
 	}
 
 }

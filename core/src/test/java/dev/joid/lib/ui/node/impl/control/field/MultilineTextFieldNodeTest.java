@@ -45,7 +45,7 @@ public class MultilineTextFieldNodeTest {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
-			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
+			return FontBounds.of(this.getWidth(text, info), this.getHeight(text, info));
 		}
 
 		@Override
@@ -1260,7 +1260,7 @@ public class MultilineTextFieldNodeTest {
 			@Override
 			public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
 				infos.add(info);
-				return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
+				return FontBounds.of(this.getWidth(text, info), this.getHeight(text, info));
 			}
 
 			@Override
@@ -1315,7 +1315,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void bindsItsTextToASignalBothWays() {
 		final List<String> changes = new ArrayList<>();
-		final Signal<String> signal = Signal.create("a\r\nb");
+		final Signal<String> signal = new Signal<>("a\r\nb");
 		final MultilineTextFieldNode field = this.field("").onChange(event -> changes.add(event.getText())).text(signal);
 		Assert.assertEquals("a\nb", field.getText());
 		Assert.assertEquals("a\nb", signal.get());
@@ -1460,7 +1460,7 @@ public class MultilineTextFieldNodeTest {
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
 			this.drawn.add(new Drawn(text, x, y, info.getColor().getAlphaF()));
-			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
+			return FontBounds.of(this.getWidth(text, info), this.getHeight(text, info));
 		}
 
 		@Override

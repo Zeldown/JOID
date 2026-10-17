@@ -86,11 +86,11 @@ public final class ObjFace {
 		final double z = x1 * y2 - y1 * x2;
 		final double length = x * x + y * y + z * z;
 		if (length == 0D) {
-			return new ObjVertex(0F, 0F, 1F);
+			return ObjVertex.of(0F, 0F, 1F);
 		}
 
 		final double norm = 1D / Math.sqrt(length);
-		return new ObjVertex((float) (x * norm), (float) (y * norm), (float) (z * norm));
+		return ObjVertex.of((float) (x * norm), (float) (y * norm), (float) (z * norm));
 	}
 
 	public ObjVertex[] getVertices() {

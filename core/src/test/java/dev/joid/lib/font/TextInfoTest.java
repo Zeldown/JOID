@@ -22,7 +22,7 @@ public class TextInfoTest {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
-			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
+			return FontBounds.of(this.getWidth(text, info), this.getHeight(text, info));
 		}
 
 		@Override

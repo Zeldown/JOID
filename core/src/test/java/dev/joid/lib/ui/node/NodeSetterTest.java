@@ -146,7 +146,7 @@ public class NodeSetterTest {
 
 	@Test
 	public void followsABoundSignalButNotAStartValue() {
-		final BooleanSignal checked = BooleanSignal.create(true);
+		final BooleanSignal checked = new BooleanSignal(true);
 		final Checkbox checkbox = new Checkbox().checked(checked);
 		Assert.assertTrue(NodeSetterTest.isFollowed(checkbox, "checked"));
 		checkbox.checked(false);
@@ -206,9 +206,9 @@ public class NodeSetterTest {
 
 	@Test
 	public void followsASignalPassedToASetter() {
-		final DoubleSignal width = DoubleSignal.create(10D);
-		final Signal<Color> color = Signal.create(Color.GRAY);
-		final BooleanSignal checked = BooleanSignal.create(false);
+		final DoubleSignal width = new DoubleSignal(10D);
+		final Signal<Color> color = new Signal<>(Color.GRAY);
+		final BooleanSignal checked = new BooleanSignal(false);
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).color(color).width(width);
 		final Checkbox checkbox = new Checkbox().checked(checked);
 		this.bridges.open(new NodeUI(rect, checkbox));
@@ -226,7 +226,7 @@ public class NodeSetterTest {
 
 	@Test
 	public void keepsAFollowedPositionUnderTheLayout() {
-		final DoubleSignal x = DoubleSignal.create(10D);
+		final DoubleSignal x = new DoubleSignal(10D);
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).x(x);
 		final FlexNode flex = FlexNode.vertical(0D, 0D, 100D).align(Align.START);
 		this.bridges.open(new NodeUI(flex));
@@ -253,8 +253,8 @@ public class NodeSetterTest {
 
 	@Test
 	public void keepsDrawingWhenAFollowedValueIsRefused() {
-		final IntegerSignal index = IntegerSignal.create(0);
-		final DoubleSignal width = DoubleSignal.create(10D);
+		final IntegerSignal index = new IntegerSignal(0);
+		final DoubleSignal width = new DoubleSignal(10D);
 		final Switch node = new Switch().values(index.map(value -> value == 0 ? Arrays.asList("low", "high") : Collections.<String>emptyList()));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).width(width);
 		this.bridges.open(new NodeUI(node, rect));
@@ -302,7 +302,7 @@ public class NodeSetterTest {
 	@Test
 	public void followsTheSettersOfAnEffect() {
 		final float[] radius = {2F};
-		final Signal<NodeEffectScope> scope = Signal.create(NodeEffectScope.SELF);
+		final Signal<NodeEffectScope> scope = new Signal<>(NodeEffectScope.SELF);
 		final BlurNodeEffect blur = BlurNodeEffect.create(1F).radius(() -> radius[0]).priority(3).scope(scope);
 		radius[0] = 4F;
 		scope.set(NodeEffectScope.CHILDREN);

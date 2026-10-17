@@ -351,7 +351,7 @@ public class ResourcePlayerNodeTest {
 		final VideoResourceDecoder video = player.getVideo();
 		Assert.assertEquals("music", player.getAudioGroup());
 		Assert.assertEquals("music", video.getAudioGroup());
-		final Signal<String> group = Signal.create("voice");
+		final Signal<String> group = new Signal<>("voice");
 		Assert.assertSame(player, player.audioGroup(group));
 		Assert.assertEquals("voice", video.getAudioGroup());
 		group.set("ambient");

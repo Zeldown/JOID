@@ -99,7 +99,7 @@ public final class DrawText {
 				}
 
 				this.drawText(ox, oy, overflowText);
-				return FontBounds.create(width, overflowText.getHeight());
+				return FontBounds.of(width, overflowText.getHeight());
 			}
 
 			return this.drawText(ox, oy, text);
@@ -136,7 +136,7 @@ public final class DrawText {
 			heightSum += line.getHeight();
 		}
 
-		return FontBounds.create(width, heightSum);
+		return FontBounds.of(width, heightSum);
 	}
 
 	public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info, final @NonNull Align alignX, final @NonNull Align alignY) {

@@ -34,7 +34,7 @@ public class ShowTheme extends ShowUI {
 	private static final Color MUTED_LIGHT  = Color.decode("#6B6880").lock();
 	private static final Color ACTIVE_LIGHT = Color.decode("#5B21B6").lock();
 
-	private final BooleanSignal dark  = BooleanSignal.create(false);
+	private final BooleanSignal dark  = new BooleanSignal(false);
 	private final TweenAnimator level = TweenAnimator.create(0F);
 
 	@Override

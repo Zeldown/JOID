@@ -11,31 +11,31 @@ public class FloatSignalTest {
 
 	@Test
 	public void startsAtZero() {
-		final FloatSignal signal = FloatSignal.create();
+		final FloatSignal signal = new FloatSignal();
 		Assert.assertEquals(0F, signal.get(), 0F);
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
-		final FloatSignal signal = FloatSignal.create(1.5F);
+		final FloatSignal signal = new FloatSignal(1.5F);
 		Assert.assertEquals(1.5F, signal.get(), 0F);
 	}
 
 	@Test
 	public void resetsToTheGivenValue() {
-		Assert.assertEquals(0.5F, FloatSignal.create(0.5F).set(2F).reset().get(), 0F);
+		Assert.assertEquals(0.5F, new FloatSignal(0.5F).set(2F).reset().get(), 0F);
 	}
 
 	@Test
 	public void computesFromItsDefault() {
-		final FloatSignal signal = FloatSignal.create(2F);
+		final FloatSignal signal = new FloatSignal(2F);
 		signal.add(0.5F);
 		Assert.assertEquals(2.5F, signal.get(), 0F);
 	}
 
 	@Test
 	public void addsAndSubtracts() {
-		final FloatSignal signal = FloatSignal.create(1F);
+		final FloatSignal signal = new FloatSignal(1F);
 		signal.add(2.5F);
 		Assert.assertEquals(3.5F, signal.get(), 0F);
 		signal.subtract(0.25F);
@@ -44,7 +44,7 @@ public class FloatSignalTest {
 
 	@Test
 	public void incrementsAndDecrements() {
-		final FloatSignal signal = FloatSignal.create(0.5F);
+		final FloatSignal signal = new FloatSignal(0.5F);
 		signal.increment();
 		Assert.assertEquals(1.5F, signal.get(), 0F);
 		signal.decrement();
@@ -54,7 +54,7 @@ public class FloatSignalTest {
 
 	@Test
 	public void multipliesAndDivides() {
-		final FloatSignal signal = FloatSignal.create(3F);
+		final FloatSignal signal = new FloatSignal(3F);
 		signal.multiply(2.5F);
 		Assert.assertEquals(7.5F, signal.get(), 0F);
 		signal.divide(0.5F);
@@ -63,15 +63,15 @@ public class FloatSignalTest {
 
 	@Test
 	public void dividesByZeroLikeJava() {
-		Assert.assertEquals(Float.POSITIVE_INFINITY, FloatSignal.create(1F).divide(0F).get(), 0F);
-		Assert.assertEquals(Float.NEGATIVE_INFINITY, FloatSignal.create(-1F).divide(0F).get(), 0F);
-		Assert.assertTrue(Float.isNaN(FloatSignal.create(0F).divide(0F).get()));
+		Assert.assertEquals(Float.POSITIVE_INFINITY, new FloatSignal(1F).divide(0F).get(), 0F);
+		Assert.assertEquals(Float.NEGATIVE_INFINITY, new FloatSignal(-1F).divide(0F).get(), 0F);
+		Assert.assertTrue(Float.isNaN(new FloatSignal(0F).divide(0F).get()));
 	}
 
 	@Test
 	public void notifiesOnlyTheOperationsChangingItsValue() {
 		final List<Float> received = new ArrayList<>();
-		final FloatSignal signal = FloatSignal.create();
+		final FloatSignal signal = new FloatSignal();
 		signal.onChange(received::add);
 		signal.increment();
 		signal.multiply(4F);
@@ -82,15 +82,15 @@ public class FloatSignalTest {
 
 	@Test
 	public void chainsItsOperations() {
-		final FloatSignal signal = FloatSignal.create(1F);
+		final FloatSignal signal = new FloatSignal(1F);
 		Assert.assertSame(signal, signal.increment().add(2F).multiply(3F).subtract(1F).divide(2F).decrement());
 		Assert.assertEquals(4.5F, signal.get(), 0F);
 	}
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("FloatSignal{1.5}", FloatSignal.create(1.5F).toString());
-		Assert.assertEquals("FloatSignal{0.0}", FloatSignal.create().toString());
+		Assert.assertEquals("FloatSignal{1.5}", new FloatSignal(1.5F).toString());
+		Assert.assertEquals("FloatSignal{0.0}", new FloatSignal().toString());
 	}
 
 }

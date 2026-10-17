@@ -5,20 +5,12 @@ import lombok.NonNull;
 
 public class StringSignal extends Signal<String> {
 
-	protected StringSignal() {
+	public StringSignal() {
 		super("");
 	}
 
-	protected StringSignal(final @NonNull String value) {
+	public StringSignal(final @NonNull String value) {
 		super(value);
-	}
-
-	public static @NonNull StringSignal create() {
-		return new StringSignal();
-	}
-
-	public static @NonNull StringSignal create(final @NonNull String value) {
-		return new StringSignal(value);
 	}
 
 	public @NonNull StringSignal append(final String value) {

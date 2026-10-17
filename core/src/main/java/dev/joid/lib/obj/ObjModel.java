@@ -155,7 +155,7 @@ public final class ObjModel implements IDrawableModel {
 			throw this.malformed(line, lineCount, problem);
 		}
 		final String[] tokens = line.substring(line.indexOf(" ") + 1).split(" ");
-		return new ObjVertex(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
+		return ObjVertex.of(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
 	private ObjTextureCoordinate parseTextureCoordinate(final @NonNull String line, final int lineCount) {
@@ -164,10 +164,10 @@ public final class ObjModel implements IDrawableModel {
 		}
 		final String[] tokens = line.substring(line.indexOf(" ") + 1).split(" ");
 		if (tokens.length == 2) {
-			return new ObjTextureCoordinate(Float.parseFloat(tokens[0]), 1F - Float.parseFloat(tokens[1]));
+			return ObjTextureCoordinate.of(Float.parseFloat(tokens[0]), 1F - Float.parseFloat(tokens[1]));
 		}
 
-		return new ObjTextureCoordinate(Float.parseFloat(tokens[0]), 1F - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
+		return ObjTextureCoordinate.of(Float.parseFloat(tokens[0]), 1F - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
 	private List<ObjFace> parseFaces(final @NonNull ObjGroup group, final @NonNull String line, final int lineCount) {

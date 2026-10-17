@@ -1120,7 +1120,7 @@ public class UIBridgeTest {
 		@Override
 		public @NonNull FontBounds drawText(final double x, final double y, final @NonNull String text, final @NonNull TextInfo info) {
 			this.drawn.add(text);
-			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
+			return FontBounds.of(this.getWidth(text, info), this.getHeight(text, info));
 		}
 
 		@Override

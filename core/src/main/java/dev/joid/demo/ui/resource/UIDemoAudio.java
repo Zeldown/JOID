@@ -26,9 +26,9 @@ public class UIDemoAudio extends UIDemo {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoAudio.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 20, UIDemoAudio.INK);
 		final TextInfo button = TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE);
-		final FloatSignal volume = FloatSignal.create(1F);
-		final BooleanSignal far = BooleanSignal.create(false);
-		final BooleanSignal away = BooleanSignal.create(false);
+		final FloatSignal volume = new FloatSignal(1F);
+		final BooleanSignal far = new BooleanSignal(false);
+		final BooleanSignal away = new BooleanSignal(false);
 
 		VideoAudioPlayer.audioListenerPosition(() -> Point.of(0D, 0D, away.get() ? 30D : 0D));
 		super.onClose(event -> VideoAudioPlayer.audioListenerPosition(null));

@@ -177,7 +177,7 @@ A detached node stops everything: its drag and hover end and it stops following 
 `wait(signal)` keeps a node unmounted until the signal holds a value; `skeleton(...)` draws a placeholder meanwhile, and `onMount` runs once the data is there:
 
 ```java
-final Signal<String> title = Signal.create(null);
+final Signal<String> title = new Signal<>();
 
 RectNode
 .create(100, 100, 400, 80)

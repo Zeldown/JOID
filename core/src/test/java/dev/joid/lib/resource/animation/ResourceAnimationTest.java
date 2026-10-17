@@ -9,7 +9,7 @@ public class ResourceAnimationTest {
 
 	@Test
 	public void findsTheFrameShownAtATime() {
-		final ResourceAnimation animation = ResourceAnimation.create(1, 1, 0, Arrays.asList(ResourceAnimationFrame.create(new int[1], 50L), ResourceAnimationFrame.create(new int[1], 100L), ResourceAnimationFrame.create(new int[1], 150L)));
+		final ResourceAnimation animation = ResourceAnimation.of(1, 1, 0, Arrays.asList(ResourceAnimationFrame.of(new int[1], 50L), ResourceAnimationFrame.of(new int[1], 100L), ResourceAnimationFrame.of(new int[1], 150L)));
 		Assert.assertEquals(300L, animation.getDuration());
 		Assert.assertEquals(0, animation.indexAt(0L));
 		Assert.assertEquals(0, animation.indexAt(49L));
@@ -21,13 +21,13 @@ public class ResourceAnimationTest {
 
 	@Test
 	public void keepsTheDurationOfItsShortFramesAboveZero() {
-		final ResourceAnimation animation = ResourceAnimation.create(1, 1, 0, Arrays.asList(ResourceAnimationFrame.create(new int[1], 0L), ResourceAnimationFrame.create(new int[1], 5L), ResourceAnimationFrame.create(new int[1], 10L)));
+		final ResourceAnimation animation = ResourceAnimation.of(1, 1, 0, Arrays.asList(ResourceAnimationFrame.of(new int[1], 0L), ResourceAnimationFrame.of(new int[1], 5L), ResourceAnimationFrame.of(new int[1], 10L)));
 		Assert.assertEquals(16L, animation.getDuration());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnAnimationWithoutFrames() {
-		ResourceAnimation.create(1, 1, 0, Arrays.asList());
+		ResourceAnimation.of(1, 1, 0, Arrays.asList());
 	}
 
 }

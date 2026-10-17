@@ -114,12 +114,12 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 				pen += face.getKerning(previous, codepoint) * size;
 			}
 
-			placements.add(new GlyphPlacement<>(start, codepoint, current, face, pen, snapshot));
+			placements.add(GlyphPlacement.of(start, codepoint, current, face, pen, snapshot));
 			pen += (drawn ? face.getAdvance(codepoint) : GlyphTextRenderer.space(face)) * size + spacing;
 			previous = codepoint;
 		}
 
-		return new GlyphLayout<>(placements, placements.isEmpty() ? 0D : pen - spacing);
+		return GlyphLayout.of(placements, placements.isEmpty() ? 0D : pen - spacing);
 	}
 
 	protected void end() {
@@ -214,7 +214,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		if (!this.canDraw()) {
-			return FontBounds.create(layout.getWidth(), this.getLineHeight(info));
+			return FontBounds.of(layout.getWidth(), this.getLineHeight(info));
 		}
 
 		final PixelGrid grid = this.isGridAligned() ? BridgeHandler.RENDER.get().getPixelGrid() : null;
@@ -238,7 +238,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		this.render(glyphs, runX, runY, runWidth, runHeight);
-		return FontBounds.create(layout.getWidth(), this.getLineHeight(info));
+		return FontBounds.of(layout.getWidth(), this.getLineHeight(info));
 	}
 
 	private @NonNull List<TextGlyph<F>> glyphs(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final PixelGrid grid) {

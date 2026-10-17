@@ -22,7 +22,7 @@ public final class ClasspathAsset extends Asset {
 		this.url = url;
 	}
 
-	public static @NonNull ClasspathAsset create(final @NonNull String path, final @NonNull URL url) {
+	public static @NonNull ClasspathAsset of(final @NonNull String path, final @NonNull URL url) {
 		return new ClasspathAsset(path, url);
 	}
 

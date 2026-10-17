@@ -28,10 +28,10 @@ public class UIDemoReorderable extends UIDemo {
 	public void init() {
 		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoReorderable.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 18, Color.WHITE);
-		final IntegerSignal starts = IntegerSignal.create(0);
-		final IntegerSignal moves = IntegerSignal.create(0);
-		final StringSignal last = StringSignal.create("none");
-		final IntegerSignal refused = IntegerSignal.create(0);
+		final IntegerSignal starts = new IntegerSignal(0);
+		final IntegerSignal moves = new IntegerSignal(0);
+		final StringSignal last = new StringSignal("none");
+		final IntegerSignal refused = new IntegerSignal(0);
 		final Consumer<Node> grip = node -> {
 			RectNode.create(10, node.dh(2) - 7, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(node);
 			RectNode.create(10, node.dh(2) - 1, 20, 3).color(UIDemoReorderable.PLACEHOLDER).attach(node);

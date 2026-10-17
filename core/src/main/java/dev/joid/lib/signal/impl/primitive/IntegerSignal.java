@@ -5,20 +5,12 @@ import lombok.NonNull;
 
 public class IntegerSignal extends Signal<Integer> {
 
-	protected IntegerSignal() {
+	public IntegerSignal() {
 		super(0);
 	}
 
-	protected IntegerSignal(final int value) {
+	public IntegerSignal(final int value) {
 		super(value);
-	}
-
-	public static @NonNull IntegerSignal create() {
-		return new IntegerSignal();
-	}
-
-	public static @NonNull IntegerSignal create(final int value) {
-		return new IntegerSignal(value);
 	}
 
 	public @NonNull IntegerSignal decrement() {

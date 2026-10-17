@@ -19,7 +19,7 @@ public final class FileAsset extends Asset {
 		this.file = file;
 	}
 
-	public static @NonNull FileAsset create(final @NonNull File file) {
+	public static @NonNull FileAsset of(final @NonNull File file) {
 		return new FileAsset(file);
 	}
 

@@ -16,7 +16,7 @@ public final class FontBounds {
 		return new FontBounds(0D, 0D);
 	}
 
-	public static @NonNull FontBounds create(final double width, final double height) {
+	public static @NonNull FontBounds of(final double width, final double height) {
 		return new FontBounds(width, height);
 	}
 

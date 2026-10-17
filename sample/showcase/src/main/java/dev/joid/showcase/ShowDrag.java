@@ -25,9 +25,9 @@ public class ShowDrag extends ShowUI {
 
 	private static final Color NAVY = Color.decode("#1E3A8A").lock();
 
-	private final StringSignal  title  = StringSignal.create("");
-	private final StringSignal  artist = StringSignal.create("");
-	private final Signal<Color> accent = Signal.create(ShowUI.VIOLET);
+	private final StringSignal  title  = new StringSignal("");
+	private final StringSignal  artist = new StringSignal("");
+	private final Signal<Color> accent = new Signal<>(ShowUI.VIOLET);
 
 	@Override
 	protected void scene() {

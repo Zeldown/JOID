@@ -7,7 +7,7 @@ public class ObjVertexTest {
 
 	@Test
 	public void keepsItsThreeCoordinates() {
-		final ObjVertex vertex = new ObjVertex(1F, -2F, 3.5F);
+		final ObjVertex vertex = ObjVertex.of(1F, -2F, 3.5F);
 		Assert.assertEquals(1F, vertex.getX(), 0F);
 		Assert.assertEquals(-2F, vertex.getY(), 0F);
 		Assert.assertEquals(3.5F, vertex.getZ(), 0F);
@@ -15,7 +15,7 @@ public class ObjVertexTest {
 
 	@Test
 	public void liesOnThePlaneWithTwoCoordinates() {
-		final ObjVertex vertex = new ObjVertex(1F, -2F);
+		final ObjVertex vertex = ObjVertex.of(1F, -2F);
 		Assert.assertEquals(1F, vertex.getX(), 0F);
 		Assert.assertEquals(-2F, vertex.getY(), 0F);
 		Assert.assertEquals(0F, vertex.getZ(), 0F);

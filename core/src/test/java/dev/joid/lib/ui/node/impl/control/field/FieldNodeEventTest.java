@@ -29,7 +29,7 @@ public class FieldNodeEventTest {
 
 		@Override
 		public FontBounds drawText(final double x, final double y, final String text, final TextInfo info) {
-			return FontBounds.create(this.getWidth(text, info), this.getHeight(text, info));
+			return FontBounds.of(this.getWidth(text, info), this.getHeight(text, info));
 		}
 
 		@Override
@@ -66,7 +66,7 @@ public class FieldNodeEventTest {
 	@Test
 	public void refusesOnlyTheUser() {
 		final List<String> proposals = new ArrayList<>();
-		final StringSignal text = StringSignal.create("supplied");
+		final StringSignal text = new StringSignal("supplied");
 		final TextFieldNode field = this.field().beforeChange(event -> {
 			proposals.add(event.getText());
 			event.cancel();
@@ -83,7 +83,7 @@ public class FieldNodeEventTest {
 
 	@Test
 	public void followsItsSignalWhateverItsBeforeChangeListeners() {
-		final StringSignal signal = StringSignal.create("ab");
+		final StringSignal signal = new StringSignal("ab");
 		final List<String> changes = new ArrayList<>();
 		final TextFieldNode field = this.field().text(signal).<TextFieldNode>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getText()));
 		this.bridges.open(new NodeUI(field));

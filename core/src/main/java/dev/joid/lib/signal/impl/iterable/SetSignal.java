@@ -11,20 +11,12 @@ import lombok.NonNull;
 
 public class SetSignal<E> extends Signal<Set<E>> {
 
-	protected SetSignal() {
+	public SetSignal() {
 		super(Collections.emptySet());
 	}
 
-	protected SetSignal(final @NonNull Collection<E> value) {
+	public SetSignal(final @NonNull Collection<E> value) {
 		super(new LinkedHashSet<>(value));
-	}
-
-	public static <E> @NonNull SetSignal<E> create() {
-		return new SetSignal<>();
-	}
-
-	public static <E> @NonNull SetSignal<E> create(final @NonNull Collection<E> value) {
-		return new SetSignal<>(value);
 	}
 
 	public @NonNull SetSignal<E> clear() {

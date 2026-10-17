@@ -63,7 +63,7 @@ public class PackerTest {
 	}
 
 	private static Edge line(final double x1, final double y1, final double x2, final double y2) {
-		return new Edge(Arrays.asList(new Vector2(x1, y1), new Vector2(x2, y2)));
+		return new Edge(Arrays.asList(Vector2.of(x1, y1), Vector2.of(x2, y2)));
 	}
 
 }

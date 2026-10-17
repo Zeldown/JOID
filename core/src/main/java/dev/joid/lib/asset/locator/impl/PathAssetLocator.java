@@ -25,12 +25,12 @@ public class PathAssetLocator implements IAssetLocator {
 		final String name = path.startsWith("/") ? path.substring(1) : path;
 		final URL url = PathAssetLocator.find(name);
 		if (url != null) {
-			return ClasspathAsset.create(name, url);
+			return ClasspathAsset.of(name, url);
 		}
 
 		final File file = new File(path);
 		if (file.isFile()) {
-			return FileAsset.create(file);
+			return FileAsset.of(file);
 		}
 		throw new IllegalArgumentException("The asset " + path + " is not found in the classpath nor as a file, check the path or give a URL with its scheme (https:, file:, jar:)");
 	}

@@ -25,11 +25,11 @@ public final class Edge {
 	}
 
 	public Vector2 start() {
-		return new Vector2(this.x[0], this.y[0]);
+		return Vector2.of(this.x[0], this.y[0]);
 	}
 
 	public Vector2 end() {
-		return new Vector2(this.x[this.x.length - 1], this.y[this.y.length - 1]);
+		return Vector2.of(this.x[this.x.length - 1], this.y[this.y.length - 1]);
 	}
 
 	public Vector2 startDirection() {
@@ -97,7 +97,7 @@ public final class Edge {
 	}
 
 	private Vector2 directionAt(final int from, final int to) {
-		return new Vector2(this.x[to] - this.x[from], this.y[to] - this.y[from]);
+		return Vector2.of(this.x[to] - this.x[from], this.y[to] - this.y[from]);
 	}
 
 }

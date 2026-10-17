@@ -31,7 +31,7 @@ public final class ResourceAnimation {
 		}
 	}
 
-	public static @NonNull ResourceAnimation create(final int width, final int height, final int plays, final @NonNull List<ResourceAnimationFrame> frames) {
+	public static @NonNull ResourceAnimation of(final int width, final int height, final int plays, final @NonNull List<ResourceAnimationFrame> frames) {
 		if (frames.isEmpty()) {
 			throw new IllegalArgumentException("An animation needs at least one frame, got none: check that the file holds its frames");
 		}

@@ -52,7 +52,7 @@ public class GlyphEntryTest {
 	}
 
 	private static Shape square(final double size) {
-		final List<Vector2> points = Arrays.asList(new Vector2(0D, 0D), new Vector2(size, 0D), new Vector2(size, size), new Vector2(0D, size));
+		final List<Vector2> points = Arrays.asList(Vector2.of(0D, 0D), Vector2.of(size, 0D), Vector2.of(size, size), Vector2.of(0D, size));
 		final List<Edge> contour = new ArrayList<>();
 		for (int i = 0; i < points.size(); i++) {
 			contour.add(new Edge(Arrays.asList(points.get(i), points.get((i + 1) % points.size()))));

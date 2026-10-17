@@ -31,11 +31,11 @@ public class UIDemoPlayer extends UIDemo {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoPlayer.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 20, UIDemoPlayer.INK);
 		final TextInfo button = TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE);
-		final IntegerSignal ends = IntegerSignal.create(0);
-		final IntegerSignal plays = IntegerSignal.create(0);
-		final IntegerSignal pauses = IntegerSignal.create(0);
-		final IntegerSignal stops = IntegerSignal.create(0);
-		final FloatSignal progress = FloatSignal.create(0F);
+		final IntegerSignal ends = new IntegerSignal(0);
+		final IntegerSignal plays = new IntegerSignal(0);
+		final IntegerSignal pauses = new IntegerSignal(0);
+		final IntegerSignal stops = new IntegerSignal(0);
+		final FloatSignal progress = new FloatSignal(0F);
 
 		final ResourcePlayerNode video = ResourcePlayerNode
 		.create(80, 40, 320, 180)

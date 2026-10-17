@@ -63,7 +63,7 @@ public final class VulkanBorrowedTextureBackend implements IBorrowedTextureBacke
 		Arrays.fill(pixels, color);
 		final VulkanTexture texture = (VulkanTexture) BridgeHandler.RENDER.get().createTexture();
 		texture.mipmap(mipmapped).allocate(width, height).upload(pixels);
-		final VulkanImage image = VulkanImage.create(texture.getImage(), texture.getView(), width, height, texture.getLevels());
+		final VulkanImage image = VulkanImage.of(texture.getImage(), texture.getView(), width, height, texture.getLevels());
 		this.textures.put(image, texture);
 		return image;
 	}

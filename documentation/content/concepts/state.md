@@ -33,7 +33,7 @@ The text and the width are ordinary Java expressions. Because they read `this.cl
 | `StringSignal` | A string | `append(s)`, `toUpperCase()`, `trim()`, `substring(i, j)` |
 | `ListSignal<E>`, `SetSignal<E>`, `MapSignal<K, V>` | A collection | `add(e)`, `remove(e)`, `clear()`, `size()`, `put(k, v)` |
 
-`get()` reads the value and makes the expression follow the signal; `peek()` reads it without following. Collection signals notify after each change, so `this.items.add("Sword")` updates everything that reads `items`. `reset()` goes back to the value given to `create(...)` (`IntegerSignal.create(5)`).
+`get()` reads the value and makes the expression follow the signal; `peek()` reads it without following. Collection signals notify after each change, so `this.items.add("Sword")` updates everything that reads `items`. `reset()` goes back to the value given to the constructor (`new IntegerSignal(5)`).
 
 ## Reactive setters
 
@@ -81,7 +81,7 @@ Use them when an expression cannot be followed, for example a value computed ins
 When the structure changes (a list grows, a tab switches), `watch` runs the body again:
 
 ```java
-private final ListSignal<String> items = ListSignal.create(new ArrayList<>(Arrays.asList("First item")));
+private final ListSignal<String> items = new ListSignal<>(new ArrayList<>(Arrays.asList("First item")));
 
 FlexNode
 .vertical(100, 100, 400)
@@ -154,7 +154,7 @@ Signals of a UI live as long as the UI. A store extends `UIStore` and holds stat
 @UIStoreData(scope = StoreScope.GLOBAL)
 public class CartStore extends UIStore {
 
-	private final ListSignal<String> items = ListSignal.create(new ArrayList<>());
+	private final ListSignal<String> items = new ListSignal<>(new ArrayList<>());
 
 }
 ```

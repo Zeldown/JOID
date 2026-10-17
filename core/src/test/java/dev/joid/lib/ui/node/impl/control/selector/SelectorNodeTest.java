@@ -236,7 +236,7 @@ public class SelectorNodeTest {
 
 	@Test
 	public void takesTheValueOfItsSignalWhenItsOptionsArrive() {
-		final Signal<String> language = Signal.create("third");
+		final Signal<String> language = new Signal<>("third");
 		final Selector selector = new Selector().value(language).values("first", "second", "third");
 		Assert.assertEquals("third", selector.getValue());
 		Assert.assertEquals("third", language.get());
@@ -249,7 +249,7 @@ public class SelectorNodeTest {
 
 	@Test
 	public void neverRefusesItsSettersNorItsSignal() {
-		final Signal<String> language = Signal.create("first");
+		final Signal<String> language = new Signal<>("first");
 		this.bridges.open(new NodeUI(this.selector.value(language).<Selector>beforeChange(event -> event.cancel())));
 		this.selector.value("second");
 		Assert.assertEquals("second", this.selector.getValue());
@@ -317,7 +317,7 @@ public class SelectorNodeTest {
 
 	@Test
 	public void writesThePickedValueIntoItsSignal() {
-		final Signal<String> language = Signal.create(null);
+		final Signal<String> language = new Signal<>();
 		this.bridges.open(new NodeUI(this.selector.active(true).value(language))).frames(2);
 		this.click(150D, 200D);
 		Assert.assertEquals("third", language.get());
@@ -325,7 +325,7 @@ public class SelectorNodeTest {
 
 	@Test
 	public void followsItsSignal() {
-		final Signal<String> language = Signal.create("second");
+		final Signal<String> language = new Signal<>("second");
 		this.bridges.open(new NodeUI(this.selector.value(language))).frame();
 		Assert.assertEquals("second", this.selector.getValue());
 		language.set("third");
@@ -337,8 +337,8 @@ public class SelectorNodeTest {
 
 	@Test
 	public void followsOnlyItsLastSignal() {
-		final Signal<String> language = Signal.create("second");
-		final Signal<String> subtitles = Signal.create("first");
+		final Signal<String> language = new Signal<>("second");
+		final Signal<String> subtitles = new Signal<>("first");
 		this.bridges.open(new NodeUI(this.selector.value(language).value(subtitles))).frame();
 		subtitles.set("third");
 		Assert.assertEquals("second", language.get());
@@ -351,12 +351,12 @@ public class SelectorNodeTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesASignalItCannotWrite() {
-		this.selector.value(Signal.create("second").map(value -> value));
+		this.selector.value(new Signal<>("second").map(value -> value));
 	}
 
 	@Test
 	public void replacesItsSignalWithAnySetter() {
-		final Signal<String> language = Signal.create("first");
+		final Signal<String> language = new Signal<>("first");
 		this.bridges.open(new NodeUI(this.selector.value(language)));
 		this.selector.values("second", "third");
 		Assert.assertEquals("second", language.get());
@@ -371,7 +371,7 @@ public class SelectorNodeTest {
 
 	@Test
 	public void writesItsOpeningIntoItsSignal() {
-		final Signal<Boolean> open = Signal.create(false);
+		final Signal<Boolean> open = new Signal<>(false);
 		this.bridges.open(new NodeUI(this.selector.active(open))).frame();
 		this.click(150D, 120D);
 		Assert.assertTrue(open.get());
@@ -383,7 +383,7 @@ public class SelectorNodeTest {
 
 	@Test
 	public void forgetsItsOpeningSignalOnceGivenAValue() {
-		final Signal<Boolean> open = Signal.create(false);
+		final Signal<Boolean> open = new Signal<>(false);
 		this.bridges.open(new NodeUI(this.selector.active(open).active(true))).frame();
 		Assert.assertTrue(this.selector.isActive());
 		this.click(150D, 120D);
@@ -405,7 +405,7 @@ public class SelectorNodeTest {
 
 	@Test
 	public void staysClosedWhenItsOpeningIsRefused() {
-		final Signal<Boolean> open = Signal.create(false);
+		final Signal<Boolean> open = new Signal<>(false);
 		this.bridges.open(new NodeUI(this.selector.active(open).beforeOpen(event -> event.cancel()))).frame();
 		this.click(150D, 120D);
 		this.selector.open();

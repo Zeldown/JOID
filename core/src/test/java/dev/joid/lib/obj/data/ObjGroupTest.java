@@ -26,7 +26,7 @@ public class ObjGroupTest {
 	@Test
 	public void addsAFaceBehindAReadOnlyList() {
 		final ObjGroup group = ObjGroup.create("part");
-		final ObjFace face = ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F));
+		final ObjFace face = ObjGroupTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(1F, 0F), ObjVertex.of(0F, 1F));
 		Assert.assertSame(group, group.face(face));
 		Assert.assertEquals(Collections.singletonList(face), group.getFaces());
 		try {
@@ -40,8 +40,8 @@ public class ObjGroupTest {
 	@Test
 	public void drawsItsFacesInOneCall() {
 		final ObjGroup group = ObjGroup.create("pair");
-		group.face(ObjGroupTest.face(new ObjVertex(0F, 0F), new ObjVertex(1F, 0F), new ObjVertex(0F, 1F)));
-		group.face(ObjGroupTest.face(new ObjVertex(1F, 0F), new ObjVertex(1F, 1F), new ObjVertex(0F, 1F)));
+		group.face(ObjGroupTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(1F, 0F), ObjVertex.of(0F, 1F)));
+		group.face(ObjGroupTest.face(ObjVertex.of(1F, 0F), ObjVertex.of(1F, 1F), ObjVertex.of(0F, 1F)));
 		group.render();
 		final List<Draw> draws = this.bridges.getRender().getDraws();
 		Assert.assertEquals(1, draws.size());

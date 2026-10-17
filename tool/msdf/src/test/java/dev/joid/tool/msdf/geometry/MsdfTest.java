@@ -13,7 +13,7 @@ public class MsdfTest {
 	public void encodesTheInsideAboveTheMiddleAndTheOutsideBelow() {
 		final Shape shape = new Shape();
 		final List<Edge> square = new ArrayList<>();
-		final Vector2[] points = {new Vector2(0.25D, 0.25D), new Vector2(0.75D, 0.25D), new Vector2(0.75D, 0.75D), new Vector2(0.25D, 0.75D)};
+		final Vector2[] points = {Vector2.of(0.25D, 0.25D), Vector2.of(0.75D, 0.25D), Vector2.of(0.75D, 0.75D), Vector2.of(0.25D, 0.75D)};
 		for (int i = 0; i < points.length; i++) {
 			square.add(new Edge(Arrays.asList(points[i], points[(i + 1) % points.length])));
 		}
@@ -48,7 +48,7 @@ public class MsdfTest {
 	}
 
 	private static Shape square(final int color, final int right) {
-		final Vector2[] points = {new Vector2(0.25D, 0.25D), new Vector2(0.75D, 0.25D), new Vector2(0.75D, 0.75D), new Vector2(0.25D, 0.75D)};
+		final Vector2[] points = {Vector2.of(0.25D, 0.25D), Vector2.of(0.75D, 0.25D), Vector2.of(0.75D, 0.75D), Vector2.of(0.25D, 0.75D)};
 		final List<Edge> square = new ArrayList<>();
 		for (int i = 0; i < points.length; i++) {
 			final Edge edge = new Edge(Arrays.asList(points[i], points[(i + 1) % points.length]));

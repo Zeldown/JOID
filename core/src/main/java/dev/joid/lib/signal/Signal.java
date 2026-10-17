@@ -25,20 +25,16 @@ public class Signal<T> implements Supplier<T> {
 	private transient int version;
 	private transient T   sealedValue;
 
-	protected Signal() {
+	public Signal() {
 		this(null);
 	}
 
-	protected Signal(final T value) {
+	public Signal(final T value) {
 		this.listenerSet = new CopyOnWriteArraySet<>();
 		this.observerList = new CopyOnWriteArrayList<>();
 		this.value = this.seal(value);
 		this.sealedValue = this.value;
 		this.defaultValue = this.value;
-	}
-
-	public static <T> @NonNull Signal<T> create(final T value) {
-		return new Signal<>(value);
 	}
 
 	public static <T> @NonNull ComputedSignal<T> from(final T value) {

@@ -9,7 +9,7 @@ public class EdgeTest {
 
 	@Test
 	public void exposesItsEndsAndDirections() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(2D, 0D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(2D, 0D)));
 		Assert.assertEquals(0D, edge.start().getX(), 0D);
 		Assert.assertEquals(2D, edge.end().getX(), 0D);
 		Assert.assertEquals(1D, edge.startDirection().normalize().getX(), 1E-12D);
@@ -19,7 +19,7 @@ public class EdgeTest {
 
 	@Test
 	public void measuresTheDistanceToTheSegment() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(2D, 0D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(2D, 0D)));
 		final SignedDistance above = new SignedDistance();
 		edge.distance(1D, 1D, above);
 		final SignedDistance below = new SignedDistance();
@@ -35,7 +35,7 @@ public class EdgeTest {
 
 	@Test
 	public void extendsTheSegmentForThePseudoDistance() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(2D, 0D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(2D, 0D)));
 		final SignedDistance beyond = new SignedDistance();
 		edge.distance(3D, 1D, beyond);
 		edge.pseudoDistance(3D, 1D, beyond);
@@ -44,13 +44,13 @@ public class EdgeTest {
 
 	@Test
 	public void endsAPolylineAlongItsLastSegment() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(3D, 0D), new Vector2(3D, 4D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(3D, 0D), Vector2.of(3D, 4D)));
 		Assert.assertEquals(1D, edge.endDirection().normalize().getY(), 1E-12D);
 	}
 
 	@Test
 	public void keepsADegenerateEdgeInfinitelyFar() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(1D, 1D), new Vector2(1D, 1D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(1D, 1D), Vector2.of(1D, 1D)));
 		final SignedDistance distance = new SignedDistance();
 		edge.distance(0D, 0D, distance);
 		Assert.assertEquals(-Double.MAX_VALUE, distance.getDistance(), 0D);
@@ -58,7 +58,7 @@ public class EdgeTest {
 
 	@Test
 	public void keepsTheClosestSegmentOfAPolyline() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(2D, 0D), new Vector2(2D, 2D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(2D, 0D), Vector2.of(2D, 2D)));
 		final SignedDistance distance = new SignedDistance();
 		edge.distance(1D, -1D, distance);
 		Assert.assertEquals(1D, distance.getDistance(), 1E-12D);
@@ -68,7 +68,7 @@ public class EdgeTest {
 
 	@Test
 	public void prefersTheMostOrthogonalSegmentAtAJoint() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(1D, 0D), new Vector2(1D, 1D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(1D, 0D), Vector2.of(1D, 1D)));
 		final SignedDistance tilted = new SignedDistance();
 		edge.distance(2D, -0.5D, tilted);
 		Assert.assertEquals(Math.sqrt(1.25D), Math.abs(tilted.getDistance()), 1E-12D);
@@ -81,7 +81,7 @@ public class EdgeTest {
 
 	@Test
 	public void flagsTheEndsOfAPolyline() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(1D, 0D), new Vector2(2D, 0D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(1D, 0D), Vector2.of(2D, 0D)));
 		final SignedDistance before = new SignedDistance();
 		edge.distance(-1D, 0.5D, before);
 		final SignedDistance between = new SignedDistance();
@@ -95,7 +95,7 @@ public class EdgeTest {
 
 	@Test
 	public void extendsTheSegmentBeforeItsStart() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(2D, 0D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(2D, 0D)));
 		final SignedDistance before = new SignedDistance();
 		edge.distance(-1D, 1D, before);
 		Assert.assertEquals(-Math.sqrt(2D), before.getDistance(), 1E-12D);
@@ -106,7 +106,7 @@ public class EdgeTest {
 
 	@Test
 	public void extendsTheSegmentOnlyOutward() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(2D, 0D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(2D, 0D)));
 		final SignedDistance start = new SignedDistance();
 		start.set(5D, 1D, -1);
 		edge.pseudoDistance(1D, 1D, start);
@@ -119,7 +119,7 @@ public class EdgeTest {
 
 	@Test
 	public void neverMovesAwayWithThePseudoDistance() {
-		final Edge edge = new Edge(Arrays.asList(new Vector2(0D, 0D), new Vector2(2D, 0D)));
+		final Edge edge = new Edge(Arrays.asList(Vector2.of(0D, 0D), Vector2.of(2D, 0D)));
 		final SignedDistance distance = new SignedDistance();
 		distance.set(0.5D, 1D, 1);
 		edge.pseudoDistance(3D, 1D, distance);
