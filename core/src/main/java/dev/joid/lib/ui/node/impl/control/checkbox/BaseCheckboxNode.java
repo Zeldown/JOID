@@ -7,19 +7,17 @@ import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class BaseCheckboxNode extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	@Getter(AccessLevel.NONE)
 	private final transient InteractiveValue<Boolean> checkedValue;
 
+	@Getter
 	private boolean checked;
 
 	protected BaseCheckboxNode(final double x, final double y, final double width, final double height) {

@@ -7,21 +7,18 @@ import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class BaseToggleNode<F, S> extends Node {
 
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	@Getter(AccessLevel.NONE)
 	private final transient InteractiveValue<Boolean> toggleValue;
 
-	private boolean           toggle;
-	private ToggleState<F, S> state;
+	@Getter private boolean           toggle;
+	@Getter private ToggleState<F, S> state;
 
 	protected BaseToggleNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);

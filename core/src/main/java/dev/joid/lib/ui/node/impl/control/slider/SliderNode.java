@@ -4,22 +4,19 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class SliderNode<V> extends BaseSliderNode<V> {
 
-	private Node track;
-	private Node thumb;
+	@Getter private Node track;
+	@Getter private Node thumb;
 
+	@Getter
 	private float speed;
 
-	@Getter(AccessLevel.NONE)
 	private double thumbX;
 
-	@Getter(AccessLevel.NONE)
 	private boolean placed;
 
 	protected SliderNode(final double x, final double y, final double width, final double height) {

@@ -4,20 +4,17 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class ToggleNode<F, S> extends BaseToggleNode<F, S> {
 
-	private Node knob;
-	private Node track;
+	@Getter private Node knob;
+	@Getter private Node track;
 
-	private float speed;
-	private float knobProgress;
+	@Getter private float speed;
+	@Getter private float knobProgress;
 
-	@Getter(AccessLevel.NONE)
 	private boolean placed;
 
 	protected ToggleNode(final double x, final double y, final double width, final double height) {

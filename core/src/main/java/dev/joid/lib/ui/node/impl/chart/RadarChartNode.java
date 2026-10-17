@@ -9,10 +9,8 @@ import java.util.stream.DoubleStream;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.chart.RadarChartNode.RadarChartData;
-import lombok.Getter;
 import lombok.NonNull;
 
-@Getter
 public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 
 	private final List<DATA> dataList;
