@@ -32,54 +32,27 @@ public class UIDemoFont extends UIDemo {
 		final TextInfo playfair = TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 18, UIDemoFont.INK).lineHeight(1.425F);
 		final TextInfo pixel = TextInfo.create(DemoFont.PIXEL, 16, UIDemoFont.INK);
 		final String[] specimen = {"Aa Bb Cc Dd Ee Ff Gg", "abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLM", "NOPQRSTUVWXYZ", "0123456789", "!?.,;:'\"()[]{}+-*/=%&@#", "àâéèêëîïôùûüç ß œ æ ł ı", "ÀÉÈÊÎÔÙÇ"};
+		final TextInfo[] specimens = {montserrat, pacifico, playfair};
+		final String[] names = {"Montserrat", "Pacifico", "Playfair Display"};
 
-		RectNode
-		.create(80, 40, 320, 260)
-		.color(UIDemoFont.PLACEHOLDER)
-		.body(rect -> {
-			FlexNode
-			.vertical(20, 20, 280)
-			.body(flex -> {
-				for (final String line : specimen) {
-					TextNode.create(0, 0).text(Text.create(line, montserrat)).attach(flex);
-				}
+		for (int i = 0; i < specimens.length; i++) {
+			final int index = i;
+			RectNode
+			.create(80 + index * 360, 40, 320, 260)
+			.color(UIDemoFont.PLACEHOLDER)
+			.body(rect -> {
+				FlexNode
+				.vertical(20, 20, 280)
+				.body(flex -> {
+					for (final String line : specimen) {
+						TextNode.create(0, 0).text(Text.create(line, specimens[index])).attach(flex);
+					}
+				})
+				.attach(rect);
+				TextNode.create(160, 275).text(Text.create(names[index], caption)).anchorX(Align.CENTER).attach(rect);
 			})
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Montserrat", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(440, 40, 320, 260)
-		.color(UIDemoFont.PLACEHOLDER)
-		.body(rect -> {
-			FlexNode
-			.vertical(20, 20, 280)
-			.body(flex -> {
-				for (final String line : specimen) {
-					TextNode.create(0, 0).text(Text.create(line, pacifico)).attach(flex);
-				}
-			})
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pacifico", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(800, 40, 320, 260)
-		.color(UIDemoFont.PLACEHOLDER)
-		.body(rect -> {
-			FlexNode
-			.vertical(20, 20, 280)
-			.body(flex -> {
-				for (final String line : specimen) {
-					TextNode.create(0, 0).text(Text.create(line, playfair)).attach(flex);
-				}
-			})
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Playfair Display", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
+			.attach(this);
+		}
 
 		RectNode
 		.create(1160, 40, 320, 260)

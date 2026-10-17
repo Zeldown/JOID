@@ -40,7 +40,7 @@ The render bridge contract — vertex layout, projection conventions, textures, 
 | `./gradlew renderBaseline` | Renders the same scenarios with the official LWJGL 3 backend into `build/snapshots/lwjgl3`. |
 | `./gradlew crossBackendTest` | Runs the tests and the baseline, then compares your shots to the LWJGL 3 ones within one level per channel. |
 | `./gradlew build` | Builds three jars that embed the JOID core of the same variant, with the libraries its jars contain (Gson, Guava, Commons IO, Commons Lang, JavaCV, JavaCPP, FFmpeg, JSVG, TwelveMonkeys, ASM), and the `embed` jars: `joid-backend-example-1.0.0-prod.jar` to ship, `joid-backend-example-1.0.0-dev.jar` with the JOID dev tools (inspector, hot reload, warnings) for the developers who use your backend, and `joid-backend-example-1.0.0-demo.jar` with the dev tools, the JOID demos and `DemoWindow`, for you only. JOID turns its dev and demo modes on by itself when their classes are in the jar. |
-| `./gradlew testDemoJar testProdJar` | Runs the tests against the packaged jars instead of the classes: every test for the demo jar, the contract and unit tests for the prod jar. |
+| `./gradlew testDemoJar testDevJar testProdJar` | Runs the tests against the packaged jars instead of the classes: every test for the demo jar, the contract and unit tests for the dev and prod jars. |
 | `./gradlew runDemo` | Launches `DemoWindow`. |
 
 Every run writes an interactive `report.html` next to the renders, and its link is printed at the end of the build when a test fails.

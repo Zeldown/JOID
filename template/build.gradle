@@ -113,6 +113,15 @@ task testDemoJar(type: Test) {
     classpath = files(demoJar.archivePath) + sourceSets.test.output + configurations.testRuntime - configurations.joidDemo - configurations.embed
 }
 
+task testDevJar(type: Test) {
+    group = 'verification'
+    description = 'Runs the contract and unit tests against the dev jar.'
+    dependsOn devJar
+    testClassesDir = sourceSets.test.output.classesDir
+    classpath = files(devJar.archivePath) + sourceSets.test.output + configurations.testRuntime - configurations.joidDemo - configurations.embed
+    exclude '**/SnapshotTest.class'
+}
+
 task testProdJar(type: Test) {
     group = 'verification'
     description = 'Runs the contract and unit tests against the prod jar.'
@@ -124,6 +133,7 @@ task testProdJar(type: Test) {
 
 snapshotTest(test, file('.snapshots/references'), file("$buildDir/snapshots/$archivesBaseName"))
 snapshotTest(testDemoJar, file('.snapshots/references'), file("$buildDir/snapshots/${archivesBaseName}-demo"))
+snapshotTest(testDevJar, file('.snapshots/references'), file("$buildDir/snapshots/${archivesBaseName}-dev"))
 snapshotTest(testProdJar, file('.snapshots/references'), file("$buildDir/snapshots/${archivesBaseName}-prod"))
 
 task renderBaseline(type: JavaExec) {

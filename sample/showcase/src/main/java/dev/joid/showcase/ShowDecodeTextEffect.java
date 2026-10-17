@@ -11,8 +11,6 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShowDecodeTextEffect implements ITextEffect {
 
-	private static final String POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@";
-
 	private final long   start;
 	private final Color  accent;
 	private final double stagger;
@@ -35,8 +33,9 @@ public final class ShowDecodeTextEffect implements ITextEffect {
 		}
 		final long seed = (now / 60L) * 31L + glyph.getIndex() * 17L;
 		final double advance = glyph.getAdvance();
-		for (int attempt = 0; attempt < ShowDecodeTextEffect.POOL.length(); attempt++) {
-			final char candidate = ShowDecodeTextEffect.POOL.charAt((int) ((seed + attempt * 7L) % ShowDecodeTextEffect.POOL.length()));
+		final String pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%&$@";
+		for (int attempt = 0; attempt < pool.length(); attempt++) {
+			final char candidate = pool.charAt((int) ((seed + attempt * 7L) % pool.length()));
 			if (glyph.hasGlyph(candidate)) {
 				glyph.codepoint(candidate).offset(glyph.getOffsetX() + (advance - glyph.getAdvance(candidate)) / 2D, glyph.getOffsetY());
 				break;

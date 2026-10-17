@@ -143,25 +143,17 @@ public abstract class StateGuardContractSuite {
 	@Test
 	public void rastersANativeDrawingUprightAtItsPixelSize() {
 		final int[] size = new int[2];
-		final IRenderBridge render = BridgeHandler.RENDER.get();
-		render.beginFrame();
-		try {
+		final SnapshotImage image = ContractDraw.frame(this.backend, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, render -> {
 			render.getModelView().identity();
 			render.getProjection().ortho(0D, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE, 0D, 0D, 10000D);
 			render.getState().viewport(0, 0, StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE).frameBuffer(null);
-			render.clearColor(0F, 0F, 0F, 1F);
 			DrawUtils.RASTER.drawRaster(8D, 8D, 32D, 32D, (width, height) -> {
 				size[0] = width;
 				size[1] = height;
 				this.backend.fill(0, height / 2, width, height / 2, 0xFFFF0000);
 				this.backend.fill(0, 0, width, height / 2, 0xFF00FF00);
 			});
-		} finally {
-			render.endFrame();
-		}
-
-		final SnapshotImage image = this.backend.capture(StateGuardContractSuite.SIZE, StateGuardContractSuite.SIZE);
-		this.backend.present();
+		});
 		Assert.assertEquals(32, size[0]);
 		Assert.assertEquals(32, size[1]);
 		ContractDraw.assertPixel(image, 24, 12, 0xFFFF0000);

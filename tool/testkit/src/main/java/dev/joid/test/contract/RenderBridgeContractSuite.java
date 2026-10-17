@@ -410,8 +410,11 @@ public abstract class RenderBridgeContractSuite {
 		final IFrameBuffer frameBuffer = render.createFrameBuffer(RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE);
 		final IShader shader = render.createShader(CoreShader.LINE.read(ShaderStage.VERTEX), CoreShader.LINE.read(ShaderStage.FRAGMENT), BlendState.NORMAL);
 		render.pushState();
-		render.getState().frameBuffer(frameBuffer).shader(shader).viewport(0, 0, 8, 8).lineWidth(4F).lineSmooth(true);
-		render.popState();
+		try {
+			render.getState().frameBuffer(frameBuffer).shader(shader).viewport(0, 0, 8, 8).lineWidth(4F).lineSmooth(true);
+		} finally {
+			render.popState();
+		}
 
 		Assert.assertNull(render.getState().getShader());
 		Assert.assertFalse(render.getState().isLineSmooth());
@@ -590,8 +593,12 @@ public abstract class RenderBridgeContractSuite {
 		final double before = render.getPixelGrid().toScreenX(0D);
 		final Transformation transformation = Transformation.create().translate(Vector.create(10.3D, 4.6D)).scale(Scale.create(1.5D, 1.5D, 1D), Vector.create(40D, 40D));
 		transformation.apply();
-		final double during = render.getPixelGrid().toScreenX(0D);
-		transformation.reset();
+		final double during;
+		try {
+			during = render.getPixelGrid().toScreenX(0D);
+		} finally {
+			transformation.reset();
+		}
 		Assert.assertNotEquals(before, during, 1E-4D);
 		Assert.assertEquals(before, render.getPixelGrid().toScreenX(0D), 0D);
 	}
@@ -671,7 +678,7 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final float start, final float end) {
-		return RenderBridgeContractSuite.quad(x, y, width, height, true, 0, false, start, end);
+		return ContractDraw.quad(x, y, width, height, 0F, true, 0, false, start, end);
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color) {
@@ -679,11 +686,7 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color, final boolean normal) {
-		return RenderBridgeContractSuite.quad(x, y, width, height, texture, color, normal, 0F, 1F);
-	}
-
-	private static VertexBuffer quad(final float x, final float y, final float width, final float height, final boolean texture, final int color, final boolean normal, final float start, final float end) {
-		return ContractDraw.quad(x, y, width, height, 0F, texture, color, normal, start, end);
+		return ContractDraw.quad(x, y, width, height, 0F, texture, color, normal, 0F, 1F);
 	}
 
 	private static VertexBuffer line(final float startX, final float startY, final float endX, final float endY, final int color) {

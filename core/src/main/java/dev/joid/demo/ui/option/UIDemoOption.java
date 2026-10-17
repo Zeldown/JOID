@@ -1,5 +1,9 @@
 package dev.joid.demo.ui.option;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
+
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.demo.ui.UIDemo;
@@ -22,6 +26,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
+import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
@@ -42,6 +47,8 @@ public class UIDemoOption extends UIDemo {
 		final DoubleSignal zoom = new DoubleSignal(1D);
 		final BooleanSignal locked = new BooleanSignal(false);
 		final IntegerSignal refusedZooms = new IntegerSignal(0);
+		final List<Supplier<UI>> popups = Arrays.asList(UIDemoFixedScalePopup::new, UIDemoLimitedScalePopup::new, UIDemoCornerPopup::new, UIDemoTintedPopup::new, UIDemoLockedPopup::new, UIDemoFixedZoomPopup::new, UIDemoDebugOffPopup::new, UIDemoInstantPopup::new, UIDemoPopInPopup::new, UIDemoSlidePopup::new);
+		final String[] captions = {"Scale ignored", "Scale limit", "Corner anchor", "Tinted backdrop", "Not closeable", "Not zoomable", "Debug off", "No transition", "Pop in only", "Custom transition"};
 		Task.create(1000L).every(1000L).onRun(event -> ticks.increment()).attach(this);
 		super.zoom(zoom);
 		super.beforeZoom(event -> {
@@ -72,145 +79,22 @@ public class UIDemoOption extends UIDemo {
 		})
 		.attach(this);
 
-		RectNode
-		.create(440, 40, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
+		for (int i = 0; i < popups.size(); i++) {
+			final int index = i;
 			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoFixedScalePopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Scale ignored", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(800, 40, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoLimitedScalePopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Scale limit", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1160, 40, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoCornerPopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Corner anchor", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1520, 40, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoTintedPopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Tinted backdrop", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(80, 380, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoLockedPopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Not closeable", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(440, 380, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoFixedZoomPopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Not zoomable", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(800, 380, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoDebugOffPopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Debug off", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1160, 380, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoInstantPopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("No transition", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1520, 380, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoPopInPopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Pop in only", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(80, 720, 320, 260)
-		.color(UIDemoOption.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(100, 105, 120, 50)
-			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.open(new UIDemoSlidePopup()))
-			.label(Text.create("Open", label))
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Custom transition", info)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
+			.create(80 + (index + 1) % 5 * 360, 40 + (index + 1) / 5 * 340, 320, 260)
+			.color(UIDemoOption.PLACEHOLDER)
+			.body(rect -> {
+				RectNode
+				.create(100, 105, 120, 50)
+				.color(UIDemoOption.INK)
+				.onClick(event -> JOID.open(popups.get(index).get()))
+				.label(Text.create("Open", label))
+				.attach(rect);
+				TextNode.create(160, 275).text(Text.create(captions[index], info)).anchorX(Align.CENTER).attach(rect);
+			})
+			.attach(this);
+		}
 
 		RectNode
 		.create(440, 720, 320, 260)

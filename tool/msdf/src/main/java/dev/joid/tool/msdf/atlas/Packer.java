@@ -1,6 +1,7 @@
 package dev.joid.tool.msdf.atlas;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -30,7 +31,7 @@ public final class Packer {
 			}
 
 			final int x = Packer.lowest(skyline, glyphWidth);
-			final int y = Packer.highest(skyline, x, glyphWidth);
+			final int y = Arrays.stream(skyline, x, x + glyphWidth).max().getAsInt();
 			if (y + glyphHeight > height) {
 				return false;
 			}
@@ -92,14 +93,6 @@ public final class Packer {
 		}
 
 		return best;
-	}
-
-	private static int highest(final int[] skyline, final int start, final int window) {
-		int highest = 0;
-		for (int x = start; x < start + window && x < skyline.length; x++) {
-			highest = Math.max(highest, skyline[x]);
-		}
-		return highest;
 	}
 
 }

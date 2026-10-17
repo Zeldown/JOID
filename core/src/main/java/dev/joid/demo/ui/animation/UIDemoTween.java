@@ -32,10 +32,13 @@ public class UIDemoTween extends UIDemo {
 	@Override
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoTween.INK);
-		final TweenAnimator back = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BACK_INOUT).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator circ = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CIRC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator expo = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.EXPO_OUT).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator quint = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUINT_INOUT).repeatYoyo(Tween.INFINITY, 0F).start();
+		final TweenAnimator[] lines = {
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BACK_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CIRC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.EXPO_OUT).repeatYoyo(Tween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUINT_INOUT).repeatYoyo(Tween.INFINITY, 0F).start()
+		};
+		final String[] names = {"Back in out", "Circ in out", "Expo out", "Quint in out"};
 		final TweenAnimator horizontal = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_INOUT).repeatYoyo(Tween.INFINITY, 0F).start();
 		final TweenAnimator vertical = TweenAnimator.create(0F).sequence(500F, 1F, TweenEquations.SINE_INOUT).push(500F, 1F).repeatYoyo(Tween.INFINITY, 0F).start();
 		final TweenAnimator paused = TweenAnimator.create(0F);
@@ -50,65 +53,23 @@ public class UIDemoTween extends UIDemo {
 		this.value = 0F;
 		Tween.to(() -> this.value, value -> this.value = value, 1000F).target(1F).ease(TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(this.manager);
 
-		RectNode
-		.create(100, 40, 400, 260)
-		.color(UIDemoTween.PLACEHOLDER)
-		.body(rect -> {
+		for (int i = 0; i < lines.length; i++) {
+			final int index = i;
 			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(back).onDetach(event -> back.clear()).attach(line);
+			.create(100 + index * 440, 40, 400, 260)
+			.color(UIDemoTween.PLACEHOLDER)
+			.body(rect -> {
+				RectNode
+				.create(40, 100, 320, 60)
+				.color(Color.WHITE)
+				.body(line -> {
+					RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(lines[index]).onDetach(event -> lines[index].clear()).attach(line);
+				})
+				.attach(rect);
+				TextNode.create(200, 275).text(Text.create(names[index], caption)).anchorX(Align.CENTER).attach(rect);
 			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Back in out", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(540, 40, 400, 260)
-		.color(UIDemoTween.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(circ).onDetach(event -> circ.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Circ in out", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(980, 40, 400, 260)
-		.color(UIDemoTween.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(expo).onDetach(event -> expo.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Expo out", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1420, 40, 400, 260)
-		.color(UIDemoTween.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoTween.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(quint).onDetach(event -> quint.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Quint in out", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
+			.attach(this);
+		}
 
 		RectNode
 		.create(100, 380, 400, 260)

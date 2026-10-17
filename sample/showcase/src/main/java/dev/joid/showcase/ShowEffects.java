@@ -25,9 +25,7 @@ public class ShowEffects extends ShowUI {
 	private static final Color GOLD  = Color.decode("#D97706").lock();
 	private static final Color SLATE = Color.decode("#2A2A3C").lock();
 
-	private static final String[] NAMES = {"Rounded corners", "Gradient", "Inner border", "Drop shadow", "Glow", "Blur", "Tilt"};
-
-	private final TweenAnimator[] levels = new TweenAnimator[ShowEffects.NAMES.length];
+	private final TweenAnimator[] levels = new TweenAnimator[7];
 
 	@Override
 	protected void scene() {
@@ -44,15 +42,16 @@ public class ShowEffects extends ShowUI {
 		ShowUI.glass(110, 120, 650, 840, 32F).attach(this);
 		TextNode.create(156, 164).text(Text.create("Effects", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);
 		TextNode.create(158, 226).text(Text.create("Stack them on any node, animate any value.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
+		final String[] names = {"Rounded corners", "Gradient", "Inner border", "Drop shadow", "Glow", "Blur", "Tilt"};
 		final Color[] dots = {ShowUI.VIOLET, ShowUI.PINK, ShowUI.SKY, ShowUI.AMBER, ShowUI.FUCHSIA, ShowUI.CYAN, ShowUI.EMERALD};
-		for (int i = 0; i < ShowEffects.NAMES.length; i++) {
+		for (int i = 0; i < names.length; i++) {
 			this.levels[i] = TweenAnimator.create(0F);
 			final double y = 300D + i * 88D;
 			final BooleanSignal on = new BooleanSignal(false);
 			final TweenAnimator level = this.levels[i];
 			final Color dot = dots[i];
 			CircleNode.create(158, y + 15D, 12).color(on.get() ? dot : Color.WHITE.withAlpha(0.18F)).effect(ShadowNodeEffect.create(dot, 10F).color(dot.withAlpha(on.get() ? 0.9F : 0F))).attach(this);
-			TextNode.create(188, y + 21D).text(Text.create(ShowEffects.NAMES[i], ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);
+			TextNode.create(188, y + 21D).text(Text.create(names[i], ShowUI.font(FontWeight.SEMI_BOLD, 26F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(this);
 			ShowToggleNode.create(650, y, dot).toggle(on).onChange(event -> level.sequence(400F, event.getValue() ? 1F : 0F, TweenEquations.QUAD_OUT).start()).attach(this);
 		}
 	}

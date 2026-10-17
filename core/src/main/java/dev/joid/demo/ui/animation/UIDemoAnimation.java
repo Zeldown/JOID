@@ -28,138 +28,39 @@ public class UIDemoAnimation extends UIDemo {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoAnimation.INK);
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
 		final IntegerSignal plays = new IntegerSignal(0);
-		final TweenAnimator linear = TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator quad = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_INOUT).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator bounce = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BOUNCE_OUT).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator elastic = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.ELASTIC_OUT).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator repeat = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_OUT).repeat(Tween.INFINITY, 0F).start();
-		final TweenAnimator delay = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 500F).start();
-		final TweenAnimator sequence = TweenAnimator.create(0F).sequence(600F, 1F, TweenEquations.QUAD_OUT).push(600F, 0.3F, TweenEquations.QUAD_IN).repeat(Tween.INFINITY, 300F).start();
-		final TweenAnimator slow = TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).speed(0.5F).start();
+		final TweenAnimator[] lines = {
+			TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BOUNCE_OUT).repeatYoyo(Tween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.ELASTIC_OUT).repeatYoyo(Tween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_OUT).repeat(Tween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 500F).start(),
+			TweenAnimator.create(0F).sequence(600F, 1F, TweenEquations.QUAD_OUT).push(600F, 0.3F, TweenEquations.QUAD_IN).repeat(Tween.INFINITY, 300F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).speed(0.5F).start()
+		};
+		final String[] names = {"Linear", "Quad in out", "Bounce out", "Elastic out", "Repeat", "Yoyo with delay", "Sequence", "Half speed"};
 		final TweenAnimator color = TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).start();
 		final TweenAnimator size = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(Tween.INFINITY, 0F).start();
 		final TweenAnimator rotation = TweenAnimator.create(0F).sequence(2000F, 1F).repeat(Tween.INFINITY, 0F).start();
 		final TweenAnimator once = TweenAnimator.create(0F);
 
-		RectNode
-		.create(100, 40, 400, 260)
-		.color(UIDemoAnimation.PLACEHOLDER)
-		.body(rect -> {
+		for (int i = 0; i < lines.length; i++) {
+			final int index = i;
 			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(linear).onDetach(event -> linear.clear()).attach(line);
+			.create(100 + index % 4 * 440, 40 + index / 4 * 340, 400, 260)
+			.color(UIDemoAnimation.PLACEHOLDER)
+			.body(rect -> {
+				RectNode
+				.create(40, 100, 320, 60)
+				.color(Color.WHITE)
+				.body(line -> {
+					RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(lines[index]).onDetach(event -> lines[index].clear()).attach(line);
+				})
+				.attach(rect);
+				TextNode.create(200, 275).text(Text.create(names[index], caption)).anchorX(Align.CENTER).attach(rect);
 			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Linear", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(540, 40, 400, 260)
-		.color(UIDemoAnimation.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(quad).onDetach(event -> quad.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Quad in out", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(980, 40, 400, 260)
-		.color(UIDemoAnimation.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(bounce).onDetach(event -> bounce.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Bounce out", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1420, 40, 400, 260)
-		.color(UIDemoAnimation.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(elastic).onDetach(event -> elastic.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Elastic out", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(100, 380, 400, 260)
-		.color(UIDemoAnimation.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(repeat).onDetach(event -> repeat.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Repeat", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(540, 380, 400, 260)
-		.color(UIDemoAnimation.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(delay).onDetach(event -> delay.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Yoyo with delay", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(980, 380, 400, 260)
-		.color(UIDemoAnimation.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(sequence).onDetach(event -> sequence.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Sequence", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1420, 380, 400, 260)
-		.color(UIDemoAnimation.PLACEHOLDER)
-		.body(rect -> {
-			RectNode
-			.create(40, 100, 320, 60)
-			.color(Color.WHITE)
-			.body(line -> {
-				RectNode.create(0, 0, 60, 60).color(UIDemoAnimation.INK).onAnimate(event -> event.getNode().x(260D * event.getValue())).animate(slow).onDetach(event -> slow.clear()).attach(line);
-			})
-			.attach(rect);
-			TextNode.create(200, 275).text(Text.create("Half speed", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
+			.attach(this);
+		}
 
 		RectNode
 		.create(100, 720, 400, 260)

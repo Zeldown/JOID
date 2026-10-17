@@ -17,7 +17,6 @@ import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.render.state.FixedMatrixImport;
 import dev.joid.base.opengl.render.texture.BlitGlMipmapBuilder;
 import dev.joid.base.opengl.render.texture.GlBorrowedTexture;
-import dev.joid.base.opengl.render.vertex.ArrayObjectGlVertexInput;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.resource.Resource;
@@ -53,7 +52,7 @@ public class GlRenderBridgeTest {
 	public void choosesTheStrategiesOfTheContextOnce() {
 		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
 		Assert.assertSame(bridge.getFrameBufferBinding(), bridge.getBinding().getFrameBufferBinding(bridge.getCapabilities().getFrameBufferFamily()));
-		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getVertexInput() instanceof ArrayObjectGlVertexInput);
+		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getVertexInput().getArray() != 0);
 		Assert.assertEquals(bridge.getCapabilities().hasFrameBufferBlit(), bridge.getMipmapBuilder() instanceof BlitGlMipmapBuilder);
 	}
 

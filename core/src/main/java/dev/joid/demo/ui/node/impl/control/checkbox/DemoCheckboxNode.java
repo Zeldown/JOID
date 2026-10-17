@@ -1,9 +1,7 @@
 package dev.joid.demo.ui.node.impl.control.checkbox;
 
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.ui.node.impl.control.checkbox.CheckboxNode;
-import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.NonNull;
 
@@ -14,7 +12,7 @@ public class DemoCheckboxNode extends CheckboxNode {
 	protected DemoCheckboxNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 		super.box(RectNode.create(0, 0, 0, 0).color(() -> Color.WHITE.withAlpha(super.isEnabled() ? 1F : 0.4F)));
-		super.mark(ContainerNode.create(0, 0, 0, 0).layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRect(node.dw(4), node.dh(4), node.dw(2), node.dh(2), DemoCheckboxNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F))));
+		super.mark(RectNode.create(0, 0, width / 2D, height / 2D).color(() -> DemoCheckboxNode.INK.withAlpha(super.isEnabled() ? 1F : 0.4F)));
 	}
 
 	public static @NonNull DemoCheckboxNode create(final double x, final double y, final double width, final double height) {

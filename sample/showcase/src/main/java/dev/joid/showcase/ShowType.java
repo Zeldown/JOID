@@ -26,11 +26,10 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowType extends ShowUI {
 
-	private static final double PIVOT_X = 128D;
-	private static final double PIVOT_Y = 236D;
-
 	@Override
 	protected void scene() {
+		final double pivotX = 128D;
+		final double pivotY = 236D;
 		super.backdrop();
 		ShowUI.blob(1250, -350, 900, ShowUI.FUCHSIA.withAlpha(0.28F), 0D, 50D).attach(this);
 		ShowUI.blob(-350, 600, 900, ShowUI.CYAN.withAlpha(0.20F), 0.5D, 50D).attach(this);
@@ -38,7 +37,7 @@ public class ShowType extends ShowUI {
 		final long start = BridgeHandler.CLOCK.get().currentTimeMillis();
 		ContainerNode
 		.create(0, 0, 1920, 1080)
-		.effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(() -> this.zoom() * (700D - ShowType.PIVOT_X), () -> this.zoom() * (470D - ShowType.PIVOT_Y))).scale(Scale.create(() -> 1D + 5D * this.zoom(), () -> 1D + 5D * this.zoom(), () -> 1D), Vector.create(ShowType.PIVOT_X, ShowType.PIVOT_Y))).scope(NodeEffectScope.CHILDREN))
+		.effect(TransformNodeEffect.create(Transformation.create().translate(Vector.create(() -> this.zoom() * (700D - pivotX), () -> this.zoom() * (470D - pivotY))).scale(Scale.create(() -> 1D + 5D * this.zoom(), () -> 1D + 5D * this.zoom(), () -> 1D), Vector.create(pivotX, pivotY))).scope(NodeEffectScope.CHILDREN))
 		.body(container -> {
 			TextNode.create(122, 160).text(Text.create("MSDF TEXT", ShowUI.font(FontWeight.BOLD, 18F, ShowUI.FAINT).letterSpacing(0.3F))).attach(container);
 			final int[] sizes = {14, 18, 24, 32, 44, 60, 80, 108};

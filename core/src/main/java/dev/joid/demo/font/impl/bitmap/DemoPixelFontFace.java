@@ -6,9 +6,12 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.glyph.IFontFace;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DemoPixelFontFace implements IFontFace {
 
 	private static final ResourceBuilder BUILDER = ResourceBuilder.create().cache(null).nearest().mipmap(false);
@@ -17,11 +20,6 @@ public final class DemoPixelFontFace implements IFontFace {
 
 	@Getter
 	private final Resource texture;
-
-	private DemoPixelFontFace(final int[] advances, final Resource texture) {
-		this.advances = advances;
-		this.texture = texture;
-	}
 
 	public static @NonNull DemoPixelFontFace create(final @NonNull BufferedImage atlas) {
 		final int[] advances = new int[95];
