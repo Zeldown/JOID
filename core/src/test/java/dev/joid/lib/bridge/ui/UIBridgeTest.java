@@ -200,6 +200,19 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void keepsTheDragOfTheFirstButtonWhileASecondOneIsPressed() {
+		this.bridges.open(new TraceUI("menu", this.trace));
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getClock().advance(40L);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
+		this.trace.clear();
+		this.bridges.getClock().advance(40L);
+		this.bridges.getUi().mouseMoved();
+		Assert.assertEquals(Collections.singletonList("dragged menu LEFT 80"), this.trace);
+	}
+
+	@Test
 	public void releasesTheTopUiFirst() {
 		final TraceUI hud = new TraceUI("hud", this.trace);
 		this.bridges.open(new TraceUI("menu", this.trace)).open(hud);
@@ -522,15 +535,13 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void timesTheDragFromTheLastPressOnTheClock() {
+	public void timesTheDragFromThePressOnTheClock() {
 		this.bridges.open(new TraceUI("menu", this.trace));
-		this.bridges.getUi().mousePressed(MouseButton.LEFT);
-		this.bridges.getClock().advance(25L);
 		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
 		this.trace.clear();
-		this.bridges.getClock().advance(5L);
+		this.bridges.getClock().advance(25L);
 		this.bridges.getUi().mouseMoved();
-		Assert.assertEquals(Collections.singletonList("dragged menu RIGHT 5"), this.trace);
+		Assert.assertEquals(Collections.singletonList("dragged menu RIGHT 25"), this.trace);
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -29,8 +29,7 @@ public final class KeyState {
 
 	public boolean isDown(final @NonNull Key key) {
 		final IWindowBridge window = BridgeHandler.WINDOW.get();
-		this.heldMap.keySet().removeIf(physicalKey -> !window.isKeyDown(physicalKey));
-		return KeyLayout.isLayoutKey(key) ? this.heldMap.containsValue(key) : window.isKeyDown(key);
+		return KeyLayout.isLayoutKey(key) ? this.heldMap.entrySet().stream().anyMatch(entry -> entry.getValue() == key && window.isKeyDown(entry.getKey())) : window.isKeyDown(key);
 	}
 
 	public @NonNull Key getKey(final @NonNull Key physicalKey) {

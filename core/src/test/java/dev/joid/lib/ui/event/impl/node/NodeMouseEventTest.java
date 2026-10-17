@@ -170,6 +170,7 @@ public class NodeMouseEventTest {
 		this.bridges.open(new NodeUI(rect)).frames(30);
 		this.bridges.move(150D, 160D).getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.frames(1).getUi().mouseMoved();
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		this.bridges.move(400D, 300D).getUi().mousePressed(MouseButton.RIGHT);
 		this.bridges.frames(2).getUi().mouseMoved();
 		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, MouseButton.LEFT, 16L, rect, 400D, 300D, MouseButton.RIGHT, 32L), received);

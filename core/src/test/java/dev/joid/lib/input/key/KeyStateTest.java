@@ -45,13 +45,20 @@ public class KeyStateTest {
 	}
 
 	@Test
-	public void forgetsAPositionTheWindowNoLongerHolds() {
+	public void holdsTheLetterWhileTheWindowHoldsItsPosition() {
 		this.bridges.getWindow().getKeys().add(Key.Q);
 		BridgeHandler.UI.keyPressed(Key.Q, Key.A);
 		this.bridges.getWindow().getKeys().clear();
 		Assert.assertFalse(Key.A.isDown());
 		this.bridges.getWindow().getKeys().add(Key.Q);
+		Assert.assertTrue(Key.A.isDown());
+	}
+
+	@Test
+	public void releasesTheLetterOfAPressShorterThanAFrame() {
+		BridgeHandler.UI.keyPressed(Key.Q, Key.A);
 		Assert.assertFalse(Key.A.isDown());
+		Assert.assertSame(Key.A, BridgeHandler.UI.getKeyState().release(Key.Q));
 	}
 
 	@Test

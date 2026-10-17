@@ -71,9 +71,12 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final boolean mousePressed(final @NonNull MouseButton button) {
-		this.pressed     = button;
-		this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
-		this.pressedNode = this.getHoveredNode();
+		if (this.pressed == null) {
+			this.pressed     = button;
+			this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
+			this.pressedNode = this.getHoveredNode();
+		}
+
 		this.consumedButtonSet.remove(button);
 		final UI ui = this.dispatch(this.pressedButtonMap.computeIfAbsent(button, pressed -> new LinkedHashSet<>()), current -> current.fireMousePressed(button));
 		final boolean consumed = ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
