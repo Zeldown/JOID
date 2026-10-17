@@ -25,6 +25,7 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
+import dev.joid.lib.ui.node.impl.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
@@ -94,7 +95,12 @@ public class ShowPlayer extends ShowUI {
 		.color(() -> Color.WHITE.withAlpha(0.92F * card.hoverValue(1F) + 0.08F))
 		.effect(ShadowNodeEffect.create(ShowUI.AMBER, 26F).color(() -> ShowUI.AMBER.withAlpha(0.8F * card.hoverValue(1F))))
 		.onClick(event -> player.toggle())
-		.layer((node, mouseX, mouseY) -> this.icon(42D, 42D, card.hoverValue(1F)))
+		.layer((node, mouseX, mouseY) -> this.play(42D, 42D, card.hoverValue(1F)))
+		.body(button -> {
+			for (final int x : new int[] {29, 46}) {
+				RectNode.create(x, 26, 9, 32).color(() -> ShowPlayer.ink(card.hoverValue(1F))).visible(() -> this.playing.get()).interactive(false).effect(RoundedNodeEffect.create(3F)).attach(button);
+			}
+		})
 		.attach(card);
 		RectNode
 		.create(176, 712, 1060, 40)
@@ -114,7 +120,27 @@ public class ShowPlayer extends ShowUI {
 				this.scrub.set(-1D);
 			}
 		})
-		.layer((node, mouseX, mouseY) -> this.bar(0D, 20D, 1060D, card.hoverValue(1F)))
+		.body(bar -> {
+			ProgressNode
+			.create(0, 0, 1060, 0)
+			.<ProgressNode>y(() -> 17D - 2D * card.hoverValue(1F))
+			.<ProgressNode>height(() -> 6D + 4D * card.hoverValue(1F))
+			.progress(() -> (float) this.shown())
+			.track(RectNode.create(0, 0, 0, 0).color(Color.WHITE.withAlpha(0.22F)).effect(RoundedNodeEffect.create(() -> 3F + 2F * card.hoverValue(1F))))
+			.fill(RectNode.create(0, 0, 0, 0).color(ShowUI.AMBER.toGradient(ShowUI.PINK)).effect(RoundedNodeEffect.create(() -> 3F + 2F * card.hoverValue(1F))).effect(ShadowNodeEffect.create(ShowUI.ORANGE, 16F).color(() -> ShowUI.ORANGE.withAlpha(0.6F * card.hoverValue(1F)))))
+			.interactive(false)
+			.attach(bar);
+			CircleNode
+			.create(0, 0, 0)
+			.color(Color.WHITE)
+			.<CircleNode>x(() -> 1060D * this.shown() - this.knob(card.hoverValue(1F)))
+			.<CircleNode>y(() -> 20D - this.knob(card.hoverValue(1F)))
+			.<CircleNode>width(() -> 2D * this.knob(card.hoverValue(1F)))
+			.<CircleNode>height(() -> 2D * this.knob(card.hoverValue(1F)))
+			.visible(() -> this.knob(card.hoverValue(1F)) > 0.5D)
+			.interactive(false)
+			.attach(bar);
+		})
 		.attach(card);
 		TextNode.create(1384, 732).text(() -> Text.create(ShowPlayer.clock(this.shown() * Math.max(1D, player.getDuration())) + " / " + ShowPlayer.clock(player.getDuration()), ShowUI.font(FontWeight.SEMI_BOLD, 22F, ShowUI.TEXT.withAlpha(0.4F + 0.6F * card.hoverValue(1F))))).anchorX(Align.END).anchorY(Align.CENTER).attach(card);
 	}
@@ -146,30 +172,22 @@ public class ShowPlayer extends ShowUI {
 		}
 	}
 
-	private void icon(final double x, final double y, final float hover) {
-		final Color ink = ShowUI.NIGHT.withAlpha(0.3F + 0.7F * hover);
-		if (this.playing.get()) {
-			DrawUtils.SHAPE.drawRoundedRect(x - 13D, y - 16D, 9D, 32D, ink, 3F);
-			DrawUtils.SHAPE.drawRoundedRect(x + 4D, y - 16D, 9D, 32D, ink, 3F);
-		} else {
-			DrawUtils.SHAPE.drawPolygon(ink, Point.create(x - 9D, y - 17D), Point.create(x - 9D, y + 17D), Point.create(x + 17D, y));
+	private void play(final double x, final double y, final float hover) {
+		if (!this.playing.get()) {
+			DrawUtils.SHAPE.drawPolygon(ShowPlayer.ink(hover), Point.create(x - 9D, y - 17D), Point.create(x - 9D, y + 17D), Point.create(x + 17D, y));
 		}
 	}
 
-	private void bar(final double x, final double y, final double width, final float hover) {
-		final double shown = this.shown();
-		final double thickness = 6D + 4D * hover;
-		DrawUtils.SHAPE.drawRoundedRect(x, y - thickness / 2D, width, thickness, Color.WHITE.withAlpha(0.22F), (float) thickness / 2F);
-		DrawUtils.SHAPE.drawShadow(x, y - thickness / 2D, width * shown, thickness, ShowUI.ORANGE.withAlpha(0.6F * hover), (float) thickness / 2F, 16F);
-		DrawUtils.SHAPE.drawRoundedRect(x, y - thickness / 2D, width * shown, thickness, ShowUI.AMBER.toGradient(ShowUI.PINK), (float) thickness / 2F);
-		final double knob = (this.scrub.get() >= 0D ? 14D : 9D) * hover;
-		if (knob > 0.5D) {
-			DrawUtils.SHAPE.drawCircle(x + width * shown, y, Color.WHITE, knob);
-		}
+	private double knob(final float hover) {
+		return (this.scrub.get() >= 0D ? 14D : 9D) * hover;
 	}
 
 	private double shown() {
 		return this.scrub.get() >= 0D ? this.scrub.get() : this.progress.get();
+	}
+
+	private static Color ink(final float hover) {
+		return ShowUI.NIGHT.withAlpha(0.3F + 0.7F * hover);
 	}
 
 	private static double ratio(final Node node, final double mouseX) {

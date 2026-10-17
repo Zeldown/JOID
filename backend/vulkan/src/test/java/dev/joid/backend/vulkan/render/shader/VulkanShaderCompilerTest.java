@@ -6,6 +6,8 @@ import java.io.PrintStream;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
+
 public class VulkanShaderCompilerTest {
 
 	@Test
@@ -14,7 +16,7 @@ public class VulkanShaderCompilerTest {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		System.setErr(new PrintStream(output, true));
 		try {
-			Assert.assertNull(VulkanShaderCompiler.compileFragment("#version 450\nvoid main() {\n    broken;\n}\n"));
+			Assert.assertNull(VulkanShaderCompiler.compile("#version 450\nvoid main() {\n    broken;\n}\n", ShaderStage.FRAGMENT));
 		} finally {
 			System.setErr(previous);
 		}

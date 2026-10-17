@@ -28,7 +28,7 @@ public class UIDemoMarkup extends UIDemo {
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoMarkup.INK);
 		final TextInfo markup = TextInfo.create(DemoFont.MONTSERRAT, 20, UIDemoMarkup.INK).markups(DemoTextMarkup.inst());
-		final int[] slots = {0, 1, 2, 3, 5, 6, 7, 8, 10, 12, 13, 14, 16, 17, 19};
+		final int[] slots = {0, 1, 2, 3, 5, 6, 7, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19};
 		final Text[] texts = {
 			Text.create("<b>bold</b> regular <w=100>thin</w> <w=300>light</w> <w=600>semi bold</w> <w=900>black</w> <w=800>extra bold</w>", markup),
 			Text.create("<i>italic</i> upright <b><i>bold italic</i></b> <w=100><i>thin italic</i></w>", markup),
@@ -42,11 +42,13 @@ public class UIDemoMarkup extends UIDemo {
 			Text.create("<i>italic</i> <c=cc3333>red</c> <u>underline</u> <h>highlight</h>", markup.copy().font(DemoFont.PACIFICO)),
 			Text.create("<i>italic</i> <c=cc3333>red</c> <u>underline</u> <h>highlight</h>", markup.copy().font(DemoFont.PLAYFAIR_DISPLAY)),
 			Text.create("an underline and a highlight on the whole text", markup.copy().effects(DemoUnderlineTextEffect.inst(), DemoHighlightTextEffect.inst())),
+			Text.create("a wave moves every glyph without touching the layout", markup.copy().effects(DemoWaveTextEffect.inst())),
 			Text.create("a rainbow colors the text glyph by glyph", markup.copy().effects(DemoRainbowTextEffect.inst())),
 			Text.create("scrambled characters keep their width", markup.copy().effects(DemoScrambleTextEffect.inst())),
+			Text.create("the shadow waves with the text", markup.copy().effects(DemoWaveTextEffect.inst()).shadow(Color.BLACK)),
 			Text.create("<b>markup</b> <u>adds</u> <h>effects</h> under the rainbow", markup.copy().effects(DemoRainbowTextEffect.inst()))
 		};
-		final String[] captions = {"Weights", "Italic", "Colors", "Decorations", "Shadow", "Uncolored", "Markup off", "Spaced", "Wrapped", "Pacifico", "Playfair Display", "Whole text", "Rainbow", "Scramble", "Effect and markup"};
+		final String[] captions = {"Weights", "Italic", "Colors", "Decorations", "Shadow", "Uncolored", "Markup off", "Spaced", "Wrapped", "Pacifico", "Playfair Display", "Whole text", "Wave", "Rainbow", "Scramble", "Wave and shadow", "Effect and markup"};
 
 		for (int i = 0; i < slots.length; i++) {
 			final int index = i;
@@ -86,24 +88,6 @@ public class UIDemoMarkup extends UIDemo {
 		.body(rect -> {
 			TextNode.create(20, 20, 280, 0).text(Text.create("<b>bold</b> and <c=cc3333>red text cut by the width</c>", markup).overflow(TextOverflow.ELLIPSIS)).mode(TextMode.OVERFLOW).attach(rect);
 			TextNode.create(160, 205).text(Text.create("Cut", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(80, 780, 320, 190)
-		.color(UIDemoMarkup.PLACEHOLDER)
-		.body(rect -> {
-			TextNode.create(20, 30, 280, 0).text(Text.create("a wave moves every glyph without touching the layout", markup.copy().effects(DemoWaveTextEffect.inst()))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Wave", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(1160, 780, 320, 190)
-		.color(UIDemoMarkup.PLACEHOLDER)
-		.body(rect -> {
-			TextNode.create(20, 30, 280, 0).text(Text.create("the shadow waves with the text", markup.copy().effects(DemoWaveTextEffect.inst()).shadow(Color.BLACK))).mode(TextMode.SPLIT).attach(rect);
-			TextNode.create(160, 205).text(Text.create("Wave and shadow", caption)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 	}

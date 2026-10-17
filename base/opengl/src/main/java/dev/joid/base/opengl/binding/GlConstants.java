@@ -127,7 +127,6 @@ public final class GlConstants {
 	public static final int PIXEL_PACK_BUFFER   = 0x88EB;
 	public static final int PIXEL_UNPACK_BUFFER = 0x88EC;
 
-	public static final int DITHER              = 0x0BD0;
 	public static final int DEPTH_CLAMP         = 0x864F;
 	public static final int COLOR_LOGIC_OP      = 0x0BF2;
 	public static final int FRAMEBUFFER_SRGB    = 0x8DB9;
@@ -135,7 +134,6 @@ public final class GlConstants {
 	public static final int RASTERIZER_DISCARD  = 0x8C89;
 	public static final int POLYGON_OFFSET_FILL = 0x8037;
 
-	public static final int BLEND_COLOR          = 0x8005;
 	public static final int BLEND_SRC_RGB        = 0x80C9;
 	public static final int BLEND_DST_RGB        = 0x80C8;
 	public static final int BLEND_SRC_ALPHA      = 0x80CB;
@@ -143,16 +141,13 @@ public final class GlConstants {
 	public static final int BLEND_EQUATION_RGB   = 0x8009;
 	public static final int BLEND_EQUATION_ALPHA = 0x883D;
 
-	public static final int VIEWPORT                = 0x0BA2;
-	public static final int LINE_WIDTH              = 0x0B21;
-	public static final int FRONT_FACE              = 0x0B46;
-	public static final int SCISSOR_BOX             = 0x0C10;
-	public static final int POLYGON_MODE            = 0x0B40;
-	public static final int LOGIC_OP_MODE           = 0x0BF0;
-	public static final int CULL_FACE_MODE          = 0x0B45;
-	public static final int COLOR_WRITEMASK         = 0x0C23;
-	public static final int COLOR_CLEAR_VALUE       = 0x0C22;
-	public static final int PRIMITIVE_RESTART_INDEX = 0x8F9E;
+	public static final int VIEWPORT          = 0x0BA2;
+	public static final int LINE_WIDTH        = 0x0B21;
+	public static final int FRONT_FACE        = 0x0B46;
+	public static final int POLYGON_MODE      = 0x0B40;
+	public static final int CULL_FACE_MODE    = 0x0B45;
+	public static final int COLOR_WRITEMASK   = 0x0C23;
+	public static final int COLOR_CLEAR_VALUE = 0x0C22;
 
 	public static final int DEPTH_FUNC        = 0x0B74;
 	public static final int DEPTH_WRITEMASK   = 0x0B72;
@@ -197,27 +192,12 @@ public final class GlConstants {
 	public static final int VERTEX_ATTRIB_ARRAY_NORMALIZED     = 0x886A;
 	public static final int VERTEX_ATTRIB_ARRAY_BUFFER_BINDING = 0x889F;
 
-	public static final int FOG                 = 0x0B60;
-	public static final int LIGHT0              = 0x4000;
-	public static final int LIGHTING            = 0x0B50;
-	public static final int ALPHA_TEST          = 0x0BC0;
-	public static final int COLOR_ARRAY         = 0x8076;
-	public static final int VERTEX_ARRAY        = 0x8074;
-	public static final int NORMAL_ARRAY        = 0x8075;
-	public static final int COLOR_MATERIAL      = 0x0B57;
-	public static final int TEXTURE_COORD_ARRAY = 0x8078;
+	public static final int FOG            = 0x0B60;
+	public static final int LIGHTING       = 0x0B50;
+	public static final int ALPHA_TEST     = 0x0BC0;
+	public static final int COLOR_MATERIAL = 0x0B57;
 
-	public static final int AMBIENT                = 0x1200;
-	public static final int DIFFUSE                = 0x1201;
-	public static final int SHADE_MODEL            = 0x0B54;
-	public static final int MATRIX_MODE            = 0x0BA0;
-	public static final int CURRENT_COLOR          = 0x0B00;
-	public static final int ALPHA_TEST_REF         = 0x0BC2;
-	public static final int CURRENT_NORMAL         = 0x0B02;
-	public static final int ALPHA_TEST_FUNC        = 0x0BC1;
-	public static final int MODELVIEW_MATRIX       = 0x0BA6;
-	public static final int PROJECTION_MATRIX      = 0x0BA7;
-	public static final int CLIENT_ACTIVE_TEXTURE  = 0x84E1;
-	public static final int CURRENT_TEXTURE_COORDS = 0x0B03;
+	public static final int MODELVIEW_MATRIX  = 0x0BA6;
+	public static final int PROJECTION_MATRIX = 0x0BA7;
 
 }

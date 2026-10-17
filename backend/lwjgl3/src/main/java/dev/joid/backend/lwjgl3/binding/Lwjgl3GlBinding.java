@@ -5,7 +5,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL11C;
 import org.lwjgl.opengl.GL13C;
 import org.lwjgl.opengl.GL14C;
@@ -87,11 +86,6 @@ public final class Lwjgl3GlBinding implements IGlBinding {
 	@Override
 	public long getVertexAttribPointer(final int index, final int name) {
 		return GL20C.glGetVertexAttribPointer(index, name);
-	}
-
-	@Override
-	public void getMaterialFloats(final int face, final int name, final @NonNull float[] values) {
-		GL11.glGetMaterialfv(face, name, values);
 	}
 
 	@Override

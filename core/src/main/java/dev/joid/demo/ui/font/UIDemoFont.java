@@ -34,6 +34,9 @@ public class UIDemoFont extends UIDemo {
 		final String[] specimen = {"Aa Bb Cc Dd Ee Ff Gg", "abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLM", "NOPQRSTUVWXYZ", "0123456789", "!?.,;:'\"()[]{}+-*/=%&@#", "àâéèêëîïôùûüç ß œ æ ł ı", "ÀÉÈÊÎÔÙÇ"};
 		final TextInfo[] specimens = {montserrat, pacifico, playfair};
 		final String[] names = {"Montserrat", "Pacifico", "Playfair Display"};
+		final boolean[] italics = {false, true};
+		final int[][] weightPositions = {{1520, 40}, {80, 380}};
+		final String[] weightCaptions = {"Weights", "Italic weights"};
 
 		for (int i = 0; i < specimens.length; i++) {
 			final int index = i;
@@ -72,37 +75,24 @@ public class UIDemoFont extends UIDemo {
 		})
 		.attach(this);
 
-		RectNode
-		.create(1520, 40, 320, 260)
-		.color(UIDemoFont.PLACEHOLDER)
-		.body(rect -> {
-			FlexNode
-			.vertical(20, 20, 280)
-			.body(flex -> {
-				for (final FontWeight weight : FontWeight.values()) {
-					TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, weight, 18, UIDemoFont.INK))).attach(flex);
-				}
+		for (int i = 0; i < italics.length; i++) {
+			final int index = i;
+			RectNode
+			.create(weightPositions[index][0], weightPositions[index][1], 320, 260)
+			.color(UIDemoFont.PLACEHOLDER)
+			.body(rect -> {
+				FlexNode
+				.vertical(20, 20, 280)
+				.body(flex -> {
+					for (final FontWeight weight : FontWeight.values()) {
+						TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, weight, 18, UIDemoFont.INK).italic(italics[index]))).attach(flex);
+					}
+				})
+				.attach(rect);
+				TextNode.create(160, 275).text(Text.create(weightCaptions[index], caption)).anchorX(Align.CENTER).attach(rect);
 			})
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Weights", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
-
-		RectNode
-		.create(80, 380, 320, 260)
-		.color(UIDemoFont.PLACEHOLDER)
-		.body(rect -> {
-			FlexNode
-			.vertical(20, 20, 280)
-			.body(flex -> {
-				for (final FontWeight weight : FontWeight.values()) {
-					TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, weight, 18, UIDemoFont.INK).italic(true))).attach(flex);
-				}
-			})
-			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Italic weights", caption)).anchorX(Align.CENTER).attach(rect);
-		})
-		.attach(this);
+			.attach(this);
+		}
 
 		RectNode
 		.create(440, 380, 320, 260)

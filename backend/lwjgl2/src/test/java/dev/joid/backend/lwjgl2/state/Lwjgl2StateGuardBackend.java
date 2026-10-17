@@ -211,7 +211,11 @@ public final class Lwjgl2StateGuardBackend implements IStateGuardBackend {
 
 	@Override
 	public @NonNull Map<@NonNull String, @NonNull String> readState() {
-		return GlStateSnapshot.read(Lwjgl2GlBinding.inst(), this.getCapabilities());
+		return GlStateSnapshot.read(Lwjgl2GlBinding.inst(), this.getCapabilities(), (face, name, values) -> {
+			final FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+			GL11.glGetMaterial(face, name, buffer);
+			buffer.get(values, 0, 4);
+		});
 	}
 
 	private boolean isCompatibility() {

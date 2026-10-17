@@ -13,18 +13,42 @@ import lombok.NonNull;
 
 public final class GlStateSnapshot {
 
+	private static final int DITHER              = 0x0BD0;
+	private static final int LIGHT0              = 0x4000;
+	private static final int COLOR_ARRAY         = 0x8076;
+	private static final int VERTEX_ARRAY        = 0x8074;
+	private static final int NORMAL_ARRAY        = 0x8075;
+	private static final int TEXTURE_COORD_ARRAY = 0x8078;
+
+	private static final int AMBIENT                 = 0x1200;
+	private static final int DIFFUSE                 = 0x1201;
+	private static final int BLEND_COLOR             = 0x8005;
+	private static final int SCISSOR_BOX             = 0x0C10;
+	private static final int SHADE_MODEL             = 0x0B54;
+	private static final int MATRIX_MODE             = 0x0BA0;
+	private static final int CURRENT_COLOR           = 0x0B00;
+	private static final int LOGIC_OP_MODE           = 0x0BF0;
+	private static final int ALPHA_TEST_REF          = 0x0BC2;
+	private static final int CURRENT_NORMAL          = 0x0B02;
+	private static final int ALPHA_TEST_FUNC         = 0x0BC1;
+	private static final int CLIENT_ACTIVE_TEXTURE   = 0x84E1;
+	private static final int CURRENT_TEXTURE_COORDS  = 0x0B03;
+	private static final int PRIMITIVE_RESTART_INDEX = 0x8F9E;
+
 	private final IGlBinding          binding;
 	private final GlCapabilities      capabilities;
 	private final Map<String, String> stateMap;
+	private final MaterialReader      materialReader;
 
-	private GlStateSnapshot(final IGlBinding binding, final GlCapabilities capabilities) {
-		this.binding      = binding;
-		this.capabilities = capabilities;
-		this.stateMap     = new TreeMap<>();
+	private GlStateSnapshot(final IGlBinding binding, final GlCapabilities capabilities, final MaterialReader materialReader) {
+		this.binding        = binding;
+		this.capabilities   = capabilities;
+		this.stateMap       = new TreeMap<>();
+		this.materialReader = materialReader;
 	}
 
-	public static @NonNull Map<@NonNull String, @NonNull String> read(final @NonNull IGlBinding binding, final @NonNull GlCapabilities capabilities) {
-		return new GlStateSnapshot(binding, capabilities).read();
+	public static @NonNull Map<@NonNull String, @NonNull String> read(final @NonNull IGlBinding binding, final @NonNull GlCapabilities capabilities, final @NonNull MaterialReader materialReader) {
+		return new GlStateSnapshot(binding, capabilities, materialReader).read();
 	}
 
 	private Map<String, String> read() {
@@ -37,7 +61,7 @@ public final class GlStateSnapshot {
 		this.capability("SCISSOR_TEST", GlConstants.SCISSOR_TEST);
 		this.capability("COLOR_LOGIC_OP", GlConstants.COLOR_LOGIC_OP);
 		this.capability("POLYGON_OFFSET_FILL", GlConstants.POLYGON_OFFSET_FILL);
-		this.capability("DITHER", GlConstants.DITHER);
+		this.capability("DITHER", GlStateSnapshot.DITHER);
 		if (this.capabilities.hasFrameBufferSrgb()) {
 			this.capability("FRAMEBUFFER_SRGB", GlConstants.FRAMEBUFFER_SRGB);
 		}
@@ -46,7 +70,7 @@ public final class GlStateSnapshot {
 		}
 		if (this.capabilities.hasPrimitiveRestart()) {
 			this.capability("PRIMITIVE_RESTART", GlConstants.PRIMITIVE_RESTART);
-			this.integer("PRIMITIVE_RESTART_INDEX", GlConstants.PRIMITIVE_RESTART_INDEX);
+			this.integer("PRIMITIVE_RESTART_INDEX", GlStateSnapshot.PRIMITIVE_RESTART_INDEX);
 		}
 		if (this.capabilities.hasDepthClamp()) {
 			this.capability("DEPTH_CLAMP", GlConstants.DEPTH_CLAMP);
@@ -74,7 +98,7 @@ public final class GlStateSnapshot {
 		this.integer("DEPTH_WRITEMASK", GlConstants.DEPTH_WRITEMASK);
 		this.integer("CULL_FACE_MODE", GlConstants.CULL_FACE_MODE);
 		this.integer("FRONT_FACE", GlConstants.FRONT_FACE);
-		this.integer("LOGIC_OP_MODE", GlConstants.LOGIC_OP_MODE);
+		this.integer("LOGIC_OP_MODE", GlStateSnapshot.LOGIC_OP_MODE);
 		this.integer("STENCIL_FUNC", GlConstants.STENCIL_FUNC);
 		this.integer("STENCIL_REF", GlConstants.STENCIL_REF);
 		this.integer("STENCIL_VALUE_MASK", GlConstants.STENCIL_VALUE_MASK);
@@ -100,10 +124,10 @@ public final class GlStateSnapshot {
 		this.integer("UNPACK_SKIP_PIXELS", GlConstants.UNPACK_SKIP_PIXELS);
 
 		this.integers("VIEWPORT", GlConstants.VIEWPORT, 4);
-		this.integers("SCISSOR_BOX", GlConstants.SCISSOR_BOX, 4);
+		this.integers("SCISSOR_BOX", GlStateSnapshot.SCISSOR_BOX, 4);
 		this.integers("POLYGON_MODE", GlConstants.POLYGON_MODE, compatibility ? 2 : 1);
 		this.integers("COLOR_WRITEMASK", GlConstants.COLOR_WRITEMASK, 4);
-		this.floats("BLEND_COLOR", GlConstants.BLEND_COLOR, 4);
+		this.floats("BLEND_COLOR", GlStateSnapshot.BLEND_COLOR, 4);
 		this.floats("COLOR_CLEAR_VALUE", GlConstants.COLOR_CLEAR_VALUE, 4);
 		this.floats("DEPTH_CLEAR_VALUE", GlConstants.DEPTH_CLEAR_VALUE, 1);
 		this.integer("STENCIL_CLEAR_VALUE", GlConstants.STENCIL_CLEAR_VALUE);
@@ -131,24 +155,24 @@ public final class GlStateSnapshot {
 		if (compatibility) {
 			this.capability("ALPHA_TEST", GlConstants.ALPHA_TEST);
 			this.capability("LIGHTING", GlConstants.LIGHTING);
-			this.capability("LIGHT0", GlConstants.LIGHT0);
+			this.capability("LIGHT0", GlStateSnapshot.LIGHT0);
 			this.capability("FOG", GlConstants.FOG);
 			this.capability("COLOR_MATERIAL", GlConstants.COLOR_MATERIAL);
-			this.capability("VERTEX_ARRAY", GlConstants.VERTEX_ARRAY);
-			this.capability("COLOR_ARRAY", GlConstants.COLOR_ARRAY);
-			this.capability("NORMAL_ARRAY", GlConstants.NORMAL_ARRAY);
-			this.capability("TEXTURE_COORD_ARRAY", GlConstants.TEXTURE_COORD_ARRAY);
-			this.integer("ALPHA_TEST_FUNC", GlConstants.ALPHA_TEST_FUNC);
-			this.integer("SHADE_MODEL", GlConstants.SHADE_MODEL);
-			this.integer("MATRIX_MODE", GlConstants.MATRIX_MODE);
-			this.integer("CLIENT_ACTIVE_TEXTURE", GlConstants.CLIENT_ACTIVE_TEXTURE);
-			this.floats("ALPHA_TEST_REF", GlConstants.ALPHA_TEST_REF, 1);
-			this.floats("CURRENT_COLOR", GlConstants.CURRENT_COLOR, 4);
-			this.floats("CURRENT_NORMAL", GlConstants.CURRENT_NORMAL, 3);
+			this.capability("VERTEX_ARRAY", GlStateSnapshot.VERTEX_ARRAY);
+			this.capability("COLOR_ARRAY", GlStateSnapshot.COLOR_ARRAY);
+			this.capability("NORMAL_ARRAY", GlStateSnapshot.NORMAL_ARRAY);
+			this.capability("TEXTURE_COORD_ARRAY", GlStateSnapshot.TEXTURE_COORD_ARRAY);
+			this.integer("ALPHA_TEST_FUNC", GlStateSnapshot.ALPHA_TEST_FUNC);
+			this.integer("SHADE_MODEL", GlStateSnapshot.SHADE_MODEL);
+			this.integer("MATRIX_MODE", GlStateSnapshot.MATRIX_MODE);
+			this.integer("CLIENT_ACTIVE_TEXTURE", GlStateSnapshot.CLIENT_ACTIVE_TEXTURE);
+			this.floats("ALPHA_TEST_REF", GlStateSnapshot.ALPHA_TEST_REF, 1);
+			this.floats("CURRENT_COLOR", GlStateSnapshot.CURRENT_COLOR, 4);
+			this.floats("CURRENT_NORMAL", GlStateSnapshot.CURRENT_NORMAL, 3);
 			for (final int face : new int[] {GlConstants.FRONT, GlConstants.BACK}) {
-				for (final int name : new int[] {GlConstants.AMBIENT, GlConstants.DIFFUSE}) {
+				for (final int name : new int[] {GlStateSnapshot.AMBIENT, GlStateSnapshot.DIFFUSE}) {
 					final float[] values = new float[4];
-					this.binding.getMaterialFloats(face, name, values);
+					this.materialReader.read(face, name, values);
 					this.stateMap.put("MATERIAL " + face + " " + name, Arrays.toString(values));
 				}
 			}
@@ -165,7 +189,7 @@ public final class GlStateSnapshot {
 		}
 		if (compatibility) {
 			this.stateMap.put("TEXTURE_2D " + unit, Boolean.toString(this.binding.isEnabled(GlConstants.TEXTURE_2D)));
-			this.floats("CURRENT_TEXTURE_COORDS " + unit, GlConstants.CURRENT_TEXTURE_COORDS, 4);
+			this.floats("CURRENT_TEXTURE_COORDS " + unit, GlStateSnapshot.CURRENT_TEXTURE_COORDS, 4);
 		}
 		if (texture != 0) {
 			for (final int name : new int[] {GlConstants.TEXTURE_MIN_FILTER, GlConstants.TEXTURE_MAG_FILTER, GlConstants.TEXTURE_WRAP_S, GlConstants.TEXTURE_WRAP_T, GlConstants.TEXTURE_BASE_LEVEL, GlConstants.TEXTURE_MAX_LEVEL}) {
@@ -201,6 +225,13 @@ public final class GlStateSnapshot {
 		final float[] values = new float[16];
 		this.binding.getFloats(value, values);
 		this.stateMap.put(name, Arrays.toString(Arrays.copyOf(values, count)));
+	}
+
+	@FunctionalInterface
+	public interface MaterialReader {
+
+		public void read(final int face, final int name, final @NonNull float[] values);
+
 	}
 
 }

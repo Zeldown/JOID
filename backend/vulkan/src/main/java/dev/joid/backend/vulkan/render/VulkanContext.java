@@ -131,10 +131,6 @@ public final class VulkanContext {
 		}
 	}
 
-	public long createImageView(final long image, final int format, final int aspect, final int levels) {
-		return VulkanContext.createImageView(this.device, image, format, aspect, levels);
-	}
-
 	public long[] createImage(final int width, final int height, final int format, final int usage, final int levels) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageCreateInfo info = VkImageCreateInfo.calloc(stack)

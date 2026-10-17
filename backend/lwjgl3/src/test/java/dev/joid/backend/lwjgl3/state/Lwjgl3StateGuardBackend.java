@@ -210,7 +210,7 @@ public final class Lwjgl3StateGuardBackend implements IStateGuardBackend {
 
 	@Override
 	public @NonNull Map<@NonNull String, @NonNull String> readState() {
-		return GlStateSnapshot.read(Lwjgl3GlBinding.inst(), this.getCapabilities());
+		return GlStateSnapshot.read(Lwjgl3GlBinding.inst(), this.getCapabilities(), GL11::glGetMaterialfv);
 	}
 
 	private boolean isCompatibility() {

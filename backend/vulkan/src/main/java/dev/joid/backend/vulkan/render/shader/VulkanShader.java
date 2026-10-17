@@ -15,6 +15,7 @@ import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.lib.bridge.render.shader.Shader;
 import dev.joid.lib.bridge.render.shader.source.ShaderSource;
+import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import dev.joid.lib.bridge.render.shader.source.ShaderTranslation;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
 import dev.joid.lib.bridge.render.state.BlendState;
@@ -64,8 +65,8 @@ public final class VulkanShader extends Shader {
 
 	@Override
 	protected void compileProgram(final @NonNull ShaderTranslation translation) {
-		final ByteBuffer vertex = VulkanShaderCompiler.compileVertex(translation.getVertex());
-		final ByteBuffer fragment = VulkanShaderCompiler.compileFragment(translation.getFragment());
+		final ByteBuffer vertex = VulkanShaderCompiler.compile(translation.getVertex(), ShaderStage.VERTEX);
+		final ByteBuffer fragment = VulkanShaderCompiler.compile(translation.getFragment(), ShaderStage.FRAGMENT);
 		if (vertex == null || fragment == null) {
 			return;
 		}

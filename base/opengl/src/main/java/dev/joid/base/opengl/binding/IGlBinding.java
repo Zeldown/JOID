@@ -21,7 +21,6 @@ public interface IGlBinding {
 
 	public int getVertexAttribi(final int index, final int name);
 	public long getVertexAttribPointer(final int index, final int name);
-	public void getMaterialFloats(final int face, final int name, final @NonNull float[] values);
 	public void getVertexAttribFloats(final int index, final int name, final @NonNull float[] values);
 
 	public void clear(final int mask);

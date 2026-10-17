@@ -139,7 +139,7 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 	private long[] createStorage(final MipmapChain chain) {
 		final VulkanContext context = this.bridge.getContext();
 		final long[] handles = context.createImage(chain.getWidth(), chain.getHeight(), VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_USAGE_SAMPLED_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK10.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, chain.getLevels());
-		return new long[] {handles[0], handles[1], context.createImageView(handles[0], VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_ASPECT_COLOR_BIT, chain.getLevels())};
+		return new long[] {handles[0], handles[1], VulkanContext.createImageView(context.getDevice(), handles[0], VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_ASPECT_COLOR_BIT, chain.getLevels())};
 	}
 
 	private static void blitLevels(final VkCommandBuffer buffer, final MemoryStack stack, final long image, final int levels, final MipmapChain chain) {

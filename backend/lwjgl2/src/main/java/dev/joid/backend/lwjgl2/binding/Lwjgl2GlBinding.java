@@ -104,13 +104,6 @@ public final class Lwjgl2GlBinding implements IGlBinding {
 	}
 
 	@Override
-	public void getMaterialFloats(final int face, final int name, final @NonNull float[] values) {
-		this.floatBuffer.clear();
-		GL11.glGetMaterial(face, name, this.floatBuffer);
-		this.floatBuffer.get(values, 0, Math.min(values.length, 4));
-	}
-
-	@Override
 	public void getVertexAttribFloats(final int index, final int name, final @NonNull float[] values) {
 		this.floatBuffer.clear();
 		GL20.glGetVertexAttrib(index, name, this.floatBuffer);

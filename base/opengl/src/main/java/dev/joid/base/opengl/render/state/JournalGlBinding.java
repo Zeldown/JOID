@@ -81,11 +81,6 @@ public final class JournalGlBinding implements IGlBinding {
 	}
 
 	@Override
-	public void getMaterialFloats(final int face, final int name, final @NonNull float[] values) {
-		this.binding.getMaterialFloats(face, name, values);
-	}
-
-	@Override
 	public void getVertexAttribFloats(final int index, final int name, final @NonNull float[] values) {
 		this.binding.getVertexAttribFloats(index, name, values);
 	}
