@@ -14,8 +14,8 @@ public class TransitionStep {
 	@Getter
 	private final TweenAnimator animator;
 
-	private boolean            drawn;
-	private ITransitionDrawing draw;
+	private boolean           drawn;
+	private TransitionDrawing draw;
 
 	@Getter private boolean running;
 	@Getter private boolean enabled;
@@ -32,7 +32,7 @@ public class TransitionStep {
 		return new TransitionStep(duration, equation);
 	}
 
-	public final <T extends TransitionStep> @NonNull T draw(final @NonNull ITransitionDrawing draw) {
+	public final <T extends TransitionStep> @NonNull T draw(final @NonNull TransitionDrawing draw) {
 		this.draw = draw;
 		return (T) this;
 	}

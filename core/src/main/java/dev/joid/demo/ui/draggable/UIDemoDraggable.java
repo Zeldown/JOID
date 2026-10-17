@@ -14,7 +14,7 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.ui.node.layer.INodeLayer;
+import dev.joid.lib.ui.node.layer.NodeLayer;
 import dev.joid.lib.ui.node.property.DraggableProperty;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableType;
@@ -40,7 +40,7 @@ public class UIDemoDraggable extends UIDemo {
 			RectNode.create(22, 38, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 			RectNode.create(22, 48, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 		};
-		final INodeLayer outline = (node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), UIDemoDraggable.INK, 2D);
+		final NodeLayer outline = (node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), UIDemoDraggable.INK, 2D);
 
 		RectNode
 		.create(100, 40, 400, 260)

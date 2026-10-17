@@ -76,7 +76,7 @@ import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.TextHoverElement;
 import dev.joid.lib.ui.node.impl.control.scrollbar.BaseScrollbarNode;
-import dev.joid.lib.ui.node.layer.INodeLayer;
+import dev.joid.lib.ui.node.layer.NodeLayer;
 import dev.joid.lib.ui.node.property.DraggableProperty;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableAreaType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableType;
@@ -158,7 +158,7 @@ public abstract class Node implements INode {
 
 	@Getter(AccessLevel.NONE) private final List<Node>                      children;
 	@Getter(AccessLevel.NONE) private final IndexedList<Node>               drawList;
-	@Getter(AccessLevel.NONE) private final LinkedList<INodeLayer>          layerList;
+	@Getter(AccessLevel.NONE) private final LinkedList<NodeLayer>           layerList;
 	@Getter(AccessLevel.NONE) private final List<IHoverElement>             hoverElementList;
 	@Getter(AccessLevel.NONE) private final Map<Class<?>, NodeEffect<Node>> effectMap;
 	@Getter(AccessLevel.NONE) private final List<Supplier<List<String>>>    hoverSupplierList;
@@ -1113,12 +1113,12 @@ public abstract class Node implements INode {
 		return this.follow("label", label, value -> this.label = value);
 	}
 
-	public final <T extends Node> @NonNull T layer(final @NonNull INodeLayer layer) {
+	public final <T extends Node> @NonNull T layer(final @NonNull NodeLayer layer) {
 		this.layerList.add(layer);
 		return (T) this;
 	}
 
-	public final <T extends Node> @NonNull T layer(final int index, final @NonNull INodeLayer layer) {
+	public final <T extends Node> @NonNull T layer(final int index, final @NonNull NodeLayer layer) {
 		this.layerList.add(index, layer);
 		return (T) this;
 	}

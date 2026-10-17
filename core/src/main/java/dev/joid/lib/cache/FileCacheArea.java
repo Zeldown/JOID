@@ -84,7 +84,7 @@ public final class FileCacheArea {
 		}
 	}
 
-	public @NonNull File compute(final @NonNull String key, final @NonNull IFileCacheWriter writer) throws IOException {
+	public @NonNull File compute(final @NonNull String key, final @NonNull FileCacheWriter writer) throws IOException {
 		synchronized (this.lock(FileCacheArea.check("entry", key))) {
 			final File file = this.find(key);
 			if (file != null) {
@@ -96,7 +96,7 @@ public final class FileCacheArea {
 		}
 	}
 
-	public @NonNull File store(final @NonNull IFileCacheWriter writer) throws IOException {
+	public @NonNull File store(final @NonNull FileCacheWriter writer) throws IOException {
 		final File temporary = this.write("a content entry of the cache area " + this.name, writer);
 		final String key;
 		try {
@@ -186,7 +186,7 @@ public final class FileCacheArea {
 		return files != null ? files : new File[0];
 	}
 
-	private File write(final String description, final IFileCacheWriter writer) throws IOException {
+	private File write(final String description, final FileCacheWriter writer) throws IOException {
 		final File directory = this.getDirectory();
 		try {
 			Files.createDirectories(directory.toPath());

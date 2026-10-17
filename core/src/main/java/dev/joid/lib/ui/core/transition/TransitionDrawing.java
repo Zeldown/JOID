@@ -4,7 +4,7 @@ import dev.joid.lib.ui.core.UI;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface ITransitionDrawing {
+public interface TransitionDrawing {
 
 	public void draw(final @NonNull UI ui, final float progress, final @NonNull Runnable body);
 

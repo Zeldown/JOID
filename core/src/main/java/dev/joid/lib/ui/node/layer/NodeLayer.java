@@ -4,7 +4,7 @@ import dev.joid.lib.ui.node.Node;
 import lombok.NonNull;
 
 @FunctionalInterface
-public interface INodeLayer {
+public interface NodeLayer {
 
 	public void draw(final @NonNull Node node, final double mouseX, final double mouseY);
 

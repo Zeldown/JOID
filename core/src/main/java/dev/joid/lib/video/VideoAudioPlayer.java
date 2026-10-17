@@ -15,7 +15,7 @@ import lombok.NonNull;
 
 public final class VideoAudioPlayer {
 
-	private static IAudioListenerPosition audioListenerPosition;
+	private static AudioListenerPosition audioListenerPosition;
 
 	private final int                         channels;
 	private final int                         sampleRate;
@@ -41,7 +41,7 @@ public final class VideoAudioPlayer {
 		return new VideoAudioPlayer(owner, sampleRate, channels);
 	}
 
-	public static void audioListenerPosition(final IAudioListenerPosition audioListenerPosition) {
+	public static void audioListenerPosition(final AudioListenerPosition audioListenerPosition) {
 		VideoAudioPlayer.audioListenerPosition = audioListenerPosition;
 	}
 
