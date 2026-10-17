@@ -381,6 +381,28 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void smoothsAScaledRotatedBorderOverOnePixel() {
+		this.bridges.resize(1920, 1080);
+		this.bridges.getRender().getModelView().push();
+		try {
+			this.bridges.getRender().getModelView().translate(200D, 0D, 0D);
+			this.bridges.getRender().getModelView().rotate(90D, 0D, 0D, 1D);
+			this.bridges.getRender().getModelView().scale(2D, 2D, 1D);
+			DrawUtils.SHAPE.drawBorder(10D, 20D, 100D, 50D, new Color(0F, 1F, 1F, 1F), 3D);
+		} finally {
+			this.bridges.getRender().getModelView().pop();
+		}
+
+		final RecordingShader shader = (RecordingShader) RoundedShader.inst().getShader();
+		Assert.assertSame(shader, this.single(0F, 1F, 1F).getShader());
+		Assert.assertEquals(0.5F, (Float) shader.getValues().get("u_Pixel"), 1E-6F);
+		Assert.assertEquals(2.75F, (Float) shader.getValues().get("u_Stroke"), 1E-6F);
+		Assert.assertArrayEquals(new float[] {10.25F, 20.25F, 109.75F, 69.75F}, (float[]) shader.getValues().get("u_InnerRect"), 1E-4F);
+		Assert.assertEquals(9.5F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[0]), 1E-4F);
+		Assert.assertEquals(70.5F, Float.intBitsToFloat(TessellatorAccess.rawBuffer(Tessellator.inst())[1]), 1E-4F);
+	}
+
+	@Test
 	public void keepsAnAxisAlignedPolygonOnItsExactPoints() {
 		DrawUtils.SHAPE.drawPolygon(new Color(0F, 1F, 0F, 1F), Point.of(10.3D, 20.6D), Point.of(110.3D, 20.6D), Point.of(110.3D, 70.6D), Point.of(10.3D, 70.6D));
 		final Draw draw = this.single(0F, 1F, 0F);

@@ -1,5 +1,6 @@
 package dev.joid.lib.shader.impl;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import lombok.NonNull;
@@ -30,7 +31,8 @@ public final class CircleShader extends ShaderProgram {
 		.uniform("radius", radius)
 		.uniform("center", centerX, centerY)
 		.uniform("type", type.ordinal())
-		.uniform("u_HasGradient", 0);
+		.uniform("u_HasGradient", 0)
+		.uniform("u_Pixel", (float) BridgeHandler.RENDER.get().getPixelGrid().getPixelSize());
 	}
 
 }

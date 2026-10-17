@@ -155,6 +155,10 @@ public final class PixelGrid {
 		return Math.max(1, (int) Math.ceil(height * this.scaleY - 1E-3D));
 	}
 
+	public double getPixelSize() {
+		return 1D / Math.max(this.scaleX, this.scaleY);
+	}
+
 	private static double round(final double value) {
 		return Math.floor(value + 0.5D + 1E-6D);
 	}

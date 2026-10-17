@@ -789,12 +789,11 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
-	public void skipsTheAudioOfAMutedVideo() {
+	public void opensTheAudioOfAMutedVideo() {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv")).volume(0F);
 		decoder.decode(ResourceData.create("voiced.mkv", null));
 		Assert.assertEquals(0F, decoder.getVolume(), 0F);
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
-		Assert.assertTrue(this.audio.calls.isEmpty());
+		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
 	}
 
 	@Test
@@ -823,16 +822,18 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
-	public void startsItsAudioOnceUnmuted() throws InterruptedException {
+	public void streamsTheAudioOfAMutedVideoWithoutGain() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv")).volume(0F);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		this.play(decoder, data, 10);
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
-		decoder.volume(1F);
-		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
-		Assert.assertEquals("create 8000x1", this.audio.calls.get(0));
+		final Object player = VideoResourceDecoderTest.field(decoder, "audioPlayer");
 		this.play(decoder, data, 60);
 		Assert.assertTrue(this.audio.calls.contains("write"));
+		Assert.assertFalse(this.audio.gains.isEmpty());
+		Assert.assertTrue(this.audio.gains.toString(), this.audio.gains.stream().allMatch(gain -> gain == 0F));
+		decoder.volume(1F);
+		this.play(decoder, data, 1);
+		Assert.assertSame(player, VideoResourceDecoderTest.field(decoder, "audioPlayer"));
+		Assert.assertEquals(0.3F, this.audio.gains.get(this.audio.gains.size() - 1), 1E-6F);
 	}
 
 	@Test
@@ -1053,11 +1054,12 @@ public class VideoResourceDecoderTest {
 
 		private final AtomicInteger samples = new AtomicInteger();
 		private final List<String>  calls   = new CopyOnWriteArrayList<>();
+		private final List<Float>   gains   = new CopyOnWriteArrayList<>();
 
 		@Override
 		public @NonNull IAudioSource createSource(final int sampleRate, final int channels) {
 			this.calls.add("create " + sampleRate + "x" + channels);
-			return new RecordingAudioSource(this.calls, this.samples);
+			return new RecordingAudioSource(this.calls, this.gains, this.samples);
 		}
 
 	}
@@ -1066,6 +1068,7 @@ public class VideoResourceDecoderTest {
 	private static final class RecordingAudioSource implements IAudioSource {
 
 		private final List<String>  calls;
+		private final List<Float>   gains;
 		private final AtomicInteger samples;
 
 		@Override
@@ -1084,7 +1087,9 @@ public class VideoResourceDecoderTest {
 		}
 
 		@Override
-		public void gain(final float gain) {}
+		public void gain(final float gain) {
+			this.gains.add(gain);
+		}
 
 		@Override
 		public void group(final Object group) {

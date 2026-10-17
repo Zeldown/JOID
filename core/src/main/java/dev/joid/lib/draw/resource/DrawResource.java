@@ -79,9 +79,10 @@ public final class DrawResource {
 			if (grid.isAligned()) {
 				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 0D));
 			} else if (render.getState().getShader() == null && RoundedShader.inst().isAvailable()) {
-				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> RoundedShader.use(0F, (float) (left + 0.5D), (float) (top + 0.5D), (float) (right - 0.5D), (float) (bottom - 0.5D), () -> {
+				final double pixel = grid.getPixelSize();
+				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> RoundedShader.use(0F, (float) (left + pixel / 2D), (float) (top + pixel / 2D), (float) (right - pixel / 2D), (float) (bottom - pixel / 2D), () -> {
 					RoundedShader.inst().aligned(false);
-					DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 1D);
+					DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), pixel);
 				}));
 			} else {
 				final RenderState state = render.getState();

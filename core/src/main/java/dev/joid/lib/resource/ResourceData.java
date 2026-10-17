@@ -133,7 +133,6 @@ public final class ResourceData {
 	public @NonNull ResourceData reload(final IResourceDecoder decoder) {
 		this.await();
 		this.clear();
-		this.error  = null;
 		this.region = null;
 		return this.decoder(decoder);
 	}
@@ -367,7 +366,6 @@ public final class ResourceData {
 			final ITexture[] textures = this.textures;
 			this.generation++;
 			this.textures = null;
-			this.error    = null;
 			this.width    = 0;
 			this.height   = 0;
 			this.release(() -> {
@@ -378,8 +376,6 @@ public final class ResourceData {
 				}
 				decoder.clear(this);
 			});
-		} else if (this.assetSource != null) {
-			this.error = null;
 		}
 
 		if (this.missingTexture != null) {
@@ -388,6 +384,7 @@ public final class ResourceData {
 		}
 
 		this.data      = null;
+		this.error     = null;
 		this.loaded    = false;
 		this.uploaded  = false;
 		this.generated = false;

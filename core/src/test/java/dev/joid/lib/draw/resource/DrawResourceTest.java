@@ -142,6 +142,26 @@ public class DrawResourceTest {
 	}
 
 	@Test
+	public void smoothsTheEdgesOfAScaledRotatedImageOverOnePixel() {
+		this.render.getModelView().push();
+		try {
+			this.render.getModelView().rotate(30D, 0D, 0D, 1D);
+			this.render.getModelView().scale(2D, 2D, 1D);
+			DrawUtils.RESOURCE.drawResource(10.3D, 20.6D, 100D, 50D, DrawResourceTest.image(64, 32));
+		} finally {
+			this.render.getModelView().pop();
+		}
+
+		final Capture capture = this.single();
+		Assert.assertEquals(0.5F, (Float) capture.getUniforms().get("u_Pixel"), 1E-6F);
+		Assert.assertArrayEquals(new float[] {10.55F, 20.85F, 110.05F, 70.35F}, (float[]) capture.getUniforms().get("u_InnerRect"), 1E-4F);
+		Assert.assertEquals(9.8D, capture.getLeft(), 1E-4D);
+		Assert.assertEquals(71.1D, capture.getBottom(), 1E-4D);
+		Assert.assertEquals(-0.005F, capture.getU(0), 1E-6F);
+		Assert.assertEquals(1.01F, capture.getV(0), 1E-6F);
+	}
+
+	@Test
 	public void smoothsTheEdgesOfARotatedImageUnderTheBoundShader() {
 		final RecordingShader shader = new RecordingShader();
 		this.render.getState().shader(shader);

@@ -7,6 +7,7 @@ uniform vec4 u_InnerRect;
 uniform int u_Type;
 uniform float u_Stroke;
 uniform int u_Aligned;
+uniform float u_Pixel;
 
 uniform int u_HasGradient;
 uniform vec2 u_GradientStartPos;
@@ -58,13 +59,13 @@ void main() {
         baseColor *= gradientColor();
     }
 
-    float mask = 1.0 - smoothstep(0.0, 1.0, distanceToCorner);
+    float mask = 1.0 - smoothstep(0.0, u_Pixel, distanceToCorner);
     if (u_Aligned == 0) {
-        mask = 1.0 - clamp(distanceToCorner, 0.0, 1.0);
+        mask = 1.0 - clamp(distanceToCorner / u_Pixel, 0.0, 1.0);
     }
 
     if (u_Stroke > 0.0) {
-        mask *= u_Aligned == 0 ? clamp(distanceToCorner + u_Stroke + 0.5, 0.0, 1.0) : smoothstep(-0.5, 0.5, distanceToCorner + u_Stroke);
+        mask *= u_Aligned == 0 ? clamp((distanceToCorner + u_Stroke) / u_Pixel + 0.5, 0.0, 1.0) : smoothstep(-0.5 * u_Pixel, 0.5 * u_Pixel, distanceToCorner + u_Stroke);
     }
 
     if (u_Type == 1) {

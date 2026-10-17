@@ -38,6 +38,20 @@ public class CircleShaderTest {
 	}
 
 	@Test
+	public void smoothsOverOnePixelOfTheCurrentScale() {
+		CircleShader.inst().bind(12F, 30F, 40F);
+		Assert.assertEquals(1F, (Float) this.shader.getValues().get("u_Pixel"), 1E-6F);
+		this.bridges.getRender().getModelView().push();
+		try {
+			this.bridges.getRender().getModelView().scale(2D, 4D, 1D);
+			CircleShader.inst().bind(12F, 30F, 40F);
+		} finally {
+			this.bridges.getRender().getModelView().pop();
+		}
+		Assert.assertEquals(0.25F, (Float) this.shader.getValues().get("u_Pixel"), 1E-6F);
+	}
+
+	@Test
 	public void bindsTheRequestedType() {
 		CircleShader.inst().bind(12F, 30F, 40F, ShaderFillType.TEXTURE);
 		Assert.assertEquals(ShaderFillType.TEXTURE.ordinal(), this.shader.getValues().get("type"));

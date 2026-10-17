@@ -1,5 +1,6 @@
 package dev.joid.lib.shader.impl;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.shader.source.CoreShader;
 import dev.joid.lib.bridge.render.shader.source.ShaderStage;
 import lombok.NonNull;
@@ -32,7 +33,8 @@ public final class RoundedShader extends ShaderProgram {
 		.uniform("u_Type", type.ordinal())
 		.uniform("u_HasGradient", 0)
 		.uniform("u_Stroke", 0F)
-		.uniform("u_Aligned", 1);
+		.uniform("u_Aligned", 1)
+		.uniform("u_Pixel", (float) BridgeHandler.RENDER.get().getPixelGrid().getPixelSize());
 	}
 
 	public void aligned(final boolean aligned) {

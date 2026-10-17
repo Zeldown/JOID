@@ -5,6 +5,7 @@ in vec4 vColor;
 uniform float radius;
 uniform vec2 center;
 uniform int type;
+uniform float u_Pixel;
 
 uniform int u_HasGradient;
 uniform vec2 u_GradientStartPos;
@@ -48,7 +49,7 @@ void main() {
         baseColor *= gradientColor();
     }
 
-    float mask = 1.0 - smoothstep(radius - 1.0, radius, dist);
+    float mask = 1.0 - smoothstep(radius - u_Pixel, radius, dist);
 
     if (type == 1) {
         fragColor = vec4(baseColor.rgb * mask, baseColor.a * mask);

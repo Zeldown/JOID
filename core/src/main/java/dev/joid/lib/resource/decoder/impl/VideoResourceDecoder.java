@@ -359,14 +359,6 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 
 	public @NonNull VideoResourceDecoder volume(final float volume) {
 		this.volume = volume;
-		synchronized (this.grabberLock) {
-			if (volume > 0F && this.audioPlayer == null && this.grabber != null) {
-				this.createAudioPlayer();
-				if (this.audioPlayer != null && this.isPlaying()) {
-					this.audioPlayer.play();
-				}
-			}
-		}
 		return this;
 	}
 
@@ -476,7 +468,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 	}
 
 	private void createAudioPlayer() {
-		if (this.grabber.getAudioChannels() > 0 && this.volume > 0F && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
+		if (this.grabber.getAudioChannels() > 0 && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
 			this.audioPlayer = VideoAudioPlayer.create(this, this.grabber.getSampleRate(), this.grabber.getAudioChannels());
 		}
 	}
@@ -633,7 +625,7 @@ public final class VideoResourceDecoder implements IResourceDecoder, IResourcePl
 							this.ended = true;
 							decoded = null;
 						} else {
-							if (frame.samples != null && this.audioPlayer != null && this.volume > 0F) {
+							if (frame.samples != null && this.audioPlayer != null) {
 								this.audioPlayer.pushSamples(frame.samples, this.getSkippedSamples(frame.timestamp));
 							}
 

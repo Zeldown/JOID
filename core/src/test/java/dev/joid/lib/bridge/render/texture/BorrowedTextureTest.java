@@ -87,6 +87,20 @@ public class BorrowedTextureTest {
 	}
 
 	@Test
+	public void loadsAHandleThatBecameValidOnceReloaded() {
+		final AtomicReference<BorrowableImage> image = new AtomicReference<>(new BorrowableImage(4, 4, false, false));
+		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(image::get));
+		resource.prepareBind();
+		Assert.assertTrue(resource.isFailed());
+		image.set(new BorrowableImage(8, 2, false, true));
+		resource.reload();
+		resource.prepareBind();
+		Assert.assertFalse(resource.isFailed());
+		Assert.assertEquals(8, resource.getWidth());
+		Assert.assertEquals(2, resource.getHeight());
+	}
+
+	@Test
 	public void survivesTheReleaseOfItsResource() {
 		final BorrowableImage image = new BorrowableImage(4, 4, false, true);
 		final ResourceData data = ResourceData.create("borrowed", null).texture(new BorrowableTexture(() -> image));
