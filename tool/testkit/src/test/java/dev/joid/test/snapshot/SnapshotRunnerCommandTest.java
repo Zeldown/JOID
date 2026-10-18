@@ -105,6 +105,17 @@ public class SnapshotRunnerCommandTest {
 	}
 
 	@Test
+	public void namesTheExceptionThrownByTheConstructorOfTheUI() {
+		try {
+			SnapshotRunnerCommandTest.runner.execute("ui " + ThrowingUI.class.getName());
+			Assert.fail();
+		} catch (final IllegalArgumentException exception) {
+			Assert.assertEquals("The snapshot UI " + ThrowingUI.class.getName() + " cannot be created: its constructor threw java.lang.IllegalStateException: Broken", exception.getMessage());
+			Assert.assertEquals("Broken", exception.getCause().getMessage());
+		}
+	}
+
+	@Test
 	public void drawsTooltipsWithTheDevFont() {
 		SnapshotRunnerCommandTest.runner.execute();
 		Assert.assertNotNull(BridgeHandler.UI.getBridge(SnapshotUIBridge.class).getHoverInfo());
@@ -217,6 +228,17 @@ public class SnapshotRunnerCommandTest {
 	public static final class ArgumentUI extends UI {
 
 		private final int argument;
+
+		@Override
+		public void init() {}
+
+	}
+
+	public static final class ThrowingUI extends UI {
+
+		public ThrowingUI() {
+			throw new IllegalStateException("Broken");
+		}
 
 		@Override
 		public void init() {}

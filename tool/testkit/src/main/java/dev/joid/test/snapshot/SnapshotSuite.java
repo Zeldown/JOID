@@ -118,7 +118,7 @@ public abstract class SnapshotSuite {
 
 			for (final File reference : references) {
 				if (reference.delete()) {
-					System.out.println("Removed orphan reference " + reference);
+					System.out.println("[JOID] Removed orphan reference " + reference);
 				}
 			}
 		}

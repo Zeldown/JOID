@@ -32,8 +32,8 @@ public class SnapshotComparisonTest {
 		final Run run = this.compare(this.shots("lwjgl3", 0xFF808080, 0xFF101010), vulkan, this.shots("glfw", 0xFF818080, 0xFF10100F));
 		Assert.assertNull(run.getStatus());
 		Assert.assertEquals("", run.getErrors());
-		Assert.assertTrue(run.getOutput(), run.getOutput().contains("vulkan: 2/2 snapshots identical to lwjgl3"));
-		Assert.assertTrue(run.getOutput(), run.getOutput().contains("glfw: 2/2 snapshots identical to lwjgl3"));
+		Assert.assertTrue(run.getOutput(), run.getOutput().contains("[JOID] vulkan: 2/2 snapshots identical to lwjgl3"));
+		Assert.assertTrue(run.getOutput(), run.getOutput().contains("[JOID] glfw: 2/2 snapshots identical to lwjgl3"));
 
 		final String report = SnapshotComparisonTest.text(new File(this.folder.getRoot(), "report.html"));
 		Assert.assertTrue(report.contains("<title>JOID cross-backend comparison</title>"));
@@ -45,9 +45,9 @@ public class SnapshotComparisonTest {
 	public void failsOnAShotBeyondTheTolerance() throws IOException {
 		final Run run = this.compare(this.shots("lwjgl3", 0xFF808080, 0xFF101010), this.shots("vulkan", 0xFF808080, 0xFF101210));
 		Assert.assertEquals(Integer.valueOf(1), run.getStatus());
-		Assert.assertTrue(run.getOutput(), run.getOutput().contains("vulkan: 1/2 snapshots identical to lwjgl3"));
+		Assert.assertTrue(run.getOutput(), run.getOutput().contains("[JOID] vulkan: 1/2 snapshots identical to lwjgl3"));
 		Assert.assertTrue(run.getErrors(), run.getErrors().contains("vulkan/b.png: 1 pixels differ from lwjgl3, maximum channel delta 2"));
-		Assert.assertTrue(run.getErrors(), run.getErrors().contains("Report: " + new File(this.folder.getRoot(), "report.html").toPath().toUri().toASCIIString()));
+		Assert.assertTrue(run.getErrors(), run.getErrors().contains("[JOID] Report: " + new File(this.folder.getRoot(), "report.html").toPath().toUri().toASCIIString()));
 		Assert.assertTrue(SnapshotComparisonTest.text(new File(this.folder.getRoot(), "report.html")).contains("{\"name\":\"vulkan/b.png\",\"status\":\"different\",\"pixels\":1}"));
 	}
 
@@ -64,7 +64,7 @@ public class SnapshotComparisonTest {
 	public void failsOnAShotThatWasNotRendered() {
 		final Run run = this.compare(this.shots("lwjgl3", 0xFF808080, 0xFF101010), this.shots("vulkan", 0xFF808080));
 		Assert.assertEquals(Integer.valueOf(1), run.getStatus());
-		Assert.assertTrue(run.getOutput(), run.getOutput().contains("vulkan: 1/2 snapshots identical to lwjgl3"));
+		Assert.assertTrue(run.getOutput(), run.getOutput().contains("[JOID] vulkan: 1/2 snapshots identical to lwjgl3"));
 		Assert.assertTrue(run.getErrors(), run.getErrors().contains("vulkan/b.png: not rendered"));
 	}
 
@@ -74,7 +74,7 @@ public class SnapshotComparisonTest {
 		Assert.assertTrue(new File(empty, "notes.txt").createNewFile());
 		final Run run = this.compare(empty, this.shots("vulkan", 0xFF808080));
 		Assert.assertEquals(Integer.valueOf(1), run.getStatus());
-		Assert.assertTrue(run.getErrors(), run.getErrors().contains("No snapshot rendered in " + empty));
+		Assert.assertTrue(run.getErrors(), run.getErrors().contains("[JOID] No snapshot rendered in " + empty));
 		Assert.assertFalse(new File(this.folder.getRoot(), "report.html").exists());
 		Assert.assertEquals(Integer.valueOf(1), this.compare(new File(this.folder.getRoot(), "missing")).getStatus());
 	}

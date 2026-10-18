@@ -28,7 +28,7 @@ public final class SnapshotBaseline {
 			}
 		}
 
-		System.out.println(runner.getRenderer() + ": " + count + " snapshots rendered into " + output);
+		System.out.println("[JOID] " + runner.getRenderer() + ": " + count + " snapshots rendered into " + output);
 		runner.stop();
 		System.exit(0);
 	}

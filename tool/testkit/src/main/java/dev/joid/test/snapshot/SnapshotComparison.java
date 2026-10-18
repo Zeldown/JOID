@@ -16,7 +16,7 @@ public final class SnapshotComparison {
 		final File reference = new File(arguments[1]);
 		final File[] shots = reference.listFiles((directory, name) -> name.endsWith(".png"));
 		if (shots == null || shots.length == 0) {
-			System.err.println("No snapshot rendered in " + reference + ", render the snapshots first");
+			System.err.println("[JOID] No snapshot rendered in " + reference + ", render the snapshots first");
 			System.exit(1);
 		}
 		Arrays.sort(shots);
@@ -41,13 +41,13 @@ public final class SnapshotComparison {
 					identical++;
 				}
 			}
-			System.out.println(candidates.getName() + ": " + identical + "/" + shots.length + " snapshots identical to " + reference.getName());
+			System.out.println("[JOID] " + candidates.getName() + ": " + identical + "/" + shots.length + " snapshots identical to " + reference.getName());
 		}
 
 		SnapshotReport.write(report, "JOID cross-backend comparison", tolerance, entries);
 		if (!failures.isEmpty()) {
-			failures.forEach(System.err::println);
-			System.err.println("Report: " + report.toPath().toUri().toASCIIString());
+			failures.forEach(failure -> System.err.println("[JOID] " + failure));
+			System.err.println("[JOID] Report: " + report.toPath().toUri().toASCIIString());
 			System.exit(1);
 		}
 	}

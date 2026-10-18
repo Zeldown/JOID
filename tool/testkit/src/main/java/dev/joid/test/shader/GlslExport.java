@@ -21,7 +21,7 @@ public final class GlslExport {
 
 	public static void main(final String[] args) throws IOException {
 		if (args.length != 1) {
-			System.err.println("Usage: GlslExport <output directory>");
+			System.err.println("[JOID] Usage: GlslExport <output directory>");
 			System.exit(2);
 		}
 
