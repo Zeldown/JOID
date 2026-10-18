@@ -3,6 +3,7 @@ package dev.joid.lib.signal.replay;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Member;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -271,6 +273,11 @@ public final class SignalReplayMethod {
 		try {
 			member.setAccessible(true);
 		} catch (final RuntimeException exception) {
+			final Method accessible = member instanceof Method && Modifier.isPublic(member.getModifiers()) ? MethodUtils.getAccessibleMethod((Method) member) : null;
+			if (accessible != null) {
+				return (T) accessible;
+			}
+
 			final String name = member.getDeclaringClass().getName();
 			throw new SignalReplayException(SignalReplayFailure.ACCESS_REFUSED, name + "." + member.getName(), name.substring(0, Math.max(0, name.lastIndexOf('.'))));
 		}

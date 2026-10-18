@@ -1,7 +1,10 @@
 package dev.joid.lib.bridge.backend;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -208,6 +211,26 @@ public class BackendTest {
 		JOID.inst().load();
 		Assert.assertEquals(Arrays.asList("first", "second"), this.trace.subList(this.trace.size() - 2, this.trace.size()));
 		Assert.assertEquals(1, Collections.frequency(this.trace, "first"));
+	}
+
+	@Test
+	public void keepsRunningTheReadyCallbacksAfterOneThrows() {
+		JOID.onReady(() -> this.trace.add("first"));
+		JOID.onReady(() -> {
+			throw new IllegalStateException("broken");
+		});
+		JOID.onReady(() -> this.trace.add("third"));
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			this.backend().register();
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertEquals(Arrays.asList("first", "third"), this.trace.subList(this.trace.size() - 2, this.trace.size()));
+		final String text = new String(output.toByteArray(), StandardCharsets.UTF_8);
+		Assert.assertTrue(text, text.startsWith("[JOID] A JOID.onReady callback failed (java.lang.IllegalStateException: broken), the next callbacks still run: catch the exception inside the callback to handle it"));
 	}
 
 	@Test

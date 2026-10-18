@@ -241,6 +241,15 @@ public class SignalReplayTest {
 	}
 
 	@Test
+	public void followsAPublicMethodDeclaredInAHiddenClassOfTheJdk() {
+		final ReplayScenarioUI ui = new ReplayScenarioUI("view");
+		Assert.assertEquals("", this.open(ui));
+		ui.getKeys().put("Grace", 2);
+		ui.getClicks().set(3);
+		Assert.assertEquals("k23", SignalReplayTest.node(ui, 0).getText().get());
+	}
+
+	@Test
 	public void followsASignalHeldInALocalVariable() {
 		final ReplayLocalUI ui = new ReplayLocalUI("simple");
 		Assert.assertEquals("", this.open(ui));

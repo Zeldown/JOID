@@ -36,7 +36,8 @@ public final class FrameThreadBridge implements IThreadBridge {
 			try {
 				task.run();
 			} catch (final RuntimeException exception) {
-				JOIDLog.warn("A task sent to the render thread from another thread failed (" + exception + "), the next tasks still run: catch the exception inside the task to handle it", exception);
+				final StackTraceElement[] trace = exception.getStackTrace();
+				JOIDLog.warnOnce("FrameThreadBridge.task." + exception.getClass().getName() + "." + (trace.length > 0 ? trace[0] : task.getClass().getName()), "A task sent to the render thread from another thread failed (" + exception + "), the next tasks still run: catch the exception inside the task to handle it", exception);
 			}
 		}
 	}

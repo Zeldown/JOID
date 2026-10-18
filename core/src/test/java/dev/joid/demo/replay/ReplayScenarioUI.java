@@ -2,6 +2,7 @@ package dev.joid.demo.replay;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
@@ -16,9 +17,10 @@ import lombok.Setter;
 @RequiredArgsConstructor
 public class ReplayScenarioUI extends UI {
 
-	private final IntegerSignal clicks = new IntegerSignal(0);
-	private final IntegerSignal other  = new IntegerSignal(0);
-	private final List<String>  names  = Collections.singletonList("Ada");
+	private final IntegerSignal                      clicks = new IntegerSignal(0);
+	private final IntegerSignal                      other  = new IntegerSignal(0);
+	private final List<String>                       names  = Collections.singletonList("Ada");
+	private final ConcurrentHashMap<String, Integer> keys   = new ConcurrentHashMap<>(Collections.singletonMap("Ada", 1));
 
 	private final String scenario;
 
@@ -65,6 +67,9 @@ public class ReplayScenarioUI extends UI {
 				break;
 			case "access":
 				SignalReplayNode.create().text("p" + this.secret() + this.clicks.get()).attach(this);
+				break;
+			case "view":
+				SignalReplayNode.create().text("k" + this.keys.keySet().size() + this.clicks.get()).attach(this);
 				break;
 			case "later":
 				SignalReplayNode.create().text("i" + this.names.get(this.clicks.get())).attach(this);

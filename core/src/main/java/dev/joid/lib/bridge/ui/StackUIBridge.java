@@ -46,7 +46,8 @@ public abstract class StackUIBridge extends UIBridge {
 				}
 
 				if (current == this.leaving) {
-					this.pending = ui;
+					this.deferred = true;
+					this.pending  = ui;
 					return;
 				}
 

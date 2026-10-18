@@ -95,6 +95,33 @@ public class FrameThreadBridgeTest {
 		Assert.assertTrue(text, text.startsWith("[JOID] A task sent to the render thread from another thread failed (java.lang.IllegalStateException: broken), the next tasks still run: catch the exception inside the task to handle it"));
 	}
 
+	@Test
+	public void warnsOnceForEachPlaceATaskThrowsFrom() throws InterruptedException {
+		final FrameThreadBridge thread = new FrameThreadBridge();
+		final List<Runnable> failures = Arrays.asList(() -> {
+			throw new IllegalStateException("first");
+		}, () -> {
+			throw new IllegalStateException("second");
+		});
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		FrameThreadBridgeTest.fromWorker(() -> {
+			for (int turn = 0; turn < 2; turn++) {
+				failures.forEach(failure -> thread.execute(() -> failure.run()));
+			}
+		});
+		System.setErr(new PrintStream(output, true));
+		try {
+			thread.runTasks();
+		} finally {
+			System.setErr(previous);
+		}
+		final String text = new String(output.toByteArray(), StandardCharsets.UTF_8);
+		Assert.assertEquals(text, 2, text.split("\\[JOID\\] A task sent to the render thread", -1).length - 1);
+		Assert.assertTrue(text, text.contains("(java.lang.IllegalStateException: first)"));
+		Assert.assertTrue(text, text.contains("(java.lang.IllegalStateException: second)"));
+	}
+
 	private static void fromWorker(final Runnable task) throws InterruptedException {
 		final Thread worker = ThreadUtils.daemonThread(task, "worker");
 		worker.start();

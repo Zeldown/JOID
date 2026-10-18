@@ -68,7 +68,13 @@ public final class JOID {
 			this.readyList.clear();
 		}
 
-		readyList.forEach(ThreadUtils::runOnRenderThread);
+		for (final Runnable callback : readyList) {
+			try {
+				ThreadUtils.runOnRenderThread(callback);
+			} catch (final RuntimeException exception) {
+				JOIDLog.warn("A JOID.onReady callback failed (" + exception + "), the next callbacks still run: catch the exception inside the callback to handle it", exception);
+			}
+		}
 		return this;
 	}
 

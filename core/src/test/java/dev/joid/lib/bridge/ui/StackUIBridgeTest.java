@@ -242,6 +242,33 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
+	public void keepsTheScreenCallbacksQuietWhenTheWaitingScreenChangesDuringTheExit() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final ScreenUI help = new ScreenUI("help", this.trace);
+		menu.transition(PopTransition.create());
+		BridgeHandler.UI.register(this.bridge);
+		try {
+			this.bridge.open(menu);
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+
+			this.bridge.open(settings);
+			this.bridge.close(settings);
+			this.bridge.open(help);
+			for (int frame = 0; frame < 30; frame++) {
+				this.bridges.frame().draw(this.bridge);
+			}
+		} finally {
+			BridgeHandler.UI.unregister(this.bridge);
+		}
+		Assert.assertEquals(Collections.singletonList(help), this.bridge.getUiList());
+		Assert.assertFalse(this.trace.contains("init settings"));
+		Assert.assertEquals(Collections.singletonList("first screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
+	}
+
+	@Test
 	public void dropsTheWaitingScreenWhenItClosesEveryUi() {
 		final ScreenUI menu = new ScreenUI("menu", this.trace);
 		final ScreenUI settings = new ScreenUI("settings", this.trace);
