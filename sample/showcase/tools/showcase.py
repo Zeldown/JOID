@@ -301,7 +301,7 @@ def frames(clip, first, last, batch):
 			if index >= start:
 				lines.append("shot f%04d" % index)
 		render.render(lines, out)
-		print("%s: frames %d-%d of %d done" % (clip, start, end, len(script.frames)))
+		print("[JOID] %s: frames %d-%d of %d done" % (clip, start, end, len(script.frames)))
 		start = end + 1
 
 

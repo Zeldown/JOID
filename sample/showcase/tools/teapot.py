@@ -149,7 +149,7 @@ def write(grids, path):
 	text = text.replace("-0.0000", "0.0000")
 	open(path, "w", newline="\r\n").write(text)
 	size = [(high[i] - low[i]) * scale for i in range(3)]
-	print(path, len(vertices), "vertices", len(faces), "triangles", os.path.getsize(path) // 1024, "KB", "size %.4f x %.4f x %.4f" % tuple(size))
+	print("[JOID]", path, len(vertices), "vertices", len(faces), "triangles", os.path.getsize(path) // 1024, "KB", "size %.4f x %.4f x %.4f" % tuple(size))
 
 
 def texture(path, top, bottom, band, accent, glaze):
@@ -178,7 +178,7 @@ def texture(path, top, bottom, band, accent, glaze):
 	ImageDraw.Draw(shine).rectangle((body + 30, 0, size - 30, size), fill=glaze)
 	image.alpha_composite(shine.filter(ImageFilter.GaussianBlur(40)))
 	image.convert("RGB").resize((512, 512), Image.LANCZOS).save(path, optimize=True)
-	print(path, os.path.getsize(path) // 1024, "KB")
+	print("[JOID]", path, os.path.getsize(path) // 1024, "KB")
 
 
 if __name__ == "__main__":

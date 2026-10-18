@@ -31,7 +31,7 @@ gradle.buildFinished {
     tasks.withType(Test).findAll { testTask -> testTask.systemProperties.containsKey('joid.snapshot.output') }.each { testTask ->
         def report = new File(testTask.systemProperties['joid.snapshot.output'].toString(), 'report.html')
         if (testTask.state.failure != null && report.exists()) {
-            println "Snapshot report of ${testTask.path}: ${report.toPath().toUri().toASCIIString()}"
+            println "[JOID] Snapshot report of ${testTask.path}: ${report.toPath().toUri().toASCIIString()}"
         }
     }
 }

@@ -113,7 +113,7 @@ public final class MsdfGenerator {
 		output.mkdirs();
 
 		final String summary = MsdfGenerator.generate(Files.readAllBytes(file.toPath()), target, codepoints, width, height, range, requested);
-		System.out.println(file.getName() + " -> " + summary + ", " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
+		System.out.println("[JOID] " + file.getName() + " -> " + summary + ", " + target.length() / 1024L + "kb, " + (System.currentTimeMillis() - start) + "ms");
 	}
 
 	private static double measure(final List<GlyphEntry> glyphs, final double size, final double range, final int width, final int height) {

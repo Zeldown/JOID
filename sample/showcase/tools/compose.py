@@ -71,7 +71,7 @@ def webp(clip, width=960, quality=82, step=1):
 	images = [image.resize((width, width * 9 // 16), Image.LANCZOS) for index, image in enumerate(frames(clip)) if index % step == 0]
 	target = os.path.join(IMAGES, "showcase-%s.webp" % clip)
 	images[0].save(target, save_all=True, append_images=images[1:], duration=round(1000 / 30 * step), loop=0, quality=quality, method=6)
-	print(target, len(images), "frames", os.path.getsize(target) // 1024, "KB")
+	print("[JOID]", target, len(images), "frames", os.path.getsize(target) // 1024, "KB")
 
 
 def ffmpeg():
@@ -79,7 +79,7 @@ def ffmpeg():
 	if not found:
 		found = next(iter(sorted(glob.glob(os.path.join(os.environ.get("LOCALAPPDATA", ""), "Microsoft", "WinGet", "Packages", "Gyan.FFmpeg*", "*", "bin", "ffmpeg.exe")), reverse=True)), None)
 	if not found:
-		sys.exit("FFmpeg not found: set FFMPEG to the path of the ffmpeg executable")
+		sys.exit("[JOID] FFmpeg not found: set FFMPEG to the path of the ffmpeg executable")
 	return found
 
 
@@ -101,10 +101,10 @@ def mp4():
 			count += 1
 		if position < len(ORDER) - 1:
 			tail = tail[-FADE:]
-		print(clip, "done")
+		print("[JOID]", clip, "done")
 	proc.stdin.close()
 	proc.wait()
-	print(target, count, "frames", os.path.getsize(target) // 1024, "KB")
+	print("[JOID]", target, count, "frames", os.path.getsize(target) // 1024, "KB")
 
 
 def still(clip, frame):
@@ -113,7 +113,7 @@ def still(clip, frame):
 		if index == frame:
 			target = os.path.join(IMAGES, "showcase-%s.png" % clip)
 			image.save(target, optimize=True)
-			print(target, os.path.getsize(target) // 1024, "KB")
+			print("[JOID]", target, os.path.getsize(target) // 1024, "KB")
 			return
 
 

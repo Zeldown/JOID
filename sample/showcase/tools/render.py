@@ -34,7 +34,7 @@ def classpath():
 		gradlew = os.path.join(ROOT, "gradlew.bat" if os.name == "nt" else "gradlew")
 		r = subprocess.run([gradlew, ":sample-showcase:renderClasspath", "--offline", "-q"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
 		if r.returncode:
-			sys.exit("gradle failed:\n" + r.stdout[-4000:] + r.stderr[-4000:])
+			sys.exit("[JOID] gradle failed:\n" + r.stdout[-4000:] + r.stderr[-4000:])
 		_classpath = open(os.path.join(WORK, "classpath.txt"), encoding="utf-8").read().strip()
 	return _classpath
 
@@ -47,10 +47,10 @@ def render(lines, out):
 	r = subprocess.run([java(), "-Xmx3g", "-Djoid.data=" + os.path.join(WORK, "data"), "-Djoid.cache=" + os.path.join(WORK, "cache"),
 		"-cp", path, PACKAGE + "ShowcaseRender", scenario, out], cwd=WORK, capture_output=True, text=True, encoding="utf-8", errors="replace")
 	if r.returncode:
-		sys.exit("render failed:\n" + r.stdout[-4000:] + r.stderr[-4000:])
+		sys.exit("[JOID] render failed:\n" + r.stdout[-4000:] + r.stderr[-4000:])
 	log = [l for l in (r.stdout + r.stderr).splitlines() if ("[JOID]" in l and not re.match(r"\[JOID\] \d+\.\d+\S* loaded", l)) or "Exception" in l]
 	if log:
-		print("console:\n  " + "\n  ".join(log[:40]))
+		print("[JOID] console:\n  " + "\n  ".join(log[:40]))
 
 
 if __name__ == "__main__":

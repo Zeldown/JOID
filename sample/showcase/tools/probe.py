@@ -25,4 +25,4 @@ for k, i in enumerate(picks):
 	image = Image.open(os.path.join(out, "f%04d.png" % i)).convert("RGB").resize((640, 360))
 	sheet.paste(image, ((k % cols) * 640, (k // cols) * 360))
 sheet.save(out + ".png")
-print(out + ".png")
+print("[JOID] " + out + ".png")
