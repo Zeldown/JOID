@@ -126,7 +126,7 @@ public final class VulkanContext {
 		}
 	}
 
-	public long[] createImage(final int width, final int height, final int format, final int usage, final int levels) {
+	public long[] createImage(final int width, final int height, final int format, final int usage, final int aspect, final int levels) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageCreateInfo info = VkImageCreateInfo.calloc(stack)
 					.sType$Default()
@@ -148,7 +148,7 @@ public final class VulkanContext {
 			VK10.vkGetImageMemoryRequirements(this.device, image.get(0), requirements);
 			final long memory = this.allocateMemory(stack, requirements, VK10.VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 			VulkanContext.check(VK10.vkBindImageMemory(this.device, image.get(0), memory, 0L), "vkBindImageMemory");
-			return new long[] {image.get(0), memory};
+			return new long[] {image.get(0), memory, VulkanContext.createImageView(this.device, image.get(0), format, aspect, levels)};
 		}
 	}
 

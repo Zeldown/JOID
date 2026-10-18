@@ -37,8 +37,7 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 		final VulkanContext context = bridge.getContext();
 		final VulkanTexture texture = VulkanTexture.create(bridge);
 		texture.allocate(width, height);
-		final long[] depth = context.createImage(width, height, context.getDepthFormat(), VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT, 1);
-		final long depthView = VulkanContext.createImageView(context.getDevice(), depth[0], context.getDepthFormat(), VK10.VK_IMAGE_ASPECT_DEPTH_BIT, 1);
+		final long[] depth = context.createImage(width, height, context.getDepthFormat(), VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK10.VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 		bridge.record(buffer -> {
 			try (MemoryStack stack = MemoryStack.stackPush()) {
 				VulkanContext.transition(buffer, depth[0], VK10.VK_IMAGE_ASPECT_DEPTH_BIT, VK10.VK_IMAGE_LAYOUT_UNDEFINED, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
@@ -49,8 +48,8 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 		});
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer framebuffer = stack.mallocLong(1);
-			VulkanContext.check(VK10.vkCreateFramebuffer(context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(context.getOffscreenRenderPass()).pAttachments(stack.longs(texture.getView(), depthView)).width(width).height(height).layers(1), null, framebuffer), "vkCreateFramebuffer");
-			return new VulkanFrameBuffer(bridge, texture, framebuffer.get(0), depth[0], depth[1], depthView);
+			VulkanContext.check(VK10.vkCreateFramebuffer(context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(context.getOffscreenRenderPass()).pAttachments(stack.longs(texture.getView(), depth[2])).width(width).height(height).layers(1), null, framebuffer), "vkCreateFramebuffer");
+			return new VulkanFrameBuffer(bridge, texture, framebuffer.get(0), depth[0], depth[1], depth[2]);
 		}
 	}
 

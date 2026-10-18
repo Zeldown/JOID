@@ -145,7 +145,7 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
-		return this.guard.call(() -> GlShader.create(this, vertex, fragment, blend));
+		return GlShader.create(this, vertex, fragment, blend);
 	}
 
 	private void bindTexture(final int unit, final SamplerBinding resolved) {

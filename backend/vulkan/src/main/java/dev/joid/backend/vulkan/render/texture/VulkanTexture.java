@@ -53,7 +53,7 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 	protected void uploadPixels(final @NonNull int[] pixels, final @NonNull MipmapChain chain) {
 		final int width = chain.getWidth();
 		final int height = chain.getHeight();
-		final VulkanBuffer staging = VulkanBuffer.create(this.bridge.getContext(), (long) width * height * 4L, VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+		final VulkanBuffer staging = new VulkanBuffer(this.bridge.getContext(), (long) width * height * 4L, VK10.VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 		MemoryUtil.memIntBuffer(staging.getAddress(), width * height).put(pixels, 0, width * height);
 
 		final long image = this.image;
@@ -137,9 +137,7 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 	}
 
 	private long[] createStorage(final MipmapChain chain) {
-		final VulkanContext context = this.bridge.getContext();
-		final long[] handles = context.createImage(chain.getWidth(), chain.getHeight(), VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_USAGE_SAMPLED_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK10.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, chain.getLevels());
-		return new long[] {handles[0], handles[1], VulkanContext.createImageView(context.getDevice(), handles[0], VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_ASPECT_COLOR_BIT, chain.getLevels())};
+		return this.bridge.getContext().createImage(chain.getWidth(), chain.getHeight(), VulkanContext.TEXTURE_FORMAT, VK10.VK_IMAGE_USAGE_SAMPLED_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK10.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK10.VK_IMAGE_ASPECT_COLOR_BIT, chain.getLevels());
 	}
 
 	private static void blitLevels(final VkCommandBuffer buffer, final MemoryStack stack, final long image, final int levels, final MipmapChain chain) {

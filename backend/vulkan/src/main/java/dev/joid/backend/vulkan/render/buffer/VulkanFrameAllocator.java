@@ -21,7 +21,7 @@ public final class VulkanFrameAllocator {
 		this.usage     = usage;
 		this.alignment = alignment;
 		this.disposer  = disposer;
-		this.buffer    = VulkanBuffer.create(context, capacity, usage);
+		this.buffer    = new VulkanBuffer(context, capacity, usage);
 	}
 
 	public void destroy() {
@@ -33,7 +33,7 @@ public final class VulkanFrameAllocator {
 		if (aligned + size > this.buffer.getSize()) {
 			final VulkanBuffer previous = this.buffer;
 			this.disposer.accept(previous::destroy);
-			this.buffer = VulkanBuffer.create(this.context, Math.max(previous.getSize() * 2L, size * 2L), this.usage);
+			this.buffer = new VulkanBuffer(this.context, Math.max(previous.getSize() * 2L, size * 2L), this.usage);
 			this.offset = size;
 			return 0L;
 		}

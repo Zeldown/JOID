@@ -44,10 +44,6 @@ ext {
         [':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':tool-msdf:jar', ':base-openal:jar'].collect { path -> tasks.getByPath(path) }
     }
 
-    releaseJars = {
-        releaseTasks()*.archivePath
-    }
-
     excludeDemo = { task ->
         task.exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/*/demo/**', 'dev/joid/backend/*/demo/**'
     }
@@ -77,11 +73,7 @@ subprojects {
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    compileJava {
-        options.encoding = 'UTF-8'
-    }
-
-    compileTestJava {
+    tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
     }
 
@@ -158,7 +150,7 @@ task collectArtifacts(type: Copy) {
     dependsOn { releaseTasks() }
     dependsOn variants.collectMany { variant -> variantModules.collect { module -> "$module:${variant}Jar" } }
     from { variantModules.collectMany { module -> variants.collect { variant -> project(module).tasks["${variant}Jar"].archivePath } } }
-    from { releaseJars() }
+    from { releaseTasks()*.archivePath }
     from backendTemplate
     from msdfGenerator
     into file('build/libs')
@@ -174,7 +166,7 @@ task checkJars {
         def dev = ['dev/joid/lib/ui/node/impl/dev/DevNode.class', 'dev/joid/internal/font/', 'assets/dev/']
         def demo = ['dev/joid/demo/DemoFont.class', 'assets/demo/']
         def shaded = ['dev/joid/shaded/asm/', 'dev/joid/shaded/gson/', 'dev/joid/shaded/guava/', 'dev/joid/shaded/jsvg/', 'dev/joid/shaded/twelvemonkeys/', 'dev/joid/shaded/commons/io/', 'dev/joid/shaded/commons/lang3/']
-        def libraries = ['org/objectweb/asm/', 'com/google/gson/', 'com/google/common/', 'com/google/thirdparty/', 'com/github/weisj/', 'com/twelvemonkeys/', 'org/apache/commons/io/', 'org/apache/commons/lang3/', 'javax/vecmath/']
+        def libraries = ['org/objectweb/asm/', 'com/google/gson/', 'com/google/common/', 'com/google/thirdparty/', 'com/github/weisj/', 'com/twelvemonkeys/', 'org/apache/commons/io/', 'org/apache/commons/lang3/']
         def credits = ['org.ow2.asm': 'ASM', 'com.google.guava': 'Guava', 'org.bytedeco': 'JavaCV and JavaCPP', 'net.java.dev.jna': 'JNA', 'com.github.weisj': 'JSVG', 'commons-io': 'Apache Commons IO', 'com.google.code.gson': 'Gson', 'com.twelvemonkeys': 'TwelveMonkeys ImageIO', 'org.apache.commons': 'Apache Commons Lang']
         def licenses = ['org.ow2.asm': ['ASM-BSD-3-Clause.txt'], 'com.github.weisj': ['JSVG-MIT.txt'], 'com.twelvemonkeys': ['TwelveMonkeys-BSD-3-Clause.txt'], 'org.lwjgl.lwjgl': ['LWJGL2-BSD-3-Clause.txt', 'OpenAL-Soft-LGPL-2.txt']]
         def notice = rootProject.file('NOTICE').readLines('UTF-8').collect { line -> line.trim() }
@@ -195,7 +187,7 @@ task checkJars {
         finds(project(':tool-testkit').jar.archivePath, classes, demoClass).each { name ->
             failures << "joid-tool-testkit needs the demo class of $name"
         }
-        releaseJars().each { jar ->
+        releaseTasks()*.archivePath.each { jar ->
             finds(jar, classes, library).each { name ->
                 failures << "${jar.name}: $name refers to a library that is not relocated"
             }

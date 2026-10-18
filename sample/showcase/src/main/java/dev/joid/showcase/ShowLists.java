@@ -1,6 +1,7 @@
 package dev.joid.showcase;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import dev.joid.demo.DemoFont;
@@ -21,8 +22,7 @@ public class ShowLists extends ShowUI {
 
 	private static final Color DRAGGED = Color.decode("#2B2647").lock();
 
-	private final List<String> order = new ArrayList<>();
-	private final StringSignal next  = new StringSignal();
+	private final StringSignal next = new StringSignal();
 
 	@Override
 	protected void scene() {
@@ -35,11 +35,8 @@ public class ShowLists extends ShowUI {
 		ShowUI.blob(-250, 400, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
 		ShowUI.blob(1350, -250, 900, ShowUI.CYAN.withAlpha(0.20F), 0.5D, 50D).attach(this);
 
-		this.order.clear();
+		final List<String> order = new ArrayList<>(Arrays.asList(titles));
 		this.next.set(titles[0]);
-		for (final String title : titles) {
-			this.order.add(title);
-		}
 
 		ShowUI.glass(440, 80, 1040, 920, 34F).attach(this);
 		TextNode.create(490, 120).text(Text.create("Playlist", ShowUI.font(FontWeight.EXTRA_BOLD, 44F, ShowUI.TEXT))).attach(this);
@@ -63,8 +60,8 @@ public class ShowLists extends ShowUI {
 			final ReorderableFlexNode list = ReorderableFlexNode
 			.vertical(20, 0, 920)
 			.onReorderEnd(event -> {
-				this.order.add(event.getIndex(), this.order.remove(event.getPrevious()));
-				this.next.set(this.order.get(0));
+				order.add(event.getIndex(), order.remove(event.getPrevious()));
+				this.next.set(order.get(0));
 			})
 			.margin(12D);
 			list.body(flex -> {

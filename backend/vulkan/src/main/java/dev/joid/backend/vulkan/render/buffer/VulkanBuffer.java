@@ -5,13 +5,9 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VK10;
 
 import dev.joid.backend.vulkan.render.VulkanContext;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VulkanBuffer {
 
 	private final VulkanContext context;
@@ -20,12 +16,16 @@ public final class VulkanBuffer {
 	private final long          size;
 	private final long          address;
 
-	public static @NonNull VulkanBuffer create(final VulkanContext context, final long size, final int usage) {
+	public VulkanBuffer(final VulkanContext context, final long size, final int usage) {
 		final long[] handles = context.createBuffer(size, usage, VK10.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK10.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final PointerBuffer address = stack.mallocPointer(1);
 			VulkanContext.check(VK10.vkMapMemory(context.getDevice(), handles[1], 0L, size, 0, address), "vkMapMemory");
-			return new VulkanBuffer(context, handles[0], handles[1], size, address.get(0));
+			this.context = context;
+			this.buffer  = handles[0];
+			this.memory  = handles[1];
+			this.size    = size;
+			this.address = address.get(0);
 		}
 	}
 

@@ -316,10 +316,10 @@ public final class VulkanRenderBridge extends RenderBridge {
 		final int format = this.context.getDepthStencilFormat();
 		if (this.depthWidth != this.passWidth || this.depthHeight != this.passHeight) {
 			this.releaseScreenTarget();
-			final long[] depth = this.context.createImage(this.passWidth, this.passHeight, format, VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, 1);
+			final long[] depth = this.context.createImage(this.passWidth, this.passHeight, format, VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK10.VK_IMAGE_ASPECT_DEPTH_BIT | VK10.VK_IMAGE_ASPECT_STENCIL_BIT, 1);
 			this.depthImage  = depth[0];
 			this.depthMemory = depth[1];
-			this.depthView   = VulkanContext.createImageView(this.context.getDevice(), this.depthImage, format, VK10.VK_IMAGE_ASPECT_DEPTH_BIT | VK10.VK_IMAGE_ASPECT_STENCIL_BIT, 1);
+			this.depthView   = depth[2];
 			this.depthWidth  = this.passWidth;
 			this.depthHeight = this.passHeight;
 		}
