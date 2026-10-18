@@ -146,9 +146,7 @@ public final class Text {
 	}
 
 	public @NonNull Text copy() {
-		final Text copy = this.copyProperties();
-		this.elementList.forEach(element -> copy.add(element.copy()));
-		return copy;
+		return this.copyProperties().add(this);
 	}
 
 	public @NonNull Text copyProperties() {
