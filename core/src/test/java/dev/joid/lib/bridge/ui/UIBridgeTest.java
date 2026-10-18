@@ -497,7 +497,7 @@ public class UIBridgeTest {
 			this.bridges.getUi().draw();
 			Assert.fail("A draw outside a frame must be refused");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("DemoUIBridge.draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()", expected.getMessage());
+			Assert.assertEquals(this.bridges.getUi().getClass().getSimpleName() + ".draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()", expected.getMessage());
 		}
 	}
 
@@ -989,7 +989,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.bridges.getRender().getDraws().clear();
-		DemoUIBridge.create().drawHover(menu, "Play", 100D, 100D);
+		new DemoUIBridge() {}.drawHover(menu, "Play", 100D, 100D);
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 

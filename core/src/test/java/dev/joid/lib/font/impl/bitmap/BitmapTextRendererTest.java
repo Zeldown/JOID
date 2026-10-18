@@ -18,6 +18,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.impl.glyph.FontFamily;
 import dev.joid.lib.font.impl.glyph.IFontFace;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -183,7 +184,7 @@ public class BitmapTextRendererTest {
 		return this.render.createTexture().allocate(3 * atlas.texels, atlas.texels);
 	}
 
-	@AllArgsConstructor
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	private enum Atlas {
 
 		ASCII(8, false),

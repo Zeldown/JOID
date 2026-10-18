@@ -51,8 +51,6 @@ public final class ObjFace {
 			averageV = averageV / this.textureCoordinates.length;
 		}
 
-		float offsetU;
-		float offsetV;
 		for (int i = 0; i < this.vertices.length; ++i) {
 			if (smooth) {
 				final ObjVertex normal = this.vertexNormals[i];
@@ -65,18 +63,8 @@ public final class ObjFace {
 			}
 
 			if (this.textureCoordinates != null) {
-				offsetU = textureOffset;
-				offsetV = textureOffset;
-
-				if (this.textureCoordinates[i].getU() > averageU) {
-					offsetU = -offsetU;
-				}
-
-				if (this.textureCoordinates[i].getV() > averageV) {
-					offsetV = -offsetV;
-				}
-
-				tessellator.addVertexWithUV(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ(), this.textureCoordinates[i].getU() + offsetU, this.textureCoordinates[i].getV() + offsetV);
+				final ObjTextureCoordinate coordinate = this.textureCoordinates[i];
+				tessellator.addVertexWithUV(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ(), coordinate.getU() + (coordinate.getU() > averageU ? -textureOffset : textureOffset), coordinate.getV() + (coordinate.getV() > averageV ? -textureOffset : textureOffset));
 			} else {
 				tessellator.addVertex(this.vertices[i].getX(), this.vertices[i].getY(), this.vertices[i].getZ());
 			}

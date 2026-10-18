@@ -18,7 +18,7 @@ import lombok.NonNull;
 @Getter
 public final class HeadlessBridges extends ExternalResource {
 
-	private final DemoUIBridge          ui     = DemoUIBridge.create();
+	private final DemoUIBridge          ui     = new DemoUIBridge() {};
 	private final ManualClockBridge     clock  = new ManualClockBridge(0L);
 	private final RecordingWindowBridge window = new RecordingWindowBridge();
 	private final RecordingRenderBridge render = new RecordingRenderBridge();

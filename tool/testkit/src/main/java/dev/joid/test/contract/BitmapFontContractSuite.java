@@ -23,6 +23,7 @@ import dev.joid.lib.font.impl.glyph.IFontFace;
 import dev.joid.lib.font.impl.glyph.TextGlyph;
 import dev.joid.test.snapshot.ISnapshotBackend;
 import dev.joid.test.snapshot.SnapshotImage;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
@@ -159,7 +160,7 @@ public abstract class BitmapFontContractSuite {
 		return columns;
 	}
 
-	@AllArgsConstructor
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	private enum Atlas {
 
 		ASCII(8, false),

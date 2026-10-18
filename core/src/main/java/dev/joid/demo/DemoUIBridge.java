@@ -9,7 +9,7 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import lombok.NonNull;
 
-public class DemoUIBridge extends WindowUIBridge {
+public abstract class DemoUIBridge extends WindowUIBridge {
 
 	private static final Color BACKGROUND = new Color(50, 50, 50).lock();
 
@@ -18,10 +18,6 @@ public class DemoUIBridge extends WindowUIBridge {
 	protected DemoUIBridge() {
 		super.background(DemoUIBridge.BACKGROUND);
 		this.interfaceScale = 1D;
-	}
-
-	public static @NonNull DemoUIBridge create() {
-		return new DemoUIBridge();
 	}
 
 	public void start() {

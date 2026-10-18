@@ -35,7 +35,7 @@ public class GlfwInputForwarderTest {
 
 	private final List<String>  trace  = new ArrayList<>();
 	private final TraceUI       ui     = new TraceUI(this.trace);
-	private final DemoUIBridge  bridge = DemoUIBridge.create();
+	private final DemoUIBridge  bridge = new DemoUIBridge() {};
 	private final IWindowBridge fixed  = new FixedWindowBridge();
 
 	private boolean devMode;
