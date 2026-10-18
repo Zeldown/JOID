@@ -999,14 +999,19 @@ public class UITest {
 	}
 
 	@Test
-	public void replacesItsDetachedDevPanelOnReload() {
+	public void keepsItsHiddenDevPanelAcrossItsReloads() {
 		JOIDEnv.devMode(true);
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		final Node panel = ui.getDevNode();
 		ui.reload();
-		Assert.assertNotSame(panel, ui.getDevNode());
-		Assert.assertFalse(ui.getNodeList().contains(ui.getDevNode()));
+		Assert.assertSame(panel, ui.getDevNode());
+		Assert.assertFalse(ui.getNodeList().contains(panel));
+		this.bridges.getUi().keyPressed(Key.F3, Key.F3);
+		this.bridges.getUi().keyPressed(Key.F3, Key.F3);
+		ui.reload();
+		Assert.assertSame(panel, ui.getDevNode());
+		Assert.assertFalse(ui.getNodeList().contains(panel));
 	}
 
 	@Test

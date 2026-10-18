@@ -253,7 +253,7 @@ public abstract class UI implements IIndexedElement {
 				}
 			}
 
-			if (JOIDEnv.isDevMode() && !devNodeEnabled) {
+			if (JOIDEnv.isDevMode() && this.devNode == null) {
 				this.devNode = DevNode.create(1900, 1060).visible(this::isOnTop).enabled(this::isOnTop).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
 			}
 
