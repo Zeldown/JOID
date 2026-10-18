@@ -117,7 +117,7 @@ public final class AlAudioSource implements IAudioSource {
 	@Override
 	public void delete() {
 		this.bridge.releaseSource(this);
-		if (this.context != null && this.context.equals(this.binding.getCurrentContext())) {
+		if (this.context != null && this.context == this.binding.getCurrentContext()) {
 			this.binding.stop(this.source);
 			this.binding.deleteSource(this.source);
 			for (final int buffer : this.bufferList) {
@@ -139,7 +139,7 @@ public final class AlAudioSource implements IAudioSource {
 			return false;
 		}
 
-		if (!current.equals(this.context)) {
+		if (current != this.context) {
 			this.context = current;
 			this.bufferList.clear();
 			this.freeBufferQueue.clear();

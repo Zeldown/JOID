@@ -62,8 +62,7 @@ public final class Lwjgl3AlBinding implements IAlBinding {
 
 	@Override
 	public Object getCurrentContext() {
-		final long context = ALC10.alcGetCurrentContext();
-		return context == 0L ? null : context;
+		return ALC10.alcGetCurrentContext() == 0L ? null : AL.getCapabilities();
 	}
 
 	@Override

@@ -162,6 +162,18 @@ public class AlAudioSourceTest {
 	}
 
 	@Test
+	public void followsAContextRecreatedWithAnEqualHandle() {
+		final IAudioSource source = this.create(1);
+		source.write(new short[] {1, 2});
+		this.binding.context = new String("first");
+		Assert.assertEquals(0, source.getBufferedSamples());
+		Assert.assertTrue(this.binding.calls.contains("gen source 3"));
+		this.binding.calls.clear();
+		source.delete();
+		Assert.assertEquals("delete source 3", this.binding.calls.get(1));
+	}
+
+	@Test
 	public void staysSilentWithoutContext() {
 		this.binding.context = null;
 		final IAudioSource source = AlAudioBridge.create(this.binding).ownContext(false).createSource(8000, 1);
