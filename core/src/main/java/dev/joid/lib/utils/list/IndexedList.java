@@ -28,12 +28,10 @@ public final class IndexedList<E extends IIndexedElement> implements Iterable<E>
 
 	public void add(final E element) {
 		this.sort();
-		final int position = this.orderedList.indexOf(element);
-		if (position >= 0 && this.isInPlace(position)) {
+		if (this.orderedList.contains(element)) {
 			return;
 		}
 
-		this.orderedList.remove(element);
 		for (int i = 0; i < this.orderedList.size(); i++) {
 			if (this.orderedList.get(i).getIndex() > element.getIndex()) {
 				this.orderedList.add(i, element);
@@ -105,11 +103,6 @@ public final class IndexedList<E extends IIndexedElement> implements Iterable<E>
 
 			index = element.getIndex();
 		}
-	}
-
-	private boolean isInPlace(final int position) {
-		final int index = this.orderedList.get(position).getIndex();
-		return (position == 0 || this.orderedList.get(position - 1).getIndex() <= index) && (position == this.orderedList.size() - 1 || this.orderedList.get(position + 1).getIndex() >= index);
 	}
 
 }
