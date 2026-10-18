@@ -8,6 +8,7 @@ import java.util.function.Supplier;
 import com.google.gson.JsonObject;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.utils.json.JsonFiles;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -24,13 +25,20 @@ public final class UIStoreHook {
 		}
 
 		final UIStoreData data = UIStoreHook.getData(clazz);
-		final T store = factory.get();
+		T store = factory.get();
 		store.init();
 
 		if (data.scope() == UIStoreScope.PERMANENT) {
-			final JsonObject json = JsonFiles.read(UIStoreHook.getFile(store), "the store starts from init()");
+			final File file = UIStoreHook.getFile(store);
+			final JsonObject json = JsonFiles.read(file, "the store starts from init()");
 			if (json != null) {
-				store.fromJson(json);
+				try {
+					store.fromJson(json);
+				} catch (final RuntimeException exception) {
+					JOIDLog.warnOnce("UIStore.fromJson." + clazz.getName() + "." + exception.getClass().getName(), "The store " + clazz.getName() + " cannot be restored from " + file.getAbsolutePath() + " (" + exception + "), it starts from init(): catch the exception inside fromJson() to handle it", exception);
+					store = factory.get();
+					store.init();
+				}
 			}
 		}
 
@@ -48,7 +56,11 @@ public final class UIStoreHook {
 			UIStoreHook.GLOBAL_CACHE.remove(clazz);
 		}
 
-		store.destroy();
+		try {
+			store.destroy();
+		} catch (final RuntimeException exception) {
+			JOIDLog.warnOnce("UIStore.destroy." + clazz.getName() + "." + exception.getClass().getName(), "The destroy of the store " + clazz.getName() + " failed (" + exception + "), it is destroyed anyway: catch the exception inside destroy() to handle it", exception);
+		}
 	}
 
 	public static void saveStore(final @NonNull UIStore store) {
@@ -61,7 +73,11 @@ public final class UIStoreHook {
 
 	public static void saveAll() {
 		for (final UIStore store : UIStoreHook.GLOBAL_CACHE.values()) {
-			UIStoreHook.saveStore(store);
+			try {
+				UIStoreHook.saveStore(store);
+			} catch (final RuntimeException exception) {
+				JOIDLog.warnOnce("UIStore.toJson." + store.getClass().getName() + "." + exception.getClass().getName(), "The store " + store.getClass().getName() + " cannot be saved (" + exception + "), the other stores are saved anyway: catch the exception inside toJson() to handle it", exception);
+			}
 		}
 	}
 

@@ -78,6 +78,7 @@ import dev.joid.lib.ui.core.hook.property.UIProperty;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
+import dev.joid.lib.ui.core.hook.store.UIStoreHookTest.UnsavableStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 import dev.joid.lib.ui.core.transition.PopTransition;
 import dev.joid.lib.ui.core.transition.Transition;
@@ -1904,6 +1905,22 @@ public class UITest {
 	@Test
 	public void buildsAStoreWithItsFactory() {
 		Assert.assertEquals("shop", new TraceUI(this.trace).useStore(NamedStore.class, () -> new NamedStore("shop")).name);
+	}
+
+	@Test
+	public void closesEveryUiWhenAGlobalStoreCannotBeSaved() {
+		final List<String> closed = new ArrayList<>();
+		final TraceUI ui = new TraceUI(this.trace).onClose(event -> closed.add("ui"));
+		final TraceUI other = new TraceUI(this.trace).onClose(event -> closed.add("other"));
+		final UnsavableStore store = ui.useStore(UnsavableStore.class, UnsavableStore::new);
+		try {
+			this.bridges.open(ui).open(other);
+			UITest.err(() -> this.bridges.getUi().closeAll());
+			Assert.assertEquals(Arrays.asList("ui", "other"), closed);
+			Assert.assertTrue(this.bridges.getUi().getUiList().isEmpty());
+		} finally {
+			UIStoreHook.destroyStore(store);
+		}
 	}
 
 	@Test

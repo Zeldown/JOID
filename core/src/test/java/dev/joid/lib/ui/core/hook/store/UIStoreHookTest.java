@@ -52,6 +52,7 @@ public class UIStoreHookTest {
 		UIStoreHook.destroyStore(new PermanentStore());
 		UIStoreHook.destroyStore(new SignalStore());
 		UIStoreHook.destroyStore(new ListStore());
+		UIStoreHook.destroyStore(new UnsavableStore());
 		JOIDEnv.dataDir(this.previous);
 		if (this.created) {
 			new File("config").delete();
@@ -204,6 +205,35 @@ public class UIStoreHookTest {
 	}
 
 	@Test
+	public void savesTheOtherGlobalStoresWhenOneCannotBeSerialized() throws IOException {
+		UIStoreHook.useStore(UnsavableStore.class, UnsavableStore::new);
+		UIStoreHook.useStore(PermanentStore.class, PermanentStore::new).value = "all";
+		final String error = UIStoreHookTest.capture(UIStoreHook::saveAll);
+		Assert.assertTrue(error, error.startsWith("[JOID] The store " + UnsavableStore.class.getName() + " cannot be saved (java.lang.IllegalStateException: broken toJson), the other stores are saved anyway: catch the exception inside toJson() to handle it"));
+		Assert.assertEquals("{\"value\":\"all\"}", this.read());
+	}
+
+	@Test
+	public void letsTheFailureOfAnExplicitSaveReachTheCaller() {
+		try {
+			new UnsavableStore().save();
+			Assert.fail("The failure of toJson() must reach the caller of save()");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("broken toJson", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void forgetsAGlobalStoreWhoseDestroyFails() {
+		final UndestroyableStore store = UIStoreHook.useStore(UndestroyableStore.class, UndestroyableStore::new);
+		final String error = UIStoreHookTest.capture(() -> UIStoreHook.destroyStore(store));
+		final UndestroyableStore next = UIStoreHook.useStore(UndestroyableStore.class, UndestroyableStore::new);
+		UIStoreHookTest.capture(() -> UIStoreHook.destroyStore(next));
+		Assert.assertTrue(error, error.startsWith("[JOID] The destroy of the store " + UndestroyableStore.class.getName() + " failed (java.lang.IllegalStateException: broken destroy), it is destroyed anyway: catch the exception inside destroy() to handle it"));
+		Assert.assertNotSame(store, next);
+	}
+
+	@Test
 	public void forgetsADestroyedGlobalStore() {
 		final GlobalStore store = UIStoreHook.useStore(GlobalStore.class, GlobalStore::new);
 		UIStoreHook.destroyStore(store);
@@ -247,6 +277,18 @@ public class UIStoreHookTest {
 		Assert.assertTrue(error, error.endsWith("), it is kept as " + this.file().getAbsolutePath() + ".corrupt and the store starts from init()" + System.lineSeparator()));
 		Assert.assertTrue(stores.get(0).initialized);
 		Assert.assertEquals("default", stores.get(0).value);
+	}
+
+	@Test
+	public void startsFromInitWhenTheStoreCannotBeRestored() throws IOException {
+		this.write("{}");
+		final List<PermanentStore> stores = new ArrayList<>();
+		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
+		Assert.assertTrue(error, error.startsWith("[JOID] The store " + PermanentStore.class.getName() + " cannot be restored from " + this.file().getAbsolutePath() + " (java.lang.NullPointerException), it starts from init(): catch the exception inside fromJson() to handle it"));
+		Assert.assertEquals("init", stores.get(0).order);
+		Assert.assertFalse(stores.get(0).loaded);
+		Assert.assertSame(stores.get(0), UIStoreHook.useStore(PermanentStore.class, PermanentStore::new));
+		Assert.assertTrue(this.file().exists());
 	}
 
 	@Test
@@ -448,5 +490,25 @@ public class UIStoreHookTest {
 
 	@UIStoreData(scope = UIStoreScope.PERMANENT)
 	public static class UnnamedStore extends UIStore {}
+
+	@UIStoreData(id = "unsavable", scope = UIStoreScope.PERMANENT)
+	public static class UnsavableStore extends UIStore {
+
+		@Override
+		public @NonNull JsonObject toJson() {
+			throw new IllegalStateException("broken toJson");
+		}
+
+	}
+
+	@UIStoreData(id = "undestroyable", scope = UIStoreScope.GLOBAL)
+	public static class UndestroyableStore extends UIStore {
+
+		@Override
+		public void destroy() {
+			throw new IllegalStateException("broken destroy");
+		}
+
+	}
 
 }
