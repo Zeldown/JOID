@@ -282,7 +282,7 @@ public final class Resource {
 			return;
 		}
 
-		BridgeHandler.RENDER.get().getState().texture(texture).textureFilter(this.properties.getInterpolation()).textureWrap(wrap);
+		BridgeHandler.RENDER.get().getState().texture(texture).textureMipmap(!Boolean.FALSE.equals(this.properties.getMipmap())).textureFilter(this.properties.getInterpolation()).textureWrap(wrap);
 	}
 
 	public void prepareBind() {

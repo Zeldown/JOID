@@ -151,7 +151,7 @@ public abstract class RenderBridge implements IRenderBridge {
 	protected final @NonNull SamplerBinding resolveTexture() {
 		final ITexture texture = this.state.getTexture();
 		if (texture != null && texture.isAllocated()) {
-			return SamplerBinding.of(texture, TextureSampling.of(this.state.getTextureFilter(), this.toSupportedWrap(this.state.getTextureWrap()), texture.isMipmapped()));
+			return SamplerBinding.of(texture, TextureSampling.of(this.state.getTextureFilter(), this.toSupportedWrap(this.state.getTextureWrap()), texture.isMipmapped() && this.state.isTextureMipmap()));
 		}
 		return SamplerBinding.of(this.getEmptyTexture(), TextureSampling.of(TextureFilter.NEAREST, TextureWrap.REPEAT, false));
 	}

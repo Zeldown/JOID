@@ -234,7 +234,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 			this.show(resource, frame);
 		}
 
-		if (this.ended && next == null && !this.loop) {
+		if (this.ended && next == null) {
 			this.running.set(false);
 			if (this.audioPlayer != null) {
 				this.audioPlayer.stop();
@@ -675,6 +675,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 				}
 			} catch (final InterruptedException ignored) {
 			} catch (final Exception exception) {
+				this.ended = true;
 				JOIDLog.warn("The video " + this.asset.getUniqueId() + " stops decoding (" + exception + "), check that the file can still be read", exception);
 			}
 		}, "ResourceVideo/" + this.asset.getUniqueId());

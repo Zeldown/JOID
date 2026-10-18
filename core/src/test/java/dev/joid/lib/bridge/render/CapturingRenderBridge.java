@@ -17,6 +17,7 @@ import dev.joid.lib.bridge.render.shader.source.ShaderSource;
 import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.bridge.render.texture.TextureSampling;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.AccessLevel;
@@ -76,7 +77,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 
 		final IShader bound = super.getState().getShader();
 		final Map<String, Object> uniforms = bound instanceof RecordingShader ? new HashMap<>(((RecordingShader) bound).getValues()) : Collections.emptyMap();
-		this.captures.add(new Capture(primitive, buffer.isTexture(), buffer.isColor(), buffer.isNormal(), vertices, super.getState().copy(), shader, uniforms));
+		this.captures.add(new Capture(primitive, buffer.isTexture(), buffer.isColor(), buffer.isNormal(), vertices, super.getState().copy(), super.resolveTexture().getSampling(), shader, uniforms));
 	}
 
 	@Override
@@ -110,6 +111,7 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 		private final boolean             normal;
 		private final int[]               vertices;
 		private final RenderState         state;
+		private final TextureSampling     sampling;
 		private final IShader             shader;
 		private final Map<String, Object> uniforms;
 

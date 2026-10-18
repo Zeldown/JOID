@@ -34,6 +34,7 @@ public final class RenderState {
 
 	private IShader       shader;
 	private ITexture      texture;
+	private boolean       textureMipmap;
 	private TextureWrap   textureWrap;
 	private IFrameBuffer  frameBuffer;
 	private TextureFilter textureFilter;
@@ -52,6 +53,7 @@ public final class RenderState {
 
 		this.textureFilter = TextureFilter.NEAREST;
 		this.textureWrap   = TextureWrap.REPEAT;
+		this.textureMipmap = true;
 	}
 
 	public static @NonNull RenderState create() {
@@ -130,12 +132,18 @@ public final class RenderState {
 	}
 
 	public @NonNull RenderState texture(final ITexture texture) {
-		this.texture = texture;
+		this.texture       = texture;
+		this.textureMipmap = true;
 		return this;
 	}
 
 	public @NonNull RenderState frameBuffer(final IFrameBuffer frameBuffer) {
 		this.frameBuffer = frameBuffer;
+		return this;
+	}
+
+	public @NonNull RenderState textureMipmap(final boolean textureMipmap) {
+		this.textureMipmap = textureMipmap;
 		return this;
 	}
 
@@ -174,6 +182,7 @@ public final class RenderState {
 		this.viewportHeight = state.viewportHeight;
 		this.frameBuffer    = state.frameBuffer;
 		this.texture        = state.texture;
+		this.textureMipmap  = state.textureMipmap;
 		this.textureFilter  = state.textureFilter;
 		this.textureWrap    = state.textureWrap;
 		this.shader         = state.shader;

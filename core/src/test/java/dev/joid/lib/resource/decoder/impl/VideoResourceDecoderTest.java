@@ -369,6 +369,26 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void stopsOnceItsDecodeFails() {
+		for (final boolean loop : new boolean[] {false, true}) {
+			final VideoResourceDecoder decoder = this.frames().loop(loop);
+			final ResourceData data = VideoResourceDecoderTest.load(decoder);
+			final String error = VideoResourceDecoderTest.capture(() -> {
+				VideoResourceDecoderTest.breakTheGrabber(decoder);
+				try {
+					this.play(decoder, data, 70);
+				} catch (final InterruptedException exception) {
+					throw new AssertionError(exception);
+				}
+			});
+			Assert.assertTrue(error, error.startsWith("[JOID] The video "));
+			Assert.assertTrue(error, error.contains(" stops decoding ("));
+			Assert.assertFalse(decoder.isPlaying());
+			Assert.assertTrue(decoder.isSettled());
+		}
+	}
+
+	@Test
 	public void loopsBackToItsFirstFrame() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.frames().loop(true);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
@@ -1042,6 +1062,16 @@ public class VideoResourceDecoderTest {
 			System.setErr(previous);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	private static void breakTheGrabber(final VideoResourceDecoder decoder) {
+		try {
+			synchronized (VideoResourceDecoderTest.field(decoder, "grabberLock")) {
+				((FFmpegFrameGrabber) VideoResourceDecoderTest.field(decoder, "grabber")).stop();
+			}
+		} catch (final Exception exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	private static void buffer(final VideoResourceDecoder decoder) throws InterruptedException {

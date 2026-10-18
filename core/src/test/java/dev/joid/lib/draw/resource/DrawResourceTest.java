@@ -294,6 +294,17 @@ public class DrawResourceTest {
 	}
 
 	@Test
+	public void samplesEachResourceOfASharedImageWithItsOwnMipmap() {
+		final Resource mipmapped = DrawResourceTest.image(64, 32).mipmap(true);
+		final Resource plain = mipmapped.copy().mipmap(false);
+		DrawUtils.RESOURCE.drawResource(0D, 0D, 32D, 16D, mipmapped);
+		DrawUtils.RESOURCE.drawResource(0D, 0D, 32D, 16D, plain);
+		Assert.assertSame(mipmapped.getTexture(), plain.getTexture());
+		Assert.assertTrue(this.render.getCaptures().get(0).getSampling().isMipmapFiltered());
+		Assert.assertFalse(this.render.getCaptures().get(1).getSampling().isMipmapFiltered());
+	}
+
+	@Test
 	public void keepsAnImageDrawnAtFullSizeWithoutMipmaps() {
 		final Resource resource = DrawResourceTest.image(64, 32);
 		DrawUtils.RESOURCE.drawResource(0D, 0D, 64D, 32D, resource);
