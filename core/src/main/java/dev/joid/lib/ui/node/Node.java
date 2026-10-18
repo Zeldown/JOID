@@ -75,7 +75,6 @@ import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.hover.HoverSupplier;
 import dev.joid.lib.ui.node.hover.IHoverElement;
-import dev.joid.lib.ui.node.hover.impl.TextHoverElement;
 import dev.joid.lib.ui.node.impl.control.scrollbar.BaseScrollbarNode;
 import dev.joid.lib.ui.node.layer.NodeLayer;
 import dev.joid.lib.ui.node.property.DraggableProperty;
@@ -413,7 +412,7 @@ public abstract class Node implements INode {
 			}
 
 			if (!lines.isEmpty()) {
-				hoverList.add(TextHoverElement.of(lines));
+				hoverList.add((node, x, y) -> node.getUi().drawHover(lines, x, y));
 			}
 		}
 

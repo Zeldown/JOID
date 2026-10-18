@@ -19,7 +19,7 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 	private Supplier<Boolean> rightSupplier;
 	private Supplier<Boolean> bottomSupplier;
 
-	protected RoundedNodeEffect(final Supplier<Float> radiusSupplier) {
+	protected RoundedNodeEffect(final @NonNull Supplier<Float> radiusSupplier) {
 		super(100);
 		this.radiusSupplier = radiusSupplier;
 		this.topSupplier    = () -> true;

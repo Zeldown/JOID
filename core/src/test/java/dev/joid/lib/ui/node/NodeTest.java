@@ -763,6 +763,7 @@ public class NodeTest {
 		Assert.assertTrue(ui.tooltips.isEmpty());
 		this.bridges.move(150D, 150D).frame();
 		Assert.assertEquals(Arrays.asList(Arrays.asList("Save", "Shortcut", "Ctrl+S")), ui.tooltips);
+		Assert.assertEquals(Arrays.asList("150.0 150.0"), ui.positions);
 	}
 
 	@Test
@@ -3913,7 +3914,8 @@ public class NodeTest {
 	public static final class HoverUI extends UI {
 
 		private final Node               node;
-		private final List<List<String>> tooltips = new ArrayList<>();
+		private final List<String>       positions = new ArrayList<>();
+		private final List<List<String>> tooltips  = new ArrayList<>();
 
 		@Override
 		public void init() {
@@ -3923,6 +3925,7 @@ public class NodeTest {
 		@Override
 		public void drawHover(final @NonNull Object content, final double mouseX, final double mouseY) {
 			this.tooltips.add(TextConverter.convertLines(content));
+			this.positions.add(mouseX + " " + mouseY);
 		}
 
 	}

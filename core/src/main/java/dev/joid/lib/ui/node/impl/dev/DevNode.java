@@ -75,7 +75,7 @@ public final class DevNode extends Node {
 	private int gridColorIndex;
 
 	private DevNode(final double x, final double y) {
-		super(x, y, 275, 53);
+		super(x, y, 275D, 53D);
 		super.anchor(Align.END);
 
 		this.inspectSignal = new BooleanSignal(true);
@@ -103,6 +103,7 @@ public final class DevNode extends Node {
 		super.clearChildren();
 		final double lockedWidth = super.getDefaultWidth() + 200D;
 		final double lockedHeight = 220D;
+		final double headerHeight = 53D;
 
 		FlexNode
 		.horizontal(15, 0, super.getDefaultHeight() - 30)
@@ -161,12 +162,12 @@ public final class DevNode extends Node {
 			}
 
 			RectNode
-			.create(0, 53, node.getWidth(), 2)
+			.create(0, headerHeight, node.getWidth(), 2)
 			.color(DevNode.LIGHT_BLACK)
 			.attach(node);
 
 			FlexNode
-			.horizontal(10, 0, 53)
+			.horizontal(10, 0, headerHeight)
 			.margin(15)
 			.body(flex -> {
 				TextNode
@@ -189,7 +190,7 @@ public final class DevNode extends Node {
 			.attach(node);
 
 			ContainerNode
-			.create(0, 53, lockedWidth, lockedHeight - 53)
+			.create(0, headerHeight, lockedWidth, lockedHeight - headerHeight)
 			.overflow(OverflowProperty.SCROLL)
 			.body(container -> {
 				FlexNode
@@ -376,20 +377,20 @@ public final class DevNode extends Node {
 		if (this.gridSignal.peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
 			final TextInfo gridInfo = TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F));
-			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.of(UIView.DESIGN_WIDTH / 2D - 1D, 0), Point.of(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
-			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.of(0, UIView.DESIGN_HEIGHT / 2D - 1D), Point.of(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
+			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.of(UIView.DESIGN_WIDTH / 2D - 1D, 0D), Point.of(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
+			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.of(0D, UIView.DESIGN_HEIGHT / 2D - 1D), Point.of(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
 
-			DrawUtils.SHAPE.drawRect(0, mouseY, mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX / 2, mouseY + 5, Text.create((int) mouseX + "px", gridInfo).alignX(Align.CENTER));
+			DrawUtils.SHAPE.drawRect(0D, mouseY, mouseX, 3D, gridColor);
+			DrawUtils.TEXT.drawText(mouseX / 2D, mouseY + 5D, Text.create((int) mouseX + "px", gridInfo).alignX(Align.CENTER));
 
-			DrawUtils.SHAPE.drawRect(mouseX, mouseY, UIView.DESIGN_WIDTH - mouseX, 3, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2, mouseY + 5, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", gridInfo).alignX(Align.CENTER));
+			DrawUtils.SHAPE.drawRect(mouseX, mouseY, UIView.DESIGN_WIDTH - mouseX, 3D, gridColor);
+			DrawUtils.TEXT.drawText(mouseX + (UIView.DESIGN_WIDTH - mouseX) / 2D, mouseY + 5D, Text.create((int) (UIView.DESIGN_WIDTH - mouseX) + "px", gridInfo).alignX(Align.CENTER));
 
-			DrawUtils.SHAPE.drawRect(mouseX, 0, 3, mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY / 2, Text.create((int) mouseY + "px", gridInfo));
+			DrawUtils.SHAPE.drawRect(mouseX, 0D, 3D, mouseY, gridColor);
+			DrawUtils.TEXT.drawText(mouseX + 5D, mouseY / 2D, Text.create((int) mouseY + "px", gridInfo));
 
-			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 3, UIView.DESIGN_HEIGHT - mouseY, gridColor);
-			DrawUtils.TEXT.drawText(mouseX + 5, mouseY + (UIView.DESIGN_HEIGHT - mouseY) / 2, Text.create((int) (UIView.DESIGN_HEIGHT - mouseY) + "px", gridInfo));
+			DrawUtils.SHAPE.drawRect(mouseX, mouseY, 3D, UIView.DESIGN_HEIGHT - mouseY, gridColor);
+			DrawUtils.TEXT.drawText(mouseX + 5D, mouseY + (UIView.DESIGN_HEIGHT - mouseY) / 2D, Text.create((int) (UIView.DESIGN_HEIGHT - mouseY) + "px", gridInfo));
 		}
 
 		DrawUtils.SHAPE.drawRoundedRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), DevNode.BLACK, 10F);
@@ -458,13 +459,12 @@ public final class DevNode extends Node {
 		final double margin = 15D;
 		final double padding = 10D;
 
-		final double infoBoxX = x;
 		final double infoBoxY = y - 35D < 0D ? y + height + 5D : y - 35D;
 		final double infoBoxWidth = margin + padding * 2D + nodeNameText.getWidth() + nodeTimeText.getWidth();
 
-		DrawUtils.SHAPE.drawRoundedRect(infoBoxX, infoBoxY, infoBoxWidth, 30D, DevNode.BLACK.withAlpha(0.8F), 5F);
+		DrawUtils.SHAPE.drawRoundedRect(x, infoBoxY, infoBoxWidth, 30D, DevNode.BLACK.withAlpha(0.8F), 5F);
 
-		double ox = infoBoxX + padding;
+		double ox = x + padding;
 		ox += DrawUtils.TEXT.drawText(ox, infoBoxY + 15D, nodeNameText.alignY(Align.CENTER)).getWidth() + margin;
 		DrawUtils.SHAPE.drawCircle(ox - margin / 2D + 1D, infoBoxY + 15D, DevNode.WHITE, 2D);
 		DrawUtils.TEXT.drawText(ox, infoBoxY + 15D, nodeTimeText.alignY(Align.CENTER));
