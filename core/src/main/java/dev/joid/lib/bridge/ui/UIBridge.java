@@ -143,9 +143,7 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	public final void update() {
-		for (final UI ui : new ArrayList<>(this.uiList.ordered())) {
-			ui.fireUpdate();
-		}
+		this.uiList.forEach(UI::fireUpdate);
 	}
 
 	public final void draw() {

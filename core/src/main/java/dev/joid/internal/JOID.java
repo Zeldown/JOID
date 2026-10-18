@@ -179,7 +179,7 @@ public final class JOID {
 			return;
 		}
 
-		for (final IUIBridge bridge : new ArrayList<>(BridgeHandler.UI.getBridgeList())) {
+		for (final IUIBridge bridge : BridgeHandler.UI.getBridgeList()) {
 			for (final UI ui : new ArrayList<>(bridge.getUiList())) {
 				UIPropertyHook.save(ui);
 			}
