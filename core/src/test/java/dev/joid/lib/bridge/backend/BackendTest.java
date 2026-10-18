@@ -182,6 +182,24 @@ public class BackendTest {
 	}
 
 	@Test
+	public void registersAgainAfterAFailedRegister() {
+		final TraceBackend backend = this.backend();
+		backend.windowed = () -> {
+			throw new IllegalStateException("No window");
+		};
+		try {
+			backend.register();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("No window", exception.getMessage());
+		}
+		Assert.assertFalse(backend.isRegistered());
+
+		backend.windowed = () -> {};
+		Assert.assertTrue(backend.register().isRegistered());
+	}
+
+	@Test
 	public void runsTheReadyCallbacksOnceInTheirOrder() {
 		JOID.onReady(() -> this.trace.add("first"));
 		JOID.onReady(() -> this.trace.add("second"));

@@ -50,7 +50,6 @@ public abstract class Backend {
 		}
 
 		JOID.checkVersion(this.version);
-		this.registered = true;
 		if (this.dataDir != null) {
 			JOIDEnv.dataDir(this.dataDir);
 		}
@@ -75,6 +74,7 @@ public abstract class Backend {
 		this.registerDefaults();
 		this.attachInput();
 
+		this.registered = true;
 		JOID.inst().load();
 		return (T) this;
 	}
