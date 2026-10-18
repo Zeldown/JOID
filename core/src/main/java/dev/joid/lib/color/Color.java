@@ -41,6 +41,7 @@ public final class Color extends LockableValue<Color> {
 	private float b;
 	private float a;
 
+	private int                  channels;
 	private UnaryOperator<Color> update;
 
 	@Getter
@@ -51,6 +52,7 @@ public final class Color extends LockableValue<Color> {
 
 	private Color(final Color color) {
 		this(color.r, color.g, color.b, color.a, color.update, color.isGradient() ? ColorGradient.of(color.gradient.getStartColor().copy(), color.gradient.getEndColor().copy(), color.gradient.getStartPoint(), color.gradient.getEndPoint()) : null);
+		this.channels = color.channels;
 	}
 
 	public Color(final FloatBuffer buffer) {
@@ -311,19 +313,19 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color red(final float red) {
-		return super.mutate("withRed", () -> this.assign(this.copy().withRed(red)));
+		return super.mutate("withRed", () -> this.assign(this.withRed(red), 1));
 	}
 
 	public @NonNull Color blue(final float blue) {
-		return super.mutate("withBlue", () -> this.assign(this.copy().withBlue(blue)));
+		return super.mutate("withBlue", () -> this.assign(this.withBlue(blue), 4));
 	}
 
 	public @NonNull Color alpha(final float alpha) {
-		return super.mutate("withAlpha", () -> this.assign(this.copy().withAlpha(alpha)));
+		return super.mutate("withAlpha", () -> this.assign(this.withAlpha(alpha), 8));
 	}
 
 	public @NonNull Color green(final float green) {
-		return super.mutate("withGreen", () -> this.assign(this.copy().withGreen(green)));
+		return super.mutate("withGreen", () -> this.assign(this.withGreen(green), 2));
 	}
 
 	public @NonNull Color withRed(final float red) {
@@ -359,7 +361,11 @@ public final class Color extends LockableValue<Color> {
 		}
 
 		final Color frame = this.update.apply(this);
-		return frame.update == null ? frame : new Color(frame.r, frame.g, frame.b, frame.a, null, frame.gradient);
+		final Color fixed = frame.update == null ? frame : new Color(frame.r, frame.g, frame.b, frame.a, null, frame.gradient);
+		final Color red = (this.channels & 1) == 0 ? fixed : fixed.withRed(this.r);
+		final Color green = (this.channels & 2) == 0 ? red : red.withGreen(this.g);
+		final Color blue = (this.channels & 4) == 0 ? green : green.withBlue(this.b);
+		return (this.channels & 8) == 0 ? blue : blue.withAlpha(this.a);
 	}
 
 	public boolean isGradient() {
@@ -375,13 +381,13 @@ public final class Color extends LockableValue<Color> {
 		return super.lock();
 	}
 
-	private void assign(final @NonNull Color color) {
+	private void assign(final @NonNull Color color, final int channel) {
 		this.r = color.r;
 		this.g = color.g;
 		this.b = color.b;
 		this.a = color.a;
-		this.update = color.update;
 		this.gradient = color.gradient;
+		this.channels |= this.update == null ? 0 : channel;
 	}
 
 	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform) {

@@ -375,6 +375,16 @@ public class ColorTest {
 	}
 
 	@Test
+	public void keepsTheLastComponentSetOnAnAnimatedColor() {
+		this.bridges.getClock().advance(1000L);
+		final Color color = Color.RAINBOW.copy();
+		for (int i = 0; i < 20000; i++) {
+			color.alpha(i % 100 / 100F).red(i % 50 / 50F);
+		}
+		Assert.assertEquals(Color.RAINBOW(1000L).withRed(1F).withAlpha(0.5F), color.alpha(0.5F).red(1F).update());
+	}
+
+	@Test
 	public void derivesTheFrameOfItsUpdate() {
 		this.bridges.getClock().advance(1000L);
 		Assert.assertEquals(Color.RAINBOW(1000L).scale(0.5F), Color.RAINBOW.scale(0.5F).update());

@@ -94,7 +94,8 @@ public final class VideoAudioPlayer {
 			this.source.group(group);
 		}
 
-		final float volume = this.owner.getVolume() * 0.3F;
+		final Point location = this.owner.getLocation();
+		this.source.gain(this.owner.getVolume() * 0.3F * (location == null ? 1F : this.computeDistanceVolume(location)));
 		if (!this.buffersQueued) {
 			if (this.sampleQueue.remainingCapacity() > 0 && this.getQueuedSamples() < this.sampleRate * this.channels / 5) {
 				return;
@@ -103,15 +104,11 @@ public final class VideoAudioPlayer {
 			this.skip((int) (elapsed * this.sampleRate) * this.channels);
 			this.fill();
 			this.buffersQueued = true;
-			this.source.gain(volume);
 			this.source.play();
 			return;
 		}
 
 		this.fill();
-		final Point location = this.owner.getLocation();
-		final float distanceVolume = location == null ? 1F : this.computeDistanceVolume(location);
-		this.source.gain(volume * distanceVolume);
 		if (!this.source.isPlaying()) {
 			this.source.play();
 		}

@@ -118,7 +118,7 @@ public class VideoAudioPlayerTest {
 		player.update(0D);
 		Assert.assertEquals(1, source.written.size());
 		Assert.assertEquals(1600, source.written.get(0).length);
-		Assert.assertEquals(Collections.singletonList(0.3F), source.gains);
+		Assert.assertEquals(0.3F, source.lastGain(), 0F);
 		Assert.assertTrue(source.playing);
 		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 	}
@@ -329,6 +329,18 @@ public class VideoAudioPlayerTest {
 		player.update(0D);
 		Assert.assertTrue(source.calls.isEmpty());
 		Assert.assertEquals(0F, source.lastGain(), 0F);
+	}
+
+	@Test
+	public void startsMutedFarFromTheOriginWithoutListener() {
+		this.video.location(100F, 0F, 0F);
+		final VideoAudioPlayer player = this.queued();
+		final RecordingAudioSource source = this.audio.source();
+		player.flush();
+		VideoAudioPlayerTest.push(player, 16, 4096);
+		player.update(0D);
+		Assert.assertEquals(Arrays.asList("play", "stop", "play"), source.calls);
+		Assert.assertFalse(source.gains.contains(0.3F));
 	}
 
 	@Test
