@@ -68,6 +68,7 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+		super.requireFrame();
 		this.guard.suspend(() -> {
 			final int[] viewport = new int[4];
 			final int previous = this.binding.getInteger(GlConstants.DRAW_FRAMEBUFFER_BINDING);
@@ -107,6 +108,7 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	protected void drawPrimitive(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer, final @NonNull IShader current) {
+		super.requireFrame();
 		this.guard.run(() -> {
 			final RenderState state = super.getState();
 			this.applyTarget(state);
@@ -159,6 +161,7 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	private void clearBuffer(final int mask, final Runnable prepare) {
+		super.requireFrame();
 		this.guard.run(() -> {
 			this.applyTarget(super.getState());
 			prepare.run();

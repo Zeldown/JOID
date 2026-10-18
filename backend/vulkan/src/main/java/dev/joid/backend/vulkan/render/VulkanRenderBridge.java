@@ -74,6 +74,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 	private int                  passWidth;
 	private int                  depthWidth;
 	private int                  passHeight;
+	private long                 passImage;
 	private int                  depthHeight;
 	private boolean              passActive;
 	private long                 boundPipeline;
@@ -269,7 +270,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 		if (this.passActive) {
 			VK10.vkCmdEndRenderPass(this.host.getCommandBuffer());
 			if (this.passTarget != null) {
-				VulkanContext.transition(this.host.getCommandBuffer(), this.passTarget.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+				VulkanContext.transition(this.host.getCommandBuffer(), this.passImage, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 			}
 			this.passActive = false;
 		}
@@ -301,7 +302,8 @@ public final class VulkanRenderBridge extends RenderBridge {
 			} else {
 				this.passWidth = target.getWidth();
 				this.passHeight = target.getHeight();
-				VulkanContext.transition(buffer, target.getTexture().getImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
+				this.passImage = target.getTexture().getImage();
+				VulkanContext.transition(buffer, this.passImage, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL);
 				info.renderPass(this.context.getOffscreenRenderPass()).framebuffer(target.getFramebuffer());
 			}
 

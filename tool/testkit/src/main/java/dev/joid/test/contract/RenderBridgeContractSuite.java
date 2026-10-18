@@ -109,6 +109,20 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	@Test
+	public void refusesToDrawOutsideAFrame() {
+		final IRenderBridge render = BridgeHandler.RENDER.get();
+		final IFrameBuffer frameBuffer = render.createFrameBuffer(8, 8);
+		try {
+			Assert.assertThrows(IllegalStateException.class, () -> render.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, 8F, 8F, false, RenderBridgeContractSuite.GREEN)));
+			Assert.assertThrows(IllegalStateException.class, () -> render.clearColor(0F, 0F, 0F, 1F));
+			Assert.assertThrows(IllegalStateException.class, () -> render.clearDepth());
+			Assert.assertThrows(IllegalStateException.class, () -> render.raster(frameBuffer, 8, 8, () -> {}));
+		} finally {
+			frameBuffer.delete();
+		}
+	}
+
+	@Test
 	public void compilesCoreShaders() {
 		for (final CoreShader coreShader : CoreShader.values()) {
 			final IShader shader = BridgeHandler.RENDER.get().createShader(coreShader.read(ShaderStage.VERTEX), coreShader.read(ShaderStage.FRAGMENT), BlendState.NORMAL);
@@ -461,6 +475,19 @@ public abstract class RenderBridgeContractSuite {
 
 		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.RED);
 		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+	}
+
+	@Test
+	public void drawsTheScreenAfterAFrameBufferDeletedDuringItsPass() {
+		final IFrameBuffer frameBuffer = BridgeHandler.RENDER.get().createFrameBuffer(8, 8);
+		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+			bridge.getState().frameBuffer(frameBuffer);
+			bridge.clearColor(0F, 1F, 0F, 1F);
+			frameBuffer.delete();
+			bridge.getState().frameBuffer(null);
+			bridge.clearColor(1F, 0F, 0F, 1F);
+		});
+		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.RED);
 	}
 
 	@Test
