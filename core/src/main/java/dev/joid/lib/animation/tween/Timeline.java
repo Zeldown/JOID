@@ -39,6 +39,15 @@ public final class Timeline extends BaseTween<Timeline> {
 		return this;
 	}
 
+	@Override
+	public void kill() {
+		super.kill();
+
+		for (final BaseTween<?> child : this.children) {
+			child.kill();
+		}
+	}
+
 	public List<BaseTween<?>> getChildren() {
 		return Collections.unmodifiableList(this.current.children);
 	}

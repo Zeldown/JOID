@@ -337,6 +337,16 @@ public class TimelineTest {
 		Assert.assertEquals(Arrays.asList("start", "first", "second", "complete"), events);
 	}
 
+	@Test
+	public void stopsItsNextChildrenWhenAChildKillsIt() {
+		final TweenValue second = new TweenValue(0F);
+		final Timeline timeline = Timeline.createSequence();
+		timeline.push(TimelineTest.tween(new TweenValue(0F), 10F).onComplete(event -> timeline.kill())).push(TimelineTest.tween(second, 20F)).start();
+		timeline.update(1.5F);
+		Assert.assertEquals(0F, second.getValue(), 0F);
+		Assert.assertTrue(timeline.isFinished());
+	}
+
 	private static Tween tween(final TweenValue value, final float target) {
 		return value.to(1F).target(target).ease(TweenEquations.LINEAR);
 	}

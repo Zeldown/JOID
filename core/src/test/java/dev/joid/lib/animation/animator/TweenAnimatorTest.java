@@ -204,6 +204,15 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
+	public void staysClearedWhenItsIterationEndClearsIt() {
+		final TweenAnimator animator = TweenAnimator.create();
+		animator.sequence(1F, 10F).repeatYoyo(Tween.INFINITY, 0F).onIterationEnd(event -> animator.clear()).start();
+		animator.update(1.5F);
+		Assert.assertEquals(0F, animator.get(), 0F);
+		Assert.assertNull(animator.getTimeline());
+	}
+
+	@Test
 	public void takesATimelineInPlaceOfTheRunningOne() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(10F, 1F).start();
 		final Timeline running = animator.getTimeline();

@@ -262,7 +262,7 @@ public abstract class BaseTween<T> {
 	}
 
 	private void updateStep() {
-		while (this.isValid(this.step)) {
+		while (!this.isKilled && this.isValid(this.step)) {
 			if (!this.isIterationStep && this.currentTime + this.deltaTime <= 0) {
 				this.isIterationStep = true;
 				this.step -= 1;
