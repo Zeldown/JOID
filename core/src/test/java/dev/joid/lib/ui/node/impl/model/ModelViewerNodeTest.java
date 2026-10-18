@@ -144,6 +144,19 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void writesItsRotationRangeBackIntoItsSignal() {
+		final DoubleSignal yaw = new DoubleSignal(0D);
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).rotationYawRange(-5D, 5D).rotationYaw(yaw).model(new FixedModel());
+		this.bridges.open(new NodeUI(viewer)).frame();
+		yaw.set(10D);
+		Assert.assertEquals(5D, yaw.peek(), 0D);
+		yaw.set(20D);
+		this.bridges.frames(2);
+		Assert.assertEquals(5D, viewer.getRotationYaw(), 0D);
+		Assert.assertEquals(5D, yaw.peek(), 0D);
+	}
+
+	@Test
 	public void forgetsItsZoomSignalOnceGivenAValue() {
 		final DoubleSignal zoom = new DoubleSignal(1.5D);
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom).zoom(0.8D).model(new FixedModel());

@@ -201,9 +201,9 @@ public abstract class UI implements IIndexedElement {
 	public final void load(final double finalWidth, final double finalHeight) {
 		final long start = System.nanoTime();
 
+		this.rescale();
 		this.bindings.subscribe(this.loaded);
 		this.view.resize(finalWidth, finalHeight);
-		this.zoomValue.update(this.view.getZoom());
 
 		if (!this.initialized) {
 			UIPropertyHook.load(this);
@@ -786,6 +786,15 @@ public abstract class UI implements IIndexedElement {
 		}
 	}
 
+	private void rescale() {
+		final IUIBridge bridge = this.getBridge();
+		final double interfaceScale = bridge == null || !this.scale.active() ? 1D : this.scale.apply(bridge.getInterfaceScale(this));
+		if (interfaceScale != this.view.getInterfaceScale()) {
+			this.view.interfaceScale(interfaceScale);
+			this.zoomValue.reapply();
+		}
+	}
+
 	private void reloadInDev(final Runnable reload) {
 		try {
 			reload.run();
@@ -866,11 +875,7 @@ public abstract class UI implements IIndexedElement {
 			}
 		}
 
-		final double interfaceScale = bridge == null || !this.scale.active() ? 1D : this.scale.apply(bridge.getInterfaceScale(this));
-		if (interfaceScale != this.view.getInterfaceScale()) {
-			this.view.interfaceScale(interfaceScale);
-			this.zoomValue.update(this.zoom);
-		}
+		this.rescale();
 
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();

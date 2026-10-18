@@ -426,6 +426,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireUpdate() {
+		this.bindings.pull();
 		this.fireAnimate();
 		this.drawList.ordered().forEach(Node::fireUpdate);
 		if (this.scrollbar != null) {

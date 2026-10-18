@@ -31,6 +31,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
@@ -1582,6 +1583,34 @@ public class UITest {
 	}
 
 	@Test
+	public void opensAtTheZoomItAsksForUnderAHalfInterfaceScale() {
+		this.bridges.getUi().interfaceScale(0.5D);
+		final TraceUI built = new TraceUI(this.trace).zoom(2D);
+		final InitUI initialized = new InitUI(ui -> ui.zoom(2D));
+		this.bridges.open(built).frame();
+		this.bridges.open(initialized).frame();
+		Assert.assertEquals(2D, built.getZoom(), 0D);
+		Assert.assertEquals(2D, initialized.getZoom(), 0D);
+		this.bridges.resize(1280, 720).frame();
+		Assert.assertEquals(2D, initialized.getZoom(), 0D);
+	}
+
+	@Test
+	public void keepsItsZoomSignalUnderAHalfInterfaceScale() {
+		this.bridges.getUi().interfaceScale(0.5D);
+		final DoubleSignal builtZoom = new DoubleSignal(2D);
+		final DoubleSignal initZoom = new DoubleSignal(2D);
+		final TraceUI built = new TraceUI(this.trace).zoom(builtZoom);
+		final InitUI initialized = new InitUI(ui -> ui.zoom(initZoom));
+		this.bridges.open(built).frame();
+		this.bridges.open(initialized).frame();
+		Assert.assertEquals(2D, built.getZoom(), 0D);
+		Assert.assertEquals(2D, builtZoom.peek(), 0D);
+		Assert.assertEquals(2D, initialized.getZoom(), 0D);
+		Assert.assertEquals(2D, initZoom.peek(), 0D);
+	}
+
+	@Test
 	public void keepsTheFittedSizeWhenItsScaleIsInactive() {
 		final HoverBridge bridge = new HoverBridge();
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D));
@@ -2528,6 +2557,18 @@ public class UITest {
 	public static final class PopupOverlayUI extends UI {}
 
 	public static final class PlainUI extends UI {}
+
+	@AllArgsConstructor
+	public static final class InitUI extends UI {
+
+		private final Consumer<UI> init;
+
+		@Override
+		public void init() {
+			this.init.accept(this);
+		}
+
+	}
 
 	@UIDataScale(limited = true, limit = 0.75D)
 	public static final class LimitedScaleUI extends TraceUI {

@@ -148,19 +148,19 @@ public class ModelViewerNode extends BaseModelNode {
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYaw(final double rotationYaw) {
-		return super.start("rotationYaw", rotationYaw, value -> this.rotationValue.update(Point.of(value, this.rotationValue.getRequested().getY())));
+		return super.start("rotationYaw", rotationYaw, value -> this.aim(Point.of(value, this.rotationValue.getRequested().getY())));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYaw(final @NonNull Signal<Double> rotationYaw) {
-		return super.bind("rotationYaw", rotationYaw, value -> this.rotationValue.update(Point.of(value, this.rotationValue.getRequested().getY())), Point::getX);
+		return super.bind("rotationYaw", rotationYaw, value -> this.aim(Point.of(value, this.rotationValue.getRequested().getY())), Point::getX);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitch(final double rotationPitch) {
-		return super.start("rotationPitch", rotationPitch, value -> this.rotationValue.update(Point.of(this.rotationValue.getRequested().getX(), value)));
+		return super.start("rotationPitch", rotationPitch, value -> this.aim(Point.of(this.rotationValue.getRequested().getX(), value)));
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitch(final @NonNull Signal<Double> rotationPitch) {
-		return super.bind("rotationPitch", rotationPitch, value -> this.rotationValue.update(Point.of(this.rotationValue.getRequested().getX(), value)), Point::getY);
+		return super.bind("rotationPitch", rotationPitch, value -> this.aim(Point.of(this.rotationValue.getRequested().getX(), value)), Point::getY);
 	}
 
 	public final <T extends ModelViewerNode> @NonNull T zoomRange(final double min, final double max) {
@@ -229,6 +229,11 @@ public class ModelViewerNode extends BaseModelNode {
 		this.drawnZoom          = this.zoom;
 		this.drawnRotationYaw   = this.rotationYaw;
 		this.drawnRotationPitch = this.rotationPitch;
+	}
+
+	private void aim(final @NonNull Point rotation) {
+		this.rotationValue.update(rotation);
+		this.turn(Point.of(this.rotationYaw, this.rotationPitch));
 	}
 
 	private void turn(final @NonNull Point rotation) {

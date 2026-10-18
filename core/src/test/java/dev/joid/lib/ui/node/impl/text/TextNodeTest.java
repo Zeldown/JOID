@@ -76,6 +76,17 @@ public class TextNodeTest {
 	}
 
 	@Test
+	public void movesTheNextNodeOfAFlexOnTheFrameItsFollowedTextChanges() {
+		final AtomicReference<String> value = new AtomicReference<>("hello");
+		final TextNode node = TextNode.create(0D, 0D).text(() -> this.text(value.get()));
+		final RectNode next = RectNode.create(0D, 0D, 10D, 20D).color(new Color(0.2F, 0.4F, 0.6F, 1F));
+		this.bridges.open(new NodeUI(FlexNode.vertical(0D, 0D, 0D).append(FlexNode.horizontal(0D, 0D, 20D).append(node, next))));
+		value.set("hello world");
+		this.bridges.frame();
+		Assert.assertEquals(110D, this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F).get(0).getLeft(), 0.001D);
+	}
+
+	@Test
 	public void keepsTheBoxItWasGiven() {
 		final TextNode node = TextNode.create(10D, 20D, 200D, 40D).text(this.text("hello"));
 		this.bridges.open(new NodeUI(node));
