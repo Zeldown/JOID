@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.event.EventListener;
@@ -53,7 +54,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		final boolean isPlaceholder = text.isEmpty() && !super.isFocused();
 		final double textX = this.getTextX(super.getX(), isPlaceholder ? super.getPlaceholder() : text);
 		final double textY = this.alignY.isCenter() ? super.getY() + (super.getHeight() - info.getHeight()) / 2D : this.alignY.isEnd() ? super.getY() + super.getHeight() - info.getHeight() - super.getMarginBottom() : super.getY() + super.getMarginTop();
-		final int[] tags = FieldNode.tags(text, super.getShownInfo());
+		final int[] tags = TextMarkup.tags(text, super.getShownInfo());
 		final FieldSelection selection = super.getSelection();
 		super.getUi().mask(super.getX() + super.getMarginLeft(), super.getY(), super.getWidth() - super.getMarginLeft() - super.getMarginRight(), super.getHeight(), () -> {
 			DrawUtils.TEXT.drawText(textX, textY, isPlaceholder ? super.getPlaceholder() : text, isPlaceholder ? super.getPlaceholderInfo() : super.getShownInfo(), Align.START, Align.START);
@@ -88,7 +89,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 	@Override
 	protected final int getPositionAt(final double mouseX, final double mouseY) {
 		final String text = super.getText();
-		final int[] tags = FieldNode.tags(text, super.getShownInfo());
+		final int[] tags = TextMarkup.tags(text, super.getShownInfo());
 		return super.getLinePosition(text, tags, 0, text.length(), "", mouseX - this.getTextX(super.getAbsoluteX(), text));
 	}
 
@@ -100,7 +101,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		final double textX = this.getTextX(super.getX(), super.getText());
-		final double cursorX = textX + this.getX(super.getText(), FieldNode.tags(super.getText(), super.getShownInfo()), super.getCursorPosition());
+		final double cursorX = textX + this.getX(super.getText(), TextMarkup.tags(super.getText(), super.getShownInfo()), super.getCursorPosition());
 		if (cursorX > super.getX() + super.getWidth() - super.getMarginRight() - super.getCursorMargin()) {
 			this.xOffset += cursorX - (super.getX() + super.getWidth() - super.getMarginRight() - super.getCursorMargin());
 		}
@@ -114,7 +115,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		}
 
 		final double textX = this.getTextX(super.getX(), super.getText());
-		final double cursorX = textX + this.getX(super.getText(), FieldNode.tags(super.getText(), super.getShownInfo()), super.getCursorPosition());
+		final double cursorX = textX + this.getX(super.getText(), TextMarkup.tags(super.getText(), super.getShownInfo()), super.getCursorPosition());
 		if (cursorX < super.getX() + super.getMarginLeft() + super.getCursorMargin()) {
 			this.xOffset -= super.getX() + super.getMarginLeft() + super.getCursorMargin() - cursorX;
 		}

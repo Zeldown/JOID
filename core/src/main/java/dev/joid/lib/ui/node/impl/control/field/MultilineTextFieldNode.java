@@ -7,6 +7,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.draw.text.TextOverflow;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
 import dev.joid.lib.utils.align.Align;
@@ -205,7 +206,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	private @NonNull FieldLayout getLayout() {
 		final String text = super.getText();
 		final TextInfo info = super.getShownInfo();
-		final int[] tags = FieldNode.tags(text, info);
+		final int[] tags = TextMarkup.tags(text, info);
 		final List<FieldLine> lines = new ArrayList<>();
 		final FieldLayout layout = new FieldLayout(text, tags, lines);
 		if (text.isEmpty()) {
@@ -217,7 +218,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			final int newLine = text.indexOf('\n', paragraphStart);
 			final int paragraphEnd = newLine < 0 ? text.length() : newLine;
 			int start = paragraphStart;
-			String prefix = FieldNode.opened(text, tags, start);
+			String prefix = TextMarkup.opened(text, tags, start);
 			for (int i = paragraphStart; i < paragraphEnd; i++) {
 				if (tags[i] != -1 || info.getWidth(prefix + text.substring(start, i + 1)) <= this.getRawWidth()) {
 					continue;
@@ -241,7 +242,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 				if (split > start) {
 					lines.add(new FieldLine(start, split, prefix));
 					start = text.charAt(split) == ' ' ? split + 1 : split;
-					prefix = FieldNode.opened(text, tags, start);
+					prefix = TextMarkup.opened(text, tags, start);
 				}
 			}
 

@@ -64,7 +64,7 @@ public final class DrawText {
 				double overflowWidth = 0D;
 				for (final TextElement element : text.getElementList()) {
 					final String elementText = text.getText(element);
-					final int[] tags = DrawText.tags(element, elementText);
+					final int[] tags = TextMarkup.tags(elementText, element.getInfo());
 					int fit = 0;
 					for (int i = 0; i <= elementText.length(); i++) {
 						if (i < elementText.length() && (tags[i] != -1 && tags[i] != i || Character.isLowSurrogate(elementText.charAt(i)))) {
@@ -154,7 +154,7 @@ public final class DrawText {
 		double spacing = 0D;
 		for (final TextElement element : text.getElementList()) {
 			final String elementText = text.getText(element).replace("<br>", String.valueOf('\n'));
-			final int[] tags = DrawText.tags(element, elementText);
+			final int[] tags = TextMarkup.tags(elementText, element.getInfo());
 			String opened = "";
 			int lastSplit = 0;
 			for (int i = 0; i < elementText.length(); i++) {
@@ -172,7 +172,7 @@ public final class DrawText {
 						i++;
 					}
 					lastSplit = i + 1;
-					opened = DrawText.opened(elementText, tags, lastSplit);
+					opened = TextMarkup.opened(elementText, tags, lastSplit);
 					continue;
 				}
 
@@ -193,7 +193,7 @@ public final class DrawText {
 						currentText = text.copyProperties().modifier(null);
 						spacing = 0D;
 						lastSplit = elementText.charAt(foundSplit) == ' ' ? foundSplit + 1 : foundSplit;
-						opened = DrawText.opened(elementText, tags, lastSplit);
+						opened = TextMarkup.opened(elementText, tags, lastSplit);
 						i--;
 					}
 				}
@@ -214,20 +214,6 @@ public final class DrawText {
 
 	public @NonNull List<@NonNull String> getLines(final double width, final @NonNull String text, final @NonNull TextInfo info) {
 		return this.getLines(width, Text.create(text, info)).stream().map(Text::getText).collect(Collectors.toList());
-	}
-
-	private static @NonNull int[] tags(final @NonNull TextElement element, final @NonNull String text) {
-		return TextMarkup.tags(element.getInfo().getMarkups(), text, element.getInfo().getStyle().derive());
-	}
-
-	private static @NonNull String opened(final @NonNull String text, final @NonNull int[] tags, final int end) {
-		final StringBuilder opened = new StringBuilder();
-		for (int i = 0; i < end; i++) {
-			if (tags[i] != -1) {
-				opened.append(text.charAt(i));
-			}
-		}
-		return opened.toString();
 	}
 
 }

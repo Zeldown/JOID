@@ -1,7 +1,5 @@
 package dev.joid.lib.ui.node.impl.control.field;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -10,8 +8,6 @@ import java.util.function.UnaryOperator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.font.TextStyle;
-import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
@@ -630,7 +626,7 @@ public abstract class FieldNode<V> extends Node {
 				continue;
 			}
 
-			final double charWidth = this.getShownInfo().getWidth(FieldNode.opened(text, tags, i) + text.charAt(i));
+			final double charWidth = this.getShownInfo().getWidth(TextMarkup.opened(text, tags, i) + text.charAt(i));
 			if (x < this.getLineX(text, tags, start, end, prefix, i) + charWidth / 2D) {
 				return previous;
 			}
@@ -930,7 +926,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private int[] getWordRange(final int position) {
-		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
+		final int[] tags = TextMarkup.tags(this.text, this.getShownInfo());
 		final boolean word = position < this.text.length() && !this.isSeparator(tags, position) || position > 0 && !this.isSeparator(tags, position - 1);
 		int start = position;
 		while (start > 0 && this.isSeparator(tags, start - 1) != word) {
@@ -994,7 +990,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private int nextWordIndex() {
-		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
+		final int[] tags = TextMarkup.tags(this.text, this.getShownInfo());
 		int index = this.getCursorPosition();
 		while (index < this.text.length() && !this.isSeparator(tags, index)) {
 			index++;
@@ -1008,7 +1004,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private int previousWordIndex() {
-		final int[] tags = FieldNode.tags(this.text, this.getShownInfo());
+		final int[] tags = TextMarkup.tags(this.text, this.getShownInfo());
 		int index = this.getCursorPosition();
 		while (index > 0 && this.isSeparator(tags, index - 1)) {
 			index--;
@@ -1036,39 +1032,6 @@ public abstract class FieldNode<V> extends Node {
 	private boolean isSeparator(final @NonNull int[] tags, final int index) {
 		final char c = this.text.charAt(index);
 		return tags[index] == -1 && (c == ' ' || c == '\n');
-	}
-
-	protected static @NonNull int[] tags(final @NonNull String text, final @NonNull TextInfo info) {
-		final int[] tags = new int[text.length()];
-		Arrays.fill(tags, -1);
-
-		final List<ITextMarkup> markups = info.getMarkups();
-		if (markups.isEmpty()) {
-			return tags;
-		}
-
-		final TextStyle style = info.getStyle().derive();
-		for (int index = 0; index < text.length();) {
-			final int consumed = TextMarkup.parse(markups, text, index, style);
-			if (consumed > 0) {
-				Arrays.fill(tags, index, index + consumed, index);
-				index += consumed;
-				continue;
-			}
-
-			index += Character.charCount(text.codePointAt(index));
-		}
-		return tags;
-	}
-
-	protected static @NonNull String opened(final @NonNull String text, final @NonNull int[] tags, final int end) {
-		final StringBuilder opened = new StringBuilder();
-		for (int i = 0; i < end; i++) {
-			if (tags[i] != -1) {
-				opened.append(text.charAt(i));
-			}
-		}
-		return opened.toString();
 	}
 
 	private static <X> boolean settle(final @NonNull InteractiveValue<X> value, final X next) {

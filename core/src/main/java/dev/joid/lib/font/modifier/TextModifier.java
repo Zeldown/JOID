@@ -1,13 +1,11 @@
 package dev.joid.lib.font.modifier;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.function.UnaryOperator;
 
 import org.apache.commons.lang3.StringUtils;
 
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import lombok.NonNull;
 
@@ -26,12 +24,11 @@ public interface TextModifier {
 	public @NonNull String modify(final @NonNull String text);
 
 	public default @NonNull String modify(final @NonNull String text, final @NonNull TextInfo info) {
-		final List<ITextMarkup> markups = info.getMarkups();
-		if (markups.isEmpty()) {
+		if (info.getMarkups().isEmpty()) {
 			return this.modify(text);
 		}
 
-		final int[] tags = TextMarkup.tags(markups, text, info.getStyle().derive());
+		final int[] tags = TextMarkup.tags(text, info);
 		final StringBuilder builder = new StringBuilder();
 		final StringBuilder plain = new StringBuilder();
 		int start = 0;
