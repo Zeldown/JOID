@@ -200,7 +200,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	private synchronized @NonNull ResourceAnimation read() {
 		if (this.source == null) {
-			try (InputStream stream = this.asset.open()) {
+			try (final InputStream stream = this.asset.open()) {
 				this.source = this.reader.read(stream);
 			} catch (final IOException exception) {
 				throw new UncheckedIOException("The animation " + this.asset.getUniqueId() + " cannot be read", exception);

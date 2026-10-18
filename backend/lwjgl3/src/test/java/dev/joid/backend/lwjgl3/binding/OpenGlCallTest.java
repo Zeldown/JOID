@@ -32,13 +32,13 @@ public class OpenGlCallTest {
 		for (final Class<?> type : new Class<?>[] {Lwjgl3Backend.class, GlRenderBridge.class}) {
 			final File root = new File(type.getProtectionDomain().getCodeSource().getLocation().toURI());
 			if (root.isDirectory()) {
-				try (Stream<Path> files = Files.walk(root.toPath())) {
+				try (final Stream<Path> files = Files.walk(root.toPath())) {
 					for (final Path file : files.filter(path -> path.toString().endsWith(".class")).collect(Collectors.toList())) {
 						OpenGlCallTest.check(root.toPath().relativize(file).toString().replace('\\', '/'), Files.readAllBytes(file), callerList);
 					}
 				}
 			} else {
-				try (ZipFile jar = new ZipFile(root)) {
+				try (final ZipFile jar = new ZipFile(root)) {
 					final Enumeration<? extends ZipEntry> entries = jar.entries();
 					while (entries.hasMoreElements()) {
 						final ZipEntry entry = entries.nextElement();

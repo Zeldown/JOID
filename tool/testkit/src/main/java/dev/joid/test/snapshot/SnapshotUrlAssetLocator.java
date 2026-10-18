@@ -35,7 +35,7 @@ public final class SnapshotUrlAssetLocator implements IAssetLocator {
 	}
 
 	private static void download(final String url, final File file) throws IOException {
-		try (InputStream stream = UrlAsset.of(url).open()) {
+		try (final InputStream stream = UrlAsset.of(url).open()) {
 			Files.copy(stream, file.toPath());
 		}
 	}

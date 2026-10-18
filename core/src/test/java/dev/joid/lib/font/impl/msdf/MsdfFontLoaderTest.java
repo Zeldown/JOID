@@ -136,7 +136,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 30000L)
 	public void loadsFromAnyHandle() throws IOException {
-		try (InputStream stream = MsdfFontLoaderTest.stream("Regular")) {
+		try (final InputStream stream = MsdfFontLoaderTest.stream("Regular")) {
 			final MsdfFont font = MsdfFontLoader.load(stream).join();
 			Assert.assertEquals(1, font.getFamily().getFaces().size());
 			Assert.assertSame(FontWeight.REGULAR, font.getFace(FontWeight.BOLD, false).getWeight());
@@ -160,7 +160,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 10000L)
 	public void loadsAMsdfStream() throws IOException {
-		try (InputStream stream = new FileInputStream(MsdfFontLoaderTest.atlas)) {
+		try (final InputStream stream = new FileInputStream(MsdfFontLoaderTest.atlas)) {
 			Assert.assertEquals("JOID Test Regular", MsdfFontLoader.load(stream).join().getFace(FontWeight.REGULAR, false).getName());
 		}
 	}
@@ -179,7 +179,7 @@ public class MsdfFontLoaderTest {
 		body[0] = (byte) (MsdfWriter.VERSION - 1);
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		output.write(bytes, 0, 8);
-		try (DeflaterOutputStream deflater = new DeflaterOutputStream(output)) {
+		try (final DeflaterOutputStream deflater = new DeflaterOutputStream(output)) {
 			deflater.write(body);
 		}
 		final Throwable cause = MsdfFontLoaderTest.cause(new ByteArrayInputStream(output.toByteArray()));

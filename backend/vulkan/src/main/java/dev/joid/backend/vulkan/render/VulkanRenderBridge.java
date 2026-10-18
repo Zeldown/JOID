@@ -191,7 +191,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
 		super.requireFrame();
 		this.beginPass((VulkanFrameBuffer) target);
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkCommandBuffer buffer = this.host.getCommandBuffer();
 			VK10.vkCmdSetViewport(buffer, 0, VkViewport.calloc(1, stack).width(width).height(height).minDepth(0F).maxDepth(1F));
 			final VkRect2D.Buffer scissor = VkRect2D.calloc(1, stack);
@@ -235,7 +235,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 			this.boundPipeline = pipeline;
 		}
 
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			this.applyDynamicState(stack, state, target != null);
 			final long vertexOffset = this.writeVertices(buffer);
 			final IntBuffer dynamicOffsets = this.writeUniforms(stack, state, shader, buffer);
@@ -283,7 +283,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 		this.endPass();
 		final VkCommandBuffer buffer = this.host.getCommandBuffer();
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkRenderPassBeginInfo info = VkRenderPassBeginInfo.calloc(stack).sType$Default();
 			if (target == null) {
 				this.passWidth = this.host.getTargetWidth();
@@ -354,7 +354,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 	private void clearAttachment(final int aspect, final Consumer<VkClearValue> value) {
 		super.requireFrame();
 		this.beginPass((VulkanFrameBuffer) super.getState().getFrameBuffer());
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(aspect);
 			value.accept(attachment.clearValue());
 			final VkClearRect.Buffer rect = VkClearRect.calloc(1, stack).baseArrayLayer(0).layerCount(1);
@@ -423,7 +423,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	private long[] createSamplers() {
 		final long[] samplers = new long[TextureSampling.values().size()];
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			for (final TextureSampling sampling : TextureSampling.values()) {
 				samplers[sampling.getIndex()] = this.createSampler(stack, sampling);
 			}

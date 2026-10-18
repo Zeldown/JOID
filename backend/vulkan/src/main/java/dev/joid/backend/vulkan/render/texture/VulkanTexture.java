@@ -59,7 +59,7 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 		final long image = this.image;
 		final int levels = super.getLevels();
 		this.bridge.record(buffer -> {
-			try (MemoryStack stack = MemoryStack.stackPush()) {
+			try (final MemoryStack stack = MemoryStack.stackPush()) {
 				VulkanContext.transition(buffer, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, levels);
 
 				final VkBufferImageCopy.Buffer copy = VkBufferImageCopy.calloc(1, stack).bufferOffset(0L);
@@ -77,7 +77,7 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 		if (allocatedLevels == chain.getLevels()) {
 			final long image = this.image;
 			this.bridge.record(buffer -> {
-				try (MemoryStack stack = MemoryStack.stackPush()) {
+				try (final MemoryStack stack = MemoryStack.stackPush()) {
 					VulkanContext.transition(buffer, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, chain.getLevels());
 					VulkanTexture.blitLevels(buffer, stack, image, chain.getLevels(), chain);
 				}
@@ -89,7 +89,7 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 		final long source = this.image;
 		final long target = storage[0];
 		this.bridge.record(buffer -> {
-			try (MemoryStack stack = MemoryStack.stackPush()) {
+			try (final MemoryStack stack = MemoryStack.stackPush()) {
 				VulkanContext.transition(buffer, source, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, 0, 1);
 				VulkanContext.transition(buffer, target, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_UNDEFINED, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 0, chain.getLevels());
 

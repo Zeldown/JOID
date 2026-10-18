@@ -43,7 +43,7 @@ public final class BinaryMsdfSource extends MsdfSource {
 
 	@Override
 	protected @NonNull MsdfFontFace parse() throws IOException {
-		try (InputStream stream = this.asset.open()) {
+		try (final InputStream stream = this.asset.open()) {
 			return BinaryMsdfSource.parse(stream);
 		}
 	}
@@ -55,7 +55,7 @@ public final class BinaryMsdfSource extends MsdfSource {
 			throw new IOException("The file does not start with JOIDMSDF, it is not a font made by the msdf tool of JOID: generate it with that tool");
 		}
 
-		try (DataInputStream input = new DataInputStream(new InflaterInputStream(stream))) {
+		try (final DataInputStream input = new DataInputStream(new InflaterInputStream(stream))) {
 			final int version = input.readUnsignedByte();
 			if (version != MsdfWriter.VERSION) {
 				throw new IOException("The msdf font version " + version + " is not supported, only the version " + MsdfWriter.VERSION + " loads: generate it again with the msdf tool of JOID");

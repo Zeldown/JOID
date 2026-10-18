@@ -103,7 +103,7 @@ public class VulkanDescriptorCacheTest {
 	}
 
 	private static long createPool(final VkDevice device) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkDescriptorPoolSize.Buffer sizes = VkDescriptorPoolSize.calloc(1, stack);
 			sizes.get(0).type(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(1);
 			final LongBuffer pool = stack.mallocLong(1);
@@ -113,7 +113,7 @@ public class VulkanDescriptorCacheTest {
 	}
 
 	private static long allocate(final VkDevice device, final long pool, final long layout) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer set = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkAllocateDescriptorSets(device, VkDescriptorSetAllocateInfo.calloc(stack).sType$Default().descriptorPool(pool).pSetLayouts(stack.longs(layout)), set), "vkAllocateDescriptorSets");
 			return set.get(0);
@@ -122,7 +122,7 @@ public class VulkanDescriptorCacheTest {
 
 	private static boolean isFull(final VkDevice device, final long layout) {
 		final long pool = VulkanDescriptorCacheTest.createPool(device);
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			VulkanDescriptorCacheTest.allocate(device, pool, layout);
 			return VK10.vkAllocateDescriptorSets(device, VkDescriptorSetAllocateInfo.calloc(stack).sType$Default().descriptorPool(pool).pSetLayouts(stack.longs(layout)), stack.mallocLong(1)) != VK10.VK_SUCCESS;
 		} finally {
@@ -131,7 +131,7 @@ public class VulkanDescriptorCacheTest {
 	}
 
 	private static long createLayout(final VkDevice device) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkDescriptorSetLayoutBinding.Buffer bindings = VkDescriptorSetLayoutBinding.calloc(1, stack);
 			bindings.get(0).binding(0).descriptorType(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(1).stageFlags(VK10.VK_SHADER_STAGE_VERTEX_BIT);
 			final LongBuffer layout = stack.mallocLong(1);

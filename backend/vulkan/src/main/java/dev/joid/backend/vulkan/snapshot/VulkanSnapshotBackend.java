@@ -62,7 +62,7 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 		final int offset = this.host.getTargetHeight() - height;
 
 		final VulkanBuffer buffer = new VulkanBuffer(context, (long) width * height * 4L, VK10.VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			VulkanContext.transition(command, image, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL);
 
 			final VkBufferImageCopy.Buffer copy = VkBufferImageCopy.calloc(1, stack);

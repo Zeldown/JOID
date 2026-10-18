@@ -57,7 +57,7 @@ public final class VulkanContext {
 
 		this.commandPool    = VulkanContext.createCommandPool(this.device, host.getQueueFamilyIndex());
 
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkPhysicalDeviceProperties properties = VkPhysicalDeviceProperties.malloc(stack);
 			VK10.vkGetPhysicalDeviceProperties(this.physicalDevice, properties);
 			this.deviceName       = properties.deviceNameString();
@@ -80,7 +80,7 @@ public final class VulkanContext {
 	}
 
 	public long createRenderPass(final int colorFormat, final int depthFormat, final boolean clearDepth) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkAttachmentDescription.Buffer attachments = VkAttachmentDescription.calloc(2, stack);
 			attachments.get(0)
 					.format(colorFormat)
@@ -127,7 +127,7 @@ public final class VulkanContext {
 	}
 
 	public long[] createImage(final int width, final int height, final int format, final int usage, final int aspect, final int levels) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageCreateInfo info = VkImageCreateInfo.calloc(stack)
 					.sType$Default()
 					.imageType(VK10.VK_IMAGE_TYPE_2D)
@@ -159,7 +159,7 @@ public final class VulkanContext {
 	}
 
 	public long[] createBuffer(final long size, final int usage, final int properties) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer buffer = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkCreateBuffer(this.device, VkBufferCreateInfo.calloc(stack).sType$Default().size(size).usage(usage).sharingMode(VK10.VK_SHARING_MODE_EXCLUSIVE), null, buffer), "vkCreateBuffer");
 
@@ -172,7 +172,7 @@ public final class VulkanContext {
 	}
 
 	public void submit(final Consumer<VkCommandBuffer> recorder) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final PointerBuffer handle = stack.mallocPointer(1);
 			VulkanContext.check(VK10.vkAllocateCommandBuffers(this.device, VkCommandBufferAllocateInfo.calloc(stack).sType$Default().commandPool(this.commandPool).level(VK10.VK_COMMAND_BUFFER_LEVEL_PRIMARY).commandBufferCount(1), handle), "vkAllocateCommandBuffers");
 			final VkCommandBuffer buffer = new VkCommandBuffer(handle.get(0), this.device);
@@ -190,7 +190,7 @@ public final class VulkanContext {
 	}
 
 	public static void transition(final VkCommandBuffer buffer, final long image, final int aspect, final int oldLayout, final int newLayout, final int baseLevel, final int levels) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageMemoryBarrier.Buffer barrier = VkImageMemoryBarrier.calloc(1, stack)
 					.sType$Default()
 					.oldLayout(oldLayout)
@@ -206,7 +206,7 @@ public final class VulkanContext {
 	}
 
 	public static long createCommandPool(final VkDevice device, final int queueFamilyIndex) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer commandPool = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkCreateCommandPool(device, VkCommandPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT).queueFamilyIndex(queueFamilyIndex), null, commandPool), "vkCreateCommandPool");
 			return commandPool.get(0);
@@ -214,7 +214,7 @@ public final class VulkanContext {
 	}
 
 	public static long createImageView(final VkDevice device, final long image, final int format, final int aspect, final int levels) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkImageViewCreateInfo info = VkImageViewCreateInfo.calloc(stack)
 					.sType$Default()
 					.image(image)

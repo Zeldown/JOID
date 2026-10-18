@@ -413,7 +413,7 @@ public final class SnapshotRunner {
 	}
 
 	private static List<String> read(final String scenario) {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotRunner.class.getResourceAsStream("/snapshot/" + scenario + ".txt"), StandardCharsets.UTF_8))) {
+		try (final BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotRunner.class.getResourceAsStream("/snapshot/" + scenario + ".txt"), StandardCharsets.UTF_8))) {
 			return reader.lines().collect(Collectors.toList());
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);

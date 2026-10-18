@@ -22,7 +22,7 @@ public class SignalReplayClassTest {
 	@Test
 	public void readsTheBytecodeFromTheFolderOfTheLoadedClass() throws Exception {
 		final File file = this.copy();
-		try (URLClassLoader loader = new URLClassLoader(new URL[] {this.folder.getRoot().toURI().toURL()}, null)) {
+		try (final URLClassLoader loader = new URLClassLoader(new URL[] {this.folder.getRoot().toURI().toURL()}, null)) {
 			final Class<?> type = Class.forName(ReplayHiddenFixture.class.getName(), false, loader);
 			final SignalReplayClass replayClass = SignalReplayClass.read(ReplayHiddenFixture.class.getName(), type, SignalReplayClassTest.class.getClassLoader());
 			Assert.assertEquals(file.getCanonicalFile(), replayClass.getFile().getCanonicalFile());
@@ -33,7 +33,7 @@ public class SignalReplayClassTest {
 	@Test
 	public void becomesStaleOnceItsClassFileChanges() throws Exception {
 		final File file = this.copy();
-		try (URLClassLoader loader = new URLClassLoader(new URL[] {this.folder.getRoot().toURI().toURL()}, null)) {
+		try (final URLClassLoader loader = new URLClassLoader(new URL[] {this.folder.getRoot().toURI().toURL()}, null)) {
 			final Class<?> type = Class.forName(ReplayHiddenFixture.class.getName(), false, loader);
 			final SignalReplayClass replayClass = SignalReplayClass.read(ReplayHiddenFixture.class.getName(), type, SignalReplayClassTest.class.getClassLoader());
 			Assert.assertFalse(replayClass.isStale());
@@ -53,7 +53,7 @@ public class SignalReplayClassTest {
 	private File copy() throws IOException {
 		final File file = new File(this.folder.getRoot(), "dev/joid/demo/replay/ReplayHiddenFixture.class");
 		Assert.assertTrue(file.getParentFile().mkdirs());
-		try (InputStream input = ReplayHiddenFixture.class.getResourceAsStream("ReplayHiddenFixture.class")) {
+		try (final InputStream input = ReplayHiddenFixture.class.getResourceAsStream("ReplayHiddenFixture.class")) {
 			Files.copy(input, file.toPath());
 		}
 		return file;

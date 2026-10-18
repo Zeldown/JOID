@@ -201,7 +201,7 @@ public class OpenTypeMsdfSourceTest {
 		final byte[] font = OpenTypeMsdfSourceTest.font();
 		final File file = OpenTypeMsdfSourceTest.resolve(font);
 		Files.write(file.toPath(), "corrupted".getBytes(StandardCharsets.UTF_8));
-		try (InputStream reader = new FileInputStream(file)) {
+		try (final InputStream reader = new FileInputStream(file)) {
 			Assert.assertEquals("JOID Test Regular", BinaryMsdfSource.of(OpenTypeMsdfSourceTest.regenerate(font)).read().getName());
 			Assert.assertEquals('c', reader.read());
 		}
@@ -319,7 +319,7 @@ public class OpenTypeMsdfSourceTest {
 		body[0] = (byte) (MsdfWriter.VERSION - 1);
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		output.write(bytes, 0, 8);
-		try (DeflaterOutputStream deflater = new DeflaterOutputStream(output)) {
+		try (final DeflaterOutputStream deflater = new DeflaterOutputStream(output)) {
 			deflater.write(body);
 		}
 		Files.write(file.toPath(), output.toByteArray());

@@ -173,7 +173,7 @@ public class BinaryMsdfSourceTest {
 	private static byte[] synthetic(final int version) throws IOException {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		output.write("JOIDMSDF".getBytes(StandardCharsets.US_ASCII));
-		try (DataOutputStream data = new DataOutputStream(new DeflaterOutputStream(output))) {
+		try (final DataOutputStream data = new DataOutputStream(new DeflaterOutputStream(output))) {
 			data.writeByte(version);
 			data.writeShort(300);
 			data.writeBoolean(true);

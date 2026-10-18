@@ -17,7 +17,7 @@ public final class ImageUtils {
 
 	public static @NonNull BufferedImage read(final @NonNull InputStream stream, final @NonNull ImageReaderSpi spi) throws IOException {
 		final ImageReader reader = spi.createReaderInstance(null);
-		try (MemoryCacheImageInputStream input = new MemoryCacheImageInputStream(stream)) {
+		try (final MemoryCacheImageInputStream input = new MemoryCacheImageInputStream(stream)) {
 			reader.setInput(input);
 			return reader.read(0);
 		} finally {

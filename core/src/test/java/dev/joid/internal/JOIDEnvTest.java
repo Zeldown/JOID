@@ -166,7 +166,7 @@ public class JOIDEnvTest {
 					return loaded;
 				}
 
-				try (InputStream input = super.getParent().getResourceAsStream(name.replace('.', '/') + ".class")) {
+				try (final InputStream input = super.getParent().getResourceAsStream(name.replace('.', '/') + ".class")) {
 					final byte[] bytes = IOUtils.toByteArray(input);
 					return super.defineClass(name, bytes, 0, bytes.length, JOIDEnv.class.getProtectionDomain());
 				} catch (final IOException e) {

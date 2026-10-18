@@ -18,7 +18,7 @@ public final class VulkanBuffer {
 
 	public VulkanBuffer(final VulkanContext context, final long size, final int usage) {
 		final long[] handles = context.createBuffer(size, usage, VK10.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK10.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final PointerBuffer address = stack.mallocPointer(1);
 			VulkanContext.check(VK10.vkMapMemory(context.getDevice(), handles[1], 0L, size, 0, address), "vkMapMemory");
 			this.context = context;

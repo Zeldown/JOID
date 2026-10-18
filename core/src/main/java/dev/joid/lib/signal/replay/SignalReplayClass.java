@@ -38,7 +38,7 @@ public final class SignalReplayClass {
 		final File file = SignalReplayClass.locate(type, path);
 		if (file != null) {
 			final long modified = file.lastModified();
-			try (InputStream input = new FileInputStream(file)) {
+			try (final InputStream input = new FileInputStream(file)) {
 				return new SignalReplayClass(file, modified, SignalReplayClass.parse(input), loader);
 			} catch (final IOException | RuntimeException exception) {
 				return SignalReplayClass.read(name, path, loader);
@@ -67,7 +67,7 @@ public final class SignalReplayClass {
 				continue;
 			}
 
-			try (InputStream input = candidate.getResourceAsStream(path)) {
+			try (final InputStream input = candidate.getResourceAsStream(path)) {
 				if (input == null) {
 					continue;
 				}

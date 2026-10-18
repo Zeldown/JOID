@@ -59,7 +59,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void decode(final @NonNull ResourceData resource) {
-		try (InputStream stream = this.asset.open()) {
+		try (final InputStream stream = this.asset.open()) {
 			this.document = new SVGLoader().load(stream, null, LoaderContext.createDefault());
 		} catch (final IOException exception) {
 			throw new UncheckedIOException("The SVG " + this.asset.getUniqueId() + " cannot be read", exception);

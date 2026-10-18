@@ -36,7 +36,7 @@ public class DemoFont {
 	}
 
 	private static BufferedImage read(final String file) {
-		try (InputStream stream = DemoFont.get(file)) {
+		try (final InputStream stream = DemoFont.get(file)) {
 			return ImageIO.read(stream);
 		} catch (final IOException exception) {
 			throw new UncheckedIOException(exception);

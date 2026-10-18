@@ -165,13 +165,13 @@ public class ResourceAnimationReaderTest {
 	}
 
 	private static ResourceAnimation read(final IResourceAnimationReader reader, final String name) throws IOException {
-		try (InputStream stream = ResourceAnimationReaderTest.class.getResourceAsStream("/animation/" + name)) {
+		try (final InputStream stream = ResourceAnimationReaderTest.class.getResourceAsStream("/animation/" + name)) {
 			return reader.read(stream);
 		}
 	}
 
 	private static byte[] bytes(final String name) throws IOException {
-		try (InputStream stream = ResourceAnimationReaderTest.class.getResourceAsStream("/animation/" + name)) {
+		try (final InputStream stream = ResourceAnimationReaderTest.class.getResourceAsStream("/animation/" + name)) {
 			final byte[] bytes = new byte[4096];
 			int total = 0;
 			int count;
@@ -217,7 +217,7 @@ public class ResourceAnimationReaderTest {
 	private static byte[] gif(final IIOImage... frames) throws IOException {
 		final ImageWriter writer = ImageIO.getImageWritersByFormatName("gif").next();
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try (ImageOutputStream stream = ImageIO.createImageOutputStream(output)) {
+		try (final ImageOutputStream stream = ImageIO.createImageOutputStream(output)) {
 			writer.setOutput(stream);
 			writer.prepareWriteSequence(null);
 			for (final IIOImage frame : frames) {
@@ -285,7 +285,7 @@ public class ResourceAnimationReaderTest {
 
 	private static byte[] deflate(final int... row) throws IOException {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try (DeflaterOutputStream stream = new DeflaterOutputStream(output)) {
+		try (final DeflaterOutputStream stream = new DeflaterOutputStream(output)) {
 			for (final int value : row) {
 				stream.write(value);
 			}

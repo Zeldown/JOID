@@ -28,7 +28,7 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 		super.getTexture().allocate(width, height);
 		final long[] depth = context.createImage(width, height, context.getDepthFormat(), VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK10.VK_IMAGE_USAGE_TRANSFER_DST_BIT, VK10.VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 		bridge.record(buffer -> {
-			try (MemoryStack stack = MemoryStack.stackPush()) {
+			try (final MemoryStack stack = MemoryStack.stackPush()) {
 				VulkanContext.transition(buffer, depth[0], VK10.VK_IMAGE_ASPECT_DEPTH_BIT, VK10.VK_IMAGE_LAYOUT_UNDEFINED, VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 				final VkImageSubresourceRange range = VkImageSubresourceRange.calloc(stack).aspectMask(VK10.VK_IMAGE_ASPECT_DEPTH_BIT).baseMipLevel(0).levelCount(1).baseArrayLayer(0).layerCount(1);
 				VK10.vkCmdClearDepthStencilImage(buffer, depth[0], VK10.VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VkClearDepthStencilValue.calloc(stack).depth(1F), range);
@@ -37,7 +37,7 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 		});
 		this.bridge = bridge;
 		this.depth  = depth;
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer framebuffer = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkCreateFramebuffer(context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(context.getOffscreenRenderPass()).pAttachments(stack.longs(super.getTexture().getView(), depth[2])).width(width).height(height).layers(1), null, framebuffer), "vkCreateFramebuffer");
 			this.framebuffer = framebuffer.get(0);

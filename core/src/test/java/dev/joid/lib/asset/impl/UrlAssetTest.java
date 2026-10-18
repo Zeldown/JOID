@@ -98,7 +98,7 @@ public class UrlAssetTest {
 	@Test
 	public void keepsAFailureThatIsNotSecureWithoutFallback() throws IOException {
 		final int port;
-		try (ServerSocket closed = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
+		try (final ServerSocket closed = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
 			port = closed.getLocalPort();
 		}
 
@@ -113,7 +113,7 @@ public class UrlAssetTest {
 
 	@Test(timeout = 60000L, expected = SocketTimeoutException.class)
 	public void givesUpOnAServerThatNeverAnswers() throws IOException {
-		try (ServerSocket mute = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
+		try (final ServerSocket mute = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
 			UrlAsset.of("http://127.0.0.1:" + mute.getLocalPort() + "/image.png").read();
 		}
 	}
@@ -121,7 +121,7 @@ public class UrlAssetTest {
 	@Test
 	public void readsAJarUrl() throws IOException {
 		final File file = this.folder.newFile("assets.jar");
-		try (JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
+		try (final JarOutputStream output = new JarOutputStream(new FileOutputStream(file))) {
 			output.putNextEntry(new ZipEntry("image.png"));
 			output.write("joid jar asset".getBytes(StandardCharsets.UTF_8));
 			output.closeEntry();
@@ -200,7 +200,7 @@ public class UrlAssetTest {
 		@Override
 		public void run() {
 			while (!this.socket.isClosed()) {
-				try (Socket client = this.socket.accept()) {
+				try (final Socket client = this.socket.accept()) {
 					this.answer(client);
 				} catch (final IOException closed) {}
 			}
@@ -216,7 +216,7 @@ public class UrlAssetTest {
 				return;
 			}
 
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.ISO_8859_1))) {
+			try (final BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.ISO_8859_1))) {
 				final String path = reader.readLine().split(" ")[1];
 				String header;
 				while ((header = reader.readLine()) != null && !header.isEmpty()) {

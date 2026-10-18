@@ -89,7 +89,7 @@ public final class VulkanDescriptorCache {
 	}
 
 	private long[] allocate(final long pool, final long layout) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer set = stack.mallocLong(1);
 			final int result = VK10.vkAllocateDescriptorSets(this.context.getDevice(), VkDescriptorSetAllocateInfo.calloc(stack).sType$Default().descriptorPool(pool).pSetLayouts(stack.longs(layout)), set);
 			if (result == VK11.VK_ERROR_OUT_OF_POOL_MEMORY || result == VK10.VK_ERROR_FRAGMENTED_POOL) {
@@ -102,7 +102,7 @@ public final class VulkanDescriptorCache {
 	}
 
 	private long createPool() {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkDescriptorPoolSize.Buffer sizes = VkDescriptorPoolSize.calloc(2, stack);
 			sizes.get(0).type(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(4096);
 			sizes.get(1).type(VK10.VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER).descriptorCount(4096);
@@ -114,7 +114,7 @@ public final class VulkanDescriptorCache {
 	}
 
 	private void write(final long set, final VulkanShader shader, final long uniformBuffer, final long[] images) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkWriteDescriptorSet.Buffer writes = VkWriteDescriptorSet.calloc(shader.getSamplerMap().size() + 1, stack);
 			writes.get()
 					.sType$Default()

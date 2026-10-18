@@ -41,7 +41,7 @@ public final class SnapshotReport {
 	}
 
 	private static String readTemplate() {
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotReport.class.getResourceAsStream("/report/report.html"), StandardCharsets.UTF_8))) {
+		try (final BufferedReader reader = new BufferedReader(new InputStreamReader(SnapshotReport.class.getResourceAsStream("/report/report.html"), StandardCharsets.UTF_8))) {
 			return reader.lines().collect(Collectors.joining("\n"));
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);

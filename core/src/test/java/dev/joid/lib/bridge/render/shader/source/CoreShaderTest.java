@@ -32,7 +32,7 @@ public class CoreShaderTest {
 
 	@Test
 	public void namesEveryShaderFolder() throws IOException, URISyntaxException {
-		try (Stream<Path> paths = Files.list(Paths.get(CoreShader.class.getResource("/assets/shaders").toURI()))) {
+		try (final Stream<Path> paths = Files.list(Paths.get(CoreShader.class.getResource("/assets/shaders").toURI()))) {
 			final List<String> folders = paths.filter(Files::isDirectory).map(path -> path.getFileName().toString()).sorted().collect(Collectors.toList());
 			Assert.assertEquals(folders, Arrays.stream(CoreShader.values()).map(shader -> shader.name().toLowerCase(Locale.ROOT)).sorted().collect(Collectors.toList()));
 		}

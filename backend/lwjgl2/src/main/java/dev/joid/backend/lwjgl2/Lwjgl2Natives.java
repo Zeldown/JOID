@@ -37,7 +37,7 @@ public final class Lwjgl2Natives {
 			directory = Lwjgl2Natives.AREA.compute("2.9.1-" + platform, folder -> {
 				Files.createDirectories(folder.toPath());
 				for (final String library : libraries) {
-					try (InputStream stream = Lwjgl2Natives.class.getResourceAsStream("/dev/joid/backend/lwjgl2/natives/" + platform + "/" + library)) {
+					try (final InputStream stream = Lwjgl2Natives.class.getResourceAsStream("/dev/joid/backend/lwjgl2/natives/" + platform + "/" + library)) {
 						if (stream == null) {
 							throw new IllegalStateException("The LWJGL 2 native " + library + " is missing from the backend");
 						}

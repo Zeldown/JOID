@@ -37,7 +37,7 @@ public abstract class Asset {
 
 	public @NonNull byte[] peek(final int length) {
 		final byte[] header = new byte[length];
-		try (InputStream stream = this.open()) {
+		try (final InputStream stream = this.open()) {
 			final int read = IOUtils.read(stream, header);
 			return read == length ? header : Arrays.copyOf(header, read);
 		} catch (final IOException exception) {
@@ -46,7 +46,7 @@ public abstract class Asset {
 	}
 
 	public final @NonNull byte[] read() throws IOException {
-		try (InputStream stream = this.open()) {
+		try (final InputStream stream = this.open()) {
 			return IOUtils.toByteArray(stream);
 		}
 	}

@@ -26,7 +26,7 @@ public class MsdfWriterTest {
 		file.deleteOnExit();
 		MsdfWriter.write(file, Collections.emptyList(), kerning, new double[] {1D, 0.8D, -0.2D, -0.1D, 0.05D}, "JOID Test Regular", 400, true, 32D, 4D, new int[4], 2, 2);
 
-		try (InputStream stream = new FileInputStream(file)) {
+		try (final InputStream stream = new FileInputStream(file)) {
 			final byte[] magic = new byte[8];
 			new DataInputStream(stream).readFully(magic);
 			Assert.assertEquals("JOIDMSDF", new String(magic, StandardCharsets.US_ASCII));

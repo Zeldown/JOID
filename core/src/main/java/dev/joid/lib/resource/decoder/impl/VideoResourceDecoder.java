@@ -710,7 +710,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 
 	private static @NonNull File extract(final Asset asset) throws IOException {
 		return VideoResourceDecoder.AREA.store(file -> {
-			try (InputStream stream = asset.open()) {
+			try (final InputStream stream = asset.open()) {
 				Files.copy(stream, file.toPath());
 			}
 		});

@@ -79,7 +79,7 @@ public final class VulkanPipelineCache {
 	}
 
 	private long create(final PipelineKey key, final long renderPass) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VulkanShader shader = (VulkanShader) key.getShader();
 			final ByteBuffer entryPoint = stack.UTF8("main");
 			final VkPipelineShaderStageCreateInfo.Buffer stages = VkPipelineShaderStageCreateInfo.calloc(2, stack);

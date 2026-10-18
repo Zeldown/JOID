@@ -26,7 +26,7 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 	@Override
 	public @NonNull ResourceAnimation read(final @NonNull InputStream stream) throws IOException {
 		final ImageReader reader = ImageIO.getImageReadersByFormatName("gif").next();
-		try (ImageInputStream input = ImageIO.createImageInputStream(stream)) {
+		try (final ImageInputStream input = ImageIO.createImageInputStream(stream)) {
 			reader.setInput(input, false);
 			final IIOMetadataNode screen = GifResourceAnimationReader.child((IIOMetadataNode) reader.getStreamMetadata().getAsTree("javax_imageio_gif_stream_1.0"), "LogicalScreenDescriptor");
 			final int count = reader.getNumImages(true);

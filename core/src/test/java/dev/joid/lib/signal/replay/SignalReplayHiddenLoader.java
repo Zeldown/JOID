@@ -60,7 +60,7 @@ public final class SignalReplayHiddenLoader extends ClassLoader {
 
 	private static byte[] transform(final String name, final boolean lines, final String renamed, final String replacement) throws IOException {
 		final byte[] original;
-		try (InputStream input = ReplayHiddenFixture.class.getResourceAsStream("ReplayHiddenFixture.class")) {
+		try (final InputStream input = ReplayHiddenFixture.class.getResourceAsStream("ReplayHiddenFixture.class")) {
 			original = IOUtils.toByteArray(input);
 		}
 		original[6] = 0;

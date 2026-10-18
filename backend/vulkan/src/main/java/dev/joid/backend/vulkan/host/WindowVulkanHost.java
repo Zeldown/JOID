@@ -74,7 +74,7 @@ public final class WindowVulkanHost implements IVulkanHost {
 		this.window         = window;
 		this.framesInFlight = framesInFlight;
 
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			this.instance         = WindowVulkanHost.createInstance(stack);
 			this.surface          = WindowVulkanHost.createSurface(stack, this.instance, window);
 			this.physicalDevice   = WindowVulkanHost.selectPhysicalDevice(stack, this.instance, this.surface);
@@ -158,7 +158,7 @@ public final class WindowVulkanHost implements IVulkanHost {
 			this.recreate();
 		}
 
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			VulkanContext.check(VK10.vkWaitForFences(this.device, this.fences[this.frameIndex], true, -1L), "vkWaitForFences");
 
 			final IntBuffer index = stack.mallocInt(1);
@@ -201,7 +201,7 @@ public final class WindowVulkanHost implements IVulkanHost {
 		VulkanContext.transition(buffer, this.getTargetImage(), VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, KHRSwapchain.VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
 		VulkanContext.check(VK10.vkEndCommandBuffer(buffer), "vkEndCommandBuffer");
 
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkSubmitInfo submit = VkSubmitInfo.calloc(stack)
 					.sType$Default()
 					.waitSemaphoreCount(1)
@@ -268,7 +268,7 @@ public final class WindowVulkanHost implements IVulkanHost {
 	}
 
 	private void createSwapchain() {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkSurfaceCapabilitiesKHR capabilities = VkSurfaceCapabilitiesKHR.malloc(stack);
 			VulkanContext.check(KHRSurface.vkGetPhysicalDeviceSurfaceCapabilitiesKHR(this.physicalDevice, this.surface, capabilities), "vkGetPhysicalDeviceSurfaceCapabilitiesKHR");
 
@@ -421,10 +421,10 @@ public final class WindowVulkanHost implements IVulkanHost {
 	}
 
 	private static boolean hasExtension(final VkPhysicalDevice device, final String name) {
-		try (MemoryStack stack = MemoryStack.stackPush()) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final IntBuffer count = stack.mallocInt(1);
 			VK10.vkEnumerateDeviceExtensionProperties(device, (ByteBuffer) null, count, null);
-			try (VkExtensionProperties.Buffer extensions = VkExtensionProperties.malloc(count.get(0))) {
+			try (final VkExtensionProperties.Buffer extensions = VkExtensionProperties.malloc(count.get(0))) {
 				VK10.vkEnumerateDeviceExtensionProperties(device, (ByteBuffer) null, count, extensions);
 				for (final VkExtensionProperties extension : extensions) {
 					if (name.equals(extension.extensionNameString())) {

@@ -26,11 +26,11 @@ public final class MsdfWriter {
 	private static final byte[] MAGIC = {'J', 'O', 'I', 'D', 'M', 'S', 'D', 'F'};
 
 	public static void write(final File file, final List<GlyphEntry> glyphs, final Kerning kerning, final double[] metrics, final String name, final int weight, final boolean italic, final double size, final double range, final int[] pixels, final int width, final int height) throws IOException {
-		try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file))) {
+		try (final OutputStream output = new BufferedOutputStream(new FileOutputStream(file))) {
 			output.write(MsdfWriter.MAGIC);
 
 			final Deflater deflater = new Deflater(Deflater.BEST_COMPRESSION);
-			try (DataOutputStream data = new DataOutputStream(new DeflaterOutputStream(output, deflater, 1 << 16))) {
+			try (final DataOutputStream data = new DataOutputStream(new DeflaterOutputStream(output, deflater, 1 << 16))) {
 				data.writeByte(MsdfWriter.VERSION);
 				data.writeShort(weight);
 				data.writeBoolean(italic);

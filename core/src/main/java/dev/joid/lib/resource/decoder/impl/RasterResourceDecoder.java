@@ -60,7 +60,7 @@ public class RasterResourceDecoder implements IResourceDecoder {
 
 	private static @NonNull BufferedImage read(final Asset asset, final ImageReaderSpi reader) {
 		final BufferedImage image;
-		try (InputStream stream = asset.open()) {
+		try (final InputStream stream = asset.open()) {
 			image = reader == null ? ImageIO.read(stream) : ImageUtils.read(stream, reader);
 		} catch (final IOException exception) {
 			throw new UncheckedIOException("The image " + asset.getUniqueId() + " cannot be read", exception);
