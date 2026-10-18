@@ -88,7 +88,7 @@ ContainerNode
 
 ![The cursor clicks Move and both panels jump to the right, then back](../images/container-move.gif "One followed x on the container moves both children")
 
-`moved` is a `BooleanSignal` field: the container follows it and both children move with it. `ContainerNode.create(parent)` creates a container that covers `parent` and attaches it right away.
+`moved` is a `BooleanSignal` field: the container follows it and both children move with it.
 
 ## Clipping and scrolling with overflow
 
@@ -231,7 +231,7 @@ Each change rebuilds this flex only; the rest of the UI stays intact.
 | `align(Align)`, `direction(FlexDirection)` | Cross-axis placement (default `null`) and axis of a `FlexNode`. |
 | `GridNode.create(x, y, width, height)` | A grid of fixed width. |
 | `horizontalMargin(double)`, `verticalMargin(double)` | One gap of a `GridNode`. |
-| `ContainerNode.create(x, y, width, height)`, `ContainerNode.create(Node parent)` | An invisible group; one that covers and attaches to `parent`. |
+| `ContainerNode.create(x, y, width, height)` | An invisible group. |
 | `overflow(OverflowProperty)` | `NONE` (default), `HIDDEN` or `SCROLL`. |
 | `scrollRatioX(float)`, `scrollRatioY(float)` | Scrolls to a fraction: `0F` start, `1F` end. |
 | `scrollOffsetX(double)`, `scrollOffsetY(double)` | Scrolls to an offset, between `-getMaxScrollY()` and `0`. |

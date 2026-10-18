@@ -20,18 +20,6 @@ public class ContainerNodeTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void coversItsWholeParent() {
-		final RectNode parent = RectNode.create(100D, 200D, 300D, 150D);
-		final ContainerNode container = ContainerNode.create(parent);
-		Assert.assertEquals(0D, container.getX(), 0D);
-		Assert.assertEquals(0D, container.getY(), 0D);
-		Assert.assertEquals(300D, container.getWidth(), 0D);
-		Assert.assertEquals(150D, container.getHeight(), 0D);
-		Assert.assertSame(parent, container.getParent());
-		Assert.assertTrue(parent.getChildren().contains(container));
-	}
-
-	@Test
 	public void keepsItsBounds() {
 		final ContainerNode container = ContainerNode.create(10D, 20D, 30D, 40D);
 		Assert.assertEquals(10D, container.getX(), 0D);

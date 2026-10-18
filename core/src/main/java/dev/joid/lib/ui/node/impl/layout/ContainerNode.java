@@ -9,10 +9,6 @@ public class ContainerNode extends Node {
 		super(x, y, width, height);
 	}
 
-	public static @NonNull ContainerNode create(final @NonNull Node parent) {
-		return new ContainerNode(0D, 0D, parent.getWidth(), parent.getHeight()).attach(parent);
-	}
-
 	public static @NonNull ContainerNode create(final double x, final double y, final double width, final double height) {
 		return new ContainerNode(x, y, width, height);
 	}

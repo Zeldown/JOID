@@ -99,7 +99,7 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 			return (T) this;
 		}
 
-		public final <T extends RadarChartData> @NonNull T label(final String label) {
+		public final <T extends RadarChartData> @NonNull T label(final @NonNull String label) {
 			return this.label(Signal.from(label));
 		}
 

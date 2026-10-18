@@ -269,7 +269,7 @@ public abstract class ChartNode extends Node {
 			return (T) this;
 		}
 
-		public final <T extends ChartData> @NonNull T add(final @NonNull String label, final Number data) {
+		public final <T extends ChartData> @NonNull T add(final @NonNull String label, final @NonNull Number data) {
 			this.dataMap.put(label, data);
 			return (T) this;
 		}
