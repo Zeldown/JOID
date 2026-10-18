@@ -2003,7 +2003,7 @@ public abstract class Node implements INode {
 			}
 		}
 
-		this.drawList.reversed().stream().filter(child -> child.zindex >= 0).forEach(child -> forward.accept(child, event));
+		this.dispatchChildren(event, forward, true);
 		if (enabled) {
 			this.bindings.mark();
 			try {
@@ -2014,9 +2014,17 @@ public abstract class Node implements INode {
 			}
 		}
 
-		this.drawList.reversed().stream().filter(child -> child.zindex < 0).forEach(child -> forward.accept(child, event));
+		this.dispatchChildren(event, forward, false);
 		if (enabled) {
 			this.fireMonitor(type, event);
+		}
+	}
+
+	private <E extends NodeInputEvent<Node>> void dispatchChildren(final E event, final BiConsumer<Node, E> forward, final boolean front) {
+		for (final Node child : this.drawList.reversed()) {
+			if (child.zindex >= 0 == front) {
+				forward.accept(child, event);
+			}
 		}
 	}
 

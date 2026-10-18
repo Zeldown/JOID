@@ -96,6 +96,31 @@ public class EventFlowTest {
 	}
 
 	@Test
+	public void sendsAPressToEveryChildWhenOneLeavesItsParent() {
+		final FlowNode first = new FlowNode("first", this.trace);
+		final FlowNode second = new FlowNode("second", this.trace);
+		final FlowNode third = new FlowNode("third", this.trace);
+		final FlowNode parent = new FlowNode("parent", this.trace).append(first, second, third);
+		second.handleMousePressed(event -> parent.remove(second));
+		this.bridges.open(new FlowUI(parent)).move(150D, 150D).frames(2);
+		this.trace.clear();
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("third handle", "third internal", "third monitor", "second handle", "second internal", "second monitor", "first handle", "first internal", "first monitor", "parent handle", "parent internal", "parent monitor"), this.trace);
+	}
+
+	@Test
+	public void sendsAPressOnceToEachChildWhenOneAppendsASibling() {
+		final FlowNode first = new FlowNode("first", this.trace);
+		final FlowNode second = new FlowNode("second", this.trace);
+		final FlowNode parent = new FlowNode("parent", this.trace).append(first, second);
+		second.handleMousePressed(event -> parent.append(new FlowNode("added", this.trace)));
+		this.bridges.open(new FlowUI(parent)).move(150D, 150D).frames(2);
+		this.trace.clear();
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList("second handle", "second internal", "second monitor", "first handle", "first internal", "first monitor", "parent handle", "parent internal", "parent monitor"), this.trace);
+	}
+
+	@Test
 	public void sendsAKeyToTheNodesThenToTheUiThenToItsShortcutsThenToItsMonitors() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).handleKeyPressed(event -> this.trace.add("node"));
 		final FlowUI ui = new FlowUI(node);
