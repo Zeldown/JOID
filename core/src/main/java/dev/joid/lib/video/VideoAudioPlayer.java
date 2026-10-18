@@ -111,14 +111,6 @@ public final class VideoAudioPlayer {
 		this.fill();
 		final Point location = this.owner.getLocation();
 		final float distanceVolume = location == null ? 1F : this.computeDistanceVolume(location);
-		if (distanceVolume <= 0.001F) {
-			if (this.source.isPlaying()) {
-				this.source.pause();
-			}
-			this.sampleQueue.clear();
-			return;
-		}
-
 		this.source.gain(volume * distanceVolume);
 		if (!this.source.isPlaying()) {
 			this.source.play();

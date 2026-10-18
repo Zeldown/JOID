@@ -24,6 +24,20 @@ public class ObjFaceTest {
 	}
 
 	@Test
+	public void refusesTextureCoordinatesThatDoNotMatchItsVertices() {
+		final ObjTextureCoordinate[] coordinates = {ObjTextureCoordinate.of(0F, 0F), ObjTextureCoordinate.of(1F, 0F)};
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> ObjFace.of(ObjFaceTest.triangle(), coordinates, null));
+		Assert.assertEquals("An ObjFace has 3 texture coordinates or none, got 2", exception.getMessage());
+	}
+
+	@Test
+	public void refusesVertexNormalsThatDoNotMatchItsVertices() {
+		final ObjVertex[] normals = {ObjVertex.of(0F, 0F, 1F)};
+		final IllegalArgumentException exception = Assert.assertThrows(IllegalArgumentException.class, () -> ObjFace.of(ObjFaceTest.triangle(), null, normals));
+		Assert.assertEquals("An ObjFace has 3 vertex normals or none, got 1", exception.getMessage());
+	}
+
+	@Test
 	public void turnsItsNormalWithItsWinding() {
 		Assert.assertEquals(-1F, ObjFaceTest.face(ObjVertex.of(0F, 0F), ObjVertex.of(0F, 1F), ObjVertex.of(1F, 0F)).getFaceNormal().getZ(), 0F);
 	}
@@ -99,11 +113,12 @@ public class ObjFaceTest {
 		face.render(tessellator);
 		Assert.assertEquals(3, TessellatorAccess.vertexCount(tessellator));
 		Assert.assertFalse(TessellatorAccess.hasTexture(tessellator));
+		Assert.assertNull(face.getTextureCoordinates());
 	}
 
 	@Test
 	public void keepsItsVertexNormals() {
-		final ObjVertex[] normals = {ObjVertex.of(0F, 0F, 1F)};
+		final ObjVertex[] normals = {ObjVertex.of(0F, 0F, 1F), ObjVertex.of(0F, 1F, 0F), ObjVertex.of(1F, 0F, 0F)};
 		final ObjFace face = ObjFace.of(ObjFaceTest.triangle(), null, normals);
 		Assert.assertArrayEquals(normals, face.getVertexNormals());
 		Assert.assertNotSame(normals, face.getVertexNormals());

@@ -23,19 +23,25 @@ public final class ObjFace {
 		if (vertices.length != 3) {
 			throw new IllegalArgumentException("An ObjFace has 3 vertices, got " + vertices.length + ": split the polygon into triangles (ObjModel does it for OBJ files)");
 		}
-		return new ObjFace(vertices, textureCoordinates, vertexNormals);
+		if (textureCoordinates != null && textureCoordinates.length != 0 && textureCoordinates.length != 3) {
+			throw new IllegalArgumentException("An ObjFace has 3 texture coordinates or none, got " + textureCoordinates.length);
+		}
+		if (vertexNormals != null && vertexNormals.length != 3) {
+			throw new IllegalArgumentException("An ObjFace has 3 vertex normals or none, got " + vertexNormals.length);
+		}
+		return new ObjFace(vertices, textureCoordinates == null || textureCoordinates.length == 0 ? null : textureCoordinates, vertexNormals);
 	}
 
 	public void render(final @NonNull Tessellator tessellator) {
 		final float textureOffset = 0.0005F;
-		final boolean smooth = this.vertexNormals != null && this.vertexNormals.length == this.vertices.length;
+		final boolean smooth = this.vertexNormals != null;
 		if (!smooth) {
 			tessellator.setNormal(this.faceNormal.getX(), this.faceNormal.getY(), this.faceNormal.getZ());
 		}
 
 		float averageU = 0F;
 		float averageV = 0F;
-		if (this.textureCoordinates != null && this.textureCoordinates.length > 0) {
+		if (this.textureCoordinates != null) {
 			for (int i = 0; i < this.textureCoordinates.length; ++i) {
 				averageU += this.textureCoordinates[i].getU();
 				averageV += this.textureCoordinates[i].getV();
@@ -58,7 +64,7 @@ public final class ObjFace {
 				}
 			}
 
-			if (this.textureCoordinates != null && this.textureCoordinates.length > 0) {
+			if (this.textureCoordinates != null) {
 				offsetU = textureOffset;
 				offsetV = textureOffset;
 
