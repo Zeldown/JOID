@@ -47,6 +47,11 @@ public final class DrawResource {
 	}
 
 	private void drawRegion(final double x, final double y, final double width, final double height, final double[] crop, final Resource resource) {
+		resource.prepareBind();
+		if (!resource.isFailed() && resource.getTexture() == null) {
+			return;
+		}
+
 		final ResourceProperties properties = resource.getProperties();
 		final double[] textureCoords = properties.getTextureCoords();
 		final double[] region = textureCoords == null ? crop : crop == null ? textureCoords : new double[] {textureCoords[0] + crop[0], textureCoords[1] + crop[1], crop[2], crop[3]};

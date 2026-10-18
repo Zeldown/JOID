@@ -1,11 +1,15 @@
 package dev.joid.lib.draw.resource;
 
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
@@ -51,6 +55,31 @@ public class DrawResourceTest {
 		Assert.assertEquals(74D, capture.getRight(), 1E-3D);
 		Assert.assertEquals(20D, capture.getTop(), 1E-3D);
 		Assert.assertEquals(52D, capture.getBottom(), 1E-3D);
+	}
+
+	@Test
+	public void drawsNothingWhileItsRemoteAssetIsDownloading() {
+		final CompletableFuture<Void> download = new CompletableFuture<>();
+		final Resource resource = ResourceBuilder.create().cache(null).of(new Asset("https://joid.invalid/photo.png") {
+
+			@Override
+			public @NonNull InputStream open() {
+				download.join();
+				return new ByteArrayInputStream(new byte[0]);
+			}
+
+			@Override
+			public boolean isRemote() {
+				return true;
+			}
+
+		});
+		try {
+			DrawUtils.RESOURCE.drawResource(10D, 20D, 100D, 50D, resource);
+		} finally {
+			download.complete(null);
+		}
+		Assert.assertTrue(this.render.getCaptures().isEmpty());
 	}
 
 	@Test

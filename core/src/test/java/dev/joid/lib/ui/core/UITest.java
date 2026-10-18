@@ -1,8 +1,10 @@
 package dev.joid.lib.ui.core;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -47,6 +50,7 @@ import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.tween.TweenEquations;
+import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
@@ -62,6 +66,7 @@ import dev.joid.lib.input.key.resolver.IKeyResolver;
 import dev.joid.lib.input.key.resolver.KeyResolver;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.Resource;
+import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.UIDataDebug;
@@ -1692,6 +1697,35 @@ public class UITest {
 		});
 		Assert.assertEquals(Arrays.asList("EQUAL 2", "EQUAL 1"), stencils);
 		Assert.assertEquals("off", UITest.stencil(this.bridges));
+	}
+
+	@Test
+	public void hidesItsContentBehindAResourceMaskStillDownloading() {
+		final TraceUI ui = new TraceUI(this.trace);
+		final CompletableFuture<Void> download = new CompletableFuture<>();
+		final Resource resource = ResourceBuilder.create().cache(null).of(new Asset("https://joid.invalid/mask.png") {
+
+			@Override
+			public @NonNull InputStream open() {
+				download.join();
+				return new ByteArrayInputStream(new byte[0]);
+			}
+
+			@Override
+			public boolean isRemote() {
+				return true;
+			}
+
+		});
+		this.bridges.open(ui);
+		this.bridges.getRender().getDraws().clear();
+		try {
+			ui.mask(resource, 10D, 10D, 50D, 50D, () -> DrawUtils.SHAPE.drawRect(0D, 0D, 100D, 100D, Color.BLUE));
+		} finally {
+			download.complete(null);
+		}
+		final Draw content = this.bridges.getRender().getDraws(0F, 0F, 1F).get(0);
+		Assert.assertFalse(UITest.passesStencil(this.bridges.getRender().getDraws(), content, 35D, 35D));
 	}
 
 	@Test
