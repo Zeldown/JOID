@@ -44,6 +44,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import com.google.gson.JsonObject;
+
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.HotReload;
 import dev.joid.internal.JOID;
@@ -78,7 +80,6 @@ import dev.joid.lib.ui.core.hook.property.UIProperty;
 import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.UIStoreHook;
-import dev.joid.lib.ui.core.hook.store.UIStoreHookTest.UnsavableStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 import dev.joid.lib.ui.core.transition.PopTransition;
 import dev.joid.lib.ui.core.transition.Transition;
@@ -2759,6 +2760,16 @@ public class UITest {
 
 	@UIStoreData(id = "uicore-global", scope = UIStoreScope.GLOBAL)
 	public static final class GlobalStore extends UIStore {}
+
+	@UIStoreData(id = "uicore-unsavable", scope = UIStoreScope.PERMANENT)
+	public static final class UnsavableStore extends UIStore {
+
+		@Override
+		public @NonNull JsonObject toJson() {
+			throw new IllegalStateException("broken toJson");
+		}
+
+	}
 
 	@AllArgsConstructor
 	@UIStoreData(id = "uicore-named")
