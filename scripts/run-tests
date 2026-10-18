@@ -51,6 +51,7 @@ before=$(git rev-parse -q --verify refs/stash)
 if [ "$mode" = "index" ]; then
     git stash push -q --keep-index --include-untracked -m "joid-tests"
 else
+    tree=$(git rev-parse HEAD^{tree})
     git stash push -q --include-untracked -m "joid-tests"
 fi
 
@@ -116,7 +117,7 @@ elif [ "$mode" = "index" ]; then
     echo "✅ Done with the unit tests, the pre-push hook runs the full suite"
 else
     echo "✅ Done with tests"
-    { tail -n 99 "$tested" 2>/dev/null; git rev-parse HEAD^{tree}; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
+    { tail -n 99 "$tested" 2>/dev/null; echo "$tree"; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
 fi
 echo ""
 
