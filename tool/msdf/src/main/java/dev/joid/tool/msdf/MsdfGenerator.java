@@ -83,21 +83,25 @@ public final class MsdfGenerator {
 		final File file = new File(charset);
 		final String text = file.isFile() ? new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8) : charset;
 		final Set<Integer> values = new LinkedHashSet<>();
-		for (final String part : text.trim().split("(?<=\\])|,(?![^\\[]*\\])")) {
-			final String entry = part.replace(",", " ").trim();
-			if (entry.isEmpty()) {
-				continue;
-			}
-
-			if (entry.startsWith("[")) {
-				final String[] bounds = entry.replace("[", "").replace("]", "").split("\\s+");
-				for (int codepoint = Integer.parseInt(bounds[0].trim()); codepoint <= Integer.parseInt(bounds[bounds.length - 1].trim()); codepoint++) {
-					values.add(codepoint);
+		try {
+			for (final String part : text.trim().split("(?<=\\])|,(?![^\\[]*\\])")) {
+				final String entry = part.replace(",", " ").trim();
+				if (entry.isEmpty()) {
+					continue;
 				}
-				continue;
-			}
 
-			values.add(Integer.parseInt(entry));
+				if (entry.startsWith("[")) {
+					final String[] bounds = entry.replace("[", "").replace("]", "").split("\\s+");
+					for (int codepoint = Integer.parseInt(bounds[0].trim()); codepoint <= Integer.parseInt(bounds[bounds.length - 1].trim()); codepoint++) {
+						values.add(codepoint);
+					}
+					continue;
+				}
+
+				values.add(Integer.parseInt(entry));
+			}
+		} catch (final NumberFormatException exception) {
+			throw new IllegalArgumentException("The charset " + charset + " is neither a file nor codepoints like [32, 126], 8364: check the path or separate the values with commas", exception);
 		}
 
 		return values.stream().mapToInt(Integer::intValue).toArray();

@@ -153,7 +153,7 @@ public class UIDemoShader extends UIDemo {
 		.attach(this);
 		TextNode.create(1535, 575).text(Text.create("Shader bound", caption)).anchorX(Align.CENTER).attach(this);
 
-		TextNode.create(1765, 470).text(Text.create("Gradient", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.RED.toGradient(Color.YELLOW, Point.of(0D, 0D), Point.of(1D, 0D))))).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1765, 470).text(Text.create("Gradient", TextInfo.create(DemoFont.MONTSERRAT, 44, UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.of(0D, 0D), Point.of(1D, 0D))))).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1765, 575).text(Text.create("Gradient text", caption)).anchorX(Align.CENTER).attach(this);
 
 		ContainerNode

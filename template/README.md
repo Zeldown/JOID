@@ -16,7 +16,7 @@ dependencies {
 }
 ```
 
-The JOID core needs no declaration: its jars embed its libraries (Gson, Guava, Commons IO and Commons Lang relocated under `dev.joid.shaded`, JavaCV, JavaCPP and FFmpeg with its natives).
+The JOID core needs no declaration: its jars embed its libraries (Gson, Guava, Commons IO, Commons Lang, JSVG, TwelveMonkeys and ASM relocated under `dev.joid.shaded`, JavaCV, JavaCPP and FFmpeg with its natives).
 
 ## Implementing the backend
 

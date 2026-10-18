@@ -86,6 +86,17 @@ public class MsdfGeneratorTest {
 	}
 
 	@Test
+	public void explainsACharsetThatIsNeitherAFileNorCodepoints() throws Exception {
+		final IllegalArgumentException missing = Assert.assertThrows(IllegalArgumentException.class, () -> MsdfGenerator.codepoints("charst.txt"));
+		Assert.assertEquals("The charset charst.txt is neither a file nor codepoints like [32, 126], 8364: check the path or separate the values with commas", missing.getMessage());
+		final File charset = File.createTempFile("joid-charset-", ".txt");
+		charset.deleteOnExit();
+		Files.write(charset.toPath(), "65\n66\n".getBytes(StandardCharsets.UTF_8));
+		final IllegalArgumentException lines = Assert.assertThrows(IllegalArgumentException.class, () -> MsdfGenerator.codepoints(charset.getAbsolutePath()));
+		Assert.assertTrue(lines.getMessage(), lines.getMessage().endsWith(" is neither a file nor codepoints like [32, 126], 8364: check the path or separate the values with commas"));
+	}
+
+	@Test
 	public void forcesTheEmSizeOfTheCommandLine() throws Exception {
 		final File output = Files.createTempDirectory("joid-msdf-").toFile();
 		final String printed = MsdfGeneratorTest.capture(() -> MsdfGenerator.main(new String[] {"--font", MsdfFonts.copy(MsdfFonts.REGULAR).getAbsolutePath(), "--output", output.getAbsolutePath(), "--width", "128", "--height", "128", "--range", "4", "--size", "24", "--charset", "[65, 65]"}));
