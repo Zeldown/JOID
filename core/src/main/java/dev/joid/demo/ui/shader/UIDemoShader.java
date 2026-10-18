@@ -38,6 +38,17 @@ public class UIDemoShader extends UIDemo {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoShader.INK);
 		final Resource image = Resource.of("assets/demo/textures/image/placeholder.webp");
 		final Resource mask = Resource.of("assets/demo/textures/vector/mask.svg");
+		final Color[] fills = {
+			UIDemoShader.INK,
+			UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK),
+			UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.of(0D, 0D), Point.of(0D, 1D)),
+			UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.of(0D, 0D), Point.of(1D, 1D)),
+			UIDemoShader.INK.withAlpha(0.5F),
+			UIDemoShader.INK.toGradient(UIDemoShader.INK.withAlpha(0F)),
+			Color.RAINBOW,
+			Color.LOADING
+		};
+		final String[] fillNames = {"Solid", "Gradient", "Vertical gradient", "Diagonal gradient", "Transparent", "Fading gradient", "Rainbow", "Loading"};
 		final NodeLayer[] layers = {
 			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 20F),
 			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 30F, true, true, false, false),
@@ -57,30 +68,11 @@ public class UIDemoShader extends UIDemo {
 		};
 		final String[] names = {"Rounded rect", "Some corners", "Rounded stroke", "Thin stroke", "Border", "Filled border", "Circle", "Polygon", "Line", "Polyline", "Curve", "Bezier", "Line loop", "Triangles", "Shader bound"};
 
-		RectNode.create(55, 40, 200, 120).color(UIDemoShader.INK).attach(this);
-		TextNode.create(155, 175).text(Text.create("Solid", caption)).anchorX(Align.CENTER).attach(this);
-
-		RectNode.create(285, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK)).attach(this);
-		TextNode.create(385, 175).text(Text.create("Gradient", caption)).anchorX(Align.CENTER).attach(this);
-
-		RectNode.create(515, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.of(0D, 0D), Point.of(0D, 1D))).attach(this);
-		TextNode.create(615, 175).text(Text.create("Vertical gradient", caption)).anchorX(Align.CENTER).attach(this);
-
-		RectNode.create(745, 40, 200, 120).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.of(0D, 0D), Point.of(1D, 1D))).attach(this);
-		TextNode.create(845, 175).text(Text.create("Diagonal gradient", caption)).anchorX(Align.CENTER).attach(this);
-
 		RectNode.create(1045, 30, 60, 140).color(Color.WHITE).attach(this);
-		RectNode.create(975, 40, 200, 120).color(UIDemoShader.INK.withAlpha(0.5F)).attach(this);
-		TextNode.create(1075, 175).text(Text.create("Transparent", caption)).anchorX(Align.CENTER).attach(this);
-
-		RectNode.create(1205, 40, 200, 120).color(UIDemoShader.INK.toGradient(UIDemoShader.INK.withAlpha(0F))).attach(this);
-		TextNode.create(1305, 175).text(Text.create("Fading gradient", caption)).anchorX(Align.CENTER).attach(this);
-
-		RectNode.create(1435, 40, 200, 120).color(Color.RAINBOW).attach(this);
-		TextNode.create(1535, 175).text(Text.create("Rainbow", caption)).anchorX(Align.CENTER).attach(this);
-
-		RectNode.create(1665, 40, 200, 120).color(Color.LOADING).attach(this);
-		TextNode.create(1765, 175).text(Text.create("Loading", caption)).anchorX(Align.CENTER).attach(this);
+		for (int i = 0; i < fills.length; i++) {
+			RectNode.create(55 + i * 230, 40, 200, 120).color(fills[i]).attach(this);
+			TextNode.create(155 + i * 230, 175).text(Text.create(fillNames[i], caption)).anchorX(Align.CENTER).attach(this);
+		}
 
 		for (int i = 0; i < layers.length; i++) {
 			ContainerNode.create(55 + i % 8 * 230, 240 + i / 8 * 200, 200, 120).layer(layers[i]).attach(this);

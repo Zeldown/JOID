@@ -281,9 +281,9 @@ def design():
 	return s
 
 
-ORDER = ["hero", "reactive", "type", "effects", "motion", "form", "player", "model", "lists", "drag", "theme", "inspect", "design"]
+CLIPS = {"hero": hero, "reactive": reactive, "type": typography, "effects": effects, "motion": motion, "form": form, "player": player, "model": model, "lists": lists, "drag": drag, "theme": theme, "inspect": inspect, "design": design}
 
-CLIPS = {"design": design, "inspect": inspect, "drag": drag, "reactive": reactive, "hero": hero, "type": typography, "effects": effects, "motion": motion, "form": form, "player": player, "model": model, "lists": lists, "theme": theme}
+ORDER = list(CLIPS)
 
 
 def frames(clip, first, last, batch):

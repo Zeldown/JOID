@@ -24,6 +24,7 @@ import dev.joid.tool.msdf.geometry.Msdf;
 import dev.joid.tool.msdf.geometry.Shape;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfGenerator {
@@ -49,7 +50,7 @@ public final class MsdfGenerator {
 		MsdfGenerator.generate(font, output, codepoints, width, height, range, options.containsKey("size") ? Double.parseDouble(options.get("size")) : 0D);
 	}
 
-	public static String generate(final byte[] data, final File target, final int[] codepoints, final int width, final int height, final double range, final double requested) throws Exception {
+	public static String generate(final @NonNull byte[] data, final @NonNull File target, final @NonNull int[] codepoints, final int width, final int height, final double range, final double requested) throws Exception {
 		final Font font = Glyphs.load(data);
 		final double[] metrics = Glyphs.metrics(font);
 
@@ -79,7 +80,7 @@ public final class MsdfGenerator {
 		return font.getFontName(Locale.ROOT) + ", weight " + source.getWeight() + (source.isItalic() ? " italic, " : ", ") + glyphs.size() + " glyphs, " + kerning.getKerning().size() + " kerning pairs, size " + size + "px";
 	}
 
-	public static int[] codepoints(final String charset) throws Exception {
+	public static int[] codepoints(final @NonNull String charset) throws Exception {
 		final File file = new File(charset);
 		final String text = file.isFile() ? new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8) : charset;
 		final Set<Integer> values = new LinkedHashSet<>();
