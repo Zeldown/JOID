@@ -126,7 +126,7 @@ public final class Text {
 	}
 
 	public @NonNull Text add(final @NonNull Text text) {
-		text.getElementList().forEach(element -> this.elementList.add(element.copy()));
+		text.elementList.forEach(element -> this.elementList.add(element.copy()));
 		return this;
 	}
 
