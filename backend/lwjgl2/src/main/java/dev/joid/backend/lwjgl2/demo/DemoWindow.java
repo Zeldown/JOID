@@ -12,15 +12,14 @@ import dev.joid.backend.lwjgl2.input.Lwjgl2InputForwarder;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DemoWindow extends DemoUIBridge {
 
-	private final Lwjgl2Backend backend;
-
-	protected DemoWindow() {
-		this.backend = Lwjgl2Backend.create();
-	}
+	private final Lwjgl2Backend backend = Lwjgl2Backend.create();
 
 	public static @NonNull DemoWindow create() {
 		return new DemoWindow();
