@@ -91,8 +91,8 @@ public final class MsdfGenerator {
 				}
 
 				if (entry.startsWith("[")) {
-					final String[] bounds = entry.replace("[", "").replace("]", "").split("\\s+");
-					for (int codepoint = Integer.parseInt(bounds[0].trim()); codepoint <= Integer.parseInt(bounds[bounds.length - 1].trim()); codepoint++) {
+					final String[] bounds = entry.replace("[", "").replace("]", "").trim().split("\\s+");
+					for (int codepoint = Integer.parseInt(bounds[0]); codepoint <= Integer.parseInt(bounds[bounds.length - 1]); codepoint++) {
 						values.add(codepoint);
 					}
 					continue;

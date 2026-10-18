@@ -88,6 +88,10 @@ public final class VulkanRenderBridge extends RenderBridge {
 			throw new IllegalArgumentException("The Vulkan host " + host.getClass().getSimpleName() + " has " + host.getFramesInFlight() + " frames in flight, getFramesInFlight() must return 1 or more");
 		}
 
+		if (!host.getDevice().getCapabilities().Vulkan13) {
+			throw new IllegalStateException("The Vulkan host " + host.getClass().getSimpleName() + " gives a device without Vulkan 1.3, create the instance and the device with VK_API_VERSION_1_3");
+		}
+
 		this.host              = host;
 		this.context           = new VulkanContext(host);
 		this.pipelineCache     = new VulkanPipelineCache(this.context);

@@ -81,6 +81,11 @@ public class MsdfGeneratorTest {
 	}
 
 	@Test
+	public void readsARangeWithSpacesInsideTheBrackets() throws Exception {
+		Assert.assertArrayEquals(new int[] {65, 66, 67, 70}, MsdfGenerator.codepoints("[ 65, 67 ], 70"));
+	}
+
+	@Test
 	public void keepsEachCodepointOfACharsetOnce() throws Exception {
 		Assert.assertArrayEquals(new int[] {65, 66, 67, 70}, MsdfGenerator.codepoints("[65, 67], 66, 70, [65, 66]"));
 	}

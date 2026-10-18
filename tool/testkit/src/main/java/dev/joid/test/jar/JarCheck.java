@@ -41,7 +41,7 @@ public final class JarCheck {
 
 	private static UI open(final String variant, final Backend backend, final Runnable present) throws ReflectiveOperationException {
 		if (JOIDEnv.isDevMode() == "prod".equals(variant) || JOIDEnv.isDemoMode() != "demo".equals(variant)) {
-			throw new IllegalStateException("The " + variant + " jar runs with the dev mode " + JOIDEnv.isDevMode() + " and the demo mode " + JOIDEnv.isDemoMode() + ": check what excludeVariant leaves in it");
+			throw new IllegalStateException("The " + variant + " jar runs with the dev mode " + JOIDEnv.isDevMode() + " and the demo mode " + JOIDEnv.isDemoMode() + ": check the excludes of gradle/variants.gradle");
 		}
 
 		final UI ui = "demo".equals(variant) ? (UI) Class.forName("dev.joid.demo.ui.simple.UIDemoSimple").getDeclaredConstructor().newInstance() : new CheckUI();
