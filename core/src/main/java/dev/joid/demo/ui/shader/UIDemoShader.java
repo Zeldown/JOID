@@ -22,6 +22,7 @@ import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
+import dev.joid.lib.ui.node.layer.NodeLayer;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.geom.BoundingBox;
 import dev.joid.lib.utils.geom.Point;
@@ -37,6 +38,24 @@ public class UIDemoShader extends UIDemo {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoShader.INK);
 		final Resource image = Resource.of("assets/demo/textures/image/placeholder.webp");
 		final Resource mask = Resource.of("assets/demo/textures/vector/mask.svg");
+		final NodeLayer[] layers = {
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 20F),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 30F, true, true, false, false),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 20F, 3D),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), UIDemoShader.INK, 30F, 1D),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 3D),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 6D),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(100D, 60D, UIDemoShader.INK, 60D),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(UIDemoShader.INK, Point.of(100D, 0D), Point.of(200D, 120D), Point.of(0D, 120D)),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.of(0D, 110D), Point.of(200D, 10D)),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.of(0D, 100D), Point.of(50D, 20D), Point.of(100D, 100D), Point.of(150D, 20D), Point.of(200D, 100D)),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.of(0D, 110D), Point.of(100D, -90D), Point.of(200D, 110D)),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.of(0D, 60D), Point.of(70D, -60D), Point.of(130D, 180D), Point.of(200D, 60D)),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, UIDemoShader.INK, Point.of(100D, 0D), Point.of(200D, 60D), Point.of(100D, 120D), Point.of(0D, 60D)),
+			(node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, UIDemoShader.INK, Point.of(0D, 0D), Point.of(90D, 120D), Point.of(0D, 120D), Point.of(110D, 0D), Point.of(200D, 0D), Point.of(200D, 120D)),
+			(node, mouseX, mouseY) -> GradientShader.use(Point.of(0D, 0D), Point.of(1D, 0D), UIDemoShader.PLACEHOLDER, UIDemoShader.INK, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(0D, 0D, node.getWidth(), node.getHeight()))
+		};
+		final String[] names = {"Rounded rect", "Some corners", "Rounded stroke", "Thin stroke", "Border", "Filled border", "Circle", "Polygon", "Line", "Polyline", "Curve", "Bezier", "Line loop", "Triangles", "Shader bound"};
 
 		RectNode.create(55, 40, 200, 120).color(UIDemoShader.INK).attach(this);
 		TextNode.create(155, 175).text(Text.create("Solid", caption)).anchorX(Align.CENTER).attach(this);
@@ -63,95 +82,10 @@ public class UIDemoShader extends UIDemo {
 		RectNode.create(1665, 40, 200, 120).color(Color.LOADING).attach(this);
 		TextNode.create(1765, 175).text(Text.create("Loading", caption)).anchorX(Align.CENTER).attach(this);
 
-		ContainerNode
-		.create(55, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 20F))
-		.attach(this);
-		TextNode.create(155, 375).text(Text.create("Rounded rect", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(285, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 30F, true, true, false, false))
-		.attach(this);
-		TextNode.create(385, 375).text(Text.create("Some corners", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(515, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 20F, 3D))
-		.attach(this);
-		TextNode.create(615, 375).text(Text.create("Rounded stroke", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(745, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawRoundedBorder(0D, 0D, node.getWidth(), node.getHeight(), UIDemoShader.INK, 30F, 1D))
-		.attach(this);
-		TextNode.create(845, 375).text(Text.create("Thin stroke", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(975, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 3D))
-		.attach(this);
-		TextNode.create(1075, 375).text(Text.create("Border", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(1205, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE, 6D))
-		.attach(this);
-		TextNode.create(1305, 375).text(Text.create("Filled border", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(1435, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCircle(100D, 60D, UIDemoShader.INK, 60D))
-		.attach(this);
-		TextNode.create(1535, 375).text(Text.create("Circle", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(1665, 240, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawPolygon(UIDemoShader.INK, Point.of(100D, 0D), Point.of(200D, 120D), Point.of(0D, 120D)))
-		.attach(this);
-		TextNode.create(1765, 375).text(Text.create("Polygon", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(55, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.of(0D, 110D), Point.of(200D, 10D)))
-		.attach(this);
-		TextNode.create(155, 575).text(Text.create("Line", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(285, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawLine(Color.WHITE, 3F, Point.of(0D, 100D), Point.of(50D, 20D), Point.of(100D, 100D), Point.of(150D, 20D), Point.of(200D, 100D)))
-		.attach(this);
-		TextNode.create(385, 575).text(Text.create("Polyline", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(515, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.of(0D, 110D), Point.of(100D, -90D), Point.of(200D, 110D)))
-		.attach(this);
-		TextNode.create(615, 575).text(Text.create("Curve", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(745, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawCurvedLine(Color.WHITE, 3F, Point.of(0D, 60D), Point.of(70D, -60D), Point.of(130D, 180D), Point.of(200D, 60D)))
-		.attach(this);
-		TextNode.create(845, 575).text(Text.create("Bezier", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(975, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.LINE_LOOP, UIDemoShader.INK, Point.of(100D, 0D), Point.of(200D, 60D), Point.of(100D, 120D), Point.of(0D, 60D)))
-		.attach(this);
-		TextNode.create(1075, 575).text(Text.create("Line loop", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(1205, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> DrawUtils.SHAPE.drawShape(DrawMode.TRIANGLES, UIDemoShader.INK, Point.of(0D, 0D), Point.of(90D, 120D), Point.of(0D, 120D), Point.of(110D, 0D), Point.of(200D, 0D), Point.of(200D, 120D)))
-		.attach(this);
-		TextNode.create(1305, 575).text(Text.create("Triangles", caption)).anchorX(Align.CENTER).attach(this);
-
-		ContainerNode
-		.create(1435, 440, 200, 120)
-		.layer((node, mouseX, mouseY) -> GradientShader.use(Point.of(0D, 0D), Point.of(1D, 0D), UIDemoShader.PLACEHOLDER, UIDemoShader.INK, () -> DrawUtils.SHAPE.drawRect(0D, 0D, node.getWidth(), node.getHeight(), Color.WHITE), BoundingBox.create(0D, 0D, node.getWidth(), node.getHeight())))
-		.attach(this);
-		TextNode.create(1535, 575).text(Text.create("Shader bound", caption)).anchorX(Align.CENTER).attach(this);
+		for (int i = 0; i < layers.length; i++) {
+			ContainerNode.create(55 + i % 8 * 230, 240 + i / 8 * 200, 200, 120).layer(layers[i]).attach(this);
+			TextNode.create(155 + i % 8 * 230, 375 + i / 8 * 200).text(Text.create(names[i], caption)).anchorX(Align.CENTER).attach(this);
+		}
 
 		TextNode.create(1765, 470).text(Text.create("Gradient", TextInfo.create(DemoFont.MONTSERRAT, 44).color(UIDemoShader.PLACEHOLDER.toGradient(UIDemoShader.INK, Point.of(0D, 0D), Point.of(1D, 0D))))).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1765, 575).text(Text.create("Gradient text", caption)).anchorX(Align.CENTER).attach(this);

@@ -9,10 +9,8 @@ import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @UIStoreData(id = "DemoPermanentStore", scope = UIStoreScope.PERMANENT)
 public class DemoPermanentStore extends UIStore {
