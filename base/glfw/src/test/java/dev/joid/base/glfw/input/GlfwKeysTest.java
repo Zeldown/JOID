@@ -32,6 +32,33 @@ public class GlfwKeysTest {
 	}
 
 	@Test
+	public void findsTheCodeAtBothEndsOfEveryRangeOfKeys() {
+		Assert.assertEquals(GLFW.GLFW_KEY_A, GlfwKeys.getCode(Key.A));
+		Assert.assertEquals(GLFW.GLFW_KEY_Z, GlfwKeys.getCode(Key.Z));
+		Assert.assertEquals(GLFW.GLFW_KEY_0, GlfwKeys.getCode(Key.DIGIT_0));
+		Assert.assertEquals(GLFW.GLFW_KEY_9, GlfwKeys.getCode(Key.DIGIT_9));
+		Assert.assertEquals(GLFW.GLFW_KEY_F1, GlfwKeys.getCode(Key.F1));
+		Assert.assertEquals(GLFW.GLFW_KEY_F25, GlfwKeys.getCode(Key.F25));
+		Assert.assertEquals(GLFW.GLFW_KEY_ESCAPE, GlfwKeys.getCode(Key.ESCAPE));
+		Assert.assertEquals(GLFW.GLFW_KEY_END, GlfwKeys.getCode(Key.END));
+		Assert.assertEquals(GLFW.GLFW_KEY_CAPS_LOCK, GlfwKeys.getCode(Key.CAPS_LOCK));
+		Assert.assertEquals(GLFW.GLFW_KEY_PAUSE, GlfwKeys.getCode(Key.PAUSE));
+		Assert.assertEquals(GLFW.GLFW_KEY_SPACE, GlfwKeys.getCode(Key.SPACE));
+		Assert.assertEquals(GLFW.GLFW_KEY_APOSTROPHE, GlfwKeys.getCode(Key.APOSTROPHE));
+		Assert.assertEquals(GLFW.GLFW_KEY_COMMA, GlfwKeys.getCode(Key.COMMA));
+		Assert.assertEquals(GLFW.GLFW_KEY_SLASH, GlfwKeys.getCode(Key.SLASH));
+		Assert.assertEquals(GLFW.GLFW_KEY_SEMICOLON, GlfwKeys.getCode(Key.SEMICOLON));
+		Assert.assertEquals(GLFW.GLFW_KEY_EQUAL, GlfwKeys.getCode(Key.EQUAL));
+		Assert.assertEquals(GLFW.GLFW_KEY_LEFT_BRACKET, GlfwKeys.getCode(Key.LEFT_BRACKET));
+		Assert.assertEquals(GLFW.GLFW_KEY_RIGHT_BRACKET, GlfwKeys.getCode(Key.RIGHT_BRACKET));
+		Assert.assertEquals(GLFW.GLFW_KEY_GRAVE_ACCENT, GlfwKeys.getCode(Key.GRAVE_ACCENT));
+		Assert.assertEquals(GLFW.GLFW_KEY_KP_0, GlfwKeys.getCode(Key.NUMPAD_0));
+		Assert.assertEquals(GLFW.GLFW_KEY_KP_EQUAL, GlfwKeys.getCode(Key.NUMPAD_EQUAL));
+		Assert.assertEquals(GLFW.GLFW_KEY_LEFT_SHIFT, GlfwKeys.getCode(Key.LEFT_SHIFT));
+		Assert.assertEquals(GLFW.GLFW_KEY_MENU, GlfwKeys.getCode(Key.MENU));
+	}
+
+	@Test
 	public void mapsEveryCodeBackToItsKey() {
 		final Set<Integer> codes = new HashSet<>();
 		for (final Key key : Key.values()) {

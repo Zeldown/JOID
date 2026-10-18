@@ -7,23 +7,28 @@ import java.util.regex.Pattern;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.ClasspathAsset;
 import dev.joid.lib.asset.impl.FileAsset;
+import dev.joid.lib.asset.impl.UrlAsset;
 import dev.joid.lib.asset.locator.IAssetLocator;
 import lombok.NonNull;
 
-public class PathAssetLocator implements IAssetLocator {
+public class StringAssetLocator implements IAssetLocator {
 
 	private static final Pattern SCHEME = Pattern.compile("^[A-Za-z][A-Za-z0-9+.-]+:");
 
 	@Override
 	public boolean supports(final @NonNull Object handle) {
-		return handle instanceof String && !PathAssetLocator.SCHEME.matcher((String) handle).find();
+		return handle instanceof String;
 	}
 
 	@Override
 	public @NonNull Asset locate(final @NonNull Object handle) {
 		final String path = (String) handle;
+		if (StringAssetLocator.SCHEME.matcher(path).find()) {
+			return UrlAsset.of(path);
+		}
+
 		final String name = path.startsWith("/") ? path.substring(1) : path;
-		final URL url = PathAssetLocator.find(name);
+		final URL url = StringAssetLocator.find(name);
 		if (url != null) {
 			return ClasspathAsset.of(name, url);
 		}
@@ -38,7 +43,7 @@ public class PathAssetLocator implements IAssetLocator {
 	private static URL find(final String name) {
 		final ClassLoader context = Thread.currentThread().getContextClassLoader();
 		final URL url = context == null ? null : context.getResource(name);
-		return url != null ? url : PathAssetLocator.class.getClassLoader().getResource(name);
+		return url != null ? url : StringAssetLocator.class.getClassLoader().getResource(name);
 	}
 
 }

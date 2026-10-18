@@ -2,9 +2,8 @@ package dev.joid.lib.asset.locator;
 
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.locator.impl.FileAssetLocator;
-import dev.joid.lib.asset.locator.impl.PathAssetLocator;
 import dev.joid.lib.asset.locator.impl.StreamAssetLocator;
-import dev.joid.lib.asset.locator.impl.UrlAssetLocator;
+import dev.joid.lib.asset.locator.impl.StringAssetLocator;
 import dev.joid.lib.utils.registry.Registry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,9 +15,8 @@ public final class AssetLocator {
 	private static final Registry<IAssetLocator> LOCATORS = new Registry<>();
 
 	static {
-		AssetLocator.register(new UrlAssetLocator());
-		AssetLocator.register(new PathAssetLocator());
 		AssetLocator.register(new FileAssetLocator());
+		AssetLocator.register(new StringAssetLocator());
 		AssetLocator.register(new StreamAssetLocator());
 	}
 
