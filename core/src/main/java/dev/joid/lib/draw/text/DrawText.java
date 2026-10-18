@@ -152,8 +152,10 @@ public final class DrawText {
 
 		Text currentText = text.copyProperties().modifier(null);
 		double spacing = 0D;
-		for (final TextElement element : text.getElementList()) {
-			final String elementText = text.getText(element).replace("<br>", String.valueOf('\n'));
+		final Text source = text.copyProperties();
+		text.getElementList().forEach(element -> source.add(element.copyWithText(element.getRawText().replace("<br>", String.valueOf('\n')))));
+		for (final TextElement element : source.getElementList()) {
+			final String elementText = source.getText(element);
 			final int[] tags = TextMarkup.tags(elementText, element.getInfo());
 			String opened = "";
 			int lastSplit = 0;

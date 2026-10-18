@@ -227,6 +227,11 @@ public class DrawTextTest {
 			Assert.assertEquals(text, "ab", lines.get(0));
 			Assert.assertEquals(text, "cd", lines.get(1));
 		}
+
+		final List<Text> upper = DrawTextTest.draw().getLines(100D, Text.create("ab<br>cd", this.info).modifier(TextModifier.UPPER_CASE));
+		Assert.assertEquals(2, upper.size());
+		Assert.assertEquals("AB", upper.get(0).getText());
+		Assert.assertEquals("CD", upper.get(1).getText());
 	}
 
 	@Test

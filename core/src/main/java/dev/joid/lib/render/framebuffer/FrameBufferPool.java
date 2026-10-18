@@ -33,6 +33,7 @@ public final class FrameBufferPool {
 		final int targetHeight = FrameBufferPool.capacity(owned ? pooled.frameBuffers[0].getHeight() : 0, height);
 		if (owned) {
 			pooled.delete();
+			FrameBufferPool.POOL.remove(key);
 		}
 
 		final IRenderBridge render = BridgeHandler.RENDER.get();
