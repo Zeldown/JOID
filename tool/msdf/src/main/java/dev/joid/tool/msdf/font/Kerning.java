@@ -9,17 +9,16 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Kerning {
 
 	private final int[]              glyphs;
 	private final FontFile           file;
 	private final Map<Long, Integer> pairs   = new HashMap<>();
 	private final Map<Long, Integer> kerning = new LinkedHashMap<>();
-
-	private Kerning(final FontFile file, final int[] glyphs) {
-		this.file = file;
-		this.glyphs = glyphs;
-	}
 
 	public static Kerning read(final FontFile file, final Font font, final int[] codepoints) {
 		final Map<Integer, Integer> glyphs = new LinkedHashMap<>();
@@ -30,7 +29,7 @@ public final class Kerning {
 			}
 		}
 
-		final Kerning reader = new Kerning(file, glyphs.values().stream().mapToInt(Integer::intValue).sorted().toArray());
+		final Kerning reader = new Kerning(glyphs.values().stream().mapToInt(Integer::intValue).sorted().toArray(), file);
 		reader.parse();
 
 		for (final int first : glyphs.keySet()) {
