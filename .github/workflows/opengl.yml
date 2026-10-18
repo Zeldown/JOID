@@ -26,7 +26,7 @@ jobs:
       - name: Install Mesa and Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libegl-mesa0
       - name: Record the snapshots of the default context
-        run: chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew :base-opengl:test :backend-lwjgl3:updateSnapshots --continue
+        run: xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew :base-opengl:test :backend-lwjgl3:updateSnapshots --continue
       - name: Upload the references
         uses: actions/upload-artifact@v4
         with:
@@ -100,7 +100,7 @@ jobs:
             export MESA_GLSL_VERSION_OVERRIDE=${{ matrix.glsl }}
           fi
           references=$(find .snapshots/backend-lwjgl3 -name '*.png' | wc -l)
-          chmod +x gradlew && xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew ${{ matrix.tasks || ':base-opengl:test :backend-lwjgl3:test' }} -PglProfile=${{ matrix.profile }} --continue
+          xvfb-run -a -s "-screen 0 1920x1080x24" ./gradlew ${{ matrix.tasks || ':base-opengl:test :backend-lwjgl3:test' }} -PglProfile=${{ matrix.profile }} --continue
           recorded=$(( $(find .snapshots/backend-lwjgl3 -name '*.png' | wc -l) - references ))
           if [ "$recorded" -gt 0 ]; then
             echo "$recorded snapshots had no reference to compare with: this runner reports another GL_RENDERER than the references job"

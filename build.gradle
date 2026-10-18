@@ -299,16 +299,11 @@ task validateShaders {
     }
 }
 
-task installLocalGitHook(type: Copy) {
+task installLocalGitHook(type: Exec) {
     group = 'JOID'
-    description = 'Installs the pre-commit and pre-push git hooks, outside a continuous integration and only when they changed.'
-    from('scripts') {
-        include 'pre-push', 'pre-commit'
-    }
-    into '.git/hooks'
+    description = 'Points git at the pre-commit and pre-push hooks of scripts, outside a continuous integration.'
+    commandLine 'git', 'config', 'core.hooksPath', 'scripts'
     onlyIf {
-        System.getenv('CI') == null && file('.git').isDirectory() && ['pre-push', 'pre-commit'].any { name -> !file(".git/hooks/$name").isFile() || file(".git/hooks/$name").bytes != file("scripts/$name").bytes }
+        System.getenv('CI') == null && file('.git').isDirectory()
     }
-
-    fileMode 0775
 }

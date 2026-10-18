@@ -93,7 +93,7 @@ else
     fi
 
     if [ $jars -eq 1 ]; then
-        tasks="$tasks checkJars"
+        tasks="$tasks checkJars testProdJar testDevJar testDemoJar"
     fi
 
     if [ $render -eq 1 ]; then
