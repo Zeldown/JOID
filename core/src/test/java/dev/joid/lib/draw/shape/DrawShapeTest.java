@@ -515,6 +515,26 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void leavesTheGradientOfASmoothedPolygonUntinted() {
+		this.bridges.resize(1920, 1080);
+		DrawUtils.SHAPE.drawPolygon(new Color(1F, 0F, 0F, 1F, frame -> Color.RED.toGradient(Color.BLUE)), Point.of(10D, 20D), Point.of(110D, 20D), Point.of(60D, 70D));
+		Assert.assertSame(GradientShader.inst().getShader(), this.bridges.getRender().getDraws().get(0).getShader());
+		Assert.assertEquals(0xFFFFFFFF, TessellatorAccess.rawBuffer(Tessellator.inst())[5]);
+	}
+
+	@Test
+	public void smoothsAPolygonWithTheColorItsGradientResolvesTo() {
+		this.bridges.resize(1920, 1080);
+		final Color[] target = {Color.BLUE.toGradient(Color.GREEN)};
+		final Color animated = new Color(0F, 0F, 0F, 1F, frame -> target[0]);
+		final Color color = animated.to(animated, 0.5F);
+		target[0] = new Color(0F, 1F, 0F, 1F);
+		DrawUtils.SHAPE.drawPolygon(color, Point.of(10D, 20D), Point.of(110D, 20D), Point.of(60D, 70D));
+		Assert.assertNull(this.single(0F, 1F, 0F).getShader());
+		Assert.assertEquals(0xFF00FF00, TessellatorAccess.rawBuffer(Tessellator.inst())[5]);
+	}
+
+	@Test
 	public void drawsARawRectangleWithTheBoundColor() {
 		this.bridges.getRender().getState().color(0.2F, 0.4F, 0.6F, 1F);
 		DrawUtils.SHAPE.drawRawRect(10.3D, 20.6D, 100D, 1D);

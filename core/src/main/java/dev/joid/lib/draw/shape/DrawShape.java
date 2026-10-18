@@ -284,12 +284,13 @@ public final class DrawShape {
 
 		final Tessellator tessellator = Tessellator.inst();
 		final BoundingBox box = BoundingBox.create(minX, minY, maxX - minX, maxY - minY);
+		final Color resolved = color.update();
 		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
 			render.getState().blend(BlendState.NORMAL).texture(null);
-			color.bind(() -> {
+			resolved.bind(() -> {
 				if (smooth) {
-					final Color resolved = color.isGradient() ? Color.WHITE : color.update();
-					EdgeSmoothing.polygon(resolved.getRedF(), resolved.getGreenF(), resolved.getBlueF(), resolved.getAlphaF(), points);
+					final Color vertex = resolved.isGradient() ? Color.WHITE : resolved;
+					EdgeSmoothing.polygon(vertex.getRedF(), vertex.getGreenF(), vertex.getBlueF(), vertex.getAlphaF(), points);
 					return;
 				}
 
