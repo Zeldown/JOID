@@ -172,6 +172,9 @@ public class ResourceNodeTest {
 		Assert.assertEquals(1F, this.single(ResourceNodeTest.TINT).getAlpha(), 0F);
 		Assert.assertEquals(1F, this.single(ResourceNodeTest.HOVER).getAlpha(), 0F);
 		Assert.assertTrue(draws.indexOf(this.single(ResourceNodeTest.TINT)) < draws.indexOf(this.single(ResourceNodeTest.HOVER)));
+		node.hoveredColor(new Color(0.6F, 0.4F, 0.2F, 0.5F));
+		this.bridges.frames(2);
+		Assert.assertEquals(0.5F, this.single(ResourceNodeTest.HOVER).getAlpha(), 1E-2F);
 	}
 
 	@Test

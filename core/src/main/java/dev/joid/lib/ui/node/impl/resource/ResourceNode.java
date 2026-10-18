@@ -85,7 +85,8 @@ public class ResourceNode extends Node {
 		primary.bind(() -> this.drawResource(this.filteredResource), canvas, true);
 
 		if (fades) {
-			final Color secondary = (this.hoveredColor != null ? this.hoveredColor : this.color).withAlpha(super.hoverValue(1F));
+			final Color base = this.hoveredColor != null ? this.hoveredColor : this.color;
+			final Color secondary = base.withAlpha(super.hoverValue(base.getAlphaF()));
 			secondary.bind(() -> this.drawResource(this.filteredHoveredResource), canvas, true);
 		}
 	}
