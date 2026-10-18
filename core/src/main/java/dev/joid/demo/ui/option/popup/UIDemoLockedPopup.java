@@ -21,7 +21,7 @@ public class UIDemoLockedPopup extends UIDemoOptionPopup {
 		.create(1060, 580, 160, 50)
 		.color(UIDemoLockedPopup.INK)
 		.onClick(event -> JOID.forceClose(this))
-		.label(Text.create("Force close", TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE)))
+		.label(Text.create("Force close", TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE)))
 		.attach(this);
 	}
 

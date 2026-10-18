@@ -26,8 +26,8 @@ public class UIDemoMarkup extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoMarkup.INK);
-		final TextInfo markup = TextInfo.create(DemoFont.MONTSERRAT, 20, UIDemoMarkup.INK).markups(DemoTextMarkup.inst());
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoMarkup.INK);
+		final TextInfo markup = TextInfo.create(DemoFont.MONTSERRAT, 20).color(UIDemoMarkup.INK).markups(DemoTextMarkup.inst());
 		final int[] slots = {0, 1, 2, 3, 5, 6, 7, 8, 10, 12, 13, 14, 15, 16, 17, 18, 19};
 		final Text[] texts = {
 			Text.create("<b>bold</b> regular <w=100>thin</w> <w=300>light</w> <w=600>semi bold</w> <w=900>black</w> <w=800>extra bold</w>", markup),

@@ -86,7 +86,7 @@ public class ShowForm extends ShowUI {
 			TextNode.create(100, 100).text(Text.create(ShowForm.initials(this.name.get()), ShowUI.font(FontWeight.BLACK, 72F, Color.WHITE))).anchor(Align.CENTER).attach(avatar);
 		})
 		.attach(this);
-		TextNode.create(1405, 560).text(Text.create(this.name.get().isEmpty() ? "Your name" : this.name.get(), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 64F, this.name.get().isEmpty() ? ShowUI.FAINT : ShowUI.TEXT))).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1405, 560).text(Text.create(this.name.get().isEmpty() ? "Your name" : this.name.get(), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 64F).color(this.name.get().isEmpty() ? ShowUI.FAINT : ShowUI.TEXT))).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1405, 660).text(Text.create(this.email.get().isEmpty() ? "you@example.com" : this.email.get(), ShowUI.font(FontWeight.MEDIUM, 24F, ShowUI.MUTED))).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1405, 730).text(Text.create(this.bio.get(), ShowUI.font(FontWeight.MEDIUM, 28F, ShowUI.TEXT).markups(DemoTextMarkup.inst()))).anchorX(Align.CENTER).attach(this);
 		RectNode

@@ -31,8 +31,8 @@ public class UIDemoEventFlow extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoEventFlow.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoEventFlow.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final StringSignal order = new StringSignal("none");
 		final IntegerSignal clicks = new IntegerSignal(0);
 		final IntegerSignal heard = new IntegerSignal(0);

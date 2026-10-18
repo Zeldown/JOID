@@ -29,8 +29,8 @@ public class UIDemoDraggable extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoDraggable.INK);
-		final TextInfo counter = TextInfo.create(DemoFont.MONTSERRAT, 22, UIDemoDraggable.INK);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoDraggable.INK);
+		final TextInfo counter = TextInfo.create(DemoFont.MONTSERRAT, 22).color(UIDemoDraggable.INK);
 		final IntegerSignal starts = new IntegerSignal(0);
 		final IntegerSignal drags = new IntegerSignal(0);
 		final IntegerSignal snaps = new IntegerSignal(0);

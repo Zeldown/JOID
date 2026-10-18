@@ -72,7 +72,7 @@ public class ShowPlayer extends ShowUI {
 			.attach(card);
 			RectNode.create(0, 0, 1440, 220).color(() -> ShowUI.vertical(Color.BLACK.withAlpha(0.55F * card.hoverValue(1F)), Color.BLACK.withAlpha(0F))).attach(card);
 			RectNode.create(0, 500, 1440, 310).color(() -> ShowUI.vertical(Color.BLACK.withAlpha(0F), Color.BLACK.withAlpha(0.35F + 0.5F * card.hoverValue(1F)))).attach(card);
-			TextNode.create(56, 48).text(() -> Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.BOLD, 54F, ShowUI.TEXT.withAlpha(card.hoverValue(1F))))).attach(card);
+			TextNode.create(56, 48).text(() -> Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 54F).weight(FontWeight.BOLD).color(ShowUI.TEXT.withAlpha(card.hoverValue(1F))))).attach(card);
 			TextNode.create(60, 120).text(() -> Text.create("Slow motion  ·  honey and light", ShowUI.font(FontWeight.MEDIUM, 22F, ShowUI.MUTED.withAlpha(card.hoverValue(1F))))).attach(card);
 			final ResourcePlayerNode preview = ResourcePlayerNode
 			.create(8, 8, 320, 180)

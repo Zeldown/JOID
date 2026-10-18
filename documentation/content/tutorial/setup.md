@@ -84,7 +84,7 @@ public final class SettingsUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo title = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 40F, Color.WHITE);
+		final TextInfo title = TextInfo.create(Theme.getFont(), 40F).weight(FontWeight.BOLD).color(Color.WHITE);
 		TextNode.create(960, 540).text(Text.create("Settings", title)).anchor(Align.CENTER).attach(this);
 	}
 
@@ -92,7 +92,7 @@ public final class SettingsUI extends UI {
 ```
 
 - `@UIData(background = true, backgroundColor = "#18181B")` fills the window behind the UI with an opaque near-black. Without `background = true`, a UI draws nothing behind its nodes.
-- `TextInfo.create(font, weight, size, color)` is the bold style of the title. (960, 540) is the center of the canvas, and `anchor(Align.CENTER)` puts the center of the text there.
+- `TextInfo.create(font, size).weight(...).color(...)` is the bold style of the title. (960, 540) is the center of the canvas, and `anchor(Align.CENTER)` puts the center of the text there.
 
 ## Step 4: open it from Main
 

@@ -328,7 +328,7 @@ public class TextFieldMarkupTest {
 	}
 
 	private TextFieldNode field(final String text, final boolean markup) {
-		final TextFieldNode field = TextFieldNode.create(0D, 0D, 400D, 40D).info(TextInfo.create(this.font, 10F, TextFieldMarkupTest.INK).markups(TextFieldMarkupTest.MARKUP)).markup(markup).text(text).focused(true);
+		final TextFieldNode field = TextFieldNode.create(0D, 0D, 400D, 40D).info(TextInfo.create(this.font, 10F).color(TextFieldMarkupTest.INK).markups(TextFieldMarkupTest.MARKUP)).markup(markup).text(text).focused(true);
 		this.bridges.open(new NodeUI(field));
 		this.bridges.getClock().advance(1000L);
 		return field;

@@ -108,7 +108,7 @@ public final class CounterUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(Theme.getFont(), 40F, Color.WHITE);
+		final TextInfo info = TextInfo.create(Theme.getFont(), 40F).color(Color.WHITE);
 
 		RectNode
 		.create(760, 440, 400, 120)

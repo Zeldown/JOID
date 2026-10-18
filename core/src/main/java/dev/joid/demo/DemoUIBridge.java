@@ -25,7 +25,7 @@ public class DemoUIBridge extends WindowUIBridge {
 	}
 
 	public void start() {
-		super.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE));
+		super.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20).color(Color.WHITE));
 		this.openMenu();
 		super.load();
 	}

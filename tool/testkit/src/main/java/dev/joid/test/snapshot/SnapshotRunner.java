@@ -79,7 +79,7 @@ public final class SnapshotRunner {
 		BridgeHandler.AUDIO.register((sampleRate, channels) -> new SnapshotAudioSource());
 		AssetLocator.register(runner.locator);
 		if (DevFont.MONTSERRAT != null) {
-			runner.bridge.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20, Color.WHITE));
+			runner.bridge.hoverInfo(TextInfo.create(DevFont.MONTSERRAT, 20).color(Color.WHITE));
 		}
 		runner.resize(1920, 1080);
 

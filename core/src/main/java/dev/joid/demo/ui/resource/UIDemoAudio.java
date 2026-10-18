@@ -23,9 +23,9 @@ public class UIDemoAudio extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoAudio.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 20, UIDemoAudio.INK);
-		final TextInfo button = TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoAudio.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 20).color(UIDemoAudio.INK);
+		final TextInfo button = TextInfo.create(DemoFont.MONTSERRAT, 20).color(Color.WHITE);
 		final FloatSignal volume = new FloatSignal(1F);
 		final BooleanSignal far = new BooleanSignal(false);
 		final BooleanSignal away = new BooleanSignal(false);

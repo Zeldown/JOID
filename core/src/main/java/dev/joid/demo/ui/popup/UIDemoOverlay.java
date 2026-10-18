@@ -21,7 +21,7 @@ public class UIDemoOverlay extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOverlay.INK);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoOverlay.INK);
 
 		RectNode
 		.create(1500, 500, 320, 260)
@@ -39,7 +39,7 @@ public class UIDemoOverlay extends UI {
 
 		@Override
 		public void init() {
-			final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoOverlay.INK);
+			final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoOverlay.INK);
 
 			RectNode
 			.create(100, 500, 320, 260)

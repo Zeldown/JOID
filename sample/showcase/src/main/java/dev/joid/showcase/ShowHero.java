@@ -125,7 +125,7 @@ public class ShowHero extends ShowUI {
 		.effect(RoundedNodeEffect.create(18F))
 		.effect(ShadowNodeEffect.create(from.withAlpha(0.45F), 18F).offsetY(6D))
 		.body(art -> {
-			TextNode.create(42, 42).text(Text.create(name.substring(0, 1), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 40F, Color.WHITE))).anchor(Align.CENTER).attach(art);
+			TextNode.create(42, 42).text(Text.create(name.substring(0, 1), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 40F).color(Color.WHITE))).anchor(Align.CENTER).attach(art);
 		})
 		.attach(this);
 		TextNode.create(x + 102D, 872).text(Text.create(name, ShowUI.font(FontWeight.SEMI_BOLD, 21F, ShowUI.TEXT))).attach(this);
@@ -160,7 +160,7 @@ public class ShowHero extends ShowUI {
 				TextNode.create(36, 19).text(Text.create("Now playing", ShowUI.font(FontWeight.SEMI_BOLD, 16F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(pill);
 			})
 			.attach(card);
-			TextNode.create(32, 282).text(Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.BOLD, 46F, ShowUI.TEXT))).attach(card);
+			TextNode.create(32, 282).text(Text.create("Golden Hour", TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 46F).weight(FontWeight.BOLD).color(ShowUI.TEXT))).attach(card);
 			TextNode.create(34, 340).text(Text.create("Slow motion  ·  honey and light", ShowUI.font(FontWeight.MEDIUM, 19F, ShowUI.MUTED))).attach(card);
 			ProgressNode
 			.create(32, 372, 476, 6)

@@ -1114,7 +1114,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void drawsItsPlaceholderAtHalfTheOpacityOfItsText() {
-		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F, new Color(0.2F, 0.4F, 0.6F, 0.4F))).placeholder("Search")));
+		this.bridges.open(new NodeUI(TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F).color(new Color(0.2F, 0.4F, 0.6F, 0.4F))).placeholder("Search")));
 		Assert.assertEquals("Search", this.font.last().getText());
 		Assert.assertEquals(0.2F, this.font.last().getAlpha(), 1E-6F);
 	}
@@ -1122,7 +1122,7 @@ public class TextFieldNodeTest {
 	@Test
 	public void keepsTheGradientOfItsTextOnItsPlaceholderAndItsCursor() {
 		final Color gradient = new Color(1F, 0F, 0F, 1F).toGradient(new Color(0F, 0F, 1F, 0.5F), Point.of(0D, 0D), Point.of(1D, 0D));
-		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F, gradient)).placeholder("Search");
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F).color(gradient)).placeholder("Search");
 		Assert.assertTrue(field.getPlaceholderInfo().getColor().isGradient());
 		Assert.assertEquals(0.5F, field.getPlaceholderInfo().getColor().getAlphaF(), 1E-6F);
 		Assert.assertTrue(field.getShownCursorColor().isGradient());
@@ -1517,7 +1517,7 @@ public class TextFieldNodeTest {
 	}
 
 	private TextInfo info() {
-		return TextInfo.create(this.font, 10F, TextFieldNodeTest.INK);
+		return TextInfo.create(this.font, 10F).color(TextFieldNodeTest.INK);
 	}
 
 	private TextFieldNode field(final String text) {

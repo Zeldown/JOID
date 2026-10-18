@@ -39,8 +39,8 @@ public class UIDemoStore extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoStore.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoStore.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final long now = BridgeHandler.CLOCK.get().currentTimeMillis();
 		final DemoLocalStore local = super.useStore(DemoLocalStore.class, () -> new DemoLocalStore(now));
 		final DemoGlobalStore global = super.useStore(DemoGlobalStore.class, () -> new DemoGlobalStore(now));

@@ -17,7 +17,7 @@ public class DemoSwitchNode<V> extends SwitchNode<V> {
 		super.option((value, index) -> RectNode
 		.create(0, 0, 0, 0)
 		.color(() -> (value.equals(super.getValue()) ? DemoSwitchNode.INK : Color.WHITE).withAlpha(super.isEnabled() ? 1F : 0.4F))
-		.label(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 20, value.equals(super.getValue()) ? Color.WHITE : DemoSwitchNode.INK))));
+		.label(() -> Text.create(value, TextInfo.create(DemoFont.MONTSERRAT, 20).color(value.equals(super.getValue()) ? Color.WHITE : DemoSwitchNode.INK))));
 	}
 
 	public static <V> @NonNull DemoSwitchNode<V> create(final double x, final double y, final double width, final double height) {

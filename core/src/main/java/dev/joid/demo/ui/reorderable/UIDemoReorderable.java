@@ -26,8 +26,8 @@ public class UIDemoReorderable extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoReorderable.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 18, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoReorderable.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 18).color(Color.WHITE);
 		final IntegerSignal starts = new IntegerSignal(0);
 		final IntegerSignal moves = new IntegerSignal(0);
 		final StringSignal last = new StringSignal("none");

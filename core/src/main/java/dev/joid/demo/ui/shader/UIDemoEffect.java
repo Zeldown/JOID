@@ -34,7 +34,7 @@ public class UIDemoEffect extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoEffect.INK);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoEffect.INK);
 		final Resource image = Resource.of("assets/demo/textures/image/placeholder.webp");
 
 		RectNode.create(55, 40, 200, 120).color(Color.WHITE).effect(RoundedNodeEffect.create(20F)).attach(this);
@@ -96,7 +96,7 @@ public class UIDemoEffect extends UIDemo {
 		ResourceNode.create(1205, 240, 200, 120).resource(image).stretch(StretchType.COVER).effect(BlurNodeEffect.create(10F)).attach(this);
 		TextNode.create(1305, 375).text(Text.create("Strong blur", caption)).anchorX(Align.CENTER).attach(this);
 
-		TextNode.create(1535, 270).text(Text.create("Blurred", TextInfo.create(DemoFont.MONTSERRAT, 44, Color.WHITE))).effect(BlurNodeEffect.create(4F)).anchorX(Align.CENTER).attach(this);
+		TextNode.create(1535, 270).text(Text.create("Blurred", TextInfo.create(DemoFont.MONTSERRAT, 44).color(Color.WHITE))).effect(BlurNodeEffect.create(4F)).anchorX(Align.CENTER).attach(this);
 		TextNode.create(1535, 375).text(Text.create("Blurred text", caption)).anchorX(Align.CENTER).attach(this);
 
 		ResourceNode

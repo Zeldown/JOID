@@ -50,17 +50,17 @@ public class ShowPaperKit implements IShowKit {
 
 	@Override
 	public @NonNull TextInfo display() {
-		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 136F, ShowPaperKit.INK);
+		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 136F).color(ShowPaperKit.INK);
 	}
 
 	@Override
 	public @NonNull TextInfo accent() {
-		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 136F, ShowPaperKit.TOMATO);
+		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 136F).color(ShowPaperKit.TOMATO);
 	}
 
 	@Override
 	public @NonNull TextInfo title() {
-		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 54F, ShowPaperKit.INK);
+		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 54F).color(ShowPaperKit.INK);
 	}
 
 	@Override

@@ -26,11 +26,11 @@ public class UIDemoFont extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoFont.INK);
-		final TextInfo montserrat = TextInfo.create(DemoFont.MONTSERRAT, 18, UIDemoFont.INK).lineHeight(1.33F);
-		final TextInfo pacifico = TextInfo.create(DemoFont.PACIFICO, 18, UIDemoFont.INK).lineHeight(1.425F);
-		final TextInfo playfair = TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 18, UIDemoFont.INK).lineHeight(1.425F);
-		final TextInfo pixel = TextInfo.create(DemoFont.PIXEL, 16, UIDemoFont.INK);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoFont.INK);
+		final TextInfo montserrat = TextInfo.create(DemoFont.MONTSERRAT, 18).color(UIDemoFont.INK).lineHeight(1.33F);
+		final TextInfo pacifico = TextInfo.create(DemoFont.PACIFICO, 18).color(UIDemoFont.INK).lineHeight(1.425F);
+		final TextInfo playfair = TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 18).color(UIDemoFont.INK).lineHeight(1.425F);
+		final TextInfo pixel = TextInfo.create(DemoFont.PIXEL, 16).color(UIDemoFont.INK);
 		final String[] specimen = {"Aa Bb Cc Dd Ee Ff Gg", "abcdefghijklmnopqrstuvwxyz", "ABCDEFGHIJKLM", "NOPQRSTUVWXYZ", "0123456789", "!?.,;:'\"()[]{}+-*/=%&@#", "àâéèêëîïôùûüç ß œ æ ł ı", "ÀÉÈÊÎÔÙÇ"};
 		final TextInfo[] specimens = {montserrat, pacifico, playfair};
 		final String[] names = {"Montserrat", "Pacifico", "Playfair Display"};
@@ -85,7 +85,7 @@ public class UIDemoFont extends UIDemo {
 				.vertical(20, 20, 280)
 				.body(flex -> {
 					for (final FontWeight weight : FontWeight.values()) {
-						TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, weight, 18, UIDemoFont.INK).italic(italics[index]))).attach(flex);
+						TextNode.create(0, 0).text(Text.create(weight.getValue() + " " + weight, TextInfo.create(DemoFont.MONTSERRAT, 18).weight(weight).color(UIDemoFont.INK).italic(italics[index]))).attach(flex);
 					}
 				})
 				.attach(rect);
@@ -102,7 +102,7 @@ public class UIDemoFont extends UIDemo {
 			.vertical(20, 20, 280)
 			.body(flex -> {
 				for (final FontWeight weight : FontWeight.values()) {
-					TextNode.create(0, 0).text(Text.create(weight.getValue() + " drawn with two faces", TextInfo.create(UIDemoFont.LIGHT_BOLD, weight, 18, UIDemoFont.INK))).attach(flex);
+					TextNode.create(0, 0).text(Text.create(weight.getValue() + " drawn with two faces", TextInfo.create(UIDemoFont.LIGHT_BOLD, 18).weight(weight).color(UIDemoFont.INK))).attach(flex);
 				}
 			})
 			.attach(rect);

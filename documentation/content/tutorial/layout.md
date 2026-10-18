@@ -34,8 +34,8 @@ A card 800 units wide at x = 560 is horizontally centered ((1920 - 800) / 2), an
 The header is three children of the card, built in its `body(...)` and placed relative to it: (40, 40) inside the card is 40 units from its top-left corner. Create the text styles once, at the start of `init()`:
 
 ```java
-final TextInfo title = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 40F, Theme.INK);
-final TextInfo hint = TextInfo.create(Theme.getFont(), 18F, Theme.INK);
+final TextInfo title = TextInfo.create(Theme.getFont(), 40F).weight(FontWeight.BOLD).color(Theme.INK);
+final TextInfo hint = TextInfo.create(Theme.getFont(), 18F).color(Theme.INK);
 ```
 
 Then add the header to the card:
@@ -79,8 +79,8 @@ private RectNode row(final Node parent, final String name, final TextInfo info) 
 Two more styles go next to `title` and `hint`:
 
 ```java
-final TextInfo section = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 16F, Theme.INK).letterSpacing(0.08F);
-final TextInfo label = TextInfo.create(Theme.getFont(), 22F, Theme.INK);
+final TextInfo section = TextInfo.create(Theme.getFont(), 16F).weight(FontWeight.BOLD).color(Theme.INK).letterSpacing(0.08F);
+final TextInfo label = TextInfo.create(Theme.getFont(), 22F).color(Theme.INK);
 ```
 
 Then the column, inside the `body` of the card, after the header:
@@ -182,10 +182,10 @@ public final class SettingsUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo title = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 40F, Theme.INK);
-		final TextInfo hint = TextInfo.create(Theme.getFont(), 18F, Theme.INK);
-		final TextInfo section = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 16F, Theme.INK).letterSpacing(0.08F);
-		final TextInfo label = TextInfo.create(Theme.getFont(), 22F, Theme.INK);
+		final TextInfo title = TextInfo.create(Theme.getFont(), 40F).weight(FontWeight.BOLD).color(Theme.INK);
+		final TextInfo hint = TextInfo.create(Theme.getFont(), 18F).color(Theme.INK);
+		final TextInfo section = TextInfo.create(Theme.getFont(), 16F).weight(FontWeight.BOLD).color(Theme.INK).letterSpacing(0.08F);
+		final TextInfo label = TextInfo.create(Theme.getFont(), 22F).color(Theme.INK);
 
 		RectNode
 		.create(560, 150, 800, 780)

@@ -32,8 +32,8 @@ public class UIDemoWatch extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoWatch.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoWatch.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final IntegerSignal ticks = new IntegerSignal(0);
 		final IntegerSignal watched = new IntegerSignal(0);
 		final BooleanSignal live = new BooleanSignal(true);

@@ -24,8 +24,8 @@ public class UIDemoSelector extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSelector.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoSelector.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final StringSignal down = new StringSignal("First");
 		final StringSignal shared = new StringSignal("Second");
 		final IntegerSignal refused = new IntegerSignal(0);

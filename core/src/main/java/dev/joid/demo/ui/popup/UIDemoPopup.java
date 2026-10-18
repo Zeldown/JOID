@@ -26,7 +26,7 @@ public class UIDemoPopup extends UI {
 
 		DemoTextFieldNode
 		.create(random.nextInt(1920 - 500) + 50, random.nextInt(1080 - 100) + 50, 400, 0)
-		.info(TextInfo.create(DemoFont.MONTSERRAT, 30, UIDemoPopup.INK))
+		.info(TextInfo.create(DemoFont.MONTSERRAT, 30).color(UIDemoPopup.INK))
 		.marginHorizontal(12D)
 		.placeholder("Placeholder")
 		.attach(this);

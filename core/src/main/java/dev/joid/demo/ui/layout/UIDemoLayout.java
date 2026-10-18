@@ -23,9 +23,9 @@ public class UIDemoLayout extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoLayout.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
-		final TextInfo small = TextInfo.create(DemoFont.MONTSERRAT, 18, UIDemoLayout.INK);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoLayout.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
+		final TextInfo small = TextInfo.create(DemoFont.MONTSERRAT, 18).color(UIDemoLayout.INK);
 		final BooleanSignal shown = new BooleanSignal(false);
 		final BooleanSignal row = new BooleanSignal(false);
 		final BooleanSignal grown = new BooleanSignal(false);

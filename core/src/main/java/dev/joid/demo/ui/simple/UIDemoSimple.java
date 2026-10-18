@@ -27,8 +27,8 @@ public class UIDemoSimple extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSimple.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoSimple.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final IntegerSignal left = new IntegerSignal(0);
 		final IntegerSignal right = new IntegerSignal(0);
 		final IntegerSignal starts = new IntegerSignal(0);

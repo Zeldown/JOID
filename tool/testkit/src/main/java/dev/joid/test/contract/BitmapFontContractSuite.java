@@ -117,7 +117,7 @@ public abstract class BitmapFontContractSuite {
 		try {
 			return ContractDraw.frame(BitmapFontContractSuite.backend, BitmapFontContractSuite.WIDTH, BitmapFontContractSuite.HEIGHT, bridge -> bridge.getModelView().with(matrix -> {
 				matrix.scale(scale, scale, 1D);
-				font.getTextRenderer().drawText(8.3D, 4.6D, "A", TextInfo.create(font, 16F, Color.WHITE));
+				font.getTextRenderer().drawText(8.3D, 4.6D, "A", TextInfo.create(font, 16F).color(Color.WHITE));
 			}));
 		} finally {
 			texture.delete();

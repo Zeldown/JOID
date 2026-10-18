@@ -28,9 +28,9 @@ public class UIDemoPlayer extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoPlayer.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 20, UIDemoPlayer.INK);
-		final TextInfo button = TextInfo.create(DemoFont.MONTSERRAT, 20, Color.WHITE);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoPlayer.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 20).color(UIDemoPlayer.INK);
+		final TextInfo button = TextInfo.create(DemoFont.MONTSERRAT, 20).color(Color.WHITE);
 		final IntegerSignal ends = new IntegerSignal(0);
 		final IntegerSignal plays = new IntegerSignal(0);
 		final IntegerSignal pauses = new IntegerSignal(0);

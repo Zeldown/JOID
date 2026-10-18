@@ -37,8 +37,8 @@ public class UIDemoRender extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoRender.INK);
-		final TextInfo large = TextInfo.create(DemoFont.MONTSERRAT, 40, UIDemoRender.INK);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoRender.INK);
+		final TextInfo large = TextInfo.create(DemoFont.MONTSERRAT, 40).color(UIDemoRender.INK);
 		final Resource image = Resource.of("assets/demo/textures/image/placeholder.webp");
 
 		RectNode

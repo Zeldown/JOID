@@ -26,8 +26,8 @@ public class UIDemoText extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoText.INK);
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 18, UIDemoText.INK);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoText.INK);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 18).color(UIDemoText.INK);
 		final String paragraph = "A long sentence wraps on the width of its node, word after word, and keeps its alignment on every line.";
 
 		RectNode

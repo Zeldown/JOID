@@ -462,11 +462,11 @@ public class MsdfTextRendererTest {
 	}
 
 	private static TextInfo info() {
-		return TextInfo.create(MsdfTextRendererTest.font, 100F, Color.WHITE);
+		return TextInfo.create(MsdfTextRendererTest.font, 100F).color(Color.WHITE);
 	}
 
 	private static TextInfo sampleInfo() {
-		return TextInfo.create(MsdfTextRendererTest.sample, 40F, new Color(0.2F, 0.4F, 0.6F, 1F)).markups();
+		return TextInfo.create(MsdfTextRendererTest.sample, 40F).color(new Color(0.2F, 0.4F, 0.6F, 1F)).markups();
 	}
 
 	private static MsdfFontFace face(final float range, final FontWeight weight) {

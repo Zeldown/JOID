@@ -166,7 +166,7 @@ public class DemoPixelFontTest {
 	}
 
 	private static TextInfo info(final float size) {
-		return TextInfo.create(DemoPixelFontTest.font, size, DemoPixelFontTest.INK);
+		return TextInfo.create(DemoPixelFontTest.font, size).color(DemoPixelFontTest.INK);
 	}
 
 	public static final class NodeUI extends UI {

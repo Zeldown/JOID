@@ -182,7 +182,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void reportsEachChangeOfItsText() {
 		final List<Object> changes = new ArrayList<>();
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldNodeTest.INK)).onChange(event -> changes.addAll(Arrays.asList(event.getNode(), event.getText(), event.getValue(), event.isValid())));
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F).color(MultilineTextFieldNodeTest.INK)).onChange(event -> changes.addAll(Arrays.asList(event.getNode(), event.getText(), event.getValue(), event.isValid())));
 		this.bridges.open(new NodeUI(field));
 		field.text("a\nb").text("a\nb");
 		Assert.assertEquals(Arrays.asList(field, "a\nb", "a\nb", true), changes);
@@ -794,7 +794,7 @@ public class MultilineTextFieldNodeTest {
 	@Test
 	public void letsItsScrollingParentTakeTheWheelOnceAtItsLimit() {
 		final ContainerNode box = ContainerNode.create(0D, 0D, 400D, 300D).overflow(OverflowProperty.SCROLL);
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldNodeTest.INK)).text("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb").attach(box);
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F).color(MultilineTextFieldNodeTest.INK)).text("0\n1\n2\n3\n4\n5\n6\n7\n8\n9\na\nb").attach(box);
 		RectNode.create(0D, 200D, 100D, 1000D).attach(box);
 		this.bridges.open(new NodeUI(box)).frames(30);
 		this.bridges.move(10D, 10D).frames(2).scroll(-1D).scroll(-1D).scroll(-1D);
@@ -1350,13 +1350,13 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	private MultilineTextFieldNode field(final double width, final String text) {
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, width, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldNodeTest.INK)).text(text).focused(true);
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, width, 200D).info(TextInfo.create(this.font, 10F).color(MultilineTextFieldNodeTest.INK)).text(text).focused(true);
 		this.bridges.open(new NodeUI(field));
 		return field;
 	}
 
 	private MultilineTextFieldNode markedField(final String text) {
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldNodeTest.INK)).text(text).focused(true);
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(this.font, 10F).color(MultilineTextFieldNodeTest.INK)).text(text).focused(true);
 		this.bridges.open(new NodeUI(field, RectNode.create(500D, 0D, 50D, 50D).color(new Color(0.6F, 0.4F, 0.2F, 1F))));
 		return field;
 	}

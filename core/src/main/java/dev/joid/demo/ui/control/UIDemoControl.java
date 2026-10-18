@@ -26,8 +26,8 @@ public class UIDemoControl extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoControl.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoControl.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final IntegerSignal checkboxChanges = new IntegerSignal(0);
 		final BooleanSignal sharedCheck = new BooleanSignal(true);
 		final IntegerSignal refusedChecks = new IntegerSignal(0);

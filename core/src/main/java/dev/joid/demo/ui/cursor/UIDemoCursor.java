@@ -25,8 +25,8 @@ public class UIDemoCursor extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoCursor.INK);
-		final TextInfo small = TextInfo.create(DemoFont.MONTSERRAT, 18, UIDemoCursor.INK);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoCursor.INK);
+		final TextInfo small = TextInfo.create(DemoFont.MONTSERRAT, 18).color(UIDemoCursor.INK);
 		final BooleanSignal locked = new BooleanSignal(false);
 		final IntegerSignal through = new IntegerSignal(0);
 		final IntegerSignal blocked = new IntegerSignal(0);

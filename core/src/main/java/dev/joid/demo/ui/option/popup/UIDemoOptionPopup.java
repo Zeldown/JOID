@@ -21,8 +21,8 @@ public class UIDemoOptionPopup extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 30, UIDemoOptionPopup.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 30).color(UIDemoOptionPopup.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 
 		RectNode
 		.create(640, 390, 640, 300)

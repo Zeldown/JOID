@@ -24,8 +24,8 @@ public class UIDemoSlider extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoSlider.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoSlider.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final IntegerSignal integer = new IntegerSignal(4);
 		final IntegerSignal percent = new IntegerSignal(25);
 		final DoubleSignal ratio = new DoubleSignal(0.5D);

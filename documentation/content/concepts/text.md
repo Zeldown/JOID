@@ -3,7 +3,7 @@
 Text is built from three pieces: a font that you load once, a `TextInfo` that describes a style (font, size, weight, color), and a `Text` that combines a string with a style. A `TextNode` displays a `Text` and sizes itself to it.
 
 ```java
-final TextInfo title = TextInfo.create(Fonts.INTER, FontWeight.BOLD, 48F, Color.WHITE);
+final TextInfo title = TextInfo.create(Fonts.INTER, 48F).weight(FontWeight.BOLD).color(Color.WHITE);
 TextNode.create(100, 100).text(Text.create("Hello JOID", title)).attach(this);
 ```
 
@@ -40,12 +40,12 @@ On this page, `font` is a loaded family and `info` a `TextInfo` field of the UI.
 
 ## Styles with TextInfo
 
-`TextInfo.create(font, [weight,] size, [color])` creates a style; the size is in canvas units and every setter chains:
+`TextInfo.create(font, size)` creates a style; the size is in canvas units and every setter chains, `weight(...)` and `color(...)` included:
 
 ```java
-final TextInfo title = TextInfo.create(this.font, FontWeight.BOLD, 48F, Color.WHITE);
-final TextInfo body = TextInfo.create(this.font, 24F, Color.WHITE);
-final TextInfo caption = TextInfo.create(this.font, 18F, Color.LIGHTGRAY).italic(true).letterSpacing(0.04F).shadow();
+final TextInfo title = TextInfo.create(this.font, 48F).weight(FontWeight.BOLD).color(Color.WHITE);
+final TextInfo body = TextInfo.create(this.font, 24F).color(Color.WHITE);
+final TextInfo caption = TextInfo.create(this.font, 18F).color(Color.LIGHTGRAY).italic(true).letterSpacing(0.04F).shadow();
 ```
 
 ![Samples of the title, body and caption styles](../images/ess-text-styles.png "The three styles; the caption is italic, spaced and shadowed.")
@@ -257,7 +257,7 @@ RectNode.create(100, 520, this.info.aw("Settings", 48D), this.info.ah(24D)).colo
 
 | `TextInfo` method | Description |
 |---|---|
-| `TextInfo.create(font, [weight,] size, [color])` | New style; `REGULAR` and `Color.BLACK` by default. |
+| `TextInfo.create(font, size)` | New style; `REGULAR` and `Color.BLACK` by default. |
 | `fontSize(float)`, `weight(FontWeight)`, `italic(boolean)`, `color(Color)` | Size in canvas units, weight, italic, color (a gradient spans the line). |
 | `letterSpacing(float)` | Space between glyphs as a fraction of the size (`0.1F` = 10 %), `0F` by default. |
 | `lineHeight(float)` | Line height as a fraction of the size (`1.5F` = 150 %); `0F` keeps the font's. |

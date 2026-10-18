@@ -36,23 +36,11 @@ public final class TextInfo extends LockableValue<TextInfo> {
 	private ITextEffect[] effects;
 
 	public static @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
-		return new TextInfo(font, FontWeight.REGULAR, fontSize, Color.BLACK);
+		return new TextInfo(font, fontSize);
 	}
 
-	public static @NonNull TextInfo create(final @NonNull IFont font, final float fontSize, final @NonNull Color color) {
-		return new TextInfo(font, FontWeight.REGULAR, fontSize, color);
-	}
-
-	public static @NonNull TextInfo create(final @NonNull IFont font, final @NonNull FontWeight weight, final float fontSize) {
-		return new TextInfo(font, weight, fontSize, Color.BLACK);
-	}
-
-	public static @NonNull TextInfo create(final @NonNull IFont font, final @NonNull FontWeight weight, final float fontSize, final @NonNull Color color) {
-		return new TextInfo(font, weight, fontSize, color);
-	}
-
-	private TextInfo(final IFont font, final FontWeight weight, final float fontSize, final Color color) {
-		this(font, fontSize, weight, 0F, 0F, color, true, false, null, null, null, null, null, new ITextEffect[0]);
+	private TextInfo(final IFont font, final float fontSize) {
+		this(font, fontSize, FontWeight.REGULAR, 0F, 0F, Color.BLACK, true, false, null, null, null, null, null, new ITextEffect[0]);
 	}
 
 	public double getHeight() {

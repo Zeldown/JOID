@@ -44,7 +44,7 @@ public class TextInfoTest {
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals(TextInfoTest.FONT + "x20.0 [" + Color.WHITE + "]", TextInfo.create(TextInfoTest.FONT, 20F, Color.WHITE).toString());
+		Assert.assertEquals(TextInfoTest.FONT + "x20.0 [" + Color.WHITE + "]", TextInfo.create(TextInfoTest.FONT, 20F).color(Color.WHITE).toString());
 	}
 
 	@Test
@@ -57,7 +57,7 @@ public class TextInfoTest {
 
 	@Test
 	public void derivesItsShadow() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 27F, Color.WHITE);
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 27F).color(Color.WHITE);
 		Assert.assertNull(info.getShadowColor());
 		Assert.assertEquals(2F, info.getShadowX(), 0F);
 		Assert.assertEquals(2F, info.getShadowY(), 0F);
@@ -98,7 +98,7 @@ public class TextInfoTest {
 
 	@Test
 	public void buildsTheBaseStyle() {
-		final TextStyle style = TextInfo.create(TextInfoTest.FONT, 20F, Color.RED).weight(FontWeight.BOLD).italic(true).effects(TextInfoTest.EFFECT).getStyle();
+		final TextStyle style = TextInfo.create(TextInfoTest.FONT, 20F).color(Color.RED).weight(FontWeight.BOLD).italic(true).effects(TextInfoTest.EFFECT).getStyle();
 		Assert.assertSame(FontWeight.BOLD, style.getWeight());
 		Assert.assertTrue(style.isItalic());
 		Assert.assertSame(Color.RED, style.getColor());
@@ -130,16 +130,6 @@ public class TextInfoTest {
 	}
 
 	@Test
-	public void takesTheWeightAtCreation() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, FontWeight.LIGHT, 20F, Color.RED);
-		Assert.assertSame(FontWeight.LIGHT, info.getWeight());
-		Assert.assertSame(Color.RED, info.getColor());
-		Assert.assertEquals(20F, info.getFontSize(), 0F);
-		Assert.assertSame(FontWeight.BOLD, TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F).getWeight());
-		Assert.assertSame(Color.BLACK, TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F).getColor());
-	}
-
-	@Test
 	public void measuresThroughItsRenderer() {
 		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F);
 		Assert.assertEquals(40D, info.getWidth("abcd"), 0D);
@@ -168,7 +158,7 @@ public class TextInfoTest {
 
 	@Test
 	public void changesTheWeightAfterCreation() {
-		Assert.assertSame(FontWeight.BLACK, TextInfo.create(TextInfoTest.FONT, FontWeight.LIGHT, 20F).weight(FontWeight.BLACK).getWeight());
+		Assert.assertSame(FontWeight.BLACK, TextInfo.create(TextInfoTest.FONT, 20F).weight(FontWeight.BLACK).getWeight());
 	}
 
 	@Test
@@ -194,16 +184,8 @@ public class TextInfoTest {
 	}
 
 	@Test
-	public void takesTheColorAtCreation() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F, Color.RED);
-		Assert.assertSame(Color.RED, info.getColor());
-		Assert.assertSame(FontWeight.REGULAR, info.getWeight());
-		Assert.assertEquals(20F, info.getFontSize(), 0F);
-	}
-
-	@Test
 	public void keepsEveryPropertyAlongTheChain() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F, Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).shadow(Color.BLUE).shadow(3F, 4F).shadowTint(0.25F);
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).weight(FontWeight.BOLD).color(Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).shadow(Color.BLUE).shadow(3F, 4F).shadowTint(0.25F);
 		Assert.assertSame(TextInfoTest.FONT, info.getFont());
 		Assert.assertEquals(20F, info.getFontSize(), 0F);
 		Assert.assertSame(FontWeight.BOLD, info.getWeight());
@@ -220,7 +202,7 @@ public class TextInfoTest {
 
 	@Test
 	public void changesItselfThroughItsSetters() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F, Color.RED);
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).color(Color.RED);
 		Assert.assertSame(info, info.fontSize(40F).weight(FontWeight.BOLD).color(Color.WHITE));
 		Assert.assertEquals(40F, info.getFontSize(), 0F);
 		Assert.assertSame(FontWeight.BOLD, info.getWeight());
@@ -229,7 +211,7 @@ public class TextInfoTest {
 
 	@Test
 	public void leavesTheOriginalUntouchedByItsCopies() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F, Color.RED);
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).color(Color.RED);
 		final TextInfo changed = info.withFontSize(40F).weight(FontWeight.BOLD).color(Color.WHITE).italic(true).shadow(Color.BLUE);
 		Assert.assertNotSame(info, changed);
 		Assert.assertEquals(40F, changed.getFontSize(), 0F);
@@ -264,7 +246,7 @@ public class TextInfoTest {
 
 	@Test
 	public void copiesEveryProperty() {
-		final TextInfo info = TextInfo.create(TextInfoTest.FONT, FontWeight.BOLD, 20F, Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).markups(TextInfoTest.MARKUP).effects(TextInfoTest.EFFECT).shadow(Color.BLUE).shadow(3F, 4F).shadowTint(0.25F);
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).weight(FontWeight.BOLD).color(Color.RED).letterSpacing(0.1F).lineHeight(1.5F).colored(false).italic(true).markups(TextInfoTest.MARKUP).effects(TextInfoTest.EFFECT).shadow(Color.BLUE).shadow(3F, 4F).shadowTint(0.25F);
 		final TextInfo copy = info.copy();
 		Assert.assertNotSame(info, copy);
 		Assert.assertSame(TextInfoTest.FONT, copy.getFont());

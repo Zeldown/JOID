@@ -50,7 +50,7 @@ public class DemoRadarChartNode extends RadarChartNode<RadarChartData> {
 
 		for (int i = 0; i < size; i++) {
 			final Point point = this.getPoint(i, super.dh(2) + 12D);
-			DrawUtils.TEXT.drawText(point.getX(), point.getY(), super.getDataList().get(i).getLabel(), TextInfo.create(DemoFont.MONTSERRAT, 16, DemoRadarChartNode.INK), Align.CENTER, Align.CENTER);
+			DrawUtils.TEXT.drawText(point.getX(), point.getY(), super.getDataList().get(i).getLabel(), TextInfo.create(DemoFont.MONTSERRAT, 16).color(DemoRadarChartNode.INK), Align.CENTER, Align.CENTER);
 		}
 	}
 

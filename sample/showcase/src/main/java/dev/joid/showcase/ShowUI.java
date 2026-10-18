@@ -114,7 +114,7 @@ public abstract class ShowUI extends UI {
 	}
 
 	protected static TextInfo font(final FontWeight weight, final float size, final Color color) {
-		return TextInfo.create(DemoFont.MONTSERRAT, weight, size, color);
+		return TextInfo.create(DemoFont.MONTSERRAT, size).weight(weight).color(color);
 	}
 
 	protected static Color vertical(final Color top, final Color bottom) {

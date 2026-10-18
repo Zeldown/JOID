@@ -350,7 +350,7 @@ public class MultilineTextFieldMarkupTest {
 	}
 
 	private MultilineTextFieldNode field(final String text, final boolean markup) {
-		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 104D, 200D).info(TextInfo.create(this.font, 10F, MultilineTextFieldMarkupTest.INK).markups(MultilineTextFieldMarkupTest.MARKUP)).markup(markup).text(text).focused(true);
+		final MultilineTextFieldNode field = MultilineTextFieldNode.create(0D, 0D, 104D, 200D).info(TextInfo.create(this.font, 10F).color(MultilineTextFieldMarkupTest.INK).markups(MultilineTextFieldMarkupTest.MARKUP)).markup(markup).text(text).focused(true);
 		this.bridges.open(new NodeUI(field));
 		return field;
 	}

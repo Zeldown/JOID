@@ -64,9 +64,9 @@ public final class Theme {
 
 	public static void load() {
 		final MsdfFont font = MsdfFontLoader.load(new File("fonts/Montserrat-Regular.ttf"), new File("fonts/Montserrat-Bold.ttf")).join();
-		Theme.text = TextInfo.create(font, 18F, Theme.INK);
-		Theme.title = TextInfo.create(font, FontWeight.BOLD, 26F, Theme.INK);
-		Theme.inverse = TextInfo.create(font, 18F, Theme.SURFACE);
+		Theme.text = TextInfo.create(font, 18F).color(Theme.INK);
+		Theme.title = TextInfo.create(font, 26F).weight(FontWeight.BOLD).color(Theme.INK);
+		Theme.inverse = TextInfo.create(font, 18F).color(Theme.SURFACE);
 	}
 
 }
@@ -402,9 +402,9 @@ public final class Theme {
 
 	public static void load() {
 		final MsdfFont font = MsdfFontLoader.load(new File("fonts/Montserrat-Regular.ttf"), new File("fonts/Montserrat-Bold.ttf")).join();
-		Theme.text = TextInfo.create(font, 18F, Theme.MUTED);
-		Theme.title = TextInfo.create(font, FontWeight.BOLD, 28F, Theme.INK);
-		Theme.inverse = TextInfo.create(font, FontWeight.BOLD, 18F, Theme.SURFACE);
+		Theme.text = TextInfo.create(font, 18F).color(Theme.MUTED);
+		Theme.title = TextInfo.create(font, 28F).weight(FontWeight.BOLD).color(Theme.INK);
+		Theme.inverse = TextInfo.create(font, 18F).weight(FontWeight.BOLD).color(Theme.SURFACE);
 	}
 
 }

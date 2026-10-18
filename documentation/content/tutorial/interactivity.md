@@ -303,10 +303,10 @@ public final class SettingsUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo title = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 40F, Theme.INK);
-		final TextInfo hint = TextInfo.create(Theme.getFont(), 18F, Theme.INK);
-		final TextInfo section = TextInfo.create(Theme.getFont(), FontWeight.BOLD, 16F, Theme.INK).letterSpacing(0.08F);
-		final TextInfo label = TextInfo.create(Theme.getFont(), 22F, Theme.INK);
+		final TextInfo title = TextInfo.create(Theme.getFont(), 40F).weight(FontWeight.BOLD).color(Theme.INK);
+		final TextInfo hint = TextInfo.create(Theme.getFont(), 18F).color(Theme.INK);
+		final TextInfo section = TextInfo.create(Theme.getFont(), 16F).weight(FontWeight.BOLD).color(Theme.INK).letterSpacing(0.08F);
+		final TextInfo label = TextInfo.create(Theme.getFont(), 22F).color(Theme.INK);
 
 		RectNode
 		.create(560, 150, 800, 780)

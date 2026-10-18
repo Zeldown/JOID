@@ -7,8 +7,8 @@ private SpriteFontFace regular;
 private SpriteFontFace bold;
 
 final SpriteFont pixel = SpriteFont.create(this.regular, this.bold);
-TextNode.create(100, 100).text(Text.create("Game over", TextInfo.create(pixel, FontWeight.BOLD, 24F, Color.WHITE))).attach(this);
-TextNode.create(100, 140).text(Text.create("Game over", TextInfo.create(pixel, 24F, Color.WHITE))).attach(this);
+TextNode.create(100, 100).text(Text.create("Game over", TextInfo.create(pixel, 24F).weight(FontWeight.BOLD).color(Color.WHITE))).attach(this);
+TextNode.create(100, 140).text(Text.create("Game over", TextInfo.create(pixel, 24F).color(Color.WHITE))).attach(this);
 ```
 
 ![Game over drawn in a bold pixel font, and below it in the regular face](../images/custom-font-bitmap.png "The SpriteFont of this page with 5 × 7 pixel sprites: one family, its bold and regular faces.")

@@ -50,7 +50,7 @@ public class ShowDrag extends ShowUI {
 		.attach(this);
 
 		TextNode.create(830, 170).text(Text.create("NOW PLAYING", ShowUI.font(FontWeight.BOLD, 18F, ShowUI.FAINT).letterSpacing(0.25F))).attach(this);
-		TextNode.create(826, 212).text(Text.create(this.title.get().isEmpty() ? "Nothing yet" : this.title.get(), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 76F, ShowUI.TEXT))).attach(this);
+		TextNode.create(826, 212).text(Text.create(this.title.get().isEmpty() ? "Nothing yet" : this.title.get(), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 76F).color(ShowUI.TEXT))).attach(this);
 		TextNode.create(830, 318).text(Text.create(this.artist.get().isEmpty() ? "Drag a record from your library" : this.artist.get(), ShowUI.font(FontWeight.MEDIUM, 24F, ShowUI.MUTED))).attach(this);
 		RectNode.create(830, 400, 560, 8).color(Color.WHITE.withAlpha(0.14F)).effect(RoundedNodeEffect.create(4F)).attach(this);
 		RectNode
@@ -104,7 +104,7 @@ public class ShowDrag extends ShowUI {
 				CircleNode.create(70, 30, 210).color(Color.BLACK.withAlpha(0.28F)).attach(art);
 				RectNode.create(145, 105, 60, 60).color(Color.WHITE.withAlpha(0.85F)).effect(CircleNodeEffect.create()).attach(art);
 				CircleNode.create(169, 129, 12).color(Color.BLACK.withAlpha(0.6F)).attach(art);
-				TextNode.create(22, 14).text(Text.create(name.substring(0, 1), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 60F, Color.WHITE))).attach(art);
+				TextNode.create(22, 14).text(Text.create(name.substring(0, 1), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 60F).color(Color.WHITE))).attach(art);
 			})
 			.attach(card);
 			TextNode.create(4, 246).text(Text.create(name, ShowUI.font(FontWeight.SEMI_BOLD, 24F, ShowUI.TEXT))).attach(card);

@@ -86,7 +86,7 @@ public class ShowLists extends ShowUI {
 			.color(ShowUI.diagonal(color, color.to(ShowUI.NIGHT, 0.45F)))
 			.effect(RoundedNodeEffect.create(14F))
 			.body(art -> {
-				TextNode.create(32, 32).text(Text.create(title.substring(0, 1), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, FontWeight.REGULAR, 32F, Color.WHITE))).anchor(Align.CENTER).attach(art);
+				TextNode.create(32, 32).text(Text.create(title.substring(0, 1), TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 32F).color(Color.WHITE))).anchor(Align.CENTER).attach(art);
 			})
 			.attach(row);
 			TextNode.create(102, 30).text(Text.create(title, ShowUI.font(FontWeight.SEMI_BOLD, 24F, ShowUI.TEXT))).anchorY(Align.CENTER).attach(row);

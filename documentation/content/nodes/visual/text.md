@@ -5,7 +5,7 @@
 In the examples, `font` is a font loaded once at startup with `MsdfFontLoader` (see [Text and Fonts](../../concepts/text.md)).
 
 ```java
-TextNode.create(100, 100).text(Text.create("Hello JOID", TextInfo.create(font, 24F, Color.WHITE))).attach(this);
+TextNode.create(100, 100).text(Text.create("Hello JOID", TextInfo.create(font, 24F).color(Color.WHITE))).attach(this);
 ```
 
 ![The words Hello JOID in white](../../images/text-hello.png "A TextNode sized by its text (Montserrat, 24).")
@@ -21,7 +21,7 @@ RectNode
 .create(100, 100, 300, 60)
 .color(Color.DARKGRAY)
 .body(rect -> {
-	TextNode.create(0, 0, rect.getWidth(), rect.getHeight()).text(Text.create("Play", TextInfo.create(font, 24F, Color.WHITE), Align.CENTER, Align.CENTER)).attach(rect);
+	TextNode.create(0, 0, rect.getWidth(), rect.getHeight()).text(Text.create("Play", TextInfo.create(font, 24F).color(Color.WHITE), Align.CENTER, Align.CENTER)).attach(rect);
 })
 .attach(this);
 ```
@@ -37,7 +37,7 @@ private final IntegerSignal score = IntegerSignal.of(0);
 
 @Override
 public void init() {
-	TextNode.create(20, 20).text(Text.create("Score: " + this.score.get(), TextInfo.create(font, 20F, Color.WHITE))).attach(this);
+	TextNode.create(20, 20).text(Text.create("Score: " + this.score.get(), TextInfo.create(font, 20F).color(Color.WHITE))).attach(this);
 }
 ```
 
@@ -61,13 +61,13 @@ For a value that changes on every frame, such as a clock, pass a lambda: `Text.c
 ```java
 TextNode
 .create(0, 0, 300, 0)
-.text(Text.create("A very long subtitle that does not fit", TextInfo.create(font, 20F, Color.WHITE)).overflow(TextOverflow.ELLIPSIS))
+.text(Text.create("A very long subtitle that does not fit", TextInfo.create(font, 20F).color(Color.WHITE)).overflow(TextOverflow.ELLIPSIS))
 .mode(TextMode.OVERFLOW)
 .attach(this);
 
 TextNode
 .create(0, 40, 300, 0)
-.text(Text.create("A paragraph wrapped on as many lines as it needs.", TextInfo.create(font, 20F, Color.WHITE)))
+.text(Text.create("A paragraph wrapped on as many lines as it needs.", TextInfo.create(font, 20F).color(Color.WHITE)))
 .mode(TextMode.SPLIT)
 .attach(this);
 ```
@@ -79,7 +79,7 @@ TextNode
 Node effects apply to the drawn glyphs, for example an outline:
 
 ```java
-TextNode.create(0, 0).text(Text.create("Outlined", TextInfo.create(font, 50F, Color.WHITE))).effect(BorderNodeEffect.create(Color.BLACK, 2F)).attach(this);
+TextNode.create(0, 0).text(Text.create("Outlined", TextInfo.create(font, 50F).color(Color.WHITE))).effect(BorderNodeEffect.create(Color.BLACK, 2F)).attach(this);
 ```
 
 ![The word Outlined in white with a thin black outline, on a light background](../../images/text-outline.png "BorderNodeEffect outlines the glyphs.")

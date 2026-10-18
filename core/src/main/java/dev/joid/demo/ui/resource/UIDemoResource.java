@@ -44,7 +44,7 @@ public class UIDemoResource extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoResource.INK);
+		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoResource.INK);
 		final IntegerSignal errors = new IntegerSignal(0);
 		final Resource vector = Resource.of("assets/demo/textures/vector/placeholder.svg");
 		final Resource square = Resource.of("https://placehold.co/100x100.png");

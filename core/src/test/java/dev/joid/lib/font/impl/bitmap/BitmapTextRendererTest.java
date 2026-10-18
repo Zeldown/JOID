@@ -127,7 +127,7 @@ public class BitmapTextRendererTest {
 			this.render.getModelView().push();
 			try {
 				this.render.getModelView().scale(1.2676D, 1.2676D, 1D);
-				font.getTextRenderer().drawText(100.3D, 100.6D, "AB", TextInfo.create(font, 16F, Color.WHITE));
+				font.getTextRenderer().drawText(100.3D, 100.6D, "AB", TextInfo.create(font, 16F).color(Color.WHITE));
 			} finally {
 				this.render.getModelView().pop();
 			}
@@ -149,17 +149,17 @@ public class BitmapTextRendererTest {
 	public void bindsTheAtlasOfTheCell() {
 		final ITexture texture = this.texture(Atlas.HD);
 		final Font font = new Font(new Renderer(Atlas.HD, texture));
-		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
+		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F).color(Color.WHITE));
 		Assert.assertSame(texture, this.render.getLast().getState().getTexture());
 	}
 
 	@Test
 	public void drawsNothingWithAnUnusableShader() {
 		final Font font = new Font(new Renderer(Atlas.ASCII, this.texture(Atlas.ASCII)));
-		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
+		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F).color(Color.WHITE));
 		((RecordingShader) this.render.getLast().getShader()).setActive(false);
 		this.render.getCaptures().clear();
-		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F, Color.WHITE));
+		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F).color(Color.WHITE));
 		Assert.assertTrue(this.render.getCaptures().isEmpty());
 	}
 
@@ -172,7 +172,7 @@ public class BitmapTextRendererTest {
 		this.render.getModelView().push();
 		try {
 			this.render.getModelView().scale(scale, scale, 1D);
-			font.getTextRenderer().drawText(100D, 100D, text, TextInfo.create(font, size, Color.WHITE).italic(italic));
+			font.getTextRenderer().drawText(100D, 100D, text, TextInfo.create(font, size).color(Color.WHITE).italic(italic));
 		} finally {
 			this.render.getModelView().pop();
 		}

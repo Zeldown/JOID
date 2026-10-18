@@ -34,8 +34,8 @@ public class UIDemoEvent extends UIDemo {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24, UIDemoEvent.INK);
-		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22, Color.WHITE);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoEvent.INK);
+		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final IntegerSignal pressed = new IntegerSignal(0);
 		final IntegerSignal released = new IntegerSignal(0);
 		final DoubleSignal knob = new DoubleSignal(0D);

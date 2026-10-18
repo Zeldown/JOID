@@ -172,7 +172,7 @@ public final class DevNode extends Node {
 			.body(flex -> {
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(JOIDLog.nameOf(inspectedNode.getClass()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.SEMI_BOLD, 17, DevNode.WHITE)).alignX(Align.START).alignY(Align.CENTER))
+				.text(Text.create(JOIDLog.nameOf(inspectedNode.getClass()), TextInfo.create(DevFont.MONTSERRAT, 17).weight(FontWeight.SEMI_BOLD).color(DevNode.WHITE)).alignX(Align.START).alignY(Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 
@@ -183,7 +183,7 @@ public final class DevNode extends Node {
 
 				TextNode
 				.create(0, flex.dh(2))
-				.text(Text.create(String.format(Locale.ROOT, "%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE)).alignX(Align.START).alignY(Align.CENTER))
+				.text(Text.create(String.format(Locale.ROOT, "%.2f", inspectedNode.getRenderTime() / 1000000F) + "ms", TextInfo.create(DevFont.MONTSERRAT, 15).weight(FontWeight.MEDIUM).color(DevNode.LIGHT_WHITE)).alignX(Align.START).alignY(Align.CENTER))
 				.anchorY(Align.CENTER)
 				.attach(flex);
 			})
@@ -196,9 +196,9 @@ public final class DevNode extends Node {
 				FlexNode
 				.vertical(10, 10, container.aw(-20))
 				.body(scroll -> {
-					final TextInfo categoryInfo = TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.LIGHT_WHITE);
-					final TextInfo labelInfo = TextInfo.create(DevFont.MONTSERRAT, FontWeight.SEMI_BOLD, 15, DevNode.ACTION.brighter(0.3F));
-					final TextInfo valueInfo = TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 15, DevNode.ACTION);
+					final TextInfo categoryInfo = TextInfo.create(DevFont.MONTSERRAT, 15).weight(FontWeight.MEDIUM).color(DevNode.LIGHT_WHITE);
+					final TextInfo labelInfo = TextInfo.create(DevFont.MONTSERRAT, 15).weight(FontWeight.SEMI_BOLD).color(DevNode.ACTION.brighter(0.3F));
+					final TextInfo valueInfo = TextInfo.create(DevFont.MONTSERRAT, 15).weight(FontWeight.MEDIUM).color(DevNode.ACTION);
 
 					TextNode
 					.create(0, 0)
@@ -333,7 +333,7 @@ public final class DevNode extends Node {
 
 		TextNode
 		.create(0, 0)
-		.text(Text.create(() -> String.format(Locale.ROOT, "%.0f fps", super.getUi().getFps()), TextInfo.create(DevFont.MONTSERRAT, FontWeight.MEDIUM, 17, DevNode.WHITE)).align(Align.CENTER))
+		.text(Text.create(() -> String.format(Locale.ROOT, "%.0f fps", super.getUi().getFps()), TextInfo.create(DevFont.MONTSERRAT, 17).weight(FontWeight.MEDIUM).color(DevNode.WHITE)).align(Align.CENTER))
 		.anchor(Align.CENTER)
 		.x(() -> 123D + super.aw(-123D) / 2D)
 		.y(() -> super.getHeight() - super.getDefaultHeight() / 2D)
@@ -376,7 +376,7 @@ public final class DevNode extends Node {
 
 		if (this.gridSignal.peek()) {
 			final Color gridColor = DevNode.GRID_COLORS[this.gridColorIndex];
-			final TextInfo gridInfo = TextInfo.create(DevFont.MONTSERRAT, 15, gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F));
+			final TextInfo gridInfo = TextInfo.create(DevFont.MONTSERRAT, 15).color(gridColor).shadow().shadow(Color.BLACK.withAlpha(0.7F));
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.of(UIView.DESIGN_WIDTH / 2D - 1D, 0D), Point.of(UIView.DESIGN_WIDTH / 2D + 1D, UIView.DESIGN_HEIGHT));
 			DrawUtils.SHAPE.drawLine(gridColor, 3F, Point.of(0D, UIView.DESIGN_HEIGHT / 2D - 1D), Point.of(UIView.DESIGN_WIDTH, UIView.DESIGN_HEIGHT / 2D + 1D));
 
@@ -452,7 +452,7 @@ public final class DevNode extends Node {
 		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.of(x + width, y), Point.of(x + width, y + height));
 		DrawUtils.SHAPE.drawDashedLine(DevNode.ACTION, 7, 2F, Point.of(x, y + height), Point.of(x + width, y + height));
 
-		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15F, DevNode.WHITE).shadow().shadow(Color.BLACK.withAlpha(0.7F));
+		final TextInfo textInfo = TextInfo.create(DevFont.MONTSERRAT, 15F).color(DevNode.WHITE).shadow().shadow(Color.BLACK.withAlpha(0.7F));
 		final Text nodeNameText = Text.create(JOIDLog.nameOf(node.getClass()), textInfo);
 		final Text nodeTimeText = Text.create(String.format(Locale.ROOT, "%.2f", node.getRenderTime() / 1000000F) + "ms", textInfo);
 

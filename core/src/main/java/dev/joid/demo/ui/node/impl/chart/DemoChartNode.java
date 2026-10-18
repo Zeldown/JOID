@@ -31,7 +31,7 @@ public class DemoChartNode extends ChartNode {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 14, DemoChartNode.INK);
+		final TextInfo info = TextInfo.create(DemoFont.MONTSERRAT, 14).color(DemoChartNode.INK);
 		DrawUtils.SHAPE.drawRect(super.getX(), super.getY(), super.getWidth(), super.getHeight(), Color.WHITE);
 
 		final double min = super.getMin().doubleValue();
