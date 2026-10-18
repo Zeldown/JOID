@@ -1701,12 +1701,12 @@ public abstract class Node implements INode {
 			}
 
 			if (this.hasOverflowX()) {
-				this.maxScrollX += offsetX;
+				this.maxScrollX += Math.max(0D, offsetX);
 				scrollsX = true;
 			}
 
 			if (this.hasOverflowY()) {
-				this.maxScrollY += offsetY;
+				this.maxScrollY += Math.max(0D, offsetY);
 				scrollsY = true;
 			}
 

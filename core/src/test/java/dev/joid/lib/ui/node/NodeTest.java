@@ -1248,6 +1248,18 @@ public class NodeTest {
 	}
 
 	@Test
+	public void scrollsToTheEndOfAChildPlacedAtANegativePosition() {
+		final ContainerNode area = ContainerNode.create(100D, 100D, 400D, 300D).overflow(OverflowProperty.SCROLL);
+		RectNode.create(-50D, -50D, 460D, 360D).attach(area);
+		this.bridges.open(new NodeUI(area));
+		this.bridges.frames(2);
+		Assert.assertEquals(10D, area.getMaxScrollX(), 0D);
+		Assert.assertEquals(10D, area.getMaxScrollY(), 0D);
+		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
+		Assert.assertEquals(0D, area.getTargetScrollY(), 0D);
+	}
+
+	@Test
 	public void scrollsHorizontallyWithTheWheel() {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
