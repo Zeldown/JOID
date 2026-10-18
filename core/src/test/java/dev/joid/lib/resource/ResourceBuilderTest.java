@@ -334,7 +334,7 @@ public class ResourceBuilderTest {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
 		builder.compute("image", () -> ResourceData.create("image" + supplied.incrementAndGet(), null));
-		builder.reload();
+		Assert.assertSame(builder, builder.reload());
 		Assert.assertTrue(cache.getDataList().isEmpty());
 		Assert.assertEquals("image2", builder.compute("image", () -> ResourceData.create("image" + supplied.incrementAndGet(), null)).getUniqueId());
 	}

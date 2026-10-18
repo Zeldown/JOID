@@ -13,8 +13,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class FrameBuffer {
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class FrameBuffer {
 
 	@NonNull private final IFrameBuffer  handle;
 	@NonNull private final TextureFilter filter;

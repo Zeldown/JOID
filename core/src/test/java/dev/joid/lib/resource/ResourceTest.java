@@ -393,7 +393,7 @@ public class ResourceTest {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final Resource resource = ResourceBuilder.create().cache(cache).compute("image", () -> ResourceData.create("image", decoder)).blocking();
 		resource.prepareBind();
-		resource.clear();
+		Assert.assertSame(resource, resource.clear());
 		Assert.assertTrue(decoder.texture.isDeleted());
 		Assert.assertTrue(decoder.calls.contains("clear"));
 		Assert.assertNull(cache.get("image"));

@@ -1,5 +1,7 @@
 package dev.joid.lib.render.framebuffer;
 
+import java.lang.reflect.Constructor;
+
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,9 +33,11 @@ public class FrameBufferTest {
 	}
 
 	@Test
-	public void wrapsTheHandleItIsGiven() {
+	public void wrapsTheHandleItIsGiven() throws ReflectiveOperationException {
 		final RecordingFrameBuffer handle = new RecordingFrameBuffer(8, 4);
-		final FrameBuffer frameBuffer = new FrameBuffer(handle, TextureFilter.NEAREST);
+		final Constructor<FrameBuffer> constructor = FrameBuffer.class.getDeclaredConstructor(IFrameBuffer.class, TextureFilter.class);
+		constructor.setAccessible(true);
+		final FrameBuffer frameBuffer = constructor.newInstance(handle, TextureFilter.NEAREST);
 		Assert.assertSame(handle, frameBuffer.getHandle());
 		Assert.assertEquals(8, frameBuffer.getWidth());
 		Assert.assertEquals(4, frameBuffer.getHeight());

@@ -309,9 +309,10 @@ public final class Resource {
 		}
 	}
 
-	public void clear() {
+	public @NonNull Resource clear() {
 		this.data.clear();
 		this.builder.remove(this.data);
+		return this;
 	}
 
 	private @NonNull Resource derive(final ResourceData data) {

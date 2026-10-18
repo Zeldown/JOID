@@ -102,9 +102,9 @@ public final class ResourceBuilder {
 		return this.properties.copy();
 	}
 
-	public void remove(final @NonNull ResourceData data) {
+	public @NonNull ResourceBuilder remove(final @NonNull ResourceData data) {
 		if (this.cache == null) {
-			return;
+			return this;
 		}
 
 		final String uniqueId = this.computed.getOrDefault(data, data.getUniqueId());
@@ -112,11 +112,12 @@ public final class ResourceBuilder {
 			this.cache.remove(uniqueId);
 		}
 		this.computed.remove(data);
+		return this;
 	}
 
-	public void reload() {
+	public @NonNull ResourceBuilder reload() {
 		if (this.cache == null) {
-			return;
+			return this;
 		}
 		synchronized (this.computed) {
 			for (final Map.Entry<ResourceData, String> entry : this.computed.entrySet()) {
@@ -126,6 +127,7 @@ public final class ResourceBuilder {
 			}
 			this.computed.clear();
 		}
+		return this;
 	}
 
 	public static @NonNull List<@NonNull ResourceBuilder> getBuilders() {
