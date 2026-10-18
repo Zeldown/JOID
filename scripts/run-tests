@@ -37,12 +37,6 @@ if [ $jars -eq 0 ] && [ $template -eq 0 ] && [ $showcase -eq 0 ]; then
     exit 0
 fi
 
-if [ "$mode" = "index" ]; then
-    tree=$(git write-tree)
-else
-    tree=$(git rev-parse HEAD^{tree})
-fi
-
 stashed=0
 restore() {
     if [ $stashed -eq 1 ]; then
@@ -122,7 +116,7 @@ elif [ "$mode" = "index" ]; then
     echo "✅ Done with the unit tests, the pre-push hook runs the full suite"
 else
     echo "✅ Done with tests"
-    { tail -n 99 "$tested" 2>/dev/null; echo "$tree"; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
+    { tail -n 99 "$tested" 2>/dev/null; git rev-parse HEAD^{tree}; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
 fi
 echo ""
 
