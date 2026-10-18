@@ -56,12 +56,8 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator clear() {
-		this.killTimeline();
-		this.speed      = 1F;
-		this.timeline   = null;
-		this.lastUpdate = 0L;
-		this.writeValue(0F);
-		return this;
+		this.speed = 1F;
+		return this.value(0F);
 	}
 
 	public @NonNull TweenAnimator sequence(final float duration, final float value) {
@@ -105,7 +101,7 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull Tween tween(final float duration) {
-		return Tween.to(this::peek, this::writeValue, duration);
+		return Tween.to(super::peek, this::writeValue, duration);
 	}
 
 	public @NonNull TweenAnimator push(final float duration, final float value) {

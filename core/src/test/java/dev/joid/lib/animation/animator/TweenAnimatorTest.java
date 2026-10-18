@@ -186,7 +186,6 @@ public class TweenAnimatorTest {
 		animator.clear();
 		Assert.assertEquals(0F, animator.get(), 0F);
 		Assert.assertEquals(1F, animator.getSpeed(), 0F);
-		Assert.assertEquals(0L, TweenAnimatorTest.lastUpdate(animator));
 		Assert.assertNull(animator.getTimeline());
 		animator.update(1F);
 		Assert.assertEquals(0F, animator.get(), 0F);
