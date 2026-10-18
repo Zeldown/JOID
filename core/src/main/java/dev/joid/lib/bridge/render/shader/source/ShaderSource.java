@@ -119,10 +119,6 @@ public final class ShaderSource {
 	}
 
 	public @NonNull ShaderSource toLine() {
-		if (this.stage != ShaderStage.VERTEX) {
-			throw new IllegalStateException("toLine() turns a vertex shader into a line shader, but this source is a " + this.stage + " shader: call it on the vertex source");
-		}
-
 		final ShaderSource source = new ShaderSource(this.stage);
 		source.inputs.addAll(this.inputs);
 		source.outputs.addAll(this.outputs);

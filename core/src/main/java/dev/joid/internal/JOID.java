@@ -35,17 +35,15 @@ public final class JOID {
 	private final List<Runnable> readyList = new ArrayList<>();
 
 	@Getter
-	private boolean ready;
+	private volatile boolean ready;
 
 	public static @NonNull JOID inst() {
 		return JOID.INSTANCE;
 	}
 
 	public synchronized @NonNull JOID load() {
-		synchronized (this.readyList) {
-			if (this.ready) {
-				return this;
-			}
+		if (this.ready) {
+			return this;
 		}
 
 		final String mode = JOIDEnv.isDemoMode() ? JOIDEnv.isDevMode() ? " in dev and demo mode" : " in demo mode" : JOIDEnv.isDevMode() ? " in dev mode" : "";

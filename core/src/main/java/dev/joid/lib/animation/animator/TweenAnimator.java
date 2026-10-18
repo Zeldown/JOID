@@ -32,13 +32,11 @@ public class TweenAnimator extends Signal<Float> {
 
 	private long lastUpdate;
 
-	private volatile float value;
-
 	@Getter
 	private Timeline timeline;
 
 	protected TweenAnimator(final float value) {
-		this.value = value;
+		super(value);
 		this.speed = 1F;
 	}
 
@@ -190,11 +188,6 @@ public class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
-	@Override
-	public @NonNull Float peek() {
-		return this.value;
-	}
-
 	public boolean isAutomatic() {
 		return TweenAnimator.RUNNING_SET.contains(this);
 	}
@@ -205,12 +198,7 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	protected void writeValue(final float value) {
-		super.write(() -> {
-			if (Float.compare(this.value, value) != 0) {
-				this.value = value;
-				super.fire();
-			}
-		});
+		super.transform(current -> value);
 	}
 
 	@Override

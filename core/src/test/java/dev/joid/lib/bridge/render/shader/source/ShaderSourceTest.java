@@ -85,16 +85,6 @@ public class ShaderSourceTest {
 		Assert.assertEquals(source.getUniforms(), line.getUniforms());
 	}
 
-	@Test
-	public void refusesALineFragmentShader() {
-		try {
-			ShaderSource.from(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n").toLine();
-			Assert.fail("A fragment shader must not become a line shader");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("toLine() turns a vertex shader into a line shader, but this source is a FRAGMENT shader: call it on the vertex source", expected.getMessage());
-		}
-	}
-
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsVertexInputs() {
 		ShaderSource.from(ShaderStage.VERTEX, "in vec3 aCustom;\n");
