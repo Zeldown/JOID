@@ -146,48 +146,6 @@ public final class Color extends LockableValue<Color> {
 		throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
 	}
 
-	private static @NonNull Color transition(final @NonNull Color color1, final @NonNull Color color2, final float progress) {
-		if (progress == 0F) {
-			return color1.copy();
-		}
-		if (progress == 1F) {
-			return color2.copy();
-		}
-
-		if (color1.update != null || color2.update != null) {
-			final Color frame = Color.transition(color1.update(), color2.update(), progress);
-			return new Color(frame.r, frame.g, frame.b, frame.a, color -> Color.transition(color1.update(), color2.update(), progress), frame.gradient);
-		}
-
-		final float inv = 1F - progress;
-
-		if (color1.isGradient() && color2.isGradient()) {
-			final ColorGradient g1 = color1.gradient;
-			final ColorGradient g2 = color2.gradient;
-			final Color start = Color.lerp(g1.getStartColor(), g2.getStartColor(), progress);
-			final Color end = Color.lerp(g1.getEndColor(), g2.getEndColor(), progress);
-			final Point startPoint = Point.of(g1.getStartPoint().getX() * inv + g2.getStartPoint().getX() * progress, g1.getStartPoint().getY() * inv + g2.getStartPoint().getY() * progress);
-			final Point endPoint = Point.of(g1.getEndPoint().getX() * inv + g2.getEndPoint().getX() * progress, g1.getEndPoint().getY() * inv + g2.getEndPoint().getY() * progress);
-			return new Color(ColorGradient.of(start, end, startPoint, endPoint));
-		}
-
-		if (color1.isGradient()) {
-			final ColorGradient g = color1.gradient;
-			final Color start = Color.lerp(g.getStartColor(), color2, progress);
-			final Color end = Color.lerp(g.getEndColor(), color2, progress);
-			return new Color(ColorGradient.of(start, end, g.getStartPoint(), g.getEndPoint()));
-		}
-
-		if (color2.isGradient()) {
-			final ColorGradient g = color2.gradient;
-			final Color start = Color.lerp(color1, g.getStartColor(), progress);
-			final Color end = Color.lerp(color1, g.getEndColor(), progress);
-			return new Color(ColorGradient.of(start, end, g.getStartPoint(), g.getEndPoint()));
-		}
-
-		return Color.lerp(color1, color2, progress);
-	}
-
 	public static @NonNull Color RAINBOW() {
 		return Color.RAINBOW(BridgeHandler.CLOCK.get().currentTimeMillis());
 	}
@@ -301,7 +259,45 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color to(final @NonNull Color target, final float progress) {
-		return Color.transition(this, target, progress);
+		if (progress == 0F) {
+			return this.copy();
+		}
+		if (progress == 1F) {
+			return target.copy();
+		}
+
+		if (this.update != null || target.update != null) {
+			final Color frame = this.update().to(target.update(), progress);
+			return new Color(frame.r, frame.g, frame.b, frame.a, color -> this.update().to(target.update(), progress), frame.gradient);
+		}
+
+		final float inv = 1F - progress;
+
+		if (this.isGradient() && target.isGradient()) {
+			final ColorGradient g1 = this.gradient;
+			final ColorGradient g2 = target.gradient;
+			final Color start = Color.lerp(g1.getStartColor(), g2.getStartColor(), progress);
+			final Color end = Color.lerp(g1.getEndColor(), g2.getEndColor(), progress);
+			final Point startPoint = Point.of(g1.getStartPoint().getX() * inv + g2.getStartPoint().getX() * progress, g1.getStartPoint().getY() * inv + g2.getStartPoint().getY() * progress);
+			final Point endPoint = Point.of(g1.getEndPoint().getX() * inv + g2.getEndPoint().getX() * progress, g1.getEndPoint().getY() * inv + g2.getEndPoint().getY() * progress);
+			return new Color(ColorGradient.of(start, end, startPoint, endPoint));
+		}
+
+		if (this.isGradient()) {
+			final ColorGradient g = this.gradient;
+			final Color start = Color.lerp(g.getStartColor(), target, progress);
+			final Color end = Color.lerp(g.getEndColor(), target, progress);
+			return new Color(ColorGradient.of(start, end, g.getStartPoint(), g.getEndPoint()));
+		}
+
+		if (target.isGradient()) {
+			final ColorGradient g = target.gradient;
+			final Color start = Color.lerp(this, g.getStartColor(), progress);
+			final Color end = Color.lerp(this, g.getEndColor(), progress);
+			return new Color(ColorGradient.of(start, end, g.getStartPoint(), g.getEndPoint()));
+		}
+
+		return Color.lerp(this, target, progress);
 	}
 
 	public @NonNull Color toGradient(final @NonNull Color target) {

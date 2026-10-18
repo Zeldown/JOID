@@ -38,7 +38,8 @@ public abstract class Asset {
 	public @NonNull byte[] peek(final int length) {
 		final byte[] header = new byte[length];
 		try (InputStream stream = this.open()) {
-			return Asset.shrink(header, IOUtils.read(stream, header));
+			final int read = IOUtils.read(stream, header);
+			return read == length ? header : Arrays.copyOf(header, read);
 		} catch (final IOException exception) {
 			throw new UncheckedIOException("The start of " + this.uniqueId + " cannot be read", exception);
 		}
@@ -48,10 +49,6 @@ public abstract class Asset {
 		try (InputStream stream = this.open()) {
 			return IOUtils.toByteArray(stream);
 		}
-	}
-
-	private static @NonNull byte[] shrink(final byte[] buffer, final int length) {
-		return length == buffer.length ? buffer : Arrays.copyOf(buffer, length);
 	}
 
 	@Override

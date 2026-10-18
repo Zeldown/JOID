@@ -202,7 +202,7 @@ public final class DrawShape {
 	}
 
 	public void drawRawRect(final double x, final double y, final double width, final double height) {
-		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
+		BridgeHandler.RENDER.get().withState(render -> {
 			final Tessellator tessellator = Tessellator.inst();
 			final PixelGrid grid = render.getPixelGrid();
 			final Span horizontal = grid.spanX(x, width);
@@ -214,7 +214,7 @@ public final class DrawShape {
 			tessellator.addVertex(horizontal.getEnd(), vertical.getStart(), 0D);
 			tessellator.addVertex(horizontal.getStart(), vertical.getStart(), 0D);
 			tessellator.draw();
-		}));
+		});
 	}
 
 	private void drawRounded(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom, final double stroke) {
@@ -285,7 +285,7 @@ public final class DrawShape {
 		final Tessellator tessellator = Tessellator.inst();
 		final BoundingBox box = BoundingBox.create(minX, minY, maxX - minX, maxY - minY);
 		final Color resolved = color.update();
-		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
+		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().blend(BlendState.NORMAL).texture(null);
 			resolved.bind(() -> {
 				if (smooth) {
@@ -300,7 +300,7 @@ public final class DrawShape {
 				}
 				tessellator.draw();
 			}, box);
-		}));
+		});
 	}
 
 	private static boolean isSlanted(final @NonNull Point @NonNull... points) {

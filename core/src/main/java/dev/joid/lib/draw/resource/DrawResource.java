@@ -79,7 +79,7 @@ public final class DrawResource {
 		}
 
 		final double[] uv = failed || region == null ? new double[] {0D, 0D, 1D, 1D} : new double[] {region[0] / resource.getSourceWidth(), region[1] / resource.getSourceHeight(), (region[0] + region[2]) / resource.getSourceWidth(), (region[1] + region[3]) / resource.getSourceHeight()};
-		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
+		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().blend(BlendState.NORMAL);
 			if (grid.isAligned()) {
 				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> DrawResource.drawQuad(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), 0D));
@@ -93,7 +93,7 @@ public final class DrawResource {
 				final RenderState state = render.getState();
 				resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> EdgeSmoothing.rect(left, top, right, bottom, DrawResource.toTexture(uv, resource, failed), state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha()));
 			}
-		}));
+		});
 	}
 
 	private static double[] toTexture(final double[] uv, final Resource resource, final boolean failed) {

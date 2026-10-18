@@ -35,7 +35,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class VideoNatives {
 
-	public static final String VERSION = "6.0-1.5.9";
+	private static final String VERSION = "6.0-1.5.9";
 
 	private static final FileCacheArea AREA = FileCache.area("ffmpeg").retention(Duration.ofDays(30L));
 

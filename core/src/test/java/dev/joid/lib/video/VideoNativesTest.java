@@ -63,7 +63,7 @@ public class VideoNativesTest {
 	@Test(timeout = 120000L)
 	public void installsTheNativesOfThePlatformIntoTheCache() throws IOException, URISyntaxException {
 		final String platform = Loader.getPlatform();
-		final File directory = new File(new File(this.cache, "ffmpeg"), VideoNatives.VERSION + "-" + platform);
+		final File directory = new File(new File(this.cache, "ffmpeg"), "6.0-1.5.9-" + platform);
 		final File jar = this.publish(platform, Files.readAllBytes(VideoNativesTest.nativesJar(platform).toPath()));
 
 		Assert.assertEquals(directory, VideoNativesTest.download(platform));
@@ -108,7 +108,7 @@ public class VideoNativesTest {
 
 	@Test
 	public void keepsAnInstalledFolderWithoutDownloading() throws IOException {
-		final File directory = new File(new File(this.cache, "ffmpeg"), VideoNatives.VERSION + "-linux-x86_64");
+		final File directory = new File(new File(this.cache, "ffmpeg"), "6.0-1.5.9-linux-x86_64");
 		Files.createDirectories(directory.toPath());
 		VideoNatives.repository("https://joid.invalid");
 		Assert.assertEquals(directory, VideoNativesTest.download("linux-x86_64"));
@@ -168,7 +168,7 @@ public class VideoNativesTest {
 
 	private File publish(final String platform, final byte[] bytes) throws IOException {
 		final File root = this.folder.newFolder("repository");
-		final File jar = new File(root, "org/bytedeco/ffmpeg/" + VideoNatives.VERSION + "/ffmpeg-" + VideoNatives.VERSION + "-" + platform + ".jar");
+		final File jar = new File(root, "org/bytedeco/ffmpeg/6.0-1.5.9/ffmpeg-6.0-1.5.9-" + platform + ".jar");
 		Files.createDirectories(jar.getParentFile().toPath());
 		Files.write(jar.toPath(), bytes);
 		VideoNatives.repository(root.toURI().toString().replaceAll("/$", ""));
