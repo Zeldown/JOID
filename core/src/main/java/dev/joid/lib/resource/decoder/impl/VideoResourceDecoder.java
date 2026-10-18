@@ -180,6 +180,10 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 					final int[] pixels = this.frameToPixels(firstFrame, this.grabber.getImageWidth(), this.videoHeight);
 					resource.data(new int[][] { pixels });
 				}
+
+				if (this.seeked) {
+					this.seek(this.seekTime);
+				}
 			} catch (final Exception exception) {
 				throw new IllegalStateException("The video " + this.asset.getUniqueId() + " cannot be decoded", exception);
 			}
@@ -449,6 +453,10 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 				this.grabber = this.open();
 				this.frameQueue = new ArrayBlockingQueue<>(5);
 				this.createAudioPlayer();
+
+				if (this.seeked) {
+					this.seek(this.seekTime);
+				}
 			} catch (final Exception exception) {
 				JOIDLog.warn("The video " + this.asset.getUniqueId() + " cannot be reopened (" + exception.getMessage() + "), check that the file can still be read");
 			}

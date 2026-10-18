@@ -894,6 +894,17 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void showsTheFrameItSeeksToBeforeItsDecode() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames().autoplay(false).seek(0.5D);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		Assert.assertEquals(0.5D, ((FFmpegFrameGrabber) VideoResourceDecoderTest.field(decoder, "grabber")).getTimestamp() / 1000000D, 0.05D);
+		decoder.play();
+		this.play(decoder, data, 1);
+		Assert.assertEquals(5, decoder.getDisplayedFrameIndex());
+		Assert.assertEquals(119, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	@Test
 	public void decodesAVideoWhoseRowsArePaddedWithoutCorruptingTheHeap() throws IOException {
 		final File file = this.folder.newFile("padded.mkv");
 		Files.write(file.toPath(), Asset.of(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/padded.mkv")).read());
