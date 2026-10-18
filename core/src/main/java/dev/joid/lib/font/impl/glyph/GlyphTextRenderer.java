@@ -188,7 +188,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		if (!(styleFont instanceof GlyphFont) || styleFont.getTextRenderer().getClass() != this.getClass()) {
-			JOIDLog.devWarnOnce("GlyphTextRenderer.font." + styleFont.getClass().getName(), () -> "The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + this.getClass().getSimpleName() + ", the text keeps its own font: give the style a font drawn by " + this.getClass().getSimpleName());
+			JOIDLog.devWarnOnce("GlyphTextRenderer.font." + styleFont.getClass().getName(), () -> "The font " + styleFont.getClass().getName() + " of a text style is not drawn by " + JOIDLog.nameOf(this.getClass()) + ", the text keeps its own font: give the style a font drawn by " + JOIDLog.nameOf(this.getClass()));
 			return font;
 		}
 
@@ -202,7 +202,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 
 		if (!this.shader.isActive()) {
-			JOIDLog.devWarnOnce("GlyphTextRenderer.unavailable." + System.identityHashCode(this), () -> "The font shader of " + this.getClass().getSimpleName() + " cannot be compiled by " + render.getClass().getSimpleName() + ", what it draws is skipped: the error printed by JOID when it was created tells why");
+			JOIDLog.devWarnOnce("GlyphTextRenderer.unavailable." + System.identityHashCode(this), () -> "The font shader of " + JOIDLog.nameOf(this.getClass()) + " cannot be compiled by " + JOIDLog.nameOf(render.getClass()) + ", what it draws is skipped: the error printed by JOID when it was created tells why");
 			return false;
 		}
 		return true;

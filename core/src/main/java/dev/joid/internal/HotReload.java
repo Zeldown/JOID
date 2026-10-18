@@ -34,7 +34,7 @@ public final class HotReload {
 	public static void watch(final UI ui, final Runnable reload) {
 		final File location = HotReload.locate(ui.getClass());
 		if (location == null) {
-			JOIDLog.warnOnce("UI.hotReload", "Hot reload is off for " + ui.getClass().getSimpleName() + ": its classes are not loaded from a folder or a jar file, run it from one of them to reload it");
+			JOIDLog.warnOnce("UI.hotReload", "Hot reload is off for " + JOIDLog.nameOf(ui.getClass()) + ": its classes are not loaded from a folder or a jar file, run it from one of them to reload it");
 			return;
 		}
 
@@ -46,7 +46,7 @@ public final class HotReload {
 				HotReload.MONITOR_EXECUTOR.execute(() -> HotReload.openMonitor(location, monitor));
 			}
 		}
-		JOIDLog.info("Hot reload is on for " + ui.getClass().getSimpleName() + ", it reloads when its classes change");
+		JOIDLog.info("Hot reload is on for " + JOIDLog.nameOf(ui.getClass()) + ", it reloads when its classes change");
 	}
 
 	public static void unwatch(final UI ui) {

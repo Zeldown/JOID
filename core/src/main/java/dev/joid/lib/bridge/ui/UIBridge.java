@@ -153,7 +153,7 @@ public abstract class UIBridge implements IUIBridge {
 	public final void draw(final @NonNull Predicate<@NonNull UI> filter) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (!render.isFrameActive()) {
-			throw new IllegalStateException(this.getClass().getSimpleName() + ".draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()");
+			throw new IllegalStateException(JOIDLog.nameOf(this.getClass()) + ".draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()");
 		}
 
 		final int stateDepth = render.getStateDepth();
@@ -172,13 +172,13 @@ public abstract class UIBridge implements IUIBridge {
 				render.popState();
 			}
 
-			JOIDLog.warnOnce("UIBridge.draw." + System.identityHashCode(this) + "." + exception.getClass().getName(), this.getClass().getSimpleName() + " cannot draw a frame and skips the rest of it (" + exception + "), fix the draw code from this error", exception);
+			JOIDLog.warnOnce("UIBridge.draw." + System.identityHashCode(this) + "." + exception.getClass().getName(), JOIDLog.nameOf(this.getClass()) + " cannot draw a frame and skips the rest of it (" + exception + "), fix the draw code from this error", exception);
 		}
 	}
 
 	@Override
 	public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {
-		JOIDLog.devWarnOnce("UIBridge.drawHover." + System.identityHashCode(this), () -> this.getClass().getSimpleName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them");
+		JOIDLog.devWarnOnce("UIBridge.drawHover." + System.identityHashCode(this), () -> JOIDLog.nameOf(this.getClass()) + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them");
 	}
 
 	@Override

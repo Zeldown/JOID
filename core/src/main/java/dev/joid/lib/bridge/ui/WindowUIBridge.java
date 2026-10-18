@@ -57,7 +57,7 @@ public class WindowUIBridge extends StackUIBridge {
 		final List<String> lines = TextConverter.convertLines(content);
 		final TextInfo info = this.hoverInfo;
 		if (info == null) {
-			JOIDLog.devWarnOnce("WindowUIBridge.hoverInfo." + System.identityHashCode(this), () -> this.getClass().getSimpleName() + " draws no tooltip, set its hoverInfo(TextInfo) to draw them");
+			JOIDLog.devWarnOnce("WindowUIBridge.hoverInfo." + System.identityHashCode(this), () -> JOIDLog.nameOf(this.getClass()) + " draws no tooltip, set its hoverInfo(TextInfo) to draw them");
 			return;
 		}
 

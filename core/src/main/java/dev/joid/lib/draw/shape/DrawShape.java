@@ -32,6 +32,10 @@ public final class DrawShape {
 	}
 
 	public void drawRect(final double x, final double y, final double width, final double height, final @NonNull Color color) {
+		if (width == 0D || height == 0D) {
+			return;
+		}
+
 		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
 		final Span horizontal = grid.spanX(x, width);
 		final Span vertical = grid.spanY(y, height);
@@ -218,6 +222,10 @@ public final class DrawShape {
 	}
 
 	private void drawRounded(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom, final double stroke) {
+		if (width == 0D || height == 0D) {
+			return;
+		}
+
 		final PixelGrid grid = BridgeHandler.RENDER.get().getPixelGrid();
 		final double left = grid.snapX(x);
 		final double top = grid.snapY(y);

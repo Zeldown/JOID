@@ -80,6 +80,22 @@ public class DrawShapeTest {
 	}
 
 	@Test
+	public void drawsNoRectangleWithoutWidthOrHeight() {
+		this.bridges.getRender().getModelView().push();
+		try {
+			this.bridges.getRender().getModelView().rotate(30D, 0D, 0D, 1D);
+			DrawUtils.SHAPE.drawRect(10.3D, 20.6D, 0D, 50D, new Color(1F, 0F, 0F, 1F));
+			DrawUtils.SHAPE.drawRect(10.3D, 20.6D, 100D, 0D, new Color(1F, 0F, 0F, 1F));
+			DrawUtils.SHAPE.drawRoundedRect(10.3D, 20.6D, 0D, 50D, new Color(1F, 0F, 0F, 1F), 4F);
+			DrawUtils.SHAPE.drawRoundedBorder(10.3D, 20.6D, 100D, 0D, new Color(1F, 0F, 0F, 1F), 4F);
+		} finally {
+			this.bridges.getRender().getModelView().pop();
+		}
+
+		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
+	}
+
+	@Test
 	public void anchorsABorderOnItsBox() {
 		DrawUtils.SHAPE.drawRect(10.3D, 10.3D, 100D, 50D, new Color(0F, 0F, 1F, 1F));
 		DrawUtils.SHAPE.drawBorder(10.3D, 10.3D, 100D, 50D, new Color(1F, 0F, 0F, 1F), 3D);

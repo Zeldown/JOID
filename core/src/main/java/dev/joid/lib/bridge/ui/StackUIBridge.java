@@ -59,7 +59,7 @@ public abstract class StackUIBridge extends UIBridge {
 
 				if (!result) {
 					if (JOIDEnv.isDevMode()) {
-						JOIDLog.warn(current.getClass().getSimpleName() + " refused to close: a beforeClose listener cancelled the event, so " + ui.getClass().getSimpleName() + " is not opened: do not cancel it to let the UI close");
+						JOIDLog.warn(JOIDLog.nameOf(current.getClass()) + " refused to close: a beforeClose listener cancelled the event, so " + JOIDLog.nameOf(ui.getClass()) + " is not opened: do not cancel it to let the UI close");
 					}
 					return;
 				}

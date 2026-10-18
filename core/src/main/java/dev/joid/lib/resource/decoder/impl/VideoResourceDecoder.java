@@ -175,14 +175,14 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 
 				this.createAudioPlayer();
 
+				if (this.seeked) {
+					this.seekInternal(this.seekTime);
+				}
+
 				final Frame firstFrame = this.grabber.grabImage();
 				if (firstFrame != null) {
 					final int[] pixels = this.frameToPixels(firstFrame, this.grabber.getImageWidth(), this.videoHeight);
 					resource.data(new int[][] { pixels });
-				}
-
-				if (this.seeked) {
-					this.seek(this.seekTime);
 				}
 			} catch (final Exception exception) {
 				throw new IllegalStateException("The video " + this.asset.getUniqueId() + " cannot be decoded", exception);
@@ -319,7 +319,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 				return this;
 			}
 		} else if (!this.seeked) {
-			this.seekInternal(0L);
+			this.seekInternal(0D);
 		}
 
 		this.seekTime = this.seeked ? this.seekTime : 0D;
@@ -356,8 +356,11 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 
 	@Override
 	public @NonNull VideoResourceDecoder seek(final double seconds) {
-		final double end = this.duration > 0D ? this.duration - 1D / this.frameRate : seconds;
-		this.seekInternal((long) (Math.max(0D, Math.min(seconds, end)) * 1000000D));
+		if (this.grabber != null && !this.running.get()) {
+			this.play().pause();
+		}
+
+		this.seekInternal(seconds);
 		return this;
 	}
 
@@ -455,7 +458,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 				this.createAudioPlayer();
 
 				if (this.seeked) {
-					this.seek(this.seekTime);
+					this.seekInternal(this.seekTime);
 				}
 			} catch (final Exception exception) {
 				JOIDLog.warn("The video " + this.asset.getUniqueId() + " cannot be reopened (" + exception.getMessage() + "), check that the file can still be read");
@@ -541,7 +544,9 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 		return (now - this.startTime) / 1000000000D;
 	}
 
-	private void seekInternal(final long microseconds) {
+	private void seekInternal(final double seconds) {
+		final double end = this.duration > 0D ? this.duration - 1D / this.frameRate : seconds;
+		final long microseconds = (long) (Math.max(0D, Math.min(seconds, end)) * 1000000D);
 		synchronized (this.grabberLock) {
 			if (this.released) {
 				return;

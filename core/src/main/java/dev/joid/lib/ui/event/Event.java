@@ -1,5 +1,7 @@
 package dev.joid.lib.ui.event;
 
+import dev.joid.internal.JOIDLog;
+
 import lombok.NonNull;
 
 public abstract class Event {
@@ -12,7 +14,7 @@ public abstract class Event {
 
 	protected final void checkWritable(final @NonNull String verb) {
 		if (this.monitor) {
-			throw new IllegalStateException("A MONITOR listener only reads " + this.getClass().getSimpleName() + ", it cannot call " + verb + "(): listen with another priority to " + verb + " it");
+			throw new IllegalStateException("A MONITOR listener only reads " + JOIDLog.nameOf(this.getClass()) + ", it cannot call " + verb + "(): listen with another priority to " + verb + " it");
 		}
 	}
 

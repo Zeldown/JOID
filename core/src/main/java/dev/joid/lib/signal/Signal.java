@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.signal.replay.SignalReplay;
 import lombok.NonNull;
@@ -122,7 +123,7 @@ public class Signal<T> implements Supplier<T> {
 	}
 
 	protected @NonNull String refuse(final @NonNull String action) {
-		return "The " + this.getClass().getSimpleName() + " is read-only and cannot be " + action;
+		return "The " + JOIDLog.nameOf(this.getClass()) + " is read-only and cannot be " + action;
 	}
 
 	protected T seal(final T value) {

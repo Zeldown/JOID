@@ -4,6 +4,7 @@ import java.io.File;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
@@ -46,7 +47,7 @@ public abstract class Backend {
 
 	public final <T extends Backend> @NonNull T register() {
 		if (this.registered) {
-			throw new IllegalStateException(this.getClass().getSimpleName() + " is already registered, call register() only once");
+			throw new IllegalStateException(JOIDLog.nameOf(this.getClass()) + " is already registered, call register() only once");
 		}
 
 		JOID.checkVersion(this.version);

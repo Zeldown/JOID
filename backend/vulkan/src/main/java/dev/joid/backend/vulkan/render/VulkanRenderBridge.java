@@ -32,6 +32,7 @@ import dev.joid.backend.vulkan.render.pipeline.VulkanPipelineCache;
 import dev.joid.backend.vulkan.render.shader.VulkanShader;
 import dev.joid.backend.vulkan.render.texture.IVulkanTexture;
 import dev.joid.backend.vulkan.render.texture.VulkanTexture;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.matrix.DepthRange;
@@ -86,11 +87,11 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	public VulkanRenderBridge(final @NonNull IVulkanHost host) {
 		if (host.getFramesInFlight() < 1) {
-			throw new IllegalArgumentException("The Vulkan host " + host.getClass().getSimpleName() + " has " + host.getFramesInFlight() + " frames in flight, getFramesInFlight() must return 1 or more");
+			throw new IllegalArgumentException("The Vulkan host " + JOIDLog.nameOf(host.getClass()) + " has " + host.getFramesInFlight() + " frames in flight, getFramesInFlight() must return 1 or more");
 		}
 
 		if (!host.getDevice().getCapabilities().Vulkan13) {
-			throw new IllegalStateException("The Vulkan host " + host.getClass().getSimpleName() + " gives a device without Vulkan 1.3, create the instance and the device with VK_API_VERSION_1_3");
+			throw new IllegalStateException("The Vulkan host " + JOIDLog.nameOf(host.getClass()) + " gives a device without Vulkan 1.3, create the instance and the device with VK_API_VERSION_1_3");
 		}
 
 		this.host              = host;

@@ -28,7 +28,7 @@ public abstract class ShaderProgram {
 			}
 		} catch (final Exception e) {
 			this.vertex = null;
-			JOIDLog.warn("The shader " + this.getClass().getSimpleName() + " cannot be loaded (" + e.getMessage() + "), what it draws is skipped: check the paths of its vertex and fragment sources", e);
+			JOIDLog.warn("The shader " + JOIDLog.nameOf(this.getClass()) + " cannot be loaded (" + e.getMessage() + "), what it draws is skipped: check the paths of its vertex and fragment sources", e);
 		}
 	}
 
@@ -38,7 +38,7 @@ public abstract class ShaderProgram {
 				this.shader = BridgeHandler.RENDER.get().createShader(this.vertex, this.fragment, BlendState.NORMAL);
 			} catch (final Exception e) {
 				this.vertex = null;
-				JOIDLog.warn("The shader " + this.getClass().getSimpleName() + " cannot be created (" + e.getMessage() + "), what it draws is skipped: fix its vertex and fragment sources from this error", e);
+				JOIDLog.warn("The shader " + JOIDLog.nameOf(this.getClass()) + " cannot be created (" + e.getMessage() + "), what it draws is skipped: fix its vertex and fragment sources from this error", e);
 			}
 		}
 		return this.shader;
@@ -67,7 +67,7 @@ public abstract class ShaderProgram {
 	public boolean canDraw() {
 		final boolean available = this.isAvailable();
 		if (!available) {
-			JOIDLog.devWarnOnce("ShaderProgram.unavailable." + System.identityHashCode(this), () -> "The shader " + this.getClass().getSimpleName() + " is unavailable, what it draws is skipped");
+			JOIDLog.devWarnOnce("ShaderProgram.unavailable." + System.identityHashCode(this), () -> "The shader " + JOIDLog.nameOf(this.getClass()) + " is unavailable, what it draws is skipped");
 		}
 		return available;
 	}

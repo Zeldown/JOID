@@ -904,6 +904,29 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void showsTheFrameItSeeksToWhileStopped() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames();
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		this.play(decoder, data, 3);
+		decoder.stop().seek(0.5D);
+		this.play(decoder, data, 10);
+		Assert.assertTrue(decoder.isPaused());
+		Assert.assertEquals(0.5D, decoder.getCurrentTime(), 1E-9D);
+		Assert.assertEquals(119, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	@Test
+	public void showsTheFrameItSeeksToBeforeItsFirstPlay() throws InterruptedException {
+		final VideoResourceDecoder decoder = this.frames().autoplay(false);
+		final ResourceData data = VideoResourceDecoderTest.load(decoder);
+		decoder.seek(0.5D);
+		this.play(decoder, data, 10);
+		Assert.assertTrue(decoder.isPaused());
+		Assert.assertEquals(0.5D, decoder.getCurrentTime(), 1E-9D);
+		Assert.assertEquals(119, VideoResourceDecoderTest.shade(data), 3);
+	}
+
+	@Test
 	public void showsTheFrameItSeeksTo() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.frames();
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
@@ -918,6 +941,7 @@ public class VideoResourceDecoderTest {
 		final VideoResourceDecoder decoder = this.frames().autoplay(false).seek(0.5D);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
 		Assert.assertEquals(0.5D, ((FFmpegFrameGrabber) VideoResourceDecoderTest.field(decoder, "grabber")).getTimestamp() / 1000000D, 0.05D);
+		Assert.assertEquals(119, VideoResourceDecoderTest.shade(data), 3);
 		decoder.play();
 		this.play(decoder, data, 1);
 		Assert.assertEquals(5, decoder.getDisplayedFrameIndex());

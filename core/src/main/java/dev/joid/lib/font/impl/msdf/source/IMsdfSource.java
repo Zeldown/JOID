@@ -2,6 +2,7 @@ package dev.joid.lib.font.impl.msdf.source;
 
 import java.io.IOException;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
 import lombok.NonNull;
 
@@ -10,7 +11,7 @@ public interface IMsdfSource {
 	public @NonNull MsdfFontFace read() throws IOException;
 
 	public default @NonNull String describe() {
-		return "read from " + this.getClass().getSimpleName();
+		return "read from " + JOIDLog.nameOf(this.getClass());
 	}
 
 }

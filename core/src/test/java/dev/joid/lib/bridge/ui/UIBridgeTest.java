@@ -497,7 +497,7 @@ public class UIBridgeTest {
 			this.bridges.getUi().draw();
 			Assert.fail("A draw outside a frame must be refused");
 		} catch (final IllegalStateException expected) {
-			Assert.assertEquals(this.bridges.getUi().getClass().getSimpleName() + ".draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()", expected.getMessage());
+			Assert.assertEquals(this.bridges.getUi().getClass().getName() + ".draw() needs an open frame and the render bridge has none: call render.beginFrame() before and render.endFrame() after, or use BridgeHandler.UI.frame()", expected.getMessage());
 		}
 	}
 
@@ -1010,7 +1010,7 @@ public class UIBridgeTest {
 			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
-		Assert.assertEquals("[JOID] " + bridge.getClass().getSimpleName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them" + System.lineSeparator(), output.toString());
+		Assert.assertEquals("[JOID] " + bridge.getClass().getName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them" + System.lineSeparator(), output.toString());
 	}
 
 	@Test

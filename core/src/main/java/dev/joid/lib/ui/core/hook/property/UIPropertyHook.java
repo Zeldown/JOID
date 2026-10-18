@@ -47,7 +47,7 @@ public final class UIPropertyHook {
 			try {
 				field.set(ui, UIPropertyHook.GSON.fromJson(json.get(key), field.getGenericType()));
 			} catch (final Exception exception) {
-				JOIDLog.warn("The property " + key + " of " + ui.getClass().getSimpleName() + " cannot be read into its field " + field.getName() + " (" + exception + "), the field keeps its default value");
+				JOIDLog.warn("The property " + key + " of " + JOIDLog.nameOf(ui.getClass()) + " cannot be read into its field " + field.getName() + " (" + exception + "), the field keeps its default value");
 			}
 		}
 	}
@@ -71,7 +71,7 @@ public final class UIPropertyHook {
 
 				json.add(key, UIPropertyHook.GSON.toJsonTree(value, field.getGenericType()));
 			} catch (final Exception exception) {
-				JOIDLog.warn("The field " + field.getName() + " of " + ui.getClass().getSimpleName() + " cannot be saved as the property " + key + " (" + exception + "), the property is not saved");
+				JOIDLog.warn("The field " + field.getName() + " of " + JOIDLog.nameOf(ui.getClass()) + " cannot be saved as the property " + key + " (" + exception + "), the property is not saved");
 			}
 		}
 
@@ -110,7 +110,7 @@ public final class UIPropertyHook {
 	}
 
 	private static JsonObject read(final UI ui) {
-		return JsonFiles.read(UIPropertyHook.getFile(ui), "the properties of " + ui.getClass().getSimpleName() + " keep their default values");
+		return JsonFiles.read(UIPropertyHook.getFile(ui), "the properties of " + JOIDLog.nameOf(ui.getClass()) + " keep their default values");
 	}
 
 }

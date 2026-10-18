@@ -3,6 +3,7 @@ package dev.joid.lib.bridge.render;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -144,7 +145,7 @@ public abstract class RenderBridge implements IRenderBridge {
 
 	protected final void requireFrame() {
 		if (!this.frameActive) {
-			throw new IllegalStateException(this.getClass().getSimpleName() + " draws only inside a frame and no frame has begun: draw between beginFrame() and endFrame(), from the draw of a UI or of the backend loop");
+			throw new IllegalStateException(JOIDLog.nameOf(this.getClass()) + " draws only inside a frame and no frame has begun: draw between beginFrame() and endFrame(), from the draw of a UI or of the backend loop");
 		}
 	}
 

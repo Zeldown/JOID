@@ -239,7 +239,7 @@ public class ComputedSignal<T> extends Signal<T> {
 
 	@Override
 	protected @NonNull String refuse(final @NonNull String action) {
-		return "The " + this.getClass().getSimpleName() + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
+		return "The " + JOIDLog.nameOf(this.getClass()) + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
 	}
 
 	private synchronized void follow() {

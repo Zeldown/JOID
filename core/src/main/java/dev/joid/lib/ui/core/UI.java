@@ -253,7 +253,7 @@ public abstract class UI implements IIndexedElement {
 
 			if (JOIDEnv.isDevMode() && this.debug.profiler()) {
 				final long end = System.nanoTime();
-				JOIDLog.info(this.getClass().getSimpleName() + " loaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
+				JOIDLog.info(JOIDLog.nameOf(this.getClass()) + " loaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
 			}
 		}
 
@@ -577,7 +577,7 @@ public abstract class UI implements IIndexedElement {
 				this.reload();
 				final long end = System.nanoTime();
 
-				JOIDLog.info(this.getClass().getSimpleName() + " reloaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
+				JOIDLog.info(JOIDLog.nameOf(this.getClass()) + " reloaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
 			});
 		}
 
@@ -922,7 +922,7 @@ public abstract class UI implements IIndexedElement {
 		if (JOIDEnv.isDevMode() && this.debug.profiler()) {
 			final float ms = this.renderTime / 1_000_000F;
 			if (ms > 16.66F) {
-				JOIDLog.warn(this.getClass().getSimpleName() + " took " + String.format(Locale.ROOT, "%.2f", ms) + "ms to draw a frame, more than the 16.66ms of 60 fps: move the heavy work out of draw() or spread it over several frames");
+				JOIDLog.warn(JOIDLog.nameOf(this.getClass()) + " took " + String.format(Locale.ROOT, "%.2f", ms) + "ms to draw a frame, more than the 16.66ms of 60 fps: move the heavy work out of draw() or spread it over several frames");
 			}
 		}
 

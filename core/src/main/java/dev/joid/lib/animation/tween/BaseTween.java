@@ -2,6 +2,7 @@ package dev.joid.lib.animation.tween;
 
 
 
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventType;
@@ -18,7 +19,7 @@ public abstract class BaseTween<T> {
 	private static final EventType<TweenEvent> REVERSE_ITERATION_END   = EventType.create("onReverseIterationEnd");
 	private static final EventType<TweenEvent> REVERSE_ITERATION_START = EventType.create("onReverseIterationStart");
 
-	private final EventBus eventBus = EventBus.create(() -> this.getClass().getSimpleName());
+	private final EventBus eventBus = EventBus.create(() -> JOIDLog.nameOf(this.getClass()));
 
 	private int     step = -2;
 	private int     repeatCnt;

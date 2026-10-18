@@ -2,6 +2,8 @@ package dev.joid.lib.utils.lock;
 
 import java.util.function.UnaryOperator;
 
+import dev.joid.internal.JOIDLog;
+
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -31,7 +33,7 @@ public abstract class LockableValue<T extends LockableValue<T>> {
 	}
 
 	protected @NonNull String describeLocked() {
-		return "This " + this.getClass().getSimpleName() + " is locked";
+		return "This " + JOIDLog.nameOf(this.getClass()) + " is locked";
 	}
 
 }

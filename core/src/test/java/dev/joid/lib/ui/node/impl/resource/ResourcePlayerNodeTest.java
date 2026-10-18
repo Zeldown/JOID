@@ -267,6 +267,16 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void pausesAnAnimationItSeeksWhileStopped() {
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
+		this.bridges.open(new NodeUI(player)).frames(3);
+		player.stop().seek(0.12D);
+		this.bridges.frames(3);
+		Assert.assertTrue(player.isPaused());
+		Assert.assertEquals(0.5D, player.getProgress(), 1E-9D);
+	}
+
+	@Test
 	public void showsTheFrameOfASeekWhilePlaying() throws InterruptedException {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));

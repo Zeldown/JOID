@@ -190,7 +190,7 @@ public final class JOID {
 	private static IUIBridge getOpeningBridge(final UI ui) {
 		final IUIBridge bridge = BridgeHandler.UI.get(ui);
 		if (bridge == null) {
-			throw new IllegalStateException("No IUIBridge can open " + ui.getClass().getSimpleName() + ": register one whose canHandle accepts it");
+			throw new IllegalStateException("No IUIBridge can open " + JOIDLog.nameOf(ui.getClass()) + ": register one whose canHandle accepts it");
 		}
 		return bridge;
 	}
