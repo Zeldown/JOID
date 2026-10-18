@@ -1462,18 +1462,8 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> T getChild(final int index, final @NonNull Class<T> clazz) {
-		int i = 0;
-		for (final Node child : this.children) {
-			if (clazz.isAssignableFrom(child.getClass())) {
-				if (i == index) {
-					return (T) child;
-				}
-
-				i++;
-			}
-		}
-
-		return null;
+		final List<T> children = this.getChildren(clazz);
+		return index >= 0 && index < children.size() ? children.get(index) : null;
 	}
 
 	public final @NonNull List<@NonNull Node> getChildren() {
