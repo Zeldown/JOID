@@ -217,7 +217,8 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 			return FontBounds.of(layout.getWidth(), this.getLineHeight(info));
 		}
 
-		final PixelGrid grid = this.isGridAligned() ? BridgeHandler.RENDER.get().getPixelGrid() : null;
+		final PixelGrid render = BridgeHandler.RENDER.get().getPixelGrid();
+		final PixelGrid grid = this.isGridAligned() ? render : null;
 		final List<TextGlyph<F>> glyphs = this.glyphs(layout, x, y, info, grid);
 		for (final TextGlyph<F> glyph : glyphs) {
 			for (final ITextEffect effect : glyph.getStyle().getEffects()) {
@@ -229,7 +230,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		final Float tint = info.getShadowTint();
 		if (shadow != null || tint != null) {
 			final double shadowX = grid == null ? info.getShadowX() : GlyphTextRenderer.shadow(info.getShadowX(), grid.getUnitX(), grid.isAligned());
-			final double shadowY = grid == null ? info.getShadowY() : GlyphTextRenderer.shadow(info.getShadowY(), grid.getUnitY(), grid.isAligned());
+			final double shadowY = GlyphTextRenderer.shadow(info.getShadowY(), render.getUnitY(), render.isAligned());
 			final List<TextGlyph<F>> shadows = new ArrayList<>(glyphs.size());
 			for (final TextGlyph<F> glyph : glyphs) {
 				shadows.add(glyph.shadow(shadowX, shadowY, tint != null ? GlyphTextRenderer.tint(glyph.getColor(), tint) : shadow));

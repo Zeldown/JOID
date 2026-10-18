@@ -319,6 +319,14 @@ public class MsdfTextRendererTest {
 	}
 
 	@Test
+	public void dropsTheShadowAWholePixelLowerAtAnyHeight() {
+		MsdfTextRenderer.inst().drawText(100D, 100.55D, "A", MsdfTextRendererTest.sampleInfo().shadow(new Color(0.1F, 0.1F, 0.1F, 1F)).shadow(0.5F, 0.889F));
+		final List<Capture> captures = this.render.getCaptures();
+		Assert.assertEquals(captures.get(1).getTop() + 1D, captures.get(0).getTop(), 1E-3D);
+		Assert.assertEquals(captures.get(1).getLeft() + 0.5D, captures.get(0).getLeft(), 1E-3D);
+	}
+
+	@Test
 	public void shiftsTheGradientOfTheShadowWithIt() {
 		MsdfTextRenderer.inst().drawText(100D, 100D, "A", MsdfTextRendererTest.sampleInfo().shadow(Color.BLUE.toGradient(Color.GREEN)).shadow(4F, 6F));
 		final List<Capture> captures = this.render.getCaptures();
