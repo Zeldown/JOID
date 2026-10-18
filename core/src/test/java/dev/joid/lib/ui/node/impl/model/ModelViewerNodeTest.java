@@ -78,6 +78,17 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void keepsItsValuesGivenBeforeAWiderRange() {
+		final DoubleSignal zoom = new DoubleSignal(3D);
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(3D).zoomRange(1D, 5D).rotationYaw(30D).rotationYawRange(-5D, 5D).rotationPitch(10D).rotationYawRange(-50D, 50D);
+		Assert.assertEquals(3D, viewer.getZoom(), 0D);
+		Assert.assertEquals(30D, viewer.getRotationYaw(), 0D);
+		Assert.assertEquals(10D, viewer.getRotationPitch(), 0D);
+		Assert.assertEquals(3D, ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom).zoomRange(1D, 5D).getZoom(), 0D);
+		Assert.assertEquals(3D, zoom.peek(), 0D);
+	}
+
+	@Test
 	public void zoomsInsideASuppliedZoomRange() {
 		final double[] max = {3D};
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).model(new FixedModel());

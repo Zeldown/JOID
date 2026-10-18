@@ -32,6 +32,7 @@ public final class InteractiveValue<V> {
 	private BiConsumer<V, V> then;
 
 	private V       pending;
+	private V       requested;
 	private boolean changed;
 	private boolean tracked;
 
@@ -87,6 +88,7 @@ public final class InteractiveValue<V> {
 		final V next = this.clamp.apply(value);
 		final V previous = this.getter.get();
 		if (InteractiveValue.same(previous, next)) {
+			this.requested = next;
 			return true;
 		}
 
@@ -98,11 +100,13 @@ public final class InteractiveValue<V> {
 			}
 		}
 
+		this.requested = next;
 		this.apply(previous, next);
 		return true;
 	}
 
 	public void update(final V value) {
+		this.requested = value;
 		final V next = this.clamp.apply(value);
 		final V previous = this.getter.get();
 		if (InteractiveValue.same(previous, next)) {
@@ -112,8 +116,16 @@ public final class InteractiveValue<V> {
 		}
 	}
 
+	public void reapply() {
+		this.update(this.getRequested());
+	}
+
 	public V get() {
 		return this.changed ? this.clamp.apply(this.pending) : this.getter.get();
+	}
+
+	public V getRequested() {
+		return this.requested != null ? this.requested : this.getter.get();
 	}
 
 	public void set(final V value) {

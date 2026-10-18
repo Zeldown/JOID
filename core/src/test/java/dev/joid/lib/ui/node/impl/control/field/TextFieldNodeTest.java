@@ -172,6 +172,15 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void keepsACursorPositionAndASelectionGivenBeforeItsText() {
+		Assert.assertEquals(3, TextFieldNode.create(100D, 100D, 200D).cursorPosition(3).text("hello").getCursorPosition());
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).cursorPosition(3).selection(1, 4).text("hello");
+		Assert.assertEquals(4, field.getCursorPosition());
+		Assert.assertEquals(1, field.getSelection().getStart());
+		Assert.assertEquals(4, field.getSelection().getEnd());
+	}
+
+	@Test
 	public void reportsEachChangeOfItsText() {
 		final List<Object> changes = new ArrayList<>();
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).onChange(event -> changes.addAll(Arrays.asList(event.getNode(), event.getText(), event.getValue(), event.isValid())));

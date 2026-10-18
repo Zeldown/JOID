@@ -114,6 +114,23 @@ public class InteractiveValueTest {
 	}
 
 	@Test
+	public void reappliesTheValueItWasAskedForOnceItsClampChanges() {
+		final int[] max = {10};
+		final InteractiveValue<Integer> amount = this.amount().clamp(value -> Math.min(value, max[0]));
+		amount.start(20);
+		max[0] = 30;
+		amount.reapply();
+		Assert.assertEquals(20, this.amount);
+		amount.change(25);
+		max[0] = 10;
+		amount.reapply();
+		Assert.assertEquals(10, this.amount);
+		max[0] = 30;
+		amount.reapply();
+		Assert.assertEquals(25, this.amount);
+	}
+
+	@Test
 	public void firesTheCoupleOfEachDirectionOfAToggle() {
 		final InteractiveValue<Boolean> opened = InteractiveValue.create(this.bindings, "opened", () -> this.opened, (final Boolean value) -> this.opened = value)
 		.events(true, InteractiveValueTest.BEFORE_OPEN, (previous, value) -> NodeChangeEvent.Pre.create(this.node, previous, value), InteractiveValueTest.OPEN, (previous, value) -> NodeChangeEvent.Post.create(this.node, previous, value))

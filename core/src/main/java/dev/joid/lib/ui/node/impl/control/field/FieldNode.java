@@ -813,7 +813,13 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		final int shift = this.focused ? this.text.length() - length : 0;
+		if (!this.focused) {
+			this.cursorValue.reapply();
+			this.selectionValue.reapply();
+			return;
+		}
+
+		final int shift = this.text.length() - length;
 		this.cursorValue.update(cursor + shift);
 		if (!selection.isEmpty()) {
 			this.selectionValue.update(FieldSelection.of(selection.getStart() + shift, selection.getEnd() + shift));
