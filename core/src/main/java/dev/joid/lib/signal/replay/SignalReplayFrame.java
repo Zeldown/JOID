@@ -1028,13 +1028,6 @@ public final class SignalReplayFrame {
 	}
 
 	private static int toInt(final Object value) {
-		if (value instanceof Boolean) {
-			return (Boolean) value ? 1 : 0;
-		}
-
-		if (value instanceof Character) {
-			return (Character) value;
-		}
 		return ((Number) value).intValue();
 	}
 

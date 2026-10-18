@@ -120,7 +120,7 @@ public final class FileCacheArea {
 		}
 	}
 
-	public long clean(final long now, final AtomicInteger files) {
+	public long clean(final long now, final @NonNull AtomicInteger files) {
 		final File[] entries = this.getDirectory().listFiles();
 		if (entries == null) {
 			return 0L;
@@ -248,7 +248,7 @@ public final class FileCacheArea {
 		return this.lockMap.computeIfAbsent(key, ignored -> new Object());
 	}
 
-	public static @NonNull String check(final String kind, final String name) {
+	public static @NonNull String check(final @NonNull String kind, final @NonNull String name) {
 		if (!FileCacheArea.NAME.matcher(name).matches()) {
 			throw new IllegalArgumentException("The cache " + kind + " name " + name + " is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'");
 		}
