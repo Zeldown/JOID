@@ -29,7 +29,7 @@ if changed '^sample/showcase/(src/|build\.gradle$)'; then
 fi
 
 if [ $jars -eq 0 ] && [ $template -eq 0 ] && [ $showcase -eq 0 ]; then
-    echo "🔍 No source change, tests skipped"
+    echo "[JOID] 🔍 No source change, tests skipped"
     echo ""
     if [ "$mode" = "index" ] && grep -qx "$(git rev-parse HEAD^{tree})" "$tested" 2>/dev/null; then
         { tail -n 99 "$tested"; git write-tree; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
@@ -41,9 +41,9 @@ stashed=0
 restore() {
     if [ $stashed -eq 1 ]; then
         echo ""
-        echo "🧹 Restoring the changes left out of the test"
+        echo "[JOID] 🧹 Restoring the changes left out of the test"
         git reset -q --hard
-        git stash pop -q --index || echo "⚠️  Unable to restore them, run: git stash pop --index"
+        git stash pop -q --index || echo "[JOID] ⚠️  Unable to restore them, run: git stash pop --index"
     fi
 }
 
@@ -83,7 +83,7 @@ if [ "$mode" = "index" ]; then
         fi
     done
 
-    echo "🔍 pre-commit: compile & unit tests"
+    echo "[JOID] 🔍 pre-commit: compile & unit tests"
     echo ""
     ./gradlew compileJava compileTestJava jarCheckClasses $tasks -PskipSnapshots --offline
     status=$?
@@ -100,7 +100,7 @@ else
         tasks="$tasks crossBackendTest"
     fi
 
-    echo "🔍 pre-push: full suite"
+    echo "[JOID] 🔍 pre-push: full suite"
     echo ""
     ./gradlew compileJava compileTestJava jarCheckClasses $tasks --offline
     status=$?
@@ -108,15 +108,15 @@ fi
 
 echo ""
 if [ $status -ne 0 ]; then
-    echo "❌ Tests failed"
+    echo "[JOID] ❌ Tests failed"
     if [ "$mode" != "index" ] && [ $render -eq 1 ]; then
-        echo "   Open build/snapshots/backend-<name>/report.html or build/snapshots/cross/report.html to inspect the differences"
-        echo "   Run ./gradlew updateSnapshots if the visual change is intended"
+        echo "[JOID]    Open build/snapshots/backend-<name>/report.html or build/snapshots/cross/report.html to inspect the differences"
+        echo "[JOID]    Run ./gradlew updateSnapshots if the visual change is intended"
     fi
 elif [ "$mode" = "index" ]; then
-    echo "✅ Done with the unit tests, the pre-push hook runs the full suite"
+    echo "[JOID] ✅ Done with the unit tests, the pre-push hook runs the full suite"
 else
-    echo "✅ Done with tests"
+    echo "[JOID] ✅ Done with tests"
     { tail -n 99 "$tested" 2>/dev/null; echo "$tree"; } > "$tested.tmp" && mv "$tested.tmp" "$tested"
 fi
 echo ""

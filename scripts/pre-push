@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo ""
-echo "🚀 Running pre-push hook on the pushed commits"
+echo "[JOID] 🚀 Running pre-push hook on the pushed commits"
 echo ""
 
 zero=0000000000000000000000000000000000000000
@@ -15,7 +15,7 @@ while read -r local_ref local_sha remote_ref remote_sha; do
 
     if ! grep -qx "$(git rev-parse "$local_sha^{tree}")" "$tested" 2>/dev/null; then
         if [ "$(git rev-parse "$local_sha^{commit}")" != "$(git rev-parse HEAD)" ]; then
-            echo "❌ $local_ref is not the checked out commit and was never tested, check it out and push again"
+            echo "[JOID] ❌ $local_ref is not the checked out commit and was never tested, check it out and push again"
             echo ""
             exit 1
         fi
@@ -33,7 +33,7 @@ $changed"
 done
 
 if [ $untested -eq 0 ]; then
-    echo "🔍 The tip of every pushed ref already passed the full suite, tests skipped"
+    echo "[JOID] 🔍 The tip of every pushed ref already passed the full suite, tests skipped"
     echo ""
     exit 0
 fi
