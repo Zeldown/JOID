@@ -152,6 +152,12 @@ public final class VulkanContext {
 		}
 	}
 
+	public void destroyImage(final long[] image) {
+		VK10.vkDestroyImageView(this.device, image[2], null);
+		VK10.vkDestroyImage(this.device, image[0], null);
+		VK10.vkFreeMemory(this.device, image[1], null);
+	}
+
 	public long[] createBuffer(final long size, final int usage, final int properties) {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer buffer = stack.mallocLong(1);

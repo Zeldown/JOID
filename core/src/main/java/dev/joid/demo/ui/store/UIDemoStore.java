@@ -47,6 +47,7 @@ public class UIDemoStore extends UIDemo {
 		final DemoPermanentStore permanent = super.useStore(DemoPermanentStore.class, () -> new DemoPermanentStore(now));
 		final long[] times = {local.getTime(), global.getTime(), permanent.getTime()};
 		final String[] captions = {"Local store", "Global store", "Permanent store"};
+
 		this.cache = "Not cached";
 
 		for (int i = 0; i < times.length; i++) {

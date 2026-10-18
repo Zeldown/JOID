@@ -70,13 +70,11 @@ public final class VulkanRenderBridge extends RenderBridge {
 	private final NavigableMap<Long, List<Runnable>> garbage;
 
 	private long                 frame;
+	private long[]               depth;
 	private int                  passWidth;
-	private long                 depthView;
 	private int                  depthWidth;
 	private int                  passHeight;
-	private long                 depthImage;
 	private int                  depthHeight;
-	private long                 depthMemory;
 	private boolean              passActive;
 	private long                 boundPipeline;
 	private boolean              screenCleared;
@@ -316,37 +314,25 @@ public final class VulkanRenderBridge extends RenderBridge {
 		final int format = this.context.getDepthStencilFormat();
 		if (this.depthWidth != this.passWidth || this.depthHeight != this.passHeight) {
 			this.releaseScreenTarget();
-			final long[] depth = this.context.createImage(this.passWidth, this.passHeight, format, VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK10.VK_IMAGE_ASPECT_DEPTH_BIT | VK10.VK_IMAGE_ASPECT_STENCIL_BIT, 1);
-			this.depthImage  = depth[0];
-			this.depthMemory = depth[1];
-			this.depthView   = depth[2];
+			this.depth       = this.context.createImage(this.passWidth, this.passHeight, format, VK10.VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK10.VK_IMAGE_ASPECT_DEPTH_BIT | VK10.VK_IMAGE_ASPECT_STENCIL_BIT, 1);
 			this.depthWidth  = this.passWidth;
 			this.depthHeight = this.passHeight;
 		}
 
 		final LongBuffer framebuffer = stack.mallocLong(1);
-		VulkanContext.check(VK10.vkCreateFramebuffer(this.context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(this.screenClearPass).pAttachments(stack.longs(this.host.getTargetView(), this.depthView)).width(this.passWidth).height(this.passHeight).layers(1), null, framebuffer), "vkCreateFramebuffer");
+		VulkanContext.check(VK10.vkCreateFramebuffer(this.context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(this.screenClearPass).pAttachments(stack.longs(this.host.getTargetView(), this.depth[2])).width(this.passWidth).height(this.passHeight).layers(1), null, framebuffer), "vkCreateFramebuffer");
 		return framebuffer.get(0);
 	}
 
 	private void releaseScreenTarget() {
-		if (this.depthImage == VK10.VK_NULL_HANDLE) {
+		if (this.depth == null) {
 			return;
 		}
 
-		final VkDevice device = this.context.getDevice();
-		final long view = this.depthView;
-		final long image = this.depthImage;
-		final long memory = this.depthMemory;
-		this.dispose(() -> {
-			VK10.vkDestroyImageView(device, view, null);
-			VK10.vkDestroyImage(device, image, null);
-			VK10.vkFreeMemory(device, memory, null);
-		});
+		final long[] depth = this.depth;
+		this.dispose(() -> this.context.destroyImage(depth));
 
-		this.depthView   = VK10.VK_NULL_HANDLE;
-		this.depthImage  = VK10.VK_NULL_HANDLE;
-		this.depthMemory = VK10.VK_NULL_HANDLE;
+		this.depth       = null;
 		this.depthWidth  = 0;
 		this.depthHeight = 0;
 	}

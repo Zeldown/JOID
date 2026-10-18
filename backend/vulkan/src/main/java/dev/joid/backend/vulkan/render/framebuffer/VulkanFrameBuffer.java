@@ -12,25 +12,22 @@ import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.VulkanRenderBridge;
 import dev.joid.backend.vulkan.render.texture.VulkanTexture;
 import dev.joid.lib.bridge.render.framebuffer.FrameBufferHandle;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 
-	private final long               depthView;
-	private final long               depthImage;
 	private final long               framebuffer;
-	private final long               depthMemory;
 	private final VulkanRenderBridge bridge;
+	@Getter(AccessLevel.NONE) private final long[] depth;
 
-	private VulkanFrameBuffer(final VulkanRenderBridge bridge, final VulkanTexture texture, final long framebuffer, final long depthImage, final long depthMemory, final long depthView) {
+	private VulkanFrameBuffer(final VulkanRenderBridge bridge, final VulkanTexture texture, final long framebuffer, final long[] depth) {
 		super(texture);
 		this.bridge      = bridge;
 		this.framebuffer = framebuffer;
-		this.depthImage  = depthImage;
-		this.depthMemory = depthMemory;
-		this.depthView   = depthView;
+		this.depth       = depth;
 	}
 
 	public static @NonNull VulkanFrameBuffer create(final VulkanRenderBridge bridge, final int width, final int height) {
@@ -49,22 +46,18 @@ public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			final LongBuffer framebuffer = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkCreateFramebuffer(context.getDevice(), VkFramebufferCreateInfo.calloc(stack).sType$Default().renderPass(context.getOffscreenRenderPass()).pAttachments(stack.longs(texture.getView(), depth[2])).width(width).height(height).layers(1), null, framebuffer), "vkCreateFramebuffer");
-			return new VulkanFrameBuffer(bridge, texture, framebuffer.get(0), depth[0], depth[1], depth[2]);
+			return new VulkanFrameBuffer(bridge, texture, framebuffer.get(0), depth);
 		}
 	}
 
 	@Override
 	protected void deleteHandle() {
 		final long framebuffer = this.framebuffer;
-		final long depthImage = this.depthImage;
-		final long depthMemory = this.depthMemory;
-		final long depthView = this.depthView;
+		final long[] depth = this.depth;
 		final VulkanContext context = this.bridge.getContext();
 		this.bridge.dispose(() -> {
 			VK10.vkDestroyFramebuffer(context.getDevice(), framebuffer, null);
-			VK10.vkDestroyImageView(context.getDevice(), depthView, null);
-			VK10.vkDestroyImage(context.getDevice(), depthImage, null);
-			VK10.vkFreeMemory(context.getDevice(), depthMemory, null);
+			context.destroyImage(depth);
 		});
 	}
 

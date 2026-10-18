@@ -125,11 +125,7 @@ public final class VulkanTexture extends Texture implements IVulkanTexture {
 		final long view = this.view;
 		final VulkanContext context = this.bridge.getContext();
 		this.bridge.releaseHandle(view);
-		this.bridge.dispose(() -> {
-			VK10.vkDestroyImageView(context.getDevice(), view, null);
-			VK10.vkDestroyImage(context.getDevice(), image, null);
-			VK10.vkFreeMemory(context.getDevice(), memory, null);
-		});
+		this.bridge.dispose(() -> context.destroyImage(new long[] {image, memory, view}));
 
 		this.image  = VK10.VK_NULL_HANDLE;
 		this.memory = VK10.VK_NULL_HANDLE;
