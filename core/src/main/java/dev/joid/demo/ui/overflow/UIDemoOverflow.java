@@ -7,6 +7,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.effect.impl.MaskNodeEffect;
@@ -30,6 +31,7 @@ public class UIDemoOverflow extends UIDemo {
 		final IntegerSignal items = new IntegerSignal(6);
 		final IntegerSignal offset = new IntegerSignal(0);
 		final IntegerSignal ends = new IntegerSignal(0);
+		final DoubleSignal scroll = new DoubleSignal(0D);
 
 		RectNode
 		.create(100, 10, 400, 220)
@@ -55,18 +57,26 @@ public class UIDemoOverflow extends UIDemo {
 		.create(540, 10, 400, 220)
 		.color(UIDemoOverflow.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(20, 20, 360, 180).color(Color.WHITE).attach(rect);
+			RectNode.create(20, 20, 360, 120).color(Color.WHITE).attach(rect);
 			FlexNode
-			.horizontal(20, 20, 180)
+			.horizontal(20, 20, 120)
 			.margin(10D)
 			.width(360)
 			.overflow(OverflowProperty.SCROLL)
+			.scrollX(scroll)
 			.body(flex -> {
 				for (int i = 0; i < 8; i++) {
-					RectNode.create(10, 10, 80, 160).color(UIDemoOverflow.INK).attach(flex);
+					RectNode.create(10, 10, 80, 100).color(UIDemoOverflow.INK).attach(flex);
 				}
 			})
 			.attach(rect);
+			RectNode
+			.create(260, 150, 120, 50)
+			.color(UIDemoOverflow.INK)
+			.onClick(event -> scroll.set(-200D))
+			.label(Text.create("Code", label))
+			.attach(rect);
+			TextNode.create(20, 163).text(Text.create("Offset: " + Math.round(scroll.get()), info)).attach(rect);
 			TextNode.create(200, 235).text(Text.create("Horizontal scroll", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);

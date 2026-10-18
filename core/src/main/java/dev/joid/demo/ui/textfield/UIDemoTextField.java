@@ -23,7 +23,7 @@ import dev.joid.lib.utils.align.Align;
 public class UIDemoTextField extends UIDemo {
 
 	private static final Color INK         = new Color(153, 153, 153).lock();
-	private static final Color ACCENT      = new Color(255, 85, 85).lock();
+	private static final Color ACCENT      = new Color(102, 102, 102).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
 	@Override

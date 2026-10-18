@@ -43,6 +43,7 @@ public class UIDemoEventFlow extends UIDemo {
 		final BooleanSignal locked = new BooleanSignal(true);
 		final IntegerSignal kept = new IntegerSignal(0);
 		final DoubleSignal moveX = new DoubleSignal(40D);
+		final IntegerSignal moves = new IntegerSignal(0);
 		final DoubleSignal scroll = new DoubleSignal(0D);
 		final BooleanSignal focused = new BooleanSignal(false);
 		final IntegerSignal cursor = new IntegerSignal(0);
@@ -198,6 +199,7 @@ public class UIDemoEventFlow extends UIDemo {
 					event.cancel();
 				}
 			})
+			.onMove(event -> moves.increment())
 			.attach(rect);
 			RectNode
 			.create(170, 190, 110, 40)
@@ -205,6 +207,7 @@ public class UIDemoEventFlow extends UIDemo {
 			.onClick(event -> square.move(40D, 40D))
 			.label(Text.create("Reset", label))
 			.attach(rect);
+			TextNode.create(40, 150).text(Text.create("Moves: " + moves.get(), info)).attach(rect);
 			TextNode.create(40, 198).text(Text.create("x: " + Math.round(moveX.get()), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Before move", info)).anchorX(Align.CENTER).attach(rect);
 		})
