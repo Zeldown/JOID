@@ -241,6 +241,19 @@ public class SwitchNodeTest {
 		Assert.assertEquals("off", new Switch().valueIndex(new IntegerSignal(5)).values("off", "on").getValue());
 	}
 
+	@Test
+	public void keepsAnIndexOutOfItsStatesUntilItsStatesReachIt() {
+		final Switch node = this.open();
+		final IntegerSignal level = new IntegerSignal(1);
+		node.valueIndex(level);
+		level.set(5);
+		Assert.assertEquals("medium", node.getValue());
+		Assert.assertEquals(1, level.get().intValue());
+		node.values("a", "b", "c", "d", "e", "f");
+		Assert.assertEquals("f", node.getValue());
+		Assert.assertEquals(5, level.get().intValue());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnIndexGivenBeforeItsStatesThatIsOutOfThem() {
 		new Switch().valueIndex(2).values("off", "on");

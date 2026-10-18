@@ -237,9 +237,7 @@ public final class NodeBindings {
 				return;
 			}
 
-			final Signal<V> signal = (Signal<V>) this.source;
-			this.value = signal.peek();
-			signal.removeOnChange(this);
+			((Signal<V>) this.source).removeOnChange(this);
 		}
 
 		private void write(final Object value) {

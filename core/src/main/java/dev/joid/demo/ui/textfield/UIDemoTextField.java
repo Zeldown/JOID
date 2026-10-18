@@ -11,6 +11,7 @@ import dev.joid.demo.ui.node.impl.control.field.DemoTextFieldNode;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
@@ -35,7 +36,7 @@ public class UIDemoTextField extends UIDemo {
 		final StringSignal character = new StringSignal("-");
 		final BooleanSignal valid = new BooleanSignal(true);
 		final IntegerSignal number = new IntegerSignal(7);
-		final StringSignal empty = new StringSignal("null");
+		final Signal<Integer> empty = new Signal<>();
 		final IntegerSignal focuses = new IntegerSignal(0);
 		final IntegerSignal blurs = new IntegerSignal(0);
 		final IntegerSignal enters = new IntegerSignal(0);
@@ -222,8 +223,8 @@ public class UIDemoTextField extends UIDemo {
 			.info(info)
 			.marginHorizontal(12D)
 			.placeholder("Empty")
-			.allowEmpty(true)
-			.onChange(event -> empty.set(String.valueOf(event.getValue())))
+			.<DemoIntegerFieldNode>allowEmpty(true)
+			.value(empty)
 			.attach(rect);
 			TextNode.create(40, 130).text(Text.create("Value: " + empty.get(), info)).attach(rect);
 			TextNode.create(160, 275).text(Text.create("Empty integer", info)).anchorX(Align.CENTER).attach(rect);

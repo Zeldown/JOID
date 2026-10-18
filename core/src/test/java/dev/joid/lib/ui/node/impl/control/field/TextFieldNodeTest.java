@@ -186,6 +186,18 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void movesItsCursorToTheEndOfItsSelectionWhateverTheOrderOfItsSetters() {
+		final TextFieldNode cursorFirst = TextFieldNode.create(100D, 100D, 200D).text("hello").cursorPosition(3).selection(1, 4);
+		final TextFieldNode selectionFirst = TextFieldNode.create(100D, 100D, 200D).text("hello").selection(1, 4).cursorPosition(3);
+		final TextFieldNode textLast = TextFieldNode.create(100D, 100D, 200D).selection(1, 4).cursorPosition(3).text("hello");
+		for (final TextFieldNode field : Arrays.asList(cursorFirst, selectionFirst, textLast)) {
+			Assert.assertEquals(4, field.getCursorPosition());
+			Assert.assertEquals(1, field.getSelection().getStart());
+			Assert.assertEquals(4, field.getSelection().getEnd());
+		}
+	}
+
+	@Test
 	public void keepsTheCursorOfItsSignalOnceItsTextIsLongEnough() {
 		final Signal<Integer> cursor = new Signal<>(4);
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("ab").cursorPosition(cursor);
@@ -265,6 +277,17 @@ public class TextFieldNodeTest {
 		Assert.assertEquals("", TextFieldNode.create(100D, 100D, 200D).maxTextLength(0).text("abcdef").getText());
 		Assert.assertEquals("abcdef", TextFieldNode.create(100D, 100D, 200D).maxTextLength(-1).text("abcdef").getText());
 		Assert.assertEquals("abc", TextFieldNode.create(100D, 100D, 200D).text("abcdef").maxTextLength(3).getText());
+	}
+
+	@Test
+	public void takesBackItsWholeTextOnceItsMaximumLengthAllowsIt() {
+		final Signal<Integer> length = new Signal<>(3);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("abcdef").maxTextLength(length);
+		this.bridges.open(new NodeUI(field)).frame();
+		Assert.assertEquals("abc", field.getText());
+		length.set(10);
+		this.bridges.frame();
+		Assert.assertEquals("abcdef", field.getText());
 	}
 
 	@Test

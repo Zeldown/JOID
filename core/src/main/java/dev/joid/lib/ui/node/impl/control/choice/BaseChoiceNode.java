@@ -36,7 +36,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 			this.value = value;
 			this.pendingIndex = -1;
 		})
-		.clamp(value -> this.valueList.isEmpty() || this.valueList.contains(value) ? value : this.value)
+		.clamp(value -> this.valueList.isEmpty() || this.valueList.contains(value) ? value : this.valueList.contains(this.value) ? this.value : this.valueList.get(0))
 		.events(BaseChoiceNode.BEFORE_CHANGE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), BaseChoiceNode.CHANGE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
 
 		super.<BaseChoiceNode<V>>require("values", "call values(...) before attaching it", node -> !node.valueList.isEmpty());
@@ -82,11 +82,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 	}
 
 	public final <T extends BaseChoiceNode<V>> @NonNull T valueIndex(final @NonNull Signal<Integer> valueIndex) {
-		return super.bind("value", valueIndex, index -> {
-			if (this.valueList.isEmpty() || index >= 0 && index < this.valueList.size()) {
-				this.select(index);
-			}
-		}, (final V value) -> this.valueList.indexOf(value));
+		return super.bind("value", valueIndex, this::select, (final V value) -> this.valueList.indexOf(value));
 	}
 
 	public final <T extends BaseChoiceNode<V>> @NonNull T change(final @NonNull V value) {
@@ -103,8 +99,11 @@ public abstract class BaseChoiceNode<V> extends Node {
 	}
 
 	private void select(final int index) {
-		if (this.valueList.isEmpty()) {
+		if (index < 0 || index >= this.valueList.size()) {
 			this.pendingIndex = index;
+			if (!this.valueList.isEmpty()) {
+				super.sync("value", this.value);
+			}
 			return;
 		}
 
@@ -122,16 +121,20 @@ public abstract class BaseChoiceNode<V> extends Node {
 
 		final boolean bound = super.getBindings().isBound("value");
 		final int index = bound || this.pendingIndex < 0 ? this.pendingIndex : this.requireIndex(values, this.pendingIndex);
-		final V current = index >= 0 && index < values.size() ? values.get(index) : this.value;
-		if (this.valueList.isEmpty() && current != null && !bound) {
-			this.requireOption(values, current);
+		final boolean valid = index >= 0 && index < values.size();
+		if (this.valueList.isEmpty() && !valid && this.value != null && !bound) {
+			this.requireOption(values, this.value);
 		}
 
-		this.pendingIndex = -1;
 		this.valueList.clear();
 		this.valueList.addAll(values);
 		this.createOptions();
-		this.choiceValue.update(values.contains(current) ? current : values.get(0));
+		if (valid) {
+			this.pendingIndex = -1;
+			this.choiceValue.update(values.get(index));
+		} else {
+			this.choiceValue.reapply();
+		}
 	}
 
 	private V requireOption(final @NonNull List<V> values, final V value) {

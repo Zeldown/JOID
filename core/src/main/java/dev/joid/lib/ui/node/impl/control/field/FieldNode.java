@@ -60,6 +60,7 @@ public abstract class FieldNode<V> extends Node {
 	@Getter private UnaryOperator<String> normalize;
 
 	private V       fallback;
+	private V       requested;
 	private boolean emptyRequested;
 
 	@Getter
@@ -333,6 +334,8 @@ public abstract class FieldNode<V> extends Node {
 			this.allowEmpty = value;
 			if (value && this.emptyRequested) {
 				this.write(null, false);
+			} else if (!value && !this.focused) {
+				this.commit();
 			}
 		});
 	}
@@ -426,7 +429,10 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final int cursorPosition) {
-		return this.cursorValue.start(cursorPosition);
+		return super.start("cursorPosition", cursorPosition, (final Integer position) -> {
+			this.cursorValue.update(position);
+			this.alignCursor();
+		});
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorPosition(final @NonNull Signal<Integer> cursorPosition) {
@@ -526,12 +532,8 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final void write(final V value, final boolean refusable) {
-		this.emptyRequested = false;
-		final String text = value == null ? "" : this.limit(this.format(this.correct(value)));
-		if (!text.equals(this.text)) {
-			this.rewrite(text, refusable);
-		}
-
+		this.replace(value == null ? "" : this.format(this.correct(value)), refusable);
+		this.requested = value;
 		this.commit();
 	}
 
@@ -540,7 +542,9 @@ public abstract class FieldNode<V> extends Node {
 			this.fallback = this.correct(this.fallback);
 		}
 
-		if (!this.focused && !this.text.isEmpty()) {
+		if (!this.focused && this.requested != null) {
+			this.write(this.requested, false);
+		} else if (!this.focused && !this.text.isEmpty()) {
 			this.commit();
 		}
 	}
@@ -652,8 +656,12 @@ public abstract class FieldNode<V> extends Node {
 
 	private void applySelection(final @NonNull FieldSelection selection) {
 		this.selection = selection;
-		if (!selection.isEmpty() && this.cursorPosition != selection.getStart() && this.cursorPosition != selection.getEnd()) {
-			this.cursorValue.update(selection.getEnd());
+		this.alignCursor();
+	}
+
+	private void alignCursor() {
+		if (!this.selection.isEmpty() && this.cursorPosition != this.selection.getStart() && this.cursorPosition != this.selection.getEnd()) {
+			this.cursorValue.update(this.selection.getEnd());
 		}
 	}
 
@@ -778,6 +786,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private void replace(final @NonNull String newText, final boolean refusable) {
 		this.emptyRequested = false;
+		this.requested = this.parse(this.normalize.apply(newText));
 		final String text = this.limit(newText);
 		if (!text.equals(this.text)) {
 			this.rewrite(text, refusable);
@@ -794,6 +803,7 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		this.emptyRequested = false;
+		this.requested = null;
 		return this.changeText(newText, true);
 	}
 
@@ -808,7 +818,10 @@ public abstract class FieldNode<V> extends Node {
 
 	private void commit() {
 		final V value = this.getValue();
-		this.fallback = value;
+		if (value != null) {
+			this.fallback = value;
+		}
+
 		final String text = value == null ? "" : this.limit(this.format(value));
 		if (!text.equals(this.text)) {
 			this.rewrite(text, false);

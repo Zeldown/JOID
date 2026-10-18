@@ -99,6 +99,19 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void takesBackTheValueOfItsSignalOnceItsRangeAllowsIt() {
+		final Signal<Integer> volume = new Signal<>(50);
+		final IntegerSlider slider = new IntegerSlider().<IntegerSlider>range(0, 10).value(volume);
+		this.bridges.open(new NodeUI(slider)).frame();
+		Assert.assertEquals(0, slider.getValue().intValue());
+		Assert.assertEquals(0, volume.get().intValue());
+		slider.range(0, 100);
+		this.bridges.frame();
+		Assert.assertEquals(50, slider.getValue().intValue());
+		Assert.assertEquals(50, volume.get().intValue());
+	}
+
+	@Test
 	public void movesItsThumbWhenItsOptionsAreRebuilt() {
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(SliderNodeTest.digits()).value(5);
 		this.bridges.open(new NodeUI(slider)).frame();
@@ -234,6 +247,26 @@ public class SliderNodeTest {
 		signal.set(2);
 		Assert.assertEquals(3, slider.getValue().intValue());
 		Assert.assertEquals(Arrays.asList(1, 3), changes);
+	}
+
+	@Test
+	public void catchesUpWithAWriteOfItsSignalItNeverSawBeforeItsDetach() {
+		final Signal<Integer> volume = new Signal<>(1);
+		final IntegerSlider slider = new IntegerSlider().<IntegerSlider>range(0, 10).value(volume);
+		final NodeUI ui = new NodeUI(slider);
+		this.bridges.open(ui).frame();
+		Signal.silent(() -> volume.set(4));
+		ui.remove(slider);
+		ui.add(slider);
+		this.bridges.frame();
+		Assert.assertEquals(4, slider.getValue().intValue());
+		Signal.batch(() -> {
+			volume.set(7);
+			ui.remove(slider);
+		});
+		ui.add(slider);
+		this.bridges.frame();
+		Assert.assertEquals(7, slider.getValue().intValue());
 	}
 
 	@Test

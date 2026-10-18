@@ -242,6 +242,20 @@ public class SelectorNodeTest {
 		Assert.assertEquals("third", language.get());
 	}
 
+	@Test
+	public void takesTheValueOfItsSignalOnceItBecomesAnOption() {
+		final Signal<List<String>> options = new Signal<>(Arrays.asList("first", "second"));
+		final Signal<String> language = new Signal<>("third");
+		final Selector selector = new Selector().values(options).value(language);
+		this.bridges.open(new NodeUI(selector)).frame();
+		Assert.assertEquals("first", selector.getValue());
+		Assert.assertEquals("first", language.get());
+		options.set(Arrays.asList("first", "second", "third"));
+		this.bridges.frame();
+		Assert.assertEquals("third", selector.getValue());
+		Assert.assertEquals("third", language.get());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAValueGivenBeforeItsOptionsThatIsNoOption() {
 		new Selector().value("fourth").values("first", "second");
@@ -290,6 +304,19 @@ public class SelectorNodeTest {
 		this.selector.values("first", "second");
 		Assert.assertEquals("first", this.selector.getValue());
 		Assert.assertEquals(Arrays.asList("first"), this.changes);
+	}
+
+	@Test
+	public void takesBackItsValueOnceItIsAnOptionAgain() {
+		final Signal<List<String>> options = new Signal<>(Arrays.asList("first", "second", "third"));
+		final Selector selector = new Selector().values(options).value("second");
+		this.bridges.open(new NodeUI(selector)).frame();
+		options.set(Arrays.asList("fourth", "fifth"));
+		this.bridges.frame();
+		Assert.assertEquals("fourth", selector.getValue());
+		options.set(Arrays.asList("first", "second", "third"));
+		this.bridges.frame();
+		Assert.assertEquals("second", selector.getValue());
 	}
 
 	@Test

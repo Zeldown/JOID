@@ -216,6 +216,22 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void takesBackItsLastValueOnceEmptyIsRefusedAgain() {
+		final Signal<Boolean> allowEmpty = new Signal<>(true);
+		final IntegerSignal signal = new IntegerSignal(42);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>allowEmpty(allowEmpty).value(signal);
+		this.bridges.open(new NodeUI(field)).frame();
+		signal.set(null);
+		this.bridges.frame();
+		allowEmpty.set(false);
+		this.bridges.frame();
+		Assert.assertEquals("42", field.getText());
+		Assert.assertEquals(42, (int) field.getValue());
+		Assert.assertTrue(field.isValid());
+		Assert.assertEquals(42, (int) signal.peek());
+	}
+
+	@Test
 	public void writesAValue() {
 		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).value(42);
 		Assert.assertEquals("42", field.getText());
@@ -253,7 +269,22 @@ public class IntegerFieldNodeTest {
 		Assert.assertEquals("20", field.getText());
 		Assert.assertEquals(25, (int) field.min(25).getValue());
 		Assert.assertEquals(3, (int) field.min(0).max(3).getValue());
-		Assert.assertEquals("3", field.<IntegerFieldNode>text("").getText());
+		Assert.assertEquals(50, (int) field.max(100).getValue());
+		Assert.assertEquals("50", field.<IntegerFieldNode>text("").getText());
+	}
+
+	@Test
+	public void writesItsValueBackIntoItsSignalOnceItsBoundsAllowIt() {
+		final IntegerSignal max = new IntegerSignal(10);
+		final IntegerSignal signal = new IntegerSignal(50);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>value(signal).max(max);
+		this.bridges.open(new NodeUI(field)).frame();
+		Assert.assertEquals(10, (int) field.getValue());
+		Assert.assertEquals(10, (int) signal.peek());
+		max.set(100);
+		this.bridges.frame();
+		Assert.assertEquals(50, (int) field.getValue());
+		Assert.assertEquals(50, (int) signal.peek());
 	}
 
 	@Test
