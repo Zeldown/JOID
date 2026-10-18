@@ -394,6 +394,25 @@ public class UITest {
 	}
 
 	@Test
+	public void dropsTheListenersOfItsInitOnceClosed() {
+		final DoubleSignal zoom = new DoubleSignal(1D);
+		final SessionUI ui = new SessionUI(this.trace, zoom);
+		this.bridges.open(ui);
+		zoom.set(0.5D);
+		this.bridges.frame();
+		JOID.close(ui);
+		zoom.set(0.25D);
+		this.trace.clear();
+		this.bridges.open(ui);
+		Assert.assertEquals(Arrays.asList("kept 0.25"), this.trace);
+		Assert.assertEquals(0.25D, ui.getZoom(), 0D);
+		Assert.assertEquals(0.25D, zoom.peek(), 0D);
+		zoom.set(0.75D);
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList("kept 0.25", "kept 0.75", "session 2 0.75"), this.trace);
+	}
+
+	@Test
 	public void keepsItsTransitionAcrossAReloadThatLeavesItsPopupUnchanged() {
 		final PopupUI ui = new PopupUI(this.trace);
 		final Transition transition = PopTransition.create();
@@ -2669,6 +2688,30 @@ public class UITest {
 			if (this.failing) {
 				throw new IllegalStateException("Init failed");
 			}
+		}
+
+	}
+
+	@UIDataDebug(profiler = false, hotreload = false)
+	public static final class SessionUI extends UI {
+
+		private final DoubleSignal zoom;
+		private final List<String> trace;
+
+		private int inits;
+
+		public SessionUI(final List<String> trace, final DoubleSignal zoom) {
+			this.trace = trace;
+			this.zoom = zoom;
+			super.onZoom(event -> this.trace.add("kept " + event.getValue()));
+		}
+
+		@Override
+		public void init() {
+			this.inits++;
+			final int session = this.inits;
+			super.zoom(this.zoom);
+			super.onZoom(event -> this.trace.add("session " + session + " " + event.getValue()));
 		}
 
 	}

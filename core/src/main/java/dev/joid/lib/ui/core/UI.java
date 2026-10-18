@@ -572,6 +572,7 @@ public abstract class UI implements IIndexedElement {
 
 		UIPropertyHook.save(this);
 		this.bindings.fire(UI.CLOSE, () -> UICloseEvent.Post.create(this));
+		this.eventBus.reset();
 	}
 
 	public final void draw(final double mouseX, final double mouseY) {
