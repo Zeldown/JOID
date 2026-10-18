@@ -259,7 +259,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		final List<FieldLine> lines = layout.getLines();
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
 			final FieldLine line = lines.get(lineIdx);
-			if (pos >= line.getStart() && pos <= line.getEnd()) {
+			if (pos >= line.getStart() && (pos < line.getEnd() || pos == line.getEnd() && (lineIdx == lines.size() - 1 || lines.get(lineIdx + 1).getStart() != pos))) {
 				return lineIdx;
 			}
 		}

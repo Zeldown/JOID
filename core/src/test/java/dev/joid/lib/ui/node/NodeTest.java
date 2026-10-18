@@ -2449,15 +2449,19 @@ public class NodeTest {
 	}
 
 	@Test
-	public void loadsAChildAppendedTwiceOnce() {
+	public void movesAChildAppendedAgainToTheEndWithoutReloadingIt() {
 		final List<String> events = new ArrayList<>();
-		final RecordingNode child = new RecordingNode("child", events, 0D, 0D, 10D, 10D);
-		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(child);
+		final RecordingNode first = new RecordingNode("first", events, 0D, 0D, 10D, 10D);
+		final RecordingNode second = new RecordingNode("second", events, 0D, 0D, 10D, 10D);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(first, second).onChildAppend(event -> events.add("append"));
 		this.bridges.open(new NodeUI(parent));
 		events.clear();
-		parent.append(child);
+		parent.append(first);
 		Assert.assertTrue(events.isEmpty());
-		Assert.assertEquals(Arrays.asList(child), parent.getChildren());
+		Assert.assertEquals(Arrays.asList(second, first), parent.getChildren());
+		Assert.assertEquals("0.1", first.getMappedIndex());
+		this.bridges.frame();
+		Assert.assertEquals(Arrays.asList("second update", "first update"), events.subList(0, 2));
 	}
 
 	@Test

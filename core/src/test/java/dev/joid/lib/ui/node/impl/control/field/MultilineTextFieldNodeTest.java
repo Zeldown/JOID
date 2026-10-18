@@ -624,6 +624,18 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void putsThePositionWhereAWordWrapsAtTheStartOfTheNextLine() {
+		final MultilineTextFieldNode field = this.field(54D, "aaaaaaaaaaaa");
+		this.click(2D, 30D);
+		Assert.assertEquals(5, field.getCursorPosition());
+		this.press(field, Key.UP);
+		Assert.assertEquals(0, field.getCursorPosition());
+		this.press(field, Key.DOWN);
+		this.press(field, Key.DOWN);
+		Assert.assertEquals(10, field.getCursorPosition());
+	}
+
+	@Test
 	public void putsTheCursorUnderAClickAfterACarriageReturn() {
 		final MultilineTextFieldNode field = this.field("ab\rcd");
 		this.click(14D, 30D);

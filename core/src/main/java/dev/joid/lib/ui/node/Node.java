@@ -648,7 +648,8 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T append(final @NonNull Node @NonNull ... nodes) {
 		for (final Node node : nodes) {
-			if (node.parent != null && node.parent != this) {
+			final boolean moved = node.parent == this;
+			if (node.parent != null && !moved) {
 				node.parent.remove(node);
 			} else if (node.parent == null && node.ui != null && node.ui.getNodeList().contains(node)) {
 				node.ui.remove(node);
@@ -663,10 +664,13 @@ public abstract class Node implements INode {
 					throw exception;
 				}
 			}
+			this.drawList.remove(node);
 			this.drawList.add(node);
 			this.children.remove(node);
 			this.children.add(node);
-			this.fire(Node.CHILD_APPEND, () -> NodeChildEvent.create(this, node));
+			if (!moved) {
+				this.fire(Node.CHILD_APPEND, () -> NodeChildEvent.create(this, node));
+			}
 		}
 
 		this.scrollMeasured = false;
