@@ -118,6 +118,13 @@ public class ResourceAnimationReaderTest {
 	}
 
 	@Test
+	public void keepsAPaletteTransparencyWrittenAfterTheFirstFrameControl() throws IOException {
+		final byte[] bytes = ResourceAnimationReaderTest.png(ResourceAnimationReaderTest.chunk("IHDR", ByteBuffer.allocate(13).putInt(2).putInt(1).put((byte) 8).put((byte) 3).array()), ResourceAnimationReaderTest.chunk("acTL", ByteBuffer.allocate(8).putInt(1).putInt(0).array()), ResourceAnimationReaderTest.chunk("PLTE", new byte[] {(byte) 255, 0, 0, 0, (byte) 255, 0, 0, 0, (byte) 255}), ResourceAnimationReaderTest.chunk("fcTL", ResourceAnimationReaderTest.control(0, 2, 0, 1)), ResourceAnimationReaderTest.chunk("tRNS", new byte[] {(byte) 255, (byte) 255, (byte) 128}), ResourceAnimationReaderTest.chunk("IDAT", ResourceAnimationReaderTest.deflate(0, 0, 2)), ResourceAnimationReaderTest.chunk("IEND", new byte[0]));
+		final ResourceAnimation animation = new ApngResourceAnimationReader().read(new ByteArrayInputStream(bytes));
+		Assert.assertArrayEquals(new int[] {0xFFFF0000, 0x800000FF}, animation.getFrames().get(0).getPixels());
+	}
+
+	@Test
 	public void refusesAPngWithoutHeader() throws IOException {
 		ResourceAnimationReaderTest.assertRefused(new ApngResourceAnimationReader(), ResourceAnimationReaderTest.png(ResourceAnimationReaderTest.chunk("IEND", new byte[0])), "The PNG has no IHDR chunk before its image data, the file is damaged: export it again");
 	}

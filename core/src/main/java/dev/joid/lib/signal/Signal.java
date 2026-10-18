@@ -32,9 +32,8 @@ public class Signal<T> implements Supplier<T> {
 	public Signal(final T value) {
 		this.listenerSet = new CopyOnWriteArraySet<>();
 		this.observerList = new CopyOnWriteArrayList<>();
-		this.value = this.seal(value);
-		this.sealedValue = this.value;
-		this.defaultValue = this.value;
+		this.value = value;
+		this.defaultValue = value;
 	}
 
 	public static <T> @NonNull ComputedSignal<T> from(final T value) {

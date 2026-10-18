@@ -74,7 +74,7 @@ public class ApngResourceAnimationReader implements IResourceAnimationReader {
 				datas.get(datas.size() - 1).write(data, 4, data.length - 4);
 				break;
 			default:
-				if (!seenData && controls.isEmpty() && Character.isLowerCase(name.charAt(0)) || name.equals("PLTE")) {
+				if (!seenData && Character.isLowerCase(name.charAt(0)) || name.equals("PLTE")) {
 					ApngResourceAnimationReader.chunk(header, name, data);
 				}
 				break;

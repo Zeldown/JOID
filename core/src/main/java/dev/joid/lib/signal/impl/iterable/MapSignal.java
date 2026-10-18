@@ -18,7 +18,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 	}
 
 	public MapSignal(final @NonNull Map<K, V> value) {
-		super(value);
+		super(new LinkedHashMap<>(value));
 	}
 
 	public @NonNull MapSignal<K, V> clear() {
