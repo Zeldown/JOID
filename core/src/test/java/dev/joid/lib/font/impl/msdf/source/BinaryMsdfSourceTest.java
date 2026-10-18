@@ -19,7 +19,7 @@ import dev.joid.lib.font.impl.msdf.MsdfFontCache;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
 import dev.joid.lib.resource.Resource;
 
-public class MsdfBinarySourceTest {
+public class BinaryMsdfSourceTest {
 
 	private static final int[][] PIXELS = {
 			{10, 200, 30, 255, 0, 128},
@@ -33,60 +33,60 @@ public class MsdfBinarySourceTest {
 
 	@Test
 	public void readsEveryGlyph() {
-		Assert.assertTrue(MsdfBinarySourceTest.face.getGlyphs().size() > 200);
-		Assert.assertNotNull(MsdfBinarySourceTest.face.getGlyph('A'));
-		Assert.assertTrue(MsdfBinarySourceTest.face.getGlyph('A').getAdvance() > 0F);
-		Assert.assertNotNull(MsdfBinarySourceTest.face.getGlyph('A').getPlaneBounds());
-		Assert.assertNull(MsdfBinarySourceTest.face.getGlyph(' ').getPlaneBounds());
-		Assert.assertNull(MsdfBinarySourceTest.face.getGlyph(0x4E00));
+		Assert.assertTrue(BinaryMsdfSourceTest.face.getGlyphs().size() > 200);
+		Assert.assertNotNull(BinaryMsdfSourceTest.face.getGlyph('A'));
+		Assert.assertTrue(BinaryMsdfSourceTest.face.getGlyph('A').getAdvance() > 0F);
+		Assert.assertNotNull(BinaryMsdfSourceTest.face.getGlyph('A').getPlaneBounds());
+		Assert.assertNull(BinaryMsdfSourceTest.face.getGlyph(' ').getPlaneBounds());
+		Assert.assertNull(BinaryMsdfSourceTest.face.getGlyph(0x4E00));
 	}
 
 	@Test
 	public void ignoresUnknownPairs() {
-		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning('H', 'H'), 0F);
-		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning('o', 'o'), 0F);
-		Assert.assertEquals(0F, MsdfBinarySourceTest.face.getKerning(0, 0), 0F);
+		Assert.assertEquals(0F, BinaryMsdfSourceTest.face.getKerning('H', 'H'), 0F);
+		Assert.assertEquals(0F, BinaryMsdfSourceTest.face.getKerning('o', 'o'), 0F);
+		Assert.assertEquals(0F, BinaryMsdfSourceTest.face.getKerning(0, 0), 0F);
 	}
 
 	@Test
 	public void readsTheAtlasMetrics() {
-		Assert.assertTrue(MsdfBinarySourceTest.face.getAtlas().getDistanceRange() > 0F);
-		Assert.assertTrue(MsdfBinarySourceTest.face.getAtlas().getSize() > 0F);
-		Assert.assertTrue(MsdfBinarySourceTest.face.getAtlas().getWidth() > 0);
-		Assert.assertTrue(MsdfBinarySourceTest.face.getMetrics().getAscender() > 0F);
-		Assert.assertTrue(MsdfBinarySourceTest.face.getMetrics().getDescender() < 0F);
+		Assert.assertTrue(BinaryMsdfSourceTest.face.getAtlas().getDistanceRange() > 0F);
+		Assert.assertTrue(BinaryMsdfSourceTest.face.getAtlas().getSize() > 0F);
+		Assert.assertTrue(BinaryMsdfSourceTest.face.getAtlas().getWidth() > 0);
+		Assert.assertTrue(BinaryMsdfSourceTest.face.getMetrics().getAscender() > 0F);
+		Assert.assertTrue(BinaryMsdfSourceTest.face.getMetrics().getDescender() < 0F);
 	}
 
 	@Test
 	public void readsTheKerningPairs() {
-		Assert.assertTrue("The atlas must declare kerning pairs", MsdfBinarySourceTest.face.getKerningPairs().size() > 1000);
-		Assert.assertTrue("AV must kern tighter", MsdfBinarySourceTest.face.getKerning('A', 'V') < 0F);
-		Assert.assertTrue("AW must kern tighter", MsdfBinarySourceTest.face.getKerning('A', 'W') < 0F);
-		Assert.assertTrue("To must kern tighter", MsdfBinarySourceTest.face.getKerning('T', 'o') < 0F);
+		Assert.assertTrue("The atlas must declare kerning pairs", BinaryMsdfSourceTest.face.getKerningPairs().size() > 1000);
+		Assert.assertTrue("AV must kern tighter", BinaryMsdfSourceTest.face.getKerning('A', 'V') < 0F);
+		Assert.assertTrue("AW must kern tighter", BinaryMsdfSourceTest.face.getKerning('A', 'W') < 0F);
+		Assert.assertTrue("To must kern tighter", BinaryMsdfSourceTest.face.getKerning('T', 'o') < 0F);
 	}
 
 	@Test
 	public void keepsPositiveAndNegativePairs() {
-		Assert.assertTrue("LT must kern tighter", MsdfBinarySourceTest.face.getKerning('L', 'T') < -0.05F);
-		Assert.assertTrue("AA must kern wider", MsdfBinarySourceTest.face.getKerning('A', 'A') > 0F);
+		Assert.assertTrue("LT must kern tighter", BinaryMsdfSourceTest.face.getKerning('L', 'T') < -0.05F);
+		Assert.assertTrue("AA must kern wider", BinaryMsdfSourceTest.face.getKerning('A', 'A') > 0F);
 	}
 
 	@BeforeClass
 	public static void read() throws IOException {
-		MsdfBinarySourceTest.face = MsdfBinarySourceTest.montserrat("Regular").read();
+		BinaryMsdfSourceTest.face = BinaryMsdfSourceTest.montserrat("Regular").read();
 	}
 
 	@Test
 	public void readsTheStyle() throws IOException {
-		Assert.assertSame(FontWeight.REGULAR, MsdfBinarySourceTest.face.getWeight());
-		Assert.assertFalse(MsdfBinarySourceTest.face.isItalic());
-		Assert.assertEquals("Montserrat Regular", MsdfBinarySourceTest.face.getName());
-		Assert.assertSame(FontWeight.BLACK, MsdfBinarySourceTest.montserrat("Black").read().getWeight());
+		Assert.assertSame(FontWeight.REGULAR, BinaryMsdfSourceTest.face.getWeight());
+		Assert.assertFalse(BinaryMsdfSourceTest.face.isItalic());
+		Assert.assertEquals("Montserrat Regular", BinaryMsdfSourceTest.face.getName());
+		Assert.assertSame(FontWeight.BLACK, BinaryMsdfSourceTest.montserrat("Black").read().getWeight());
 	}
 
 	@Test
 	public void placesTheAtlasBoundsOnTexelEdges() {
-		final MsdfBounds bounds = MsdfBinarySourceTest.face.getGlyph('A').getAtlasBounds();
+		final MsdfBounds bounds = BinaryMsdfSourceTest.face.getGlyph('A').getAtlasBounds();
 		Assert.assertEquals(Math.rint(bounds.getLeft()), bounds.getLeft(), 0F);
 		Assert.assertEquals(Math.rint(bounds.getBottom()), bounds.getBottom(), 0F);
 		Assert.assertEquals(Math.rint(bounds.getRight()), bounds.getRight(), 0F);
@@ -96,25 +96,25 @@ public class MsdfBinarySourceTest {
 
 	@Test
 	public void overridesTheStyle() throws IOException {
-		final MsdfFontFace face = MsdfBinarySourceTest.montserrat("Regular").weight(FontWeight.LIGHT).italic(true).read();
+		final MsdfFontFace face = BinaryMsdfSourceTest.montserrat("Regular").weight(FontWeight.LIGHT).italic(true).read();
 		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
 		Assert.assertTrue(face.isItalic());
-		Assert.assertEquals(MsdfBinarySourceTest.face.getGlyphs().size(), face.getGlyphs().size());
+		Assert.assertEquals(BinaryMsdfSourceTest.face.getGlyphs().size(), face.getGlyphs().size());
 	}
 
 	@Test(expected = IOException.class)
 	public void refusesAForeignFile() throws IOException {
-		MsdfBinarySource.of(new ByteArrayInputStream("not a joid font".getBytes(StandardCharsets.UTF_8))).read();
+		BinaryMsdfSource.of(new ByteArrayInputStream("not a joid font".getBytes(StandardCharsets.UTF_8))).read();
 	}
 
 	@Test
 	public void undoesEveryRowFilter() throws IOException {
-		final Resource texture = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).read().getTexture();
+		final Resource texture = BinaryMsdfSource.of(new ByteArrayInputStream(BinaryMsdfSourceTest.synthetic(4))).read().getTexture();
 		texture.getDecoder().decode(texture.getResourceData());
 		final int[] pixels = texture.getData();
-		for (int y = 0; y < MsdfBinarySourceTest.PIXELS.length; y++) {
+		for (int y = 0; y < BinaryMsdfSourceTest.PIXELS.length; y++) {
 			for (int x = 0; x < 2; x++) {
-				final int[] row = MsdfBinarySourceTest.PIXELS[y];
+				final int[] row = BinaryMsdfSourceTest.PIXELS[y];
 				Assert.assertEquals("Pixel " + x + "," + y, 255 << 24 | row[x * 3] << 16 | row[x * 3 + 1] << 8 | row[x * 3 + 2], pixels[x + y * 2]);
 			}
 		}
@@ -122,33 +122,33 @@ public class MsdfBinarySourceTest {
 
 	@Test(expected = IOException.class)
 	public void refusesAnOlderVersion() throws IOException {
-		MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(3))).read();
+		BinaryMsdfSource.of(new ByteArrayInputStream(BinaryMsdfSourceTest.synthetic(3))).read();
 	}
 
 	@Test(expected = IOException.class)
 	public void refusesANewerVersion() throws IOException {
-		MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(5))).read();
+		BinaryMsdfSource.of(new ByteArrayInputStream(BinaryMsdfSourceTest.synthetic(5))).read();
 	}
 
 	@Test
 	public void readsTheNameOfTheFace() throws IOException {
-		Assert.assertEquals("Synthetic Light Italic", MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).read().getName());
-		Assert.assertEquals("Synthetic Light Italic", MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).weight(FontWeight.BLACK).read().getName());
+		Assert.assertEquals("Synthetic Light Italic", BinaryMsdfSource.of(new ByteArrayInputStream(BinaryMsdfSourceTest.synthetic(4))).read().getName());
+		Assert.assertEquals("Synthetic Light Italic", BinaryMsdfSource.of(new ByteArrayInputStream(BinaryMsdfSourceTest.synthetic(4))).weight(FontWeight.BLACK).read().getName());
 	}
 
 	@Test
 	public void overridesOnlyWhatIsAsked() throws IOException {
-		final MsdfFontFace weighted = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).weight(FontWeight.BLACK).read();
+		final MsdfFontFace weighted = BinaryMsdfSource.of(new ByteArrayInputStream(BinaryMsdfSourceTest.synthetic(4))).weight(FontWeight.BLACK).read();
 		Assert.assertSame(FontWeight.BLACK, weighted.getWeight());
 		Assert.assertTrue(weighted.isItalic());
-		final MsdfFontFace upright = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).italic(false).read();
+		final MsdfFontFace upright = BinaryMsdfSource.of(new ByteArrayInputStream(BinaryMsdfSourceTest.synthetic(4))).italic(false).read();
 		Assert.assertSame(FontWeight.LIGHT, upright.getWeight());
 		Assert.assertFalse(upright.isItalic());
 	}
 
 	@Test
 	public void readsEveryFieldOfTheFormat() throws IOException {
-		final MsdfFontFace face = MsdfBinarySource.of(new ByteArrayInputStream(MsdfBinarySourceTest.synthetic(4))).read();
+		final MsdfFontFace face = BinaryMsdfSource.of(new ByteArrayInputStream(BinaryMsdfSourceTest.synthetic(4))).read();
 		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
 		Assert.assertTrue(face.isItalic());
 		Assert.assertEquals(4F, face.getAtlas().getDistanceRange(), 0F);
@@ -167,8 +167,8 @@ public class MsdfBinarySourceTest {
 		Assert.assertEquals(0.04F, face.getKerning('A', 'W'), 1E-6F);
 	}
 
-	private static MsdfBinarySource montserrat(final String weight) throws IOException {
-		return MsdfBinarySource.of(MsdfFontCache.resolve(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-" + weight + ".ttf")).read()));
+	private static BinaryMsdfSource montserrat(final String weight) throws IOException {
+		return BinaryMsdfSource.of(MsdfFontCache.resolve(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-" + weight + ".ttf")).read()));
 	}
 
 	private static byte[] synthetic(final int version) throws IOException {
@@ -180,7 +180,7 @@ public class MsdfBinarySourceTest {
 			data.writeBoolean(true);
 			data.writeUTF("Synthetic Light Italic");
 			data.writeInt(2);
-			data.writeInt(MsdfBinarySourceTest.PIXELS.length);
+			data.writeInt(BinaryMsdfSourceTest.PIXELS.length);
 			data.writeFloat(4F);
 			data.writeFloat(32F);
 			for (final float metric : new float[] {1.25F, 0.875F, -0.25F, -0.125F, 0.0625F}) {
@@ -203,16 +203,16 @@ public class MsdfBinarySourceTest {
 
 			data.writeShort(1000);
 			for (final int value : new int[] {1, 'A', 2, 'V', -80 << 1 ^ -80 >> 31, 'W' - 'V', 40 << 1 ^ 40 >> 31}) {
-				MsdfBinarySourceTest.variable(data, value);
+				BinaryMsdfSourceTest.variable(data, value);
 			}
 
-			for (int y = 0; y < MsdfBinarySourceTest.PIXELS.length; y++) {
+			for (int y = 0; y < BinaryMsdfSourceTest.PIXELS.length; y++) {
 				data.writeByte(y);
-				for (int i = 0; i < MsdfBinarySourceTest.PIXELS[y].length; i++) {
-					final int left = i >= 3 ? MsdfBinarySourceTest.PIXELS[y][i - 3] : 0;
-					final int up = y > 0 ? MsdfBinarySourceTest.PIXELS[y - 1][i] : 0;
-					final int corner = i >= 3 && y > 0 ? MsdfBinarySourceTest.PIXELS[y - 1][i - 3] : 0;
-					data.writeByte(MsdfBinarySourceTest.PIXELS[y][i] - MsdfBinarySourceTest.predict(y, left, up, corner));
+				for (int i = 0; i < BinaryMsdfSourceTest.PIXELS[y].length; i++) {
+					final int left = i >= 3 ? BinaryMsdfSourceTest.PIXELS[y][i - 3] : 0;
+					final int up = y > 0 ? BinaryMsdfSourceTest.PIXELS[y - 1][i] : 0;
+					final int corner = i >= 3 && y > 0 ? BinaryMsdfSourceTest.PIXELS[y - 1][i - 3] : 0;
+					data.writeByte(BinaryMsdfSourceTest.PIXELS[y][i] - BinaryMsdfSourceTest.predict(y, left, up, corner));
 				}
 			}
 		}

@@ -24,7 +24,7 @@ import lombok.NonNull;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MsdfBinarySource extends MsdfSource {
+public final class BinaryMsdfSource extends MsdfSource {
 
 	private static final int BYTES = 3;
 
@@ -32,8 +32,8 @@ public final class MsdfBinarySource extends MsdfSource {
 
 	private final Asset asset;
 
-	public static @NonNull MsdfBinarySource of(final @NonNull Object handle) {
-		return new MsdfBinarySource(Asset.of(handle));
+	public static @NonNull BinaryMsdfSource of(final @NonNull Object handle) {
+		return new BinaryMsdfSource(Asset.of(handle));
 	}
 
 	@Override
@@ -44,14 +44,14 @@ public final class MsdfBinarySource extends MsdfSource {
 	@Override
 	protected @NonNull MsdfFontFace parse() throws IOException {
 		try (InputStream stream = this.asset.open()) {
-			return MsdfBinarySource.parse(stream);
+			return BinaryMsdfSource.parse(stream);
 		}
 	}
 
 	private static @NonNull MsdfFontFace parse(final @NonNull InputStream stream) throws IOException {
-		final byte[] magic = new byte[MsdfBinarySource.MAGIC.length];
+		final byte[] magic = new byte[BinaryMsdfSource.MAGIC.length];
 		new DataInputStream(stream).readFully(magic);
-		if (!Arrays.equals(magic, MsdfBinarySource.MAGIC)) {
+		if (!Arrays.equals(magic, BinaryMsdfSource.MAGIC)) {
 			throw new IOException("The file does not start with JOIDMSDF, it is not a font made by the msdf tool of JOID: generate it with that tool");
 		}
 
@@ -86,22 +86,22 @@ public final class MsdfBinarySource extends MsdfSource {
 			}
 
 			final int unitsPerEm = input.readUnsignedShort();
-			final int groups = MsdfBinarySource.variable(input);
+			final int groups = BinaryMsdfSource.variable(input);
 			final Map<Long, Float> kerningPairs = new HashMap<>();
 			int first = 0;
 			for (int group = 0; group < groups; group++) {
-				first += MsdfBinarySource.variable(input);
-				final int pairs = MsdfBinarySource.variable(input);
+				first += BinaryMsdfSource.variable(input);
+				final int pairs = BinaryMsdfSource.variable(input);
 
 				int second = 0;
 				for (int pair = 0; pair < pairs; pair++) {
-					second += MsdfBinarySource.variable(input);
-					final int value = MsdfBinarySource.variable(input);
+					second += BinaryMsdfSource.variable(input);
+					final int value = BinaryMsdfSource.variable(input);
 					kerningPairs.put(MsdfFontFace.pair(first, second), (value >>> 1 ^ -(value & 1)) / (float) unitsPerEm);
 				}
 			}
 
-			return MsdfFontFace.of(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), name, weight, italic);
+			return MsdfFontFace.of(atlas, metrics, glyphs, kerningPairs, BinaryMsdfSource.image(input, width, height), name, weight, italic);
 		}
 	}
 
@@ -127,7 +127,7 @@ public final class MsdfBinarySource extends MsdfSource {
 	}
 
 	private static @NonNull BufferedImage image(final @NonNull DataInputStream input, final int width, final int height) throws IOException {
-		final int stride = width * MsdfBinarySource.BYTES;
+		final int stride = width * BinaryMsdfSource.BYTES;
 		final byte[] row = new byte[stride];
 		final byte[] previous = new byte[stride];
 		final int[] pixels = new int[width * height];
@@ -137,9 +137,9 @@ public final class MsdfBinarySource extends MsdfSource {
 			input.readFully(row);
 
 			for (int i = 0; i < stride; i++) {
-				final int left = i >= MsdfBinarySource.BYTES ? row[i - MsdfBinarySource.BYTES] & 255 : 0;
+				final int left = i >= BinaryMsdfSource.BYTES ? row[i - BinaryMsdfSource.BYTES] & 255 : 0;
 				final int up = previous[i] & 255;
-				final int corner = i >= MsdfBinarySource.BYTES ? previous[i - MsdfBinarySource.BYTES] & 255 : 0;
+				final int corner = i >= BinaryMsdfSource.BYTES ? previous[i - BinaryMsdfSource.BYTES] & 255 : 0;
 				switch (filter) {
 				case 1:
 					row[i] = (byte) (row[i] + left);
@@ -151,7 +151,7 @@ public final class MsdfBinarySource extends MsdfSource {
 					row[i] = (byte) (row[i] + (left + up) / 2);
 					break;
 				case 4:
-					row[i] = (byte) (row[i] + MsdfBinarySource.paeth(left, up, corner));
+					row[i] = (byte) (row[i] + BinaryMsdfSource.paeth(left, up, corner));
 					break;
 				default:
 					break;
@@ -159,7 +159,7 @@ public final class MsdfBinarySource extends MsdfSource {
 			}
 
 			for (int x = 0; x < width; x++) {
-				pixels[x + y * width] = 255 << 24 | (row[x * MsdfBinarySource.BYTES] & 255) << 16 | (row[x * MsdfBinarySource.BYTES + 1] & 255) << 8 | row[x * MsdfBinarySource.BYTES + 2] & 255;
+				pixels[x + y * width] = 255 << 24 | (row[x * BinaryMsdfSource.BYTES] & 255) << 16 | (row[x * BinaryMsdfSource.BYTES + 1] & 255) << 8 | row[x * BinaryMsdfSource.BYTES + 2] & 255;
 			}
 
 			System.arraycopy(row, 0, previous, 0, stride);

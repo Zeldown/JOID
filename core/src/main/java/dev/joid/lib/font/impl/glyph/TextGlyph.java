@@ -3,10 +3,13 @@ package dev.joid.lib.font.impl.glyph;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.effect.ITextGlyph;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 
 	private final F            face;
@@ -24,26 +27,12 @@ public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 	private double offsetX;
 	private double offsetY;
 
-	private TextGlyph(final GlyphFont<F> font, final F face, final int index, final int codepoint, final TextStyle style, final double x, final double baseline, final double size, final double advance, final Color color, final boolean shadow) {
-		this.font = font;
-		this.face = face;
-		this.index = index;
-		this.codepoint = codepoint;
-		this.style = style;
-		this.x = x;
-		this.baseline = baseline;
-		this.size = size;
-		this.advance = advance;
-		this.color = color;
-		this.shadow = shadow;
-	}
-
 	public static <F extends IFontFace> @NonNull TextGlyph<F> create(final @NonNull GlyphFont<F> font, final @NonNull F face, final int index, final int codepoint, final @NonNull TextStyle style, final double x, final double baseline, final double size, final double advance, final @NonNull Color color) {
-		return new TextGlyph<>(font, face, index, codepoint, style, x, baseline, size, advance, color, false);
+		return new TextGlyph<>(face, x, index, size, advance, false, baseline, style, font, color, codepoint, 0D, 0D);
 	}
 
 	public @NonNull TextGlyph<F> shadow(final double x, final double y, final @NonNull Color color) {
-		return new TextGlyph<>(this.font, this.face, this.index, this.codepoint, this.style, this.x + x, this.baseline + y, this.size, this.advance, color, true).offset(this.offsetX, this.offsetY);
+		return new TextGlyph<>(this.face, this.x + x, this.index, this.size, this.advance, true, this.baseline + y, this.style, this.font, color, this.codepoint, this.offsetX, this.offsetY);
 	}
 
 	public boolean isSlanted() {

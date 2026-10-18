@@ -34,9 +34,9 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.font.FontWeight;
+import dev.joid.lib.font.impl.msdf.source.BinaryMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
-import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
-import dev.joid.lib.font.impl.msdf.source.MsdfOpenTypeSource;
+import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSource;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
 import lombok.NonNull;
 
@@ -57,7 +57,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 30000L)
 	public void restylesASource() {
-		final MsdfFont font = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"), MsdfOpenTypeSource.of(MsdfFontLoaderTest.stream("Regular")).italic(true)).join();
+		final MsdfFont font = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"), OpenTypeMsdfSource.of(MsdfFontLoaderTest.stream("Regular")).italic(true)).join();
 		Assert.assertFalse(font.getFace(FontWeight.REGULAR, false).isItalic());
 		Assert.assertTrue(font.getFace(FontWeight.REGULAR, true).isItalic());
 	}
@@ -144,7 +144,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 30000L)
 	public void acceptsAnyMsdfSource() throws IOException {
-		final MsdfFontFace face = MsdfOpenTypeSource.of(MsdfFontLoaderTest.stream("Regular")).read();
+		final MsdfFontFace face = OpenTypeMsdfSource.of(MsdfFontLoaderTest.stream("Regular")).read();
 		final IMsdfSource source = () -> face;
 		Assert.assertSame(face, MsdfFontLoader.load(source).join().getFace(FontWeight.REGULAR, false));
 	}
@@ -166,7 +166,7 @@ public class MsdfFontLoaderTest {
 
 	@Test(timeout = 10000L)
 	public void restylesAMsdfFile() {
-		final MsdfFontFace face = MsdfFontLoader.load(MsdfBinarySource.of(MsdfFontLoaderTest.atlas).weight(FontWeight.LIGHT).italic(true)).join().getFace(FontWeight.LIGHT, true);
+		final MsdfFontFace face = MsdfFontLoader.load(BinaryMsdfSource.of(MsdfFontLoaderTest.atlas).weight(FontWeight.LIGHT).italic(true)).join().getFace(FontWeight.LIGHT, true);
 		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
 		Assert.assertTrue(face.isItalic());
 	}
@@ -223,7 +223,7 @@ public class MsdfFontLoaderTest {
 	public void readsTheFacesInParallelOnItsOwnPool() {
 		final CountDownLatch started = new CountDownLatch(2);
 		final List<String> threads = new CopyOnWriteArrayList<>();
-		final MsdfFont font = MsdfFontLoader.load(new FaceSource(started, threads, MsdfBinarySource.of(MsdfFontLoaderTest.atlas)), new FaceSource(started, threads, MsdfBinarySource.of(MsdfFontLoaderTest.atlas).weight(FontWeight.BOLD))).join();
+		final MsdfFont font = MsdfFontLoader.load(new FaceSource(started, threads, BinaryMsdfSource.of(MsdfFontLoaderTest.atlas)), new FaceSource(started, threads, BinaryMsdfSource.of(MsdfFontLoaderTest.atlas).weight(FontWeight.BOLD))).join();
 		Assert.assertEquals(2, font.getFamily().getFaces().size());
 		Assert.assertEquals(2, threads.size());
 		for (final String thread : threads) {
@@ -239,7 +239,7 @@ public class MsdfFontLoaderTest {
 		try {
 			JOIDEnv.devMode(true);
 			System.setOut(new PrintStream(output, true));
-			MsdfFontLoader.load(new FaceSource(new CountDownLatch(0), new CopyOnWriteArrayList<>(), MsdfBinarySource.of(MsdfFontLoaderTest.atlas))).join();
+			MsdfFontLoader.load(new FaceSource(new CountDownLatch(0), new CopyOnWriteArrayList<>(), BinaryMsdfSource.of(MsdfFontLoaderTest.atlas))).join();
 		} finally {
 			System.setOut(previous);
 			JOIDEnv.devMode(devMode);

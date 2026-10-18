@@ -12,9 +12,9 @@ import java.util.concurrent.Executors;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.font.impl.msdf.source.BinaryMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
-import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
-import dev.joid.lib.font.impl.msdf.source.MsdfOpenTypeSource;
+import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSource;
 import dev.joid.lib.utils.thread.RenderThreadFuture;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
@@ -69,7 +69,7 @@ public final class MsdfFontLoader {
 		}
 
 		final Asset asset = Asset.of(handle);
-		return MsdfOpenTypeSource.supports(asset.peek(MsdfOpenTypeSource.HEADER)) ? MsdfOpenTypeSource.of(asset) : MsdfBinarySource.of(asset);
+		return OpenTypeMsdfSource.supports(asset.peek(OpenTypeMsdfSource.HEADER)) ? OpenTypeMsdfSource.of(asset) : BinaryMsdfSource.of(asset);
 	}
 
 }

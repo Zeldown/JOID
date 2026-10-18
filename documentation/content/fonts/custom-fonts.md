@@ -280,10 +280,10 @@ Implement the two interfaces when text is not made of glyphs on a baseline. `IFo
 To produce MSDF faces your own way, pass an `IMsdfSource` to `MsdfFontLoader.load(...)`: its `read()` returns an `MsdfFontFace`. The built-in sources also override what a file declares:
 
 ```java
-final MsdfFont display = MsdfFontLoader.load(MsdfOpenTypeSource.of(new File("fonts/Display.ttf")).weight(FontWeight.BOLD), new File("fonts/Display-Regular.ttf")).join();
+final MsdfFont display = MsdfFontLoader.load(OpenTypeMsdfSource.of(new File("fonts/Display.ttf")).weight(FontWeight.BOLD), new File("fonts/Display-Regular.ttf")).join();
 ```
 
-`MsdfOpenTypeSource.of(handle)` reads a `.ttf`, `.otf` or `.ttc` through the cache, `MsdfBinarySource.of(handle)` a `.msdf` atlas; both take `weight(...)` and `italic(...)`.
+`OpenTypeMsdfSource.of(handle)` reads a `.ttf`, `.otf` or `.ttc` through the cache, `BinaryMsdfSource.of(handle)` a `.msdf` atlas; both take `weight(...)` and `italic(...)`.
 
 ## Pre-generating atlases with the MSDF Generator
 

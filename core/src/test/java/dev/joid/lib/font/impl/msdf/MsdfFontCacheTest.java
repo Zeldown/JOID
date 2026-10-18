@@ -33,8 +33,8 @@ import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.FontWeight;
-import dev.joid.lib.font.impl.msdf.source.MsdfBinarySource;
-import dev.joid.lib.font.impl.msdf.source.MsdfOpenTypeSource;
+import dev.joid.lib.font.impl.msdf.source.BinaryMsdfSource;
+import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSource;
 import dev.joid.tool.msdf.MsdfGenerator;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
 
@@ -93,7 +93,7 @@ public class MsdfFontCacheTest {
 
 	@Test(timeout = 60000L)
 	public void restylesAnOpenTypeSource() {
-		final MsdfFont font = MsdfFontLoader.load(MsdfOpenTypeSource.of(MsdfFontCacheTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).weight(FontWeight.BOLD)).join();
+		final MsdfFont font = MsdfFontLoader.load(OpenTypeMsdfSource.of(MsdfFontCacheTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).weight(FontWeight.BOLD)).join();
 		Assert.assertSame(FontWeight.BOLD, font.getFace(FontWeight.BOLD, false).getWeight());
 	}
 
@@ -103,7 +103,7 @@ public class MsdfFontCacheTest {
 		final String[] lines = MsdfFontCacheTest.capture(() -> {
 			MsdfFontLoader.load(new ByteArrayInputStream(font)).join();
 			MsdfFontLoader.load(new ByteArrayInputStream(font)).join();
-			MsdfFontLoader.load(MsdfBinarySource.of(MsdfFontCache.find(font))).join();
+			MsdfFontLoader.load(BinaryMsdfSource.of(MsdfFontCache.find(font))).join();
 		}).split(System.lineSeparator());
 		Assert.assertTrue(lines[0], lines[0].startsWith("[JOID] Font JOID Test Regular generated into the msdf cache (" + MsdfFontCache.find(font) + ") in "));
 		Assert.assertTrue(lines[1], lines[1].startsWith("[JOID] Font JOID Test Regular read from the msdf cache (" + MsdfFontCache.find(font) + ") in "));
@@ -149,8 +149,8 @@ public class MsdfFontCacheTest {
 	@Test(timeout = 60000L)
 	public void readsACachedAtlasInsteadOfGeneratingIt() throws IOException {
 		final byte[] font = MsdfFontCacheTest.font();
-		final MsdfOpenTypeSource miss = MsdfOpenTypeSource.of(new ByteArrayInputStream(font));
-		final MsdfOpenTypeSource hit = MsdfOpenTypeSource.of(new ByteArrayInputStream(font));
+		final OpenTypeMsdfSource miss = OpenTypeMsdfSource.of(new ByteArrayInputStream(font));
+		final OpenTypeMsdfSource hit = OpenTypeMsdfSource.of(new ByteArrayInputStream(font));
 		miss.read();
 		final byte[] atlas = Files.readAllBytes(miss.getFile().toPath());
 		Assert.assertEquals("JOID Test Regular", hit.read().getName());
@@ -164,7 +164,7 @@ public class MsdfFontCacheTest {
 	public void generatesIntoAMissingDirectory() throws IOException {
 		JOIDEnv.cacheDir(new File(this.folder.getRoot(), "missing"));
 		final File file = MsdfFontCache.resolve(MsdfFontCacheTest.font());
-		Assert.assertEquals("JOID Test Regular", MsdfBinarySource.of(file).read().getName());
+		Assert.assertEquals("JOID Test Regular", BinaryMsdfSource.of(file).read().getName());
 		Assert.assertEquals(new File(this.folder.getRoot(), "missing/msdf"), file.getParentFile());
 	}
 
@@ -172,7 +172,7 @@ public class MsdfFontCacheTest {
 	public void regeneratesAnExistingAtlas() throws IOException {
 		final byte[] font = MsdfFontCacheTest.font();
 		Files.write(MsdfFontCache.resolve(font).toPath(), "stale".getBytes(StandardCharsets.UTF_8));
-		Assert.assertEquals("JOID Test Regular", MsdfBinarySource.of(MsdfFontCache.regenerate(font)).read().getName());
+		Assert.assertEquals("JOID Test Regular", BinaryMsdfSource.of(MsdfFontCache.regenerate(font)).read().getName());
 		Assert.assertEquals(1, this.entries().length);
 	}
 
@@ -182,10 +182,10 @@ public class MsdfFontCacheTest {
 		final File file = MsdfFontCache.resolve(font);
 		Files.write(file.toPath(), "corrupted".getBytes(StandardCharsets.UTF_8));
 		try (InputStream reader = new FileInputStream(file)) {
-			Assert.assertEquals("JOID Test Regular", MsdfBinarySource.of(MsdfFontCache.regenerate(font)).read().getName());
+			Assert.assertEquals("JOID Test Regular", BinaryMsdfSource.of(MsdfFontCache.regenerate(font)).read().getName());
 			Assert.assertEquals('c', reader.read());
 		}
-		Assert.assertEquals("JOID Test Regular", MsdfBinarySource.of(MsdfFontCache.find(font)).read().getName());
+		Assert.assertEquals("JOID Test Regular", BinaryMsdfSource.of(MsdfFontCache.find(font)).read().getName());
 	}
 
 	@Test

@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MsdfOpenTypeSource extends MsdfSource {
+public final class OpenTypeMsdfSource extends MsdfSource {
 
 	public static final int HEADER = 4;
 
@@ -25,12 +25,12 @@ public final class MsdfOpenTypeSource extends MsdfSource {
 	private File    file;
 	private boolean generated;
 
-	public static @NonNull MsdfOpenTypeSource of(final @NonNull Object handle) {
-		return new MsdfOpenTypeSource(Asset.of(handle));
+	public static @NonNull OpenTypeMsdfSource of(final @NonNull Object handle) {
+		return new OpenTypeMsdfSource(Asset.of(handle));
 	}
 
 	public static boolean supports(final @NonNull byte[] header) {
-		for (final byte[] signature : MsdfOpenTypeSource.SIGNATURES) {
+		for (final byte[] signature : OpenTypeMsdfSource.SIGNATURES) {
 			if (header.length >= signature.length && Arrays.equals(Arrays.copyOf(header, signature.length), signature)) {
 				return true;
 			}
@@ -51,7 +51,7 @@ public final class MsdfOpenTypeSource extends MsdfSource {
 		this.file = this.generated ? MsdfFontCache.resolve(font) : cached;
 
 		try {
-			return MsdfBinarySource.of(this.file).read();
+			return BinaryMsdfSource.of(this.file).read();
 		} catch (final IOException exception) {
 			if (this.generated) {
 				throw exception;
@@ -59,7 +59,7 @@ public final class MsdfOpenTypeSource extends MsdfSource {
 
 			this.generated = true;
 			this.file = MsdfFontCache.regenerate(font);
-			return MsdfBinarySource.of(this.file).read();
+			return BinaryMsdfSource.of(this.file).read();
 		}
 	}
 

@@ -36,7 +36,7 @@ public final class RenderThreadFuture<T> extends CompletableFuture<T> {
 
 	@Override
 	public T get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-		if (!this.isDone() && BridgeHandler.THREAD.get().isRenderThread()) {
+		if (!super.isDone() && BridgeHandler.THREAD.get().isRenderThread()) {
 			try {
 				this.settle(this.source.get(timeout, unit), null);
 			} catch (final ExecutionException exception) {
@@ -47,7 +47,7 @@ public final class RenderThreadFuture<T> extends CompletableFuture<T> {
 	}
 
 	private void settleOnRenderThread() {
-		if (this.isDone() || !BridgeHandler.THREAD.get().isRenderThread()) {
+		if (super.isDone() || !BridgeHandler.THREAD.get().isRenderThread()) {
 			return;
 		}
 
@@ -60,9 +60,9 @@ public final class RenderThreadFuture<T> extends CompletableFuture<T> {
 
 	private void settle(final T value, final Throwable error) {
 		if (error != null) {
-			this.completeExceptionally(error);
+			super.completeExceptionally(error);
 		} else {
-			this.complete(value);
+			super.complete(value);
 		}
 	}
 

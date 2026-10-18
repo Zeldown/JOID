@@ -138,12 +138,7 @@ public final class Color extends LockableValue<Color> {
 		}
 
 		if (hex.length() == 9) {
-			final int intval = Integer.parseUnsignedInt(hex.substring(1), 16);
-			final int red    = intval >> 24 & 0xFF;
-			final int green  = intval >> 16 & 0xFF;
-			final int blue   = intval >>  8 & 0xFF;
-			final int alpha  = intval >>  0 & 0xFF;
-			return new Color(red, green, blue, alpha);
+			return Color.argb(Integer.rotateRight(Integer.parseUnsignedInt(hex.substring(1), 16), 8));
 		}
 
 		throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
