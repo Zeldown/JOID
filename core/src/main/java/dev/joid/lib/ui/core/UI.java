@@ -190,7 +190,6 @@ public abstract class UI implements IIndexedElement {
 		}).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
 
 		this.zoom = 1D;
-		this.devNode = null;
 		this.drawnFrame = Long.MIN_VALUE;
 		this.lastHoveredFrame = -1L;
 		this.hoveredPath = Collections.emptyList();

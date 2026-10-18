@@ -161,7 +161,7 @@ public abstract class Shader implements IShader {
 		}
 		for (final UniformSampler sampler : this.samplerMap.values()) {
 			if (sampler.getTexture() != null) {
-				this.lineShader.getSamplerMap().get(sampler.getName()).value(sampler.getTexture(), sampler.getFilter(), sampler.getWrap());
+				this.lineShader.samplerMap.get(sampler.getName()).value(sampler.getTexture(), sampler.getFilter(), sampler.getWrap());
 			}
 		}
 		return this.lineShader;
