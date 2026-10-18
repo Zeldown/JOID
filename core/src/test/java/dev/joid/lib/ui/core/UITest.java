@@ -1611,6 +1611,42 @@ public class UITest {
 	}
 
 	@Test
+	public void takesTheZoomWrittenIntoItsSignalWhileClosed() {
+		this.bridges.getUi().interfaceScale(0.5D);
+		final DoubleSignal zoom = new DoubleSignal(2D);
+		final TraceUI ui = new TraceUI(this.trace).zoom(zoom);
+		zoom.set(1.5D);
+		this.bridges.open(ui).frame();
+		Assert.assertEquals(1.5D, ui.getZoom(), 0D);
+		Assert.assertEquals(1.5D, zoom.peek(), 0D);
+		ui.dispose();
+		this.bridges.getUi().remove(ui);
+		this.bridges.frames(3);
+		zoom.set(1.8D);
+		this.bridges.getUi().interfaceScale(0.4D);
+		this.bridges.open(ui).frame();
+		Assert.assertEquals(1.8D, ui.getZoom(), 0D);
+		Assert.assertEquals(1.8D, zoom.peek(), 0D);
+	}
+
+	@Test
+	public void takesBackTheZoomOfItsSignalWhenTheInterfaceScaleComesBack() {
+		this.bridges.getUi().interfaceScale(0.5D);
+		final DoubleSignal zoom = new DoubleSignal(2D);
+		final InitUI ui = new InitUI(initialized -> initialized.zoom(zoom));
+		this.bridges.open(ui).frame();
+		Assert.assertEquals(2D, ui.getZoom(), 0D);
+		this.bridges.getUi().interfaceScale(1D);
+		this.bridges.frame();
+		Assert.assertEquals(1D, ui.getZoom(), 0D);
+		Assert.assertEquals(1D, zoom.peek(), 0D);
+		this.bridges.getUi().interfaceScale(0.5D);
+		this.bridges.frame();
+		Assert.assertEquals(2D, ui.getZoom(), 0D);
+		Assert.assertEquals(2D, zoom.peek(), 0D);
+	}
+
+	@Test
 	public void keepsTheFittedSizeWhenItsScaleIsInactive() {
 		final HoverBridge bridge = new HoverBridge();
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D));

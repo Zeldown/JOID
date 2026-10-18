@@ -1577,6 +1577,10 @@ public abstract class Node implements INode {
 		return this.bindings.bind(property, signal, applier, writer);
 	}
 
+	protected final <T extends Node, V, M> @NonNull T bindNullable(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull Consumer<V> applier, final @NonNull Function<@NonNull M, V> writer) {
+		return this.bindings.bindNullable(property, signal, applier, writer);
+	}
+
 	protected final void sync(final @NonNull String property, final @NonNull Object value) {
 		this.bindings.sync(property, value);
 	}

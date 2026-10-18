@@ -168,7 +168,51 @@ public class IntegerFieldNodeTest {
 		field.focused(false);
 		Assert.assertEquals("", field.getText());
 		Assert.assertNull(field.getValue());
-		Assert.assertEquals(4, (int) signal.get());
+		Assert.assertNull(signal.get());
+	}
+
+	@Test
+	public void emptiesItselfWhenItsSignalHoldsNoValueAndEmptyIsAllowed() {
+		final IntegerSignal signal = new IntegerSignal(4);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>allowEmpty(true).value(signal);
+		this.bridges.open(new NodeUI(field)).frame();
+		signal.set(null);
+		this.bridges.frame();
+		Assert.assertEquals("", field.getText());
+		Assert.assertNull(field.getValue());
+		Assert.assertNull(signal.peek());
+		signal.set(7);
+		Assert.assertEquals("7", field.getText());
+		Assert.assertEquals(7, (int) signal.peek());
+	}
+
+	@Test
+	public void emptiesItselfForASignalWithoutValueWhicheverComesFirstOfTheSignalAndAllowEmpty() {
+		final IntegerSignal before = new IntegerSignal(4);
+		final IntegerSignal after = new IntegerSignal(4);
+		before.set(null);
+		after.set(null);
+		final IntegerFieldNode allowedFirst = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>value(42).<IntegerFieldNode>allowEmpty(true).value(before);
+		final IntegerFieldNode boundFirst = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>value(42).<IntegerFieldNode>value(after).allowEmpty(true);
+		this.bridges.open(new NodeUI(allowedFirst, boundFirst)).frame();
+		for (final IntegerFieldNode field : Arrays.asList(allowedFirst, boundFirst)) {
+			Assert.assertEquals("", field.getText());
+			Assert.assertNull(field.getValue());
+		}
+		Assert.assertNull(before.peek());
+		Assert.assertNull(after.peek());
+	}
+
+	@Test
+	public void writesItsValueBackWhenItsSignalHoldsNoValueAndEmptyIsRefused() {
+		final IntegerSignal signal = new IntegerSignal(4);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);
+		this.bridges.open(new NodeUI(field)).frame();
+		signal.set(null);
+		this.bridges.frame();
+		Assert.assertEquals("4", field.getText());
+		Assert.assertEquals(4, (int) field.getValue());
+		Assert.assertEquals(4, (int) signal.peek());
 	}
 
 	@Test

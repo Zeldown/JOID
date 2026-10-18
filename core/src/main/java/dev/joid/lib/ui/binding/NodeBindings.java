@@ -93,16 +93,20 @@ public final class NodeBindings {
 	}
 
 	public <T, V, M> @NonNull T bind(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull Consumer<@NonNull V> applier, final @NonNull Function<@NonNull M, V> writer) {
+		return this.bindNullable(property, signal, value -> {
+			if (value != null) {
+				applier.accept(value);
+			}
+		}, writer);
+	}
+
+	public <T, V, M> @NonNull T bindNullable(final @NonNull String property, final @NonNull Signal<V> signal, final @NonNull Consumer<V> applier, final @NonNull Function<@NonNull M, V> writer) {
 		if (!signal.isWritable()) {
 			throw new IllegalArgumentException("The " + property + " of " + this.name.get() + " is changed by the user, so it cannot follow " + signal + ", which cannot be written: pass a writable Signal, or its value as a start value");
 		}
 
 		this.release(property);
-		final NodeBinding<V> binding = new NodeBinding<>(signal, value -> {
-			if (value != null) {
-				applier.accept(value);
-			}
-		}, (Function<Object, V>) writer, signal.peek());
+		final NodeBinding<V> binding = new NodeBinding<>(signal, applier, (Function<Object, V>) writer, signal.peek());
 		this.bindingMap.put(property, binding);
 		if (this.subscribed) {
 			signal.onChange(binding);
@@ -201,7 +205,7 @@ public final class NodeBindings {
 
 		@Override
 		public void onChange(final V value) {
-			if (NodeBindings.this.subscribed) {
+			if (NodeBindings.this.subscribed && !Objects.equals(this.value, value)) {
 				this.value = value;
 				this.applier.accept(value);
 			}
@@ -241,7 +245,8 @@ public final class NodeBindings {
 		private void write(final Object value) {
 			final Signal<V> signal = (Signal<V>) this.source;
 			final V written = this.writer.apply(value);
-			if (written != null && !written.equals(signal.peek())) {
+			if (!Objects.equals(written, this.value) && Objects.equals(this.value, signal.peek())) {
+				this.value = written;
 				signal.set(written);
 			}
 		}

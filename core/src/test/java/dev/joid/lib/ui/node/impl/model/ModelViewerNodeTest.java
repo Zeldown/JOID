@@ -144,6 +144,19 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void takesBackTheZoomOfItsSignalOnceItsRangeAllowsIt() {
+		final DoubleSignal zoom = new DoubleSignal(8D);
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoomRange(1D, 5D).zoom(zoom).model(new FixedModel());
+		this.bridges.open(new NodeUI(viewer)).frame();
+		Assert.assertEquals(5D, viewer.getZoom(), 0D);
+		Assert.assertEquals(5D, zoom.peek(), 0D);
+		viewer.zoomRange(1D, 10D);
+		this.bridges.frame();
+		Assert.assertEquals(8D, viewer.getZoom(), 0D);
+		Assert.assertEquals(8D, zoom.peek(), 0D);
+	}
+
+	@Test
 	public void writesItsRotationRangeBackIntoItsSignal() {
 		final DoubleSignal yaw = new DoubleSignal(0D);
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).rotationYawRange(-5D, 5D).rotationYaw(yaw).model(new FixedModel());

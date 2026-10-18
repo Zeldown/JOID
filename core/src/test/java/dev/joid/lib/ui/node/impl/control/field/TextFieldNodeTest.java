@@ -178,6 +178,24 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(4, field.getCursorPosition());
 		Assert.assertEquals(1, field.getSelection().getStart());
 		Assert.assertEquals(4, field.getSelection().getEnd());
+		Assert.assertEquals(3, TextFieldNode.create(100D, 100D, 200D).focused(true).cursorPosition(3).text("hello").getCursorPosition());
+		final TextFieldNode focused = TextFieldNode.create(100D, 100D, 200D).focused(true).cursorPosition(3).selection(1, 4).text("hello");
+		Assert.assertEquals(4, focused.getCursorPosition());
+		Assert.assertEquals(1, focused.getSelection().getStart());
+		Assert.assertEquals(4, focused.getSelection().getEnd());
+	}
+
+	@Test
+	public void keepsTheCursorOfItsSignalOnceItsTextIsLongEnough() {
+		final Signal<Integer> cursor = new Signal<>(4);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text("ab").cursorPosition(cursor);
+		this.bridges.open(new NodeUI(field)).frame();
+		Assert.assertEquals(2, field.getCursorPosition());
+		Assert.assertEquals(2, cursor.peek().intValue());
+		field.text("abcdef");
+		this.bridges.frame();
+		Assert.assertEquals(4, field.getCursorPosition());
+		Assert.assertEquals(4, cursor.peek().intValue());
 	}
 
 	@Test

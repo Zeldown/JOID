@@ -59,7 +59,8 @@ public abstract class FieldNode<V> extends Node {
 	@Getter private Predicate<String>     accept;
 	@Getter private UnaryOperator<String> normalize;
 
-	private V fallback;
+	private V       fallback;
+	private boolean emptyRequested;
 
 	@Getter
 	private boolean markup;
@@ -328,7 +329,12 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T allowEmpty(final @NonNull Supplier<Boolean> allowEmpty) {
-		return super.follow("allowEmpty", allowEmpty, value -> this.allowEmpty = value);
+		return super.follow("allowEmpty", allowEmpty, value -> {
+			this.allowEmpty = value;
+			if (value && this.emptyRequested) {
+				this.write(null, false);
+			}
+		});
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T maxTextLength(final int maxTextLength) {
@@ -509,15 +515,19 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final <T extends FieldNode<V>> @NonNull T bindValue(final @NonNull Signal<V> value) {
-		return super.bind("text", value, current -> {
-			if (!current.equals(this.getValue())) {
+		return super.bindNullable("text", value, current -> {
+			if (current == null && !this.allowEmpty) {
+				this.commit();
+				this.emptyRequested = true;
+			} else if (!Objects.equals(current, this.getValue())) {
 				this.write(current, false);
 			}
 		}, (final String text) -> this.getValue());
 	}
 
-	protected final void write(final @NonNull V value, final boolean refusable) {
-		final String text = this.limit(this.format(this.correct(value)));
+	protected final void write(final V value, final boolean refusable) {
+		this.emptyRequested = false;
+		final String text = value == null ? "" : this.limit(this.format(this.correct(value)));
 		if (!text.equals(this.text)) {
 			this.rewrite(text, refusable);
 		}
@@ -767,6 +777,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private void replace(final @NonNull String newText, final boolean refusable) {
+		this.emptyRequested = false;
 		final String text = this.limit(newText);
 		if (!text.equals(this.text)) {
 			this.rewrite(text, refusable);
@@ -782,6 +793,7 @@ public abstract class FieldNode<V> extends Node {
 			return false;
 		}
 
+		this.emptyRequested = false;
 		return this.changeText(newText, true);
 	}
 
@@ -813,7 +825,7 @@ public abstract class FieldNode<V> extends Node {
 			return;
 		}
 
-		if (!this.focused) {
+		if (!this.focused || !super.isAttached()) {
 			this.cursorValue.reapply();
 			this.selectionValue.reapply();
 			return;

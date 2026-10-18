@@ -126,7 +126,7 @@ public final class Text {
 	}
 
 	public @NonNull Text add(final @NonNull Text text) {
-		text.elementList.forEach(element -> this.elementList.add(element.copy()));
+		this.elementList.addAll(text.elementList.stream().map(TextElement::copy).collect(Collectors.toList()));
 		return this;
 	}
 

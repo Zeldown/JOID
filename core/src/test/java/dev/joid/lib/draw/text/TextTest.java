@@ -350,6 +350,14 @@ public class TextTest {
 	}
 
 	@Test
+	public void repeatsItsElementsWhenAddedToItself() {
+		final Text text = Text.create("ab", TextTest.info());
+		text.add(text);
+		Assert.assertEquals("abab", text.getText());
+		Assert.assertEquals(2, text.getElementList().size());
+	}
+
+	@Test
 	public void keepsItsElementsWhenItsCopyGrows() {
 		final Text text = Text.create("ab", TextTest.info());
 		text.copy().add(TextElement.create("cd", TextTest.info()));
