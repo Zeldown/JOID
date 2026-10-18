@@ -210,6 +210,11 @@ public class DrawTextTest {
 	}
 
 	@Test
+	public void wrapsBeforeASurrogatePairThatOverflows() {
+		Assert.assertEquals(Arrays.asList("abc", "\uD83D\uDE00"), DrawTextTest.draw().getLines(45D, "abc\uD83D\uDE00", this.info));
+	}
+
+	@Test
 	public void keepsAShortTextOnOneLine() {
 		Assert.assertEquals(Collections.singletonList("ab cd"), DrawTextTest.draw().getLines(100D, "ab cd", this.info));
 	}
