@@ -29,26 +29,21 @@ public final class Lwjgl2InputForwarder {
 		}
 
 		while (Keyboard.next()) {
-			if (Keyboard.getEventKeyState()) {
-				Lwjgl2InputForwarder.keyPressed(Keyboard.getEventKey(), Keyboard.getEventCharacter(), Keyboard.isRepeatEvent());
-			} else {
-				Lwjgl2InputForwarder.keyReleased(Keyboard.getEventKey());
+			final int code = Keyboard.getEventKey();
+			if (!Keyboard.getEventKeyState()) {
+				BridgeHandler.UI.keyReleased(Lwjgl2Keys.getPhysicalKey(code));
+				continue;
+			}
+
+			final char character = Keyboard.getEventCharacter();
+			if (!Keyboard.isRepeatEvent()) {
+				BridgeHandler.UI.keyPressed(Lwjgl2Keys.getPhysicalKey(code), Lwjgl2Keys.getKey(code, character));
+			}
+
+			if (character != Keyboard.CHAR_NONE) {
+				BridgeHandler.UI.charTyped(character);
 			}
 		}
-	}
-
-	private static void keyPressed(final int code, final char character, final boolean repeat) {
-		if (!repeat) {
-			BridgeHandler.UI.keyPressed(Lwjgl2Keys.getPhysicalKey(code), Lwjgl2Keys.getKey(code, character));
-		}
-
-		if (character != Keyboard.CHAR_NONE) {
-			BridgeHandler.UI.charTyped(character);
-		}
-	}
-
-	private static void keyReleased(final int code) {
-		BridgeHandler.UI.keyReleased(Lwjgl2Keys.getPhysicalKey(code));
 	}
 
 }

@@ -1,6 +1,7 @@
 package dev.joid.backend.lwjgl2.input;
 
-import java.lang.reflect.Method;
+import java.lang.reflect.Field;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -12,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -28,14 +30,20 @@ public class Lwjgl2InputForwarderTest {
 	private final FixedWindowBridge window = new FixedWindowBridge();
 
 	@Before
-	public void openAUi() {
+	public void openAUi() throws Exception {
 		BridgeHandler.WINDOW.register(this.window);
 		this.bridge.add(this.ui);
 		BridgeHandler.UI.register(this.bridge);
+		Lwjgl2InputForwarderTest.set(Mouse.class, "created", true);
+		Lwjgl2InputForwarderTest.set(Mouse.class, "readBuffer", ByteBuffer.allocate(0));
+		Lwjgl2InputForwarderTest.set(Keyboard.class, "created", true);
+		Lwjgl2InputForwarderTest.set(Keyboard.class, "repeat_enabled", true);
 	}
 
 	@After
-	public void closeTheUi() {
+	public void closeTheUi() throws Exception {
+		Lwjgl2InputForwarderTest.set(Mouse.class, "created", false);
+		Lwjgl2InputForwarderTest.set(Keyboard.class, "created", false);
 		this.bridge.closeAll();
 		BridgeHandler.UI.unregister(this.bridge);
 		BridgeHandler.WINDOW.unregister(this.window);
@@ -91,9 +99,7 @@ public class Lwjgl2InputForwarderTest {
 		Assert.assertTrue(Key.A.isDown());
 		Assert.assertTrue(Key.Q.isPhysicalDown());
 
-		final Method release = Lwjgl2InputForwarder.class.getDeclaredMethod("keyReleased", int.class);
-		release.setAccessible(true);
-		release.invoke(null, Keyboard.KEY_Q);
+		this.poll(Keyboard.KEY_Q, false, '\0', false);
 		Assert.assertFalse(Key.A.isDown());
 	}
 
@@ -102,9 +108,20 @@ public class Lwjgl2InputForwarderTest {
 	}
 
 	private void keyPressed(final int code, final char character, final boolean repeat) throws Exception {
-		final Method press = Lwjgl2InputForwarder.class.getDeclaredMethod("keyPressed", int.class, char.class, boolean.class);
-		press.setAccessible(true);
-		press.invoke(null, code, character, repeat);
+		this.poll(code, true, character, repeat);
+	}
+
+	private void poll(final int code, final boolean state, final char character, final boolean repeat) throws Exception {
+		final ByteBuffer events = ByteBuffer.allocate(Keyboard.EVENT_SIZE);
+		events.putInt(code).put((byte) (state ? 1 : 0)).putInt(character).putLong(0L).put((byte) (repeat ? 1 : 0)).flip();
+		Lwjgl2InputForwarderTest.set(Keyboard.class, "readBuffer", events);
+		Lwjgl2InputForwarder.poll();
+	}
+
+	private static void set(final Class<?> type, final String name, final Object value) throws Exception {
+		final Field field = type.getDeclaredField(name);
+		field.setAccessible(true);
+		field.set(null, value);
 	}
 
 	public static final class TraceUI extends UI {
