@@ -150,12 +150,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<UIBridge> {
 	}
 
 	private boolean dispatch(final Predicate<UIBridge> event) {
-		for (final UIBridge bridge : this.getInputList()) {
-			if (event.test(bridge)) {
-				return true;
-			}
-		}
-		return false;
+		return super.find(event) != null;
 	}
 
 	private List<UIBridge> getInputList() {

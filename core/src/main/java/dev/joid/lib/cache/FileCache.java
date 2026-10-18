@@ -21,7 +21,7 @@ public final class FileCache {
 	private static final Map<String, FileCacheArea> AREA_MAP = new ConcurrentHashMap<>();
 
 	public static @NonNull FileCacheArea area(final @NonNull String name) {
-		return FileCache.AREA_MAP.computeIfAbsent(FileCacheArea.check("area", name), FileCacheArea::create);
+		return FileCache.AREA_MAP.computeIfAbsent(FileCacheArea.check("area", name), FileCacheArea::new);
 	}
 
 	public static long clean() {
@@ -36,7 +36,7 @@ public final class FileCache {
 		long freed = 0L;
 		for (final File directory : directories) {
 			final AtomicInteger files = new AtomicInteger();
-			freed += FileCache.AREA_MAP.computeIfAbsent(directory.getName(), FileCacheArea::create).clean(now, files);
+			freed += FileCache.AREA_MAP.computeIfAbsent(directory.getName(), FileCacheArea::new).clean(now, files);
 			if (files.get() > 0) {
 				details.add(directory.getName() + ": " + files.get() + (files.get() == 1 ? " file" : " files"));
 			}

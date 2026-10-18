@@ -321,8 +321,8 @@ public class FileCacheTest {
 
 	@Test
 	public void sharesItsFolderWithAnotherProcess() throws IOException {
-		final FileCacheArea first = FileCacheArea.create("shared");
-		final FileCacheArea second = FileCacheArea.create("shared");
+		final FileCacheArea first = new FileCacheArea("shared");
+		final FileCacheArea second = new FileCacheArea("shared");
 		final File file = first.compute("key", entry -> {
 			FileCacheTest.write(entry, "first");
 			Assert.assertEquals(0L, second.clean(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1L), new AtomicInteger()));
