@@ -161,14 +161,6 @@ public abstract class FieldNode<V> extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
-		if (this.cursorPosition > this.text.length()) {
-			this.cursorValue.update(this.cursorPosition);
-		}
-
-		if (this.selection.getEnd() > this.text.length()) {
-			this.selectionValue.update(this.selection);
-		}
-
 		this.drawField();
 		this.repeatInput();
 	}
@@ -817,11 +809,11 @@ public abstract class FieldNode<V> extends Node {
 		final int length = this.text.length();
 		final int cursor = this.getCursorPosition();
 		final FieldSelection selection = this.getSelection();
-		if (!this.changeText(newText, refusable) || !this.focused) {
+		if (!this.changeText(newText, refusable)) {
 			return;
 		}
 
-		final int shift = this.text.length() - length;
+		final int shift = this.focused ? this.text.length() - length : 0;
 		this.cursorValue.update(cursor + shift);
 		if (!selection.isEmpty()) {
 			this.selectionValue.update(FieldSelection.of(selection.getStart() + shift, selection.getEnd() + shift));

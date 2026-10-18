@@ -1297,6 +1297,17 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void typesIntoAFieldItsSubmitClearedAndFocusedAgain() {
+		final TextFieldNode field = this.field("hello").<TextFieldNode>cursorPosition(5).onSubmit(event -> event.getNode().text("").focused(true));
+		this.press(field, Key.ENTER);
+		Assert.assertEquals(0, field.getCursorPosition());
+		this.type(field, "x");
+		this.press(field, Key.BACKSPACE);
+		this.type(field, "ok");
+		Assert.assertEquals("ok", field.getText());
+	}
+
+	@Test
 	public void putsTheCursorUnderAClickInsideAParent() {
 		final RectNode wrapper = RectNode.create(40D, 40D, 400D, 40D);
 		final TextFieldNode field = TextFieldNode.create(8D, 0D, 384D).info(this.info()).text("hello").attach(wrapper);
