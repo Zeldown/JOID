@@ -7,18 +7,9 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.format.IResourceFormat;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DemoCheckerResourceFormat implements IResourceFormat {
-
-	private static final DemoCheckerResourceFormat INSTANCE = new DemoCheckerResourceFormat();
-
-	public static @NonNull DemoCheckerResourceFormat inst() {
-		return DemoCheckerResourceFormat.INSTANCE;
-	}
 
 	@Override
 	public boolean supports(final @NonNull byte[] header) {

@@ -6,18 +6,9 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.ClasspathAsset;
 import dev.joid.lib.asset.locator.IAssetLocator;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DemoAssetLocator implements IAssetLocator {
-
-	private static final DemoAssetLocator INSTANCE = new DemoAssetLocator();
-
-	public static @NonNull DemoAssetLocator inst() {
-		return DemoAssetLocator.INSTANCE;
-	}
 
 	@Override
 	public boolean supports(final @NonNull Object handle) {

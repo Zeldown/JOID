@@ -59,21 +59,25 @@ public final class ContractDraw {
 
 	public static @NonNull VertexBuffer quad(final float x, final float y, final float width, final float height, final float z, final boolean texture, final int color, final boolean normal, final float start, final float end) {
 		final float[][] corners = {{x, y, start, start}, {x + width, y, end, start}, {x + width, y + height, end, end}, {x, y, start, start}, {x + width, y + height, end, end}, {x, y + height, start, end}};
-		final ByteBuffer buffer = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
-		for (int i = 0; i < corners.length; i++) {
+		return ContractDraw.vertices(corners, z, texture, color, normal);
+	}
+
+	public static @NonNull VertexBuffer vertices(final @NonNull float[][] points, final float z, final boolean texture, final int color, final boolean normal) {
+		final ByteBuffer buffer = ByteBuffer.allocateDirect(points.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
+		for (int i = 0; i < points.length; i++) {
 			final int offset = i * VertexBuffer.STRIDE;
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset(), corners[i][0]);
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 4, corners[i][1]);
+			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset(), points[i][0]);
+			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 4, points[i][1]);
 			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 8, z);
-			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset(), corners[i][2]);
-			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, corners[i][3]);
+			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset(), points[i][2]);
+			buffer.putFloat(offset + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, points[i][3]);
 			buffer.put(offset + VertexAttribute.COLOR.getOffset(), (byte) (color >> 16));
 			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 1, (byte) (color >> 8));
 			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 2, (byte) color);
 			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 3, (byte) (color >> 24));
 			buffer.put(offset + VertexAttribute.NORMAL.getOffset() + 2, (byte) 127);
 		}
-		return VertexBuffer.of(buffer, corners.length, texture, color != 0, normal);
+		return VertexBuffer.of(buffer, points.length, texture, color != 0, normal);
 	}
 
 }

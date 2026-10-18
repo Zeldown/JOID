@@ -140,7 +140,7 @@ public class GlRenderBridge extends RenderBridge {
 
 	@Override
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
-		return this.guard.call(() -> GlFrameBuffer.create(this, width, height));
+		return this.guard.call(() -> new GlFrameBuffer(this, width, height));
 	}
 
 	@Override

@@ -253,7 +253,7 @@ public final class VulkanRenderBridge extends RenderBridge {
 
 	@Override
 	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height) {
-		return VulkanFrameBuffer.create(this, width, height);
+		return new VulkanFrameBuffer(this, width, height);
 	}
 
 	@Override

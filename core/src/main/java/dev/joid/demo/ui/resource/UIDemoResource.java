@@ -38,8 +38,8 @@ public class UIDemoResource extends UIDemo {
 	private static final ResourceBuilder PIXELATED = ResourceBuilder.create().nearest().textureCoords(160D, 165D, 35D, 35D);
 
 	static {
-		AssetLocator.register(DemoAssetLocator.inst());
-		ResourceFormat.register(DemoCheckerResourceFormat.inst());
+		AssetLocator.register(new DemoAssetLocator());
+		ResourceFormat.register(new DemoCheckerResourceFormat());
 	}
 
 	@Override

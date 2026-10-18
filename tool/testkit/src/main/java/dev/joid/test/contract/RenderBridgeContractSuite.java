@@ -1,8 +1,6 @@
 package dev.joid.test.contract;
 
 import java.lang.reflect.Field;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
@@ -27,7 +25,6 @@ import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
-import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
@@ -701,18 +698,7 @@ public abstract class RenderBridgeContractSuite {
 	}
 
 	private static VertexBuffer line(final float startX, final float startY, final float endX, final float endY, final int color) {
-		final float[][] points = {{startX, startY}, {endX, endY}};
-		final ByteBuffer buffer = ByteBuffer.allocateDirect(points.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
-		for (int i = 0; i < points.length; i++) {
-			final int offset = i * VertexBuffer.STRIDE;
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset(), points[i][0]);
-			buffer.putFloat(offset + VertexAttribute.POSITION.getOffset() + 4, points[i][1]);
-			buffer.put(offset + VertexAttribute.COLOR.getOffset(), (byte) (color >> 16));
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 1, (byte) (color >> 8));
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 2, (byte) color);
-			buffer.put(offset + VertexAttribute.COLOR.getOffset() + 3, (byte) (color >> 24));
-		}
-		return VertexBuffer.of(buffer, points.length, false, true, false);
+		return ContractDraw.vertices(new float[][] {{startX, startY, 0F, 0F}, {endX, endY, 0F, 0F}}, 0F, false, color, false);
 	}
 
 }
