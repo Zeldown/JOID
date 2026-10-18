@@ -2354,6 +2354,59 @@ public class NodeTest {
 	}
 
 	@Test
+	public void finishesItsDetachWhenItsDetachHookFails() {
+		final DoubleSignal x = new DoubleSignal(0D);
+		final SloppyNode sloppy = new SloppyNode().x(x);
+		final List<String> events = new ArrayList<>();
+		final RecordingNode sibling = new RecordingNode("sibling", events, 0D, 0D, 10D, 10D);
+		final int[] detaches = {0};
+		sloppy.onDetach(event -> detaches[0]++);
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(sloppy, sibling);
+		this.bridges.open(new NodeUI(parent));
+		events.clear();
+		NodeTest.forgetWarnings();
+		final String output = NodeTest.capture(() -> parent.remove(sloppy, sibling));
+		Assert.assertTrue(output, output.contains("The detach of SloppyNode in NodeUI failed (java.lang.IllegalStateException: The detach of this node fails on purpose), the node is detached anyway"));
+		Assert.assertTrue(parent.getChildren().isEmpty());
+		Assert.assertTrue(NodeTest.<IndexedList<Node>>field(parent, "drawList").ordered().isEmpty());
+		Assert.assertEquals(Arrays.asList("sibling detach"), events);
+		Assert.assertEquals(1, detaches[0]);
+		Assert.assertFalse(NodeTest.subscribed(sloppy));
+		x.set(42D);
+		Assert.assertEquals(0D, sloppy.getX(), 0D);
+	}
+
+	@Test
+	public void keepsTheInitFailureWhenTheDetachAfterItFails() {
+		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D);
+		this.bridges.open(new NodeUI(parent));
+		final Node child = new Node(0D, 0D, 10D, 10D) {
+
+			private Object resource;
+
+			@Override
+			public void init(final @NonNull UI ui) {
+				throw new IllegalStateException("The init of this node fails on purpose");
+			}
+
+			@Override
+			public void detach() {
+				this.resource.hashCode();
+			}
+
+		};
+		NodeTest.capture(() -> {
+			try {
+				parent.append(child);
+				Assert.fail("The init of the child fails");
+			} catch (final IllegalStateException expected) {
+				Assert.assertEquals("The init of this node fails on purpose", expected.getMessage());
+			}
+		});
+		Assert.assertFalse(child.isAttached());
+	}
+
+	@Test
 	public void placesAtItsOwnPositionAChildAddedToTheUIAfterItsAppendFailed() {
 		final boolean[] fails = {true};
 		final RectNode parent = RectNode.create(100D, 100D, 50D, 50D).visible(false);
@@ -4074,6 +4127,19 @@ public class NodeTest {
 		@Override
 		public void init(final @NonNull UI ui) {
 			throw new IllegalStateException("The init of this node fails on purpose");
+		}
+
+	}
+
+	public static final class SloppyNode extends Node {
+
+		public SloppyNode() {
+			super(0D, 0D, 10D, 10D);
+		}
+
+		@Override
+		public void detach() {
+			throw new IllegalStateException("The detach of this node fails on purpose");
 		}
 
 	}

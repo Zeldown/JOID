@@ -464,7 +464,11 @@ public abstract class Node implements INode {
 		}
 
 		this.attached = false;
-		this.detach();
+		try {
+			this.detach();
+		} catch (final RuntimeException exception) {
+			JOIDLog.warnOnce("Node.detach." + this.getClass().getName() + "." + exception.getClass().getName(), "The detach of " + this.describe() + " failed (" + exception + "), the node is detached anyway: catch the exception inside detach() to handle it", exception);
+		}
 		this.endInteraction();
 		this.bindings.unsubscribe();
 		this.hoverElementList.forEach(IHoverElement::detach);
