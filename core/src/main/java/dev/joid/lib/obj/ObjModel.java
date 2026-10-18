@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
@@ -57,6 +58,7 @@ public final class ObjModel implements IDrawableModel {
 		try {
 			reader = new BufferedReader(new InputStreamReader(Asset.of(handle).open()));
 			ObjGroup group = null;
+			Boolean textured = null;
 			int lineCount = 0;
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -77,7 +79,12 @@ public final class ObjModel implements IDrawableModel {
 						group = ObjGroup.create("Default");
 					}
 
-					for (final ObjFace face : this.parseFaces(group, line, lineCount)) {
+					final List<ObjFace> faces = this.parseFaces(textured, line, lineCount);
+					if (textured == null) {
+						textured = faces.get(0).getTextureCoordinates() != null;
+					}
+
+					for (final ObjFace face : faces) {
 						group.face(face);
 					}
 				} else if (line.startsWith("g ") || line.startsWith("o ")) {
@@ -86,6 +93,7 @@ public final class ObjModel implements IDrawableModel {
 					}
 
 					group = ObjGroup.create(line.substring(2));
+					textured = null;
 				}
 			}
 
@@ -170,7 +178,7 @@ public final class ObjModel implements IDrawableModel {
 		return ObjTextureCoordinate.of(Float.parseFloat(tokens[0]), 1F - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
-	private List<ObjFace> parseFaces(final @NonNull ObjGroup group, final @NonNull String line, final int lineCount) {
+	private List<ObjFace> parseFaces(final Boolean groupTextured, final @NonNull String line, final int lineCount) {
 		final boolean full = ObjModel.FACE_PATTERN.matcher(line).matches();
 		final boolean textured = full || ObjModel.FACE_TEXTURE_PATTERN.matcher(line).matches();
 		final boolean normal = full || ObjModel.FACE_NORMAL_PATTERN.matcher(line).matches();
@@ -179,7 +187,7 @@ public final class ObjModel implements IDrawableModel {
 		}
 
 		final String[] tokens = line.substring(line.indexOf(" ") + 1).split(" ");
-		if (!group.getFaces().isEmpty() && (group.getFaces().get(0).getTextureCoordinates() != null) != textured) {
+		if (groupTextured != null && groupTextured != textured) {
 			throw this.malformed(line, lineCount, textured ? "has texture coordinates while the faces before it in its group have none, keep one face format per group" : "has no texture coordinates while the faces before it in its group have some, keep one face format per group");
 		}
 
@@ -200,7 +208,7 @@ public final class ObjModel implements IDrawableModel {
 
 		final List<ObjFace> faces = new ArrayList<>();
 		for (int i = 1; i < tokens.length - 1; i++) {
-			faces.add(ObjModel.face(vertices, textureCoordinates, vertexNormals, 0, i, i + 1));
+			faces.add(ObjFace.of(ObjModel.corners(vertices, i), ObjModel.corners(textureCoordinates, i), ObjModel.corners(vertexNormals, i)));
 		}
 		return faces;
 	}
@@ -218,22 +226,15 @@ public final class ObjModel implements IDrawableModel {
 		return new IllegalArgumentException("The OBJ model " + this.name + " cannot be read: its line " + lineCount + " \"" + line + "\" " + problem + ", fix this line in the model file");
 	}
 
-	private static ObjFace face(final ObjVertex[] vertices, final ObjTextureCoordinate[] textureCoordinates, final ObjVertex[] vertexNormals, final int... corners) {
-		final ObjVertex[] faceVertices = new ObjVertex[corners.length];
-		final ObjVertex[] faceNormals = vertexNormals != null ? new ObjVertex[corners.length] : null;
-		final ObjTextureCoordinate[] faceCoordinates = textureCoordinates != null ? new ObjTextureCoordinate[corners.length] : null;
-		for (int i = 0; i < corners.length; i++) {
-			faceVertices[i] = vertices[corners[i]];
-			if (faceCoordinates != null) {
-				faceCoordinates[i] = textureCoordinates[corners[i]];
-			}
-
-			if (faceNormals != null) {
-				faceNormals[i] = vertexNormals[corners[i]];
-			}
+	private static <T> T[] corners(final T[] values, final int corner) {
+		if (values == null) {
+			return null;
 		}
 
-		return ObjFace.of(faceVertices, faceCoordinates, faceNormals);
+		final T[] corners = Arrays.copyOf(values, 3);
+		corners[1] = values[corner];
+		corners[2] = values[corner + 1];
+		return corners;
 	}
 
 }

@@ -118,7 +118,7 @@ public class ObjFaceTest {
 	}
 
 	private static Tessellator tessellator() {
-		final Tessellator tessellator = new Tessellator();
+		final Tessellator tessellator = TessellatorAccess.create();
 		tessellator.start(DrawMode.TRIANGLES);
 		return tessellator;
 	}

@@ -1,5 +1,6 @@
 package dev.joid.lib.render.tessellator;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
 import lombok.AccessLevel;
@@ -7,6 +8,16 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TessellatorAccess {
+
+	public static Tessellator create() {
+		try {
+			final Constructor<Tessellator> constructor = Tessellator.class.getDeclaredConstructor();
+			constructor.setAccessible(true);
+			return constructor.newInstance();
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException(exception);
+		}
+	}
 
 	public static int[] rawBuffer(final Tessellator tessellator) {
 		final int[] buffer = TessellatorAccess.read(tessellator, "rawBuffer");

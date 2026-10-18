@@ -23,18 +23,8 @@ public class TessellatorTest {
 	}
 
 	@Test
-	public void copiesAnIndependentTessellator() {
-		final Tessellator copy = new Tessellator();
-		copy.start(DrawMode.TRIANGLES);
-		Assert.assertNotSame(Tessellator.inst(), copy);
-		Assert.assertTrue(TessellatorAccess.isDrawing(copy));
-		Assert.assertFalse(TessellatorAccess.isDrawing(Tessellator.inst()));
-		copy.draw();
-	}
-
-	@Test
 	public void refusesToStartTwice() {
-		final Tessellator tessellator = new Tessellator();
+		final Tessellator tessellator = TessellatorAccess.create();
 		tessellator.start(DrawMode.TRIANGLES);
 		try {
 			tessellator.start(DrawMode.QUADS);
@@ -47,7 +37,7 @@ public class TessellatorTest {
 	@Test
 	public void refusesToDrawWithoutStarting() {
 		try {
-			new Tessellator().draw();
+			TessellatorAccess.create().draw();
 			Assert.fail("A draw without start must be refused");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The Tessellator has no shape to draw, call start(DrawMode) before draw()", expected.getMessage());
@@ -56,7 +46,7 @@ public class TessellatorTest {
 
 	@Test
 	public void abortsAnUnfinishedShape() {
-		final Tessellator tessellator = new Tessellator();
+		final Tessellator tessellator = TessellatorAccess.create();
 		tessellator.start(DrawMode.TRIANGLES);
 		tessellator.addVertex(1D, 2D, 3D);
 		tessellator.abort();
@@ -69,7 +59,7 @@ public class TessellatorTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingMode() {
-		new Tessellator().start(null);
+		TessellatorAccess.create().start(null);
 	}
 
 	@Test
@@ -370,7 +360,7 @@ public class TessellatorTest {
 
 	@Test
 	public void growsWithALargeDraw() {
-		final Tessellator tessellator = new Tessellator();
+		final Tessellator tessellator = TessellatorAccess.create();
 		tessellator.start(DrawMode.TRIANGLES);
 		for (int i = 0; i < 9999; i++) {
 			tessellator.addVertex(i, 0D, 0D);
@@ -385,7 +375,7 @@ public class TessellatorTest {
 
 	@Test
 	public void keepsAHugeBufferWhileItsDrawFillsIt() {
-		final Tessellator tessellator = new Tessellator();
+		final Tessellator tessellator = TessellatorAccess.create();
 		tessellator.start(DrawMode.QUADS);
 		for (int i = 0; i < 20000; i++) {
 			tessellator.addVertex(i, 0D, 0D);
@@ -398,7 +388,7 @@ public class TessellatorTest {
 
 	@Test
 	public void releasesAHugeBufferAfterASmallDraw() {
-		final Tessellator tessellator = new Tessellator();
+		final Tessellator tessellator = TessellatorAccess.create();
 		tessellator.start(DrawMode.QUADS);
 		for (int i = 0; i < 20000; i++) {
 			tessellator.addVertex(i, 0D, 0D);
