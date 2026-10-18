@@ -38,12 +38,10 @@ public final class GlStateGuard {
 	}
 
 	public void run(final Runnable action) {
-		this.enter();
-		try {
+		this.call(() -> {
 			action.run();
-		} finally {
-			this.exit();
-		}
+			return null;
+		});
 	}
 
 	public <T> T call(final Supplier<T> action) {

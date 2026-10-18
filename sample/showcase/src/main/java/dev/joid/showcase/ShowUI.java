@@ -82,8 +82,8 @@ public abstract class ShowUI extends UI {
 		return CircleNode
 		.create(x, y, size)
 		.color(color)
-		.<CircleNode>x(() -> x + IShowKit.wave(phase) * range)
-		.<CircleNode>y(() -> y + IShowKit.wave(phase + 0.25D) * range * 0.6D)
+		.<CircleNode>x(() -> x + IKit.wave(phase) * range)
+		.<CircleNode>y(() -> y + IKit.wave(phase + 0.25D) * range * 0.6D)
 		.effect(BlurNodeEffect.create((float) (size / 6D)));
 	}
 

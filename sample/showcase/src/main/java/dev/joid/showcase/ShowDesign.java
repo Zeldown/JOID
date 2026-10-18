@@ -57,7 +57,7 @@ public class ShowDesign extends ShowUI {
 		.attach(this);
 	}
 
-	private void screen(final IShowKit kit, final Node layer) {
+	private void screen(final IKit kit, final Node layer) {
 		kit.backdrop(layer);
 
 		TextNode.create(150, 236).text(Text.create("Same code.", kit.display())).attach(layer);

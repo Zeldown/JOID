@@ -18,7 +18,7 @@ import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 import lombok.NonNull;
 
-public class ShowNeonKit implements IShowKit {
+public class ShowNeonKit implements IKit {
 
 	@Override
 	public void backdrop(final @NonNull Node layer) {

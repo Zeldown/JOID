@@ -1,6 +1,6 @@
 package dev.joid.demo.ui;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import dev.joid.demo.DemoFont;
@@ -56,12 +56,10 @@ public class UIDemoChoice extends UI {
 	private static final Color ACTIVE  = new Color(102, 102, 102).lock();
 	private static final Color HOVERED = new Color(128, 128, 128).lock();
 
-	private static final List<DemoEntry> LIST = new ArrayList<>();
-
-	static {
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSimple.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOption.class));
-		UIDemoChoice.LIST.add(DemoEntry.create("UIDemoOverlay", () -> {
+	private static final List<DemoEntry> LIST = Arrays.asList(
+		DemoEntry.create(UIDemoSimple.class),
+		DemoEntry.create(UIDemoOption.class),
+		DemoEntry.create("UIDemoOverlay", () -> {
 			if (JOID.isOpen(UIDemoOverlay.class)) {
 				JOID.close(JOID.getUi(UIDemoOverlay.class));
 				JOID.close(JOID.getUi(UIDemoOverlay.BelowOverlay.class));
@@ -69,36 +67,36 @@ public class UIDemoChoice extends UI {
 				JOID.open(new UIDemoOverlay());
 				JOID.open(new UIDemoOverlay.BelowOverlay());
 			}
-		}).state(() -> JOID.isOpen(UIDemoOverlay.class)));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoLayout.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOverflow.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoText.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoFont.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoMarkup.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoResource.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoPlayer.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoAudio.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEvent.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEventFlow.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoCursor.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoDraggable.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoReorderable.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoTextField.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoControl.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSlider.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSelector.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoSignal.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoWatch.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoStore.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoOtherStore.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoEffect.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoAnimation.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoTween.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoRender.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoShader.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoChart.class));
-		UIDemoChoice.LIST.add(DemoEntry.create(UIDemoModel.class));
-	}
+		}).state(() -> JOID.isOpen(UIDemoOverlay.class)),
+		DemoEntry.create(UIDemoLayout.class),
+		DemoEntry.create(UIDemoOverflow.class),
+		DemoEntry.create(UIDemoText.class),
+		DemoEntry.create(UIDemoFont.class),
+		DemoEntry.create(UIDemoMarkup.class),
+		DemoEntry.create(UIDemoResource.class),
+		DemoEntry.create(UIDemoPlayer.class),
+		DemoEntry.create(UIDemoAudio.class),
+		DemoEntry.create(UIDemoEvent.class),
+		DemoEntry.create(UIDemoEventFlow.class),
+		DemoEntry.create(UIDemoCursor.class),
+		DemoEntry.create(UIDemoDraggable.class),
+		DemoEntry.create(UIDemoReorderable.class),
+		DemoEntry.create(UIDemoTextField.class),
+		DemoEntry.create(UIDemoControl.class),
+		DemoEntry.create(UIDemoSlider.class),
+		DemoEntry.create(UIDemoSelector.class),
+		DemoEntry.create(UIDemoSignal.class),
+		DemoEntry.create(UIDemoWatch.class),
+		DemoEntry.create(UIDemoStore.class),
+		DemoEntry.create(UIDemoOtherStore.class),
+		DemoEntry.create(UIDemoEffect.class),
+		DemoEntry.create(UIDemoAnimation.class),
+		DemoEntry.create(UIDemoTween.class),
+		DemoEntry.create(UIDemoRender.class),
+		DemoEntry.create(UIDemoShader.class),
+		DemoEntry.create(UIDemoChart.class),
+		DemoEntry.create(UIDemoModel.class)
+	);
 
 	@Override
 	public void init() {

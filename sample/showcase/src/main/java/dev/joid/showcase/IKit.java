@@ -12,7 +12,7 @@ import dev.joid.lib.ui.node.impl.control.toggle.ToggleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.NonNull;
 
-public interface IShowKit {
+public interface IKit {
 
 	public void backdrop(final @NonNull Node layer);
 

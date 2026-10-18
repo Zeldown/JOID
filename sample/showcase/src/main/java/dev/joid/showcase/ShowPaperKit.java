@@ -21,7 +21,7 @@ import dev.joid.lib.ui.node.impl.text.TextNode;
 import dev.joid.lib.utils.align.Align;
 import lombok.NonNull;
 
-public class ShowPaperKit implements IShowKit {
+public class ShowPaperKit implements IKit {
 
 	public static final Color INK    = Color.decode("#151413").lock();
 	public static final Color CARD   = Color.decode("#FFFCF4").lock();
@@ -44,8 +44,8 @@ public class ShowPaperKit implements IShowKit {
 			RectNode.create(96, 0, 3, 1080).color(ShowPaperKit.TOMATO.withAlpha(0.45F)).attach(paper);
 		})
 		.attach(layer);
-		CircleNode.create(1610, -150, 520).color(ShowPaperKit.BUTTER).<CircleNode>y(() -> -150D + IShowKit.wave(0D) * 18D).attach(layer);
-		CircleNode.create(800, 900, 260).color(ShowPaperKit.TOMATO).<CircleNode>x(() -> 800D + IShowKit.wave(0.3D) * 24D).attach(layer);
+		CircleNode.create(1610, -150, 520).color(ShowPaperKit.BUTTER).<CircleNode>y(() -> -150D + IKit.wave(0D) * 18D).attach(layer);
+		CircleNode.create(800, 900, 260).color(ShowPaperKit.TOMATO).<CircleNode>x(() -> 800D + IKit.wave(0.3D) * 24D).attach(layer);
 	}
 
 	@Override
