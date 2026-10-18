@@ -76,7 +76,10 @@ public final class SignalReplayParts {
 
 		final Map<String, String> holeMap = new HashMap<>();
 		for (int index = 0; index < keyList.size(); index++) {
-			holeMap.putIfAbsent(keyList.get(index), matcher.group(index + 1));
+			final String previous = holeMap.put(keyList.get(index), matcher.group(index + 1));
+			if (previous != null && !previous.equals(matcher.group(index + 1))) {
+				return null;
+			}
 		}
 		return holeMap;
 	}

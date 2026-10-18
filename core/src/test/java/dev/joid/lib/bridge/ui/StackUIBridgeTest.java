@@ -62,6 +62,19 @@ public class StackUIBridgeTest {
 	}
 
 	@Test
+	public void keepsTheScreenUnderAPopupThatRefusesToClose() {
+		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI popup = new PopupUI("popup", this.trace);
+		popup.closeable = false;
+		this.bridge.open(menu);
+		this.bridge.open(popup);
+		this.bridge.open(new ScreenUI("settings", this.trace));
+		Assert.assertEquals(Arrays.asList(menu, popup), this.bridge.getUiList());
+		Assert.assertFalse(this.trace.contains("close menu"));
+		Assert.assertFalse(menu.isClosed());
+	}
+
+	@Test
 	public void opensAPopupAndAnOverlayOverTheOpenScreen() {
 		final ScreenUI menu = new ScreenUI("menu", this.trace);
 		final PopupUI popup = new PopupUI("popup", this.trace);

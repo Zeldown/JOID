@@ -398,6 +398,10 @@ public abstract class UI implements IIndexedElement {
 	}
 
 	public final boolean fireClose() {
+		if (this.closed) {
+			return true;
+		}
+
 		if (this.transition != null && this.transition.getOut().isRunning()) {
 			return false;
 		}

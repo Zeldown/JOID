@@ -2,6 +2,8 @@ package dev.joid.lib.bridge.ui;
 
 import java.util.ArrayList;
 
+import com.google.common.collect.Lists;
+
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -38,9 +40,14 @@ public abstract class StackUIBridge extends UIBridge {
 
 		this.replacing = super.hasScreen();
 		try {
-			for (final UI current : new ArrayList<>(super.getUiList())) {
+			for (final UI current : Lists.reverse(new ArrayList<>(super.getUiList()))) {
 				if (current.getOverlay().active() || !this.canReplace(current)) {
 					continue;
+				}
+
+				if (current == this.leaving) {
+					this.pending = ui;
+					return;
 				}
 
 				final boolean result = current.fireClose();

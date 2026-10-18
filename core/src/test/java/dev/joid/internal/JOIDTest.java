@@ -422,6 +422,69 @@ public class JOIDTest {
 	}
 
 	@Test
+	public void opensAUiFromTheOnCloseOfTheClosedOne() {
+		final MenuUI menu = new MenuUI();
+		final MenuUI next = new MenuUI();
+		menu.onClose(event -> JOID.open(next));
+		JOID.open(menu);
+		JOID.close(menu);
+		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
+		Assert.assertEquals(1, menu.closes);
+		Assert.assertEquals(1, menu.detaches);
+		Assert.assertEquals(1, next.inits);
+	}
+
+	@Test
+	public void opensAUiFromTheOnCloseOfAUiThatPlaysItsExit() {
+		final MenuUI menu = new MenuUI();
+		final MenuUI next = new MenuUI();
+		menu.transition(PopTransition.create());
+		menu.onClose(event -> JOID.open(next));
+		for (int round = 1; round <= 2; round++) {
+			JOID.open(menu);
+			this.bridges.frames(30);
+			JOID.close(menu);
+			this.bridges.frames(30);
+			Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
+			Assert.assertFalse(menu.getTransition().getOut().isRunning());
+			Assert.assertEquals(round, menu.closes);
+			Assert.assertEquals(round, next.inits);
+		}
+	}
+
+	@Test
+	public void opensAUiFromTheOnCloseOfAForcedUi() {
+		final MenuUI menu = new MenuUI();
+		final MenuUI next = new MenuUI();
+		final MenuUI forced = new MenuUI();
+		menu.onClose(event -> JOID.open(next));
+		JOID.open(menu);
+		JOID.forceClose(menu);
+		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
+		JOID.open(menu);
+		JOID.forceOpen(forced);
+		Assert.assertTrue(this.bridges.getUi().isOpen(forced));
+		Assert.assertFalse(this.bridges.getUi().isOpen(menu));
+		Assert.assertEquals(0, menu.closes);
+	}
+
+	@Test
+	public void opensTheUiThatTheOnCloseOfALeavingUiOpens() {
+		final MenuUI menu = new MenuUI();
+		final MenuUI waiting = new MenuUI();
+		final MenuUI next = new MenuUI();
+		menu.transition(PopTransition.create());
+		menu.onClose(event -> JOID.open(next));
+		JOID.open(menu);
+		this.bridges.frames(30);
+		JOID.open(waiting);
+		this.bridges.frames(30);
+		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
+		Assert.assertEquals(0, waiting.inits);
+		Assert.assertEquals(1, menu.closes);
+	}
+
+	@Test
 	public void opensAndClosesOnTheRenderThreadFromAnotherThread() {
 		final QueueThreadBridge thread = new QueueThreadBridge();
 		final MenuUI menu = new MenuUI();
