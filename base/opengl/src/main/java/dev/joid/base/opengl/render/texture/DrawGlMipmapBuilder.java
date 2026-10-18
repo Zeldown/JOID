@@ -15,7 +15,6 @@ import dev.joid.lib.bridge.render.state.BlendState;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
-import lombok.NonNull;
 
 public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 
@@ -23,7 +22,7 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 
 	private GlShader shader;
 
-	private DrawGlMipmapBuilder() {
+	public DrawGlMipmapBuilder() {
 		final float[][] corners = {{-1F, -1F, 0F, 0F}, {1F, -1F, 1F, 0F}, {1F, 1F, 1F, 1F}, {-1F, -1F, 0F, 0F}, {1F, 1F, 1F, 1F}, {-1F, 1F, 0F, 1F}};
 		this.quad = ByteBuffer.allocateDirect(corners.length * VertexBuffer.STRIDE).order(ByteOrder.nativeOrder());
 		for (int i = 0; i < corners.length; i++) {
@@ -32,10 +31,6 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 			this.quad.putFloat(i * VertexBuffer.STRIDE + VertexAttribute.TEXTURE_COORDINATE.getOffset(), corners[i][2]);
 			this.quad.putFloat(i * VertexBuffer.STRIDE + VertexAttribute.TEXTURE_COORDINATE.getOffset() + 4, corners[i][3]);
 		}
-	}
-
-	public static @NonNull DrawGlMipmapBuilder create() {
-		return new DrawGlMipmapBuilder();
 	}
 
 	@Override
@@ -91,8 +86,8 @@ public final class DrawGlMipmapBuilder implements IGlMipmapBuilder {
 
 	private GlShader getShader(final GlRenderBridge bridge) {
 		if (this.shader == null) {
-			final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "out vec2 vTexCoord;\n\nvoid main() {\n    vTexCoord = aTexCoord;\n    gl_Position = vec4(aPosition, 1.0);\n}");
-			final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, "in vec2 vTexCoord;\n\nuniform sampler2D tex;\n\nvoid main() {\n    fragColor = texture(tex, vTexCoord);\n}");
+			final ShaderSource vertex = ShaderSource.from(ShaderStage.VERTEX, "out vec2 vTexCoord;\n\nvoid main() {\n    vTexCoord = aTexCoord;\n    gl_Position = vec4(aPosition, 1.0);\n}");
+			final ShaderSource fragment = ShaderSource.from(ShaderStage.FRAGMENT, "in vec2 vTexCoord;\n\nuniform sampler2D tex;\n\nvoid main() {\n    fragColor = texture(tex, vTexCoord);\n}");
 			this.shader = GlShader.create(bridge, vertex, fragment, BlendState.DISABLED);
 		}
 		return this.shader;

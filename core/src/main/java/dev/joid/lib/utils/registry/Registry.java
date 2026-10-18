@@ -5,18 +5,11 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Registry<T> {
 
 	private final List<T> list = new CopyOnWriteArrayList<>();
-
-	public static <T> @NonNull Registry<T> create() {
-		return new Registry<>();
-	}
 
 	public void register(final @NonNull T value) {
 		this.list.remove(value);

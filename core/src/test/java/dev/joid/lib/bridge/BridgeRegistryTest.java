@@ -11,14 +11,14 @@ public class BridgeRegistryTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void refusesToGiveABridgeBeforeOneIsRegistered() {
-		BridgeRegistry.<ManualClockBridge>create("Clock").get();
+		new BridgeRegistry<ManualClockBridge>("Clock").get();
 	}
 
 	@Test
 	public void givesTheLastRegisteredBridge() {
-		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
-		final ManualClockBridge first = ManualClockBridge.create(1L);
-		final ManualClockBridge second = ManualClockBridge.create(2L);
+		final BridgeRegistry<ManualClockBridge> registry = new BridgeRegistry<>("Clock");
+		final ManualClockBridge first = new ManualClockBridge(1L);
+		final ManualClockBridge second = new ManualClockBridge(2L);
 		registry.register(first);
 		registry.register(second);
 		Assert.assertSame(second, registry.get());
@@ -27,9 +27,9 @@ public class BridgeRegistryTest {
 
 	@Test
 	public void fallsBackOnTheBridgeBelowOnceUnregistered() {
-		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
-		final ManualClockBridge first = ManualClockBridge.create(1L);
-		final ManualClockBridge second = ManualClockBridge.create(2L);
+		final BridgeRegistry<ManualClockBridge> registry = new BridgeRegistry<>("Clock");
+		final ManualClockBridge first = new ManualClockBridge(1L);
+		final ManualClockBridge second = new ManualClockBridge(2L);
 		registry.register(first);
 		registry.register(second);
 		registry.unregister(second);
@@ -38,43 +38,43 @@ public class BridgeRegistryTest {
 
 	@Test
 	public void registersADefaultBridgeOnlyIntoAnEmptyRegistry() {
-		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
-		final ManualClockBridge first = ManualClockBridge.create(1L);
+		final BridgeRegistry<ManualClockBridge> registry = new BridgeRegistry<>("Clock");
+		final ManualClockBridge first = new ManualClockBridge(1L);
 		registry.registerDefault(first);
-		registry.registerDefault(ManualClockBridge.create(2L));
+		registry.registerDefault(new ManualClockBridge(2L));
 		Assert.assertSame(first, registry.get());
 		Assert.assertNull(registry.find(bridge -> bridge.currentTimeMillis() == 2L));
 	}
 
 	@Test
 	public void findsTheLatestBridgeMatchingAFilter() {
-		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
-		final ManualClockBridge early = ManualClockBridge.create(1L);
+		final BridgeRegistry<ManualClockBridge> registry = new BridgeRegistry<>("Clock");
+		final ManualClockBridge early = new ManualClockBridge(1L);
 		registry.register(early);
-		registry.register(ManualClockBridge.create(2L));
+		registry.register(new ManualClockBridge(2L));
 		Assert.assertSame(early, registry.find(bridge -> bridge.currentTimeMillis() == 1L));
 		Assert.assertNull(registry.find(bridge -> bridge.currentTimeMillis() == 3L));
 	}
 
 	@Test
 	public void givesTheHighestPriorityBeforeTheLatestBridge() {
-		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
-		final ManualClockBridge high = ManualClockBridge.create(1L);
-		final ManualClockBridge low = ManualClockBridge.create(2L);
+		final BridgeRegistry<ManualClockBridge> registry = new BridgeRegistry<>("Clock");
+		final ManualClockBridge high = new ManualClockBridge(1L);
+		final ManualClockBridge low = new ManualClockBridge(2L);
 		registry.register(high, 5);
 		registry.register(low, -5);
-		registry.register(ManualClockBridge.create(3L));
+		registry.register(new ManualClockBridge(3L));
 		Assert.assertSame(high, registry.get());
 		Assert.assertSame(low, registry.getBridgeList().get(0));
 	}
 
 	@Test
 	public void ordersItsBridgesByPriorityThenByRegistration() {
-		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
-		final ManualClockBridge low = ManualClockBridge.create(1L);
-		final ManualClockBridge first = ManualClockBridge.create(2L);
-		final ManualClockBridge second = ManualClockBridge.create(3L);
-		final ManualClockBridge high = ManualClockBridge.create(4L);
+		final BridgeRegistry<ManualClockBridge> registry = new BridgeRegistry<>("Clock");
+		final ManualClockBridge low = new ManualClockBridge(1L);
+		final ManualClockBridge first = new ManualClockBridge(2L);
+		final ManualClockBridge second = new ManualClockBridge(3L);
+		final ManualClockBridge high = new ManualClockBridge(4L);
 		registry.register(first);
 		registry.register(high, 1);
 		registry.register(low, -1);
@@ -84,9 +84,9 @@ public class BridgeRegistryTest {
 
 	@Test
 	public void movesABridgeRegisteredAgain() {
-		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
-		final ManualClockBridge first = ManualClockBridge.create(1L);
-		final ManualClockBridge second = ManualClockBridge.create(2L);
+		final BridgeRegistry<ManualClockBridge> registry = new BridgeRegistry<>("Clock");
+		final ManualClockBridge first = new ManualClockBridge(1L);
+		final ManualClockBridge second = new ManualClockBridge(2L);
 		registry.register(first);
 		registry.register(second);
 		registry.register(first);
@@ -97,9 +97,9 @@ public class BridgeRegistryTest {
 
 	@Test
 	public void keepsTheDefaultBridgeBelowEveryOther() {
-		final BridgeRegistry<ManualClockBridge> registry = BridgeRegistry.create("Clock");
-		final ManualClockBridge fallback = ManualClockBridge.create(1L);
-		final ManualClockBridge low = ManualClockBridge.create(2L);
+		final BridgeRegistry<ManualClockBridge> registry = new BridgeRegistry<>("Clock");
+		final ManualClockBridge fallback = new ManualClockBridge(1L);
+		final ManualClockBridge low = new ManualClockBridge(2L);
 		registry.registerDefault(fallback);
 		registry.register(low, Integer.MIN_VALUE + 1);
 		Assert.assertSame(low, registry.get());
@@ -108,7 +108,7 @@ public class BridgeRegistryTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void givesAReadOnlyListOfItsBridges() {
-		BridgeRegistry.<ManualClockBridge>create("Clock").getBridgeList().add(ManualClockBridge.create(1L));
+		new BridgeRegistry<ManualClockBridge>("Clock").getBridgeList().add(new ManualClockBridge(1L));
 	}
 
 }

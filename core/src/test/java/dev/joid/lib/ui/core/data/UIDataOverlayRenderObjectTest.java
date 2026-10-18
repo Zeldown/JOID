@@ -9,14 +9,14 @@ public class UIDataOverlayRenderObjectTest {
 
 	@Test
 	public void startsHiddenAndBelowTheScreens() {
-		final UIDataOverlayRenderObject data = new UIDataOverlayRenderObject();
+		final UIDataOverlayRenderObject data = UIDataOverlayRenderObject.create();
 		Assert.assertFalse(data.always());
 		Assert.assertFalse(data.aboveScreens());
 	}
 
 	@Test
 	public void changesEveryValue() {
-		final UIDataOverlayRenderObject data = new UIDataOverlayRenderObject();
+		final UIDataOverlayRenderObject data = UIDataOverlayRenderObject.create();
 		Assert.assertSame(data, data.always(true).aboveScreens(true));
 		Assert.assertTrue(data.always());
 		Assert.assertTrue(data.aboveScreens());
@@ -26,7 +26,7 @@ public class UIDataOverlayRenderObjectTest {
 	public void takesOnlyTheValuesChangedInTheAnnotation() {
 		final UIDataOverlayRender previous = DefaultUI.class.getAnnotation(UIDataOverlay.class).render();
 		final UIDataOverlayRender next = AlwaysUI.class.getAnnotation(UIDataOverlay.class).render();
-		final UIDataOverlayRenderObject data = new UIDataOverlayRenderObject().aboveScreens(true);
+		final UIDataOverlayRenderObject data = UIDataOverlayRenderObject.create().aboveScreens(true);
 		Assert.assertSame(data, AnnotationValues.merge(data, previous, next));
 		Assert.assertTrue(data.always());
 		Assert.assertTrue(data.aboveScreens());

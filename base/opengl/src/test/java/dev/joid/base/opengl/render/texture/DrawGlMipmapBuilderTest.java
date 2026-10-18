@@ -20,7 +20,7 @@ public class DrawGlMipmapBuilderTest {
 
 	@Test
 	public void drawsTheLevelsWithItsCompiledProgram() {
-		final GlRenderBridge bridge = GlRenderBridge.create(this.binding());
+		final GlRenderBridge bridge = new GlRenderBridge(this.binding());
 		Assert.assertTrue(bridge.getMipmapBuilder() instanceof DrawGlMipmapBuilder);
 
 		bridge.getMipmapBuilder().build(bridge, GlTexture.create(bridge), MipmapChain.of(4, 4, true));

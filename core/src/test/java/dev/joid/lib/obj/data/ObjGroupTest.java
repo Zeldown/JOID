@@ -61,7 +61,7 @@ public class ObjGroupTest {
 	}
 
 	private static ObjFace face(final ObjVertex... vertices) {
-		return ObjFace.create(vertices, null, null);
+		return ObjFace.of(vertices, null, null);
 	}
 
 }

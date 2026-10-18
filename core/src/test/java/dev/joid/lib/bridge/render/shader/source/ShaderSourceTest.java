@@ -42,7 +42,7 @@ public class ShaderSourceTest {
 
 	@Test
 	public void parsesVaryings() {
-		final ShaderSource source = ShaderSource.parse(ShaderStage.VERTEX, "out vec2 vTexCoord;\nflat out vec4 vColor;\n\nvoid main() {\n}\n");
+		final ShaderSource source = ShaderSource.from(ShaderStage.VERTEX, "out vec2 vTexCoord;\nflat out vec4 vColor;\n\nvoid main() {\n}\n");
 		Assert.assertEquals(2, source.getOutputs().size());
 		Assert.assertEquals("vec2 vTexCoord", source.getOutputs().get(0).getDeclaration());
 		Assert.assertFalse(source.getOutputs().get(0).isFlat());
@@ -51,7 +51,7 @@ public class ShaderSourceTest {
 
 	@Test
 	public void keepsLineNumbers() {
-		final String[] lines = ShaderSource.parse(ShaderStage.FRAGMENT, "uniform float u_Radius;\nin vec2 vTexCoord;\n\nvoid main() {\n    fragColor = vec4(u_Radius);\n}").getBody().split("\n", -1);
+		final String[] lines = ShaderSource.from(ShaderStage.FRAGMENT, "uniform float u_Radius;\nin vec2 vTexCoord;\n\nvoid main() {\n    fragColor = vec4(u_Radius);\n}").getBody().split("\n", -1);
 		Assert.assertEquals("", lines[0]);
 		Assert.assertEquals("", lines[1]);
 		Assert.assertEquals("    fragColor = vec4(u_Radius);", lines[4]);
@@ -59,7 +59,7 @@ public class ShaderSourceTest {
 
 	@Test
 	public void keepsTheCommentsThatADeclarationOpensOrCloses() {
-		final String[] lines = ShaderSource.parse(ShaderStage.FRAGMENT, "uniform float u_Time; /* time\n   in seconds */\n/* wave\n*/ uniform float u_Wave;\n\nvoid main() {\n}").getBody().split("\n", -1);
+		final String[] lines = ShaderSource.from(ShaderStage.FRAGMENT, "uniform float u_Time; /* time\n   in seconds */\n/* wave\n*/ uniform float u_Wave;\n\nvoid main() {\n}").getBody().split("\n", -1);
 		Assert.assertEquals("/*", lines[0]);
 		Assert.assertEquals("   in seconds */", lines[1]);
 		Assert.assertEquals("/* wave", lines[2]);
@@ -68,13 +68,13 @@ public class ShaderSourceTest {
 
 	@Test
 	public void detectsUsedBuiltins() {
-		final ShaderSource source = ShaderSource.parse(ShaderStage.VERTEX, "// uNormalMatrix is unused\nvoid main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0); /* aNormal */\n}\n");
+		final ShaderSource source = ShaderSource.from(ShaderStage.VERTEX, "// uNormalMatrix is unused\nvoid main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0); /* aNormal */\n}\n");
 		Assert.assertEquals(EnumSet.of(ShaderBuiltin.POSITION, ShaderBuiltin.PROJECTION_MATRIX, ShaderBuiltin.MODEL_VIEW_MATRIX), source.getBuiltins());
 	}
 
 	@Test
 	public void turnsAVertexShaderIntoALineShader() {
-		final ShaderSource source = ShaderSource.parse(ShaderStage.VERTEX, "out vec4 vColor;\nuniform float u_Wave;\n\nvoid main() {\n    vColor = aColor;\n    gl_Position = vec4(aPosition, u_Wave);\n}\n");
+		final ShaderSource source = ShaderSource.from(ShaderStage.VERTEX, "out vec4 vColor;\nuniform float u_Wave;\n\nvoid main() {\n    vColor = aColor;\n    gl_Position = vec4(aPosition, u_Wave);\n}\n");
 		final ShaderSource line = source.toLine();
 		Assert.assertFalse(source.isLine());
 		Assert.assertTrue(line.isLine());
@@ -88,7 +88,7 @@ public class ShaderSourceTest {
 	@Test
 	public void refusesALineFragmentShader() {
 		try {
-			ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n").toLine();
+			ShaderSource.from(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n").toLine();
 			Assert.fail("A fragment shader must not become a line shader");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("toLine() turns a vertex shader into a line shader, but this source is a FRAGMENT shader: call it on the vertex source", expected.getMessage());
@@ -97,17 +97,17 @@ public class ShaderSourceTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsVertexInputs() {
-		ShaderSource.parse(ShaderStage.VERTEX, "in vec3 aCustom;\n");
+		ShaderSource.from(ShaderStage.VERTEX, "in vec3 aCustom;\n");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void rejectsFragmentOutputs() {
-		ShaderSource.parse(ShaderStage.FRAGMENT, "out vec4 color;\n");
+		ShaderSource.from(ShaderStage.FRAGMENT, "out vec4 color;\n");
 	}
 
 	@Test
 	public void separatesUniformsAndSamplers() {
-		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, "uniform sampler2D tex;\nuniform vec4 u_Color;\nuniform float u_Values[16];\n");
+		final ShaderSource source = ShaderSource.from(ShaderStage.FRAGMENT, "uniform sampler2D tex;\nuniform vec4 u_Color;\nuniform float u_Values[16];\n");
 		Assert.assertEquals(1, source.getSamplers().size());
 		Assert.assertEquals("tex", source.getSamplers().get(0).getName());
 		Assert.assertEquals(2, source.getUniforms().size());
@@ -116,7 +116,7 @@ public class ShaderSourceTest {
 
 	@Test
 	public void ignoresVersionAndBuiltinDeclarations() {
-		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, "#version 330 core\nlayout(location = 0) out vec4 fragColor;\nuniform bool uLighting;\n\nvoid main() {\n    fragColor = vec4(uLighting ? 1.0 : 0.0);\n}\n");
+		final ShaderSource source = ShaderSource.from(ShaderStage.FRAGMENT, "#version 330 core\nlayout(location = 0) out vec4 fragColor;\nuniform bool uLighting;\n\nvoid main() {\n    fragColor = vec4(uLighting ? 1.0 : 0.0);\n}\n");
 		Assert.assertTrue(source.getOutputs().isEmpty());
 		Assert.assertTrue(source.getUniforms().isEmpty());
 		Assert.assertEquals(EnumSet.of(ShaderBuiltin.LIGHTING, ShaderBuiltin.FRAGMENT_COLOR), source.getBuiltins());
@@ -125,8 +125,8 @@ public class ShaderSourceTest {
 
 	@Test
 	public void findsABuiltinByItsIdentifier() {
-		Assert.assertSame(ShaderBuiltin.POSITION, ShaderBuiltin.find("aPosition"));
-		Assert.assertNull(ShaderBuiltin.find("aMissing"));
+		Assert.assertSame(ShaderBuiltin.POSITION, ShaderBuiltin.of("aPosition"));
+		Assert.assertNull(ShaderBuiltin.of("aMissing"));
 	}
 
 }

@@ -18,7 +18,7 @@ public final class SnapshotEntry {
 	private final File           render;
 	private final File           reference;
 
-	public static @NonNull SnapshotEntry create(final @NonNull String name, final @NonNull SnapshotStatus status, final int pixels, final @NonNull File render, final @NonNull File reference) {
+	public static @NonNull SnapshotEntry of(final @NonNull String name, final @NonNull SnapshotStatus status, final int pixels, final @NonNull File render, final @NonNull File reference) {
 		return new SnapshotEntry(name, status, pixels, render, reference);
 	}
 
@@ -26,7 +26,7 @@ public final class SnapshotEntry {
 		final SnapshotImage expected = SnapshotImage.read(reference);
 		final SnapshotDifference difference = actual.compare(expected, tolerance);
 		if (difference.getPixels() == 0) {
-			return SnapshotEntry.create(name, SnapshotStatus.IDENTICAL, 0, render, reference);
+			return SnapshotEntry.of(name, SnapshotStatus.IDENTICAL, 0, render, reference);
 		}
 
 		if (actual.getWidth() != expected.getWidth() || actual.getHeight() != expected.getHeight()) {
@@ -34,7 +34,7 @@ public final class SnapshotEntry {
 		} else {
 			failures.add(name + ": " + difference.getPixels() + " pixels differ from " + against + ", maximum channel delta " + difference.getMaximum());
 		}
-		return SnapshotEntry.create(name, SnapshotStatus.DIFFERENT, difference.getPixels(), render, reference);
+		return SnapshotEntry.of(name, SnapshotStatus.DIFFERENT, difference.getPixels(), render, reference);
 	}
 
 }

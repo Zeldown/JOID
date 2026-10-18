@@ -107,7 +107,7 @@ public abstract class FieldNode<V> extends Node {
 		this.accept         = text -> true;
 		this.normalize      = UnaryOperator.identity();
 		this.maxTextLength  = -1;
-		this.selection      = FieldSelection.create(0, 0);
+		this.selection      = FieldSelection.of(0, 0);
 		this.selectionColor = new Color(50, 152, 253, 100);
 
 		this.textValue = InteractiveValue.create(super.getBindings(), "text", () -> this.text, (final String text) -> this.text = text)
@@ -122,7 +122,7 @@ public abstract class FieldNode<V> extends Node {
 		.clamp(selection -> {
 			final int start = this.snap(Math.min(Math.max(0, selection.getStart()), this.text.length()), false);
 			final int end = this.snap(Math.min(Math.max(0, selection.getEnd()), this.text.length()), false);
-			return FieldSelection.create(start == end ? 0 : start, start == end ? 0 : end);
+			return FieldSelection.of(start == end ? 0 : start, start == end ? 0 : end);
 		})
 		.events(FieldNode.BEFORE_SELECT, (previous, selection) -> NodeChangeEvent.Pre.create(this, previous, selection), FieldNode.SELECT, (previous, selection) -> NodeChangeEvent.Post.create(this, previous, selection));
 
@@ -208,7 +208,7 @@ public abstract class FieldNode<V> extends Node {
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 		if (event.isConsumed() || !super.isHovered()) {
 			if (FieldNode.settle(this.focusedValue, false)) {
-				this.selectionValue.set(FieldSelection.create(0, 0));
+				this.selectionValue.set(FieldSelection.of(0, 0));
 				this.pressCount = 0;
 			}
 			return;
@@ -440,7 +440,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T selection(final int start, final int end) {
-		return this.selectionValue.start(FieldSelection.create(start, end));
+		return this.selectionValue.start(FieldSelection.of(start, end));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T selection(final @NonNull Signal<FieldSelection> selection) {
@@ -500,7 +500,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T select(final int start, final int end) {
-		this.selectionValue.change(FieldSelection.create(start, end));
+		this.selectionValue.change(FieldSelection.of(start, end));
 		return (T) this;
 	}
 
@@ -571,7 +571,7 @@ public abstract class FieldNode<V> extends Node {
 			return false;
 		}
 
-		this.selectionValue.set(FieldSelection.create(0, 0));
+		this.selectionValue.set(FieldSelection.of(0, 0));
 		this.cursorValue.set(start);
 		this.increaseCursor(textToAdd.length());
 		return true;
@@ -581,7 +581,7 @@ public abstract class FieldNode<V> extends Node {
 		final int anchor = this.getAnchor();
 		final int cursor = this.snap(Math.min(Math.max(0, position), this.text.length()), forward);
 		this.cursorValue.set(cursor);
-		this.selectionValue.set(UI.isShiftKeyDown() ? FieldSelection.create(anchor, cursor) : FieldSelection.create(0, 0));
+		this.selectionValue.set(UI.isShiftKeyDown() ? FieldSelection.of(anchor, cursor) : FieldSelection.of(0, 0));
 		if (forward) {
 			this.followCursorForward();
 		} else {
@@ -644,7 +644,7 @@ public abstract class FieldNode<V> extends Node {
 	private void applyFocus(final boolean focused) {
 		if (!focused) {
 			this.commit();
-			this.selectionValue.update(FieldSelection.create(0, 0));
+			this.selectionValue.update(FieldSelection.of(0, 0));
 			this.inputting = false;
 			this.selecting = false;
 		}
@@ -748,7 +748,7 @@ public abstract class FieldNode<V> extends Node {
 		final FieldSelection selection = this.getSelection();
 		if (key == Key.A && this.isShortcutKeyDown()) {
 			this.cursorValue.set(this.text.length());
-			this.selectionValue.set(FieldSelection.create(0, this.text.length()));
+			this.selectionValue.set(FieldSelection.of(0, this.text.length()));
 			return;
 		}
 
@@ -768,7 +768,7 @@ public abstract class FieldNode<V> extends Node {
 			if (this.edit(this.text.substring(0, selection.getStart()) + this.text.substring(selection.getEnd()))) {
 				BridgeHandler.WINDOW.get().setClipboard(cut);
 				this.cursorValue.set(selection.getStart());
-				this.selectionValue.set(FieldSelection.create(0, 0));
+				this.selectionValue.set(FieldSelection.of(0, 0));
 			}
 			return;
 		}
@@ -828,7 +828,7 @@ public abstract class FieldNode<V> extends Node {
 		final int shift = this.text.length() - length;
 		this.cursorValue.update(cursor + shift);
 		if (!selection.isEmpty()) {
-			this.selectionValue.update(FieldSelection.create(selection.getStart() + shift, selection.getEnd() + shift));
+			this.selectionValue.update(FieldSelection.of(selection.getStart() + shift, selection.getEnd() + shift));
 		}
 	}
 
@@ -900,7 +900,7 @@ public abstract class FieldNode<V> extends Node {
 		this.anchorStart = range[0];
 		this.anchorEnd = this.pressCount == 1 ? range[0] : range[1];
 		this.cursorValue.set(range[1]);
-		this.selectionValue.set(FieldSelection.create(range[0], range[1]));
+		this.selectionValue.set(FieldSelection.of(range[0], range[1]));
 	}
 
 	private void drag(final int position) {
@@ -909,7 +909,7 @@ public abstract class FieldNode<V> extends Node {
 		final int anchor = range[0] < this.anchorStart ? this.anchorEnd : this.anchorStart;
 		final int cursor = range[0] < this.anchorStart ? range[0] : Math.max(range[1], this.anchorEnd);
 		this.cursorValue.set(cursor);
-		this.selectionValue.set(FieldSelection.create(anchor, cursor));
+		this.selectionValue.set(FieldSelection.of(anchor, cursor));
 		if (cursor < previous) {
 			this.followCursorBackward();
 		} else {
@@ -961,7 +961,7 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		if (this.edit(this.text.substring(0, selection.getStart()) + this.text.substring(selection.getEnd()))) {
-			this.selectionValue.set(FieldSelection.create(0, 0));
+			this.selectionValue.set(FieldSelection.of(0, 0));
 			this.cursorValue.set(selection.getStart());
 		}
 		return true;

@@ -31,20 +31,20 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void createsAnEmptyRegistryEachTime() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
-		Assert.assertNotSame(registry, UIBridgeRegistry.create());
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
+		Assert.assertNotSame(registry, new UIBridgeRegistry());
 		Assert.assertNull(registry.get(new MenuUI()));
 		Assert.assertNull(registry.get(MenuUI.class));
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void refusesToGiveABridgeBeforeOneIsRegistered() {
-		UIBridgeRegistry.create().get();
+		new UIBridgeRegistry().get();
 	}
 
 	@Test
 	public void routesAUiToTheBridgeThatHandlesIt() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RoutingBridge menus = new RoutingBridge(MenuUI.class);
 		final RoutingBridge huds = new RoutingBridge(HudUI.class);
 		registry.register(menus);
@@ -57,7 +57,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void routesAnOpenUiToTheBridgeThatHoldsIt() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RoutingBridge huds = new RoutingBridge(HudUI.class);
 		final RoutingBridge latest = new RoutingBridge(UI.class);
 		final MenuUI ui = new MenuUI();
@@ -72,7 +72,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void routesAUiToNoBridgeWhenNoneHandlesIt() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		registry.register(new RoutingBridge(MenuUI.class));
 		Assert.assertNull(registry.get(new HudUI()));
 		Assert.assertNull(registry.get(HudUI.class));
@@ -80,7 +80,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void prefersTheLatestBridgeOfTheSamePriority() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RoutingBridge latest = new RoutingBridge(UI.class);
 		registry.register(new RoutingBridge(UI.class));
 		registry.register(latest);
@@ -90,7 +90,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void prefersTheHighestPriorityOverTheLatestBridge() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RoutingBridge highest = new RoutingBridge(UI.class);
 		registry.register(highest, 5);
 		registry.register(new RoutingBridge(UI.class));
@@ -100,7 +100,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void routesToARegisteredBridgeBeforeTheDefaultOne() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RoutingBridge fallback = new RoutingBridge(UI.class);
 		final RoutingBridge lowest = new RoutingBridge(UI.class);
 		registry.registerDefault(fallback);
@@ -112,7 +112,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void routesAnOpenUiToItsHolderWhateverThePriority() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RoutingBridge low = new RoutingBridge(UI.class);
 		final RoutingBridge high = new RoutingBridge(UI.class);
 		final MenuUI ui = new MenuUI();
@@ -125,7 +125,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void forgetsAnUnregisteredBridge() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RoutingBridge bridge = new RoutingBridge(UI.class);
 		registry.register(bridge);
 		registry.unregister(bridge);
@@ -134,7 +134,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void framesEveryBridgeFromTheLowestPriority() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RecordingRenderBridge render = this.bridges.getRender();
 		registry.register(this.bridge("high", Color.BLUE), 1);
 		registry.register(this.bridge("low", Color.RED), -1);
@@ -147,7 +147,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void runsItsFrameTasksOnceAFrameBeforeTheBridges() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		registry.register(this.bridge("high", Color.BLUE), 1);
 		registry.register(this.bridge("low", Color.RED), -1);
 		Assert.assertSame(registry, registry.onFrame(() -> this.trace.add("frame")));
@@ -188,7 +188,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void clearsNothingWithoutUIBridge() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final int clears = this.bridges.getRender().getColorClears();
 		registry.frame();
 		Assert.assertEquals(clears, this.bridges.getRender().getColorClears());
@@ -197,7 +197,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void resizesTheBridgesWhenTheWindowChanges() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final RecordingRenderBridge render = this.bridges.getRender();
 		registry.register(this.bridge("menu", Color.RED));
 		registry.frame();
@@ -214,7 +214,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void sendsAnEventToTheHighestBridgeFirstAndStopsAtTheOneThatConsumesIt() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final TraceUI high = this.open(registry, "high", 1);
 		this.open(registry, "low", 0);
 		high.cancel = true;
@@ -227,7 +227,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void sendsAnEventNoBridgeConsumesToEveryBridge() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		this.open(registry, "high", 1);
 		this.open(registry, "low", 0);
 		Assert.assertFalse(registry.mousePressed(MouseButton.LEFT));
@@ -237,7 +237,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void releasesEveryBridgeThatSawThePress() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final TraceUI high = this.open(registry, "high", 1);
 		this.open(registry, "low", 0);
 		registry.mousePressed(MouseButton.LEFT);
@@ -249,7 +249,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void releasesOnlyTheBridgesThatSawThePress() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final TraceUI high = this.open(registry, "high", 1);
 		this.open(registry, "low", 0);
 		high.cancel = true;
@@ -262,7 +262,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void consumesTheReleaseOfAKeyABridgeConsumed() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		this.open(registry, "high", 1);
 		final TraceUI low = this.open(registry, "low", 0);
 		low.cancel = true;
@@ -277,7 +277,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void releasesAtItsPositionTheKeyOfThePress() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final TraceUI ui = this.open(registry, "ui", 0);
 		ui.cancel = true;
 		Assert.assertTrue(registry.keyPressed(Key.Q, Key.A));
@@ -287,7 +287,7 @@ public class UIBridgeRegistryTest {
 
 	@Test
 	public void knowsTheHeldKeysABridgeConsumed() {
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		final TraceUI ui = this.open(registry, "ui", 0);
 		ui.cancel = true;
 		Assert.assertTrue(registry.keyPressed(Key.Q, Key.A));
@@ -301,12 +301,12 @@ public class UIBridgeRegistryTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToRouteAMissingUi() {
-		UIBridgeRegistry.create().get((UI) null);
+		new UIBridgeRegistry().get((UI) null);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void refusesToRouteAMissingClass() {
-		UIBridgeRegistry.create().get((Class<? extends UI>) null);
+		new UIBridgeRegistry().get((Class<? extends UI>) null);
 	}
 
 	private WindowUIBridge bridge(final String name, final Color background) {

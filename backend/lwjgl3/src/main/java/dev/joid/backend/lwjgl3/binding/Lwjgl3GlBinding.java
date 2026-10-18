@@ -25,8 +25,8 @@ public final class Lwjgl3GlBinding implements IGlBinding {
 
 	private static final Lwjgl3GlBinding INSTANCE = new Lwjgl3GlBinding();
 
-	private final IGlFrameBufferBinding extFrameBufferBinding  = Lwjgl3ExtGlFrameBufferBinding.create();
-	private final IGlFrameBufferBinding coreFrameBufferBinding = Lwjgl3CoreGlFrameBufferBinding.create();
+	private final IGlFrameBufferBinding extFrameBufferBinding  = new Lwjgl3ExtGlFrameBufferBinding();
+	private final IGlFrameBufferBinding coreFrameBufferBinding = new Lwjgl3CoreGlFrameBufferBinding();
 
 	public static @NonNull Lwjgl3GlBinding inst() {
 		return Lwjgl3GlBinding.INSTANCE;

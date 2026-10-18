@@ -46,7 +46,7 @@ public class ShaderPipelineTest {
 	@After
 	public void releaseThePool() {
 		FrameBufferPool.cleanup();
-		BridgeHandler.CLOCK.register(SystemClockBridge.create());
+		BridgeHandler.CLOCK.register(new SystemClockBridge());
 	}
 
 	@Test
@@ -276,7 +276,7 @@ public class ShaderPipelineTest {
 
 	@Test
 	public void releasesTheFrameBuffersLeftUnusedForFiveSeconds() {
-		final ManualClockBridge clock = ManualClockBridge.create(1000L);
+		final ManualClockBridge clock = new ManualClockBridge(1000L);
 		BridgeHandler.CLOCK.register(clock);
 		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
 		clock.advance(3000L);

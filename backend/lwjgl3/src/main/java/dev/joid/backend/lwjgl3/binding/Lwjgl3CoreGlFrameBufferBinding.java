@@ -3,16 +3,8 @@ package dev.joid.backend.lwjgl3.binding;
 import org.lwjgl.opengl.GL30C;
 
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl3CoreGlFrameBufferBinding implements IGlFrameBufferBinding {
-
-	public static @NonNull Lwjgl3CoreGlFrameBufferBinding create() {
-		return new Lwjgl3CoreGlFrameBufferBinding();
-	}
 
 	@Override
 	public int genFramebuffer() {

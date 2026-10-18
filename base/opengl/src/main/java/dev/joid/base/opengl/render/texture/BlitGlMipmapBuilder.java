@@ -4,16 +4,8 @@ import dev.joid.base.opengl.binding.GlConstants;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
 import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.lib.bridge.render.texture.MipmapChain;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BlitGlMipmapBuilder implements IGlMipmapBuilder {
-
-	public static @NonNull BlitGlMipmapBuilder create() {
-		return new BlitGlMipmapBuilder();
-	}
 
 	@Override
 	public void build(final GlRenderBridge bridge, final GlTexture texture, final MipmapChain chain) {

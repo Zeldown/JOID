@@ -198,7 +198,7 @@ public class ListSignalTest {
 
 	@Test
 	public void appliesADeferredMutationOnTheCurrentList() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final ListSignal<String> signal = new ListSignal<>(Collections.singletonList("a"));
 		BridgeHandler.THREAD.register(thread);
 		try {

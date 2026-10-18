@@ -6,19 +6,11 @@ import org.junit.Test;
 public class RotationTest {
 
 	@Test
-	public void startsWithoutAxis() {
-		final Rotation rotation = Rotation.create();
-		Assert.assertEquals(0D, rotation.getPitch(), 0D);
-		Assert.assertEquals(0D, rotation.getYaw(), 0D);
-		Assert.assertEquals(0D, rotation.getRoll(), 0D);
-	}
-
-	@Test
 	public void turnsTheYawAroundTheVerticalAxis() {
 		Assert.assertEquals(0D, Rotation.YAW.getPitch(), 0D);
 		Assert.assertEquals(1D, Rotation.YAW.getYaw(), 0D);
 		Assert.assertEquals(0D, Rotation.YAW.getRoll(), 0D);
-		Assert.assertEquals(1D, Rotation.create(1D, 0D, 0D).getYaw(), 0D);
+		Assert.assertEquals(1D, Rotation.of(1D, 0D, 0D).getYaw(), 0D);
 	}
 
 	@Test
@@ -26,8 +18,8 @@ public class RotationTest {
 		Assert.assertEquals(1D, Rotation.PITCH.getPitch(), 0D);
 		Assert.assertEquals(0D, Rotation.PITCH.getYaw(), 0D);
 		Assert.assertEquals(0D, Rotation.PITCH.getRoll(), 0D);
-		Assert.assertEquals(1D, Rotation.create(0D, 1D, 0D).getPitch(), 0D);
-		Assert.assertEquals(1D, Rotation.create(() -> 0D, () -> 1D, () -> 0D).getPitch(), 0D);
+		Assert.assertEquals(1D, Rotation.of(0D, 1D, 0D).getPitch(), 0D);
+		Assert.assertEquals(1D, Rotation.of(() -> 0D, () -> 1D, () -> 0D).getPitch(), 0D);
 	}
 
 	@Test
@@ -35,8 +27,8 @@ public class RotationTest {
 		Assert.assertEquals(0D, Rotation.ROLL.getPitch(), 0D);
 		Assert.assertEquals(0D, Rotation.ROLL.getYaw(), 0D);
 		Assert.assertEquals(1D, Rotation.ROLL.getRoll(), 0D);
-		Assert.assertEquals(1D, Rotation.create(0D, 0D, 1D).getRoll(), 0D);
-		Assert.assertEquals(1D, Rotation.create(() -> 0D, () -> 0D, () -> 1D).getRoll(), 0D);
+		Assert.assertEquals(1D, Rotation.of(0D, 0D, 1D).getRoll(), 0D);
+		Assert.assertEquals(1D, Rotation.of(() -> 0D, () -> 0D, () -> 1D).getRoll(), 0D);
 	}
 
 	@Test
@@ -56,7 +48,7 @@ public class RotationTest {
 	@Test
 	public void readsItsSuppliersOnEveryCall() {
 		final double[] yaw = {0.5D};
-		final Rotation rotation = Rotation.create(() -> yaw[0], () -> 0D, () -> 0D);
+		final Rotation rotation = Rotation.of(() -> yaw[0], () -> 0D, () -> 0D);
 		Assert.assertEquals(0.5D, rotation.getYaw(), 0D);
 		yaw[0] = 1D;
 		Assert.assertEquals(1D, rotation.getYaw(), 0D);

@@ -15,8 +15,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 
 public class DemoWindow extends DemoUIBridge {
 
-	private final Lwjgl2Backend        backend;
-	private final Lwjgl2InputForwarder input;
+	private final Lwjgl2Backend backend;
 
 	public DemoWindow() throws LWJGLException {
 		this.backend = Lwjgl2Backend.create();
@@ -28,7 +27,6 @@ public class DemoWindow extends DemoUIBridge {
 		Keyboard.enableRepeatEvents(true);
 		JOID.onReady(() -> BridgeHandler.UI.register(this));
 		this.backend.register();
-		this.input = Lwjgl2InputForwarder.create();
 	}
 
 	public static void main(final String[] args) throws LWJGLException {
@@ -53,7 +51,7 @@ public class DemoWindow extends DemoUIBridge {
 				continue;
 			}
 
-			this.input.poll();
+			Lwjgl2InputForwarder.poll();
 			this.backend.frame();
 			Display.update();
 		}

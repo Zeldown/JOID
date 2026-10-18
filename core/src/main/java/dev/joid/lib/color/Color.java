@@ -49,8 +49,8 @@ public final class Color extends LockableValue<Color> {
 	@EqualsAndHashCode.Exclude
 	private String constant;
 
-	public Color(final Color color) {
-		this(color.r, color.g, color.b, color.a, color.update, color.isGradient() ? new ColorGradient(color.gradient.getStartColor().copy(), color.gradient.getEndColor().copy(), color.gradient.getStartPoint(), color.gradient.getEndPoint()) : null);
+	private Color(final Color color) {
+		this(color.r, color.g, color.b, color.a, color.update, color.isGradient() ? ColorGradient.of(color.gradient.getStartColor().copy(), color.gradient.getEndColor().copy(), color.gradient.getStartPoint(), color.gradient.getEndPoint()) : null);
 	}
 
 	public Color(final FloatBuffer buffer) {
@@ -129,7 +129,7 @@ public final class Color extends LockableValue<Color> {
 			final List<String> parts = Color.arguments(text, 9, 2, 6);
 			final Point startPoint = parts.size() == 2 ? Point.of(0D, 0D) : Point.of(Double.parseDouble(parts.get(2)), Double.parseDouble(parts.get(3)));
 			final Point endPoint = parts.size() == 2 ? Point.of(1D, 0D) : Point.of(Double.parseDouble(parts.get(4)), Double.parseDouble(parts.get(5)));
-			return new Color(new ColorGradient(Color.decode(parts.get(0)), Color.decode(parts.get(1)), startPoint, endPoint));
+			return new Color(ColorGradient.of(Color.decode(parts.get(0)), Color.decode(parts.get(1)), startPoint, endPoint));
 		}
 
 		final String hex = text.startsWith("#") ? text : "#" + text;
@@ -149,15 +149,7 @@ public final class Color extends LockableValue<Color> {
 		throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
 	}
 
-	public static @NonNull Color fill(final int color) {
-		return new Color(color, color, color);
-	}
-
-	public static @NonNull Color fill(final float color) {
-		return new Color(color, color, color);
-	}
-
-	public static @NonNull Color transition(final @NonNull Color color1, final @NonNull Color color2, final float progress) {
+	private static @NonNull Color transition(final @NonNull Color color1, final @NonNull Color color2, final float progress) {
 		if (progress == 0F) {
 			return color1.copy();
 		}
@@ -179,28 +171,24 @@ public final class Color extends LockableValue<Color> {
 			final Color end = Color.lerp(g1.getEndColor(), g2.getEndColor(), progress);
 			final Point startPoint = Point.of(g1.getStartPoint().getX() * inv + g2.getStartPoint().getX() * progress, g1.getStartPoint().getY() * inv + g2.getStartPoint().getY() * progress);
 			final Point endPoint = Point.of(g1.getEndPoint().getX() * inv + g2.getEndPoint().getX() * progress, g1.getEndPoint().getY() * inv + g2.getEndPoint().getY() * progress);
-			return new Color(new ColorGradient(start, end, startPoint, endPoint));
+			return new Color(ColorGradient.of(start, end, startPoint, endPoint));
 		}
 
 		if (color1.isGradient()) {
 			final ColorGradient g = color1.gradient;
 			final Color start = Color.lerp(g.getStartColor(), color2, progress);
 			final Color end = Color.lerp(g.getEndColor(), color2, progress);
-			return new Color(new ColorGradient(start, end, g.getStartPoint(), g.getEndPoint()));
+			return new Color(ColorGradient.of(start, end, g.getStartPoint(), g.getEndPoint()));
 		}
 
 		if (color2.isGradient()) {
 			final ColorGradient g = color2.gradient;
 			final Color start = Color.lerp(color1, g.getStartColor(), progress);
 			final Color end = Color.lerp(color1, g.getEndColor(), progress);
-			return new Color(new ColorGradient(start, end, g.getStartPoint(), g.getEndPoint()));
+			return new Color(ColorGradient.of(start, end, g.getStartPoint(), g.getEndPoint()));
 		}
 
 		return Color.lerp(color1, color2, progress);
-	}
-
-	public static @NonNull Color gradient(final @NonNull Color color1, final @NonNull Color color2, final @NonNull Point startPoint, final @NonNull Point endPoint) {
-		return new Color(new ColorGradient(color1, color2, startPoint, endPoint));
 	}
 
 	public static @NonNull Color RAINBOW() {
@@ -324,7 +312,7 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	public @NonNull Color toGradient(final @NonNull Color target, final @NonNull Point startPoint, final @NonNull Point endPoint) {
-		return Color.gradient(this, target, startPoint, endPoint);
+		return new Color(ColorGradient.of(this, target, startPoint, endPoint));
 	}
 
 	public @NonNull Color red(final float red) {
@@ -356,7 +344,7 @@ public final class Color extends LockableValue<Color> {
 			final Color start = this.gradient.getStartColor();
 			final Color end = this.gradient.getEndColor();
 			final float scale = this.a > 0F ? alpha / this.a : 0F;
-			return new Color(this.r, this.g, this.b, alpha, this.follow(color -> color.withAlpha(alpha)), new ColorGradient(start.withAlpha(this.a > 0F ? start.a * scale : alpha), end.withAlpha(this.a > 0F ? end.a * scale : alpha), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
+			return new Color(this.r, this.g, this.b, alpha, this.follow(color -> color.withAlpha(alpha)), ColorGradient.of(start.withAlpha(this.a > 0F ? start.a * scale : alpha), end.withAlpha(this.a > 0F ? end.a * scale : alpha), this.gradient.getStartPoint(), this.gradient.getEndPoint()));
 		}
 		return new Color(this.r, this.g, this.b, alpha, this.follow(color -> color.withAlpha(alpha)));
 	}
@@ -402,7 +390,7 @@ public final class Color extends LockableValue<Color> {
 	}
 
 	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform) {
-		final ColorGradient gradient = this.isGradient() ? new ColorGradient(transform.apply(this.gradient.getStartColor()), transform.apply(this.gradient.getEndColor()), this.gradient.getStartPoint(), this.gradient.getEndPoint()) : null;
+		final ColorGradient gradient = this.isGradient() ? ColorGradient.of(transform.apply(this.gradient.getStartColor()), transform.apply(this.gradient.getEndColor()), this.gradient.getStartPoint(), this.gradient.getEndPoint()) : null;
 		return new Color(r, g, b, a, this.follow(transform), gradient);
 	}
 

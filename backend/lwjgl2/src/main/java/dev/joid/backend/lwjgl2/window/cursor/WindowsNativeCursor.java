@@ -8,18 +8,13 @@ import com.sun.jna.Native;
 import com.sun.jna.Pointer;
 
 import dev.joid.lib.input.cursor.Cursor;
-import lombok.NonNull;
 
 public final class WindowsNativeCursor extends NativeCursor {
 
 	private final Function loadCursor;
 
-	private WindowsNativeCursor() throws ReflectiveOperationException {
+	public WindowsNativeCursor() throws ReflectiveOperationException {
 		this.loadCursor = Function.getFunction("user32", "LoadCursorW", Function.class.getField("ALT_CONVENTION").getInt(null));
-	}
-
-	public static @NonNull WindowsNativeCursor create() throws ReflectiveOperationException {
-		return new WindowsNativeCursor();
 	}
 
 	@Override

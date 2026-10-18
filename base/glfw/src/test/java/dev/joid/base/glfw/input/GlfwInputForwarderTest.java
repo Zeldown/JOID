@@ -35,7 +35,7 @@ public class GlfwInputForwarderTest {
 
 	private final List<String>  trace  = new ArrayList<>();
 	private final TraceUI       ui     = new TraceUI(this.trace);
-	private final DemoUIBridge  bridge = new DemoUIBridge();
+	private final DemoUIBridge  bridge = DemoUIBridge.create();
 	private final IWindowBridge fixed  = new FixedWindowBridge();
 
 	private boolean devMode;
@@ -70,7 +70,7 @@ public class GlfwInputForwarderTest {
 		GLFW.glfwSetScrollCallback(GlfwInputForwarderTest.window, (handle, x, y) -> this.trace.add("passed scroll"));
 		GLFW.glfwSetKeyCallback(GlfwInputForwarderTest.window, (handle, code, scancode, action, mods) -> this.trace.add("passed key"));
 		GLFW.glfwSetMouseButtonCallback(GlfwInputForwarderTest.window, (handle, code, action, mods) -> this.trace.add("passed button"));
-		GlfwInputForwarder.create().attach(GlfwInputForwarderTest.window);
+		GlfwInputForwarder.attach(GlfwInputForwarderTest.window);
 	}
 
 	@After

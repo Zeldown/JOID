@@ -161,11 +161,11 @@ public abstract class UI implements IIndexedElement {
 
 	protected UI() {
 		this.annotationMap = UI.annotations(this.getClass());
-		this.data          = AnnotationValues.read(this.annotationMap.get(UIData.class), new UIDataObject());
-		this.debug         = AnnotationValues.read(this.annotationMap.get(UIDataDebug.class), new UIDataDebugObject());
-		this.popup         = AnnotationValues.read(this.annotationMap.get(UIDataPopup.class), new UIDataPopupObject());
-		this.scale         = AnnotationValues.read(this.annotationMap.get(UIDataScale.class), new UIDataScaleObject());
-		this.overlay       = AnnotationValues.read(this.annotationMap.get(UIDataOverlay.class), new UIDataOverlayObject());
+		this.data          = AnnotationValues.read(this.annotationMap.get(UIData.class), UIDataObject.create());
+		this.debug         = AnnotationValues.read(this.annotationMap.get(UIDataDebug.class), UIDataDebugObject.create());
+		this.popup         = AnnotationValues.read(this.annotationMap.get(UIDataPopup.class), UIDataPopupObject.create());
+		this.scale         = AnnotationValues.read(this.annotationMap.get(UIDataScale.class), UIDataScaleObject.create());
+		this.overlay       = AnnotationValues.read(this.annotationMap.get(UIDataOverlay.class), UIDataOverlayObject.create());
 
 		if (this.popup.active() && this.overlay.active()) {
 			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
@@ -179,7 +179,7 @@ public abstract class UI implements IIndexedElement {
 
 		this.view = UIView.create(this.data.getAnchorPositionX(), this.data.getAnchorPositionY());
 
-		this.bindings         = NodeBindings.create(this, this.eventBus, () -> JOIDLog.nameOf(this.getClass()), this::traced);
+		this.bindings         = new NodeBindings(this, this.eventBus, () -> JOIDLog.nameOf(this.getClass()), this::traced);
 		this.taskList         = new CopyOnWriteArrayList<>();
 		this.keptTaskList     = new ArrayList<>();
 		this.shortcutList     = new CopyOnWriteArrayList<>();

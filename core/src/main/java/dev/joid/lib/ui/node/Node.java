@@ -270,7 +270,7 @@ public abstract class Node implements INode {
 
 	protected Node(final double x, final double y, final double width, final double height) {
 		this.eventBus = EventBus.create(this::describe);
-		this.bindings = NodeBindings.create(this, this.eventBus, () -> JOIDLog.nameOf(this.getClass()), this::replay);
+		this.bindings = new NodeBindings(this, this.eventBus, () -> JOIDLog.nameOf(this.getClass()), this::replay);
 
 		this.taskList        = new CopyOnWriteArrayList<>();
 		this.shortcutList    = new CopyOnWriteArrayList<>();
@@ -414,7 +414,7 @@ public abstract class Node implements INode {
 			}
 
 			if (!lines.isEmpty()) {
-				hoverList.add(TextHoverElement.create(lines));
+				hoverList.add(TextHoverElement.of(lines));
 			}
 		}
 

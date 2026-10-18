@@ -31,7 +31,7 @@ public final class GlShader extends Shader {
 	@Getter private boolean programActive;
 
 	private GlShader(final GlRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
-		super(bridge, GlslShaderTranslator.create(bridge.getCapabilities().getDialect(), UniformLayout.LOOSE), vertex, fragment, blend);
+		super(bridge, new GlslShaderTranslator(bridge.getCapabilities().getDialect(), UniformLayout.LOOSE), vertex, fragment, blend);
 		this.binding     = bridge.getBinding();
 		this.locationMap = new HashMap<>();
 	}

@@ -34,13 +34,13 @@ public class ShaderFeatureTest {
 
 	@Test
 	public void findsTheFeaturesOfTheDeclarations() {
-		final ShaderSource source = ShaderSource.parse(ShaderStage.FRAGMENT, "flat in vec4 vColor;\nuniform uint u_Count;\n\nvoid main() {\n    fragColor = vColor;\n}\n");
+		final ShaderSource source = ShaderSource.from(ShaderStage.FRAGMENT, "flat in vec4 vColor;\nuniform uint u_Count;\n\nvoid main() {\n    fragColor = vColor;\n}\n");
 		Assert.assertEquals(EnumSet.of(ShaderFeature.FLAT_VARYINGS, ShaderFeature.UNSIGNED_INTEGERS), source.getFeatures());
 	}
 
 	@Test
 	public void ignoresTheFeaturesOfTheComments() {
-		Assert.assertTrue(ShaderSource.parse(ShaderStage.FRAGMENT, "// uint and a << b\nvoid main() {\n    fragColor = vec4(1.0); /* switch */\n}\n").getFeatures().isEmpty());
+		Assert.assertTrue(ShaderSource.from(ShaderStage.FRAGMENT, "// uint and a << b\nvoid main() {\n    fragColor = vec4(1.0); /* switch */\n}\n").getFeatures().isEmpty());
 	}
 
 	@Test

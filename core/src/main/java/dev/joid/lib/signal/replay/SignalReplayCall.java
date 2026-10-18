@@ -13,7 +13,7 @@ public final class SignalReplayCall {
 	private final StackTraceElement caller;
 	private final String            setter;
 
-	public static SignalReplayCall create(final StackTraceElement caller, final String setter) {
+	public static SignalReplayCall of(final StackTraceElement caller, final String setter) {
 		return new SignalReplayCall(caller, setter);
 	}
 

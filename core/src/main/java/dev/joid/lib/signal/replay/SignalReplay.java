@@ -151,7 +151,7 @@ public final class SignalReplay {
 		final SignalReplayMatch match = state.pick(call.getKey(), matchList);
 		state.putBack(match.getRemainingList(readList));
 		final List<Signal<?>> consumedList = match.getReadList(readList);
-		return consumedList.isEmpty() ? null : SignalReplayBinding.create(call, match, consumedList, value);
+		return consumedList.isEmpty() ? null : new SignalReplayBinding<>(call, match, consumedList, value);
 	}
 
 	private static SignalReplayCall locate(final StackTraceElement[] stack, final State state) {
@@ -160,7 +160,7 @@ public final class SignalReplay {
 				return null;
 			}
 
-			final SignalReplayCall call = SignalReplayCall.create(stack[index], stack[index - 1].getMethodName());
+			final SignalReplayCall call = SignalReplayCall.of(stack[index], stack[index - 1].getMethodName());
 			final SignalReplaySite site = SignalReplay.site(call, state.findOwner(call.getCaller().getClassName()));
 			if (!site.isPassThrough()) {
 				return SignalReplay.isLibrary(stack[index].getClassName()) ? null : call;
@@ -249,7 +249,7 @@ public final class SignalReplay {
 		if (consumed == null) {
 			throw new SignalReplayException(SignalReplayFailure.SIGNALS_DIFFER);
 		}
-		return SignalReplayMatch.create(slice, run, holeMap, consumed);
+		return SignalReplayMatch.of(slice, run, holeMap, consumed);
 	}
 
 	private static boolean[] consume(final List<Signal<?>> readList, final List<Signal<?>> directList, final List<Signal<?>> definitionList) {

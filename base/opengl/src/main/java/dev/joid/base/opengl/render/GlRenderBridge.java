@@ -41,17 +41,13 @@ public class GlRenderBridge extends RenderBridge {
 
 	private int screenFrameBuffer;
 
-	protected GlRenderBridge(final @NonNull IGlBinding binding) {
+	public GlRenderBridge(final @NonNull IGlBinding binding) {
 		this.capabilities       = GlCapabilities.read(binding).require();
-		this.guard              = GlStateGuard.create(binding, this.capabilities);
+		this.guard              = new GlStateGuard(binding, this.capabilities);
 		this.binding            = this.guard.getBinding();
-		this.mipmapBuilder      = this.capabilities.hasFrameBufferBlit() ? BlitGlMipmapBuilder.create() : DrawGlMipmapBuilder.create();
+		this.mipmapBuilder      = this.capabilities.hasFrameBufferBlit() ? new BlitGlMipmapBuilder() : new DrawGlMipmapBuilder();
 		this.frameBufferBinding = this.binding.getFrameBufferBinding(this.capabilities.getFrameBufferFamily());
-		this.vertexInput        = this.guard.call(() -> GlVertexInput.create(this.binding, this.capabilities.hasVertexArrays()));
-	}
-
-	public static @NonNull GlRenderBridge create(final @NonNull IGlBinding binding) {
-		return new GlRenderBridge(binding);
+		this.vertexInput        = this.guard.call(() -> new GlVertexInput(this.binding, this.capabilities.hasVertexArrays()));
 	}
 
 	@Override

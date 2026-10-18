@@ -27,12 +27,12 @@ public final class Lwjgl2Backend extends Backend {
 
 	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
-		return Lwjgl2WindowBridge.create();
+		return new Lwjgl2WindowBridge();
 	}
 
 	@Override
 	protected @NonNull IRenderBridge createRenderBridge() {
-		return GlRenderBridge.create(Lwjgl2GlBinding.inst());
+		return new GlRenderBridge(Lwjgl2GlBinding.inst());
 	}
 
 }

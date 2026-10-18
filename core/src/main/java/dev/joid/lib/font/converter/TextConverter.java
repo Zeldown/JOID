@@ -11,7 +11,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextConverter {
 
-	private static final Registry<ITextConverter> CONVERTERS = Registry.create();
+	private static final Registry<ITextConverter> CONVERTERS = new Registry<>();
 
 	public static void register(final @NonNull ITextConverter converter) {
 		TextConverter.CONVERTERS.register(converter);

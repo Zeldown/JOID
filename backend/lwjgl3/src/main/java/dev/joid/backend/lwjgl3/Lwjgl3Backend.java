@@ -40,17 +40,17 @@ public final class Lwjgl3Backend extends Backend {
 
 	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
-		return GlfwWindowBridge.create(this.window);
+		return new GlfwWindowBridge(this.window);
 	}
 
 	@Override
 	protected @NonNull IRenderBridge createRenderBridge() {
-		return GlRenderBridge.create(this.binding);
+		return new GlRenderBridge(this.binding);
 	}
 
 	@Override
 	protected void attachInput() {
-		GlfwInputForwarder.create().attach(this.window);
+		GlfwInputForwarder.attach(this.window);
 	}
 
 }

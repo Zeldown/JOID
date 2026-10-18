@@ -25,7 +25,7 @@ public class InteractiveValueTest {
 
 	private final List<String> trace    = new ArrayList<>();
 	private final RectNode     node     = RectNode.create(0D, 0D, 10D, 10D);
-	private final NodeBindings bindings = NodeBindings.create(this.node, EventBus.create(() -> "RectNode"), () -> "RectNode", Runnable::run);
+	private final NodeBindings bindings = new NodeBindings(this.node, EventBus.create(() -> "RectNode"), () -> "RectNode", Runnable::run);
 
 	private int     amount;
 	private boolean opened;

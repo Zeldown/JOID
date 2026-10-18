@@ -47,7 +47,7 @@ public final class Lwjgl3BorrowedTextureBackend implements IBorrowedTextureBacke
 
 	@Override
 	public @NonNull ITexture borrow(final @NonNull Supplier<Object> texture) {
-		return GlBorrowedTexture.create(() -> (Integer) texture.get());
+		return GlBorrowedTexture.of(() -> (Integer) texture.get());
 	}
 
 	@Override

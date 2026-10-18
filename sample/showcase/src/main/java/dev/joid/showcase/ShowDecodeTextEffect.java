@@ -15,7 +15,7 @@ public final class ShowDecodeTextEffect implements ITextEffect {
 	private final Color  accent;
 	private final double stagger;
 
-	public static @NonNull ShowDecodeTextEffect create(final long start, final @NonNull Color accent, final double stagger) {
+	public static @NonNull ShowDecodeTextEffect of(final long start, final @NonNull Color accent, final double stagger) {
 		return new ShowDecodeTextEffect(start, accent, stagger);
 	}
 

@@ -43,7 +43,7 @@ public final class MsdfFontLoader {
 			for (int i = 0; i < loaded.length; i++) {
 				loaded[i] = futures.get(i).join();
 			}
-			return MsdfFont.create(loaded);
+			return MsdfFont.of(loaded);
 		}));
 	}
 

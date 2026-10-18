@@ -48,7 +48,7 @@ public final class VulkanBorrowedTextureBackend implements IBorrowedTextureBacke
 
 	@Override
 	public @NonNull ITexture borrow(final @NonNull Supplier<Object> texture) {
-		return VulkanBorrowedTexture.create(() -> (VulkanImage) texture.get());
+		return VulkanBorrowedTexture.of(() -> (VulkanImage) texture.get());
 	}
 
 	@Override

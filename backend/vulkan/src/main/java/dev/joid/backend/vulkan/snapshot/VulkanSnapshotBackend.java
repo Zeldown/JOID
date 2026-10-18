@@ -78,7 +78,7 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 		VK10.vkQueueWaitIdle(this.host.getQueue());
 
 		final boolean bgra = this.host.getColorFormat() == VK10.VK_FORMAT_B8G8R8A8_UNORM || this.host.getColorFormat() == VK10.VK_FORMAT_B8G8R8A8_SRGB;
-		final SnapshotImage snapshot = SnapshotImage.fromBytes(MemoryUtil.memByteBuffer(buffer.getAddress(), width * height * 4), width, height, false, bgra ? PixelLayout.BGRA8 : PixelLayout.RGBA8);
+		final SnapshotImage snapshot = SnapshotImage.from(MemoryUtil.memByteBuffer(buffer.getAddress(), width * height * 4), width, height, false, bgra ? PixelLayout.BGRA8 : PixelLayout.RGBA8);
 		buffer.destroy();
 		return snapshot;
 	}

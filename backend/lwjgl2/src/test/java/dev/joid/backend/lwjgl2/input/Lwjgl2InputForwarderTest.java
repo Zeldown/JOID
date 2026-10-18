@@ -24,17 +24,14 @@ public class Lwjgl2InputForwarderTest {
 
 	private final List<String>      trace  = new ArrayList<>();
 	private final TraceUI           ui     = new TraceUI(this.trace);
-	private final DemoUIBridge      bridge = new DemoUIBridge();
+	private final DemoUIBridge      bridge = DemoUIBridge.create();
 	private final FixedWindowBridge window = new FixedWindowBridge();
-
-	private Lwjgl2InputForwarder input;
 
 	@Before
 	public void openAUi() {
 		BridgeHandler.WINDOW.register(this.window);
 		this.bridge.add(this.ui);
 		BridgeHandler.UI.register(this.bridge);
-		this.input = Lwjgl2InputForwarder.create();
 	}
 
 	@After
@@ -96,7 +93,7 @@ public class Lwjgl2InputForwarderTest {
 
 		final Method release = Lwjgl2InputForwarder.class.getDeclaredMethod("keyReleased", int.class);
 		release.setAccessible(true);
-		release.invoke(this.input, Keyboard.KEY_Q);
+		release.invoke(null, Keyboard.KEY_Q);
 		Assert.assertFalse(Key.A.isDown());
 	}
 
@@ -107,7 +104,7 @@ public class Lwjgl2InputForwarderTest {
 	private void keyPressed(final int code, final char character, final boolean repeat) throws Exception {
 		final Method press = Lwjgl2InputForwarder.class.getDeclaredMethod("keyPressed", int.class, char.class, boolean.class);
 		press.setAccessible(true);
-		press.invoke(this.input, code, character, repeat);
+		press.invoke(null, code, character, repeat);
 	}
 
 	public static final class TraceUI extends UI {

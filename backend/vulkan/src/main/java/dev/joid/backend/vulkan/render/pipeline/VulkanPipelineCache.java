@@ -31,20 +31,15 @@ import dev.joid.lib.bridge.render.state.PipelineKey;
 import dev.joid.lib.bridge.render.vertex.Primitive;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
-import lombok.NonNull;
 
 public final class VulkanPipelineCache {
 
 	private final VulkanContext            context;
 	private final Map<PipelineKey, long[]> pipelineMap;
 
-	private VulkanPipelineCache(final VulkanContext context) {
+	public VulkanPipelineCache(final VulkanContext context) {
 		this.context     = context;
 		this.pipelineMap = new HashMap<>();
-	}
-
-	public static @NonNull VulkanPipelineCache create(final VulkanContext context) {
-		return new VulkanPipelineCache(context);
 	}
 
 	public void destroy() {

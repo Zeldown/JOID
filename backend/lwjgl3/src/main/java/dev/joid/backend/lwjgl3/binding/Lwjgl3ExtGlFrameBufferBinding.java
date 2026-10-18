@@ -4,16 +4,8 @@ import org.lwjgl.opengl.EXTFramebufferBlit;
 import org.lwjgl.opengl.EXTFramebufferObject;
 
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl3ExtGlFrameBufferBinding implements IGlFrameBufferBinding {
-
-	public static @NonNull Lwjgl3ExtGlFrameBufferBinding create() {
-		return new Lwjgl3ExtGlFrameBufferBinding();
-	}
 
 	@Override
 	public int genFramebuffer() {

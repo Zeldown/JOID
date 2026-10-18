@@ -44,9 +44,9 @@ public class GlRenderBridgeTest {
 		GL11.glTranslatef(5F, 7F, -2000F);
 		FixedMatrixImport.create(bridge).apply();
 
-		final MatrixStack projection = MatrixStack.create();
+		final MatrixStack projection = new MatrixStack();
 		projection.ortho(0D, 320D, 240D, 0D, 1000D, 3000D);
-		final MatrixStack modelView = MatrixStack.create();
+		final MatrixStack modelView = new MatrixStack();
 		modelView.translate(5D, 7D, -2000D);
 		Assert.assertArrayEquals(projection.getMatrix(), bridge.getProjection().getMatrix(), 1E-6F);
 		Assert.assertArrayEquals(modelView.getMatrix(), bridge.getModelView().getMatrix(), 0F);
@@ -67,7 +67,7 @@ public class GlRenderBridgeTest {
 		System.setErr(new PrintStream(output, true));
 		JOIDEnv.devMode(true);
 		try {
-			final Resource resource = Resource.of(GlBorrowedTexture.create(2147483000));
+			final Resource resource = Resource.of(GlBorrowedTexture.of(2147483000));
 			resource.prepareBind();
 			Assert.assertTrue(resource.isFailed());
 		} finally {

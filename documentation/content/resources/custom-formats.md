@@ -191,7 +191,7 @@ public class StripAnimationReader implements IResourceAnimationReader {
 
 		final int width = strip.getWidth() / this.frameCount;
 		final int height = strip.getHeight();
-		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(width, height);
+		final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(width, height);
 		final List<ResourceAnimationFrame> frames = new ArrayList<>();
 		for (int i = 0; i < this.frameCount; i++) {
 			final int[] pixels = strip.getRGB(i * width, 0, width, height, null, 0, width);
@@ -216,7 +216,7 @@ ResourceNode.create(100, 100, 128, 128).resource(coin).attach(this);
 |---|---|
 | `ResourceAnimation` | `create(width, height, plays, frames)`: `plays` is the number of plays, `0` to loop forever. |
 | `ResourceAnimationFrame` | `create(int[] pixels, long duration)`: full-size ARGB pixels and a duration in milliseconds. |
-| `ResourceAnimationCanvas` | `create(width, height)`, then `compose(frame, x, y, frameWidth, frameHeight, blend, disposal)` draws a partial frame and returns the whole canvas. |
+| `ResourceAnimationCanvas` | `new ResourceAnimationCanvas(width, height)`, then `compose(frame, x, y, frameWidth, frameHeight, blend, disposal)` draws a partial frame and returns the whole canvas. |
 | `Blend`, `Disposal` | `SOURCE` replaces, `OVER` blends; before the next frame, `NONE` keeps, `BACKGROUND` clears, `PREVIOUS` restores. |
 
 ## Resolvers for in-memory inputs

@@ -17,7 +17,7 @@ public class DemoPixelFontFaceTest {
 
 	@BeforeClass
 	public static void load() throws IOException {
-		DemoPixelFontFaceTest.face = DemoPixelFontFace.create(ImageIO.read(JOID.class.getResourceAsStream("/assets/demo/fonts/Pixel/Pixel.png")));
+		DemoPixelFontFaceTest.face = DemoPixelFontFace.from(ImageIO.read(JOID.class.getResourceAsStream("/assets/demo/fonts/Pixel/Pixel.png")));
 	}
 
 	@Test

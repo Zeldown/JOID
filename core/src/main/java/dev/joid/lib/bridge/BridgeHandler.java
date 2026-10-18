@@ -15,17 +15,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BridgeHandler {
 
-	public static final UIBridgeRegistry                      UI            = UIBridgeRegistry.create();
-	public static final BridgeRegistry<IAudioBridge>          AUDIO         = BridgeRegistry.create("AUDIO");
-	public static final BridgeRegistry<IClockBridge>          CLOCK         = BridgeRegistry.create("CLOCK");
-	public static final BridgeRegistry<IWindowBridge>         WINDOW        = BridgeRegistry.create("WINDOW");
-	public static final BridgeRegistry<IRenderBridge>         RENDER        = BridgeRegistry.create("RENDER");
-	public static final BridgeRegistry<IThreadBridge>         THREAD        = BridgeRegistry.create("THREAD");
-	public static final BridgeRegistry<ISignalReplayBridge> SIGNAL_REPLAY = BridgeRegistry.create("SIGNAL_REPLAY");
+	public static final UIBridgeRegistry                      UI            = new UIBridgeRegistry();
+	public static final BridgeRegistry<IAudioBridge>          AUDIO         = new BridgeRegistry<>("AUDIO");
+	public static final BridgeRegistry<IClockBridge>          CLOCK         = new BridgeRegistry<>("CLOCK");
+	public static final BridgeRegistry<IWindowBridge>         WINDOW        = new BridgeRegistry<>("WINDOW");
+	public static final BridgeRegistry<IRenderBridge>         RENDER        = new BridgeRegistry<>("RENDER");
+	public static final BridgeRegistry<IThreadBridge>         THREAD        = new BridgeRegistry<>("THREAD");
+	public static final BridgeRegistry<ISignalReplayBridge> SIGNAL_REPLAY = new BridgeRegistry<>("SIGNAL_REPLAY");
 
 	static {
-		BridgeHandler.CLOCK.register(SystemClockBridge.create());
-		BridgeHandler.THREAD.register(DirectThreadBridge.create());
+		BridgeHandler.CLOCK.register(new SystemClockBridge());
+		BridgeHandler.THREAD.register(new DirectThreadBridge());
 		BridgeHandler.SIGNAL_REPLAY.register(new ISignalReplayBridge() {});
 	}
 

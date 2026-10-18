@@ -92,7 +92,7 @@ public class ApngResourceAnimationReader implements IResourceAnimationReader {
 			throw new IllegalArgumentException("The PNG has no acTL chunk or no frame control, it is not an animated PNG: draw it as a still image or export it as an APNG");
 		}
 
-		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(width, height);
+		final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(width, height);
 		final List<ResourceAnimationFrame> frames = new ArrayList<>();
 		for (int i = 0; i < controls.size(); i++) {
 			final Control control = controls.get(i);

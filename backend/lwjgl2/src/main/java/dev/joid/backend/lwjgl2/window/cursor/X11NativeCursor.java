@@ -8,20 +8,15 @@ import com.sun.jna.Pointer;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.input.cursor.Cursor;
-import lombok.NonNull;
 
 public final class X11NativeCursor extends NativeCursor {
 
 	private final Function createFontCursor;
 	private final Function libraryLoadCursor;
 
-	private X11NativeCursor() {
+	public X11NativeCursor() {
 		this.createFontCursor  = X11NativeCursor.getLibrary("X11", "libX11.so.6").getFunction("XCreateFontCursor");
 		this.libraryLoadCursor = X11NativeCursor.findFunction("Xcursor", "libXcursor.so.1", "XcursorLibraryLoadCursor");
-	}
-
-	public static @NonNull X11NativeCursor create() {
-		return new X11NativeCursor();
 	}
 
 	@Override

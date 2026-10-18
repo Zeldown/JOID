@@ -6,7 +6,6 @@ import dev.joid.base.opengl.render.GlEnums;
 import dev.joid.lib.bridge.render.vertex.VertexAttribute;
 import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.Getter;
-import lombok.NonNull;
 
 @Getter
 public final class GlVertexInput {
@@ -15,7 +14,7 @@ public final class GlVertexInput {
 	private final int        buffer;
 	private final IGlBinding binding;
 
-	private GlVertexInput(final IGlBinding binding, final boolean vertexArray) {
+	public GlVertexInput(final IGlBinding binding, final boolean vertexArray) {
 		this.binding = binding;
 		this.buffer  = binding.genBuffer();
 		this.array   = vertexArray ? binding.genVertexArray() : 0;
@@ -23,10 +22,6 @@ public final class GlVertexInput {
 			binding.bindVertexArray(this.array);
 			this.pointAttributes();
 		}
-	}
-
-	public static @NonNull GlVertexInput create(final IGlBinding binding, final boolean vertexArray) {
-		return new GlVertexInput(binding, vertexArray);
 	}
 
 	public void bind() {

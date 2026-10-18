@@ -124,7 +124,7 @@ public class GlRenderBridgeTest {
 		System.setErr(new PrintStream(output, true));
 		JOIDEnv.devMode(true);
 		try {
-			final Resource resource = Resource.of(GlBorrowedTexture.create(2147483000));
+			final Resource resource = Resource.of(GlBorrowedTexture.of(2147483000));
 			resource.prepareBind();
 			Assert.assertTrue(resource.isFailed());
 		} finally {

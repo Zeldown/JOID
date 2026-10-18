@@ -15,8 +15,8 @@ public final class DemoPixelFont extends BitmapFont<DemoPixelFontFace> {
 		super(family, DemoPixelFont.SIZE);
 	}
 
-	public static @NonNull DemoPixelFont create(final @NonNull BufferedImage atlas) {
-		return new DemoPixelFont(FontFamily.of(DemoPixelFontFace.create(atlas)));
+	public static @NonNull DemoPixelFont from(final @NonNull BufferedImage atlas) {
+		return new DemoPixelFont(FontFamily.of(DemoPixelFontFace.from(atlas)));
 	}
 
 	@Override

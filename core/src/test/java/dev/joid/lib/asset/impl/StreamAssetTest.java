@@ -16,7 +16,7 @@ public class StreamAssetTest {
 	@Test
 	public void opensANewStreamEveryTime() throws IOException {
 		final ByteArrayInputStream stream = new ByteArrayInputStream(StreamAssetTest.CONTENT);
-		final StreamAsset asset = StreamAsset.create(stream);
+		final StreamAsset asset = StreamAsset.of(stream);
 		Assert.assertNotSame(asset.open(), asset.open());
 		Assert.assertNotSame(stream, asset.open());
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
@@ -24,47 +24,47 @@ public class StreamAssetTest {
 
 	@Test
 	public void givesEachStreamItsOwnId() {
-		final String first = StreamAsset.create(new NamedStream()).getUniqueId();
-		final String second = StreamAsset.create(new NamedStream()).getUniqueId();
+		final String first = StreamAsset.of(new NamedStream()).getUniqueId();
+		final String second = StreamAsset.of(new NamedStream()).getUniqueId();
 		Assert.assertNotEquals(first, second);
 		Assert.assertTrue(first, first.startsWith("stream_"));
 	}
 
 	@Test
 	public void isLocal() {
-		Assert.assertFalse(StreamAsset.create(new ByteArrayInputStream(StreamAssetTest.CONTENT)).isRemote());
+		Assert.assertFalse(StreamAsset.of(new ByteArrayInputStream(StreamAssetTest.CONTENT)).isRemote());
 	}
 
 	@Test
 	public void peeksAgainOnceRead() throws IOException {
-		final StreamAsset asset = StreamAsset.create(new ByteArrayInputStream(StreamAssetTest.CONTENT));
+		final StreamAsset asset = StreamAsset.of(new ByteArrayInputStream(StreamAssetTest.CONTENT));
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
 		Assert.assertArrayEquals("joid".getBytes(StandardCharsets.UTF_8), asset.peek(4));
 	}
 
 	@Test
 	public void canBeReadTwice() throws IOException {
-		final StreamAsset asset = StreamAsset.create(new ByteArrayInputStream(StreamAssetTest.CONTENT));
+		final StreamAsset asset = StreamAsset.of(new ByteArrayInputStream(StreamAssetTest.CONTENT));
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
 	}
 
 	@Test
 	public void peeksPastTheEndOfItsStream() throws IOException {
-		final StreamAsset asset = StreamAsset.create(new ByteArrayInputStream(StreamAssetTest.CONTENT));
+		final StreamAsset asset = StreamAsset.of(new ByteArrayInputStream(StreamAssetTest.CONTENT));
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.peek(4096));
 		Assert.assertArrayEquals(StreamAssetTest.CONTENT, asset.read());
 	}
 
 	@Test(expected = UncheckedIOException.class)
 	public void failsToPeekAFailingStream() {
-		StreamAsset.create(new FailingStream()).peek(4);
+		StreamAsset.of(new FailingStream()).peek(4);
 	}
 
 	@Test
 	public void closesAStreamThatFailsWhileRead() {
 		final BrokenStream stream = new BrokenStream();
-		final StreamAsset asset = StreamAsset.create(stream);
+		final StreamAsset asset = StreamAsset.of(stream);
 		for (int attempt = 0; attempt < 2; attempt++) {
 			try {
 				asset.open();
@@ -77,7 +77,7 @@ public class StreamAssetTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesANullStream() {
-		StreamAsset.create(null);
+		StreamAsset.of(null);
 	}
 
 	private static final class NamedStream extends ByteArrayInputStream {

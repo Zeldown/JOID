@@ -54,7 +54,7 @@ public final class SignalReplayClass {
 	public SignalReplayMethod method(final MethodNode method) {
 		return this.methodMap.computeIfAbsent(method, key -> {
 			try {
-				return SignalReplayMethod.create(this, key);
+				return SignalReplayMethod.of(this, key);
 			} catch (final AnalyzerException exception) {
 				throw new SignalReplayException(SignalReplayFailure.CLASS_NOT_FOUND, this.node.name.replace('/', '.'));
 			}

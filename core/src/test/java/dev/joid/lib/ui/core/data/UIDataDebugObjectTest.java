@@ -10,39 +10,39 @@ public class UIDataDebugObjectTest {
 
 	@Test
 	public void startsWithEveryToolOn() {
-		final UIDataDebugObject data = new UIDataDebugObject();
+		final UIDataDebugObject data = UIDataDebugObject.create();
 		Assert.assertTrue(data.profiler());
 		Assert.assertTrue(data.hotreload());
 	}
 
 	@Test
 	public void readsTheDefaultsOfTheAnnotation() {
-		final UIDataDebugObject data = AnnotationValues.read(DefaultUI.class.getAnnotation(UIDataDebug.class), new UIDataDebugObject());
+		final UIDataDebugObject data = AnnotationValues.read(DefaultUI.class.getAnnotation(UIDataDebug.class), UIDataDebugObject.create());
 		Assert.assertTrue(data.profiler());
 		Assert.assertTrue(data.hotreload());
 	}
 
 	@Test
 	public void copiesEveryValueOfTheAnnotation() {
-		final UIDataDebugObject data = AnnotationValues.read(QuietUI.class.getAnnotation(UIDataDebug.class), new UIDataDebugObject());
+		final UIDataDebugObject data = AnnotationValues.read(QuietUI.class.getAnnotation(UIDataDebug.class), UIDataDebugObject.create());
 		Assert.assertFalse(data.profiler());
 		Assert.assertFalse(data.hotreload());
 	}
 
 	@Test
 	public void inheritsTheAnnotationOfAParent() {
-		Assert.assertFalse(AnnotationValues.read(ChildUI.class.getAnnotation(UIDataDebug.class), new UIDataDebugObject()).profiler());
+		Assert.assertFalse(AnnotationValues.read(ChildUI.class.getAnnotation(UIDataDebug.class), UIDataDebugObject.create()).profiler());
 	}
 
 	@Test
 	public void keepsItsDefaultsWithoutAnnotation() {
-		Assert.assertTrue(AnnotationValues.read(PlainUI.class.getAnnotation(UIDataDebug.class), new UIDataDebugObject()).profiler());
-		Assert.assertFalse(AnnotationValues.read(QuietUI.class.getAnnotation(UIDataDebug.class), new UIDataDebugObject()).profiler());
+		Assert.assertTrue(AnnotationValues.read(PlainUI.class.getAnnotation(UIDataDebug.class), UIDataDebugObject.create()).profiler());
+		Assert.assertFalse(AnnotationValues.read(QuietUI.class.getAnnotation(UIDataDebug.class), UIDataDebugObject.create()).profiler());
 	}
 
 	@Test
 	public void changesEveryValue() {
-		final UIDataDebugObject data = new UIDataDebugObject();
+		final UIDataDebugObject data = UIDataDebugObject.create();
 		Assert.assertSame(data, data.profiler(false).hotreload(false));
 		Assert.assertFalse(data.profiler());
 		Assert.assertFalse(data.hotreload());
@@ -50,7 +50,7 @@ public class UIDataDebugObjectTest {
 
 	@Test
 	public void keepsItsValuesWhenTheAnnotationIsUnchanged() {
-		final UIDataDebugObject data = new UIDataDebugObject().profiler(false);
+		final UIDataDebugObject data = UIDataDebugObject.create().profiler(false);
 		Assert.assertSame(data, AnnotationValues.merge(data, DefaultUI.class.getAnnotation(UIDataDebug.class), DefaultUI.class.getAnnotation(UIDataDebug.class)));
 		Assert.assertFalse(data.profiler());
 		Assert.assertTrue(data.hotreload());
@@ -58,14 +58,14 @@ public class UIDataDebugObjectTest {
 
 	@Test
 	public void takesEveryValueChangedInTheAnnotation() {
-		final UIDataDebugObject data = AnnotationValues.merge(new UIDataDebugObject(), DefaultUI.class.getAnnotation(UIDataDebug.class), QuietUI.class.getAnnotation(UIDataDebug.class));
+		final UIDataDebugObject data = AnnotationValues.merge(UIDataDebugObject.create(), DefaultUI.class.getAnnotation(UIDataDebug.class), QuietUI.class.getAnnotation(UIDataDebug.class));
 		Assert.assertFalse(data.profiler());
 		Assert.assertFalse(data.hotreload());
 	}
 
 	@Test
 	public void describesItself() {
-		Assert.assertEquals("UIDataDebugObject(profiler=false, hotreload=true)", new UIDataDebugObject().profiler(false).toString());
+		Assert.assertEquals("UIDataDebugObject(profiler=false, hotreload=true)", UIDataDebugObject.create().profiler(false).toString());
 	}
 
 	@UIDataDebug

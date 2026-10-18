@@ -43,7 +43,7 @@ Each release publishes `joid-backend-template-<version>.zip`, a Gradle project t
 
 | Your engine | Do this |
 |---|---|
-| Gives you an OpenGL 2.0 to 4.6 context | Embed `joid-base-opengl`, implement its `IGl*Binding` interfaces with the OpenGL functions of your engine, and register `GlRenderBridge.create(binding)`. It renders the same pixels as the official backends. |
+| Gives you an OpenGL 2.0 to 4.6 context | Embed `joid-base-opengl`, implement its `IGl*Binding` interfaces with the OpenGL functions of your engine, and register `new GlRenderBridge(binding)`. It renders the same pixels as the official backends. |
 | Has no fixed pipeline (Vulkan, a modern game renderer) | Extend `RenderBridge`, which keeps the matrices and the render state in Java. The rest of this page covers this case. |
 | Has its own matrix stacks and state | Implement `IRenderBridge` directly and forward each call. |
 
@@ -214,7 +214,7 @@ public final class EngineShader extends Shader {
 	private EngineProgram program;
 
 	private EngineShader(final EngineRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
-		super(bridge, GlslShaderTranslator.create(GlslDialect.GLSL_450, UniformLayout.BLOCK), vertex, fragment, blend);
+		super(bridge, new GlslShaderTranslator(GlslDialect.GLSL_450, UniformLayout.BLOCK), vertex, fragment, blend);
 	}
 
 	public static EngineShader create(final EngineRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {

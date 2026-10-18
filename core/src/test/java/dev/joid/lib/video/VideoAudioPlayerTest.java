@@ -46,7 +46,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void createsItsSourceOnceOnPlay() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 44100, 2);
+		final VideoAudioPlayer player = new VideoAudioPlayer(2, 44100, this.video);
 		player.play();
 		player.play();
 		Assert.assertEquals(Collections.singletonList("44100x2"), this.audio.created);
@@ -55,7 +55,7 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void playsWithoutSoundWithoutAudioBridge() {
 		BridgeHandler.AUDIO.unregister(this.audio);
-		final VideoAudioPlayer player = VideoAudioPlayer.create(VideoAudioPlayerTest.video("mute.mp4"), 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, VideoAudioPlayerTest.video("mute.mp4"));
 		final String error = VideoAudioPlayerTest.capture(player::play);
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update(0D);
@@ -71,8 +71,8 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void warnsOnceForEachVideoWithoutSound() {
 		BridgeHandler.AUDIO.unregister(this.audio);
-		final String first = VideoAudioPlayerTest.capture(() -> VideoAudioPlayer.create(VideoAudioPlayerTest.video("twice.mp4"), 8000, 1).play());
-		final String second = VideoAudioPlayerTest.capture(() -> VideoAudioPlayer.create(VideoAudioPlayerTest.video("twice.mp4"), 8000, 1).play());
+		final String first = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer(1, 8000, VideoAudioPlayerTest.video("twice.mp4")).play());
+		final String second = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer(1, 8000, VideoAudioPlayerTest.video("twice.mp4")).play());
 		BridgeHandler.AUDIO.register(this.audio);
 		Assert.assertTrue(first, first.startsWith("[JOID] The video twice.mp4 plays without sound ("));
 		Assert.assertEquals("", second);
@@ -80,7 +80,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void waitsUntilItPlays() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update(0D);
 		Assert.assertEquals(16, VideoAudioPlayerTest.queueSize(player));
@@ -89,7 +89,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void dropsTheSamplesPushedBeforeItPlays() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		VideoAudioPlayerTest.push(player, 20, 1024);
 		player.play();
 		player.update(0D);
@@ -99,7 +99,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void keepsTheSamplesPushedAfterItPlays() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		player.play();
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update(0D);
@@ -155,7 +155,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void cutsItsChunksBetweenTwoFramesOfAMultichannelTrack() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 6);
+		final VideoAudioPlayer player = new VideoAudioPlayer(6, 8000, this.video);
 		player.play();
 		player.update(0D);
 		VideoAudioPlayerTest.push(player, 16, 3000);
@@ -199,7 +199,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void givesItsGroupToItsSource() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		this.video.audioGroup("music");
 		player.play();
 		Assert.assertEquals("music", this.audio.source().group);
@@ -238,7 +238,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void controlsNothingBeforeItPlays() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		VideoAudioPlayerTest.push(player, 2, 10);
 		player.pause();
 		player.resume();
@@ -278,7 +278,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void skipsWholeFramesOfInterleavedSamples() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 2);
+		final VideoAudioPlayer player = new VideoAudioPlayer(2, 8000, this.video);
 		player.play();
 		player.update(0D);
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3, 4})}, 1);
@@ -289,7 +289,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void dropsAChunkThatEndsBeforeTheStart() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 2, 3})}, 3);
 		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 0})}, 1);
@@ -298,7 +298,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void ignoresEmptyOrUnknownSamples() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		player.pushSamples(new Buffer[0], 0);
 		player.pushSamples(new Buffer[] {null}, 0);
 		player.pushSamples(new Buffer[] {ByteBuffer.allocate(4)}, 0);
@@ -307,7 +307,7 @@ public class VideoAudioPlayerTest {
 
 	@Test
 	public void dropsSamplesBeyondItsQueue() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		VideoAudioPlayerTest.push(player, 200, 10);
 		Assert.assertEquals(128, VideoAudioPlayerTest.queueSize(player));
 	}
@@ -399,7 +399,7 @@ public class VideoAudioPlayerTest {
 	}
 
 	private VideoAudioPlayer started() {
-		final VideoAudioPlayer player = VideoAudioPlayer.create(this.video, 8000, 1);
+		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		player.play();
 		player.update(0D);
 		return player;

@@ -38,7 +38,7 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 			}
 
 			int plays = 1;
-			final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(width, height);
+			final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(width, height);
 			final List<ResourceAnimationFrame> frames = new ArrayList<>();
 			for (int i = 0; i < count; i++) {
 				final BufferedImage image = reader.read(i);

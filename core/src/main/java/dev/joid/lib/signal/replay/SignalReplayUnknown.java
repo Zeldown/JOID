@@ -11,11 +11,11 @@ public final class SignalReplayUnknown {
 	private final Object key;
 	private final String description;
 
-	public static SignalReplayUnknown create(final String description) {
+	public static SignalReplayUnknown of(final String description) {
 		return new SignalReplayUnknown(null, description);
 	}
 
-	public static SignalReplayUnknown create(final String description, final Object key) {
+	public static SignalReplayUnknown of(final String description, final Object key) {
 		return new SignalReplayUnknown(key, description);
 	}
 

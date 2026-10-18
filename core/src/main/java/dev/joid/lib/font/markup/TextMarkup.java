@@ -12,7 +12,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextMarkup {
 
-	private static final Registry<ITextMarkup> MARKUPS = Registry.create();
+	private static final Registry<ITextMarkup> MARKUPS = new Registry<>();
 
 	public static void register(final @NonNull ITextMarkup markup) {
 		TextMarkup.MARKUPS.register(markup);

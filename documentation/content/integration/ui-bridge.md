@@ -63,7 +63,7 @@ JOID.inst().load();
 `frame()` runs one whole frame: `update()`, then `beginFrame()`, the `drawBackground()` hook, `draw()`, and `endFrame()` in a `finally`. Call `resize(width, height)` once before the first frame and after every window resize: it sets the render target to the window and lays out every UI again.
 
 ```java
-GlfwInputForwarder.create(bridge).attach(window);
+GlfwInputForwarder.attach(window);
 bridge.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 while (!GLFW.glfwWindowShouldClose(window)) {
 	GLFW.glfwPollEvents();

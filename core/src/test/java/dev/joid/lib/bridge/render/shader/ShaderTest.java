@@ -129,7 +129,7 @@ public class ShaderTest {
 
 	@Test
 	public void writesIntegerUniforms() {
-		final TestShader shader = new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "void main() {}"), ShaderSource.parse(ShaderStage.FRAGMENT, "uniform ivec2 u_Cell;\nuniform int u_Mode;\n\nvoid main() {\n    fragColor = vec4(float(u_Cell.x + u_Mode));\n}\n"));
+		final TestShader shader = new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.from(ShaderStage.VERTEX, "void main() {}"), ShaderSource.from(ShaderStage.FRAGMENT, "uniform ivec2 u_Cell;\nuniform int u_Mode;\n\nvoid main() {\n    fragColor = vec4(float(u_Cell.x + u_Mode));\n}\n"));
 		shader.uniform("u_Cell", 3, 4).uniform("u_Mode", 2);
 		Assert.assertEquals(4, shader.getBlock().getMember("u_Cell").getValues().getInt(4));
 		Assert.assertEquals(2, shader.getBlock().getMember("u_Mode").getValues().getInt(0));
@@ -137,7 +137,7 @@ public class ShaderTest {
 
 	@Test
 	public void declaresTheStencilSamplerOfAnEmulatedStencil() {
-		final TestShader shader = new TestShader(new RecordingRenderBridge(), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		final TestShader shader = new TestShader(new RecordingRenderBridge(), new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST), ShaderSource.from(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.from(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
 		Assert.assertEquals(3, shader.getSamplerMap().get(GlslShaderTranslator.STENCIL).getUnit());
 		Assert.assertNull(ShaderTest.create().getSamplerMap().get(GlslShaderTranslator.STENCIL));
 	}
@@ -190,20 +190,20 @@ public class ShaderTest {
 
 	@Test
 	public void writesTheCurrentColorForTheVerticesWithoutColor() {
-		final TestShader shader = new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, "in vec4 vColor;\n\nvoid main() {\n    fragColor = vColor;\n}\n"));
+		final TestShader shader = new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.from(ShaderStage.VERTEX, "out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.from(ShaderStage.FRAGMENT, "in vec4 vColor;\n\nvoid main() {\n    fragColor = vColor;\n}\n"));
 		final RenderState state = RenderState.create();
 		state.color(1F, 0.5F, 0.25F, 1F);
-		shader.builtins(state, ShaderTest.vertices(false), new float[16], MatrixStack.create());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		Assert.assertEquals(0.25F, shader.getBlock().getMember(GlslShaderTranslator.CURRENT_COLOR).getValues().getFloat(8), 0F);
 		Assert.assertEquals(0, shader.getBlock().getMember(GlslShaderTranslator.VERTEX_COLOR).getValues().getInt(0));
-		shader.builtins(state, ShaderTest.vertices(true), new float[16], MatrixStack.create());
+		shader.builtins(state, ShaderTest.vertices(true), new float[16], new MatrixStack());
 		Assert.assertEquals(1, shader.getBlock().getMember(GlslShaderTranslator.VERTEX_COLOR).getValues().getInt(0));
 	}
 
 	@Test
 	public void writesTheBuiltinsOfADraw() {
 		final TestShader shader = ShaderTest.create();
-		final MatrixStack modelView = MatrixStack.create();
+		final MatrixStack modelView = new MatrixStack();
 		modelView.translate(4D, 0D, 0D);
 		final RenderState state = RenderState.create();
 		state.alphaCutoff(0.5F);
@@ -217,16 +217,16 @@ public class ShaderTest {
 	public void emulatesTheBorderWhenTheBridgeCannotWrapToIt() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.setBorderless(true);
-		final TestShader shader = new TestShader(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		final TestShader shader = new TestShader(render, new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK), ShaderSource.from(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.from(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
 		Assert.assertNotNull(shader.getBlock().getMember(GlslShaderTranslator.BORDER + "u_Noise"));
-		Assert.assertNull(new TestShader(new RecordingRenderBridge(), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT)).getBlock().getMember(GlslShaderTranslator.BORDER + "u_Noise"));
+		Assert.assertNull(new TestShader(new RecordingRenderBridge(), new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK), ShaderSource.from(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.from(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT)).getBlock().getMember(GlslShaderTranslator.BORDER + "u_Noise"));
 	}
 
 	@Test
 	public void compilesTheSourcesItTranslatedForTheBridge() {
 		final RecordingRenderBridge render = new RecordingRenderBridge();
 		render.setBorderless(true);
-		final TestShader shader = new TestShader(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		final TestShader shader = new TestShader(render, new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST), ShaderSource.from(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.from(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
 		Assert.assertSame(GlslDialect.GLSL_330, shader.getTranslation().getDialect());
 		Assert.assertTrue(shader.getTranslation().getVertex().startsWith("#version 330 core\n"));
 		Assert.assertTrue(shader.getTranslation().getFragment().contains("joid_borderTexture(tex, joid_Border_tex, "));
@@ -237,20 +237,20 @@ public class ShaderTest {
 
 	@Test
 	public void writesTheBorderOfEachEmulatedSampler() {
-		final TestShader shader = new TestShader(new RecordingRenderBridge(), GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true), ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		final TestShader shader = new TestShader(new RecordingRenderBridge(), new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK).clampToBorder(true), ShaderSource.from(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.from(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
 		final ITexture noise = new RecordingTexture().allocate(8, 4);
 		shader.sampler("u_Noise", noise, TextureFilter.LINEAR, TextureWrap.CLAMP_TO_BORDER);
 		final RenderState state = RenderState.create();
-		shader.builtins(state, ShaderTest.vertices(false), new float[16], MatrixStack.create());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "u_Noise", 2F, 8F, 4F);
 		ShaderTest.assertBorder(shader, "tex", 0F, 1F, 1F);
 		state.texture(new RecordingTexture().allocate(16, 2));
 		state.textureFilter(TextureFilter.NEAREST);
 		state.textureWrap(TextureWrap.CLAMP_TO_BORDER);
-		shader.builtins(state, ShaderTest.vertices(false), new float[16], MatrixStack.create());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "tex", 1F, 16F, 2F);
 		state.textureWrap(TextureWrap.CLAMP_TO_EDGE);
-		shader.builtins(state, ShaderTest.vertices(false), new float[16], MatrixStack.create());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		ShaderTest.assertBorder(shader, "tex", 0F, 1F, 1F);
 	}
 
@@ -260,10 +260,10 @@ public class ShaderTest {
 		final boolean devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(true);
 		try {
-			final String first = ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, fragment)));
+			final String first = ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.from(ShaderStage.VERTEX, "flat out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.from(ShaderStage.FRAGMENT, fragment)));
 			Assert.assertTrue(first, first.contains("[JOID] A fragment shader uses flat varyings, which needs GLSL 1.30"));
 			Assert.assertTrue(first, first.contains("[JOID] A vertex shader uses flat varyings"));
-			Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, fragment))));
+			Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.from(ShaderStage.VERTEX, "flat out vec4 vColor;\n\nvoid main() {\n    vColor = aColor;\n}\n"), ShaderSource.from(ShaderStage.FRAGMENT, fragment))));
 		} finally {
 			JOIDEnv.devMode(devMode);
 		}
@@ -280,7 +280,7 @@ public class ShaderTest {
 				}
 			}));
 			JOIDEnv.devMode(false);
-			Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, "flat out vec4 vTint;\n\nvoid main() {\n    vTint = aColor;\n}\n"), ShaderSource.parse(ShaderStage.FRAGMENT, "flat in vec4 vTint;\n\nvoid main() {\n    fragColor = vTint;\n}\n"))));
+			Assert.assertEquals("", ShaderTest.capture(() -> new TestShader(new RecordingRenderBridge(), BlendState.NORMAL, ShaderSource.from(ShaderStage.VERTEX, "flat out vec4 vTint;\n\nvoid main() {\n    vTint = aColor;\n}\n"), ShaderSource.from(ShaderStage.FRAGMENT, "flat in vec4 vTint;\n\nvoid main() {\n    fragColor = vTint;\n}\n"))));
 		} finally {
 			JOIDEnv.devMode(devMode);
 		}
@@ -317,8 +317,8 @@ public class ShaderTest {
 		final RenderState state = RenderState.create();
 		state.lineWidth(3F);
 		state.viewport(0, 0, 800, 600);
-		((Shader) shader.getLineShader()).builtins(state, ShaderTest.vertices(false), new float[16], MatrixStack.create());
-		shader.builtins(state, ShaderTest.vertices(false), new float[16], MatrixStack.create());
+		((Shader) shader.getLineShader()).builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
+		shader.builtins(state, ShaderTest.vertices(false), new float[16], new MatrixStack());
 		final UniformBlock block = ((Shader) shader.getLineShader()).getBlock();
 		Assert.assertEquals(3F, block.getMember(GlslShaderTranslator.LINE_WIDTH).getValues().getFloat(0), 0F);
 		Assert.assertEquals(600F, block.getMember(GlslShaderTranslator.LINE_VIEWPORT).getValues().getFloat(4), 0F);
@@ -353,7 +353,7 @@ public class ShaderTest {
 	}
 
 	private static TestShader create(final RenderBridge render) {
-		return new TestShader(render, BlendState.NORMAL, ShaderSource.parse(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.parse(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
+		return new TestShader(render, BlendState.NORMAL, ShaderSource.from(ShaderStage.VERTEX, ShaderTest.VERTEX), ShaderSource.from(ShaderStage.FRAGMENT, ShaderTest.FRAGMENT));
 	}
 
 	private static final class TestShader extends Shader {
@@ -362,11 +362,11 @@ public class ShaderTest {
 		private int compilations;
 
 		private TestShader(final RenderBridge render, final BlendState blend) {
-			this(render, blend, ShaderSource.parse(ShaderStage.VERTEX, "void main() {}"), ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {}"));
+			this(render, blend, ShaderSource.from(ShaderStage.VERTEX, "void main() {}"), ShaderSource.from(ShaderStage.FRAGMENT, "void main() {}"));
 		}
 
 		private TestShader(final RenderBridge render, final BlendState blend, final ShaderSource vertex, final ShaderSource fragment) {
-			super(render, GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK), vertex, fragment, blend);
+			super(render, new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK), vertex, fragment, blend);
 		}
 
 		private TestShader(final RenderBridge render, final GlslShaderTranslator translator, final ShaderSource vertex, final ShaderSource fragment) {

@@ -37,9 +37,9 @@ public class ScaleTest {
 
 	@Test
 	public void scalesASingleAxis() {
-		final Scale width = Scale.WIDTH(2D);
-		final Scale height = Scale.HEIGHT(3D);
-		final Scale depth = Scale.DEPTH(4D);
+		final Scale width = Scale.create().width(2D);
+		final Scale height = Scale.create().height(3D);
+		final Scale depth = Scale.create().depth(4D);
 		Assert.assertEquals(2D, width.getWidth(), 0D);
 		Assert.assertEquals(2D, width.getHeight() + width.getDepth(), 0D);
 		Assert.assertEquals(3D, height.getHeight(), 0D);
@@ -51,9 +51,9 @@ public class ScaleTest {
 	@Test
 	public void followsASingleSuppliedAxis() {
 		final double[] factor = {1D};
-		final Scale width = Scale.WIDTH(() -> factor[0]);
-		final Scale height = Scale.HEIGHT(() -> factor[0]);
-		final Scale depth = Scale.DEPTH(() -> factor[0]);
+		final Scale width = Scale.create().width(() -> factor[0]);
+		final Scale height = Scale.create().height(() -> factor[0]);
+		final Scale depth = Scale.create().depth(() -> factor[0]);
 		factor[0] = 5D;
 		Assert.assertEquals(5D, width.getWidth(), 0D);
 		Assert.assertEquals(2D, width.getHeight() + width.getDepth(), 0D);

@@ -32,7 +32,6 @@ import org.lwjgl.vulkan.VkSubpassDescription;
 
 import dev.joid.backend.vulkan.host.IVulkanHost;
 import lombok.Getter;
-import lombok.NonNull;
 
 @Getter
 public final class VulkanContext {
@@ -51,7 +50,7 @@ public final class VulkanContext {
 	private final VkPhysicalDevice                 physicalDevice;
 	private final VkPhysicalDeviceMemoryProperties memoryProperties;
 
-	private VulkanContext(final IVulkanHost host) {
+	public VulkanContext(final IVulkanHost host) {
 		this.queue          = host.getQueue();
 		this.device         = host.getDevice();
 		this.physicalDevice = host.getPhysicalDevice();
@@ -72,10 +71,6 @@ public final class VulkanContext {
 			this.depthStencilFormat  = VulkanContext.selectDepthFormat(stack, this.physicalDevice, VK10.VK_FORMAT_D24_UNORM_S8_UINT, VK10.VK_FORMAT_D32_SFLOAT_S8_UINT);
 			this.offscreenRenderPass = this.createRenderPass(VulkanContext.TEXTURE_FORMAT, this.depthFormat, false);
 		}
-	}
-
-	public static @NonNull VulkanContext create(final IVulkanHost host) {
-		return new VulkanContext(host);
 	}
 
 	public void destroy() {

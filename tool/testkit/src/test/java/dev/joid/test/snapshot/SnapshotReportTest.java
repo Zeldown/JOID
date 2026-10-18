@@ -22,7 +22,7 @@ public class SnapshotReportTest {
 	public void fillsTheTemplateWithTheTitleAndTheEntries() throws IOException {
 		final File shot = this.file("shot.png", "shot");
 		final File report = new File(this.folder.getRoot(), "out/report.html");
-		SnapshotReport.write(report, "Backends <lwjgl3> & vulkan", 1, Arrays.asList(SnapshotEntry.create("vulkan/say \"hi\\", SnapshotStatus.DIFFERENT, 12, shot, shot), SnapshotEntry.create("vulkan/home", SnapshotStatus.UPDATED, 0, shot, shot)));
+		SnapshotReport.write(report, "Backends <lwjgl3> & vulkan", 1, Arrays.asList(SnapshotEntry.of("vulkan/say \"hi\\", SnapshotStatus.DIFFERENT, 12, shot, shot), SnapshotEntry.of("vulkan/home", SnapshotStatus.UPDATED, 0, shot, shot)));
 		final String html = SnapshotReportTest.text(report);
 		Assert.assertTrue(html, html.contains("<title>Backends &lt;lwjgl3&gt; &amp; vulkan</title>"));
 		Assert.assertTrue(html, html.contains("const TOLERANCE = 1;"));
@@ -33,7 +33,7 @@ public class SnapshotReportTest {
 	public void writesTheImagesOfEachShotIntoAScript() throws IOException {
 		final File render = this.file("render.png", "render");
 		final File reference = this.file("reference.png", "reference");
-		SnapshotReport.write(new File(this.folder.getRoot(), "report.html"), "Snapshots", 0, Arrays.asList(SnapshotEntry.create("a", SnapshotStatus.DIFFERENT, 3, render, reference), SnapshotEntry.create("b", SnapshotStatus.IDENTICAL, 0, render, reference)));
+		SnapshotReport.write(new File(this.folder.getRoot(), "report.html"), "Snapshots", 0, Arrays.asList(SnapshotEntry.of("a", SnapshotStatus.DIFFERENT, 3, render, reference), SnapshotEntry.of("b", SnapshotStatus.IDENTICAL, 0, render, reference)));
 		Assert.assertEquals("joidShot(0, \"data:image/png;base64,cmVuZGVy\", \"data:image/png;base64,cmVmZXJlbmNl\");", SnapshotReportTest.text(new File(this.folder.getRoot(), "report/0.js")));
 		Assert.assertEquals("joidShot(1, \"data:image/png;base64,cmVuZGVy\", null);", SnapshotReportTest.text(new File(this.folder.getRoot(), "report/1.js")));
 	}
@@ -49,7 +49,7 @@ public class SnapshotReportTest {
 	@Test(expected = UncheckedIOException.class)
 	public void failsOnAMissingRender() {
 		final File missing = new File(this.folder.getRoot(), "missing.png");
-		SnapshotReport.write(new File(this.folder.getRoot(), "report.html"), "Snapshots", 0, Collections.singletonList(SnapshotEntry.create("a", SnapshotStatus.IDENTICAL, 0, missing, missing)));
+		SnapshotReport.write(new File(this.folder.getRoot(), "report.html"), "Snapshots", 0, Collections.singletonList(SnapshotEntry.of("a", SnapshotStatus.IDENTICAL, 0, missing, missing)));
 	}
 
 	@Test(expected = UncheckedIOException.class)

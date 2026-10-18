@@ -5,10 +5,7 @@ import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalContext;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SignalReplayBinding<T> implements Supplier<T> {
 
 	private final SignalReplayCall  call;
@@ -19,10 +16,12 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 	private T       value;
 	private boolean started;
 
-	public static <T> SignalReplayBinding<T> create(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> consumedList, final T value) {
-		final SignalReplayBinding<T> binding = new SignalReplayBinding<>(call, match, consumedList, SignalContext.getEpoch());
-		binding.value = value;
-		return binding;
+	public SignalReplayBinding(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> readList, final T value) {
+		this.call     = call;
+		this.match    = match;
+		this.readList = readList;
+		this.epoch    = SignalContext.getEpoch();
+		this.value    = value;
 	}
 
 	@Override

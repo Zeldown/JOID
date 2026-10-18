@@ -11,13 +11,9 @@ public final class FrameThreadBridge implements IThreadBridge {
 	private final Thread          thread;
 	private final Queue<Runnable> taskQueue;
 
-	private FrameThreadBridge(final Thread thread) {
-		this.thread    = thread;
+	public FrameThreadBridge() {
+		this.thread    = Thread.currentThread();
 		this.taskQueue = new ConcurrentLinkedQueue<>();
-	}
-
-	public static @NonNull FrameThreadBridge create() {
-		return new FrameThreadBridge(Thread.currentThread());
 	}
 
 	@Override

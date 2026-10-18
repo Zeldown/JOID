@@ -186,7 +186,7 @@ public final class Main {
 		JOID.inst().load();
 		Theme.load();
 
-		GlfwInputForwarder.create(bridge).attach(window);
+		GlfwInputForwarder.attach(window);
 		GLFW.glfwSetFramebufferSizeCallback(window, (handle, width, height) -> {
 			if (width > 0 && height > 0) {
 				bridge.resize(width, height);

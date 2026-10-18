@@ -23,7 +23,7 @@ public enum ShaderBuiltin {
 	private final String type;
 	private final Kind   kind;
 
-	public static ShaderBuiltin find(final @NonNull String identifier) {
+	public static ShaderBuiltin of(final @NonNull String identifier) {
 		for (final ShaderBuiltin builtin : ShaderBuiltin.values()) {
 			if (builtin.getIdentifier().equals(identifier)) {
 				return builtin;

@@ -35,7 +35,7 @@ public final class GlslExport {
 				throw new IOException("The folder " + folder.getAbsolutePath() + " cannot be created, check that its parent folder can be written");
 			}
 
-			final GlslShaderTranslator translator = GlslShaderTranslator.create(dialect, dialect.hasUniformBlocks() ? UniformLayout.BLOCK : UniformLayout.LOOSE);
+			final GlslShaderTranslator translator = new GlslShaderTranslator(dialect, dialect.hasUniformBlocks() ? UniformLayout.BLOCK : UniformLayout.LOOSE);
 			for (final CoreShader shader : CoreShader.values()) {
 				final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
 				final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);

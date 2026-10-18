@@ -15,7 +15,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProfileGlBinding {
 
-	public static @NonNull IGlBinding create(final @NonNull IGlBinding binding, final @NonNull SnapshotProfile profile) {
+	public static @NonNull IGlBinding from(final @NonNull IGlBinding binding, final @NonNull SnapshotProfile profile) {
 		return (IGlBinding) Proxy.newProxyInstance(IGlBinding.class.getClassLoader(), new Class<?>[] {IGlBinding.class}, (proxy, method, args) -> {
 			final Object name = args == null ? null : args[0];
 			if ("getInteger".equals(method.getName()) && Integer.valueOf(GlConstants.NUM_EXTENSIONS).equals(name)) {

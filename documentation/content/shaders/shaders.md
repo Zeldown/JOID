@@ -119,7 +119,7 @@ For code built at run time, or another blending, create the shader yourself:
 private String vertexCode;
 private String fragmentCode;
 
-final IShader shader = BridgeHandler.RENDER.get().createShader(ShaderSource.parse(ShaderStage.VERTEX, vertexCode), ShaderSource.parse(ShaderStage.FRAGMENT, fragmentCode), BlendState.PREMULTIPLIED);
+final IShader shader = BridgeHandler.RENDER.get().createShader(ShaderSource.from(ShaderStage.VERTEX, vertexCode), ShaderSource.from(ShaderStage.FRAGMENT, fragmentCode), BlendState.PREMULTIPLIED);
 if (!shader.isActive()) {
 	System.err.println("[MyUI] The shader did not compile");
 }
@@ -287,7 +287,7 @@ public class GrayscaleShaderPass implements IShaderPass {
 | `canDraw()`, `isAvailable()` | Whether the shader can draw, with or without the dev-mode warning. |
 | `bind()`, `unbind()` | Make the shader current, return to the default shader. |
 | `IRenderBridge.createShader(ShaderSource vertex, ShaderSource fragment, BlendState blend)` | Creates a shader. |
-| `ShaderSource.read(ShaderStage stage, Object handle)`, `parse(ShaderStage stage, String code)` | Reads or parses a source. |
+| `ShaderSource.read(ShaderStage stage, Object handle)`, `from(ShaderStage stage, String code)` | Reads or parses a source. |
 | `IShader.uniform(String name, ...)` | Sets a uniform, returns the shader. |
 | `IShader.sampler(String name, ITexture texture, TextureFilter filter, TextureWrap wrap)` | Assigns a texture to a sampler. |
 | `IShader.isActive()` | Compiled and linked. |

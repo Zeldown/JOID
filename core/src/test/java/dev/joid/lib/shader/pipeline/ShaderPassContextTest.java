@@ -13,7 +13,7 @@ public class ShaderPassContextTest {
 	@Test
 	public void keepsTheDrawnArea() {
 		final PixelGrid grid = ShaderPassContextTest.grid(1D, 1D);
-		final ShaderPassContext context = ShaderPassContext.create(10D, 20D, 100D, 50D, 5D, 0D, grid);
+		final ShaderPassContext context = ShaderPassContext.of(10D, 20D, 100D, 50D, 5D, 0D, grid);
 		Assert.assertEquals(10D, context.getX(), 0D);
 		Assert.assertEquals(20D, context.getY(), 0D);
 		Assert.assertEquals(100D, context.getWidth(), 0D);
@@ -24,7 +24,7 @@ public class ShaderPassContextTest {
 
 	@Test
 	public void alignsTheTextureOnScreenPixels() {
-		final ShaderPassContext context = ShaderPassContext.create(10.3D, 20.6D, 100D, 50D, 5D, 0D, ShaderPassContextTest.grid(2D, 0.5D));
+		final ShaderPassContext context = ShaderPassContext.of(10.3D, 20.6D, 100D, 50D, 5D, 0D, ShaderPassContextTest.grid(2D, 0.5D));
 		Assert.assertEquals(5D, context.getRegionX(), 1E-9D);
 		Assert.assertEquals(14D, context.getRegionY(), 1E-9D);
 		Assert.assertEquals(110.5D, context.getRegionWidth(), 1E-9D);
@@ -37,11 +37,11 @@ public class ShaderPassContextTest {
 
 	@Test
 	public void keepsTheExpandedAreaOfARotatedDraw() {
-		final MatrixStack projection = MatrixStack.create();
-		final MatrixStack modelView = MatrixStack.create();
+		final MatrixStack projection = new MatrixStack();
+		final MatrixStack modelView = new MatrixStack();
 		projection.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		modelView.rotate(30D, 0D, 0D, 1D);
-		final ShaderPassContext context = ShaderPassContext.create(10.3D, 20.6D, 100D, 50D, 5D, 0D, PixelGrid.of(projection.getMatrix(), modelView.getMatrix(), 3840, 2160));
+		final ShaderPassContext context = ShaderPassContext.of(10.3D, 20.6D, 100D, 50D, 5D, 0D, PixelGrid.of(projection.getMatrix(), modelView.getMatrix(), 3840, 2160));
 		Assert.assertEquals(5.3D, context.getRegionX(), 1E-9D);
 		Assert.assertEquals(15.6D, context.getRegionY(), 1E-9D);
 		Assert.assertEquals(110D, context.getRegionWidth(), 1E-9D);
@@ -52,7 +52,7 @@ public class ShaderPassContextTest {
 
 	@Test
 	public void clipsTheTextureToTheViewAndItsMargin() {
-		final ShaderPassContext context = ShaderPassContext.create(-1000D, -500D, 4000D, 2000D, 5D, 10D, ShaderPassContextTest.view(MatrixStack.create()));
+		final ShaderPassContext context = ShaderPassContext.of(-1000D, -500D, 4000D, 2000D, 5D, 10D, ShaderPassContextTest.view(new MatrixStack()));
 		Assert.assertEquals(-10D, context.getRegionX(), 1E-3D);
 		Assert.assertEquals(-10D, context.getRegionY(), 1E-3D);
 		Assert.assertEquals(1940D, context.getRegionWidth(), 1E-3D);
@@ -65,7 +65,7 @@ public class ShaderPassContextTest {
 
 	@Test
 	public void keepsAOnePixelStripOfAnAreaOutsideTheView() {
-		final ShaderPassContext context = ShaderPassContext.create(3000D, 20D, 100D, 50D, 0D, 10D, ShaderPassContextTest.view(MatrixStack.create()));
+		final ShaderPassContext context = ShaderPassContext.of(3000D, 20D, 100D, 50D, 0D, 10D, ShaderPassContextTest.view(new MatrixStack()));
 		Assert.assertEquals(3000D, context.getRegionX(), 1E-3D);
 		Assert.assertEquals(1D, context.getRegionWidth(), 1E-3D);
 		Assert.assertEquals(1, context.getTextureWidth());
@@ -74,9 +74,9 @@ public class ShaderPassContextTest {
 
 	@Test
 	public void clipsARotatedAreaOnItsOwnTexels() {
-		final MatrixStack modelView = MatrixStack.create();
+		final MatrixStack modelView = new MatrixStack();
 		modelView.rotate(30D, 0D, 0D, 1D);
-		final ShaderPassContext context = ShaderPassContext.create(-5000D, -5000D, 10000D, 10000D, 0D, 0D, ShaderPassContextTest.view(modelView));
+		final ShaderPassContext context = ShaderPassContext.of(-5000D, -5000D, 10000D, 10000D, 0D, 0D, ShaderPassContextTest.view(modelView));
 		Assert.assertTrue(context.getTextureWidth() < 3000);
 		Assert.assertTrue(context.getTextureHeight() < 3000);
 		Assert.assertEquals(context.getTextureWidth(), context.getRegionWidth(), 1E-3D);
@@ -86,7 +86,7 @@ public class ShaderPassContextTest {
 	}
 
 	private static PixelGrid view(final MatrixStack modelView) {
-		final MatrixStack projection = MatrixStack.create();
+		final MatrixStack projection = new MatrixStack();
 		projection.ortho(0D, 1920D, 1080D, 0D, 0D, 10000D);
 		return PixelGrid.of(projection.getMatrix(), modelView.getMatrix(), 1920, 1080);
 	}

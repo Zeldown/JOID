@@ -233,7 +233,7 @@ public final class ObjModel implements IDrawableModel {
 			}
 		}
 
-		return ObjFace.create(faceVertices, faceCoordinates, faceNormals);
+		return ObjFace.of(faceVertices, faceCoordinates, faceNormals);
 	}
 
 }

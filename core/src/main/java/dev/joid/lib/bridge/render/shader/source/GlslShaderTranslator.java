@@ -40,7 +40,7 @@ public class GlslShaderTranslator {
 	private boolean               clampToBorder;
 	private StencilEmulation.Pass stencil;
 
-	protected GlslShaderTranslator(final @NonNull GlslDialect dialect, final @NonNull UniformLayout layout) {
+	public GlslShaderTranslator(final @NonNull GlslDialect dialect, final @NonNull UniformLayout layout) {
 		if (layout == UniformLayout.BLOCK && !dialect.hasUniformBlocks()) {
 			throw new IllegalArgumentException(dialect.getName() + " has no uniform blocks, translate its uniforms with UniformLayout.LOOSE");
 		}
@@ -48,10 +48,6 @@ public class GlslShaderTranslator {
 		this.dialect = dialect;
 		this.layout  = layout;
 		this.stencil = StencilEmulation.Pass.NONE;
-	}
-
-	public static @NonNull GlslShaderTranslator create(final @NonNull GlslDialect dialect, final @NonNull UniformLayout layout) {
-		return new GlslShaderTranslator(dialect, layout);
 	}
 
 	public final <T extends GlslShaderTranslator> @NonNull T clampToBorder(final boolean clampToBorder) {

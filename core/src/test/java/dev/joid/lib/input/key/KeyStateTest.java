@@ -28,7 +28,7 @@ public class KeyStateTest {
 
 	@Test
 	public void releasesTheKeyGivenAtThePress() {
-		final KeyState state = KeyState.create();
+		final KeyState state = new KeyState();
 		state.press(Key.Q, Key.A);
 		state.press(Key.W, Key.Z);
 		Assert.assertSame(Key.A, state.release(Key.Q));
@@ -37,7 +37,7 @@ public class KeyStateTest {
 
 	@Test
 	public void releasesThePositionOfAKeyNeverPressed() {
-		final KeyState state = KeyState.create();
+		final KeyState state = new KeyState();
 		Assert.assertSame(Key.Q, state.release(Key.Q));
 		state.press(Key.Q, Key.A);
 		state.release(Key.Q);

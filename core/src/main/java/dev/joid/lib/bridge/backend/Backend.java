@@ -92,7 +92,7 @@ public abstract class Backend {
 	}
 
 	protected IThreadBridge createThreadBridge() {
-		return FrameThreadBridge.create();
+		return new FrameThreadBridge();
 	}
 
 	protected void registerDefaults() {

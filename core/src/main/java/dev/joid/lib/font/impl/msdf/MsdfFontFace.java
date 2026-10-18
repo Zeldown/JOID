@@ -38,7 +38,7 @@ public final class MsdfFontFace implements IFontFace {
 		this.xHeight = MsdfFontFace.measureXHeight(atlas, glyphs);
 	}
 
-	public static @NonNull MsdfFontFace create(final @NonNull MsdfAtlas atlas, final @NonNull MsdfMetrics metrics, final @NonNull Map<Integer, MsdfGlyph> glyphs, final @NonNull Map<Long, Float> kerningPairs, final @NonNull BufferedImage image, final @NonNull String name, final @NonNull FontWeight weight, final boolean italic) {
+	public static @NonNull MsdfFontFace of(final @NonNull MsdfAtlas atlas, final @NonNull MsdfMetrics metrics, final @NonNull Map<Integer, MsdfGlyph> glyphs, final @NonNull Map<Long, Float> kerningPairs, final @NonNull BufferedImage image, final @NonNull String name, final @NonNull FontWeight weight, final boolean italic) {
 		if (name.isEmpty()) {
 			throw new IllegalArgumentException("A font face needs a name, got an empty one: give the face the name of its font");
 		}

@@ -35,8 +35,8 @@ public abstract class RenderBridge implements IRenderBridge {
 	private ITexture emptyTexture;
 
 	protected RenderBridge() {
-		this.modelView  = MatrixStack.create();
-		this.projection = MatrixStack.create();
+		this.modelView  = new MatrixStack();
+		this.projection = new MatrixStack();
 		this.stateStack = new ArrayDeque<>();
 		this.state      = RenderState.create();
 	}

@@ -18,14 +18,10 @@ public class BridgeRegistry<T extends IBridge> {
 	@NonNull
 	private volatile List<@NonNull T> bridgeList;
 
-	protected BridgeRegistry(final @NonNull String name) {
+	public BridgeRegistry(final @NonNull String name) {
 		this.name        = name;
 		this.priorityMap = new HashMap<>();
 		this.bridgeList  = Collections.emptyList();
-	}
-
-	public static <T extends IBridge> @NonNull BridgeRegistry<T> create(final @NonNull String name) {
-		return new BridgeRegistry<>(name);
 	}
 
 	public final void register(final @NonNull T bridge) {

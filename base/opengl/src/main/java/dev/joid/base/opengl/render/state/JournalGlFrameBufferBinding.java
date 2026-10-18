@@ -1,19 +1,13 @@
 package dev.joid.base.opengl.render.state;
 
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NonNull;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public final class JournalGlFrameBufferBinding implements IGlFrameBufferBinding {
 
 	private final IGlFrameBufferBinding binding;
 	private final GlStateJournal        journal;
-
-	public static @NonNull JournalGlFrameBufferBinding create(final IGlFrameBufferBinding binding, final GlStateJournal journal) {
-		return new JournalGlFrameBufferBinding(binding, journal);
-	}
 
 	@Override
 	public int genFramebuffer() {

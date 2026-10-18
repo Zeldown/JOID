@@ -9,7 +9,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KeyResolver {
 
-	private static final Registry<IKeyResolver> RESOLVERS = Registry.create();
+	private static final Registry<IKeyResolver> RESOLVERS = new Registry<>();
 
 	public static void register(final @NonNull IKeyResolver resolver) {
 		KeyResolver.RESOLVERS.register(resolver);

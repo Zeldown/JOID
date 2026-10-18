@@ -85,7 +85,7 @@ public class FrameBufferTest {
 		});
 		Assert.assertArrayEquals(new int[] {0, 0, 64, 32}, viewport);
 		Assert.assertArrayEquals(FrameBufferTest.ortho(0D, 64D, 32D, 0D), matrices[0], 0F);
-		Assert.assertArrayEquals(MatrixStack.create().getMatrix(), matrices[1], 0F);
+		Assert.assertArrayEquals(new MatrixStack().getMatrix(), matrices[1], 0F);
 		Assert.assertEquals(1920, this.render.getState().getViewportWidth());
 		Assert.assertArrayEquals(projection, this.render.getProjection().getMatrix(), 0F);
 		Assert.assertArrayEquals(modelView, this.render.getModelView().getMatrix(), 0F);
@@ -206,7 +206,7 @@ public class FrameBufferTest {
 	}
 
 	private static float[] ortho(final double left, final double right, final double bottom, final double top) {
-		final MatrixStack stack = MatrixStack.create();
+		final MatrixStack stack = new MatrixStack();
 		stack.ortho(left, right, bottom, top, -1000D, 1000D);
 		return stack.getMatrix();
 	}

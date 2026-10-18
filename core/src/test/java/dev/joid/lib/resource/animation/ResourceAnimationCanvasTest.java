@@ -14,7 +14,7 @@ public class ResourceAnimationCanvasTest {
 
 	@Test
 	public void paintsAFrameInsideTheCanvas() {
-		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(2, 2);
+		final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(2, 2);
 		final int[] frame = canvas.compose(new int[] {ResourceAnimationCanvasTest.RED}, 1, 1, 1, 1, Blend.SOURCE, Disposal.NONE);
 		Assert.assertEquals(0, frame[0] >>> 24);
 		Assert.assertEquals(ResourceAnimationCanvasTest.RED, frame[3]);
@@ -22,7 +22,7 @@ public class ResourceAnimationCanvasTest {
 
 	@Test
 	public void blendsTranslucentPixelsOverTheCanvas() {
-		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(1, 1);
+		final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(1, 1);
 		canvas.compose(new int[] {ResourceAnimationCanvasTest.RED}, 0, 0, 1, 1, Blend.SOURCE, Disposal.NONE);
 		final int over = canvas.compose(new int[] {ResourceAnimationCanvasTest.GHOST}, 0, 0, 1, 1, Blend.OVER, Disposal.NONE)[0];
 		Assert.assertEquals(255, over >>> 24);
@@ -33,14 +33,14 @@ public class ResourceAnimationCanvasTest {
 
 	@Test
 	public void keepsTheCanvasWhenTheFrameIsTransparent() {
-		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(1, 1);
+		final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(1, 1);
 		canvas.compose(new int[] {ResourceAnimationCanvasTest.RED}, 0, 0, 1, 1, Blend.SOURCE, Disposal.NONE);
 		Assert.assertEquals(ResourceAnimationCanvasTest.RED, canvas.compose(new int[] {0}, 0, 0, 1, 1, Blend.OVER, Disposal.NONE)[0]);
 	}
 
 	@Test
 	public void clearsTheFrameAreaAfterABackgroundDisposal() {
-		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(2, 1);
+		final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(2, 1);
 		canvas.compose(new int[] {ResourceAnimationCanvasTest.RED, ResourceAnimationCanvasTest.RED}, 0, 0, 2, 1, Blend.SOURCE, Disposal.NONE);
 		Assert.assertEquals(ResourceAnimationCanvasTest.BLUE, canvas.compose(new int[] {ResourceAnimationCanvasTest.BLUE}, 1, 0, 1, 1, Blend.SOURCE, Disposal.BACKGROUND)[1]);
 		final int[] next = canvas.compose(new int[] {0}, 1, 0, 1, 1, Blend.OVER, Disposal.NONE);
@@ -50,7 +50,7 @@ public class ResourceAnimationCanvasTest {
 
 	@Test
 	public void restoresThePreviousCanvasAfterAPreviousDisposal() {
-		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(1, 1);
+		final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(1, 1);
 		canvas.compose(new int[] {ResourceAnimationCanvasTest.RED}, 0, 0, 1, 1, Blend.SOURCE, Disposal.NONE);
 		Assert.assertEquals(ResourceAnimationCanvasTest.BLUE, canvas.compose(new int[] {ResourceAnimationCanvasTest.BLUE}, 0, 0, 1, 1, Blend.SOURCE, Disposal.PREVIOUS)[0]);
 		Assert.assertEquals(ResourceAnimationCanvasTest.RED, canvas.compose(new int[] {0}, 0, 0, 1, 1, Blend.OVER, Disposal.NONE)[0]);
@@ -58,7 +58,7 @@ public class ResourceAnimationCanvasTest {
 
 	@Test
 	public void clipsAFrameOutsideTheCanvas() {
-		final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(1, 1);
+		final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(1, 1);
 		Assert.assertEquals(ResourceAnimationCanvasTest.BLUE, canvas.compose(new int[] {ResourceAnimationCanvasTest.RED, ResourceAnimationCanvasTest.BLUE}, -1, 0, 2, 1, Blend.SOURCE, Disposal.NONE)[0]);
 	}
 

@@ -12,7 +12,7 @@ public final class SnapshotDifference {
 	private final int pixels;
 	private final int maximum;
 
-	public static @NonNull SnapshotDifference create(final int pixels, final int maximum) {
+	public static @NonNull SnapshotDifference of(final int pixels, final int maximum) {
 		return new SnapshotDifference(pixels, maximum);
 	}
 

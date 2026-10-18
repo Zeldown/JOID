@@ -48,8 +48,8 @@ public final class ContractDraw {
 	}
 
 	public static @NonNull IShader shader(final @NonNull String fragment) {
-		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}");
-		return BridgeHandler.RENDER.get().createShader(vertex, ShaderSource.parse(ShaderStage.FRAGMENT, fragment), BlendState.NORMAL);
+		final ShaderSource vertex = ShaderSource.from(ShaderStage.VERTEX, "void main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}");
+		return BridgeHandler.RENDER.get().createShader(vertex, ShaderSource.from(ShaderStage.FRAGMENT, fragment), BlendState.NORMAL);
 	}
 
 	public static void assertPixel(final @NonNull SnapshotImage image, final int x, final int y, final int expected) {

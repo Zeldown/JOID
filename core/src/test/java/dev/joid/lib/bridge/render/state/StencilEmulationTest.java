@@ -50,9 +50,9 @@ public class StencilEmulationTest {
 
 	@Test
 	public void writesItsUniforms() {
-		final ShaderSource vertex = ShaderSource.parse(ShaderStage.VERTEX, "void main() {\n    gl_Position = vec4(aPosition, 1.0);\n}\n");
-		final ShaderSource fragment = ShaderSource.parse(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n");
-		final UniformBlock block = GlslShaderTranslator.create(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST).createBlock(vertex, fragment);
+		final ShaderSource vertex = ShaderSource.from(ShaderStage.VERTEX, "void main() {\n    gl_Position = vec4(aPosition, 1.0);\n}\n");
+		final ShaderSource fragment = ShaderSource.from(ShaderStage.FRAGMENT, "void main() {\n    fragColor = vec4(1.0);\n}\n");
+		final UniformBlock block = new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK).stencil(StencilEmulation.Pass.TEST).createBlock(vertex, fragment);
 		final RenderState state = StencilEmulationTest.createState(StencilFunction.NOT_EQUAL, 3, 0xFF, StencilOperation.KEEP, StencilOperation.INVERT);
 		StencilEmulation.from(state, true).write(block);
 		block.pack();

@@ -42,7 +42,7 @@ public final class ShaderPipeline {
 				expansion = Math.max(expansion, pass.expansion());
 				margin += pass.reach(scale);
 			}
-			ShaderPipeline.renderMultiPass(ShaderPassContext.create(x, y, width, height, expansion, margin, grid), passes, baseDraw);
+			ShaderPipeline.renderMultiPass(ShaderPassContext.of(x, y, width, height, expansion, margin, grid), passes, baseDraw);
 		} finally {
 			ShaderPipeline.pipelineDepth--;
 		}

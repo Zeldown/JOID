@@ -1086,7 +1086,7 @@ public class TextFieldNodeTest {
 
 	@Test
 	public void keepsTheGradientOfItsTextOnItsPlaceholderAndItsCursor() {
-		final Color gradient = Color.gradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.of(0D, 0D), Point.of(1D, 0D));
+		final Color gradient = new Color(1F, 0F, 0F, 1F).toGradient(new Color(0F, 0F, 1F, 0.5F), Point.of(0D, 0D), Point.of(1D, 0D));
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(this.font, 10F, gradient)).placeholder("Search");
 		Assert.assertTrue(field.getPlaceholderInfo().getColor().isGradient());
 		Assert.assertEquals(0.5F, field.getPlaceholderInfo().getColor().getAlphaF(), 1E-6F);

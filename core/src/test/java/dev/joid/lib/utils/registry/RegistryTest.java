@@ -7,12 +7,12 @@ public class RegistryTest {
 
 	@Test
 	public void findsNothingWhileEmpty() {
-		Assert.assertNull(Registry.<String>create().find(value -> true));
+		Assert.assertNull(new Registry<String>().find(value -> true));
 	}
 
 	@Test
 	public void asksTheLastRegisteredValueFirst() {
-		final Registry<String> registry = Registry.create();
+		final Registry<String> registry = new Registry<>();
 		registry.register("first");
 		registry.register("second");
 		Assert.assertEquals("second", registry.find(value -> true));
@@ -21,7 +21,7 @@ public class RegistryTest {
 
 	@Test
 	public void movesAValueRegisteredAgainToTheFront() {
-		final Registry<String> registry = Registry.create();
+		final Registry<String> registry = new Registry<>();
 		registry.register("first");
 		registry.register("second");
 		registry.register("first");
@@ -30,7 +30,7 @@ public class RegistryTest {
 
 	@Test
 	public void forgetsAnUnregisteredValue() {
-		final Registry<String> registry = Registry.create();
+		final Registry<String> registry = new Registry<>();
 		registry.register("first");
 		registry.unregister("first");
 		Assert.assertNull(registry.find(value -> true));

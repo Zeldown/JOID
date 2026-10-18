@@ -72,13 +72,13 @@ public final class ShaderSource {
 
 	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull Object handle) {
 		try (final InputStream stream = Asset.of(handle).open()) {
-			return ShaderSource.parse(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
+			return ShaderSource.from(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
 		} catch (final IOException exception) {
 			throw new UncheckedIOException(exception);
 		}
 	}
 
-	public static @NonNull ShaderSource parse(final @NonNull ShaderStage stage, final @NonNull String code) {
+	public static @NonNull ShaderSource from(final @NonNull ShaderStage stage, final @NonNull String code) {
 		final ShaderSource source = new ShaderSource(stage);
 		final StringBuilder body = new StringBuilder();
 		final StringBuilder instructions = new StringBuilder();
@@ -138,7 +138,7 @@ public final class ShaderSource {
 
 	private void declare(final Matcher declaration) {
 		final String name = declaration.group(4);
-		if (ShaderBuiltin.find(name) != null) {
+		if (ShaderBuiltin.of(name) != null) {
 			return;
 		}
 

@@ -65,7 +65,7 @@ public class GlStateJournalTest {
 				return null;
 			}
 		});
-		return GlStateJournal.create(binding, GlCapabilities.read(binding));
+		return new GlStateJournal(binding, GlCapabilities.read(binding));
 	}
 
 	private static <T> T fake(final Class<T> type, final Answer answer) {

@@ -34,7 +34,7 @@ public class NativeCursorTest {
 	@Test
 	public void loadsADistinctWindowsHandleForEveryCursor() throws ReflectiveOperationException {
 		Assume.assumeTrue(Platform.current() == Platform.WINDOWS);
-		final WindowsNativeCursor cursor = WindowsNativeCursor.create();
+		final WindowsNativeCursor cursor = new WindowsNativeCursor();
 		final Set<Long> handles = new HashSet<>();
 		for (final Cursor shape : Cursor.values()) {
 			final ByteBuffer handle = (ByteBuffer) cursor.load(shape);

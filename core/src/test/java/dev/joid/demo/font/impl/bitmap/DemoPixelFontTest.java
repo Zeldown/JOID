@@ -37,7 +37,7 @@ public class DemoPixelFontTest {
 
 	@BeforeClass
 	public static void load() throws IOException {
-		DemoPixelFontTest.font = DemoPixelFont.create(ImageIO.read(JOID.class.getResourceAsStream("/assets/demo/fonts/Pixel/Pixel.png")));
+		DemoPixelFontTest.font = DemoPixelFont.from(ImageIO.read(JOID.class.getResourceAsStream("/assets/demo/fonts/Pixel/Pixel.png")));
 	}
 
 	@Test

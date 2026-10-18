@@ -9,7 +9,7 @@ public class UIDataOverlayInteractionObjectTest {
 
 	@Test
 	public void startsWithoutInteractionAndCancelsEverything() {
-		final UIDataOverlayInteractionObject data = new UIDataOverlayInteractionObject();
+		final UIDataOverlayInteractionObject data = UIDataOverlayInteractionObject.create();
 		Assert.assertFalse(data.active());
 		Assert.assertTrue(data.cancelClick());
 		Assert.assertTrue(data.cancelScroll());
@@ -18,7 +18,7 @@ public class UIDataOverlayInteractionObjectTest {
 
 	@Test
 	public void changesEveryValue() {
-		final UIDataOverlayInteractionObject data = new UIDataOverlayInteractionObject();
+		final UIDataOverlayInteractionObject data = UIDataOverlayInteractionObject.create();
 		Assert.assertSame(data, data.active(true).cancelClick(false).cancelScroll(false).cancelKeyboard(false));
 		Assert.assertTrue(data.active());
 		Assert.assertFalse(data.cancelClick());
@@ -30,7 +30,7 @@ public class UIDataOverlayInteractionObjectTest {
 	public void takesOnlyTheValuesChangedInTheAnnotation() {
 		final UIDataOverlayInteraction previous = DefaultUI.class.getAnnotation(UIDataOverlay.class).interaction();
 		final UIDataOverlayInteraction next = ScrollUI.class.getAnnotation(UIDataOverlay.class).interaction();
-		final UIDataOverlayInteractionObject data = new UIDataOverlayInteractionObject().active(true);
+		final UIDataOverlayInteractionObject data = UIDataOverlayInteractionObject.create().active(true);
 		Assert.assertSame(data, AnnotationValues.merge(data, previous, next));
 		Assert.assertTrue(data.active());
 		Assert.assertFalse(data.cancelScroll());

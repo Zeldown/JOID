@@ -8,12 +8,8 @@ import lombok.NonNull;
 
 public final class VulkanShaderTranslator extends GlslShaderTranslator {
 
-	private VulkanShaderTranslator() {
+	public VulkanShaderTranslator() {
 		super(GlslDialect.GLSL_450, UniformLayout.BLOCK);
-	}
-
-	public static @NonNull VulkanShaderTranslator create() {
-		return new VulkanShaderTranslator();
 	}
 
 	@Override

@@ -29,7 +29,7 @@ public final class AlAudioSource implements IAudioSource {
 	private int             bufferedSamples;
 	@Getter private boolean playing;
 
-	private AlAudioSource(final AlAudioBridge bridge, final int sampleRate, final int channels) {
+	public AlAudioSource(final AlAudioBridge bridge, final int sampleRate, final int channels) {
 		this.bridge           = bridge;
 		this.binding          = bridge.getBinding();
 		this.channels         = channels;
@@ -38,10 +38,6 @@ public final class AlAudioSource implements IAudioSource {
 		this.freeBufferQueue  = new ArrayDeque<>();
 		this.sampleCountQueue = new ArrayDeque<>();
 		this.gain             = 1F;
-	}
-
-	public static @NonNull AlAudioSource create(final AlAudioBridge bridge, final int sampleRate, final int channels) {
-		return new AlAudioSource(bridge, sampleRate, channels);
 	}
 
 	@Override

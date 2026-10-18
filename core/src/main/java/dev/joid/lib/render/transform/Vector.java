@@ -39,30 +39,6 @@ public final class Vector {
 		return new Vector(xSupplier, ySupplier, zSupplier);
 	}
 
-	public static @NonNull Vector X(final double x) {
-		return new Vector(x, 0D, 0D);
-	}
-
-	public static @NonNull Vector X(final @NonNull Supplier<Double> xSupplier) {
-		return new Vector(xSupplier, () -> 0D, () -> 0D);
-	}
-
-	public static @NonNull Vector Y(final double y) {
-		return new Vector(0D, y, 0D);
-	}
-
-	public static @NonNull Vector Y(final @NonNull Supplier<Double> ySupplier) {
-		return new Vector(() -> 0D, ySupplier, () -> 0D);
-	}
-
-	public static @NonNull Vector Z(final double z) {
-		return new Vector(0D, 0D, z);
-	}
-
-	public static @NonNull Vector Z(final @NonNull Supplier<Double> zSupplier) {
-		return new Vector(() -> 0D, () -> 0D, zSupplier);
-	}
-
 	public double getX() {
 		return this.xSupplier.get();
 	}

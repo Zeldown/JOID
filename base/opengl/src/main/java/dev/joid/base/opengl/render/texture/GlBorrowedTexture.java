@@ -23,11 +23,11 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 		this.bridge = GlBorrowedTexture.findBridge();
 	}
 
-	public static @NonNull GlBorrowedTexture create(final int texture) {
+	public static @NonNull GlBorrowedTexture of(final int texture) {
 		return new GlBorrowedTexture(() -> texture);
 	}
 
-	public static @NonNull GlBorrowedTexture create(final @NonNull IntSupplier texture) {
+	public static @NonNull GlBorrowedTexture of(final @NonNull IntSupplier texture) {
 		return new GlBorrowedTexture(texture);
 	}
 
@@ -85,7 +85,7 @@ public final class GlBorrowedTexture extends BorrowedTexture<Integer> implements
 	private static @NonNull GlRenderBridge findBridge() {
 		final GlRenderBridge bridge = BridgeHandler.RENDER.getBridge(GlRenderBridge.class);
 		if (bridge == null) {
-			throw new IllegalStateException("No OpenGL render bridge is registered, register an OpenGL backend before GlBorrowedTexture.create(...)");
+			throw new IllegalStateException("No OpenGL render bridge is registered, register an OpenGL backend before GlBorrowedTexture.of(...)");
 		}
 		return bridge;
 	}

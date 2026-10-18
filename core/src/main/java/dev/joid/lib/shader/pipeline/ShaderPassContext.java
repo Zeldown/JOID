@@ -26,7 +26,7 @@ public final class ShaderPassContext {
 	private final int       frameBufferWidth;
 	private final int       frameBufferHeight;
 
-	public static @NonNull ShaderPassContext create(final double x, final double y, final double width, final double height, final double expansion, final double margin, final @NonNull PixelGrid grid) {
+	public static @NonNull ShaderPassContext of(final double x, final double y, final double width, final double height, final double expansion, final double margin, final @NonNull PixelGrid grid) {
 		final double left = x - expansion;
 		final double top = y - expansion;
 		final double right = x + width + expansion;

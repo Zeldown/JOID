@@ -68,7 +68,7 @@ public class VulkanDescriptorCacheTest {
 	public void allocatesInTheRoomFreedInAnOlderPool() throws ReflectiveOperationException {
 		final VulkanContext context = BridgeHandler.RENDER.getBridge(VulkanRenderBridge.class).getContext();
 		final VkDevice device = context.getDevice();
-		final VulkanDescriptorCache cache = VulkanDescriptorCache.create(context);
+		final VulkanDescriptorCache cache = new VulkanDescriptorCache(context);
 		final long layout = VulkanDescriptorCacheTest.createLayout(device);
 		final Method allocate = VulkanDescriptorCache.class.getDeclaredMethod("allocate", long.class);
 		allocate.setAccessible(true);

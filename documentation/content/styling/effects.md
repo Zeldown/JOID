@@ -166,7 +166,7 @@ A transform moves, scales or rotates the rendering of the node and its children 
 RectNode
 .create(100, 100, 200, 120)
 .color(Color.WHITE)
-.self(node -> node.effect(TransformNodeEffect.create(new TranslateTransformOperation(Vector.Y(() -> (double) -node.hoverValue(6F))))))
+.self(node -> node.effect(TransformNodeEffect.create(new TranslateTransformOperation(Vector.create().y(() -> (double) -node.hoverValue(6F))))))
 .attach(this);
 ```
 
@@ -191,7 +191,7 @@ RectNode
 | `new RotateTransformOperation(angle, axis, pivot)` | Rotates by `angle` degrees (value or `Supplier<Double>`); `Rotation.ROLL` is the 2D rotation, `YAW` and `PITCH` flip in 3D. |
 | `Transformation.create().translate(...).rotate(...).scale(...)` | Several operations in order, passed to `create(transformation)`. |
 
-`Vector.create(x, y)`, `Vector.X(...)` and `Vector.Y(...)` take values or suppliers; operations are in `dev.joid.lib.render.transform.operation`.
+`Vector.create(x, y)`, `Vector.create().x(...)` and `Vector.create().y(...)` take values or suppliers; operations are in `dev.joid.lib.render.transform.operation`.
 
 ## Order, priority and scope
 

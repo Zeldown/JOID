@@ -81,7 +81,7 @@ public class ShowEffects extends ShowUI {
 
 	private Color shadow() {
 		final float level = Math.max(this.level(3), this.level(4));
-		return Color.transition(Color.BLACK, ShowUI.FUCHSIA, this.level(4)).withAlpha((0.6F + 0.3F * this.level(4)) * level);
+		return Color.BLACK.to(ShowUI.FUCHSIA, this.level(4)).withAlpha((0.6F + 0.3F * this.level(4)) * level);
 	}
 
 	private float level(final int index) {

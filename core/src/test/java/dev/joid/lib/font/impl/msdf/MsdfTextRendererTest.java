@@ -44,7 +44,7 @@ public class MsdfTextRendererTest {
 
 	@BeforeClass
 	public static void createTheSample() {
-		MsdfTextRendererTest.sample = MsdfFont.create(MsdfTextRendererTest.face(4F, FontWeight.REGULAR), MsdfTextRendererTest.face(6F, FontWeight.BOLD));
+		MsdfTextRendererTest.sample = MsdfFont.of(MsdfTextRendererTest.face(4F, FontWeight.REGULAR), MsdfTextRendererTest.face(6F, FontWeight.BOLD));
 	}
 
 	@Test
@@ -238,7 +238,7 @@ public class MsdfTextRendererTest {
 	@Test
 	public void drawsAnItalicFaceUpright() {
 		final MsdfFontFace face = MsdfTextRendererTest.face(4F, FontWeight.REGULAR);
-		MsdfTextRenderer.inst().drawText(100D, 100D, "A", TextInfo.create(MsdfFont.create(face, face.style(FontWeight.REGULAR, true)), 40F).italic(true).markups());
+		MsdfTextRenderer.inst().drawText(100D, 100D, "A", TextInfo.create(MsdfFont.of(face, face.style(FontWeight.REGULAR, true)), 40F).italic(true).markups());
 		Assert.assertEquals(103.125D, this.render.getLast().getLeft(), 1E-3D);
 		Assert.assertEquals(121.875D, this.render.getLast().getRight(), 1E-3D);
 	}
@@ -466,7 +466,7 @@ public class MsdfTextRendererTest {
 		glyphs.put((int) 'A', MsdfGlyph.of('A', 0.625F, MsdfBounds.of(0.0625F, -0.125F, 0.5625F, 0.75F), MsdfBounds.of(8F, 8F, 24F, 32F)));
 		glyphs.put((int) 'x', MsdfGlyph.of('x', 0.5F, MsdfBounds.of(0F, 0F, 0.5F, 0.578125F), MsdfBounds.of(32F, 8F, 48F, 24F)));
 		glyphs.put((int) ' ', MsdfGlyph.of(' ', 0.25F, null, null));
-		return MsdfFontFace.create(MsdfAtlas.of(64, 64, 32F, range), MsdfMetrics.of(1.25F, 1F, -0.25F, -0.125F, 0.0625F), glyphs, Collections.singletonMap(MsdfFontFace.pair('A', 'x'), -0.0625F), new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB), "Sample", weight, false);
+		return MsdfFontFace.of(MsdfAtlas.of(64, 64, 32F, range), MsdfMetrics.of(1.25F, 1F, -0.25F, -0.125F, 0.0625F), glyphs, Collections.singletonMap(MsdfFontFace.pair('A', 'x'), -0.0625F), new BufferedImage(64, 64, BufferedImage.TYPE_INT_ARGB), "Sample", weight, false);
 	}
 
 }

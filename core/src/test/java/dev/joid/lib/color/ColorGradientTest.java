@@ -21,7 +21,7 @@ public class ColorGradientTest {
 	public void keepsItsEndsAndItsDirection() {
 		final Point startPoint = Point.of(1D, 0D);
 		final Point endPoint = Point.of(0D, 1D);
-		final ColorGradient gradient = new ColorGradient(Color.RED, Color.BLUE, startPoint, endPoint);
+		final ColorGradient gradient = ColorGradient.of(Color.RED, Color.BLUE, startPoint, endPoint);
 		Assert.assertSame(Color.RED, gradient.getStartColor());
 		Assert.assertSame(Color.BLUE, gradient.getEndColor());
 		Assert.assertSame(startPoint, gradient.getStartPoint());
@@ -30,7 +30,7 @@ public class ColorGradientTest {
 
 	@Test
 	public void drawsThroughTheGradientShader() {
-		final ColorGradient gradient = new ColorGradient(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.of(0D, 0D), Point.of(1D, 0D));
+		final ColorGradient gradient = ColorGradient.of(new Color(1F, 0F, 0F, 1F), new Color(0F, 0F, 1F, 0.5F), Point.of(0D, 0D), Point.of(1D, 0D));
 		final AtomicReference<IShader> used = new AtomicReference<>();
 		gradient.use(() -> used.set(this.bridges.getRender().getState().getShader()), BoundingBox.create(10D, 20D, 100D, 50D));
 		final RecordingShader shader = (RecordingShader) used.get();

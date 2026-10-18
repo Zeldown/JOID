@@ -27,7 +27,7 @@ public class DrawRasterTest {
 
 	@After
 	public void restoreTheClock() {
-		BridgeHandler.CLOCK.register(SystemClockBridge.create());
+		BridgeHandler.CLOCK.register(new SystemClockBridge());
 	}
 
 	@Test
@@ -94,7 +94,7 @@ public class DrawRasterTest {
 
 	@Test
 	public void releasesItsTargetLeftUnusedForFiveSeconds() {
-		final ManualClockBridge clock = ManualClockBridge.create(1000L);
+		final ManualClockBridge clock = new ManualClockBridge(1000L);
 		BridgeHandler.CLOCK.register(clock);
 		DrawUtils.RASTER.drawRaster(0D, 0D, 100D, 30D, (width, height) -> {});
 		clock.advance(4999L);

@@ -31,30 +31,6 @@ public final class Scale {
 		return new Scale(widthSupplier, heightSupplier, depthSupplier);
 	}
 
-	public static @NonNull Scale WIDTH(final double width) {
-		return new Scale(width, 1D, 1D);
-	}
-
-	public static @NonNull Scale WIDTH(final @NonNull Supplier<Double> widthSupplier) {
-		return new Scale(widthSupplier, () -> 1D, () -> 1D);
-	}
-
-	public static @NonNull Scale HEIGHT(final double height) {
-		return new Scale(1D, height, 1D);
-	}
-
-	public static @NonNull Scale HEIGHT(final @NonNull Supplier<Double> heightSupplier) {
-		return new Scale(() -> 1D, heightSupplier, () -> 1D);
-	}
-
-	public static @NonNull Scale DEPTH(final double depth) {
-		return new Scale(1D, 1D, depth);
-	}
-
-	public static @NonNull Scale DEPTH(final @NonNull Supplier<Double> depthSupplier) {
-		return new Scale(() -> 1D, () -> 1D, depthSupplier);
-	}
-
 	public double getWidth() {
 		return this.widthSupplier.get();
 	}

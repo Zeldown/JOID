@@ -62,7 +62,7 @@ public final class SignalReplayMethod {
 		this.define();
 	}
 
-	public static SignalReplayMethod create(final SignalReplayClass replayClass, final MethodNode method) throws AnalyzerException {
+	public static SignalReplayMethod of(final SignalReplayClass replayClass, final MethodNode method) throws AnalyzerException {
 		return new SignalReplayMethod(replayClass, method);
 	}
 
@@ -299,7 +299,7 @@ public final class SignalReplayMethod {
 			final Frame<SourceValue> frame = this.frames[end];
 			final int start = this.expressionStart(frame.getStack(frame.getStackSize() - 1).insns, end);
 			if (store.getOpcode() != Opcodes.ASTORE || this.isValue(((VarInsnNode) instruction).var, index) || this.isPure(start, end)) {
-				this.definitionMap.put(instruction, SignalReplaySlice.create(this, start, end, null));
+				this.definitionMap.put(instruction, SignalReplaySlice.of(this, start, end, null));
 			}
 		}
 	}

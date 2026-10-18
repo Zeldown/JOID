@@ -19,7 +19,7 @@ public final class ObjFace {
 		this.faceNormal         = this.normal();
 	}
 
-	public static @NonNull ObjFace create(final @NonNull ObjVertex @NonNull [] vertices, final ObjTextureCoordinate[] textureCoordinates, final ObjVertex[] vertexNormals) {
+	public static @NonNull ObjFace of(final @NonNull ObjVertex @NonNull [] vertices, final ObjTextureCoordinate[] textureCoordinates, final ObjVertex[] vertexNormals) {
 		if (vertices.length != 3) {
 			throw new IllegalArgumentException("An ObjFace has 3 vertices, got " + vertices.length + ": split the polygon into triangles (ObjModel does it for OBJ files)");
 		}

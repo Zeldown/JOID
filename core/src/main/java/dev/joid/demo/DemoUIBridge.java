@@ -15,9 +15,13 @@ public class DemoUIBridge extends WindowUIBridge {
 
 	private double interfaceScale;
 
-	public DemoUIBridge() {
+	protected DemoUIBridge() {
 		super.background(DemoUIBridge.BACKGROUND);
 		this.interfaceScale = 1D;
+	}
+
+	public static @NonNull DemoUIBridge create() {
+		return new DemoUIBridge();
 	}
 
 	public void start() {

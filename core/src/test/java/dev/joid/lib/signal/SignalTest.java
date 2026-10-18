@@ -337,7 +337,7 @@ public class SignalTest {
 
 	@Test
 	public void appliesAWriteFromAnotherThreadAtTheNextFrame() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final Signal<String> signal = new Signal<>("joid");
 		BridgeHandler.THREAD.register(thread);
 		try {
@@ -352,7 +352,7 @@ public class SignalTest {
 
 	@Test
 	public void appliesTheWritesOfAThreadInOrder() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("joid").onChange(received::add);
 		BridgeHandler.THREAD.register(thread);
@@ -368,7 +368,7 @@ public class SignalTest {
 
 	@Test
 	public void carriesItsSilenceToADeferredWrite() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("joid").onChange(received::add);
 		BridgeHandler.THREAD.register(thread);
@@ -386,7 +386,7 @@ public class SignalTest {
 
 	@Test
 	public void appliesADeferredIncrementOnTheCurrentValue() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final IntegerSignal signal = new IntegerSignal(0);
 		BridgeHandler.THREAD.register(thread);
 		try {
@@ -401,7 +401,7 @@ public class SignalTest {
 
 	@Test
 	public void groupsTheDeferredWritesOfABatch() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final IntegerSignal left = new IntegerSignal(0);
 		final IntegerSignal right = new IntegerSignal(0);
 		final List<Integer> received = new ArrayList<>();

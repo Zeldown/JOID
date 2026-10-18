@@ -74,7 +74,7 @@ public final class SignalReplaySite {
 			for (int argument = argumentTypes.length - 1; argument >= 0; argument--) {
 				final SourceValue value = frame.getStack(frame.getStackSize() - argumentTypes.length + argument);
 				final int start = replayMethod.expressionStart(value.insns, end);
-				callList.add(0, SignalReplaySlice.create(replayMethod, start, end, argumentTypes[argument]));
+				callList.add(0, SignalReplaySlice.of(replayMethod, start, end, argumentTypes[argument]));
 				end = start;
 			}
 			sliceList.addAll(callList);

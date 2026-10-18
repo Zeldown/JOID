@@ -17,15 +17,11 @@ public final class JournalGlBinding implements IGlBinding {
 	private final IGlFrameBufferBinding extFrameBufferBinding;
 	private final IGlFrameBufferBinding coreFrameBufferBinding;
 
-	private JournalGlBinding(final IGlBinding binding, final GlStateJournal journal) {
+	public JournalGlBinding(final IGlBinding binding, final GlStateJournal journal) {
 		this.binding                = binding;
 		this.journal                = journal;
-		this.extFrameBufferBinding  = JournalGlFrameBufferBinding.create(binding.getFrameBufferBinding(GlFrameBufferFamily.EXT), journal);
-		this.coreFrameBufferBinding = JournalGlFrameBufferBinding.create(binding.getFrameBufferBinding(GlFrameBufferFamily.CORE), journal);
-	}
-
-	public static @NonNull JournalGlBinding create(final IGlBinding binding, final GlStateJournal journal) {
-		return new JournalGlBinding(binding, journal);
+		this.extFrameBufferBinding  = new JournalGlFrameBufferBinding(binding.getFrameBufferBinding(GlFrameBufferFamily.EXT), journal);
+		this.coreFrameBufferBinding = new JournalGlFrameBufferBinding(binding.getFrameBufferBinding(GlFrameBufferFamily.CORE), journal);
 	}
 
 	@Override

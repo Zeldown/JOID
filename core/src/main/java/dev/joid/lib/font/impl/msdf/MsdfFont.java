@@ -11,7 +11,7 @@ public final class MsdfFont extends GlyphFont<MsdfFontFace> {
 		super(family);
 	}
 
-	public static @NonNull MsdfFont create(final @NonNull MsdfFontFace @NonNull... faces) {
+	public static @NonNull MsdfFont of(final @NonNull MsdfFontFace @NonNull... faces) {
 		return new MsdfFont(FontFamily.of(faces));
 	}
 

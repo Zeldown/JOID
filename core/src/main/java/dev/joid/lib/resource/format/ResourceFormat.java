@@ -17,7 +17,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceFormat {
 
-	private static final Registry<IResourceFormat> FORMATS = Registry.create();
+	private static final Registry<IResourceFormat> FORMATS = new Registry<>();
 
 	static {
 		ResourceFormat.register(new GifResourceFormat());

@@ -5,7 +5,6 @@ import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
 
 import dev.joid.lib.input.cursor.Cursor;
-import lombok.NonNull;
 
 public final class MacNativeCursor extends NativeCursor {
 
@@ -14,16 +13,12 @@ public final class MacNativeCursor extends NativeCursor {
 	private final Function classMethod;
 	private final Function registerName;
 
-	private MacNativeCursor() {
+	public MacNativeCursor() {
 		final NativeLibrary objc = NativeLibrary.getInstance("objc");
 		this.messageSend  = objc.getFunction("objc_msgSend");
 		this.classMethod  = objc.getFunction("class_getClassMethod");
 		this.registerName = objc.getFunction("sel_registerName");
 		this.cursorClass  = objc.getFunction("objc_getClass").invokePointer(new Object[] {"NSCursor"});
-	}
-
-	public static @NonNull MacNativeCursor create() {
-		return new MacNativeCursor();
 	}
 
 	@Override

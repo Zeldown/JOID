@@ -16,7 +16,7 @@ public final class FieldSelection {
 	private final int start;
 	private final int end;
 
-	public static @NonNull FieldSelection create(final int start, final int end) {
+	public static @NonNull FieldSelection of(final int start, final int end) {
 		return new FieldSelection(Math.min(start, end), Math.max(start, end));
 	}
 

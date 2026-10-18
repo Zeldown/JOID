@@ -32,15 +32,11 @@ public final class UIBridgeRegistry extends BridgeRegistry<UIBridge> {
 	private int width;
 	private int height;
 
-	private UIBridgeRegistry() {
+	public UIBridgeRegistry() {
 		super("UI");
 		this.frameList = new CopyOnWriteArrayList<>();
 		this.pressedMap = new EnumMap<>(MouseButton.class);
-		this.keyState = KeyState.create();
-	}
-
-	public static @NonNull UIBridgeRegistry create() {
-		return new UIBridgeRegistry();
+		this.keyState = new KeyState();
 	}
 
 	public void frame() {

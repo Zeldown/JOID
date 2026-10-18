@@ -89,7 +89,7 @@ public abstract class SnapshotSuite {
 			shot.getValue().write(render);
 			if (update || !reference.exists()) {
 				shot.getValue().write(reference);
-				SnapshotSuite.ENTRIES.add(SnapshotEntry.create(shot.getKey(), update ? SnapshotStatus.UPDATED : SnapshotStatus.RECORDED, 0, render, reference));
+				SnapshotSuite.ENTRIES.add(SnapshotEntry.of(shot.getKey(), update ? SnapshotStatus.UPDATED : SnapshotStatus.RECORDED, 0, render, reference));
 				continue;
 			}
 

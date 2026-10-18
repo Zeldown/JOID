@@ -16,13 +16,9 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	private final long              window;
 	private final Map<Cursor, Long> cursorMap;
 
-	private GlfwWindowBridge(final long window) {
+	public GlfwWindowBridge(final long window) {
 		this.window    = window;
 		this.cursorMap = new EnumMap<>(Cursor.class);
-	}
-
-	public static @NonNull GlfwWindowBridge create(final long window) {
-		return new GlfwWindowBridge(window);
 	}
 
 	public void destroy() {

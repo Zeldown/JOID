@@ -14,18 +14,11 @@ import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2WindowBridge implements IWindowBridge {
 
 	private final NativeCursor nativeCursor = NativeCursor.forPlatform();
-
-	public static @NonNull Lwjgl2WindowBridge create() {
-		return new Lwjgl2WindowBridge();
-	}
 
 	@Override
 	public int getWidth() {

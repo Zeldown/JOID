@@ -21,7 +21,6 @@ import org.lwjgl.vulkan.VkWriteDescriptorSet;
 import dev.joid.backend.vulkan.render.VulkanContext;
 import dev.joid.backend.vulkan.render.shader.VulkanShader;
 import dev.joid.lib.bridge.render.shader.uniform.UniformSampler;
-import lombok.NonNull;
 
 public final class VulkanDescriptorCache {
 
@@ -29,14 +28,10 @@ public final class VulkanDescriptorCache {
 	private final VulkanContext           context;
 	private final Map<List<Long>, long[]> setMap;
 
-	private VulkanDescriptorCache(final VulkanContext context) {
+	public VulkanDescriptorCache(final VulkanContext context) {
 		this.context  = context;
 		this.poolList = new ArrayList<>();
 		this.setMap   = new HashMap<>();
-	}
-
-	public static @NonNull VulkanDescriptorCache create(final VulkanContext context) {
-		return new VulkanDescriptorCache(context);
 	}
 
 	public void destroy() {

@@ -46,7 +46,7 @@ public abstract class BaseToggleNode<F, S> extends Node {
 	}
 
 	public final <T extends BaseToggleNode<F, S>> @NonNull T state(final F toggle, final S back) {
-		this.state = ToggleState.create(toggle, back);
+		this.state = ToggleState.of(toggle, back);
 		return (T) this;
 	}
 

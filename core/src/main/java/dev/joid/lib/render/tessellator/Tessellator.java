@@ -15,10 +15,8 @@ import dev.joid.lib.bridge.render.vertex.VertexBuffer;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Tessellator {
 
 	private static final Tessellator INSTANCE = new Tessellator();
@@ -47,10 +45,6 @@ public final class Tessellator {
 
 	public static @NonNull Tessellator inst() {
 		return Tessellator.INSTANCE;
-	}
-
-	public static @NonNull Tessellator create() {
-		return new Tessellator();
 	}
 
 	public void start(final @NonNull DrawMode drawMode) {

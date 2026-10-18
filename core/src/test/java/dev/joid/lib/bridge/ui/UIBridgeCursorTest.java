@@ -183,7 +183,7 @@ public class UIBridgeCursorTest {
 
 	@Test
 	public void ignoresTheCursorOfABridgeWithoutUi() {
-		final DemoUIBridge other = new DemoUIBridge();
+		final DemoUIBridge other = DemoUIBridge.create();
 		final NodeUI ui = new NodeUI(RectNode.create(100, 100, 200, 200).cursor(Cursor.POINTER));
 		BridgeHandler.UI.register(other);
 		try {

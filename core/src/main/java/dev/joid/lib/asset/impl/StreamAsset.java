@@ -24,7 +24,7 @@ public final class StreamAsset extends Asset {
 		this.stream = stream;
 	}
 
-	public static @NonNull StreamAsset create(final @NonNull InputStream stream) {
+	public static @NonNull StreamAsset of(final @NonNull InputStream stream) {
 		return new StreamAsset(stream);
 	}
 

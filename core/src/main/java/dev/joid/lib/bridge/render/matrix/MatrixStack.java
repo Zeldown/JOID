@@ -12,13 +12,9 @@ public final class MatrixStack {
 
 	private float[] matrix;
 
-	private MatrixStack() {
+	public MatrixStack() {
 		this.stack  = new ArrayDeque<>();
 		this.matrix = MatrixStack.identityMatrix();
-	}
-
-	public static @NonNull MatrixStack create() {
-		return new MatrixStack();
 	}
 
 	public void pop() {

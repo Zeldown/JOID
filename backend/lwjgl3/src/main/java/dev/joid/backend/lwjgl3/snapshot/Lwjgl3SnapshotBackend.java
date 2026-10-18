@@ -33,7 +33,7 @@ public final class Lwjgl3SnapshotBackend implements ISnapshotBackend {
 		GLFW.glfwMakeContextCurrent(this.window.getWindow());
 		GLFW.glfwSwapInterval(0);
 		GL.createCapabilities();
-		Lwjgl3Backend.create(this.window.getWindow()).binding(ProfileGlBinding.create(Lwjgl3GlBinding.inst(), this.profile)).audio(false).register();
+		Lwjgl3Backend.create(this.window.getWindow()).binding(ProfileGlBinding.from(Lwjgl3GlBinding.inst(), this.profile)).audio(false).register();
 		this.bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
 		this.profile.check(this.bridge.getCapabilities());
 	}

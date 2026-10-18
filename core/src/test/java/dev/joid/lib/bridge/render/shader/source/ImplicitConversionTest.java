@@ -44,8 +44,8 @@ public class ImplicitConversionTest {
 		for (final CoreShader shader : CoreShader.values()) {
 			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
 			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
-			final GlslShaderTranslator old = GlslShaderTranslator.create(GlslDialect.GLSL_110, UniformLayout.LOOSE);
-			final GlslShaderTranslator baseline = GlslShaderTranslator.create(GlslDialect.GLSL_120, UniformLayout.LOOSE);
+			final GlslShaderTranslator old = new GlslShaderTranslator(GlslDialect.GLSL_110, UniformLayout.LOOSE);
+			final GlslShaderTranslator baseline = new GlslShaderTranslator(GlslDialect.GLSL_120, UniformLayout.LOOSE);
 			Assert.assertEquals(shader.name(), ImplicitConversionTest.strip(baseline.translateVertex(vertex, fragment)), ImplicitConversionTest.strip(old.translateVertex(vertex, fragment)));
 			Assert.assertEquals(shader.name(), ImplicitConversionTest.strip(baseline.translateFragment(vertex, fragment)), ImplicitConversionTest.strip(old.translateFragment(vertex, fragment)));
 		}

@@ -64,7 +64,7 @@ public final class SignalReplayFrame {
 	@Getter
 	private boolean lastLive;
 
-	private SignalReplayFrame(final SignalReplayRun run, final SignalReplaySlice slice, final int depth) {
+	public SignalReplayFrame(final SignalReplayRun run, final SignalReplaySlice slice, final int depth) {
 		this.run         = run;
 		this.slice       = slice;
 		this.method      = slice.getMethod();
@@ -75,10 +75,6 @@ public final class SignalReplayFrame {
 		this.locals      = new Object[this.method.getMethod().maxLocals + 2];
 		this.localLives  = new boolean[this.locals.length];
 		this.localStates = new boolean[this.locals.length];
-	}
-
-	public static SignalReplayFrame create(final SignalReplayRun run, final SignalReplaySlice slice, final int depth) {
-		return new SignalReplayFrame(run, slice, depth);
 	}
 
 	public Object execute() {
@@ -308,7 +304,7 @@ public final class SignalReplayFrame {
 				return index + 1;
 			case Opcodes.NEW: {
 				final String type = ((TypeInsnNode) instruction).desc;
-				this.push(type.equals("java/lang/StringBuilder") || type.equals("java/lang/StringBuffer") ? SignalReplayParts.create() : new Object(), false, 1);
+				this.push(type.equals("java/lang/StringBuilder") || type.equals("java/lang/StringBuffer") ? new SignalReplayParts() : new Object(), false, 1);
 				return index + 1;
 			}
 			case Opcodes.NEWARRAY:
@@ -364,7 +360,7 @@ public final class SignalReplayFrame {
 
 		if (variable == 0 && !this.method.isStatic()) {
 			final Object self = this.run.getSelf();
-			this.push(self != null ? self : SignalReplayUnknown.create("this"), false, 1);
+			this.push(self != null ? self : SignalReplayUnknown.of("this"), false, 1);
 			return;
 		}
 
@@ -373,7 +369,7 @@ public final class SignalReplayFrame {
 		if (result != null) {
 			this.push(result[0], (Boolean) result[1], size);
 		} else {
-			this.push(SignalReplayUnknown.create(this.method.describeLocal(variable, index), variable), false, size);
+			this.push(SignalReplayUnknown.of(this.method.describeLocal(variable, index), variable), false, size);
 		}
 	}
 
@@ -389,7 +385,7 @@ public final class SignalReplayFrame {
 		if (this.localStates[variable] && !SignalReplayFrame.isUnknown(this.locals[variable])) {
 			this.locals[variable] = SignalReplayFrame.toInt(this.locals[variable]) + instruction.incr;
 		} else {
-			this.locals[variable] = SignalReplayUnknown.create(this.method.describeLocal(variable, index));
+			this.locals[variable] = SignalReplayUnknown.of(this.method.describeLocal(variable, index));
 			this.localStates[variable] = true;
 		}
 	}
@@ -428,7 +424,7 @@ public final class SignalReplayFrame {
 			if (live || this.controlLive) {
 				throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, SignalReplayFrame.describe(SignalReplayFrame.isUnknown(value) ? value : position));
 			}
-			this.replace(array, SignalReplayUnknown.create(SignalReplayFrame.describe(SignalReplayFrame.isUnknown(value) ? value : position)), false);
+			this.replace(array, SignalReplayUnknown.of(SignalReplayFrame.describe(SignalReplayFrame.isUnknown(value) ? value : position)), false);
 			return;
 		}
 
@@ -600,7 +596,7 @@ public final class SignalReplayFrame {
 		final int size = Type.getType(instruction.desc).getSize();
 		if (target instanceof SignalReplayUnknown) {
 			final String description = ((SignalReplayUnknown) target).getDescription();
-			this.unknown(SignalReplayUnknown.create(description.equals("this") ? "the field " + instruction.name : description), live, size);
+			this.unknown(SignalReplayUnknown.of(description.equals("this") ? "the field " + instruction.name : description), live, size);
 			return;
 		}
 		this.push(this.fieldValue(instruction, target), live, size);
@@ -632,7 +628,7 @@ public final class SignalReplayFrame {
 				if (live || this.controlLive) {
 					throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, SignalReplayFrame.describe(unknown));
 				}
-				this.replace(target, SignalReplayUnknown.create(SignalReplayFrame.describe(unknown)), false);
+				this.replace(target, SignalReplayUnknown.of(SignalReplayFrame.describe(unknown)), false);
 				return;
 			}
 
@@ -651,7 +647,7 @@ public final class SignalReplayFrame {
 				final Object key = ((SignalReplayUnknown) receiver).getKey();
 				receiver = this.run.position(key != null ? key : instruction, this.method.type(Type.getObjectType(instruction.owner)));
 			} else if (unknown == null && SignalReplayFrame.isUnknown(receiver)) {
-				unknown = "this".equals(SignalReplayFrame.describe(receiver)) ? SignalReplayUnknown.create("the method " + instruction.name + "()") : receiver;
+				unknown = "this".equals(SignalReplayFrame.describe(receiver)) ? SignalReplayUnknown.of("the method " + instruction.name + "()") : receiver;
 			}
 		}
 
@@ -716,7 +712,7 @@ public final class SignalReplayFrame {
 			live |= this.lastLive;
 		}
 
-		final SignalReplayParts parts = SignalReplayParts.create();
+		final SignalReplayParts parts = new SignalReplayParts();
 		final String recipe = instruction.bsm.getName().equals("makeConcatWithConstants") ? (String) instruction.bsmArgs[0] : null;
 		if (recipe == null) {
 			for (int position = 0; position < arguments.length; position++) {
@@ -788,7 +784,7 @@ public final class SignalReplayFrame {
 		if (live || this.controlLive) {
 			throw new SignalReplayException(SignalReplayFailure.LOCAL_COMBINED, SignalReplayFrame.describe(unknown));
 		}
-		this.push(SignalReplayUnknown.create(SignalReplayFrame.describe(unknown)), false, size);
+		this.push(SignalReplayUnknown.of(SignalReplayFrame.describe(unknown)), false, size);
 	}
 
 	private void push(final Object value, final boolean live, final int size) {

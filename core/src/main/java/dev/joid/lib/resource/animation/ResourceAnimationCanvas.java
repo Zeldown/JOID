@@ -11,14 +11,10 @@ public final class ResourceAnimationCanvas {
 	private final int   height;
 	private final int[] pixels;
 
-	private ResourceAnimationCanvas(final int width, final int height) {
+	public ResourceAnimationCanvas(final int width, final int height) {
 		this.width = width;
 		this.height = height;
 		this.pixels = new int[width * height];
-	}
-
-	public static @NonNull ResourceAnimationCanvas create(final int width, final int height) {
-		return new ResourceAnimationCanvas(width, height);
 	}
 
 	public @NonNull int[] compose(final @NonNull int[] frame, final int x, final int y, final int frameWidth, final int frameHeight, final @NonNull Blend blend, final @NonNull Disposal disposal) {

@@ -22,7 +22,7 @@ public final class EngineSnapshotBackend implements ISnapshotBackend {
 
 	@Override
 	public SnapshotImage capture(final int width, final int height) {
-		return SnapshotImage.fromBytes(this.device.readPixels(width, height), width, height, false, PixelLayout.RGBA8);
+		return SnapshotImage.from(this.device.readPixels(width, height), width, height, false, PixelLayout.RGBA8);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class RenderBridgeContractTest extends RenderBridgeContractSuite {
 | `destroy()` | Release the surface. |
 | `getRenderer()` | The name of the GPU or renderer; it names the folder of the references. |
 
-In `SnapshotImage.fromBytes(...)`, `bottomUp` is `true` when the first row is the bottom one (OpenGL).
+In `SnapshotImage.from(...)`, `bottomUp` is `true` when the first row is the bottom one (OpenGL).
 
 ## The suites
 

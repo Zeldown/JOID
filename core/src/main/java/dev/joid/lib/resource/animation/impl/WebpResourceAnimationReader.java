@@ -69,7 +69,7 @@ public class WebpResourceAnimationReader implements IResourceAnimationReader {
 		final ImageReader reader = new WebPImageReaderSpi().createReaderInstance(null);
 		try (MemoryCacheImageInputStream input = new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes))) {
 			reader.setInput(input);
-			final ResourceAnimationCanvas canvas = ResourceAnimationCanvas.create(width, height);
+			final ResourceAnimationCanvas canvas = new ResourceAnimationCanvas(width, height);
 			final List<ResourceAnimationFrame> animation = new ArrayList<>();
 			for (int i = 0; i < frames.size(); i++) {
 				final Control control = frames.get(i);

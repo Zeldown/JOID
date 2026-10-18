@@ -21,7 +21,7 @@ public final class GlSnapshotCapture {
 			bridge.getBinding().readBuffer(GlConstants.BACK);
 			bridge.getBinding().readPixels(0, 0, width, height, GlConstants.RGBA, GlConstants.UNSIGNED_BYTE, pixels);
 		});
-		return SnapshotImage.fromBytes(pixels, width, height, true, PixelLayout.RGBA8);
+		return SnapshotImage.from(pixels, width, height, true, PixelLayout.RGBA8);
 	}
 
 }

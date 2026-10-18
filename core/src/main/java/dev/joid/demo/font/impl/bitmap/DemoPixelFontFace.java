@@ -21,7 +21,7 @@ public final class DemoPixelFontFace implements IFontFace {
 	@Getter
 	private final Resource texture;
 
-	public static @NonNull DemoPixelFontFace create(final @NonNull BufferedImage atlas) {
+	public static @NonNull DemoPixelFontFace from(final @NonNull BufferedImage atlas) {
 		final int[] advances = new int[95];
 		advances[0] = DemoPixelFont.SIZE / 2;
 		for (int codepoint = '!'; codepoint <= '~'; codepoint++) {

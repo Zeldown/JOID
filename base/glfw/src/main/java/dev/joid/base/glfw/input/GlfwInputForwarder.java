@@ -11,16 +11,11 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.input.mouse.MouseButton;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlfwInputForwarder {
 
-	public static @NonNull GlfwInputForwarder create() {
-		return new GlfwInputForwarder();
-	}
-
-	public @NonNull GlfwInputForwarder attach(final long window) {
+	public static void attach(final long window) {
 		final GLFWCharCallback character = GLFW.glfwSetCharCallback(window, null);
 		GLFW.glfwSetCharCallback(window, (handle, codepoint) -> {
 			if (!BridgeHandler.UI.charTyped(codepoint) && character != null) {
@@ -57,7 +52,6 @@ public final class GlfwInputForwarder {
 				button.invoke(handle, code, action, mods);
 			}
 		});
-		return this;
 	}
 
 }

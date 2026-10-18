@@ -13,7 +13,7 @@ public class TextHoverElement implements IHoverElement {
 
 	private final List<String> lines;
 
-	public static @NonNull TextHoverElement create(final @NonNull List<@NonNull String> lines) {
+	public static @NonNull TextHoverElement of(final @NonNull List<@NonNull String> lines) {
 		return new TextHoverElement(lines);
 	}
 

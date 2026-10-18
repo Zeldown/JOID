@@ -55,7 +55,7 @@ public final class SnapshotRunner {
 	private final boolean                 devMode;
 
 	private SnapshotRunner(final ISnapshotBackend backend) {
-		this.clock     = ManualClockBridge.create(1735689600000L);
+		this.clock     = new ManualClockBridge(1735689600000L);
 		this.masks     = new ArrayList<>();
 		this.window    = new SnapshotWindowBridge();
 		this.bridge    = new SnapshotUIBridge();

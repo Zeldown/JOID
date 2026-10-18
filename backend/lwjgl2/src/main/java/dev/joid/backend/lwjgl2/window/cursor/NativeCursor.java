@@ -29,11 +29,11 @@ public abstract class NativeCursor {
 			Class.forName("com.sun.jna.Native");
 			switch (Platform.current()) {
 			case WINDOWS:
-				return WindowsNativeCursor.create();
+				return new WindowsNativeCursor();
 			case MACOS:
-				return MacNativeCursor.create();
+				return new MacNativeCursor();
 			default:
-				return X11NativeCursor.create();
+				return new X11NativeCursor();
 			}
 		} catch (final ReflectiveOperationException | LinkageError | RuntimeException exception) {
 			JOIDLog.devWarnOnce("NativeCursor.jna", () -> "JNA is missing or cannot be loaded, the mouse cursor stays the default one: " + exception);

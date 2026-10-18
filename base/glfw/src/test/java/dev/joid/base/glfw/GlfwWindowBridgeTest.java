@@ -41,7 +41,7 @@ public class GlfwWindowBridgeTest {
 
 	@Test
 	public void showsEveryCursorWithoutError() throws Exception {
-		final GlfwWindowBridge bridge = GlfwWindowBridge.create(GlfwWindowBridgeTest.window);
+		final GlfwWindowBridge bridge = new GlfwWindowBridge(GlfwWindowBridgeTest.window);
 		final Map<?, ?> cursorMap = GlfwWindowBridgeTest.cursorMap(bridge);
 		final List<Integer> errors = GlfwWindowBridgeTest.record(() -> {
 			for (final Cursor cursor : Cursor.values()) {
@@ -58,7 +58,7 @@ public class GlfwWindowBridgeTest {
 	@Test
 	public void reusesItsCursorsUntilDestroyed() {
 		final List<Integer> errors = GlfwWindowBridgeTest.record(() -> {
-			final GlfwWindowBridge bridge = GlfwWindowBridge.create(GlfwWindowBridgeTest.window);
+			final GlfwWindowBridge bridge = new GlfwWindowBridge(GlfwWindowBridgeTest.window);
 			for (int i = 0; i < 3; i++) {
 				bridge.setCursor(Cursor.TEXT);
 				bridge.setCursor(Cursor.DEFAULT);

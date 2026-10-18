@@ -20,7 +20,7 @@ public final class SignalReplayMatch {
 	private final Map<Object, Signal<?>> positionalMap;
 	private final boolean[]              consumed;
 
-	public static SignalReplayMatch create(final SignalReplaySlice slice, final SignalReplayRun run, final Map<String, String> holeMap, final boolean[] consumed) {
+	public static SignalReplayMatch of(final SignalReplaySlice slice, final SignalReplayRun run, final Map<String, String> holeMap, final boolean[] consumed) {
 		return new SignalReplayMatch(slice, run.getSelf(), run.isDefinitions(), holeMap, run.getPositionalMap(), consumed);
 	}
 

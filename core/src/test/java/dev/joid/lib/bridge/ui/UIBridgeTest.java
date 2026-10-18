@@ -941,7 +941,7 @@ public class UIBridgeTest {
 	@Test
 	public void resizesTheScreenAndLoadsItsUis() {
 		final TraceUI menu = new TraceUI("menu", this.trace);
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		registry.register(this.bridges.getUi());
 		this.bridges.open(menu);
 		this.bridges.getWindow().setWidth(800);
@@ -989,7 +989,7 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.bridges.getRender().getDraws().clear();
-		new DemoUIBridge().drawHover(menu, "Play", 100D, 100D);
+		DemoUIBridge.create().drawHover(menu, "Play", 100D, 100D);
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
@@ -1047,7 +1047,7 @@ public class UIBridgeTest {
 	@Test
 	public void clearsTheScreenToTheBackgroundOfAWindowBridge() {
 		final WindowUIBridge bridge = WindowUIBridge.create();
-		final UIBridgeRegistry registry = UIBridgeRegistry.create();
+		final UIBridgeRegistry registry = new UIBridgeRegistry();
 		registry.register(bridge);
 		registry.frame();
 		Assert.assertEquals(Color.BLACK, this.bridges.getRender().getClearedColor());

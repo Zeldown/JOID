@@ -101,7 +101,7 @@ public final class MsdfBinarySource extends MsdfSource {
 				}
 			}
 
-			return MsdfFontFace.create(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), name, weight, italic);
+			return MsdfFontFace.of(atlas, metrics, glyphs, kerningPairs, MsdfBinarySource.image(input, width, height), name, weight, italic);
 		}
 	}
 

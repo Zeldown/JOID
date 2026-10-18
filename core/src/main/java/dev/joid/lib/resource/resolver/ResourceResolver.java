@@ -12,7 +12,7 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceResolver {
 
-	private static final Registry<IResourceResolver> RESOLVERS = Registry.create();
+	private static final Registry<IResourceResolver> RESOLVERS = new Registry<>();
 
 	static {
 		ResourceResolver.register(new TextureResourceResolver());

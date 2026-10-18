@@ -102,9 +102,9 @@ public class BorderNodeEffectTest {
 
 	private ShaderPassContext context() {
 		try {
-			final Method create = ShaderPassContext.class.getDeclaredMethod("create", double.class, double.class, double.class, double.class, double.class, double.class, PixelGrid.class);
-			create.setAccessible(true);
-			return (ShaderPassContext) create.invoke(null, 10D, 20D, 100D, 50D, 5D, 0D, this.bridges.getRender().getPixelGrid());
+			final Method of = ShaderPassContext.class.getDeclaredMethod("of", double.class, double.class, double.class, double.class, double.class, double.class, PixelGrid.class);
+			of.setAccessible(true);
+			return (ShaderPassContext) of.invoke(null, 10D, 20D, 100D, 50D, 5D, 0D, this.bridges.getRender().getPixelGrid());
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}

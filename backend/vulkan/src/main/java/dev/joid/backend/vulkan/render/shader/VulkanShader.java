@@ -32,7 +32,7 @@ public final class VulkanShader extends Shader {
 	private long    descriptorSetLayout;
 
 	private VulkanShader(final VulkanRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {
-		super(bridge, VulkanShaderTranslator.create(), vertex, fragment, blend);
+		super(bridge, new VulkanShaderTranslator(), vertex, fragment, blend);
 	}
 
 	public static @NonNull VulkanShader create(final VulkanRenderBridge bridge, final ShaderSource vertex, final ShaderSource fragment, final BlendState blend) {

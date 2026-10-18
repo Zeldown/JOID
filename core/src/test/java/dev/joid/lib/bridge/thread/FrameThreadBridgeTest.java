@@ -19,7 +19,7 @@ public class FrameThreadBridgeTest {
 
 	@Test
 	public void runsATaskFromAnotherThreadAtTheNextFrame() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> trace = Collections.synchronizedList(new ArrayList<>());
 		BridgeHandler.THREAD.register(thread);
 		try {
@@ -34,7 +34,7 @@ public class FrameThreadBridgeTest {
 
 	@Test
 	public void runsATaskAtOnceOnTheRenderThread() {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final AtomicBoolean ran = new AtomicBoolean();
 		BridgeHandler.THREAD.register(thread);
 		try {
@@ -50,7 +50,7 @@ public class FrameThreadBridgeTest {
 
 	@Test
 	public void knowsOnlyTheThreadThatCreatedIt() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final AtomicBoolean render = new AtomicBoolean(true);
 		FrameThreadBridgeTest.fromWorker(() -> render.set(thread.isRenderThread()));
 		Assert.assertFalse(render.get());
@@ -59,7 +59,7 @@ public class FrameThreadBridgeTest {
 
 	@Test
 	public void runsTheTasksInTheOrderTheyCame() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> trace = new ArrayList<>();
 		FrameThreadBridgeTest.fromWorker(() -> {
 			thread.execute(() -> trace.add("first"));
@@ -74,7 +74,7 @@ public class FrameThreadBridgeTest {
 
 	@Test
 	public void keepsRunningTheTasksAfterOneThrows() throws InterruptedException {
-		final FrameThreadBridge thread = FrameThreadBridge.create();
+		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> trace = new ArrayList<>();
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();

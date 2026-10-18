@@ -7,7 +7,6 @@ import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
 import dev.joid.base.opengl.capability.GlProfile;
 import lombok.Getter;
-import lombok.NonNull;
 
 public final class GlStateGuard {
 
@@ -19,14 +18,10 @@ public final class GlStateGuard {
 
 	private int depth;
 
-	private GlStateGuard(final IGlBinding binding, final GlCapabilities capabilities) {
-		this.journal      = GlStateJournal.create(binding, capabilities);
+	public GlStateGuard(final IGlBinding binding, final GlCapabilities capabilities) {
+		this.journal      = new GlStateJournal(binding, capabilities);
 		this.capabilities = capabilities;
-		this.binding      = JournalGlBinding.create(binding, this.journal);
-	}
-
-	public static @NonNull GlStateGuard create(final IGlBinding binding, final GlCapabilities capabilities) {
-		return new GlStateGuard(binding, capabilities);
+		this.binding      = new JournalGlBinding(binding, this.journal);
 	}
 
 	public void exit() {

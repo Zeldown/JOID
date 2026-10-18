@@ -39,7 +39,7 @@ public final class NodeBindings {
 	@Getter
 	private boolean subscribed;
 
-	private NodeBindings(final Object owner, final EventBus eventBus, final Supplier<String> name, final Consumer<Runnable> runner) {
+	public NodeBindings(final @NonNull Object owner, final @NonNull EventBus eventBus, final @NonNull Supplier<@NonNull String> name, final @NonNull Consumer<@NonNull Runnable> runner) {
 		this.owner = owner;
 		this.eventBus = eventBus;
 		this.name = name;
@@ -48,10 +48,6 @@ public final class NodeBindings {
 		this.watchList = new ArrayList<>();
 		this.valueList = new ArrayList<>();
 		this.bindingMap = new LinkedHashMap<>();
-	}
-
-	public static @NonNull NodeBindings create(final @NonNull Object owner, final @NonNull EventBus eventBus, final @NonNull Supplier<@NonNull String> name, final @NonNull Consumer<@NonNull Runnable> runner) {
-		return new NodeBindings(owner, eventBus, name, runner);
 	}
 
 	public void subscribe(final boolean loaded) {

@@ -57,7 +57,7 @@ public final class AlAudioBridge implements IAudioBridge {
 			Runtime.getRuntime().addShutdownHook(new Thread(this.binding::destroyContext, "joid-al-shutdown"));
 		}
 
-		final AlAudioSource source = AlAudioSource.create(this, sampleRate, channels);
+		final AlAudioSource source = new AlAudioSource(this, sampleRate, channels);
 		this.sourceSet.add(source);
 		return source;
 	}

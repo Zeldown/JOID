@@ -54,7 +54,7 @@ public class SnapshotComparisonTest {
 	@Test
 	public void failsOnAShotOfAnotherSize() {
 		final File vulkan = this.shots("vulkan", 0xFF808080);
-		SnapshotImage.fromBytes(ByteBuffer.wrap(new byte[] {0, 0, 0, (byte) 255, 0, 0, 0, (byte) 255}), 2, 1, false, PixelLayout.RGBA8).write(new File(vulkan, "a.png"));
+		SnapshotImage.from(ByteBuffer.wrap(new byte[] {0, 0, 0, (byte) 255, 0, 0, 0, (byte) 255}), 2, 1, false, PixelLayout.RGBA8).write(new File(vulkan, "a.png"));
 		final Run run = this.compare(this.shots("lwjgl3", 0xFF808080), vulkan);
 		Assert.assertEquals(Integer.valueOf(1), run.getStatus());
 		Assert.assertTrue(run.getErrors(), run.getErrors().contains("vulkan/a.png: 2x1 instead of the 1x1 of lwjgl3"));
@@ -92,7 +92,7 @@ public class SnapshotComparisonTest {
 	}
 
 	private static SnapshotImage image(final int color) {
-		return SnapshotImage.fromBytes(ByteBuffer.wrap(new byte[] {(byte) (color >> 16), (byte) (color >> 8), (byte) color, (byte) 255}), 1, 1, false, PixelLayout.RGBA8);
+		return SnapshotImage.from(ByteBuffer.wrap(new byte[] {(byte) (color >> 16), (byte) (color >> 8), (byte) color, (byte) 255}), 1, 1, false, PixelLayout.RGBA8);
 	}
 
 	private static String text(final File file) throws IOException {

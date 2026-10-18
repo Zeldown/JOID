@@ -14,7 +14,7 @@ public final class ShowRiseTextEffect implements ITextEffect {
 	private final long   start;
 	private final double stagger;
 
-	public static @NonNull ShowRiseTextEffect create(final long start, final double stagger) {
+	public static @NonNull ShowRiseTextEffect of(final long start, final double stagger) {
 		return new ShowRiseTextEffect(start, stagger);
 	}
 

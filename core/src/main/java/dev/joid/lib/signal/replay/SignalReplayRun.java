@@ -55,7 +55,7 @@ public final class SignalReplayRun {
 	}
 
 	public Object run(final SignalReplaySlice slice) {
-		final Object value = SignalReplayFrame.create(this, slice, 0).execute();
+		final Object value = new SignalReplayFrame(this, slice, 0).execute();
 		this.flush();
 		return value;
 	}
@@ -71,7 +71,7 @@ public final class SignalReplayRun {
 		this.currentList = readList;
 		Object[] result;
 		try {
-			final SignalReplayFrame frame = SignalReplayFrame.create(this, slice, depth);
+			final SignalReplayFrame frame = new SignalReplayFrame(this, slice, depth);
 			final Object value = frame.execute();
 			this.flush();
 			result = value instanceof SignalReplayUnknown || value instanceof SignalReplayParts ? null : new Object[] {value, frame.isLastLive()};

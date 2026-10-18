@@ -76,7 +76,7 @@ public class SnapshotRunnerTest {
 
 		@Override
 		public @NonNull SnapshotImage capture(final int width, final int height) {
-			return SnapshotImage.fromBytes(ByteBuffer.allocate(width * height * 4), width, height, false, PixelLayout.RGBA8);
+			return SnapshotImage.from(ByteBuffer.allocate(width * height * 4), width, height, false, PixelLayout.RGBA8);
 		}
 
 		@Override

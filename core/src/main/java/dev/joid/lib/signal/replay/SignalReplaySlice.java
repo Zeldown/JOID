@@ -42,7 +42,7 @@ public final class SignalReplaySlice {
 		this.signature      = this.describe();
 	}
 
-	public static SignalReplaySlice create(final SignalReplayMethod method, final int start, final int end, final Type type) {
+	public static SignalReplaySlice of(final SignalReplayMethod method, final int start, final int end, final Type type) {
 		return new SignalReplaySlice(method, start, end, type);
 	}
 

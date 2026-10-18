@@ -28,7 +28,7 @@ public class DemoFont {
 		DemoFont.MONTSERRAT = DevFont.MONTSERRAT;
 		DemoFont.PACIFICO = MsdfFontLoader.load(DemoFont.get("Pacifico/Pacifico-Regular.ttf")).join();
 		DemoFont.PLAYFAIR_DISPLAY = MsdfFontLoader.load(DemoFont.get("Playfair-Display/PlayfairDisplay.ttf")).join();
-		DemoFont.PIXEL = DemoPixelFont.create(DemoFont.read("Pixel/Pixel.png"));
+		DemoFont.PIXEL = DemoPixelFont.from(DemoFont.read("Pixel/Pixel.png"));
 	}
 
 	private static InputStream get(final String file) {

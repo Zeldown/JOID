@@ -5,6 +5,7 @@ import dev.joid.lib.ui.core.view.UIView;
 import dev.joid.lib.utils.align.Align;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +15,7 @@ import lombok.experimental.Accessors;
 @Setter
 @ToString
 @Accessors(fluent = true, chain = true)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UIDataObject {
 
 	private int     zindex     = 0;
@@ -32,6 +34,10 @@ public final class UIDataObject {
 	@Getter(AccessLevel.NONE)
 	@Setter(AccessLevel.NONE)
 	private Color backgroundColorCache = Color.decode(this.backgroundColor);
+
+	public static @NonNull UIDataObject create() {
+		return new UIDataObject();
+	}
 
 	public double getAnchorPositionX() {
 		return UIDataObject.position(this.anchorX, UIView.DESIGN_WIDTH);

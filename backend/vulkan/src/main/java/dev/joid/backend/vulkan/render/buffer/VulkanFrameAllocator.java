@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 
 import dev.joid.backend.vulkan.render.VulkanContext;
 import lombok.Getter;
-import lombok.NonNull;
 
 @Getter
 public final class VulkanFrameAllocator {
@@ -17,16 +16,12 @@ public final class VulkanFrameAllocator {
 	private long         offset;
 	private VulkanBuffer buffer;
 
-	private VulkanFrameAllocator(final VulkanContext context, final long capacity, final int usage, final long alignment, final Consumer<Runnable> disposer) {
+	public VulkanFrameAllocator(final VulkanContext context, final long capacity, final int usage, final long alignment, final Consumer<Runnable> disposer) {
 		this.context   = context;
 		this.usage     = usage;
 		this.alignment = alignment;
 		this.disposer  = disposer;
 		this.buffer    = VulkanBuffer.create(context, capacity, usage);
-	}
-
-	public static @NonNull VulkanFrameAllocator create(final VulkanContext context, final long capacity, final int usage, final long alignment, final Consumer<Runnable> disposer) {
-		return new VulkanFrameAllocator(context, capacity, usage, alignment, disposer);
 	}
 
 	public void destroy() {

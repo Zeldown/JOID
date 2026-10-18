@@ -25,7 +25,7 @@ RectNode
 .hoverDuration(250L)
 .hoverEquation(TweenEquations.CUBIC_OUT)
 .self(node -> node.effect(RoundedNodeEffect.create(() -> 8F + node.hoverValue(8F))))
-.self(node -> node.effect(TransformNodeEffect.create(new TranslateTransformOperation(Vector.Y(() -> (double) -node.hoverValue(12F))))))
+.self(node -> node.effect(TransformNodeEffect.create(new TranslateTransformOperation(Vector.create().y(() -> (double) -node.hoverValue(12F))))))
 .attach(this);
 ```
 

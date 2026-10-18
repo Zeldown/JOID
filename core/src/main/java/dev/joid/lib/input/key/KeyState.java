@@ -5,18 +5,11 @@ import java.util.Map;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KeyState {
 
 	private final Map<Key, Key> heldMap = new EnumMap<>(Key.class);
-
-	public static @NonNull KeyState create() {
-		return new KeyState();
-	}
 
 	public void press(final @NonNull Key physicalKey, final @NonNull Key key) {
 		this.heldMap.put(physicalKey, key);

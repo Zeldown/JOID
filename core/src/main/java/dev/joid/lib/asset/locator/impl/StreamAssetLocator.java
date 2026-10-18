@@ -16,7 +16,7 @@ public class StreamAssetLocator implements IAssetLocator {
 
 	@Override
 	public @NonNull Asset locate(final @NonNull Object handle) {
-		return StreamAsset.create((InputStream) handle);
+		return StreamAsset.of((InputStream) handle);
 	}
 
 }

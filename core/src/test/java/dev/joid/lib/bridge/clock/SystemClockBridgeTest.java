@@ -10,7 +10,7 @@ public class SystemClockBridgeTest {
 	@Test
 	public void readsTheNanoTimeOfTheSystem() {
 		final long before = System.nanoTime();
-		final long time = SystemClockBridge.create().nanoTime();
+		final long time = new SystemClockBridge().nanoTime();
 		Assert.assertTrue(time >= before);
 		Assert.assertTrue(time <= System.nanoTime());
 	}
@@ -18,7 +18,7 @@ public class SystemClockBridgeTest {
 	@Test
 	public void readsTheWallClockOfTheSystem() {
 		final long before = System.currentTimeMillis();
-		final long time = SystemClockBridge.create().currentTimeMillis();
+		final long time = new SystemClockBridge().currentTimeMillis();
 		Assert.assertTrue(time >= before);
 		Assert.assertTrue(time <= System.currentTimeMillis());
 	}

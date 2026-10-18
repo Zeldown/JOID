@@ -469,7 +469,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 
 	private void createAudioPlayer() {
 		if (this.grabber.getAudioChannels() > 0 && !BridgeHandler.AUDIO.getBridgeList().isEmpty()) {
-			this.audioPlayer = VideoAudioPlayer.create(this, this.grabber.getSampleRate(), this.grabber.getAudioChannels());
+			this.audioPlayer = new VideoAudioPlayer(this.grabber.getAudioChannels(), this.grabber.getSampleRate(), this);
 		}
 	}
 

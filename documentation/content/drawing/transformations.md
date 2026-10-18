@@ -212,7 +212,7 @@ Light comes from the viewer; faces with vertex normals look smooth. Each `drawMo
 | `rotate(double angle, Rotation rotation, Vector pivot)` | Appends a rotation of `angle` degrees around `pivot`. |
 | `scale(Scale scale, Vector pivot)` | Appends a scale around `pivot`. |
 | `apply(Drawing drawing)` | Pushes the matrix, applies the operations, draws, pops. |
-| `Vector.create(x, y)`, `Scale.create(width, height, depth)`, `Rotation.create(yaw, pitch, roll)` | Values or suppliers. |
+| `Vector.create(x, y)`, `Scale.create(width, height, depth)`, `Rotation.of(yaw, pitch, roll)` | Values or suppliers. |
 | `MatrixStack.push()`, `pop()`, `identity()` | Save, restore, reset the matrix. |
 | `MatrixStack.translate(x, y, z)`, `scale(x, y, z)`, `rotate(angle, x, y, z)`, `ortho(left, right, bottom, top, near, far)` | Transform the matrix. |
 | `FrameBuffer.create(int width, int height, TextureFilter filter)` | Framebuffer of that size in window pixels. |

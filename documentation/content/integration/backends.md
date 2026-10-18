@@ -20,7 +20,7 @@ public final class App {
 		BridgeHandler.UI.register(bridge);
 		JOID.inst().load();
 
-		GlfwInputForwarder.create(bridge).attach(window);
+		GlfwInputForwarder.attach(window);
 		GLFW.glfwSetFramebufferSizeCallback(window, (handle, width, height) -> {
 			if (width > 0 && height > 0) {
 				bridge.resize(width, height);
@@ -119,10 +119,9 @@ final AppUIBridge bridge = new AppUIBridge();
 BridgeHandler.UI.register(bridge);
 JOID.inst().load();
 
-final Lwjgl2InputForwarder input = Lwjgl2InputForwarder.create(bridge);
 bridge.resize(BridgeHandler.WINDOW.get().getWidth(), BridgeHandler.WINDOW.get().getHeight());
 while (!Display.isCloseRequested()) {
-	input.poll();
+	Lwjgl2InputForwarder.poll();
 	bridge.frame();
 	Display.update();
 	if (Display.wasResized()) {
@@ -166,7 +165,7 @@ A host that draws its interface with fixed-function matrices loads them into JOI
 ```java
 BridgeHandler.AUDIO.register(AlAudioBridge.create(Lwjgl3AlBinding.inst()));
 BridgeHandler.WINDOW.register(new HostWindowBridge());
-BridgeHandler.RENDER.register(GlRenderBridge.create(Lwjgl3GlBinding.inst()));
+BridgeHandler.RENDER.register(new GlRenderBridge(Lwjgl3GlBinding.inst()));
 ```
 
 ## A render thread with IThreadBridge
@@ -206,7 +205,7 @@ BridgeHandler.THREAD.register(new GameThreadBridge());
 | `IRenderBridge.beginFrame()` / `endFrame()` | Wrap a JOID frame drawn inside a host loop. |
 | `IRenderBridge.screen(int width, int height)` | Draw to the window, with a viewport and a projection in pixels. |
 | `IRenderBridge.suspend(Runnable)` | Run a host drawing inside a JOID frame. |
-| `ManualClockBridge.create(long)` / `advance(long)` | A clock that moves only when you advance it, for tests. |
+| `new ManualClockBridge(long)` / `advance(long)` | A clock that moves only when you advance it, for tests. |
 
 ## Good to know
 

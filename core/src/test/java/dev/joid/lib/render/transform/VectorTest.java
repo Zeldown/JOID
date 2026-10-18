@@ -57,20 +57,20 @@ public class VectorTest {
 
 	@Test
 	public void pointsAlongASingleAxis() {
-		Assert.assertEquals(4D, Vector.X(4D).getX(), 0D);
-		Assert.assertEquals(0D, Vector.X(4D).getY(), 0D);
-		Assert.assertEquals(5D, Vector.Y(5D).getY(), 0D);
-		Assert.assertEquals(0D, Vector.Y(5D).getZ(), 0D);
-		Assert.assertEquals(6D, Vector.Z(6D).getZ(), 0D);
-		Assert.assertEquals(0D, Vector.Z(6D).getX(), 0D);
+		Assert.assertEquals(4D, Vector.create().x(4D).getX(), 0D);
+		Assert.assertEquals(0D, Vector.create().x(4D).getY(), 0D);
+		Assert.assertEquals(5D, Vector.create().y(5D).getY(), 0D);
+		Assert.assertEquals(0D, Vector.create().y(5D).getZ(), 0D);
+		Assert.assertEquals(6D, Vector.create().z(6D).getZ(), 0D);
+		Assert.assertEquals(0D, Vector.create().z(6D).getX(), 0D);
 	}
 
 	@Test
 	public void followsASingleSuppliedAxis() {
 		final double[] value = {1D};
-		final Vector x = Vector.X(() -> value[0]);
-		final Vector y = Vector.Y(() -> value[0]);
-		final Vector z = Vector.Z(() -> value[0]);
+		final Vector x = Vector.create().x(() -> value[0]);
+		final Vector y = Vector.create().y(() -> value[0]);
+		final Vector z = Vector.create().z(() -> value[0]);
 		value[0] = 7D;
 		Assert.assertEquals(7D, x.getX(), 0D);
 		Assert.assertEquals(0D, x.getY() + x.getZ(), 0D);

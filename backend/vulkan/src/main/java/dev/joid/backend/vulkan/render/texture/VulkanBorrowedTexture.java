@@ -20,11 +20,11 @@ public final class VulkanBorrowedTexture extends BorrowedTexture<VulkanImage> im
 		this.bridge = VulkanBorrowedTexture.findBridge();
 	}
 
-	public static @NonNull VulkanBorrowedTexture create(final @NonNull VulkanImage image) {
+	public static @NonNull VulkanBorrowedTexture of(final @NonNull VulkanImage image) {
 		return new VulkanBorrowedTexture(() -> image);
 	}
 
-	public static @NonNull VulkanBorrowedTexture create(final @NonNull Supplier<VulkanImage> image) {
+	public static @NonNull VulkanBorrowedTexture of(final @NonNull Supplier<VulkanImage> image) {
 		return new VulkanBorrowedTexture(image);
 	}
 
@@ -63,7 +63,7 @@ public final class VulkanBorrowedTexture extends BorrowedTexture<VulkanImage> im
 	private static @NonNull VulkanRenderBridge findBridge() {
 		final VulkanRenderBridge bridge = BridgeHandler.RENDER.getBridge(VulkanRenderBridge.class);
 		if (bridge == null) {
-			throw new IllegalStateException("No Vulkan render bridge is registered, register the Vulkan backend before VulkanBorrowedTexture.create(...)");
+			throw new IllegalStateException("No Vulkan render bridge is registered, register the Vulkan backend before VulkanBorrowedTexture.of(...)");
 		}
 		return bridge;
 	}

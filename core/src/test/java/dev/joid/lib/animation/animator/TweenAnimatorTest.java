@@ -31,13 +31,13 @@ public class TweenAnimatorTest {
 
 	@Before
 	public void useAManualClock() {
-		this.clock = ManualClockBridge.create(1000L);
+		this.clock = new ManualClockBridge(1000L);
 		BridgeHandler.CLOCK.register(this.clock);
 	}
 
 	@After
 	public void restoreTheSystemClock() {
-		BridgeHandler.CLOCK.register(SystemClockBridge.create());
+		BridgeHandler.CLOCK.register(new SystemClockBridge());
 	}
 
 	@Test

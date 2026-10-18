@@ -129,7 +129,7 @@ public class RoundedNodeEffectTest {
 	@Test
 	public void capsTheRadiusAtHalfTheSmallestSide() {
 		final IShaderPass pass = RoundedNodeEffect.create(999F).toShaderPass(RectNode.create(100D, 100D, 200D, 50D));
-		pass.bind(ShaderPassContext.create(100D, 100D, 200D, 50D, 0D, 0D, this.bridges.getRender().getPixelGrid()));
+		pass.bind(ShaderPassContext.of(100D, 100D, 200D, 50D, 0D, 0D, this.bridges.getRender().getPixelGrid()));
 		try {
 			Assert.assertEquals(25F, (Float) this.shader.getValues().get("u_Radius"), 0F);
 			Assert.assertArrayEquals(new float[] {125F, 125F, 275F, 125F}, (float[]) this.shader.getValues().get("u_InnerRect"), 1E-3F);

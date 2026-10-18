@@ -9,11 +9,9 @@ import java.util.regex.Pattern;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SignalReplayParts {
 
 	private final List<Object> partList = new ArrayList<>();
@@ -21,10 +19,6 @@ public final class SignalReplayParts {
 	@Getter
 	@Setter
 	private boolean live;
-
-	public static SignalReplayParts create() {
-		return new SignalReplayParts();
-	}
 
 	public void add(final Object part) {
 		if (part instanceof SignalReplayParts) {

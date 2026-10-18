@@ -173,7 +173,7 @@ public final class Main {
 		JOID.inst().load();
 		Theme.load();
 
-		GlfwInputForwarder.create(bridge).attach(window);
+		GlfwInputForwarder.attach(window);
 		GLFW.glfwSetFramebufferSizeCallback(window, (handle, width, height) -> {
 			if (width > 0 && height > 0) {
 				bridge.resize(width, height);
@@ -244,9 +244,8 @@ Backend.register();
 ```
 
 ```java
-final Lwjgl2InputForwarder input = Lwjgl2InputForwarder.create(bridge);
 while (!Display.isCloseRequested()) {
-	input.poll();
+	Lwjgl2InputForwarder.poll();
 	bridge.frame();
 	Display.update();
 	if (Display.wasResized()) {

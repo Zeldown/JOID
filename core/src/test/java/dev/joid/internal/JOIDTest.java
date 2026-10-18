@@ -167,7 +167,7 @@ public class JOIDTest {
 	@Test
 	public void savesOnTheRenderThreadOnShutdown() throws InterruptedException {
 		JOIDEnv.dataDir(this.folder.getRoot());
-		final FrameThreadBridge render = FrameThreadBridge.create();
+		final FrameThreadBridge render = new FrameThreadBridge();
 		final ExitStore store = UIStoreHook.useStore(ExitStore.class, ExitStore::new);
 		store.savers.clear();
 		BridgeHandler.THREAD.register(render);
@@ -187,7 +187,7 @@ public class JOIDTest {
 	@Test
 	public void savesOnceOnShutdownWhenTheRenderThreadDoesNotAnswer() throws InterruptedException {
 		JOIDEnv.dataDir(this.folder.getRoot());
-		final FrameThreadBridge render = FrameThreadBridge.create();
+		final FrameThreadBridge render = new FrameThreadBridge();
 		final ExitStore store = UIStoreHook.useStore(ExitStore.class, ExitStore::new);
 		store.savers.clear();
 		BridgeHandler.THREAD.register(render);
