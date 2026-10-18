@@ -37,6 +37,7 @@ import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.source.BinaryMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSource;
+import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSourceTest;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
 import lombok.NonNull;
 
@@ -52,7 +53,7 @@ public class MsdfFontLoaderTest {
 	@BeforeClass
 	public static void generateAnAtlas() throws IOException {
 		MsdfFontLoaderTest.atlas = MsdfFontLoaderTest.FOLDER.newFile("font.msdf");
-		Files.copy(MsdfFontCache.resolve(Asset.of(MsdfFontLoaderTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).read()).toPath(), MsdfFontLoaderTest.atlas.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(OpenTypeMsdfSourceTest.resolve(Asset.of(MsdfFontLoaderTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).read()).toPath(), MsdfFontLoaderTest.atlas.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 
 	@Test(timeout = 30000L)

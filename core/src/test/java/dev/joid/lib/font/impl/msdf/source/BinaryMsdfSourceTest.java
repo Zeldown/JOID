@@ -15,7 +15,6 @@ import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.MsdfBounds;
-import dev.joid.lib.font.impl.msdf.MsdfFontCache;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
 import dev.joid.lib.resource.Resource;
 
@@ -168,7 +167,7 @@ public class BinaryMsdfSourceTest {
 	}
 
 	private static BinaryMsdfSource montserrat(final String weight) throws IOException {
-		return BinaryMsdfSource.of(MsdfFontCache.resolve(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-" + weight + ".ttf")).read()));
+		return BinaryMsdfSource.of(OpenTypeMsdfSourceTest.resolve(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-" + weight + ".ttf")).read()));
 	}
 
 	private static byte[] synthetic(final int version) throws IOException {
