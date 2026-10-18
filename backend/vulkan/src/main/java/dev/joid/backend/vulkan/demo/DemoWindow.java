@@ -7,16 +7,23 @@ import dev.joid.backend.vulkan.VulkanBackend;
 import dev.joid.backend.vulkan.host.WindowVulkanHost;
 import dev.joid.base.glfw.demo.GlfwDemoWindow;
 import dev.joid.lib.bridge.backend.Backend;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DemoWindow extends GlfwDemoWindow {
 
 	private VulkanBackend    backend;
 	private WindowVulkanHost host;
 
+	public static @NonNull DemoWindow create() {
+		return new DemoWindow();
+	}
+
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);
-		new DemoWindow().run();
+		DemoWindow.create().run();
 	}
 
 	@Override

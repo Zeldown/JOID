@@ -8,17 +8,20 @@ import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.backend.Backend;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 	@Getter
-	private final long window;
+	private long window;
 
-	private final Backend backend;
+	private Backend backend;
 
-	protected GlfwDemoWindow() {
+	public void run() {
 		GLFWErrorCallback.createPrint(System.err).set();
 		if (!GLFW.glfwInit()) {
 			throw new IllegalStateException("GLFW cannot be initialized, check that the system has a display (DISPLAY or WAYLAND_DISPLAY on Linux)");
@@ -34,9 +37,7 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 
 		JOID.onReady(() -> BridgeHandler.UI.register(this));
 		this.backend = this.registerBackend(this.window);
-	}
 
-	public void run() {
 		super.start();
 		this.loop();
 	}

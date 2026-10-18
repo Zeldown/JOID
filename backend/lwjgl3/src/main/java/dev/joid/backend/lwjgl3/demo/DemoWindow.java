@@ -7,12 +7,19 @@ import dev.joid.backend.lwjgl3.GlContextRequest;
 import dev.joid.backend.lwjgl3.Lwjgl3Backend;
 import dev.joid.base.glfw.demo.GlfwDemoWindow;
 import dev.joid.lib.bridge.backend.Backend;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DemoWindow extends GlfwDemoWindow {
 
+	public static @NonNull DemoWindow create() {
+		return new DemoWindow();
+	}
+
 	public static void main(final String[] args) {
-		new DemoWindow().run();
+		DemoWindow.create().run();
 	}
 
 	@Override

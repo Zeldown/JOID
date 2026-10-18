@@ -12,13 +12,25 @@ import dev.joid.backend.lwjgl2.input.Lwjgl2InputForwarder;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
+import lombok.NonNull;
 
 public class DemoWindow extends DemoUIBridge {
 
 	private final Lwjgl2Backend backend;
 
-	public DemoWindow() throws LWJGLException {
+	protected DemoWindow() {
 		this.backend = Lwjgl2Backend.create();
+	}
+
+	public static @NonNull DemoWindow create() {
+		return new DemoWindow();
+	}
+
+	public static void main(final String[] args) throws LWJGLException {
+		DemoWindow.create().run();
+	}
+
+	public void run() throws LWJGLException {
 		Lwjgl2Natives.install();
 		Display.setDisplayMode(new DisplayMode(1920, 1080));
 		Display.setResizable(true);
@@ -27,13 +39,7 @@ public class DemoWindow extends DemoUIBridge {
 		Keyboard.enableRepeatEvents(true);
 		JOID.onReady(() -> BridgeHandler.UI.register(this));
 		this.backend.register();
-	}
 
-	public static void main(final String[] args) throws LWJGLException {
-		new DemoWindow().run();
-	}
-
-	public void run() {
 		super.start();
 		this.loop();
 	}

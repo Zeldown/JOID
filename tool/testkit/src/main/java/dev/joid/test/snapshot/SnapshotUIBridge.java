@@ -15,8 +15,12 @@ public final class SnapshotUIBridge extends WindowUIBridge {
 	@Accessors(fluent = true, chain = true)
 	private double interfaceScale = 1D;
 
-	public SnapshotUIBridge() {
+	private SnapshotUIBridge() {
 		super.background(SnapshotUIBridge.BACKGROUND);
+	}
+
+	public static @NonNull SnapshotUIBridge create() {
+		return new SnapshotUIBridge();
 	}
 
 	@Override

@@ -8,6 +8,12 @@ import com.example.joid.backend.ExampleBackend;
 
 public class DemoWindow extends DemoUIBridge {
 
+	protected DemoWindow() {}
+
+	public static DemoWindow create() {
+		return new DemoWindow();
+	}
+
 	public void run(final ExampleBackend backend) {
 		super.start();
 
@@ -17,7 +23,7 @@ public class DemoWindow extends DemoUIBridge {
 	}
 
 	public static void main(final String[] args) {
-		final DemoWindow window = new DemoWindow();
+		final DemoWindow window = DemoWindow.create();
 		JOID.onReady(() -> BridgeHandler.UI.register(window));
 		window.run(ExampleBackend.create().register());
 	}

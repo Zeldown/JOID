@@ -5,12 +5,20 @@ import org.lwjgl.system.Configuration;
 
 import dev.joid.backend.vulkan.demo.DemoWindow;
 import dev.joid.internal.JOID;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ShowcaseWindow extends DemoWindow {
+
+	public static @NonNull ShowcaseWindow create() {
+		return new ShowcaseWindow();
+	}
 
 	public static void main(final String[] args) {
 		Configuration.STACK_SIZE.set(1024);
-		new ShowcaseWindow().run();
+		ShowcaseWindow.create().run();
 	}
 
 	@Override

@@ -58,7 +58,7 @@ public final class SnapshotRunner {
 		this.clock     = new ManualClockBridge(1735689600000L);
 		this.masks     = new ArrayList<>();
 		this.window    = new SnapshotWindowBridge();
-		this.bridge    = new SnapshotUIBridge();
+		this.bridge    = SnapshotUIBridge.create();
 		this.backend   = backend;
 		this.locator   = new SnapshotUrlAssetLocator();
 		this.devMode   = JOIDEnv.isDevMode();
