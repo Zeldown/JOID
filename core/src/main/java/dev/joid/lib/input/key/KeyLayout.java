@@ -37,7 +37,7 @@ public final class KeyLayout {
 
 	private final Function<@NonNull Key, String> nameFunction;
 
-	public static @NonNull KeyLayout of(final @NonNull Function<@NonNull Key, String> nameFunction) {
+	public static @NonNull KeyLayout from(final @NonNull Function<@NonNull Key, String> nameFunction) {
 		return new KeyLayout(nameFunction);
 	}
 

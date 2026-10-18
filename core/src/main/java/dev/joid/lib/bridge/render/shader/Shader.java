@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
@@ -60,10 +59,8 @@ public abstract class Shader implements IShader {
 			this.samplerMap.put(sampler.getName(), UniformSampler.create(sampler.getName(), this.samplerMap.size() + 1));
 		}
 
-		if (JOIDEnv.isDevMode()) {
-			Shader.warnBeyondBaseline(vertex);
-			Shader.warnBeyondBaseline(fragment);
-		}
+		Shader.warnBeyondBaseline(vertex);
+		Shader.warnBeyondBaseline(fragment);
 
 		this.translation = translator.translate(vertex, fragment);
 	}
@@ -210,7 +207,7 @@ public abstract class Shader implements IShader {
 	private static void warnBeyondBaseline(final ShaderSource source) {
 		for (final ShaderFeature feature : source.getFeatures()) {
 			if (!GlslDialect.GLSL_120.supports(feature)) {
-				JOIDLog.warnOnce("Shader.baseline." + feature.name() + source.getBody(), "A " + source.getStage().name().toLowerCase(Locale.ROOT) + " shader uses " + feature.getDescription() + ", which needs " + feature.getGlsl().getName() + ": the OpenGL 2.1 contexts (GLSL 1.20) that JOID supports refuse it, keep to GLSL 1.20 to draw on every backend");
+				JOIDLog.devWarnOnce("Shader.baseline." + feature.name() + source.getBody(), () -> "A " + source.getStage().name().toLowerCase(Locale.ROOT) + " shader uses " + feature.getDescription() + ", which needs " + feature.getGlsl().getName() + ": the OpenGL 2.1 contexts (GLSL 1.20) that JOID supports refuse it, keep to GLSL 1.20 to draw on every backend");
 			}
 		}
 	}

@@ -1,12 +1,13 @@
 package dev.joid.lib.bridge.ui;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
+
+import com.google.common.collect.Lists;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.BridgeRegistry;
@@ -83,13 +84,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<UIBridge> {
 	public boolean mousePressed(final @NonNull MouseButton button) {
 		final List<UIBridge> pressedList = new ArrayList<>();
 		this.pressedMap.put(button, pressedList);
-		for (final UIBridge bridge : this.getInputList()) {
-			pressedList.add(bridge);
-			if (bridge.mousePressed(button)) {
-				return true;
-			}
-		}
-		return false;
+		return this.dispatch(bridge -> pressedList.add(bridge) && bridge.mousePressed(button));
 	}
 
 	public boolean mouseReleased(final @NonNull MouseButton button) {
@@ -121,7 +116,7 @@ public final class UIBridgeRegistry extends BridgeRegistry<UIBridge> {
 	public boolean keyReleased(final @NonNull Key physicalKey) {
 		final Key key = this.keyState.release(physicalKey);
 		boolean consumed = false;
-		for (final UIBridge bridge : this.getInputList()) {
+		for (final UIBridge bridge : Lists.reverse(super.getBridgeList())) {
 			consumed |= bridge.keyReleased(physicalKey, key);
 		}
 		return consumed;
@@ -151,12 +146,6 @@ public final class UIBridgeRegistry extends BridgeRegistry<UIBridge> {
 
 	private boolean dispatch(final Predicate<UIBridge> event) {
 		return super.find(event) != null;
-	}
-
-	private List<UIBridge> getInputList() {
-		final List<UIBridge> inputList = new ArrayList<>(super.getBridgeList());
-		Collections.reverse(inputList);
-		return inputList;
 	}
 
 }
