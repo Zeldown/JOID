@@ -14,10 +14,10 @@ public class UIViewTest {
 	@Test
 	public void boundsTheZoom() {
 		final UIView view = UIView.create(960D, 540D).resize(1920D, 1080D);
-		Assert.assertEquals(1D, view.zoom(5D).getZoom(), 1E-9D);
-		Assert.assertEquals(0.1D, view.zoom(0D).getZoom(), 1E-9D);
-		Assert.assertEquals(4D, view.interfaceScale(0.25D).zoom(10D).getZoom(), 1E-9D);
-		Assert.assertEquals(1D, view.interfaceScale(1D).getZoom(), 1E-9D);
+		Assert.assertEquals(1D, view.clampZoom(5D), 1E-9D);
+		Assert.assertEquals(0.1D, view.clampZoom(0D), 1E-9D);
+		Assert.assertEquals(4D, view.interfaceScale(0.25D).clampZoom(10D), 1E-9D);
+		Assert.assertEquals(1D, view.interfaceScale(1D).clampZoom(4D), 1E-9D);
 	}
 
 	@Test

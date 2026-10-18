@@ -124,8 +124,6 @@ public abstract class UI implements IIndexedElement {
 	private PopupTransition                              popupTransition;
 	private Map<Class<? extends Annotation>, Annotation> annotationMap;
 
-	private double zoom;
-
 	@Getter private boolean closed;
 	@Getter private boolean initialized;
 
@@ -184,12 +182,8 @@ public abstract class UI implements IIndexedElement {
 		this.keptTaskList     = new ArrayList<>();
 		this.shortcutList     = new CopyOnWriteArrayList<>();
 		this.keptShortcutList = new ArrayList<>();
-		this.zoomValue        = InteractiveValue.create(this.bindings, "zoom", () -> this.zoom, (final Double zoom) -> {
-			this.zoom = zoom;
-			this.view.zoom(zoom);
-		}).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
+		this.zoomValue        = InteractiveValue.create(this.bindings, "zoom", this.view::getZoom, this.view::zoom).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
 
-		this.zoom = 1D;
 		this.drawnFrame = Long.MIN_VALUE;
 		this.lastHoveredFrame = -1L;
 		this.hoveredPath = Collections.emptyList();
@@ -276,7 +270,7 @@ public abstract class UI implements IIndexedElement {
 		final UIMouseScrollEvent<UI> event = UIMouseScrollEvent.create(this, mx, my, notchesX, notchesY);
 		return this.fireInput(UI.HANDLE_MOUSE_SCROLL, "mouseScroll", event, node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event), () -> {
 			if (!event.isConsumed() && JOIDEnv.isDevMode() && this.data.zoomable() && UI.isAltKeyDown() && notchesY != 0D) {
-				this.zoomValue.change(this.zoom + notchesY * (UI.isShiftKeyDown() ? 0.12D : 0.012D));
+				this.zoomValue.change(this.getZoom() + notchesY * (UI.isShiftKeyDown() ? 0.12D : 0.012D));
 				event.consume();
 			}
 		});
@@ -338,12 +332,12 @@ public abstract class UI implements IIndexedElement {
 		return this.fireInput(UI.HANDLE_KEY_PRESSED, "keyPressed", event, node -> node.fireKeyPressed(physicalKey, key, event), () -> {
 			this.fireShortcuts(key, false, event);
 			if (this.data.zoomable() && !event.isConsumed()) {
-				final double zoom = this.zoom;
-				if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom + 0.1D) && this.zoom != zoom) {
+				final double zoom = this.getZoom();
+				if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom + 0.1D) && this.getZoom() != zoom) {
 					event.consume();
 				}
 
-				if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom - 0.1D) && this.zoom != zoom) {
+				if ((key == Key.NUMPAD_SUBTRACT || key == Key.MINUS) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom - 0.1D) && this.getZoom() != zoom) {
 					event.consume();
 				}
 			}
@@ -441,7 +435,7 @@ public abstract class UI implements IIndexedElement {
 	}
 
 	public final <T extends UI> @NonNull T zoomBy(final double delta) {
-		return this.zoomTo(this.zoom + delta);
+		return this.zoomTo(this.getZoom() + delta);
 	}
 
 	public final <T extends UI> @NonNull T beforeZoom(final @NonNull EventListener<UIChangeEvent.Pre<T, Double>> listener) {

@@ -94,13 +94,13 @@ public final class UIView {
 	}
 
 	public @NonNull UIView zoom(final double zoom) {
-		this.zoom = this.clampZoom(zoom);
+		this.zoom = zoom;
 		return this;
 	}
 
 	public @NonNull UIView interfaceScale(final double interfaceScale) {
 		this.interfaceScale = interfaceScale;
-		return this.zoom(this.zoom);
+		return this;
 	}
 
 	public @NonNull UIView resize(final double width, final double height) {
