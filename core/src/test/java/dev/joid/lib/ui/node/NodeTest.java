@@ -2349,7 +2349,38 @@ public class NodeTest {
 			Assert.assertEquals("The init of this node fails on purpose", expected.getMessage());
 		}
 		Assert.assertFalse(child.isAttached());
+		Assert.assertNull(child.getParent());
 		Assert.assertTrue(NodeTest.subscribers(signal).isEmpty());
+	}
+
+	@Test
+	public void placesAtItsOwnPositionAChildAddedToTheUIAfterItsAppendFailed() {
+		final boolean[] fails = {true};
+		final RectNode parent = RectNode.create(100D, 100D, 50D, 50D).visible(false);
+		final NodeUI ui = new NodeUI(parent);
+		this.bridges.open(ui);
+		final Node child = new Node(10D, 10D, 10D, 10D) {
+
+			@Override
+			public void init(final @NonNull UI ui) {
+				if (fails[0]) {
+					throw new IllegalStateException("The first init of this node fails on purpose");
+				}
+			}
+
+		};
+		try {
+			parent.append(child);
+			Assert.fail("The first init of the child fails");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The first init of this node fails on purpose", expected.getMessage());
+		}
+		fails[0] = false;
+		ui.add(child);
+		Assert.assertNull(child.getParent());
+		Assert.assertEquals(10D, child.getAbsoluteX(), 0D);
+		Assert.assertEquals(10D, child.getAbsoluteY(), 0D);
+		Assert.assertTrue(child.isVisible());
 	}
 
 	@Test

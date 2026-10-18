@@ -652,7 +652,12 @@ public abstract class Node implements INode {
 
 			node.parent = this;
 			if (this.attached && !node.attached) {
-				node.load(this.ui);
+				try {
+					node.load(this.ui);
+				} catch (final RuntimeException exception) {
+					node.parent = null;
+					throw exception;
+				}
 			}
 			this.drawList.add(node);
 			this.children.remove(node);
