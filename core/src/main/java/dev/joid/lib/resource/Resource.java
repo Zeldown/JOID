@@ -294,10 +294,6 @@ public final class Resource {
 			this.generate();
 		}
 
-		if (this.blocking) {
-			this.data.await();
-		}
-
 		if (Boolean.TRUE.equals(this.properties.getMipmap()) && this.isMipmappable()) {
 			for (int i = 0; i < this.data.getTextureCount(); i++) {
 				this.data.getTexture(i).mipmap(true);
