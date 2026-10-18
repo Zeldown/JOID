@@ -14,33 +14,27 @@ public class DoubleSignal extends Signal<Double> {
 	}
 
 	public @NonNull DoubleSignal decrement() {
-		super.transform(current -> current - 1D);
-		return this;
+		return super.transform(current -> current - 1D);
 	}
 
 	public @NonNull DoubleSignal increment() {
-		super.transform(current -> current + 1D);
-		return this;
+		return super.transform(current -> current + 1D);
 	}
 
 	public @NonNull DoubleSignal add(final double value) {
-		super.transform(current -> current + value);
-		return this;
+		return super.transform(current -> current + value);
 	}
 
 	public @NonNull DoubleSignal subtract(final double value) {
-		super.transform(current -> current - value);
-		return this;
+		return super.transform(current -> current - value);
 	}
 
 	public @NonNull DoubleSignal multiply(final double value) {
-		super.transform(current -> current * value);
-		return this;
+		return super.transform(current -> current * value);
 	}
 
 	public @NonNull DoubleSignal divide(final double value) {
-		super.transform(current -> current / value);
-		return this;
+		return super.transform(current -> current / value);
 	}
 
 }

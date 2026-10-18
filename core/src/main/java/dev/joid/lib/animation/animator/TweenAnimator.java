@@ -154,13 +154,13 @@ public class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator update() {
-		this.release();
+		TweenAnimator.RUNNING_SET.remove(this);
 		this.advance();
 		return this;
 	}
 
 	public @NonNull TweenAnimator update(final float delta) {
-		this.release();
+		TweenAnimator.RUNNING_SET.remove(this);
 		this.advance(delta);
 		return this;
 	}
@@ -202,12 +202,8 @@ public class TweenAnimator extends Signal<Float> {
 		return "The " + this + " is animated and cannot be " + action + ", use value(...) or start a tween";
 	}
 
-	private void release() {
-		TweenAnimator.RUNNING_SET.remove(this);
-	}
-
 	private void killTimeline() {
-		this.release();
+		TweenAnimator.RUNNING_SET.remove(this);
 		if (this.timeline != null) {
 			this.timeline.kill();
 		}
@@ -228,7 +224,7 @@ public class TweenAnimator extends Signal<Float> {
 		Signal.batch(() -> this.timeline.update(delta * this.speed));
 		if (this.timeline != null && this.timeline.isFinished()) {
 			this.timeline = null;
-			this.release();
+			TweenAnimator.RUNNING_SET.remove(this);
 		}
 	}
 

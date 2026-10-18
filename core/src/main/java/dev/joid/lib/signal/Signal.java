@@ -161,8 +161,8 @@ public class Signal<T> implements Supplier<T> {
 		return this;
 	}
 
-	protected final @NonNull Signal<T> transform(final @NonNull UnaryOperator<T> operator) {
-		return this.write(() -> this.store(operator.apply(this.peek())));
+	protected final <S extends Signal<T>> @NonNull S transform(final @NonNull UnaryOperator<T> operator) {
+		return (S) this.write(() -> this.store(operator.apply(this.peek())));
 	}
 
 	protected final boolean hasListeners() {

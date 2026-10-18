@@ -14,28 +14,23 @@ public class IntegerSignal extends Signal<Integer> {
 	}
 
 	public @NonNull IntegerSignal decrement() {
-		super.transform(current -> current - 1);
-		return this;
+		return super.transform(current -> current - 1);
 	}
 
 	public @NonNull IntegerSignal increment() {
-		super.transform(current -> current + 1);
-		return this;
+		return super.transform(current -> current + 1);
 	}
 
 	public @NonNull IntegerSignal add(final int value) {
-		super.transform(current -> current + value);
-		return this;
+		return super.transform(current -> current + value);
 	}
 
 	public @NonNull IntegerSignal subtract(final int value) {
-		super.transform(current -> current - value);
-		return this;
+		return super.transform(current -> current - value);
 	}
 
 	public @NonNull IntegerSignal multiply(final int value) {
-		super.transform(current -> current * value);
-		return this;
+		return super.transform(current -> current * value);
 	}
 
 	public @NonNull IntegerSignal divide(final int value) {
@@ -43,8 +38,7 @@ public class IntegerSignal extends Signal<Integer> {
 			throw new IllegalArgumentException("The IntegerSignal of value " + super.peek() + " cannot be divided by 0, check the divisor before calling divide(...)");
 		}
 
-		super.transform(current -> current / value);
-		return this;
+		return super.transform(current -> current / value);
 	}
 
 }

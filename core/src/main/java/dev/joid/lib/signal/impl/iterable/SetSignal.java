@@ -49,12 +49,11 @@ public class SetSignal<E> extends Signal<Set<E>> {
 	}
 
 	private @NonNull SetSignal<E> mutate(final @NonNull Consumer<Set<E>> mutation) {
-		super.transform(current -> {
+		return super.transform(current -> {
 			final Set<E> set = new LinkedHashSet<>(current);
 			mutation.accept(set);
 			return set;
 		});
-		return this;
 	}
 
 }

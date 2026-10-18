@@ -14,8 +14,7 @@ public class BooleanSignal extends Signal<Boolean> {
 	}
 
 	public @NonNull BooleanSignal toggle() {
-		super.transform(current -> !current);
-		return this;
+		return super.transform(current -> !current);
 	}
 
 }

@@ -14,33 +14,27 @@ public class FloatSignal extends Signal<Float> {
 	}
 
 	public @NonNull FloatSignal decrement() {
-		super.transform(current -> current - 1F);
-		return this;
+		return super.transform(current -> current - 1F);
 	}
 
 	public @NonNull FloatSignal increment() {
-		super.transform(current -> current + 1F);
-		return this;
+		return super.transform(current -> current + 1F);
 	}
 
 	public @NonNull FloatSignal add(final float value) {
-		super.transform(current -> current + value);
-		return this;
+		return super.transform(current -> current + value);
 	}
 
 	public @NonNull FloatSignal subtract(final float value) {
-		super.transform(current -> current - value);
-		return this;
+		return super.transform(current -> current - value);
 	}
 
 	public @NonNull FloatSignal multiply(final float value) {
-		super.transform(current -> current * value);
-		return this;
+		return super.transform(current -> current * value);
 	}
 
 	public @NonNull FloatSignal divide(final float value) {
-		super.transform(current -> current / value);
-		return this;
+		return super.transform(current -> current / value);
 	}
 
 }

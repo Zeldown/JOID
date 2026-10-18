@@ -14,28 +14,23 @@ public class LongSignal extends Signal<Long> {
 	}
 
 	public @NonNull LongSignal decrement() {
-		super.transform(current -> current - 1);
-		return this;
+		return super.transform(current -> current - 1);
 	}
 
 	public @NonNull LongSignal increment() {
-		super.transform(current -> current + 1);
-		return this;
+		return super.transform(current -> current + 1);
 	}
 
 	public @NonNull LongSignal add(final long value) {
-		super.transform(current -> current + value);
-		return this;
+		return super.transform(current -> current + value);
 	}
 
 	public @NonNull LongSignal subtract(final long value) {
-		super.transform(current -> current - value);
-		return this;
+		return super.transform(current -> current - value);
 	}
 
 	public @NonNull LongSignal multiply(final long value) {
-		super.transform(current -> current * value);
-		return this;
+		return super.transform(current -> current * value);
 	}
 
 	public @NonNull LongSignal divide(final long value) {
@@ -43,8 +38,7 @@ public class LongSignal extends Signal<Long> {
 			throw new IllegalArgumentException("The LongSignal of value " + super.peek() + " cannot be divided by 0, check the divisor before calling divide(...)");
 		}
 
-		super.transform(current -> current / value);
-		return this;
+		return super.transform(current -> current / value);
 	}
 
 }

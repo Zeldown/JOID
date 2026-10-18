@@ -65,12 +65,11 @@ public class ListSignal<E> extends Signal<List<E>> {
 	}
 
 	private @NonNull ListSignal<E> mutate(final @NonNull Consumer<List<E>> mutation) {
-		super.transform(current -> {
+		return super.transform(current -> {
 			final List<E> list = new ArrayList<>(current);
 			mutation.accept(list);
 			return list;
 		});
-		return this;
 	}
 
 }
