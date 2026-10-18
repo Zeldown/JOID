@@ -23,7 +23,6 @@ public class ShowMotion extends ShowUI {
 
 	@Override
 	protected void scene() {
-		super.backdrop();
 		ShowUI.blob(-250, -250, 900, ShowUI.VIOLET.withAlpha(0.38F), 0D, 50D).attach(this);
 		ShowUI.blob(1300, 500, 900, ShowUI.CYAN.withAlpha(0.20F), 0.5D, 50D).attach(this);
 

@@ -31,7 +31,6 @@ public class ShowLists extends ShowUI {
 		final Color[]  colors  = {ShowUI.AMBER, ShowUI.CYAN, ShowUI.PINK, ShowUI.EMERALD, ShowUI.VIOLET, ShowUI.SKY, ShowUI.CYAN, ShowUI.ORANGE, ShowUI.FUCHSIA, ShowUI.ORANGE, ShowUI.SKY, ShowUI.EMERALD};
 		final String[] artists = {"Amber Lane", "The Shallows", "Rosa Mendes", "North Lights", "Lo & Behold", "Kite Club", "The Shallows", "Amber Lane", "Mira Sol", "Ash & Oak", "North Lights", "Kite Club"};
 
-		super.backdrop();
 		ShowUI.blob(-250, 400, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
 		ShowUI.blob(1350, -250, 900, ShowUI.CYAN.withAlpha(0.20F), 0.5D, 50D).attach(this);
 

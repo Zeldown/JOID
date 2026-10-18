@@ -28,7 +28,6 @@ public class ShowReactive extends ShowUI {
 
 	@Override
 	protected void scene() {
-		super.backdrop();
 		ShowUI.blob(-300, 200, 900, ShowUI.VIOLET.withAlpha(0.45F), 0D, 50D).attach(this);
 		ShowUI.blob(1300, -300, 900, ShowUI.CYAN.withAlpha(0.22F), 0.4D, 50D).attach(this);
 		ShowUI.blob(1100, 700, 700, ShowUI.PINK.withAlpha(0.22F), 0.7D, 50D).attach(this);

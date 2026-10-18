@@ -31,7 +31,6 @@ public class ShowDrag extends ShowUI {
 
 	@Override
 	protected void scene() {
-		super.backdrop();
 		ShowUI.blob(-300, -300, 900, ShowUI.VIOLET.withAlpha(0.35F), 0D, 50D).attach(this);
 		ShowUI.blob(1350, 450, 900, ShowUI.CYAN.withAlpha(0.18F), 0.5D, 50D).attach(this);
 

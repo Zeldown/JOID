@@ -40,7 +40,6 @@ public class ShowHero extends ShowUI {
 
 	@Override
 	protected void scene() {
-		super.backdrop();
 		ShowUI.blob(-260, -320, 1000, ShowUI.VIOLET.withAlpha(0.55F), 0D, 60D).attach(this);
 		ShowUI.blob(1480, -260, 760, ShowUI.CYAN.withAlpha(0.32F), 0.3D, 50D).attach(this);
 		ShowUI.blob(1080, 640, 720, ShowUI.PINK.withAlpha(0.30F), 0.6D, 70D).attach(this);

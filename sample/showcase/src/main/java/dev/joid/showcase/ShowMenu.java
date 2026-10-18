@@ -21,7 +21,6 @@ public class ShowMenu extends ShowUI {
 
 	@Override
 	protected void scene() {
-		super.backdrop();
 		ShowUI.blob(-260, -320, 1000, ShowUI.VIOLET.withAlpha(0.45F), 0D, 60D).attach(this);
 		ShowUI.blob(1480, -260, 760, ShowUI.CYAN.withAlpha(0.24F), 0.3D, 50D).attach(this);
 		ShowUI.blob(1000, 700, 760, ShowUI.PINK.withAlpha(0.20F), 0.6D, 60D).attach(this);

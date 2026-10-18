@@ -29,7 +29,6 @@ public class ShowEffects extends ShowUI {
 
 	@Override
 	protected void scene() {
-		super.backdrop();
 		ShowUI.blob(-300, 300, 900, ShowUI.VIOLET.withAlpha(0.40F), 0D, 50D).attach(this);
 		ShowUI.blob(1250, -350, 900, ShowUI.PINK.withAlpha(0.22F), 0.4D, 50D).attach(this);
 		ShowUI.blob(1200, 650, 800, ShowUI.CYAN.withAlpha(0.18F), 0.7D, 50D).attach(this);

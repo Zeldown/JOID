@@ -38,14 +38,12 @@ public abstract class ShowUI extends UI {
 	public static final Color FUCHSIA = Color.decode("#E879F9").lock();
 	public static final Color EMERALD = Color.decode("#34D399").lock();
 
-	private static final Color BACKGROUND = Color.decode("#18181B").lock();
-
 	private long start;
 
 	@Override
 	public void init() {
 		this.start = BridgeHandler.CLOCK.get().currentTimeMillis();
-		RectNode.create(0, 0, 1920, 1080).color(ShowUI.BACKGROUND).attach(this);
+		RectNode.create(0, 0, 1920, 1080).color(ShowUI.diagonal(ShowUI.NIGHT, ShowUI.DUSK)).attach(this);
 		this.scene();
 
 		Shortcut.create(Key.ESCAPE).onTrigger(event -> this.menu()).attach(this);
@@ -72,10 +70,6 @@ public abstract class ShowUI extends UI {
 			return 1D;
 		}
 		return equation.compute((float) ((t - from) / (to - from)));
-	}
-
-	protected void backdrop() {
-		RectNode.create(0, 0, 1920, 1080).color(ShowUI.diagonal(ShowUI.NIGHT, ShowUI.DUSK)).attach(this);
 	}
 
 	protected static CircleNode blob(final double x, final double y, final double size, final Color color, final double phase, final double range) {

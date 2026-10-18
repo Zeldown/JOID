@@ -31,7 +31,6 @@ public class ShowType extends ShowUI {
 		final double pivotX = 128D;
 		final double pivotY = 236D;
 
-		super.backdrop();
 		ShowUI.blob(1250, -350, 900, ShowUI.FUCHSIA.withAlpha(0.28F), 0D, 50D).attach(this);
 		ShowUI.blob(-350, 600, 900, ShowUI.CYAN.withAlpha(0.20F), 0.5D, 50D).attach(this);
 

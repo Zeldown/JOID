@@ -47,7 +47,6 @@ public class ShowPlayer extends ShowUI {
 
 	@Override
 	protected void scene() {
-		super.backdrop();
 		ShowUI.blob(-250, 500, 900, ShowUI.AMBER.withAlpha(0.22F), 0D, 50D).attach(this);
 		ShowUI.blob(1350, -300, 900, ShowUI.PINK.withAlpha(0.22F), 0.5D, 50D).attach(this);
 		CircleNode.create(560, 140, 800).color(ShowUI.ORANGE.withAlpha(0.25F)).effect(BlurNodeEffect.create(120F)).attach(this);
