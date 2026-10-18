@@ -25,40 +25,11 @@ def os = org.gradle.internal.os.OperatingSystem.current()
 def arm = System.getProperty('os.arch').startsWith('aarch64')
 
 ext {
-    shadeLibraries = { task ->
-        task.relocate 'com.github.weisj.jsvg', 'dev.joid.shaded.jsvg'
-        task.relocate 'com.twelvemonkeys', 'dev.joid.shaded.twelvemonkeys'
-        task.relocate 'org.objectweb.asm', 'dev.joid.shaded.asm'
-        task.relocate 'com.google.gson', 'dev.joid.shaded.gson'
-        task.relocate 'com.google.common', 'dev.joid.shaded.guava'
-        task.relocate 'org.apache.commons.io', 'dev.joid.shaded.commons.io'
-        task.relocate 'org.apache.commons.lang3', 'dev.joid.shaded.commons.lang3'
-        task.relocate 'com.google.thirdparty', 'dev.joid.shaded.guava.thirdparty'
-        task.exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/LICENSE*', 'META-INF/NOTICE*', 'META-INF/AL2.0', 'META-INF/LGPL2.1'
-    }
-
     variants = ['prod', 'dev', 'demo']
     variantModules = [':core', ':backend-lwjgl2', ':backend-lwjgl3', ':backend-vulkan']
 
     releaseTasks = {
         [':base-glfw:releaseJar', ':base-opengl:releaseJar', ':tool-testkit:jar', ':tool-msdf:jar', ':base-openal:jar'].collect { path -> tasks.getByPath(path) }
-    }
-
-    excludeDemo = { task ->
-        task.exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/*/demo/**', 'dev/joid/backend/*/demo/**'
-    }
-
-    excludeDevelopment = { task ->
-        rootProject.excludeDemo(task)
-        task.exclude 'assets/dev/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**', 'dev/joid/base/*/snapshot/**', 'dev/joid/backend/*/snapshot/**'
-    }
-
-    excludeVariant = { task, variant ->
-        if (variant == 'prod') {
-            rootProject.excludeDevelopment(task)
-        } else if (variant == 'dev') {
-            rootProject.excludeDemo(task)
-        }
     }
 
     lwjglVersion = "3.3.4"

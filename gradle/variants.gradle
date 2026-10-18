@@ -25,8 +25,21 @@ rootProject.variants.each { variant ->
 
         configurations = ([project] + embeddedModules).collect { module -> module.configurations.findByName('shade') }.findAll { configuration -> configuration != null }
         classifier = variant
-        rootProject.shadeLibraries(it)
-        rootProject.excludeVariant(it, variant)
+        relocate 'com.github.weisj.jsvg', 'dev.joid.shaded.jsvg'
+        relocate 'com.twelvemonkeys', 'dev.joid.shaded.twelvemonkeys'
+        relocate 'org.objectweb.asm', 'dev.joid.shaded.asm'
+        relocate 'com.google.gson', 'dev.joid.shaded.gson'
+        relocate 'com.google.common', 'dev.joid.shaded.guava'
+        relocate 'org.apache.commons.io', 'dev.joid.shaded.commons.io'
+        relocate 'org.apache.commons.lang3', 'dev.joid.shaded.commons.lang3'
+        relocate 'com.google.thirdparty', 'dev.joid.shaded.guava.thirdparty'
+        exclude 'module-info.class', 'META-INF/versions/**', 'META-INF/services/javax.imageio.**', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/LICENSE*', 'META-INF/NOTICE*', 'META-INF/AL2.0', 'META-INF/LGPL2.1'
+        if (variant != 'demo') {
+            exclude 'assets/demo/**', 'dev/joid/demo/**', 'dev/joid/base/*/demo/**', 'dev/joid/backend/*/demo/**'
+        }
+        if (variant == 'prod') {
+            exclude 'assets/dev/**', 'dev/joid/internal/font/**', 'dev/joid/lib/ui/node/impl/dev/**', 'dev/joid/base/*/snapshot/**', 'dev/joid/backend/*/snapshot/**'
+        }
     }
 
     build.dependsOn "${variant}Jar"

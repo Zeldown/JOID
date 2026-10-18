@@ -2,6 +2,7 @@ package dev.joid.base.opengl.render.state;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,15 +48,7 @@ public final class GlStateJournal {
 
 	public void restore() {
 		this.recording = false;
-		for (int i = 1; i < this.size; i++) {
-			final Entry entry = this.entryList.get(i);
-			int j = i - 1;
-			while (j >= 0 && this.entryList.get(j).key.compareTo(entry.key) > 0) {
-				this.entryList.set(j + 1, this.entryList.get(j));
-				j--;
-			}
-			this.entryList.set(j + 1, entry);
-		}
+		this.entryList.subList(0, this.size).sort(Comparator.comparing(entry -> entry.key));
 
 		for (int i = 0; i < this.size; i++) {
 			this.restore(this.entryList.get(i));
