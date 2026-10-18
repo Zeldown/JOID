@@ -131,6 +131,10 @@ public class ResourcePlayerNode extends Node {
 			}
 		}
 
+		if (this.fork == null) {
+			return;
+		}
+
 		Color.WHITE.bind();
 		this.stretch.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
 	}

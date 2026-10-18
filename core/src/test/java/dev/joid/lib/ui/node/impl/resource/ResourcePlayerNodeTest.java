@@ -1,6 +1,8 @@
 package dev.joid.lib.ui.node.impl.resource;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +11,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingTexture;
@@ -23,6 +26,8 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.geom.Point;
 
 public class ResourcePlayerNodeTest {
@@ -402,6 +407,38 @@ public class ResourcePlayerNodeTest {
 		Assert.assertNotNull(fork.getResourceData().getTextures());
 		player.fireDetach();
 		Assert.assertNull(fork.getResourceData().getTextures());
+	}
+
+	@Test
+	public void endsTheFrameOfTheUiItsEndCloses() {
+		final List<Boolean> drawn = new ArrayList<>();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onEnd(event -> BridgeHandler.UI.get(event.getNode().getUi()).open(new NodeUI()));
+		final RectNode after = RectNode.create(0D, 0D, 10D, 10D).layer((rect, mouseX, mouseY) -> drawn.add(rect.isAttached()));
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		System.setErr(new PrintStream(output, true));
+		try {
+			this.bridges.open(new NodeUI(player, after)).frames(20);
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertEquals("", output.toString());
+		Assert.assertEquals(16, drawn.size());
+		Assert.assertFalse(drawn.contains(false));
+	}
+
+	@Test
+	public void staysIdleOnceATaskClosesItsUi() {
+		final List<Boolean> drawn = new ArrayList<>();
+		final RectNode before = RectNode.create(0D, 0D, 10D, 10D).layer((rect, mouseX, mouseY) -> drawn.add(rect.isAttached()));
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink());
+		final NodeUI ui = new NodeUI(before, player);
+		Task.create(50L).onRun(event -> BridgeHandler.UI.get(ui).open(new NodeUI())).attach(ui);
+		this.bridges.open(ui).frames(10);
+		Assert.assertFalse(drawn.isEmpty());
+		Assert.assertFalse(drawn.contains(false));
+		Assert.assertNull(ResourcePlayerNodeTest.read(player, "fork"));
+		Assert.assertFalse(player.isPlaying());
 	}
 
 	@Test

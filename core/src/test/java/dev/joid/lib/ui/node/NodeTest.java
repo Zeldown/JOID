@@ -2465,6 +2465,20 @@ public class NodeTest {
 	}
 
 	@Test
+	public void movesATopLevelNodeAttachedAgainToTheEndWithoutReloadingIt() {
+		final List<String> events = new ArrayList<>();
+		final RecordingNode first = new RecordingNode("first", events, 0D, 0D, 10D, 10D);
+		final RecordingNode second = new RecordingNode("second", events, 0D, 0D, 10D, 10D);
+		final NodeUI ui = new NodeUI(first);
+		this.bridges.open(ui);
+		second.attach(ui);
+		events.clear();
+		first.attach(ui);
+		Assert.assertTrue(events.isEmpty());
+		Assert.assertEquals(Arrays.asList(second, first), ui.getNodeList());
+	}
+
+	@Test
 	public void updatesItsScrollbarAndItsSkeleton() {
 		final List<String> events = new ArrayList<>();
 		final Bar bar = new Bar(90D, 0D, 10D, 100D, 20D).onUpdate(event -> events.add("scrollbar"));

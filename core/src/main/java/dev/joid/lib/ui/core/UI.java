@@ -674,6 +674,7 @@ public abstract class UI implements IIndexedElement {
 			if (!node.isAttached()) {
 				node.load(this);
 			}
+			this.nodeList.remove(node);
 			this.nodeList.add(node);
 		}
 		return (T) this;
@@ -896,6 +897,10 @@ public abstract class UI implements IIndexedElement {
 			double lastDepthLevel = this.depthLevel;
 
 			for (final Node node : this.nodeList.ordered()) {
+				if (this.closed) {
+					return;
+				}
+
 				render.getModelView().translate(0D, 0D, this.depthLevel - lastDepthLevel);
 				lastDepthLevel = this.depthLevel;
 				node.render(mx, my);
