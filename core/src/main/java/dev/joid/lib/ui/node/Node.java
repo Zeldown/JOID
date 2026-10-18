@@ -92,7 +92,6 @@ import dev.joid.lib.utils.geom.BoundingBox;
 import dev.joid.lib.utils.geom.Point;
 import dev.joid.lib.utils.list.IndexedList;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -150,7 +149,7 @@ public abstract class Node implements INode {
 
 	@Getter(AccessLevel.NONE) private final transient List<Task>               taskList;
 	@Getter(AccessLevel.NONE) private final transient List<Shortcut>           shortcutList;
-	@Getter(AccessLevel.NONE) private final transient List<NodeRequirement>    requirementList;
+	@Getter(AccessLevel.NONE) private final transient List<Runnable>           requirementList;
 	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Point>  positionValue;
 	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Double> scrollXValue;
 	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Double> scrollYValue;
@@ -312,7 +311,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void load(final @NonNull UI ui) {
-		this.checkRequirements();
+		this.requirementList.forEach(Runnable::run);
 		final SignalContext context = SignalContext.current();
 		final List<Signal<?>> readList = context.takeReads();
 		try {
@@ -1580,7 +1579,11 @@ public abstract class Node implements INode {
 	}
 
 	protected final <N extends Node> void require(final @NonNull String setting, final @NonNull String advice, final @NonNull Predicate<@NonNull N> present) {
-		this.requirementList.add(new NodeRequirement(advice, setting, (Predicate<Node>) present));
+		this.requirementList.add(() -> {
+			if (!present.test((N) this)) {
+				throw new IllegalStateException("The " + JOIDLog.nameOf(this.getClass()) + " has no " + setting + ", " + advice);
+			}
+		});
 	}
 
 	protected final <N extends Node> @NonNull N part(final Node previous, final @NonNull N next) {
@@ -2165,14 +2168,6 @@ public abstract class Node implements INode {
 		this.drawList.forEach(child -> child.clearOverflowArea(area));
 	}
 
-	private void checkRequirements() {
-		for (final NodeRequirement requirement : this.requirementList) {
-			if (!requirement.present.test(this)) {
-				throw new IllegalStateException("The " + JOIDLog.nameOf(this.getClass()) + " has no " + requirement.setting + ", " + requirement.advice);
-			}
-		}
-	}
-
 	private void checkMovable(final DraggableProperty draggable) {
 		if (draggable == null || draggable.getType() != DraggableType.MOVE) {
 			return;
@@ -2317,15 +2312,6 @@ public abstract class Node implements INode {
 		}
 
 		return this.toJson();
-	}
-
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private static final class NodeRequirement {
-
-		private final String          advice;
-		private final String          setting;
-		private final Predicate<Node> present;
-
 	}
 
 }
