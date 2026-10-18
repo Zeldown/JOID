@@ -2753,6 +2753,16 @@ public class NodeTest {
 	}
 
 	@Test
+	public void copiesAFlexChildAtItsDeclaredPosition() {
+		final RectNode child = RectNode.create(0D, 0D, 80D, 50D);
+		this.bridges.open(new NodeUI(FlexNode.horizontal(0D, 0D, 50D).margin(0D).append(RectNode.create(0D, 0D, 100D, 50D), child)));
+		final RectNode copy = child.copy();
+		this.bridges.open(new NodeUI(copy));
+		Assert.assertEquals(100D, child.getX(), 0D);
+		Assert.assertEquals(0D, copy.getX(), 0D);
+	}
+
+	@Test
 	public void copiesTheCurrentValuesWithoutTheirSources() {
 		final DoubleSignal width = new DoubleSignal(10D);
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).width(width);

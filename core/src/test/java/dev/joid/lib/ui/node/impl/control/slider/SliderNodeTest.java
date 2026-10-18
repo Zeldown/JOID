@@ -116,6 +116,14 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void placesAThumbSizedByItsHeightOnItsFirstFrame() {
+		final Slider slider = new Slider().speed(0.2F).thumb(RectNode.create(0D, 0D, 0D, 0D)).values(SliderNodeTest.digits());
+		this.bridges.open(new NodeUI(slider));
+		Assert.assertEquals(0D, slider.getThumb().getX(), 1E-9D);
+		Assert.assertEquals(50D, slider.getThumb().getWidth(), 0D);
+	}
+
+	@Test
 	public void movesItsThumbToANewValue() {
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(SliderNodeTest.digits()).value(5);
 		this.bridges.open(new NodeUI(slider)).frame();

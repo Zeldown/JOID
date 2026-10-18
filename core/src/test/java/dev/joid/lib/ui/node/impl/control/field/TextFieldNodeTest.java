@@ -28,7 +28,9 @@ import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.geom.Point;
 
@@ -554,6 +556,39 @@ public class TextFieldNodeTest {
 		this.bridges.getUi().keyPressed(Key.C, Key.C);
 		this.bridges.getUi().charTyped('c');
 		Assert.assertEquals("abc", field.getText());
+	}
+
+	@Test
+	public void receivesTheKeysTypedWhileScrolledOutOfView() {
+		final TextFieldNode field = TextFieldNode.create(10D, 10D, 100D).info(this.info());
+		final ContainerNode box = ContainerNode.create(100D, 100D, 300D, 300D).overflow(OverflowProperty.SCROLL).append(field, RectNode.create(10D, 600D, 100D, 40D));
+		this.bridges.open(new NodeUI(box));
+		this.click(120D, 120D);
+		box.scrollTo(0D, -550D);
+		this.bridges.frames(60);
+		Assert.assertFalse(field.isVisible());
+		this.bridges.getUi().charTyped('a');
+		this.bridges.getUi().charTyped('b');
+		this.bridges.getUi().keyPressed(Key.BACKSPACE, Key.BACKSPACE);
+		Assert.assertEquals("a", field.getText());
+		Assert.assertTrue(field.isFocused());
+	}
+
+	@Test
+	public void losesItsFocusOutOfViewWhenAnotherFieldIsClicked() {
+		final TextFieldNode hidden = TextFieldNode.create(10D, 10D, 100D).info(this.info());
+		final TextFieldNode shown = TextFieldNode.create(10D, 600D, 100D).info(this.info());
+		final ContainerNode box = ContainerNode.create(100D, 100D, 300D, 300D).overflow(OverflowProperty.SCROLL).append(hidden, shown);
+		this.bridges.open(new NodeUI(box));
+		this.click(120D, 120D);
+		box.scrollTo(0D, -550D);
+		this.bridges.frames(60);
+		this.click(120D, shown.getAbsoluteY() + 5D);
+		this.bridges.getUi().charTyped('c');
+		Assert.assertFalse(hidden.isFocused());
+		Assert.assertTrue(shown.isFocused());
+		Assert.assertEquals("", hidden.getText());
+		Assert.assertEquals("c", shown.getText());
 	}
 
 	@Test

@@ -177,8 +177,8 @@ public abstract class Node implements INode {
 	private double defaultX;
 	private double defaultY;
 
-	private double layoutX;
-	private double layoutY;
+	private transient double layoutX;
+	private transient double layoutY;
 
 	private transient double shiftX;
 	private transient double shiftY;
@@ -552,7 +552,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull IConsumableEvent source) {
-		if (!this.isVisible() || !this.isInteractive()) {
+		if (!this.isShown() || !this.isInteractive()) {
 			return;
 		}
 
@@ -604,7 +604,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireCharTyped(final int codepoint, final @NonNull IConsumableEvent source) {
-		if (!this.isVisible()) {
+		if (!this.isShown()) {
 			return;
 		}
 
@@ -623,7 +623,7 @@ public abstract class Node implements INode {
 	}
 
 	public final void fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull IConsumableEvent source) {
-		if (!this.isVisible()) {
+		if (!this.isShown()) {
 			return;
 		}
 
@@ -1927,6 +1927,10 @@ public abstract class Node implements INode {
 
 	private boolean canScroll(final InteractiveValue<Double> scroll, final double maxScroll, final double notches) {
 		return notches > 0D ? scroll.get() < 0D : scroll.get() > -maxScroll;
+	}
+
+	private boolean isShown() {
+		return this.isVisibleProperty() && (this.parent == null || this.parent.isShown());
 	}
 
 	private boolean isScrollbarShown() {

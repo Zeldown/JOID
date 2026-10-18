@@ -29,12 +29,16 @@ public abstract class SliderNode<V> extends BaseSliderNode<V> {
 	}
 
 	@Override
+	public void update() {
+		this.thumb.fit(super.getHeight(), super.getHeight());
+	}
+
+	@Override
 	public void layout() {
 		if (this.track != null) {
 			this.track.layoutPosition(0D, 0D).layoutSize(super.getWidth(), super.getHeight());
 		}
 
-		this.thumb.fit(super.getHeight(), super.getHeight());
 		final double target = super.getInset() + super.getProgress() * (super.getWidth() - super.getInset() * 2D) - this.thumb.getWidth() / 2D;
 		this.thumbX = this.placed && !super.isSliding() && this.speed < 1F ? super.getUi().lerpByFramerate(this.thumbX, target, this.speed, 0.001D) : target;
 		this.placed = true;
