@@ -254,6 +254,80 @@ public class SwitchNodeTest {
 		Assert.assertEquals(5, level.get().intValue());
 	}
 
+	@Test
+	public void forgetsAnIndexOutOfItsStatesOnceGivenItsCurrentState() {
+		final Switch node = this.open();
+		final IntegerSignal level = new IntegerSignal(1);
+		node.valueIndex(level);
+		level.set(5);
+		node.value("medium");
+		node.values("low", "medium", "high", "ultra");
+		Assert.assertEquals("medium", node.getValue());
+		Assert.assertEquals(1, level.get().intValue());
+	}
+
+	@Test
+	public void forgetsAnIndexOutOfItsStatesOnceGivenASignalOfItsCurrentState() {
+		final Switch node = this.open();
+		final IntegerSignal level = new IntegerSignal(1);
+		final Signal<String> quality = new Signal<>("medium");
+		node.valueIndex(level);
+		level.set(5);
+		node.value(quality);
+		node.values("low", "medium", "high", "d", "e", "f");
+		Assert.assertEquals("medium", node.getValue());
+		Assert.assertEquals("medium", quality.get());
+	}
+
+	@Test
+	public void forgetsAnIndexOutOfItsStatesOnceJumpingToItsCurrentIndex() {
+		final Switch node = this.open();
+		final IntegerSignal level = new IntegerSignal(1);
+		node.valueIndex(level);
+		level.set(5);
+		node.valueIndex(1);
+		node.values("low", "medium", "high", "d", "e", "f");
+		Assert.assertEquals("medium", node.getValue());
+	}
+
+	@Test
+	public void forgetsAnIndexOutOfItsStatesOncePickingItsCurrentState() {
+		final Switch node = this.open();
+		final IntegerSignal level = new IntegerSignal(1);
+		node.valueIndex(level);
+		level.set(5);
+		node.pick("medium");
+		node.values("low", "medium", "high", "d", "e", "f");
+		Assert.assertEquals("medium", node.getValue());
+		Assert.assertEquals(1, level.get().intValue());
+	}
+
+	@Test
+	public void keepsAnIndexOutOfItsStatesAfterARefusedPick() {
+		final Switch node = this.open();
+		final IntegerSignal level = new IntegerSignal(1);
+		node.valueIndex(level);
+		level.set(5);
+		node.beforeChange(event -> event.cancel());
+		node.pick("high");
+		node.values("a", "b", "c", "d", "e", "f");
+		Assert.assertEquals("f", node.getValue());
+		Assert.assertEquals(5, level.get().intValue());
+	}
+
+	@Test
+	public void keepsAnIndexOutOfItsStatesWhileItsStateDisappears() {
+		final Switch node = this.open();
+		final IntegerSignal level = new IntegerSignal(1);
+		node.valueIndex(level);
+		level.set(5);
+		node.values("x", "y");
+		Assert.assertEquals("x", node.getValue());
+		node.values("a", "b", "c", "d", "e", "f");
+		Assert.assertEquals("f", node.getValue());
+		Assert.assertEquals(5, level.get().intValue());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnIndexGivenBeforeItsStatesThatIsOutOfThem() {
 		new Switch().valueIndex(2).values("off", "on");

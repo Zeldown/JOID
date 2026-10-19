@@ -349,6 +349,17 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void keepsPlayingTheSameResourceItsSupplierGivesAgain() {
+		final Resource resource = ResourcePlayerNodeTest.blink();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(() -> resource.copy());
+		this.bridges.open(new NodeUI(player)).frame();
+		final Resource fork = ResourcePlayerNodeTest.read(player, "fork");
+		this.bridges.frames(5);
+		Assert.assertSame(fork, ResourcePlayerNodeTest.read(player, "fork"));
+		Assert.assertTrue(player.isPlaying());
+	}
+
+	@Test
 	public void appliesItsVolumeToItsVideo() {
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).volume(0.25F).resource(ResourcePlayerNodeTest.video());
 		this.bridges.open(new NodeUI(player));

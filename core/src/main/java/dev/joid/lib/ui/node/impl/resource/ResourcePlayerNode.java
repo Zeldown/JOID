@@ -219,6 +219,10 @@ public class ResourcePlayerNode extends Node {
 
 	public final <T extends ResourcePlayerNode> @NonNull T resource(final @NonNull Supplier<@NonNull Resource> resource) {
 		return super.follow("resource", resource, value -> {
+			if (this.resource != null && this.resource.getResourceData() == value.getResourceData() && this.resource.isBlocking() == value.isBlocking() && this.resource.getProperties().equals(value.getProperties())) {
+				return;
+			}
+
 			this.reset();
 			this.resource = value;
 		});

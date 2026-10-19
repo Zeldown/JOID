@@ -291,6 +291,19 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void keepsItsTextOnceItsMaximumLengthChangesAfterARefusedChange() {
+		final Signal<Integer> length = new Signal<>(20);
+		final Signal<String> text = new Signal<>("abc");
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).maxTextLength(length).text(text).beforeChange(event -> event.cancel());
+		this.bridges.open(new NodeUI(field)).frame();
+		field.change("refused");
+		length.set(10);
+		this.bridges.frame();
+		Assert.assertEquals("abc", field.getText());
+		Assert.assertEquals("abc", text.peek());
+	}
+
+	@Test
 	public void stopsAPasteAtItsMaximumLength() {
 		final TextFieldNode field = this.field("ab").maxTextLength(4).cursorPosition(2);
 		this.bridges.getWindow().setClipboard("xyz");

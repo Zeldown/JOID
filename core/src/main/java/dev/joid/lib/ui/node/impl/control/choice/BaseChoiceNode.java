@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
@@ -70,11 +71,11 @@ public abstract class BaseChoiceNode<V> extends Node {
 	}
 
 	public final <T extends BaseChoiceNode<V>> @NonNull T value(final @NonNull V value) {
-		return this.choiceValue.start(this.requireOption(this.valueList, value));
+		return super.start("value", this.requireOption(this.valueList, value), this::choose);
 	}
 
 	public final <T extends BaseChoiceNode<V>> @NonNull T value(final @NonNull Signal<V> value) {
-		return this.choiceValue.bind(value);
+		return super.bind("value", value, this::choose, (final V current) -> current);
 	}
 
 	public final <T extends BaseChoiceNode<V>> @NonNull T valueIndex(final int valueIndex) {
@@ -86,7 +87,12 @@ public abstract class BaseChoiceNode<V> extends Node {
 	}
 
 	public final <T extends BaseChoiceNode<V>> @NonNull T change(final @NonNull V value) {
-		this.choiceValue.change(this.requireOption(this.valueList, value));
+		final V option = this.requireOption(this.valueList, value);
+		if (Objects.equals(option, this.value)) {
+			this.pendingIndex = -1;
+		}
+
+		this.choiceValue.change(option);
 		return (T) this;
 	}
 
@@ -107,7 +113,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 			return;
 		}
 
-		this.choiceValue.update(this.valueList.get(index));
+		this.choose(this.valueList.get(index));
 	}
 
 	private void configure(final @NonNull List<V> values) {
@@ -130,11 +136,16 @@ public abstract class BaseChoiceNode<V> extends Node {
 		this.valueList.addAll(values);
 		this.createOptions();
 		if (valid) {
-			this.pendingIndex = -1;
-			this.choiceValue.update(values.get(index));
+			this.choose(values.get(index));
 		} else {
 			this.choiceValue.reapply();
+			this.pendingIndex = index;
 		}
+	}
+
+	private void choose(final V value) {
+		this.pendingIndex = -1;
+		this.choiceValue.update(value);
 	}
 
 	private V requireOption(final @NonNull List<V> values, final V value) {

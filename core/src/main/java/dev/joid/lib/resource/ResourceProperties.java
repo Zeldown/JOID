@@ -2,11 +2,13 @@ package dev.joid.lib.resource;
 
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 @Getter
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ResourceProperties {
 

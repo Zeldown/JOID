@@ -25,6 +25,7 @@ public class ComputedSignal<T> extends Signal<T> {
 
 	private transient long             epoch;
 	private transient boolean          linked;
+	private transient boolean          audible;
 	private transient boolean          computed;
 	private transient volatile T       value;
 	private transient boolean          computing;
@@ -124,6 +125,8 @@ public class ComputedSignal<T> extends Signal<T> {
 	protected void dispatch() {
 		final T current;
 		synchronized (this) {
+			final boolean audible = this.audible;
+			this.audible = false;
 			if (!super.hasListeners()) {
 				return;
 			}
@@ -134,6 +137,10 @@ public class ComputedSignal<T> extends Signal<T> {
 			}
 
 			this.publishedVersion = super.getVersion();
+			if (!audible) {
+				return;
+			}
+
 			current = this.value;
 		}
 		super.emit(current);
@@ -152,7 +159,8 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	protected void markStale(final SignalContext context) {
-		if (super.hasListeners() && !context.isSilent()) {
+		if (super.hasListeners()) {
+			this.audible |= !context.isSilent();
 			context.schedule(this);
 		}
 

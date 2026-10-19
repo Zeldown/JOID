@@ -61,7 +61,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private V       fallback;
 	private V       requested;
-	private boolean emptyRequested;
+	private boolean requesting;
 
 	@Getter
 	private boolean markup;
@@ -332,9 +332,9 @@ public abstract class FieldNode<V> extends Node {
 	public final <T extends FieldNode<V>> @NonNull T allowEmpty(final @NonNull Supplier<Boolean> allowEmpty) {
 		return super.follow("allowEmpty", allowEmpty, value -> {
 			this.allowEmpty = value;
-			if (value && this.emptyRequested) {
-				this.write(null, false);
-			} else if (!value && !this.focused) {
+			if (this.requesting) {
+				this.write(this.requested, false);
+			} else if (!this.focused) {
 				this.commit();
 			}
 		});
@@ -521,19 +521,14 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final <T extends FieldNode<V>> @NonNull T bindValue(final @NonNull Signal<V> value) {
-		return super.bindNullable("text", value, current -> {
-			if (current == null && !this.allowEmpty) {
-				this.commit();
-				this.emptyRequested = true;
-			} else if (!Objects.equals(current, this.getValue())) {
-				this.write(current, false);
-			}
-		}, (final String text) -> this.getValue());
+		return super.bindNullable("text", value, current -> this.write(current, false), (final String text) -> this.getValue());
 	}
 
 	protected final void write(final V value, final boolean refusable) {
-		this.replace(value == null ? "" : this.format(this.correct(value)), refusable);
-		this.requested = value;
+		if (Objects.equals(value, this.getValue()) || value == null && !this.allowEmpty || this.replace(value == null ? "" : this.format(this.correct(value)), refusable)) {
+			this.request(value, true);
+		}
+
 		this.commit();
 	}
 
@@ -542,7 +537,7 @@ public abstract class FieldNode<V> extends Node {
 			this.fallback = this.correct(this.fallback);
 		}
 
-		if (!this.focused && this.requested != null) {
+		if (this.requesting) {
 			this.write(this.requested, false);
 		} else if (!this.focused && !this.text.isEmpty()) {
 			this.commit();
@@ -784,17 +779,19 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	private void replace(final @NonNull String newText, final boolean refusable) {
-		this.emptyRequested = false;
-		this.requested = this.parse(this.normalize.apply(newText));
+	private boolean replace(final @NonNull String newText, final boolean refusable) {
 		final String text = this.limit(newText);
-		if (!text.equals(this.text)) {
-			this.rewrite(text, refusable);
+		final boolean accepted = text.equals(this.text) || this.rewrite(text, refusable);
+		if (accepted) {
+			final V parsed = this.parse(this.normalize.apply(newText));
+			this.request(parsed, parsed != null || newText.isEmpty());
 		}
 
 		if (!this.focused) {
 			this.commit();
 		}
+
+		return accepted;
 	}
 
 	private boolean edit(final @NonNull String newText) {
@@ -802,9 +799,17 @@ public abstract class FieldNode<V> extends Node {
 			return false;
 		}
 
-		this.emptyRequested = false;
-		this.requested = null;
-		return this.changeText(newText, true);
+		if (!this.changeText(newText, true)) {
+			return false;
+		}
+
+		this.request(null, false);
+		return true;
+	}
+
+	private void request(final V value, final boolean requesting) {
+		this.requested = value;
+		this.requesting = requesting;
 	}
 
 	private boolean changeText(final @NonNull String text, final boolean refusable) {
@@ -830,18 +835,18 @@ public abstract class FieldNode<V> extends Node {
 		super.sync("text", this.text);
 	}
 
-	private void rewrite(final @NonNull String newText, final boolean refusable) {
+	private boolean rewrite(final @NonNull String newText, final boolean refusable) {
 		final int length = this.text.length();
 		final int cursor = this.getCursorPosition();
 		final FieldSelection selection = this.getSelection();
 		if (!this.changeText(newText, refusable)) {
-			return;
+			return false;
 		}
 
 		if (!this.focused || !super.isAttached()) {
 			this.cursorValue.reapply();
 			this.selectionValue.reapply();
-			return;
+			return true;
 		}
 
 		final int shift = this.text.length() - length;
@@ -849,6 +854,8 @@ public abstract class FieldNode<V> extends Node {
 		if (!selection.isEmpty()) {
 			this.selectionValue.update(FieldSelection.of(selection.getStart() + shift, selection.getEnd() + shift));
 		}
+
+		return true;
 	}
 
 	private V valueOf(final @NonNull String text) {

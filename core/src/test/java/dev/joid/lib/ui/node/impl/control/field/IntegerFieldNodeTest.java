@@ -232,6 +232,36 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void emptiesItselfAgainOnceEmptyIsAllowedAgain() {
+		final Signal<Boolean> allowEmpty = new Signal<>(true);
+		final IntegerSignal signal = new IntegerSignal(42);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>allowEmpty(allowEmpty).value(signal);
+		this.bridges.open(new NodeUI(field)).frame();
+		signal.set(null);
+		this.bridges.frame();
+		allowEmpty.set(false);
+		this.bridges.frame();
+		allowEmpty.set(true);
+		this.bridges.frame();
+		Assert.assertEquals("", field.getText());
+		Assert.assertNull(field.getValue());
+		Assert.assertNull(signal.peek());
+	}
+
+	@Test
+	public void emptiesItselfForAnEmptyTextOnceEmptyIsAllowed() {
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(7);
+		this.bridges.open(new NodeUI(field)).frame();
+		field.text("");
+		this.bridges.frame();
+		Assert.assertEquals("7", field.getText());
+		field.allowEmpty(true);
+		this.bridges.frame();
+		Assert.assertEquals("", field.getText());
+		Assert.assertNull(field.getValue());
+	}
+
+	@Test
 	public void writesAValue() {
 		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).value(42);
 		Assert.assertEquals("42", field.getText());
@@ -284,6 +314,74 @@ public class IntegerFieldNodeTest {
 		max.set(100);
 		this.bridges.frame();
 		Assert.assertEquals(50, (int) field.getValue());
+		Assert.assertEquals(50, (int) signal.peek());
+	}
+
+	@Test
+	public void keepsItsValueOnceItsBoundsChangeAfterARefusedStep() {
+		final IntegerSignal max = new IntegerSignal(20);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>max(max).value(10).beforeChange(event -> {
+			if (event.getValue() != null && event.getValue() > 10) {
+				event.cancel();
+			}
+		}));
+		this.bridges.frame();
+		this.press(field, Key.UP);
+		Assert.assertEquals("10", field.getText());
+		field.focused(false);
+		max.set(25);
+		this.bridges.frame();
+		Assert.assertEquals("10", field.getText());
+	}
+
+	@Test
+	public void keepsItsValueOnceItsBoundsChangeAfterARefusedChange() {
+		final IntegerSignal max = new IntegerSignal(100);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>max(max).value(5).beforeChange(event -> event.cancel());
+		this.bridges.open(new NodeUI(field)).frame();
+		field.change(6);
+		max.set(50);
+		this.bridges.frame();
+		Assert.assertEquals("5", field.getText());
+	}
+
+	@Test
+	public void keepsTheValueItsBoundsGaveOnceItsSignalHoldsNoValueAndEmptyIsRefused() {
+		final IntegerSignal max = new IntegerSignal(10);
+		final IntegerSignal signal = new IntegerSignal(50);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).<IntegerFieldNode>value(signal).max(max);
+		this.bridges.open(new NodeUI(field)).frame();
+		signal.set(null);
+		this.bridges.frame();
+		max.set(100);
+		this.bridges.frame();
+		Assert.assertEquals("10", field.getText());
+		Assert.assertEquals(10, (int) signal.peek());
+	}
+
+	@Test
+	public void writesItsValueBackIntoItsSignalOnceItsBoundsAllowItEvenWhileFocused() {
+		final IntegerSignal signal = new IntegerSignal(50);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>value(signal).max(10));
+		this.bridges.frame();
+		field.max(100);
+		this.bridges.frame();
+		Assert.assertEquals("50", field.getText());
+		Assert.assertEquals(50, (int) signal.peek());
+		Assert.assertTrue(field.isFocused());
+	}
+
+	@Test
+	public void writesItsValueBackIntoItsSignalOnceItsBoundsAllowItAfterARefusedKeystroke() {
+		final IntegerSignal signal = new IntegerSignal(50);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>value(signal).<IntegerFieldNode>max(10).beforeChange(event -> event.cancel()));
+		this.type(field, "5");
+		field.focused(false);
+		this.bridges.frame();
+		Assert.assertEquals("10", field.getText());
+		field.max(100);
+		this.bridges.frame();
+		Assert.assertEquals("50", field.getText());
 		Assert.assertEquals(50, (int) signal.peek());
 	}
 

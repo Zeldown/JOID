@@ -310,6 +310,21 @@ public class ComputedSignalTest {
 	}
 
 	@Test
+	public void followsADependencyItSwitchedToDuringASilentChange() {
+		final List<Integer> received = new ArrayList<>();
+		final BooleanSignal first = new BooleanSignal(true);
+		final IntegerSignal a = new IntegerSignal(1);
+		final IntegerSignal b = new IntegerSignal(2);
+		final ComputedSignal<Integer> shown = Signal.from(() -> first.get() ? a.get() : b.get());
+		shown.onChange(received::add);
+		first.silent(signal -> signal.set(false));
+		Assert.assertTrue(received.isEmpty());
+		b.set(5);
+		b.set(6);
+		Assert.assertEquals(Arrays.asList(5, 6), received);
+	}
+
+	@Test
 	public void notifiesAChangeMadeOnAnotherThread() throws InterruptedException {
 		final List<String> received = Collections.synchronizedList(new ArrayList<>());
 		final Signal<String> name = new Signal<>("joid");
