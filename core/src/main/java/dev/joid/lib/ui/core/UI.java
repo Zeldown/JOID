@@ -102,6 +102,7 @@ public abstract class UI implements IIndexedElement {
 	@NonNull private final IndexedList<@NonNull Node> nodeList;
 
 	private final List<Task>                             taskList;
+	private final List<Node>                             ghostList;
 	private final NodeBindings                           bindings;
 	private final List<Task>                             keptTaskList;
 	private final List<Shortcut>                         shortcutList;
@@ -179,6 +180,7 @@ public abstract class UI implements IIndexedElement {
 
 		this.bindings         = new NodeBindings(this, this.eventBus, () -> JOIDLog.nameOf(this.getClass()), this::traced);
 		this.taskList         = new CopyOnWriteArrayList<>();
+		this.ghostList        = new ArrayList<>();
 		this.keptTaskList     = new ArrayList<>();
 		this.shortcutList     = new CopyOnWriteArrayList<>();
 		this.keptShortcutList = new ArrayList<>();
@@ -585,6 +587,12 @@ public abstract class UI implements IIndexedElement {
 		this.untraced(() -> this.drawFrame(mouseX, mouseY));
 	}
 
+	public final void drawGhost(final @NonNull Node ghost) {
+		if (!this.ghostList.contains(ghost)) {
+			this.ghostList.add(ghost);
+		}
+	}
+
 	public void drawHover(final @NonNull Object content, final double mouseX, final double mouseY) {
 		this.getBridge().drawHover(this, content, mouseX, mouseY);
 	}
@@ -746,6 +754,21 @@ public abstract class UI implements IIndexedElement {
 		return Key.LEFT_SHIFT.isDown() || Key.RIGHT_SHIFT.isDown();
 	}
 
+	private void renderGhosts(final double mouseX, final double mouseY) {
+		for (final Node ghost : this.ghostList) {
+			BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
+				render.getState().stencil(StencilState.DISABLED);
+
+				final Node parent = ghost.getParent();
+				if (parent != null) {
+					matrix.translate(parent.getAbsoluteX() - parent.getX(), parent.getAbsoluteY() - parent.getY(), 0D);
+				}
+
+				ghost.render(mouseX, mouseY);
+			}));
+		}
+	}
+
 	private void renderHoveredNode(final double mouseX, final double mouseY) {
 		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
 			render.getState().depthTest(false).depthWrite(false);
@@ -895,6 +918,7 @@ public abstract class UI implements IIndexedElement {
 			this.depthLevel = 0D;
 			double lastDepthLevel = this.depthLevel;
 
+			this.ghostList.clear();
 			for (final Node node : this.nodeList.ordered()) {
 				if (this.closed) {
 					return;
@@ -905,6 +929,7 @@ public abstract class UI implements IIndexedElement {
 				node.render(mx, my);
 			}
 
+			this.renderGhosts(mx, my);
 			if (this.getHoveredNode() != null) {
 				this.renderHoveredNode(mx, my);
 			}

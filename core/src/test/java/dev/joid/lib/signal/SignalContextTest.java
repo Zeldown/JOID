@@ -156,6 +156,21 @@ public class SignalContextTest {
 	}
 
 	@Test
+	public void keepsTheNullOriginOfASignalWrittenBackSeveralTimes() {
+		final Signal<Integer> trigger = new Signal<>(0);
+		final Signal<Integer> signal = new Signal<>(null);
+		final List<Object> originList = new ArrayList<>();
+		trigger.onChange(value -> {
+			SignalContext.current().countWriteBack(signal);
+			signal.set(5);
+			SignalContext.current().countWriteBack(signal);
+			originList.add(SignalContext.current().getWriteBackOrigin(signal));
+		});
+		trigger.set(1);
+		Assert.assertEquals(Collections.singletonList(null), originList);
+	}
+
+	@Test
 	public void movesTheEpochOnEveryChange() {
 		final long epoch = SignalContext.getEpoch();
 		new Signal<>("a").set("b").fireChange();

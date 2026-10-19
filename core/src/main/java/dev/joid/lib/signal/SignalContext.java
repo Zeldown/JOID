@@ -123,7 +123,9 @@ public final class SignalContext {
 			return 0;
 		}
 
-		this.originMap.putIfAbsent(signal, signal.peek());
+		if (!this.originMap.containsKey(signal)) {
+			this.originMap.put(signal, signal.peek());
+		}
 		return this.writeBackMap.merge(signal, 1, Integer::sum);
 	}
 

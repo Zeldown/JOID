@@ -35,7 +35,6 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.matrix.MatrixStack;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
-import dev.joid.lib.bridge.render.state.StencilState;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.Text;
@@ -1644,22 +1643,7 @@ public abstract class Node implements INode {
 	}
 
 	protected boolean isDraggingChild(final @NonNull Node child) {
-		return false;
-	}
-
-	private void renderDraggedNode(final double mouseX, final double mouseY) {
-		BridgeHandler.RENDER.get().withState(render -> render.getModelView().with(matrix -> {
-			render.getState().stencil(StencilState.DISABLED);
-
-			if (this.parent != null) {
-				matrix.translate(-this.parent.x, -this.parent.y, 0D);
-				if (this.position == PositionProperty.ABSOLUTE) {
-					matrix.translate(this.parent.getAbsoluteX(), this.parent.getAbsoluteY(), 0D);
-				}
-			}
-
-			this.draggedNode.render(mouseX, mouseY);
-		}));
+		return child.dragging && child.draggable.getType() == DraggableType.MOVE;
 	}
 
 	private void updateHover(final double mouseX, final double mouseY) {
@@ -1893,7 +1877,7 @@ public abstract class Node implements INode {
 		effectDraw.run();
 
 		if (this.draggedNode != null) {
-			this.renderDraggedNode(mouseX, mouseY);
+			this.ui.drawGhost(this.draggedNode);
 		}
 	}
 

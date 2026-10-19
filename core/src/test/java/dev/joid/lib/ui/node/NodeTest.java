@@ -36,6 +36,7 @@ import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
+import dev.joid.lib.render.transform.Scale;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.signal.Signal;
@@ -1947,6 +1948,88 @@ public class NodeTest {
 		Assert.assertEquals(340D, draws.get(0).getLeft(), 1E-3D);
 		Assert.assertEquals(540D, draws.get(1).getLeft(), 1E-3D);
 		Assert.assertEquals(410D, draws.get(1).getTop(), 1E-3D);
+	}
+
+	@Test
+	public void drawsTheDraggedCopyAboveTheNodesDrawnAfterItsOriginal() {
+		final RectNode slot = RectNode.create(600D, 300D, 120D, 120D).color(new Color(0.8F, 0.1F, 0.1F, 1F));
+		final RectNode node = RectNode.create(200D, 300D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).draggable(DraggableProperty.screen().type(DraggableType.COPY).snapType(DraggableSnapType.OVERLAP).snap(slot));
+		this.bridges.open(new NodeUI(node, slot)).frame();
+		this.bridges.move(210D, 310D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.move(620D, 320D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
+		Assert.assertEquals(2, draws.size());
+		Assert.assertEquals(610D, draws.get(1).getLeft(), 1E-3D);
+		Assert.assertTrue(this.order(0.8F, 0.1F, 0.1F) < this.bridges.getRender().getDraws().indexOf(draws.get(1)));
+	}
+
+	@Test
+	public void drawsTheDraggedCopyOutsideTheChildrenEffectsOfItsParents() {
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.press(ContainerNode.create(100D, 100D, 200D, 200D).effect(RoundedNodeEffect.create(20F).scope(NodeEffectScope.CHILDREN)).append(node), 120D, 120D);
+		this.bridges.move(620D, 620D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		final List<Draw> draws = this.bridges.getRender().getDraws();
+		final Draw ghost = draws.get(draws.size() - 1);
+		Assert.assertEquals(0.2F, ghost.getRed(), 0F);
+		Assert.assertEquals(610D, ghost.getLeft(), 1E-3D);
+		Assert.assertEquals(610D, ghost.getTop(), 1E-3D);
+	}
+
+	@Test
+	public void drawsTheDraggedCopyUnderTheMouseWhateverTheTransformOfItsParents() {
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.press(ContainerNode.create(100D, 100D, 200D, 200D).effect(TransformNodeEffect.create(Transformation.create().scale(Scale.create(2D, 2D, 1D)))).append(node), 120D, 120D);
+		this.bridges.move(620D, 620D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
+		Assert.assertEquals(2, draws.size());
+		Assert.assertEquals(610D, draws.get(1).getLeft(), 1E-3D);
+		Assert.assertEquals(660D, draws.get(1).getRight(), 1E-3D);
+	}
+
+	@Test
+	public void drawsTheDraggedCopyOfANestedChildUnderTheMouse() {
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.press(ContainerNode.create(100D, 100D, 300D, 300D).append(ContainerNode.create(50D, 50D, 200D, 200D).append(node)), 170D, 170D);
+		this.bridges.move(620D, 620D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
+		Assert.assertEquals(2, draws.size());
+		Assert.assertEquals(610D, draws.get(1).getLeft(), 1E-3D);
+		Assert.assertEquals(610D, draws.get(1).getTop(), 1E-3D);
+	}
+
+	@Test
+	public void drawsTheDraggedCopyOfANestedAbsoluteChildUnderTheMouse() {
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).position(PositionProperty.ABSOLUTE).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.press(ContainerNode.create(100D, 100D, 300D, 300D).append(ContainerNode.create(50D, 50D, 200D, 200D).append(node)), 20D, 20D);
+		this.bridges.move(620D, 620D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
+		Assert.assertEquals(2, draws.size());
+		Assert.assertEquals(610D, draws.get(1).getLeft(), 1E-3D);
+		Assert.assertEquals(610D, draws.get(1).getTop(), 1E-3D);
+	}
+
+	@Test
+	public void drawsADraggedChildAboveItsSiblings() {
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).draggable(DraggableProperty.free());
+		final RectNode sibling = RectNode.create(100D, 0D, 100D, 100D).color(new Color(0.8F, 0.1F, 0.1F, 1F));
+		this.press(ContainerNode.create(0D, 0D, 500D, 500D).append(node, sibling), 20D, 20D);
+		this.bridges.move(130D, 30D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frame();
+		Assert.assertTrue(this.order(0.8F, 0.1F, 0.1F) < this.order(0.2F, 0.4F, 0.6F));
+		this.drop(130D, 30D);
+		Assert.assertTrue(this.order(0.2F, 0.4F, 0.6F) < this.order(0.8F, 0.1F, 0.1F));
 	}
 
 	@Test
@@ -4037,14 +4120,17 @@ public class NodeTest {
 
 	}
 
-	@AllArgsConstructor
 	public static final class NodeUI extends UI {
 
-		private final Node node;
+		private final Node[] nodes;
+
+		public NodeUI(final Node... nodes) {
+			this.nodes = nodes;
+		}
 
 		@Override
 		public void init() {
-			super.add(this.node);
+			super.add(this.nodes);
 		}
 
 	}
