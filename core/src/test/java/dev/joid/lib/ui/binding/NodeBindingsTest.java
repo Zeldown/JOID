@@ -13,6 +13,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.ui.UIBridgeCursorTest.NodeUI;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.node.impl.control.choice.SwitchNodeTest.Switch;
@@ -20,6 +21,8 @@ import dev.joid.lib.ui.node.impl.control.field.IntegerFieldNode;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNodeTest.FieldFont;
 import dev.joid.lib.ui.node.impl.control.slider.IntegerSliderNodeTest.Slider;
 import dev.joid.lib.ui.node.impl.control.slider.SliderNodeTest;
+import dev.joid.lib.ui.node.impl.model.ModelViewerNode;
+import dev.joid.lib.ui.node.impl.model.ModelViewerNodeTest.FixedModel;
 
 public class NodeBindingsTest {
 
@@ -38,6 +41,62 @@ public class NodeBindingsTest {
 		Assert.assertEquals(100, (int) signal.peek());
 		Assert.assertEquals(100, (int) slider.getValue());
 		Assert.assertEquals(95, (int) field.getValue());
+		field.change(43);
+		this.bridges.frames(3);
+		Assert.assertEquals(43, (int) signal.peek());
+		Assert.assertEquals(100, (int) slider.getValue());
+		Assert.assertEquals(43, (int) field.getValue());
+	}
+
+	@Test
+	public void keepsTheValueOfTheGestureOnEitherSideOfTwoDisjointBounds() {
+		final IntegerSignal signal = new IntegerSignal(15);
+		final IntegerFieldNode lower = this.field(signal).max(10);
+		final IntegerFieldNode upper = this.field(signal).min(20);
+		this.bridges.open(new NodeUI(lower, upper)).frame();
+		NodeBindingsTest.guard(signal);
+		lower.change(3);
+		this.bridges.frames(3);
+		Assert.assertEquals(3, (int) signal.peek());
+		Assert.assertEquals(3, (int) lower.getValue());
+		Assert.assertEquals(20, (int) upper.getValue());
+		upper.change(25);
+		this.bridges.frames(3);
+		Assert.assertEquals(25, (int) signal.peek());
+		Assert.assertEquals(10, (int) lower.getValue());
+		Assert.assertEquals(25, (int) upper.getValue());
+	}
+
+	@Test
+	public void keepsTheZoomOfTheGestureWhenTheZoomRangesOfItsViewersCannotAgree() {
+		final DoubleSignal signal = new DoubleSignal(1D);
+		final ModelViewerNode near = ModelViewerNode.create(0D, 0D, 100D, 100D).<ModelViewerNode>model(new FixedModel()).zoomRange(0.1D, 1D).zoom(signal);
+		final ModelViewerNode far = ModelViewerNode.create(0D, 0D, 100D, 100D).<ModelViewerNode>model(new FixedModel()).zoomRange(1.5D, 2D).zoom(signal);
+		this.bridges.open(new NodeUI(near, far)).frame();
+		NodeBindingsTest.guard(signal);
+		near.zoomTo(0.5D);
+		this.bridges.frames(3);
+		Assert.assertEquals(0.5D, signal.peek(), 0D);
+		Assert.assertEquals(0.5D, near.getZoom(), 0D);
+		Assert.assertEquals(1.5D, far.getZoom(), 0D);
+		far.zoomTo(1.8D);
+		this.bridges.frames(3);
+		Assert.assertEquals(1.8D, signal.peek(), 0D);
+		Assert.assertEquals(1D, near.getZoom(), 0D);
+		Assert.assertEquals(1.8D, far.getZoom(), 0D);
+	}
+
+	@Test
+	public void keepsThePitchOfTheGestureWhenItsYawAndItsPitchShareASignal() {
+		final DoubleSignal signal = new DoubleSignal(5D);
+		final ModelViewerNode viewer = ModelViewerNode.create(0D, 0D, 100D, 100D).<ModelViewerNode>model(new FixedModel()).rotationYawRange(0D, 10D).rotationPitchRange(20D, 30D).rotationYaw(signal).rotationPitch(signal);
+		this.bridges.open(new NodeUI(viewer)).frame();
+		NodeBindingsTest.guard(signal);
+		viewer.rotate(8D, 25D);
+		this.bridges.frames(3);
+		Assert.assertEquals(25D, signal.peek(), 0D);
+		Assert.assertEquals(10D, viewer.getRotationYaw(), 0D);
+		Assert.assertEquals(25D, viewer.getRotationPitch(), 0D);
 	}
 
 	@Test

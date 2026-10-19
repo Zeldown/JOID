@@ -224,6 +224,42 @@ public class VideoResourceDecoderTest {
 	}
 
 	@Test
+	public void keepsTheAudioOfALoopedVideoSeekedAwayFromItsStartFlowing() throws InterruptedException {
+		final PlayingAudioSource source = new PlayingAudioSource();
+		final IAudioBridge bridge = (sampleRate, channels) -> source;
+		BridgeHandler.AUDIO.register(bridge);
+		try {
+			final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm")).loop(true);
+			final ResourceData data = VideoResourceDecoderTest.load(decoder);
+			decoder.seek(0.2D);
+			this.hear(decoder, data, source, 200);
+			Assert.assertTrue(source.played + " samples heard", source.played > 145000);
+		} finally {
+			BridgeHandler.AUDIO.unregister(bridge);
+		}
+	}
+
+	@Test
+	public void keepsTheAudioOfALoopedVideoSeekedAwayFromItsStartAfterAStall() throws InterruptedException {
+		final PlayingAudioSource source = new PlayingAudioSource();
+		final IAudioBridge bridge = (sampleRate, channels) -> source;
+		BridgeHandler.AUDIO.register(bridge);
+		try {
+			final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm")).loop(true);
+			final ResourceData data = VideoResourceDecoderTest.load(decoder);
+			decoder.seek(0.2D);
+			this.hear(decoder, data, source, 100);
+			this.bridges.getClock().advance(1000L);
+			source.advance(48000);
+			final int played = source.played;
+			this.hear(decoder, data, source, 100);
+			Assert.assertTrue(source.played - played + " samples heard", source.played - played > 72000);
+		} finally {
+			BridgeHandler.AUDIO.unregister(bridge);
+		}
+	}
+
+	@Test
 	public void loopsAWebmWhoseAudioStartsBeforeZeroUnderAFrozenClock() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm")).loop(true);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
@@ -1053,6 +1089,13 @@ public class VideoResourceDecoderTest {
 		}
 	}
 
+	private void hear(final VideoResourceDecoder decoder, final ResourceData data, final PlayingAudioSource source, final int frames) throws InterruptedException {
+		for (int i = 0; i < frames; i++) {
+			this.play(decoder, data, 1);
+			source.advance(768);
+		}
+	}
+
 	private static ResourceData load(final VideoResourceDecoder decoder) {
 		final ResourceData data = ResourceData.create("video", decoder);
 		decoder.prepare(data);
@@ -1180,6 +1223,60 @@ public class VideoResourceDecoderTest {
 		@Override
 		public void delete() {
 			this.calls.add("delete");
+		}
+
+	}
+
+	private static final class PlayingAudioSource implements IAudioSource {
+
+		private int     written;
+		private int     played;
+		private boolean playing;
+
+		@Override
+		public void play() {
+			this.playing = true;
+		}
+
+		@Override
+		public void stop() {
+			this.playing = false;
+			this.played = this.written;
+		}
+
+		@Override
+		public void pause() {
+			this.playing = false;
+		}
+
+		@Override
+		public void gain(final float gain) {}
+
+		@Override
+		public void group(final Object group) {}
+
+		@Override
+		public void write(final @NonNull short[] samples) {
+			this.written += samples.length;
+		}
+
+		@Override
+		public boolean isPlaying() {
+			return this.playing && this.played < this.written;
+		}
+
+		@Override
+		public int getBufferedSamples() {
+			return this.written - this.played;
+		}
+
+		@Override
+		public void delete() {}
+
+		private void advance(final int samples) {
+			if (this.isPlaying()) {
+				this.played = Math.min(this.written, this.played + samples);
+			}
 		}
 
 	}

@@ -247,7 +247,12 @@ public final class NodeBindings {
 				return;
 			}
 
-			if (SignalContext.current().countWriteBack(signal) > 16) {
+			final int count = SignalContext.current().countWriteBack(signal);
+			if (count > 16) {
+				if (count == 17) {
+					signal.set((V) SignalContext.current().getWriteBackOrigin(signal));
+				}
+
 				JOIDLog.devWarnOnce("NodeBindings.bounds." + System.identityHashCode(signal), () -> NodeBindings.this.name.get() + " and the other controls bound to " + signal + " keep correcting each other: their bounds are incompatible, give them bounds that agree");
 				return;
 			}

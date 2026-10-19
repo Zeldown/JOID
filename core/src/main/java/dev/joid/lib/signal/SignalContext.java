@@ -26,6 +26,7 @@ public final class SignalContext {
 	private final Set<Signal<?>>          pendingSet   = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Runnable>          deferredList = new ArrayList<>();
 	private final Deque<Signal<?>>        pendingQueue = new ArrayDeque<>();
+	private final Map<Signal<?>, Object>  originMap    = new IdentityHashMap<>();
 	private final Map<Signal<?>, Integer> writeBackMap = new IdentityHashMap<>();
 
 	private int               depth;
@@ -118,7 +119,16 @@ public final class SignalContext {
 	}
 
 	public int countWriteBack(final Signal<?> signal) {
-		return this.flushing ? this.writeBackMap.merge(signal, 1, Integer::sum) : 0;
+		if (!this.flushing) {
+			return 0;
+		}
+
+		this.originMap.putIfAbsent(signal, signal.peek());
+		return this.writeBackMap.merge(signal, 1, Integer::sum);
+	}
+
+	public Object getWriteBackOrigin(final Signal<?> signal) {
+		return this.originMap.get(signal);
 	}
 
 	public List<Signal<?>> takeReads() {
@@ -180,6 +190,7 @@ public final class SignalContext {
 			}
 		} finally {
 			this.flushing = false;
+			this.originMap.clear();
 			this.writeBackMap.clear();
 		}
 

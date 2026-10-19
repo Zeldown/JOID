@@ -21,6 +21,7 @@ import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.node.property.PositionProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.align.Axis;
+import dev.joid.lib.utils.list.IndexedList;
 
 
 public class ReorderableFlexNodeTest {
@@ -368,6 +369,20 @@ public class ReorderableFlexNodeTest {
 		Assert.assertEquals(1, flex.getChildIndex(first));
 		Assert.assertTrue(flex.getLogicalOrder().isEmpty());
 		Assert.assertTrue(flex.getChildCurrent().isEmpty());
+	}
+
+	@Test
+	public void drawsTheDroppedChildInItsNewSlot() {
+		final RectNode first = ReorderableFlexNodeTest.item();
+		final RectNode second = ReorderableFlexNodeTest.item();
+		final RectNode third = ReorderableFlexNodeTest.item();
+		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third);
+		this.bridges.open(new NodeUI(flex));
+		this.press(150D, 120D);
+		this.bridges.move(150D, 150D).frames(60);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(60);
+		Assert.assertEquals(Arrays.asList(second, first, third), ReorderableFlexNodeTest.drawList(flex));
 	}
 
 	@Test
@@ -987,6 +1002,16 @@ public class ReorderableFlexNodeTest {
 			final Field field = ReorderableFlexNode.class.getDeclaredField(name);
 			field.setAccessible(true);
 			return (V) field.get(flex);
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException(exception);
+		}
+	}
+
+	private static List<Node> drawList(final Node node) {
+		try {
+			final Field field = Node.class.getDeclaredField("drawList");
+			field.setAccessible(true);
+			return ((IndexedList<Node>) field.get(node)).ordered();
 		} catch (final ReflectiveOperationException exception) {
 			throw new IllegalStateException(exception);
 		}

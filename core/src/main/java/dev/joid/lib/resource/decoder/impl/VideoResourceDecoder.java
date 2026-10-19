@@ -65,6 +65,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	private volatile boolean     seeked;
 	private volatile double      seekTime;
 	private volatile double      loopOffset;
+	private volatile double      audioOrigin;
 	@Getter private volatile int displayedFrameIndex;
 
 	private long startTime;
@@ -205,7 +206,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	@Override
 	public void update(final @NonNull ResourceData resource) {
 		if (this.audioPlayer != null) {
-			this.audioPlayer.update(this.getPlaybackTime() - this.seekTime);
+			this.audioPlayer.update(this.getPlaybackTime() - this.audioOrigin);
 		}
 
 		if (!this.running.get()) {
@@ -323,6 +324,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 		}
 
 		this.seekTime = this.seeked ? this.seekTime : 0D;
+		this.audioOrigin = this.seekTime;
 		this.displayedFrameIndex = (int) (this.seekTime * this.frameRate);
 		this.loopOffset = 0D;
 		this.startTime = BridgeHandler.CLOCK.get().nanoTime() - (long) (this.seekTime * 1000000000D);
@@ -571,6 +573,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 			this.pauseTime = now;
 			this.loopOffset = 0D;
 			this.seekTime = microseconds / 1000000D;
+			this.audioOrigin = this.seekTime;
 			this.ended = false;
 			this.seeked = true;
 

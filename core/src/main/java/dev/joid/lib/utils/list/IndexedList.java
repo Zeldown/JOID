@@ -2,9 +2,11 @@ package dev.joid.lib.utils.list;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.google.common.collect.Lists;
@@ -16,19 +18,23 @@ public final class IndexedList<E extends IIndexedElement> implements Iterable<E>
 	private final List<E> orderedList;
 	private final List<E> orderedView;
 	private final List<E> reversedList;
+	private final List<E> insertionList;
 
-	private IndexedList(final List<E> orderedList) {
-		this.orderedList  = orderedList;
-		this.orderedView  = Collections.unmodifiableList(orderedList);
-		this.reversedList = Collections.unmodifiableList(Lists.reverse(orderedList));
+	private int[] indexes = new int[0];
+
+	private IndexedList(final List<E> orderedList, final List<E> insertionList) {
+		this.orderedList   = orderedList;
+		this.orderedView   = Collections.unmodifiableList(orderedList);
+		this.reversedList  = Collections.unmodifiableList(Lists.reverse(orderedList));
+		this.insertionList = insertionList;
 	}
 
 	public static <E extends IIndexedElement> @NonNull IndexedList<E> linked() {
-		return new IndexedList<>(new LinkedList<>());
+		return new IndexedList<>(new LinkedList<>(), new LinkedList<>());
 	}
 
 	public static <E extends IIndexedElement> @NonNull IndexedList<E> concurrent() {
-		return new IndexedList<>(new CopyOnWriteArrayList<>());
+		return new IndexedList<>(new CopyOnWriteArrayList<>(), new CopyOnWriteArrayList<>());
 	}
 
 	public void add(final E element) {
@@ -37,22 +43,22 @@ public final class IndexedList<E extends IIndexedElement> implements Iterable<E>
 			return;
 		}
 
-		for (int i = 0; i < this.orderedList.size(); i++) {
-			if (this.orderedList.get(i).getIndex() > element.getIndex()) {
-				this.orderedList.add(i, element);
-				return;
-			}
-		}
-
-		this.orderedList.add(element);
+		this.insertionList.add(element);
+		this.insert(element);
+		this.snapshot();
 	}
 
 	public void remove(final E element) {
+		this.sort();
 		this.orderedList.remove(element);
+		this.insertionList.remove(element);
+		this.snapshot();
 	}
 
 	public void clear() {
 		this.orderedList.clear();
+		this.insertionList.clear();
+		this.indexes = new int[0];
 	}
 
 	public int size() {
@@ -98,16 +104,44 @@ public final class IndexedList<E extends IIndexedElement> implements Iterable<E>
 		return this.orderedList.iterator();
 	}
 
-	private void sort() {
-		int index = Integer.MIN_VALUE;
-		for (final E element : this.orderedList) {
-			if (element.getIndex() < index) {
-				this.orderedList.sort(Comparator.comparingInt(IIndexedElement::getIndex));
+	private void insert(final E element) {
+		for (int i = 0; i < this.orderedList.size(); i++) {
+			if (this.orderedList.get(i).getIndex() > element.getIndex()) {
+				this.orderedList.add(i, element);
 				return;
 			}
-
-			index = element.getIndex();
 		}
+
+		this.orderedList.add(element);
+	}
+
+	private void sort() {
+		final int[] indexes = this.indexes;
+		int position = 0;
+		for (final E element : this.orderedList) {
+			if (position >= indexes.length || element.getIndex() != indexes[position++]) {
+				final Map<E, Integer> rankMap = new IdentityHashMap<>();
+				for (final E inserted : this.insertionList) {
+					rankMap.put(inserted, rankMap.size());
+				}
+
+				this.orderedList.sort(Comparator.<E>comparingInt(IIndexedElement::getIndex).thenComparingInt(sorted -> rankMap.getOrDefault(sorted, Integer.MAX_VALUE)));
+				this.snapshot();
+				return;
+			}
+		}
+	}
+
+	private void snapshot() {
+		final int[] indexes = this.indexes.length == this.orderedList.size() ? this.indexes : new int[this.orderedList.size()];
+		int position = 0;
+		for (final E element : this.orderedList) {
+			if (position < indexes.length) {
+				indexes[position++] = element.getIndex();
+			}
+		}
+
+		this.indexes = indexes;
 	}
 
 }

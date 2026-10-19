@@ -146,6 +146,36 @@ public class IndexedListTest {
 	}
 
 	@Test
+	public void takesBackItsInsertionOrderOnceAnIndexComesBack() {
+		final Element first = new Element(0);
+		final Element second = new Element(0);
+		final Element third = new Element(0);
+		final IndexedList<Element> list = IndexedListTest.of(first, second, third);
+		first.index = 1;
+		Assert.assertEquals(Arrays.asList(second, third, first), list.ordered());
+		first.index = 0;
+		Assert.assertEquals(Arrays.asList(first, second, third), list.ordered());
+	}
+
+	@Test
+	public void takesBackItsInsertionOrderOnceTwoIndexesComeBackInALinkedList() {
+		final Element first = new Element(0);
+		final Element second = new Element(0);
+		final Element third = new Element(0);
+		final IndexedList<Element> list = IndexedList.linked();
+		list.add(first);
+		list.add(second);
+		list.add(third);
+		third.index = 1;
+		list.ordered();
+		first.index = 1;
+		Assert.assertEquals(Arrays.asList(second, first, third), list.ordered());
+		third.index = 0;
+		first.index = 0;
+		Assert.assertEquals(Arrays.asList(first, second, third), list.ordered());
+	}
+
+	@Test
 	public void staysInOrderWhenSortedAgain() {
 		final Element first = new Element(0);
 		final Element second = new Element(0);

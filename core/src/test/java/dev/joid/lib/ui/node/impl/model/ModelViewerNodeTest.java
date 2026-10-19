@@ -349,7 +349,7 @@ public class ModelViewerNodeTest {
 
 	}
 
-	private static final class FixedModel implements IDrawableModel {
+	public static final class FixedModel implements IDrawableModel {
 
 		@Override
 		public void render() {}
