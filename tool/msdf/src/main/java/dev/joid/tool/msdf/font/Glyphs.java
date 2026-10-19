@@ -99,6 +99,10 @@ public final class Glyphs {
 	}
 
 	private static Vector2 line(final List<Edge> contour, final Vector2 from, final Vector2 to) {
+		if (from.subtract(to).length() < 1E-6D) {
+			return from;
+		}
+
 		final List<Vector2> points = new ArrayList<>();
 		points.add(from);
 		points.add(to);
@@ -107,6 +111,10 @@ public final class Glyphs {
 	}
 
 	private static Vector2 quadratic(final List<Edge> contour, final Vector2 from, final Vector2 control, final Vector2 to) {
+		if (from.subtract(control).length() + control.subtract(to).length() < 1E-6D) {
+			return from;
+		}
+
 		final int steps = Glyphs.steps(from, control, to, null);
 		final List<Vector2> points = new ArrayList<>();
 		for (int i = 0; i <= steps; i++) {
@@ -120,6 +128,10 @@ public final class Glyphs {
 	}
 
 	private static Vector2 cubic(final List<Edge> contour, final Vector2 from, final Vector2 first, final Vector2 second, final Vector2 to) {
+		if (from.subtract(first).length() + first.subtract(second).length() + second.subtract(to).length() < 1E-6D) {
+			return from;
+		}
+
 		final int steps = Glyphs.steps(from, first, second, to);
 		final List<Vector2> points = new ArrayList<>();
 		for (int i = 0; i <= steps; i++) {

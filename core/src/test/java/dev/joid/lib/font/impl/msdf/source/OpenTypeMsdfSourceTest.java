@@ -1,5 +1,8 @@
 package dev.joid.lib.font.impl.msdf.source;
 
+import java.awt.Font;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Area;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,7 +44,12 @@ import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
 import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.tool.msdf.MsdfGenerator;
+import dev.joid.tool.msdf.atlas.GlyphEntry;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
+import dev.joid.tool.msdf.font.Glyphs;
+import dev.joid.tool.msdf.geometry.Coloring;
+import dev.joid.tool.msdf.geometry.Msdf;
+import dev.joid.tool.msdf.geometry.Shape;
 
 public class OpenTypeMsdfSourceTest {
 
@@ -162,8 +170,16 @@ public class OpenTypeMsdfSourceTest {
 	@Test(timeout = 60000L)
 	public void keysTheCacheByTheVersionsOfJoidAndOfItsGenerator() throws IOException {
 		final byte[] font = OpenTypeMsdfSourceTest.font();
-		final String versions = JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT;
+		final String versions = JOID.VERSION + " " + MsdfWriter.VERSION + " " + MsdfGenerator.REVISION + " " + MsdfGenerator.CHARSET + " " + MsdfGenerator.RANGE + " " + MsdfGenerator.WIDTH + "x" + MsdfGenerator.HEIGHT;
 		Assert.assertEquals(Hashing.sha256().newHasher().putString(versions, StandardCharsets.UTF_8).putBytes(font).hash() + ".msdf", OpenTypeMsdfSourceTest.resolve(font).getName());
+	}
+
+	@Test(timeout = 60000L)
+	public void generatesTheCrossedLettersWithoutWrongSignsInsideOrOutsideTheirStrokes() throws Exception {
+		final Font font = Glyphs.load(Asset.of(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Black.ttf")).read());
+		for (final int codepoint : new int[] {0xD8, 0xF8, 0x141, 0x142}) {
+			Assert.assertEquals(new String(Character.toChars(codepoint)), 0, OpenTypeMsdfSourceTest.wrongSigns(font, codepoint));
+		}
 	}
 
 	@Test(timeout = 60000L)
@@ -376,6 +392,44 @@ public class OpenTypeMsdfSourceTest {
 			JOIDEnv.devMode(devMode);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	private static int wrongSigns(final Font font, final int codepoint) {
+		final double size = 101D;
+		final Shape shape = Glyphs.outline(font, codepoint);
+		final Area area = new Area(font.createGlyphVector(new FontRenderContext(null, false, true), new String(Character.toChars(codepoint))).getGlyphOutline(0));
+		Coloring.apply(shape, 3D);
+		final GlyphEntry glyph = new GlyphEntry(codepoint, 0D, shape);
+		glyph.measure(size, 24D);
+		final int[] field = Msdf.generate(shape, glyph.getWidth(), glyph.getHeight(), size, glyph.getLeft(), glyph.getTop(), 24D);
+
+		int wrong = 0;
+		for (int y = 0; y < glyph.getHeight(); y++) {
+			for (int x = 0; x < glyph.getWidth(); x++) {
+				final double px = glyph.getLeft() + (x + 0.5D) / size;
+				final double py = glyph.getTop() - (y + 0.5D) / size;
+				final boolean inside = area.contains(px * 1000D, -py * 1000D);
+				final int color = field[x + y * glyph.getWidth()];
+				final int red = color >> 16 & 255;
+				final int green = color >> 8 & 255;
+				final int blue = color & 255;
+				if (Math.max(Math.min(red, green), Math.min(Math.max(red, green), blue)) >= 128 != inside && OpenTypeMsdfSourceTest.isDeep(area, px, py, size, inside)) {
+					wrong++;
+				}
+			}
+		}
+		return wrong;
+	}
+
+	private static boolean isDeep(final Area area, final double px, final double py, final double size, final boolean inside) {
+		for (int dy = -1; dy <= 1; dy++) {
+			for (int dx = -1; dx <= 1; dx++) {
+				if (area.contains((px + dx / size) * 1000D, -(py + dy / size) * 1000D) != inside) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private String[] entries() {

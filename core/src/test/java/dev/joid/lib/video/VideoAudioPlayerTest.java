@@ -134,6 +134,19 @@ public class VideoAudioPlayerTest {
 	}
 
 	@Test
+	public void catchesUpWithItsVideoWhenItsSourceRanDry() {
+		final VideoAudioPlayer player = this.started();
+		VideoAudioPlayerTest.push(player, 64, 1024);
+		player.update(0D);
+		final RecordingAudioSource source = this.audio.source();
+		source.played = source.getWrittenSamples();
+		source.playing = false;
+		player.update(5D);
+		Assert.assertEquals((short) 40000, source.written.get(8)[0]);
+		Assert.assertTrue(source.playing);
+	}
+
+	@Test
 	public void splitsLargeSamplesAcrossChunksInOrder() {
 		final VideoAudioPlayer player = this.started();
 		VideoAudioPlayerTest.push(player, 16, 3000);

@@ -29,6 +29,8 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfGenerator {
 
+	public static final int REVISION = 1;
+
 	public static final int    WIDTH   = 2048;
 	public static final int    HEIGHT  = 2048;
 	public static final double RANGE   = 24D;

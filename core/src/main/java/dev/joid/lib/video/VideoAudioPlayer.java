@@ -28,6 +28,7 @@ public final class VideoAudioPlayer {
 	private boolean      initialized;
 	private boolean      buffersQueued;
 
+	private long    dequeued;
 	private int     pendingOffset;
 	private short[] pendingSamples;
 
@@ -108,6 +109,10 @@ public final class VideoAudioPlayer {
 			return;
 		}
 
+		if (!this.source.isPlaying() && this.source.getBufferedSamples() == 0) {
+			this.skip((int) ((long) (elapsed * this.sampleRate) * this.channels - this.dequeued));
+		}
+
 		this.fill();
 		if (!this.source.isPlaying()) {
 			this.source.play();
@@ -144,6 +149,7 @@ public final class VideoAudioPlayer {
 		this.sampleQueue.clear();
 		this.pendingSamples = null;
 		this.pendingOffset = 0;
+		this.dequeued = 0L;
 	}
 
 	private int getQueuedSamples() {
@@ -169,10 +175,12 @@ public final class VideoAudioPlayer {
 			if (next.length > remaining) {
 				this.pendingSamples = next;
 				this.pendingOffset = remaining;
+				this.dequeued += remaining;
 				return;
 			}
 
 			remaining -= next.length;
+			this.dequeued += next.length;
 		}
 	}
 
@@ -244,6 +252,7 @@ public final class VideoAudioPlayer {
 			return null;
 		}
 
+		this.dequeued += offset;
 		return offset < chunk.length ? Arrays.copyOf(chunk, offset) : chunk;
 	}
 
