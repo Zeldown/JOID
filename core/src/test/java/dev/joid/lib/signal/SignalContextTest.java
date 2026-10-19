@@ -44,7 +44,7 @@ public class SignalContextTest {
 		final Signal<String> second = new Signal<>("b");
 		first.get();
 		second.get();
-		first.get();
+		first.isPresent();
 		Assert.assertEquals(Arrays.asList(first, second, first), SignalContext.current().takeReads());
 		Assert.assertTrue(SignalContext.current().takeReads().isEmpty());
 	}

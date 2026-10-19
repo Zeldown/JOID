@@ -357,6 +357,14 @@ public class BaseTweenTest {
 	}
 
 	@Test
+	public void keepsItsUserData() {
+		final Tween tween = BaseTweenTest.tween(new TweenValue(0F));
+		Assert.assertNull(tween.getUserData());
+		Assert.assertSame(tween, tween.userData("data"));
+		Assert.assertEquals("data", tween.getUserData());
+	}
+
+	@Test
 	public void forcesItsEndValues() {
 		final TweenValue value = new TweenValue(0F);
 		final Tween tween = BaseTweenTest.tween(value).start();

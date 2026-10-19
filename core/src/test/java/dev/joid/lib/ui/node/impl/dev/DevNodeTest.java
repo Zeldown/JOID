@@ -532,7 +532,7 @@ public class DevNodeTest {
 	public void ignoresTheKeysBelowAnotherUi() {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI());
 		this.bridges.open(new DevUI());
-		panel.fireKeyPressed(Key.G, Key.G, NodeKeyEvent.create(panel, Key.G, Key.G, null));
+		panel.fireKeyPressed(Key.G, Key.G);
 		Assert.assertFalse(DevNodeTest.peek(panel, "gridSignal"));
 	}
 
@@ -555,7 +555,7 @@ public class DevNodeTest {
 		final DevNode panel = DevNodeTest.open(this.bridges, new DevUI(RectNode.create(200D, 200D, 300D, 150D)));
 		this.bridges.move(250D, 250D).frame();
 		this.bridges.open(new DevUI());
-		panel.fireMousePressed(250D, 250D, MouseButton.LEFT, NodeMouseEvent.create(panel, 250D, 250D, MouseButton.LEFT, 0L, null));
+		panel.fireMousePressed(250D, 250D, MouseButton.LEFT);
 		Assert.assertFalse(DevNodeTest.peek(panel, "inspectedNodeLocked"));
 	}
 

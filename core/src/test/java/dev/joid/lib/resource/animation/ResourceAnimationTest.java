@@ -20,6 +20,19 @@ public class ResourceAnimationTest {
 	}
 
 	@Test
+	public void endsEachFrameAfterTheFramesBeforeIt() {
+		final ResourceAnimation animation = ResourceAnimation.of(1, 1, 0, Arrays.asList(ResourceAnimationFrame.of(new int[1], 50L), ResourceAnimationFrame.of(new int[1], 100L), ResourceAnimationFrame.of(new int[1], 150L)));
+		Assert.assertArrayEquals(new long[] {50L, 150L, 300L}, animation.getEnds());
+	}
+
+	@Test
+	public void keepsItsFrameEndsWhenAReadCopyChanges() {
+		final ResourceAnimation animation = ResourceAnimation.of(1, 1, 0, Arrays.asList(ResourceAnimationFrame.of(new int[1], 50L), ResourceAnimationFrame.of(new int[1], 100L)));
+		animation.getEnds()[0] = 0L;
+		Assert.assertArrayEquals(new long[] {50L, 150L}, animation.getEnds());
+	}
+
+	@Test
 	public void keepsTheDurationOfItsShortFramesAboveZero() {
 		final ResourceAnimation animation = ResourceAnimation.of(1, 1, 0, Arrays.asList(ResourceAnimationFrame.of(new int[1], 0L), ResourceAnimationFrame.of(new int[1], 5L), ResourceAnimationFrame.of(new int[1], 10L)));
 		Assert.assertEquals(16L, animation.getDuration());

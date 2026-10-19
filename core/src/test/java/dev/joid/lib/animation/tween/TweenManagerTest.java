@@ -1,5 +1,8 @@
 package dev.joid.lib.animation.tween;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,6 +30,40 @@ public class TweenManagerTest {
 		new TweenManager().add(TweenManagerTest.tween(first, 10F)).add(TweenManagerTest.tween(second, 20F)).update(0.5F);
 		Assert.assertEquals(5F, first.getValue(), 0F);
 		Assert.assertEquals(10F, second.getValue(), 0F);
+	}
+
+	@Test
+	public void countsItsRunningTweensAndTimelines() {
+		final Timeline inner = Timeline.createParallel().push(Tween.mark());
+		final TweenManager manager = new TweenManager().add(Tween.mark()).add(Timeline.createSequence().push(Tween.mark()).push(Tween.mark()).push(inner));
+		Assert.assertEquals(4, manager.getRunningTweensCount());
+		Assert.assertEquals(2, manager.getRunningTimelinesCount());
+	}
+
+	@Test
+	public void countsTheTweensOfANestedSequence() {
+		final TweenManager manager = new TweenManager().add(Timeline.createSequence().push(Tween.mark()).beginSequence().push(Tween.mark()).push(Tween.mark()).end());
+		Assert.assertEquals(3, manager.getRunningTweensCount());
+	}
+
+	@Test
+	public void countsTheTimelinesOfANestedParallel() {
+		final TweenManager manager = new TweenManager().add(Timeline.createSequence().push(Tween.mark()).beginParallel().push(Tween.mark()).end());
+		Assert.assertEquals(2, manager.getRunningTimelinesCount());
+	}
+
+	@Test
+	public void listsACopyOfItsObjects() {
+		final Tween tween = Tween.mark();
+		final TweenManager manager = new TweenManager().add(tween);
+		final List<BaseTween<?>> objects = manager.getObjects();
+		manager.add(Tween.mark());
+		Assert.assertEquals(Collections.singletonList(tween), objects);
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void exposesReadOnlyObjects() {
+		new TweenManager().getObjects().add(Tween.mark());
 	}
 
 	@Test

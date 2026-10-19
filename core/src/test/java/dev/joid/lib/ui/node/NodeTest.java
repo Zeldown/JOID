@@ -1344,7 +1344,7 @@ public class NodeTest {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column));
 		this.bridges.move(300D, 150D).frames(2);
-		final boolean context = NodeTest.scroll(column, -1D, 0D);
+		final boolean context = column.fireMouseScroll(300D, 150D, -1D, 0D);
 		Assert.assertFalse(context);
 		Assert.assertEquals(0D, column.getTargetScrollX(), 0D);
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
@@ -1355,7 +1355,7 @@ public class NodeTest {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
 		this.bridges.move(300D, 150D).frames(2);
-		final boolean context = NodeTest.scroll(row, 1D, 0D);
+		final boolean context = row.fireMouseScroll(300D, 150D, 1D, 0D);
 		Assert.assertFalse(context);
 		Assert.assertEquals(0D, row.getTargetScrollX(), 0D);
 	}
@@ -1366,7 +1366,7 @@ public class NodeTest {
 		RectNode.create(0D, 0D, 700D, 10D).attach(area);
 		this.bridges.open(new NodeUI(area)).move(300D, 150D).frames(2);
 		area.scrollY(-area.getMaxScrollY());
-		final boolean context = NodeTest.scroll(area, 0D, -1D);
+		final boolean context = area.fireMouseScroll(300D, 150D, 0D, -1D);
 		Assert.assertFalse(context);
 		Assert.assertEquals(-200D, area.getTargetScrollY(), 0D);
 		Assert.assertEquals(0D, area.getTargetScrollX(), 0D);
@@ -1383,7 +1383,7 @@ public class NodeTest {
 		Assert.assertEquals(0D, column.getScrollY(), 0D);
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 		Assert.assertEquals(100D, column.getChildren().get(1).getY(), 0D);
-		final boolean context = NodeTest.scroll(column, 0D, -1D);
+		final boolean context = column.fireMouseScroll(300D, 150D, 0D, -1D);
 		Assert.assertFalse(context);
 	}
 
@@ -1400,10 +1400,10 @@ public class NodeTest {
 	public void consumesTheWheelWhileItScrolls() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final boolean down = NodeTest.scroll(column, 0D, -1D);
+		final boolean down = column.fireMouseScroll(300D, 150D, 0D, -1D);
 		Assert.assertTrue(down);
 		Assert.assertEquals(-30D, column.getTargetScrollY(), 0D);
-		final boolean up = NodeTest.scroll(column, 0D, 1D);
+		final boolean up = column.fireMouseScroll(300D, 150D, 0D, 1D);
 		Assert.assertTrue(up);
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
 	}
@@ -1412,10 +1412,10 @@ public class NodeTest {
 	public void leavesTheWheelToItsParentAtItsLimits() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final boolean up = NodeTest.scroll(column, 0D, 1D);
+		final boolean up = column.fireMouseScroll(300D, 150D, 0D, 1D);
 		Assert.assertFalse(up);
 		column.scrollY(-column.getMaxScrollY());
-		final boolean down = NodeTest.scroll(column, 0D, -1D);
+		final boolean down = column.fireMouseScroll(300D, 150D, 0D, -1D);
 		Assert.assertFalse(down);
 		Assert.assertEquals(-200D, column.getTargetScrollY(), 0D);
 	}
@@ -1425,8 +1425,8 @@ public class NodeTest {
 		final ContainerNode box = ContainerNode.create(100D, 100D, 400D, 100D).overflow(OverflowProperty.SCROLL);
 		RectNode.create(0D, 0D, 400D, 100D).attach(box);
 		this.bridges.open(new NodeUI(box)).move(300D, 150D).frames(2);
-		final boolean down = NodeTest.scroll(box, 0D, -1D);
-		final boolean up = NodeTest.scroll(box, 0D, 1D);
+		final boolean down = box.fireMouseScroll(300D, 150D, 0D, -1D);
+		final boolean up = box.fireMouseScroll(300D, 150D, 0D, 1D);
 		Assert.assertFalse(down);
 		Assert.assertFalse(up);
 	}
@@ -1435,9 +1435,22 @@ public class NodeTest {
 	public void leavesAStillWheelToItsParent() {
 		final ContainerNode column = NodeTest.column();
 		this.bridges.open(new NodeUI(column)).move(300D, 150D).frames(2);
-		final boolean context = NodeTest.scroll(column, 0D, 0D);
+		final boolean context = column.fireMouseScroll(300D, 150D, 0D, 0D);
 		Assert.assertFalse(context);
 		Assert.assertEquals(0D, column.getTargetScrollY(), 0D);
+	}
+
+	@Test
+	public void tellsWhetherItsHandlersConsumedAnInputFiredWithoutSource() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).handleMouseReleased(event -> event.consume()).handleCharTyped(event -> event.consume()).handleKeyReleased(event -> event.consume());
+		final RectNode idle = RectNode.create(200D, 100D, 50D, 50D);
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(node, idle))).frame();
+		Assert.assertTrue(node.fireMouseReleased(120D, 120D, MouseButton.LEFT));
+		Assert.assertTrue(node.fireCharTyped('a'));
+		Assert.assertTrue(node.fireKeyReleased(Key.A, Key.A));
+		Assert.assertFalse(idle.fireMouseReleased(220D, 120D, MouseButton.LEFT));
+		Assert.assertFalse(idle.fireCharTyped('a'));
+		Assert.assertFalse(idle.fireKeyReleased(Key.A, Key.A));
 	}
 
 	@Test
@@ -3302,7 +3315,7 @@ public class NodeTest {
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
 		this.bridges.open(new NodeUI(parent));
 		node.startDragging(110D, 110D);
-		node.fireMouseDragged(160D, 110D, MouseButton.LEFT, 0L, NodeMouseEvent.create(node, 160D, 110D, MouseButton.LEFT, 0L, null));
+		node.fireMouseDragged(160D, 110D, MouseButton.LEFT, 0L);
 		parent.remove(node);
 		Assert.assertEquals(Arrays.asList("start", "end"), events);
 		Assert.assertFalse(node.isDragging());
@@ -3915,12 +3928,6 @@ public class NodeTest {
 		RectNode.create(0D, 100D, 400D, 100D).color(new Color(0.3F, 0.5F, 0.7F, 1F)).attach(column);
 		RectNode.create(0D, 200D, 400D, 100D).color(new Color(0.5F, 0.7F, 0.9F, 1F)).attach(column);
 		return column;
-	}
-
-	private static boolean scroll(final Node node, final double notchesX, final double notchesY) {
-		final NodeMouseScrollEvent<Node> input = NodeMouseScrollEvent.create(node, 300D, 150D, notchesX, notchesY, null);
-		node.fireMouseScroll(300D, 150D, notchesX, notchesY, input);
-		return input.isConsumed();
 	}
 
 	private static String capture(final Runnable runnable) {

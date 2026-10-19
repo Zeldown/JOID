@@ -211,6 +211,10 @@ public abstract class UIBridge implements IUIBridge {
 		return this.uiList.contains(ui);
 	}
 
+	public boolean isScreenOpen() {
+		return this.hasScreen();
+	}
+
 	public boolean isOverlayHidden() {
 		return false;
 	}

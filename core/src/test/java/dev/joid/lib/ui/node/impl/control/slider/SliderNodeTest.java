@@ -16,7 +16,6 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
@@ -301,7 +300,7 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(SliderNodeTest.digits()).value(5);
 		this.bridges.open(new NodeUI(slider)).frame();
 		SliderNodeTest.drag(slider);
-		slider.fireMouseDragged(425D, 125D, MouseButton.LEFT, 0L, NodeMouseEvent.create(slider, 425D, 125D, MouseButton.LEFT, 0L, null));
+		slider.fireMouseDragged(425D, 125D, MouseButton.LEFT, 0L);
 		this.bridges.move(425D, 125D).frame();
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertEquals(8, slider.getValue().intValue());
@@ -405,10 +404,10 @@ public class SliderNodeTest {
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(1, 2, 3);
 		this.bridges.open(new NodeUI(slider)).frame();
 		SliderNodeTest.drag(slider);
-		slider.fireMouseDragged(0D, 125D, MouseButton.LEFT, 0L, NodeMouseEvent.create(slider, 0D, 125D, MouseButton.LEFT, 0L, null));
+		slider.fireMouseDragged(0D, 125D, MouseButton.LEFT, 0L);
 		this.bridges.move(0D, 125D).frame();
 		Assert.assertEquals(0D, slider.getThumb().getX(), 1E-9D);
-		slider.fireMouseDragged(1900D, 125D, MouseButton.LEFT, 0L, NodeMouseEvent.create(slider, 1900D, 125D, MouseButton.LEFT, 0L, null));
+		slider.fireMouseDragged(1900D, 125D, MouseButton.LEFT, 0L);
 		this.bridges.move(1900D, 125D).frame();
 		Assert.assertEquals(350D, slider.getThumb().getX(), 1E-9D);
 	}

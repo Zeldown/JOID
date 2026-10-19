@@ -200,6 +200,8 @@ public final class Lwjgl2StateGuardBackend implements IStateGuardBackend {
 		case CLIENT_ARRAYS:
 		case COLOR_MATERIAL:
 			return this.isCompatibility();
+		case PIXEL_BUFFER:
+			return this.getCapabilities().hasPixelBuffers();
 		case VERTEX_ARRAY:
 			return this.getCapabilities().hasVertexArrays();
 		case SAMPLER_OBJECTS:

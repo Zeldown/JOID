@@ -460,8 +460,10 @@ public class ComputedSignalTest {
 	public void startsEmptyForANullValue() {
 		final Signal<String> name = new Signal<>();
 		final ComputedSignal<String> upper = name.map(value -> value == null ? null : value.toUpperCase());
+		Assert.assertFalse(upper.isPresent());
 		Assert.assertNull(upper.get());
 		name.set("joid");
+		Assert.assertTrue(upper.isPresent());
 		Assert.assertEquals("JOID", upper.peek());
 	}
 

@@ -32,7 +32,7 @@ public class VertexAttributeTest {
 		int end = 0;
 		for (final VertexAttribute attribute : VertexAttribute.values()) {
 			Assert.assertTrue(attribute.name(), attribute.getOffset() >= end);
-			end = attribute.getOffset() + attribute.getComponents() * (attribute.getComponent() == VertexComponent.FLOAT ? 4 : 1);
+			end = attribute.getOffset() + attribute.getComponents() * attribute.getComponent().getSize();
 		}
 		Assert.assertTrue(end <= VertexBuffer.STRIDE);
 	}

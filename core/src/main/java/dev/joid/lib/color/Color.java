@@ -308,6 +308,41 @@ public final class Color extends LockableValue<Color> {
 		return new Color(ColorGradient.of(this, target, startPoint, endPoint));
 	}
 
+	public @NonNull float[] RGBtoHSB(final float[] hsbvals) {
+		return Color.RGBtoHSB(this.getRed(), this.getGreen(), this.getBlue(), hsbvals);
+	}
+
+	public static @NonNull float[] RGBtoHSB(final int r, final int g, final int b, final float[] hsbvals) {
+		final float[] values = hsbvals == null ? new float[3] : hsbvals;
+		final int cmax = Math.max(Math.max(r, g), b);
+		final int cmin = Math.min(Math.min(r, g), b);
+		final float saturation = cmax != 0 ? (float) (cmax - cmin) / cmax : 0F;
+
+		float hue = 0F;
+		if (saturation != 0F) {
+			final float redc = (float) (cmax - r) / (cmax - cmin);
+			final float greenc = (float) (cmax - g) / (cmax - cmin);
+			final float bluec = (float) (cmax - b) / (cmax - cmin);
+			if (r == cmax) {
+				hue = bluec - greenc;
+			} else if (g == cmax) {
+				hue = 2F + redc - bluec;
+			} else {
+				hue = 4F + greenc - redc;
+			}
+
+			hue /= 6F;
+			if (hue < 0F) {
+				hue += 1F;
+			}
+		}
+
+		values[0] = hue;
+		values[1] = saturation;
+		values[2] = cmax / 255F;
+		return values;
+	}
+
 	public @NonNull Color red(final float red) {
 		return super.mutate("withRed", () -> this.assign(this.withRed(red), 1));
 	}

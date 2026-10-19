@@ -82,6 +82,10 @@ public final class GlCapabilities {
 		return this.version >= 320 || this.hasExtension("GL_ARB_depth_clamp");
 	}
 
+	public boolean hasPixelBuffers() {
+		return this.version >= 210 || this.hasExtension("GL_ARB_pixel_buffer_object") || this.hasExtension("GL_EXT_pixel_buffer_object");
+	}
+
 	public boolean hasPrimitiveRestart() {
 		return this.version >= 310;
 	}

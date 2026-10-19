@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import dev.joid.lib.asset.Asset;
@@ -82,8 +83,16 @@ public final class ResourceBuilder {
 	}
 
 	public @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier) {
+		return this.compute(uniqueId, dataSupplier, null);
+	}
+
+	public @NonNull Resource compute(final @NonNull String uniqueId, final @NonNull Supplier<ResourceData> dataSupplier, final Consumer<Resource> onCreate) {
 		if (this.cache == null) {
-			return Resource.create(this, dataSupplier.get());
+			final Resource resource = Resource.create(this, dataSupplier.get());
+			if (onCreate != null) {
+				onCreate.accept(resource);
+			}
+			return resource;
 		}
 
 		final ResourceData cached = this.cache.get(uniqueId);
@@ -95,7 +104,11 @@ public final class ResourceBuilder {
 		final ResourceData data = dataSupplier.get();
 		this.cache.put(uniqueId, data);
 		this.computed.put(data, uniqueId);
-		return Resource.create(this, data);
+		final Resource resource = Resource.create(this, data);
+		if (onCreate != null) {
+			onCreate.accept(resource);
+		}
+		return resource;
 	}
 
 	public @NonNull ResourceProperties getProperties() {

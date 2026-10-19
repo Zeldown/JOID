@@ -58,6 +58,14 @@ public class GlCapabilitiesTest {
 	}
 
 	@Test
+	public void readsThePixelBuffersOfTheContext() {
+		Assert.assertTrue(GlCapabilities.read(GlCapabilitiesTest.context("2.1 Mesa", "1.20", 0, 0)).hasPixelBuffers());
+		Assert.assertTrue(GlCapabilities.read(GlCapabilitiesTest.context("2.0 Mesa", "1.10", 0, 0, "GL_ARB_pixel_buffer_object")).hasPixelBuffers());
+		Assert.assertTrue(GlCapabilities.read(GlCapabilitiesTest.context("2.0 Mesa", "1.10", 0, 0, "GL_EXT_pixel_buffer_object")).hasPixelBuffers());
+		Assert.assertFalse(GlCapabilities.read(GlCapabilitiesTest.context("2.0 Mesa", "1.10", 0, 0)).hasPixelBuffers());
+	}
+
+	@Test
 	public void refusesToReadWithoutAContext() {
 		try {
 			GlCapabilities.read(GlCapabilitiesTest.context(null, null, 0, 0));

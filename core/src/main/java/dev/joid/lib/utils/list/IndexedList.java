@@ -3,6 +3,7 @@ package dev.joid.lib.utils.list;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -20,6 +21,10 @@ public final class IndexedList<E extends IIndexedElement> implements Iterable<E>
 		this.orderedList  = orderedList;
 		this.orderedView  = Collections.unmodifiableList(orderedList);
 		this.reversedList = Collections.unmodifiableList(Lists.reverse(orderedList));
+	}
+
+	public static <E extends IIndexedElement> @NonNull IndexedList<E> linked() {
+		return new IndexedList<>(new LinkedList<>());
 	}
 
 	public static <E extends IIndexedElement> @NonNull IndexedList<E> concurrent() {

@@ -928,13 +928,13 @@ public class UIBridgeTest {
 		Assert.assertEquals(Arrays.asList(menu, overlay), this.bridges.getUi().getUiList());
 		this.bridges.getUi().open(settings);
 		Assert.assertEquals(Arrays.asList(overlay, settings), this.bridges.getUi().getUiList());
-		Assert.assertTrue(this.bridges.getUi().hasScreen());
+		Assert.assertTrue(this.bridges.getUi().isScreenOpen());
 	}
 
 	@Test
 	public void opensNoScreenWithOnlyOverlays() {
 		this.bridges.open(new OverlayUI("overlay", this.trace));
-		Assert.assertFalse(this.bridges.getUi().hasScreen());
+		Assert.assertFalse(this.bridges.getUi().isScreenOpen());
 		Assert.assertFalse(this.bridges.getUi().isOverlayHidden());
 	}
 

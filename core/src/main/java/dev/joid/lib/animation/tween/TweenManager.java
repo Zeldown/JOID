@@ -1,6 +1,7 @@
 package dev.joid.lib.animation.tween;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import lombok.NonNull;
@@ -62,6 +63,46 @@ public class TweenManager {
 		synchronized (this.lock) {
 			return this.objects.size();
 		}
+	}
+
+	public int getRunningTweensCount() {
+		synchronized (this.lock) {
+			return TweenManager.getTweensCount(this.objects);
+		}
+	}
+
+	public int getRunningTimelinesCount() {
+		synchronized (this.lock) {
+			return TweenManager.getTimelinesCount(this.objects);
+		}
+	}
+
+	public @NonNull List<BaseTween<?>> getObjects() {
+		synchronized (this.lock) {
+			return Collections.unmodifiableList(new ArrayList<>(this.objects));
+		}
+	}
+
+	private static int getTweensCount(final List<BaseTween<?>> objects) {
+		int count = 0;
+		for (final BaseTween<?> object : objects) {
+			if (object instanceof Tween) {
+				count++;
+			} else if (object instanceof Timeline) {
+				count += TweenManager.getTweensCount(((Timeline) object).getChildren());
+			}
+		}
+		return count;
+	}
+
+	private static int getTimelinesCount(final List<BaseTween<?>> objects) {
+		int count = 0;
+		for (final BaseTween<?> object : objects) {
+			if (object instanceof Timeline) {
+				count += 1 + TweenManager.getTimelinesCount(((Timeline) object).getChildren());
+			}
+		}
+		return count;
 	}
 
 }

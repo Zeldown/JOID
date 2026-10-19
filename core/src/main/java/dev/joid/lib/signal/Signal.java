@@ -118,6 +118,10 @@ public class Signal<T> implements Supplier<T> {
 		return current == this.sealedValue ? current : this.reseal(current);
 	}
 
+	public boolean isPresent() {
+		return this.get() != null;
+	}
+
 	public boolean isWritable() {
 		return true;
 	}

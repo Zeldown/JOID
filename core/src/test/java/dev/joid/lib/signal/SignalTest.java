@@ -48,12 +48,14 @@ public class SignalTest {
 	@Test
 	public void startsEmptyWithoutDefault() {
 		final Signal<String> signal = new Signal<>();
+		Assert.assertFalse(signal.isPresent());
 		Assert.assertNull(signal.get());
 	}
 
 	@Test
 	public void startsWithTheGivenValue() {
 		final Signal<String> signal = new Signal<>("joid");
+		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals("joid", signal.get());
 	}
 
@@ -65,6 +67,7 @@ public class SignalTest {
 	@Test
 	public void keepsItsValueOverItsDefault() {
 		final Signal<String> signal = new Signal<>("joid").set("ui");
+		Assert.assertTrue(signal.isPresent());
 		Assert.assertEquals("ui", signal.get());
 	}
 
@@ -79,6 +82,7 @@ public class SignalTest {
 	@Test
 	public void forgetsItsValueOnResetWithoutDefault() {
 		final Signal<String> signal = new Signal<String>().set("joid").reset();
+		Assert.assertFalse(signal.isPresent());
 		Assert.assertNull(signal.get());
 	}
 

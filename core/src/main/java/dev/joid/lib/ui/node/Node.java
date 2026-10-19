@@ -485,6 +485,12 @@ public abstract class Node implements INode {
 		return this.listen(Node.HANDLE_MOUSE_SCROLL, listener);
 	}
 
+	public final boolean fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY) {
+		final NodeMouseScrollEvent<Node> input = NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, null);
+		this.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, input);
+		return input.isConsumed();
+	}
+
 	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull IConsumableEvent source) {
 		if (!this.isVisible() || !this.isInteractive()) {
 			return;
@@ -517,6 +523,12 @@ public abstract class Node implements INode {
 		return this.listen(Node.HANDLE_MOUSE_DRAGGED, listener);
 	}
 
+	public final boolean fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime) {
+		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, null);
+		this.fireMouseDragged(mouseX, mouseY, button, deltaTime, input);
+		return input.isConsumed();
+	}
+
 	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull IConsumableEvent source) {
 		if (this.isVisible() && this.isInteractive()) {
 			this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, source), this.isEnabled(), Node.HANDLE_MOUSE_DRAGGED, (node, event) -> node.fireMouseDragged(mouseX, mouseY, button, deltaTime, event), this::mouseDragged);
@@ -532,6 +544,12 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T handleMousePressed(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
 		return this.listen(Node.HANDLE_MOUSE_PRESSED, listener);
+	}
+
+	public final boolean fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button) {
+		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, null);
+		this.fireMousePressed(mouseX, mouseY, button, input);
+		return input.isConsumed();
 	}
 
 	public final void fireMousePressed(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull IConsumableEvent source) {
@@ -562,6 +580,12 @@ public abstract class Node implements INode {
 		return this.listen(Node.HANDLE_MOUSE_RELEASED, listener);
 	}
 
+	public final boolean fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button) {
+		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, null);
+		this.fireMouseReleased(mouseX, mouseY, button, input);
+		return input.isConsumed();
+	}
+
 	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull IConsumableEvent source) {
 		if (this.dragging && button.isLeft()) {
 			this.stopDragging();
@@ -572,6 +596,12 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T handleCharTyped(final @NonNull EventListener<NodeCharEvent<T>> listener) {
 		return this.listen(Node.HANDLE_CHAR_TYPED, listener);
+	}
+
+	public final boolean fireCharTyped(final int codepoint) {
+		final NodeCharEvent<Node> input = NodeCharEvent.create(this, codepoint, null);
+		this.fireCharTyped(codepoint, input);
+		return input.isConsumed();
 	}
 
 	public final void fireCharTyped(final int codepoint, final @NonNull IConsumableEvent source) {
@@ -587,6 +617,12 @@ public abstract class Node implements INode {
 		return this.listen(Node.HANDLE_KEY_PRESSED, listener);
 	}
 
+	public final boolean fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key) {
+		final NodeKeyEvent<Node> input = NodeKeyEvent.create(this, physicalKey, key, null);
+		this.fireKeyPressed(physicalKey, key, input);
+		return input.isConsumed();
+	}
+
 	public final void fireKeyPressed(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull IConsumableEvent source) {
 		if (!this.isShown()) {
 			return;
@@ -599,6 +635,12 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T handleKeyReleased(final @NonNull EventListener<NodeKeyEvent<T>> listener) {
 		return this.listen(Node.HANDLE_KEY_RELEASED, listener);
+	}
+
+	public final boolean fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key) {
+		final NodeKeyEvent<Node> input = NodeKeyEvent.create(this, physicalKey, key, null);
+		this.fireKeyReleased(physicalKey, key, input);
+		return input.isConsumed();
 	}
 
 	public final void fireKeyReleased(final @NonNull Key physicalKey, final @NonNull Key key, final @NonNull IConsumableEvent source) {

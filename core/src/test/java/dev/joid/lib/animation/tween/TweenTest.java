@@ -13,6 +13,7 @@ public class TweenTest {
 	public void describesItsInterpolation() {
 		final Tween tween = new TweenValue(0F).to(2F);
 		Assert.assertEquals(2F, tween.getDuration(), 0F);
+		Assert.assertSame(TweenEquations.LINEAR, tween.getEasing());
 		Assert.assertFalse(tween.isStarted());
 	}
 
@@ -65,9 +66,30 @@ public class TweenTest {
 	}
 
 	@Test
-	public void setsItsTargetAtOnceWithoutDuration() {
+	public void movesItsValueFromItsTarget() {
+		final TweenValue value = new TweenValue(10F);
+		final Tween tween = Tween.from(value::getValue, value::setValue, 1F).target(0F).ease(TweenEquations.LINEAR).start();
+		tween.update(0.25F);
+		Assert.assertEquals(2.5F, value.getValue(), 0F);
+		tween.update(1F);
+		Assert.assertEquals(10F, value.getValue(), 0F);
+	}
+
+	@Test
+	public void replaysFromItsTargetToItsNewStart() {
+		final TweenValue value = new TweenValue(10F);
+		final Tween tween = Tween.from(value::getValue, value::setValue, 1F).target(0F).start();
+		tween.update(2F);
+		value.setValue(20F);
+		tween.start().update(0.5F);
+		Assert.assertEquals(10F, value.getValue(), 0F);
+	}
+
+	@Test
+	public void setsItsTargetAtOnce() {
 		final TweenValue value = new TweenValue(0F);
-		final Tween tween = value.to(0F).target(5F).start();
+		final Tween tween = Tween.set(value::getValue, value::setValue).target(5F).start();
+		Assert.assertEquals(0F, tween.getDuration(), 0F);
 		tween.update(0F);
 		Assert.assertEquals(0F, value.getValue(), 0F);
 		tween.update(0.25F);
@@ -76,9 +98,9 @@ public class TweenTest {
 	}
 
 	@Test
-	public void restoresTheStartOfAnInstantTweenPlayedBackward() {
+	public void restoresTheValueOfASetPlayedBackward() {
 		final TweenValue value = new TweenValue(0F);
-		final Tween tween = value.to(0F).target(5F).start();
+		final Tween tween = Tween.set(value::getValue, value::setValue).target(5F).start();
 		tween.update(0.25F);
 		tween.update(-0.5F);
 		Assert.assertEquals(0F, value.getValue(), 0F);
@@ -92,6 +114,15 @@ public class TweenTest {
 		tween.update(0.25F);
 		Assert.assertEquals(2, values.size());
 		Assert.assertEquals(0F, value.getValue(), 0F);
+		Assert.assertTrue(tween.isFinished());
+	}
+
+	@Test
+	public void callsItsListenerOnStart() {
+		final List<BaseTween<?>> events = new ArrayList<>();
+		final Tween tween = Tween.call(event -> events.add(event.getTween())).start();
+		tween.update(1F);
+		Assert.assertEquals(Collections.singletonList(tween), events);
 		Assert.assertTrue(tween.isFinished());
 	}
 
@@ -142,6 +173,41 @@ public class TweenTest {
 		Assert.assertEquals(5F, value.getValue(), 0F);
 		tween.update(0.5F);
 		Assert.assertEquals(20F, value.getValue(), 0F);
+	}
+
+	@Test
+	public void addsTheRelativeTargetToTheStartValue() {
+		final TweenValue value = new TweenValue(5F);
+		value.to(1F).targetRelative(10F).ease(TweenEquations.LINEAR).start().update(2F);
+		Assert.assertEquals(15F, value.getValue(), 0F);
+	}
+
+	@Test
+	public void addsALateRelativeTargetToTheStartValue() {
+		final TweenValue value = new TweenValue(5F);
+		final Tween tween = value.to(1F).target(5F).start();
+		tween.update(0F);
+		tween.targetRelative(10F).update(2F);
+		Assert.assertEquals(15F, value.getValue(), 0F);
+	}
+
+	@Test
+	public void addsItsRelativeTargetToItsNewStartWhenStartedAgain() {
+		final TweenValue value = new TweenValue(5F);
+		final Tween tween = value.to(1F).targetRelative(10F).start();
+		tween.update(2F);
+		tween.start().update(2F);
+		Assert.assertEquals(25F, value.getValue(), 0F);
+	}
+
+	@Test
+	public void shiftsItsWaypointsWithARelativeTarget() {
+		final TweenValue value = new TweenValue(5F);
+		final Tween tween = value.to(1F).targetRelative(20F).waypoint(10F).path(TweenPaths.LINEAR).ease(TweenEquations.LINEAR).start();
+		tween.update(0.5F);
+		Assert.assertEquals(15F, value.getValue(), 0F);
+		tween.update(1F);
+		Assert.assertEquals(25F, value.getValue(), 0F);
 	}
 
 	@Test(expected = NullPointerException.class)

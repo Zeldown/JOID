@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import dev.joid.lib.ui.event.EventListener;
 import lombok.NonNull;
 
 public final class Tween extends BaseTween<Tween> {
@@ -13,13 +14,18 @@ public final class Tween extends BaseTween<Tween> {
 	private final Supplier<Float> getter;
 	private final Consumer<Float> setter;
 
+	private float         end;
 	private float         start;
+	private float         origin;
 	private float         target;
 	private TweenPath     path;
 	private int           waypointCount;
 	private TweenEquation equation;
 	private float[]       waypoints  = new float[0];
 	private float[]       pathBuffer = new float[2];
+
+	private boolean isFrom;
+	private boolean isRelative;
 
 	private Tween(final Supplier<Float> getter, final Consumer<Float> setter, final float duration) {
 		if (duration < 0) {
@@ -37,6 +43,20 @@ public final class Tween extends BaseTween<Tween> {
 		return new Tween(getter, setter, duration);
 	}
 
+	public static @NonNull Tween from(final @NonNull Supplier<Float> getter, final @NonNull Consumer<Float> setter, final float duration) {
+		final Tween tween = new Tween(getter, setter, duration);
+		tween.isFrom = true;
+		return tween;
+	}
+
+	public static @NonNull Tween set(final @NonNull Supplier<Float> getter, final @NonNull Consumer<Float> setter) {
+		return new Tween(getter, setter, 0F);
+	}
+
+	public static @NonNull Tween call(final @NonNull EventListener<TweenEvent> listener) {
+		return Tween.mark().onIterationStart(listener);
+	}
+
 	public static @NonNull Tween mark() {
 		return new Tween(null, null, 0F);
 	}
@@ -48,6 +68,14 @@ public final class Tween extends BaseTween<Tween> {
 
 	public @NonNull Tween target(final float target) {
 		this.target = target;
+		this.resolve();
+		return this;
+	}
+
+	public @NonNull Tween targetRelative(final float target) {
+		this.isRelative = true;
+		this.target = target;
+		this.resolve();
 		return this;
 	}
 
@@ -67,10 +95,15 @@ public final class Tween extends BaseTween<Tween> {
 		return this;
 	}
 
+	public @NonNull TweenEquation getEasing() {
+		return this.equation;
+	}
+
 	@Override
 	protected void initializeOverride() {
 		if (this.getter != null) {
-			this.start = this.getter.get();
+			this.origin = this.getter.get();
+			this.resolve();
 		}
 	}
 
@@ -81,22 +114,22 @@ public final class Tween extends BaseTween<Tween> {
 		}
 
 		if (!isIterationStep && step > lastStep) {
-			this.setter.accept(super.isReverse(lastStep) ? this.start : this.target);
+			this.setter.accept(super.isReverse(lastStep) ? this.start : this.end);
 			return;
 		}
 
 		if (!isIterationStep && step < lastStep) {
-			this.setter.accept(super.isReverse(lastStep) ? this.target : this.start);
+			this.setter.accept(super.isReverse(lastStep) ? this.end : this.start);
 			return;
 		}
 
 		if (this.duration < 0.00000000001F && delta > -0.00000000001F) {
-			this.setter.accept(super.isReverse(step) ? this.target : this.start);
+			this.setter.accept(super.isReverse(step) ? this.end : this.start);
 			return;
 		}
 
 		if (this.duration < 0.00000000001F && delta < 0.00000000001F) {
-			this.setter.accept(super.isReverse(step) ? this.start : this.target);
+			this.setter.accept(super.isReverse(step) ? this.start : this.end);
 			return;
 		}
 
@@ -104,20 +137,23 @@ public final class Tween extends BaseTween<Tween> {
 		final float progress = this.equation.compute(time / this.duration);
 
 		if (this.waypointCount == 0) {
-			this.setter.accept(this.start + progress * (this.target - this.start));
+			this.setter.accept(this.start + progress * (this.end - this.start));
 			return;
 		}
 
+		final float offset = this.isRelative ? this.origin : 0F;
 		this.pathBuffer[0] = this.start;
-		System.arraycopy(this.waypoints, 0, this.pathBuffer, 1, this.waypointCount);
-		this.pathBuffer[this.waypointCount + 1] = this.target;
+		for (int i = 0; i < this.waypointCount; i++) {
+			this.pathBuffer[i + 1] = this.waypoints[i] + offset;
+		}
+		this.pathBuffer[this.waypointCount + 1] = this.end;
 		this.setter.accept(this.path.compute(progress, this.pathBuffer, this.waypointCount + 2));
 	}
 
 	@Override
 	protected void forceEndValues() {
 		if (this.setter != null) {
-			this.setter.accept(this.target);
+			this.setter.accept(this.end);
 		}
 	}
 
@@ -126,6 +162,12 @@ public final class Tween extends BaseTween<Tween> {
 		if (this.setter != null) {
 			this.setter.accept(this.start);
 		}
+	}
+
+	private void resolve() {
+		final float destination = this.isRelative ? this.origin + this.target : this.target;
+		this.start = this.isFrom ? destination : this.origin;
+		this.end   = this.isFrom ? this.origin : destination;
 	}
 
 }

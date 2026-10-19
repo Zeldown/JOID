@@ -302,6 +302,11 @@ public final class ResourceData {
 		}
 	}
 
+	public <T extends IResourceDecoder> T getDecoder(final @NonNull Class<T> clazz) {
+		final IResourceDecoder decoder = this.decoder;
+		return clazz.isInstance(decoder) ? clazz.cast(decoder) : null;
+	}
+
 	private @NonNull List<@NonNull Resource> getResources() {
 		synchronized (this.resources) {
 			return new ArrayList<>(this.resources);

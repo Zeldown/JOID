@@ -37,6 +37,8 @@ public abstract class BaseTween<T> {
 	private boolean isFinished;
 	private boolean isInitialized;
 
+	private Object userData;
+
 	public T start() {
 		this.build();
 		if (this.repeatCnt < 0 && this.duration + this.repeatDelay <= 0) {
@@ -87,6 +89,11 @@ public abstract class BaseTween<T> {
 		return this.repeat(count, delay, true, "repeatYoyo");
 	}
 
+	public T userData(final Object userData) {
+		this.userData = userData;
+		return (T) this;
+	}
+
 	public T onStart(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.START, listener);
 	}
@@ -135,6 +142,10 @@ public abstract class BaseTween<T> {
 		return this.repeatCnt;
 	}
 
+	public Object getUserData() {
+		return this.userData;
+	}
+
 	public float getCurrentTime() {
 		return this.currentTime;
 	}
@@ -143,7 +154,7 @@ public abstract class BaseTween<T> {
 		return this.repeatDelay;
 	}
 
-	protected float getFullDuration() {
+	public float getFullDuration() {
 		if (this.repeatCnt < 0) {
 			return -1;
 		}
@@ -193,7 +204,7 @@ public abstract class BaseTween<T> {
 		this.forceStartValues();
 	}
 
-	protected void forceToEnd(final float time) {
+	public void forceToEnd(final float time) {
 		this.currentTime = time - this.getFullDuration();
 		this.step = this.repeatCnt * 2 + 1;
 		this.isIterationStep = false;
