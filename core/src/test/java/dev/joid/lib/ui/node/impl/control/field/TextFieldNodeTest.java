@@ -291,6 +291,20 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void takesBackItsTypedTextOnceItsMaximumLengthAllowsItAfterItsBlur() {
+		final Signal<Integer> length = new Signal<>(20);
+		final TextFieldNode field = this.field("").maxTextLength(length);
+		this.type(field, "hello world");
+		field.blur();
+		length.set(5);
+		this.bridges.frame();
+		Assert.assertEquals("hello", field.getText());
+		length.set(20);
+		this.bridges.frame();
+		Assert.assertEquals("hello world", field.getText());
+	}
+
+	@Test
 	public void keepsItsTextOnceItsMaximumLengthChangesAfterARefusedChange() {
 		final Signal<Integer> length = new Signal<>(20);
 		final Signal<String> text = new Signal<>("abc");

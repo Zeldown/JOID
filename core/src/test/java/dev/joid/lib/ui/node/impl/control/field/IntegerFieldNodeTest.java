@@ -386,6 +386,23 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void takesBackItsTypedValueOnceItsBoundsAllowItAfterItsBlur() {
+		final IntegerSignal max = new IntegerSignal(100);
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>value(signal).max(max)).cursorPosition(0);
+		this.type(field, "5");
+		field.blur();
+		this.bridges.frame();
+		max.set(10);
+		this.bridges.frame();
+		Assert.assertEquals(10, (int) signal.peek());
+		max.set(100);
+		this.bridges.frame();
+		Assert.assertEquals("50", field.getText());
+		Assert.assertEquals(50, (int) signal.peek());
+	}
+
+	@Test
 	public void lowersANumberTooLongForAnInteger() {
 		Assert.assertEquals(50, (int) IntegerFieldNode.create(0D, 0D, 100D).min(0).max(50).<IntegerFieldNode>text("99999999999").getValue());
 		Assert.assertEquals(Integer.MAX_VALUE, (int) IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>text("99999999999").getValue());

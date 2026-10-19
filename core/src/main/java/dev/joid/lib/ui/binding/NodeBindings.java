@@ -243,10 +243,17 @@ public final class NodeBindings {
 		private void write(final Object value) {
 			final Signal<V> signal = (Signal<V>) this.source;
 			final V written = this.writer.apply(value);
-			if (!Objects.equals(written, this.value) && Objects.equals(this.value, signal.peek())) {
-				this.value = written;
-				signal.set(written);
+			if (Objects.equals(written, this.value) || !Objects.equals(this.value, signal.peek())) {
+				return;
 			}
+
+			if (SignalContext.current().countWriteBack(signal) > 16) {
+				JOIDLog.devWarnOnce("NodeBindings.bounds." + System.identityHashCode(signal), () -> NodeBindings.this.name.get() + " and the other controls bound to " + signal + " keep correcting each other: their bounds are incompatible, give them bounds that agree");
+				return;
+			}
+
+			this.value = written;
+			signal.set(written);
 		}
 
 	}

@@ -640,6 +640,11 @@ public abstract class FieldNode<V> extends Node {
 
 	private void applyFocus(final boolean focused) {
 		if (!focused) {
+			if (this.focused && !this.requesting) {
+				final V typed = this.parse(this.normalize.apply(this.text));
+				this.request(typed, typed != null || this.text.isEmpty());
+			}
+
 			this.commit();
 			this.selectionValue.update(FieldSelection.of(0, 0));
 			this.inputting = false;

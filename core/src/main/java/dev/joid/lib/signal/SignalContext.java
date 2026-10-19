@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
@@ -21,10 +22,11 @@ public final class SignalContext {
 	private static final AtomicLong                 EPOCH   = new AtomicLong();
 	private static final ThreadLocal<SignalContext> CURRENT = ThreadLocal.withInitial(SignalContext::new);
 
-	private final Signal<?>[]      reads        = new Signal<?>[64];
-	private final Set<Signal<?>>   pendingSet   = Collections.newSetFromMap(new IdentityHashMap<>());
-	private final List<Runnable>   deferredList = new ArrayList<>();
-	private final Deque<Signal<?>> pendingQueue = new ArrayDeque<>();
+	private final Signal<?>[]             reads        = new Signal<?>[64];
+	private final Set<Signal<?>>          pendingSet   = Collections.newSetFromMap(new IdentityHashMap<>());
+	private final List<Runnable>          deferredList = new ArrayList<>();
+	private final Deque<Signal<?>>        pendingQueue = new ArrayDeque<>();
+	private final Map<Signal<?>, Integer> writeBackMap = new IdentityHashMap<>();
 
 	private int               depth;
 	private int               readIndex;
@@ -115,6 +117,10 @@ public final class SignalContext {
 		}
 	}
 
+	public int countWriteBack(final Signal<?> signal) {
+		return this.flushing ? this.writeBackMap.merge(signal, 1, Integer::sum) : 0;
+	}
+
 	public List<Signal<?>> takeReads() {
 		final List<Signal<?>> readList = new ArrayList<>(this.readCount);
 		for (int index = this.readCount; index > 0; index--) {
@@ -174,6 +180,7 @@ public final class SignalContext {
 			}
 		} finally {
 			this.flushing = false;
+			this.writeBackMap.clear();
 		}
 
 		if (failure != null) {
