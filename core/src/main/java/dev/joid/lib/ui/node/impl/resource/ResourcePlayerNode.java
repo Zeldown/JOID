@@ -70,7 +70,7 @@ public class ResourcePlayerNode extends Node {
 
 	@Override
 	public void update() {
-		if (!this.isReady()) {
+		if (super.getDragSource() != null || !this.isReady()) {
 			return;
 		}
 
@@ -87,9 +87,13 @@ public class ResourcePlayerNode extends Node {
 
 	@Override
 	public void draw(final double mouseX, final double mouseY) {
+		if (super.getDragSource() != null) {
+			this.drawFrame(((ResourcePlayerNode) super.getDragSource()).fork);
+			return;
+		}
+
 		if (this.fork.isFailed()) {
-			Color.WHITE.bind();
-			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
+			this.drawFrame(this.fork);
 			return;
 		}
 
@@ -131,12 +135,9 @@ public class ResourcePlayerNode extends Node {
 			}
 		}
 
-		if (this.fork == null) {
-			return;
+		if (this.fork != null) {
+			this.drawFrame(this.fork);
 		}
-
-		Color.WHITE.bind();
-		this.stretch.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), this.fork);
 	}
 
 	@Override
@@ -370,6 +371,10 @@ public class ResourcePlayerNode extends Node {
 	}
 
 	private boolean isReady() {
+		if (super.getDragSource() != null) {
+			return ((ResourcePlayerNode) super.getDragSource()).isReady();
+		}
+
 		if (this.fork == null) {
 			if (this.resource.isBlocking()) {
 				this.resource.getResourceData().await();
@@ -382,6 +387,15 @@ public class ResourcePlayerNode extends Node {
 
 		this.fork.prepareBind();
 		return this.fork.isFailed() || this.fork.isLoaded() && this.fork.getWidth() != 0 && this.fork.getHeight() != 0;
+	}
+
+	private void drawFrame(final @NonNull Resource fork) {
+		Color.WHITE.bind();
+		if (fork.isFailed()) {
+			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), fork);
+		} else {
+			this.stretch.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), fork);
+		}
 	}
 
 	private void reset() {

@@ -219,8 +219,10 @@ public class DraggablePropertyTest {
 		this.drag(ContainerNode.create(0D, 0D, 1920D, 1080D).append(node), 210D, 160D);
 		this.bridges.frames(100);
 		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
-		Assert.assertNotNull(node.getDraggedNode());
-		Assert.assertEquals(200D, node.getDraggedNode().getX(), 0D);
+		final Node copy = node.getDraggedNode();
+		Assert.assertNotNull(copy);
+		Assert.assertTrue(copy.isAttached());
+		Assert.assertEquals(200D, copy.getX(), 0D);
 		Assert.assertEquals(100D, node.getX(), 0D);
 		Assert.assertEquals(2, draws.size());
 		Assert.assertEquals(100D, draws.get(0).getLeft(), 1E-3D);
@@ -228,6 +230,22 @@ public class DraggablePropertyTest {
 		Assert.assertEquals(150D, draws.get(1).getTop(), 1E-3D);
 		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
 		Assert.assertNull(node.getDraggedNode());
+		Assert.assertFalse(copy.isAttached());
+		Assert.assertTrue(node.isAttached());
+	}
+
+	@Test
+	public void detachesTheCopyOfItsDragOnceDisabled() {
+		final ContainerNode node = ContainerNode.create(100D, 100D, 50D, 50D).append(RectNode.create(40D, 40D, 5D, 5D)).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.drag(node, 210D, 160D);
+		this.bridges.frames(5);
+		final Node copy = node.getDraggedNode();
+		Assert.assertTrue(copy.isAttached());
+		Assert.assertTrue(copy.getChildren().get(0).isAttached());
+		node.draggable(DraggableProperty.disabled());
+		Assert.assertNull(node.getDraggedNode());
+		Assert.assertFalse(copy.isAttached());
+		Assert.assertFalse(copy.getChildren().get(0).isAttached());
 	}
 
 	@Test

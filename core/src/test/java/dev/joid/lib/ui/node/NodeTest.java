@@ -3333,9 +3333,11 @@ public class NodeTest {
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 400D, 400D).append(node);
 		this.bridges.open(new NodeUI(parent));
 		node.startDragging(110D, 110D);
-		Assert.assertNotNull(node.getDraggedNode());
+		final Node copy = node.getDraggedNode();
+		Assert.assertTrue(copy.isAttached());
 		parent.remove(node);
 		Assert.assertNull(node.getDraggedNode());
+		Assert.assertFalse(copy.isAttached());
 		Assert.assertEquals(100D, node.getX(), 0D);
 	}
 

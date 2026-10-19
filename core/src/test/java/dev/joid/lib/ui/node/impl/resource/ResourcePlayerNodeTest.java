@@ -16,6 +16,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
@@ -27,6 +28,8 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.property.DraggableProperty;
+import dev.joid.lib.ui.node.property.DraggableProperty.DraggableType;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.geom.Point;
 
@@ -517,6 +520,36 @@ public class ResourcePlayerNodeTest {
 	}
 
 	@Test
+	public void showsItsCurrentFrameInTheCopyOfItsDrag() {
+		final Resource resource = ResourcePlayerNodeTest.blink();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).<ResourcePlayerNode>loop(true).resource(resource).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 500D, 500D).append(player))).frames(3);
+		this.drag(player);
+		final ResourcePlayerNode copy = (ResourcePlayerNode) player.getDraggedNode();
+		final List<Draw> draws = this.bridges.getRender().getDraws(1F, 1F, 1F);
+		Assert.assertEquals(2, draws.size());
+		Assert.assertSame(draws.get(0).getTexture(), draws.get(1).getTexture());
+		Assert.assertNull(copy.getPlayback());
+		Assert.assertFalse(copy.isPlaying());
+		Assert.assertEquals(1, resource.getResourceData().getForks().size());
+	}
+
+	@Test
+	public void forksItsVideoOnceAcrossTheCopiesOfItsDrags() {
+		final Resource resource = ResourcePlayerNodeTest.video();
+		final ResourcePlayerNode player = ResourcePlayerNode.create(10D, 10D, 80D, 80D).<ResourcePlayerNode>loop(true).resource(resource).draggable(DraggableProperty.free().type(DraggableType.COPY));
+		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 500D, 500D).append(player))).frames(3);
+		for (int drag = 0; drag < 3; drag++) {
+			this.drag(player);
+			Assert.assertNull(((ResourcePlayerNode) player.getDraggedNode()).getVideo());
+			this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+			this.bridges.frames(5);
+			Assert.assertEquals(1, resource.getResourceData().getForks().size());
+			Assert.assertTrue(player.isPlaying());
+		}
+	}
+
+	@Test
 	public void playsASharedResourceApartFromAnotherPlayer() {
 		final Resource resource = ResourcePlayerNodeTest.blink();
 		final ResourcePlayerNode first = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(resource);
@@ -597,6 +630,14 @@ public class ResourcePlayerNodeTest {
 			}
 			this.bridges.frame();
 		}
+	}
+
+	private void drag(final ResourcePlayerNode player) {
+		this.bridges.move(player.getAbsoluteX() + 20D, player.getAbsoluteY() + 20D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.move(300D, 300D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(5);
 	}
 
 	private Draw skeleton() {

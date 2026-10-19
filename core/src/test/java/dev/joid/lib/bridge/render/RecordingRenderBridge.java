@@ -88,7 +88,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 		}
 
 		final RenderState state = super.getState();
-		this.draws.add(new Draw(primitive, xs, ys, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha(), state.getLineWidth(), state.getShader(), state.getTextureFilter(), state.getStencil()));
+		this.draws.add(new Draw(primitive, xs, ys, state.getRed(), state.getGreen(), state.getBlue(), state.getAlpha(), state.getLineWidth(), state.getShader(), state.getTexture(), state.getTextureFilter(), state.getStencil()));
 	}
 
 	@Override
@@ -123,6 +123,7 @@ public final class RecordingRenderBridge extends RenderBridge {
 		private final float         alpha;
 		private final float         lineWidth;
 		private final IShader       shader;
+		private final ITexture      texture;
 		private final TextureFilter textureFilter;
 		private final StencilState  stencil;
 

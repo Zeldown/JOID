@@ -202,6 +202,7 @@ public abstract class Node implements INode {
 	private transient double  dragX;
 	private transient double  dragY;
 	private transient boolean dragged;
+	private transient Node    dragSource;
 	private transient Node    draggedNode;
 	private transient boolean dragging;
 	private transient double  startDragX;
@@ -722,7 +723,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T copy() {
-		return (T) this.duplicate(true);
+		return (T) this.duplicate(false);
 	}
 
 	public final <T extends UIStore> T useStore(final @NonNull Class<T> clazz, final @NonNull Supplier<T> factory) {
@@ -897,7 +898,7 @@ public abstract class Node implements INode {
 			if (previous == null || previous.getType() != value.getType() || !value.isEnabled(this)) {
 				this.dragging  = false;
 				this.dragged   = false;
-				this.draggedNode = null;
+				this.releaseDraggedNode();
 			}
 		});
 	}
@@ -916,7 +917,7 @@ public abstract class Node implements INode {
 			this.dragged = true;
 
 			if (this.draggable.getType() == DraggableType.COPY) {
-				this.draggedNode = this.duplicate(false);
+				this.draggedNode = this.duplicate(true);
 				this.draggedNode.parent = this.parent;
 				this.draggedNode.position(PositionProperty.ABSOLUTE);
 				this.draggedNode.moveTo(this.targetDragX, this.targetDragY);
@@ -949,7 +950,7 @@ public abstract class Node implements INode {
 		}
 
 		if (this.draggedNode != null) {
-			this.draggedNode = null;
+			this.releaseDraggedNode();
 			this.dragged = false;
 		}
 		return (T) this;
@@ -2079,10 +2080,18 @@ public abstract class Node implements INode {
 		}
 
 		this.dragged = false;
-		this.draggedNode = null;
+		this.releaseDraggedNode();
 		this.endHover(false);
 		this.hoverAnimator.clear();
 		this.mounted = false;
+	}
+
+	private void releaseDraggedNode() {
+		final Node node = this.draggedNode;
+		this.draggedNode = null;
+		if (node != null) {
+			node.fireDetach();
+		}
 	}
 
 	private void endHover(final boolean recursive) {
@@ -2246,21 +2255,24 @@ public abstract class Node implements INode {
 		return json;
 	}
 
-	private @NonNull Node duplicate(final boolean listeners) {
+	private @NonNull Node duplicate(final boolean ghost) {
 		final Map<Object, Object> copies = new IdentityHashMap<>();
-		final Node copy = this.duplicate(listeners, copies);
+		final Node copy = this.duplicate(ghost, copies);
 		copies.forEach((original, duplicate) -> ((Node) original).copyFields((Node) duplicate, copies));
 		return copy;
 	}
 
-	private @NonNull Node duplicate(final boolean listeners, final @NonNull Map<Object, Object> copies) {
+	private @NonNull Node duplicate(final boolean ghost, final @NonNull Map<Object, Object> copies) {
 		final Node copy = this.instantiate();
 		copies.put(this, copy);
 		copy.ui = this.ui;
 		copy.bindings.releaseFollows();
 
 		copy.eventBus.clear();
-		if (listeners) {
+		if (ghost) {
+			copy.attached = true;
+			copy.dragSource = this;
+		} else {
 			copy.eventBus.addAll(this.eventBus);
 		}
 
@@ -2270,20 +2282,20 @@ public abstract class Node implements INode {
 		copy.drawList.clear();
 		copy.children.clear();
 		for (final Node child : this.children) {
-			final Node childCopy = child.duplicate(listeners, copies);
+			final Node childCopy = child.duplicate(ghost, copies);
 			childCopy.parent = copy;
 			copy.drawList.add(childCopy);
 			copy.children.add(childCopy);
 		}
 
 		if (this.scrollbar != null) {
-			final Node scrollbar = ((Node) this.scrollbar).duplicate(listeners, copies);
+			final Node scrollbar = ((Node) this.scrollbar).duplicate(ghost, copies);
 			scrollbar.parent = copy;
 			copy.scrollbar = ((BaseScrollbarNode) scrollbar).scrollNode(copy);
 		}
 
 		if (this.skeleton != null) {
-			copy.skeleton = this.skeleton.duplicate(listeners, copies);
+			copy.skeleton = this.skeleton.duplicate(ghost, copies);
 			copy.skeleton.parent = copy;
 		}
 
