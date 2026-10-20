@@ -778,7 +778,10 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T x(final @NonNull Signal<Double> x) {
 		if (x.isWritable()) {
-			this.bind("x", x, value -> this.positionValue.update(Point.of(value, this.defaultY)), Point::getX);
+			this.bind("x", x, value -> {
+				this.stopDrop();
+				this.positionValue.update(Point.of(value, this.defaultY));
+			}, Point::getX);
 		} else {
 			this.follow("x", x, value -> this.positionValue.update(Point.of(value, this.defaultY)));
 		}
@@ -798,7 +801,10 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T y(final @NonNull Signal<Double> y) {
 		if (y.isWritable()) {
-			this.bind("y", y, value -> this.positionValue.update(Point.of(this.defaultX, value)), Point::getY);
+			this.bind("y", y, value -> {
+				this.stopDrop();
+				this.positionValue.update(Point.of(this.defaultX, value));
+			}, Point::getY);
 		} else {
 			this.follow("y", y, value -> this.positionValue.update(Point.of(this.defaultX, value)));
 		}
@@ -813,6 +819,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T move(final double x, final double y) {
+		this.stopDrop();
 		this.positionValue.change(Point.of(x, y));
 		return (T) this;
 	}
@@ -2102,6 +2109,12 @@ public abstract class Node implements INode {
 
 	private boolean moveTo(final double x, final double y) {
 		return this.positionValue.change(Point.of(x - this.layoutX - this.shiftX + this.getPivotX(), y - this.layoutY - this.shiftY + this.getPivotY()));
+	}
+
+	private void stopDrop() {
+		if (!this.dragging) {
+			this.dragged = false;
+		}
 	}
 
 	private void locate(final Point position) {
