@@ -493,6 +493,48 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void keepsAChangeToItsOwnValueMadeAfterAWriteOfItsSignalItNeverSaw() {
+		final IntegerSignal signal = new IntegerSignal(10);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);
+		final NodeUI ui = new NodeUI(field);
+		this.bridges.open(ui).frame();
+		ui.remove(field);
+		signal.set(30);
+		field.change(10);
+		ui.add(field);
+		this.bridges.frames(2);
+		Assert.assertEquals(10, (int) field.getValue());
+		Assert.assertEquals(10, (int) signal.peek());
+	}
+
+	@Test
+	public void staysAtItsMaximumOnAWheelStepAfterAWriteOfItsSignalItNeverSaw() {
+		final IntegerSignal signal = new IntegerSignal(100);
+		final IntegerFieldNode field = IntegerFieldNode.create(100D, 100D, 100D, 30D).max(100).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);
+		this.bridges.open(new NodeUI(field));
+		field.focused(true);
+		this.bridges.move(150D, 110D).frames(2);
+		signal.silent(value -> value.set(30));
+		this.bridges.scroll(1D).frames(2);
+		Assert.assertEquals(100, (int) field.getValue());
+		Assert.assertEquals(100, (int) signal.peek());
+	}
+
+	@Test
+	public void keepsASilentWriteOfItsSignalOnABlurWithoutTyping() {
+		final IntegerSignal signal = new IntegerSignal(10);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);
+		this.bridges.open(new NodeUI(field)).frame();
+		field.focus();
+		this.bridges.frame();
+		signal.silent(value -> value.set(30));
+		field.blur();
+		this.bridges.frames(2);
+		Assert.assertEquals(30, (int) field.getValue());
+		Assert.assertEquals(30, (int) signal.peek());
+	}
+
+	@Test
 	public void keepsAWriteOfItsSignalMadeInTheBatchOfItsBlur() {
 		final IntegerSignal signal = new IntegerSignal(10);
 		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);

@@ -525,7 +525,12 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final void write(final V value, final boolean refusable) {
-		if (Objects.equals(value, this.getValue()) || value == null && !this.allowEmpty || this.replace(value == null ? "" : this.format(this.correct(value)), refusable)) {
+		final boolean shown = Objects.equals(value, this.getValue());
+		if (shown && refusable) {
+			super.getBindings().see("text");
+		}
+
+		if (shown || value == null && !this.allowEmpty || this.replace(value == null ? "" : this.format(this.correct(value)), refusable)) {
 			this.request(value, true);
 		}
 
@@ -786,7 +791,13 @@ public abstract class FieldNode<V> extends Node {
 
 	private boolean replace(final @NonNull String newText, final boolean refusable) {
 		final String text = this.limit(newText);
-		final boolean accepted = text.equals(this.text) || this.rewrite(text, refusable);
+		final boolean shown = text.equals(this.text);
+		if (shown && refusable) {
+			super.getBindings().see("text");
+			super.sync("text", this.text);
+		}
+
+		final boolean accepted = shown || this.rewrite(text, refusable);
 		if (accepted) {
 			final V parsed = this.parse(this.normalize.apply(newText));
 			this.request(parsed, parsed != null || newText.isEmpty());

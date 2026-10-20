@@ -1579,6 +1579,33 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void keepsAChangeToItsOwnTextMadeAfterAWriteOfItsSignalItNeverSaw() {
+		final Signal<String> signal = new Signal<>("abc");
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text(signal);
+		final NodeUI ui = new NodeUI(field);
+		this.bridges.open(ui).frame();
+		ui.remove(field);
+		signal.set("zzz");
+		field.change("abc");
+		ui.add(field);
+		this.bridges.frames(2);
+		Assert.assertEquals("abc", field.getText());
+		Assert.assertEquals("abc", signal.peek());
+	}
+
+	@Test
+	public void keepsAChangeToItsOwnTextMadeWhileFocusedAfterAWriteOfItsSignalItNeverSaw() {
+		final Signal<String> signal = new Signal<>("abc");
+		final TextFieldNode field = this.field("").text(signal);
+		this.bridges.frame();
+		signal.silent(value -> value.set("zzz"));
+		field.change("abc");
+		this.bridges.frames(2);
+		Assert.assertEquals("abc", field.getText());
+		Assert.assertEquals("abc", signal.peek());
+	}
+
+	@Test
 	public void followsOnlyItsLastSignal() {
 		final Signal<String> name = new Signal<>("Alex");
 		final Signal<String> nickname = new Signal<>("Al");
