@@ -204,6 +204,7 @@ public abstract class Node implements INode {
 	private transient Node    dragSource;
 	private transient Node    draggedNode;
 	private transient boolean dragging;
+	private transient boolean stepping;
 	private transient double  startDragX;
 	private transient double  startDragY;
 	private transient double  targetDragX;
@@ -778,15 +779,9 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T x(final @NonNull Signal<Double> x) {
 		if (x.isWritable()) {
-			this.bind("x", x, value -> {
-				this.positionValue.update(Point.of(value, this.defaultY));
-				this.retargetDropX();
-			}, Point::getX);
+			this.bind("x", x, value -> this.positionValue.update(Point.of(value, this.defaultY)), Point::getX);
 		} else {
-			this.follow("x", x, value -> {
-				this.positionValue.update(Point.of(value, this.defaultY));
-				this.retargetDropX();
-			});
+			this.follow("x", x, value -> this.positionValue.update(Point.of(value, this.defaultY)));
 		}
 		this.checkMovable(this.draggable);
 		return (T) this;
@@ -804,15 +799,9 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T y(final @NonNull Signal<Double> y) {
 		if (y.isWritable()) {
-			this.bind("y", y, value -> {
-				this.positionValue.update(Point.of(this.defaultX, value));
-				this.retargetDropY();
-			}, Point::getY);
+			this.bind("y", y, value -> this.positionValue.update(Point.of(this.defaultX, value)), Point::getY);
 		} else {
-			this.follow("y", y, value -> {
-				this.positionValue.update(Point.of(this.defaultX, value));
-				this.retargetDropY();
-			});
+			this.follow("y", y, value -> this.positionValue.update(Point.of(this.defaultX, value)));
 		}
 		this.checkMovable(this.draggable);
 		return (T) this;
@@ -825,10 +814,7 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T move(final double x, final double y) {
-		if (this.positionValue.change(Point.of(x, y))) {
-			this.retargetDropX();
-			this.retargetDropY();
-		}
+		this.positionValue.change(Point.of(x, y));
 		return (T) this;
 	}
 
@@ -944,20 +930,20 @@ public abstract class Node implements INode {
 		if (this.dragging) {
 			final boolean snapping = this.draggable != null && this.draggable.isEnabled(this) && this.draggable.hasSnapping();
 			final Node target = snapping ? this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this) : null;
-			final boolean dropped = this.fireDragDrop(target, () -> {
-				if (target != null) {
-					this.targetDragX = target.getAbsoluteX() + (target.width - this.width) / 2D;
-					this.targetDragY = target.getAbsoluteY() + (target.height - this.height) / 2D;
-					this.fire(Node.DRAG_SNAP, () -> NodeDragEvent.Post.create(this, target));
-				} else if (snapping) {
-					this.targetDragX = this.startDragX;
-					this.targetDragY = this.startDragY;
-				}
-				this.dragging = false;
-			});
+			this.dragging = false;
+			if (target != null) {
+				this.targetDragX = target.getAbsoluteX() + (target.width - this.width) / 2D;
+				this.targetDragY = target.getAbsoluteY() + (target.height - this.height) / 2D;
+			} else if (snapping) {
+				this.targetDragX = this.startDragX;
+				this.targetDragY = this.startDragY;
+			}
 
-			if (!dropped) {
-				this.dragging = false;
+			if (!this.fireDragDrop(target, () -> {
+				if (target != null) {
+					this.fire(Node.DRAG_SNAP, () -> NodeDragEvent.Post.create(this, target));
+				}
+			})) {
 				this.targetDragX = this.startDragX;
 				this.targetDragY = this.startDragY;
 			}
@@ -1794,7 +1780,10 @@ public abstract class Node implements INode {
 					final double diffX = this.getAbsoluteX() - this.x;
 					final double diffY = this.getAbsoluteY() - this.y;
 
-					if (!this.moveTo(newAbsoluteX - diffX, newAbsoluteY - diffY)) {
+					this.stepping = true;
+					final boolean moved = this.moveTo(newAbsoluteX - diffX, newAbsoluteY - diffY);
+					this.stepping = false;
+					if (!moved) {
 						this.targetDragX = this.getAbsoluteX();
 						this.targetDragY = this.getAbsoluteY();
 					}
@@ -2119,22 +2108,22 @@ public abstract class Node implements INode {
 		return this.positionValue.change(Point.of(x - this.layoutX - this.shiftX + this.getPivotX(), y - this.layoutY - this.shiftY + this.getPivotY()));
 	}
 
-	private void retargetDropX() {
-		if (!this.dragging && this.dragged) {
-			this.targetDragX = this.getAbsoluteX();
-		}
-	}
-
-	private void retargetDropY() {
-		if (!this.dragging && this.dragged) {
-			this.targetDragY = this.getAbsoluteY();
-		}
-	}
-
 	private void locate(final Point position) {
+		final boolean stepping = this.stepping;
+		final boolean movedX = position.getX() != this.defaultX;
+		final boolean movedY = position.getY() != this.defaultY;
+		this.stepping = false;
 		this.defaultX = position.getX();
 		this.defaultY = position.getY();
 		this.place();
+		if (!stepping && !this.dragging && this.dragged) {
+			if (movedX) {
+				this.targetDragX = this.getAbsoluteX();
+			}
+			if (movedY) {
+				this.targetDragY = this.getAbsoluteY();
+			}
+		}
 		this.bindings.sync("x", position);
 		this.bindings.sync("y", position);
 	}

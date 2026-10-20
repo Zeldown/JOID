@@ -347,6 +347,125 @@ public class DraggablePropertyTest {
 	}
 
 	@Test
+	public void movesADroppedNodeWhereItsReleaseListenerMovesIt() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free()).handleMouseReleased(event -> event.getNode().move(500D, 500D));
+		this.drag(node, 310D, 310D);
+		this.bridges.frames(3);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(100);
+		Assert.assertEquals(500D, node.getX(), 0D);
+		Assert.assertEquals(500D, node.getY(), 0D);
+	}
+
+	@Test
+	public void movesADroppedNodeWhereAPressListenerDuringItsDropAnimationMovesIt() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free()).handleMousePressed(event -> {
+			if (!event.getButton().isLeft()) {
+				event.getNode().move(500D, 500D);
+			}
+		});
+		this.drag(node, 310D, 310D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frame();
+		this.rightClick(node);
+		this.bridges.frames(100);
+		Assert.assertEquals(500D, node.getX(), 0D);
+		Assert.assertEquals(500D, node.getY(), 0D);
+	}
+
+	@Test
+	public void keepsDroppingANodeWhenAPressListenerMoveIsRefused() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free()).beforeMove(event -> {
+			if (event.getValue().getX() > 400D) {
+				event.cancel();
+			}
+		}).handleMousePressed(event -> {
+			if (!event.getButton().isLeft()) {
+				event.getNode().move(500D, 500D);
+			}
+		});
+		this.drag(node, 310D, 310D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frame();
+		this.rightClick(node);
+		this.bridges.frames(100);
+		Assert.assertEquals(300D, node.getX(), 0D);
+		Assert.assertEquals(300D, node.getY(), 0D);
+	}
+
+	@Test
+	public void movesADroppedNodeExactlyWhereAMoveDuringItsDropAnimationPutsItsSignal() {
+		final DoubleSignal x = new DoubleSignal(40D);
+		final RectNode node = RectNode.create(0D, 100D, 50D, 50D).x(x).draggable(DraggableProperty.free()).beforeMove(event -> {
+			if (event.getValue().getX() > 200D) {
+				event.cancel();
+			}
+		});
+		this.bridges.open(new NodeUI(node)).frame();
+		this.bridges.move(50D, 110D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.move(190D, 110D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frame();
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(3);
+		node.move(40D, 100D);
+		this.bridges.frames(100);
+		Assert.assertEquals(40D, node.getX(), 0D);
+		Assert.assertEquals(40D, x.peek(), 0D);
+	}
+
+	@Test
+	public void keepsDroppingANodeAlongTheAxisAMoveLeavesWhereItIs() {
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free());
+		this.drag(node, 310D, 310D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(3);
+		node.move(node.getX(), 500D);
+		this.bridges.frames(100);
+		Assert.assertEquals(300D, node.getX(), 0D);
+		Assert.assertEquals(500D, node.getY(), 0D);
+	}
+
+	@Test
+	public void keepsSnappingANodeAlongTheAxisItsSnapListenerLeavesFree() {
+		final DoubleSignal x = new DoubleSignal(100D);
+		final DoubleSignal y = new DoubleSignal(100D);
+		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).x(x).y(y).draggable(DraggableProperty.free().snap(target)).onDragSnap(event -> y.set(300D));
+		this.drag(node, 310D, 310D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(100);
+		Assert.assertEquals(400D, node.getX(), 0D);
+		Assert.assertEquals(300D, node.getY(), 0D);
+	}
+
+	@Test
+	public void keepsDroppingANodeAlongTheAxisItsBeforeDropListenerLeavesFree() {
+		final DoubleSignal x = new DoubleSignal(100D);
+		final DoubleSignal y = new DoubleSignal(100D);
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).x(x).y(y).draggable(DraggableProperty.free()).beforeDragDrop(event -> y.set(50D));
+		this.drag(node, 310D, 310D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(100);
+		Assert.assertEquals(300D, node.getX(), 0D);
+		Assert.assertEquals(50D, node.getY(), 0D);
+	}
+
+	@Test
+	public void keepsSnappingANodeAlongTheAxisItsBeforeDropListenerLeavesFree() {
+		final DoubleSignal x = new DoubleSignal(100D);
+		final DoubleSignal y = new DoubleSignal(100D);
+		final RectNode target = RectNode.create(400D, 400D, 50D, 50D);
+		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).x(x).y(y).draggable(DraggableProperty.free().snap(target)).beforeDragDrop(event -> y.set(50D));
+		this.drag(node, 310D, 310D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(100);
+		Assert.assertEquals(400D, node.getX(), 0D);
+		Assert.assertEquals(50D, node.getY(), 0D);
+	}
+
+	@Test
 	public void dragsACopyOfTheNode() {
 		final DraggableProperty draggable = DraggableProperty.free();
 		Assert.assertSame(draggable, draggable.type(DraggableType.COPY));
@@ -415,6 +534,13 @@ public class DraggablePropertyTest {
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		this.bridges.move(x, y).frame();
 		this.bridges.getUi().mouseMoved();
+	}
+
+	private void rightClick(final Node node) {
+		this.bridges.move(node.getX() + 10D, node.getY() + 10D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
 	}
 
 	private static double[] bounds(final BoundingBox bounds) {
