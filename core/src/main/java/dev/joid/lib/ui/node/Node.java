@@ -779,11 +779,14 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T x(final @NonNull Signal<Double> x) {
 		if (x.isWritable()) {
 			this.bind("x", x, value -> {
-				this.stopDrop();
 				this.positionValue.update(Point.of(value, this.defaultY));
+				this.retargetDropX();
 			}, Point::getX);
 		} else {
-			this.follow("x", x, value -> this.positionValue.update(Point.of(value, this.defaultY)));
+			this.follow("x", x, value -> {
+				this.positionValue.update(Point.of(value, this.defaultY));
+				this.retargetDropX();
+			});
 		}
 		this.checkMovable(this.draggable);
 		return (T) this;
@@ -802,11 +805,14 @@ public abstract class Node implements INode {
 	public final <T extends Node> @NonNull T y(final @NonNull Signal<Double> y) {
 		if (y.isWritable()) {
 			this.bind("y", y, value -> {
-				this.stopDrop();
 				this.positionValue.update(Point.of(this.defaultX, value));
+				this.retargetDropY();
 			}, Point::getY);
 		} else {
-			this.follow("y", y, value -> this.positionValue.update(Point.of(this.defaultX, value)));
+			this.follow("y", y, value -> {
+				this.positionValue.update(Point.of(this.defaultX, value));
+				this.retargetDropY();
+			});
 		}
 		this.checkMovable(this.draggable);
 		return (T) this;
@@ -819,8 +825,10 @@ public abstract class Node implements INode {
 	}
 
 	public final <T extends Node> @NonNull T move(final double x, final double y) {
-		this.stopDrop();
-		this.positionValue.change(Point.of(x, y));
+		if (this.positionValue.change(Point.of(x, y))) {
+			this.retargetDropX();
+			this.retargetDropY();
+		}
 		return (T) this;
 	}
 
@@ -2111,9 +2119,15 @@ public abstract class Node implements INode {
 		return this.positionValue.change(Point.of(x - this.layoutX - this.shiftX + this.getPivotX(), y - this.layoutY - this.shiftY + this.getPivotY()));
 	}
 
-	private void stopDrop() {
-		if (!this.dragging) {
-			this.dragged = false;
+	private void retargetDropX() {
+		if (!this.dragging && this.dragged) {
+			this.targetDragX = this.getAbsoluteX();
+		}
+	}
+
+	private void retargetDropY() {
+		if (!this.dragging && this.dragged) {
+			this.targetDragY = this.getAbsoluteY();
 		}
 	}
 
