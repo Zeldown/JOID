@@ -463,6 +463,53 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void keepsAChangeMadeAfterAWriteOfItsSignalItNeverSaw() {
+		final IntegerSignal signal = new IntegerSignal(10);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);
+		final NodeUI ui = new NodeUI(field);
+		this.bridges.open(ui).frame();
+		ui.remove(field);
+		signal.set(30);
+		field.change(60);
+		ui.add(field);
+		this.bridges.frames(2);
+		Assert.assertEquals(60, (int) field.getValue());
+		Assert.assertEquals(60, (int) signal.peek());
+	}
+
+	@Test
+	public void keepsATextOfItsOwnValueTypedAfterAWriteOfItsSignalItNeverSaw() {
+		final IntegerSignal signal = new IntegerSignal(10);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);
+		final NodeUI ui = new NodeUI(field);
+		this.bridges.open(ui).frame();
+		ui.remove(field);
+		signal.set(30);
+		field.change("010");
+		ui.add(field);
+		this.bridges.frames(2);
+		Assert.assertEquals(10, (int) field.getValue());
+		Assert.assertEquals(10, (int) signal.peek());
+	}
+
+	@Test
+	public void keepsAWriteOfItsSignalMadeInTheBatchOfItsBlur() {
+		final IntegerSignal signal = new IntegerSignal(10);
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(signal);
+		this.bridges.open(new NodeUI(field)).frame();
+		field.focus();
+		field.change(12);
+		this.bridges.frames(2);
+		Signal.batch(() -> {
+			signal.set(30);
+			field.blur();
+		});
+		this.bridges.frames(2);
+		Assert.assertEquals("30", field.getText());
+		Assert.assertEquals(30, (int) signal.peek());
+	}
+
+	@Test
 	public void writesTheCorrectedValueToItsSignalOnEveryKeystrokeWithoutRewritingItsText() {
 		final IntegerSignal signal = new IntegerSignal(4);
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).value(signal)).cursorPosition(1);

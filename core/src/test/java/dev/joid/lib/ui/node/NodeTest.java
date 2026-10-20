@@ -2232,6 +2232,27 @@ public class NodeTest {
 	}
 
 	@Test
+	public void keepsTheLastOfItsMoveAndAWriteOfItsPositionSignalInOneBatch() {
+		final DoubleSignal x = new DoubleSignal(10D);
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).x(x);
+		this.bridges.open(new NodeUI(node)).frame();
+		Signal.batch(() -> {
+			x.set(40D);
+			node.move(70D, 10D);
+		});
+		this.bridges.frames(2);
+		Assert.assertEquals(70D, node.getX(), 0D);
+		Assert.assertEquals(70D, x.peek(), 0D);
+		Signal.batch(() -> {
+			node.move(80D, 10D);
+			x.set(45D);
+		});
+		this.bridges.frames(2);
+		Assert.assertEquals(45D, node.getX(), 0D);
+		Assert.assertEquals(45D, x.peek(), 0D);
+	}
+
+	@Test
 	public void refusesToMoveAComputedPosition() {
 		final double[] x = {100D};
 		try {

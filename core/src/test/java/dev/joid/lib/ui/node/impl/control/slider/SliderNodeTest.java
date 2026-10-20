@@ -269,6 +269,36 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void keepsAChangeMadeAfterAWriteOfItsSignalItNeverSaw() {
+		final Signal<Integer> volume = new Signal<>(10);
+		final IntegerSlider slider = new IntegerSlider().<IntegerSlider>range(0, 100).value(volume);
+		final NodeUI ui = new NodeUI(slider);
+		this.bridges.open(ui).frame();
+		ui.remove(slider);
+		volume.set(30);
+		slider.change(60);
+		ui.add(slider);
+		this.bridges.frames(2);
+		Assert.assertEquals(60, slider.getValue().intValue());
+		Assert.assertEquals(60, volume.peek().intValue());
+	}
+
+	@Test
+	public void keepsAChangeToItsOwnValueMadeAfterAWriteOfItsSignalItNeverSaw() {
+		final Signal<Integer> volume = new Signal<>(10);
+		final IntegerSlider slider = new IntegerSlider().<IntegerSlider>range(0, 100).value(volume);
+		final NodeUI ui = new NodeUI(slider);
+		this.bridges.open(ui).frame();
+		ui.remove(slider);
+		volume.set(30);
+		slider.change(10);
+		ui.add(slider);
+		this.bridges.frames(2);
+		Assert.assertEquals(10, slider.getValue().intValue());
+		Assert.assertEquals(10, volume.peek().intValue());
+	}
+
+	@Test
 	public void followsItsDraggedThumb() {
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(SliderNodeTest.digits()).value(5);
 		this.bridges.open(new NodeUI(slider)).frame();

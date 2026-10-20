@@ -39,6 +39,8 @@ public final class NodeBindings {
 	@Getter
 	private boolean subscribed;
 
+	private int external;
+
 	public NodeBindings(final @NonNull Object owner, final @NonNull EventBus eventBus, final @NonNull Supplier<@NonNull String> name, final @NonNull Consumer<@NonNull Runnable> runner) {
 		this.owner = owner;
 		this.eventBus = eventBus;
@@ -120,6 +122,22 @@ public final class NodeBindings {
 		final NodeBinding<?> binding = this.bindingMap.get(property);
 		if (binding != null && binding.writer != null) {
 			binding.write(value);
+		}
+	}
+
+	public void external(final @NonNull Runnable runnable) {
+		this.external++;
+		try {
+			runnable.run();
+		} finally {
+			this.external--;
+		}
+	}
+
+	public void see(final @NonNull String property) {
+		final NodeBinding<?> binding = this.bindingMap.get(property);
+		if (binding != null && binding.writer != null) {
+			binding.see();
 		}
 	}
 
@@ -219,6 +237,10 @@ public final class NodeBindings {
 			}
 		}
 
+		private void see() {
+			this.value = ((Signal<V>) this.source).peek();
+		}
+
 		private void subscribe() {
 			if (this.writer == null) {
 				return;
@@ -243,7 +265,7 @@ public final class NodeBindings {
 		private void write(final Object value) {
 			final Signal<V> signal = (Signal<V>) this.source;
 			final V written = this.writer.apply(value);
-			if (Objects.equals(written, this.value) || !Objects.equals(this.value, signal.peek())) {
+			if (Objects.equals(written, this.value) || NodeBindings.this.external == 0 && !Objects.equals(this.value, signal.peek())) {
 				return;
 			}
 

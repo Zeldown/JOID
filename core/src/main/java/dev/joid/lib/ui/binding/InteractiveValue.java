@@ -89,6 +89,8 @@ public final class InteractiveValue<V> {
 		final V previous = this.getter.get();
 		if (InteractiveValue.same(previous, next)) {
 			this.requested = next;
+			this.bindings.see(this.property);
+			this.bindings.sync(this.property, next);
 			return true;
 		}
 
@@ -101,7 +103,9 @@ public final class InteractiveValue<V> {
 		}
 
 		this.requested = next;
-		this.apply(previous, next);
+		this.bindings.see(this.property);
+		this.bindings.external(() -> this.store(next));
+		this.fireChange(previous, next);
 		return true;
 	}
 
@@ -171,8 +175,16 @@ public final class InteractiveValue<V> {
 	}
 
 	private void apply(final V previous, final V next) {
+		this.store(next);
+		this.fireChange(previous, next);
+	}
+
+	private void store(final V next) {
 		this.setter.accept(next);
 		this.bindings.sync(this.property, next);
+	}
+
+	private void fireChange(final V previous, final V next) {
 		final ValueEvents<V> events = this.getEvents(next);
 		if (events != null && this.bindings.isSubscribed()) {
 			this.bindings.fire(events.onType, () -> events.on.apply(previous, next));

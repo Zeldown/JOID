@@ -136,6 +136,18 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void zoomsWithTheWheelAfterAWriteOfItsSignalItNeverSaw() {
+		final DoubleSignal zoom = new DoubleSignal(1D);
+		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom).model(new FixedModel());
+		this.bridges.open(new NodeUI(viewer)).frame();
+		this.bridges.move(200D, 200D).frames(2);
+		zoom.silent(signal -> signal.set(1.5D));
+		this.bridges.scroll(1D).frames(2);
+		Assert.assertEquals(1.04D, viewer.getZoom(), 1E-9D);
+		Assert.assertEquals(1.04D, zoom.peek(), 1E-9D);
+	}
+
+	@Test
 	public void writesItsZoomRangeBackIntoItsSignal() {
 		final DoubleSignal zoom = new DoubleSignal(5D);
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(zoom);
@@ -240,6 +252,20 @@ public class ModelViewerNodeTest {
 		yaw.set(90D);
 		Assert.assertEquals(90D, viewer.getRotationYaw(), 0D);
 		Assert.assertEquals(4D, viewer.getRotationPitch(), 1E-9D);
+	}
+
+	@Test
+	public void keepsAWriteOfItsPitchSignalItNeverSawWhileDraggedOnlyInYaw() {
+		final DoubleSignal yaw = new DoubleSignal(0D);
+		final DoubleSignal pitch = new DoubleSignal(0D);
+		final ModelViewerNode viewer = this.drag(ModelViewerNode.create(100D, 100D, 200D, 200D).rotationYaw(yaw).rotationPitch(pitch).model(new FixedModel()));
+		this.bridges.move(250D, 200D).frame();
+		pitch.silent(signal -> signal.set(30D));
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(2);
+		Assert.assertEquals(10D, yaw.peek(), 1E-9D);
+		Assert.assertEquals(30D, viewer.getRotationPitch(), 0D);
+		Assert.assertEquals(30D, pitch.peek(), 0D);
 	}
 
 	@Test
