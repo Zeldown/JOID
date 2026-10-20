@@ -45,6 +45,31 @@ public class SnapshotComparisonTest {
 	}
 
 	@Test
+	public void comparesAGpuThatTwoApisNameDifferently() throws IOException {
+		final File lwjgl3 = this.shots("lwjgl3", 0xFF808080);
+		final File vulkan = this.shots("vulkan", 0xFF808080);
+		SnapshotComparisonTest.renderer(lwjgl3, "Mesa Intel(R) UHD Graphics 620 (KBL GT2)");
+		SnapshotComparisonTest.renderer(vulkan, "Intel(R) UHD Graphics 620 (KBL GT2)");
+		final Run run = this.compare(lwjgl3, vulkan);
+		Assert.assertNull(run.getStatus());
+		Assert.assertTrue(run.getOutput(), run.getOutput().contains("[JOID] vulkan: 1/1 snapshots identical to lwjgl3"));
+		Assert.assertTrue(run.getErrors(), run.getErrors().contains("[JOID] lwjgl3 rendered on Mesa Intel(R) UHD Graphics 620 (KBL GT2) and vulkan on Intel(R) UHD Graphics 620 (KBL GT2): differences may come from the GPUs, run them on one GPU"));
+	}
+
+	@Test
+	public void comparesBackendsRenderedOnDifferentGpusAfterAWarning() throws IOException {
+		final File lwjgl3 = this.shots("lwjgl3", 0xFF808080);
+		final File vulkan = this.shots("vulkan", 0xFF808280);
+		SnapshotComparisonTest.renderer(lwjgl3, "Intel(R) RaptorLake-S Mobile Graphics Controller");
+		SnapshotComparisonTest.renderer(vulkan, "NVIDIA GeForce RTX 4070 Laptop GPU");
+		final Run run = this.compare(lwjgl3, vulkan);
+		final String warning = "[JOID] lwjgl3 rendered on Intel(R) RaptorLake-S Mobile Graphics Controller and vulkan on NVIDIA GeForce RTX 4070 Laptop GPU: differences may come from the GPUs, run them on one GPU";
+		Assert.assertEquals(Integer.valueOf(1), run.getStatus());
+		Assert.assertTrue(run.getErrors(), run.getErrors().contains(warning));
+		Assert.assertTrue(run.getErrors(), run.getErrors().indexOf(warning) < run.getErrors().indexOf("vulkan/a.png: 1 pixels differ from lwjgl3, maximum channel delta 2"));
+	}
+
+	@Test
 	public void failsOnAShotBeyondTheTolerance() throws IOException {
 		final Run run = this.compare(this.shots("lwjgl3", 0xFF808080, 0xFF101010), this.shots("vulkan", 0xFF808080, 0xFF101210));
 		Assert.assertEquals(Integer.valueOf(1), run.getStatus());
@@ -52,18 +77,6 @@ public class SnapshotComparisonTest {
 		Assert.assertTrue(run.getErrors(), run.getErrors().contains("vulkan/b.png: 1 pixels differ from lwjgl3, maximum channel delta 2"));
 		Assert.assertTrue(run.getErrors(), run.getErrors().contains("[JOID] Report: " + new File(this.folder.getRoot(), "report.html").toPath().toUri().toASCIIString()));
 		Assert.assertTrue(SnapshotComparisonTest.text(new File(this.folder.getRoot(), "report.html")).contains("{\"name\":\"vulkan/b.png\",\"status\":\"different\",\"pixels\":1}"));
-	}
-
-	@Test
-	public void failsOnBackendsRenderedOnDifferentGpus() throws IOException {
-		final File lwjgl3 = this.shots("lwjgl3", 0xFF808080);
-		final File vulkan = this.shots("vulkan", 0xFF808280);
-		SnapshotComparisonTest.renderer(lwjgl3, "Intel(R) RaptorLake-S Mobile Graphics Controller");
-		SnapshotComparisonTest.renderer(vulkan, "NVIDIA GeForce RTX 4070 Laptop GPU");
-		final Run run = this.compare(lwjgl3, vulkan);
-		Assert.assertEquals(Integer.valueOf(1), run.getStatus());
-		Assert.assertTrue(run.getErrors(), run.getErrors().contains("[JOID] vulkan rendered on NVIDIA GeForce RTX 4070 Laptop GPU and lwjgl3 on Intel(R) RaptorLake-S Mobile Graphics Controller: only backends rendered on the same GPU are compared, run them on one GPU"));
-		Assert.assertFalse(run.getErrors(), run.getErrors().contains("pixels differ"));
 	}
 
 	@Test

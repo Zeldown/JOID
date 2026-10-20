@@ -33,8 +33,7 @@ public final class SnapshotComparison {
 			final File candidates = new File(arguments[i]);
 			final String candidateGpu = SnapshotComparison.getGpu(candidates);
 			if (gpu != null && candidateGpu != null && !gpu.equals(candidateGpu)) {
-				failures.add(candidates.getName() + " rendered on " + candidateGpu + " and " + reference.getName() + " on " + gpu + ": only backends rendered on the same GPU are compared, run them on one GPU");
-				continue;
+				System.err.println("[JOID] " + reference.getName() + " rendered on " + gpu + " and " + candidates.getName() + " on " + candidateGpu + ": differences may come from the GPUs, run them on one GPU");
 			}
 
 			int identical = 0;
