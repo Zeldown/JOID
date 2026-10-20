@@ -2033,6 +2033,23 @@ public class NodeTest {
 	}
 
 	@Test
+	public void drawsADraggedRootAboveTheOtherRoots() {
+		final RectNode node = RectNode.create(10D, 10D, 50D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).draggable(DraggableProperty.screen());
+		final RectNode sibling = RectNode.create(100D, 0D, 100D, 100D).color(new Color(0.8F, 0.1F, 0.1F, 1F));
+		this.bridges.open(new NodeUI(node, sibling)).frame();
+		this.bridges.move(20D, 20D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.move(130D, 30D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(100);
+		Assert.assertTrue(this.order(0.8F, 0.1F, 0.1F) < this.order(0.2F, 0.4F, 0.6F));
+		Assert.assertSame(node, node.getUi().getNodeAt(130D, 30D));
+		this.drop(130D, 30D);
+		Assert.assertTrue(this.order(0.2F, 0.4F, 0.6F) < this.order(0.8F, 0.1F, 0.1F));
+		Assert.assertSame(sibling, node.getUi().getNodeAt(130D, 30D));
+	}
+
+	@Test
 	public void reportsTheStartEveryMoveAndTheEndOfADrag() {
 		final List<String> events = new ArrayList<>();
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.free()).onDragStart(event -> events.add("start")).onDrag(event -> events.add("drag")).onDragDrop(event -> events.add("end"));

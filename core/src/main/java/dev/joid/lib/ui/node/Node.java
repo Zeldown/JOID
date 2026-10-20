@@ -1389,7 +1389,8 @@ public abstract class Node implements INode {
 
 	@Override
 	public int getIndex() {
-		return this.parent != null && this.parent.isDraggingChild(this) ? Integer.MAX_VALUE : this.zindex;
+		final boolean raised = this.parent != null ? this.parent.isDraggingChild(this) : this.dragging && this.draggable.getType() == DraggableType.MOVE;
+		return raised ? Integer.MAX_VALUE : this.zindex;
 	}
 
 	public final <T extends UI> T getUi() {
