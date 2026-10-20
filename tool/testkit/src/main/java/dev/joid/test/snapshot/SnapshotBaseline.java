@@ -20,6 +20,7 @@ public final class SnapshotBaseline {
 		}
 
 		final SnapshotRunner runner = SnapshotRunner.start(backend);
+		runner.writeRenderer(output);
 		int count = 0;
 		for (final String scenario : SnapshotRunner.getScenarios()) {
 			for (final Map.Entry<String, SnapshotImage> shot : runner.run(scenario).entrySet()) {

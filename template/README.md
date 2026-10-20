@@ -35,8 +35,8 @@ The render bridge contract — vertex layout, projection conventions, textures, 
 
 | Command | Result |
 |---|---|
-| `./gradlew test` | Runs `RenderBridgeContractTest` and `BitmapFontContractTest`, which check the render bridge contract in a few seconds, and `SnapshotTest`, which renders every JOID scenario and compares each shot pixel for pixel to the references of the machine, recorded in `.snapshots/references` on the first run. |
-| `./gradlew updateSnapshots` | Replaces the references after an intended visual change. |
+| `./gradlew test` | Runs `RenderBridgeContractTest` and `BitmapFontContractTest`, which check the render bridge contract in a few seconds, and `SnapshotTest`, which renders every JOID scenario and compares each shot pixel for pixel to the references of the GPU in `.snapshots/references`; a shot without a reference for this GPU fails the test. |
+| `./gradlew updateSnapshots` | Records the references of the GPU, the first time and after an intended visual change. |
 | `./gradlew renderBaseline` | Renders the same scenarios with the official LWJGL 3 backend into `build/snapshots/lwjgl3`. |
 | `./gradlew crossBackendTest` | Runs the tests and the baseline, then compares your shots to the LWJGL 3 ones within one level per channel. |
 | `./gradlew build` | Builds three jars that embed the JOID core of the same variant, with the libraries its jars contain (Gson, Guava, Commons IO, Commons Lang, JavaCV, JavaCPP, FFmpeg, JSVG, TwelveMonkeys, ASM), and the `embed` jars: `joid-backend-example-1.0.0-prod.jar` to ship, `joid-backend-example-1.0.0-dev.jar` with the JOID dev tools (inspector, hot reload, warnings) for the developers who use your backend, and `joid-backend-example-1.0.0-demo.jar` with the dev tools, the JOID demos and `DemoWindow`, for you only. JOID turns its dev and demo modes on by itself when their classes are in the jar. |

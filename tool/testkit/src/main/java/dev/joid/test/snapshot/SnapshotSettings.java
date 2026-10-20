@@ -13,6 +13,10 @@ public final class SnapshotSettings {
 		return Boolean.getBoolean("joid.snapshot.update");
 	}
 
+	public static boolean isRecord() {
+		return Boolean.getBoolean("joid.snapshot.record");
+	}
+
 	public static @NonNull File getOutput() {
 		return new File(System.getProperty("joid.snapshot.output", "build/snapshots/renders"));
 	}

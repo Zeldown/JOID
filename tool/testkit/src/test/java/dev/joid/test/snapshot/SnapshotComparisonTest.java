@@ -28,8 +28,11 @@ public class SnapshotComparisonTest {
 	@Test
 	public void acceptsCandidatesWithinOneLevelPerChannel() throws IOException {
 		final File vulkan = this.shots("vulkan", 0xFF808080, 0xFF101010);
+		final File lwjgl3 = this.shots("lwjgl3", 0xFF808080, 0xFF101010);
 		SnapshotComparisonTest.image(0xFF000000).write(new File(vulkan, "extra.png"));
-		final Run run = this.compare(this.shots("lwjgl3", 0xFF808080, 0xFF101010), vulkan, this.shots("glfw", 0xFF818080, 0xFF10100F));
+		SnapshotComparisonTest.renderer(vulkan, "NVIDIA GeForce RTX 4070 Laptop GPU");
+		SnapshotComparisonTest.renderer(lwjgl3, "NVIDIA GeForce RTX 4070 Laptop GPU/PCIe/SSE2");
+		final Run run = this.compare(lwjgl3, vulkan, this.shots("glfw", 0xFF818080, 0xFF10100F));
 		Assert.assertNull(run.getStatus());
 		Assert.assertEquals("", run.getErrors());
 		Assert.assertTrue(run.getOutput(), run.getOutput().contains("[JOID] vulkan: 2/2 snapshots identical to lwjgl3"));
@@ -49,6 +52,18 @@ public class SnapshotComparisonTest {
 		Assert.assertTrue(run.getErrors(), run.getErrors().contains("vulkan/b.png: 1 pixels differ from lwjgl3, maximum channel delta 2"));
 		Assert.assertTrue(run.getErrors(), run.getErrors().contains("[JOID] Report: " + new File(this.folder.getRoot(), "report.html").toPath().toUri().toASCIIString()));
 		Assert.assertTrue(SnapshotComparisonTest.text(new File(this.folder.getRoot(), "report.html")).contains("{\"name\":\"vulkan/b.png\",\"status\":\"different\",\"pixels\":1}"));
+	}
+
+	@Test
+	public void failsOnBackendsRenderedOnDifferentGpus() throws IOException {
+		final File lwjgl3 = this.shots("lwjgl3", 0xFF808080);
+		final File vulkan = this.shots("vulkan", 0xFF808280);
+		SnapshotComparisonTest.renderer(lwjgl3, "Intel(R) RaptorLake-S Mobile Graphics Controller");
+		SnapshotComparisonTest.renderer(vulkan, "NVIDIA GeForce RTX 4070 Laptop GPU");
+		final Run run = this.compare(lwjgl3, vulkan);
+		Assert.assertEquals(Integer.valueOf(1), run.getStatus());
+		Assert.assertTrue(run.getErrors(), run.getErrors().contains("[JOID] vulkan rendered on NVIDIA GeForce RTX 4070 Laptop GPU and lwjgl3 on Intel(R) RaptorLake-S Mobile Graphics Controller: only backends rendered on the same GPU are compared, run them on one GPU"));
+		Assert.assertFalse(run.getErrors(), run.getErrors().contains("pixels differ"));
 	}
 
 	@Test
@@ -93,6 +108,10 @@ public class SnapshotComparisonTest {
 
 	private static SnapshotImage image(final int color) {
 		return SnapshotImage.from(ByteBuffer.wrap(new byte[] {(byte) (color >> 16), (byte) (color >> 8), (byte) color, (byte) 255}), 1, 1, false, PixelLayout.RGBA8);
+	}
+
+	private static void renderer(final File directory, final String renderer) throws IOException {
+		Files.write(new File(directory, "renderer.txt").toPath(), renderer.getBytes(StandardCharsets.UTF_8));
 	}
 
 	private static String text(final File file) throws IOException {

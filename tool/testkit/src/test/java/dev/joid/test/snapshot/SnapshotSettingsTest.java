@@ -18,6 +18,7 @@ public class SnapshotSettingsTest {
 		final Properties properties = new Properties();
 		properties.putAll(this.previous);
 		properties.remove("joid.snapshot.update");
+		properties.remove("joid.snapshot.record");
 		properties.remove("joid.snapshot.output");
 		properties.remove("joid.snapshot.references");
 		System.setProperties(properties);
@@ -31,6 +32,7 @@ public class SnapshotSettingsTest {
 	@Test
 	public void keepsTheProjectFoldersByDefault() {
 		Assert.assertFalse(SnapshotSettings.isUpdate());
+		Assert.assertFalse(SnapshotSettings.isRecord());
 		Assert.assertEquals(new File("build/snapshots/renders"), SnapshotSettings.getOutput());
 		Assert.assertEquals(new File(".snapshots/references"), SnapshotSettings.getReferences());
 	}
@@ -38,9 +40,11 @@ public class SnapshotSettingsTest {
 	@Test
 	public void readsTheSystemProperties() {
 		System.setProperty("joid.snapshot.update", "true");
+		System.setProperty("joid.snapshot.record", "true");
 		System.setProperty("joid.snapshot.output", "renders");
 		System.setProperty("joid.snapshot.references", "references");
 		Assert.assertTrue(SnapshotSettings.isUpdate());
+		Assert.assertTrue(SnapshotSettings.isRecord());
 		Assert.assertEquals(new File("renders"), SnapshotSettings.getOutput());
 		Assert.assertEquals(new File("references"), SnapshotSettings.getReferences());
 	}

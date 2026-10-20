@@ -1,12 +1,14 @@
 package dev.joid.test.snapshot;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -98,6 +100,15 @@ public final class SnapshotRunner {
 
 	public @NonNull String getRenderer() {
 		return this.backend.getRenderer().replaceAll("[^A-Za-z0-9]+", "-").replaceAll("^-|-$", "");
+	}
+
+	public void writeRenderer(final @NonNull File output) {
+		output.mkdirs();
+		try {
+			Files.write(new File(output, "renderer.txt").toPath(), this.backend.getRenderer().getBytes(StandardCharsets.UTF_8));
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	public static @NonNull List<String> getScenarios() {

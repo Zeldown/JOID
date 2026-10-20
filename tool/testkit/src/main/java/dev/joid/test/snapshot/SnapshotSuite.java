@@ -2,10 +2,12 @@ package dev.joid.test.snapshot;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -72,6 +74,7 @@ public abstract class SnapshotSuite {
 	private SnapshotRunner getRunner() {
 		if (SnapshotSuite.runner == null) {
 			SnapshotSuite.runner = SnapshotRunner.start(this.createBackend());
+			SnapshotSuite.runner.writeRenderer(SnapshotSettings.getOutput());
 		}
 		return SnapshotSuite.runner;
 	}
@@ -82,18 +85,30 @@ public abstract class SnapshotSuite {
 		final boolean update = SnapshotSettings.isUpdate();
 
 		final List<String> failures = new ArrayList<>();
+		boolean missing = false;
 		for (final Map.Entry<String, SnapshotImage> shot : this.getRunner().run(scenario).entrySet()) {
 			final String name = shot.getKey() + ".png";
 			final File reference = new File(references, name);
 			final File render = new File(output, name);
 			shot.getValue().write(render);
-			if (update || !reference.exists()) {
+			if (update || !reference.exists() && SnapshotSettings.isRecord()) {
 				shot.getValue().write(reference);
 				SnapshotSuite.ENTRIES.add(SnapshotEntry.of(shot.getKey(), update ? SnapshotStatus.UPDATED : SnapshotStatus.RECORDED, 0, render, reference));
 				continue;
 			}
 
+			if (!reference.exists()) {
+				missing = true;
+				continue;
+			}
+
 			SnapshotSuite.ENTRIES.add(SnapshotEntry.compare(shot.getKey(), shot.getValue(), render, reference, 0, "the reference", failures));
+		}
+
+		if (missing) {
+			final String[] renderers = SnapshotSettings.getReferences().list((directory, name) -> !name.equals(references.getName()) && new File(directory, name).isDirectory());
+			final String others = renderers == null || renderers.length == 0 ? "" : " (references exist for " + Arrays.stream(renderers).sorted().collect(Collectors.joining(", ")) + ")";
+			failures.add("[JOID] No reference for the GPU " + references.getName() + " in " + SnapshotSettings.getReferences() + ", the shots of " + scenario + " were not compared: record them on this GPU with updateSnapshots" + others);
 		}
 
 		Assert.assertTrue(String.join(System.lineSeparator(), failures) + System.lineSeparator() + "Report: " + new File(output, "report.html").toPath().toUri().toASCIIString(), failures.isEmpty());

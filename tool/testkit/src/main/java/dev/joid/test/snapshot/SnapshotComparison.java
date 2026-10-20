@@ -1,6 +1,10 @@
 package dev.joid.test.snapshot;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,10 +26,17 @@ public final class SnapshotComparison {
 		Arrays.sort(shots);
 
 		final int tolerance = 1;
+		final String gpu = SnapshotComparison.getGpu(reference);
 		final List<SnapshotEntry> entries = new ArrayList<>();
 		final List<String> failures = new ArrayList<>();
 		for (int i = 2; i < arguments.length; i++) {
 			final File candidates = new File(arguments[i]);
+			final String candidateGpu = SnapshotComparison.getGpu(candidates);
+			if (gpu != null && candidateGpu != null && !gpu.equals(candidateGpu)) {
+				failures.add(candidates.getName() + " rendered on " + candidateGpu + " and " + reference.getName() + " on " + gpu + ": only backends rendered on the same GPU are compared, run them on one GPU");
+				continue;
+			}
+
 			int identical = 0;
 			for (final File shot : shots) {
 				final String name = candidates.getName() + "/" + shot.getName();
@@ -49,6 +60,19 @@ public final class SnapshotComparison {
 			failures.forEach(failure -> System.err.println("[JOID] " + failure));
 			System.err.println("[JOID] Report: " + report.toPath().toUri().toASCIIString());
 			System.exit(1);
+		}
+	}
+
+	private static String getGpu(final File directory) {
+		final File renderer = new File(directory, "renderer.txt");
+		if (!renderer.exists()) {
+			return null;
+		}
+
+		try {
+			return new String(Files.readAllBytes(renderer.toPath()), StandardCharsets.UTF_8).replaceFirst("/.*", "").trim();
+		} catch (final IOException e) {
+			throw new UncheckedIOException(e);
 		}
 	}
 
