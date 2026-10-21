@@ -1619,6 +1619,80 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(1, TextFieldNodeTest.subscribers(nickname).size());
 	}
 
+	@Test
+	public void keepsTheCursorTheListenerOfItsTextPlacesWhileTyping() {
+		final Signal<String> text = new Signal<>("hello");
+		final Signal<Integer> cursor = new Signal<>(2);
+		final TextFieldNode field = this.field("").text(text).cursorPosition(cursor);
+		this.bridges.frame();
+		text.onChange(value -> cursor.set(value.length()));
+		Assert.assertTrue(this.bridges.getUi().charTyped('x'));
+		Assert.assertEquals("hexllo", field.getText());
+		Assert.assertEquals(6, field.getCursorPosition());
+		Assert.assertEquals(6, cursor.peek().intValue());
+		text.onChange(value -> cursor.set(0));
+		cursor.set(2);
+		this.type(field, "y");
+		Assert.assertEquals("heyxllo", field.getText());
+		Assert.assertEquals(0, field.getCursorPosition());
+		Assert.assertEquals(0, cursor.peek().intValue());
+	}
+
+	@Test
+	public void keepsTheSelectionTheListenerOfItsTextPlacesWhileTyping() {
+		final Signal<String> text = new Signal<>("hello");
+		final Signal<FieldSelection> selection = new Signal<>(FieldSelection.of(0, 0));
+		final TextFieldNode field = this.field("").text(text).cursorPosition(2).selection(selection);
+		this.bridges.frame();
+		text.onChange(value -> selection.set(FieldSelection.of(0, value.length())));
+		Assert.assertTrue(this.bridges.getUi().charTyped('x'));
+		Assert.assertEquals("hexllo", field.getText());
+		Assert.assertEquals(FieldSelection.of(0, 6), field.getSelection());
+		Assert.assertEquals(FieldSelection.of(0, 6), selection.peek());
+		Assert.assertEquals(6, field.getCursorPosition());
+	}
+
+	@Test
+	public void keepsTheCursorTheListenerOfItsTextPlacesWhileErasing() {
+		final Signal<String> text = new Signal<>("hello world");
+		final Signal<Integer> cursor = new Signal<>(8);
+		final TextFieldNode field = this.field("").text(text).cursorPosition(cursor);
+		this.bridges.frame();
+		text.onChange(value -> cursor.set(value.length()));
+		this.bridges.getWindow().getKeys().add(Key.BACKSPACE);
+		this.bridges.getUi().keyPressed(Key.BACKSPACE, Key.BACKSPACE);
+		Assert.assertEquals("hello wrld", field.getText());
+		Assert.assertEquals(10, field.getCursorPosition());
+		Assert.assertEquals(10, cursor.peek().intValue());
+		this.elapse(500L);
+		Assert.assertEquals("hello wrl", field.getText());
+		Assert.assertEquals(9, field.getCursorPosition());
+		Assert.assertEquals(9, cursor.peek().intValue());
+	}
+
+	@Test
+	public void formatsWhatIsTypedThroughTheListenerOfItsText() {
+		final Signal<String> text = new Signal<>("");
+		final Signal<Integer> cursor = new Signal<>(0);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 400D).info(this.info()).text(text).cursorPosition(cursor).focused(true);
+		this.bridges.open(new NodeUI(field)).frame();
+		text.onChange(value -> {
+			final String digits = value.replace(" ", "");
+			final String grouped = digits.length() > 4 ? digits.substring(0, 4) + " " + digits.substring(4) : digits;
+			if (!grouped.equals(value)) {
+				text.set(grouped);
+				cursor.set(grouped.length());
+			}
+		});
+		for (final char digit : "12345678".toCharArray()) {
+			this.bridges.getUi().charTyped(digit);
+			this.bridges.frame();
+		}
+		Assert.assertEquals("1234 5678", field.getText());
+		Assert.assertEquals(9, field.getCursorPosition());
+		Assert.assertEquals(9, cursor.peek().intValue());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesASignalItCannotWrite() {
 		TextFieldNode.create(100D, 100D, 200D).text(new Signal<>("Alex").map(String::toUpperCase));

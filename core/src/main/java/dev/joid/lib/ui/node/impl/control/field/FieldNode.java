@@ -12,6 +12,7 @@ import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.ui.binding.InteractiveValue;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -569,14 +570,12 @@ public abstract class FieldNode<V> extends Node {
 			}
 		}
 
-		if (!this.edit(this.text.substring(0, start) + textToAdd + this.text.substring(end))) {
-			return false;
-		}
-
-		this.selectionValue.set(FieldSelection.of(0, 0));
-		this.cursorValue.set(start);
-		this.increaseCursor(textToAdd.length());
-		return true;
+		final int added = textToAdd.length();
+		return this.edit(this.text.substring(0, start) + textToAdd + this.text.substring(end), () -> {
+			this.selectionValue.set(FieldSelection.of(0, 0));
+			this.cursorValue.set(start);
+			this.increaseCursor(added);
+		});
 	}
 
 	protected final void placeCursor(final int position, final boolean forward) {
@@ -702,9 +701,7 @@ public abstract class FieldNode<V> extends Node {
 			}
 
 			final int start = this.isWordKeyDown() ? this.previousWordIndex() : this.previousIndex(cursor);
-			if (this.edit(this.text.substring(0, start) + this.text.substring(cursor))) {
-				this.decreaseCursor(cursor - start);
-			}
+			this.edit(this.text.substring(0, start) + this.text.substring(cursor), () -> this.decreaseCursor(cursor - start));
 			return true;
 		}
 
@@ -713,7 +710,7 @@ public abstract class FieldNode<V> extends Node {
 				return false;
 			}
 
-			this.edit(this.text.substring(0, cursor) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.nextIndex(cursor)));
+			this.edit(this.text.substring(0, cursor) + this.text.substring(this.isWordKeyDown() ? this.nextWordIndex() : this.nextIndex(cursor)), () -> {});
 			return true;
 		}
 
@@ -776,11 +773,11 @@ public abstract class FieldNode<V> extends Node {
 			}
 
 			final String cut = this.text.substring(selection.getStart(), selection.getEnd());
-			if (this.edit(this.text.substring(0, selection.getStart()) + this.text.substring(selection.getEnd()))) {
+			this.edit(this.text.substring(0, selection.getStart()) + this.text.substring(selection.getEnd()), () -> {
 				BridgeHandler.WINDOW.get().setClipboard(cut);
 				this.cursorValue.set(selection.getStart());
 				this.selectionValue.set(FieldSelection.of(0, 0));
-			}
+			});
 			return;
 		}
 
@@ -810,17 +807,26 @@ public abstract class FieldNode<V> extends Node {
 		return accepted;
 	}
 
-	private boolean edit(final @NonNull String newText) {
+	private boolean edit(final @NonNull String newText, final @NonNull Runnable place) {
 		if (newText.equals(this.text) || !this.accepts(newText) || !this.accept.test(newText)) {
 			return false;
 		}
 
-		if (!this.changeText(newText, true)) {
-			return false;
-		}
+		final SignalContext context = SignalContext.current();
+		context.open();
+		try {
+			if (!this.changeText(newText, true)) {
+				return false;
+			}
 
-		this.request(null, false);
-		return true;
+			this.request(null, false);
+			place.run();
+			this.cursorValue.commit();
+			this.selectionValue.commit();
+			return true;
+		} finally {
+			context.close();
+		}
 	}
 
 	private void request(final V value, final boolean requesting) {
@@ -1002,10 +1008,10 @@ public abstract class FieldNode<V> extends Node {
 			return false;
 		}
 
-		if (this.edit(this.text.substring(0, selection.getStart()) + this.text.substring(selection.getEnd()))) {
+		this.edit(this.text.substring(0, selection.getStart()) + this.text.substring(selection.getEnd()), () -> {
 			this.selectionValue.set(FieldSelection.of(0, 0));
 			this.cursorValue.set(selection.getStart());
-		}
+		});
 		return true;
 	}
 
