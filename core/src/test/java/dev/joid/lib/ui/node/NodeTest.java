@@ -2361,6 +2361,16 @@ public class NodeTest {
 	}
 
 	@Test
+	public void refusesToStartADragWithADisabledDraggableProperty() {
+		try {
+			RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.disabled()).startDragging(110D, 110D);
+			Assert.fail("A node with a disabled DraggableProperty cannot start a drag");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The node RectNode has a disabled DraggableProperty, enable it with enabled(...) first", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void refusesToDragATopLevelNodeInsideItsParent() {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.parent());
 		final String output = NodeTest.capture(() -> this.press(node, 110D, 110D));

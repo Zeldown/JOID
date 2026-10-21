@@ -2182,6 +2182,10 @@ public abstract class Node implements INode {
 		if (this.draggable == null) {
 			throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " has no DraggableProperty, call draggable(...) first");
 		}
+
+		if (!this.draggable.isEnabled(this)) {
+			throw new IllegalStateException("The node " + JOIDLog.nameOf(this.getClass()) + " has a disabled DraggableProperty, enable it with enabled(...) first");
+		}
 	}
 
 	private void checkDragArea() {
