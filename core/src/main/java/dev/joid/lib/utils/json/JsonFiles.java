@@ -45,6 +45,11 @@ public final class JsonFiles {
 			failure = exception.toString();
 		}
 
+		JsonFiles.keep(file, failure, consequence);
+		return null;
+	}
+
+	public static void keep(final @NonNull File file, final @NonNull String failure, final @NonNull String consequence) {
 		final File corrupt = new File(file.getPath() + ".corrupt");
 		try {
 			Files.move(file.toPath(), corrupt.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -52,7 +57,6 @@ public final class JsonFiles {
 		} catch (final IOException exception) {
 			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + failure + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + exception + "), it is left untouched and " + consequence);
 		}
-		return null;
 	}
 
 	public static void write(final @NonNull File file, final @NonNull String json) {

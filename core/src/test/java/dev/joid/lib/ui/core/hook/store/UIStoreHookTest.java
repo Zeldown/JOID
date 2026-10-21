@@ -288,7 +288,21 @@ public class UIStoreHookTest {
 		Assert.assertEquals("init", stores.get(0).order);
 		Assert.assertFalse(stores.get(0).loaded);
 		Assert.assertSame(stores.get(0), UIStoreHook.useStore(PermanentStore.class, PermanentStore::new));
-		Assert.assertTrue(this.file().exists());
+		Assert.assertFalse(this.file().exists());
+		Assert.assertEquals("{}", new String(Files.readAllBytes(new File(this.file().getPath() + ".corrupt").toPath()), StandardCharsets.UTF_8));
+	}
+
+	@Test
+	public void keepsAStoreFileItCannotRestoreThroughTheNextSessions() throws IOException {
+		this.write("{\"value\":{\"volume\":5}}");
+		final File corrupt = new File(this.file().getPath() + ".corrupt");
+		for (int session = 0; session < 2; session++) {
+			UIStoreHookTest.capture(() -> UIStoreHook.useStore(PermanentStore.class, PermanentStore::new));
+			UIStoreHook.saveAll();
+			UIStoreHook.destroyStore(new PermanentStore());
+		}
+		Assert.assertEquals("{\"value\":\"default\"}", this.read());
+		Assert.assertEquals("{\"value\":{\"volume\":5}}", new String(Files.readAllBytes(corrupt.toPath()), StandardCharsets.UTF_8));
 	}
 
 	@Test

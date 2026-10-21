@@ -36,6 +36,7 @@ public final class UIStoreHook {
 					store.fromJson(json);
 				} catch (final RuntimeException exception) {
 					JOIDLog.warnOnce("UIStore.fromJson." + clazz.getName() + "." + exception.getClass().getName(), "The store " + clazz.getName() + " cannot be restored from " + file.getAbsolutePath() + " (" + exception + "), it starts from init(): catch the exception inside fromJson() to handle it", exception);
+					JsonFiles.keep(file, exception.toString(), "the store starts from init()");
 					store = factory.get();
 					store.init();
 				}
