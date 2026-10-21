@@ -1,6 +1,8 @@
 package dev.joid.lib.ui.binding;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,8 @@ import dev.joid.lib.ui.event.Event;
 import dev.joid.lib.ui.event.EventBus;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventType;
+import dev.joid.lib.ui.event.ICancellableEvent;
+import dev.joid.lib.ui.event.IConsumableEvent;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,11 +39,14 @@ public final class NodeBindings {
 	private final List<NodeWatch>             watchList;
 	private final List<InteractiveValue<?>>   valueList;
 	private final Map<String, NodeBinding<?>> bindingMap;
+	private final Deque<Runnable>             eventQueue;
 
 	@Getter
 	private boolean subscribed;
 
-	private int external;
+	private int     batch;
+	private int     external;
+	private boolean draining;
 
 	public NodeBindings(final @NonNull Object owner, final @NonNull EventBus eventBus, final @NonNull Supplier<@NonNull String> name, final @NonNull Consumer<@NonNull Runnable> runner) {
 		this.owner = owner;
@@ -50,6 +57,7 @@ public final class NodeBindings {
 		this.watchList = new ArrayList<>();
 		this.valueList = new ArrayList<>();
 		this.bindingMap = new LinkedHashMap<>();
+		this.eventQueue = new ArrayDeque<>();
 	}
 
 	public void subscribe(final boolean loaded) {
@@ -125,8 +133,33 @@ public final class NodeBindings {
 		}
 	}
 
+	public void open() {
+		this.batch++;
+		SignalContext.current().open();
+	}
+
+	public void close() {
+		try {
+			SignalContext.current().close();
+		} finally {
+			this.batch--;
+			if (this.batch == 0) {
+				this.drain();
+			}
+		}
+	}
+
+	public void batch(final @NonNull Runnable runnable) {
+		this.open();
+		try {
+			runnable.run();
+		} finally {
+			this.close();
+		}
+	}
+
 	public void external(final @NonNull Runnable runnable) {
-		Signal.batch(() -> {
+		this.batch(() -> {
 			this.external++;
 			try {
 				runnable.run();
@@ -210,8 +243,41 @@ public final class NodeBindings {
 		}
 
 		final E fired = event.get();
-		this.runner.accept(() -> this.eventBus.fire(type, fired));
+		final Runnable firing = () -> this.runner.accept(() -> this.eventBus.fire(type, fired));
+		if ((this.batch > 0 || this.draining) && !(fired instanceof ICancellableEvent) && !(fired instanceof IConsumableEvent)) {
+			this.eventQueue.add(firing);
+		} else {
+			firing.run();
+		}
 		return fired;
+	}
+
+	private void drain() {
+		if (this.draining) {
+			return;
+		}
+
+		RuntimeException failure = null;
+		this.draining = true;
+		try {
+			while (!this.eventQueue.isEmpty()) {
+				try {
+					this.eventQueue.poll().run();
+				} catch (final RuntimeException exception) {
+					if (failure == null) {
+						failure = exception;
+					} else {
+						failure.addSuppressed(exception);
+					}
+				}
+			}
+		} finally {
+			this.draining = false;
+		}
+
+		if (failure != null) {
+			throw failure;
+		}
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)

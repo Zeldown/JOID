@@ -12,7 +12,6 @@ import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.ui.binding.InteractiveValue;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.EventListener;
@@ -449,7 +448,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T change(final @NonNull String text) {
-		Signal.batch(() -> this.replace(text, true));
+		super.getBindings().batch(() -> this.replace(text, true));
 		return (T) this;
 	}
 
@@ -526,7 +525,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final void write(final V value, final boolean refusable) {
-		Signal.batch(() -> {
+		super.getBindings().batch(() -> {
 			final boolean shown = Objects.equals(value, this.getValue());
 			if (shown && refusable) {
 				super.getBindings().see("text");
@@ -814,8 +813,7 @@ public abstract class FieldNode<V> extends Node {
 			return false;
 		}
 
-		final SignalContext context = SignalContext.current();
-		context.open();
+		super.getBindings().open();
 		try {
 			if (!this.changeText(newText, true)) {
 				return false;
@@ -827,7 +825,7 @@ public abstract class FieldNode<V> extends Node {
 			this.selectionValue.commit();
 			return true;
 		} finally {
-			context.close();
+			super.getBindings().close();
 		}
 	}
 

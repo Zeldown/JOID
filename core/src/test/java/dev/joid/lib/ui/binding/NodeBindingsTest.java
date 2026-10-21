@@ -167,6 +167,97 @@ public class NodeBindingsTest {
 	}
 
 	@Test
+	public void showsAWriteOfASignalMadeInTheChangeOfABlurRightAway() {
+		final DoubleSignal x = new DoubleSignal(0D);
+		final List<Object> read = new ArrayList<>();
+		final RectNode node = RectNode.create(0D, 0D, 50D, 50D).x(x);
+		final IntegerFieldNode field = this.field(new IntegerSignal(0));
+		this.bridges.open(new NodeUI(node, field)).frame();
+		field.focus();
+		field.change("");
+		for (final char digit : "007".toCharArray()) {
+			this.bridges.getUi().charTyped(digit);
+		}
+		this.bridges.frame();
+		field.onChange(event -> {
+			x.set(77D);
+			read.add(node.getX());
+		});
+		field.blur();
+		Assert.assertEquals(Arrays.asList(77D), read);
+	}
+
+	@Test
+	public void showsAWriteOfASignalMadeInTheCursorMoveOfASelectionRightAway() {
+		final DoubleSignal x = new DoubleSignal(0D);
+		final List<Object> read = new ArrayList<>();
+		final RectNode node = RectNode.create(0D, 0D, 50D, 50D).x(x);
+		final TextFieldNode field = this.text(new StringSignal("hello world"));
+		this.bridges.open(new NodeUI(node, field)).frame();
+		field.focus().moveCursor(0);
+		field.onCursorMove(event -> {
+			x.set(55D);
+			read.add(node.getX());
+		});
+		field.select(2, 5);
+		Assert.assertEquals(Arrays.asList(55D), read);
+	}
+
+	@Test
+	public void showsTheChangeOfAFieldInTheOtherFieldsOfItsSignalWhenItFiresTheChange() {
+		final StringSignal signal = new StringSignal("a");
+		final List<Object> read = new ArrayList<>();
+		final TextFieldNode first = this.text(signal);
+		final TextFieldNode second = this.text(signal);
+		this.bridges.open(new NodeUI(first, second)).frames(2);
+		first.onChange(event -> read.add(second.getText()));
+		first.change("hello");
+		Assert.assertEquals(Arrays.asList("hello"), read);
+	}
+
+	@Test
+	public void showsWhatIsTypedInTheOtherFieldsOfItsSignalWhenItFiresTheChange() {
+		final StringSignal signal = new StringSignal("a");
+		final List<Object> read = new ArrayList<>();
+		final TextFieldNode first = this.text(signal);
+		final TextFieldNode second = this.text(signal);
+		this.bridges.open(new NodeUI(first, second)).frames(2);
+		first.focus().moveCursor(1);
+		this.bridges.frames(2);
+		first.onChange(event -> read.add(second.getText()));
+		this.bridges.getUi().charTyped('b');
+		Assert.assertEquals(Arrays.asList("ab"), read);
+	}
+
+	@Test
+	public void showsTheChangeOfAFieldInTheSliderOfItsSignalWhenItFiresTheChange() {
+		final IntegerSignal signal = new IntegerSignal(10);
+		final List<Object> read = new ArrayList<>();
+		final IntegerFieldNode field = this.field(signal);
+		final Slider slider = this.slider(signal);
+		this.bridges.open(new NodeUI(field, slider)).frames(2);
+		field.onChange(event -> read.add(slider.getValue()));
+		field.change(50);
+		Assert.assertEquals(Arrays.asList(50), read);
+	}
+
+	@Test
+	public void keepsTheCursorAListenerOfItsChangePlaces() {
+		final List<Object> fired = new ArrayList<>();
+		final TextFieldNode field = this.text(new StringSignal("hello"));
+		this.bridges.open(new NodeUI(field)).frames(2);
+		field.focus().moveCursor(5);
+		field.onChange(event -> {
+			fired.add(event.getText());
+			field.moveCursor(0);
+		});
+		field.onCursorMove(event -> fired.add(field.getCursorPosition()));
+		field.change("world!");
+		Assert.assertEquals(0, field.getCursorPosition());
+		Assert.assertEquals(Arrays.asList("world!", 0, 0), fired);
+	}
+
+	@Test
 	public void warnsOnceInDevModeWhenTheBoundsOfItsControlsCannotAgree() {
 		final IntegerSignal signal = new IntegerSignal(50);
 		final Slider slider = this.slider(signal);
@@ -195,6 +286,10 @@ public class NodeBindingsTest {
 
 	private IntegerFieldNode field(final IntegerSignal signal) {
 		return IntegerFieldNode.create(0D, 0D, 200D).<IntegerFieldNode>info(TextInfo.create(new FieldFont(), 10F)).value(signal);
+	}
+
+	private TextFieldNode text(final StringSignal signal) {
+		return TextFieldNode.create(0D, 100D, 300D).<TextFieldNode>info(TextInfo.create(new FieldFont(), 10F)).text(signal);
 	}
 
 	private static void guard(final Signal<?> signal) {
