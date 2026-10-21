@@ -204,6 +204,36 @@ public class SignalContextTest {
 	}
 
 	@Test
+	public void keepsATaskAudibleWhenASilentWriteSettlesIt() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerSignal other = new IntegerSignal(0);
+		final IntegerSignal target = new IntegerSignal(0);
+		final List<String> trace = new ArrayList<>();
+		other.map(value -> value + 1).onChange(value -> trace.add("mapped " + value));
+		target.onChange(value -> trace.add("target " + value));
+		signal.onChange(value -> {
+			SignalContext.current().settle(() -> Signal.silent(() -> other.set(value)));
+			SignalContext.current().settle(() -> target.set(value));
+		});
+		signal.set(1);
+		Assert.assertEquals(Collections.singletonList("target 1"), trace);
+	}
+
+	@Test
+	public void settlesATaskInTheSilenceItWasQueuedIn() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final List<String> trace = new ArrayList<>();
+		signal.onChange(value -> Signal.silent(() -> SignalContext.current().settle(() -> {
+			trace.add("silent " + SignalContext.current().isSilent());
+			throw new IllegalStateException("settled");
+		})));
+		final IllegalStateException exception = Assert.assertThrows(IllegalStateException.class, () -> signal.set(1));
+		Assert.assertEquals("settled", exception.getMessage());
+		Assert.assertEquals(Collections.singletonList("silent true"), trace);
+		Assert.assertFalse(SignalContext.current().isSilent());
+	}
+
+	@Test
 	public void movesTheEpochOnEveryChange() {
 		final long epoch = SignalContext.getEpoch();
 		new Signal<>("a").set("b").fireChange();

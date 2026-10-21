@@ -403,6 +403,28 @@ public class NodeBindingsTest {
 	}
 
 	@Test
+	public void firesTheWatchersOfAControlListenerThatFollowsASilentWrite() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerSignal muted = new IntegerSignal(0);
+		final IntegerSignal other = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(signal);
+		final Slider third = this.slider(signal);
+		final Slider fourth = this.slider(other);
+		final Slider fifth = this.slider(other);
+		this.bridges.open(new NodeUI(first, second, third, fourth, fifth)).frame();
+		muted.map(value -> value + 1).onChange(value -> fired.add("mapped " + value));
+		other.onChange(value -> fired.add("other " + value));
+		second.onChange(event -> Signal.silent(() -> muted.set(event.getValue())));
+		third.onChange(event -> other.set(event.getValue()));
+		first.change(70);
+		Assert.assertEquals(Arrays.asList("other 70"), fired);
+		Assert.assertEquals(70, (int) fourth.getValue());
+		Assert.assertEquals(70, (int) fifth.getValue());
+	}
+
+	@Test
 	public void keepsTheCursorAListenerOfItsChangePlaces() {
 		final List<Object> fired = new ArrayList<>();
 		final TextFieldNode field = this.text(new StringSignal("hello"));

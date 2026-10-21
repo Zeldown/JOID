@@ -77,7 +77,15 @@ public final class SignalContext {
 
 	public void settle(final Runnable task) {
 		if (this.flushing) {
-			this.settleQueue.add(task);
+			final boolean silent = this.silent;
+			this.settleQueue.add(() -> {
+				final boolean previous = this.silent(silent);
+				try {
+					task.run();
+				} finally {
+					this.silent(previous);
+				}
+			});
 		} else {
 			task.run();
 		}
