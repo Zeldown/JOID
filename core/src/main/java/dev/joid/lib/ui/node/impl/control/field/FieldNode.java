@@ -63,6 +63,7 @@ public abstract class FieldNode<V> extends Node {
 	private V       fallback;
 	private V       requested;
 	private boolean requesting;
+	private String  requestedText;
 
 	@Getter
 	private boolean markup;
@@ -268,11 +269,11 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull String text) {
-		return super.start("text", text, value -> this.replace(value, false));
+		return super.start("text", text, this::retext);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T text(final @NonNull Signal<String> text) {
-		return super.bind("text", text, value -> this.replace(value, false));
+		return super.bind("text", text, this::retext);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T placeholder(final @NonNull String placeholder) {
@@ -330,6 +331,11 @@ public abstract class FieldNode<V> extends Node {
 
 	public final <T extends FieldNode<V>> @NonNull T normalize(final @NonNull UnaryOperator<@NonNull String> normalize) {
 		this.normalize = normalize;
+		if (this.requestedText != null) {
+			this.retext(this.requestedText);
+		} else if (!this.focused) {
+			this.commit();
+		}
 		return (T) this;
 	}
 
@@ -660,7 +666,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private void applyFocus(final boolean focused) {
 		if (!focused) {
-			if (this.focused && !this.requesting) {
+			if (this.focused && !this.requesting && this.requestedText == null) {
 				final V typed = this.parse(this.normalize.apply(this.text));
 				this.request(typed, typed != null || this.text.isEmpty());
 			}
@@ -814,6 +820,7 @@ public abstract class FieldNode<V> extends Node {
 		if (accepted) {
 			final V parsed = this.parse(this.normalize.apply(newText));
 			this.request(parsed, parsed != null || newText.isEmpty());
+			this.requestedText = parsed != null || newText.isEmpty() ? null : newText;
 		}
 
 		if (!this.focused) {
@@ -847,6 +854,11 @@ public abstract class FieldNode<V> extends Node {
 	private void request(final V value, final boolean requesting) {
 		this.requested = value;
 		this.requesting = requesting;
+		this.requestedText = null;
+	}
+
+	private void retext(final String text) {
+		super.getBindings().batch(() -> this.replace(text, false));
 	}
 
 	private boolean changeText(final String text, final boolean refusable) {
@@ -859,17 +871,19 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	private void commit() {
-		final V value = this.getValue();
-		if (value != null) {
-			this.fallback = value;
-		}
+		super.getBindings().batch(() -> {
+			final V value = this.getValue();
+			if (value != null) {
+				this.fallback = value;
+			}
 
-		final String text = value == null ? "" : this.limit(this.format(value));
-		if (!text.equals(this.text)) {
-			this.rewrite(text, false);
-		}
+			final String text = value == null ? "" : this.limit(this.format(value));
+			if (!text.equals(this.text)) {
+				this.rewrite(text, false);
+			}
 
-		super.sync("text", this.text);
+			super.sync("text", this.text);
+		});
 	}
 
 	private boolean rewrite(final String newText, final boolean refusable) {

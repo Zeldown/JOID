@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -84,6 +85,31 @@ public class IntegerFieldNodeTest {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).accept(text -> text.length() < 3));
 		this.type(field, "1a23");
 		Assert.assertEquals("12", field.getText());
+	}
+
+	@Test
+	public void readsATextItsNormalizeMakesValidWhateverTheOrderOfItsSetters() {
+		final UnaryOperator<String> spaces = text -> text.replace(" ", "");
+		final StringSignal text = new StringSignal("1 000");
+		final IntegerFieldNode before = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>normalize(spaces).text("1 000");
+		final IntegerFieldNode after = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>text("1 000").normalize(spaces);
+		final IntegerFieldNode bound = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>text(text).normalize(spaces);
+		Assert.assertEquals(Arrays.asList("1000", 1000), Arrays.asList(before.getText(), before.getValue()));
+		Assert.assertEquals(Arrays.asList("1000", 1000), Arrays.asList(after.getText(), after.getValue()));
+		Assert.assertEquals(Arrays.asList("1000", 1000, "1000"), Arrays.asList(bound.getText(), bound.getValue(), text.get()));
+	}
+
+	@Test
+	public void keepsAnUnreadableTextThroughAFocusWithoutTyping() {
+		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).text("1 000"));
+		field.blur();
+		field.normalize(text -> text.replace(" ", ""));
+		Assert.assertEquals(1000, (int) field.getValue());
+		field.focus();
+		field.change("42");
+		field.blur();
+		field.normalize(UnaryOperator.identity());
+		Assert.assertEquals(42, (int) field.getValue());
 	}
 
 	@Test

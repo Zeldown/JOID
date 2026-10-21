@@ -132,6 +132,31 @@ public class FieldNodeEventTest {
 		Assert.assertEquals(Arrays.asList("first", "second"), received);
 	}
 
+	@Test
+	public void seesTheCursorAndTheSelectionOfAGivenTextInItsListeners() {
+		final List<String> seen = new ArrayList<>();
+		final TextFieldNode field = this.field().text("abcdef");
+		this.bridges.open(new NodeUI(field));
+		field.selection(1, 6);
+		field.onChange(event -> seen.add("change " + field.getCursorPosition() + " " + field.getSelection().getStart() + "-" + field.getSelection().getEnd()));
+		field.onCursorMove(event -> seen.add("cursor " + field.getCursorPosition() + " " + field.getSelection().getStart() + "-" + field.getSelection().getEnd()));
+		field.text("ab");
+		field.text(new StringSignal("abcd"));
+		Assert.assertEquals(Arrays.asList("change 2 0-2", "cursor 2 0-2", "change 4 2-4", "cursor 4 2-4"), seen);
+	}
+
+	@Test
+	public void seesTheCommittedTextOfAFieldLeftByItsFocusedSetter() {
+		final List<String> seen = new ArrayList<>();
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(FieldNodeEventTest.FONT, 10F)).<IntegerFieldNode>text("1").focused(true);
+		this.bridges.open(new NodeUI(field));
+		field.text("007");
+		field.selection(1, 3);
+		field.onChange(event -> seen.add(field.getText() + " " + field.getCursorPosition() + " " + field.getSelection().getStart() + "-" + field.getSelection().getEnd()));
+		field.focused(false);
+		Assert.assertEquals(Collections.singletonList("7 1 0-1"), seen);
+	}
+
 	private TextFieldNode field() {
 		return TextFieldNode.create(0D, 0D, 100D).info(TextInfo.create(FieldNodeEventTest.FONT, 10F)).text("ab").focused(true).cursorPosition(2);
 	}

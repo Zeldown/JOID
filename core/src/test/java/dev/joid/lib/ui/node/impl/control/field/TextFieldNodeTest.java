@@ -240,6 +240,11 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void normalizesAGivenTextWhateverTheOrderOfItsSetters() {
+		Assert.assertEquals("ab", TextFieldNode.create(100D, 100D, 200D).<TextFieldNode>text(" ab ").normalize(String::trim).getText());
+	}
+
+	@Test
 	public void normalizesWhatIsTypedOnlyOnCommit() {
 		final List<Object> changes = new ArrayList<>();
 		final TextFieldNode field = this.field("ab").<TextFieldNode>normalize(String::toUpperCase).<TextFieldNode>onChange(event -> changes.addAll(Arrays.asList(event.getText(), event.getValue(), event.isValid()))).cursorPosition(2);

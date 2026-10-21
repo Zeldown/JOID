@@ -196,6 +196,11 @@ public class MultilineTextFieldNodeTest {
 	}
 
 	@Test
+	public void normalizesAGivenTextWhateverTheOrderOfItsSetters() {
+		Assert.assertEquals("ab\ncd", MultilineTextFieldNode.create(0D, 0D, 400D, 200D).<MultilineTextFieldNode>text(" ab\ncd ").normalize(String::trim).getText());
+	}
+
+	@Test
 	public void breaksOneLineForAnEnterFollowedByItsCarriageReturn() {
 		final MultilineTextFieldNode field = this.field("ab").cursorPosition(2);
 		this.press(field, Key.ENTER);
