@@ -269,6 +269,28 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void keepsTheWriteOfAListenerOfOneOfItsRotationSignalsIntoTheOther() {
+		final DoubleSignal yaw = new DoubleSignal(0D);
+		final DoubleSignal pitch = new DoubleSignal(0D);
+		final DoubleSignal otherYaw = new DoubleSignal(0D);
+		final DoubleSignal otherPitch = new DoubleSignal(0D);
+		final ModelViewerNode viewer = ModelViewerNode.create(0D, 0D, 100D, 100D).rotationYaw(yaw).rotationPitch(pitch).model(new FixedModel());
+		final ModelViewerNode other = ModelViewerNode.create(100D, 0D, 100D, 100D).rotationYaw(otherYaw).rotationPitch(otherPitch).model(new FixedModel());
+		yaw.onChange(value -> pitch.set(5D));
+		otherPitch.onChange(value -> otherYaw.set(5D));
+		this.bridges.open(new NodeUI(viewer)).open(new NodeUI(other)).frame();
+		viewer.rotate(8D, 25D);
+		other.rotate(8D, 25D);
+		this.bridges.frames(3);
+		Assert.assertEquals(8D, viewer.getRotationYaw(), 0D);
+		Assert.assertEquals(5D, viewer.getRotationPitch(), 0D);
+		Assert.assertEquals(5D, pitch.peek(), 0D);
+		Assert.assertEquals(5D, other.getRotationYaw(), 0D);
+		Assert.assertEquals(25D, other.getRotationPitch(), 0D);
+		Assert.assertEquals(5D, otherYaw.peek(), 0D);
+	}
+
+	@Test
 	public void turnsLikeTheMouseThroughItsGesture() {
 		final List<Object> events = new ArrayList<>();
 		final ModelViewerNode viewer = ModelViewerNode

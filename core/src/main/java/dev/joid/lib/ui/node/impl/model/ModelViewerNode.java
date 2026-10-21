@@ -239,8 +239,10 @@ public class ModelViewerNode extends BaseModelNode {
 	private void turn(final @NonNull Point rotation) {
 		this.rotationYaw   = rotation.getX();
 		this.rotationPitch = rotation.getY();
-		super.sync("rotationYaw", rotation);
-		super.sync("rotationPitch", rotation);
+		Signal.batch(() -> {
+			super.sync("rotationYaw", rotation);
+			super.sync("rotationPitch", rotation);
+		});
 	}
 
 }

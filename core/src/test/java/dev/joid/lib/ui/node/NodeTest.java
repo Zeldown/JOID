@@ -2253,6 +2253,28 @@ public class NodeTest {
 	}
 
 	@Test
+	public void keepsTheWriteOfAListenerOfOneOfItsPositionSignalsIntoTheOther() {
+		final DoubleSignal x = new DoubleSignal(0D);
+		final DoubleSignal y = new DoubleSignal(0D);
+		final DoubleSignal otherX = new DoubleSignal(0D);
+		final DoubleSignal otherY = new DoubleSignal(0D);
+		final RectNode node = RectNode.create(0D, 0D, 50D, 50D).x(x).y(y);
+		final RectNode other = RectNode.create(0D, 0D, 50D, 50D).x(otherX).y(otherY);
+		x.onChange(value -> y.set(50D));
+		otherY.onChange(value -> otherX.set(50D));
+		this.bridges.open(new NodeUI(node, other)).frame();
+		node.move(10D, 10D);
+		other.move(10D, 10D);
+		this.bridges.frames(3);
+		Assert.assertEquals(10D, node.getX(), 0D);
+		Assert.assertEquals(50D, node.getY(), 0D);
+		Assert.assertEquals(50D, y.peek(), 0D);
+		Assert.assertEquals(50D, other.getX(), 0D);
+		Assert.assertEquals(10D, other.getY(), 0D);
+		Assert.assertEquals(50D, otherX.peek(), 0D);
+	}
+
+	@Test
 	public void refusesToMoveAComputedPosition() {
 		final double[] x = {100D};
 		try {

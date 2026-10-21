@@ -2124,8 +2124,10 @@ public abstract class Node implements INode {
 				this.targetDragY = this.getAbsoluteY();
 			}
 		}
-		this.bindings.sync("x", position);
-		this.bindings.sync("y", position);
+		Signal.batch(() -> {
+			this.bindings.sync("x", position);
+			this.bindings.sync("y", position);
+		});
 	}
 
 	private void scroll(final Axis axis, final double offset) {
