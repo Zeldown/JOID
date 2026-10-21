@@ -288,7 +288,7 @@ public final class NodeBindings {
 		if (fired instanceof ICancellableEvent || fired instanceof IConsumableEvent) {
 			firing.run();
 		} else if (this.batch > 0 || this.draining) {
-			this.eventQueue.add(settling);
+			this.eventQueue.add(SignalContext.current().keepSilence(settling));
 		} else {
 			settling.run();
 		}

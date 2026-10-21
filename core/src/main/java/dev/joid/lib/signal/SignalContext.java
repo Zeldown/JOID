@@ -67,7 +67,7 @@ public final class SignalContext {
 	}
 
 	public void defer(final Runnable task) {
-		final Runnable deferred = this.silent ? () -> Signal.silent(task) : task;
+		final Runnable deferred = this.keepSilence(task);
 		if (this.depth > 0) {
 			this.deferredList.add(deferred);
 		} else {
@@ -77,18 +77,23 @@ public final class SignalContext {
 
 	public void settle(final Runnable task) {
 		if (this.flushing) {
-			final boolean silent = this.silent;
-			this.settleQueue.add(() -> {
-				final boolean previous = this.silent(silent);
-				try {
-					task.run();
-				} finally {
-					this.silent(previous);
-				}
-			});
+			this.settleQueue.add(this.keepSilence(task));
 		} else {
 			task.run();
 		}
+	}
+
+	public Runnable keepSilence(final Runnable task) {
+		final boolean silent = this.silent;
+		return () -> {
+			final SignalContext context = SignalContext.current();
+			final boolean previous = context.silent(silent);
+			try {
+				task.run();
+			} finally {
+				context.silent(previous);
+			}
+		};
 	}
 
 	public void read(final Signal<?> signal) {

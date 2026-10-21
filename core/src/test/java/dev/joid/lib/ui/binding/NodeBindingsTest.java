@@ -425,6 +425,44 @@ public class NodeBindingsTest {
 	}
 
 	@Test
+	public void keepsTheSilenceOfAChangeAFieldMakesInItsOwnChange() {
+		final StringSignal signal = new StringSignal("");
+		final IntegerSignal length = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final TextFieldNode field = this.text(signal);
+		this.bridges.open(new NodeUI(field)).frames(2);
+		length.onChange(value -> fired.add("length " + value));
+		field.onChange(event -> {
+			if (event.getValue().startsWith(" ")) {
+				Signal.silent(() -> field.change(event.getValue().trim()));
+			}
+		});
+		field.onChange(event -> length.set(event.getValue().length()));
+		field.change(" ab");
+		Assert.assertEquals(Arrays.asList("length 3"), fired);
+		Assert.assertEquals(2, (int) length.peek());
+	}
+
+	@Test
+	public void keepsTheSilenceOfAChangeAListenerMakesOnTheControlThatFiresIt() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerSignal other = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(signal);
+		this.bridges.open(new NodeUI(first, second)).frame();
+		other.onChange(value -> fired.add("other " + value));
+		second.onChange(event -> {
+			if (event.getValue() == 70) {
+				Signal.silent(() -> first.change(30));
+			}
+		});
+		first.onChange(event -> other.set(event.getValue()));
+		first.change(70);
+		Assert.assertEquals(Arrays.asList("other 70"), fired);
+	}
+
+	@Test
 	public void keepsTheCursorAListenerOfItsChangePlaces() {
 		final List<Object> fired = new ArrayList<>();
 		final TextFieldNode field = this.text(new StringSignal("hello"));
