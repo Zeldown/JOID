@@ -399,7 +399,52 @@ public class NodeBindingsTest {
 		});
 		third.onChange(event -> fired.add("third " + event.getPrevious() + " " + event.getValue()));
 		first.change(80);
-		Assert.assertEquals(Arrays.asList("second 0 80", "third 0 80", "third 80 20", "second 80 20", "first 80 20", "first 0 80"), fired);
+		Assert.assertEquals(Arrays.asList("second 0 80", "third 0 80", "third 80 20", "second 80 20", "first 0 80", "first 80 20"), fired);
+	}
+
+	@Test
+	public void announcesTheValueItsOwnListenerGivesItInItsLastChange() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerSignal other = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(other);
+		this.bridges.open(new NodeUI(first, second)).frame();
+		first.onChange(event -> {
+			if (event.getValue() > 50) {
+				first.change(50);
+			}
+		});
+		first.onChange(event -> {
+			fired.add(event.getPrevious() + " " + event.getValue());
+			other.set(event.getValue());
+		});
+		first.change(80);
+		this.bridges.frames(2);
+		Assert.assertEquals(Arrays.asList("0 80", "80 50"), fired);
+		Assert.assertEquals(50, (int) other.peek());
+		Assert.assertEquals(50, (int) second.getValue());
+	}
+
+	@Test
+	public void announcesTheValueAListenerOfItsSignalGivesItInItsLastChange() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerSignal other = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider slider = this.slider(signal);
+		this.bridges.open(new NodeUI(slider)).frame();
+		signal.onChange(value -> {
+			if (value > 50) {
+				signal.set(50);
+			}
+		});
+		slider.onChange(event -> {
+			fired.add(event.getPrevious() + " " + event.getValue());
+			other.set(event.getValue());
+		});
+		slider.change(80);
+		Assert.assertEquals(Arrays.asList("0 80", "80 50"), fired);
+		Assert.assertEquals(50, (int) other.peek());
 	}
 
 	@Test
@@ -460,6 +505,7 @@ public class NodeBindingsTest {
 		first.onChange(event -> other.set(event.getValue()));
 		first.change(70);
 		Assert.assertEquals(Arrays.asList("other 70"), fired);
+		Assert.assertEquals(30, (int) other.peek());
 	}
 
 	@Test

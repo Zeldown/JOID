@@ -104,8 +104,10 @@ public final class InteractiveValue<V> {
 
 		this.requested = next;
 		this.bindings.see(this.property);
-		this.bindings.external(() -> this.store(next));
-		this.fireChange(previous, next);
+		this.bindings.batch(() -> {
+			this.bindings.external(() -> this.store(next));
+			this.fireChange(previous, next);
+		});
 		return true;
 	}
 

@@ -431,6 +431,16 @@ public class SelectorNodeTest {
 	}
 
 	@Test
+	public void announcesItsClosingLastWhenTheListenerOfItsOpeningClosesIt() {
+		final List<String> events = new ArrayList<>();
+		this.selector.onOpen(event -> this.selector.close()).onOpen(event -> events.add("open")).onClose(event -> events.add("close"));
+		this.bridges.open(new NodeUI(this.selector)).frame();
+		this.selector.open();
+		Assert.assertFalse(this.selector.isActive());
+		Assert.assertEquals(Arrays.asList("open", "close"), events);
+	}
+
+	@Test
 	public void staysClosedWhenItsOpeningIsRefused() {
 		final Signal<Boolean> open = new Signal<>(false);
 		this.bridges.open(new NodeUI(this.selector.active(open).beforeOpen(event -> event.cancel()))).frame();

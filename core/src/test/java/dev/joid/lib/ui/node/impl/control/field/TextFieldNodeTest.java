@@ -751,6 +751,21 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void announcesTheCursorTheListenerOfItsMovePlacesLast() {
+		final List<Object> moves = new ArrayList<>();
+		final TextFieldNode field = this.field("abcdef");
+		field.onCursorMove(event -> {
+			if (event.getValue() > 2) {
+				field.moveCursor(2);
+			}
+		});
+		field.onCursorMove(event -> moves.add(event.getValue()));
+		field.moveCursor(5);
+		Assert.assertEquals(2, field.getCursorPosition());
+		Assert.assertEquals(Arrays.asList(5, 2), moves);
+	}
+
+	@Test
 	public void keepsItsCursorWhenItsMoveIsRefused() {
 		final TextFieldNode field = this.field("abc").cursorPosition(1).beforeCursorMove(event -> event.cancel());
 		this.press(field, Key.RIGHT);
