@@ -242,6 +242,103 @@ public class NodeBindingsTest {
 	}
 
 	@Test
+	public void showsItsSignalInEveryControlBoundToItWhenOneOfThemFiresTheChange() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final List<Object> read = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(signal);
+		final Slider third = this.slider(signal);
+		this.bridges.open(new NodeUI(first, second, third)).frame();
+		second.onChange(event -> read.add(third.getValue()));
+		first.change(80);
+		Assert.assertEquals(Arrays.asList(80), read);
+	}
+
+	@Test
+	public void showsAWriteOfItsSignalInEveryControlBoundToItWhenTheyFireTheChange() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final List<Object> read = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(signal);
+		final Slider third = this.slider(signal);
+		this.bridges.open(new NodeUI(first, second, third)).frame();
+		first.onChange(event -> read.add("first " + second.getValue() + " " + third.getValue()));
+		second.onChange(event -> read.add("second " + first.getValue() + " " + third.getValue()));
+		third.onChange(event -> read.add("third " + first.getValue() + " " + second.getValue()));
+		signal.set(60);
+		Assert.assertEquals(Arrays.asList("first 60 60", "second 60 60", "third 60 60"), read);
+	}
+
+	@Test
+	public void showsTheChangeOfAFieldInEveryFieldOfItsSignalWhenTheyFireTheChange() {
+		final StringSignal signal = new StringSignal("a");
+		final List<Object> read = new ArrayList<>();
+		final TextFieldNode first = this.text(signal);
+		final TextFieldNode second = this.text(signal);
+		final TextFieldNode third = this.text(signal);
+		this.bridges.open(new NodeUI(first, second, third)).frames(2);
+		second.onChange(event -> read.add(third.getText()));
+		first.change("hello");
+		signal.set("world");
+		Assert.assertEquals(Arrays.asList("hello", "world"), read);
+	}
+
+	@Test
+	public void firesNoEventOfAFieldAListenerOfItsChangeDetaches() {
+		final List<Object> fired = new ArrayList<>();
+		final TextFieldNode field = this.text(new StringSignal("a"));
+		final NodeUI ui = new NodeUI(field);
+		this.bridges.open(ui).frames(2);
+		field.focus().moveCursor(1);
+		this.bridges.frame();
+		field.onChange(event -> {
+			fired.add("change");
+			ui.remove(field);
+		});
+		field.onCursorMove(event -> fired.add("cursor"));
+		field.change("hello");
+		Assert.assertEquals(Arrays.asList("change"), fired);
+	}
+
+	@Test
+	public void firesNoChangeOfABoundControlAnEarlierListenerDetaches() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(signal);
+		final Slider third = this.slider(signal);
+		final NodeUI ui = new NodeUI(first, second, third);
+		this.bridges.open(ui).frame();
+		second.onChange(event -> {
+			fired.add("second change");
+			ui.remove(third);
+		});
+		third.onChange(event -> fired.add("third change"));
+		third.onDetach(event -> fired.add("third detach"));
+		first.change(80);
+		Assert.assertEquals(80, (int) third.getValue());
+		Assert.assertEquals(Arrays.asList("second change", "third detach"), fired);
+	}
+
+	@Test
+	public void firesTheDetachOfANodeASignalListenerRemovesRightAway() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider slider = this.slider(signal);
+		final RectNode node = RectNode.create(0D, 0D, 50D, 50D);
+		final NodeUI ui = new NodeUI(slider, node);
+		this.bridges.open(ui).frame();
+		slider.onChange(event -> fired.add("change"));
+		node.onDetach(event -> fired.add("detach"));
+		signal.onChange(value -> {
+			ui.remove(node);
+			fired.add("removed");
+		});
+		signal.set(60);
+		Assert.assertEquals(Arrays.asList("detach", "removed", "change"), fired);
+	}
+
+	@Test
 	public void keepsTheCursorAListenerOfItsChangePlaces() {
 		final List<Object> fired = new ArrayList<>();
 		final TextFieldNode field = this.text(new StringSignal("hello"));

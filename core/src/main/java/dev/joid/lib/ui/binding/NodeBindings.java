@@ -238,18 +238,11 @@ public final class NodeBindings {
 	}
 
 	public <E extends Event> E fire(final @NonNull EventType<?> type, final @NonNull Supplier<@NonNull E> event) {
-		if (!this.eventBus.has(type)) {
-			return null;
-		}
+		return this.fire(type, event, false);
+	}
 
-		final E fired = event.get();
-		final Runnable firing = () -> this.runner.accept(() -> this.eventBus.fire(type, fired));
-		if ((this.batch > 0 || this.draining) && !(fired instanceof ICancellableEvent) && !(fired instanceof IConsumableEvent)) {
-			this.eventQueue.add(firing);
-		} else {
-			firing.run();
-		}
-		return fired;
+	public <E extends Event> E fireSubscribed(final @NonNull EventType<?> type, final @NonNull Supplier<@NonNull E> event) {
+		return this.subscribed ? this.fire(type, event, true) : null;
 	}
 
 	private void drain() {
@@ -278,6 +271,28 @@ public final class NodeBindings {
 		if (failure != null) {
 			throw failure;
 		}
+	}
+
+	private <E extends Event> E fire(final EventType<?> type, final Supplier<E> event, final boolean subscribed) {
+		if (!this.eventBus.has(type)) {
+			return null;
+		}
+
+		final E fired = event.get();
+		final Runnable firing = () -> {
+			if (!subscribed || this.subscribed) {
+				this.runner.accept(() -> this.eventBus.fire(type, fired));
+			}
+		};
+		final Runnable settling = subscribed ? () -> SignalContext.current().settle(firing) : firing;
+		if (fired instanceof ICancellableEvent || fired instanceof IConsumableEvent) {
+			firing.run();
+		} else if (this.batch > 0 || this.draining) {
+			this.eventQueue.add(settling);
+		} else {
+			settling.run();
+		}
+		return fired;
 	}
 
 	@AllArgsConstructor(access = AccessLevel.PRIVATE)

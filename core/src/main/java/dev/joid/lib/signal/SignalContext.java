@@ -25,6 +25,7 @@ public final class SignalContext {
 	private final Signal<?>[]             reads        = new Signal<?>[64];
 	private final Set<Signal<?>>          pendingSet   = Collections.newSetFromMap(new IdentityHashMap<>());
 	private final List<Runnable>          deferredList = new ArrayList<>();
+	private final Deque<Runnable>         settleQueue  = new ArrayDeque<>();
 	private final Deque<Signal<?>>        pendingQueue = new ArrayDeque<>();
 	private final Map<Signal<?>, Object>  originMap    = new IdentityHashMap<>();
 	private final Map<Signal<?>, Integer> writeBackMap = new IdentityHashMap<>();
@@ -34,6 +35,7 @@ public final class SignalContext {
 	private int               readCount;
 	private boolean           tracing;
 	private boolean           flushing;
+	private boolean           settling;
 	private ComputedSignal<?> observer;
 
 	@Getter private long    readTotal;
@@ -71,6 +73,14 @@ public final class SignalContext {
 			this.deferredList.add(deferred);
 		} else {
 			ThreadUtils.runOnRenderThread(deferred);
+		}
+	}
+
+	public void settle(final Runnable task) {
+		if (this.flushing) {
+			this.settleQueue.add(task);
+		} else {
+			task.run();
 		}
 	}
 
@@ -194,6 +204,25 @@ public final class SignalContext {
 			this.flushing = false;
 			this.originMap.clear();
 			this.writeBackMap.clear();
+		}
+
+		if (!this.settling) {
+			this.settling = true;
+			try {
+				while (!this.settleQueue.isEmpty()) {
+					try {
+						this.settleQueue.poll().run();
+					} catch (final RuntimeException exception) {
+						if (failure == null) {
+							failure = exception;
+						} else {
+							failure.addSuppressed(exception);
+						}
+					}
+				}
+			} finally {
+				this.settling = false;
+			}
 		}
 
 		if (failure != null) {

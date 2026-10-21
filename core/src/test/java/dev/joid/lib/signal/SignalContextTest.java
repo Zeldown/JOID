@@ -171,6 +171,20 @@ public class SignalContextTest {
 	}
 
 	@Test
+	public void settlesATaskAfterTheWholeFlush() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final List<String> trace = new ArrayList<>();
+		signal.onChange(value -> {
+			SignalContext.current().settle(() -> trace.add("settled"));
+			trace.add("first");
+		});
+		signal.onChange(value -> trace.add("second"));
+		signal.set(1);
+		SignalContext.current().settle(() -> trace.add("outside"));
+		Assert.assertEquals(Arrays.asList("first", "second", "settled", "outside"), trace);
+	}
+
+	@Test
 	public void movesTheEpochOnEveryChange() {
 		final long epoch = SignalContext.getEpoch();
 		new Signal<>("a").set("b").fireChange();

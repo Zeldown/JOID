@@ -95,8 +95,8 @@ public final class InteractiveValue<V> {
 		}
 
 		final ValueEvents<V> events = this.getEvents(next);
-		if (events != null && this.bindings.isSubscribed()) {
-			final Event event = this.bindings.fire(events.beforeType, () -> events.before.apply(previous, next));
+		if (events != null) {
+			final Event event = this.bindings.fireSubscribed(events.beforeType, () -> events.before.apply(previous, next));
 			if (event != null && ((ICancellableEvent) event).isCancelled()) {
 				return false;
 			}
@@ -186,8 +186,8 @@ public final class InteractiveValue<V> {
 
 	private void fireChange(final V previous, final V next) {
 		final ValueEvents<V> events = this.getEvents(next);
-		if (events != null && this.bindings.isSubscribed()) {
-			this.bindings.fire(events.onType, () -> events.on.apply(previous, next));
+		if (events != null) {
+			this.bindings.fireSubscribed(events.onType, () -> events.on.apply(previous, next));
 		}
 		this.then.accept(previous, next);
 	}
