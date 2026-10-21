@@ -126,12 +126,14 @@ public final class NodeBindings {
 	}
 
 	public void external(final @NonNull Runnable runnable) {
-		this.external++;
-		try {
-			runnable.run();
-		} finally {
-			this.external--;
-		}
+		Signal.batch(() -> {
+			this.external++;
+			try {
+				runnable.run();
+			} finally {
+				this.external--;
+			}
+		});
 	}
 
 	public void see(final @NonNull String property) {

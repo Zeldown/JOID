@@ -1693,6 +1693,56 @@ public class TextFieldNodeTest {
 		Assert.assertEquals(9, cursor.peek().intValue());
 	}
 
+	@Test
+	public void formatsAChangeThroughTheListenerOfItsText() {
+		final Signal<String> text = new Signal<>("");
+		final Signal<Integer> cursor = new Signal<>(0);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 400D).info(this.info()).text(text).cursorPosition(cursor).focused(true);
+		this.bridges.open(new NodeUI(field)).frame();
+		text.onChange(value -> {
+			final String digits = value.replace(" ", "");
+			final String grouped = digits.length() > 4 ? digits.substring(0, 4) + " " + digits.substring(4) : digits;
+			if (!grouped.equals(value)) {
+				text.set(grouped);
+				cursor.set(grouped.length());
+			}
+		});
+		field.change("12345678");
+		Assert.assertEquals("1234 5678", field.getText());
+		Assert.assertEquals(9, field.getCursorPosition());
+		Assert.assertEquals(9, cursor.peek().intValue());
+	}
+
+	@Test
+	public void keepsTheCursorTheListenerOfItsFocusPlacesOnABlur() {
+		final Signal<String> text = new Signal<>("hello  ");
+		final Signal<Integer> cursor = new Signal<>(7);
+		final Signal<Boolean> focused = new Signal<>(false);
+		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(this.info()).text(text).cursorPosition(cursor).focused(focused);
+		this.bridges.open(new NodeUI(field)).frame();
+		field.focus().moveCursor(7);
+		this.bridges.frame();
+		focused.onChange(value -> {
+			if (!value) {
+				text.set(text.peek().trim());
+				cursor.set(0);
+			}
+		});
+		this.click(600D, 400D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		Assert.assertFalse(field.isFocused());
+		Assert.assertEquals("hello", field.getText());
+		Assert.assertEquals(0, field.getCursorPosition());
+		Assert.assertEquals(0, cursor.peek().intValue());
+		text.set("world  ");
+		field.focus().moveCursor(7);
+		this.bridges.frame();
+		field.blur();
+		Assert.assertEquals("world", field.getText());
+		Assert.assertEquals(0, field.getCursorPosition());
+		Assert.assertEquals(0, cursor.peek().intValue());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesASignalItCannotWrite() {
 		TextFieldNode.create(100D, 100D, 200D).text(new Signal<>("Alex").map(String::toUpperCase));

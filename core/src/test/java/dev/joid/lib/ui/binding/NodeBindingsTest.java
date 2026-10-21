@@ -3,6 +3,9 @@ package dev.joid.lib.ui.binding;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -12,17 +15,20 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.ui.UIBridgeCursorTest.NodeUI;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.node.impl.control.choice.SwitchNodeTest.Switch;
 import dev.joid.lib.ui.node.impl.control.field.IntegerFieldNode;
+import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNodeTest.FieldFont;
 import dev.joid.lib.ui.node.impl.control.slider.IntegerSliderNodeTest.Slider;
 import dev.joid.lib.ui.node.impl.control.slider.SliderNodeTest;
 import dev.joid.lib.ui.node.impl.model.ModelViewerNode;
 import dev.joid.lib.ui.node.impl.model.ModelViewerNodeTest.FixedModel;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class NodeBindingsTest {
 
@@ -138,6 +144,26 @@ public class NodeBindingsTest {
 		Assert.assertEquals(50, (int) capped.getValue());
 		Assert.assertEquals(50, (int) slider.getValue());
 		Assert.assertEquals(50, (int) free.getValue());
+	}
+
+	@Test
+	public void showsAWriteOfItsSignalMadeInAClickRightAway() {
+		final DoubleSignal x = new DoubleSignal(0D);
+		final StringSignal text = new StringSignal("hello");
+		final List<Object> read = new ArrayList<>();
+		final RectNode node = RectNode.create(0D, 0D, 50D, 50D).x(x);
+		final TextFieldNode field = TextFieldNode.create(0D, 100D, 200D).<TextFieldNode>info(TextInfo.create(new FieldFont(), 10F)).text(text);
+		final RectNode button = RectNode.create(500D, 500D, 100D, 100D).onClick(event -> {
+			x.set(50D);
+			text.set("world");
+			read.add(node.getX());
+			read.add(field.getText());
+		});
+		this.bridges.open(new NodeUI(node, field, button)).frame();
+		this.bridges.move(550D, 550D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		Assert.assertEquals(Arrays.asList(50D, "world"), read);
 	}
 
 	@Test
