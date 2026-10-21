@@ -682,6 +682,38 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void blursTheFocusedFieldOfAnotherUiBeforeFocusingTheClickedOne() {
+		final List<String> events = new ArrayList<>();
+		final TextFieldNode first = TextFieldNode.create(100D, 100D, 200D).info(this.info());
+		final TextFieldNode second = TextFieldNode.create(100D, 200D, 200D).info(this.info());
+		first.onBlur(event -> events.add("blur first " + second.isFocused()));
+		second.onFocus(event -> events.add("focus second " + first.isFocused()));
+		this.bridges.open(new NodeUI(first)).open(new NodeUI(second));
+		first.focus();
+		this.click(124D, 220D);
+		this.bridges.getUi().keyPressed(Key.ESCAPE, Key.ESCAPE);
+		this.bridges.getUi().charTyped('z');
+		Assert.assertEquals(Arrays.asList("blur first false", "focus second false"), events);
+		Assert.assertFalse(first.isFocused());
+		Assert.assertEquals("", first.getText());
+	}
+
+	@Test
+	public void leavesTheClickedFieldUnfocusedWhenTheBlurOfTheFocusedOneDetachesIt() {
+		final TextFieldNode first = TextFieldNode.create(100D, 100D, 200D).info(this.info());
+		final TextFieldNode second = TextFieldNode.create(100D, 200D, 200D).info(this.info());
+		final NodeUI ui = new NodeUI(first, second);
+		first.onBlur(event -> ui.remove(second));
+		this.bridges.open(ui);
+		first.focus();
+		this.click(124D, 220D);
+		Assert.assertFalse(second.isFocused());
+		second.attach(ui);
+		this.bridges.frames(2);
+		Assert.assertFalse(second.isFocused());
+	}
+
+	@Test
 	public void insertsWhatIsTypedAtTheCursor() {
 		final TextFieldNode field = this.field("hllo").cursorPosition(1);
 		this.type(field, "e");

@@ -203,7 +203,13 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		if (!this.focused) {
-			FieldNode.release(super.getUi().getNodeList(), this);
+			for (final UI ui : super.getUi().getBridge().getUiList()) {
+				FieldNode.release(ui.getNodeList(), this);
+			}
+		}
+
+		if (!super.isAttached()) {
+			return;
 		}
 
 		if (!FieldNode.settle(this.focusedValue, true)) {
