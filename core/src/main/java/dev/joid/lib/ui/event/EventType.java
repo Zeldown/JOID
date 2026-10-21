@@ -9,7 +9,6 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class EventType<E extends Event> {
 
-	@NonNull
 	private final String name;
 
 	public static <E extends Event> @NonNull EventType<E> create(final @NonNull String name) {

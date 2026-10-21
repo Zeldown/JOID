@@ -16,8 +16,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FrameBuffer {
 
-	@NonNull private final IFrameBuffer  handle;
-	@NonNull private final TextureFilter filter;
+	private final IFrameBuffer  handle;
+	private final TextureFilter filter;
 
 	private boolean filled;
 

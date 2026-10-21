@@ -29,7 +29,7 @@ public final class Text {
 	private double       height;
 	private List<Object> measured;
 
-	private Text(final @NonNull List<@NonNull TextElement> elementList) {
+	private Text(final List<TextElement> elementList) {
 		this.elementList = new LinkedList<>(elementList);
 		this.alignX      = Align.START;
 		this.alignY      = Align.START;

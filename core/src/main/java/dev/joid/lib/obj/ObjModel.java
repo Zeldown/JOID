@@ -43,7 +43,7 @@ public final class ObjModel implements IDrawableModel {
 	private final String   name;
 	private final Resource texture;
 
-	private ObjModel(final @NonNull String name, final @NonNull Object handle, final @NonNull Resource texture) {
+	private ObjModel(final String name, final Object handle, final Resource texture) {
 		this.name    = name;
 		this.texture = texture;
 		this.load(handle);

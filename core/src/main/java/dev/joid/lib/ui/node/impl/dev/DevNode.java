@@ -278,11 +278,7 @@ public final class DevNode extends Node {
 					final List<Field> fields = new ArrayList<>();
 
 					Class<?> clazz = inspectedNode.getClass();
-					while (clazz != null) {
-						if (clazz.equals(Node.class)) {
-							break;
-						}
-
+					while (!clazz.equals(Node.class)) {
 						for (final Field field : clazz.getDeclaredFields()) {
 							if (Modifier.isStatic(field.getModifiers())) {
 								continue;

@@ -114,7 +114,7 @@ public abstract class StackUIBridge extends UIBridge {
 
 	@Override
 	public void remove(final @NonNull UI ui) {
-		final boolean screen = super.getUiList().contains(ui) && !ui.getOverlay().active();
+		final boolean screen = super.isOpen(ui) && !ui.getOverlay().active();
 		if (ui == this.leaving) {
 			this.drop();
 		}

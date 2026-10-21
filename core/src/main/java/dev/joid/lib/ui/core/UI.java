@@ -1042,7 +1042,7 @@ public abstract class UI implements IIndexedElement {
 		for (final Annotation annotation : type.getAnnotations()) {
 			annotationMap.put(annotation.annotationType(), annotation);
 		}
-		return Collections.unmodifiableMap(annotationMap);
+		return annotationMap;
 	}
 
 	private static Transition createPopupTransition(final PopupTransition popupTransition) {

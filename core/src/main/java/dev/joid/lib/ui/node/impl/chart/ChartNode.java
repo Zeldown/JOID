@@ -144,7 +144,7 @@ public abstract class ChartNode extends Node {
 			private final Set<String> labelSet;
 			private final Map<String, ChartData> dataMap;
 
-			private XChartAxis(final @NonNull String name, final @NonNull String... labels) {
+			private XChartAxis(final String name, final String... labels) {
 				super(name);
 
 				this.labelSet = new LinkedHashSet<>();
@@ -194,7 +194,7 @@ public abstract class ChartNode extends Node {
 			private String prefix;
 			private String suffix;
 
-			private YChartAxis(final @NonNull String name) {
+			private YChartAxis(final String name) {
 				super(name);
 			}
 

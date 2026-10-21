@@ -10,7 +10,6 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TaskEvent extends Event {
 
-	@NonNull
 	private final Task task;
 
 	public static @NonNull TaskEvent create(final @NonNull Task task) {

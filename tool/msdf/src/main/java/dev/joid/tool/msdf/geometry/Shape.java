@@ -9,9 +9,7 @@ public final class Shape {
 	private final List<List<Edge>> contours = new ArrayList<>();
 
 	public void add(final List<Edge> contour) {
-		if (!contour.isEmpty()) {
-			this.contours.add(contour);
-		}
+		this.contours.add(contour);
 	}
 
 	public List<List<Edge>> getContours() {

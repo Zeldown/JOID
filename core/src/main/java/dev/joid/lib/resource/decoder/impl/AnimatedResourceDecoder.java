@@ -77,7 +77,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 
 	@Override
 	public void update(final @NonNull ResourceData resource) {
-		if (this.animation == null || this.displayed < 0) {
+		if (this.displayed < 0) {
 			return;
 		}
 

@@ -301,9 +301,7 @@ public final class WindowVulkanHost implements IVulkanHost {
 
 			final LongBuffer swapchain = stack.mallocLong(1);
 			VulkanContext.check(KHRSwapchain.vkCreateSwapchainKHR(this.device, info, null, swapchain), "vkCreateSwapchainKHR");
-			if (this.swapchain != VK10.VK_NULL_HANDLE) {
-				KHRSwapchain.vkDestroySwapchainKHR(this.device, this.swapchain, null);
-			}
+			KHRSwapchain.vkDestroySwapchainKHR(this.device, this.swapchain, null);
 			this.swapchain = swapchain.get(0);
 
 			final IntBuffer count = stack.mallocInt(1);

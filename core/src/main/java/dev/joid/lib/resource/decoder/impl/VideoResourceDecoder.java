@@ -609,10 +609,6 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	}
 
 	private void startDecodeThread() {
-		if (this.decodeThread != null && this.decodeThread.isAlive()) {
-			return;
-		}
-
 		this.decodeThread = ThreadUtils.daemonThread(() -> {
 			try {
 				double lastTime = 0D;

@@ -55,10 +55,6 @@ public final class DraggableProperty {
 	public static @NonNull DraggableProperty disabled() { return DraggableProperty.free().enabled(node -> false); }
 
 	public Node getSnapping(final @NonNull Node node) {
-		if (!this.hasSnapping()) {
-			return null;
-		}
-
 		final double x = node.getAbsoluteX();
 		final double y = node.getAbsoluteY();
 		final double width = node.getWidth();

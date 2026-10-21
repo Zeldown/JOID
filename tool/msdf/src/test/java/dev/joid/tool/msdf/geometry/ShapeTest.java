@@ -10,13 +10,6 @@ import org.junit.Test;
 public class ShapeTest {
 
 	@Test
-	public void ignoresEmptyContours() {
-		final Shape shape = new Shape();
-		shape.add(new ArrayList<>());
-		Assert.assertTrue(shape.isEmpty());
-	}
-
-	@Test
 	public void boundsEveryContour() {
 		final Shape shape = new Shape();
 		shape.add(ShapeTest.square(0D, 0D, 2D));

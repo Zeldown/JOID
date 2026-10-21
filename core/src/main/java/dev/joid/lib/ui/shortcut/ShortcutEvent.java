@@ -11,8 +11,8 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ShortcutEvent extends Event {
 
-	@NonNull private final Key      key;
-	@NonNull private final Shortcut shortcut;
+	private final Key      key;
+	private final Shortcut shortcut;
 
 	public static @NonNull ShortcutEvent create(final @NonNull Key key, final @NonNull Shortcut shortcut) {
 		return new ShortcutEvent(key, shortcut);

@@ -66,7 +66,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			}
 
 			final FieldSelection selection = super.getSelection();
-			if (!selection.isEmpty() && !lines.isEmpty()) {
+			if (!selection.isEmpty()) {
 				final int start = selection.getStart();
 				final int end = selection.getEnd();
 				final int startLine = this.getLineIndex(layout, start);
