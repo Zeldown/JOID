@@ -95,7 +95,7 @@ public final class Glyphs {
 			Glyphs.line(contour, current, start);
 		}
 
-		shape.add(new ArrayList<>(contour));
+		shape.add(contour);
 	}
 
 	private static Vector2 line(final List<Edge> contour, final Vector2 from, final Vector2 to) {

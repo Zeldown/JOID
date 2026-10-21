@@ -265,7 +265,7 @@ public class GlslShaderTranslator {
 			return this.emulateBorder(body, vertex, fragment);
 		}
 
-		final List<ShaderVariable> variableList = new ArrayList<>(this.getUniforms(vertex, fragment));
+		final List<ShaderVariable> variableList = this.getUniforms(vertex, fragment);
 		variableList.addAll(vertex.getOutputs());
 		variableList.addAll(fragment.getInputs());
 		return this.emulateBorder(ImplicitConversion.apply(body, variableList), vertex, fragment);
