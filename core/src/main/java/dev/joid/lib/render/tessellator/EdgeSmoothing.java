@@ -40,7 +40,7 @@ public final class EdgeSmoothing {
 		EdgeSmoothing.draw(red, green, blue, alpha, mapping, Point.of(left, bottom), Point.of(right, bottom), Point.of(right, top), Point.of(left, top));
 	}
 
-	private static void draw(final float red, final float green, final float blue, final float alpha, final double[] mapping, final @NonNull Point @NonNull... points) {
+	private static void draw(final float red, final float green, final float blue, final float alpha, final double[] mapping, final Point... points) {
 		final int count = points.length;
 		double centerX = 0D;
 		double centerY = 0D;
@@ -116,7 +116,7 @@ public final class EdgeSmoothing {
 		tessellator.draw();
 	}
 
-	private static void vertex(final @NonNull Tessellator tessellator, final double x, final double y, final double[] mapping, final float red, final float green, final float blue, final float alpha) {
+	private static void vertex(final Tessellator tessellator, final double x, final double y, final double[] mapping, final float red, final float green, final float blue, final float alpha) {
 		tessellator.setColor(red, green, blue, alpha);
 		if (mapping != null) {
 			tessellator.setTextureUV(mapping[0] + (x - mapping[6]) * mapping[1] + (y - mapping[7]) * mapping[2], mapping[3] + (x - mapping[6]) * mapping[4] + (y - mapping[7]) * mapping[5]);

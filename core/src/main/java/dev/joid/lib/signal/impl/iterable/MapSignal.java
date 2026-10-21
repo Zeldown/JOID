@@ -66,7 +66,7 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return Collections.unmodifiableMap(new LinkedHashMap<>(value));
 	}
 
-	private @NonNull MapSignal<K, V> mutate(final @NonNull Consumer<Map<K, V>> mutation) {
+	private @NonNull MapSignal<K, V> mutate(final Consumer<Map<K, V>> mutation) {
 		return super.transform(current -> {
 			final Map<K, V> map = new LinkedHashMap<>(current);
 			mutation.accept(map);

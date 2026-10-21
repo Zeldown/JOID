@@ -78,7 +78,7 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 		tessellator.draw();
 	}
 
-	private void bindFace(final @NonNull MsdfFontFace face) {
+	private void bindFace(final MsdfFontFace face) {
 		this.face = face;
 		face.getTexture().bindTextureOnly(TextureWrap.CLAMP_TO_EDGE);
 		super.getShader()
@@ -86,7 +86,7 @@ public final class MsdfTextRenderer extends GlyphTextRenderer<MsdfFontFace> {
 		.uniform("pxRange", face.getAtlas().getDistanceRange());
 	}
 
-	private double getVerticalSize(final @NonNull MsdfFontFace face, final double size) {
+	private double getVerticalSize(final MsdfFontFace face, final double size) {
 		final PixelGrid grid = super.getGrid();
 		final double xHeight = face.getXHeight() * size * grid.getScaleY();
 		return grid.isAligned() && xHeight > 0D ? size * Math.max(1D, Math.round(xHeight)) / xHeight : size;

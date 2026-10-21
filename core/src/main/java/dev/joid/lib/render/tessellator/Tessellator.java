@@ -376,7 +376,7 @@ public final class Tessellator {
 		Tessellator.intBuffer.put(this.rawBuffer[offset + 7]);
 	}
 
-	private static int getOutputCount(final @NonNull DrawMode drawMode, final int vertexCount) {
+	private static int getOutputCount(final DrawMode drawMode, final int vertexCount) {
 		switch (drawMode) {
 		case QUADS:
 			return vertexCount / 4 * 6;

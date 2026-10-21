@@ -231,12 +231,12 @@ public class ModelViewerNode extends BaseModelNode {
 		this.drawnRotationPitch = this.rotationPitch;
 	}
 
-	private void aim(final @NonNull Point rotation) {
+	private void aim(final Point rotation) {
 		this.rotationValue.update(rotation);
 		this.turn(Point.of(this.rotationYaw, this.rotationPitch));
 	}
 
-	private void turn(final @NonNull Point rotation) {
+	private void turn(final Point rotation) {
 		this.rotationYaw   = rotation.getX();
 		this.rotationPitch = rotation.getY();
 		Signal.batch(() -> {

@@ -2265,7 +2265,7 @@ public abstract class Node implements INode {
 		return copy;
 	}
 
-	private @NonNull Node duplicate(final boolean ghost, final @NonNull Map<Object, Object> copies) {
+	private @NonNull Node duplicate(final boolean ghost, final Map<Object, Object> copies) {
 		final Node copy = this.instantiate();
 		copies.put(this, copy);
 		copy.ui = this.ui;
@@ -2305,7 +2305,7 @@ public abstract class Node implements INode {
 		return copy;
 	}
 
-	private void copyFields(final @NonNull Node copy, final @NonNull Map<Object, Object> copies) {
+	private void copyFields(final Node copy, final Map<Object, Object> copies) {
 		for (final Field field : this.getFields(this.getClass())) {
 			if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers())) {
 				continue;
@@ -2331,7 +2331,7 @@ public abstract class Node implements INode {
 		}
 	}
 
-	private @NonNull List<@NonNull Field> getFields(final @NonNull Class<?> clazz) {
+	private @NonNull List<@NonNull Field> getFields(final Class<?> clazz) {
 		final List<Field> fields = new ArrayList<>();
 		for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
 			Collections.addAll(fields, c.getDeclaredFields());

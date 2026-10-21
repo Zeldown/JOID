@@ -97,7 +97,7 @@ public abstract class BitmapTextRenderer<F extends IFontFace> extends GlyphTextR
 		super.getShader().uniform("grayscale", grayscale);
 	}
 
-	private void bindTexture(final @NonNull ITexture texture) {
+	private void bindTexture(final ITexture texture) {
 		this.texture = texture;
 		BridgeHandler.RENDER.get().getState().texture(texture).textureFilter(TextureFilter.NEAREST).textureWrap(TextureWrap.CLAMP_TO_EDGE);
 		super.getShader().uniform("texel", 1F / texture.getWidth(), 1F / texture.getHeight());

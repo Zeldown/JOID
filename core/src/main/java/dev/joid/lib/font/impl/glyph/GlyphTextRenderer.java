@@ -168,11 +168,11 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		this.shader.uniform("pixel", pixelX, pixelY);
 	}
 
-	private @NonNull F getFace(final @NonNull TextInfo info) {
+	private @NonNull F getFace(final TextInfo info) {
 		return this.getFont(info).getFace(info.getWeight(), info.isItalic());
 	}
 
-	private @NonNull GlyphFont<F> getFont(final @NonNull TextInfo info) {
+	private @NonNull GlyphFont<F> getFont(final TextInfo info) {
 		final IFont font = info.getFont();
 		if (!(font instanceof GlyphFont) || font.getTextRenderer().getClass() != this.getClass()) {
 			throw new IllegalArgumentException(this.getClass().getName() + " cannot draw the font " + font.getClass().getName() + ", it is drawn by " + font.getTextRenderer().getClass().getName() + ": draw it with info.getFont().getTextRenderer()");
@@ -181,7 +181,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return (GlyphFont<F>) font;
 	}
 
-	private @NonNull GlyphFont<F> getFont(final @NonNull GlyphFont<F> font, final @NonNull TextStyle style) {
+	private @NonNull GlyphFont<F> getFont(final GlyphFont<F> font, final TextStyle style) {
 		final IFont styleFont = style.getFont();
 		if (styleFont == null || styleFont == font) {
 			return font;
@@ -208,7 +208,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return true;
 	}
 
-	private @NonNull FontBounds draw(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
+	private @NonNull FontBounds draw(final GlyphLayout<F> layout, final double x, final double y, final TextInfo info, final double runX, final double runY, final double runWidth, final double runHeight) {
 		if (layout.getPlacements().isEmpty()) {
 			return FontBounds.empty();
 		}
@@ -242,7 +242,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return FontBounds.of(layout.getWidth(), this.getLineHeight(info));
 	}
 
-	private @NonNull List<TextGlyph<F>> glyphs(final @NonNull GlyphLayout<F> layout, final double x, final double y, final @NonNull TextInfo info, final PixelGrid grid) {
+	private @NonNull List<TextGlyph<F>> glyphs(final GlyphLayout<F> layout, final double x, final double y, final TextInfo info, final PixelGrid grid) {
 		final List<GlyphPlacement<F>> placements = layout.getPlacements();
 		final List<TextGlyph<F>> glyphs = new ArrayList<>(placements.size());
 		final float size = info.getFontSize();
@@ -265,7 +265,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return glyphs;
 	}
 
-	private void render(final @NonNull List<TextGlyph<F>> glyphs, final double runX, final double runY, final double runWidth, final double runHeight) {
+	private void render(final List<TextGlyph<F>> glyphs, final double runX, final double runY, final double runWidth, final double runHeight) {
 		this.runX = runX;
 		this.runY = runY;
 		this.runWidth = runWidth;
@@ -288,7 +288,7 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		}
 	}
 
-	private static float space(final @NonNull IFontFace face) {
+	private static float space(final IFontFace face) {
 		return face.hasGlyph(' ') ? face.getAdvance(' ') : 0.25F;
 	}
 
@@ -300,12 +300,12 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return Math.signum(offset * unit) * Math.max(1D, Math.floor(Math.abs(offset * unit) + 0.5D + 1E-6D)) / unit;
 	}
 
-	private static @NonNull Color tint(final @NonNull Color color, final float tint) {
+	private static @NonNull Color tint(final Color color, final float tint) {
 		final Color current = color.update();
 		return new Color(current.getRedF() * tint, current.getGreenF() * tint, current.getBlueF() * tint, current.getAlphaF());
 	}
 
-	private static @NonNull Color color(final @NonNull TextStyle style, final @NonNull TextInfo info) {
+	private static @NonNull Color color(final TextStyle style, final TextInfo info) {
 		if (!info.isColored()) {
 			return info.getColor();
 		}

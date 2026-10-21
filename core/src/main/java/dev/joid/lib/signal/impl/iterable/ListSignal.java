@@ -64,7 +64,7 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return Collections.unmodifiableList(new ArrayList<>(value));
 	}
 
-	private @NonNull ListSignal<E> mutate(final @NonNull Consumer<List<E>> mutation) {
+	private @NonNull ListSignal<E> mutate(final Consumer<List<E>> mutation) {
 		return super.transform(current -> {
 			final List<E> list = new ArrayList<>(current);
 			mutation.accept(list);

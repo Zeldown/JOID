@@ -256,7 +256,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		}
 	}
 
-	private int getLineIndex(final @NonNull FieldLayout layout, final int pos) {
+	private int getLineIndex(final FieldLayout layout, final int pos) {
 		final List<FieldLine> lines = layout.getLines();
 		for (int lineIdx = 0; lineIdx < lines.size(); lineIdx++) {
 			final FieldLine line = lines.get(lineIdx);
@@ -268,11 +268,11 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		return Math.max(0, lines.size() - 1);
 	}
 
-	private double getX(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final int pos) {
+	private double getX(final FieldLayout layout, final FieldLine line, final int pos) {
 		return super.getLineX(layout.getText(), layout.getTags(), line.getStart(), line.getEnd(), line.getPrefix(), pos);
 	}
 
-	private int getPosition(final @NonNull FieldLayout layout, final @NonNull FieldLine line, final double x) {
+	private int getPosition(final FieldLayout layout, final FieldLine line, final double x) {
 		return super.getLinePosition(layout.getText(), layout.getTags(), line.getStart(), line.getEnd(), line.getPrefix(), x);
 	}
 

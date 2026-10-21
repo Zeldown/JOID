@@ -47,7 +47,7 @@ public final class MsdfFontLoader {
 		}));
 	}
 
-	private static @NonNull CompletableFuture<MsdfFontFace> read(final @NonNull Object handle) {
+	private static @NonNull CompletableFuture<MsdfFontFace> read(final Object handle) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				final long start = System.nanoTime();
@@ -63,7 +63,7 @@ public final class MsdfFontLoader {
 		}, MsdfFontLoader.EXECUTOR);
 	}
 
-	private static @NonNull IMsdfSource source(final @NonNull Object handle) {
+	private static @NonNull IMsdfSource source(final Object handle) {
 		if (handle instanceof IMsdfSource) {
 			return (IMsdfSource) handle;
 		}

@@ -54,15 +54,15 @@ public final class FontFamily<F extends IFontFace> {
 		return face;
 	}
 
-	private void warn(final @NonNull FontWeight weight, final boolean italic, final @NonNull F face) {
+	private void warn(final FontWeight weight, final boolean italic, final F face) {
 		JOIDLog.devWarnOnce("FontFamily." + System.identityHashCode(this) + "." + FontFamily.style(weight, italic), () -> "The font weight " + FontFamily.style(weight, italic) + " is not loaded in the family of " + face.getName() + ", " + FontFamily.style(face.getWeight(), face.isItalic()) + " is drawn instead (loaded: " + this.faces.stream().map(FontFamily::describe).distinct().collect(Collectors.joining(", ")) + ")");
 	}
 
-	private static @NonNull String style(final @NonNull FontWeight weight, final boolean italic) {
+	private static @NonNull String style(final FontWeight weight, final boolean italic) {
 		return weight.getValue() + (italic ? " italic" : "");
 	}
 
-	private static @NonNull String describe(final @NonNull IFontFace face) {
+	private static @NonNull String describe(final IFontFace face) {
 		return FontFamily.style(face.getWeight(), face.isItalic()) + " " + face.getName();
 	}
 
@@ -76,7 +76,7 @@ public final class FontFamily<F extends IFontFace> {
 		return desired == 400 || desired > 500 ? candidate > current : candidate < current;
 	}
 
-	private static <F extends IFontFace> @NonNull F match(final @NonNull List<F> faces, final int desired) {
+	private static <F extends IFontFace> @NonNull F match(final List<F> faces, final int desired) {
 		F match = faces.get(0);
 		for (final F face : faces) {
 			if (FontFamily.closer(face.getWeight().getValue(), match.getWeight().getValue(), desired)) {

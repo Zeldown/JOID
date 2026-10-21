@@ -48,7 +48,7 @@ public class SetSignal<E> extends Signal<Set<E>> {
 		return Collections.unmodifiableSet(new LinkedHashSet<>(value));
 	}
 
-	private @NonNull SetSignal<E> mutate(final @NonNull Consumer<Set<E>> mutation) {
+	private @NonNull SetSignal<E> mutate(final Consumer<Set<E>> mutation) {
 		return super.transform(current -> {
 			final Set<E> set = new LinkedHashSet<>(current);
 			mutation.accept(set);

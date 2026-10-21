@@ -221,7 +221,7 @@ public final class DrawShape {
 		});
 	}
 
-	private void drawRounded(final double x, final double y, final double width, final double height, final @NonNull Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom, final double stroke) {
+	private void drawRounded(final double x, final double y, final double width, final double height, final Color color, final float radius, final boolean roundedLeft, final boolean roundedTop, final boolean roundedRight, final boolean roundedBottom, final double stroke) {
 		if (width == 0D || height == 0D) {
 			return;
 		}
@@ -235,7 +235,7 @@ public final class DrawShape {
 		this.drawRoundedShape(corner, (float) (left + (roundedLeft ? corner : 0F)), (float) (top + (roundedTop ? corner : 0F)), (float) (right - (roundedRight ? corner : 0F)), (float) (bottom - (roundedBottom ? corner : 0F)), left, top, right, bottom, color, (float) stroke, grid.isAligned());
 	}
 
-	private void drawEdges(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
+	private void drawEdges(final double left, final double top, final double right, final double bottom, final Color color) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		if (render.getPixelGrid().isAligned()) {
 			this.drawQuad(left, top, right, bottom, color);
@@ -250,12 +250,12 @@ public final class DrawShape {
 		this.drawOutline(Math.min(left, right), Math.min(top, bottom), Math.max(left, right), Math.max(top, bottom), color, 0F);
 	}
 
-	private void drawOutline(final double left, final double top, final double right, final double bottom, final @NonNull Color color, final float stroke) {
+	private void drawOutline(final double left, final double top, final double right, final double bottom, final Color color, final float stroke) {
 		final double pixel = BridgeHandler.RENDER.get().getPixelGrid().getPixelSize();
 		this.drawRoundedShape(0F, (float) (left + pixel / 2D), (float) (top + pixel / 2D), (float) (right - pixel / 2D), (float) (bottom - pixel / 2D), left, top, right, bottom, color, stroke, false);
 	}
 
-	private void drawRoundedShape(final float radius, final float x1, final float y1, final float x2, final float y2, final double left, final double top, final double right, final double bottom, final @NonNull Color color, final float stroke, final boolean aligned) {
+	private void drawRoundedShape(final float radius, final float x1, final float y1, final float x2, final float y2, final double left, final double top, final double right, final double bottom, final Color color, final float stroke, final boolean aligned) {
 		final double pixel = BridgeHandler.RENDER.get().getPixelGrid().getPixelSize();
 		final Color resolved = color.update();
 		RoundedShader.use(radius, x1, y1, x2, y2, () -> {
@@ -273,11 +273,11 @@ public final class DrawShape {
 		});
 	}
 
-	private void drawQuad(final double left, final double top, final double right, final double bottom, final @NonNull Color color) {
+	private void drawQuad(final double left, final double top, final double right, final double bottom, final Color color) {
 		this.drawPoints(DrawMode.POLYGON, color, false, Point.of(left, bottom), Point.of(right, bottom), Point.of(right, top), Point.of(left, top));
 	}
 
-	private void drawPoints(final @NonNull DrawMode mode, final @NonNull Color color, final boolean smooth, final @NonNull Point @NonNull... points) {
+	private void drawPoints(final DrawMode mode, final Color color, final boolean smooth, final Point... points) {
 		double minX = Double.POSITIVE_INFINITY;
 		double minY = Double.POSITIVE_INFINITY;
 		double maxX = Double.NEGATIVE_INFINITY;
@@ -311,7 +311,7 @@ public final class DrawShape {
 		});
 	}
 
-	private static boolean isSlanted(final @NonNull Point @NonNull... points) {
+	private static boolean isSlanted(final Point... points) {
 		for (int i = 0; i < points.length; i++) {
 			final Point start = points[i];
 			final Point end = points[(i + 1) % points.length];

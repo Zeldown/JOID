@@ -48,7 +48,7 @@ public final class ShaderPipeline {
 		}
 	}
 
-	private static void drawTexturedQuad(final @NonNull IFrameBuffer frameBuffer, final @NonNull ShaderPassContext context) {
+	private static void drawTexturedQuad(final IFrameBuffer frameBuffer, final ShaderPassContext context) {
 		final IRenderBridge render = BridgeHandler.RENDER.get();
 		final boolean aligned = render.getPixelGrid().isAligned();
 		render.getState().blend(BlendState.PREMULTIPLIED);
@@ -72,7 +72,7 @@ public final class ShaderPipeline {
 		tess.draw();
 	}
 
-	private static void renderMultiPass(final @NonNull ShaderPassContext area, final @NonNull List<IShaderPass> passes, final @NonNull Runnable baseDraw) {
+	private static void renderMultiPass(final ShaderPassContext area, final List<IShaderPass> passes, final Runnable baseDraw) {
 		if (area.getWidth() <= 0D || area.getHeight() <= 0D) {
 			baseDraw.run();
 			return;
@@ -100,7 +100,7 @@ public final class ShaderPipeline {
 		});
 	}
 
-	private static void drawInto(final @NonNull IFrameBuffer target, final @NonNull ShaderPassContext context, final @NonNull Runnable draw) {
+	private static void drawInto(final IFrameBuffer target, final ShaderPassContext context, final Runnable draw) {
 		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().frameBuffer(target).viewport(0, 0, context.getTextureWidth(), context.getTextureHeight());
 			render.getProjection().with(projection -> render.getModelView().with(modelView -> {
@@ -112,7 +112,7 @@ public final class ShaderPipeline {
 		});
 	}
 
-	private static void drawPass(final @NonNull IShaderPass pass, final @NonNull ShaderPassContext context, final @NonNull IFrameBuffer source) {
+	private static void drawPass(final IShaderPass pass, final ShaderPassContext context, final IFrameBuffer source) {
 		pass.bind(context);
 		try {
 			ShaderPipeline.drawTexturedQuad(source, context);

@@ -674,7 +674,7 @@ public abstract class FieldNode<V> extends Node {
 		this.focused = focused;
 	}
 
-	private void applySelection(final @NonNull FieldSelection selection) {
+	private void applySelection(final FieldSelection selection) {
 		this.selection = selection;
 		this.alignCursor();
 	}
@@ -699,7 +699,7 @@ public abstract class FieldNode<V> extends Node {
 		this.lastInput = BridgeHandler.CLOCK.get().currentTimeMillis();
 	}
 
-	private boolean repeatKey(final @NonNull Key key) {
+	private boolean repeatKey(final Key key) {
 		final int cursor = this.getCursorPosition();
 		if (key == Key.LEFT) {
 			this.placeCursor(this.isWordKeyDown() ? this.previousWordIndex() : cursor - 1, false);
@@ -733,7 +733,7 @@ public abstract class FieldNode<V> extends Node {
 		return false;
 	}
 
-	private void pressKey(final @NonNull Key key) {
+	private void pressKey(final Key key) {
 		if (this.handleKey(key)) {
 			if (this.focused) {
 				this.holdInput(key);
@@ -802,7 +802,7 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	private boolean replace(final @NonNull String newText, final boolean refusable) {
+	private boolean replace(final String newText, final boolean refusable) {
 		final String text = this.limit(newText);
 		final boolean shown = text.equals(this.text);
 		if (shown && refusable) {
@@ -823,7 +823,7 @@ public abstract class FieldNode<V> extends Node {
 		return accepted;
 	}
 
-	private boolean edit(final @NonNull String newText, final @NonNull Runnable place) {
+	private boolean edit(final String newText, final Runnable place) {
 		if (newText.equals(this.text) || !this.accepts(newText) || !this.accept.test(newText)) {
 			return false;
 		}
@@ -849,7 +849,7 @@ public abstract class FieldNode<V> extends Node {
 		this.requesting = requesting;
 	}
 
-	private boolean changeText(final @NonNull String text, final boolean refusable) {
+	private boolean changeText(final String text, final boolean refusable) {
 		if (!refusable) {
 			this.textValue.update(text);
 			return true;
@@ -872,7 +872,7 @@ public abstract class FieldNode<V> extends Node {
 		super.sync("text", this.text);
 	}
 
-	private boolean rewrite(final @NonNull String newText, final boolean refusable) {
+	private boolean rewrite(final String newText, final boolean refusable) {
 		final int length = this.text.length();
 		final int cursor = this.getCursorPosition();
 		final FieldSelection selection = this.getSelection();
@@ -895,7 +895,7 @@ public abstract class FieldNode<V> extends Node {
 		return true;
 	}
 
-	private V valueOf(final @NonNull String text) {
+	private V valueOf(final String text) {
 		if (text.isEmpty() && this.allowEmpty) {
 			return null;
 		}
@@ -904,7 +904,7 @@ public abstract class FieldNode<V> extends Node {
 		return parsed == null ? this.fallback : this.correct(parsed);
 	}
 
-	private boolean isValid(final @NonNull String text) {
+	private boolean isValid(final String text) {
 		if (text.isEmpty() && this.allowEmpty) {
 			return true;
 		}
@@ -927,12 +927,12 @@ public abstract class FieldNode<V> extends Node {
 		return next != null;
 	}
 
-	private @NonNull String limit(final @NonNull String text) {
+	private @NonNull String limit(final String text) {
 		final String cleaned = this.clean(text);
 		return this.maxTextLength >= 0 ? FieldNode.cut(cleaned, this.maxTextLength) : cleaned;
 	}
 
-	private @NonNull String clean(final @NonNull String text) {
+	private @NonNull String clean(final String text) {
 		final StringBuilder builder = new StringBuilder();
 		text.replace("\r\n", "\n").replace("\r", "\n").codePoints().forEach(codepoint -> {
 			if (codepoint == '\n' ? this.isMultiline() : !Character.isISOControl(codepoint)) {
@@ -942,7 +942,7 @@ public abstract class FieldNode<V> extends Node {
 		return builder.toString();
 	}
 
-	private void holdInput(final @NonNull Key key) {
+	private void holdInput(final Key key) {
 		this.firstInput = true;
 		this.inputting  = true;
 		this.lastInput  = BridgeHandler.CLOCK.get().currentTimeMillis();
@@ -1096,12 +1096,12 @@ public abstract class FieldNode<V> extends Node {
 		return this.isMac() ? Key.LEFT_SUPER.isDown() || Key.RIGHT_SUPER.isDown() : UI.isCtrlKeyDown();
 	}
 
-	private boolean isSeparator(final @NonNull int[] tags, final int index) {
+	private boolean isSeparator(final int[] tags, final int index) {
 		final char c = this.text.charAt(index);
 		return tags[index] == -1 && (c == ' ' || c == '\n');
 	}
 
-	private static void release(final @NonNull List<@NonNull Node> nodeList, final @NonNull FieldNode<?> pressed) {
+	private static void release(final List<Node> nodeList, final FieldNode<?> pressed) {
 		for (final Node node : nodeList) {
 			if (node != pressed && node instanceof FieldNode && ((FieldNode<?>) node).focused) {
 				((FieldNode<?>) node).release();
@@ -1111,13 +1111,13 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	private static <X> boolean settle(final @NonNull InteractiveValue<X> value, final X next) {
+	private static <X> boolean settle(final InteractiveValue<X> value, final X next) {
 		value.set(next);
 		value.commit();
 		return Objects.equals(value.get(), next);
 	}
 
-	private static @NonNull String cut(final @NonNull String text, final int codepoints) {
+	private static @NonNull String cut(final String text, final int codepoints) {
 		return text.codePointCount(0, text.length()) <= codepoints ? text : text.substring(0, text.offsetByCodePoints(0, codepoints));
 	}
 

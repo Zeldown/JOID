@@ -241,7 +241,7 @@ public class ReorderableFlexNode extends FlexNode {
 		return this.reorderedNode == child;
 	}
 
-	private void startDragInternal(final @NonNull Node child, final double mouseX, final double mouseY) {
+	private void startDragInternal(final Node child, final double mouseX, final double mouseY) {
 		final int index = super.getChildren().indexOf(child);
 		final boolean started = child.fireDragStart(() -> {
 			this.reorderedNode = child;
@@ -348,7 +348,7 @@ public class ReorderableFlexNode extends FlexNode {
 		return slot;
 	}
 
-	private void move(final @NonNull Node dragged, final int index) {
+	private void move(final Node dragged, final int index) {
 		final List<Node> free = new ArrayList<>();
 		int position = 0;
 		for (int i = 0; i < this.logicalOrder.size(); i++) {
@@ -394,7 +394,7 @@ public class ReorderableFlexNode extends FlexNode {
 		super.fire(ReorderableFlexNode.REORDER_END, () -> NodeReorderEvent.Post.create(this, node, oldIndex, newIndex));
 	}
 
-	private double extent(final @NonNull List<Node> children) {
+	private double extent(final List<Node> children) {
 		double extent = 0D;
 		for (final Node child : children) {
 			if (super.isLaidOut(child)) {
@@ -404,7 +404,7 @@ public class ReorderableFlexNode extends FlexNode {
 		return extent;
 	}
 
-	private double mainSize(final @NonNull Node child) {
+	private double mainSize(final Node child) {
 		return super.getDirection() == Axis.VERTICAL ? child.getHeight() : child.getWidth();
 	}
 

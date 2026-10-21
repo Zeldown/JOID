@@ -389,7 +389,7 @@ public class ResourcePlayerNode extends Node {
 		return this.fork.isFailed() || this.fork.isLoaded() && this.fork.getWidth() != 0 && this.fork.getHeight() != 0;
 	}
 
-	private void drawFrame(final @NonNull Resource fork) {
+	private void drawFrame(final Resource fork) {
 		Color.WHITE.bind();
 		if (fork.isFailed()) {
 			DrawUtils.RESOURCE.drawResource(super.getX(), super.getY(), super.getWidth(), super.getHeight(), fork);
@@ -440,7 +440,7 @@ public class ResourcePlayerNode extends Node {
 		}
 	}
 
-	private static Resource fork(final @NonNull Resource resource) {
+	private static Resource fork(final Resource resource) {
 		return resource.getDecoder() != null || resource.isFailed() || resource.getTexture() != null ? resource.fork() : null;
 	}
 

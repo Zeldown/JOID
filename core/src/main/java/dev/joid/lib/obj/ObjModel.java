@@ -53,7 +53,7 @@ public final class ObjModel implements IDrawableModel {
 		return new ObjModel(name, handle, texture);
 	}
 
-	private void load(final @NonNull Object handle) {
+	private void load(final Object handle) {
 		BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(Asset.of(handle).open()));
@@ -109,7 +109,7 @@ public final class ObjModel implements IDrawableModel {
 		}
 	}
 
-	private void close(final @NonNull BufferedReader reader) {
+	private void close(final BufferedReader reader) {
 		try {
 			reader.close();
 		} catch (final IOException e) {
@@ -158,7 +158,7 @@ public final class ObjModel implements IDrawableModel {
 		return this.vertices.isEmpty() ? 0D : statistics.getMax() - statistics.getMin();
 	}
 
-	private ObjVertex parseVertex(final @NonNull String line, final int lineCount, final @NonNull Pattern pattern, final @NonNull String problem) {
+	private ObjVertex parseVertex(final String line, final int lineCount, final Pattern pattern, final String problem) {
 		if (!pattern.matcher(line).matches()) {
 			throw this.malformed(line, lineCount, problem);
 		}
@@ -166,7 +166,7 @@ public final class ObjModel implements IDrawableModel {
 		return ObjVertex.of(Float.parseFloat(tokens[0]), Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
-	private ObjTextureCoordinate parseTextureCoordinate(final @NonNull String line, final int lineCount) {
+	private ObjTextureCoordinate parseTextureCoordinate(final String line, final int lineCount) {
 		if (!ObjModel.TEXTURE_PATTERN.matcher(line).matches()) {
 			throw this.malformed(line, lineCount, "is not a texture coordinate \"vt u v\" or \"vt u v w\"");
 		}
@@ -178,7 +178,7 @@ public final class ObjModel implements IDrawableModel {
 		return ObjTextureCoordinate.of(Float.parseFloat(tokens[0]), 1F - Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
 	}
 
-	private List<ObjFace> parseFaces(final Boolean groupTextured, final @NonNull String line, final int lineCount) {
+	private List<ObjFace> parseFaces(final Boolean groupTextured, final String line, final int lineCount) {
 		final boolean full = ObjModel.FACE_PATTERN.matcher(line).matches();
 		final boolean textured = full || ObjModel.FACE_TEXTURE_PATTERN.matcher(line).matches();
 		final boolean normal = full || ObjModel.FACE_NORMAL_PATTERN.matcher(line).matches();
@@ -222,7 +222,7 @@ public final class ObjModel implements IDrawableModel {
 		return list.get(position);
 	}
 
-	private @NonNull IllegalArgumentException malformed(final @NonNull String line, final int lineCount, final @NonNull String problem) {
+	private @NonNull IllegalArgumentException malformed(final String line, final int lineCount, final String problem) {
 		return new IllegalArgumentException("The OBJ model " + this.name + " cannot be read: its line " + lineCount + " \"" + line + "\" " + problem + ", fix this line in the model file");
 	}
 

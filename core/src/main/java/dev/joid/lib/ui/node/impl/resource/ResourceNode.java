@@ -149,7 +149,7 @@ public class ResourceNode extends Node {
 		return super.follow("stretch", stretch, value -> this.stretch = value);
 	}
 
-	private void drawResource(final @NonNull Resource resource) {
+	private void drawResource(final Resource resource) {
 		this.stretch.draw(super.getX(), super.getY(), super.getWidth(), super.getHeight(), resource);
 	}
 

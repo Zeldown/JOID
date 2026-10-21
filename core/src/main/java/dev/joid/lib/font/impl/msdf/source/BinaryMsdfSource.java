@@ -48,7 +48,7 @@ public final class BinaryMsdfSource extends MsdfSource {
 		}
 	}
 
-	private static @NonNull MsdfFontFace parse(final @NonNull InputStream stream) throws IOException {
+	private static @NonNull MsdfFontFace parse(final InputStream stream) throws IOException {
 		final byte[] magic = new byte[BinaryMsdfSource.MAGIC.length];
 		new DataInputStream(stream).readFully(magic);
 		if (!Arrays.equals(magic, BinaryMsdfSource.MAGIC)) {
@@ -113,7 +113,7 @@ public final class BinaryMsdfSource extends MsdfSource {
 		return leftDistance <= upDistance && leftDistance <= cornerDistance ? left : upDistance <= cornerDistance ? up : corner;
 	}
 
-	private static int variable(final @NonNull DataInputStream input) throws IOException {
+	private static int variable(final DataInputStream input) throws IOException {
 		int value = 0;
 		int shift = 0;
 		int part;
@@ -126,7 +126,7 @@ public final class BinaryMsdfSource extends MsdfSource {
 		return value;
 	}
 
-	private static @NonNull BufferedImage image(final @NonNull DataInputStream input, final int width, final int height) throws IOException {
+	private static @NonNull BufferedImage image(final DataInputStream input, final int width, final int height) throws IOException {
 		final int stride = width * BinaryMsdfSource.BYTES;
 		final byte[] row = new byte[stride];
 		final byte[] previous = new byte[stride];

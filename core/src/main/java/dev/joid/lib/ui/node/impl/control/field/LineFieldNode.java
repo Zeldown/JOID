@@ -150,11 +150,11 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		return super.listen(LineFieldNode.SUBMIT, listener);
 	}
 
-	private boolean isScrolling(final @NonNull String shown) {
+	private boolean isScrolling(final String shown) {
 		return this.alignX.isStart() || super.getShownInfo().getWidth(shown) > super.getWidth() - super.getMarginLeft() - super.getMarginRight() - 2D;
 	}
 
-	private double getTextX(final double x, final @NonNull String shown) {
+	private double getTextX(final double x, final String shown) {
 		if (this.isScrolling(shown)) {
 			return x + super.getMarginLeft() - this.xOffset;
 		}
@@ -166,7 +166,7 @@ public abstract class LineFieldNode<V> extends FieldNode<V> {
 		return x + super.getWidth() - super.getShownInfo().getWidth(shown) - super.getMarginRight() - 2D;
 	}
 
-	private double getX(final @NonNull String text, final @NonNull int[] tags, final int position) {
+	private double getX(final String text, final int[] tags, final int position) {
 		return super.getLineX(text, tags, 0, text.length(), "", position);
 	}
 

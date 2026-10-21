@@ -407,12 +407,12 @@ public final class Color extends LockableValue<Color> {
 		BridgeHandler.RENDER.get().getState().color(1F, 1F, 1F, 1F);
 	}
 
-	private @NonNull Color constant(final @NonNull String name) {
+	private @NonNull Color constant(final String name) {
 		this.constant = name;
 		return super.lock();
 	}
 
-	private void assign(final @NonNull Color color, final int channel) {
+	private void assign(final Color color, final int channel) {
 		this.r = color.r;
 		this.g = color.g;
 		this.b = color.b;
@@ -421,16 +421,16 @@ public final class Color extends LockableValue<Color> {
 		this.channels |= this.update == null ? 0 : channel;
 	}
 
-	private @NonNull Color derive(final float r, final float g, final float b, final float a, final @NonNull UnaryOperator<Color> transform) {
+	private @NonNull Color derive(final float r, final float g, final float b, final float a, final UnaryOperator<Color> transform) {
 		final ColorGradient gradient = this.isGradient() ? ColorGradient.of(transform.apply(this.gradient.getStartColor()), transform.apply(this.gradient.getEndColor()), this.gradient.getStartPoint(), this.gradient.getEndPoint()) : null;
 		return new Color(r, g, b, a, this.follow(transform), gradient);
 	}
 
-	private UnaryOperator<Color> follow(final @NonNull UnaryOperator<Color> transform) {
+	private UnaryOperator<Color> follow(final UnaryOperator<Color> transform) {
 		return this.update == null ? null : color -> transform.apply(this.update());
 	}
 
-	private static @NonNull Color lerp(final @NonNull Color from, final @NonNull Color to, final float progress) {
+	private static @NonNull Color lerp(final Color from, final Color to, final float progress) {
 		final float inv = 1F - progress;
 		return new Color(from.r * inv + to.r * progress, from.g * inv + to.g * progress, from.b * inv + to.b * progress, from.a * inv + to.a * progress);
 	}
@@ -439,7 +439,7 @@ public final class Color extends LockableValue<Color> {
 		return Math.max(0F, Math.min(1F, value));
 	}
 
-	private static @NonNull List<String> arguments(final @NonNull String text, final int start, final int... counts) {
+	private static @NonNull List<String> arguments(final String text, final int start, final int... counts) {
 		if (!text.endsWith(")")) {
 			throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
 		}
