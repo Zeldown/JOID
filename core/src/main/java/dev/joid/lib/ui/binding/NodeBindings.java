@@ -273,6 +273,20 @@ public final class NodeBindings {
 		}
 	}
 
+	private void deliver(final Runnable task) {
+		final boolean draining = this.draining;
+		this.draining = true;
+		try {
+			task.run();
+		} finally {
+			this.draining = draining;
+		}
+
+		if (!draining && this.batch == 0) {
+			this.drain();
+		}
+	}
+
 	private <E extends Event> E fire(final EventType<?> type, final Supplier<E> event, final boolean subscribed) {
 		if (!this.eventBus.has(type)) {
 			return null;
@@ -284,7 +298,7 @@ public final class NodeBindings {
 				this.runner.accept(() -> this.eventBus.fire(type, fired));
 			}
 		};
-		final Runnable settling = subscribed ? () -> SignalContext.current().settle(firing) : firing;
+		final Runnable settling = subscribed ? () -> SignalContext.current().settle(() -> this.deliver(firing)) : firing;
 		if (fired instanceof ICancellableEvent || fired instanceof IConsumableEvent) {
 			firing.run();
 		} else if (this.batch > 0 || this.draining) {

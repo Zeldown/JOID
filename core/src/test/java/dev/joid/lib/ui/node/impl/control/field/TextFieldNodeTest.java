@@ -669,6 +669,19 @@ public class TextFieldNodeTest {
 	}
 
 	@Test
+	public void blursItsFocusedFieldBeforeFocusingTheClickedOne() {
+		final List<String> events = new ArrayList<>();
+		final TextFieldNode first = TextFieldNode.create(100D, 100D, 200D).info(this.info());
+		final TextFieldNode second = TextFieldNode.create(100D, 200D, 200D).info(this.info());
+		first.onBlur(event -> events.add("blur first " + second.isFocused()));
+		second.onFocus(event -> events.add("focus second " + first.isFocused()));
+		this.bridges.open(new NodeUI(first, second));
+		first.focus();
+		this.click(124D, 220D);
+		Assert.assertEquals(Arrays.asList("blur first false", "focus second false"), events);
+	}
+
+	@Test
 	public void insertsWhatIsTypedAtTheCursor() {
 		final TextFieldNode field = this.field("hllo").cursorPosition(1);
 		this.type(field, "e");

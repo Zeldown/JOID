@@ -98,6 +98,23 @@ public class SliderNodeTest {
 	}
 
 	@Test
+	public void announcesTheValueItsOwnListenerGivesItInItsLastChangeOfANewRange() {
+		final List<String> changes = new ArrayList<>();
+		final Signal<Integer> volume = new Signal<>(0);
+		final IntegerSlider slider = new IntegerSlider().<IntegerSlider>range(0, 10).value(volume);
+		this.bridges.open(new NodeUI(slider)).frame();
+		slider.onChange(event -> {
+			if (event.getValue() < 5) {
+				slider.change(5);
+			}
+		});
+		slider.onChange(event -> changes.add(event.getPrevious() + " " + event.getValue()));
+		slider.range(4, 10);
+		Assert.assertEquals(Arrays.asList("0 4", "4 5"), changes);
+		Assert.assertEquals(5, volume.peek().intValue());
+	}
+
+	@Test
 	public void takesBackTheValueOfItsSignalOnceItsRangeAllowsIt() {
 		final Signal<Integer> volume = new Signal<>(50);
 		final IntegerSlider slider = new IntegerSlider().<IntegerSlider>range(0, 10).value(volume);

@@ -63,6 +63,24 @@ public class CheckboxNodeTest {
 	}
 
 	@Test
+	public void announcesTheStateItsOwnListenerGivesItInItsLastChangeOfAWriteOfItsSignal() {
+		final List<Boolean> changes = new ArrayList<>();
+		final BooleanSignal subtitles = new BooleanSignal(false);
+		final Checkbox checkbox = new Checkbox().checked(subtitles);
+		this.bridges.open(new NodeUI(checkbox)).frame();
+		checkbox.onChange(event -> {
+			if (event.getValue()) {
+				checkbox.change(false);
+			}
+		});
+		checkbox.onChange(event -> changes.add(event.getValue()));
+		subtitles.set(true);
+		Assert.assertFalse(checkbox.isChecked());
+		Assert.assertFalse(subtitles.peek());
+		Assert.assertEquals(Arrays.asList(true, false), changes);
+	}
+
+	@Test
 	public void catchesUpWithASilentWriteOfItsSignalAtTheNextFrame() {
 		final BooleanSignal subtitles = new BooleanSignal(true);
 		final Checkbox checkbox = new Checkbox().checked(subtitles);

@@ -427,6 +427,31 @@ public class NodeBindingsTest {
 	}
 
 	@Test
+	public void announcesTheValueItsOwnListenerGivesItInItsLastChangeOfAWriteOfItsSignal() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerSignal other = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(other);
+		this.bridges.open(new NodeUI(first, second)).frame();
+		first.onChange(event -> {
+			if (event.getValue() > 50) {
+				first.change(50);
+			}
+		});
+		first.onChange(event -> {
+			fired.add(event.getPrevious() + " " + event.getValue());
+			other.set(event.getValue());
+		});
+		signal.set(80);
+		this.bridges.frames(2);
+		Assert.assertEquals(Arrays.asList("0 80", "80 50"), fired);
+		Assert.assertEquals(50, (int) signal.peek());
+		Assert.assertEquals(50, (int) other.peek());
+		Assert.assertEquals(50, (int) second.getValue());
+	}
+
+	@Test
 	public void announcesTheValueAListenerOfItsSignalGivesItInItsLastChange() {
 		final IntegerSignal signal = new IntegerSignal(0);
 		final IntegerSignal other = new IntegerSignal(0);

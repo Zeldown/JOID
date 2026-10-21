@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.control.field;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -197,11 +198,12 @@ public abstract class FieldNode<V> extends Node {
 	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 		if (event.isConsumed() || !super.isHovered()) {
-			if (FieldNode.settle(this.focusedValue, false)) {
-				this.selectionValue.set(FieldSelection.of(0, 0));
-				this.pressCount = 0;
-			}
+			this.release();
 			return;
+		}
+
+		if (!this.focused) {
+			FieldNode.release(super.getUi().getNodeList(), this);
 		}
 
 		if (!FieldNode.settle(this.focusedValue, true)) {
@@ -641,6 +643,13 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		return previous;
+	}
+
+	private void release() {
+		if (FieldNode.settle(this.focusedValue, false)) {
+			this.selectionValue.set(FieldSelection.of(0, 0));
+			this.pressCount = 0;
+		}
 	}
 
 	private void applyFocus(final boolean focused) {
@@ -1084,6 +1093,16 @@ public abstract class FieldNode<V> extends Node {
 	private boolean isSeparator(final @NonNull int[] tags, final int index) {
 		final char c = this.text.charAt(index);
 		return tags[index] == -1 && (c == ' ' || c == '\n');
+	}
+
+	private static void release(final @NonNull List<@NonNull Node> nodeList, final @NonNull FieldNode<?> pressed) {
+		for (final Node node : nodeList) {
+			if (node != pressed && node instanceof FieldNode && ((FieldNode<?>) node).focused && !node.isHovered()) {
+				((FieldNode<?>) node).release();
+			}
+
+			FieldNode.release(node.getChildren(), pressed);
+		}
 	}
 
 	private static <X> boolean settle(final @NonNull InteractiveValue<X> value, final X next) {

@@ -800,6 +800,19 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void commitsItsTextBeforeAnotherClickedFieldIsFocused() {
+		final List<String> texts = new ArrayList<>();
+		final IntegerFieldNode first = IntegerFieldNode.create(0D, 0D, 100D, 30D).max(10).value(0).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F));
+		final TextFieldNode second = TextFieldNode.create(0D, 100D, 100D, 30D).info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).onFocus(event -> texts.add(first.getText()));
+		this.bridges.open(new NodeUI(first, second));
+		first.focused(true).cursorPosition(1);
+		this.type(first, "5");
+		this.bridges.move(10D, 110D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		Assert.assertEquals(Collections.singletonList("5"), texts);
+	}
+
+	@Test
 	public void keepsItsTypedValueOnEscape() {
 		final IntegerSignal signal = new IntegerSignal(4);
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(signal)).cursorPosition(1);
