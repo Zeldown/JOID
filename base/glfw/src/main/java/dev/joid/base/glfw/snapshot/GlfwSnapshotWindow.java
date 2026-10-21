@@ -20,6 +20,7 @@ public final class GlfwSnapshotWindow {
 
 		GLFW.glfwWindowHint(GLFW.GLFW_VISIBLE, GLFW.GLFW_FALSE);
 		GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, GLFW.GLFW_FALSE);
+		GLFW.glfwWindowHint(GLFW.GLFW_DECORATED, GLFW.GLFW_FALSE);
 		hints.run();
 
 		final long window = GLFW.glfwCreateWindow(width, height, "JOID snapshot", 0L, 0L);
