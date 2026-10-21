@@ -80,10 +80,8 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	public @NonNull Tween waypoint(final float waypoint) {
-		if (this.waypoints.length == this.waypointCount) {
-			this.waypoints  = Arrays.copyOf(this.waypoints, this.waypointCount + 1);
-			this.pathBuffer = Arrays.copyOf(this.pathBuffer, this.waypointCount + 3);
-		}
+		this.waypoints  = Arrays.copyOf(this.waypoints, this.waypointCount + 1);
+		this.pathBuffer = Arrays.copyOf(this.pathBuffer, this.waypointCount + 3);
 
 		this.waypoints[this.waypointCount] = waypoint;
 		this.waypointCount++;
