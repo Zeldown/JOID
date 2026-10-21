@@ -99,6 +99,10 @@ public final class Timeline extends BaseTween<Timeline> {
 			return this;
 		}
 
+		if (this.current != this) {
+			throw new IllegalStateException("The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()");
+		}
+
 		this.duration = 0;
 		for (final BaseTween<?> child : this.children) {
 			if (child.getRepeatCount() < 0) {

@@ -223,6 +223,16 @@ public class TimelineTest {
 	}
 
 	@Test
+	public void refusesToStartATimelineLeftOpen() {
+		try {
+			Timeline.createSequence().beginParallel().push(Tween.mark()).start();
+			Assert.fail("A timeline left open must not start");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void refusesAnInfiniteChild() {
 		try {
 			Timeline.createSequence().push(Tween.mark().repeat(Tween.INFINITY, 0F)).start();
