@@ -2151,8 +2151,8 @@ public abstract class Node implements INode {
 		.clamp(offset -> this.scrollMeasured ? Math.max(-(horizontal ? this.maxScrollX : this.maxScrollY), Math.min(offset, 0D)) : Math.min(offset, 0D))
 		.events(Node.BEFORE_SCROLL, (previous, offset) -> NodeScrollEvent.Pre.create(this, axis, previous, offset), Node.SCROLL, (previous, offset) -> NodeScrollEvent.Post.create(this, axis, previous, offset))
 		.then((previous, offset) -> {
-			if ((horizontal ? this.scrollEndX : this.scrollEndY) && this.scrollMeasured && this.bindings.isSubscribed()) {
-				this.fire(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, axis, previous, offset));
+			if ((horizontal ? this.scrollEndX : this.scrollEndY) && this.scrollMeasured) {
+				this.bindings.fireSubscribed(Node.SCROLL_TO_END, () -> NodeScrollEvent.Post.create(this, axis, previous, offset));
 			}
 		});
 	}

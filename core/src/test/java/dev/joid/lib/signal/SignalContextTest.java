@@ -185,6 +185,25 @@ public class SignalContextTest {
 	}
 
 	@Test
+	public void settlesTheTasksOfANestedFlushBeforeItReturns() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final List<String> trace = new ArrayList<>();
+		signal.onChange(value -> {
+			if (value < 3) {
+				SignalContext.current().settle(() -> {
+					trace.add("rewrite " + value);
+					signal.set(value + 1);
+					trace.add("rewritten " + value);
+				});
+				SignalContext.current().settle(() -> trace.add("settled " + value));
+			}
+			trace.add("changed " + value);
+		});
+		signal.set(1);
+		Assert.assertEquals(Arrays.asList("changed 1", "rewrite 1", "changed 2", "settled 1", "rewrite 2", "changed 3", "settled 2", "rewritten 2", "rewritten 1"), trace);
+	}
+
+	@Test
 	public void movesTheEpochOnEveryChange() {
 		final long epoch = SignalContext.getEpoch();
 		new Signal<>("a").set("b").fireChange();

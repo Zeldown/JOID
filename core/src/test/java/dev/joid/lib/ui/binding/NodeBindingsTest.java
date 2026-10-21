@@ -339,6 +339,70 @@ public class NodeBindingsTest {
 	}
 
 	@Test
+	public void firesTheEventsOfAChangeMadeInAControlListenerBeforeItReturns() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerSignal other = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(signal);
+		final Slider third = this.slider(other);
+		final Slider fourth = this.slider(other);
+		this.bridges.open(new NodeUI(first, second, third, fourth)).frame();
+		first.onChange(event -> {
+			fired.add("first");
+			third.change(50);
+			fired.add("after");
+		});
+		second.onChange(event -> fired.add("second"));
+		third.onChange(event -> fired.add("third"));
+		fourth.onChange(event -> fired.add("fourth"));
+		signal.set(60);
+		Assert.assertEquals(Arrays.asList("first", "second", "fourth", "third", "after"), fired);
+	}
+
+	@Test
+	public void firesTheEventsOfASignalWriteMadeInAControlListenerBeforeItReturns() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final IntegerSignal other = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(signal);
+		final Slider third = this.slider(other);
+		final Slider fourth = this.slider(other);
+		this.bridges.open(new NodeUI(first, second, third, fourth)).frame();
+		first.onChange(event -> {
+			fired.add("first");
+			other.set(40);
+			fired.add("after");
+		});
+		second.onChange(event -> fired.add("second"));
+		third.onChange(event -> fired.add("third"));
+		fourth.onChange(event -> fired.add("fourth"));
+		signal.set(60);
+		Assert.assertEquals(Arrays.asList("first", "second", "third", "fourth", "after"), fired);
+	}
+
+	@Test
+	public void firesTheChangesOfEachControlInTheirOrderWhenOneRewritesItsSignal() {
+		final IntegerSignal signal = new IntegerSignal(0);
+		final List<Object> fired = new ArrayList<>();
+		final Slider first = this.slider(signal);
+		final Slider second = this.slider(signal);
+		final Slider third = this.slider(signal);
+		this.bridges.open(new NodeUI(first, second, third)).frame();
+		first.onChange(event -> fired.add("first " + event.getPrevious() + " " + event.getValue()));
+		second.onChange(event -> {
+			fired.add("second " + event.getPrevious() + " " + event.getValue());
+			if (event.getValue() == 80) {
+				second.change(20);
+			}
+		});
+		third.onChange(event -> fired.add("third " + event.getPrevious() + " " + event.getValue()));
+		first.change(80);
+		Assert.assertEquals(Arrays.asList("second 0 80", "third 0 80", "third 80 20", "second 80 20", "first 80 20", "first 0 80"), fired);
+	}
+
+	@Test
 	public void keepsTheCursorAListenerOfItsChangePlaces() {
 		final List<Object> fired = new ArrayList<>();
 		final TextFieldNode field = this.text(new StringSignal("hello"));

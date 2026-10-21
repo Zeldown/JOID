@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
@@ -81,6 +82,17 @@ public class NodeScrollEventTest {
 		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollToEnd(event -> received.add("end")).onScroll(event -> received.add("scroll"));
 		this.bridges.open(new NodeUI(box)).frames(30);
 		box.scrollY(-1000D);
+		Assert.assertEquals(Arrays.asList("scroll", "end"), received);
+	}
+
+	@Test
+	public void firesTheScrollBeforeTheEndOfAScrollBoundToASignal() {
+		final List<String> received = new ArrayList<>();
+		final DoubleSignal offset = new DoubleSignal(0D);
+		final ContainerNode box = NodeScrollEventTest.box(1000D).onScrollToEnd(event -> received.add("end")).onScroll(event -> received.add("scroll"));
+		box.scrollY(offset);
+		this.bridges.open(new NodeUI(box)).frames(30);
+		offset.set(-1000D);
 		Assert.assertEquals(Arrays.asList("scroll", "end"), received);
 	}
 

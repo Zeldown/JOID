@@ -35,7 +35,6 @@ public final class SignalContext {
 	private int               readCount;
 	private boolean           tracing;
 	private boolean           flushing;
-	private boolean           settling;
 	private ComputedSignal<?> observer;
 
 	@Getter private long    readTotal;
@@ -180,7 +179,7 @@ public final class SignalContext {
 	}
 
 	private void flush() {
-		if (this.depth > 0 || this.flushing) {
+		if (this.depth > 0 || this.flushing || this.pendingQueue.isEmpty()) {
 			return;
 		}
 
@@ -206,22 +205,15 @@ public final class SignalContext {
 			this.writeBackMap.clear();
 		}
 
-		if (!this.settling) {
-			this.settling = true;
+		while (!this.settleQueue.isEmpty()) {
 			try {
-				while (!this.settleQueue.isEmpty()) {
-					try {
-						this.settleQueue.poll().run();
-					} catch (final RuntimeException exception) {
-						if (failure == null) {
-							failure = exception;
-						} else {
-							failure.addSuppressed(exception);
-						}
-					}
+				this.settleQueue.poll().run();
+			} catch (final RuntimeException exception) {
+				if (failure == null) {
+					failure = exception;
+				} else {
+					failure.addSuppressed(exception);
 				}
-			} finally {
-				this.settling = false;
 			}
 		}
 
