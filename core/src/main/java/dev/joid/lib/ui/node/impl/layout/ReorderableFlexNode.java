@@ -421,7 +421,7 @@ public class ReorderableFlexNode extends FlexNode {
 	private void applyReorder() {
 		this.syncOrder();
 
-		super.reorderChildren(new ArrayList<>(this.logicalOrder));
+		super.reorderChildren(this.logicalOrder);
 	}
 
 	private void autoScrollParent(final double mouseX, final double mouseY) {
