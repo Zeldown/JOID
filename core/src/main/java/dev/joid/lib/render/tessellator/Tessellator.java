@@ -288,7 +288,7 @@ public final class Tessellator {
 			}
 		}
 
-		if (this.drawMode == DrawMode.LINE_LOOP && size > 1 && this.isSamePoint(points[0], points[size - 1])) {
+		if (this.drawMode == DrawMode.LINE_LOOP && this.isSamePoint(points[0], points[size - 1])) {
 			size--;
 		}
 

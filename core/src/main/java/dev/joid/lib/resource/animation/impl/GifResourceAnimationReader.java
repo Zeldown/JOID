@@ -78,7 +78,7 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 
 		for (Node node = extensions.getFirstChild(); node != null; node = node.getNextSibling()) {
 			final IIOMetadataNode extension = (IIOMetadataNode) node;
-			if ("NETSCAPE".equals(extension.getAttribute("applicationID")) && extension.getUserObject() instanceof byte[]) {
+			if ("NETSCAPE".equals(extension.getAttribute("applicationID"))) {
 				final byte[] data = (byte[]) extension.getUserObject();
 				if (data.length >= 3 && data[0] == 1) {
 					final int loops = (data[1] & 0xFF) | (data[2] & 0xFF) << 8;

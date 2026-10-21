@@ -409,7 +409,7 @@ public class ReorderableFlexNode extends FlexNode {
 	}
 
 	private void syncOrder() {
-		this.logicalOrder.removeIf(child -> child != this.reorderedNode && !super.getChildren().contains(child));
+		this.logicalOrder.removeIf(child -> !super.getChildren().contains(child));
 		for (final Node child : super.getChildren()) {
 			if (!this.logicalOrder.contains(child)) {
 				this.logicalOrder.add(child);

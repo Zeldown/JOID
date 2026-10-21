@@ -89,7 +89,7 @@ public final class DrawText {
 					overflowText.add(element.copyWithText(elementText).modifier(null));
 				}
 
-				if (overflowText.isEmpty() || overflowText.getText().isEmpty()) {
+				if (overflowText.getText().isEmpty()) {
 					return FontBounds.empty();
 				}
 
