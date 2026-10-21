@@ -265,7 +265,7 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 			}
 		}
 
-		return Math.max(0, lines.size() - 1);
+		return 0;
 	}
 
 	private double getX(final FieldLayout layout, final FieldLine line, final int pos) {

@@ -66,7 +66,7 @@ public class ApngResourceAnimationReader implements IResourceAnimationReader {
 				break;
 			case "IDAT":
 				seenData = true;
-				if (controls.size() == 1 && datas.size() == 1) {
+				if (controls.size() == 1) {
 					datas.get(0).write(data);
 				}
 				break;

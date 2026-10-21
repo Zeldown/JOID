@@ -300,7 +300,7 @@ public final class Resource {
 			}
 		}
 
-		if (this.isLoaded() && !this.isUploaded() && this.getData() != null) {
+		if (this.isLoaded() && !this.isUploaded()) {
 			this.upload();
 		}
 	}

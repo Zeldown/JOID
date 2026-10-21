@@ -75,7 +75,7 @@ public class WindowUIBridge extends StackUIBridge {
 			width = Math.max(width, info.getWidth(line));
 		}
 		width += paddingX * 2D;
-		final double height = paddingY * 2D + lines.size() * lineHeight + Math.max(0, lines.size() - 1) * lineGap;
+		final double height = paddingY * 2D + lines.size() * lineHeight + (lines.size() - 1) * lineGap;
 
 		double x = mouseX + 14D;
 		double y = mouseY + 14D;

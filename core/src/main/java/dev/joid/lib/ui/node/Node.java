@@ -2060,9 +2060,7 @@ public abstract class Node implements INode {
 	}
 
 	private void endInteraction() {
-		if (this.dragging) {
-			this.stopDragging();
-		}
+		this.stopDragging();
 
 		if (this.dragged && this.draggable.getType() == DraggableType.MOVE) {
 			this.moveTo(this.x + (this.targetDragX - this.getAbsoluteX()), this.y + (this.targetDragY - this.getAbsoluteY()));

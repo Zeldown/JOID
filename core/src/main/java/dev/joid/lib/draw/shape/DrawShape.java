@@ -156,10 +156,6 @@ public final class DrawShape {
 			}
 		}
 
-		if (dashes.isEmpty()) {
-			return;
-		}
-
 		BridgeHandler.RENDER.get().withState(render -> {
 			render.getState().lineWidth(stroke).lineSmooth(true);
 			this.drawShape(DrawMode.LINES, color, dashes.toArray(new Point[0]));

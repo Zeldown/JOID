@@ -30,8 +30,8 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 			reader.setInput(input, false);
 			final IIOMetadataNode screen = GifResourceAnimationReader.child((IIOMetadataNode) reader.getStreamMetadata().getAsTree("javax_imageio_gif_stream_1.0"), "LogicalScreenDescriptor");
 			final int count = reader.getNumImages(true);
-			int width = screen == null ? 0 : Integer.parseInt(screen.getAttribute("logicalScreenWidth"));
-			int height = screen == null ? 0 : Integer.parseInt(screen.getAttribute("logicalScreenHeight"));
+			int width = Integer.parseInt(screen.getAttribute("logicalScreenWidth"));
+			int height = Integer.parseInt(screen.getAttribute("logicalScreenHeight"));
 			if (width <= 0 || height <= 0) {
 				width = reader.getWidth(0);
 				height = reader.getHeight(0);
@@ -48,8 +48,8 @@ public class GifResourceAnimationReader implements IResourceAnimationReader {
 				plays = GifResourceAnimationReader.plays(root, plays);
 
 				final int[] pixels = image.getRGB(0, 0, image.getWidth(), image.getHeight(), null, 0, image.getWidth());
-				final int x = descriptor == null ? 0 : Integer.parseInt(descriptor.getAttribute("imageLeftPosition"));
-				final int y = descriptor == null ? 0 : Integer.parseInt(descriptor.getAttribute("imageTopPosition"));
+				final int x = Integer.parseInt(descriptor.getAttribute("imageLeftPosition"));
+				final int y = Integer.parseInt(descriptor.getAttribute("imageTopPosition"));
 				final long delay = Long.parseLong(control.getAttribute("delayTime")) * 10L;
 				frames.add(ResourceAnimationFrame.of(canvas.compose(pixels, x, y, image.getWidth(), image.getHeight(), Blend.OVER, GifResourceAnimationReader.disposal(control)), delay <= 10L ? 100L : delay));
 			}
