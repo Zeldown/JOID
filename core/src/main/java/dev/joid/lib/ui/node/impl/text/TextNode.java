@@ -76,7 +76,7 @@ public class TextNode extends Node {
 	}
 
 	private boolean hasText() {
-		return this.text != null && !this.text.isEmpty() && !this.text.getText().isEmpty();
+		return this.text != null && !this.text.getText().isEmpty();
 	}
 
 	private void measure() {
