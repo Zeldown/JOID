@@ -164,6 +164,26 @@ public class UITest {
 	}
 
 	@Test
+	public void countsARefusedReloadAsAReadOfItsAnnotations() throws Exception {
+		final PopupUI ui = new PopupUI(this.trace);
+		this.bridges.open(ui);
+		final Field field = UI.class.getDeclaredField("annotationMap");
+		field.setAccessible(true);
+		field.set(ui, new HashMap<Class<?>, Annotation>());
+		ui.getOverlay().active(true);
+		try {
+			ui.reload();
+			Assert.fail("A reload must refuse a UI both popup and overlay");
+		} catch (final IllegalStateException expected) {
+			Assert.assertTrue(ui.getPopup().active());
+		}
+		ui.getPopup().active(false);
+		ui.reload();
+		Assert.assertFalse(ui.getPopup().active());
+		Assert.assertTrue(ui.getOverlay().active());
+	}
+
+	@Test
 	public void initializesAndUpdatesNothingByDefault() {
 		final PlainUI ui = new PlainUI();
 		ui.init();

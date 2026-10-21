@@ -623,8 +623,8 @@ public abstract class UI implements IIndexedElement {
 			AnnotationValues.merge(this.popup, this.annotationMap.get(UIDataPopup.class), annotations.get(UIDataPopup.class));
 			AnnotationValues.merge(this.scale, this.annotationMap.get(UIDataScale.class), annotations.get(UIDataScale.class));
 			AnnotationValues.merge(this.overlay, this.annotationMap.get(UIDataOverlay.class), annotations.get(UIDataOverlay.class));
-			this.checkKind();
 			this.annotationMap = annotations;
+			this.checkKind();
 			this.refreshTransition();
 
 			this.initialized = false;
