@@ -2,6 +2,8 @@ package dev.joid.lib.render.tessellator;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -41,6 +43,20 @@ public class TessellatorTest {
 			Assert.fail("A draw without start must be refused");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The Tessellator has no shape to draw, call start(DrawMode) before draw()", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void refusesVerticesWithoutStarting() {
+		final Tessellator tessellator = TessellatorAccess.create();
+		final List<Runnable> calls = Arrays.asList(() -> tessellator.addVertex(0D, 0D, 0D), () -> tessellator.setColor(255, 255, 255), () -> tessellator.setTextureUV(0D, 0D), () -> tessellator.setNormal(0F, 0F, 1F));
+		for (final Runnable call : calls) {
+			try {
+				call.run();
+				Assert.fail("A vertex without start must be refused");
+			} catch (final IllegalStateException expected) {
+				Assert.assertEquals("The Tessellator is not tessellating, call start(DrawMode) before giving it vertices", expected.getMessage());
+			}
 		}
 	}
 

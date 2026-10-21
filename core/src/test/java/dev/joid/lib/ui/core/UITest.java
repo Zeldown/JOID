@@ -151,6 +151,19 @@ public class UITest {
 	}
 
 	@Test
+	public void refusesToReloadAsAPopupAndAnOverlay() {
+		final PopupUI ui = new PopupUI(this.trace);
+		this.bridges.open(ui);
+		ui.getOverlay().active(true);
+		try {
+			ui.reload();
+			Assert.fail("A reload must refuse a UI both popup and overlay");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("The UI " + PopupUI.class.getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void initializesAndUpdatesNothingByDefault() {
 		final PlainUI ui = new PlainUI();
 		ui.init();

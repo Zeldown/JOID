@@ -640,6 +640,16 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void refusesAStepThatIsNotPositive() {
+		try {
+			IntegerFieldNode.create(0D, 0D, 100D).step(0);
+			Assert.fail("A step of 0 leaves the arrows without effect");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The step 0 of the IntegerFieldNode must be positive, pass a step of 1 or more", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void stepsByOneByDefault() {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).value(5));
 		this.press(field, Key.DOWN);

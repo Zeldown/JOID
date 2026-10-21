@@ -69,6 +69,36 @@ public class ModelViewerNodeTest {
 	}
 
 	@Test
+	public void refusesAZoomRangeWithItsMinAboveItsMax() {
+		try {
+			ModelViewerNode.create(100D, 100D, 200D, 200D).zoomRange(2D, 0.5D);
+			Assert.fail("A min above the max leaves the zoom range empty");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The min 2.0 of the zoom range is above its max 0.5, pass a min of at most 0.5", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void refusesARotationYawRangeWithItsMinAboveItsMax() {
+		try {
+			ModelViewerNode.create(100D, 100D, 200D, 200D).rotationYawRange(5D, -5D);
+			Assert.fail("A min above the max leaves the rotation yaw range empty");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The min 5.0 of the rotation yaw range is above its max -5.0, pass a min of at most -5.0", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void refusesARotationPitchRangeWithItsMinAboveItsMax() {
+		try {
+			ModelViewerNode.create(100D, 100D, 200D, 200D).rotationPitchRange(2D, -2D);
+			Assert.fail("A min above the max leaves the rotation pitch range empty");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The min 2.0 of the rotation pitch range is above its max -2.0, pass a min of at most -2.0", expected.getMessage());
+		}
+	}
+
+	@Test
 	public void bringsItsValuesInsideARangeGivenAfterThem() {
 		final ModelViewerNode viewer = ModelViewerNode.create(100D, 100D, 200D, 200D).zoom(1.5D).rotationYaw(30D).rotationPitch(-20D);
 		viewer.zoomRange(0.1D, 1D).rotationYawRange(-5D, 5D).rotationPitchRange(-2D, 2D);

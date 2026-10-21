@@ -136,6 +136,7 @@ public final class Tessellator {
 	}
 
 	public void setColor(final int r, final int g, final int b, final int a) {
+		this.checkDrawing();
 		final int red = Math.max(0, Math.min(255, r));
 		final int green = Math.max(0, Math.min(255, g));
 		final int blue = Math.max(0, Math.min(255, b));
@@ -155,12 +156,14 @@ public final class Tessellator {
 	}
 
 	public void setTextureUV(final double u, final double v) {
+		this.checkDrawing();
 		this.hasTexture = true;
 		this.textureU = u;
 		this.textureV = v;
 	}
 
 	public void setNormal(final float x, final float y, final float z) {
+		this.checkDrawing();
 		this.hasNormals = true;
 		final byte normalX = (byte) (int) (x * 127F);
 		final byte normalY = (byte) (int) (y * 127F);
@@ -169,6 +172,7 @@ public final class Tessellator {
 	}
 
 	public void addVertex(final double x, final double y, final double z) {
+		this.checkDrawing();
 		if (this.rawBufferIndex >= this.rawBufferSize - 32) {
 			if (this.rawBufferSize == 0) {
 				this.rawBufferSize = 0x10000;
@@ -202,6 +206,12 @@ public final class Tessellator {
 	public void addVertexWithUV(final double x, final double y, final double z, final double u, final double v) {
 		this.setTextureUV(u, v);
 		this.addVertex(x, y, z);
+	}
+
+	private void checkDrawing() {
+		if (!this.isDrawing) {
+			throw new IllegalStateException("The Tessellator is not tessellating, call start(DrawMode) before giving it vertices");
+		}
 	}
 
 	private void reset() {

@@ -169,6 +169,10 @@ public class ModelViewerNode extends BaseModelNode {
 
 	public final <T extends ModelViewerNode> @NonNull T zoomRange(final @NonNull Supplier<Double> min, final @NonNull Supplier<Double> max) {
 		return super.follow("zoomRange", () -> Point.of(min.get(), max.get()), range -> {
+			if (range.getX() > range.getY()) {
+				throw new IllegalArgumentException("The min " + range.getX() + " of the zoom range is above its max " + range.getY() + ", pass a min of at most " + range.getY());
+			}
+
 			this.minZoom = range.getX();
 			this.maxZoom = range.getY();
 			this.zoomValue.reapply();
@@ -181,6 +185,10 @@ public class ModelViewerNode extends BaseModelNode {
 
 	public final <T extends ModelViewerNode> @NonNull T rotationYawRange(final @NonNull Supplier<Double> min, final @NonNull Supplier<Double> max) {
 		return super.follow("rotationYawRange", () -> Point.of(min.get(), max.get()), range -> {
+			if (range.getX() > range.getY()) {
+				throw new IllegalArgumentException("The min " + range.getX() + " of the rotation yaw range is above its max " + range.getY() + ", pass a min of at most " + range.getY());
+			}
+
 			this.minRotationYaw = range.getX();
 			this.maxRotationYaw = range.getY();
 			this.rotationValue.reapply();
@@ -193,6 +201,10 @@ public class ModelViewerNode extends BaseModelNode {
 
 	public final <T extends ModelViewerNode> @NonNull T rotationPitchRange(final @NonNull Supplier<Double> min, final @NonNull Supplier<Double> max) {
 		return super.follow("rotationPitchRange", () -> Point.of(min.get(), max.get()), range -> {
+			if (range.getX() > range.getY()) {
+				throw new IllegalArgumentException("The min " + range.getX() + " of the rotation pitch range is above its max " + range.getY() + ", pass a min of at most " + range.getY());
+			}
+
 			this.minRotationPitch = range.getX();
 			this.maxRotationPitch = range.getY();
 			this.rotationValue.reapply();

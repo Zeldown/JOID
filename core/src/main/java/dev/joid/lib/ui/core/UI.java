@@ -166,9 +166,7 @@ public abstract class UI implements IIndexedElement {
 		this.scale         = AnnotationValues.read(this.annotationMap.get(UIDataScale.class), UIDataScaleObject.create());
 		this.overlay       = AnnotationValues.read(this.annotationMap.get(UIDataOverlay.class), UIDataOverlayObject.create());
 
-		if (this.popup.active() && this.overlay.active()) {
-			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
-		}
+		this.checkKind();
 
 		this.eventBus = EventBus.create(() -> JOIDLog.nameOf(this.getClass()));
 		this.nodeList = IndexedList.concurrent();
@@ -625,6 +623,7 @@ public abstract class UI implements IIndexedElement {
 			AnnotationValues.merge(this.popup, this.annotationMap.get(UIDataPopup.class), annotations.get(UIDataPopup.class));
 			AnnotationValues.merge(this.scale, this.annotationMap.get(UIDataScale.class), annotations.get(UIDataScale.class));
 			AnnotationValues.merge(this.overlay, this.annotationMap.get(UIDataOverlay.class), annotations.get(UIDataOverlay.class));
+			this.checkKind();
 			this.annotationMap = annotations;
 			this.refreshTransition();
 
@@ -777,6 +776,12 @@ public abstract class UI implements IIndexedElement {
 				hovered = hovered.getParent();
 			}
 		}));
+	}
+
+	private void checkKind() {
+		if (this.popup.active() && this.overlay.active()) {
+			throw new IllegalStateException("The UI " + this.getClass().getName() + " cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay");
+		}
 	}
 
 	private void refreshTransition() {

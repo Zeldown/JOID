@@ -97,7 +97,13 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T step(final @NonNull Supplier<Integer> step) {
-		return super.follow("step", step, value -> this.step = value);
+		return super.follow("step", step, value -> {
+			if (value <= 0) {
+				throw new IllegalArgumentException("The step " + value + " of the IntegerFieldNode must be positive, pass a step of 1 or more");
+			}
+
+			this.step = value;
+		});
 	}
 
 	public final <T extends IntegerFieldNode> @NonNull T value(final int value) {
