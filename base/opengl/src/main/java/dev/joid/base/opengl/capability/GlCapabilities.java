@@ -42,8 +42,7 @@ public final class GlCapabilities {
 				extensionSet.add(binding.getString(GlConstants.EXTENSIONS, i));
 			}
 		} else {
-			final String extensions = binding.getString(GlConstants.EXTENSIONS);
-			extensionSet.addAll(Arrays.asList(extensions == null ? new String[0] : extensions.trim().split("\\s+")));
+			extensionSet.addAll(Arrays.asList(binding.getString(GlConstants.EXTENSIONS).trim().split("\\s+")));
 		}
 
 		GlProfile profile = GlProfile.COMPATIBILITY;

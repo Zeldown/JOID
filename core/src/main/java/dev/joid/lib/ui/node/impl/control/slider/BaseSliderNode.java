@@ -61,7 +61,7 @@ public abstract class BaseSliderNode<V> extends BaseChoiceNode<V> {
 		}
 
 		final int count = super.getValueList().size();
-		return count <= 1 ? 0D : Math.max(0, super.getValueIndex()) / (double) (count - 1);
+		return count <= 1 ? 0D : super.getValueIndex() / (double) (count - 1);
 	}
 
 	public final <T extends BaseSliderNode<V>> @NonNull T inset(final double inset) {

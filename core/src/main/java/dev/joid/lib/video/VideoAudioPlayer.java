@@ -85,7 +85,7 @@ public final class VideoAudioPlayer {
 	}
 
 	public void update(final double elapsed) {
-		if (!this.initialized || !this.playing || this.source == null) {
+		if (!this.playing || this.source == null) {
 			return;
 		}
 
@@ -120,10 +120,6 @@ public final class VideoAudioPlayer {
 	}
 
 	public void pushSamples(final Buffer[] samples, final int skip) {
-		if (samples.length == 0 || !(samples[0] instanceof ShortBuffer)) {
-			return;
-		}
-
 		final ShortBuffer buffer = (ShortBuffer) samples[0];
 		final short[] data = new short[buffer.remaining()];
 		buffer.get(data);

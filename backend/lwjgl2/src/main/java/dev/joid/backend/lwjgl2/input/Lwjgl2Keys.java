@@ -82,7 +82,7 @@ public final class Lwjgl2Keys {
 	}
 
 	public static @NonNull Key getPhysicalKey(final int code) {
-		return code < 0 || code >= Lwjgl2Keys.KEY_ARRAY.length ? Key.UNKNOWN : Lwjgl2Keys.KEY_ARRAY[code];
+		return Lwjgl2Keys.KEY_ARRAY[code];
 	}
 
 	public static boolean isKeyDown(final @NonNull Key key) {

@@ -25,7 +25,7 @@ public final class GlStateGuard {
 	}
 
 	public void exit() {
-		if (this.depth > 0 && --this.depth == 0) {
+		if (--this.depth == 0) {
 			this.journal.restore();
 		}
 	}

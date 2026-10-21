@@ -928,7 +928,7 @@ public abstract class Node implements INode {
 
 	public final <T extends Node> @NonNull T stopDragging() {
 		if (this.dragging) {
-			final boolean snapping = this.draggable != null && this.draggable.isEnabled(this) && this.draggable.hasSnapping();
+			final boolean snapping = this.draggable.isEnabled(this) && this.draggable.hasSnapping();
 			final Node target = snapping ? this.draggable.getSnapping(this.draggable.getType() == DraggableType.COPY && this.draggedNode != null ? this.draggedNode : this) : null;
 			this.dragging = false;
 			if (target != null) {
@@ -2064,7 +2064,7 @@ public abstract class Node implements INode {
 			this.stopDragging();
 		}
 
-		if (this.dragged && this.draggable != null && this.draggable.getType() == DraggableType.MOVE) {
+		if (this.dragged && this.draggable.getType() == DraggableType.MOVE) {
 			this.moveTo(this.x + (this.targetDragX - this.getAbsoluteX()), this.y + (this.targetDragY - this.getAbsoluteY()));
 		}
 

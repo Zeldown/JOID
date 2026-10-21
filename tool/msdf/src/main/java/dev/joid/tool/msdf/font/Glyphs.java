@@ -87,7 +87,7 @@ public final class Glyphs {
 	}
 
 	private static void close(final Shape shape, final List<Edge> contour, final Vector2 current, final Vector2 start) {
-		if (contour.isEmpty() || current == null || start == null) {
+		if (contour.isEmpty()) {
 			return;
 		}
 

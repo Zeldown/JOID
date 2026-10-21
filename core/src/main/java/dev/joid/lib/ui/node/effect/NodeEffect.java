@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-import dev.joid.internal.JOIDLog;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
@@ -50,7 +49,7 @@ public abstract class NodeEffect<T extends Node> implements Cloneable {
 		try {
 			return (E) super.clone();
 		} catch (final CloneNotSupportedException exception) {
-			throw new IllegalStateException("The effect " + JOIDLog.nameOf(this.getClass()) + " cannot be copied (" + exception + "), keep NodeEffect as its superclass", exception);
+			throw new IllegalStateException(exception);
 		}
 	}
 

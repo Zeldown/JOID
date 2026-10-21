@@ -83,7 +83,7 @@ public class VectorResourceDecoder implements IResourceDecoder {
 
 	@Override
 	public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {
-		if (this.document == null || this.texture == null || this.textures.isEmpty()) {
+		if (this.textures.isEmpty()) {
 			return;
 		}
 

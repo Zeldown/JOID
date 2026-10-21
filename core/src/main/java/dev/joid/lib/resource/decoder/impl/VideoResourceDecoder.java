@@ -691,10 +691,6 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	}
 
 	private int[] frameToPixels(final Frame frame, final int width, final int height) {
-		if (frame.image == null || frame.image[0] == null) {
-			return new int[this.videoWidth * height];
-		}
-
 		final ByteBuffer buffer = (ByteBuffer) frame.image[0];
 		buffer.rewind();
 		final int[] pixels = new int[this.videoWidth * height];

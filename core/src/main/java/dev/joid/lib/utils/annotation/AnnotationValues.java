@@ -12,7 +12,7 @@ import lombok.NonNull;
 public final class AnnotationValues {
 
 	public static <T> @NonNull T read(final Annotation annotation, final @NonNull T target) {
-		return annotation == null ? target : AnnotationValues.merge(target, null, annotation, true);
+		return AnnotationValues.merge(target, null, annotation, true);
 	}
 
 	public static <T> @NonNull T merge(final @NonNull T target, final Annotation previous, final Annotation next) {

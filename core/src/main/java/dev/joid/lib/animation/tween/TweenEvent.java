@@ -10,7 +10,6 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TweenEvent extends Event {
 
-	@NonNull
 	private final BaseTween<?> tween;
 
 	public static @NonNull TweenEvent create(final @NonNull BaseTween<?> tween) {

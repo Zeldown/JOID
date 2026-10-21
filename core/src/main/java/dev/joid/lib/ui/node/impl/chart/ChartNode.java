@@ -59,7 +59,7 @@ public abstract class ChartNode extends Node {
 	}
 
 	public final ChartData getData(final @NonNull String data) {
-		return this.xAxis == null ? null : this.xAxis.getDataMap().get(data);
+		return this.xAxis == null ? null : this.xAxis.get(data);
 	}
 
 	public final @NonNull Map<String, ChartData> getDataMap() {

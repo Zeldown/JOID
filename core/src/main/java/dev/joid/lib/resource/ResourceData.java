@@ -479,7 +479,7 @@ public final class ResourceData {
 
 	private static @NonNull String describe(final Throwable error) {
 		Throwable cause = error;
-		while (cause.getCause() != null && cause.getCause() != cause) {
+		while (cause.getCause() != null) {
 			cause = cause.getCause();
 		}
 

@@ -251,7 +251,6 @@ public abstract class BaseTween<T> {
 
 	private void testRelaunch() {
 		if (!this.isIterationStep && this.repeatCnt >= 0 && this.step < 0 && this.currentTime + this.deltaTime >= 0) {
-			assert this.step == -1;
 			this.isIterationStep = true;
 			this.step = 0;
 			final float delta = 0 - this.currentTime;
@@ -261,7 +260,6 @@ public abstract class BaseTween<T> {
 			this.fire(BaseTween.ITERATION_START);
 			this.updateOverride(this.step, this.step - 1, this.isIterationStep, delta);
 		} else if (!this.isIterationStep && this.repeatCnt >= 0 && this.step > this.repeatCnt * 2 && this.currentTime + this.deltaTime < 0) {
-			assert this.step == this.repeatCnt * 2 + 1;
 			this.isIterationStep = true;
 			this.step = this.repeatCnt * 2;
 			final float delta = 0 - this.currentTime;

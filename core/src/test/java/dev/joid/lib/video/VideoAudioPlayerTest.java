@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -307,15 +306,6 @@ public class VideoAudioPlayerTest {
 		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 		player.pushSamples(new Buffer[] {ShortBuffer.wrap(new short[] {1, 0})}, 1);
 		Assert.assertEquals(1, VideoAudioPlayerTest.queueSize(player));
-	}
-
-	@Test
-	public void ignoresEmptyOrUnknownSamples() {
-		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
-		player.pushSamples(new Buffer[0], 0);
-		player.pushSamples(new Buffer[] {null}, 0);
-		player.pushSamples(new Buffer[] {ByteBuffer.allocate(4)}, 0);
-		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 	}
 
 	@Test

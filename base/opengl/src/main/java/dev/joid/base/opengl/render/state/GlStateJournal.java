@@ -106,10 +106,8 @@ public final class GlStateJournal {
 	}
 
 	public void saveSampler(final int unit) {
-		if (this.recording) {
-			this.touch(GlStateKey.ACTIVE_TEXTURE);
-			this.touch(GlStateKey.SAMPLER, unit);
-		}
+		this.touch(GlStateKey.ACTIVE_TEXTURE);
+		this.touch(GlStateKey.SAMPLER, unit);
 	}
 
 	public void saveFrameBuffer(final int target) {

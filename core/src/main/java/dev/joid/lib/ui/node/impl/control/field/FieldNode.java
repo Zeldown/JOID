@@ -589,7 +589,7 @@ public abstract class FieldNode<V> extends Node {
 
 	protected final void placeCursor(final int position, final boolean forward) {
 		final int anchor = this.getAnchor();
-		final int cursor = this.snap(Math.min(Math.max(0, position), this.text.length()), forward);
+		final int cursor = this.snap(position, forward);
 		this.cursorValue.set(cursor);
 		this.selectionValue.set(UI.isShiftKeyDown() ? FieldSelection.of(anchor, cursor) : FieldSelection.of(0, 0));
 		if (forward) {
@@ -600,12 +600,12 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final void decreaseCursor(final int value) {
-		this.cursorValue.set(this.snap(Math.max(0, this.getCursorPosition() - value), false));
+		this.cursorValue.set(this.snap(this.getCursorPosition() - value, false));
 		this.followCursorBackward();
 	}
 
 	protected final void increaseCursor(final int value) {
-		this.cursorValue.set(this.snap(Math.min(this.text.length(), this.getCursorPosition() + value), true));
+		this.cursorValue.set(this.snap(this.getCursorPosition() + value, true));
 		this.followCursorForward();
 	}
 

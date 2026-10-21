@@ -28,14 +28,12 @@ public final class ObjGroup {
 	}
 
 	public void render() {
-		if (this.faces.size() > 0) {
-			final Tessellator tessellator = Tessellator.inst();
-			tessellator.start(DrawMode.TRIANGLES);
-			for (final ObjFace face : this.faces) {
-				face.render(tessellator);
-			}
-			tessellator.draw();
+		final Tessellator tessellator = Tessellator.inst();
+		tessellator.start(DrawMode.TRIANGLES);
+		for (final ObjFace face : this.faces) {
+			face.render(tessellator);
 		}
+		tessellator.draw();
 	}
 
 	public @NonNull List<ObjFace> getFaces() {

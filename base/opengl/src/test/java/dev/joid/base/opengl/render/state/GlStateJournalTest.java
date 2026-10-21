@@ -40,7 +40,7 @@ public class GlStateJournalTest {
 		final IGlBinding binding = GlStateJournalTest.fake(IGlBinding.class, (method, args) -> {
 			switch (method.getName()) {
 			case "getString":
-				return args.length > 1 ? null : args[0].equals(GlConstants.VERSION) ? "2.1" : args[0].equals(GlConstants.SHADING_LANGUAGE_VERSION) ? "1.20" : null;
+				return args.length > 1 ? null : args[0].equals(GlConstants.VERSION) ? "2.1" : args[0].equals(GlConstants.SHADING_LANGUAGE_VERSION) ? "1.20" : args[0].equals(GlConstants.EXTENSIONS) ? "" : null;
 			case "getVertexAttribi":
 				return args[1].equals(GlConstants.VERTEX_ATTRIB_ARRAY_ENABLED) ? 1 : args[1].equals(GlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING) ? 0 : 4;
 			case "getVertexAttribPointer":

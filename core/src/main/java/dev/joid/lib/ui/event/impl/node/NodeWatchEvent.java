@@ -19,7 +19,7 @@ public final class NodeWatchEvent<N extends Node> extends NodeEvent<N> {
 	private NodeWatchEvent(final N node, final Object value, final WatchProperty[] properties) {
 		super(node);
 		this.value = value;
-		this.properties = Collections.unmodifiableList(Arrays.asList(properties.clone()));
+		this.properties = Collections.unmodifiableList(Arrays.asList(properties));
 	}
 
 	public static <N extends Node> @NonNull NodeWatchEvent<N> create(final @NonNull N node, final Object value, final @NonNull WatchProperty @NonNull... properties) {

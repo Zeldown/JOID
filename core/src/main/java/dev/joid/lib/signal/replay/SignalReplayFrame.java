@@ -401,12 +401,8 @@ public final class SignalReplayFrame {
 			return;
 		}
 
-		try {
-			final Object element = Array.get(array, SignalReplayFrame.toInt(position));
-			this.push(opcode == Opcodes.AALOAD ? element : SignalReplayFrame.normalize(element), live, size);
-		} catch (final RuntimeException exception) {
-			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
-		}
+		final Object element = Array.get(array, SignalReplayFrame.toInt(position));
+		this.push(opcode == Opcodes.AALOAD ? element : SignalReplayFrame.normalize(element), live, size);
 	}
 
 	private void arrayStore() {
@@ -428,11 +424,7 @@ public final class SignalReplayFrame {
 			return;
 		}
 
-		try {
-			Array.set(array, SignalReplayFrame.toInt(position), SignalReplayFrame.convert(value, array.getClass().getComponentType()));
-		} catch (final RuntimeException exception) {
-			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
-		}
+		Array.set(array, SignalReplayFrame.toInt(position), SignalReplayFrame.convert(value, array.getClass().getComponentType()));
 		if (live) {
 			this.replace(array, array, true);
 		}
@@ -466,11 +458,7 @@ public final class SignalReplayFrame {
 			return;
 		}
 
-		try {
-			this.push(SignalReplayFrame.compute(opcode, left, right), live, size);
-		} catch (final ArithmeticException exception) {
-			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
-		}
+		this.push(SignalReplayFrame.compute(opcode, left, right), live, size);
 	}
 
 	private void unary(final int opcode) {
@@ -585,7 +573,7 @@ public final class SignalReplayFrame {
 		try {
 			final Object value = field.get(target);
 			return field.getType().isPrimitive() ? SignalReplayFrame.normalize(value) : value;
-		} catch (final IllegalAccessException | RuntimeException exception) {
+		} catch (final IllegalAccessException exception) {
 			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
 		}
 	}
@@ -765,7 +753,7 @@ public final class SignalReplayFrame {
 			return invocation.invoke();
 		} catch (final InvocationTargetException exception) {
 			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception.getCause());
-		} catch (final ReflectiveOperationException | IllegalArgumentException exception) {
+		} catch (final ReflectiveOperationException exception) {
 			throw new SignalReplayException(SignalReplayFailure.REPLAY_FAILED, exception);
 		}
 	}

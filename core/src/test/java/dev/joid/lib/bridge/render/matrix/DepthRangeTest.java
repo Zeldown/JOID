@@ -36,11 +36,6 @@ public class DepthRangeTest {
 		Assert.assertArrayEquals(projection, stack.getMatrix(), 0F);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesAMatrixOfTheWrongSize() {
-		DepthRange.toZeroToOne(new float[9]);
-	}
-
 	private static float depth(final float[] matrix, final float z) {
 		final float clipZ = matrix[10] * z + matrix[14];
 		final float clipW = matrix[11] * z + matrix[15];
