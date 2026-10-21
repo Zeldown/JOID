@@ -735,6 +735,31 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void keepsTheCursorTheListenerOfItsValuePlacesOnAStep() {
+		final IntegerSignal value = new IntegerSignal(9);
+		final IntegerSignal cursor = new IntegerSignal(1);
+		final IntegerFieldNode field = IntegerFieldNode.create(100D, 100D, 100D, 30D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).value(value).cursorPosition(cursor);
+		this.bridges.open(new NodeUI(field));
+		field.focused(true);
+		this.bridges.move(150D, 110D).frames(2);
+		value.onChange(number -> cursor.set(0));
+		this.bridges.getUi().keyPressed(Key.UP, Key.UP);
+		Assert.assertEquals("10", field.getText());
+		Assert.assertEquals(0, field.getCursorPosition());
+		Assert.assertEquals(0, (int) cursor.peek());
+		cursor.set(2);
+		this.bridges.scroll(1D);
+		Assert.assertEquals("11", field.getText());
+		Assert.assertEquals(0, field.getCursorPosition());
+		Assert.assertEquals(0, (int) cursor.peek());
+		cursor.set(2);
+		field.change(20);
+		Assert.assertEquals("20", field.getText());
+		Assert.assertEquals(0, field.getCursorPosition());
+		Assert.assertEquals(0, (int) cursor.peek());
+	}
+
+	@Test
 	public void correctsAPasteOnBlurLikeWhatIsTyped() {
 		final List<String> changes = new ArrayList<>();
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).min(0).max(100).value(4).onChange(event -> changes.add(event.getText()))).cursorPosition(1);

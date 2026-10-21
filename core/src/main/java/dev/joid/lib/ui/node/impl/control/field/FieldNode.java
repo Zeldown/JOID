@@ -449,7 +449,7 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T change(final @NonNull String text) {
-		this.replace(text, true);
+		Signal.batch(() -> this.replace(text, true));
 		return (T) this;
 	}
 
@@ -526,16 +526,18 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	protected final void write(final V value, final boolean refusable) {
-		final boolean shown = Objects.equals(value, this.getValue());
-		if (shown && refusable) {
-			super.getBindings().see("text");
-		}
+		Signal.batch(() -> {
+			final boolean shown = Objects.equals(value, this.getValue());
+			if (shown && refusable) {
+				super.getBindings().see("text");
+			}
 
-		if (shown || value == null && !this.allowEmpty || this.replace(value == null ? "" : this.format(this.correct(value)), refusable)) {
-			this.request(value, true);
-		}
+			if (shown || value == null && !this.allowEmpty || this.replace(value == null ? "" : this.format(this.correct(value)), refusable)) {
+				this.request(value, true);
+			}
 
-		this.commit();
+			this.commit();
+		});
 	}
 
 	protected final void revalidate() {
