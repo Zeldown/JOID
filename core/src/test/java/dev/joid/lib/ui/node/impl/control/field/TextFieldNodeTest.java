@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
+import dev.joid.lib.bridge.ui.UIBridgeCursorTest.OverlayUI;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
@@ -711,6 +712,37 @@ public class TextFieldNodeTest {
 		second.attach(ui);
 		this.bridges.frames(2);
 		Assert.assertFalse(second.isFocused());
+	}
+
+	@Test
+	public void blursTheFocusedFieldOfAScreenBelowTheClickedFieldOfAnOverlay() {
+		final List<String> events = new ArrayList<>();
+		final TextFieldNode first = TextFieldNode.create(100D, 100D, 200D).info(this.info());
+		final TextFieldNode second = TextFieldNode.create(100D, 100D, 200D).info(this.info());
+		first.onBlur(event -> events.add("blur first " + second.isFocused()));
+		second.onFocus(event -> events.add("focus second " + first.isFocused()));
+		this.bridges.open(new NodeUI(first)).open(new OverlayUI(second));
+		first.focus();
+		this.click(124D, 120D);
+		this.bridges.getUi().keyPressed(Key.ESCAPE, Key.ESCAPE);
+		this.bridges.getUi().charTyped('z');
+		Assert.assertEquals(Arrays.asList("blur first false", "focus second false"), events);
+		Assert.assertFalse(first.isFocused());
+		Assert.assertEquals("", first.getText());
+	}
+
+	@Test
+	public void blursTheFocusedFieldThatHoldsTheClickedOneFirst() {
+		final List<String> events = new ArrayList<>();
+		final TextFieldNode outer = TextFieldNode.create(100D, 100D, 400D).info(this.info());
+		final TextFieldNode inner = TextFieldNode.create(0D, 0D, 100D).info(this.info());
+		inner.attach(outer);
+		outer.onBlur(event -> events.add("blur outer " + inner.isFocused()));
+		inner.onFocus(event -> events.add("focus inner " + outer.isFocused()));
+		this.bridges.open(new NodeUI(outer));
+		outer.focus();
+		this.click(110D, 120D);
+		Assert.assertEquals(Arrays.asList("blur outer false", "focus inner false"), events);
 	}
 
 	@Test

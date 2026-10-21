@@ -1103,7 +1103,7 @@ public abstract class FieldNode<V> extends Node {
 
 	private static void release(final @NonNull List<@NonNull Node> nodeList, final @NonNull FieldNode<?> pressed) {
 		for (final Node node : nodeList) {
-			if (node != pressed && node instanceof FieldNode && ((FieldNode<?>) node).focused && !node.isHovered()) {
+			if (node != pressed && node instanceof FieldNode && ((FieldNode<?>) node).focused) {
 				((FieldNode<?>) node).release();
 			}
 
