@@ -333,7 +333,7 @@ public abstract class FieldNode<V> extends Node {
 		this.normalize = normalize;
 		if (this.requestedText != null) {
 			this.retext(this.requestedText);
-		} else if (!this.focused) {
+		} else if (!this.focused && !this.text.isEmpty()) {
 			this.commit();
 		}
 		return (T) this;
@@ -346,11 +346,7 @@ public abstract class FieldNode<V> extends Node {
 	public final <T extends FieldNode<V>> @NonNull T allowEmpty(final @NonNull Supplier<Boolean> allowEmpty) {
 		return super.follow("allowEmpty", allowEmpty, value -> {
 			this.allowEmpty = value;
-			if (this.requesting) {
-				this.write(this.requested, false);
-			} else if (!this.focused) {
-				this.commit();
-			}
+			this.revalidate();
 		});
 	}
 

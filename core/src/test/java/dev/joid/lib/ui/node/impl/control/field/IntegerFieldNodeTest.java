@@ -100,6 +100,17 @@ public class IntegerFieldNodeTest {
 	}
 
 	@Test
+	public void keepsTheEmptyTextOfAnUntouchedFieldWhateverItsNormalize() {
+		final UnaryOperator<String> spaces = text -> text.replace(" ", "");
+		final IntegerFieldNode alone = IntegerFieldNode.create(0D, 0D, 100D).normalize(spaces);
+		final IntegerFieldNode normalizedFirst = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>normalize(spaces).allowEmpty(true);
+		final IntegerFieldNode allowedFirst = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>allowEmpty(true).normalize(spaces);
+		Assert.assertEquals(Arrays.asList("", 0), Arrays.asList(alone.getText(), alone.getValue()));
+		Assert.assertEquals(Arrays.asList("", null), Arrays.asList(normalizedFirst.getText(), normalizedFirst.getValue()));
+		Assert.assertEquals(Arrays.asList("", null), Arrays.asList(allowedFirst.getText(), allowedFirst.getValue()));
+	}
+
+	@Test
 	public void keepsAnUnreadableTextThroughAFocusWithoutTyping() {
 		final IntegerFieldNode field = this.focused(IntegerFieldNode.create(0D, 0D, 100D).text("1 000"));
 		field.blur();
@@ -181,6 +192,24 @@ public class IntegerFieldNodeTest {
 		Assert.assertEquals(3, (int) IntegerFieldNode.create(0D, 0D, 100D).min(3).max(9).getValue());
 		Assert.assertEquals(-2, (int) IntegerFieldNode.create(0D, 0D, 100D).min(-9).max(-2).getValue());
 		Assert.assertEquals("", IntegerFieldNode.create(0D, 0D, 100D).min(3).max(9).getText());
+	}
+
+	@Test
+	public void keepsTheEmptyTextOfAnUntouchedFieldWhateverItsAllowEmpty() {
+		final Signal<Boolean> allowEmpty = new Signal<>(true);
+		final List<String> changes = new ArrayList<>();
+		final IntegerFieldNode field = IntegerFieldNode.create(0D, 0D, 100D).<IntegerFieldNode>info(TextInfo.create(IntegerFieldNodeTest.FONT, 20F)).allowEmpty(allowEmpty);
+		field.onChange(event -> changes.add(event.getText()));
+		this.bridges.open(new NodeUI(field)).frame();
+		allowEmpty.set(false);
+		this.bridges.frame();
+		Assert.assertEquals("", field.getText());
+		allowEmpty.set(true);
+		this.bridges.frame();
+		Assert.assertEquals("", field.getText());
+		Assert.assertNull(field.getValue());
+		Assert.assertEquals("", IntegerFieldNode.create(0D, 0D, 100D).allowEmpty(false).getText());
+		Assert.assertTrue(changes.isEmpty());
 	}
 
 	@Test
