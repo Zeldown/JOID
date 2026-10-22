@@ -33,6 +33,7 @@ import dev.joid.lib.ui.node.property.OverflowProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 public class MultilineTextFieldNodeTest {
 
@@ -1430,15 +1431,12 @@ public class MultilineTextFieldNodeTest {
 		}
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class FieldUI extends UI {
 
 		private final String text;
 
 		private MultilineTextFieldNode field;
-
-		private FieldUI(final String text) {
-			this.text = text;
-		}
 
 		@Override
 		public void init() {

@@ -19,6 +19,7 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 public class ModelNodeTest {
@@ -142,6 +143,7 @@ public class ModelNodeTest {
 
 	}
 
+	@Getter
 	@RequiredArgsConstructor
 	public static final class RecordingModel implements IDrawableModel {
 
@@ -154,21 +156,6 @@ public class ModelNodeTest {
 		@Override
 		public void render() {
 			this.grid = BridgeHandler.RENDER.get().getPixelGrid();
-		}
-
-		@Override
-		public double getDepth() {
-			return this.depth;
-		}
-
-		@Override
-		public double getWidth() {
-			return this.width;
-		}
-
-		@Override
-		public double getHeight() {
-			return this.height;
 		}
 
 	}

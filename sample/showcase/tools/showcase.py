@@ -314,7 +314,7 @@ if __name__ == "__main__":
 		del argv[index:index + 2]
 	args = [a for a in argv if not a.startswith("--")]
 	if not args or args[0] not in list(CLIPS) + ["all"]:
-		sys.exit(__doc__)
+		sys.exit("[JOID] " + __doc__)
 	first = int(args[1]) if len(args) > 1 else 0
 	last = int(args[2]) if len(args) > 2 else None
 	for clip in (ORDER if args[0] == "all" else [args[0]]):

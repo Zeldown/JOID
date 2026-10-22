@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDLog;
 import dev.joid.lib.bridge.backend.Backend;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
@@ -30,7 +31,7 @@ public final class JarCheck {
 
 			System.out.println("[JOID] The " + variant + " jar started JOID and drew " + ui.getClass().getSimpleName());
 		} catch (final Throwable throwable) {
-			throwable.printStackTrace();
+			JOIDLog.warn("The " + variant + " jar check failed", throwable);
 			status = 1;
 		}
 

@@ -425,7 +425,7 @@ public class BaseTweenTest {
 		private int starts;
 
 		private StepTween(final float duration) {
-			this.duration = duration;
+			super.duration = duration;
 		}
 
 		@Override

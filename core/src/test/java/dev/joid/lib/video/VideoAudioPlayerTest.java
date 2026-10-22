@@ -25,7 +25,10 @@ import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.utils.geom.Point;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class VideoAudioPlayerTest {
 
@@ -485,6 +488,7 @@ public class VideoAudioPlayerTest {
 
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class RecordingAudioSource implements IAudioSource {
 
 		private final List<Float>   gains   = new ArrayList<>();
@@ -495,11 +499,7 @@ public class VideoAudioPlayerTest {
 
 		private int     played;
 		private Object  group;
-		private boolean playing;
-
-		private RecordingAudioSource(final int channels) {
-			this.channels = channels;
-		}
+		@Getter private boolean playing;
 
 		@Override
 		public void play() {
@@ -533,11 +533,6 @@ public class VideoAudioPlayerTest {
 		@Override
 		public void write(final @NonNull short[] samples) {
 			this.written.add(samples);
-		}
-
-		@Override
-		public boolean isPlaying() {
-			return this.playing;
 		}
 
 		@Override

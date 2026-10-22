@@ -25,7 +25,10 @@ import dev.joid.lib.resource.animation.impl.GifResourceAnimationReader;
 import dev.joid.lib.resource.cache.MemoryResourceCache;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class ResourceTest {
 
@@ -534,16 +537,14 @@ public class ResourceTest {
 		}
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class Decoder implements IResourceDecoder {
 
 		private final List<String>     calls   = new CopyOnWriteArrayList<>();
 		private final RecordingTexture texture = new RecordingTexture();
 
+		@Getter
 		private final boolean mipmappable;
-
-		private Decoder(final boolean mipmappable) {
-			this.mipmappable = mipmappable;
-		}
 
 		@Override
 		public void init(final @NonNull ResourceData resource) {
@@ -580,11 +581,6 @@ public class ResourceTest {
 		@Override
 		public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {
 			this.calls.add("request " + width + "x" + height + (async ? " async" : " blocking") + (resizing ? " resizing" : ""));
-		}
-
-		@Override
-		public boolean isMipmappable() {
-			return this.mipmappable;
 		}
 
 	}

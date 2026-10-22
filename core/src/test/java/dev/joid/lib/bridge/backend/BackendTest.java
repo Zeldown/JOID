@@ -29,7 +29,9 @@ import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
 import dev.joid.lib.color.Color;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class BackendTest {
 
@@ -307,6 +309,7 @@ public class BackendTest {
 		current.addAll(readyList);
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class TraceBackend extends Backend {
 
 		private final List<String>          trace;
@@ -318,10 +321,6 @@ public class BackendTest {
 		private boolean  threaded = true;
 		private Runnable defaults = () -> {};
 		private Runnable windowed = () -> {};
-
-		private TraceBackend(final List<String> trace) {
-			this.trace = trace;
-		}
 
 		public static @NonNull TraceBackend create(final @NonNull List<String> trace) {
 			return new TraceBackend(trace);

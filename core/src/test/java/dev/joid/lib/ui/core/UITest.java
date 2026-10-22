@@ -3052,13 +3052,10 @@ public class UITest {
 
 	}
 
+	@AllArgsConstructor
 	public static final class Binding {
 
 		private Key key;
-
-		public Binding(final Key key) {
-			this.key = key;
-		}
 
 	}
 
@@ -3133,15 +3130,12 @@ public class UITest {
 
 	}
 
+	@RequiredArgsConstructor
 	public static final class ReloadUI extends UI {
 
 		private final List<String> trace;
 
 		private int inits;
-
-		public ReloadUI(final List<String> trace) {
-			this.trace = trace;
-		}
 
 		@Override
 		public void init() {

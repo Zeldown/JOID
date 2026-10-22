@@ -12,6 +12,8 @@ import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartData;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 public class DemoChartNodeTest {
 
@@ -53,13 +55,10 @@ public class DemoChartNodeTest {
 		}
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class ChartUI extends UI {
 
 		private final DemoChartNode chart;
-
-		private ChartUI(final DemoChartNode chart) {
-			this.chart = chart;
-		}
 
 		@Override
 		public void init() {

@@ -3,8 +3,11 @@ package dev.joid.lib.animation.tween.equation;
 
 
 import dev.joid.lib.animation.tween.TweenEquation;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Back extends TweenEquation {
 
 	public static final Back IN    = Back.in(1.70158F);
@@ -12,10 +15,6 @@ public abstract class Back extends TweenEquation {
 	public static final Back INOUT = Back.inOut(1.70158F);
 
 	protected final float bounce;
-
-	protected Back(final float bounce) {
-		this.bounce = bounce;
-	}
 
 	public abstract @NonNull Back s(final float s);
 

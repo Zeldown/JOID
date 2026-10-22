@@ -9,7 +9,7 @@ import render
 import showcase
 
 if len(sys.argv) < 3 or sys.argv[1] not in showcase.CLIPS:
-	sys.exit(__doc__)
+	sys.exit("[JOID] " + __doc__)
 clip, picks = sys.argv[1], sorted(int(a) for a in sys.argv[2:])
 script = showcase.CLIPS[clip]()
 lines = ["ui " + render.PACKAGE + script.ui]

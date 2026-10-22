@@ -346,12 +346,12 @@ public class UIBridgeRegistryTest {
 
 		@Override
 		public void open(final @NonNull UI ui) {
-			this.add(ui);
+			super.add(ui);
 		}
 
 		@Override
 		public void close(final @NonNull UI ui) {
-			this.remove(ui);
+			super.remove(ui);
 		}
 
 		@Override

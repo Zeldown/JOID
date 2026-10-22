@@ -32,11 +32,11 @@ public final class Tween extends BaseTween<Tween> {
 			throw new IllegalArgumentException("The duration of a tween cannot be negative, got " + duration + ": pass 0 or more");
 		}
 
-		this.getter   = getter;
-		this.setter   = setter;
-		this.duration = duration;
-		this.path     = TweenPaths.CATMULL_ROM;
-		this.equation = TweenEquations.LINEAR;
+		this.getter    = getter;
+		this.setter    = setter;
+		super.duration = duration;
+		this.path      = TweenPaths.CATMULL_ROM;
+		this.equation  = TweenEquations.LINEAR;
 	}
 
 	public static @NonNull Tween to(final @NonNull Supplier<Float> getter, final @NonNull Consumer<Float> setter, final float duration) {
@@ -121,18 +121,18 @@ public final class Tween extends BaseTween<Tween> {
 			return;
 		}
 
-		if (this.duration < 0.00000000001F && delta > -0.00000000001F) {
+		if (super.duration < 0.00000000001F && delta > -0.00000000001F) {
 			this.setter.accept(super.isReverse(step) ? this.end : this.start);
 			return;
 		}
 
-		if (this.duration < 0.00000000001F && delta < 0.00000000001F) {
+		if (super.duration < 0.00000000001F && delta < 0.00000000001F) {
 			this.setter.accept(super.isReverse(step) ? this.start : this.end);
 			return;
 		}
 
-		final float time = super.isReverse(step) ? this.duration - super.getCurrentTime() : super.getCurrentTime();
-		final float progress = this.equation.compute(time / this.duration);
+		final float time = super.isReverse(step) ? super.duration - super.getCurrentTime() : super.getCurrentTime();
+		final float progress = this.equation.compute(time / super.duration);
 
 		if (this.waypointCount == 0) {
 			this.setter.accept(this.start + progress * (this.end - this.start));

@@ -40,11 +40,11 @@ public class LockableValueTest {
 		}
 
 		public Box value(final int value) {
-			return this.mutate("withValue", () -> this.value = value);
+			return super.mutate("withValue", () -> this.value = value);
 		}
 
 		public Box withValue(final int value) {
-			return this.derive(box -> box.value(value));
+			return super.derive(box -> box.value(value));
 		}
 
 	}

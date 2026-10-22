@@ -2,17 +2,17 @@ package dev.joid.lib.bridge.render.texture;
 
 import java.util.function.Supplier;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BorrowedTexture<H> implements ITexture {
 
+	@NonNull
 	private final Supplier<H> supplier;
-
-	protected BorrowedTexture(final @NonNull Supplier<H> supplier) {
-		this.supplier = supplier;
-	}
 
 	@Override
 	public final @NonNull BorrowedTexture<H> mipmap(final boolean mipmap) {

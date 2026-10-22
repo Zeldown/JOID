@@ -35,6 +35,7 @@ import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VectorResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
+import lombok.Getter;
 import lombok.NonNull;
 
 public class ResourceBuilderTest {
@@ -449,7 +450,7 @@ public class ResourceBuilderTest {
 		private final CountDownLatch release = new CountDownLatch(1);
 
 		private final byte[]  bytes;
-		private final boolean remote;
+		@Getter private final boolean remote;
 
 		private HeldAsset(final String uniqueId, final boolean remote, final Asset source) {
 			super(uniqueId);
@@ -473,11 +474,6 @@ public class ResourceBuilderTest {
 			return new ByteArrayInputStream(this.bytes);
 		}
 
-		@Override
-		public boolean isRemote() {
-			return this.remote;
-		}
-
 	}
 
 	private static final class FlakyAsset extends Asset {
@@ -486,7 +482,7 @@ public class ResourceBuilderTest {
 		private final List<Thread>  readers = new CopyOnWriteArrayList<>();
 
 		private final byte[]  bytes;
-		private final boolean remote;
+		@Getter private final boolean remote;
 
 		private FlakyAsset(final String uniqueId, final boolean remote, final byte[] bytes) {
 			super(uniqueId);
@@ -502,11 +498,6 @@ public class ResourceBuilderTest {
 
 			this.readers.add(Thread.currentThread());
 			return new ByteArrayInputStream(this.bytes);
-		}
-
-		@Override
-		public boolean isRemote() {
-			return this.remote;
 		}
 
 	}

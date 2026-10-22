@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import dev.joid.lib.input.key.Key;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class KeyResolverTest {
 
@@ -58,13 +59,10 @@ public class KeyResolverTest {
 		KeyResolver.resolve(null);
 	}
 
+	@RequiredArgsConstructor
 	public static final class NameKeyResolver implements IKeyResolver {
 
 		private final boolean unbound;
-
-		public NameKeyResolver(final boolean unbound) {
-			this.unbound = unbound;
-		}
 
 		@Override
 		public boolean supports(final @NonNull Object binding) {

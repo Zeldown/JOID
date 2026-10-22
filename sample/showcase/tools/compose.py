@@ -119,7 +119,7 @@ def still(clip, frame):
 
 if __name__ == "__main__":
 	if len(sys.argv) < 2 or sys.argv[1] not in ("webp", "mp4", "still"):
-		sys.exit(__doc__)
+		sys.exit("[JOID] " + __doc__)
 	if sys.argv[1] == "webp":
 		for clip in (ORDER if sys.argv[2] == "all" else [sys.argv[2]]):
 			webp(clip, *[int(a) for a in sys.argv[3:]])

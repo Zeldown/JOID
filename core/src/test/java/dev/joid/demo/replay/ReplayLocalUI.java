@@ -34,7 +34,7 @@ public class ReplayLocalUI extends UI {
 				break;
 			}
 			case "direct": {
-				final IntegerSignal clicks = ReplayCountedSignal.create(0);
+				final IntegerSignal clicks = new ReplayCountedSignal(0);
 				this.signalList.add(clicks);
 				SignalReplayNode.create().text("Direct " + clicks.get()).attach(this);
 				break;

@@ -12,6 +12,8 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis.XChartAxis;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis.YChartAxis;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -216,16 +218,14 @@ public abstract class ChartNode extends Node {
 
 	}
 
+	@AllArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class ChartData {
 
+		@NonNull
 		private Map<String, Number> dataMap;
 
 		protected ChartData() {
 			this(new LinkedHashMap<>());
-		}
-
-		protected ChartData(final @NonNull Map<@NonNull String, @NonNull Number> dataMap) {
-			this.dataMap = dataMap;
 		}
 
 		public static @NonNull ChartData create() {

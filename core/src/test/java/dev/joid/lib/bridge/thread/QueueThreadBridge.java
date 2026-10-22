@@ -3,18 +3,15 @@ package dev.joid.lib.bridge.thread;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
 import lombok.NonNull;
 
 public final class QueueThreadBridge implements IThreadBridge {
 
 	private final List<Runnable> tasks = new ArrayList<>();
 
+	@Getter
 	private boolean renderThread;
-
-	@Override
-	public boolean isRenderThread() {
-		return this.renderThread;
-	}
 
 	@Override
 	public void execute(final @NonNull Runnable runnable) {

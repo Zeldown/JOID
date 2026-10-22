@@ -30,6 +30,7 @@ import dev.joid.lib.ui.node.NodeTest.NodeUI;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.video.VideoNativesException;
+import lombok.Getter;
 import lombok.NonNull;
 
 public class ResourceFailureTest {
@@ -225,7 +226,7 @@ public class ResourceFailureTest {
 	private static final class BytesAsset extends Asset {
 
 		private final byte[]  bytes;
-		private final boolean remote;
+		@Getter private final boolean remote;
 
 		private BytesAsset(final String uniqueId, final boolean remote, final byte[] bytes) {
 			super(uniqueId);
@@ -236,11 +237,6 @@ public class ResourceFailureTest {
 		@Override
 		public @NonNull InputStream open() {
 			return new ByteArrayInputStream(this.bytes);
-		}
-
-		@Override
-		public boolean isRemote() {
-			return this.remote;
 		}
 
 	}

@@ -64,7 +64,6 @@ public final class Timeline extends BaseTween<Timeline> {
 			throw new IllegalArgumentException("The pushed timeline still has an open beginSequence() or beginParallel(), close each one with end() before pushing it");
 		}
 
-		timeline.parent = this.current;
 		this.current.children.add(timeline);
 		return this;
 	}
@@ -103,7 +102,7 @@ public final class Timeline extends BaseTween<Timeline> {
 			throw new IllegalStateException("The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()");
 		}
 
-		this.duration = 0;
+		super.duration = 0;
 		for (final BaseTween<?> child : this.children) {
 			if (child.getRepeatCount() < 0) {
 				throw new IllegalArgumentException("A timeline cannot hold a child that repeats forever (repeat count " + child.getRepeatCount() + "), give it a finite repeat count");
@@ -112,11 +111,11 @@ public final class Timeline extends BaseTween<Timeline> {
 			child.build();
 
 			if (this.mode == Mode.SEQUENCE) {
-				final float delay = this.duration;
-				this.duration += child.getFullDuration();
+				final float delay = super.duration;
+				super.duration += child.getFullDuration();
 				child.delay += delay;
 			} else {
-				this.duration = Math.max(this.duration, child.getFullDuration());
+				super.duration = Math.max(super.duration, child.getFullDuration());
 			}
 		}
 
@@ -160,7 +159,7 @@ public final class Timeline extends BaseTween<Timeline> {
 	@Override
 	protected void forceEndValues() {
 		for (final BaseTween<?> child : this.children) {
-			child.forceToEnd(this.duration);
+			child.forceToEnd(super.duration);
 		}
 	}
 

@@ -27,8 +27,10 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class ShaderPipelineTest {
 
@@ -347,6 +349,7 @@ public class ShaderPipelineTest {
 	}
 
 	@Getter
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class RecordingPass implements IShaderPass {
 
 		private final String          name;
@@ -355,12 +358,6 @@ public class ShaderPipelineTest {
 		private final RecordingShader shader = new RecordingShader();
 
 		private ShaderPassContext context;
-
-		private RecordingPass(final String name, final float expansion, final List<String> log) {
-			this.name = name;
-			this.expansion = expansion;
-			this.log = log;
-		}
 
 		@Override
 		public void unbind() {

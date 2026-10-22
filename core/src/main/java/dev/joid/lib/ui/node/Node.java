@@ -726,7 +726,7 @@ public abstract class Node implements INode {
 		return (T) this.duplicate(false);
 	}
 
-	public final <T extends UIStore> T useStore(final @NonNull Class<T> clazz, final @NonNull Supplier<T> factory) {
+	public final <T extends UIStore> @NonNull T useStore(final @NonNull Class<T> clazz, final @NonNull Supplier<T> factory) {
 		return this.getUi().useStore(clazz, factory);
 	}
 

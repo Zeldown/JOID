@@ -58,6 +58,17 @@ public class AnnotationValuesTest {
 		}
 	}
 
+	@Test
+	public void reportsTheErrorThrownByTheMethodOfAValue() {
+		try {
+			AnnotationValues.read(CustomType.class.getAnnotation(Sample.class), new RefusingValues());
+			Assert.fail("A method of a value that throws must be reported");
+		} catch (final IllegalStateException expected) {
+			Assert.assertEquals("refused size 3", expected.getCause().getMessage());
+			Assert.assertTrue(expected.getMessage(), expected.getMessage().endsWith("(java.lang.IllegalArgumentException: refused size 3)"));
+		}
+	}
+
 	@Retention(RetentionPolicy.RUNTIME)
 	public @interface Sample {
 
@@ -90,6 +101,22 @@ public class AnnotationValuesTest {
 
 		private int    size = 1;
 		private String name = "plain";
+
+	}
+
+	public static final class RefusingValues {
+
+		public RefusingValues size(final int size) {
+			throw new IllegalArgumentException("refused size " + size);
+		}
+
+		public RefusingValues name(final String name) {
+			return this;
+		}
+
+		public NestedValues nested() {
+			return new NestedValues();
+		}
 
 	}
 

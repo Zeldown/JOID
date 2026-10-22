@@ -24,7 +24,9 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -214,9 +216,8 @@ public class SnapshotRunnerCommandTest {
 
 	}
 
+	@NoArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class PrivateUI extends UI {
-
-		private PrivateUI() {}
 
 		@Override
 		public void init() {}

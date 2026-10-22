@@ -1,6 +1,7 @@
 package dev.joid.lib.utils.annotation;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -53,7 +54,8 @@ public final class AnnotationValues {
 		try {
 			return method.invoke(target, arguments);
 		} catch (final ReflectiveOperationException exception) {
-			throw new IllegalStateException("The method " + method.getName() + " of " + target.getClass().getName() + " failed for an annotation value (" + exception + ")", exception);
+			final Throwable cause = exception instanceof InvocationTargetException ? exception.getCause() : exception;
+			throw new IllegalStateException("The method " + method.getName() + " of " + target.getClass().getName() + " failed for an annotation value (" + cause + ")", cause);
 		}
 	}
 

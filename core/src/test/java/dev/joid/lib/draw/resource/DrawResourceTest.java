@@ -25,8 +25,10 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class DrawResourceTest {
 
@@ -479,16 +481,14 @@ public class DrawResourceTest {
 		return resource;
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class SizedDecoder implements IResourceDecoder {
 
+		@Getter
 		private final boolean mipmappable;
 
 		@Getter private int width;
 		@Getter private int height;
-
-		private SizedDecoder(final boolean mipmappable) {
-			this.mipmappable = mipmappable;
-		}
 
 		@Override
 		public void clear(final @NonNull ResourceData resource) {}
@@ -510,11 +510,6 @@ public class DrawResourceTest {
 		public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {
 			this.width = width;
 			this.height = height;
-		}
-
-		@Override
-		public boolean isMipmappable() {
-			return this.mipmappable;
 		}
 
 	}

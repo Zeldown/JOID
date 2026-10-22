@@ -55,5 +55,5 @@ def render(lines, out):
 
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
-		sys.exit(__doc__)
+		sys.exit("[JOID] " + __doc__)
 	render(open(sys.argv[1], encoding="utf-8").read().splitlines(), os.path.abspath(sys.argv[2]))

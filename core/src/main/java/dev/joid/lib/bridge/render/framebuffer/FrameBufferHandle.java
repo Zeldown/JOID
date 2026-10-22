@@ -1,19 +1,19 @@
 package dev.joid.lib.bridge.render.framebuffer;
 
 import dev.joid.lib.bridge.render.texture.Texture;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class FrameBufferHandle<T extends Texture> implements IFrameBuffer {
 
+	@NonNull
 	private final T texture;
 
 	private boolean deleted;
-
-	protected FrameBufferHandle(final @NonNull T texture) {
-		this.texture = texture;
-	}
 
 	@Override
 	public final int getWidth() {

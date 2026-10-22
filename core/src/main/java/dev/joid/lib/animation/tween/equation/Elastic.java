@@ -3,8 +3,11 @@ package dev.joid.lib.animation.tween.equation;
 
 
 import dev.joid.lib.animation.tween.TweenEquation;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Elastic extends TweenEquation {
 
 	private static final float PI = 3.14159265F;
@@ -15,11 +18,6 @@ public abstract class Elastic extends TweenEquation {
 
 	protected final float a;
 	protected final float p;
-
-	protected Elastic(final float a, final float p) {
-		this.a = a;
-		this.p = p;
-	}
 
 	public abstract @NonNull Elastic a(final float a);
 	public abstract @NonNull Elastic p(final float p);

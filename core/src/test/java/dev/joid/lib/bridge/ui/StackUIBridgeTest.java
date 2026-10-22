@@ -21,6 +21,7 @@ import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.core.data.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.transition.PopTransition;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class StackUIBridgeTest {
 
@@ -362,13 +363,10 @@ public class StackUIBridgeTest {
 		Assert.assertTrue(this.bridge.canReplace(new ScreenUI("menu", this.trace)));
 	}
 
+	@RequiredArgsConstructor
 	public static final class ScreenBridge extends StackUIBridge {
 
 		private final List<String> trace;
-
-		public ScreenBridge(final List<String> trace) {
-			this.trace = trace;
-		}
 
 		@Override
 		protected void attachScreen() {

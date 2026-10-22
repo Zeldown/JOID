@@ -25,7 +25,9 @@ import dev.joid.lib.obj.data.ObjGroup;
 import dev.joid.lib.obj.data.ObjTextureCoordinate;
 import dev.joid.lib.obj.data.ObjVertex;
 import dev.joid.lib.resource.Resource;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class ObjModelTest {
 
@@ -466,13 +468,10 @@ public class ObjModelTest {
 		return ObjModel.of("test", new ByteArrayInputStream(String.join("\n", lines).getBytes(StandardCharsets.UTF_8)), ObjModelTest.TEXTURE);
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class FailingStream extends InputStream {
 
 		private final IOException failure;
-
-		private FailingStream(final IOException failure) {
-			this.failure = failure;
-		}
 
 		@Override
 		public int read() throws IOException {

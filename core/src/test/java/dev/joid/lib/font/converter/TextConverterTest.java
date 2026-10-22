@@ -8,6 +8,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class TextConverterTest {
 
@@ -80,13 +81,10 @@ public class TextConverterTest {
 		TextConverter.convertLines(Arrays.asList("First", null));
 	}
 
+	@RequiredArgsConstructor
 	public static final class TranslatableText {
 
 		private final String key;
-
-		public TranslatableText(final String key) {
-			this.key = key;
-		}
 
 		@Override
 		public String toString() {
@@ -95,13 +93,10 @@ public class TextConverterTest {
 
 	}
 
+	@RequiredArgsConstructor
 	public static final class LanguageTextConverter implements ITextConverter {
 
 		private final String language;
-
-		public LanguageTextConverter(final String language) {
-			this.language = language;
-		}
 
 		@Override
 		public boolean supports(final @NonNull Object text) {

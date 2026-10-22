@@ -8,13 +8,9 @@ public class ReplayCountedSignal extends IntegerSignal {
 
 	public static final AtomicInteger CREATED = new AtomicInteger();
 
-	protected ReplayCountedSignal(final int value) {
+	public ReplayCountedSignal(final int value) {
 		super(value);
 		ReplayCountedSignal.CREATED.incrementAndGet();
-	}
-
-	public static ReplayCountedSignal create(final int value) {
-		return new ReplayCountedSignal(value);
 	}
 
 }
