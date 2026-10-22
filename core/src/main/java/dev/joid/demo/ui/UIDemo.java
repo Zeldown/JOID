@@ -12,7 +12,7 @@ public class UIDemo extends UI {
 			}
 
 			super.getData().active(false);
-			JOID.open(new UIDemoChoice());
+			JOID.open(UIDemoChoice.getMenu().get());
 			event.cancel();
 		});
 	}

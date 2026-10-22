@@ -1,7 +1,9 @@
 package dev.joid.demo.ui;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.animation.UIDemoAnimation;
@@ -48,6 +50,8 @@ import dev.joid.lib.ui.node.impl.layout.GridNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.shortcut.Shortcut;
+import lombok.Getter;
+import lombok.NonNull;
 
 @UIData(background = true, closeable = false)
 public class UIDemoChoice extends UI {
@@ -98,6 +102,8 @@ public class UIDemoChoice extends UI {
 		DemoEntry.create(UIDemoModel.class)
 	);
 
+	@Getter private static Supplier<UI> menu = UIDemoChoice::new;
+
 	@Override
 	public void init() {
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 26).color(Color.WHITE);
@@ -123,6 +129,14 @@ public class UIDemoChoice extends UI {
 		.attach(this);
 
 		Shortcut.create(Key.K).ctrl(true).onTrigger(event -> JOID.open(new UIDemoPopup())).attach(this);
+	}
+
+	public static void menu(final @NonNull Supplier<UI> menu) {
+		UIDemoChoice.menu = menu;
+	}
+
+	public static @NonNull List<@NonNull DemoEntry> getEntries() {
+		return Collections.unmodifiableList(UIDemoChoice.LIST);
 	}
 
 }

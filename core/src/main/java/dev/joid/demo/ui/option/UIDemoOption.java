@@ -151,7 +151,7 @@ public class UIDemoOption extends UIDemo {
 			RectNode
 			.create(100, 105, 120, 50)
 			.color(UIDemoOption.INK)
-			.onClick(event -> JOID.forceOpen(new UIDemoChoice()))
+			.onClick(event -> JOID.forceOpen(UIDemoChoice.getMenu().get()))
 			.label(Text.create("Menu", label))
 			.attach(rect);
 			TextNode.create(160, 275).text(Text.create("Force open", info)).anchorX(Align.CENTER).attach(rect);
