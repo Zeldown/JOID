@@ -143,7 +143,7 @@ public class ComputedSignal<T> extends Signal<T> {
 
 			current = this.value;
 		}
-		super.emit(current);
+		super.fireChange(current);
 	}
 
 	@Override

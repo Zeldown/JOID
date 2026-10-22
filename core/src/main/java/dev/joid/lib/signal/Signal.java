@@ -137,7 +137,7 @@ public class Signal<T> implements Supplier<T> {
 	protected void refresh() {}
 
 	protected void dispatch() {
-		this.emit(this.peek());
+		this.fireChange(this.peek());
 	}
 
 	protected final int getVersion() {
@@ -183,7 +183,7 @@ public class Signal<T> implements Supplier<T> {
 		this.version++;
 	}
 
-	protected final void emit(final T value) {
+	protected final void fireChange(final T value) {
 		RuntimeException failure = null;
 		for (final SignalListener<? super T> listener : this.listenerSet) {
 			try {
