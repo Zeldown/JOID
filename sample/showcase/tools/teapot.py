@@ -1,12 +1,3 @@
-"""Generate the JOID demo model: a teapot built from the Utah teapot profile curves (public domain data).
-
-The body and the lid are one surface of revolution swept from the cubic Bezier profile of the original patches.
-The handle and the spout are swept tubes between the inner and outer Bezier curves of their patches.
-Every vertex carries its own smooth normal and texture coordinate.
-
-usage: python teapot.py   -> core/src/main/resources/assets/demo/models/model.obj + texture.png (neutral)
-                             sample/showcase/src/main/resources/assets/showcase/teapot.png (colored, for the showcase)
-"""
 import math, os
 from PIL import Image, ImageDraw, ImageFilter
 

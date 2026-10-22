@@ -28,8 +28,8 @@ public abstract class Elastic extends TweenEquation {
 			@Override
 			public final float compute(final float time) {
 				float t = time;
-				float a = this.a;
-				final float p = this.p;
+				float a = super.a;
+				final float p = super.p;
 				if (t == 0F) {
 					return 0F;
 				}
@@ -51,12 +51,12 @@ public abstract class Elastic extends TweenEquation {
 
 			@Override
 			public @NonNull Elastic a(final float a) {
-				return Elastic.in(a, this.p);
+				return Elastic.in(a, super.p);
 			}
 
 			@Override
 			public @NonNull Elastic p(final float p) {
-				return Elastic.in(this.a, p);
+				return Elastic.in(super.a, p);
 			}
 
 			@Override
@@ -72,8 +72,8 @@ public abstract class Elastic extends TweenEquation {
 
 			@Override
 			public final float compute(final float t) {
-				float a = this.a;
-				final float p = this.p;
+				float a = super.a;
+				final float p = super.p;
 				if (t == 0F) {
 					return 0F;
 				}
@@ -95,12 +95,12 @@ public abstract class Elastic extends TweenEquation {
 
 			@Override
 			public @NonNull Elastic a(final float a) {
-				return Elastic.out(a, this.p);
+				return Elastic.out(a, super.p);
 			}
 
 			@Override
 			public @NonNull Elastic p(final float p) {
-				return Elastic.out(this.a, p);
+				return Elastic.out(super.a, p);
 			}
 
 			@Override
@@ -117,8 +117,8 @@ public abstract class Elastic extends TweenEquation {
 			@Override
 			public final float compute(final float time) {
 				float t = time;
-				float a = this.a;
-				final float p = this.p;
+				float a = super.a;
+				final float p = super.p;
 				if (t == 0F) {
 					return 0F;
 				}
@@ -144,12 +144,12 @@ public abstract class Elastic extends TweenEquation {
 
 			@Override
 			public @NonNull Elastic a(final float a) {
-				return Elastic.inOut(a, this.p);
+				return Elastic.inOut(a, super.p);
 			}
 
 			@Override
 			public @NonNull Elastic p(final float p) {
-				return Elastic.inOut(this.a, p);
+				return Elastic.inOut(super.a, p);
 			}
 
 			@Override

@@ -39,7 +39,9 @@ import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSourceTest;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class MsdfFontLoaderTest {
 
@@ -271,17 +273,12 @@ public class MsdfFontLoaderTest {
 		throw new AssertionError("The font must not load");
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class FaceSource implements IMsdfSource {
 
-		private final IMsdfSource    source;
-		private final List<String>   threads;
 		private final CountDownLatch started;
-
-		private FaceSource(final CountDownLatch started, final List<String> threads, final IMsdfSource source) {
-			this.started = started;
-			this.threads = threads;
-			this.source = source;
-		}
+		private final List<String>   threads;
+		private final IMsdfSource    source;
 
 		@Override
 		public @NonNull MsdfFontFace read() throws IOException {

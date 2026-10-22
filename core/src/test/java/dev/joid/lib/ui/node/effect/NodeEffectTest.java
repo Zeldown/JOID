@@ -22,8 +22,10 @@ import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.CircleNodeEffect;
 import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class NodeEffectTest {
 
@@ -203,19 +205,14 @@ public class NodeEffectTest {
 
 	public static final class PlainEffect extends NodeEffect<Node> {}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static class TraceEffect extends NodeEffect<Node> {
 
 		private final String       name;
-		private final boolean      applies;
 		private final List<String> trace;
+		private final boolean      applies;
 
 		private UI ui;
-
-		private TraceEffect(final String name, final List<String> trace, final boolean applies) {
-			this.name = name;
-			this.trace = trace;
-			this.applies = applies;
-		}
 
 		@Override
 		public void init(final @NonNull Node node, final @NonNull UI ui) {

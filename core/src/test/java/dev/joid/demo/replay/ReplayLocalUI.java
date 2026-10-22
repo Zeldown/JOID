@@ -79,7 +79,7 @@ public class ReplayLocalUI extends UI {
 				for (final String name : names.get()) {
 					SignalReplayNode.create().text(name).attach(this);
 				}
-				SignalReplayNode.create().caption(SignalReplayCaption.create("Saved " + saved.get())).attach(this);
+				SignalReplayNode.create().caption(SignalReplayCaption.of("Saved " + saved.get())).attach(this);
 				break;
 			}
 			case "loop": {

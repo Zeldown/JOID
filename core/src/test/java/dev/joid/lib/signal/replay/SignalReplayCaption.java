@@ -13,7 +13,7 @@ public final class SignalReplayCaption {
 
 	private final Supplier<String> text;
 
-	public static SignalReplayCaption create(final String text) {
+	public static SignalReplayCaption of(final String text) {
 		return new SignalReplayCaption(Signal.from(text));
 	}
 

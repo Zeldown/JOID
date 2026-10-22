@@ -10,7 +10,9 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.resolver.ResourceResolver;
+import lombok.AccessLevel;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 public class BorrowedTextureTest {
 
@@ -108,19 +110,13 @@ public class BorrowedTextureTest {
 		Assert.assertTrue(image.valid);
 	}
 
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class BorrowableImage {
 
 		private final int     width;
 		private final int     height;
-		private final boolean valid;
 		private final boolean mipmapped;
-
-		private BorrowableImage(final int width, final int height, final boolean mipmapped, final boolean valid) {
-			this.width = width;
-			this.height = height;
-			this.mipmapped = mipmapped;
-			this.valid = valid;
-		}
+		private final boolean valid;
 
 		@Override
 		public @NonNull String toString() {
