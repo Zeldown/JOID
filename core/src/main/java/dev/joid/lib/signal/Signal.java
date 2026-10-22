@@ -187,7 +187,7 @@ public class Signal<T> implements Supplier<T> {
 		RuntimeException failure = null;
 		for (final SignalListener<? super T> listener : this.listenerSet) {
 			try {
-				listener.onChange(value);
+				listener.apply(value);
 			} catch (final RuntimeException exception) {
 				if (failure == null) {
 					failure = exception;

@@ -319,7 +319,7 @@ public final class NodeBindings {
 		private V value;
 
 		@Override
-		public void onChange(final V value) {
+		public void apply(final V value) {
 			if (NodeBindings.this.subscribed && !Objects.equals(this.value, value)) {
 				this.value = value;
 				this.applier.accept(value);
@@ -347,7 +347,7 @@ public final class NodeBindings {
 			signal.onChange(this);
 			final V current = signal.peek();
 			if (!Objects.equals(this.value, current)) {
-				this.onChange(current);
+				this.apply(current);
 			}
 		}
 
@@ -392,7 +392,7 @@ public final class NodeBindings {
 		private Object value;
 
 		@Override
-		public void onChange(final Object value) {
+		public void apply(final Object value) {
 			if (!NodeBindings.this.subscribed) {
 				return;
 			}
@@ -407,7 +407,7 @@ public final class NodeBindings {
 			this.signal.onChange(this);
 			final Object current = this.signal.peek();
 			if (loaded && !Objects.equals(this.value, current)) {
-				this.onChange(current);
+				this.apply(current);
 			}
 		}
 

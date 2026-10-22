@@ -168,7 +168,7 @@ public class ComputedSignalTest {
 		tenfold.onChange(new SignalListener<Integer>() {
 
 			@Override
-			public void onChange(final Integer value) {
+			public void apply(final Integer value) {
 				calls.incrementAndGet();
 				tenfold.removeOnChange(this);
 			}

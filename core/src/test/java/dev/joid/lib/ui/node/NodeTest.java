@@ -3332,7 +3332,7 @@ public class NodeTest {
 		final List<SignalListener<Integer>> pending = new ArrayList<>(NodeTest.subscribers(signal));
 		parent.remove(child);
 		for (final SignalListener<Integer> subscriber : pending) {
-			subscriber.onChange(1);
+			subscriber.apply(1);
 		}
 		Assert.assertEquals(0, reloads[0]);
 	}
