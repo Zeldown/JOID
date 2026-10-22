@@ -24,18 +24,17 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
+import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.resource.cache.IResourceCache;
 import dev.joid.lib.resource.cache.MemoryResourceCache;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VectorResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
-
-import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import lombok.NonNull;
 
 public class ResourceBuilderTest {

@@ -4,7 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.lib.input.key.Key;
-
 import lombok.NonNull;
 
 public class KeyResolverTest {

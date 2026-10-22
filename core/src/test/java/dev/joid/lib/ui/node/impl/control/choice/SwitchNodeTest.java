@@ -16,7 +16,6 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

@@ -30,7 +30,6 @@ import dev.joid.lib.ui.node.NodeTest.NodeUI;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.resource.ResourcePlayerNode;
 import dev.joid.lib.video.VideoNativesException;
-
 import lombok.NonNull;
 
 public class ResourceFailureTest {

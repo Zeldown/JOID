@@ -10,7 +10,6 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.converter.ITextConverter;
 import dev.joid.lib.font.converter.TextConverter;
 import dev.joid.lib.font.modifier.TextModifier;
-
 import lombok.NonNull;
 
 public class TextElementTest {

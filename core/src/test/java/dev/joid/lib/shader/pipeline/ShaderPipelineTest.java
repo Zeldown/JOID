@@ -27,7 +27,6 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.render.framebuffer.FrameBufferPool;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-
 import lombok.Getter;
 import lombok.NonNull;
 

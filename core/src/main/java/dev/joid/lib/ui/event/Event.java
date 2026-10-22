@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.event;
 
 import dev.joid.internal.JOIDLog;
-
 import lombok.NonNull;
 
 public abstract class Event {

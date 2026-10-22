@@ -18,7 +18,6 @@ import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
-
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 

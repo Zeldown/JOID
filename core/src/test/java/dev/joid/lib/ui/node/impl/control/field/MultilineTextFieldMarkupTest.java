@@ -25,7 +25,6 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.node.Node;
-
 import lombok.Getter;
 
 public class MultilineTextFieldMarkupTest {

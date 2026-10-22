@@ -17,7 +17,6 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.ui.core.UI;
-
 import lombok.AllArgsConstructor;
 
 public class UIPropertyHookTest {

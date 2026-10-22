@@ -3,7 +3,6 @@ package dev.joid.lib.utils.lock;
 import java.util.function.UnaryOperator;
 
 import dev.joid.internal.JOIDLog;
-
 import lombok.Getter;
 import lombok.NonNull;
 

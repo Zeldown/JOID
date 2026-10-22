@@ -17,8 +17,8 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
-import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ResourceNodeTest {
 

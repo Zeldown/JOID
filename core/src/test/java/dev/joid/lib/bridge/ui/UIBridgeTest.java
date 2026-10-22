@@ -44,7 +44,6 @@ import dev.joid.lib.ui.event.IConsumableEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.shortcut.Shortcut;
-
 import lombok.NonNull;
 
 public class UIBridgeTest {

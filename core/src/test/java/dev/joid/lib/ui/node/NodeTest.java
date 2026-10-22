@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDLog;
@@ -75,7 +76,6 @@ import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.align.Axis;
 import dev.joid.lib.utils.geom.Point;
 import dev.joid.lib.utils.list.IndexedList;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;

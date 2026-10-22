@@ -25,7 +25,6 @@ import dev.joid.lib.obj.data.ObjGroup;
 import dev.joid.lib.obj.data.ObjTextureCoordinate;
 import dev.joid.lib.obj.data.ObjVertex;
 import dev.joid.lib.resource.Resource;
-
 import lombok.NonNull;
 
 public class ObjModelTest {

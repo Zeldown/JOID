@@ -1,10 +1,10 @@
 package com.example.joid.backend.demo;
 
+import com.example.joid.backend.ExampleBackend;
+
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.lib.bridge.BridgeHandler;
-
-import com.example.joid.backend.ExampleBackend;
 
 public class DemoWindow extends DemoUIBridge {
 

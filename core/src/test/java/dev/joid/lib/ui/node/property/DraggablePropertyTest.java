@@ -20,7 +20,6 @@ import dev.joid.lib.ui.node.property.DraggableProperty.DraggableAreaType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableType;
 import dev.joid.lib.utils.geom.BoundingBox;
-
 import lombok.AllArgsConstructor;
 
 public class DraggablePropertyTest {

@@ -21,7 +21,6 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.control.selector.SelectorNode.SelectorDirection;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-
 import lombok.AllArgsConstructor;
 
 public class SelectorNodeTest {

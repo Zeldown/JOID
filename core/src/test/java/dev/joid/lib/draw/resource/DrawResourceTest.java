@@ -25,7 +25,6 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
-
 import lombok.Getter;
 import lombok.NonNull;
 

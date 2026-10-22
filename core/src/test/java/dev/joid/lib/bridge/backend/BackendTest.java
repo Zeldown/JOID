@@ -29,7 +29,6 @@ import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
 import dev.joid.lib.color.Color;
-
 import lombok.NonNull;
 
 public class BackendTest {

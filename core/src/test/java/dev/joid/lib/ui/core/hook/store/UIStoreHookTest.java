@@ -26,7 +26,6 @@ import com.google.gson.reflect.TypeToken;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
-
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
