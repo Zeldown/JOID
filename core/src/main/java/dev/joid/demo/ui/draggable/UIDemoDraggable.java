@@ -5,16 +5,16 @@ import java.util.function.Consumer;
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.shader.impl.BorderShader.BorderMode;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
-import dev.joid.lib.ui.node.layer.NodeLayer;
 import dev.joid.lib.ui.node.property.DraggableProperty;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableType;
@@ -40,7 +40,6 @@ public class UIDemoDraggable extends UIDemo {
 			RectNode.create(22, 38, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 			RectNode.create(22, 48, 36, 4).color(UIDemoDraggable.PLACEHOLDER).attach(node);
 		};
-		final NodeLayer outline = (node, mouseX, mouseY) -> DrawUtils.SHAPE.drawBorder(0D, 0D, node.getWidth(), node.getHeight(), UIDemoDraggable.INK, 2D);
 
 		RectNode
 		.create(100, 40, 400, 260)
@@ -71,7 +70,7 @@ public class UIDemoDraggable extends UIDemo {
 				.draggable(DraggableProperty.parent())
 				.attach(container);
 			})
-			.layer(outline)
+			.effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Parent area", caption)).anchorX(Align.CENTER).attach(rect);
 		})
@@ -81,7 +80,7 @@ public class UIDemoDraggable extends UIDemo {
 		.create(980, 40, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			final RectNode area = RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect);
+			final RectNode area = RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect);
 			RectNode
 			.create(60, 60, 80, 80)
 			.color(UIDemoDraggable.INK)
@@ -96,7 +95,7 @@ public class UIDemoDraggable extends UIDemo {
 		.create(1420, 40, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect);
+			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect);
 			RectNode
 			.create(60, 60, 80, 80)
 			.color(UIDemoDraggable.INK)
@@ -112,9 +111,9 @@ public class UIDemoDraggable extends UIDemo {
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
 			final DraggableProperty nearest = DraggableProperty.free();
-			nearest.snap(RectNode.create(20, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
-			nearest.snap(RectNode.create(150, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
-			nearest.snap(RectNode.create(280, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
+			nearest.snap(RectNode.create(20, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect));
+			nearest.snap(RectNode.create(150, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect));
+			nearest.snap(RectNode.create(280, 30, 100, 100).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect));
 			RectNode
 			.create(160, 150, 80, 80)
 			.color(UIDemoDraggable.INK)
@@ -130,9 +129,9 @@ public class UIDemoDraggable extends UIDemo {
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
 			final DraggableProperty overlap = DraggableProperty.free().type(DraggableType.COPY).snapType(DraggableSnapType.OVERLAP);
-			overlap.snap(RectNode.create(40, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
-			overlap.snap(RectNode.create(160, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
-			overlap.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
+			overlap.snap(RectNode.create(40, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect));
+			overlap.snap(RectNode.create(160, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect));
+			overlap.snap(RectNode.create(280, 40, 80, 80).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect));
 			RectNode
 			.create(160, 150, 80, 80)
 			.color(UIDemoDraggable.INK)
@@ -148,7 +147,7 @@ public class UIDemoDraggable extends UIDemo {
 		.create(980, 380, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect);
+			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect);
 			RectNode
 			.create(40, 40, 320, 180)
 			.color(UIDemoDraggable.PLACEHOLDER)
@@ -232,8 +231,8 @@ public class UIDemoDraggable extends UIDemo {
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
 			final DraggableProperty slots = DraggableProperty.free();
-			slots.snap(RectNode.create(40, 30, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
-			slots.snap(RectNode.create(40, 150, 80, 80).color(UIDemoDraggable.PLACEHOLDER).layer(outline).attach(rect));
+			slots.snap(RectNode.create(40, 30, 80, 80).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect));
+			slots.snap(RectNode.create(40, 150, 80, 80).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect));
 			RectNode
 			.create(40, 30, 80, 80)
 			.color(UIDemoDraggable.INK)
