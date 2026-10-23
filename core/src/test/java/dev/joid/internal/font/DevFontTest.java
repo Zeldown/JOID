@@ -5,6 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
@@ -16,7 +17,7 @@ public class DevFontTest {
 
 	@BeforeClass
 	public static void load() {
-		DevFont.load();
+		TestUtils.captureOut(false, DevFont::load);
 	}
 
 	@Test

@@ -9,6 +9,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
@@ -58,7 +59,7 @@ public class TextTest {
 
 	@BeforeClass
 	public static void load() {
-		TextTest.montserrat = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf"), JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Bold.ttf")).join();
+		TestUtils.captureOut(false, () -> TextTest.montserrat = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf"), JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Bold.ttf")).join());
 	}
 
 	@Test

@@ -6,7 +6,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.font.DevFont;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
 
@@ -20,7 +20,7 @@ public class DemoUIBridgeTest {
 
 	@BeforeClass
 	public static void loadTheDevFont() {
-		DevFont.load();
+		TestUtils.loadTheDevFont();
 	}
 
 	@Test

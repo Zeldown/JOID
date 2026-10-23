@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
 
+import dev.joid.internal.font.DevFont;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -68,6 +69,12 @@ public final class TestUtils {
 			field.setBoolean(null, demoMode);
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
+		}
+	}
+
+	public static void loadTheDevFont() {
+		if (DevFont.MONTSERRAT == null) {
+			TestUtils.captureOut(false, DevFont::load);
 		}
 	}
 

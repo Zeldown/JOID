@@ -7,6 +7,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.internal.TestUtils;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
@@ -28,7 +29,7 @@ public class DemoChartNodeTest {
 
 	@BeforeClass
 	public static void loadTheDevFont() {
-		DevFont.load();
+		TestUtils.loadTheDevFont();
 	}
 
 	@Test

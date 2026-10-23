@@ -12,6 +12,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.FontBounds;
@@ -53,7 +54,7 @@ public class DrawTextTest {
 
 	@BeforeClass
 	public static void load() {
-		DrawTextTest.montserrat = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf")).join();
+		TestUtils.captureOut(false, () -> DrawTextTest.montserrat = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf")).join());
 	}
 
 	@Test

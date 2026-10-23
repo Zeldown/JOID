@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
@@ -57,7 +58,7 @@ public class DevNodeTest {
 
 	@BeforeClass
 	public static void loadTheDevFont() {
-		DevFont.load();
+		TestUtils.loadTheDevFont();
 	}
 
 	@Before

@@ -54,7 +54,6 @@ import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
-import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -125,7 +124,7 @@ public class UITest {
 
 	@BeforeClass
 	public static void loadTheDevFont() {
-		DevFont.load();
+		TestUtils.loadTheDevFont();
 	}
 
 	@Before

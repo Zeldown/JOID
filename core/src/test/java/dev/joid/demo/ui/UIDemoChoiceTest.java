@@ -19,6 +19,7 @@ import dev.joid.demo.ui.control.UIDemoControl;
 import dev.joid.demo.ui.model.UIDemoModel;
 import dev.joid.demo.ui.simple.UIDemoSimple;
 import dev.joid.internal.ConsoleCapture;
+import dev.joid.internal.TestUtils;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
@@ -42,7 +43,7 @@ public class UIDemoChoiceTest {
 
 	@BeforeClass
 	public static void loadTheDevFont() {
-		DevFont.load();
+		TestUtils.loadTheDevFont();
 	}
 
 	@Before
