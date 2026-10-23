@@ -101,9 +101,7 @@ public class MsdfFontLoaderTest {
 		BridgeHandler.THREAD.register(thread);
 		try {
 			final CompletableFuture<MsdfFont> future = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"));
-			while (thread.isIdle()) {
-				Thread.sleep(10L);
-			}
+			Assert.assertTrue("The font sent no task to the render thread in 10 s", thread.await(10L, TimeUnit.SECONDS));
 			Assert.assertFalse(future.isDone());
 			thread.run();
 			Assert.assertTrue(future.isDone());

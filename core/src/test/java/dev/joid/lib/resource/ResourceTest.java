@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BooleanSupplier;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -256,12 +255,13 @@ public class ResourceTest {
 		Assert.assertArrayEquals(new int[] {0xFF336699, 0xFF336699}, resource.getData());
 	}
 
-	@Test
-	public void decodesInTheBackgroundByDefault() throws InterruptedException {
+	@Test(timeout = 10000L)
+	public void decodesInTheBackgroundByDefault() {
 		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceTest.image());
 		resource.generate();
 		Assert.assertTrue(resource.isGenerated());
-		ResourceTest.await(resource::isLoaded);
+		resource.getResourceData().await();
+		Assert.assertTrue(resource.isLoaded());
 		Assert.assertEquals(2, resource.getWidth());
 	}
 
@@ -521,14 +521,6 @@ public class ResourceTest {
 		image.setRGB(0, 0, 0xFF336699);
 		image.setRGB(1, 0, 0xFF336699);
 		return image;
-	}
-
-	private static void await(final BooleanSupplier condition) throws InterruptedException {
-		final long deadline = System.currentTimeMillis() + 5000L;
-		while (!condition.getAsBoolean() && System.currentTimeMillis() < deadline) {
-			Thread.sleep(1L);
-		}
-		Assert.assertTrue(condition.getAsBoolean());
 	}
 
 	private static boolean awaitWaiting(final Thread thread) {

@@ -214,7 +214,8 @@ public class VideoResourceDecoderTest {
 	public void keepsTheAudioOfAWebmOnceLooped() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm")).loop(true);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		while (((double) VideoResourceDecoderTest.field(decoder, "loopOffset")) <= 0D) {
+		for (int frame = 0; ((double) VideoResourceDecoderTest.field(decoder, "loopOffset")) <= 0D; frame++) {
+			Assert.assertTrue("The webm did not loop in 600 frames", frame < 600);
 			this.play(decoder, data, 1);
 		}
 		this.play(decoder, data, 30);

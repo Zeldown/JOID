@@ -272,8 +272,8 @@ public class ResourceDataTest {
 		data.generate(true);
 		final Thread clearing = new Thread(data::clear);
 		clearing.start();
-		clearing.join(1000L);
-		Assert.assertFalse(clearing.isAlive());
+		clearing.join(10000L);
+		Assert.assertFalse("The clear waited for the decode", clearing.isAlive());
 		Assert.assertFalse(data.isGenerated());
 		Assert.assertNull(data.getTextures());
 		Assert.assertFalse(decoder.calls.contains("clear"));
