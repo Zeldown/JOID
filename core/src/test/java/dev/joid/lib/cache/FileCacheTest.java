@@ -13,8 +13,10 @@ import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,23 +28,28 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDWarnings;
 
 public class FileCacheTest {
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	private File previous;
+	private File        previous;
+	private Set<String> areaSet;
 
 	@Before
 	public void useATemporaryCache() {
 		this.previous = JOIDEnv.getCacheDir();
+		this.areaSet = new HashSet<>(FileCacheTest.areaMap().keySet());
 		JOIDEnv.cacheDir(this.folder.getRoot());
 	}
 
 	@After
 	public void restoreTheCache() {
+		FileCacheTest.areaMap().keySet().retainAll(this.areaSet);
 		JOIDEnv.cacheDir(this.previous);
+		JOIDWarnings.forget();
 	}
 
 	@Test
@@ -267,13 +274,11 @@ public class FileCacheTest {
 	}
 
 	@Test
-	public void keepsTheAreaItCleansForItsLaterUse() throws IOException, ReflectiveOperationException {
+	public void keepsTheAreaItCleansForItsLaterUse() throws IOException {
 		final File directory = this.folder.newFolder("cleaned");
 		FileCacheTest.write(new File(directory, ".area"), "PT48H");
 		FileCacheTest.capture(FileCache::clean);
-		final Field field = FileCache.class.getDeclaredField("AREA_MAP");
-		field.setAccessible(true);
-		Assert.assertSame(((Map<?, ?>) field.get(null)).get("cleaned"), FileCache.area("cleaned"));
+		Assert.assertSame(FileCacheTest.areaMap().get("cleaned"), FileCache.area("cleaned"));
 	}
 
 	@Test
@@ -353,6 +358,16 @@ public class FileCacheTest {
 
 	private static String[] entries(final FileCacheArea area) {
 		return area.getDirectory().list((parent, name) -> !name.startsWith("."));
+	}
+
+	private static Map<String, FileCacheArea> areaMap() {
+		try {
+			final Field field = FileCache.class.getDeclaredField("AREA_MAP");
+			field.setAccessible(true);
+			return (Map<String, FileCacheArea>) field.get(null);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	private static String capture(final Runnable runnable) {

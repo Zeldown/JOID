@@ -2,12 +2,14 @@ package dev.joid.demo.ui.node.impl.chart;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis;
@@ -16,6 +18,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 public class DemoChartNodeTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

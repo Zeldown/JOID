@@ -19,6 +19,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -33,6 +34,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.bridge.ui.UIBridgeRegistryTest.RoutingBridge;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataPopup;
@@ -48,12 +50,21 @@ import lombok.NonNull;
 
 public class JOIDTest {
 
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
+
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	private File    dataDir;
 	private boolean devMode;
 	private boolean demoMode;
+
+	private MsdfFont      devFont;
+	private MsdfFont      pacifico;
+	private MsdfFont      montserrat;
+	private DemoPixelFont pixel;
+	private MsdfFont      playfairDisplay;
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
@@ -63,6 +74,11 @@ public class JOIDTest {
 		this.dataDir = JOIDEnv.getDataDir();
 		this.devMode = JOIDEnv.isDevMode();
 		this.demoMode = JOIDEnv.isDemoMode();
+		this.devFont = DevFont.MONTSERRAT;
+		this.pacifico = DemoFont.PACIFICO;
+		this.montserrat = DemoFont.MONTSERRAT;
+		this.pixel = DemoFont.PIXEL;
+		this.playfairDisplay = DemoFont.PLAYFAIR_DISPLAY;
 	}
 
 	@After
@@ -70,6 +86,11 @@ public class JOIDTest {
 		JOIDEnv.dataDir(this.dataDir);
 		JOIDEnv.devMode(this.devMode);
 		JOIDEnv.demoMode(this.demoMode);
+		DevFont.MONTSERRAT = this.devFont;
+		DemoFont.PACIFICO = this.pacifico;
+		DemoFont.MONTSERRAT = this.montserrat;
+		DemoFont.PIXEL = this.pixel;
+		DemoFont.PLAYFAIR_DISPLAY = this.playfairDisplay;
 	}
 
 	@Test
@@ -94,55 +115,34 @@ public class JOIDTest {
 
 	@Test
 	public void loadsNoFontOutsideTheDevAndDemoModes() {
-		final MsdfFont previous = DevFont.MONTSERRAT;
 		DevFont.MONTSERRAT = null;
-		try {
-			JOIDEnv.devMode(false);
-			JOIDEnv.demoMode(false);
-			JOIDTest.quietly(JOIDTest.create());
-			Assert.assertNull(DevFont.MONTSERRAT);
-			Assert.assertNull(DemoFont.MONTSERRAT);
-		} finally {
-			DevFont.MONTSERRAT = previous;
-		}
+		DemoFont.MONTSERRAT = null;
+		JOIDEnv.devMode(false);
+		JOIDEnv.demoMode(false);
+		JOIDTest.quietly(JOIDTest.create());
+		Assert.assertNull(DevFont.MONTSERRAT);
+		Assert.assertNull(DemoFont.MONTSERRAT);
 	}
 
 	@Test
 	public void loadsTheInternalFontInDevMode() {
-		final MsdfFont previous = DevFont.MONTSERRAT;
 		DevFont.MONTSERRAT = null;
-		try {
-			JOIDEnv.demoMode(false);
-			JOIDTest.quietly(JOIDTest.create());
-			Assert.assertNotNull(DevFont.MONTSERRAT);
-			Assert.assertNull(DemoFont.MONTSERRAT);
-		} finally {
-			DevFont.MONTSERRAT = previous;
-		}
+		DemoFont.MONTSERRAT = null;
+		JOIDEnv.demoMode(false);
+		JOIDTest.quietly(JOIDTest.create());
+		Assert.assertNotNull(DevFont.MONTSERRAT);
+		Assert.assertNull(DemoFont.MONTSERRAT);
 	}
 
 	@Test
 	public void loadsTheDemoFontsInDemoMode() {
-		final MsdfFont previous = DevFont.MONTSERRAT;
-		final MsdfFont montserrat = DemoFont.MONTSERRAT;
-		final MsdfFont pacifico = DemoFont.PACIFICO;
-		final MsdfFont playfairDisplay = DemoFont.PLAYFAIR_DISPLAY;
-		final DemoPixelFont pixel = DemoFont.PIXEL;
-		try {
-			JOIDEnv.devMode(false);
-			JOIDTest.quietly(JOIDTest.create());
-			Assert.assertNotNull(DemoFont.MONTSERRAT);
-			Assert.assertNotNull(DemoFont.PACIFICO);
-			Assert.assertNotNull(DemoFont.PLAYFAIR_DISPLAY);
-			Assert.assertNotNull(DemoFont.PIXEL);
-			Assert.assertSame(DevFont.MONTSERRAT, DemoFont.MONTSERRAT);
-		} finally {
-			DevFont.MONTSERRAT = previous;
-			DemoFont.MONTSERRAT = montserrat;
-			DemoFont.PACIFICO = pacifico;
-			DemoFont.PLAYFAIR_DISPLAY = playfairDisplay;
-			DemoFont.PIXEL = pixel;
-		}
+		JOIDEnv.devMode(false);
+		JOIDTest.quietly(JOIDTest.create());
+		Assert.assertNotNull(DemoFont.MONTSERRAT);
+		Assert.assertNotNull(DemoFont.PACIFICO);
+		Assert.assertNotNull(DemoFont.PLAYFAIR_DISPLAY);
+		Assert.assertNotNull(DemoFont.PIXEL);
+		Assert.assertSame(DevFont.MONTSERRAT, DemoFont.MONTSERRAT);
 	}
 
 	@Test
@@ -168,6 +168,8 @@ public class JOIDTest {
 		Assert.assertEquals("{\"volume\":3}", new String(Files.readAllBytes(property.toPath()), StandardCharsets.UTF_8));
 		Assert.assertEquals("{\"value\":\"kept\"}", new String(Files.readAllBytes(saved.toPath()), StandardCharsets.UTF_8));
 		Assert.assertTrue(this.bridges.getUi().isOpen(settings));
+		this.bridges.getUi().remove(settings);
+		settings.dispose();
 	}
 
 	@Test
@@ -600,12 +602,16 @@ public class JOIDTest {
 	public void createsNoDataFolderOnLoad() {
 		final File data = new File(this.folder.getRoot(), "joid");
 		JOIDEnv.dataDir(data);
+		JOIDEnv.devMode(false);
+		JOIDEnv.demoMode(false);
 		JOIDTest.quietly(JOIDTest.create());
 		Assert.assertFalse(data.exists());
 	}
 
 	@Test
 	public void loadsOnce() {
+		JOIDEnv.devMode(false);
+		JOIDEnv.demoMode(false);
 		final JOID joid = JOIDTest.create();
 		JOIDTest.quietly(joid);
 		final PrintStream previous = System.out;

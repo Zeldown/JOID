@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 import org.junit.rules.ExternalResource;
 
 import dev.joid.demo.DemoUIBridge;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
@@ -45,12 +46,15 @@ public final class HeadlessBridges extends ExternalResource {
 			this.ui.remove(opened);
 		}
 
+		RenderSingletons.reset();
 		BridgeHandler.UI.unregister(this.ui);
 		BridgeHandler.CLOCK.unregister(this.clock);
 		BridgeHandler.WINDOW.unregister(this.window);
 		BridgeHandler.RENDER.unregister(this.render);
 		HeadlessBridges.stopTheAnimators();
 		HeadlessBridges.releaseTheKeys();
+		HeadlessBridges.forgetTheCursor();
+		JOIDWarnings.forget();
 	}
 
 	public @NonNull HeadlessBridges resize(final int width, final int height) {
@@ -131,6 +135,19 @@ public final class HeadlessBridges extends ExternalResource {
 
 	public static void releaseTheKeys() {
 		HeadlessBridges.<Map<?, ?>>field(KeyState.class, BridgeHandler.UI.getKeyState(), "heldMap").clear();
+	}
+
+	private static void forgetTheCursor() {
+		try {
+			final Field cursor = UIBridge.class.getDeclaredField("windowCursor");
+			final Field window = UIBridge.class.getDeclaredField("cursorWindow");
+			cursor.setAccessible(true);
+			window.setAccessible(true);
+			cursor.set(null, null);
+			window.set(null, null);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 	private static <T> T field(final Class<?> type, final Object target, final String name) {

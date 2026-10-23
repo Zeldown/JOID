@@ -41,6 +41,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -63,6 +64,7 @@ import dev.joid.lib.bridge.render.RenderBridge;
 import dev.joid.lib.bridge.render.state.RenderState;
 import dev.joid.lib.bridge.render.state.StencilOperation;
 import dev.joid.lib.bridge.render.state.StencilState;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.input.key.Key;
@@ -105,6 +107,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 public class UITest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

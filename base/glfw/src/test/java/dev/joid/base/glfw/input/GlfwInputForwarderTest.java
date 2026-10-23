@@ -109,12 +109,15 @@ public class GlfwInputForwarderTest {
 	@Test
 	public void forwardsTheKeyAndTheCharacterAsTheyCome() {
 		this.ui.cancel = true;
-		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_PRESS);
-		GlfwInputForwarderTest.character(0xE9);
-		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_ENTER, GLFW.GLFW_PRESS);
-		Assert.assertEquals(Arrays.asList("key F3", "char é", "key ENTER"), this.trace);
-		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_RELEASE);
-		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_ENTER, GLFW.GLFW_RELEASE);
+		try {
+			GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_PRESS);
+			GlfwInputForwarderTest.character(0xE9);
+			GlfwInputForwarderTest.key(GLFW.GLFW_KEY_ENTER, GLFW.GLFW_PRESS);
+			Assert.assertEquals(Arrays.asList("key F3", "char é", "key ENTER"), this.trace);
+		} finally {
+			GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_RELEASE);
+			GlfwInputForwarderTest.key(GLFW.GLFW_KEY_ENTER, GLFW.GLFW_RELEASE);
+		}
 	}
 
 	@Test
@@ -140,10 +143,13 @@ public class GlfwInputForwarderTest {
 		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_REPEAT);
 		GlfwInputForwarderTest.key(GLFW.GLFW_KEY_F3, GLFW.GLFW_RELEASE);
 		GlfwInputForwarderTest.character('a');
-		GlfwInputForwarderTest.button(0, GLFW.GLFW_PRESS);
-		GlfwInputForwarderTest.scroll(0D, 1D);
-		Assert.assertEquals(Arrays.asList("key F3", "passed key", "passed key", "passed key", "char a", "passed char", "pressed LEFT", "passed button", "scrolled 1.0", "passed scroll"), this.trace);
-		GlfwInputForwarderTest.button(0, GLFW.GLFW_RELEASE);
+		try {
+			GlfwInputForwarderTest.button(0, GLFW.GLFW_PRESS);
+			GlfwInputForwarderTest.scroll(0D, 1D);
+			Assert.assertEquals(Arrays.asList("key F3", "passed key", "passed key", "passed key", "char a", "passed char", "pressed LEFT", "passed button", "scrolled 1.0", "passed scroll"), this.trace);
+		} finally {
+			GlfwInputForwarderTest.button(0, GLFW.GLFW_RELEASE);
+		}
 	}
 
 	private static void key(final int code, final int action) {

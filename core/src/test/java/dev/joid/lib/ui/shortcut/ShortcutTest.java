@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -18,6 +19,7 @@ import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
@@ -30,6 +32,9 @@ import dev.joid.lib.ui.node.impl.control.field.TextFieldNodeTest.FieldFont;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class ShortcutTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

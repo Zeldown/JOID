@@ -23,7 +23,9 @@ public class SignalContextTest {
 	@After
 	public void stopTracing() {
 		SignalContext.current().tracing(false);
+		SignalContext.current().takeReads();
 	}
+
 
 	@Test
 	public void tracesNothingByDefault() throws InterruptedException {

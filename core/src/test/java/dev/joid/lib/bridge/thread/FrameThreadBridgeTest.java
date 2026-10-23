@@ -9,13 +9,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.utils.thread.ThreadUtils;
 
 public class FrameThreadBridgeTest {
+
+	@After
+	public void forgetTheWarnings() {
+		JOIDWarnings.forget();
+	}
 
 	@Test
 	public void runsATaskFromAnotherThreadAtTheNextFrame() throws InterruptedException {

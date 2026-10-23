@@ -4,16 +4,21 @@ import java.lang.reflect.Field;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.video.VideoAudioPlayer;
 
 public class UIDemoAudioTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

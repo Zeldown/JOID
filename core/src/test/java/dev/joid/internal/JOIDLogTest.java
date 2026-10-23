@@ -5,10 +5,16 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class JOIDLogTest {
+
+	@After
+	public void forgetTheWarnings() {
+		JOIDWarnings.forget();
+	}
 
 	@Test
 	public void writesItsInformationOnTheStandardOutput() {

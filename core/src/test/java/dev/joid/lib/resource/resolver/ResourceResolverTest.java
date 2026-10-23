@@ -40,10 +40,15 @@ public class ResourceResolverTest {
 
 	@Test
 	public void prefersTheLastRegisteredResolver() {
-		ResourceResolver.register(new SpecialResolver());
-		Assert.assertTrue(ResourceResolver.supports(new SpecialImage()));
-		Assert.assertEquals("special", ResourceResolver.resolve(ResourceBuilder.create().cache(null), new SpecialImage()).getUniqueId());
-		Assert.assertTrue(ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)).getDecoder() instanceof RasterResourceDecoder);
+		final SpecialResolver resolver = new SpecialResolver();
+		ResourceResolver.register(resolver);
+		try {
+			Assert.assertTrue(ResourceResolver.supports(new SpecialImage()));
+			Assert.assertEquals("special", ResourceResolver.resolve(ResourceBuilder.create().cache(null), new SpecialImage()).getUniqueId());
+			Assert.assertTrue(ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)).getDecoder() instanceof RasterResourceDecoder);
+		} finally {
+			ResourceResolver.unregister(resolver);
+		}
 	}
 
 	@Test

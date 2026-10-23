@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -30,9 +31,11 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.source.BinaryMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
@@ -48,6 +51,9 @@ public class MsdfFontLoaderTest {
 	private static final String[] WEIGHTS = {"Thin", "ExtraLight", "Light", "Regular", "Medium", "SemiBold", "Bold", "ExtraBold", "Black"};
 
 	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
+
+	@ClassRule
 	public static final TemporaryFolder FOLDER = new TemporaryFolder();
 
 	private static File atlas;
@@ -56,6 +62,11 @@ public class MsdfFontLoaderTest {
 	public static void generateAnAtlas() throws IOException {
 		MsdfFontLoaderTest.atlas = MsdfFontLoaderTest.FOLDER.newFile("font.msdf");
 		Files.copy(OpenTypeMsdfSourceTest.resolve(Asset.of(MsdfFontLoaderTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).read()).toPath(), MsdfFontLoaderTest.atlas.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	}
+
+	@After
+	public void forgetTheWarnings() {
+		JOIDWarnings.forget();
 	}
 
 	@Test(timeout = 30000L)

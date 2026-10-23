@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
@@ -44,6 +45,7 @@ public class VideoAudioPlayerTest {
 	public void forgetTheAudio() {
 		BridgeHandler.AUDIO.unregister(this.audio);
 		VideoAudioPlayer.audioListenerPosition(null);
+		JOIDWarnings.forget();
 	}
 
 	@Test

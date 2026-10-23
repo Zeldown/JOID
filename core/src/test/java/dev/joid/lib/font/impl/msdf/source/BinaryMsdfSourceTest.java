@@ -9,10 +9,12 @@ import java.util.zip.DeflaterOutputStream;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
 import dev.joid.lib.asset.Asset;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.MsdfBounds;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
@@ -27,6 +29,9 @@ public class BinaryMsdfSourceTest {
 			{1, 2, 3, 250, 251, 252},
 			{128, 64, 32, 16, 8, 4}
 	};
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	private static MsdfFontFace face;
 

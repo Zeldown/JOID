@@ -10,6 +10,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.framebuffer.IFrameBuffer;
 import dev.joid.lib.bridge.render.shader.IShader;
@@ -46,7 +47,9 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 				try {
 					base.evaluate();
 				} finally {
+					RenderSingletons.reset();
 					BridgeHandler.RENDER.unregister(CapturingRenderBridge.this);
+					JOIDWarnings.forget();
 				}
 			}
 

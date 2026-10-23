@@ -8,9 +8,11 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
@@ -40,6 +42,9 @@ public class DrawTextTest {
 
 		return text.startsWith("<c red>", index) ? 7 : 0;
 	};
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	private static MsdfFont montserrat;
 

@@ -17,6 +17,7 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.core.data.UIDataOverlay;
 import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.core.data.UIDataPopup.PopupTransition;
@@ -29,18 +30,19 @@ public class StackUIBridgeTest {
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
+	private final List<UI>     uiList = new ArrayList<>();
 	private final List<String> trace  = new ArrayList<>();
 	private final ScreenBridge bridge = new ScreenBridge(this.trace);
 
 	@After
 	public void disposeTheUis() {
-		new ArrayList<>(this.bridge.getUiList()).forEach(UI::dispose);
+		this.uiList.forEach(UI::dispose);
 	}
 
 	@Test
 	public void closesTheOpenScreenBeforeOpeningAnother() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
 		this.bridge.open(menu);
 		this.bridge.open(settings);
 		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList());
@@ -50,7 +52,7 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void keepsTheOpenScreenWhenItRefusesToClose() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
 		menu.closeable = false;
 		this.bridge.open(menu);
 		final PrintStream previous = System.err;
@@ -59,7 +61,7 @@ public class StackUIBridgeTest {
 		final boolean devMode = JOIDEnv.isDevMode();
 		JOIDEnv.devMode(true);
 		try {
-			this.bridge.open(new ScreenUI("settings", this.trace));
+			this.bridge.open(new ScreenUI("settings", this));
 		} finally {
 			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
@@ -70,12 +72,12 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void keepsTheScreenUnderAPopupThatRefusesToClose() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI popup = new PopupUI("popup", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI popup = new PopupUI("popup", this);
 		popup.closeable = false;
 		this.bridge.open(menu);
 		this.bridge.open(popup);
-		this.bridge.open(new ScreenUI("settings", this.trace));
+		this.bridge.open(new ScreenUI("settings", this));
 		Assert.assertEquals(Arrays.asList(menu, popup), this.bridge.getUiList());
 		Assert.assertFalse(this.trace.contains("close menu"));
 		Assert.assertFalse(menu.isClosed());
@@ -83,9 +85,9 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void opensAPopupAndAnOverlayOverTheOpenScreen() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final PopupUI popup = new PopupUI("popup", this.trace);
-		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final PopupUI popup = new PopupUI("popup", this);
+		final OverlayUI overlay = new OverlayUI("overlay", this);
 		this.bridge.open(menu);
 		this.bridge.open(popup);
 		this.bridge.open(overlay);
@@ -95,9 +97,9 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void bringsAnOpenUiBackOnTopWithoutClosingIt() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final PopupUI first = new PopupUI("first", this.trace);
-		final PopupUI second = new PopupUI("second", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final PopupUI first = new PopupUI("first", this);
+		final PopupUI second = new PopupUI("second", this);
 		this.bridge.open(menu);
 		this.bridge.open(first);
 		this.bridge.open(second);
@@ -111,7 +113,7 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void loadsTheUiItAddsAtTheWindowSize() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
 		this.bridges.resize(1366, 768);
 		this.bridge.add(menu);
 		Assert.assertEquals(1366D, menu.getWindowWidth(), 0D);
@@ -121,8 +123,8 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void closesEveryUiWithoutAskingThem() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final OverlayUI overlay = new OverlayUI("overlay", this);
 		this.bridge.add(menu);
 		this.bridge.add(overlay);
 		this.bridge.closeAll();
@@ -134,9 +136,9 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void tellsWhenTheFirstScreenOpensAndTheLastOneCloses() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final PopupUI popup = new PopupUI("popup", this.trace);
-		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final PopupUI popup = new PopupUI("popup", this);
+		final OverlayUI overlay = new OverlayUI("overlay", this);
 		this.bridge.add(overlay);
 		this.bridge.add(menu);
 		this.bridge.add(popup);
@@ -149,20 +151,20 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void skipsTheScreenCallbacksWhileAScreenReplacesAnother() {
-		this.bridge.open(new ScreenUI("menu", this.trace));
-		this.bridge.open(new PopupUI("popup", this.trace));
-		this.bridge.open(new ScreenUI("settings", this.trace));
+		this.bridge.open(new ScreenUI("menu", this));
+		this.bridge.open(new PopupUI("popup", this));
+		this.bridge.open(new ScreenUI("settings", this));
 		this.bridge.close(this.bridge.getUiList().get(this.bridge.getUiList().size() - 1));
 		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
 	}
 
 	@Test
 	public void skipsTheScreenCallbacksWhileItForcesAScreenOpen() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
 		menu.closeable = false;
 		this.bridge.open(menu);
-		this.bridge.open(new PopupUI("popup", this.trace));
+		this.bridge.open(new PopupUI("popup", this));
 		this.bridge.forceOpen(settings);
 		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList());
 		Assert.assertTrue(menu.isClosed());
@@ -171,8 +173,8 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void tellsTheLastScreenClosedWhenItForcesAnOverlayOpen() {
-		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
-		this.bridge.open(new ScreenUI("menu", this.trace));
+		final OverlayUI overlay = new OverlayUI("overlay", this);
+		this.bridge.open(new ScreenUI("menu", this));
 		this.bridge.forceOpen(overlay);
 		Assert.assertEquals(Collections.singletonList(overlay), this.bridge.getUiList());
 		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
@@ -180,8 +182,8 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void skipsTheScreenCallbacksWhileAUiReplacesAnother() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
 		this.bridge.open(menu);
 		this.bridge.replace(menu, settings);
 		Assert.assertEquals(Collections.singletonList(settings), this.bridge.getUiList());
@@ -192,8 +194,8 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void keepsTheScreenCallbacksQuietWhileTheReplacedScreenPlaysItsExit() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
 		menu.transition(PopTransition.create());
 		BridgeHandler.UI.register(this.bridge);
 		try {
@@ -217,7 +219,7 @@ public class StackUIBridgeTest {
 	@Test
 	public void attachesTheScreenOfAUiWhoseInitFails() {
 		try {
-			this.bridge.open(new FailingUI("menu", this.trace));
+			this.bridge.open(new FailingUI("menu", this));
 			Assert.fail();
 		} catch (final IllegalStateException exception) {
 			Assert.assertEquals("Init failed", exception.getMessage());
@@ -227,8 +229,8 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void opensTheWaitingScreenWhenTheLeavingOneIsForcedToClose() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
 		menu.transition(PopTransition.create());
 		BridgeHandler.UI.register(this.bridge);
 		try {
@@ -250,9 +252,9 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void keepsTheScreenCallbacksQuietWhenTheWaitingScreenChangesDuringTheExit() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
-		final ScreenUI help = new ScreenUI("help", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
+		final ScreenUI help = new ScreenUI("help", this);
 		menu.transition(PopTransition.create());
 		BridgeHandler.UI.register(this.bridge);
 		try {
@@ -277,8 +279,8 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void dropsTheWaitingScreenWhenItClosesEveryUi() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
 		menu.transition(PopTransition.create());
 		BridgeHandler.UI.register(this.bridge);
 		try {
@@ -302,8 +304,8 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void keepsALeavingScreenOpenedAgain() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
 		menu.transition(PopTransition.create());
 		BridgeHandler.UI.register(this.bridge);
 		try {
@@ -327,18 +329,18 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void tellsTheFirstScreenOpenWhenNoScreenWasReplaced() {
-		final OverlayUI overlay = new OverlayUI("overlay", this.trace);
+		final OverlayUI overlay = new OverlayUI("overlay", this);
 		this.bridge.open(overlay);
-		this.bridge.open(new ScreenUI("menu", this.trace));
+		this.bridge.open(new ScreenUI("menu", this));
 		Assert.assertEquals(Collections.singletonList("first screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
 	}
 
 	@Test
 	public void skipsTheScreenCallbacksWhenTheOpenScreenRefusesToClose() {
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
+		final ScreenUI menu = new ScreenUI("menu", this);
 		menu.closeable = false;
 		this.bridge.open(menu);
-		this.bridge.open(new ScreenUI("settings", this.trace));
+		this.bridge.open(new ScreenUI("settings", this));
 		menu.closeable = true;
 		this.bridge.close(menu);
 		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));
@@ -347,9 +349,9 @@ public class StackUIBridgeTest {
 	@Test
 	public void keepsTheScreensItCannotReplace() {
 		final BaseBridge bridge = new BaseBridge();
-		final BaseUI base = new BaseUI("base", this.trace);
-		final ScreenUI menu = new ScreenUI("menu", this.trace);
-		final ScreenUI settings = new ScreenUI("settings", this.trace);
+		final BaseUI base = new BaseUI("base", this);
+		final ScreenUI menu = new ScreenUI("menu", this);
+		final ScreenUI settings = new ScreenUI("settings", this);
 		bridge.open(base);
 		bridge.open(menu);
 		bridge.open(settings);
@@ -360,13 +362,13 @@ public class StackUIBridgeTest {
 
 	@Test
 	public void handlesEveryUi() {
-		Assert.assertTrue(this.bridge.canHandle(new ScreenUI("menu", this.trace)));
+		Assert.assertTrue(this.bridge.canHandle(new ScreenUI("menu", this)));
 		Assert.assertTrue(this.bridge.canHandle(ScreenUI.class));
 	}
 
 	@Test
 	public void replacesEveryUiByDefault() {
-		Assert.assertTrue(this.bridge.canReplace(new ScreenUI("menu", this.trace)));
+		Assert.assertTrue(this.bridge.canReplace(new ScreenUI("menu", this)));
 	}
 
 	@RequiredArgsConstructor
@@ -395,6 +397,7 @@ public class StackUIBridgeTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static class ScreenUI extends UI {
 
 		private final String       name;
@@ -402,9 +405,10 @@ public class StackUIBridgeTest {
 
 		private boolean closeable = true;
 
-		public ScreenUI(final String name, final List<String> trace) {
+		public ScreenUI(final String name, final StackUIBridgeTest test) {
 			this.name  = name;
-			this.trace = trace;
+			this.trace = test.trace;
+			test.uiList.add(this);
 			super.beforeClose(event -> {
 				this.trace.add("close " + this.name);
 				if (!this.closeable) {
@@ -423,24 +427,24 @@ public class StackUIBridgeTest {
 	@UIDataPopup(active = true, transition = PopupTransition.NONE)
 	public static final class PopupUI extends ScreenUI {
 
-		public PopupUI(final String name, final List<String> trace) {
-			super(name, trace);
+		public PopupUI(final String name, final StackUIBridgeTest test) {
+			super(name, test);
 		}
 
 	}
 
 	public static final class BaseUI extends ScreenUI {
 
-		public BaseUI(final String name, final List<String> trace) {
-			super(name, trace);
+		public BaseUI(final String name, final StackUIBridgeTest test) {
+			super(name, test);
 		}
 
 	}
 
 	public static final class FailingUI extends ScreenUI {
 
-		public FailingUI(final String name, final List<String> trace) {
-			super(name, trace);
+		public FailingUI(final String name, final StackUIBridgeTest test) {
+			super(name, test);
 		}
 
 		@Override
@@ -454,8 +458,8 @@ public class StackUIBridgeTest {
 	@UIDataOverlay(active = true)
 	public static final class OverlayUI extends ScreenUI {
 
-		public OverlayUI(final String name, final List<String> trace) {
-			super(name, trace);
+		public OverlayUI(final String name, final StackUIBridgeTest test) {
+			super(name, test);
 		}
 
 	}

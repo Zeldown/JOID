@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.TextInfo;
@@ -44,6 +46,9 @@ public class DevNodeTest {
 	private static final Color BLACK  = new Color(23, 23, 25);
 	private static final Color WHITE  = new Color(250, 250, 250);
 	private static final Color ACTION = new Color(57, 120, 255);
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

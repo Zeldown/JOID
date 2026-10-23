@@ -5,10 +5,12 @@ import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.RenderBridge;
@@ -37,6 +39,11 @@ public class ShaderTest {
 
 	private static final String VERTEX   = "uniform sampler2D u_Noise;\n\nvoid main() {\n    gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aPosition, 1.0);\n}\n";
 	private static final String FRAGMENT = "uniform sampler2D tex;\nuniform sampler2D u_Noise;\nuniform vec4 u_Tint;\nuniform float u_Weights[3];\n\nvoid main() {\n    fragColor = texture(tex, vec2(0.0)) * u_Tint * u_Weights[0];\n}\n";
+
+	@After
+	public void forgetTheWarnings() {
+		JOIDWarnings.forget();
+	}
 
 	@Test
 	public void bindsItselfWithItsBlend() {

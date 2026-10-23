@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -15,11 +16,15 @@ import dev.joid.demo.ui.control.UIDemoControl;
 import dev.joid.demo.ui.simple.UIDemoSimple;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
 
 public class UIDemoChoiceTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

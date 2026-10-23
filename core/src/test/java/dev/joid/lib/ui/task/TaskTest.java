@@ -11,12 +11,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.EventListener;
@@ -25,6 +27,9 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class TaskTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

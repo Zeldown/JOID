@@ -5,8 +5,10 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.After;
@@ -32,6 +34,8 @@ public class Lwjgl2InputForwarderTest {
 	private final DemoUIBridge      bridge  = new DemoUIBridge() {};
 	private final FixedWindowBridge window  = new FixedWindowBridge();
 
+	private final Map<Field, Object> previousMap = new LinkedHashMap<>();
+
 	private boolean devMode;
 
 	@Before
@@ -41,10 +45,10 @@ public class Lwjgl2InputForwarderTest {
 		BridgeHandler.WINDOW.register(this.window);
 		this.bridge.add(this.ui);
 		BridgeHandler.UI.register(this.bridge);
-		Lwjgl2InputForwarderTest.set(Mouse.class, "created", true);
-		Lwjgl2InputForwarderTest.set(Mouse.class, "readBuffer", ByteBuffer.allocate(0));
-		Lwjgl2InputForwarderTest.set(Keyboard.class, "created", true);
-		Lwjgl2InputForwarderTest.set(Keyboard.class, "repeat_enabled", true);
+		this.replace(Mouse.class, "created", true);
+		this.replace(Mouse.class, "readBuffer", ByteBuffer.allocate(0));
+		this.replace(Keyboard.class, "created", true);
+		this.replace(Keyboard.class, "repeat_enabled", true);
 	}
 
 	@After
@@ -52,8 +56,12 @@ public class Lwjgl2InputForwarderTest {
 		for (final int code : new ArrayList<>(this.pressed)) {
 			this.poll(code, false, '\0', false);
 		}
-		Lwjgl2InputForwarderTest.set(Mouse.class, "created", false);
-		Lwjgl2InputForwarderTest.set(Keyboard.class, "created", false);
+		for (final Map.Entry<Field, Object> previous : this.previousMap.entrySet()) {
+			previous.getKey().set(null, previous.getValue());
+		}
+		final Field layout = Lwjgl2Keys.class.getDeclaredField("LAYOUT_MAP");
+		layout.setAccessible(true);
+		((Map<?, ?>) layout.get(null)).clear();
 		this.bridge.closeAll();
 		BridgeHandler.UI.unregister(this.bridge);
 		BridgeHandler.WINDOW.unregister(this.window);
@@ -130,13 +138,14 @@ public class Lwjgl2InputForwarderTest {
 		}
 		final ByteBuffer events = ByteBuffer.allocate(Keyboard.EVENT_SIZE);
 		events.putInt(code).put((byte) (state ? 1 : 0)).putInt(character).putLong(0L).put((byte) (repeat ? 1 : 0)).flip();
-		Lwjgl2InputForwarderTest.set(Keyboard.class, "readBuffer", events);
+		this.replace(Keyboard.class, "readBuffer", events);
 		Lwjgl2InputForwarder.poll();
 	}
 
-	private static void set(final Class<?> type, final String name, final Object value) throws Exception {
+	private void replace(final Class<?> type, final String name, final Object value) throws Exception {
 		final Field field = type.getDeclaredField(name);
 		field.setAccessible(true);
+		this.previousMap.putIfAbsent(field, field.get(null));
 		field.set(null, value);
 	}
 

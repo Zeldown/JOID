@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -15,6 +16,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingTexture;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.resource.Resource;
@@ -33,6 +35,9 @@ import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.geom.Point;
 
 public class ResourcePlayerNodeTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

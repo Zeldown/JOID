@@ -2,12 +2,17 @@ package dev.joid.internal.font;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
 
 public class DevFontTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@BeforeClass
 	public static void load() {

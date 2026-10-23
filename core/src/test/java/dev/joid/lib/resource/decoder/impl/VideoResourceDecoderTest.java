@@ -28,6 +28,7 @@ import org.bytedeco.javacv.Frame;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -41,13 +42,18 @@ import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.audio.IAudioSource;
 import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.ITexture;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.video.VideoAudioPlayer;
+import dev.joid.lib.video.VideoNatives;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 public class VideoResourceDecoderTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
@@ -64,11 +70,14 @@ public class VideoResourceDecoderTest {
 	}
 
 	@After
-	public void releaseEveryDecoder() {
+	public void releaseEveryDecoder() throws ReflectiveOperationException {
 		for (final VideoResourceDecoder decoder : this.decoders) {
 			decoder.release();
 		}
 		BridgeHandler.AUDIO.unregister(this.audio);
+		final Field installation = VideoNatives.class.getDeclaredField("installation");
+		installation.setAccessible(true);
+		installation.set(null, null);
 	}
 
 	@Test

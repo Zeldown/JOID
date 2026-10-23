@@ -13,6 +13,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -20,6 +21,7 @@ import org.junit.rules.TemporaryFolder;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
@@ -51,6 +53,9 @@ public class KeyLayoutTest {
 		KeyLayoutTest.AZERTY_MAP.put(Key.GRAVE_ACCENT, "²");
 		KeyLayoutTest.AZERTY_MAP.put(Key.RIGHT_BRACKET, "$");
 	}
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

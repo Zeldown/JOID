@@ -5,15 +5,22 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.font.FontWeight;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class FontFamilyTest {
+
+	@After
+	public void forgetTheWarnings() {
+		JOIDWarnings.forget();
+	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnEmptyFamily() {

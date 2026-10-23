@@ -5,9 +5,11 @@ import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.IFont;
@@ -48,6 +50,9 @@ public class TextTest {
 		}
 
 	};
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	private static MsdfFont montserrat;
 

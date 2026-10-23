@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.render.texture.TextureWrap;
 import dev.joid.lib.bridge.render.vertex.Primitive;
+import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.font.FontBounds;
@@ -28,6 +30,9 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.utils.geom.Point;
 
 public class MsdfTextRendererTest {
+
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	private static MsdfFont font;
 	private static MsdfFont sample;
