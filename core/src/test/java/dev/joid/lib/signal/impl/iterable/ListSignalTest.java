@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.signal.ComputedSignal;
@@ -225,11 +226,7 @@ public class ListSignalTest {
 			protected List<String> seal(final List<String> value) {
 				if (Thread.currentThread().getName().equals("sealer")) {
 					sealing.countDown();
-					final long deadline = System.currentTimeMillis() + 5000L;
-					while (main.getState() != Thread.State.BLOCKED && System.currentTimeMillis() < deadline) {
-						Thread.yield();
-					}
-					blocked.set(main.getState() == Thread.State.BLOCKED);
+					blocked.set(TestUtils.awaitBlocked(main, this));
 				}
 				return super.seal(value);
 			}

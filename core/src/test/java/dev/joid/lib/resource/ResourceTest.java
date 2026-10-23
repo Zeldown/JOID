@@ -503,7 +503,7 @@ public class ResourceTest {
 		final Thread main = Thread.currentThread();
 		final AtomicBoolean waited = new AtomicBoolean();
 		resource.getResourceData().dispatch(() -> {
-			waited.set(TestUtils.awaitWaiting(main));
+			waited.set(TestUtils.awaitWaiting(main, ResourceData.class, "await"));
 			resource.getResourceData().decoder(decoder);
 		});
 		final Resource fork = resource.fork();

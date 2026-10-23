@@ -376,7 +376,7 @@ public class VectorResourceDecoderTest {
 		while (((boolean) TestUtils.field(decoder, "rendering")) && System.currentTimeMillis() < deadline) {
 			Thread.sleep(1L);
 		}
-		Assert.assertFalse(((boolean) TestUtils.field(decoder, "rendering")));
+		Assert.assertFalse("The raster did not end in 5 s", (boolean) TestUtils.field(decoder, "rendering"));
 	}
 
 	private static Map<?, ?> textures(final VectorResourceDecoder decoder) {

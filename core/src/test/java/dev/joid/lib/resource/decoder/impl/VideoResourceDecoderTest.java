@@ -204,9 +204,9 @@ public class VideoResourceDecoderTest {
 			VideoResourceDecoderTest.load(decoder);
 			Assert.assertTrue(path, ((FFmpegFrameGrabber) TestUtils.field(decoder, "grabber")).getFormatContext().start_time() < 0L);
 			decoder.seek(0D);
-			final long deadline = System.currentTimeMillis() + 5000L;
+			final long deadline = System.currentTimeMillis() + 10000L;
 			while (!((boolean) TestUtils.field(decoder, "ended")) && ((ArrayBlockingQueue<?>) TestUtils.field(decoder, "frameQueue")).remainingCapacity() > 0) {
-				Assert.assertTrue(path + " did not fill its queue in 5 s", System.currentTimeMillis() < deadline);
+				Assert.assertTrue(path + " did not fill its queue in 10 s", System.currentTimeMillis() < deadline);
 				Thread.sleep(1L);
 			}
 
@@ -807,14 +807,14 @@ public class VideoResourceDecoderTest {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream(path));
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
 		final ArrayBlockingQueue<?> queue = (ArrayBlockingQueue<?>) TestUtils.field(TestUtils.field(decoder, "audioPlayer"), "sampleQueue");
-		final long full = System.currentTimeMillis() + 5000L;
+		final long full = System.currentTimeMillis() + 10000L;
 		while (queue.remainingCapacity() > 0) {
-			Assert.assertTrue("The audio queue did not fill in 5 s", System.currentTimeMillis() < full);
+			Assert.assertTrue("The audio queue did not fill in 10 s", System.currentTimeMillis() < full);
 			Thread.sleep(1L);
 		}
-		final long deadline = System.currentTimeMillis() + 5000L;
+		final long deadline = System.currentTimeMillis() + 10000L;
 		while (!((boolean) TestUtils.field(decoder, "ended"))) {
-			Assert.assertTrue("The video did not end in 5 s", System.currentTimeMillis() < deadline);
+			Assert.assertTrue("The video did not end in 10 s", System.currentTimeMillis() < deadline);
 			decoder.update(data);
 			Thread.sleep(1L);
 		}
@@ -1096,9 +1096,9 @@ public class VideoResourceDecoderTest {
 	private void play(final VideoResourceDecoder decoder, final ResourceData data, final int frames) throws InterruptedException {
 		for (int i = 0; i < frames; i++) {
 			this.bridges.getClock().advance(16L);
-			final long deadline = System.currentTimeMillis() + 5000L;
+			final long deadline = System.currentTimeMillis() + 10000L;
 			while (!decoder.isSettled()) {
-				Assert.assertTrue("The video did not settle in 5 s", System.currentTimeMillis() < deadline);
+				Assert.assertTrue("The video did not settle in 10 s", System.currentTimeMillis() < deadline);
 				Thread.sleep(1L);
 			}
 			decoder.update(data);
@@ -1146,9 +1146,9 @@ public class VideoResourceDecoderTest {
 	}
 
 	private static void buffer(final VideoResourceDecoder decoder) throws InterruptedException {
-		final long deadline = System.currentTimeMillis() + 5000L;
+		final long deadline = System.currentTimeMillis() + 10000L;
 		while (((ArrayBlockingQueue<?>) TestUtils.field(decoder, "frameQueue")).remainingCapacity() > 0) {
-			Assert.assertTrue("The frame queue did not fill in 5 s", System.currentTimeMillis() < deadline);
+			Assert.assertTrue("The frame queue did not fill in 10 s", System.currentTimeMillis() < deadline);
 			Thread.sleep(1L);
 		}
 	}

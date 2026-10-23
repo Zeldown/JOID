@@ -2,6 +2,8 @@ package dev.joid.internal;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
@@ -76,15 +78,45 @@ public final class TestUtils {
 		}
 	}
 
-	public static boolean awaitWaiting(final @NonNull Thread thread) {
+	public static boolean awaitWaiting(final @NonNull Thread thread, final @NonNull Class<?> type, final @NonNull String method) {
 		final long deadline = System.currentTimeMillis() + 5000L;
-		while (thread.getState() != Thread.State.WAITING) {
+		while (!TestUtils.isWaitingIn(thread, type, method)) {
 			if (System.currentTimeMillis() > deadline) {
 				return false;
 			}
 			Thread.yield();
 		}
 		return true;
+	}
+
+	public static boolean awaitBlocked(final @NonNull Thread thread, final @NonNull Object monitor) {
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (!TestUtils.isBlockedOn(thread, monitor)) {
+			if (System.currentTimeMillis() > deadline) {
+				return false;
+			}
+			Thread.yield();
+		}
+		return true;
+	}
+
+	private static boolean isWaitingIn(final Thread thread, final Class<?> type, final String method) {
+		final ThreadInfo info = ManagementFactory.getThreadMXBean().getThreadInfo(thread.getId(), Integer.MAX_VALUE);
+		if (info == null || info.getThreadState() != Thread.State.WAITING) {
+			return false;
+		}
+
+		for (final StackTraceElement element : info.getStackTrace()) {
+			if (!element.getClassName().startsWith("java.") && !element.getClassName().startsWith("sun.")) {
+				return element.getClassName().equals(type.getName()) && element.getMethodName().equals(method);
+			}
+		}
+		return false;
+	}
+
+	private static boolean isBlockedOn(final Thread thread, final Object monitor) {
+		final ThreadInfo info = ManagementFactory.getThreadMXBean().getThreadInfo(thread.getId());
+		return info != null && info.getThreadState() == Thread.State.BLOCKED && info.getLockInfo() != null && info.getLockInfo().getIdentityHashCode() == System.identityHashCode(monitor);
 	}
 
 }

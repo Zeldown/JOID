@@ -240,7 +240,7 @@ public class ResourceBuilderTest {
 		final Thread main = Thread.currentThread();
 		final AtomicBoolean waited = new AtomicBoolean();
 		final Thread releaser = new Thread(() -> {
-			waited.set(TestUtils.awaitWaiting(main));
+			waited.set(TestUtils.awaitWaiting(main, ResourceData.class, "await"));
 			asset.release.countDown();
 		});
 		releaser.start();
@@ -301,7 +301,7 @@ public class ResourceBuilderTest {
 		final Thread main = Thread.currentThread();
 		final AtomicBoolean waited = new AtomicBoolean();
 		final Thread releaser = new Thread(() -> {
-			waited.set(TestUtils.awaitWaiting(main));
+			waited.set(TestUtils.awaitWaiting(main, ResourceData.class, "await"));
 			asset.release.countDown();
 		});
 		releaser.start();
