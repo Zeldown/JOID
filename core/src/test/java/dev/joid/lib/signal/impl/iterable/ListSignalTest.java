@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -217,18 +217,19 @@ public class ListSignalTest {
 	@Test
 	public void keepsAWriteMadeWhileAnotherThreadSealsItsList() throws ReflectiveOperationException, InterruptedException {
 		final CountDownLatch sealing = new CountDownLatch(1);
-		final CountDownLatch written = new CountDownLatch(1);
+		final AtomicBoolean blocked = new AtomicBoolean();
+		final Thread main = Thread.currentThread();
 		final ListSignal<String> signal = new ListSignal<String>(Collections.singletonList("a")) {
 
 			@Override
 			protected List<String> seal(final List<String> value) {
 				if (Thread.currentThread().getName().equals("sealer")) {
 					sealing.countDown();
-					try {
-						written.await(1L, TimeUnit.SECONDS);
-					} catch (final InterruptedException exception) {
-						Thread.currentThread().interrupt();
+					final long deadline = System.currentTimeMillis() + 5000L;
+					while (main.getState() != Thread.State.BLOCKED && System.currentTimeMillis() < deadline) {
+						Thread.yield();
 					}
+					blocked.set(main.getState() == Thread.State.BLOCKED);
 				}
 				return super.seal(value);
 			}
@@ -241,8 +242,8 @@ public class ListSignalTest {
 		sealer.start();
 		sealing.await();
 		signal.set(Arrays.asList("a", "b"));
-		written.countDown();
 		sealer.join();
+		Assert.assertTrue("The write did not wait for the seal", blocked.get());
 		Assert.assertEquals(Arrays.asList("a", "b"), signal.peek());
 	}
 

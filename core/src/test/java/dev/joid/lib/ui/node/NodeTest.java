@@ -23,7 +23,7 @@ import com.google.gson.JsonParser;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
-import dev.joid.internal.JOIDLog;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -2542,7 +2542,7 @@ public class NodeTest {
 		final ContainerNode parent = ContainerNode.create(0D, 0D, 100D, 100D).append(sloppy, sibling);
 		this.bridges.open(new NodeUI(parent));
 		events.clear();
-		NodeTest.forgetWarnings();
+		JOIDWarnings.forget();
 		final String output = NodeTest.capture(() -> parent.remove(sloppy, sibling));
 		Assert.assertTrue(output, output.contains("The detach of SloppyNode in NodeUI failed (java.lang.IllegalStateException: The detach of this node fails on purpose), the node is detached anyway"));
 		Assert.assertTrue(parent.getChildren().isEmpty());
@@ -3130,7 +3130,7 @@ public class NodeTest {
 	public void keepsUpdatingTheOtherNodesWhenAnUpdateFails() {
 		final List<String> events = new ArrayList<>();
 		final RecordingNode after = new RecordingNode("after", events, 0D, 0D, 10D, 10D);
-		NodeTest.forgetWarnings();
+		JOIDWarnings.forget();
 		final String output = NodeTest.capture(() -> {
 			this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 100D, 100D).append(new FailingNode(), after)));
 			events.clear();
@@ -3927,7 +3927,7 @@ public class NodeTest {
 
 	@Test
 	public void keepsDrawingWhenItsVisibilityFails() {
-		NodeTest.forgetWarnings();
+		JOIDWarnings.forget();
 		final boolean[] failing = {false};
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).visible(() -> {
 			if (failing[0]) {
@@ -4095,16 +4095,6 @@ public class NodeTest {
 			System.setErr(error);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
-	}
-
-	private static void forgetWarnings() {
-		try {
-			final Field field = JOIDLog.class.getDeclaredField("KEY_SET");
-			field.setAccessible(true);
-			((Set<?>) field.get(null)).clear();
-		} catch (final ReflectiveOperationException exception) {
-			throw new AssertionError(exception);
-		}
 	}
 
 	private static int links(final Node node) {

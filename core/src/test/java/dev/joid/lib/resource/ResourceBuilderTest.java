@@ -16,12 +16,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+
+import com.google.common.cache.Cache;
 
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -182,12 +185,15 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
-	public void sharesTheDataOfAFileStillInUseAfterItsExpiry() throws IOException, InterruptedException {
+	public void sharesTheDataOfAFileStillInUseAfterItsExpiry() throws IOException, ReflectiveOperationException {
 		final File file = this.folder.newFile("still.png");
 		Files.write(file.toPath(), Asset.of(ResourceBuilderTest.stream("/animation/still.png")).read());
-		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create().expiry(20L));
+		final MemoryResourceCache cache = MemoryResourceCache.create();
+		final ResourceBuilder builder = ResourceBuilder.create().cache(cache);
 		final Resource first = builder.of(file);
-		Thread.sleep(100L);
+		final Field field = MemoryResourceCache.class.getDeclaredField("cache");
+		field.setAccessible(true);
+		((Cache<?, ?>) field.get(cache)).invalidateAll();
 		Assert.assertSame(first.getResourceData(), builder.of(file).getResourceData());
 	}
 
@@ -222,15 +228,16 @@ public class ResourceBuilderTest {
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
 		final RasterResourceDecoder decoder = RasterResourceDecoder.create(Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
 		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
+		final Thread main = Thread.currentThread();
+		final AtomicBoolean waited = new AtomicBoolean();
 		final Thread releaser = new Thread(() -> {
-			try {
-				Thread.sleep(50L);
-			} catch (final InterruptedException ignored) {}
+			waited.set(ResourceBuilderTest.awaitWaiting(main));
 			asset.release.countDown();
 		});
 		releaser.start();
 		resource.decoder(decoder);
 		releaser.join();
+		Assert.assertTrue("The decoder was given once the detection ended", waited.get());
 		resource.getResourceData().await();
 		Assert.assertSame(decoder, resource.getDecoder());
 		resource.prepareBind();
@@ -278,10 +285,10 @@ public class ResourceBuilderTest {
 		final Resource resource = ResourceBuilder.create().cache(null).of(asset).blocking();
 		Assert.assertNull(resource.getDecoder());
 		Assert.assertFalse(resource.isLoaded());
+		final Thread main = Thread.currentThread();
+		final AtomicBoolean waited = new AtomicBoolean();
 		final Thread releaser = new Thread(() -> {
-			try {
-				Thread.sleep(50L);
-			} catch (final InterruptedException ignored) {}
+			waited.set(ResourceBuilderTest.awaitWaiting(main));
 			asset.release.countDown();
 		});
 		releaser.start();
@@ -289,6 +296,7 @@ public class ResourceBuilderTest {
 		Assert.assertTrue(resource.getDecoder() instanceof AnimatedResourceDecoder);
 		Assert.assertTrue(resource.isLoaded());
 		releaser.join();
+		Assert.assertTrue("The download ended before the draw", waited.get());
 	}
 
 	@Test
@@ -410,6 +418,17 @@ public class ResourceBuilderTest {
 
 	private static InputStream stream(final String path) {
 		return ResourceBuilderTest.class.getResourceAsStream(path);
+	}
+
+	private static boolean awaitWaiting(final Thread thread) {
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (thread.getState() != Thread.State.WAITING) {
+			if (System.currentTimeMillis() > deadline) {
+				return false;
+			}
+			Thread.yield();
+		}
+		return true;
 	}
 
 	private static final class MapResourceCache implements IResourceCache {

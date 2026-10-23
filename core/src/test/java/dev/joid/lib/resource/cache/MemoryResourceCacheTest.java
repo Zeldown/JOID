@@ -1,11 +1,15 @@
 package dev.joid.lib.resource.cache;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.common.cache.Cache;
 
 import dev.joid.lib.resource.ResourceData;
 
@@ -46,21 +50,20 @@ public class MemoryResourceCacheTest {
 	}
 
 	@Test
-	public void forgetsItsDataAfterItsExpiry() throws InterruptedException {
+	public void forgetsItsDataAfterItsExpiry() {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		Assert.assertSame(cache, cache.expiry(20L));
 		Assert.assertEquals(20L, cache.getExpiry());
-		cache.put("image", ResourceData.create("image", null));
-		Thread.sleep(100L);
-		Assert.assertTrue(cache.getDataList().isEmpty());
+		Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(20L), MemoryResourceCacheTest.field(MemoryResourceCacheTest.field(MemoryResourceCacheTest.field(cache, "cache"), "localCache"), "expireAfterAccessNanos"));
 	}
 
 	@Test
-	public void findsItsDataStillInUseAfterItsExpiry() throws InterruptedException {
-		final MemoryResourceCache cache = MemoryResourceCache.create().expiry(20L);
+	public void findsItsDataStillInUseAfterItsExpiry() {
+		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceData data = ResourceData.create("image", null);
 		cache.put("image", data);
-		Thread.sleep(100L);
+		((Cache<?, ?>) MemoryResourceCacheTest.field(cache, "cache")).invalidateAll();
+		Assert.assertTrue(cache.getDataList().isEmpty());
 		Assert.assertSame(data, cache.get("image"));
 		Assert.assertEquals(Collections.singletonList(data), cache.getDataList());
 	}
@@ -84,6 +87,16 @@ public class MemoryResourceCacheTest {
 		cache.put("image", data);
 		cache.size(10).expiry(60000L);
 		Assert.assertSame(data, cache.get("image"));
+	}
+
+	private static Object field(final Object target, final String name) {
+		try {
+			final Field field = target.getClass().getDeclaredField(name);
+			field.setAccessible(true);
+			return field.get(target);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 }

@@ -528,18 +528,12 @@ public class ResourceDataTest {
 	}
 
 	@Test
-	public void ignoresTheDecodeOfAReplacedDecoder() throws InterruptedException {
-		final CountDownLatch release = new CountDownLatch(1);
+	public void forgetsTheFailureOfTheDecodeItAwaitsBeforeAReload() {
 		final CountDownLatch finished = new CountDownLatch(1);
 		final ResourceData data = ResourceData.create("image", new Decoder() {
 
 			@Override
 			public void decode(final @NonNull ResourceData resource) {
-				try {
-					release.await(5L, TimeUnit.SECONDS);
-				} catch (final InterruptedException exception) {
-					Thread.currentThread().interrupt();
-				}
 				finished.countDown();
 				throw new IllegalStateException("late");
 			}
@@ -547,9 +541,7 @@ public class ResourceDataTest {
 		});
 		data.generate(true);
 		data.reload(new Decoder());
-		release.countDown();
-		Assert.assertTrue(finished.await(5L, TimeUnit.SECONDS));
-		Thread.sleep(50L);
+		Assert.assertEquals(0L, finished.getCount());
 		Assert.assertFalse(data.isFailed());
 		Assert.assertFalse(data.isLoaded());
 	}

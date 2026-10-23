@@ -624,8 +624,9 @@ public class ResourcePlayerNodeTest {
 
 	private void settle(final ResourcePlayerNode player, final int frames) throws InterruptedException {
 		for (int i = 0; i < frames; i++) {
-			final long deadline = System.currentTimeMillis() + 5000L;
-			while (!player.getVideo().isSettled() && System.currentTimeMillis() < deadline) {
+			final long deadline = System.currentTimeMillis() + 10000L;
+			while (!player.getVideo().isSettled()) {
+				Assert.assertTrue("The video did not settle in 10 s", System.currentTimeMillis() < deadline);
 				Thread.sleep(1L);
 			}
 			this.bridges.frame();

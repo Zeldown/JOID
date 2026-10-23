@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
@@ -226,10 +227,11 @@ public class ResourceTest {
 	public void waitsForItsTasksOnlyWhenDrawn() {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final AtomicBoolean done = new AtomicBoolean();
+		final CountDownLatch release = new CountDownLatch(1);
 		final Resource resource = ResourceBuilder.create().cache(null).compute("image", () -> ResourceData.create("image", null));
 		resource.getResourceData().dispatch(() -> {
 			try {
-				Thread.sleep(50L);
+				release.await();
 			} catch (final InterruptedException ignored) {}
 			threads.add(Thread.currentThread());
 			done.set(true);
@@ -237,6 +239,7 @@ public class ResourceTest {
 		Assert.assertSame(resource, resource.blocking());
 		Assert.assertTrue(resource.isBlocking());
 		Assert.assertFalse(done.get());
+		release.countDown();
 		resource.prepareBind();
 		Assert.assertTrue(done.get());
 		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
@@ -497,13 +500,14 @@ public class ResourceTest {
 	public void forksItsPlaybackOnceItsDetectionEnds() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoder.create(Asset.of(ResourceTest.class.getResourceAsStream("/animation/blink.gif")), new GifResourceAnimationReader());
 		final Resource resource = ResourceTest.resource(null);
+		final Thread main = Thread.currentThread();
+		final AtomicBoolean waited = new AtomicBoolean();
 		resource.getResourceData().dispatch(() -> {
-			try {
-				Thread.sleep(50L);
-			} catch (final InterruptedException ignored) {}
+			waited.set(ResourceTest.awaitWaiting(main));
 			resource.getResourceData().decoder(decoder);
 		});
 		final Resource fork = resource.fork();
+		Assert.assertTrue("The fork was made once the detection ended", waited.get());
 		Assert.assertNotSame(resource, fork);
 		Assert.assertSame(decoder, ResourceTest.field(fork.getDecoder(), "origin"));
 	}
@@ -525,6 +529,17 @@ public class ResourceTest {
 			Thread.sleep(1L);
 		}
 		Assert.assertTrue(condition.getAsBoolean());
+	}
+
+	private static boolean awaitWaiting(final Thread thread) {
+		final long deadline = System.currentTimeMillis() + 5000L;
+		while (thread.getState() != Thread.State.WAITING) {
+			if (System.currentTimeMillis() > deadline) {
+				return false;
+			}
+			Thread.yield();
+		}
+		return true;
 	}
 
 	private static Object field(final Object target, final String name) {

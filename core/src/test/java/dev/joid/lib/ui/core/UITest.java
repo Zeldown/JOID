@@ -51,6 +51,7 @@ import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.HotReload;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.asset.Asset;
@@ -2157,6 +2158,7 @@ public class UITest {
 		final UI first = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
 		final UI second = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
 		JOIDEnv.devMode(true);
+		JOIDWarnings.forget();
 		final String errors = UITest.err(() -> {
 			first.load(1920D, 1080D);
 			second.load(1920D, 1080D);

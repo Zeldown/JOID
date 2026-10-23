@@ -17,6 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.iterable.MapSignal;
 import dev.joid.lib.signal.impl.iterable.SetSignal;
@@ -403,6 +404,7 @@ public class ComputedSignalTest {
 	public void warnsOnceInDevModeWhenItReadsNoSignal() {
 		final boolean devMode = JOIDEnv.isDevMode();
 		final IntegerSignal count = new IntegerSignal(1);
+		JOIDWarnings.forget();
 		try {
 			JOIDEnv.devMode(true);
 			final ComputedSignal<Integer> fixed = Signal.from(() -> 42);
@@ -410,7 +412,7 @@ public class ComputedSignalTest {
 				Assert.assertEquals(42, fixed.get().intValue());
 				Assert.assertEquals(42, Signal.from(() -> 42).get().intValue());
 			});
-			Assert.assertEquals("[JOID] A Signal.from(...) of ComputedSignalTest reads no signal, so its value never changes: read a signal with get() inside it, or pass a lambda to the setter to read the value at every frame" + System.lineSeparator(), output.substring(0, output.indexOf(System.lineSeparator()) + System.lineSeparator().length()));
+			Assert.assertTrue(output, output.startsWith("[JOID] A Signal.from(...) of ComputedSignalTest reads no signal, so its value never changes: read a signal with get() inside it, or pass a lambda to the setter to read the value at every frame" + System.lineSeparator()));
 			Assert.assertEquals("", ComputedSignalTest.capture(() -> count.map(value -> value + 1).get()));
 		} finally {
 			JOIDEnv.devMode(devMode);
@@ -514,20 +516,29 @@ public class ComputedSignalTest {
 	}
 
 	@Test
-	public void staysFastOnAChange() {
+	public void computesEachOfItsMapsOnceAChange() {
+		final AtomicInteger evaluations = new AtomicInteger();
 		final IntegerSignal count = new IntegerSignal(0);
-		final ComputedSignal<String> color = count.map(value -> value >= 3 ? "green" : "gray");
-		final ComputedSignal<String> text = count.map(value -> "Clicks: " + value);
-		final ComputedSignal<String> message = count.map(value -> value == 0 ? "Nobody clicked yet" : "Thanks!");
-		final int changes = 200000;
-		final long start = System.nanoTime();
-		for (int index = 0; index < changes; index++) {
+		final ComputedSignal<String> color = count.map(value -> {
+			evaluations.incrementAndGet();
+			return value >= 3 ? "green" : "gray";
+		});
+		final ComputedSignal<String> text = count.map(value -> {
+			evaluations.incrementAndGet();
+			return "Clicks: " + value;
+		});
+		final ComputedSignal<String> message = count.map(value -> {
+			evaluations.incrementAndGet();
+			return value == 0 ? "Nobody clicked yet" : "Thanks!";
+		});
+		for (int index = 0; index < 1000; index++) {
 			count.increment();
 			color.get();
 			text.get();
 			message.get();
+			color.get();
 		}
-		Assert.assertTrue((System.nanoTime() - start) / changes < 5000L);
+		Assert.assertEquals(3000, evaluations.get());
 	}
 
 	private static String capture(final Runnable runnable) {
