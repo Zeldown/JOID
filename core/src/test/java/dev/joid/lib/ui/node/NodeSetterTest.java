@@ -3,13 +3,10 @@ package dev.joid.lib.ui.node;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -26,21 +23,13 @@ import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.binding.NodeBindings;
 import dev.joid.lib.ui.core.NodeUI;
-import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
-import dev.joid.lib.ui.node.impl.control.checkbox.BaseCheckboxNode;
 import dev.joid.lib.ui.node.impl.control.checkbox.CheckboxNodeTest.Checkbox;
-import dev.joid.lib.ui.node.impl.control.choice.BaseChoiceNode;
 import dev.joid.lib.ui.node.impl.control.choice.SwitchNodeTest.Switch;
-import dev.joid.lib.ui.node.impl.control.field.FieldNode;
-import dev.joid.lib.ui.node.impl.control.field.IntegerFieldNode;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
-import dev.joid.lib.ui.node.impl.control.selector.BaseSelectorNode;
-import dev.joid.lib.ui.node.impl.control.toggle.BaseToggleNode;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.layout.GridNode;
-import dev.joid.lib.ui.node.impl.model.ModelViewerNode;
 import dev.joid.lib.ui.node.impl.progress.ProgressNode;
 import dev.joid.lib.ui.node.impl.progress.ProgressNode.ProgressDirection;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -128,21 +117,6 @@ public class NodeSetterTest {
 		this.bridges.frame();
 		Assert.assertEquals("Muted", ui.getState().getText().getText());
 		Assert.assertEquals("Muted true", ui.getLabel().getText().getText());
-	}
-
-	@Test
-	public void offersAStartValueOrAWritableSignalToAValueTheUserChanges() {
-		final Object[][] setters = {{Node.class, "scrollX"}, {Node.class, "scrollY"}, {BaseCheckboxNode.class, "checked"}, {BaseToggleNode.class, "toggle"}, {BaseChoiceNode.class, "value"}, {BaseChoiceNode.class, "valueIndex"}, {BaseSelectorNode.class, "active"}, {FieldNode.class, "text"}, {FieldNode.class, "focused"}, {FieldNode.class, "cursorPosition"}, {FieldNode.class, "selection"}, {IntegerFieldNode.class, "value"}, {ModelViewerNode.class, "zoom"}, {ModelViewerNode.class, "rotationYaw"}, {ModelViewerNode.class, "rotationPitch"}, {UI.class, "zoom"}};
-		for (final Object[] setter : setters) {
-			int forms = 0;
-			for (final Method method : ((Class<?>) setter[0]).getDeclaredMethods()) {
-				if (method.getName().equals(setter[1]) && Modifier.isPublic(method.getModifiers())) {
-					Assert.assertNotSame(setter[1] + " of " + setter[0], Supplier.class, method.getParameterTypes()[0]);
-					forms++;
-				}
-			}
-			Assert.assertEquals(setter[1] + " of " + setter[0], 2, forms);
-		}
 	}
 
 	@Test

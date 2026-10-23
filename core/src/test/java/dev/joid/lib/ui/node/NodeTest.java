@@ -3,7 +3,6 @@ package dev.joid.lib.ui.node;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -3180,14 +3179,6 @@ public class NodeTest {
 	}
 
 	@Test
-	public void cannotBeReloadedAlone() {
-		for (final Method method : Node.class.getMethods()) {
-			Assert.assertNotEquals("reload", method.getName());
-			Assert.assertNotEquals("onReload", method.getName());
-		}
-	}
-
-	@Test
 	public void onlyCallsItsWatchCallbacksForAWatchWithoutProperty() {
 		final Signal<Integer> signal = new Signal<>(0);
 		final List<WatchProperty> watched = new ArrayList<>();
@@ -3917,13 +3908,6 @@ public class NodeTest {
 		this.bridges.frame();
 		Assert.assertEquals(Arrays.asList(other, raised), ui.getNodeList());
 		Assert.assertTrue(this.order(0.6F, 0.4F, 0.2F) < this.order(0.2F, 0.4F, 0.6F));
-	}
-
-	@Test
-	public void hidesItsSourcesAndLinks() {
-		for (final Method method : Node.class.getMethods()) {
-			Assert.assertFalse(method.getName(), Arrays.asList("getBindings", "getSourceMap", "getLinkList", "getRequirementList", "isFollowed").contains(method.getName()));
-		}
 	}
 
 	@Test

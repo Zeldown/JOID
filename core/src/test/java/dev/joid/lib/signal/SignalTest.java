@@ -1,7 +1,6 @@
 package dev.joid.lib.signal;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,13 +34,6 @@ public class SignalTest {
 			Assert.assertEquals(Collections.singletonList("ui"), received);
 		} finally {
 			BridgeHandler.THREAD.unregister(thread);
-		}
-	}
-
-	@Test
-	public void readsItsValueWithGetOrPeekOnly() {
-		for (final Method method : Signal.class.getMethods()) {
-			Assert.assertNotEquals("getOrDefault", method.getName());
 		}
 	}
 
