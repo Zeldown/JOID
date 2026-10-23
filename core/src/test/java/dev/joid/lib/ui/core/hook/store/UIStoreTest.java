@@ -22,23 +22,17 @@ public class UIStoreTest {
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	private File    previous;
-	private boolean created;
+	private File previous;
 
 	@Before
 	public void useATemporaryConfig() {
-		final boolean existed = new File("config").exists();
 		this.previous = JOIDEnv.getDataDir();
-		this.created = !existed && new File("config").exists();
 		JOIDEnv.dataDir(this.folder.getRoot());
 	}
 
 	@After
 	public void restoreTheConfig() {
 		JOIDEnv.dataDir(this.previous);
-		if (this.created) {
-			new File("config").delete();
-		}
 	}
 
 	@Test
