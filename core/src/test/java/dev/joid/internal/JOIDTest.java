@@ -102,16 +102,9 @@ public class JOIDTest {
 	@Test
 	public void printsItsSettingsOnLoad() {
 		final JOID joid = JOIDTest.create();
-		final PrintStream previous = System.out;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(output, true));
-		try {
-			Assert.assertSame(joid, joid.load());
-		} finally {
-			System.setOut(previous);
-		}
-		final String text = output.toString();
-		Assert.assertTrue(text, text.startsWith("[JOID] " + JOID.VERSION + " loaded in dev and demo mode, data in " + JOIDEnv.getDataDir().getAbsolutePath() + ", cache in " + JOIDEnv.getCacheDir().getAbsolutePath() + System.lineSeparator()));
+		TestUtils.demoMode(false);
+		final String text = TestUtils.captureOut(() -> Assert.assertSame(joid, joid.load()));
+		Assert.assertTrue(text, text.startsWith("[JOID] " + JOID.VERSION + " loaded in dev mode, data in " + JOIDEnv.getDataDir().getAbsolutePath() + ", cache in " + JOIDEnv.getCacheDir().getAbsolutePath() + System.lineSeparator()));
 	}
 
 	@Test
