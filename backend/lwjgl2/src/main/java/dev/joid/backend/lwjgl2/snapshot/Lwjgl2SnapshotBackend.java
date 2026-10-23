@@ -13,7 +13,9 @@ import dev.joid.base.opengl.snapshot.GlSnapshotCapture;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.utils.platform.Platform;
 import dev.joid.test.snapshot.ISnapshotBackend;
+import dev.joid.test.snapshot.SnapshotBridgeRestorer;
 import dev.joid.test.snapshot.SnapshotImage;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -23,18 +25,22 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 	private Pbuffer        buffer;
 	private GlRenderBridge bridge;
 
+	@Getter(AccessLevel.NONE)
+	private SnapshotBridgeRestorer restorer;
+
 	@Override
 	public void destroy() {
 		if (this.buffer == null) {
 			Display.destroy();
-			return;
+		} else {
+			this.buffer.destroy();
 		}
-
-		this.buffer.destroy();
+		this.restorer.restore();
 	}
 
 	@Override
 	public void create(final int width, final int height) {
+		this.restorer = new SnapshotBridgeRestorer();
 		final Lwjgl2Backend backend = Lwjgl2Backend.create().audio(false);
 		Lwjgl2Natives.install();
 		final PixelFormat format = new PixelFormat().withDepthBits(24).withStencilBits(8);

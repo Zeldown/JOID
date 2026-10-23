@@ -25,8 +25,6 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.asset.locator.AssetLocator;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.bridge.BridgeRegistry;
-import dev.joid.lib.bridge.IBridge;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.font.TextInfo;
@@ -50,10 +48,10 @@ public final class SnapshotRunner {
 
 	private final List<int[]>             masks;
 	private final ManualClockBridge       clock;
-	private final List<Runnable>          restorers;
 	private final SnapshotUIBridge        bridge;
 	private final ISnapshotBackend        backend;
 	private final SnapshotWindowBridge    window;
+	private final SnapshotBridgeRestorer  restorer;
 	private final SnapshotUrlAssetLocator locator;
 	private final boolean                 devMode;
 
@@ -65,7 +63,7 @@ public final class SnapshotRunner {
 		this.backend   = backend;
 		this.locator   = new SnapshotUrlAssetLocator();
 		this.devMode   = JOIDEnv.isDevMode();
-		this.restorers = Arrays.asList(SnapshotRunner.restorer(BridgeHandler.UI), SnapshotRunner.restorer(BridgeHandler.AUDIO), SnapshotRunner.restorer(BridgeHandler.CLOCK), SnapshotRunner.restorer(BridgeHandler.WINDOW), SnapshotRunner.restorer(BridgeHandler.RENDER), SnapshotRunner.restorer(BridgeHandler.THREAD), SnapshotRunner.restorer(BridgeHandler.SIGNAL_REPLAY));
+		this.restorer  = new SnapshotBridgeRestorer();
 	}
 
 	public static @NonNull SnapshotRunner start(final @NonNull ISnapshotBackend backend) {
@@ -74,7 +72,7 @@ public final class SnapshotRunner {
 		try {
 			backend.create(1920, 1080);
 		} catch (final RuntimeException exception) {
-			runner.restorers.forEach(Runnable::run);
+			runner.restorer.restore();
 			throw exception;
 		}
 		BridgeHandler.CLOCK.register(runner.clock);
@@ -93,7 +91,7 @@ public final class SnapshotRunner {
 	public void stop() {
 		this.bridge.closeAll();
 		this.backend.destroy();
-		this.restorers.forEach(Runnable::run);
+		this.restorer.restore();
 		AssetLocator.unregister(this.locator);
 		JOIDEnv.devMode(this.devMode);
 	}
@@ -379,17 +377,6 @@ public final class SnapshotRunner {
 		} catch (final InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
-	}
-
-	private static <T extends IBridge> Runnable restorer(final BridgeRegistry<T> registry) {
-		final List<T> before = registry.getBridgeList();
-		return () -> {
-			for (final T bridge : registry.getBridgeList()) {
-				if (!before.contains(bridge)) {
-					registry.unregister(bridge);
-				}
-			}
-		};
 	}
 
 	private static boolean isSettled() {

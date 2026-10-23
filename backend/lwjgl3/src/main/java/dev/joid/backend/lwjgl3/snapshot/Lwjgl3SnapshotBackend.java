@@ -10,7 +10,9 @@ import dev.joid.base.opengl.render.GlRenderBridge;
 import dev.joid.base.opengl.snapshot.GlSnapshotCapture;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.test.snapshot.ISnapshotBackend;
+import dev.joid.test.snapshot.SnapshotBridgeRestorer;
 import dev.joid.test.snapshot.SnapshotImage;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -22,13 +24,18 @@ public final class Lwjgl3SnapshotBackend implements ISnapshotBackend {
 	private GlRenderBridge     bridge;
 	private GlfwSnapshotWindow window;
 
+	@Getter(AccessLevel.NONE)
+	private SnapshotBridgeRestorer restorer;
+
 	@Override
 	public void destroy() {
 		this.window.destroy();
+		this.restorer.restore();
 	}
 
 	@Override
 	public void create(final int width, final int height) {
+		this.restorer = new SnapshotBridgeRestorer();
 		this.window = GlfwSnapshotWindow.create(width, height, this.profile.getRequest()::apply);
 		GLFW.glfwMakeContextCurrent(this.window.getWindow());
 		GLFW.glfwSwapInterval(0);

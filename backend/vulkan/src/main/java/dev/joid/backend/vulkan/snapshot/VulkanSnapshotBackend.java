@@ -15,7 +15,9 @@ import dev.joid.base.glfw.snapshot.GlfwSnapshotWindow;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.utils.image.PixelLayout;
 import dev.joid.test.snapshot.ISnapshotBackend;
+import dev.joid.test.snapshot.SnapshotBridgeRestorer;
 import dev.joid.test.snapshot.SnapshotImage;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -26,6 +28,9 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 	private SnapshotVulkanHost host;
 	private GlfwSnapshotWindow window;
 
+	@Getter(AccessLevel.NONE)
+	private SnapshotBridgeRestorer restorer;
+
 	@Override
 	public void destroy() {
 		if (this.host.isFrameActive()) {
@@ -35,10 +40,12 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 		this.backend.destroy();
 		this.host.destroy();
 		this.window.destroy();
+		this.restorer.restore();
 	}
 
 	@Override
 	public void create(final int width, final int height) {
+		this.restorer = new SnapshotBridgeRestorer();
 		this.window  = GlfwSnapshotWindow.create(width, height, () -> GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API));
 		this.host    = SnapshotVulkanHost.create(width, height);
 		this.backend = VulkanBackend.create(this.window.getWindow(), this.host).audio(false).register();
