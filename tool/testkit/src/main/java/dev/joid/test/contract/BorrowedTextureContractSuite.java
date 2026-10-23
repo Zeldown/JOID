@@ -52,11 +52,15 @@ public abstract class BorrowedTextureContractSuite {
 	public void drawsABorrowedTexture() {
 		final Object texture = BorrowedTextureContractSuite.backend.createBorrowableTexture(4, 2, BorrowedTextureContractSuite.RED, false);
 		final Resource resource = Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture));
-		ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
-		Assert.assertTrue(resource.getTexture() instanceof BorrowedTexture);
-		Assert.assertEquals(4, resource.getWidth());
-		Assert.assertEquals(2, resource.getHeight());
-		Assert.assertFalse(resource.isFailed());
+		try {
+			ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
+			Assert.assertTrue(resource.getTexture() instanceof BorrowedTexture);
+			Assert.assertEquals(4, resource.getWidth());
+			Assert.assertEquals(2, resource.getHeight());
+			Assert.assertFalse(resource.isFailed());
+		} finally {
+			resource.clear();
+		}
 	}
 
 	@Test
@@ -67,7 +71,12 @@ public abstract class BorrowedTextureContractSuite {
 		resource.getTexture().delete();
 		resource.clear();
 		Assert.assertTrue(BorrowedTextureContractSuite.backend.isBorrowableTexture(texture));
-		ContractDraw.assertPixel(BorrowedTextureContractSuite.render(Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture))), 32, 32, BorrowedTextureContractSuite.RED);
+		final Resource again = Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture));
+		try {
+			ContractDraw.assertPixel(BorrowedTextureContractSuite.render(again), 32, 32, BorrowedTextureContractSuite.RED);
+		} finally {
+			again.clear();
+		}
 	}
 
 	@Test
@@ -104,8 +113,13 @@ public abstract class BorrowedTextureContractSuite {
 	public void restoresTheTextureParametersAfterTheFrame() {
 		final Object texture = BorrowedTextureContractSuite.backend.createBorrowableTexture(4, 4, BorrowedTextureContractSuite.RED, false);
 		final Map<String, String> parameters = BorrowedTextureContractSuite.backend.readBorrowableParameters(texture);
-		BorrowedTextureContractSuite.render(Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture)).linear());
-		Assert.assertEquals(parameters, BorrowedTextureContractSuite.backend.readBorrowableParameters(texture));
+		final Resource resource = Resource.of(BorrowedTextureContractSuite.backend.borrow(() -> texture)).linear();
+		try {
+			BorrowedTextureContractSuite.render(resource);
+			Assert.assertEquals(parameters, BorrowedTextureContractSuite.backend.readBorrowableParameters(texture));
+		} finally {
+			resource.clear();
+		}
 	}
 
 	@Test
@@ -114,11 +128,15 @@ public abstract class BorrowedTextureContractSuite {
 		final Object blue = BorrowedTextureContractSuite.backend.createBorrowableTexture(8, 2, BorrowedTextureContractSuite.BLUE, false);
 		final AtomicReference<Object> current = new AtomicReference<>(red);
 		final Resource resource = Resource.of(BorrowedTextureContractSuite.backend.borrow(current::get));
-		ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
-		current.set(blue);
-		ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.BLUE);
-		Assert.assertEquals(8, resource.getWidth());
-		Assert.assertEquals(2, resource.getHeight());
+		try {
+			ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.RED);
+			current.set(blue);
+			ContractDraw.assertPixel(BorrowedTextureContractSuite.render(resource), 32, 32, BorrowedTextureContractSuite.BLUE);
+			Assert.assertEquals(8, resource.getWidth());
+			Assert.assertEquals(2, resource.getHeight());
+		} finally {
+			resource.clear();
+		}
 	}
 
 	private static SnapshotImage render(final Resource resource) {

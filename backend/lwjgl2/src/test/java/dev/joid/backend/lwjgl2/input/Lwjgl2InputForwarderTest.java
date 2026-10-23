@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +17,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 import dev.joid.demo.DemoUIBridge;
+import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
@@ -24,13 +26,18 @@ import lombok.NonNull;
 
 public class Lwjgl2InputForwarderTest {
 
-	private final List<String>      trace  = new ArrayList<>();
-	private final TraceUI           ui     = new TraceUI(this.trace);
-	private final DemoUIBridge      bridge = new DemoUIBridge() {};
-	private final FixedWindowBridge window = new FixedWindowBridge();
+	private final List<String>      trace   = new ArrayList<>();
+	private final TraceUI           ui      = new TraceUI(this.trace);
+	private final Set<Integer>      pressed = new LinkedHashSet<>();
+	private final DemoUIBridge      bridge  = new DemoUIBridge() {};
+	private final FixedWindowBridge window  = new FixedWindowBridge();
+
+	private boolean devMode;
 
 	@Before
 	public void openAUi() throws Exception {
+		this.devMode = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(false);
 		BridgeHandler.WINDOW.register(this.window);
 		this.bridge.add(this.ui);
 		BridgeHandler.UI.register(this.bridge);
@@ -42,11 +49,15 @@ public class Lwjgl2InputForwarderTest {
 
 	@After
 	public void closeTheUi() throws Exception {
+		for (final int code : new ArrayList<>(this.pressed)) {
+			this.poll(code, false, '\0', false);
+		}
 		Lwjgl2InputForwarderTest.set(Mouse.class, "created", false);
 		Lwjgl2InputForwarderTest.set(Keyboard.class, "created", false);
 		this.bridge.closeAll();
 		BridgeHandler.UI.unregister(this.bridge);
 		BridgeHandler.WINDOW.unregister(this.window);
+		JOIDEnv.devMode(this.devMode);
 	}
 
 	@Test
@@ -112,6 +123,11 @@ public class Lwjgl2InputForwarderTest {
 	}
 
 	private void poll(final int code, final boolean state, final char character, final boolean repeat) throws Exception {
+		if (state) {
+			this.pressed.add(code);
+		} else {
+			this.pressed.remove(code);
+		}
 		final ByteBuffer events = ByteBuffer.allocate(Keyboard.EVENT_SIZE);
 		events.putInt(code).put((byte) (state ? 1 : 0)).putInt(character).putLong(0L).put((byte) (repeat ? 1 : 0)).flip();
 		Lwjgl2InputForwarderTest.set(Keyboard.class, "readBuffer", events);

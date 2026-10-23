@@ -9,7 +9,9 @@ import java.util.Collections;
 import java.util.zip.InflaterInputStream;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import dev.joid.tool.msdf.MsdfFonts;
 import dev.joid.tool.msdf.font.FontFile;
@@ -18,12 +20,14 @@ import dev.joid.tool.msdf.font.Kerning;
 
 public class MsdfWriterTest {
 
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
+
 	@Test
 	public void writesTheHeaderOfTheCurrentFormat() throws Exception {
 		final byte[] data = MsdfFonts.read(MsdfFonts.REGULAR);
 		final Kerning kerning = Kerning.read(FontFile.read(data), Glyphs.load(data), new int[] {'A'});
-		final File file = File.createTempFile("joid-msdf-", ".msdf");
-		file.deleteOnExit();
+		final File file = this.folder.newFile("font.msdf");
 		MsdfWriter.write(file, Collections.emptyList(), kerning, new double[] {1D, 0.8D, -0.2D, -0.1D, 0.05D}, "JOID Test Regular", 400, true, 32D, 4D, new int[4], 2, 2);
 
 		try (final InputStream stream = new FileInputStream(file)) {

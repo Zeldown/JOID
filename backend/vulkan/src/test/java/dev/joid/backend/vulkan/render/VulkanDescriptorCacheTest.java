@@ -56,12 +56,16 @@ public class VulkanDescriptorCacheTest {
 		final VulkanImage blue = (VulkanImage) this.backend.createBorrowableTexture(4, 4, 0xFF0000FF, false);
 		final AtomicReference<Object> current = new AtomicReference<>(red);
 		final Resource resource = Resource.of(this.backend.borrow(current::get));
-		this.render(resource);
-		Assert.assertTrue(VulkanDescriptorCacheTest.isCached(red.getView()));
-		current.set(blue);
-		this.render(resource);
-		Assert.assertFalse(VulkanDescriptorCacheTest.isCached(red.getView()));
-		Assert.assertTrue(VulkanDescriptorCacheTest.isCached(blue.getView()));
+		try {
+			this.render(resource);
+			Assert.assertTrue(VulkanDescriptorCacheTest.isCached(red.getView()));
+			current.set(blue);
+			this.render(resource);
+			Assert.assertFalse(VulkanDescriptorCacheTest.isCached(red.getView()));
+			Assert.assertTrue(VulkanDescriptorCacheTest.isCached(blue.getView()));
+		} finally {
+			resource.clear();
+		}
 	}
 
 	@Test

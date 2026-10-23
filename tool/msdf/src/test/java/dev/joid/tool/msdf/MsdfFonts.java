@@ -1,5 +1,6 @@
 package dev.joid.tool.msdf;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,12 +24,18 @@ public final class MsdfFonts {
 	public static final String BOLD_ITALIC = "JoidTest-BoldItalic.otf";
 
 	public static byte[] read(final String name) throws IOException {
-		return Files.readAllBytes(MsdfFonts.copy(name).toPath());
+		try (final InputStream stream = MsdfFonts.class.getResourceAsStream("/font/" + name)) {
+			final ByteArrayOutputStream output = new ByteArrayOutputStream();
+			final byte[] buffer = new byte[8192];
+			for (int read = stream.read(buffer); read != -1; read = stream.read(buffer)) {
+				output.write(buffer, 0, read);
+			}
+			return output.toByteArray();
+		}
 	}
 
-	public static File copy(final String name) throws IOException {
-		final File file = File.createTempFile("joid-font-", name);
-		file.deleteOnExit();
+	public static File copy(final String name, final File folder) throws IOException {
+		final File file = new File(folder, name);
 		try (final InputStream stream = MsdfFonts.class.getResourceAsStream("/font/" + name)) {
 			Files.copy(stream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}

@@ -23,6 +23,8 @@ public final class VulkanBorrowedTextureBackend implements IBorrowedTextureBacke
 
 	@Override
 	public void destroy() {
+		this.textures.values().forEach(VulkanTexture::delete);
+		this.textures.clear();
 		this.backend.destroy();
 	}
 

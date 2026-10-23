@@ -1,6 +1,9 @@
 package dev.joid.test.contract;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
@@ -126,101 +129,138 @@ public abstract class RenderBridgeContractSuite {
 	public void compilesCoreShaders() {
 		for (final CoreShader coreShader : CoreShader.values()) {
 			final IShader shader = BridgeHandler.RENDER.get().createShader(coreShader.read(ShaderStage.VERTEX), coreShader.read(ShaderStage.FRAGMENT), BlendState.NORMAL);
-			Assert.assertTrue("The " + coreShader.name() + " shader does not compile", shader.isActive());
+			try {
+				Assert.assertTrue("The " + coreShader.name() + " shader does not compile", shader.isActive());
+			} finally {
+				shader.delete();
+			}
 		}
 	}
 
 	@Test
 	public void skipsTheDrawsOfAShaderThatFailsToCompile() {
-		final IShader shader = ContractDraw.shader("void main() {\n    fragColor = undeclaredColor;\n}");
-		Assert.assertFalse("A shader that fails to compile must report isActive() == false", shader.isActive());
+		final IShader[] shader = new IShader[1];
+		final SnapshotImage[] image = new SnapshotImage[1];
+		try {
+			final String error = RenderBridgeContractSuite.capture(() -> {
+				shader[0] = ContractDraw.shader("void main() {\n    fragColor = undeclaredColor;\n}");
+				Assert.assertFalse("A shader that fails to compile must report isActive() == false", shader[0].isActive());
 
-		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
-			shader.bind();
-			try {
-				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
-			} finally {
-				shader.unbind();
+				image[0] = RenderBridgeContractSuite.render(bridge -> {
+					shader[0].bind();
+					try {
+						bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+					} finally {
+						shader[0].unbind();
+					}
+
+					bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
+				});
+			});
+			Assert.assertTrue(error, error.startsWith("[JOID] ") && error.contains("compile"));
+			ContractDraw.assertPixel(image[0], 16, 32, RenderBridgeContractSuite.BLACK);
+			ContractDraw.assertPixel(image[0], 48, 32, RenderBridgeContractSuite.GREEN);
+		} finally {
+			if (shader[0] != null) {
+				shader[0].delete();
 			}
-
-			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(RenderBridgeContractSuite.SIZE / 2, 0F, RenderBridgeContractSuite.SIZE / 2, RenderBridgeContractSuite.SIZE, false, RenderBridgeContractSuite.GREEN));
-		});
-		ContractDraw.assertPixel(image, 16, 32, RenderBridgeContractSuite.BLACK);
-		ContractDraw.assertPixel(image, 48, 32, RenderBridgeContractSuite.GREEN);
+		}
 	}
 
 	@Test
 	public void appliesTheUniformsSetBeforeTheShaderIsBound() {
 		final IShader shader = ContractDraw.shader("uniform vec4 tint;\n\nvoid main() {\n    fragColor = tint;\n}");
-		shader.uniform("tint", 0F, 1F, 0F, 1F);
-		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
-			shader.bind();
-			try {
-				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
-			} finally {
-				shader.unbind();
-			}
-		});
-		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		try {
+			shader.uniform("tint", 0F, 1F, 0F, 1F);
+			final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+				shader.bind();
+				try {
+					bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+				} finally {
+					shader.unbind();
+				}
+			});
+			ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		} finally {
+			shader.delete();
+		}
 	}
 
 	@Test
 	public void appliesEveryUniformType() {
 		final IShader shader = ContractDraw.shader("uniform float u_Float;\nuniform vec2 u_Vec2;\nuniform vec3 u_Vec3;\nuniform vec4 u_Vec4;\nuniform int u_Int;\nuniform bool u_Bool;\nuniform mat3 u_Matrix;\nuniform float u_Floats[3];\nuniform vec4 u_Colors[2];\n\nvoid main() {\n    bool valid = u_Float == 0.5 && u_Vec2 == vec2(1.0, 2.0) && u_Vec3 == vec3(3.0, 4.0, 5.0) && u_Vec4 == vec4(6.0, 7.0, 8.0, 9.0) && u_Int == 3 && u_Bool && u_Matrix[1][2] == 6.0 && u_Matrix[2][0] == 7.0 && u_Floats[2] == 12.0;\n    fragColor = valid ? u_Colors[1] : u_Colors[0];\n}");
-		shader
-		.uniform("u_Float", 0.5F)
-		.uniform("u_Vec2", 1F, 2F)
-		.uniform("u_Vec3", 3F, 4F, 5F)
-		.uniform("u_Vec4", 6F, 7F, 8F, 9F)
-		.uniform("u_Int", 3)
-		.uniform("u_Bool", true)
-		.uniform("u_Matrix", 1F, 2F, 3F, 4F, 5F, 6F, 7F, 8F, 9F)
-		.uniform("u_Floats", 10F, 11F, 12F)
-		.uniform("u_Colors", 1F, 0F, 0F, 1F, 0F, 1F, 0F, 1F);
-		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
-			shader.bind();
-			try {
-				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
-			} finally {
-				shader.unbind();
-			}
-		});
-		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		try {
+			shader
+			.uniform("u_Float", 0.5F)
+			.uniform("u_Vec2", 1F, 2F)
+			.uniform("u_Vec3", 3F, 4F, 5F)
+			.uniform("u_Vec4", 6F, 7F, 8F, 9F)
+			.uniform("u_Int", 3)
+			.uniform("u_Bool", true)
+			.uniform("u_Matrix", 1F, 2F, 3F, 4F, 5F, 6F, 7F, 8F, 9F)
+			.uniform("u_Floats", 10F, 11F, 12F)
+			.uniform("u_Colors", 1F, 0F, 0F, 1F, 0F, 1F, 0F, 1F);
+			final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+				shader.bind();
+				try {
+					bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+				} finally {
+					shader.unbind();
+				}
+			});
+			ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		} finally {
+			shader.delete();
+		}
 	}
 
 	@Test
 	public void samplesTheTextureOfASampler() {
 		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.GREEN});
 		final IShader shader = ContractDraw.shader("uniform sampler2D u_Mask;\n\nvoid main() {\n    fragColor = texture(u_Mask, vec2(0.5, 0.5));\n}");
-		shader.sampler("u_Mask", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
-		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
-			shader.bind();
-			try {
-				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
-			} finally {
-				shader.unbind();
-			}
-		});
-		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		try {
+			shader.sampler("u_Mask", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
+			final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+				shader.bind();
+				try {
+					bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+				} finally {
+					shader.unbind();
+				}
+			});
+			ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		} finally {
+			shader.delete();
+			texture.delete();
+		}
 	}
 
 	@Test
 	public void samplesEveryTextureOfTheFirstDrawOfABackend() throws ReflectiveOperationException {
 		final Field empty = RenderBridge.class.getDeclaredField("emptyTexture");
 		empty.setAccessible(true);
+		final ITexture previous = (ITexture) empty.get(BridgeHandler.RENDER.get());
+		if (previous != null) {
+			previous.delete();
+		}
 		empty.set(BridgeHandler.RENDER.get(), null);
 		final ITexture texture = BridgeHandler.RENDER.get().createTexture().allocate(1, 1).upload(new int[] {RenderBridgeContractSuite.GREEN});
 		final IShader shader = ContractDraw.shader("uniform sampler2D u_First;\nuniform sampler2D u_Second;\n\nvoid main() {\n    fragColor = texture(u_First, vec2(0.5, 0.5)) * texture(u_Second, vec2(0.5, 0.5));\n}");
-		shader.sampler("u_First", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
-		final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
-			shader.bind();
-			try {
-				bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
-			} finally {
-				shader.unbind();
-			}
-		});
-		ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		try {
+			shader.sampler("u_First", texture, TextureFilter.NEAREST, TextureWrap.CLAMP_TO_EDGE);
+			final SnapshotImage image = RenderBridgeContractSuite.render(bridge -> {
+				shader.bind();
+				try {
+					bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
+				} finally {
+					shader.unbind();
+				}
+			});
+			ContractDraw.assertPixel(image, 32, 32, RenderBridgeContractSuite.GREEN);
+		} finally {
+			shader.delete();
+			texture.delete();
+		}
 	}
 
 	@Test
@@ -454,6 +494,7 @@ public abstract class RenderBridgeContractSuite {
 			bridge.draw(Primitive.TRIANGLES, RenderBridgeContractSuite.quad(0F, 0F, RenderBridgeContractSuite.SIZE, RenderBridgeContractSuite.SIZE, false, 0));
 		});
 		frameBuffer.delete();
+		shader.delete();
 
 		ContractDraw.assertPixel(image, 60, 60, RenderBridgeContractSuite.RED);
 	}
@@ -641,6 +682,18 @@ public abstract class RenderBridgeContractSuite {
 		}
 		Assert.assertNotEquals(before, during, 1E-4D);
 		Assert.assertEquals(before, render.getPixelGrid().toScreenX(0D), 0D);
+	}
+
+	private static String capture(final Runnable runnable) {
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setErr(new PrintStream(output, true));
+			runnable.run();
+		} finally {
+			System.setErr(previous);
+		}
+		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	private static SnapshotImage render(final Consumer<IRenderBridge> draw) {

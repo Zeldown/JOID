@@ -121,13 +121,14 @@ public class GlRenderBridgeTest {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		final boolean devMode = JOIDEnv.isDevMode();
+		final Resource resource = Resource.of(GlBorrowedTexture.of(2147483000));
 		System.setErr(new PrintStream(output, true));
 		JOIDEnv.devMode(true);
 		try {
-			final Resource resource = Resource.of(GlBorrowedTexture.of(2147483000));
 			resource.prepareBind();
 			Assert.assertTrue(resource.isFailed());
 		} finally {
+			resource.clear();
 			JOIDEnv.devMode(devMode);
 			System.setErr(previous);
 		}
