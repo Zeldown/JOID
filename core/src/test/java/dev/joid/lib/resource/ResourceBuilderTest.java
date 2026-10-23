@@ -271,9 +271,13 @@ public class ResourceBuilderTest {
 	@Test
 	public void detectsTheFormatOfARemoteAssetAgainOnATaskThreadOnceReloaded() throws IOException {
 		final FlakyAsset asset = new FlakyAsset("flaky-remote", true, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")).read());
-		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
-		final String output = TestUtils.captureErr(true, () -> resource.getResourceData().await());
+		final AtomicReference<Resource> created = new AtomicReference<>();
+		final String output = TestUtils.captureErr(true, () -> {
+			created.set(ResourceBuilder.create().cache(null).of(asset));
+			created.get().getResourceData().await();
+		});
 		Assert.assertTrue(output, output.startsWith("[JOID] The resource flaky-remote cannot be read: The start of flaky-remote cannot be read (java.io.IOException: offline)"));
+		final Resource resource = created.get();
 		Assert.assertTrue(resource.isFailed());
 		resource.reload();
 		resource.prepareBind();
