@@ -113,10 +113,21 @@ public class UrlAssetTest {
 		}
 	}
 
-	@Test(timeout = 60000L, expected = SocketTimeoutException.class)
+	@Test
 	public void givesUpOnAServerThatNeverAnswers() throws IOException {
-		try (final ServerSocket mute = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
-			UrlAsset.of("http://127.0.0.1:" + mute.getLocalPort() + "/image.png").read();
+		final String handlers = System.getProperty("java.protocol.handler.pkgs");
+		System.setProperty("java.protocol.handler.pkgs", "dev.joid.lib.asset.impl");
+		try {
+			UrlAsset.of("mute://server/image.png").read();
+			Assert.fail("A server that never answers must time out");
+		} catch (final SocketTimeoutException expected) {
+			Assert.assertEquals("Connect timeout 10000 ms, read timeout 30000 ms", expected.getMessage());
+		} finally {
+			if (handlers == null) {
+				System.clearProperty("java.protocol.handler.pkgs");
+			} else {
+				System.setProperty("java.protocol.handler.pkgs", handlers);
+			}
 		}
 	}
 
