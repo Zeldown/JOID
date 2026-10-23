@@ -26,12 +26,15 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.signal.SignalContext;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.showcase.ReplayShowcaseFixture;
 import example.replay.LabelNode;
 import example.replay.LabelUI;
 import example.replay.OverridingLabelUI;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 public class SignalReplayTest {
 
@@ -397,16 +400,7 @@ public class SignalReplayTest {
 
 	@Test
 	public void leavesNoReadBehindAFrame() {
-		final IntegerSignal clicks = new IntegerSignal(1);
-		final UI ui = new UI() {
-
-			@Override
-			public void init() {
-				RectNode.create(0D, 0D, 10D, 10D).color(() -> clicks.get() > 0 ? Color.GREEN : Color.GRAY).attach(this);
-			}
-
-		};
-		this.bridges.open(ui);
+		this.bridges.open(new ClicksUI(new IntegerSignal(1)));
 		final long total = SignalContext.current().getReadTotal();
 		this.bridges.frames(3);
 		Assert.assertTrue(SignalContext.current().getReadTotal() > total);
@@ -556,6 +550,19 @@ public class SignalReplayTest {
 		} finally {
 			JOIDEnv.devMode(previous);
 		}
+	}
+
+	@UIDataDebug(profiler = false, hotreload = false)
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	private static final class ClicksUI extends UI {
+
+		private final IntegerSignal clicks;
+
+		@Override
+		public void init() {
+			RectNode.create(0D, 0D, 10D, 10D).color(() -> this.clicks.get() > 0 ? Color.GREEN : Color.GRAY).attach(this);
+		}
+
 	}
 
 }
