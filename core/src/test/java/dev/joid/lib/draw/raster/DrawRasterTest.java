@@ -3,14 +3,12 @@ package dev.joid.lib.draw.raster;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
-import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.RecordingFrameBuffer;
@@ -24,11 +22,6 @@ public class DrawRasterTest {
 
 	@Rule
 	public final CapturingRenderBridge render = new CapturingRenderBridge(1920, 1080);
-
-	@After
-	public void restoreTheClock() {
-		BridgeHandler.CLOCK.register(new SystemClockBridge());
-	}
 
 	@Test
 	public void drawsIntoItsTargetAtThePixelSize() {
@@ -96,13 +89,17 @@ public class DrawRasterTest {
 	public void releasesItsTargetLeftUnusedForFiveSeconds() {
 		final ManualClockBridge clock = new ManualClockBridge(1000L);
 		BridgeHandler.CLOCK.register(clock);
-		DrawUtils.RASTER.drawRaster(0D, 0D, 100D, 30D, (width, height) -> {});
-		clock.advance(4999L);
-		FrameBufferPool.releaseUnused();
-		Assert.assertFalse(((RecordingFrameBuffer) this.target()).isDeleted());
-		clock.advance(1L);
-		FrameBufferPool.releaseUnused();
-		Assert.assertTrue(((RecordingFrameBuffer) this.target()).isDeleted());
+		try {
+			DrawUtils.RASTER.drawRaster(0D, 0D, 100D, 30D, (width, height) -> {});
+			clock.advance(4999L);
+			FrameBufferPool.releaseUnused();
+			Assert.assertFalse(((RecordingFrameBuffer) this.target()).isDeleted());
+			clock.advance(1L);
+			FrameBufferPool.releaseUnused();
+			Assert.assertTrue(((RecordingFrameBuffer) this.target()).isDeleted());
+		} finally {
+			BridgeHandler.CLOCK.unregister(clock);
+		}
 	}
 
 	@Test

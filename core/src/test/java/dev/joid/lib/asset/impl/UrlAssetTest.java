@@ -10,9 +10,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetAddress;
+import java.net.JarURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -127,9 +129,13 @@ public class UrlAssetTest {
 			output.closeEntry();
 		}
 		final UrlAsset asset = UrlAsset.of("jar:" + file.toURI() + "!/image.png");
-		Assert.assertArrayEquals("joid jar asset".getBytes(StandardCharsets.UTF_8), asset.read());
-		Assert.assertNull(asset.getFile());
-		Assert.assertFalse(asset.isRemote());
+		try {
+			Assert.assertArrayEquals("joid jar asset".getBytes(StandardCharsets.UTF_8), asset.read());
+			Assert.assertNull(asset.getFile());
+			Assert.assertFalse(asset.isRemote());
+		} finally {
+			((JarURLConnection) new URL(asset.getUrl()).openConnection()).getJarFile().close();
+		}
 	}
 
 	@Test(expected = UncheckedIOException.class)

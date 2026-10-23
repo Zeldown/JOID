@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
-import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.RecordingFrameBuffer;
@@ -47,7 +46,6 @@ public class ShaderPipelineTest {
 	@After
 	public void releaseThePool() {
 		FrameBufferPool.cleanup();
-		BridgeHandler.CLOCK.register(new SystemClockBridge());
 	}
 
 	@Test
@@ -279,18 +277,22 @@ public class ShaderPipelineTest {
 	public void releasesTheFrameBuffersLeftUnusedForFiveSeconds() {
 		final ManualClockBridge clock = new ManualClockBridge(1000L);
 		BridgeHandler.CLOCK.register(clock);
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		clock.advance(3000L);
-		ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		clock.advance(4999L);
-		FrameBufferPool.releaseUnused();
-		Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
-		clock.advance(1L);
-		FrameBufferPool.releaseUnused();
-		Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
-		Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(1)).isDeleted());
-		ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
-		Assert.assertEquals(4, this.render.getFrameBuffers().size());
+		try {
+			ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
+			clock.advance(3000L);
+			ShaderPipeline.render(10D, 20D, 60D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
+			clock.advance(4999L);
+			FrameBufferPool.releaseUnused();
+			Assert.assertFalse(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
+			clock.advance(1L);
+			FrameBufferPool.releaseUnused();
+			Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(0)).isDeleted());
+			Assert.assertTrue(((RecordingFrameBuffer) this.render.getFrameBuffers().get(1)).isDeleted());
+			ShaderPipeline.render(10D, 20D, 100D, 50D, this::drawBox, new RecordingPass("mask", 0F, this.log));
+			Assert.assertEquals(4, this.render.getFrameBuffers().size());
+		} finally {
+			BridgeHandler.CLOCK.unregister(clock);
+		}
 	}
 
 	@Test

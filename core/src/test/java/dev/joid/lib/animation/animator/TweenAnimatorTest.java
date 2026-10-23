@@ -19,8 +19,8 @@ import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
-import dev.joid.lib.bridge.clock.SystemClockBridge;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
@@ -36,8 +36,9 @@ public class TweenAnimatorTest {
 	}
 
 	@After
-	public void restoreTheSystemClock() {
-		BridgeHandler.CLOCK.register(new SystemClockBridge());
+	public void releaseTheManualClock() {
+		BridgeHandler.CLOCK.unregister(this.clock);
+		HeadlessBridges.stopTheAnimators();
 	}
 
 	@Test

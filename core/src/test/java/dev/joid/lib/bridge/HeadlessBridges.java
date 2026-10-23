@@ -1,16 +1,21 @@
 package dev.joid.lib.bridge;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.junit.rules.ExternalResource;
 
 import dev.joid.demo.DemoUIBridge;
+import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.RenderSingletons;
 import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
+import dev.joid.lib.input.key.KeyState;
 import dev.joid.lib.ui.core.UI;
 import lombok.Getter;
 import lombok.NonNull;
@@ -44,6 +49,8 @@ public final class HeadlessBridges extends ExternalResource {
 		BridgeHandler.CLOCK.unregister(this.clock);
 		BridgeHandler.WINDOW.unregister(this.window);
 		BridgeHandler.RENDER.unregister(this.render);
+		HeadlessBridges.stopTheAnimators();
+		HeadlessBridges.releaseTheKeys();
 	}
 
 	public @NonNull HeadlessBridges resize(final int width, final int height) {
@@ -116,6 +123,24 @@ public final class HeadlessBridges extends ExternalResource {
 			this.frame();
 		}
 		return this;
+	}
+
+	public static void stopTheAnimators() {
+		HeadlessBridges.<Set<?>>field(TweenAnimator.class, null, "RUNNING_SET").clear();
+	}
+
+	public static void releaseTheKeys() {
+		HeadlessBridges.<Map<?, ?>>field(KeyState.class, BridgeHandler.UI.getKeyState(), "heldMap").clear();
+	}
+
+	private static <T> T field(final Class<?> type, final Object target, final String name) {
+		try {
+			final Field field = type.getDeclaredField(name);
+			field.setAccessible(true);
+			return (T) field.get(target);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
 	}
 
 }

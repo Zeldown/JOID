@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -27,7 +28,15 @@ public class UIBridgeRegistryTest {
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
-	private final List<String> trace = new ArrayList<>();
+	private final List<String>         trace      = new ArrayList<>();
+	private final List<WindowUIBridge> bridgeList = new ArrayList<>();
+
+	@After
+	public void disposeTheUis() {
+		for (final WindowUIBridge bridge : this.bridgeList) {
+			new ArrayList<>(bridge.getUiList()).forEach(UI::dispose);
+		}
+	}
 
 	@Test
 	public void createsAnEmptyRegistryEachTime() {
@@ -312,6 +321,7 @@ public class UIBridgeRegistryTest {
 	private WindowUIBridge bridge(final String name, final Color background) {
 		final WindowUIBridge bridge = WindowUIBridge.create().background(background);
 		bridge.add(new TraceUI(name, this.trace));
+		this.bridgeList.add(bridge);
 		return bridge;
 	}
 
@@ -319,6 +329,7 @@ public class UIBridgeRegistryTest {
 		final TraceUI ui = new TraceUI(name, this.trace);
 		final WindowUIBridge bridge = WindowUIBridge.create();
 		bridge.add(ui);
+		this.bridgeList.add(bridge);
 		registry.register(bridge, priority);
 		return ui;
 	}

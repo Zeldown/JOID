@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +31,11 @@ public class StackUIBridgeTest {
 
 	private final List<String> trace  = new ArrayList<>();
 	private final ScreenBridge bridge = new ScreenBridge(this.trace);
+
+	@After
+	public void disposeTheUis() {
+		new ArrayList<>(this.bridge.getUiList()).forEach(UI::dispose);
+	}
 
 	@Test
 	public void closesTheOpenScreenBeforeOpeningAnother() {

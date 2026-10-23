@@ -48,9 +48,14 @@ public class AssetLocatorTest {
 
 	@Test
 	public void prefersTheLastRegisteredLocator() {
-		AssetLocator.register(new SpecialLocator());
-		Assert.assertEquals("special", AssetLocator.locate(new SpecialStream()).getUniqueId());
-		Assert.assertTrue(AssetLocator.locate(new ByteArrayInputStream(new byte[0])) instanceof StreamAsset);
+		final SpecialLocator locator = new SpecialLocator();
+		AssetLocator.register(locator);
+		try {
+			Assert.assertEquals("special", AssetLocator.locate(new SpecialStream()).getUniqueId());
+			Assert.assertTrue(AssetLocator.locate(new ByteArrayInputStream(new byte[0])) instanceof StreamAsset);
+		} finally {
+			AssetLocator.unregister(locator);
+		}
 	}
 
 	@Test

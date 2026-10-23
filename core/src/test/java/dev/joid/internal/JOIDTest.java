@@ -26,6 +26,7 @@ import org.junit.rules.TemporaryFolder;
 import com.google.gson.JsonObject;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.demo.font.impl.bitmap.DemoPixelFont;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -123,6 +124,10 @@ public class JOIDTest {
 	@Test
 	public void loadsTheDemoFontsInDemoMode() {
 		final MsdfFont previous = DevFont.MONTSERRAT;
+		final MsdfFont montserrat = DemoFont.MONTSERRAT;
+		final MsdfFont pacifico = DemoFont.PACIFICO;
+		final MsdfFont playfairDisplay = DemoFont.PLAYFAIR_DISPLAY;
+		final DemoPixelFont pixel = DemoFont.PIXEL;
 		try {
 			JOIDEnv.devMode(false);
 			JOIDTest.quietly(JOIDTest.create());
@@ -133,9 +138,10 @@ public class JOIDTest {
 			Assert.assertSame(DevFont.MONTSERRAT, DemoFont.MONTSERRAT);
 		} finally {
 			DevFont.MONTSERRAT = previous;
-			DemoFont.MONTSERRAT = null;
-			DemoFont.PACIFICO = null;
-			DemoFont.PLAYFAIR_DISPLAY = null;
+			DemoFont.MONTSERRAT = montserrat;
+			DemoFont.PACIFICO = pacifico;
+			DemoFont.PLAYFAIR_DISPLAY = playfairDisplay;
+			DemoFont.PIXEL = pixel;
 		}
 	}
 
