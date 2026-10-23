@@ -118,7 +118,7 @@ public class MsdfFontLoaderTest {
 		final QueueThreadBridge thread = new QueueThreadBridge();
 		BridgeHandler.THREAD.register(thread);
 		try {
-			final CompletableFuture<MsdfFont> future = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"));
+			final CompletableFuture<MsdfFont> future = MsdfFontLoader.load(MsdfFontLoaderTest.atlas);
 			Assert.assertTrue("The font sent no task to the render thread in 10 s", thread.await(10L, TimeUnit.SECONDS));
 			Assert.assertFalse(future.isDone());
 			thread.run();
@@ -134,7 +134,7 @@ public class MsdfFontLoaderTest {
 		final QueueThreadBridge thread = new QueueThreadBridge();
 		BridgeHandler.THREAD.register(thread);
 		try {
-			final CompletableFuture<MsdfFont> future = MsdfFontLoader.load(MsdfFontLoaderTest.stream("Regular"));
+			final CompletableFuture<MsdfFont> future = MsdfFontLoader.load(MsdfFontLoaderTest.atlas);
 			thread.renderThread(true);
 			Assert.assertNotNull(future.join());
 		} finally {
