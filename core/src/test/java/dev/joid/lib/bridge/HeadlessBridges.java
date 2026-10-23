@@ -15,6 +15,7 @@ import dev.joid.lib.bridge.clock.ManualClockBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
 import dev.joid.lib.bridge.render.RenderSingletons;
 import dev.joid.lib.bridge.ui.UIBridge;
+import dev.joid.lib.bridge.ui.UIBridgeRegistry;
 import dev.joid.lib.bridge.window.RecordingWindowBridge;
 import dev.joid.lib.input.key.KeyState;
 import dev.joid.lib.ui.core.UI;
@@ -54,6 +55,7 @@ public final class HeadlessBridges extends ExternalResource {
 		HeadlessBridges.stopTheAnimators();
 		HeadlessBridges.releaseTheKeys();
 		HeadlessBridges.forgetTheCursor();
+		HeadlessBridges.forgetTheScreenSize();
 		JOIDWarnings.forget();
 	}
 
@@ -149,6 +151,19 @@ public final class HeadlessBridges extends ExternalResource {
 			window.setAccessible(true);
 			cursor.set(null, null);
 			window.set(null, null);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
+	}
+
+	public static void forgetTheScreenSize() {
+		try {
+			final Field width = UIBridgeRegistry.class.getDeclaredField("width");
+			final Field height = UIBridgeRegistry.class.getDeclaredField("height");
+			width.setAccessible(true);
+			height.setAccessible(true);
+			width.setInt(BridgeHandler.UI, 0);
+			height.setInt(BridgeHandler.UI, 0);
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}

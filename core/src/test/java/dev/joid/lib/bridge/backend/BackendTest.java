@@ -83,6 +83,7 @@ public class BackendTest {
 
 		BackendTest.ready(this.ready, this.readyList);
 		HeadlessBridges.forgetTheCursor();
+		HeadlessBridges.forgetTheScreenSize();
 		JOIDEnv.devMode(this.devMode);
 		TestUtils.demoMode(this.demoMode);
 		JOIDEnv.dataDir(this.dataDir);

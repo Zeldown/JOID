@@ -45,9 +45,12 @@ public class VideoNativesTest {
 	}
 
 	@After
-	public void restoreTheRepository() {
+	public void restoreTheRepository() throws ReflectiveOperationException {
 		VideoNatives.repository(this.repository);
 		JOIDEnv.cacheDir(this.previous);
+		final Field installation = VideoNatives.class.getDeclaredField("installation");
+		installation.setAccessible(true);
+		installation.set(null, null);
 	}
 
 	@Test

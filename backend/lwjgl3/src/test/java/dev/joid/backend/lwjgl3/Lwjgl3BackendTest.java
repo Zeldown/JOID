@@ -1,9 +1,11 @@
 package dev.joid.backend.lwjgl3;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Test;
@@ -13,10 +15,21 @@ import dev.joid.backend.lwjgl3.snapshot.SnapshotProfile;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.StackUIBridge;
 import dev.joid.lib.bridge.ui.UIBridge;
+import dev.joid.lib.bridge.ui.UIBridgeRegistry;
 import dev.joid.lib.bridge.ui.WindowUIBridge;
 import dev.joid.lib.color.Color;
 
 public class Lwjgl3BackendTest {
+
+	@After
+	public void forgetTheScreenSize() throws ReflectiveOperationException {
+		final Field width = UIBridgeRegistry.class.getDeclaredField("width");
+		final Field height = UIBridgeRegistry.class.getDeclaredField("height");
+		width.setAccessible(true);
+		height.setAccessible(true);
+		width.setInt(BridgeHandler.UI, 0);
+		height.setInt(BridgeHandler.UI, 0);
+	}
 
 	@Test
 	public void registersWithTheVersionOfTheJOIDItEmbeds() {
