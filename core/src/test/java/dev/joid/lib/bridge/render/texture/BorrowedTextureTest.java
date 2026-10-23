@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
@@ -83,7 +84,8 @@ public class BorrowedTextureTest {
 	@Test
 	public void failsTheResourceOfAnInvalidHandle() {
 		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(() -> new BorrowableImage(4, 4, false, false)));
-		resource.prepareBind();
+		final String output = TestUtils.captureErr(true, resource::prepareBind);
+		Assert.assertTrue(output, output.contains(" cannot be read: The borrowed texture host 4x4 is not a texture of the host"));
 		Assert.assertTrue(resource.isFailed());
 		Assert.assertEquals("The borrowed texture host 4x4 is not a texture of the host, borrow a texture that the host created and has not deleted", resource.getResourceData().getError().getMessage());
 	}
@@ -92,7 +94,8 @@ public class BorrowedTextureTest {
 	public void loadsAHandleThatBecameValidOnceReloaded() {
 		final AtomicReference<BorrowableImage> image = new AtomicReference<>(new BorrowableImage(4, 4, false, false));
 		final Resource resource = ResourceResolver.resolve(ResourceBuilder.create().cache(null), new BorrowableTexture(image::get));
-		resource.prepareBind();
+		final String output = TestUtils.captureErr(true, resource::prepareBind);
+		Assert.assertTrue(output, output.contains(" cannot be read: The borrowed texture host 4x4 is not a texture of the host"));
 		Assert.assertTrue(resource.isFailed());
 		image.set(new BorrowableImage(8, 2, false, true));
 		resource.reload();

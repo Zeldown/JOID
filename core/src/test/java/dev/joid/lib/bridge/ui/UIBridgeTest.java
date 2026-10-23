@@ -15,6 +15,7 @@ import org.junit.Test;
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
@@ -989,8 +990,9 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.bridges.getRender().getDraws().clear();
-		new DemoUIBridge() {}.drawHover(menu, "Play", 100D, 100D);
+		final String output = TestUtils.captureErr(true, () -> new DemoUIBridge() {}.drawHover(menu, "Play", 100D, 100D));
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
+		Assert.assertTrue(output, output.contains(" draws no tooltip, set its hoverInfo(TextInfo) to draw them"));
 	}
 
 	@Test

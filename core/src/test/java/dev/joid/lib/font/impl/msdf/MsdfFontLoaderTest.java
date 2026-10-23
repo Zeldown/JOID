@@ -25,9 +25,11 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import dev.joid.internal.ConsoleCapture;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
@@ -55,6 +57,9 @@ public class MsdfFontLoaderTest {
 
 	@ClassRule
 	public static final TemporaryFolder FOLDER = new TemporaryFolder();
+
+	@Rule
+	public final ConsoleCapture console = new ConsoleCapture();
 
 	private static File atlas;
 

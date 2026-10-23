@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
@@ -77,7 +78,8 @@ public class StackUIBridgeTest {
 		popup.closeable = false;
 		this.bridge.open(menu);
 		this.bridge.open(popup);
-		this.bridge.open(new ScreenUI("settings", this));
+		final String output = TestUtils.captureErr(() -> this.bridge.open(new ScreenUI("settings", this)));
+		Assert.assertTrue(output, output.startsWith("[JOID] PopupUI refused to close: a beforeClose listener cancelled the event, so ScreenUI is not opened"));
 		Assert.assertEquals(Arrays.asList(menu, popup), this.bridge.getUiList());
 		Assert.assertFalse(this.trace.contains("close menu"));
 		Assert.assertFalse(menu.isClosed());
@@ -340,7 +342,8 @@ public class StackUIBridgeTest {
 		final ScreenUI menu = new ScreenUI("menu", this);
 		menu.closeable = false;
 		this.bridge.open(menu);
-		this.bridge.open(new ScreenUI("settings", this));
+		final String output = TestUtils.captureErr(() -> this.bridge.open(new ScreenUI("settings", this)));
+		Assert.assertTrue(output, output.startsWith("[JOID] ScreenUI refused to close: a beforeClose listener cancelled the event, so ScreenUI is not opened"));
 		menu.closeable = true;
 		this.bridge.close(menu);
 		Assert.assertEquals(Arrays.asList("first screen", "last screen"), this.trace.stream().filter(line -> line.endsWith("screen")).collect(Collectors.toList()));

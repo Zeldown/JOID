@@ -34,11 +34,13 @@ public class FontFamilyTest {
 
 	@Test
 	public void picksTheClosestWeight() {
-		Assert.assertEquals(600, FontFamilyTest.family(300, 600).resolve(FontWeight.MEDIUM, false).getWeight().getValue());
-		Assert.assertEquals(400, FontFamilyTest.family(400, 900).resolve(FontWeight.SEMI_BOLD, false).getWeight().getValue());
-		Assert.assertEquals(300, FontFamilyTest.family(300, 600).resolve(FontWeight.REGULAR, false).getWeight().getValue());
-		Assert.assertEquals(400, FontFamilyTest.family(400, 700).resolve(FontWeight.THIN, false).getWeight().getValue());
-		Assert.assertEquals(700, FontFamilyTest.family(400, 700).resolve(FontWeight.BLACK, false).getWeight().getValue());
+		TestUtils.captureErr(() -> {
+			Assert.assertEquals(600, FontFamilyTest.family(300, 600).resolve(FontWeight.MEDIUM, false).getWeight().getValue());
+			Assert.assertEquals(400, FontFamilyTest.family(400, 900).resolve(FontWeight.SEMI_BOLD, false).getWeight().getValue());
+			Assert.assertEquals(300, FontFamilyTest.family(300, 600).resolve(FontWeight.REGULAR, false).getWeight().getValue());
+			Assert.assertEquals(400, FontFamilyTest.family(400, 700).resolve(FontWeight.THIN, false).getWeight().getValue());
+			Assert.assertEquals(700, FontFamilyTest.family(400, 700).resolve(FontWeight.BLACK, false).getWeight().getValue());
+		});
 	}
 
 	@Test
@@ -51,10 +53,12 @@ public class FontFamilyTest {
 
 	@Test
 	public void breaksTiesInTheCssOrder() {
-		Assert.assertEquals(500, FontFamilyTest.family(300, 500).resolve(FontWeight.REGULAR, false).getWeight().getValue());
-		Assert.assertEquals(400, FontFamilyTest.family(400, 600).resolve(FontWeight.MEDIUM, false).getWeight().getValue());
-		Assert.assertEquals(200, FontFamilyTest.family(200, 400).resolve(FontWeight.LIGHT, false).getWeight().getValue());
-		Assert.assertEquals(700, FontFamilyTest.family(500, 700).resolve(FontWeight.SEMI_BOLD, false).getWeight().getValue());
+		TestUtils.captureErr(() -> {
+			Assert.assertEquals(500, FontFamilyTest.family(300, 500).resolve(FontWeight.REGULAR, false).getWeight().getValue());
+			Assert.assertEquals(400, FontFamilyTest.family(400, 600).resolve(FontWeight.MEDIUM, false).getWeight().getValue());
+			Assert.assertEquals(200, FontFamilyTest.family(200, 400).resolve(FontWeight.LIGHT, false).getWeight().getValue());
+			Assert.assertEquals(700, FontFamilyTest.family(500, 700).resolve(FontWeight.SEMI_BOLD, false).getWeight().getValue());
+		});
 	}
 
 	@Test
@@ -62,8 +66,10 @@ public class FontFamilyTest {
 		final Face upright = new Face(FontWeight.REGULAR, false);
 		final Face italic = new Face(FontWeight.BOLD, true);
 		final FontFamily<Face> family = FontFamily.of(upright, italic);
-		Assert.assertSame(italic, family.resolve(FontWeight.REGULAR, true));
-		Assert.assertSame(upright, family.resolve(FontWeight.BOLD, false));
+		TestUtils.captureErr(() -> {
+			Assert.assertSame(italic, family.resolve(FontWeight.REGULAR, true));
+			Assert.assertSame(upright, family.resolve(FontWeight.BOLD, false));
+		});
 	}
 
 	@Test

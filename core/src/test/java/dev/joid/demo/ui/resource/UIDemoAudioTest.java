@@ -10,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.internal.ConsoleCapture;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
@@ -24,6 +25,9 @@ public class UIDemoAudioTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
+
+	@Rule
+	public final ConsoleCapture console = new ConsoleCapture();
 
 	@BeforeClass
 	public static void loadTheDevFont() {

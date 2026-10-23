@@ -7,6 +7,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.RecordingShader;
@@ -160,8 +162,10 @@ public class BitmapTextRendererTest {
 		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F).color(Color.WHITE));
 		((RecordingShader) this.render.getLast().getShader()).setActive(false);
 		this.render.getCaptures().clear();
-		font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F).color(Color.WHITE));
+		JOIDWarnings.forget();
+		final String output = TestUtils.captureErr(true, () -> font.getTextRenderer().drawText(0D, 0D, "A", TextInfo.create(font, 16F).color(Color.WHITE)));
 		Assert.assertTrue(this.render.getCaptures().isEmpty());
+		Assert.assertTrue(output, output.startsWith("[JOID] The font shader of Renderer cannot be compiled by CapturingRenderBridge, what it draws is skipped"));
 	}
 
 	private Capture draw(final Atlas atlas, final double scale, final String text, final float size) {

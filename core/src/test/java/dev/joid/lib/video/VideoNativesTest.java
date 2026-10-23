@@ -21,12 +21,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import dev.joid.internal.ConsoleCapture;
 import dev.joid.internal.JOIDEnv;
 
 public class VideoNativesTest {
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
+
+	@Rule
+	public final ConsoleCapture console = new ConsoleCapture();
 
 	private String repository;
 	private File   previous;

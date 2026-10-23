@@ -297,7 +297,7 @@ public class FileCacheTest {
 		final File old = area.compute("key", entry -> FileCacheTest.write(entry, "old"));
 		final File file;
 		try (final InputStream reader = new FileInputStream(old)) {
-			Assert.assertTrue(area.remove("key"));
+			TestUtils.captureErr(() -> Assert.assertTrue(area.remove("key")));
 			file = area.compute("key", entry -> FileCacheTest.write(entry, "new"));
 			Assert.assertEquals("new", FileCacheTest.read(file));
 			Assert.assertEquals(file, area.entry("key"));
@@ -314,7 +314,7 @@ public class FileCacheTest {
 		final FileCacheArea area = FileCache.area("locked");
 		final File file = area.compute("key", entry -> FileCacheTest.write(entry, "value"));
 		try (final InputStream reader = new FileInputStream(file)) {
-			Assert.assertTrue(area.remove("key"));
+			TestUtils.captureErr(() -> Assert.assertTrue(area.remove("key")));
 			Assert.assertNull(area.entry("key"));
 			Assert.assertEquals('v', reader.read());
 		}

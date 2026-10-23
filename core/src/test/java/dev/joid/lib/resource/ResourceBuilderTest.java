@@ -17,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -256,7 +257,10 @@ public class ResourceBuilderTest {
 	@Test
 	public void detectsTheFormatAgainOnceReloadedAfterAFailedRead() throws IOException {
 		final FlakyAsset asset = new FlakyAsset("flaky", false, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")).read());
-		final Resource resource = ResourceBuilder.create().cache(null).of(asset).blocking();
+		final AtomicReference<Resource> created = new AtomicReference<>();
+		final String output = TestUtils.captureErr(true, () -> created.set(ResourceBuilder.create().cache(null).of(asset).blocking()));
+		Assert.assertTrue(output, output.startsWith("[JOID] The resource flaky cannot be read: The start of flaky cannot be read (java.io.IOException: offline)"));
+		final Resource resource = created.get();
 		Assert.assertTrue(resource.isFailed());
 		resource.reload();
 		resource.prepareBind();
@@ -268,7 +272,8 @@ public class ResourceBuilderTest {
 	public void detectsTheFormatOfARemoteAssetAgainOnATaskThreadOnceReloaded() throws IOException {
 		final FlakyAsset asset = new FlakyAsset("flaky-remote", true, Asset.of(ResourceBuilderTest.stream("/animation/blink.gif")).read());
 		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
-		resource.getResourceData().await();
+		final String output = TestUtils.captureErr(true, () -> resource.getResourceData().await());
+		Assert.assertTrue(output, output.startsWith("[JOID] The resource flaky-remote cannot be read: The start of flaky-remote cannot be read (java.io.IOException: offline)"));
 		Assert.assertTrue(resource.isFailed());
 		resource.reload();
 		resource.prepareBind();

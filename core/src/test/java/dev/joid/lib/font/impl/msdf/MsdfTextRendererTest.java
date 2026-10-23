@@ -13,6 +13,8 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
 import dev.joid.lib.bridge.render.CapturingRenderBridge.Capture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
@@ -65,7 +67,9 @@ public class MsdfTextRendererTest {
 		final double regular = MsdfTextRendererTest.info().getWidth("Hello");
 		final double bold = MsdfTextRendererTest.info().weight(FontWeight.BOLD).getWidth("Hello");
 		Assert.assertTrue("Bold must be wider than regular (" + bold + " vs " + regular + ")", bold > regular);
-		Assert.assertEquals(bold, MsdfTextRendererTest.info().weight(FontWeight.BLACK).getWidth("Hello"), 0D);
+		JOIDWarnings.forget();
+		final String output = TestUtils.captureErr(true, () -> Assert.assertEquals(bold, MsdfTextRendererTest.info().weight(FontWeight.BLACK).getWidth("Hello"), 0D));
+		Assert.assertTrue(output, output.startsWith("[JOID] The font weight 900 is not loaded in the family of Montserrat Bold, 700 is drawn instead"));
 	}
 
 	@Test

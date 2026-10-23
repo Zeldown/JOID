@@ -11,6 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
@@ -101,7 +102,9 @@ public class GlyphTextRendererTest {
 
 	@Test
 	public void prefersAnItalicFace() {
-		GlyphTextRendererTest.draw("*A", GlyphTextRendererTest.info().italic(true));
+		JOIDWarnings.forget();
+		final String output = TestUtils.captureErr(true, () -> GlyphTextRendererTest.draw("*A", GlyphTextRendererTest.info().italic(true)));
+		Assert.assertTrue(output, output.startsWith("[JOID] The font weight 700 italic is not loaded in the family of Test, 400 italic is drawn instead"));
 		Assert.assertSame(GlyphTextRendererTest.ITALIC, GlyphTextRendererTest.RENDERER.drawn.get(0).getFace());
 		Assert.assertFalse(GlyphTextRendererTest.RENDERER.drawn.get(0).isSlanted());
 	}
@@ -169,7 +172,9 @@ public class GlyphTextRendererTest {
 
 	@Test
 	public void resolvesTheRequestedWeight() {
-		Assert.assertEquals(20D, GlyphTextRendererTest.info().weight(FontWeight.BLACK).getWidth("AB"), 1E-6D);
+		JOIDWarnings.forget();
+		final String output = TestUtils.captureErr(true, () -> Assert.assertEquals(20D, GlyphTextRendererTest.info().weight(FontWeight.BLACK).getWidth("AB"), 1E-6D));
+		Assert.assertTrue(output, output.startsWith("[JOID] The font weight 900 is not loaded in the family of Test, 700 is drawn instead"));
 	}
 
 	@Test
@@ -233,8 +238,9 @@ public class GlyphTextRendererTest {
 			style.font(MsdfTextRenderer::inst);
 			return 1;
 		};
-		final GlyphLayout<Face> layout = GlyphTextRendererTest.layout("%A", GlyphTextRendererTest.info().markups(foreign));
-		Assert.assertSame(GlyphTextRendererTest.REGULAR, layout.getPlacements().get(0).getFace());
+		JOIDWarnings.forget();
+		final String output = TestUtils.captureErr(true, () -> Assert.assertSame(GlyphTextRendererTest.REGULAR, GlyphTextRendererTest.layout("%A", GlyphTextRendererTest.info().markups(foreign)).getPlacements().get(0).getFace()));
+		Assert.assertTrue(output, output.contains(" of a text style is not drawn by Renderer, the text keeps its own font"));
 	}
 
 	@Test

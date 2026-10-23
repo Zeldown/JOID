@@ -33,6 +33,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.common.hash.Hashing;
 
+import dev.joid.internal.ConsoleCapture;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
@@ -56,6 +57,9 @@ public class OpenTypeMsdfSourceTest {
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
+
+	@Rule
+	public final ConsoleCapture console = new ConsoleCapture();
 
 	private File previous;
 	private File cache;

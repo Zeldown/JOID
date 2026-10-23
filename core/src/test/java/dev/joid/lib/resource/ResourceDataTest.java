@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
@@ -341,7 +342,8 @@ public class ResourceDataTest {
 		final Resource resource = ResourceDataTest.resource(data).onError((failed, error) -> errors.add(error.getMessage()));
 		BridgeHandler.THREAD.register(thread);
 		try {
-			data.fail(new IllegalStateException("missing"));
+			final String output = TestUtils.captureErr(true, () -> data.fail(new IllegalStateException("missing")));
+			Assert.assertTrue(output, output.startsWith("[JOID] The resource image cannot be read: missing."));
 			resource.onError((failed, error) -> errors.add("late " + error.getMessage()));
 			Assert.assertTrue(errors.isEmpty());
 			thread.run();
@@ -444,7 +446,8 @@ public class ResourceDataTest {
 			System.gc();
 			Thread.sleep(10L);
 		}
-		data.fail(new IllegalStateException("missing"));
+		final String output = TestUtils.captureErr(true, () -> data.fail(new IllegalStateException("missing")));
+		Assert.assertTrue(output, output.startsWith("[JOID] The resource image cannot be read: missing."));
 		Assert.assertEquals(Collections.singletonList("missing"), errors);
 		final long deadline = System.currentTimeMillis() + 5000L;
 		while (reference.get() != null && System.currentTimeMillis() < deadline) {
@@ -466,7 +469,8 @@ public class ResourceDataTest {
 
 		});
 		final Resource resource = ResourceDataTest.resource(data).onLoad(loaded -> loads.add("load"));
-		data.generate(false);
+		final String output = TestUtils.captureErr(true, () -> data.generate(false));
+		Assert.assertTrue(output, output.startsWith("[JOID] The resource image cannot be read: broken."));
 		Assert.assertTrue(resource.isFailed());
 		Assert.assertTrue(loads.isEmpty());
 	}
@@ -481,15 +485,19 @@ public class ResourceDataTest {
 			}
 
 		});
-		data.generate(true);
-		data.await();
+		final String output = TestUtils.captureErr(true, () -> {
+			data.generate(true);
+			data.await();
+		});
 		Assert.assertTrue(data.isFailed());
+		Assert.assertTrue(output, output.startsWith("[JOID] The resource image cannot be read: The native library is missing."));
 	}
 
 	@Test
 	public void reloadsAFailedResourceWithANewDecoder() {
 		final ResourceData data = ResourceData.create("image", null);
-		data.fail(new IllegalStateException("missing"));
+		final String output = TestUtils.captureErr(true, () -> data.fail(new IllegalStateException("missing")));
+		Assert.assertTrue(output, output.startsWith("[JOID] The resource image cannot be read: missing."));
 		final Decoder decoder = new Decoder();
 		Assert.assertSame(data, data.reload(decoder));
 		Assert.assertFalse(data.isFailed());
@@ -539,8 +547,11 @@ public class ResourceDataTest {
 			}
 
 		});
-		data.generate(true);
-		data.reload(new Decoder());
+		final String output = TestUtils.captureErr(true, () -> {
+			data.generate(true);
+			data.reload(new Decoder());
+		});
+		Assert.assertTrue(output, output.startsWith("[JOID] The resource image cannot be read: late."));
 		Assert.assertEquals(0L, finished.getCount());
 		Assert.assertFalse(data.isFailed());
 		Assert.assertFalse(data.isLoaded());

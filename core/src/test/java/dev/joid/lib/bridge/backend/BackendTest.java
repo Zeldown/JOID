@@ -13,8 +13,10 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.ConsoleCapture;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
@@ -36,6 +38,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 public class BackendTest {
+
+	@Rule
+	public final ConsoleCapture console = new ConsoleCapture();
 
 	private final List<String> trace = new ArrayList<>();
 
@@ -100,6 +105,7 @@ public class BackendTest {
 		Assert.assertSame(backend.thread, BridgeHandler.THREAD.get());
 		Assert.assertTrue(backend.isRegistered());
 		Assert.assertTrue(JOID.inst().isReady());
+		Assert.assertTrue(this.console.getOut(), this.console.getOut().startsWith("[JOID] " + JOID.VERSION + " loaded, data in "));
 	}
 
 	@Test

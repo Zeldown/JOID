@@ -15,12 +15,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import dev.joid.internal.ConsoleCapture;
 import lombok.NonNull;
 
 public class SnapshotSuiteTest {
 
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
+
+	@Rule
+	public final ConsoleCapture console = new ConsoleCapture();
 
 	private Properties previous;
 

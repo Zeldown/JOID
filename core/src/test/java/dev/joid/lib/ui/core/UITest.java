@@ -345,8 +345,11 @@ public class UITest {
 		ui.getData().zlevel(4D).anchorX(Align.START);
 		ui.getDebug().profiler(true);
 		ui.getPopup().active(false);
-		ui.reload();
-		this.bridges.frame();
+		final String output = TestUtils.captureOut(true, () -> {
+			ui.reload();
+			this.bridges.frame();
+		});
+		Assert.assertTrue(output, output.startsWith("[JOID] PopupUI loaded in "));
 		Assert.assertEquals(4D, ui.getData().zlevel(), 0D);
 		Assert.assertEquals(0D, ui.getView().getAnchorX(), 0D);
 		Assert.assertTrue(ui.getDebug().profiler());

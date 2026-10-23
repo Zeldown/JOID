@@ -18,6 +18,7 @@ import dev.joid.demo.ui.animation.UIDemoTween;
 import dev.joid.demo.ui.control.UIDemoControl;
 import dev.joid.demo.ui.model.UIDemoModel;
 import dev.joid.demo.ui.simple.UIDemoSimple;
+import dev.joid.internal.ConsoleCapture;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
@@ -32,6 +33,9 @@ public class UIDemoChoiceTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
+
+	@Rule
+	public final ConsoleCapture console = new ConsoleCapture();
 
 	private MsdfFont     previous;
 	private Supplier<UI> menu;

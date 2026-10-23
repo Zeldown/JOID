@@ -319,7 +319,8 @@ public class JOIDTest {
 		final MenuUI next = new MenuUI();
 		menu.closeable = false;
 		JOID.open(menu);
-		JOID.open(next);
+		final String output = TestUtils.captureErr(() -> JOID.open(next));
+		Assert.assertTrue(output, output.startsWith("[JOID] MenuUI refused to close: a beforeClose listener cancelled the event, so MenuUI is not opened"));
 		Assert.assertEquals(Collections.singletonList(menu), this.bridges.getUi().getUiList());
 		Assert.assertSame(this.bridges.getUi(), JOID.forceOpen(next));
 		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
