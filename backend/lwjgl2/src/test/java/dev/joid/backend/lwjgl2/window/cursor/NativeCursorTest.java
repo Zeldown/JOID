@@ -1,7 +1,9 @@
 package dev.joid.backend.lwjgl2.window.cursor;
 
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
@@ -46,12 +48,19 @@ public class NativeCursorTest {
 	}
 
 	@Test
-	public void appliesNothingWithoutDisplay() {
+	public void appliesNothingWithoutDisplay() throws ReflectiveOperationException {
 		final NativeCursor cursor = NativeCursor.forPlatform();
 		Assume.assumeNotNull(cursor);
 		Lwjgl2Natives.install();
 		cursor.apply(Cursor.POINTER);
-		cursor.apply(Cursor.DEFAULT);
+		Assert.assertSame(Cursor.DEFAULT, NativeCursorTest.read(cursor, "applied"));
+		Assert.assertTrue(((Map<?, ?>) NativeCursorTest.read(cursor, "handleMap")).isEmpty());
+	}
+
+	private static Object read(final NativeCursor cursor, final String name) throws ReflectiveOperationException {
+		final Field field = NativeCursor.class.getDeclaredField(name);
+		field.setAccessible(true);
+		return field.get(cursor);
 	}
 
 }

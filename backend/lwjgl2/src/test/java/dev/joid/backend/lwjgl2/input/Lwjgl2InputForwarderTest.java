@@ -100,7 +100,7 @@ public class Lwjgl2InputForwarderTest {
 		this.keyPressed(Keyboard.KEY_BACK, '\b');
 		this.keyPressed(Keyboard.KEY_RETURN, '\r');
 		this.keyPressed(Keyboard.KEY_NUMPAD1, '1');
-		Assert.assertEquals(Arrays.asList("key BACKSPACE", "key ENTER", "key " + Lwjgl2Keys.getPhysicalKey(Keyboard.KEY_NUMPAD1)), this.trace);
+		Assert.assertEquals(Arrays.asList("key BACKSPACE", "key ENTER", "key NUMPAD_1"), this.trace);
 	}
 
 	@Test

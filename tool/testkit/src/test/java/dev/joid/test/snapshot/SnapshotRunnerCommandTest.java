@@ -119,7 +119,7 @@ public class SnapshotRunnerCommandTest {
 
 	@Test
 	public void drawsTooltipsWithTheDevFont() {
-		Assert.assertNotNull(BridgeHandler.UI.getBridge(SnapshotUIBridge.class).getHoverInfo());
+		Assert.assertSame(DevFont.MONTSERRAT, BridgeHandler.UI.getBridge(SnapshotUIBridge.class).getHoverInfo().getFont());
 	}
 
 	@Test
