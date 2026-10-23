@@ -19,6 +19,7 @@ import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
 import dev.joid.lib.bridge.render.RecordingRenderBridge;
@@ -76,6 +77,7 @@ public class BackendTest {
 		}
 
 		BackendTest.ready(this.ready, this.readyList);
+		HeadlessBridges.forgetTheCursor();
 		JOIDEnv.devMode(this.devMode);
 		TestUtils.demoMode(this.demoMode);
 		JOIDEnv.dataDir(this.dataDir);

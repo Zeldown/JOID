@@ -2,6 +2,7 @@ package dev.joid.demo.ui.resource;
 
 import java.lang.reflect.Field;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -14,6 +15,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.video.VideoAudioPlayer;
+import dev.joid.lib.video.VideoNatives;
 
 public class UIDemoAudioTest {
 
@@ -26,6 +28,13 @@ public class UIDemoAudioTest {
 	@BeforeClass
 	public static void loadTheDevFont() {
 		DevFont.load();
+	}
+
+	@After
+	public void forgetTheNatives() throws ReflectiveOperationException {
+		final Field installation = VideoNatives.class.getDeclaredField("installation");
+		installation.setAccessible(true);
+		installation.set(null, null);
 	}
 
 	@Test

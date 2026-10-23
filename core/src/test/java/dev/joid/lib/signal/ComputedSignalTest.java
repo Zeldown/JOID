@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -24,6 +25,11 @@ import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 
 public class ComputedSignalTest {
+
+	@After
+	public void forgetTheWarnings() {
+		JOIDWarnings.forget();
+	}
 
 	@Test
 	public void computesItsValueFromTheSignalsItReads() {

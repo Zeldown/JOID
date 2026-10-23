@@ -7,6 +7,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -33,6 +34,7 @@ import dev.joid.lib.ui.node.property.DraggableProperty;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableType;
 import dev.joid.lib.ui.task.Task;
 import dev.joid.lib.utils.geom.Point;
+import dev.joid.lib.video.VideoNatives;
 
 public class ResourcePlayerNodeTest {
 
@@ -41,6 +43,13 @@ public class ResourcePlayerNodeTest {
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
+
+	@After
+	public void forgetTheNatives() throws ReflectiveOperationException {
+		final Field installation = VideoNatives.class.getDeclaredField("installation");
+		installation.setAccessible(true);
+		installation.set(null, null);
+	}
 
 	@Test
 	public void startsWithoutPlayback() {

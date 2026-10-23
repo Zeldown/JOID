@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
@@ -39,6 +40,7 @@ public class TweenAnimatorTest {
 	public void releaseTheManualClock() {
 		BridgeHandler.CLOCK.unregister(this.clock);
 		HeadlessBridges.stopTheAnimators();
+		JOIDWarnings.forget();
 	}
 
 	@Test

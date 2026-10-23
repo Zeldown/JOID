@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
@@ -49,6 +50,7 @@ public class UIStoreHookTest {
 		UIStoreHook.destroyStore(new ListStore());
 		UIStoreHook.destroyStore(new UnsavableStore());
 		JOIDEnv.dataDir(this.previous);
+		JOIDWarnings.forget();
 	}
 
 	@Test

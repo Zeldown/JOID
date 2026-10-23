@@ -141,7 +141,7 @@ public final class HeadlessBridges extends ExternalResource {
 		HeadlessBridges.<Map<?, ?>>field(KeyState.class, BridgeHandler.UI.getKeyState(), "heldMap").clear();
 	}
 
-	private static void forgetTheCursor() {
+	public static void forgetTheCursor() {
 		try {
 			final Field cursor = UIBridge.class.getDeclaredField("windowCursor");
 			final Field window = UIBridge.class.getDeclaredField("cursorWindow");
