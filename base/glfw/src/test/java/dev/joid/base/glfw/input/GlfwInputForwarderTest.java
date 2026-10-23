@@ -26,6 +26,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.IConsumableEvent;
 import lombok.NonNull;
 
@@ -182,6 +183,7 @@ public class GlfwInputForwarderTest {
 		callback.invoke(GlfwInputForwarderTest.window, button, action, 0);
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class TraceUI extends UI {
 
 		private final List<String> trace;

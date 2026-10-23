@@ -13,6 +13,7 @@ import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 
 public class TransitionTest {
 
@@ -189,6 +190,7 @@ public class TransitionTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class EmptyUI extends UI {}
 
 }

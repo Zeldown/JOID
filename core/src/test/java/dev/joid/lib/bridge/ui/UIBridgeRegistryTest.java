@@ -18,6 +18,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.IConsumableEvent;
 import dev.joid.lib.ui.node.Node;
 import lombok.AllArgsConstructor;
@@ -334,9 +335,11 @@ public class UIBridgeRegistryTest {
 		return ui;
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class MenuUI extends UI {}
 
 	@AllArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class AnimatorUI extends UI {
 
 		private final TweenAnimator animator;
@@ -348,6 +351,7 @@ public class UIBridgeRegistryTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class HudUI extends UI {}
 
 	@AllArgsConstructor
@@ -380,6 +384,7 @@ public class UIBridgeRegistryTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class TraceUI extends UI {
 
 		private final String       name;

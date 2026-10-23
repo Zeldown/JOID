@@ -37,6 +37,7 @@ import dev.joid.lib.bridge.ui.UIBridgeRegistryTest.RoutingBridge;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.core.data.UIDataPopup.PopupTransition;
 import dev.joid.lib.ui.core.hook.property.UIProperty;
@@ -710,6 +711,7 @@ public class JOIDTest {
 		}
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class MenuUI extends UI {
 
 		private int     inits;
@@ -734,6 +736,7 @@ public class JOIDTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	@UIDataPopup(active = true, transition = PopupTransition.NONE)
 	public static final class PopupUI extends UI {}
 
@@ -753,6 +756,7 @@ public class JOIDTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class SettingsUI extends UI {
 
 		@UIProperty
@@ -783,6 +787,7 @@ public class JOIDTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class StubbornUI extends UI {
 
 		public StubbornUI() {

@@ -18,6 +18,7 @@ import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.control.selector.SelectorNode.SelectorDirection;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
@@ -494,6 +495,7 @@ public class SelectorNodeTest {
 	}
 
 	@AllArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class BackgroundUI extends UI {
 
 		private final Node         node;

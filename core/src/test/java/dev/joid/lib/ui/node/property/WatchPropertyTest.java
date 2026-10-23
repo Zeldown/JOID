@@ -12,6 +12,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.RequiredArgsConstructor;
@@ -83,6 +84,7 @@ public class WatchPropertyTest {
 	}
 
 	@RequiredArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class WatchUI extends UI {
 
 		private final Signal<Integer> count;

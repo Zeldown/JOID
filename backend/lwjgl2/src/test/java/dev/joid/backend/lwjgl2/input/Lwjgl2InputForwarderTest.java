@@ -24,6 +24,7 @@ import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.window.IWindowBridge;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import lombok.NonNull;
 
 public class Lwjgl2InputForwarderTest {
@@ -149,6 +150,7 @@ public class Lwjgl2InputForwarderTest {
 		field.set(null, value);
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class TraceUI extends UI {
 
 		private final List<String> trace;

@@ -24,6 +24,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNodeTest;
@@ -177,6 +178,7 @@ public class KeyLayoutTest {
 		return KeyLayoutTest.AZERTY_MAP.getOrDefault(key, key.name().toLowerCase(Locale.ROOT));
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class ShortcutUI extends UI {
 
 		private final Node[] nodes;

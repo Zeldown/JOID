@@ -12,6 +12,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartData;
 import lombok.AccessLevel;
@@ -60,6 +61,7 @@ public class DemoChartNodeTest {
 		}
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class ChartUI extends UI {
 

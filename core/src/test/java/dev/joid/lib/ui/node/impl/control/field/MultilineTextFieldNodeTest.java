@@ -23,6 +23,7 @@ import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
@@ -900,6 +901,7 @@ public class MultilineTextFieldNodeTest {
 		}
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	public static final class FieldUI extends UI {
 

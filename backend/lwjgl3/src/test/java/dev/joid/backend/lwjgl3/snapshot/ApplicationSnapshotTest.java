@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import dev.joid.lib.color.Color;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.test.snapshot.SnapshotImage;
 import dev.joid.test.snapshot.SnapshotRunner;
@@ -23,6 +24,7 @@ public class ApplicationSnapshotTest {
 		}
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PlaceholderUI extends UI {
 
 		@Override

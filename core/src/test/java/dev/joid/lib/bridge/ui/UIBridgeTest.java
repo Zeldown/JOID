@@ -1247,6 +1247,7 @@ public class UIBridgeTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static class DepthUI extends UI {
 
 		private final String       name;

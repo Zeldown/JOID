@@ -16,6 +16,7 @@ import org.junit.rules.TemporaryFolder;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import lombok.AllArgsConstructor;
 
 public class UIPropertyHookTest {
@@ -129,6 +130,7 @@ public class UIPropertyHookTest {
 		Assert.assertEquals(2, loaded.origin.y);
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static class PropertyUI extends UI {
 
 		@UIProperty("zoomLevel")
@@ -153,6 +155,7 @@ public class UIPropertyHookTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static class FinalPropertyUI extends UI {
 
 		@UIProperty

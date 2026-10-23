@@ -8,6 +8,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
@@ -54,6 +55,7 @@ public class INodeTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class EmptyUI extends UI {}
 
 }

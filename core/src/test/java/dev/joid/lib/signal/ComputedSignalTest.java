@@ -497,7 +497,9 @@ public class ComputedSignalTest {
 	@Test
 	public void describesItself() {
 		Assert.assertEquals("ComputedSignal{2}", new IntegerSignal(1).map(value -> value * 2).toString());
-		Assert.assertEquals("ComputedSignal{null}", Signal.from(() -> null).toString());
+		JOIDWarnings.forget();
+		final String output = TestUtils.captureErr(() -> Assert.assertEquals("ComputedSignal{null}", Signal.from(() -> null).toString()));
+		Assert.assertTrue(output, output.startsWith("[JOID] A Signal.from(...) of ComputedSignalTest reads no signal"));
 	}
 
 	@Test

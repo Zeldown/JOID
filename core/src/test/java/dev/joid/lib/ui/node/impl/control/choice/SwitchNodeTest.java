@@ -431,6 +431,7 @@ public class SwitchNodeTest {
 	}
 
 	@RequiredArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class SingleUI extends UI {
 
 		private final SwitchNode<String> node;

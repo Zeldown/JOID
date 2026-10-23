@@ -21,6 +21,7 @@ import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.core.data.UIDataPopup;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -176,6 +177,7 @@ public class SnapshotRunnerCommandTest {
 		Assert.assertNotSame(data, JOID.getUi(IconUI.class).getResource().getResourceData());
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class TraceUI extends UI {
 
 		@Getter private double dragX;
@@ -191,6 +193,7 @@ public class SnapshotRunnerCommandTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class TypeUI extends UI {
 
 		@Getter
@@ -203,6 +206,7 @@ public class SnapshotRunnerCommandTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class HeldUI extends UI {
 
 		@Getter
@@ -216,6 +220,7 @@ public class SnapshotRunnerCommandTest {
 	}
 
 	@NoArgsConstructor(access = AccessLevel.PRIVATE)
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PrivateUI extends UI {
 
 		@Override
@@ -225,6 +230,7 @@ public class SnapshotRunnerCommandTest {
 
 	@Getter
 	@RequiredArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class ArgumentUI extends UI {
 
 		private final int argument;
@@ -234,6 +240,7 @@ public class SnapshotRunnerCommandTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class ThrowingUI extends UI {
 
 		public ThrowingUI() {
@@ -246,6 +253,7 @@ public class SnapshotRunnerCommandTest {
 	}
 
 	@UIDataPopup(active = true)
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PopupUI extends UI {
 
 		@Override
@@ -255,6 +263,7 @@ public class SnapshotRunnerCommandTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class FailedResourceUI extends UI {
 
 		@Getter
@@ -267,6 +276,7 @@ public class SnapshotRunnerCommandTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class IconUI extends UI {
 
 		@Getter

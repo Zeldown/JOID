@@ -2113,12 +2113,13 @@ public class UITest {
 		final File location = this.folder.newFolder("classes");
 		final UI first = UITest.hotReloaded(location, new AtomicInteger());
 		final UI second = UITest.hotReloaded(location, new AtomicInteger());
+		final PrintStream previous = System.out;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		JOIDEnv.devMode(true);
-		TestUtils.captureOut(() -> {
+		System.setOut(new PrintStream(output, true));
+		try {
 			first.load(1920D, 1080D);
 			second.load(1920D, 1080D);
-		});
-		try {
 			Assert.assertNotNull(UITest.monitor(first));
 			Assert.assertEquals(UITest.location(first), UITest.location(second));
 			final BlockingQueue<String> changes = UITest.listen(first);
@@ -2130,7 +2131,9 @@ public class UITest {
 		} finally {
 			first.dispose();
 			second.dispose();
+			System.setOut(previous);
 		}
+		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] ShopNode.class changed, the UIs that use it reload"));
 	}
 
 	@Test
@@ -2189,23 +2192,28 @@ public class UITest {
 		final AtomicInteger inits = new AtomicInteger();
 		Files.write(location.toPath(), new byte[] {1});
 		final UI ui = UITest.hotReloaded(location, inits);
+		final PrintStream previous = System.out;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		JOIDEnv.devMode(true);
-		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
+		System.setOut(new PrintStream(output, true));
 		try {
+			ui.load(1920D, 1080D);
 			final BlockingQueue<String> changes = UITest.listen(ui);
 			Files.write(location.toPath(), new byte[] {1, 2});
 			UITest.await(changes, "file change ui.jar");
 			UITest.await(changes, "stop");
 			Assert.assertTrue(UITest.isReloadPending(ui));
 			Assert.assertEquals(1, inits.get());
-			final String output = TestUtils.captureOut(() -> ui.draw(0D, 0D));
+			final String reload = TestUtils.captureOut(() -> ui.draw(0D, 0D));
 			Assert.assertFalse(UITest.isReloadPending(ui));
 			Assert.assertEquals(2, inits.get());
 			Assert.assertTrue(ui.isInitialized());
-			Assert.assertTrue(output, output.matches("\\[JOID\\] \\w* ?reloaded in \\d+\\.\\d\\dms" + System.lineSeparator()));
+			Assert.assertTrue(reload, reload.matches("\\[JOID\\] \\w* ?reloaded in \\d+\\.\\d\\dms" + System.lineSeparator()));
 		} finally {
 			ui.dispose();
+			System.setOut(previous);
 		}
+		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] ui.jar changed, the UIs that use it reload"));
 	}
 
 	@Test
@@ -2215,26 +2223,31 @@ public class UITest {
 		final AtomicInteger inits = new AtomicInteger();
 		Assert.assertTrue(type.getParentFile().mkdir());
 		final UI ui = UITest.hotReloaded(location, inits);
+		final PrintStream previous = System.out;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		JOIDEnv.devMode(true);
-		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
+		System.setOut(new PrintStream(output, true));
 		try {
+			ui.load(1920D, 1080D);
 			final BlockingQueue<String> changes = UITest.listen(ui);
 			Files.write(type.toPath(), new byte[] {1});
 			UITest.await(changes, "file create ShopNode.class");
 			UITest.await(changes, "stop");
 			Assert.assertTrue(UITest.isReloadPending(ui));
 			Assert.assertEquals(1, inits.get());
-			TestUtils.captureOut(() -> ui.draw(0D, 0D));
+			ui.draw(0D, 0D);
 			Assert.assertEquals(2, inits.get());
 			Files.write(type.toPath(), new byte[] {1, 2});
 			Assert.assertTrue(type.setLastModified(type.lastModified() + 10000L));
 			UITest.await(changes, "file change ShopNode.class");
 			UITest.await(changes, "stop");
-			TestUtils.captureOut(() -> ui.draw(0D, 0D));
+			ui.draw(0D, 0D);
 			Assert.assertEquals(3, inits.get());
 		} finally {
 			ui.dispose();
+			System.setOut(previous);
 		}
+		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] ShopNode.class changed, the UIs that use it reload"));
 	}
 
 	@Test
@@ -2602,11 +2615,14 @@ public class UITest {
 
 	@UIDataPopup(active = true)
 	@UIDataOverlay(active = true)
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PopupOverlayUI extends UI {}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PlainUI extends UI {}
 
 	@AllArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class InitUI extends UI {
 
 		private final Consumer<UI> init;
@@ -2644,6 +2660,7 @@ public class UITest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class RenewUI extends UI {
 
 		private int inits;
@@ -2690,6 +2707,7 @@ public class UITest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class StateFailureUI extends UI {
 
 		private static boolean failing;
@@ -2815,6 +2833,7 @@ public class UITest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class StaticPropertyUI extends UI {
 
 		@UIProperty
@@ -3101,6 +3120,7 @@ public class UITest {
 	}
 
 	@RequiredArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class ReloadUI extends UI {
 
 		private final List<String> trace;

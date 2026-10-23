@@ -4125,6 +4125,7 @@ public class NodeTest {
 		}
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class ScrollUI extends UI {
 
 		@Override
@@ -4138,6 +4139,7 @@ public class NodeTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class MovingUI extends UI {
 
 		private RectNode panel;
@@ -4185,6 +4187,7 @@ public class NodeTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class CurrentUI extends UI {
 
 		private UI      found;
@@ -4199,6 +4202,7 @@ public class NodeTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class WatchingUI extends UI {
 
 		private final Signal<Integer> signal = new Signal<>(0);
@@ -4214,6 +4218,7 @@ public class NodeTest {
 	}
 
 	@RequiredArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class ReloadedUI extends UI {
 
 		private final Signal<Integer> signal;

@@ -5,8 +5,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -285,12 +290,34 @@ public class VectorResourceDecoderTest {
 	@Test
 	public void refusesADocumentItCannotParse() {
 		final VectorResourceDecoder decoder = VectorResourceDecoder.create(new TextAsset("notes.svg", "not a document"));
+		final Logger logger = Logger.getLogger("com.github.weisj.jsvg");
+		final List<LogRecord> records = new ArrayList<>();
+		final Handler handler = new Handler() {
+
+			@Override
+			public void publish(final LogRecord record) {
+				records.add(record);
+			}
+
+			@Override
+			public void flush() {}
+
+			@Override
+			public void close() {}
+
+		};
+		logger.addHandler(handler);
+		logger.setUseParentHandlers(false);
 		try {
 			decoder.decode(ResourceData.create("notes.svg", decoder));
 			Assert.fail("The document must not decode");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("notes.svg is not an SVG document that can be parsed", expected.getMessage());
+		} finally {
+			logger.removeHandler(handler);
+			logger.setUseParentHandlers(true);
 		}
+		Assert.assertEquals("Error while parsing SVG.", records.get(0).getMessage());
 	}
 
 	@Test
