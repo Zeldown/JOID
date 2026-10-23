@@ -9,10 +9,8 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class PositionPropertyTest {
 
@@ -46,18 +44,6 @@ public class PositionPropertyTest {
 		final List<Draw> draws = this.bridges.getRender().getDraws(0.3F, 0.5F, 0.7F);
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0);
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

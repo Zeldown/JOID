@@ -2725,6 +2725,7 @@ public class UITest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class CurrentUI extends UI {
 
 		private UI current;
@@ -2828,18 +2829,7 @@ public class UITest {
 
 	}
 
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
-	}
-
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PropertyUI extends UI {
 
 		@UIProperty

@@ -15,10 +15,8 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class SliderNodeTest {
 
@@ -500,18 +498,6 @@ public class SliderNodeTest {
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 	public static final class Slider extends SliderNode<Integer> {

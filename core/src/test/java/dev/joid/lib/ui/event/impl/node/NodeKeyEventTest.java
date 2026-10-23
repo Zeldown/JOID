@@ -12,10 +12,9 @@ import org.junit.Test;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.key.Key;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
-import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class NodeKeyEventTest {
@@ -119,21 +118,6 @@ public class NodeKeyEventTest {
 		this.bridges.getUi().keyPressed(Key.A, Key.A);
 		this.bridges.getUi().keyReleased(Key.A, Key.A);
 		Assert.assertEquals(new HashSet<>(Arrays.asList(hidden, disabled)), new HashSet<>(received));
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

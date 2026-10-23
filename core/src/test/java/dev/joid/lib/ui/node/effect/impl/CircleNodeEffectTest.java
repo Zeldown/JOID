@@ -14,10 +14,8 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.CircleShader;
 import dev.joid.lib.shader.impl.ShaderFillType;
 import dev.joid.lib.shader.pipeline.pass.CircleShaderPass;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class CircleNodeEffectTest {
 
@@ -56,18 +54,6 @@ public class CircleNodeEffectTest {
 		Assert.assertEquals(20F, (Float) this.shader.getValues().get("radius"), 0F);
 		Assert.assertArrayEquals(new float[] {140F, 120F}, (float[]) this.shader.getValues().get("center"), 0F);
 		Assert.assertEquals(ShaderFillType.TEXTURE.ordinal(), this.shader.getValues().get("type"));
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

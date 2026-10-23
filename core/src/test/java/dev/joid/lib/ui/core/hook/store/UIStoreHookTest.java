@@ -260,7 +260,10 @@ public class UIStoreHookTest {
 	@Test
 	public void startsOverFromAnEmptyFile() throws IOException {
 		this.write("");
-		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class, PermanentStore::new);
+		final List<PermanentStore> stores = new ArrayList<>();
+		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
+		Assert.assertTrue(error, error.startsWith("[JOID] The file " + this.file().getAbsolutePath() + " cannot be read (it holds no JSON object), it is kept as " + this.file().getAbsolutePath() + ".corrupt and "));
+		final PermanentStore store = stores.get(0);
 		Assert.assertTrue(store.initialized);
 		Assert.assertFalse(store.loaded);
 		Assert.assertFalse(this.file().exists());

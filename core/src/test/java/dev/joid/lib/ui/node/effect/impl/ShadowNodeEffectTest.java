@@ -14,11 +14,9 @@ import dev.joid.lib.bridge.render.RecordingShader;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.RoundedShader;
 import dev.joid.lib.shader.impl.ShadowShader;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.CircleNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class ShadowNodeEffectTest {
 
@@ -157,18 +155,6 @@ public class ShadowNodeEffectTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingColor() {
 		ShadowNodeEffect.create(null, 8F);
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 	public static final class SoftRoundedEffect extends RoundedNodeEffect {

@@ -12,7 +12,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -20,7 +20,6 @@ import dev.joid.lib.ui.node.property.DraggableProperty.DraggableAreaType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableSnapType;
 import dev.joid.lib.ui.node.property.DraggableProperty.DraggableType;
 import dev.joid.lib.utils.geom.BoundingBox;
-import lombok.AllArgsConstructor;
 
 public class DraggablePropertyTest {
 
@@ -544,18 +543,6 @@ public class DraggablePropertyTest {
 
 	private static double[] bounds(final BoundingBox bounds) {
 		return new double[] {bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight()};
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

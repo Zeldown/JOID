@@ -11,8 +11,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class NodeEventTest {
@@ -139,21 +138,6 @@ public class NodeEventTest {
 		ready.set(true);
 		this.bridges.frames(3);
 		Assert.assertEquals(Collections.singletonList(child), received);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

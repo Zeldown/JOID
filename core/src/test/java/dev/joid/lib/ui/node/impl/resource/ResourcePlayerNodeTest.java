@@ -23,8 +23,7 @@ import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -82,7 +81,16 @@ public class ResourcePlayerNodeTest {
 
 	@Test
 	public void showsAFailedResourceWithoutSizeAtTheSizeOfItsMissingTexture() {
-		final Resource missing = ResourceBuilder.create().cache(null).of("missing/absent.png").blocking();
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		final Resource missing;
+		System.setErr(new PrintStream(output, true));
+		try {
+			missing = ResourceBuilder.create().cache(null).of("missing/absent.png").blocking();
+		} finally {
+			System.setErr(previous);
+		}
+		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The resource missing/absent.png cannot be read: The asset missing/absent.png is not found in the classpath nor as a file"));
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D).resource(missing);
 		this.bridges.open(new NodeUI(player)).frame();
 		Assert.assertEquals(64D, player.getWidth(), 0D);
@@ -677,21 +685,6 @@ public class ResourcePlayerNodeTest {
 
 	private static Resource video() {
 		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv")).blocking();
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

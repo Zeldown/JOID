@@ -9,11 +9,10 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.progress.ProgressNode.ProgressDirection;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class ProgressNodeTest {
 
@@ -119,18 +118,6 @@ public class ProgressNodeTest {
 
 	private static ProgressNode bar() {
 		return ProgressNode.create(100D, 100D, 200D, 50D).track(RectNode.create(0D, 0D, 0D, 0D).color(Color.BLACK)).fill(RectNode.create(0D, 0D, 0D, 0D).color(Color.WHITE));
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

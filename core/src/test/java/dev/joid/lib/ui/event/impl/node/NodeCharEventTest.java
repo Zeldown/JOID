@@ -10,10 +10,9 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
-import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class NodeCharEventTest {
@@ -76,21 +75,6 @@ public class NodeCharEventTest {
 		this.bridges.open(new NodeUI(hidden, disabled)).frames(30);
 		this.bridges.getUi().charTyped('a');
 		Assert.assertTrue(received.isEmpty());
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

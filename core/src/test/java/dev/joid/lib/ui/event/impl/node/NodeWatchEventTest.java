@@ -12,8 +12,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.WatchProperty;
 
@@ -51,21 +50,6 @@ public class NodeWatchEventTest {
 		RectNode.create(100D, 100D, 200D, 100D).watch(signal).onWatch(event -> received.add(event.getNode()));
 		signal.set(2);
 		Assert.assertTrue(received.isEmpty());
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

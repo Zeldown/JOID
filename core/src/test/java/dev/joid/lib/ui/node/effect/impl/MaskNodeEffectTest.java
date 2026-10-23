@@ -16,10 +16,8 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class MaskNodeEffectTest {
 
@@ -169,18 +167,6 @@ public class MaskNodeEffectTest {
 
 	private static Resource resource() {
 		return ResourceBuilder.create().cache(null).compute("mask", () -> ResourceData.create("mask", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)}));
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

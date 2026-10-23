@@ -12,8 +12,7 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.cursor.Cursor;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class NodeHoverEventTest {
@@ -113,21 +112,6 @@ public class NodeHoverEventTest {
 		Assert.assertTrue(received.isEmpty());
 		Assert.assertTrue(rect.isHovered());
 		Assert.assertEquals(0F, rect.hoverValue(1F), 0F);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

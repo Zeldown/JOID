@@ -17,7 +17,7 @@ import dev.joid.lib.shader.impl.BorderShader;
 import dev.joid.lib.shader.impl.GradientShader;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect;
 import dev.joid.lib.ui.node.effect.impl.BorderNodeEffect;
@@ -377,21 +377,6 @@ public class RectNodeTest {
 		final List<Draw> draws = this.bridges.getRender().getDraws(red, green, blue);
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 	private static <T> T effects(final Node node) {

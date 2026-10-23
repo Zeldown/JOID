@@ -13,8 +13,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 
 public class ResourcePlayerNodeEventTest {
 
@@ -240,21 +239,6 @@ public class ResourcePlayerNodeEventTest {
 
 	private static Resource blink() {
 		return ResourceBuilder.create().cache(null).of(ResourcePlayerNodeEventTest.class.getResourceAsStream("/animation/blink.png")).blocking();
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

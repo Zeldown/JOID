@@ -11,8 +11,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.chart.RadarChartNode.RadarChartData;
 import dev.joid.lib.utils.geom.Point;
 
@@ -185,21 +184,6 @@ public class RadarChartNodeTest {
 		Assert.assertEquals(8D, chart.getMax().doubleValue(), 0D);
 		Assert.assertEquals(2D, chart.getMin().doubleValue(), 0D);
 		Assert.assertEquals(5D, chart.getAverage().doubleValue(), 0D);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 	public static final class StarChartNode extends RadarChartNode<RadarChartData> {

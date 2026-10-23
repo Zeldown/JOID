@@ -15,6 +15,7 @@ import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -442,6 +443,7 @@ public class SwitchNodeTest {
 	}
 
 	@RequiredArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class SwitchUI extends UI {
 
 		private final List<String> changes;

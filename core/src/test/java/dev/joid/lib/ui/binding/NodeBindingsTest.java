@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.bridge.ui.UIBridgeCursorTest.NodeUI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
@@ -42,8 +42,11 @@ public class NodeBindingsTest {
 		final IntegerFieldNode field = this.field(signal).max(95);
 		this.bridges.open(new NodeUI(slider, field)).frame();
 		NodeBindingsTest.guard(signal);
-		slider.change(100);
-		this.bridges.frames(3);
+		final String warning = NodeBindingsTest.capture(() -> {
+			slider.change(100);
+			this.bridges.frames(3);
+		});
+		Assert.assertEquals("[JOID] IntegerFieldNode and the other controls bound to IntegerSignal{100} keep correcting each other: their bounds are incompatible, give them bounds that agree" + System.lineSeparator(), warning);
 		Assert.assertEquals(100, (int) signal.peek());
 		Assert.assertEquals(100, (int) slider.getValue());
 		Assert.assertEquals(95, (int) field.getValue());
@@ -59,7 +62,8 @@ public class NodeBindingsTest {
 		final IntegerSignal signal = new IntegerSignal(15);
 		final IntegerFieldNode lower = this.field(signal).max(10);
 		final IntegerFieldNode upper = this.field(signal).min(20);
-		this.bridges.open(new NodeUI(lower, upper)).frame();
+		final String warning = NodeBindingsTest.capture(() -> this.bridges.open(new NodeUI(lower, upper)).frame());
+		Assert.assertEquals("[JOID] IntegerFieldNode and the other controls bound to IntegerSignal{20} keep correcting each other: their bounds are incompatible, give them bounds that agree" + System.lineSeparator(), warning);
 		NodeBindingsTest.guard(signal);
 		lower.change(3);
 		this.bridges.frames(3);
@@ -78,7 +82,8 @@ public class NodeBindingsTest {
 		final DoubleSignal signal = new DoubleSignal(1D);
 		final ModelViewerNode near = ModelViewerNode.create(0D, 0D, 100D, 100D).<ModelViewerNode>model(new FixedModel()).zoomRange(0.1D, 1D).zoom(signal);
 		final ModelViewerNode far = ModelViewerNode.create(0D, 0D, 100D, 100D).<ModelViewerNode>model(new FixedModel()).zoomRange(1.5D, 2D).zoom(signal);
-		this.bridges.open(new NodeUI(near, far)).frame();
+		final String warning = NodeBindingsTest.capture(() -> this.bridges.open(new NodeUI(near, far)).frame());
+		Assert.assertEquals("[JOID] ModelViewerNode and the other controls bound to DoubleSignal{1.5} keep correcting each other: their bounds are incompatible, give them bounds that agree" + System.lineSeparator(), warning);
 		NodeBindingsTest.guard(signal);
 		near.zoomTo(0.5D);
 		this.bridges.frames(3);
@@ -96,7 +101,8 @@ public class NodeBindingsTest {
 	public void keepsThePitchOfTheGestureWhenItsYawAndItsPitchShareASignal() {
 		final DoubleSignal signal = new DoubleSignal(5D);
 		final ModelViewerNode viewer = ModelViewerNode.create(0D, 0D, 100D, 100D).<ModelViewerNode>model(new FixedModel()).rotationYawRange(0D, 10D).rotationPitchRange(20D, 30D).rotationYaw(signal).rotationPitch(signal);
-		this.bridges.open(new NodeUI(viewer)).frame();
+		final String warning = NodeBindingsTest.capture(() -> this.bridges.open(new NodeUI(viewer)).frame());
+		Assert.assertEquals("[JOID] ModelViewerNode and the other controls bound to DoubleSignal{20.0} keep correcting each other: their bounds are incompatible, give them bounds that agree" + System.lineSeparator(), warning);
 		NodeBindingsTest.guard(signal);
 		viewer.rotate(8D, 25D);
 		this.bridges.frames(3);
@@ -111,7 +117,8 @@ public class NodeBindingsTest {
 		final Slider slider = this.slider(signal);
 		final IntegerFieldNode field = this.field(signal).min(5);
 		NodeBindingsTest.guard(signal);
-		this.bridges.open(new NodeUI(slider, field)).frames(3);
+		final String warning = NodeBindingsTest.capture(() -> this.bridges.open(new NodeUI(slider, field)).frames(3));
+		Assert.assertEquals("[JOID] Slider and the other controls bound to IntegerSignal{5} keep correcting each other: their bounds are incompatible, give them bounds that agree" + System.lineSeparator(), warning);
 		Assert.assertEquals(5, (int) signal.peek());
 		Assert.assertEquals(0, (int) slider.getValue());
 		Assert.assertEquals(5, (int) field.getValue());
@@ -123,7 +130,8 @@ public class NodeBindingsTest {
 		final Switch first = new Switch().<Switch>values("a", "b").value(signal);
 		final Switch second = new Switch().<Switch>values("c", "d").value(signal);
 		NodeBindingsTest.guard(signal);
-		this.bridges.open(new NodeUI(first, second)).frame();
+		final String warning = NodeBindingsTest.capture(() -> this.bridges.open(new NodeUI(first, second)).frame());
+		Assert.assertEquals("[JOID] Switch and the other controls bound to StringSignal{c} keep correcting each other: their bounds are incompatible, give them bounds that agree" + System.lineSeparator(), warning);
 		first.change("b");
 		this.bridges.frames(3);
 		Assert.assertEquals("b", signal.peek());

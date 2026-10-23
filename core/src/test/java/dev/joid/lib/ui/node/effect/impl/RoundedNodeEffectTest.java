@@ -16,10 +16,8 @@ import dev.joid.lib.shader.impl.ShaderFillType;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 import dev.joid.lib.shader.pipeline.pass.RoundedShaderPass;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class RoundedNodeEffectTest {
 
@@ -136,18 +134,6 @@ public class RoundedNodeEffectTest {
 		} finally {
 			pass.unbind();
 		}
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

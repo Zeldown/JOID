@@ -21,10 +21,9 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
-import dev.joid.lib.ui.node.Node;
 import lombok.Getter;
 
 public class MultilineTextFieldMarkupTest {
@@ -399,21 +398,6 @@ public class MultilineTextFieldMarkupTest {
 
 	private List<Draw> selections() {
 		return this.bridges.getRender().getDraws(50 / 255F, 152 / 255F, 253 / 255F);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 	public static final class MarkupFont implements IFont, ITextRenderer {

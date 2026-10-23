@@ -20,6 +20,7 @@ import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.control.checkbox.CheckboxNodeTest.Checkbox;
@@ -313,6 +314,7 @@ public class EventFlowTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class FlowUI extends UI {
 
 		private final Node[] nodes;

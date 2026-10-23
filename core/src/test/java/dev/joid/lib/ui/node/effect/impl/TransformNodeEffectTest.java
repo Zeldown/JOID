@@ -14,8 +14,7 @@ import dev.joid.lib.render.transform.Rotation;
 import dev.joid.lib.render.transform.Scale;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class TransformNodeEffectTest {
@@ -139,21 +138,6 @@ public class TransformNodeEffectTest {
 		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		public NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

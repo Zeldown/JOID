@@ -44,6 +44,7 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.SignalListener;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.core.hook.store.UIStore;
@@ -4180,22 +4181,8 @@ public class NodeTest {
 
 	}
 
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		public NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
-	}
-
 	@RequiredArgsConstructor
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class HoverUI extends UI {
 
 		private final Node               node;

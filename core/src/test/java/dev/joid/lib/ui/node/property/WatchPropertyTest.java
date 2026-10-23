@@ -10,10 +10,10 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 public class WatchPropertyTest {
@@ -80,18 +80,6 @@ public class WatchPropertyTest {
 		for (final Node child : ui.node.getChildren()) {
 			Assert.assertSame(ui.node, child.getParent());
 		}
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 	@RequiredArgsConstructor

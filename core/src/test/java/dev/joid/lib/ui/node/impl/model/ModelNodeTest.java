@@ -16,9 +16,7 @@ import dev.joid.lib.draw.model.IDrawableModel;
 import dev.joid.lib.obj.ObjModel;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
-import lombok.AllArgsConstructor;
+import dev.joid.lib.ui.core.NodeUI;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -129,18 +127,6 @@ public class ModelNodeTest {
 
 	private static ObjModel cube() {
 		return ObjModel.of("cube", ModelNodeTest.class.getResourceAsStream("/dev/joid/lib/ui/node/impl/model/cube.obj"), ResourceBuilder.create().cache(null).compute("cube", () -> ResourceData.create("cube", null).textures(new ITexture[] {new RecordingTexture().allocate(4, 4)})));
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 	@Getter

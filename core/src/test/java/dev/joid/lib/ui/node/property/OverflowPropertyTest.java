@@ -9,10 +9,8 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class OverflowPropertyTest {
 
@@ -64,18 +62,6 @@ public class OverflowPropertyTest {
 		RectNode.create(0D, 50D, 200D, 100D).color(new Color(0.3F, 0.5F, 0.7F, 1F)).attach(parent);
 		RectNode.create(0D, 150D, 200D, 50D).color(new Color(0.5F, 0.7F, 0.9F, 1F)).attach(parent);
 		return parent;
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

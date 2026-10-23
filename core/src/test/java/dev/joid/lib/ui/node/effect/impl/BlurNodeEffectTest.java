@@ -18,10 +18,8 @@ import dev.joid.lib.render.transform.Scale;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.shader.impl.BlurShader;
 import dev.joid.lib.shader.pipeline.IShaderPass;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class BlurNodeEffectTest {
 
@@ -121,18 +119,6 @@ public class BlurNodeEffectTest {
 		FrameBufferPool.cleanup();
 		Assert.assertEquals(4096, width);
 		Assert.assertEquals(2048, height);
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

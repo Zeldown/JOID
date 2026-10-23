@@ -14,7 +14,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
@@ -22,7 +22,6 @@ import dev.joid.lib.ui.node.property.PositionProperty;
 import dev.joid.lib.utils.align.Align;
 import dev.joid.lib.utils.align.Axis;
 import dev.joid.lib.utils.list.IndexedList;
-
 
 public class ReorderableFlexNodeTest {
 
@@ -1019,21 +1018,6 @@ public class ReorderableFlexNodeTest {
 
 	private static RectNode item() {
 		return RectNode.create(0D, 0D, 200D, 50D);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

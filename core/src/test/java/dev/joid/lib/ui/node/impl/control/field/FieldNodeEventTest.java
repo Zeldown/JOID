@@ -16,10 +16,9 @@ import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
-import dev.joid.lib.ui.node.Node;
 
 public class FieldNodeEventTest {
 
@@ -163,21 +162,6 @@ public class FieldNodeEventTest {
 
 	private MultilineTextFieldNode multiline() {
 		return MultilineTextFieldNode.create(0D, 100D, 100D, 100D).info(TextInfo.create(FieldNodeEventTest.FONT, 10F)).text("ab").focused(true).cursorPosition(2);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

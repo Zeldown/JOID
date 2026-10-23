@@ -23,8 +23,10 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
@@ -1939,22 +1941,8 @@ public class TextFieldNodeTest {
 		}
 	}
 
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
-	}
-
 	@UIData(closeable = false)
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static final class PinnedUI extends UI {
 
 		private final Node[] nodes;

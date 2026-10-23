@@ -2,12 +2,14 @@ package dev.joid.demo.replay;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
+@UIDataDebug(profiler = false, hotreload = false)
 public class ReplayAnimatorUI extends UI {
 
 	private final TweenAnimator widthAnimator;

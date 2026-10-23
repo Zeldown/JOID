@@ -17,8 +17,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis.XChartAxis;
 import dev.joid.lib.ui.node.impl.chart.ChartNode.ChartAxis.YChartAxis;
@@ -368,21 +367,6 @@ public class ChartNodeTest {
 		Assert.assertEquals(top, draw.getTop(), 1E-3D);
 		Assert.assertEquals(right, draw.getRight(), 1E-3D);
 		Assert.assertEquals(bottom, draw.getBottom(), 1E-3D);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 	public static final class BarChartNode extends ChartNode {

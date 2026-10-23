@@ -11,8 +11,7 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.PositionedHoverElement.HoverElementPosition;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -123,21 +122,6 @@ public class NodeHoverElementTest {
 
 	private Draw tooltip() {
 		return this.bridges.getRender().getDraws(0.6F, 0.4F, 0.2F).get(0);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

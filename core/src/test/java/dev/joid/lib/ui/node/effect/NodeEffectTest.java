@@ -14,6 +14,7 @@ import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.pipeline.IShaderPass;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
@@ -171,18 +172,6 @@ public class NodeEffectTest {
 	@Test(expected = NullPointerException.class)
 	public void refusesToWrapAMissingNode() {
 		new PlainEffect().draw(null, () -> {});
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 	public static final class TraceNode extends Node {

@@ -21,12 +21,12 @@ import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.event.impl.node.NodeCharEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.event.impl.node.NodeMouseScrollEvent;
-import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
@@ -1442,21 +1442,6 @@ public class MultilineTextFieldNodeTest {
 		public void init() {
 			this.field = MultilineTextFieldNode.create(0D, 0D, 400D, 200D).info(TextInfo.create(MultilineTextFieldNodeTest.FONT, 10F)).text(this.text).focused(true);
 			this.field.attach(this);
-		}
-
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
 		}
 
 	}

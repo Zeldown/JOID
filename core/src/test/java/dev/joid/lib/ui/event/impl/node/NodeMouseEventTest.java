@@ -11,10 +11,9 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
-import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class NodeMouseEventTest {
@@ -174,21 +173,6 @@ public class NodeMouseEventTest {
 		this.bridges.move(400D, 300D).getUi().mousePressed(MouseButton.RIGHT);
 		this.bridges.frames(2).getUi().mouseMoved();
 		Assert.assertEquals(Arrays.asList(rect, 150D, 160D, MouseButton.LEFT, 16L, rect, 400D, 300D, MouseButton.RIGHT, 32L), received);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

@@ -11,10 +11,9 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
-import lombok.AllArgsConstructor;
 
 public class PopTransitionTest {
 
@@ -119,18 +118,6 @@ public class PopTransitionTest {
 		final List<Draw> draws = this.bridges.getRender().getDraws(0.2F, 0.4F, 0.6F);
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0).getRight() - draws.get(0).getLeft();
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 }

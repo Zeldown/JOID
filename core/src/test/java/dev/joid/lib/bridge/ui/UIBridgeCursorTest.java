@@ -16,7 +16,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.cursor.Cursor;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.data.UIDataOverlay;
 import dev.joid.lib.ui.core.data.UIDataOverlayInteraction;
 import dev.joid.lib.ui.core.data.UIDataOverlayRender;
@@ -196,21 +196,6 @@ public class UIBridgeCursorTest {
 		} finally {
 			BridgeHandler.UI.unregister(other);
 		}
-	}
-
-	public static class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		public NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 	@UIDataPopup(active = true, transition = PopupTransition.NONE)

@@ -18,7 +18,7 @@ import dev.joid.internal.JOIDEnv;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RenderBridge;
-import dev.joid.lib.bridge.ui.UIBridgeCursorTest.NodeUI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.bridge.ui.UIBridgeRegistryTest.MenuUI;
 import dev.joid.lib.bridge.ui.UIBridgeRegistryTest.RoutingBridge;
 import dev.joid.lib.color.Color;
@@ -32,6 +32,7 @@ import dev.joid.lib.render.tessellator.DrawMode;
 import dev.joid.lib.render.tessellator.Tessellator;
 import dev.joid.lib.render.tessellator.TessellatorAccess;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.core.data.UIDataOverlay;
 import dev.joid.lib.ui.core.data.UIDataOverlayInteraction;
 import dev.joid.lib.ui.core.data.UIDataOverlayRender;
@@ -1139,6 +1140,7 @@ public class UIBridgeTest {
 
 	}
 
+	@UIDataDebug(profiler = false, hotreload = false)
 	public static class TraceUI extends UI {
 
 		private final String       name;

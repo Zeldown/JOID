@@ -10,9 +10,9 @@ import org.junit.Test;
 
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.HeadlessBridges;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIDataDebug;
-import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.AllArgsConstructor;
 
@@ -57,21 +57,6 @@ public class NodeAnimateEventTest {
 		@Override
 		public void init() {
 			this.animator.start();
-		}
-
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
 		}
 
 	}

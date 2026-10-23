@@ -9,12 +9,14 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.replay.SignalReplayNode;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @RequiredArgsConstructor
+@UIDataDebug(profiler = false, hotreload = false)
 public class ReplayScenarioUI extends UI {
 
 	private final IntegerSignal                      clicks = new IntegerSignal(0);

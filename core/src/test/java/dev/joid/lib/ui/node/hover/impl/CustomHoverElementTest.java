@@ -8,7 +8,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.hover.IHoverElement;
 import dev.joid.lib.ui.node.hover.impl.PositionedHoverElement.HoverElementPosition;
@@ -144,21 +144,6 @@ public class CustomHoverElementTest {
 		@Override
 		public void render(final @NonNull Node node, final double mouseX, final double mouseY) {
 			DrawUtils.SHAPE.drawRect(0D, 0D, 40D, 20D, new Color(0.6F, 0.4F, 0.2F, 1F));
-		}
-
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
 		}
 
 	}

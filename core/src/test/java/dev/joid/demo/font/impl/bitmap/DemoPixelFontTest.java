@@ -21,8 +21,7 @@ import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.mouse.MouseButton;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.control.field.TextFieldNode;
 import dev.joid.lib.ui.node.impl.text.TextNode;
 
@@ -167,21 +166,6 @@ public class DemoPixelFontTest {
 
 	private static TextInfo info(final float size) {
 		return TextInfo.create(DemoPixelFontTest.font, size).color(DemoPixelFontTest.INK);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

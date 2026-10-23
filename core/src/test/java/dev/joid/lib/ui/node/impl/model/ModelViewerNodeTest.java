@@ -13,10 +13,8 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.draw.model.IDrawableModel;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.utils.geom.Point;
-import lombok.AllArgsConstructor;
 
 public class ModelViewerNodeTest {
 
@@ -413,18 +411,6 @@ public class ModelViewerNodeTest {
 		} catch (final ReflectiveOperationException exception) {
 			throw new IllegalStateException(exception);
 		}
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 	public static final class FixedModel implements IDrawableModel {

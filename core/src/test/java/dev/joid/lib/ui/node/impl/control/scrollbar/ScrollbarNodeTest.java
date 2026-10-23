@@ -15,13 +15,12 @@ import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.render.transform.Transformation;
 import dev.joid.lib.render.transform.Vector;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
-import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.effect.impl.TransformNodeEffect;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 public class ScrollbarNodeTest {
@@ -299,18 +298,6 @@ public class ScrollbarNodeTest {
 			RectNode.create(0D, i * 100D, 400D, 100D).attach(content);
 		}
 		return content;
-	}
-
-	@AllArgsConstructor
-	public static final class NodeUI extends UI {
-
-		private final Node node;
-
-		@Override
-		public void init() {
-			super.add(this.node);
-		}
-
 	}
 
 	public static final class Bar extends ScrollbarNode {

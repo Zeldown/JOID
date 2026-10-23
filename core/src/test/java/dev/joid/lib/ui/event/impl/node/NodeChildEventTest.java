@@ -9,8 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 public class NodeChildEventTest {
@@ -36,21 +35,6 @@ public class NodeChildEventTest {
 		this.bridges.open(new NodeUI(parent)).frames(30);
 		parent.append(RectNode.create(10D, 10D, 20D, 20D));
 		Assert.assertEquals(Arrays.asList(true, true, true), received);
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

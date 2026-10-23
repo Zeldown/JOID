@@ -25,6 +25,7 @@ import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.DoubleSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.binding.NodeBindings;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.effect.NodeEffect.NodeEffectScope;
 import dev.joid.lib.ui.node.effect.impl.BlurNodeEffect;
@@ -321,21 +322,6 @@ public class NodeSetterTest {
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		public NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

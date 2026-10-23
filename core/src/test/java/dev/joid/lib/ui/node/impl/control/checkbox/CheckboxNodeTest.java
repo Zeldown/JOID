@@ -14,8 +14,7 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.layout.ContainerNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
@@ -236,21 +235,6 @@ public class CheckboxNodeTest {
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		public NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 	public static final class Checkbox extends CheckboxNode {

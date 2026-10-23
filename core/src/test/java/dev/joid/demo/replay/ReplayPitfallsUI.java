@@ -8,12 +8,14 @@ import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.replay.SignalReplayNode;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@UIDataDebug(profiler = false, hotreload = false)
 public class ReplayPitfallsUI extends UI {
 
 	private final List<String>  names  = Arrays.asList("Ada", "Grace");

@@ -18,8 +18,7 @@ import dev.joid.lib.font.FontBounds;
 import dev.joid.lib.font.IFont;
 import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.utils.align.Align;
@@ -289,21 +288,6 @@ public class TextNodeTest {
 		this.font.getDrawn().clear();
 		this.bridges.frame();
 		return this.font.getDrawn();
-	}
-
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 	public static final class TextFont implements IFont, ITextRenderer {

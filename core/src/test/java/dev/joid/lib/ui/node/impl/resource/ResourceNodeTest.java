@@ -1,5 +1,9 @@
 package dev.joid.lib.ui.node.impl.resource;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
@@ -14,8 +18,7 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.resource.Resource;
 import dev.joid.lib.resource.ResourceBuilder;
 import dev.joid.lib.resource.ResourceData;
-import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.node.Node;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
 import dev.joid.lib.ui.node.impl.resource.ResourceNode.StretchType;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
@@ -98,9 +101,11 @@ public class ResourceNodeTest {
 
 	@Test
 	public void showsAFailedResourceWithoutSizeAtTheSizeOfItsMissingTexture() {
-		final Resource missing = ResourceBuilder.create().cache(null).of("missing/absent.png").blocking();
-		Assert.assertTrue(missing.isFailed());
-		final ResourceNode node = ResourceNode.create(100D, 100D).resource(missing);
+		final List<Resource> missing = new ArrayList<>();
+		final String error = ResourceNodeTest.capture(() -> missing.add(ResourceBuilder.create().cache(null).of("missing/absent.png").blocking()));
+		Assert.assertTrue(error, error.startsWith("[JOID] The resource missing/absent.png cannot be read: The asset missing/absent.png is not found in the classpath nor as a file"));
+		Assert.assertTrue(missing.get(0).isFailed());
+		final ResourceNode node = ResourceNode.create(100D, 100D).resource(missing.get(0));
 		this.bridges.open(new NodeUI(node)).frame();
 		Assert.assertEquals(64D, node.getWidth(), 0D);
 		Assert.assertEquals(64D, node.getHeight(), 0D);
@@ -345,23 +350,20 @@ public class ResourceNodeTest {
 		Assert.assertEquals(bottom, draw.getBottom(), 1E-3D);
 	}
 
-	private static Resource resource(final int width, final int height) {
-		return ResourceBuilder.create().cache(null).of(new RecordingTexture().allocate(width, height));
+	private static String capture(final Runnable runnable) {
+		final PrintStream previous = System.err;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setErr(new PrintStream(output, true));
+			runnable.run();
+		} finally {
+			System.setErr(previous);
+		}
+		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
-	public static final class NodeUI extends UI {
-
-		private final Node[] nodes;
-
-		private NodeUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
+	private static Resource resource(final int width, final int height) {
+		return ResourceBuilder.create().cache(null).of(new RecordingTexture().allocate(width, height));
 	}
 
 }
