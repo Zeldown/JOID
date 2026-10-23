@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.JarURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -99,17 +100,15 @@ public class UrlAssetTest {
 
 	@Test
 	public void keepsAFailureThatIsNotSecureWithoutFallback() throws IOException {
-		final int port;
-		try (final ServerSocket closed = new ServerSocket(0, 50, InetAddress.getLoopbackAddress())) {
-			port = closed.getLocalPort();
-		}
-
-		try {
-			UrlAsset.of("https://" + InetAddress.getLoopbackAddress().getHostAddress() + ":" + port + "/image.png").read();
-			Assert.fail("A closed port must fail");
-		} catch (final IOException expected) {
-			Assert.assertFalse(expected instanceof SSLException);
-			Assert.assertEquals(0, expected.getSuppressed().length);
+		try (final Socket closed = new Socket()) {
+			closed.bind(new InetSocketAddress(InetAddress.getLoopbackAddress(), 0));
+			try {
+				UrlAsset.of("https://" + InetAddress.getLoopbackAddress().getHostAddress() + ":" + closed.getLocalPort() + "/image.png").read();
+				Assert.fail("A closed port must fail");
+			} catch (final IOException expected) {
+				Assert.assertFalse(expected instanceof SSLException);
+				Assert.assertEquals(0, expected.getSuppressed().length);
+			}
 		}
 	}
 
