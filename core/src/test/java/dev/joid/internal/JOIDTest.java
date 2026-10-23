@@ -85,7 +85,7 @@ public class JOIDTest {
 	public void restoreTheSettings() {
 		JOIDEnv.dataDir(this.dataDir);
 		JOIDEnv.devMode(this.devMode);
-		JOIDEnv.demoMode(this.demoMode);
+		TestUtils.demoMode(this.demoMode);
 		DevFont.MONTSERRAT = this.devFont;
 		DemoFont.PACIFICO = this.pacifico;
 		DemoFont.MONTSERRAT = this.montserrat;
@@ -118,7 +118,7 @@ public class JOIDTest {
 		DevFont.MONTSERRAT = null;
 		DemoFont.MONTSERRAT = null;
 		JOIDEnv.devMode(false);
-		JOIDEnv.demoMode(false);
+		TestUtils.demoMode(false);
 		JOIDTest.quietly(JOIDTest.create());
 		Assert.assertNull(DevFont.MONTSERRAT);
 		Assert.assertNull(DemoFont.MONTSERRAT);
@@ -128,7 +128,7 @@ public class JOIDTest {
 	public void loadsTheInternalFontInDevMode() {
 		DevFont.MONTSERRAT = null;
 		DemoFont.MONTSERRAT = null;
-		JOIDEnv.demoMode(false);
+		TestUtils.demoMode(false);
 		JOIDTest.quietly(JOIDTest.create());
 		Assert.assertNotNull(DevFont.MONTSERRAT);
 		Assert.assertNull(DemoFont.MONTSERRAT);
@@ -603,7 +603,7 @@ public class JOIDTest {
 		final File data = new File(this.folder.getRoot(), "joid");
 		JOIDEnv.dataDir(data);
 		JOIDEnv.devMode(false);
-		JOIDEnv.demoMode(false);
+		TestUtils.demoMode(false);
 		JOIDTest.quietly(JOIDTest.create());
 		Assert.assertFalse(data.exists());
 	}
@@ -611,7 +611,7 @@ public class JOIDTest {
 	@Test
 	public void loadsOnce() {
 		JOIDEnv.devMode(false);
-		JOIDEnv.demoMode(false);
+		TestUtils.demoMode(false);
 		final JOID joid = JOIDTest.create();
 		JOIDTest.quietly(joid);
 		final PrintStream previous = System.out;

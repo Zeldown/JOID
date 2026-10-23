@@ -28,14 +28,6 @@ public final class JOIDEnv {
 		JOIDEnv.devMode = devMode;
 	}
 
-	public static void demoMode(final boolean demoMode) {
-		if (demoMode && !JOIDEnv.DEMO) {
-			throw new IllegalStateException("The demo mode needs the demo classes of JOID, use its demo jar");
-		}
-
-		JOIDEnv.demoMode = demoMode;
-	}
-
 	public static void dataDir(final @NonNull File dataDir) {
 		JOIDEnv.dataDir = dataDir;
 	}

@@ -36,6 +36,16 @@ public final class TestUtils {
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
+	public static void demoMode(final boolean demoMode) {
+		try {
+			final Field field = JOIDEnv.class.getDeclaredField("demoMode");
+			field.setAccessible(true);
+			field.setBoolean(null, demoMode);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
+	}
+
 	public static Object field(final @NonNull Object target, final @NonNull String name) {
 		try {
 			final Field field = target.getClass().getDeclaredField(name);

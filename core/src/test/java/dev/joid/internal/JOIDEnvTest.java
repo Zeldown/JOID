@@ -19,7 +19,6 @@ import dev.joid.lib.utils.platform.Platform;
 public class JOIDEnvTest {
 
 	private boolean devMode;
-	private boolean demoMode;
 
 	private File dataDir;
 	private File cacheDir;
@@ -27,7 +26,6 @@ public class JOIDEnvTest {
 	@Before
 	public void rememberTheModes() {
 		this.devMode = JOIDEnv.isDevMode();
-		this.demoMode = JOIDEnv.isDemoMode();
 		this.dataDir = JOIDEnv.getDataDir();
 		this.cacheDir = JOIDEnv.getCacheDir();
 	}
@@ -35,7 +33,6 @@ public class JOIDEnvTest {
 	@After
 	public void restoreTheModes() {
 		JOIDEnv.devMode(this.devMode);
-		JOIDEnv.demoMode(this.demoMode);
 		JOIDEnv.dataDir(this.dataDir);
 		JOIDEnv.cacheDir(this.cacheDir);
 	}
@@ -56,25 +53,16 @@ public class JOIDEnvTest {
 	}
 
 	@Test
-	public void switchesTheModesForTheTests() {
+	public void switchesTheDevMode() {
 		JOIDEnv.devMode(false);
-		JOIDEnv.demoMode(false);
 		Assert.assertFalse(JOIDEnv.isDevMode());
-		Assert.assertFalse(JOIDEnv.isDemoMode());
 		JOIDEnv.devMode(true);
-		JOIDEnv.demoMode(true);
 		Assert.assertTrue(JOIDEnv.isDevMode());
-		Assert.assertTrue(JOIDEnv.isDemoMode());
 	}
 
 	@Test(expected = IllegalStateException.class)
 	public void refusesTheDevModeWithoutTheDevClasses() throws Throwable {
 		JOIDEnvTest.switchOn("devMode", "DevNode.class");
-	}
-
-	@Test(expected = IllegalStateException.class)
-	public void refusesTheDemoModeWithoutTheDemoClasses() throws Throwable {
-		JOIDEnvTest.switchOn("demoMode", "DemoFont.class");
 	}
 
 	@Test

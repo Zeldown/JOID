@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
 import dev.joid.lib.bridge.render.IRenderBridge;
@@ -56,7 +57,7 @@ public class BackendTest {
 		this.dataDir = JOIDEnv.getDataDir();
 		this.cacheDir = JOIDEnv.getCacheDir();
 		JOIDEnv.devMode(false);
-		JOIDEnv.demoMode(false);
+		TestUtils.demoMode(false);
 		BackendTest.ready(false, Collections.emptyList());
 	}
 
@@ -76,7 +77,7 @@ public class BackendTest {
 
 		BackendTest.ready(this.ready, this.readyList);
 		JOIDEnv.devMode(this.devMode);
-		JOIDEnv.demoMode(this.demoMode);
+		TestUtils.demoMode(this.demoMode);
 		JOIDEnv.dataDir(this.dataDir);
 		JOIDEnv.cacheDir(this.cacheDir);
 	}
