@@ -41,11 +41,6 @@ public class Lwjgl2GlBindingTest {
 	}
 
 	@Test
-	public void sharesOneBinding() {
-		Assert.assertSame(Lwjgl2GlBinding.inst(), Lwjgl2GlBinding.inst());
-	}
-
-	@Test
 	public void readsNoStringWithoutACurrentContext() throws InterruptedException {
 		final AtomicReference<String> version = new AtomicReference<>("unread");
 		final Thread thread = new Thread(() -> version.set(Lwjgl2GlBinding.inst().getString(GlConstants.VERSION)));

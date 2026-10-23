@@ -119,7 +119,6 @@ public class SnapshotRunnerCommandTest {
 
 	@Test
 	public void drawsTooltipsWithTheDevFont() {
-		SnapshotRunnerCommandTest.runner.execute();
 		Assert.assertNotNull(BridgeHandler.UI.getBridge(SnapshotUIBridge.class).getHoverInfo());
 	}
 

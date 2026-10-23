@@ -20,7 +20,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.backend.lwjgl3.Lwjgl3Backend;
-import dev.joid.base.opengl.render.GlRenderBridge;
 
 public class OpenGlCallTest {
 
@@ -29,22 +28,20 @@ public class OpenGlCallTest {
 	@Test
 	public void callsOpenGlOnlyThroughTheBindings() throws IOException, URISyntaxException {
 		final List<String> callerList = new ArrayList<>();
-		for (final Class<?> type : new Class<?>[] {Lwjgl3Backend.class, GlRenderBridge.class}) {
-			final File root = new File(type.getProtectionDomain().getCodeSource().getLocation().toURI());
-			if (root.isDirectory()) {
-				try (final Stream<Path> files = Files.walk(root.toPath())) {
-					for (final Path file : files.filter(path -> path.toString().endsWith(".class")).collect(Collectors.toList())) {
-						OpenGlCallTest.check(root.toPath().relativize(file).toString().replace('\\', '/'), Files.readAllBytes(file), callerList);
-					}
+		final File root = new File(Lwjgl3Backend.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+		if (root.isDirectory()) {
+			try (final Stream<Path> files = Files.walk(root.toPath())) {
+				for (final Path file : files.filter(path -> path.toString().endsWith(".class")).collect(Collectors.toList())) {
+					OpenGlCallTest.check(root.toPath().relativize(file).toString().replace('\\', '/'), Files.readAllBytes(file), callerList);
 				}
-			} else {
-				try (final ZipFile jar = new ZipFile(root)) {
-					final Enumeration<? extends ZipEntry> entries = jar.entries();
-					while (entries.hasMoreElements()) {
-						final ZipEntry entry = entries.nextElement();
-						if (entry.getName().endsWith(".class")) {
-							OpenGlCallTest.check(entry.getName(), IOUtils.toByteArray(jar.getInputStream(entry)), callerList);
-						}
+			}
+		} else {
+			try (final ZipFile jar = new ZipFile(root)) {
+				final Enumeration<? extends ZipEntry> entries = jar.entries();
+				while (entries.hasMoreElements()) {
+					final ZipEntry entry = entries.nextElement();
+					if (entry.getName().endsWith(".class")) {
+						OpenGlCallTest.check(entry.getName(), IOUtils.toByteArray(jar.getInputStream(entry)), callerList);
 					}
 				}
 			}

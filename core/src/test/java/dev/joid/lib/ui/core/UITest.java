@@ -2292,10 +2292,6 @@ public class UITest {
 		UITest.out(() -> ui.load(1920D, 1080D));
 		Assert.assertNotNull(UITest.location(ui));
 		ui.dispose();
-		final long deadline = System.currentTimeMillis() + 5000L;
-		while (UITest.location(ui) != null && System.currentTimeMillis() < deadline) {
-			Thread.sleep(10L);
-		}
 		Assert.assertNull(UITest.location(ui));
 	}
 

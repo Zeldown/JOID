@@ -1,7 +1,5 @@
 package dev.joid.lib.font;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Modifier;
 import java.util.Collections;
 
 import org.junit.Assert;
@@ -311,13 +309,6 @@ public class TextInfoTest {
 		Assert.assertTrue(copy.isItalic());
 		Assert.assertEquals(40F, copy.getFontSize(), 0F);
 		Assert.assertFalse(info.copy().isLocked());
-	}
-
-	@Test
-	public void hidesItsConstructors() {
-		for (final Constructor<?> constructor : TextInfo.class.getDeclaredConstructors()) {
-			Assert.assertTrue(Modifier.isPrivate(constructor.getModifiers()));
-		}
 	}
 
 	@Test

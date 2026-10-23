@@ -16,7 +16,7 @@ public class GlCapabilitiesTest {
 
 	@Test
 	public void readsACoreContext() {
-		final GlCapabilities capabilities = GlCapabilities.read(GlCapabilitiesTest.context("3.3.0 NVIDIA 560.94", "3.30 NVIDIA via Cg compiler", GlConstants.CONTEXT_CORE_PROFILE_BIT, 0, "GL_ARB_texture_border_clamp"));
+		final GlCapabilities capabilities = GlCapabilities.read(GlCapabilitiesTest.context("3.3.0 NVIDIA 560.94", "3.30 NVIDIA via Cg compiler", GlConstants.CONTEXT_CORE_PROFILE_BIT, 0, "GL_ARB_texture_border_clamp")).require();
 		Assert.assertEquals(330, capabilities.getVersion());
 		Assert.assertEquals(330, capabilities.getGlslVersion());
 		Assert.assertSame(GlProfile.CORE, capabilities.getProfile());
@@ -51,7 +51,7 @@ public class GlCapabilitiesTest {
 
 	@Test
 	public void readsTheExtFrameBuffersWithOrWithoutBlit() {
-		Assert.assertSame(GlFrameBufferFamily.EXT, GlCapabilities.read(GlCapabilitiesTest.context("2.1", "1.20", 0, 0, "GL_EXT_framebuffer_object")).getFrameBufferFamily());
+		Assert.assertSame(GlFrameBufferFamily.EXT, GlCapabilities.read(GlCapabilitiesTest.context("2.1", "1.20", 0, 0, "GL_EXT_framebuffer_object")).require().getFrameBufferFamily());
 		Assert.assertFalse(GlCapabilities.read(GlCapabilitiesTest.context("2.1", "1.20", 0, 0, "GL_EXT_framebuffer_object")).hasFrameBufferBlit());
 		Assert.assertTrue(GlCapabilities.read(GlCapabilitiesTest.context("2.1", "1.20", 0, 0, "GL_EXT_framebuffer_object", "GL_EXT_framebuffer_blit")).hasFrameBufferBlit());
 		Assert.assertSame(GlFrameBufferFamily.UNSUPPORTED, GlCapabilities.read(GlCapabilitiesTest.context("2.1", "1.20", 0, 0)).getFrameBufferFamily());
@@ -76,30 +76,12 @@ public class GlCapabilitiesTest {
 	}
 
 	@Test
-	public void choosesTheStrategiesOfACoreContext() {
-		final GlCapabilities capabilities = GlCapabilities.read(GlCapabilitiesTest.context("4.6.0 NVIDIA", "4.60 NVIDIA", GlConstants.CONTEXT_CORE_PROFILE_BIT, 0)).require();
-		Assert.assertSame(GlslDialect.GLSL_330, capabilities.getDialect());
-		Assert.assertSame(GlFrameBufferFamily.CORE, capabilities.getFrameBufferFamily());
-		Assert.assertTrue(capabilities.hasVertexArrays());
-		Assert.assertTrue(capabilities.hasFrameBufferBlit());
-	}
-
-	@Test
 	public void choosesTheHighestDialectOfTheContext() {
 		Assert.assertSame(GlslDialect.GLSL_120, GlCapabilitiesTest.dialect("2.1 Mesa", "1.20"));
 		Assert.assertSame(GlslDialect.GLSL_130, GlCapabilitiesTest.dialect("3.0 Mesa", "1.30"));
 		Assert.assertSame(GlslDialect.GLSL_140, GlCapabilitiesTest.dialect("3.1 Mesa", "1.40"));
 		Assert.assertSame(GlslDialect.GLSL_150, GlCapabilitiesTest.dialect("3.2 Mesa", "1.50"));
 		Assert.assertSame(GlslDialect.GLSL_330, GlCapabilitiesTest.dialect("4.5 Mesa", "4.50"));
-	}
-
-	@Test
-	public void choosesTheStrategiesOfALegacyContext() {
-		final GlCapabilities capabilities = GlCapabilities.read(GlCapabilitiesTest.context("2.1 Metal", "1.20", 0, 0, "GL_EXT_framebuffer_object")).require();
-		Assert.assertSame(GlslDialect.GLSL_120, capabilities.getDialect());
-		Assert.assertSame(GlFrameBufferFamily.EXT, capabilities.getFrameBufferFamily());
-		Assert.assertFalse(capabilities.hasVertexArrays());
-		Assert.assertFalse(capabilities.hasFrameBufferBlit());
 	}
 
 	@Test

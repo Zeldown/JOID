@@ -53,7 +53,7 @@ public class GlRenderBridgeTest {
 	}
 
 	@Test
-	public void choosesTheStrategiesOfTheContextOnce() {
+	public void followsTheCapabilitiesOfItsContext() {
 		final GlRenderBridge bridge = GlRenderBridgeTest.backend.getBridge();
 		Assert.assertSame(bridge.getFrameBufferBinding(), bridge.getBinding().getFrameBufferBinding(bridge.getCapabilities().getFrameBufferFamily()));
 		Assert.assertEquals(bridge.getCapabilities().hasVertexArrays(), bridge.getVertexInput().getArray() != 0);
