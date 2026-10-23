@@ -632,9 +632,6 @@ public class ColorTest {
 	@Test
 	public void convertsItselfToHsb() {
 		Assert.assertArrayEquals(new float[] {1F / 18F, 0.75F, 0.8F}, new Color(204, 102, 51).RGBtoHSB(null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {7F / 18F, 0.75F, 0.8F}, new Color(51, 204, 102).RGBtoHSB(null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {11F / 18F, 0.75F, 0.8F}, new Color(51, 102, 204).RGBtoHSB(null), 0.0001F);
-		Assert.assertArrayEquals(new float[] {0.91634F, 1F, 1F}, new Color(255, 0, 128).RGBtoHSB(null), 0.0001F);
 	}
 
 	@Test

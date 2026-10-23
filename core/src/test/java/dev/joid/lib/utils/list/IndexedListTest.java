@@ -236,6 +236,7 @@ public class IndexedListTest {
 		list.add(first);
 		list.add(second);
 		list.add(first);
+		list.add(second);
 		Assert.assertEquals(Arrays.asList(first, second), list.ordered());
 	}
 
@@ -249,18 +250,6 @@ public class IndexedListTest {
 		first.index = 2;
 		list.add(first);
 		Assert.assertEquals(Arrays.asList(second, first), list.ordered());
-	}
-
-	@Test
-	public void ignoresAnElementAddedTwice() {
-		final Element first = new Element(0);
-		final Element second = new Element(1);
-		final IndexedList<Element> list = IndexedList.concurrent();
-		list.add(first);
-		list.add(second);
-		list.add(first);
-		list.add(second);
-		Assert.assertEquals(Arrays.asList(first, second), list.ordered());
 	}
 
 	@Test
