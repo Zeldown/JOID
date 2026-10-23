@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.font.FontWeight;
@@ -86,7 +85,7 @@ public class FontFamilyTest {
 	@Test
 	public void staysSilentOutsideDevMode() {
 		final FontFamily<Face> family = FontFamilyTest.family(400, 700);
-		Assert.assertEquals("", FontFamilyTest.capture(false, () -> family.resolve(FontWeight.THIN, false)));
+		Assert.assertEquals("", TestUtils.captureErr(false, () -> family.resolve(FontWeight.THIN, false)));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -102,7 +101,7 @@ public class FontFamilyTest {
 	@Test
 	public void warnsOnceAboutAMissingWeightInDevMode() {
 		final FontFamily<Face> family = FontFamilyTest.family(400, 700);
-		final String output = FontFamilyTest.capture(true, () -> {
+		final String output = TestUtils.captureErr(true, () -> {
 			family.resolve(FontWeight.SEMI_BOLD, false);
 			family.resolve(FontWeight.SEMI_BOLD, false);
 			family.resolve(FontWeight.BOLD, false);
@@ -115,7 +114,7 @@ public class FontFamilyTest {
 	@Test
 	public void warnsOnceForEachWeightAndStyle() {
 		final FontFamily<Face> family = FontFamily.of(new Face(FontWeight.REGULAR, false), new Face(FontWeight.BOLD, true));
-		final String output = FontFamilyTest.capture(true, () -> {
+		final String output = TestUtils.captureErr(true, () -> {
 			family.resolve(FontWeight.SEMI_BOLD, false);
 			family.resolve(FontWeight.SEMI_BOLD, true);
 			family.resolve(FontWeight.SEMI_BOLD, true);
@@ -129,7 +128,7 @@ public class FontFamilyTest {
 	@Test
 	public void namesTheFontInTheWarning() {
 		final FontFamily<Face> family = FontFamily.of(new Face(FontWeight.REGULAR, false, "Inter Regular"), new Face(FontWeight.BOLD, false, "Inter Bold"));
-		final String output = FontFamilyTest.capture(true, () -> family.resolve(FontWeight.LIGHT, false));
+		final String output = TestUtils.captureErr(true, () -> family.resolve(FontWeight.LIGHT, false));
 		Assert.assertTrue(output, output.startsWith("[JOID] The font weight 300 is not loaded in the family of Inter Regular, 400 is drawn instead (loaded: 400 Inter Regular, 700 Inter Bold)"));
 	}
 
@@ -139,16 +138,6 @@ public class FontFamilyTest {
 			faces[i] = new Face(FontWeight.of(weights[i]), false);
 		}
 		return FontFamily.of(faces);
-	}
-
-	private static String capture(final boolean devMode, final Runnable runnable) {
-		final boolean previous = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(devMode);
-		try {
-			return TestUtils.captureErr(runnable);
-		} finally {
-			JOIDEnv.devMode(previous);
-		}
 	}
 
 	@Getter

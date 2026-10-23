@@ -24,6 +24,16 @@ public final class TestUtils {
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
+	public static @NonNull String captureOut(final boolean devMode, final @NonNull Runnable runnable) {
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(devMode);
+		try {
+			return TestUtils.captureOut(runnable);
+		} finally {
+			JOIDEnv.devMode(previous);
+		}
+	}
+
 	public static @NonNull String captureErr(final @NonNull Runnable runnable) {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -34,6 +44,16 @@ public final class TestUtils {
 			System.setErr(previous);
 		}
 		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
+	public static @NonNull String captureErr(final boolean devMode, final @NonNull Runnable runnable) {
+		final boolean previous = JOIDEnv.isDevMode();
+		JOIDEnv.devMode(devMode);
+		try {
+			return TestUtils.captureErr(runnable);
+		} finally {
+			JOIDEnv.devMode(previous);
+		}
 	}
 
 	public static void demoMode(final boolean demoMode) {

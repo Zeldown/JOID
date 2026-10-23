@@ -2,7 +2,6 @@ package dev.joid.lib.animation.animator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.Timeline;
 import dev.joid.lib.animation.tween.Tween;
@@ -573,17 +573,7 @@ public class TweenAnimatorTest {
 	}
 
 	private static long lastUpdate(final TweenAnimator animator) {
-		return (long) TweenAnimatorTest.field(animator, "lastUpdate");
-	}
-
-	private static Object field(final TweenAnimator animator, final String name) {
-		try {
-			final Field field = TweenAnimator.class.getDeclaredField(name);
-			field.setAccessible(true);
-			return field.get(animator);
-		} catch (final ReflectiveOperationException exception) {
-			throw new AssertionError(exception);
-		}
+		return (long) TestUtils.field(animator, "lastUpdate");
 	}
 
 	@UIDataDebug(profiler = false, hotreload = false)

@@ -16,7 +16,6 @@ import dev.joid.demo.replay.ReplayCountedSignal;
 import dev.joid.demo.replay.ReplayLocalUI;
 import dev.joid.demo.replay.ReplayPitfallsUI;
 import dev.joid.demo.replay.ReplayScenarioUI;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -186,12 +185,12 @@ public class SignalReplayTest {
 		final ReplayScenarioUI ui = new ReplayScenarioUI("later");
 		Assert.assertEquals("", this.open(ui));
 		Assert.assertEquals("iAda", SignalReplayTest.node(ui, 0).getText().get());
-		final String output = SignalReplayTest.capture(true, () -> {
+		final String output = TestUtils.captureErr(true, () -> {
 			ui.getClicks().set(5);
 			SignalReplayTest.node(ui, 0).getText().get();
 			ui.getClicks().set(6);
 			SignalReplayTest.node(ui, 0).getText().get();
-		});
+		}).replace("\r\n", "\n");
 		Assert.assertEquals("iAda", SignalReplayTest.node(ui, 0).getText().get());
 		Assert.assertTrue(output, output.startsWith("[JOID] ReplayScenarioUI.java:"));
 		Assert.assertTrue(output, output.contains(" text(...) reads clicks but cannot follow it: replaying the expression failed (java.lang.IndexOutOfBoundsException"));
@@ -205,10 +204,10 @@ public class SignalReplayTest {
 		Assert.assertEquals("", this.open(ui));
 		Assert.assertEquals("bAda0", SignalReplayTest.node(ui, 0).getText().get());
 		ui.setShift(1);
-		final String output = SignalReplayTest.capture(true, () -> {
+		final String output = TestUtils.captureErr(true, () -> {
 			ui.getClicks().set(5);
 			SignalReplayTest.node(ui, 0).getText().get();
-		});
+		}).replace("\r\n", "\n");
 		Assert.assertEquals("bAda0", SignalReplayTest.node(ui, 0).getText().get());
 		Assert.assertTrue(output, output.contains(" text(...) reads clicks but cannot follow it: replaying the expression failed (java.lang.IndexOutOfBoundsException"));
 		Assert.assertEquals(output, 1, output.split("\n").length);
@@ -229,7 +228,7 @@ public class SignalReplayTest {
 	@Test
 	public void staysSilentOutsideTheDevMode() {
 		final ReplayScenarioUI ui = new ReplayScenarioUI("combined");
-		Assert.assertEquals("", SignalReplayTest.capture(false, () -> this.bridges.getUi().add(ui)));
+		Assert.assertEquals("", TestUtils.captureErr(false, () -> this.bridges.getUi().add(ui)));
 		Assert.assertEquals("Row 0", SignalReplayTest.node(ui, 0).getText().get());
 	}
 
@@ -393,7 +392,7 @@ public class SignalReplayTest {
 	public void followsTheNativeExpressionsOfTheShowcase() {
 		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = new IntegerSignal(0);
-		Assert.assertEquals("", SignalReplayTest.capture(true, SignalReplayTest.traced(() -> ReplayShowcaseFixture.run(node, clicks))));
+		Assert.assertEquals("", TestUtils.captureErr(true, SignalReplayTest.traced(() -> ReplayShowcaseFixture.run(node, clicks))));
 		clicks.set(2);
 		Assert.assertEquals("Showcase 2", node.getText().get());
 	}
@@ -517,7 +516,7 @@ public class SignalReplayTest {
 	}
 
 	private String open(final UI ui) {
-		return SignalReplayTest.capture(true, () -> this.bridges.getUi().add(ui)).replaceAll("\\.java:\\d+ ", ".java:N ");
+		return TestUtils.captureErr(true, () -> this.bridges.getUi().add(ui)).replace("\r\n", "\n").replaceAll("\\.java:\\d+ ", ".java:N ");
 	}
 
 	private static String hidden(final SignalReplayHiddenLoader loader, final SignalReplayNode node, final IntegerSignal clicks) {
@@ -525,7 +524,7 @@ public class SignalReplayTest {
 		Thread.currentThread().setContextClassLoader(loader);
 		try {
 			SignalReplay.reset();
-			return SignalReplayTest.capture(true, SignalReplayTest.traced(() -> loader.run(node, clicks))).replaceAll("\\.java:\\d+ ", ".java:N ");
+			return TestUtils.captureErr(true, SignalReplayTest.traced(() -> loader.run(node, clicks))).replace("\r\n", "\n").replaceAll("\\.java:\\d+ ", ".java:N ");
 		} finally {
 			Thread.currentThread().setContextClassLoader(previous);
 		}
@@ -540,16 +539,6 @@ public class SignalReplayTest {
 				SignalContext.current().tracing(tracing);
 			}
 		};
-	}
-
-	private static String capture(final boolean devMode, final Runnable runnable) {
-		final boolean previous = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(devMode);
-		try {
-			return TestUtils.captureErr(runnable).replace("\r\n", "\n");
-		} finally {
-			JOIDEnv.devMode(previous);
-		}
 	}
 
 	@UIDataDebug(profiler = false, hotreload = false)

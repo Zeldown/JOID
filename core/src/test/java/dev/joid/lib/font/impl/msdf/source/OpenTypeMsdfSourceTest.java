@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
@@ -131,7 +130,7 @@ public class OpenTypeMsdfSourceTest {
 	@Test(timeout = 60000L)
 	public void logsHowEachFaceIsLoadedInDevMode() throws IOException {
 		final byte[] font = OpenTypeMsdfSourceTest.font();
-		final String[] lines = OpenTypeMsdfSourceTest.capture(() -> {
+		final String[] lines = TestUtils.captureOut(true, () -> {
 			MsdfFontLoader.load(new ByteArrayInputStream(font)).join();
 			MsdfFontLoader.load(new ByteArrayInputStream(font)).join();
 			MsdfFontLoader.load(BinaryMsdfSource.of(OpenTypeMsdfSourceTest.find(font))).join();
@@ -144,18 +143,7 @@ public class OpenTypeMsdfSourceTest {
 
 	@Test(timeout = 60000L)
 	public void logsNothingOutsideDevMode() {
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		final PrintStream previous = System.out;
-		final boolean devMode = JOIDEnv.isDevMode();
-		try {
-			JOIDEnv.devMode(false);
-			System.setOut(new PrintStream(output, true));
-			MsdfFontLoader.load(OpenTypeMsdfSourceTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).join();
-		} finally {
-			System.setOut(previous);
-			JOIDEnv.devMode(devMode);
-		}
-		Assert.assertEquals(0, output.size());
+		Assert.assertEquals("", TestUtils.captureOut(false, () -> MsdfFontLoader.load(OpenTypeMsdfSourceTest.class.getResourceAsStream("/font/JoidTest-Regular.ttf")).join()));
 	}
 
 	@Test(timeout = 60000L)
@@ -379,16 +367,6 @@ public class OpenTypeMsdfSourceTest {
 			return method.invoke(null, font);
 		} catch (final ReflectiveOperationException exception) {
 			throw new IllegalStateException(exception);
-		}
-	}
-
-	private static String capture(final Runnable runnable) {
-		final boolean devMode = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
-			return TestUtils.captureOut(runnable);
-		} finally {
-			JOIDEnv.devMode(devMode);
 		}
 	}
 

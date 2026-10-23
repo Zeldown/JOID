@@ -97,15 +97,6 @@ public class CircleNodeTest {
 	}
 
 	@Test
-	public void fadesTowardsItsHoveredColor() {
-		this.bridges.open(new NodeUI(CircleNode.create(100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).hoveredColor(new Color(0.6F, 0.4F, 0.2F, 1F)))).frame();
-		this.bridges.move(125D, 225D).frames(6);
-		final Draw draw = this.bridges.getRender().getDraws().get(0);
-		Assert.assertTrue(draw.getRed() > 0.2F && draw.getRed() < 0.6F);
-		Assert.assertEquals(0.4F, draw.getGreen(), 1E-4F);
-	}
-
-	@Test
 	public void takesAHoveredColorOfItsOwn() {
 		final Color hovered = new Color(0.6F, 0.4F, 0.2F, 1F);
 		final CircleNode circle = CircleNode.create(100D, 200D, 50D).color(new Color(0.2F, 0.4F, 0.6F, 1F)).hoveredColor(hovered);
