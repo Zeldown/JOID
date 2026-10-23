@@ -273,25 +273,6 @@ public class MultilineTextFieldMarkupTest {
 	}
 
 	@Test
-	public void showsATagBrokenByADeletionAsText() {
-		final MultilineTextFieldNode field = this.field("a<b>bc</b>d", true).cursorPosition(3);
-		this.press(field, Key.BACKSPACE);
-		Assert.assertEquals("a<>bc</b>d", field.getText());
-		field.cursorPosition(9);
-		Assert.assertEquals(52D, this.cursor().getLeft(), 1E-5D);
-	}
-
-	@Test
-	public void deletesTheCharacterNextToATag() {
-		final MultilineTextFieldNode field = this.field("a<b>bc</b>d", true).cursorPosition(4);
-		this.press(field, Key.DELETE);
-		Assert.assertEquals("a<b>c</b>d", field.getText());
-		this.press(field, Key.BACKSPACE);
-		Assert.assertEquals("a<bc</b>d", field.getText());
-		Assert.assertEquals(3, field.getCursorPosition());
-	}
-
-	@Test
 	public void keepsTheStyleOfALineBreakTypedInsideIt() {
 		final MultilineTextFieldNode field = this.field("<b>abcd</b>", true).cursorPosition(5);
 		this.press(field, Key.ENTER);

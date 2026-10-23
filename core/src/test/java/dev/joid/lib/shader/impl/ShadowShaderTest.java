@@ -25,12 +25,6 @@ public class ShadowShaderTest {
 	}
 
 	@Test
-	public void sharesOneAvailableInstance() {
-		Assert.assertSame(ShadowShader.inst(), ShadowShader.inst());
-		Assert.assertTrue(ShadowShader.inst().isAvailable());
-	}
-
-	@Test
 	public void bindsTheRadiusTheBlurAndTheBox() {
 		ShadowShader.inst().bind(6F, 12F, 1F, 2F, 3F, 4F);
 		final Map<String, Object> values = this.shader.getValues();
@@ -48,32 +42,6 @@ public class ShadowShaderTest {
 		Assert.assertArrayEquals(new float[] {10F, 20F, 30F, 40F}, (float[]) this.shader.getValues().get("u_Box"), 0F);
 		Assert.assertFalse(this.shader.isBound());
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
-	}
-
-	@Test
-	public void releasesTheShaderWhenTheDrawFails() {
-		try {
-			ShadowShader.use(5F, 8F, 10F, 20F, 30F, 40F, () -> {
-				throw new IllegalStateException("draw");
-			});
-			Assert.fail();
-		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("draw", exception.getMessage());
-		}
-		Assert.assertFalse(this.shader.isBound());
-	}
-
-	@Test
-	public void skipsTheDrawWithoutShader() {
-		final boolean[] ran = {false};
-		this.shader.setActive(false);
-		try {
-			Assert.assertFalse(ShadowShader.inst().isAvailable());
-			ShadowShader.use(5F, 8F, 10F, 20F, 30F, 40F, () -> ran[0] = true);
-		} finally {
-			this.shader.setActive(true);
-		}
-		Assert.assertFalse(ran[0]);
 	}
 
 	@Test(expected = NullPointerException.class)

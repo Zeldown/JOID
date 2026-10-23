@@ -25,12 +25,6 @@ public class RoundedShaderTest {
 	}
 
 	@Test
-	public void sharesOneAvailableInstance() {
-		Assert.assertSame(RoundedShader.inst(), RoundedShader.inst());
-		Assert.assertTrue(RoundedShader.inst().isAvailable());
-	}
-
-	@Test
 	public void bindsTheRadiusAndTheInnerBox() {
 		RoundedShader.inst().bind(6F, 1F, 2F, 3F, 4F);
 		final Map<String, Object> values = this.shader.getValues();
@@ -64,32 +58,6 @@ public class RoundedShaderTest {
 		Assert.assertArrayEquals(new float[] {10F, 20F, 30F, 40F}, (float[]) this.shader.getValues().get("u_InnerRect"), 0F);
 		Assert.assertFalse(this.shader.isBound());
 		Assert.assertNull(this.bridges.getRender().getState().getShader());
-	}
-
-	@Test
-	public void releasesTheShaderWhenTheDrawFails() {
-		try {
-			RoundedShader.use(5F, 10F, 20F, 30F, 40F, () -> {
-				throw new IllegalStateException("draw");
-			});
-			Assert.fail();
-		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("draw", exception.getMessage());
-		}
-		Assert.assertFalse(this.shader.isBound());
-	}
-
-	@Test
-	public void skipsTheDrawWithoutShader() {
-		final boolean[] ran = {false};
-		this.shader.setActive(false);
-		try {
-			Assert.assertFalse(RoundedShader.inst().isAvailable());
-			RoundedShader.use(5F, 10F, 20F, 30F, 40F, () -> ran[0] = true);
-		} finally {
-			this.shader.setActive(true);
-		}
-		Assert.assertFalse(ran[0]);
 	}
 
 	@Test(expected = NullPointerException.class)

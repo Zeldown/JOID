@@ -23,12 +23,6 @@ public class CircleShaderTest {
 	}
 
 	@Test
-	public void sharesOneAvailableInstance() {
-		Assert.assertSame(CircleShader.inst(), CircleShader.inst());
-		Assert.assertTrue(CircleShader.inst().isAvailable());
-	}
-
-	@Test
 	public void bindsTheRadiusAndTheCenter() {
 		CircleShader.inst().bind(12F, 30F, 40F);
 		Assert.assertSame(this.shader, this.bridges.getRender().getState().getShader());
@@ -74,32 +68,6 @@ public class CircleShaderTest {
 		CircleShader.use(8F, 1F, 2F, () -> {});
 		Assert.assertArrayEquals(new float[] {1F, 2F}, (float[]) this.shader.getValues().get("center"), 0F);
 		Assert.assertFalse(this.shader.isBound());
-	}
-
-	@Test
-	public void releasesTheShaderWhenTheDrawFails() {
-		try {
-			CircleShader.use(8F, 1F, 2F, () -> {
-				throw new IllegalStateException("draw");
-			});
-			Assert.fail();
-		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("draw", exception.getMessage());
-		}
-		Assert.assertFalse(this.shader.isBound());
-	}
-
-	@Test
-	public void skipsTheDrawWithoutShader() {
-		final boolean[] ran = {false};
-		this.shader.setActive(false);
-		try {
-			Assert.assertFalse(CircleShader.inst().isAvailable());
-			CircleShader.use(8F, 1F, 2F, () -> ran[0] = true);
-		} finally {
-			this.shader.setActive(true);
-		}
-		Assert.assertFalse(ran[0]);
 	}
 
 }

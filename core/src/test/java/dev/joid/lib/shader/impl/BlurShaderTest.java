@@ -13,12 +13,6 @@ public class BlurShaderTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void sharesOneAvailableInstance() {
-		Assert.assertSame(BlurShader.inst(), BlurShader.inst());
-		Assert.assertTrue(BlurShader.inst().isAvailable());
-	}
-
-	@Test
 	public void bindsTheRadiusTheDirectionAndTheTexel() {
 		final RecordingShader shader = (RecordingShader) BlurShader.inst().getShader();
 		BlurShader.inst().bind(4F, 0F, 1F, 0.01F, 0.02F);

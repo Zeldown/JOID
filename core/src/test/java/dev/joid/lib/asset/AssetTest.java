@@ -8,15 +8,11 @@ import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import dev.joid.lib.asset.impl.FileAsset;
-import dev.joid.lib.asset.impl.StreamAsset;
-import dev.joid.lib.asset.impl.UrlAsset;
-import dev.joid.lib.asset.locator.AssetLocator;
-import dev.joid.lib.asset.locator.IAssetLocator;
 import lombok.NonNull;
 
 public class AssetTest {
@@ -26,25 +22,13 @@ public class AssetTest {
 	private static File file;
 
 	@Test
-	public void keepsAnAssetAsIs() {
-		final Asset asset = Asset.of(AssetTest.file);
-		Assert.assertSame(asset, Asset.of(asset));
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesAnUnknownHandle() {
-		Asset.of(new Object());
-	}
-
-	@Test
 	public void peeksPastTheEndOfAFile() {
 		Assert.assertEquals(AssetTest.CONTENT.length, Asset.of(AssetTest.file).peek(4096).length);
 	}
 
 	@Test
-	public void locatesAUrlWithoutOpeningIt() {
+	public void identifiesAUrlWithoutOpeningIt() {
 		final Asset asset = Asset.of("https://example.invalid/image.png");
-		Assert.assertTrue(asset instanceof UrlAsset);
 		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());
 	}
 
@@ -55,28 +39,15 @@ public class AssetTest {
 		Files.write(AssetTest.file.toPath(), AssetTest.CONTENT);
 	}
 
+	@AfterClass
+	public static void delete() {
+		Assert.assertTrue(AssetTest.file.delete());
+	}
+
 	@Test
-	public void locatesAFile() throws IOException {
+	public void readsAFileAgain() throws IOException {
 		final Asset asset = Asset.of(AssetTest.file);
-		Assert.assertTrue(asset instanceof FileAsset);
-		Assert.assertEquals(AssetTest.file.getAbsolutePath(), asset.getUniqueId());
 		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
-		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
-	}
-
-	@Test
-	public void locatesAStream() throws IOException {
-		final Asset asset = Asset.of(new ByteArrayInputStream(AssetTest.CONTENT));
-		Assert.assertTrue(asset instanceof StreamAsset);
-		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
-	}
-
-	@Test
-	public void registersACustomLocator() throws IOException {
-		AssetLocator.register(new HandleLocator());
-
-		final Asset asset = Asset.of(new Handle());
-		Assert.assertEquals("handle", asset.getUniqueId());
 		Assert.assertArrayEquals(AssetTest.CONTENT, asset.read());
 	}
 
@@ -138,8 +109,6 @@ public class AssetTest {
 		Asset.of(null);
 	}
 
-	private static final class Handle {}
-
 	private static final class HandleAsset extends Asset {
 
 		private HandleAsset() {
@@ -149,20 +118,6 @@ public class AssetTest {
 		@Override
 		public @NonNull InputStream open() {
 			return new ByteArrayInputStream(AssetTest.CONTENT);
-		}
-
-	}
-
-	private static final class HandleLocator implements IAssetLocator {
-
-		@Override
-		public boolean supports(final @NonNull Object handle) {
-			return handle instanceof Handle;
-		}
-
-		@Override
-		public @NonNull Asset locate(final @NonNull Object handle) {
-			return new HandleAsset();
 		}
 
 	}

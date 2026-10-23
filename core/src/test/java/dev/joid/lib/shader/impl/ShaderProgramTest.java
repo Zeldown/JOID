@@ -175,6 +175,44 @@ public class ShaderProgramTest {
 		Assert.assertSame(BlendState.PREMULTIPLIED, state.getBlend());
 	}
 
+	@Test
+	public void releasesTheShaderWhenTheDrawFails() {
+		final SourceShader shader = new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source());
+		try {
+			shader.draw(() -> {
+				throw new IllegalStateException("draw");
+			});
+			Assert.fail("The failure of the draw must reach its caller");
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("draw", exception.getMessage());
+		}
+		Assert.assertFalse(((RecordingShader) shader.getShader()).isBound());
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
+	}
+
+	@Test
+	public void skipsTheDrawWithoutShader() {
+		final SourceShader shader = new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source());
+		final boolean[] ran = {false};
+		((RecordingShader) shader.getShader()).setActive(false);
+		Assert.assertFalse(shader.isAvailable());
+		shader.draw(() -> ran[0] = true);
+		Assert.assertFalse(ran[0]);
+		Assert.assertNull(this.bridges.getRender().getState().getShader());
+	}
+
+	@Test
+	public void sharesOneAvailableInstanceOfEachShader() {
+		Assert.assertSame(BlurShader.inst(), BlurShader.inst());
+		Assert.assertSame(CircleShader.inst(), CircleShader.inst());
+		Assert.assertSame(ShadowShader.inst(), ShadowShader.inst());
+		Assert.assertSame(RoundedShader.inst(), RoundedShader.inst());
+		Assert.assertSame(GradientShader.inst(), GradientShader.inst());
+		for (final ShaderProgram shader : new ShaderProgram[] {BlurShader.inst(), CircleShader.inst(), ShadowShader.inst(), RoundedShader.inst(), GradientShader.inst()}) {
+			Assert.assertTrue(shader.getClass().getSimpleName(), shader.isAvailable());
+		}
+	}
+
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingSource() {
 		new SourceShader(null, ShaderProgramTest.source());

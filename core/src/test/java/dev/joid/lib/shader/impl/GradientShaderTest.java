@@ -28,12 +28,6 @@ public class GradientShaderTest {
 	}
 
 	@Test
-	public void sharesOneAvailableInstance() {
-		Assert.assertSame(GradientShader.inst(), GradientShader.inst());
-		Assert.assertTrue(GradientShader.inst().isAvailable());
-	}
-
-	@Test
 	public void paintsADrawWithTheGradient() {
 		final IShader[] bound = new IShader[1];
 		GradientShader.use(Point.of(0D, 0.25D), Point.of(1D, 0.75D), new Color(0.2F, 0.4F, 0.6F, 1F), new Color(0.8F, 0.6F, 0.4F, 0.5F), () -> bound[0] = this.bridges.getRender().getState().getShader(), BoundingBox.create(10D, 20D, 100D, 50D));
@@ -64,37 +58,11 @@ public class GradientShaderTest {
 	}
 
 	@Test
-	public void releasesTheShaderWhenTheDrawFails() {
-		try {
-			GradientShader.use(Point.of(0D, 0D), Point.of(1D, 0D), Color.RED, Color.BLUE, () -> {
-				throw new IllegalStateException("draw");
-			}, BoundingBox.create(0D, 0D, 1D, 1D));
-			Assert.fail();
-		} catch (final IllegalStateException exception) {
-			Assert.assertEquals("draw", exception.getMessage());
-		}
-		Assert.assertFalse(this.shader.isBound());
-	}
-
-	@Test
 	public void restoresThePreviousShader() {
 		final RecordingShader previous = new RecordingShader();
 		previous.bind();
 		GradientShader.use(Point.of(0D, 0D), Point.of(1D, 0D), Color.RED, Color.BLUE, () -> {}, BoundingBox.create(0D, 0D, 1D, 1D));
 		Assert.assertSame(previous, this.bridges.getRender().getState().getShader());
-	}
-
-	@Test
-	public void skipsTheDrawWithoutShader() {
-		final boolean[] ran = {false};
-		this.shader.setActive(false);
-		try {
-			GradientShader.use(Point.of(0D, 0D), Point.of(1D, 0D), Color.RED, Color.BLUE, () -> ran[0] = true, BoundingBox.create(0D, 0D, 1D, 1D));
-		} finally {
-			this.shader.setActive(true);
-		}
-		Assert.assertFalse(ran[0]);
-		Assert.assertTrue(this.shader.getValues().isEmpty());
 	}
 
 	@Test(expected = NullPointerException.class)
