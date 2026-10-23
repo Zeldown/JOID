@@ -71,7 +71,7 @@ public class UIBridgeTest {
 	}
 
 	@Test
-	public void listsItsUisWhileAnotherThreadOpensAndClosesThem() throws InterruptedException {
+	public void listsItsUisWhileAnotherThreadOpensAndClosesThem() {
 		final RoutingBridge bridge = new RoutingBridge(UI.class);
 		final AtomicReference<RuntimeException> failure = new AtomicReference<>();
 		final Thread reader = new Thread(() -> {
@@ -92,7 +92,7 @@ public class UIBridgeTest {
 			bridge.close(menu);
 			bridge.close(hud);
 		}
-		reader.join();
+		TestUtils.join(reader);
 		Assert.assertNull(failure.get());
 	}
 

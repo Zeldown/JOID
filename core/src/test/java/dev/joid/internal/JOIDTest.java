@@ -190,7 +190,7 @@ public class JOIDTest {
 	}
 
 	@Test
-	public void savesOnceOnShutdownWhenTheRenderThreadDoesNotAnswer() throws InterruptedException {
+	public void savesOnceOnShutdownWhenTheRenderThreadDoesNotAnswer() {
 		JOIDEnv.dataDir(this.folder.getRoot());
 		final FrameThreadBridge render = new FrameThreadBridge();
 		final ExitStore store = UIStoreHook.useStore(ExitStore.class, ExitStore::new);
@@ -199,7 +199,7 @@ public class JOIDTest {
 		final Thread shutdown = JOIDTest.shutdown();
 		try {
 			shutdown.start();
-			shutdown.join();
+			TestUtils.join(shutdown);
 			render.runTasks();
 		} finally {
 			BridgeHandler.THREAD.unregister(render);

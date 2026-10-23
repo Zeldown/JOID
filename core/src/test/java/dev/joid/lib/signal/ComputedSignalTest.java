@@ -330,13 +330,13 @@ public class ComputedSignalTest {
 	}
 
 	@Test
-	public void notifiesAChangeMadeOnAnotherThread() throws InterruptedException {
+	public void notifiesAChangeMadeOnAnotherThread() {
 		final List<String> received = Collections.synchronizedList(new ArrayList<>());
 		final Signal<String> name = new Signal<>("joid");
 		name.map(String::toUpperCase).onChange(received::add);
 		final Thread thread = new Thread(() -> name.set("ui"));
 		thread.start();
-		thread.join();
+		TestUtils.join(thread);
 		Assert.assertEquals(Collections.singletonList("UI"), received);
 	}
 
@@ -349,11 +349,7 @@ public class ComputedSignalTest {
 			evaluations.incrementAndGet();
 			final Thread thread = new Thread(other::get);
 			thread.start();
-			try {
-				thread.join();
-			} catch (final InterruptedException exception) {
-				Thread.currentThread().interrupt();
-			}
+			TestUtils.join(thread);
 			return mine.get() * 2;
 		});
 		Assert.assertEquals(2, doubled.get().intValue());

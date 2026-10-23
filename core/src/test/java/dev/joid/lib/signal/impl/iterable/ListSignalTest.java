@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Assert;
@@ -198,14 +199,14 @@ public class ListSignalTest {
 	}
 
 	@Test
-	public void appliesADeferredMutationOnTheCurrentList() throws InterruptedException {
+	public void appliesADeferredMutationOnTheCurrentList() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final ListSignal<String> signal = new ListSignal<>(Collections.singletonList("a"));
 		BridgeHandler.THREAD.register(thread);
 		try {
 			final Thread worker = ThreadUtils.daemonThread(() -> signal.add("b").remove("a"), "worker");
 			worker.start();
-			worker.join();
+			TestUtils.join(worker);
 			Assert.assertEquals(Collections.singletonList("a"), signal.peek());
 			signal.add("c");
 			thread.runTasks();
@@ -237,9 +238,9 @@ public class ListSignalTest {
 		sealed.set(signal, null);
 		final Thread sealer = ThreadUtils.daemonThread(signal::peek, "sealer");
 		sealer.start();
-		sealing.await();
+		Assert.assertTrue("The list was never sealed on its own thread", sealing.await(10L, TimeUnit.SECONDS));
 		signal.set(Arrays.asList("a", "b"));
-		sealer.join();
+		TestUtils.join(sealer);
 		Assert.assertTrue("The write did not wait for the seal", blocked.get());
 		Assert.assertEquals(Arrays.asList("a", "b"), signal.peek());
 	}

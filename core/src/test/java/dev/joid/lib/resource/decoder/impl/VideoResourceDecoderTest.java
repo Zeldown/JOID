@@ -19,6 +19,7 @@ import java.util.Locale;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -606,13 +607,13 @@ public class VideoResourceDecoderTest {
 		final boolean blocked;
 		try {
 			decoding.start();
-			copying.await();
+			Assert.assertTrue("The decoder never read its asset", copying.await(10L, TimeUnit.SECONDS));
 			seeking.start();
 			seeking.join(5000L);
 			blocked = seeking.isAlive();
 			copied.countDown();
-			decoding.join();
-			seeking.join();
+			TestUtils.join(decoding);
+			TestUtils.join(seeking);
 		} finally {
 			JOIDEnv.devMode(devMode);
 		}

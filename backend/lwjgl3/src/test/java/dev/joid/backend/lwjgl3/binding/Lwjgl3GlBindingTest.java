@@ -40,7 +40,8 @@ public class Lwjgl3GlBindingTest {
 		final AtomicReference<String> version = new AtomicReference<>("unread");
 		final Thread thread = new Thread(() -> version.set(Lwjgl3GlBinding.inst().getString(GlConstants.VERSION)));
 		thread.start();
-		thread.join();
+		thread.join(10000L);
+		Assert.assertFalse("The thread did not end in 10 s", thread.isAlive());
 		Assert.assertNull(version.get());
 	}
 

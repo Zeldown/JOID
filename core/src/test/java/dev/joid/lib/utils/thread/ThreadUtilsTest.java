@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
 
@@ -41,18 +42,18 @@ public class ThreadUtilsTest {
 	}
 
 	@Test
-	public void createsANamedDaemonThread() throws InterruptedException {
+	public void createsANamedDaemonThread() {
 		final AtomicBoolean ran = new AtomicBoolean();
 		final Thread thread = ThreadUtils.daemonThread(() -> ran.set(true), "joid-worker");
 		Assert.assertEquals("joid-worker", thread.getName());
 		Assert.assertTrue(thread.isDaemon());
 		thread.start();
-		thread.join();
+		TestUtils.join(thread);
 		Assert.assertTrue(ran.get());
 	}
 
 	@Test
-	public void numbersTheThreadsOfAFactory() throws InterruptedException {
+	public void numbersTheThreadsOfAFactory() {
 		final AtomicBoolean ran = new AtomicBoolean();
 		final ThreadFactory factory = ThreadUtils.daemonFactory("joid-pool");
 		final Thread first = factory.newThread(() -> ran.set(true));
@@ -62,7 +63,7 @@ public class ThreadUtilsTest {
 		Assert.assertTrue(first.isDaemon());
 		Assert.assertTrue(second.isDaemon());
 		first.start();
-		first.join();
+		TestUtils.join(first);
 		Assert.assertTrue(ran.get());
 	}
 

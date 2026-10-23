@@ -141,7 +141,7 @@ public class ResourceFailureTest {
 	@Test
 	public void failsARemoteImageOnItsTaskThread() {
 		final Resource resource = ResourceBuilder.create().cache(null).of(new BytesAsset("https://joid.invalid/photo.heic", true, ResourceFailureTest.HEIC));
-		resource.getResourceData().await();
+		TestUtils.awaitWithin(resource.getResourceData()::await);
 		Assert.assertTrue(resource.isFailed());
 	}
 

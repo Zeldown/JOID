@@ -7,6 +7,9 @@ import java.lang.management.ThreadInfo;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
+import org.junit.Assert;
+
+import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -98,6 +101,21 @@ public final class TestUtils {
 			Thread.yield();
 		}
 		return true;
+	}
+
+	public static void join(final @NonNull Thread thread) {
+		try {
+			thread.join(30000L);
+		} catch (final InterruptedException exception) {
+			throw new AssertionError(exception);
+		}
+		Assert.assertFalse("The thread " + thread.getName() + " did not end in 30 s", thread.isAlive());
+	}
+
+	public static void awaitWithin(final @NonNull Runnable wait) {
+		final Thread thread = ThreadUtils.daemonThread(wait, "TestUtils/await");
+		thread.start();
+		TestUtils.join(thread);
 	}
 
 	private static boolean isWaitingIn(final Thread thread, final Class<?> type, final String method) {

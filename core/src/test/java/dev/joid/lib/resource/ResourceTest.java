@@ -218,7 +218,7 @@ public class ResourceTest {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final Resource resource = ResourceTest.resource(null);
 		resource.getResourceData().dispatch(() -> threads.add(Thread.currentThread()));
-		resource.getResourceData().await();
+		TestUtils.awaitWithin(resource.getResourceData()::await);
 		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
 	}
 

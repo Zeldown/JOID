@@ -90,13 +90,13 @@ public class ResourceDataTest {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final ResourceData data = ResourceData.create("image", null);
 		data.dispatch(() -> threads.add(Thread.currentThread()));
-		data.await();
+		TestUtils.awaitWithin(data::await);
 		Assert.assertFalse(data.isDispatching());
 		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
 		Assert.assertTrue(threads.get(0).isDaemon());
 		threads.get(0).join(5000L);
 		Assert.assertFalse(threads.get(0).isAlive());
-		data.await();
+		TestUtils.awaitWithin(data::await);
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class ResourceDataTest {
 		data.await();
 		Assert.assertTrue(Thread.interrupted());
 		release.countDown();
-		data.await();
+		TestUtils.awaitWithin(data::await);
 	}
 
 	@Test
@@ -250,7 +250,7 @@ public class ResourceDataTest {
 		data.generate(true);
 		Assert.assertFalse(data.isLoaded());
 		release.countDown();
-		data.await();
+		TestUtils.awaitWithin(data::await);
 		Assert.assertTrue(data.isLoaded());
 	}
 
@@ -281,7 +281,7 @@ public class ResourceDataTest {
 		data.generate(true);
 		Assert.assertFalse(data.isGenerated());
 		release.countDown();
-		data.await();
+		TestUtils.awaitWithin(data::await);
 		Assert.assertFalse(data.isLoaded());
 		Assert.assertTrue(texture.isDeleted());
 		Assert.assertTrue(decoder.calls.contains("clear"));
@@ -310,12 +310,12 @@ public class ResourceDataTest {
 			data.generate(true);
 			data.clear();
 			release.countDown();
-			data.await();
+			TestUtils.awaitWithin(data::await);
 			data.clear();
 			thread.run();
 			Assert.assertEquals(2, Collections.frequency(decoder.calls, "clear"));
 			data.generate(true);
-			data.await();
+			TestUtils.awaitWithin(data::await);
 			thread.run();
 			Assert.assertEquals("decode", decoder.calls.get(decoder.calls.size() - 1));
 		} finally {
@@ -487,7 +487,7 @@ public class ResourceDataTest {
 		});
 		final String output = TestUtils.captureErr(true, () -> {
 			data.generate(true);
-			data.await();
+			TestUtils.awaitWithin(data::await);
 		});
 		Assert.assertTrue(data.isFailed());
 		Assert.assertTrue(output, output.startsWith("[JOID] The resource image cannot be read: The native library is missing."));

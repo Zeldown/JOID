@@ -10,6 +10,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 
 public class SignalContextTest {
@@ -27,7 +28,7 @@ public class SignalContextTest {
 	}
 
 	@Test
-	public void tracesNothingByDefault() throws InterruptedException {
+	public void tracesNothingByDefault() {
 		final Signal<String> signal = new Signal<>("a");
 		final List<List<Signal<?>>> readList = new ArrayList<>();
 		final Thread thread = new Thread(() -> {
@@ -35,7 +36,7 @@ public class SignalContextTest {
 			readList.add(SignalContext.current().takeReads());
 		});
 		thread.start();
-		thread.join();
+		TestUtils.join(thread);
 		Assert.assertEquals(Collections.singletonList(Collections.emptyList()), readList);
 	}
 
@@ -123,7 +124,7 @@ public class SignalContextTest {
 	}
 
 	@Test
-	public void keepsTheReadsOfEachThreadApart() throws InterruptedException {
+	public void keepsTheReadsOfEachThreadApart() {
 		final Signal<String> mine = new Signal<>("a");
 		final Signal<String> other = new Signal<>("b");
 		final List<List<Signal<?>>> otherReads = new ArrayList<>();
@@ -134,7 +135,7 @@ public class SignalContextTest {
 			otherReads.add(SignalContext.current().takeReads());
 		});
 		thread.start();
-		thread.join();
+		TestUtils.join(thread);
 		Assert.assertEquals(Collections.singletonList(Collections.singletonList(other)), otherReads);
 		Assert.assertEquals(Collections.singletonList(mine), SignalContext.current().takeReads());
 	}

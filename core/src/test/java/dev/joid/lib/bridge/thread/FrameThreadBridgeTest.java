@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.utils.thread.ThreadUtils;
 
@@ -25,7 +26,7 @@ public class FrameThreadBridgeTest {
 	}
 
 	@Test
-	public void runsATaskFromAnotherThreadAtTheNextFrame() throws InterruptedException {
+	public void runsATaskFromAnotherThreadAtTheNextFrame() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> trace = Collections.synchronizedList(new ArrayList<>());
 		BridgeHandler.THREAD.register(thread);
@@ -49,7 +50,7 @@ public class FrameThreadBridgeTest {
 	}
 
 	@Test
-	public void knowsOnlyTheThreadThatCreatedIt() throws InterruptedException {
+	public void knowsOnlyTheThreadThatCreatedIt() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final AtomicBoolean render = new AtomicBoolean(true);
 		FrameThreadBridgeTest.fromWorker(() -> render.set(thread.isRenderThread()));
@@ -58,7 +59,7 @@ public class FrameThreadBridgeTest {
 	}
 
 	@Test
-	public void runsTheTasksInTheOrderTheyCame() throws InterruptedException {
+	public void runsTheTasksInTheOrderTheyCame() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> trace = new ArrayList<>();
 		FrameThreadBridgeTest.fromWorker(() -> {
@@ -73,7 +74,7 @@ public class FrameThreadBridgeTest {
 	}
 
 	@Test
-	public void keepsRunningTheTasksAfterOneThrows() throws InterruptedException {
+	public void keepsRunningTheTasksAfterOneThrows() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> trace = new ArrayList<>();
 		final PrintStream previous = System.err;
@@ -96,7 +97,7 @@ public class FrameThreadBridgeTest {
 	}
 
 	@Test
-	public void warnsOnceForEachPlaceATaskThrowsFrom() throws InterruptedException {
+	public void warnsOnceForEachPlaceATaskThrowsFrom() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<Runnable> failures = Arrays.asList(() -> {
 			throw new IllegalStateException("first");
@@ -122,10 +123,10 @@ public class FrameThreadBridgeTest {
 		Assert.assertTrue(text, text.contains("(java.lang.IllegalStateException: second)"));
 	}
 
-	private static void fromWorker(final Runnable task) throws InterruptedException {
+	private static void fromWorker(final Runnable task) {
 		final Thread worker = ThreadUtils.daemonThread(task, "worker");
 		worker.start();
-		worker.join();
+		TestUtils.join(worker);
 	}
 
 }

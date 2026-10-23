@@ -221,13 +221,13 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
-	public void picksTheDecoderOfAHeldAssetOnATaskThread() throws InterruptedException {
+	public void picksTheDecoderOfAHeldAssetOnATaskThread() {
 		final HeldAsset asset = new HeldAsset("remote", true, Asset.of(ResourceBuilderTest.stream("/animation/still.png")));
 		final Resource resource = ResourceBuilder.create().cache(null).of(asset);
 		Assert.assertNull(resource.getDecoder());
 		Assert.assertTrue(asset.readers.isEmpty());
 		asset.release.countDown();
-		resource.getResourceData().await();
+		TestUtils.awaitWithin(resource.getResourceData()::await);
 		Assert.assertTrue(resource.getDecoder() instanceof RasterResourceDecoder);
 		Assert.assertEquals("ResourceTask/remote", asset.readers.get(0).getName());
 	}
@@ -247,10 +247,10 @@ public class ResourceBuilderTest {
 		resource.decoder(decoder);
 		releaser.join();
 		Assert.assertTrue("The decoder was given once the detection ended", waited.get());
-		resource.getResourceData().await();
+		TestUtils.awaitWithin(resource.getResourceData()::await);
 		Assert.assertSame(decoder, resource.getDecoder());
 		resource.prepareBind();
-		resource.getResourceData().await();
+		TestUtils.awaitWithin(resource.getResourceData()::await);
 		Assert.assertTrue(resource.isLoaded());
 	}
 
@@ -274,14 +274,14 @@ public class ResourceBuilderTest {
 		final AtomicReference<Resource> created = new AtomicReference<>();
 		final String output = TestUtils.captureErr(true, () -> {
 			created.set(ResourceBuilder.create().cache(null).of(asset));
-			created.get().getResourceData().await();
+			TestUtils.awaitWithin(created.get().getResourceData()::await);
 		});
 		Assert.assertTrue(output, output.startsWith("[JOID] The resource flaky-remote cannot be read: The start of flaky-remote cannot be read (java.io.IOException: offline)"));
 		final Resource resource = created.get();
 		Assert.assertTrue(resource.isFailed());
 		resource.reload();
 		resource.prepareBind();
-		resource.getResourceData().await();
+		TestUtils.awaitWithin(resource.getResourceData()::await);
 		Assert.assertTrue(resource.getDecoder() instanceof AnimatedResourceDecoder);
 		Assert.assertEquals("ResourceTask/flaky-remote", asset.readers.get(0).getName());
 	}
@@ -323,7 +323,7 @@ public class ResourceBuilderTest {
 		final ResourceBuilder builder = ResourceBuilder.create().cache(MemoryResourceCache.create());
 		final Resource first = builder.of(asset);
 		final Resource second = builder.of(asset);
-		first.getResourceData().await();
+		TestUtils.awaitWithin(first.getResourceData()::await);
 		Assert.assertSame(first.getResourceData(), second.getResourceData());
 		Assert.assertEquals(1, asset.opened.get());
 	}

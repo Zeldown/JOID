@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.thread.FrameThreadBridge;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
@@ -194,7 +195,7 @@ public class SignalTest {
 	}
 
 	@Test
-	public void acceptsListenersFromAnotherThreadDuringANotification() throws InterruptedException {
+	public void acceptsListenersFromAnotherThreadDuringANotification() {
 		final AtomicBoolean running = new AtomicBoolean(true);
 		final List<Throwable> failures = Collections.synchronizedList(new ArrayList<>());
 		final IntegerSignal signal = new IntegerSignal();
@@ -214,7 +215,7 @@ public class SignalTest {
 			failures.add(exception);
 		} finally {
 			running.set(false);
-			worker.join();
+			TestUtils.join(worker);
 		}
 		Assert.assertTrue(failures.toString(), failures.isEmpty());
 	}
@@ -332,7 +333,7 @@ public class SignalTest {
 	}
 
 	@Test
-	public void appliesAWriteFromAnotherThreadAtTheNextFrame() throws InterruptedException {
+	public void appliesAWriteFromAnotherThreadAtTheNextFrame() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final Signal<String> signal = new Signal<>("joid");
 		BridgeHandler.THREAD.register(thread);
@@ -347,7 +348,7 @@ public class SignalTest {
 	}
 
 	@Test
-	public void appliesTheWritesOfAThreadInOrder() throws InterruptedException {
+	public void appliesTheWritesOfAThreadInOrder() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("joid").onChange(received::add);
@@ -363,7 +364,7 @@ public class SignalTest {
 	}
 
 	@Test
-	public void carriesItsSilenceToADeferredWrite() throws InterruptedException {
+	public void carriesItsSilenceToADeferredWrite() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> received = new ArrayList<>();
 		final Signal<String> signal = new Signal<>("joid").onChange(received::add);
@@ -381,7 +382,7 @@ public class SignalTest {
 	}
 
 	@Test
-	public void appliesADeferredIncrementOnTheCurrentValue() throws InterruptedException {
+	public void appliesADeferredIncrementOnTheCurrentValue() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final IntegerSignal signal = new IntegerSignal(0);
 		BridgeHandler.THREAD.register(thread);
@@ -396,7 +397,7 @@ public class SignalTest {
 	}
 
 	@Test
-	public void groupsTheDeferredWritesOfABatch() throws InterruptedException {
+	public void groupsTheDeferredWritesOfABatch() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final IntegerSignal left = new IntegerSignal(0);
 		final IntegerSignal right = new IntegerSignal(0);
@@ -422,10 +423,10 @@ public class SignalTest {
 		return (Set<?>) field.get(signal);
 	}
 
-	private static void fromWorker(final Runnable task) throws InterruptedException {
+	private static void fromWorker(final Runnable task) {
 		final Thread worker = ThreadUtils.daemonThread(task, "worker");
 		worker.start();
-		worker.join();
+		TestUtils.join(worker);
 	}
 
 }
