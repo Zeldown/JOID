@@ -41,6 +41,7 @@ import dev.joid.lib.font.impl.msdf.source.BinaryMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.IMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSource;
 import dev.joid.lib.font.impl.msdf.source.OpenTypeMsdfSourceTest;
+import dev.joid.tool.msdf.MsdfGenerator;
 import dev.joid.tool.msdf.atlas.MsdfWriter;
 import lombok.AccessLevel;
 import lombok.NonNull;
@@ -92,11 +93,13 @@ public class MsdfFontLoaderTest {
 		MsdfFontLoaderTest.fails(IllegalArgumentException.class, new Object());
 	}
 
-	@Test(timeout = 60000L)
-	public void loadsEveryWeightOfAFamily() {
+	@Test(timeout = 30000L)
+	public void loadsEveryWeightOfAFamily() throws Exception {
 		final Object[] handles = new Object[MsdfFontLoaderTest.WEIGHTS.length];
 		for (int i = 0; i < handles.length; i++) {
-			handles[handles.length - 1 - i] = MsdfFontLoaderTest.stream(MsdfFontLoaderTest.WEIGHTS[i]);
+			final File file = MsdfFontLoaderTest.FOLDER.newFile(MsdfFontLoaderTest.WEIGHTS[i] + ".msdf");
+			MsdfGenerator.generate(Asset.of(MsdfFontLoaderTest.stream(MsdfFontLoaderTest.WEIGHTS[i])).read(), file, new int[] {'A'}, 64, 64, 4D, 0D);
+			handles[handles.length - 1 - i] = file;
 		}
 
 		final MsdfFont font = MsdfFontLoader.load(handles).join();
