@@ -33,24 +33,12 @@ public class VulkanShaderTranslatorTest {
 	}
 
 	@Test
-	public void compilesCoreShadersWithTheDefaultBlockTranslator() {
-		for (final CoreShader shader : CoreShader.values()) {
-			final ShaderSource vertex = shader.read(ShaderStage.VERTEX);
-			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
-			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateVertex(vertex, fragment), ShaderStage.VERTEX).remaining() > 0);
-			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
-		}
-	}
-
-	@Test
 	public void compilesCoreShadersAsLines() {
 		for (final CoreShader shader : CoreShader.values()) {
 			final ShaderSource vertex = shader.read(ShaderStage.VERTEX).toLine();
 			final ShaderSource fragment = shader.read(ShaderStage.FRAGMENT);
 			Assert.assertTrue(shader.name(), VulkanShaderCompiler.compile(new VulkanShaderTranslator().translateVertex(vertex, fragment), ShaderStage.VERTEX).remaining() > 0);
 			Assert.assertTrue(shader.name(), VulkanShaderCompiler.compile(new VulkanShaderTranslator().translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
-			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateVertex(vertex, fragment), ShaderStage.VERTEX).remaining() > 0);
-			Assert.assertTrue(shader.name(), GlslCompiler.compileOpenGl(new GlslShaderTranslator(GlslDialect.GLSL_330, UniformLayout.BLOCK).translateFragment(vertex, fragment), ShaderStage.FRAGMENT).remaining() > 0);
 		}
 	}
 

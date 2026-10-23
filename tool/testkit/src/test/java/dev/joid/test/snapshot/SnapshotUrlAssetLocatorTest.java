@@ -34,16 +34,11 @@ public class SnapshotUrlAssetLocatorTest {
 	}
 
 	@Test
-	public void locatesOnlyUrls() {
+	public void supportsOnlyHttpUrls() {
 		final SnapshotUrlAssetLocator locator = new SnapshotUrlAssetLocator();
 		Assert.assertTrue(locator.supports("https://example.invalid/image.png"));
-		Assert.assertFalse(locator.supports(new File("image.png")));
-	}
-
-	@Test
-	public void leavesTheOtherStringsToTheOtherLocators() {
-		final SnapshotUrlAssetLocator locator = new SnapshotUrlAssetLocator();
 		Assert.assertTrue(locator.supports("http://example.invalid/image.png"));
+		Assert.assertFalse(locator.supports(new File("image.png")));
 		Assert.assertFalse(locator.supports("assets/demo/image.png"));
 		Assert.assertFalse(locator.supports("joid://image.png"));
 	}

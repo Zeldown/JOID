@@ -25,13 +25,6 @@ public class GlfwKeysTest {
 	}
 
 	@Test
-	public void findsTheCodeOfAKey() {
-		Assert.assertEquals(GLFW.GLFW_KEY_ESCAPE, GlfwKeys.getCode(Key.ESCAPE));
-		Assert.assertEquals(GLFW.GLFW_KEY_KP_ADD, GlfwKeys.getCode(Key.NUMPAD_ADD));
-		Assert.assertEquals(GLFW.GLFW_KEY_UNKNOWN, GlfwKeys.getCode(Key.UNKNOWN));
-	}
-
-	@Test
 	public void findsTheCodeAtBothEndsOfEveryRangeOfKeys() {
 		Assert.assertEquals(GLFW.GLFW_KEY_A, GlfwKeys.getCode(Key.A));
 		Assert.assertEquals(GLFW.GLFW_KEY_Z, GlfwKeys.getCode(Key.Z));
@@ -53,9 +46,11 @@ public class GlfwKeysTest {
 		Assert.assertEquals(GLFW.GLFW_KEY_RIGHT_BRACKET, GlfwKeys.getCode(Key.RIGHT_BRACKET));
 		Assert.assertEquals(GLFW.GLFW_KEY_GRAVE_ACCENT, GlfwKeys.getCode(Key.GRAVE_ACCENT));
 		Assert.assertEquals(GLFW.GLFW_KEY_KP_0, GlfwKeys.getCode(Key.NUMPAD_0));
+		Assert.assertEquals(GLFW.GLFW_KEY_KP_ADD, GlfwKeys.getCode(Key.NUMPAD_ADD));
 		Assert.assertEquals(GLFW.GLFW_KEY_KP_EQUAL, GlfwKeys.getCode(Key.NUMPAD_EQUAL));
 		Assert.assertEquals(GLFW.GLFW_KEY_LEFT_SHIFT, GlfwKeys.getCode(Key.LEFT_SHIFT));
 		Assert.assertEquals(GLFW.GLFW_KEY_MENU, GlfwKeys.getCode(Key.MENU));
+		Assert.assertEquals(GLFW.GLFW_KEY_UNKNOWN, GlfwKeys.getCode(Key.UNKNOWN));
 	}
 
 	@Test

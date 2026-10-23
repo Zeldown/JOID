@@ -4,6 +4,7 @@ dependencies {
     compile project(':core')
 
     compileOnly project(':tool-testkit')
+    testCompile project(':tool-testkit')
 }
 
 task releaseJar(type: Jar) {

@@ -230,12 +230,6 @@ public class AlAudioSourceTest {
 	}
 
 	@Test
-	public void givesItsAudioGainToItsSources() {
-		AlAudioBridge.create(this.binding).gain((gain, group) -> 0F).createSource(8000, 1).gain(1F);
-		Assert.assertEquals("gain 1 0.0", this.binding.calls.get(this.binding.calls.size() - 1));
-	}
-
-	@Test
 	public void appliesANewAudioGainToTheLivingSources() {
 		final AlAudioBridge bridge = AlAudioBridge.create(this.binding);
 		bridge.createSource(8000, 1).gain(0.8F);

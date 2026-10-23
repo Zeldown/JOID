@@ -8,8 +8,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import lombok.NonNull;
-
 public class SnapshotBaselineTest {
 
 	@Rule
@@ -31,7 +29,7 @@ public class SnapshotBaselineTest {
 		Assert.assertTrue(new File(output, "static-home.png").createNewFile());
 		Assert.assertTrue(new File(output, "notes.txt").createNewFile());
 		try {
-			SnapshotBaseline.main(new String[] {UnavailableBackend.class.getName(), output.getPath()});
+			SnapshotBaseline.main(new String[] {SnapshotRunnerTest.FailingBackend.class.getName(), output.getPath()});
 			Assert.fail();
 		} catch (final IllegalStateException e) {
 			Assert.assertEquals("No window", e.getMessage());
@@ -41,32 +39,7 @@ public class SnapshotBaselineTest {
 
 	@Test(expected = IllegalStateException.class)
 	public void reachesTheBackendWithoutAnOutputFolder() throws Exception {
-		SnapshotBaseline.main(new String[] {UnavailableBackend.class.getName(), new File(this.folder.getRoot(), "missing").getPath()});
-	}
-
-	public static final class UnavailableBackend implements ISnapshotBackend {
-
-		@Override
-		public void destroy() {}
-
-		@Override
-		public void create(final int width, final int height) {
-			throw new IllegalStateException("No window");
-		}
-
-		@Override
-		public void present() {}
-
-		@Override
-		public @NonNull SnapshotImage capture(final int width, final int height) {
-			throw new IllegalStateException("No window");
-		}
-
-		@Override
-		public @NonNull String getRenderer() {
-			return "unavailable";
-		}
-
+		SnapshotBaseline.main(new String[] {SnapshotRunnerTest.FailingBackend.class.getName(), new File(this.folder.getRoot(), "missing").getPath()});
 	}
 
 }

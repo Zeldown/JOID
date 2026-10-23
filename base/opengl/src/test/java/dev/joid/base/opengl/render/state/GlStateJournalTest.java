@@ -1,7 +1,5 @@
 package dev.joid.base.opengl.render.state;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.base.opengl.binding.GlConstants;
+import dev.joid.base.opengl.binding.GlFakes;
 import dev.joid.base.opengl.binding.IGlBinding;
 import dev.joid.base.opengl.binding.IGlFrameBufferBinding;
 import dev.joid.base.opengl.capability.GlCapabilities;
@@ -37,7 +36,7 @@ public class GlStateJournalTest {
 	}
 
 	private GlStateJournal journal(final boolean clientMemory) {
-		final IGlBinding binding = GlStateJournalTest.fake(IGlBinding.class, (method, args) -> {
+		final IGlBinding binding = GlFakes.fake(IGlBinding.class, (method, args) -> {
 			switch (method.getName()) {
 			case "getString":
 				return args.length > 1 ? null : args[0].equals(GlConstants.VERSION) ? "2.1" : args[0].equals(GlConstants.SHADING_LANGUAGE_VERSION) ? "1.20" : args[0].equals(GlConstants.EXTENSIONS) ? "" : null;
@@ -46,7 +45,7 @@ public class GlStateJournalTest {
 			case "getVertexAttribPointer":
 				return 1234L;
 			case "getFrameBufferBinding":
-				return GlStateJournalTest.fake(IGlFrameBufferBinding.class, (call, values) -> null);
+				return GlFakes.fake(IGlFrameBufferBinding.class, (call, values) -> null);
 			case "canPointClientMemory":
 				return clientMemory;
 			case "bindBuffer":
@@ -66,23 +65,6 @@ public class GlStateJournalTest {
 			}
 		});
 		return new GlStateJournal(binding, GlCapabilities.read(binding));
-	}
-
-	private static <T> T fake(final Class<T> type, final Answer answer) {
-		return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, (proxy, method, args) -> {
-			final Object value = answer.answer(method, args == null ? new Object[0] : args);
-			if (value != null || !method.getReturnType().isPrimitive()) {
-				return value;
-			}
-			return method.getReturnType() == boolean.class ? (Object) false : method.getReturnType() == long.class ? (Object) 0L : method.getReturnType() == void.class ? null : (Object) 0;
-		});
-	}
-
-	@FunctionalInterface
-	private interface Answer {
-
-		public Object answer(final Method method, final Object[] args);
-
 	}
 
 }
