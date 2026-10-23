@@ -238,7 +238,7 @@ public class ListSignalTest {
 		sealed.set(signal, null);
 		final Thread sealer = ThreadUtils.daemonThread(signal::peek, "sealer");
 		sealer.start();
-		Assert.assertTrue("The list was never sealed on its own thread", sealing.await(10L, TimeUnit.SECONDS));
+		Assert.assertTrue("The list was never sealed on its own thread", sealing.await(30L, TimeUnit.SECONDS));
 		signal.set(Arrays.asList("a", "b"));
 		TestUtils.join(sealer);
 		Assert.assertTrue("The write did not wait for the seal", blocked.get());

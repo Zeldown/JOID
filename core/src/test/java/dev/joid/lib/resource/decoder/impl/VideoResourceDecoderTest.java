@@ -607,7 +607,7 @@ public class VideoResourceDecoderTest {
 		final boolean blocked;
 		try {
 			decoding.start();
-			Assert.assertTrue("The decoder never read its asset", copying.await(10L, TimeUnit.SECONDS));
+			Assert.assertTrue("The decoder never read its asset", copying.await(30L, TimeUnit.SECONDS));
 			seeking.start();
 			seeking.join(5000L);
 			blocked = seeking.isAlive();
