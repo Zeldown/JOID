@@ -1,7 +1,6 @@
 package dev.joid.lib.resource;
 
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingTexture;
@@ -490,7 +490,7 @@ public class ResourceTest {
 		Assert.assertNotSame(resource, fork);
 		Assert.assertNotSame(resource.getResourceData(), fork.getResourceData());
 		Assert.assertNotSame(decoder, fork.getDecoder());
-		Assert.assertSame(decoder, ResourceTest.field(fork.getDecoder(), "origin"));
+		Assert.assertSame(decoder, TestUtils.field(fork.getDecoder(), "origin"));
 		Assert.assertEquals(Collections.singletonList(fork.getResourceData()), resource.getResourceData().getForks());
 		Assert.assertTrue(fork.isBlocking());
 		Assert.assertSame(TextureFilter.LINEAR, fork.getProperties().getInterpolation());
@@ -503,13 +503,13 @@ public class ResourceTest {
 		final Thread main = Thread.currentThread();
 		final AtomicBoolean waited = new AtomicBoolean();
 		resource.getResourceData().dispatch(() -> {
-			waited.set(ResourceTest.awaitWaiting(main));
+			waited.set(TestUtils.awaitWaiting(main));
 			resource.getResourceData().decoder(decoder);
 		});
 		final Resource fork = resource.fork();
 		Assert.assertTrue("The fork was made once the detection ended", waited.get());
 		Assert.assertNotSame(resource, fork);
-		Assert.assertSame(decoder, ResourceTest.field(fork.getDecoder(), "origin"));
+		Assert.assertSame(decoder, TestUtils.field(fork.getDecoder(), "origin"));
 	}
 
 	private static Resource resource(final IResourceDecoder decoder) {
@@ -521,27 +521,6 @@ public class ResourceTest {
 		image.setRGB(0, 0, 0xFF336699);
 		image.setRGB(1, 0, 0xFF336699);
 		return image;
-	}
-
-	private static boolean awaitWaiting(final Thread thread) {
-		final long deadline = System.currentTimeMillis() + 5000L;
-		while (thread.getState() != Thread.State.WAITING) {
-			if (System.currentTimeMillis() > deadline) {
-				return false;
-			}
-			Thread.yield();
-		}
-		return true;
-	}
-
-	private static Object field(final Object target, final String name) {
-		try {
-			final Field field = target.getClass().getDeclaredField(name);
-			field.setAccessible(true);
-			return field.get(target);
-		} catch (final ReflectiveOperationException exception) {
-			throw new AssertionError(exception);
-		}
 	}
 
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)

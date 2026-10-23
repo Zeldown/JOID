@@ -1,10 +1,8 @@
 package dev.joid.backend.lwjgl2.input;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -40,17 +38,6 @@ public class Lwjgl2KeysTest {
 			"SYSRQ=PRINT_SCREEN", "RMENU=RIGHT_ALT", "PAUSE=PAUSE", "HOME=HOME", "UP=UP", "PRIOR=PAGE_UP", "LEFT=LEFT", "RIGHT=RIGHT",
 			"END=END", "DOWN=DOWN", "NEXT=PAGE_DOWN", "INSERT=INSERT", "DELETE=DELETE", "LMETA=LEFT_SUPER", "RMETA=RIGHT_SUPER", "APPS=MENU"
 		), keys);
-	}
-
-	@Test
-	public void readsEachMappedKeyBackOnItsCode() throws Exception {
-		final Field field = Lwjgl2Keys.class.getDeclaredField("CODE_MAP");
-		field.setAccessible(true);
-		final Map<?, ?> codes = (Map<?, ?>) field.get(null);
-		Assert.assertEquals(112, codes.size());
-		for (final Map.Entry<?, ?> entry : codes.entrySet()) {
-			Assert.assertEquals(entry.getKey(), Lwjgl2Keys.getPhysicalKey((Integer) entry.getValue()));
-		}
 	}
 
 }

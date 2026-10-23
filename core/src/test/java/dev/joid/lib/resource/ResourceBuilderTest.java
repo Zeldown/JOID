@@ -1,6 +1,5 @@
 package dev.joid.lib.resource;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -26,10 +25,10 @@ import org.junit.rules.TemporaryFolder;
 
 import com.google.common.cache.Cache;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
-import dev.joid.lib.bridge.render.RecordingTexture;
 import dev.joid.lib.bridge.render.texture.TextureFilter;
 import dev.joid.lib.bridge.thread.QueueThreadBridge;
 import dev.joid.lib.resource.cache.IResourceCache;
@@ -38,6 +37,8 @@ import dev.joid.lib.resource.decoder.impl.AnimatedResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.RasterResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VectorResourceDecoder;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
+import dev.joid.lib.resource.resolver.IResourceResolver;
+import dev.joid.lib.resource.resolver.ResourceResolver;
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -121,20 +122,27 @@ public class ResourceBuilderTest {
 	}
 
 	@Test
-	public void resolvesABufferedImage() {
-		final BufferedImage image = new BufferedImage(8, 4, BufferedImage.TYPE_INT_ARGB);
-		final Resource resource = ResourceBuilder.create().cache(null).of(image);
-		Assert.assertTrue(resource.getDecoder() instanceof RasterResourceDecoder);
-		Assert.assertTrue(resource.getUniqueId(), resource.getUniqueId().startsWith("image_"));
-	}
+	public void resolvesAnInputThroughTheResourceResolvers() {
+		final Object input = new Object();
+		final IResourceResolver resolver = new IResourceResolver() {
 
-	@Test
-	public void resolvesATexture() {
-		final RecordingTexture texture = new RecordingTexture();
-		final Resource resource = ResourceBuilder.create().cache(null).of(texture);
-		Assert.assertNull(resource.getDecoder());
-		Assert.assertSame(texture, resource.getTexture());
-		Assert.assertTrue(resource.getUniqueId(), resource.getUniqueId().matches("texture_\\d+"));
+			@Override
+			public boolean supports(final @NonNull Object other) {
+				return other == input;
+			}
+
+			@Override
+			public @NonNull Resource resolve(final @NonNull ResourceBuilder builder, final @NonNull Object other) {
+				return builder.compute("resolved", () -> ResourceData.create("resolved", null));
+			}
+
+		};
+		ResourceResolver.register(resolver);
+		try {
+			Assert.assertEquals("resolved", ResourceBuilder.create().cache(null).of(input).getUniqueId());
+		} finally {
+			ResourceResolver.unregister(resolver);
+		}
 	}
 
 	@Test
@@ -231,7 +239,7 @@ public class ResourceBuilderTest {
 		final Thread main = Thread.currentThread();
 		final AtomicBoolean waited = new AtomicBoolean();
 		final Thread releaser = new Thread(() -> {
-			waited.set(ResourceBuilderTest.awaitWaiting(main));
+			waited.set(TestUtils.awaitWaiting(main));
 			asset.release.countDown();
 		});
 		releaser.start();
@@ -288,7 +296,7 @@ public class ResourceBuilderTest {
 		final Thread main = Thread.currentThread();
 		final AtomicBoolean waited = new AtomicBoolean();
 		final Thread releaser = new Thread(() -> {
-			waited.set(ResourceBuilderTest.awaitWaiting(main));
+			waited.set(TestUtils.awaitWaiting(main));
 			asset.release.countDown();
 		});
 		releaser.start();
@@ -418,17 +426,6 @@ public class ResourceBuilderTest {
 
 	private static InputStream stream(final String path) {
 		return ResourceBuilderTest.class.getResourceAsStream(path);
-	}
-
-	private static boolean awaitWaiting(final Thread thread) {
-		final long deadline = System.currentTimeMillis() + 5000L;
-		while (thread.getState() != Thread.State.WAITING) {
-			if (System.currentTimeMillis() > deadline) {
-				return false;
-			}
-			Thread.yield();
-		}
-		return true;
 	}
 
 	private static final class MapResourceCache implements IResourceCache {

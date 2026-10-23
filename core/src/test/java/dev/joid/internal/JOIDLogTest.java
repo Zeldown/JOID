@@ -31,12 +31,12 @@ public class JOIDLogTest {
 
 	@Test
 	public void prefixesItsWarnings() {
-		Assert.assertEquals("[JOID] The resource photo.heic cannot be read" + System.lineSeparator(), JOIDLogTest.capture(() -> JOIDLog.warn("The resource photo.heic cannot be read")));
+		Assert.assertEquals("[JOID] The resource photo.heic cannot be read" + System.lineSeparator(), TestUtils.captureErr(() -> JOIDLog.warn("The resource photo.heic cannot be read")));
 	}
 
 	@Test
 	public void printsTheStackOfTheCauseAfterTheWarning() {
-		final String output = JOIDLogTest.capture(() -> JOIDLog.warn("The listener failed", new IllegalStateException("broken")));
+		final String output = TestUtils.captureErr(() -> JOIDLog.warn("The listener failed", new IllegalStateException("broken")));
 		final String[] lines = output.split(System.lineSeparator());
 		Assert.assertEquals("[JOID] The listener failed", lines[0]);
 		Assert.assertEquals("java.lang.IllegalStateException: broken", lines[1]);
@@ -45,7 +45,7 @@ public class JOIDLogTest {
 
 	@Test
 	public void warnsOnceForEachKey() {
-		final String output = JOIDLogTest.capture(() -> {
+		final String output = TestUtils.captureErr(() -> {
 			JOIDLog.warnOnce("JOIDLogTest.once.first", "first");
 			JOIDLog.warnOnce("JOIDLogTest.once.first", "first again");
 			JOIDLog.warnOnce("JOIDLogTest.once.second", "second");
@@ -55,7 +55,7 @@ public class JOIDLogTest {
 
 	@Test
 	public void printsTheStackOnceForEachKey() {
-		final String output = JOIDLogTest.capture(() -> {
+		final String output = TestUtils.captureErr(() -> {
 			for (int i = 0; i < 3; i++) {
 				JOIDLog.warnOnce("JOIDLogTest.stack", "The pull failed", new IllegalArgumentException("frame " + i));
 			}
@@ -71,9 +71,9 @@ public class JOIDLogTest {
 		final AtomicInteger built = new AtomicInteger();
 		try {
 			JOIDEnv.devMode(false);
-			final String production = JOIDLogTest.capture(() -> JOIDLog.devWarnOnce("JOIDLogTest.dev", () -> "dev " + built.incrementAndGet()));
+			final String production = TestUtils.captureErr(() -> JOIDLog.devWarnOnce("JOIDLogTest.dev", () -> "dev " + built.incrementAndGet()));
 			JOIDEnv.devMode(true);
-			final String development = JOIDLogTest.capture(() -> {
+			final String development = TestUtils.captureErr(() -> {
 				JOIDLog.devWarnOnce("JOIDLogTest.dev", () -> "dev " + built.incrementAndGet());
 				JOIDLog.devWarnOnce("JOIDLogTest.dev", () -> "dev " + built.incrementAndGet());
 			});
@@ -83,18 +83,6 @@ public class JOIDLogTest {
 		} finally {
 			JOIDEnv.devMode(devMode);
 		}
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(error);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 }

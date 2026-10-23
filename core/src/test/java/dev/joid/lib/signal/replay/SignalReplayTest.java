@@ -1,10 +1,7 @@
 package dev.joid.lib.signal.replay;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.lang.reflect.ReflectPermission;
-import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +17,7 @@ import dev.joid.demo.replay.ReplayLocalUI;
 import dev.joid.demo.replay.ReplayPitfallsUI;
 import dev.joid.demo.replay.ReplayScenarioUI;
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -551,18 +549,13 @@ public class SignalReplayTest {
 	}
 
 	private static String capture(final boolean devMode, final Runnable runnable) {
-		final PrintStream error = System.err;
 		final boolean previous = JOIDEnv.isDevMode();
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		JOIDEnv.devMode(devMode);
 		try {
-			JOIDEnv.devMode(devMode);
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
+			return TestUtils.captureErr(runnable).replace("\r\n", "\n");
 		} finally {
-			System.setErr(error);
 			JOIDEnv.devMode(previous);
 		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8).replace("\r\n", "\n");
 	}
 
 }

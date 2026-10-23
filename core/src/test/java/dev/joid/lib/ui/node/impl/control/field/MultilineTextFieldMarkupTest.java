@@ -176,28 +176,6 @@ public class MultilineTextFieldMarkupTest {
 	}
 
 	@Test
-	public void movesThroughEveryPositionOfATagWithTheArrows() {
-		final MultilineTextFieldNode field = this.field("a<b>bc</b>d", true).cursorPosition(1);
-		for (int position = 2; position <= 5; position++) {
-			this.press(field, Key.RIGHT);
-			Assert.assertEquals(position, field.getCursorPosition());
-		}
-		this.press(field, Key.LEFT);
-		Assert.assertEquals(4, field.getCursorPosition());
-	}
-
-	@Test
-	public void goesToTheStartAndTheEndOfItsTextWithHomeAndEnd() {
-		for (final boolean markup : new boolean[] {true, false}) {
-			final MultilineTextFieldNode field = this.field("<b>aaaa bbbbb\ncc</b>", markup).cursorPosition(5);
-			this.press(field, Key.END);
-			Assert.assertEquals(20, field.getCursorPosition());
-			this.press(field, Key.HOME);
-			Assert.assertEquals(0, field.getCursorPosition());
-		}
-	}
-
-	@Test
 	public void keepsTheCursorColumnOnTheVisibleWidthWithUpAndDown() {
 		final MultilineTextFieldNode field = this.field("<b>aaaa bbbbb cc</b>", true).cursorPosition(5);
 		this.press(field, Key.DOWN);
@@ -259,17 +237,6 @@ public class MultilineTextFieldMarkupTest {
 		this.type(field, "y");
 		Assert.assertEquals("ay<b>xbc</b>d", field.getText());
 		Assert.assertEquals(Arrays.asList("ay<b>xbc</b>d"), this.lines(field));
-	}
-
-	@Test
-	public void typesInsideATagLikeAnyText() {
-		final MultilineTextFieldNode field = this.field("a<b>bc</b>d", true).cursorPosition(2);
-		this.type(field, "z");
-		Assert.assertEquals("a<zb>bc</b>d", field.getText());
-		field.cursorPosition(3);
-		this.press(field, Key.BACKSPACE);
-		Assert.assertEquals("a<b>bc</b>d", field.getText());
-		Assert.assertEquals(2, field.getCursorPosition());
 	}
 
 	@Test

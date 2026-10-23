@@ -26,7 +26,6 @@ public class SignalContextTest {
 		SignalContext.current().takeReads();
 	}
 
-
 	@Test
 	public void tracesNothingByDefault() throws InterruptedException {
 		final Signal<String> signal = new Signal<>("a");

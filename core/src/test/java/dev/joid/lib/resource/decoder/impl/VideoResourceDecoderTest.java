@@ -1,11 +1,9 @@
 package dev.joid.lib.resource.decoder.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +32,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.FileAsset;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -105,8 +104,8 @@ public class VideoResourceDecoderTest {
 		final VideoResourceDecoder vp8 = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/alpha-vp8.webm"));
 		vp9.decode(ResourceData.create("alpha-vp9.webm", null));
 		vp8.decode(ResourceData.create("alpha-vp8.webm", null));
-		Assert.assertEquals("libvpx-vp9", ((String) VideoResourceDecoderTest.field(vp9, "codec")));
-		Assert.assertEquals("libvpx", ((String) VideoResourceDecoderTest.field(vp8, "codec")));
+		Assert.assertEquals("libvpx-vp9", ((String) TestUtils.field(vp9, "codec")));
+		Assert.assertEquals("libvpx", ((String) TestUtils.field(vp8, "codec")));
 	}
 
 	@Test
@@ -127,9 +126,9 @@ public class VideoResourceDecoderTest {
 	@Test
 	public void copiesItsAssetIntoTheCacheUnderTheHashOfItsContent() throws IOException, NoSuchAlgorithmException {
 		final VideoResourceDecoder decoder = this.frames();
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "file"));
+		Assert.assertNull(TestUtils.field(decoder, "file"));
 		decoder.decode(ResourceData.create("frames.mkv", null));
-		final File file = ((File) VideoResourceDecoderTest.field(decoder, "file"));
+		final File file = ((File) TestUtils.field(decoder, "file"));
 		final byte[] bytes = VideoResourceDecoderTest.bytes("frames.mkv");
 		Assert.assertEquals(String.format(Locale.ROOT, "%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest(bytes))), file.getName());
 		Assert.assertEquals("video", file.getParentFile().getName());
@@ -144,7 +143,7 @@ public class VideoResourceDecoderTest {
 		this.decoders.add(decoder);
 		final ResourceData data = ResourceData.create("frames.mkv", null);
 		decoder.decode(data);
-		Assert.assertSame(file, VideoResourceDecoderTest.field(decoder, "file"));
+		Assert.assertSame(file, TestUtils.field(decoder, "file"));
 		Assert.assertTrue(decoder.getAsset() instanceof FileAsset);
 		Assert.assertEquals(16, data.getWidth());
 	}
@@ -157,7 +156,7 @@ public class VideoResourceDecoderTest {
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
 		decoder.clear(data);
 		Assert.assertTrue(file.isFile());
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "file"));
+		Assert.assertNull(TestUtils.field(decoder, "file"));
 	}
 
 	@Test
@@ -170,11 +169,11 @@ public class VideoResourceDecoderTest {
 			this.decoders.add(fork);
 			final ResourceData data = VideoResourceDecoderTest.load(decoder);
 			final ResourceData forked = VideoResourceDecoderTest.load(fork);
-			Assert.assertSame(decoder, VideoResourceDecoderTest.field(fork, "origin"));
-			Assert.assertSame(VideoResourceDecoderTest.field(decoder, "file"), VideoResourceDecoderTest.field(fork, "file"));
-			Assert.assertNotSame(VideoResourceDecoderTest.field(decoder, "grabber"), VideoResourceDecoderTest.field(fork, "grabber"));
+			Assert.assertSame(decoder, TestUtils.field(fork, "origin"));
+			Assert.assertSame(TestUtils.field(decoder, "file"), TestUtils.field(fork, "file"));
+			Assert.assertNotSame(TestUtils.field(decoder, "grabber"), TestUtils.field(fork, "grabber"));
 			Assert.assertEquals(16, forked.getWidth());
-			final File copy = ((File) VideoResourceDecoderTest.field(decoder, "file"));
+			final File copy = ((File) TestUtils.field(decoder, "file"));
 			decoder.clear(data);
 			Assert.assertTrue(copy.isFile());
 			fork.clear(forked);
@@ -203,16 +202,16 @@ public class VideoResourceDecoderTest {
 		for (final String path : new String[] {"/video/opus-vp9.webm", "/dev/joid/lib/resource/decoder/impl/voiced.mkv"}) {
 			final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream(path));
 			VideoResourceDecoderTest.load(decoder);
-			Assert.assertTrue(path, ((FFmpegFrameGrabber) VideoResourceDecoderTest.field(decoder, "grabber")).getFormatContext().start_time() < 0L);
+			Assert.assertTrue(path, ((FFmpegFrameGrabber) TestUtils.field(decoder, "grabber")).getFormatContext().start_time() < 0L);
 			decoder.seek(0D);
 			final long deadline = System.currentTimeMillis() + 5000L;
-			while (!((boolean) VideoResourceDecoderTest.field(decoder, "ended")) && ((ArrayBlockingQueue<?>) VideoResourceDecoderTest.field(decoder, "frameQueue")).remainingCapacity() > 0) {
+			while (!((boolean) TestUtils.field(decoder, "ended")) && ((ArrayBlockingQueue<?>) TestUtils.field(decoder, "frameQueue")).remainingCapacity() > 0) {
 				Assert.assertTrue(path + " did not fill its queue in 5 s", System.currentTimeMillis() < deadline);
 				Thread.sleep(1L);
 			}
 
-			final double rate = ((FFmpegFrameGrabber) VideoResourceDecoderTest.field(decoder, "grabber")).getSampleRate();
-			final int queued = VideoResourceDecoderTest.queuedSamples(((VideoAudioPlayer) VideoResourceDecoderTest.field(decoder, "audioPlayer")));
+			final double rate = ((FFmpegFrameGrabber) TestUtils.field(decoder, "grabber")).getSampleRate();
+			final int queued = VideoResourceDecoderTest.queuedSamples(((VideoAudioPlayer) TestUtils.field(decoder, "audioPlayer")));
 			Assert.assertTrue(path + " " + queued, queued > 0);
 			Assert.assertTrue(path + " " + queued, queued <= Math.ceil(VideoResourceDecoderTest.audioEnd(path) * rate));
 			decoder.release();
@@ -223,7 +222,7 @@ public class VideoResourceDecoderTest {
 	public void keepsTheAudioOfAWebmOnceLooped() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm")).loop(true);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		for (int frame = 0; ((double) VideoResourceDecoderTest.field(decoder, "loopOffset")) <= 0D; frame++) {
+		for (int frame = 0; ((double) TestUtils.field(decoder, "loopOffset")) <= 0D; frame++) {
 			Assert.assertTrue("The webm did not loop in 600 frames", frame < 600);
 			this.play(decoder, data, 1);
 		}
@@ -273,13 +272,13 @@ public class VideoResourceDecoderTest {
 	public void loopsAWebmWhoseAudioStartsBeforeZeroUnderAFrozenClock() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/video/opus-vp9.webm")).loop(true);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		Assert.assertTrue(((FFmpegFrameGrabber) VideoResourceDecoderTest.field(decoder, "grabber")).getFormatContext().start_time() < 0L);
+		Assert.assertTrue(((FFmpegFrameGrabber) TestUtils.field(decoder, "grabber")).getFormatContext().start_time() < 0L);
 		for (int frame = 0; frame < 60; frame++) {
 			this.play(decoder, data, 1);
 			Assert.assertTrue("frame " + frame, decoder.isSettled());
 		}
 		Assert.assertTrue(decoder.isPlaying());
-		Assert.assertTrue(((double) VideoResourceDecoderTest.field(decoder, "loopOffset")) > 0D);
+		Assert.assertTrue(((double) TestUtils.field(decoder, "loopOffset")) > 0D);
 	}
 
 	@Test
@@ -289,7 +288,7 @@ public class VideoResourceDecoderTest {
 		final VideoResourceDecoder decoder = this.decoder(file);
 		final ResourceData data = ResourceData.create("frames.mkv", null);
 		decoder.decode(data);
-		Assert.assertSame(file, VideoResourceDecoderTest.field(decoder, "file"));
+		Assert.assertSame(file, TestUtils.field(decoder, "file"));
 		Assert.assertEquals(16, data.getWidth());
 	}
 
@@ -299,8 +298,8 @@ public class VideoResourceDecoderTest {
 		final ResourceData data = ResourceData.create("frames.mkv", decoder);
 		decoder.init(data);
 		decoder.prepare(data);
-		Assert.assertEquals(2, ((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures")).length);
-		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[0], data.getTextures()[0]);
+		Assert.assertEquals(2, ((ITexture[]) TestUtils.field(decoder, "textures")).length);
+		Assert.assertSame(((ITexture[]) TestUtils.field(decoder, "textures"))[0], data.getTextures()[0]);
 		for (final RecordingTexture texture : VideoResourceDecoderTest.textures(decoder)) {
 			Assert.assertEquals(1, texture.getWidth());
 			Assert.assertArrayEquals(new int[] {0}, texture.getPixels());
@@ -316,7 +315,7 @@ public class VideoResourceDecoderTest {
 			Assert.assertEquals(8, texture.getHeight());
 			Assert.assertEquals(20, texture.getPixels()[0] & 0xFF, 3);
 		}
-		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[0], data.getTextures()[0]);
+		Assert.assertSame(((ITexture[]) TestUtils.field(decoder, "textures"))[0], data.getTextures()[0]);
 		Assert.assertTrue(decoder.isAutoplay());
 		Assert.assertTrue(decoder.isPlaying());
 	}
@@ -353,7 +352,7 @@ public class VideoResourceDecoderTest {
 	public void playsOnceDecodedWhenAskedBefore() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.frames().autoplay(false);
 		Assert.assertSame(decoder, decoder.play());
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertNull(TestUtils.field(decoder, "grabber"));
 		Assert.assertFalse(decoder.isPlaying());
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
 		Assert.assertTrue(decoder.isPlaying());
@@ -395,10 +394,10 @@ public class VideoResourceDecoderTest {
 		Assert.assertEquals(1, decoder.getDisplayedFrameIndex());
 		Assert.assertEquals(0.1D, decoder.getCurrentTime(), 1E-9D);
 		Assert.assertEquals(0.1D, decoder.getProgress(), 1E-9D);
-		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[0], data.getTextures()[0]);
+		Assert.assertSame(((ITexture[]) TestUtils.field(decoder, "textures"))[0], data.getTextures()[0]);
 		this.play(decoder, data, 6);
 		Assert.assertEquals(60, VideoResourceDecoderTest.shade(data), 3);
-		Assert.assertSame(((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[1], data.getTextures()[0]);
+		Assert.assertSame(((ITexture[]) TestUtils.field(decoder, "textures"))[1], data.getTextures()[0]);
 	}
 
 	@Test
@@ -407,7 +406,7 @@ public class VideoResourceDecoderTest {
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
 		this.play(decoder, data, 70);
 		Assert.assertFalse(decoder.isPlaying());
-		Assert.assertTrue(((boolean) VideoResourceDecoderTest.field(decoder, "ended")));
+		Assert.assertTrue(((boolean) TestUtils.field(decoder, "ended")));
 		Assert.assertTrue(decoder.isSettled());
 		Assert.assertEquals(200, VideoResourceDecoderTest.shade(data), 3);
 		Assert.assertEquals(0.9D, decoder.getCurrentTime(), 1E-9D);
@@ -419,11 +418,11 @@ public class VideoResourceDecoderTest {
 		for (final boolean loop : new boolean[] {false, true}) {
 			final VideoResourceDecoder decoder = this.frames().loop(loop);
 			final ResourceData data = VideoResourceDecoderTest.load(decoder);
-			final String error = VideoResourceDecoderTest.capture(() -> {
+			final String error = TestUtils.captureErr(() -> {
 				VideoResourceDecoderTest.breakTheGrabber(decoder);
 				try {
 					this.play(decoder, data, 70);
-					final Thread thread = (Thread) VideoResourceDecoderTest.field(decoder, "decodeThread");
+					final Thread thread = (Thread) TestUtils.field(decoder, "decodeThread");
 					if (thread != null) {
 						thread.join(5000L);
 						Assert.assertFalse("The decode thread did not stop in 5 s", thread.isAlive());
@@ -628,7 +627,7 @@ public class VideoResourceDecoderTest {
 		Assert.assertSame(decoder, decoder.stop());
 		Assert.assertFalse(decoder.isPlaying());
 		Assert.assertFalse(decoder.isPaused());
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "decodeThread"));
+		Assert.assertNull(TestUtils.field(decoder, "decodeThread"));
 		Assert.assertTrue(decoder.isSettled());
 	}
 
@@ -639,8 +638,8 @@ public class VideoResourceDecoderTest {
 		decoder.release();
 		final ResourceData data = ResourceData.create("frames.mkv", null);
 		decoder.decode(data);
-		Assert.assertTrue(((boolean) VideoResourceDecoderTest.field(decoder, "released")));
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertTrue(((boolean) TestUtils.field(decoder, "released")));
+		Assert.assertNull(TestUtils.field(decoder, "grabber"));
 		Assert.assertFalse(decoder.isPlaying());
 		Assert.assertEquals(0, data.getWidth());
 	}
@@ -658,7 +657,7 @@ public class VideoResourceDecoderTest {
 			final ResourceData copy = ResourceData.create("alpha-vp9.webm", null);
 			decoder.decode(data);
 			other.decode(copy);
-			Assert.assertEquals(((File) VideoResourceDecoderTest.field(decoder, "file")), ((File) VideoResourceDecoderTest.field(other, "file")));
+			Assert.assertEquals(((File) TestUtils.field(decoder, "file")), ((File) TestUtils.field(other, "file")));
 			decoder.clear(data);
 			other.clear(copy);
 			Assert.assertEquals(1, directory.list((parent, name) -> !name.startsWith(".")).length);
@@ -673,8 +672,8 @@ public class VideoResourceDecoderTest {
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
 		final List<RecordingTexture> textures = VideoResourceDecoderTest.textures(decoder);
 		decoder.clear(data);
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "textures"));
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertNull(TestUtils.field(decoder, "textures"));
+		Assert.assertNull(TestUtils.field(decoder, "grabber"));
 		for (final RecordingTexture texture : textures) {
 			Assert.assertTrue(texture.isDeleted());
 		}
@@ -704,7 +703,7 @@ public class VideoResourceDecoderTest {
 		this.play(decoder, data, 3);
 		decoder.clear(data);
 		decoder.play();
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertNull(TestUtils.field(decoder, "grabber"));
 		Assert.assertFalse(decoder.isPlaying());
 		final ResourceData reloaded = VideoResourceDecoderTest.load(decoder);
 		Assert.assertTrue(decoder.isPlaying());
@@ -719,8 +718,8 @@ public class VideoResourceDecoderTest {
 		this.play(decoder, data, 20);
 		decoder.release();
 		Assert.assertSame(decoder, decoder.play());
-		Assert.assertFalse(((boolean) VideoResourceDecoderTest.field(decoder, "released")));
-		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertFalse(((boolean) TestUtils.field(decoder, "released")));
+		Assert.assertNotNull(TestUtils.field(decoder, "grabber"));
 		this.play(decoder, data, 7);
 		Assert.assertTrue(decoder.isPlaying());
 		Assert.assertEquals(40, VideoResourceDecoderTest.shade(data), 3);
@@ -735,9 +734,9 @@ public class VideoResourceDecoderTest {
 		VideoResourceDecoderTest.load(decoder);
 		decoder.release();
 		Files.delete(file.toPath());
-		final String error = VideoResourceDecoderTest.capture(decoder::play);
+		final String error = TestUtils.captureErr(decoder::play);
 		Assert.assertTrue(error, error.startsWith("[JOID] The video " + file.getPath() + " cannot be reopened ("));
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "grabber"));
+		Assert.assertNull(TestUtils.field(decoder, "grabber"));
 		Assert.assertFalse(decoder.isPlaying());
 	}
 
@@ -749,7 +748,7 @@ public class VideoResourceDecoderTest {
 		JOIDEnv.devMode(false);
 		final String error;
 		try {
-			error = VideoResourceDecoderTest.capture(() -> data.generate(false));
+			error = TestUtils.captureErr(() -> data.generate(false));
 		} finally {
 			JOIDEnv.devMode(devMode);
 		}
@@ -788,7 +787,7 @@ public class VideoResourceDecoderTest {
 	public void streamsItsAudioThroughTheAudioBridge() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv"));
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
+		Assert.assertNotNull(TestUtils.field(decoder, "audioPlayer"));
 		Assert.assertEquals("create 8000x1", this.audio.calls.get(0));
 		this.play(decoder, data, 60);
 		Assert.assertTrue(this.audio.calls.contains("write"));
@@ -799,7 +798,7 @@ public class VideoResourceDecoderTest {
 		decoder.stop();
 		decoder.release();
 		Assert.assertEquals(Arrays.asList("pause", "play", "stop", "stop", "stop", "delete"), this.audio.calls);
-		Assert.assertNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
+		Assert.assertNull(TestUtils.field(decoder, "audioPlayer"));
 	}
 
 	@Test
@@ -807,14 +806,14 @@ public class VideoResourceDecoderTest {
 		final String path = "/dev/joid/lib/resource/decoder/impl/still.mkv";
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream(path));
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		final ArrayBlockingQueue<?> queue = (ArrayBlockingQueue<?>) VideoResourceDecoderTest.field(VideoResourceDecoderTest.field(decoder, "audioPlayer"), "sampleQueue");
+		final ArrayBlockingQueue<?> queue = (ArrayBlockingQueue<?>) TestUtils.field(TestUtils.field(decoder, "audioPlayer"), "sampleQueue");
 		final long full = System.currentTimeMillis() + 5000L;
 		while (queue.remainingCapacity() > 0) {
 			Assert.assertTrue("The audio queue did not fill in 5 s", System.currentTimeMillis() < full);
 			Thread.sleep(1L);
 		}
 		final long deadline = System.currentTimeMillis() + 5000L;
-		while (!((boolean) VideoResourceDecoderTest.field(decoder, "ended"))) {
+		while (!((boolean) TestUtils.field(decoder, "ended"))) {
 			Assert.assertTrue("The video did not end in 5 s", System.currentTimeMillis() < deadline);
 			decoder.update(data);
 			Thread.sleep(1L);
@@ -851,7 +850,7 @@ public class VideoResourceDecoderTest {
 		Assert.assertEquals(5F, decoder.getReferenceDistance(), 0F);
 		Assert.assertSame(decoder, decoder.location(1F, 2F, 3F).referenceDistance(2F).maxDistance(9F));
 		decoder.decode(ResourceData.create("voiced.mkv", null));
-		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
+		Assert.assertNotNull(TestUtils.field(decoder, "audioPlayer"));
 		decoder.location(4F, 5F, 6F).referenceDistance(3F).maxDistance(12F);
 		Assert.assertEquals(4D, decoder.getLocation().getX(), 0D);
 		Assert.assertEquals(5D, decoder.getLocation().getY(), 0D);
@@ -865,7 +864,7 @@ public class VideoResourceDecoderTest {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv")).volume(0F);
 		decoder.decode(ResourceData.create("voiced.mkv", null));
 		Assert.assertEquals(0F, decoder.getVolume(), 0F);
-		Assert.assertNotNull(VideoResourceDecoderTest.field(decoder, "audioPlayer"));
+		Assert.assertNotNull(TestUtils.field(decoder, "audioPlayer"));
 	}
 
 	@Test
@@ -897,14 +896,14 @@ public class VideoResourceDecoderTest {
 	public void streamsTheAudioOfAMutedVideoWithoutGain() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/voiced.mkv")).volume(0F);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		final Object player = VideoResourceDecoderTest.field(decoder, "audioPlayer");
+		final Object player = TestUtils.field(decoder, "audioPlayer");
 		this.play(decoder, data, 60);
 		Assert.assertTrue(this.audio.calls.contains("write"));
 		Assert.assertFalse(this.audio.gains.isEmpty());
 		Assert.assertTrue(this.audio.gains.toString(), this.audio.gains.stream().allMatch(gain -> gain == 0F));
 		decoder.volume(1F);
 		this.play(decoder, data, 1);
-		Assert.assertSame(player, VideoResourceDecoderTest.field(decoder, "audioPlayer"));
+		Assert.assertSame(player, TestUtils.field(decoder, "audioPlayer"));
 		Assert.assertEquals(0.3F, this.audio.gains.get(this.audio.gains.size() - 1), 1E-6F);
 	}
 
@@ -992,7 +991,7 @@ public class VideoResourceDecoderTest {
 	public void showsTheFrameItSeeksToBeforeItsDecode() throws InterruptedException {
 		final VideoResourceDecoder decoder = this.frames().autoplay(false).seek(0.5D);
 		final ResourceData data = VideoResourceDecoderTest.load(decoder);
-		Assert.assertEquals(0.5D, ((FFmpegFrameGrabber) VideoResourceDecoderTest.field(decoder, "grabber")).getTimestamp() / 1000000D, 0.05D);
+		Assert.assertEquals(0.5D, ((FFmpegFrameGrabber) TestUtils.field(decoder, "grabber")).getTimestamp() / 1000000D, 0.05D);
 		Assert.assertEquals(119, VideoResourceDecoderTest.shade(data), 3);
 		decoder.play();
 		this.play(decoder, data, 1);
@@ -1127,8 +1126,8 @@ public class VideoResourceDecoderTest {
 
 	private static List<RecordingTexture> textures(final VideoResourceDecoder decoder) {
 		final List<RecordingTexture> textures = new ArrayList<>();
-		textures.add((RecordingTexture) ((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[0]);
-		textures.add((RecordingTexture) ((ITexture[]) VideoResourceDecoderTest.field(decoder, "textures"))[1]);
+		textures.add((RecordingTexture) ((ITexture[]) TestUtils.field(decoder, "textures"))[0]);
+		textures.add((RecordingTexture) ((ITexture[]) TestUtils.field(decoder, "textures"))[1]);
 		return textures;
 	}
 
@@ -1136,22 +1135,10 @@ public class VideoResourceDecoderTest {
 		return Asset.of(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/" + name)).read();
 	}
 
-	private static String capture(final Runnable runnable) {
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(previous);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
-	}
-
 	private static void breakTheGrabber(final VideoResourceDecoder decoder) {
 		try {
-			synchronized (VideoResourceDecoderTest.field(decoder, "grabberLock")) {
-				((FFmpegFrameGrabber) VideoResourceDecoderTest.field(decoder, "grabber")).stop();
+			synchronized (TestUtils.field(decoder, "grabberLock")) {
+				((FFmpegFrameGrabber) TestUtils.field(decoder, "grabber")).stop();
 			}
 		} catch (final Exception exception) {
 			throw new AssertionError(exception);
@@ -1160,19 +1147,9 @@ public class VideoResourceDecoderTest {
 
 	private static void buffer(final VideoResourceDecoder decoder) throws InterruptedException {
 		final long deadline = System.currentTimeMillis() + 5000L;
-		while (((ArrayBlockingQueue<?>) VideoResourceDecoderTest.field(decoder, "frameQueue")).remainingCapacity() > 0) {
+		while (((ArrayBlockingQueue<?>) TestUtils.field(decoder, "frameQueue")).remainingCapacity() > 0) {
 			Assert.assertTrue("The frame queue did not fill in 5 s", System.currentTimeMillis() < deadline);
 			Thread.sleep(1L);
-		}
-	}
-
-	private static Object field(final Object target, final String name) {
-		try {
-			final Field field = target.getClass().getDeclaredField(name);
-			field.setAccessible(true);
-			return field.get(target);
-		} catch (final ReflectiveOperationException exception) {
-			throw new AssertionError(exception);
 		}
 	}
 

@@ -1,13 +1,10 @@
 package dev.joid.lib.video;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.nio.Buffer;
 import java.nio.ShortBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.audio.IAudioBridge;
@@ -60,12 +58,12 @@ public class VideoAudioPlayerTest {
 	public void playsWithoutSoundWithoutAudioBridge() {
 		BridgeHandler.AUDIO.unregister(this.audio);
 		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, VideoAudioPlayerTest.video("mute.mp4"));
-		final String error = VideoAudioPlayerTest.capture(player::play);
+		final String error = TestUtils.captureErr(player::play);
 		VideoAudioPlayerTest.push(player, 16, 1024);
 		player.update(0D);
 		final int queued = VideoAudioPlayerTest.queueSize(player);
 		BridgeHandler.AUDIO.register(this.audio);
-		final String again = VideoAudioPlayerTest.capture(player::play);
+		final String again = TestUtils.captureErr(player::play);
 		Assert.assertEquals("[JOID] The video mute.mp4 plays without sound (java.lang.IllegalStateException: No audio bridge registered, call BridgeHandler.AUDIO.register before using JOID), register an audio bridge and check the audio device" + System.lineSeparator(), error);
 		Assert.assertEquals("", again);
 		Assert.assertEquals(16, queued);
@@ -75,8 +73,8 @@ public class VideoAudioPlayerTest {
 	@Test
 	public void warnsOnceForEachVideoWithoutSound() {
 		BridgeHandler.AUDIO.unregister(this.audio);
-		final String first = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer(1, 8000, VideoAudioPlayerTest.video("twice.mp4")).play());
-		final String second = VideoAudioPlayerTest.capture(() -> new VideoAudioPlayer(1, 8000, VideoAudioPlayerTest.video("twice.mp4")).play());
+		final String first = TestUtils.captureErr(() -> new VideoAudioPlayer(1, 8000, VideoAudioPlayerTest.video("twice.mp4")).play());
+		final String second = TestUtils.captureErr(() -> new VideoAudioPlayer(1, 8000, VideoAudioPlayerTest.video("twice.mp4")).play());
 		BridgeHandler.AUDIO.register(this.audio);
 		Assert.assertTrue(first, first.startsWith("[JOID] The video twice.mp4 plays without sound ("));
 		Assert.assertEquals("", second);
@@ -457,18 +455,6 @@ public class VideoAudioPlayerTest {
 			}
 			player.pushSamples(new Buffer[] {ShortBuffer.wrap(samples)}, 0);
 		}
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(previous);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	private static final class RecordingAudioBridge implements IAudioBridge {

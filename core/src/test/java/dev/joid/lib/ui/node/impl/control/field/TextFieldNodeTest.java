@@ -1564,6 +1564,9 @@ public class TextFieldNodeTest {
 		this.press(field, Key.HOME);
 		Assert.assertEquals(2, TextFieldNodeTest.anchor(field));
 		Assert.assertEquals(0, field.getCursorPosition());
+		this.bridges.getWindow().getKeys().remove(Key.LEFT_SHIFT);
+		this.press(field, Key.END);
+		Assert.assertEquals(-1, TextFieldNodeTest.anchor(field));
 	}
 
 	@Test

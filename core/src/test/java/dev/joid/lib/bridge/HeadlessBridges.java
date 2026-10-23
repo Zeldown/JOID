@@ -129,6 +129,10 @@ public final class HeadlessBridges extends ExternalResource {
 		return this;
 	}
 
+	public static int countTheAnimators() {
+		return HeadlessBridges.<Set<?>>field(TweenAnimator.class, null, "RUNNING_SET").size();
+	}
+
 	public static void stopTheAnimators() {
 		HeadlessBridges.<Set<?>>field(TweenAnimator.class, null, "RUNNING_SET").clear();
 	}

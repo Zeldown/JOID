@@ -1,8 +1,5 @@
 package dev.joid.lib.ui.event;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,14 +10,15 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.impl.node.NodeMouseEvent;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.control.checkbox.CheckboxNodeTest.Checkbox;
@@ -45,7 +43,7 @@ public class EventFlowTest {
 		final FlowNode above = new FlowNode("above", this.trace);
 		final FlowNode below = new FlowNode("below", this.trace).zindex(-1);
 		final FlowNode parent = new FlowNode("parent", this.trace).append(above, below);
-		this.bridges.open(new FlowUI(parent)).move(150D, 150D).frames(2);
+		this.bridges.open(new NodeUI(parent)).move(150D, 150D).frames(2);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("above handle", "above internal", "above monitor", "parent handle", "parent internal", "below handle", "below internal", "below monitor", "parent monitor"), this.trace);
@@ -56,7 +54,7 @@ public class EventFlowTest {
 		final FlowNode above = new FlowNode("above", this.trace).handleMousePressed(event -> event.consume());
 		final FlowNode below = new FlowNode("below", this.trace).zindex(-1);
 		final FlowNode parent = new FlowNode("parent", this.trace).append(above, below);
-		this.bridges.open(new FlowUI(parent)).move(150D, 150D).frames(2);
+		this.bridges.open(new NodeUI(parent)).move(150D, 150D).frames(2);
 		this.trace.clear();
 		Assert.assertTrue(this.bridges.getUi().mousePressed(MouseButton.LEFT));
 		Assert.assertEquals(Arrays.asList("above handle", "above internal consumed", "above monitor", "parent internal consumed", "below internal consumed", "below monitor", "parent monitor"), this.trace);
@@ -65,7 +63,7 @@ public class EventFlowTest {
 	@Test
 	public void ordersTheListenersOfOneStepByPriority() {
 		final RectNode node = RectNode.create(100D, 100D, 100D, 100D).onClick(event -> this.trace.add("normal")).onClick(EventListener.priority(EventPriority.LOWEST, event -> this.trace.add("lowest"))).onClick(EventListener.priority(EventPriority.HIGHEST, event -> this.trace.add("highest")));
-		this.bridges.open(new FlowUI(node)).move(150D, 150D).frames(2);
+		this.bridges.open(new NodeUI(node)).move(150D, 150D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("highest", "normal", "lowest"), this.trace);
 	}
@@ -74,7 +72,7 @@ public class EventFlowTest {
 	public void keepsTheClickOfAButtonInsideACard() {
 		final RectNode button = RectNode.create(10D, 10D, 20D, 20D).onClick(event -> this.trace.add("button"));
 		final RectNode card = RectNode.create(100D, 100D, 100D, 100D).onClick(event -> this.trace.add("card")).handleMousePressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("card monitor " + event.isConsumed()))).append(button);
-		this.bridges.open(new FlowUI(card)).move(115D, 115D).frames(2);
+		this.bridges.open(new NodeUI(card)).move(115D, 115D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("button", "card monitor true"), this.trace);
 	}
@@ -85,7 +83,7 @@ public class EventFlowTest {
 		final FlowNode skeleton = new FlowNode("skeleton", this.trace);
 		final FlowNode child = new FlowNode("child", this.trace);
 		final FlowNode node = new FlowNode("node", this.trace).append(child).wait(waiting -> ready.get()).skeleton(waiting -> skeleton);
-		this.bridges.open(new FlowUI(node)).move(150D, 150D).frames(2);
+		this.bridges.open(new NodeUI(node)).move(150D, 150D).frames(2);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("skeleton handle", "skeleton internal", "skeleton monitor"), this.trace);
@@ -103,7 +101,7 @@ public class EventFlowTest {
 		final FlowNode third = new FlowNode("third", this.trace);
 		final FlowNode parent = new FlowNode("parent", this.trace).append(first, second, third);
 		second.handleMousePressed(event -> parent.remove(second));
-		this.bridges.open(new FlowUI(parent)).move(150D, 150D).frames(2);
+		this.bridges.open(new NodeUI(parent)).move(150D, 150D).frames(2);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("third handle", "third internal", "third monitor", "second handle", "second internal", "second monitor", "first handle", "first internal", "first monitor", "parent handle", "parent internal", "parent monitor"), this.trace);
@@ -115,7 +113,7 @@ public class EventFlowTest {
 		final FlowNode second = new FlowNode("second", this.trace);
 		final FlowNode parent = new FlowNode("parent", this.trace).append(first, second);
 		second.handleMousePressed(event -> parent.append(new FlowNode("added", this.trace)));
-		this.bridges.open(new FlowUI(parent)).move(150D, 150D).frames(2);
+		this.bridges.open(new NodeUI(parent)).move(150D, 150D).frames(2);
 		this.trace.clear();
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertEquals(Arrays.asList("second handle", "second internal", "second monitor", "first handle", "first internal", "first monitor", "parent handle", "parent internal", "parent monitor"), this.trace);
@@ -124,7 +122,7 @@ public class EventFlowTest {
 	@Test
 	public void sendsAKeyToTheNodesThenToTheUiThenToItsShortcutsThenToItsMonitors() {
 		final RectNode node = RectNode.create(0D, 0D, 10D, 10D).handleKeyPressed(event -> this.trace.add("node"));
-		final FlowUI ui = new FlowUI(node);
+		final NodeUI ui = new NodeUI(node);
 		this.bridges.open(ui);
 		ui.handleKeyPressed(event -> this.trace.add("ui"));
 		ui.handleKeyPressed(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("monitor " + event.isConsumed())));
@@ -138,7 +136,7 @@ public class EventFlowTest {
 
 	@Test
 	public void letsTheUiConsumeTheKeysBeforeItsShortcuts() {
-		final FlowUI ui = new FlowUI();
+		final NodeUI ui = new NodeUI();
 		this.bridges.open(ui);
 		ui.handleKeyPressed(event -> event.consume());
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
@@ -149,7 +147,7 @@ public class EventFlowTest {
 	@Test
 	public void keepsAUiOpenWhenItRefusesToClose() {
 		final BooleanSignal locked = new BooleanSignal(true);
-		final FlowUI ui = new FlowUI();
+		final NodeUI ui = new NodeUI();
 		this.bridges.open(ui);
 		ui.beforeClose(event -> {
 			this.trace.add("before " + event.getUi().isClosed());
@@ -167,7 +165,7 @@ public class EventFlowTest {
 
 	@Test
 	public void closesAUiFromEscapeOnlyWhenItAccepts() {
-		final FlowUI ui = new FlowUI();
+		final NodeUI ui = new NodeUI();
 		this.bridges.open(ui);
 		ui.beforeClose(event -> event.cancel());
 		this.bridges.getUi().keyPressed(Key.ESCAPE, Key.ESCAPE);
@@ -193,7 +191,7 @@ public class EventFlowTest {
 			changes.add("refused " + event.getValue());
 			event.cancel();
 		}).onChange(event -> changes.add("changed " + event.getPrevious() + " " + event.getValue()));
-		this.bridges.open(new FlowUI(checkbox)).move(110D, 110D).frames(2);
+		this.bridges.open(new NodeUI(checkbox)).move(110D, 110D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertFalse(checkbox.isChecked());
 		checked.set(true);
@@ -220,7 +218,7 @@ public class EventFlowTest {
 			refused.add(event.getValue());
 			event.cancel();
 		});
-		this.bridges.open(new FlowUI(checkbox, toggle, control, selector, slider));
+		this.bridges.open(new NodeUI(checkbox, toggle, control, selector, slider));
 		checkbox.change(true);
 		toggle.change(true);
 		control.change("two");
@@ -242,7 +240,7 @@ public class EventFlowTest {
 	public void skipsTheChangeListenersOfARefusedToggle() {
 		final List<Object> changes = new ArrayList<>();
 		final Toggle toggle = new Toggle().state("on", 1).beforeChange(EventListener.priority(EventPriority.HIGH, event -> event.cancel())).beforeChange(event -> changes.add("normal")).onChange(event -> changes.add("changed"));
-		this.bridges.open(new FlowUI(toggle)).move(110D, 110D).frames(2);
+		this.bridges.open(new NodeUI(toggle)).move(110D, 110D).frames(2);
 		this.bridges.getUi().mousePressed(MouseButton.LEFT);
 		Assert.assertFalse(toggle.isToggle());
 		Assert.assertTrue(changes.isEmpty());
@@ -257,7 +255,7 @@ public class EventFlowTest {
 		final Switch control = new Switch().values("one", "two").value(state).<Switch>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
 		final Selector selector = new Selector().values("first", "second").value(option).<Selector>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
 		final Slider slider = new Slider().thumb(SliderNodeTest.thumb()).values(1, 2, 3).value(number).<Slider>beforeChange(event -> event.cancel()).onChange(event -> changes.add(event.getValue()));
-		this.bridges.open(new FlowUI(control, selector, slider));
+		this.bridges.open(new NodeUI(control, selector, slider));
 		state.set("two");
 		option.set("second");
 		number.set(3);
@@ -275,23 +273,11 @@ public class EventFlowTest {
 		checkbox.<Checkbox>onChange(event -> {
 			throw new IllegalStateException("broken");
 		}).onChange(event -> this.trace.add("next"));
-		this.bridges.open(new FlowUI(checkbox));
-		final String printed = EventFlowTest.capture(() -> checkbox.checked(true));
-		Assert.assertTrue(printed, printed.startsWith("[JOID] The onChange listener of Checkbox in FlowUI failed (java.lang.IllegalStateException: broken"));
+		this.bridges.open(new NodeUI(checkbox));
+		final String printed = TestUtils.captureErr(() -> checkbox.checked(true));
+		Assert.assertTrue(printed, printed.startsWith("[JOID] The onChange listener of Checkbox in NodeUI failed (java.lang.IllegalStateException: broken"));
 		Assert.assertEquals(Collections.singletonList("next"), this.trace);
 		Assert.assertTrue(checkbox.isChecked());
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(error);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	public static final class FlowNode extends Node {
@@ -310,22 +296,6 @@ public class EventFlowTest {
 		@Override
 		public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 			this.trace.add(this.name + " internal" + (event.isConsumed() ? " consumed" : ""));
-		}
-
-	}
-
-	@UIDataDebug(profiler = false, hotreload = false)
-	public static final class FlowUI extends UI {
-
-		private final Node[] nodes;
-
-		private FlowUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
 		}
 
 	}

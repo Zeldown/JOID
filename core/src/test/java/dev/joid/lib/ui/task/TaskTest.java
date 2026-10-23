@@ -19,8 +19,8 @@ import dev.joid.internal.JOID;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
@@ -43,7 +43,7 @@ public class TaskTest {
 
 	@Test
 	public void runsOnceItsDelayElapsed() {
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		final Task task = Task.create(100L).onRun(event -> this.runs.incrementAndGet()).attach(ui);
 		this.bridges.frames(6);
 		Assert.assertEquals(0, this.runs.get());
@@ -58,7 +58,7 @@ public class TaskTest {
 	@Test
 	public void runsItsListenersByPriorityAndPastAFailure() {
 		final List<String> trace = new ArrayList<>();
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		Task.create(0L).onRun(event -> trace.add("normal")).onRun(EventListener.priority(EventPriority.HIGH, event -> {
 			trace.add("high");
 			throw new IllegalStateException("broken");
@@ -77,7 +77,7 @@ public class TaskTest {
 
 	@Test
 	public void repeatsEveryPeriod() {
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		final Task task = Task.create(0L).every(48L).onRun(event -> this.runs.incrementAndGet()).attach(ui);
 		this.bridges.frames(7);
 		Assert.assertEquals(3, this.runs.get());
@@ -87,7 +87,7 @@ public class TaskTest {
 
 	@Test
 	public void stopsWhenDetachedFromItsOwnRun() {
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		Task.create(0L).every(0L).onRun(event -> {
 			if (this.runs.incrementAndGet() == 2) {
 				event.getTask().detach();
@@ -119,7 +119,7 @@ public class TaskTest {
 	@Test
 	public void waitsForItsNodeToJoinAUi() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		final Task task = Task.create(0L).every(0L).onRun(event -> this.runs.incrementAndGet()).attach(node);
 		this.bridges.frames(2);
 		Assert.assertEquals(0, this.runs.get());
@@ -131,7 +131,7 @@ public class TaskTest {
 
 	@Test
 	public void stopsWhenItsUiCloses() {
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		final Task task = Task.create(0L).every(0L).attach(ui);
 		JOID.close(ui);
 		Assert.assertFalse(task.isAttached());
@@ -140,7 +140,7 @@ public class TaskTest {
 
 	@Test
 	public void stopsWhenItsUiReloads() {
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		final Task task = Task.create(0L).every(0L).onRun(event -> this.runs.incrementAndGet()).attach(ui);
 		ui.reload();
 		this.bridges.frames(2);
@@ -150,7 +150,7 @@ public class TaskTest {
 
 	@Test
 	public void givesItselfToItsEvent() {
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		final List<Task> tasks = new ArrayList<>();
 		final Task task = Task.create(0L).onRun(event -> tasks.add(event.getTask())).attach(ui);
 		this.bridges.frame();
@@ -160,7 +160,7 @@ public class TaskTest {
 	@Test
 	public void runsInTheContextOfItsUi() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final TaskUI ui = this.open(node);
+		final NodeUI ui = this.open(node);
 		final List<UI> currents = new ArrayList<>();
 		Task.create(0L).onRun(event -> currents.add(UI.getCurrent())).attach(ui);
 		Task.create(0L).onRun(event -> currents.add(UI.getCurrent())).attach(node);
@@ -171,7 +171,7 @@ public class TaskTest {
 
 	@Test
 	public void keepsTheListOfItsOwnerInStep() {
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		final RectNode node = RectNode.create(0, 0, 100, 100);
 		final Task task = Task.create(0L).attach(ui);
 		Assert.assertSame(ui, task.getUi());
@@ -192,7 +192,7 @@ public class TaskTest {
 
 	@Test
 	public void exposesReadOnlyTaskLists() {
-		final TaskUI ui = this.open();
+		final NodeUI ui = this.open();
 		final RectNode node = RectNode.create(0, 0, 100, 100);
 		final Task task = Task.create(0L).attach(ui);
 		Task.create(0L).attach(node);
@@ -212,26 +212,10 @@ public class TaskTest {
 		Task.create(0L).onRun(null);
 	}
 
-	private TaskUI open(final Node... nodes) {
-		final TaskUI ui = new TaskUI(nodes);
+	private NodeUI open(final Node... nodes) {
+		final NodeUI ui = new NodeUI(nodes);
 		this.bridges.open(ui);
 		return ui;
-	}
-
-	@UIDataDebug(profiler = false, hotreload = false)
-	public static final class TaskUI extends UI {
-
-		private final Node[] nodes;
-
-		private TaskUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

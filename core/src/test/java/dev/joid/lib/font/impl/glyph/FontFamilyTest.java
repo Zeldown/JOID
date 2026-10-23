@@ -1,8 +1,5 @@
 package dev.joid.lib.font.impl.glyph;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.junit.After;
@@ -11,6 +8,7 @@ import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.font.FontWeight;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -144,18 +142,13 @@ public class FontFamilyTest {
 	}
 
 	private static String capture(final boolean devMode, final Runnable runnable) {
-		final PrintStream error = System.err;
 		final boolean previous = JOIDEnv.isDevMode();
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		JOIDEnv.devMode(devMode);
 		try {
-			JOIDEnv.devMode(devMode);
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
+			return TestUtils.captureErr(runnable);
 		} finally {
-			System.setErr(error);
 			JOIDEnv.devMode(previous);
 		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	@Getter

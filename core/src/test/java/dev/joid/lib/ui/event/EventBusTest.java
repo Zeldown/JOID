@@ -1,8 +1,5 @@
 package dev.joid.lib.ui.event;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,6 +8,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.ui.event.impl.node.NodeChangeEvent;
 import dev.joid.lib.ui.event.impl.node.NodeKeyEvent;
@@ -75,7 +73,7 @@ public class EventBusTest {
 		final EventListener<NodeChangeEvent.Pre<RectNode, Integer>> cancel = event -> event.cancel();
 		this.bus.listen(EventBusTest.KEY, EventListener.priority(EventPriority.MONITOR, consume));
 		this.bus.listen(EventBusTest.CHANGE, EventListener.priority(EventPriority.MONITOR, cancel));
-		final String printed = EventBusTest.capture(() -> {
+		final String printed = TestUtils.captureErr(() -> {
 			this.bus.fire(EventBusTest.KEY, key);
 			this.bus.fire(EventBusTest.CHANGE, change);
 		});
@@ -100,7 +98,7 @@ public class EventBusTest {
 			throw new IllegalArgumentException("broken");
 		}));
 		this.bus.listen(EventBusTest.KEY, event -> this.trace.add("next"));
-		final String printed = EventBusTest.capture(() -> this.bus.fire(EventBusTest.KEY, this.key()));
+		final String printed = TestUtils.captureErr(() -> this.bus.fire(EventBusTest.KEY, this.key()));
 		Assert.assertEquals(Collections.singletonList("next"), this.trace);
 		Assert.assertTrue(printed, printed.startsWith("[JOID] The handleKeyPressed listener of RectNode in TestUI failed (java.lang.IllegalArgumentException: broken"));
 	}
@@ -110,7 +108,7 @@ public class EventBusTest {
 		this.bus.listen(EventBusTest.KEY, event -> {
 			throw new IllegalArgumentException("broken");
 		});
-		final String printed = EventBusTest.capture(() -> {
+		final String printed = TestUtils.captureErr(() -> {
 			this.bus.fire(EventBusTest.KEY, this.key());
 			this.bus.fire(EventBusTest.KEY, this.key());
 		});
@@ -123,7 +121,7 @@ public class EventBusTest {
 		this.bus.listen(EventBusTest.CHANGE, event -> {
 			throw new IllegalStateException("broken");
 		});
-		EventBusTest.capture(() -> this.bus.fire(EventBusTest.CHANGE, change));
+		TestUtils.captureErr(() -> this.bus.fire(EventBusTest.CHANGE, change));
 		Assert.assertFalse(change.isCancelled());
 	}
 
@@ -164,18 +162,6 @@ public class EventBusTest {
 
 	private NodeKeyEvent<RectNode> key() {
 		return NodeKeyEvent.create(RectNode.create(0D, 0D, 10D, 10D), Key.A, Key.A, null);
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(error);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 }

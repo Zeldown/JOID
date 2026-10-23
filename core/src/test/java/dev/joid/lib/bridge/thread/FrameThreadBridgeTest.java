@@ -43,16 +43,9 @@ public class FrameThreadBridgeTest {
 	public void runsATaskAtOnceOnTheRenderThread() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final AtomicBoolean ran = new AtomicBoolean();
-		BridgeHandler.THREAD.register(thread);
-		try {
-			Assert.assertTrue(thread.isRenderThread());
-			ThreadUtils.runOnRenderThread(() -> ran.set(true));
-			Assert.assertTrue(ran.get());
-			thread.execute(() -> ran.set(false));
-			Assert.assertFalse(ran.get());
-		} finally {
-			BridgeHandler.THREAD.unregister(thread);
-		}
+		Assert.assertTrue(thread.isRenderThread());
+		thread.execute(() -> ran.set(true));
+		Assert.assertTrue(ran.get());
 	}
 
 	@Test

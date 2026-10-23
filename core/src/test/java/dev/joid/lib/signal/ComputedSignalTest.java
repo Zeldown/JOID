@@ -1,9 +1,6 @@
 package dev.joid.lib.signal;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.ref.WeakReference;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,6 +15,7 @@ import org.junit.Test;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.iterable.MapSignal;
 import dev.joid.lib.signal.impl.iterable.SetSignal;
@@ -408,12 +406,12 @@ public class ComputedSignalTest {
 		try {
 			JOIDEnv.devMode(true);
 			final ComputedSignal<Integer> fixed = Signal.from(() -> 42);
-			final String output = ComputedSignalTest.capture(() -> {
+			final String output = TestUtils.captureErr(() -> {
 				Assert.assertEquals(42, fixed.get().intValue());
 				Assert.assertEquals(42, Signal.from(() -> 42).get().intValue());
 			});
 			Assert.assertTrue(output, output.startsWith("[JOID] A Signal.from(...) of ComputedSignalTest reads no signal, so its value never changes: read a signal with get() inside it, or pass a lambda to the setter to read the value at every frame" + System.lineSeparator()));
-			Assert.assertEquals("", ComputedSignalTest.capture(() -> count.map(value -> value + 1).get()));
+			Assert.assertEquals("", TestUtils.captureErr(() -> count.map(value -> value + 1).get()));
 		} finally {
 			JOIDEnv.devMode(devMode);
 		}
@@ -539,18 +537,6 @@ public class ComputedSignalTest {
 			color.get();
 		}
 		Assert.assertEquals(3000, evaluations.get());
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(error);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 }

@@ -1,6 +1,7 @@
 package dev.joid.demo.ui;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import org.junit.After;
@@ -12,7 +13,10 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.DemoFont;
+import dev.joid.demo.ui.animation.UIDemoAnimation;
+import dev.joid.demo.ui.animation.UIDemoTween;
 import dev.joid.demo.ui.control.UIDemoControl;
+import dev.joid.demo.ui.model.UIDemoModel;
 import dev.joid.demo.ui.simple.UIDemoSimple;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -58,6 +62,19 @@ public class UIDemoChoiceTest {
 		this.bridges.frames(120);
 		Assert.assertFalse(menu.isClosed());
 		Assert.assertTrue(this.bridges.getUi().isOpen(menu));
+	}
+
+	@Test
+	public void stopsTheEndlessAnimatorsOfADemoOnceClosed() {
+		for (final Supplier<UI> supplier : Arrays.<Supplier<UI>>asList(UIDemoAnimation::new, UIDemoTween::new, UIDemoModel::new)) {
+			final int running = HeadlessBridges.countTheAnimators();
+			final UI demo = supplier.get();
+			this.bridges.open(demo);
+			Assert.assertTrue(demo.getClass().getSimpleName(), HeadlessBridges.countTheAnimators() > running);
+			demo.getData().active(false);
+			Assert.assertTrue(demo.fireClose());
+			Assert.assertEquals(demo.getClass().getSimpleName(), running, HeadlessBridges.countTheAnimators());
+		}
 	}
 
 	@Test

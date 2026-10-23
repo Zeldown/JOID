@@ -1,9 +1,6 @@
 package dev.joid.lib.ui.node;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,6 +20,7 @@ import com.google.gson.JsonParser;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -2373,7 +2371,7 @@ public class NodeTest {
 	@Test
 	public void refusesToDragATopLevelNodeInsideItsParent() {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).draggable(DraggableProperty.parent());
-		final String output = NodeTest.capture(() -> this.press(node, 110D, 110D));
+		final String output = TestUtils.captureErr(() -> this.press(node, 110D, 110D));
 		Assert.assertTrue(output, output.contains("The node RectNode is dragged inside its parent but sits at the top of its UI, attach it to a node or pick another area such as DraggableProperty.ui()"));
 		Assert.assertFalse(node.isDragging());
 		Assert.assertFalse(node.isDragging());
@@ -2543,7 +2541,7 @@ public class NodeTest {
 		this.bridges.open(new NodeUI(parent));
 		events.clear();
 		JOIDWarnings.forget();
-		final String output = NodeTest.capture(() -> parent.remove(sloppy, sibling));
+		final String output = TestUtils.captureErr(() -> parent.remove(sloppy, sibling));
 		Assert.assertTrue(output, output.contains("The detach of SloppyNode in NodeUI failed (java.lang.IllegalStateException: The detach of this node fails on purpose), the node is detached anyway"));
 		Assert.assertTrue(parent.getChildren().isEmpty());
 		Assert.assertTrue(NodeTest.<IndexedList<Node>>field(parent, "drawList").ordered().isEmpty());
@@ -2573,7 +2571,7 @@ public class NodeTest {
 			}
 
 		};
-		NodeTest.capture(() -> {
+		TestUtils.captureErr(() -> {
 			try {
 				parent.append(child);
 				Assert.fail("The init of the child fails");
@@ -3131,7 +3129,7 @@ public class NodeTest {
 		final List<String> events = new ArrayList<>();
 		final RecordingNode after = new RecordingNode("after", events, 0D, 0D, 10D, 10D);
 		JOIDWarnings.forget();
-		final String output = NodeTest.capture(() -> {
+		final String output = TestUtils.captureErr(() -> {
 			this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 100D, 100D).append(new FailingNode(), after)));
 			events.clear();
 			this.bridges.frames(2);
@@ -3151,14 +3149,14 @@ public class NodeTest {
 			}
 
 		};
-		final String output = NodeTest.capture(() -> this.bridges.open(new NodeUI(node)).frames(3));
+		final String output = TestUtils.captureErr(() -> this.bridges.open(new NodeUI(node)).frames(3));
 		Assert.assertTrue(frames[0] > 2);
 		Assert.assertEquals(1, output.split("failed \\(java.lang.IllegalStateException", -1).length - 1);
 	}
 
 	@Test
 	public void keepsTheFrameGoingWhenAnInputFails() {
-		final String output = NodeTest.capture(() -> {
+		final String output = TestUtils.captureErr(() -> {
 			this.bridges.open(new NodeUI(new FailingNode())).move(5D, 5D).frames(2);
 			this.bridges.getUi().mousePressed(MouseButton.LEFT);
 			this.bridges.getUi().mousePressed(MouseButton.LEFT);
@@ -3587,7 +3585,7 @@ public class NodeTest {
 			}
 		}).append(RectNode.create(0D, 0D, 10D, 10D)).watch(signal, WatchProperty.BODY, WatchProperty.CLEAR_CHILDREN);
 		this.bridges.open(new NodeUI(node));
-		final String error = NodeTest.capture(() -> signal.set(1));
+		final String error = TestUtils.captureErr(() -> signal.set(1));
 		Assert.assertTrue(error, error.contains("Body failed"));
 		Assert.assertTrue(error, error.contains("the remaining properties of this watch still apply"));
 		Assert.assertTrue(node.getChildren().isEmpty());
@@ -3922,7 +3920,7 @@ public class NodeTest {
 		});
 		this.bridges.open(new NodeUI(node)).frame();
 		failing[0] = true;
-		final String errors = NodeTest.capture(() -> this.bridges.frames(3));
+		final String errors = TestUtils.captureErr(() -> this.bridges.frames(3));
 		Assert.assertEquals(1, errors.split("The visible of RectNode cannot take its new value", -1).length - 1);
 		Assert.assertTrue(node.isVisible());
 	}
@@ -4068,18 +4066,6 @@ public class NodeTest {
 		RectNode.create(0D, 100D, 400D, 100D).color(new Color(0.3F, 0.5F, 0.7F, 1F)).attach(column);
 		RectNode.create(0D, 200D, 400D, 100D).color(new Color(0.5F, 0.7F, 0.9F, 1F)).attach(column);
 		return column;
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(error);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	private static int links(final Node node) {

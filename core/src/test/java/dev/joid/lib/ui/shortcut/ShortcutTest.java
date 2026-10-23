@@ -22,8 +22,8 @@ import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.input.key.Key;
+import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.core.UI;
-import dev.joid.lib.ui.core.data.UIDataDebug;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 import dev.joid.lib.ui.node.Node;
@@ -49,7 +49,7 @@ public class ShortcutTest {
 	@Test
 	public void runsAShortcutOfItsUiAfterItsNodes() {
 		final RectNode node = RectNode.create(0, 0, 100, 100).handleKeyPressed(event -> this.trace.add("node"));
-		final ShortcutUI ui = this.open(node);
+		final NodeUI ui = this.open(node);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Arrays.asList("node", "shortcut"), this.trace);
@@ -57,7 +57,7 @@ public class ShortcutTest {
 
 	@Test
 	public void runsItsTriggerListenersByPriority() {
-		final ShortcutUI ui = this.open();
+		final NodeUI ui = this.open();
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("normal")).onTrigger(EventListener.priority(EventPriority.HIGHEST, event -> this.trace.add("highest " + event.getKey()))).onTrigger(EventListener.priority(EventPriority.MONITOR, event -> this.trace.add("monitor"))).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Arrays.asList("highest S", "normal", "monitor"), this.trace);
@@ -66,7 +66,7 @@ public class ShortcutTest {
 	@Test
 	public void runsAShortcutThatOverridesTheFocusBeforeItsNodes() {
 		final RectNode node = RectNode.create(0, 0, 100, 100).handleKeyPressed(event -> this.trace.add("node"));
-		final ShortcutUI ui = this.open(node);
+		final NodeUI ui = this.open(node);
 		Shortcut.create(Key.S).overrideFocus(true).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Collections.singletonList("shortcut"), this.trace);
@@ -76,7 +76,7 @@ public class ShortcutTest {
 	@Test
 	public void leavesTheKeyToAFocusedField() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(new FieldFont(), 10F)).focused(true);
-		final ShortcutUI ui = this.open(field);
+		final NodeUI ui = this.open(field);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertTrue(this.trace.isEmpty());
@@ -86,7 +86,7 @@ public class ShortcutTest {
 	@Test
 	public void takesTheKeyFromAFocusedFieldWhenItOverridesTheFocus() {
 		final TextFieldNode field = TextFieldNode.create(100D, 100D, 200D).info(TextInfo.create(new FieldFont(), 10F)).focused(true);
-		final ShortcutUI ui = this.open(field);
+		final NodeUI ui = this.open(field);
 		Shortcut.create(Key.S).overrideFocus(true).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertEquals(Collections.singletonList("shortcut"), this.trace);
@@ -96,7 +96,7 @@ public class ShortcutTest {
 
 	@Test
 	public void takesTheKeyFromTheNextShortcuts() {
-		final ShortcutUI ui = this.open();
+		final NodeUI ui = this.open();
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("first")).attach(ui);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("second")).attach(ui);
 		ui.fireKeyPressed(Key.S, Key.S);
@@ -105,7 +105,7 @@ public class ShortcutTest {
 
 	@Test
 	public void letsTheKeyThroughWhenItDoesNotTrigger() {
-		final ShortcutUI ui = this.open();
+		final NodeUI ui = this.open();
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 		Assert.assertFalse(ui.fireKeyPressed(Key.D, Key.D));
 		Assert.assertTrue(this.trace.isEmpty());
@@ -113,7 +113,7 @@ public class ShortcutTest {
 
 	@Test
 	public void needsExactlyItsModifiers() {
-		final ShortcutUI ui = this.open();
+		final NodeUI ui = this.open();
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("plain")).attach(ui);
 		Shortcut.create(Key.S).ctrl(true).shift(true).onTrigger(event -> this.trace.add("ctrl shift")).attach(ui);
 		Shortcut.create(Key.S).alt(true).onTrigger(event -> this.trace.add("alt")).attach(ui);
@@ -135,7 +135,7 @@ public class ShortcutTest {
 		final AtomicBoolean enabled = new AtomicBoolean(true);
 		final RectNode node = RectNode.create(0, 0, 100, 100).visible(() -> shown.get()).enabled(() -> enabled.get());
 		final RectNode parent = RectNode.create(0, 0, 200, 200).append(node);
-		final ShortcutUI ui = this.open(parent);
+		final NodeUI ui = this.open(parent);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(node);
 		Assert.assertTrue(ui.fireKeyPressed(Key.S, Key.S));
 		shown.set(false);
@@ -158,7 +158,7 @@ public class ShortcutTest {
 	public void skipsAShortcutOfANodeHiddenWithItsParent() {
 		final AtomicBoolean shown = new AtomicBoolean(true);
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final ShortcutUI ui = this.open(RectNode.create(0, 0, 200, 200).visible(() -> shown.get()).append(node));
+		final NodeUI ui = this.open(RectNode.create(0, 0, 200, 200).visible(() -> shown.get()).append(node));
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(node);
 		shown.set(false);
 		this.bridges.frame();
@@ -169,7 +169,7 @@ public class ShortcutTest {
 	@Test
 	public void prefersTheShortcutOfANodeToTheShortcutOfItsUi() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final ShortcutUI ui = this.open(node);
+		final NodeUI ui = this.open(node);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("ui")).attach(ui);
 		Shortcut.create(Key.S).onTrigger(event -> this.trace.add("node")).attach(node);
 		ui.fireKeyPressed(Key.S, Key.S);
@@ -178,7 +178,7 @@ public class ShortcutTest {
 
 	@Test
 	public void stopsOnceDetached() {
-		final ShortcutUI ui = this.open();
+		final NodeUI ui = this.open();
 		final Shortcut shortcut = Shortcut.create(Key.S).onTrigger(event -> this.trace.add("shortcut")).attach(ui).detach();
 		Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
 		Assert.assertFalse(shortcut.isAttached());
@@ -189,7 +189,7 @@ public class ShortcutTest {
 
 	@Test
 	public void stopsWhenItsUiCloses() {
-		final ShortcutUI ui = this.open();
+		final NodeUI ui = this.open();
 		final Shortcut shortcut = Shortcut.create(Key.S).attach(ui);
 		JOID.close(ui);
 		Assert.assertFalse(shortcut.isAttached());
@@ -199,7 +199,7 @@ public class ShortcutTest {
 	@Test
 	public void movesToItsNewTarget() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final ShortcutUI ui = this.open(node);
+		final NodeUI ui = this.open(node);
 		final Shortcut shortcut = Shortcut.create(Key.S).attach(ui).attach(node);
 		Assert.assertTrue(ui.getShortcutList().isEmpty());
 		Assert.assertEquals(Collections.singletonList(shortcut), node.getShortcutList());
@@ -210,7 +210,7 @@ public class ShortcutTest {
 	@Test
 	public void keepsTheListOfItsOwnerInStep() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final ShortcutUI ui = this.open(node);
+		final NodeUI ui = this.open(node);
 		final Shortcut shortcut = Shortcut.create(Key.S).attach(ui);
 		Assert.assertEquals(Collections.singletonList(shortcut), ui.getShortcutList());
 		shortcut.attach(node);
@@ -227,14 +227,14 @@ public class ShortcutTest {
 
 	@Test(expected = UnsupportedOperationException.class)
 	public void exposesAReadOnlyShortcutList() {
-		final ShortcutUI ui = this.open();
+		final NodeUI ui = this.open();
 		Shortcut.create(Key.S).attach(ui);
 		ui.getShortcutList().clear();
 	}
 
 	@Test
 	public void givesItselfAndTheKeyToItsEvent() {
-		final ShortcutUI ui = this.open();
+		final NodeUI ui = this.open();
 		final List<ShortcutEvent> events = new ArrayList<>();
 		final Shortcut shortcut = Shortcut.create(Key.S).onTrigger(events::add).attach(ui);
 		ui.fireKeyPressed(Key.S, Key.S);
@@ -246,7 +246,7 @@ public class ShortcutTest {
 	@Test
 	public void runsInTheContextOfItsUi() {
 		final RectNode node = RectNode.create(0, 0, 100, 100);
-		final ShortcutUI ui = this.open(node);
+		final NodeUI ui = this.open(node);
 		final List<UI> currents = new ArrayList<>();
 		Shortcut.create(Key.S).onTrigger(event -> currents.add(UI.getCurrent())).attach(ui);
 		Shortcut.create(Key.D).onTrigger(event -> currents.add(UI.getCurrent())).attach(node);
@@ -264,7 +264,7 @@ public class ShortcutTest {
 		JOIDEnv.devMode(true);
 		try {
 			System.setErr(new PrintStream(output, true));
-			final ShortcutUI ui = this.open();
+			final NodeUI ui = this.open();
 			Shortcut.create("unknown binding").onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 			Shortcut.create("unknown binding");
 			Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
@@ -288,26 +288,10 @@ public class ShortcutTest {
 		Shortcut.create(Key.S).onTrigger(null);
 	}
 
-	private ShortcutUI open(final Node... nodes) {
-		final ShortcutUI ui = new ShortcutUI(nodes);
+	private NodeUI open(final Node... nodes) {
+		final NodeUI ui = new NodeUI(nodes);
 		this.bridges.open(ui);
 		return ui;
-	}
-
-	@UIDataDebug(profiler = false, hotreload = false)
-	public static final class ShortcutUI extends UI {
-
-		private final Node[] nodes;
-
-		private ShortcutUI(final Node... nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public void init() {
-			super.add(this.nodes);
-		}
-
 	}
 
 }

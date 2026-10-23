@@ -37,6 +37,7 @@ import com.google.common.hash.Hashing;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.cache.FileCacheWriter;
@@ -382,18 +383,13 @@ public class OpenTypeMsdfSourceTest {
 	}
 
 	private static String capture(final Runnable runnable) {
-		final PrintStream previous = System.out;
 		final boolean devMode = JOIDEnv.isDevMode();
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		JOIDEnv.devMode(true);
 		try {
-			JOIDEnv.devMode(true);
-			System.setOut(new PrintStream(output, true));
-			runnable.run();
+			return TestUtils.captureOut(runnable);
 		} finally {
-			System.setOut(previous);
 			JOIDEnv.devMode(devMode);
 		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	private static int wrongSigns(final Font font, final int codepoint) {

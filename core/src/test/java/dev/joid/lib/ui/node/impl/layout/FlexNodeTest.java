@@ -52,6 +52,16 @@ public class FlexNodeTest {
 	}
 
 	@Test
+	public void laysOutItsChildrenWhileLoading() {
+		final RectNode second = RectNode.create(0D, 0D, 200D, 50D);
+		final FlexNode flex = FlexNode.vertical(100D, 100D, 200D).margin(10D).append(RectNode.create(0D, 0D, 200D, 50D), second).wait(node -> false);
+		this.bridges.open(new NodeUI(flex));
+		Assert.assertFalse(flex.isMounted());
+		Assert.assertEquals(60D, second.getY(), 0D);
+		Assert.assertEquals(110D, flex.getHeight(), 0D);
+	}
+
+	@Test
 	public void linesUpTheChildrenOfARow() {
 		final RectNode first = RectNode.create(0D, 0D, 50D, 100D);
 		final RectNode second = RectNode.create(0D, 0D, 30D, 100D);

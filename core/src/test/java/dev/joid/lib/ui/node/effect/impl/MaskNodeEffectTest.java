@@ -39,21 +39,15 @@ public class MaskNodeEffectTest {
 	}
 
 	@Test
-	public void startsAtTheCornerOfItsNode() {
+	public void keepsItsBoundsFromTheCornerOfItsNode() {
 		final MaskNodeEffect effect = MaskNodeEffect.create().width(40D).height(30D);
 		Assert.assertEquals(0D, effect.getX(), 0D);
 		Assert.assertEquals(0D, effect.getY(), 0D);
 		Assert.assertEquals(40D, MaskNodeEffectTest.read(effect, "widthSupplier"), 0D);
 		Assert.assertEquals(30D, MaskNodeEffectTest.read(effect, "heightSupplier"), 0D);
-	}
-
-	@Test
-	public void keepsItsBounds() {
-		final MaskNodeEffect effect = MaskNodeEffect.create().x(5D).y(6D).width(40D).height(30D);
+		effect.x(5D).y(6D);
 		Assert.assertEquals(5D, effect.getX(), 0D);
 		Assert.assertEquals(6D, effect.getY(), 0D);
-		Assert.assertEquals(40D, MaskNodeEffectTest.read(effect, "widthSupplier"), 0D);
-		Assert.assertEquals(30D, MaskNodeEffectTest.read(effect, "heightSupplier"), 0D);
 	}
 
 	@Test

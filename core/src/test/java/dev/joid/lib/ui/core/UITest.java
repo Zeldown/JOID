@@ -53,6 +53,7 @@ import dev.joid.internal.HotReload;
 import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.asset.Asset;
@@ -397,14 +398,14 @@ public class UITest {
 		final UI ui = UITest.hotReloaded(this.folder.newFolder("classes"), new AtomicInteger());
 		JOIDEnv.devMode(true);
 		ui.getDebug().hotreload(false);
-		UITest.out(() -> ui.load(1920D, 1080D));
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
 		try {
 			Assert.assertNull(UITest.location(ui));
 			ui.getDebug().hotreload(true);
-			UITest.out(() -> ui.draw(0D, 0D));
+			TestUtils.captureOut(() -> ui.draw(0D, 0D));
 			Assert.assertNotNull(UITest.location(ui));
 			ui.getDebug().hotreload(false);
-			UITest.out(() -> ui.draw(0D, 0D));
+			TestUtils.captureOut(() -> ui.draw(0D, 0D));
 			Assert.assertNull(UITest.location(ui));
 		} finally {
 			ui.dispose();
@@ -892,7 +893,7 @@ public class UITest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		RetryUI.failing = true;
 		try {
-			final String output = UITest.err(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+			final String output = TestUtils.captureErr(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
 			Assert.assertTrue(output, output.startsWith("[JOID] The reload of RetryUI failed (java.lang.NullPointerException: Init failed), fix init() then reload it again"));
 		} finally {
 			RetryUI.failing = false;
@@ -910,7 +911,7 @@ public class UITest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		StateFailureUI.failing = true;
 		try {
-			final String output = UITest.err(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+			final String output = TestUtils.captureErr(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
 			Assert.assertTrue(output, output.startsWith("[JOID] Init state failed"));
 			Assert.assertTrue(output, output.contains("java.lang.IllegalStateException: Init state failed"));
 			Assert.assertTrue(output, output.contains("\tat " + StateFailureUI.class.getName() + ".init("));
@@ -927,7 +928,7 @@ public class UITest {
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
 		RetryUI.failing = true;
 		try {
-			final String output = UITest.err(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+			final String output = TestUtils.captureErr(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
 			Assert.assertTrue(output, output.startsWith("[JOID] The reload of RetryUI failed (java.lang.NullPointerException: Init failed), fix init() then reload it again"));
 		} finally {
 			RetryUI.failing = false;
@@ -1053,7 +1054,7 @@ public class UITest {
 		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
 		RetryUI.failing = true;
 		try {
-			UITest.err(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+			TestUtils.captureErr(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
 		} finally {
 			RetryUI.failing = false;
 		}
@@ -1138,7 +1139,7 @@ public class UITest {
 	@Test
 	public void printsItsLoadTimeWithItsProfilerInDevMode() {
 		JOIDEnv.devMode(true);
-		final String output = UITest.out(() -> new ProfiledUI(this.trace).load(1920D, 1080D));
+		final String output = TestUtils.captureOut(() -> new ProfiledUI(this.trace).load(1920D, 1080D));
 		Assert.assertTrue(output, output.matches("\\[JOID\\] ProfiledUI loaded in \\d+\\.\\d\\dms" + System.lineSeparator()));
 	}
 
@@ -1146,21 +1147,21 @@ public class UITest {
 	public void printsItsLoadTimeOnlyOnItsFirstLoad() {
 		JOIDEnv.devMode(true);
 		final ProfiledUI ui = new ProfiledUI(this.trace);
-		UITest.out(() -> ui.load(1920D, 1080D));
-		Assert.assertEquals("", UITest.out(() -> ui.load(1366D, 768D)));
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
+		Assert.assertEquals("", TestUtils.captureOut(() -> ui.load(1366D, 768D)));
 	}
 
 	@Test
 	public void loadsQuietlyWithoutItsProfiler() {
 		JOIDEnv.devMode(true);
-		Assert.assertEquals("", UITest.out(() -> new TraceUI(this.trace).load(1920D, 1080D)));
+		Assert.assertEquals("", TestUtils.captureOut(() -> new TraceUI(this.trace).load(1920D, 1080D)));
 	}
 
 	@Test
 	public void warnsAboutASlowFrameWithItsProfilerInDevMode() {
 		JOIDEnv.devMode(true);
 		final ProfiledUI ui = new ProfiledUI(this.trace);
-		UITest.out(() -> this.bridges.open(ui));
+		TestUtils.captureOut(() -> this.bridges.open(ui));
 		ui.pause = 20L;
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -2038,7 +2039,7 @@ public class UITest {
 		final UnsavableStore store = ui.useStore(UnsavableStore.class, UnsavableStore::new);
 		try {
 			this.bridges.open(ui).open(other);
-			UITest.err(() -> this.bridges.getUi().closeAll());
+			TestUtils.captureErr(() -> this.bridges.getUi().closeAll());
 			Assert.assertEquals(Arrays.asList("ui", "other"), closed);
 			Assert.assertTrue(this.bridges.getUi().getUiList().isEmpty());
 		} finally {
@@ -2113,7 +2114,7 @@ public class UITest {
 		final UI first = UITest.hotReloaded(location, new AtomicInteger());
 		final UI second = UITest.hotReloaded(location, new AtomicInteger());
 		JOIDEnv.devMode(true);
-		UITest.out(() -> {
+		TestUtils.captureOut(() -> {
 			first.load(1920D, 1080D);
 			second.load(1920D, 1080D);
 		});
@@ -2138,10 +2139,10 @@ public class UITest {
 		final UI first = UITest.hotReloaded(location, new AtomicInteger());
 		final UI second = UITest.hotReloaded(location, new AtomicInteger());
 		JOIDEnv.devMode(true);
-		UITest.out(() -> first.load(1920D, 1080D));
+		TestUtils.captureOut(() -> first.load(1920D, 1080D));
 		final FileAlterationMonitor monitor = UITest.monitor(first);
 		first.dispose();
-		UITest.out(() -> second.load(1920D, 1080D));
+		TestUtils.captureOut(() -> second.load(1920D, 1080D));
 		try {
 			Assert.assertNotNull(UITest.monitor(second));
 			Assert.assertNotSame(monitor, UITest.monitor(second));
@@ -2164,7 +2165,7 @@ public class UITest {
 		final UI second = UITest.hotReloaded(new URL("jar:file:/mods/joid.jar!/"), new AtomicInteger());
 		JOIDEnv.devMode(true);
 		JOIDWarnings.forget();
-		final String errors = UITest.err(() -> {
+		final String errors = TestUtils.captureErr(() -> {
 			first.load(1920D, 1080D);
 			second.load(1920D, 1080D);
 		});
@@ -2189,7 +2190,7 @@ public class UITest {
 		Files.write(location.toPath(), new byte[] {1});
 		final UI ui = UITest.hotReloaded(location, inits);
 		JOIDEnv.devMode(true);
-		UITest.out(() -> ui.load(1920D, 1080D));
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
 		try {
 			final BlockingQueue<String> changes = UITest.listen(ui);
 			Files.write(location.toPath(), new byte[] {1, 2});
@@ -2197,7 +2198,7 @@ public class UITest {
 			UITest.await(changes, "stop");
 			Assert.assertTrue(UITest.isReloadPending(ui));
 			Assert.assertEquals(1, inits.get());
-			final String output = UITest.out(() -> ui.draw(0D, 0D));
+			final String output = TestUtils.captureOut(() -> ui.draw(0D, 0D));
 			Assert.assertFalse(UITest.isReloadPending(ui));
 			Assert.assertEquals(2, inits.get());
 			Assert.assertTrue(ui.isInitialized());
@@ -2215,7 +2216,7 @@ public class UITest {
 		Assert.assertTrue(type.getParentFile().mkdir());
 		final UI ui = UITest.hotReloaded(location, inits);
 		JOIDEnv.devMode(true);
-		UITest.out(() -> ui.load(1920D, 1080D));
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
 		try {
 			final BlockingQueue<String> changes = UITest.listen(ui);
 			Files.write(type.toPath(), new byte[] {1});
@@ -2223,13 +2224,13 @@ public class UITest {
 			UITest.await(changes, "stop");
 			Assert.assertTrue(UITest.isReloadPending(ui));
 			Assert.assertEquals(1, inits.get());
-			UITest.out(() -> ui.draw(0D, 0D));
+			TestUtils.captureOut(() -> ui.draw(0D, 0D));
 			Assert.assertEquals(2, inits.get());
 			Files.write(type.toPath(), new byte[] {1, 2});
 			Assert.assertTrue(type.setLastModified(type.lastModified() + 10000L));
 			UITest.await(changes, "file change ShopNode.class");
 			UITest.await(changes, "stop");
-			UITest.out(() -> ui.draw(0D, 0D));
+			TestUtils.captureOut(() -> ui.draw(0D, 0D));
 			Assert.assertEquals(3, inits.get());
 		} finally {
 			ui.dispose();
@@ -2243,14 +2244,14 @@ public class UITest {
 		final AtomicInteger inits = new AtomicInteger();
 		final UI ui = UITest.hotReloaded(location, inits);
 		JOIDEnv.devMode(true);
-		UITest.out(() -> ui.load(1920D, 1080D));
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
 		try {
 			final BlockingQueue<String> changes = UITest.listen(ui);
 			Files.write(other.toPath(), new byte[] {1});
 			UITest.await(changes, "file create logo.png");
 			UITest.await(changes, "stop");
 			Assert.assertFalse(UITest.isReloadPending(ui));
-			UITest.out(() -> ui.draw(0D, 0D));
+			TestUtils.captureOut(() -> ui.draw(0D, 0D));
 			Assert.assertEquals(1, inits.get());
 		} finally {
 			ui.dispose();
@@ -2267,7 +2268,7 @@ public class UITest {
 		Files.write(location.toPath(), new byte[] {1});
 		final UI ui = UITest.hotReloaded(location, inits);
 		JOIDEnv.devMode(true);
-		UITest.out(() -> ui.load(1920D, 1080D));
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
 		try {
 			final BlockingQueue<String> changes = UITest.listen(ui);
 			Files.write(other.toPath(), new byte[] {1});
@@ -2281,7 +2282,7 @@ public class UITest {
 			UITest.await(changes, "file delete other.txt", "directory delete assets");
 			UITest.await(changes, "stop");
 			Assert.assertFalse(UITest.isReloadPending(ui));
-			UITest.out(() -> ui.draw(0D, 0D));
+			TestUtils.captureOut(() -> ui.draw(0D, 0D));
 			Assert.assertEquals(1, inits.get());
 		} finally {
 			ui.dispose();
@@ -2294,7 +2295,7 @@ public class UITest {
 		Files.write(location.toPath(), new byte[] {1});
 		final UI ui = UITest.hotReloaded(location, new AtomicInteger());
 		JOIDEnv.devMode(true);
-		UITest.out(() -> ui.load(1920D, 1080D));
+		TestUtils.captureOut(() -> ui.load(1920D, 1080D));
 		Assert.assertNotNull(UITest.location(ui));
 		ui.dispose();
 		Assert.assertNull(UITest.location(ui));
@@ -2399,30 +2400,6 @@ public class UITest {
 			value = ui.lerpByFramerate(value, 100D, 0.1D, 0.001D);
 		}
 		return value;
-	}
-
-	private static String out(final Runnable runnable) {
-		final PrintStream previous = System.out;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(output, true));
-		try {
-			runnable.run();
-		} finally {
-			System.setOut(previous);
-		}
-		return output.toString();
-	}
-
-	private static String err(final Runnable runnable) {
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
-			runnable.run();
-		} finally {
-			System.setErr(previous);
-		}
-		return output.toString();
 	}
 
 	private static UI hotReloaded(final File location, final AtomicInteger inits) throws Exception {

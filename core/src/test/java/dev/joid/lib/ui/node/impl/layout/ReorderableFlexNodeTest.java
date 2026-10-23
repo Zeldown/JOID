@@ -19,8 +19,6 @@ import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.node.property.PositionProperty;
-import dev.joid.lib.utils.align.Align;
-import dev.joid.lib.utils.align.Axis;
 import dev.joid.lib.utils.list.IndexedList;
 
 public class ReorderableFlexNodeTest {
@@ -29,148 +27,11 @@ public class ReorderableFlexNodeTest {
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
 	@Test
-	public void stacksTheChildrenOfAColumn() {
-		final RectNode first = ReorderableFlexNodeTest.item();
-		final RectNode second = ReorderableFlexNodeTest.item();
-		final RectNode third = ReorderableFlexNodeTest.item();
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second, third);
-		this.bridges.open(new NodeUI(flex));
-		Assert.assertEquals(0D, first.getY(), 0D);
-		Assert.assertEquals(60D, second.getY(), 0D);
-		Assert.assertEquals(120D, third.getY(), 0D);
-		Assert.assertEquals(200D, flex.getWidth(), 0D);
-		Assert.assertEquals(170D, flex.getHeight(), 0D);
-		Assert.assertSame(Axis.VERTICAL, flex.getDirection());
-	}
-
-	@Test
-	public void linesUpTheChildrenOfARow() {
-		final RectNode first = RectNode.create(0D, 0D, 80D, 50D);
-		final RectNode second = RectNode.create(0D, 0D, 80D, 50D);
-		final RectNode third = RectNode.create(0D, 0D, 80D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNode.horizontal(100D, 100D, 50D).margin(10D);
-		flex.append(first, second, third);
-		this.bridges.open(new NodeUI(flex));
-		Assert.assertEquals(0D, first.getX(), 0D);
-		Assert.assertEquals(90D, second.getX(), 0D);
-		Assert.assertEquals(180D, third.getX(), 0D);
-		Assert.assertEquals(260D, flex.getWidth(), 0D);
-		Assert.assertEquals(50D, flex.getHeight(), 0D);
-		Assert.assertSame(Axis.HORIZONTAL, flex.getDirection());
-	}
-
-	@Test
-	public void addsTheOwnOffsetOfEachChild() {
-		final RectNode first = RectNode.create(15D, 5D, 200D, 50D);
-		final RectNode second = ReorderableFlexNodeTest.item();
-		this.bridges.open(new NodeUI(ReorderableFlexNodeTest.column(100D, 100D, first, second)));
-		Assert.assertEquals(5D, first.getY(), 0D);
-		Assert.assertEquals(15D, first.getX(), 0D);
-		Assert.assertEquals(60D, second.getY(), 0D);
-	}
-
-	@Test
-	public void neitherPlacesNorCountsAHiddenChild() {
-		final RectNode hidden = ReorderableFlexNodeTest.item().visible(() -> false);
-		final RectNode third = ReorderableFlexNodeTest.item();
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item(), hidden, third);
-		this.bridges.open(new NodeUI(flex));
-		Assert.assertEquals(0D, hidden.getY(), 0D);
-		Assert.assertEquals(60D, third.getY(), 0D);
-		Assert.assertEquals(110D, flex.getHeight(), 0D);
-	}
-
-	@Test
-	public void alignsTheChildrenOfAColumnAcrossItsWidth() {
-		final RectNode start = RectNode.create(20D, 0D, 100D, 50D);
-		final RectNode center = RectNode.create(20D, 0D, 100D, 50D);
-		final RectNode end = RectNode.create(20D, 0D, 100D, 50D);
-		this.bridges.open(new NodeUI(ReorderableFlexNode.vertical(0D, 0D, 300D).align(Align.START).append(start), ReorderableFlexNode.vertical(0D, 100D, 300D).align(Align.CENTER).append(center), ReorderableFlexNode.vertical(0D, 200D, 300D).align(Align.END).append(end)));
-		Assert.assertEquals(0D, start.getX(), 0D);
-		Assert.assertEquals(100D, center.getX(), 0D);
-		Assert.assertEquals(200D, end.getX(), 0D);
-	}
-
-	@Test
-	public void alignsTheChildrenOfARowAcrossItsHeight() {
-		final RectNode start = RectNode.create(0D, 20D, 50D, 40D);
-		final RectNode center = RectNode.create(0D, 20D, 50D, 40D);
-		final RectNode end = RectNode.create(0D, 20D, 50D, 40D);
-		this.bridges.open(new NodeUI(ReorderableFlexNode.horizontal(0D, 0D, 100D).align(Align.START).append(start), ReorderableFlexNode.horizontal(0D, 200D, 100D).align(Align.CENTER).append(center), ReorderableFlexNode.horizontal(0D, 400D, 100D).align(Align.END).append(end)));
-		Assert.assertEquals(0D, start.getY(), 0D);
-		Assert.assertEquals(30D, center.getY(), 0D);
-		Assert.assertEquals(60D, end.getY(), 0D);
-	}
-
-	@Test
-	public void leavesTheCrossAxisAloneWithoutAlignment() {
-		final RectNode column = RectNode.create(20D, 0D, 100D, 50D);
-		final RectNode row = RectNode.create(0D, 20D, 50D, 40D);
-		this.bridges.open(new NodeUI(ReorderableFlexNode.vertical(0D, 0D, 300D).append(column), ReorderableFlexNode.horizontal(0D, 200D, 100D).append(row)));
-		Assert.assertEquals(20D, column.getX(), 0D);
-		Assert.assertEquals(20D, row.getY(), 0D);
-	}
-
-	@Test
-	public void shrinksToNothingWithoutChildren() {
-		final ReorderableFlexNode column = ReorderableFlexNode.vertical(0D, 0D, 300D).margin(10D);
-		final ReorderableFlexNode row = ReorderableFlexNode.horizontal(0D, 0D, 100D).margin(10D);
-		this.bridges.open(new NodeUI(column, row));
-		Assert.assertEquals(0D, column.getHeight(), 0D);
-		Assert.assertEquals(0D, row.getWidth(), 0D);
-	}
-
-	@Test
-	public void placesAChildAddedAfterTheLayout() {
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item());
-		this.bridges.open(new NodeUI(flex));
-		final RectNode added = ReorderableFlexNodeTest.item();
-		flex.append(added);
-		this.bridges.frame();
-		Assert.assertEquals(60D, added.getY(), 0D);
-		Assert.assertEquals(110D, flex.getHeight(), 0D);
-	}
-
-	@Test
-	public void turnsIntoARowWithTheDirection() {
-		final RectNode first = RectNode.create(0D, 0D, 80D, 50D);
-		final RectNode second = RectNode.create(0D, 0D, 80D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, first, second).direction(Axis.HORIZONTAL);
-		this.bridges.open(new NodeUI(flex));
-		Assert.assertEquals(90D, second.getX(), 0D);
-		Assert.assertEquals(0D, second.getY(), 0D);
-		Assert.assertEquals(200D, flex.getWidth(), 0D);
-	}
-
-	@Test
-	public void keepsItsSettings() {
+	public void keepsItsAutoDrag() {
 		final ReorderableFlexNode flex = ReorderableFlexNode.vertical(0D, 0D, 300D);
-		Assert.assertEquals(0D, flex.getMargin(), 0D);
-		Assert.assertNull(flex.getAlign());
 		Assert.assertTrue(flex.isAutoDrag());
-		Assert.assertSame(flex, flex.margin(10D));
-		Assert.assertSame(flex, flex.align(Align.END));
 		Assert.assertSame(flex, flex.autoDrag(false));
-		Assert.assertSame(flex, flex.direction(Axis.HORIZONTAL));
-		Assert.assertEquals(10D, flex.getMargin(), 0D);
-		Assert.assertSame(Align.END, flex.getAlign());
 		Assert.assertFalse(flex.isAutoDrag());
-		Assert.assertSame(Axis.HORIZONTAL, flex.getDirection());
-	}
-
-	@Test
-	public void laysOutItsChildrenWhileLoading() {
-		final RectNode second = ReorderableFlexNodeTest.item();
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, ReorderableFlexNodeTest.item(), second).wait(node -> false);
-		this.bridges.open(new NodeUI(flex));
-		Assert.assertFalse(flex.isMounted());
-		Assert.assertEquals(60D, second.getY(), 0D);
-		Assert.assertEquals(110D, flex.getHeight(), 0D);
-	}
-
-	@Test(expected = NullPointerException.class)
-	public void refusesANullDirection() {
-		ReorderableFlexNode.vertical(0D, 0D, 300D).direction((Axis) null);
 	}
 
 	@Test
@@ -958,18 +819,6 @@ public class ReorderableFlexNodeTest {
 		this.bridges.frames(60);
 		Assert.assertEquals(Arrays.asList(second, first, added), flex.getChildren());
 		Assert.assertEquals(120D, added.getY(), 0D);
-	}
-
-	@Test
-	public void putsTheChildrenOnOneLineOnceTurnedIntoARow() {
-		final RectNode second = RectNode.create(0D, 0D, 50D, 50D);
-		final ReorderableFlexNode flex = ReorderableFlexNodeTest.column(100D, 100D, RectNode.create(0D, 0D, 50D, 50D), second);
-		this.bridges.open(new NodeUI(flex));
-		Assert.assertEquals(60D, second.getY(), 0D);
-		flex.direction(Axis.HORIZONTAL);
-		this.bridges.frame();
-		Assert.assertEquals(60D, second.getX(), 0D);
-		Assert.assertEquals(0D, second.getY(), 0D);
 	}
 
 	private RectNode scrollingColumn() {

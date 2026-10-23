@@ -1,11 +1,9 @@
 package dev.joid.lib.cache;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +27,7 @@ import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.JOIDWarnings;
+import dev.joid.internal.TestUtils;
 
 public class FileCacheTest {
 
@@ -202,7 +201,7 @@ public class FileCacheTest {
 			Files.createDirectories(entry.toPath());
 			FileCacheTest.write(new File(entry, "library"), "123");
 		}), 8L);
-		final String output = FileCacheTest.capture(() -> Assert.assertEquals(8L, FileCache.clean()));
+		final String output = TestUtils.captureOut(() -> Assert.assertEquals(8L, FileCache.clean()));
 		Assert.assertFalse(old.exists());
 		Assert.assertFalse(folder.exists());
 		Assert.assertTrue(recent.isFile());
@@ -215,7 +214,7 @@ public class FileCacheTest {
 		Files.createFile(new File(directory, ".area").toPath());
 		final File old = FileCacheTest.age(FileCacheTest.write(new File(directory, "old"), "1"), 31L);
 		final File recent = FileCacheTest.age(FileCacheTest.write(new File(directory, "recent"), "1"), 29L);
-		final String output = FileCacheTest.capture(() -> Assert.assertEquals(1L, FileCache.clean()));
+		final String output = TestUtils.captureOut(() -> Assert.assertEquals(1L, FileCache.clean()));
 		Assert.assertFalse(old.exists());
 		Assert.assertTrue(recent.isFile());
 		Assert.assertTrue(new File(directory, ".area").isFile());
@@ -226,7 +225,7 @@ public class FileCacheTest {
 	public void leavesAFolderThatIsNotAnArea() throws IOException {
 		final File directory = this.folder.newFolder("foreign");
 		final File file = FileCacheTest.age(FileCacheTest.write(new File(directory, "file"), "1"), 365L);
-		final String output = FileCacheTest.capture(() -> Assert.assertEquals(0L, FileCache.clean()));
+		final String output = TestUtils.captureOut(() -> Assert.assertEquals(0L, FileCache.clean()));
 		Assert.assertTrue(file.isFile());
 		Assert.assertEquals("", output);
 	}
@@ -237,7 +236,7 @@ public class FileCacheTest {
 		area.compute("key", entry -> FileCacheTest.write(entry, "value"));
 		final File orphan = FileCacheTest.age(FileCacheTest.write(new File(area.getDirectory(), ".crashed.tmp"), "12"), 2L);
 		final File writing = FileCacheTest.write(new File(area.getDirectory(), ".writing.tmp"), "12");
-		final String output = FileCacheTest.capture(() -> Assert.assertEquals(2L, FileCache.clean()));
+		final String output = TestUtils.captureOut(() -> Assert.assertEquals(2L, FileCache.clean()));
 		Assert.assertFalse(orphan.exists());
 		Assert.assertTrue(writing.isFile());
 		Assert.assertNotNull(area.entry("key"));
@@ -268,7 +267,7 @@ public class FileCacheTest {
 		FileCacheTest.write(new File(directory, ".area"), "PT48H");
 		final File old = FileCacheTest.age(FileCacheTest.write(new File(directory, "old"), "1"), 3L);
 		final File recent = FileCacheTest.age(FileCacheTest.write(new File(directory, "recent"), "1"), 1L);
-		FileCacheTest.capture(() -> Assert.assertEquals(1L, FileCache.clean()));
+		TestUtils.captureOut(() -> Assert.assertEquals(1L, FileCache.clean()));
 		Assert.assertFalse(old.exists());
 		Assert.assertTrue(recent.isFile());
 	}
@@ -277,7 +276,7 @@ public class FileCacheTest {
 	public void keepsTheAreaItCleansForItsLaterUse() throws IOException {
 		final File directory = this.folder.newFolder("cleaned");
 		FileCacheTest.write(new File(directory, ".area"), "PT48H");
-		FileCacheTest.capture(FileCache::clean);
+		TestUtils.captureOut(FileCache::clean);
 		Assert.assertSame(FileCacheTest.areaMap().get("cleaned"), FileCache.area("cleaned"));
 	}
 
@@ -287,7 +286,7 @@ public class FileCacheTest {
 		FileCacheTest.write(new File(directory, ".area"), "a week");
 		final File old = FileCacheTest.age(FileCacheTest.write(new File(directory, "old"), "1"), 31L);
 		final File recent = FileCacheTest.age(FileCacheTest.write(new File(directory, "recent"), "1"), 29L);
-		FileCacheTest.capture(() -> Assert.assertEquals(1L, FileCache.clean()));
+		TestUtils.captureOut(() -> Assert.assertEquals(1L, FileCache.clean()));
 		Assert.assertFalse(old.exists());
 		Assert.assertTrue(recent.isFile());
 	}
@@ -305,7 +304,7 @@ public class FileCacheTest {
 			Assert.assertEquals('o', reader.read());
 		}
 
-		FileCacheTest.capture(FileCache::clean);
+		TestUtils.captureOut(FileCache::clean);
 		Assert.assertArrayEquals(new String[] {file.getName()}, FileCacheTest.entries(area));
 		Assert.assertEquals(file, area.entry("key"));
 	}
@@ -320,7 +319,7 @@ public class FileCacheTest {
 			Assert.assertEquals('v', reader.read());
 		}
 
-		FileCacheTest.capture(FileCache::clean);
+		TestUtils.captureOut(FileCache::clean);
 		Assert.assertArrayEquals(new String[0], FileCacheTest.entries(area));
 	}
 
@@ -368,18 +367,6 @@ public class FileCacheTest {
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream previous = System.out;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setOut(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setOut(previous);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 }

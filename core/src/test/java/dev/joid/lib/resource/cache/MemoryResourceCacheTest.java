@@ -1,6 +1,5 @@
 package dev.joid.lib.resource.cache;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -11,6 +10,7 @@ import org.junit.Test;
 
 import com.google.common.cache.Cache;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.resource.ResourceData;
 
 public class MemoryResourceCacheTest {
@@ -54,7 +54,7 @@ public class MemoryResourceCacheTest {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		Assert.assertSame(cache, cache.expiry(20L));
 		Assert.assertEquals(20L, cache.getExpiry());
-		Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(20L), MemoryResourceCacheTest.field(MemoryResourceCacheTest.field(MemoryResourceCacheTest.field(cache, "cache"), "localCache"), "expireAfterAccessNanos"));
+		Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(20L), TestUtils.field(TestUtils.field(TestUtils.field(cache, "cache"), "localCache"), "expireAfterAccessNanos"));
 	}
 
 	@Test
@@ -62,7 +62,7 @@ public class MemoryResourceCacheTest {
 		final MemoryResourceCache cache = MemoryResourceCache.create();
 		final ResourceData data = ResourceData.create("image", null);
 		cache.put("image", data);
-		((Cache<?, ?>) MemoryResourceCacheTest.field(cache, "cache")).invalidateAll();
+		((Cache<?, ?>) TestUtils.field(cache, "cache")).invalidateAll();
 		Assert.assertTrue(cache.getDataList().isEmpty());
 		Assert.assertSame(data, cache.get("image"));
 		Assert.assertEquals(Collections.singletonList(data), cache.getDataList());
@@ -87,16 +87,6 @@ public class MemoryResourceCacheTest {
 		cache.put("image", data);
 		cache.size(10).expiry(60000L);
 		Assert.assertSame(data, cache.get("image"));
-	}
-
-	private static Object field(final Object target, final String name) {
-		try {
-			final Field field = target.getClass().getDeclaredField(name);
-			field.setAccessible(true);
-			return field.get(target);
-		} catch (final ReflectiveOperationException exception) {
-			throw new AssertionError(exception);
-		}
 	}
 
 }

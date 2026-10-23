@@ -1,6 +1,5 @@
 package dev.joid.lib.shader.pipeline.pass;
 
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.junit.Assert;
@@ -10,7 +9,6 @@ import org.junit.Test;
 
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
-import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.shader.impl.BlurShader;
 import dev.joid.lib.shader.pipeline.ShaderPassContext;
 
@@ -63,13 +61,7 @@ public class BlurShaderPassTest {
 	}
 
 	private ShaderPassContext context() {
-		try {
-			final Method of = ShaderPassContext.class.getDeclaredMethod("of", double.class, double.class, double.class, double.class, double.class, double.class, PixelGrid.class);
-			of.setAccessible(true);
-			return (ShaderPassContext) of.invoke(null, 10D, 20D, 100D, 50D, 4D, 0D, this.bridges.getRender().getPixelGrid());
-		} catch (final ReflectiveOperationException exception) {
-			throw new AssertionError(exception);
-		}
+		return ShaderPassContext.of(10D, 20D, 100D, 50D, 4D, 0D, this.bridges.getRender().getPixelGrid());
 	}
 
 }

@@ -174,20 +174,6 @@ public class AlAudioSourceTest {
 	}
 
 	@Test
-	public void staysSilentWithoutContext() {
-		this.binding.context = null;
-		final IAudioSource source = AlAudioBridge.create(this.binding).ownContext(false).createSource(8000, 1);
-		source.play();
-		source.write(new short[] {1});
-		source.gain(1F);
-		source.pause();
-		source.stop();
-		Assert.assertFalse(source.isPlaying());
-		Assert.assertEquals(0, source.getBufferedSamples());
-		Assert.assertTrue(this.binding.calls.isEmpty());
-	}
-
-	@Test
 	public void deletesItsSourceAndItsBuffers() {
 		final IAudioSource source = this.create(1);
 		source.write(new short[] {1});
@@ -221,8 +207,14 @@ public class AlAudioSourceTest {
 		this.binding.context = null;
 		final AlAudioBridge bridge = AlAudioBridge.create(this.binding).ownContext(false);
 		final IAudioSource source = bridge.createSource(8000, 1);
+		source.play();
 		source.write(new short[] {1});
+		source.gain(1F);
+		source.pause();
+		source.stop();
 		Assert.assertFalse(bridge.isOwnContext());
+		Assert.assertFalse(source.isPlaying());
+		Assert.assertEquals(0, source.getBufferedSamples());
 		Assert.assertTrue(this.binding.calls.isEmpty());
 		this.binding.context = "shared";
 		source.write(new short[] {2});

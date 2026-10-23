@@ -1,11 +1,9 @@
 package dev.joid.lib.shader.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -17,6 +15,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingShader;
@@ -93,7 +92,7 @@ public class ShaderProgramTest {
 	@Test
 	public void staysUnavailableWhenItsSourceCannotBeRead() {
 		final SourceShader[] shader = new SourceShader[1];
-		final String error = ShaderProgramTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
+		final String error = TestUtils.captureErr(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
 		Assert.assertNull(shader[0].getShader());
 		Assert.assertFalse(shader[0].isAvailable());
 		Assert.assertTrue(error, error.contains("broken"));
@@ -114,17 +113,17 @@ public class ShaderProgramTest {
 	@Test
 	public void closesItsSourcesWhenOneCannotBeRead() {
 		final ClosingStream fragment = new ClosingStream();
-		ShaderProgramTest.capture(() -> new SourceShader(new BrokenStream(), fragment));
+		TestUtils.captureErr(() -> new SourceShader(new BrokenStream(), fragment));
 		Assert.assertTrue(fragment.closed);
 	}
 
 	@Test
 	public void warnsOnceInDevModeThatItIsUnavailable() {
 		final SourceShader[] shader = new SourceShader[1];
-		ShaderProgramTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
+		TestUtils.captureErr(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
 		JOIDEnv.devMode(true);
 		try {
-			final String error = ShaderProgramTest.capture(() -> {
+			final String error = TestUtils.captureErr(() -> {
 				shader[0].canDraw();
 				shader[0].canDraw();
 			});
@@ -137,18 +136,18 @@ public class ShaderProgramTest {
 	@Test
 	public void staysSilentOutOfDevModeWhenItIsUnavailable() {
 		final SourceShader[] shader = new SourceShader[1];
-		ShaderProgramTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
-		Assert.assertEquals("", ShaderProgramTest.capture(() -> shader[0].canDraw()));
+		TestUtils.captureErr(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
+		Assert.assertEquals("", TestUtils.captureErr(() -> shader[0].canDraw()));
 	}
 
 	@Test
 	public void checksItsAvailabilitySilentlyInDevMode() {
 		final SourceShader[] shader = new SourceShader[1];
-		ShaderProgramTest.capture(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
+		TestUtils.captureErr(() -> shader[0] = new SourceShader(new BrokenStream(), ShaderProgramTest.source()));
 		JOIDEnv.devMode(true);
 		try {
-			Assert.assertEquals("", ShaderProgramTest.capture(() -> Assert.assertFalse(shader[0].isAvailable())));
-			Assert.assertNotEquals("", ShaderProgramTest.capture(() -> Assert.assertFalse(shader[0].canDraw())));
+			Assert.assertEquals("", TestUtils.captureErr(() -> Assert.assertFalse(shader[0].isAvailable())));
+			Assert.assertNotEquals("", TestUtils.captureErr(() -> Assert.assertFalse(shader[0].canDraw())));
 		} finally {
 			JOIDEnv.devMode(false);
 		}
@@ -159,7 +158,7 @@ public class ShaderProgramTest {
 		final SourceShader shader = new SourceShader(ShaderProgramTest.source(), ShaderProgramTest.source());
 		JOIDEnv.devMode(true);
 		try {
-			Assert.assertEquals("", ShaderProgramTest.capture(() -> Assert.assertTrue(shader.canDraw())));
+			Assert.assertEquals("", TestUtils.captureErr(() -> Assert.assertTrue(shader.canDraw())));
 		} finally {
 			JOIDEnv.devMode(false);
 		}
@@ -220,24 +219,12 @@ public class ShaderProgramTest {
 
 	@Test
 	public void reportsAnUnreadableShaderAsAJoidWarning() {
-		final String error = ShaderProgramTest.capture(() -> new SourceShader(new BrokenStream(), new ByteArrayInputStream("void main() {}".getBytes(StandardCharsets.UTF_8))));
+		final String error = TestUtils.captureErr(() -> new SourceShader(new BrokenStream(), new ByteArrayInputStream("void main() {}".getBytes(StandardCharsets.UTF_8))));
 		Assert.assertTrue(error, error.startsWith("[JOID] "));
 	}
 
 	private static InputStream source() {
 		return new ByteArrayInputStream("void main() {}".getBytes(StandardCharsets.UTF_8));
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(error);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	private static final class SourceShader extends ShaderProgram {

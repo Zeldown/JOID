@@ -1,8 +1,5 @@
 package dev.joid.lib.ui.node.impl.resource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +7,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingTexture;
@@ -102,7 +100,7 @@ public class ResourceNodeTest {
 	@Test
 	public void showsAFailedResourceWithoutSizeAtTheSizeOfItsMissingTexture() {
 		final List<Resource> missing = new ArrayList<>();
-		final String error = ResourceNodeTest.capture(() -> missing.add(ResourceBuilder.create().cache(null).of("missing/absent.png").blocking()));
+		final String error = TestUtils.captureErr(() -> missing.add(ResourceBuilder.create().cache(null).of("missing/absent.png").blocking()));
 		Assert.assertTrue(error, error.startsWith("[JOID] The resource missing/absent.png cannot be read: The asset missing/absent.png is not found in the classpath nor as a file"));
 		Assert.assertTrue(missing.get(0).isFailed());
 		final ResourceNode node = ResourceNode.create(100D, 100D).resource(missing.get(0));
@@ -348,18 +346,6 @@ public class ResourceNodeTest {
 		Assert.assertEquals(top, draw.getTop(), 1E-3D);
 		Assert.assertEquals(right, draw.getRight(), 1E-3D);
 		Assert.assertEquals(bottom, draw.getBottom(), 1E-3D);
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(previous);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	private static Resource resource(final int width, final int height) {

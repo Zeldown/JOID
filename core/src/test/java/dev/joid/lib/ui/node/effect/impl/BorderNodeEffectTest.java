@@ -1,6 +1,5 @@
 package dev.joid.lib.ui.node.effect.impl;
 
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +11,6 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.RecordingShader;
-import dev.joid.lib.bridge.render.matrix.PixelGrid;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.shader.impl.BorderShader;
 import dev.joid.lib.shader.impl.BorderShader.BorderMode;
@@ -98,13 +96,7 @@ public class BorderNodeEffectTest {
 	}
 
 	private ShaderPassContext context() {
-		try {
-			final Method of = ShaderPassContext.class.getDeclaredMethod("of", double.class, double.class, double.class, double.class, double.class, double.class, PixelGrid.class);
-			of.setAccessible(true);
-			return (ShaderPassContext) of.invoke(null, 10D, 20D, 100D, 50D, 5D, 0D, this.bridges.getRender().getPixelGrid());
-		} catch (final ReflectiveOperationException exception) {
-			throw new AssertionError(exception);
-		}
+		return ShaderPassContext.of(10D, 20D, 100D, 50D, 5D, 0D, this.bridges.getRender().getPixelGrid());
 	}
 
 }

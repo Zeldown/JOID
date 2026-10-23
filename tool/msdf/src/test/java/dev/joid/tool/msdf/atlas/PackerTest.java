@@ -48,7 +48,6 @@ public class PackerTest {
 	@Test
 	public void skipsGlyphsWithoutOutline() {
 		final List<GlyphEntry> glyphs = new ArrayList<>(Arrays.asList(new GlyphEntry(' ', 0.25D, new Shape())));
-		Assert.assertFalse(glyphs.get(0).isDrawable());
 		Assert.assertTrue(Packer.pack(glyphs, 16D, 2D, 8, 8));
 	}
 

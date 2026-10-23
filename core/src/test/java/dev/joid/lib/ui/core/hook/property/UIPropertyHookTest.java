@@ -1,8 +1,6 @@
 package dev.joid.lib.ui.core.hook.property;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
@@ -16,6 +14,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.ui.core.UI;
 import lombok.AllArgsConstructor;
 
@@ -92,7 +91,7 @@ public class UIPropertyHookTest {
 		Files.write(file.toPath(), "{ broken".getBytes(StandardCharsets.UTF_8));
 
 		final PropertyUI loaded = new PropertyUI();
-		final String error = UIPropertyHookTest.capture(() -> UIPropertyHook.load(loaded));
+		final String error = TestUtils.captureErr(() -> UIPropertyHook.load(loaded));
 		Assert.assertEquals(1D, loaded.zoom, 0D);
 		Assert.assertFalse(file.exists());
 		Assert.assertEquals("{ broken", new String(Files.readAllBytes(new File(file.getPath() + ".corrupt").toPath()), StandardCharsets.UTF_8));
@@ -107,7 +106,7 @@ public class UIPropertyHookTest {
 		Files.write(file.toPath(), "{\"zoomLevel\":\"wide\",\"title\":\"Shop\"}".getBytes(StandardCharsets.UTF_8));
 
 		final PropertyUI loaded = new PropertyUI();
-		final String error = UIPropertyHookTest.capture(() -> UIPropertyHook.load(loaded));
+		final String error = TestUtils.captureErr(() -> UIPropertyHook.load(loaded));
 		Assert.assertEquals(1D, loaded.zoom, 0D);
 		Assert.assertEquals("Shop", loaded.title);
 		Assert.assertTrue(error, error.startsWith("[JOID] The property zoomLevel of PropertyUI cannot be read into its field zoom ("));
@@ -128,18 +127,6 @@ public class UIPropertyHookTest {
 		Assert.assertEquals("Shop", loaded.title);
 		Assert.assertEquals(1, loaded.origin.x);
 		Assert.assertEquals(2, loaded.origin.y);
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(error);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	public static class PropertyUI extends UI {

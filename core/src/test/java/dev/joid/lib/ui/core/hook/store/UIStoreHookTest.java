@@ -1,9 +1,7 @@
 package dev.joid.lib.ui.core.hook.store;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -24,6 +22,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.signal.impl.iterable.ListSignal;
 import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import lombok.AllArgsConstructor;
@@ -201,7 +200,7 @@ public class UIStoreHookTest {
 	public void savesTheOtherGlobalStoresWhenOneCannotBeSerialized() throws IOException {
 		UIStoreHook.useStore(UnsavableStore.class, UnsavableStore::new);
 		UIStoreHook.useStore(PermanentStore.class, PermanentStore::new).value = "all";
-		final String error = UIStoreHookTest.capture(UIStoreHook::saveAll);
+		final String error = TestUtils.captureErr(UIStoreHook::saveAll);
 		Assert.assertTrue(error, error.startsWith("[JOID] The store " + UnsavableStore.class.getName() + " cannot be saved (java.lang.IllegalStateException: broken toJson), the other stores are saved anyway: catch the exception inside toJson() to handle it"));
 		Assert.assertEquals("{\"value\":\"all\"}", this.read());
 	}
@@ -219,9 +218,9 @@ public class UIStoreHookTest {
 	@Test
 	public void forgetsAGlobalStoreWhoseDestroyFails() {
 		final UndestroyableStore store = UIStoreHook.useStore(UndestroyableStore.class, UndestroyableStore::new);
-		final String error = UIStoreHookTest.capture(() -> UIStoreHook.destroyStore(store));
+		final String error = TestUtils.captureErr(() -> UIStoreHook.destroyStore(store));
 		final UndestroyableStore next = UIStoreHook.useStore(UndestroyableStore.class, UndestroyableStore::new);
-		UIStoreHookTest.capture(() -> UIStoreHook.destroyStore(next));
+		TestUtils.captureErr(() -> UIStoreHook.destroyStore(next));
 		Assert.assertTrue(error, error.startsWith("[JOID] The destroy of the store " + UndestroyableStore.class.getName() + " failed (java.lang.IllegalStateException: broken destroy), it is destroyed anyway: catch the exception inside destroy() to handle it"));
 		Assert.assertNotSame(store, next);
 	}
@@ -255,7 +254,7 @@ public class UIStoreHookTest {
 	public void startsOverFromAnEmptyFile() throws IOException {
 		this.write("");
 		final List<PermanentStore> stores = new ArrayList<>();
-		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
+		final String error = TestUtils.captureErr(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
 		Assert.assertTrue(error, error.startsWith("[JOID] The file " + this.file().getAbsolutePath() + " cannot be read (it holds no JSON object), it is kept as " + this.file().getAbsolutePath() + ".corrupt and "));
 		final PermanentStore store = stores.get(0);
 		Assert.assertTrue(store.initialized);
@@ -268,7 +267,7 @@ public class UIStoreHookTest {
 	public void startsOverFromACorruptedFile() throws IOException {
 		this.write("{ broken");
 		final List<PermanentStore> stores = new ArrayList<>();
-		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
+		final String error = TestUtils.captureErr(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
 		Assert.assertTrue(error, error.startsWith("[JOID] The file " + this.file().getAbsolutePath() + " cannot be read (com.google.gson.JsonSyntaxException: "));
 		Assert.assertTrue(error, error.endsWith("), it is kept as " + this.file().getAbsolutePath() + ".corrupt and the store starts from init()" + System.lineSeparator()));
 		Assert.assertTrue(stores.get(0).initialized);
@@ -279,7 +278,7 @@ public class UIStoreHookTest {
 	public void startsFromInitWhenTheStoreCannotBeRestored() throws IOException {
 		this.write("{}");
 		final List<PermanentStore> stores = new ArrayList<>();
-		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
+		final String error = TestUtils.captureErr(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
 		Assert.assertTrue(error, error.startsWith("[JOID] The store " + PermanentStore.class.getName() + " cannot be restored from " + this.file().getAbsolutePath() + " (java.lang.NullPointerException), it starts from init(): catch the exception inside fromJson() to handle it"));
 		Assert.assertEquals("init", stores.get(0).order);
 		Assert.assertFalse(stores.get(0).loaded);
@@ -293,7 +292,7 @@ public class UIStoreHookTest {
 		this.write("{\"value\":{\"volume\":5}}");
 		final File corrupt = new File(this.file().getPath() + ".corrupt");
 		for (int session = 0; session < 2; session++) {
-			UIStoreHookTest.capture(() -> UIStoreHook.useStore(PermanentStore.class, PermanentStore::new));
+			TestUtils.captureErr(() -> UIStoreHook.useStore(PermanentStore.class, PermanentStore::new));
 			UIStoreHook.saveAll();
 			UIStoreHook.destroyStore(new PermanentStore());
 		}
@@ -305,7 +304,7 @@ public class UIStoreHookTest {
 	public void reportsAStoreFileThatCannotBeWritten() {
 		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class, PermanentStore::new);
 		Assert.assertTrue(this.file().mkdirs());
-		final String error = UIStoreHookTest.capture(() -> UIStoreHook.saveStore(store));
+		final String error = TestUtils.captureErr(() -> UIStoreHook.saveStore(store));
 		Assert.assertTrue(error, error.startsWith("[JOID] The file " + this.file().getAbsolutePath() + " cannot be saved ("));
 		Assert.assertTrue(error, error.endsWith("), check that the data folder can be written" + System.lineSeparator()));
 	}
@@ -316,7 +315,7 @@ public class UIStoreHookTest {
 		final File corrupt = new File(this.file().getPath() + ".corrupt");
 		Files.write(corrupt.toPath(), "older".getBytes(StandardCharsets.UTF_8));
 
-		UIStoreHookTest.capture(() -> UIStoreHook.useStore(PermanentStore.class, PermanentStore::new));
+		TestUtils.captureErr(() -> UIStoreHook.useStore(PermanentStore.class, PermanentStore::new));
 		Assert.assertFalse(this.file().exists());
 		Assert.assertEquals("{ broken", new String(Files.readAllBytes(corrupt.toPath()), StandardCharsets.UTF_8));
 	}
@@ -325,7 +324,7 @@ public class UIStoreHookTest {
 	public void leavesAFileItCannotReadUntouched() {
 		Assert.assertTrue(this.file().mkdirs());
 		final List<PermanentStore> stores = new ArrayList<>();
-		final String error = UIStoreHookTest.capture(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
+		final String error = TestUtils.captureErr(() -> stores.add(UIStoreHook.useStore(PermanentStore.class, PermanentStore::new)));
 		Assert.assertTrue(error, error.startsWith("[JOID] The file " + this.file().getAbsolutePath() + " cannot be read ("));
 		Assert.assertTrue(error, error.endsWith("), it is left untouched and the store starts from init()" + System.lineSeparator()));
 		Assert.assertTrue(stores.get(0).initialized);
@@ -343,18 +342,6 @@ public class UIStoreHookTest {
 	private void write(final String content) throws IOException {
 		Assert.assertTrue(this.file().getParentFile().mkdirs());
 		Files.write(this.file().toPath(), content.getBytes(StandardCharsets.UTF_8));
-	}
-
-	private static String capture(final Runnable runnable) {
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			runnable.run();
-		} finally {
-			System.setErr(error);
-		}
-		return new String(output.toByteArray(), StandardCharsets.UTF_8);
 	}
 
 	@UIStoreData(id = "local")
