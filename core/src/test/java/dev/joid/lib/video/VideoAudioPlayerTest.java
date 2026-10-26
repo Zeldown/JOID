@@ -412,16 +412,6 @@ public class VideoAudioPlayerTest {
 		Assert.assertEquals(Arrays.asList("8000x1", "8000x1"), this.audio.created);
 	}
 
-	public static int queueSize(final VideoAudioPlayer player) {
-		try {
-			final Field field = VideoAudioPlayer.class.getDeclaredField("sampleQueue");
-			field.setAccessible(true);
-			return ((ArrayBlockingQueue<?>) field.get(player)).size();
-		} catch (final ReflectiveOperationException exception) {
-			throw new IllegalStateException(exception);
-		}
-	}
-
 	private VideoAudioPlayer started() {
 		final VideoAudioPlayer player = new VideoAudioPlayer(1, 8000, this.video);
 		player.play();
@@ -434,6 +424,16 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 16, 4096);
 		player.update(0D);
 		return player;
+	}
+
+	public static int queueSize(final VideoAudioPlayer player) {
+		try {
+			final Field field = VideoAudioPlayer.class.getDeclaredField("sampleQueue");
+			field.setAccessible(true);
+			return ((ArrayBlockingQueue<?>) field.get(player)).size();
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException(exception);
+		}
 	}
 
 	private static VideoResourceDecoder video(final String name) {

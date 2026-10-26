@@ -511,12 +511,12 @@ public class SignalReplayTest {
 		Assert.assertFalse(mapped.contains("<init>"));
 	}
 
-	private static SignalReplayNode node(final UI ui, final int index) {
-		return (SignalReplayNode) ui.getNodeList().get(index);
-	}
-
 	private String open(final UI ui) {
 		return TestUtils.captureErr(true, () -> this.bridges.getUi().add(ui)).replace("\r\n", "\n").replaceAll("\\.java:\\d+ ", ".java:N ");
+	}
+
+	private static SignalReplayNode node(final UI ui, final int index) {
+		return (SignalReplayNode) ui.getNodeList().get(index);
 	}
 
 	private static String hidden(final SignalReplayHiddenLoader loader, final SignalReplayNode node, final IntegerSignal clicks) {

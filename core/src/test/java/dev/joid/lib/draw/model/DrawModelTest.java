@@ -75,11 +75,11 @@ public class DrawModelTest {
 		private final RecordingRenderBridge render;
 		private final boolean               failing;
 
-		private PixelGrid grid;
 		private float     depth;
 		private boolean   cull;
-		private boolean   lighting;
+		private PixelGrid grid;
 		private int       depthClears;
+		private boolean   lighting;
 
 		@Override
 		public void render() {

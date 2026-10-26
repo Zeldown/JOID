@@ -31,8 +31,8 @@ public class Lwjgl2InputForwarderTest {
 
 	private final List<String>      trace   = new ArrayList<>();
 	private final TraceUI           ui      = new TraceUI(this.trace);
-	private final Set<Integer>      pressed = new LinkedHashSet<>();
 	private final DemoUIBridge      bridge  = new DemoUIBridge() {};
+	private final Set<Integer>      pressed = new LinkedHashSet<>();
 	private final FixedWindowBridge window  = new FixedWindowBridge();
 
 	private final Map<Field, Object> previousMap = new LinkedHashMap<>();

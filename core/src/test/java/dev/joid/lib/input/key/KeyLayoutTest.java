@@ -35,6 +35,9 @@ public class KeyLayoutTest {
 
 	private static final Map<Key, String> AZERTY_MAP = new EnumMap<>(Key.class);
 
+	@ClassRule
+	public static final TemporaryCache CACHE = new TemporaryCache();
+
 	static {
 		KeyLayoutTest.AZERTY_MAP.put(Key.A, "q");
 		KeyLayoutTest.AZERTY_MAP.put(Key.M, ",");
@@ -54,9 +57,6 @@ public class KeyLayoutTest {
 		KeyLayoutTest.AZERTY_MAP.put(Key.GRAVE_ACCENT, "²");
 		KeyLayoutTest.AZERTY_MAP.put(Key.RIGHT_BRACKET, "$");
 	}
-
-	@ClassRule
-	public static final TemporaryCache CACHE = new TemporaryCache();
 
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();

@@ -32,9 +32,9 @@ public class VideoNativesTest {
 	@Rule
 	public final ConsoleCapture console = new ConsoleCapture();
 
-	private String repository;
-	private File   previous;
 	private File   cache;
+	private File   previous;
+	private String repository;
 
 	@Before
 	public void rememberTheRepository() throws IOException {
@@ -161,6 +161,15 @@ public class VideoNativesTest {
 		return new File(this.cache, "ffmpeg").list((parent, name) -> !name.startsWith("."));
 	}
 
+	private File publish(final String platform, final byte[] bytes) throws IOException {
+		final File root = this.folder.newFolder("repository");
+		final File jar = new File(root, "org/bytedeco/ffmpeg/6.0-1.5.9/ffmpeg-6.0-1.5.9-" + platform + ".jar");
+		Files.createDirectories(jar.getParentFile().toPath());
+		Files.write(jar.toPath(), bytes);
+		VideoNatives.repository(root.toURI().toString().replaceAll("/$", ""));
+		return jar;
+	}
+
 	private static File download(final String platform) {
 		try {
 			final Method download = VideoNatives.class.getDeclaredMethod("download", String.class);
@@ -171,15 +180,6 @@ public class VideoNativesTest {
 		} catch (final ReflectiveOperationException exception) {
 			throw new IllegalStateException(exception);
 		}
-	}
-
-	private File publish(final String platform, final byte[] bytes) throws IOException {
-		final File root = this.folder.newFolder("repository");
-		final File jar = new File(root, "org/bytedeco/ffmpeg/6.0-1.5.9/ffmpeg-6.0-1.5.9-" + platform + ".jar");
-		Files.createDirectories(jar.getParentFile().toPath());
-		Files.write(jar.toPath(), bytes);
-		VideoNatives.repository(root.toURI().toString().replaceAll("/$", ""));
-		return jar;
 	}
 
 	private static File nativesJar(final String platform) throws IOException, URISyntaxException {

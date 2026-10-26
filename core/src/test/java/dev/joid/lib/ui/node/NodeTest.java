@@ -4370,13 +4370,13 @@ public class NodeTest {
 		}
 
 		@Override
-		public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
-			this.events.add(this.name + " dragged");
+		public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
+			this.events.add(this.name + " released");
 		}
 
 		@Override
-		public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
-			this.events.add(this.name + " released");
+		public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
+			this.events.add(this.name + " dragged");
 		}
 
 		@Override

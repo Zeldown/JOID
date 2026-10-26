@@ -341,13 +341,13 @@ public class FileCacheTest {
 		Assert.assertTrue(file.isFile());
 	}
 
+	private static String read(final File file) throws IOException {
+		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+	}
+
 	private static File write(final File file, final String text) throws IOException {
 		Files.write(file.toPath(), text.getBytes(StandardCharsets.UTF_8));
 		return file;
-	}
-
-	private static String read(final File file) throws IOException {
-		return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
 	}
 
 	private static File age(final File file, final long days) {

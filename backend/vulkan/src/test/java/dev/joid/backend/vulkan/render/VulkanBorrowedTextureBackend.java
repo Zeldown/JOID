@@ -22,15 +22,15 @@ public final class VulkanBorrowedTextureBackend implements IBorrowedTextureBacke
 	private final Map<Object, VulkanTexture> textures = new IdentityHashMap<>();
 
 	@Override
+	public void create(final int width, final int height) {
+		this.backend.create(width, height);
+	}
+
+	@Override
 	public void destroy() {
 		this.textures.values().forEach(VulkanTexture::delete);
 		this.textures.clear();
 		this.backend.destroy();
-	}
-
-	@Override
-	public void create(final int width, final int height) {
-		this.backend.create(width, height);
 	}
 
 	@Override

@@ -58,10 +58,10 @@ public class MsdfFontLoaderTest {
 	@ClassRule
 	public static final TemporaryFolder FOLDER = new TemporaryFolder();
 
+	private static File atlas;
+
 	@Rule
 	public final ConsoleCapture console = new ConsoleCapture();
-
-	private static File atlas;
 
 	@BeforeClass
 	public static void generateAnAtlas() throws IOException {

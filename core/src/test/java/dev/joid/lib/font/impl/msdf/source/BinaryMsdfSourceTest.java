@@ -35,6 +35,11 @@ public class BinaryMsdfSourceTest {
 
 	private static MsdfFontFace face;
 
+	@BeforeClass
+	public static void read() throws IOException {
+		BinaryMsdfSourceTest.face = BinaryMsdfSourceTest.montserrat("Regular").read();
+	}
+
 	@Test
 	public void readsEveryGlyph() {
 		Assert.assertTrue(BinaryMsdfSourceTest.face.getGlyphs().size() > 200);
@@ -73,11 +78,6 @@ public class BinaryMsdfSourceTest {
 	public void keepsPositiveAndNegativePairs() {
 		Assert.assertTrue("LT must kern tighter", BinaryMsdfSourceTest.face.getKerning('L', 'T') < -0.05F);
 		Assert.assertTrue("AA must kern wider", BinaryMsdfSourceTest.face.getKerning('A', 'A') > 0F);
-	}
-
-	@BeforeClass
-	public static void read() throws IOException {
-		BinaryMsdfSourceTest.face = BinaryMsdfSourceTest.montserrat("Regular").read();
 	}
 
 	@Test

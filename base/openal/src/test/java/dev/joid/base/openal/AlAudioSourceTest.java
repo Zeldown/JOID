@@ -286,15 +286,6 @@ public class AlAudioSourceTest {
 		private int    names;
 		private Object context = "first";
 
-		private void finish(final int source, final int buffers) {
-			this.played.merge(source, buffers, Integer::sum);
-		}
-
-		private void runDry(final int source) {
-			this.played.put(source, this.queues.get(source).size());
-			this.playing.put(source, false);
-		}
-
 		@Override
 		public void createContext() {
 			this.calls.add("create context");
@@ -392,6 +383,15 @@ public class AlAudioSourceTest {
 		@Override
 		public int getProcessedBuffers(final int source) {
 			return this.played.get(source);
+		}
+
+		private void finish(final int source, final int buffers) {
+			this.played.merge(source, buffers, Integer::sum);
+		}
+
+		private void runDry(final int source) {
+			this.played.put(source, this.queues.get(source).size());
+			this.playing.put(source, false);
 		}
 
 	}

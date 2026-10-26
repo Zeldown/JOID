@@ -1866,15 +1866,6 @@ public class TextFieldNodeTest {
 		return field;
 	}
 
-	public static int anchor(final FieldNode<?> field) {
-		final FieldSelection selection = field.getSelection();
-		if (selection.isEmpty()) {
-			return -1;
-		}
-
-		return field.getCursorPosition() == selection.getStart() ? selection.getEnd() : selection.getStart();
-	}
-
 	private TextFieldNode selected(final int start, final int cursor) {
 		final TextFieldNode field = this.field("abcdef").cursorPosition(start);
 		this.bridges.getWindow().getKeys().add(Key.LEFT_SHIFT);
@@ -1922,6 +1913,15 @@ public class TextFieldNodeTest {
 
 	private List<Draw> selections() {
 		return this.bridges.getRender().getDraws(50 / 255F, 152 / 255F, 253 / 255F);
+	}
+
+	public static int anchor(final FieldNode<?> field) {
+		final FieldSelection selection = field.getSelection();
+		if (selection.isEmpty()) {
+			return -1;
+		}
+
+		return field.getCursorPosition() == selection.getStart() ? selection.getEnd() : selection.getStart();
 	}
 
 	private static Set<?> subscribers(final Signal<?> signal) {
@@ -1977,17 +1977,17 @@ public class TextFieldNodeTest {
 		}
 
 		@Override
+		public double getLineHeight(final TextInfo info) {
+			return 20D;
+		}
+
+		@Override
 		public double getWidth(final String text, final TextInfo info) {
 			return text.length() * 10D;
 		}
 
 		@Override
 		public double getHeight(final String text, final TextInfo info) {
-			return 20D;
-		}
-
-		@Override
-		public double getLineHeight(final TextInfo info) {
 			return 20D;
 		}
 

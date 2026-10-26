@@ -17,9 +17,9 @@ import lombok.NonNull;
 
 public final class GlBorrowedTextureBackend implements IBorrowedTextureBackend {
 
+	private final List<Integer>        textures = new ArrayList<>();
 	private final ISnapshotBackend     backend;
 	private final Supplier<IGlBinding> bindings;
-	private final List<Integer>        textures = new ArrayList<>();
 
 	private IGlBinding binding;
 
@@ -29,18 +29,18 @@ public final class GlBorrowedTextureBackend implements IBorrowedTextureBackend {
 	}
 
 	@Override
+	public void create(final int width, final int height) {
+		this.backend.create(width, height);
+		this.binding = this.bindings.get();
+	}
+
+	@Override
 	public void destroy() {
 		for (final int texture : this.textures) {
 			this.binding.deleteTexture(texture);
 		}
 		this.textures.clear();
 		this.backend.destroy();
-	}
-
-	@Override
-	public void create(final int width, final int height) {
-		this.backend.create(width, height);
-		this.binding = this.bindings.get();
 	}
 
 	@Override

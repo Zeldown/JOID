@@ -252,13 +252,13 @@ public class NodeEffectTest {
 		private final List<String> trace;
 
 		@Override
-		public void unbind() {
-			this.trace.add("unbind");
+		public void bind(final @NonNull ShaderPassContext context) {
+			this.trace.add("bind");
 		}
 
 		@Override
-		public void bind(final @NonNull ShaderPassContext context) {
-			this.trace.add("bind");
+		public void unbind() {
+			this.trace.add("unbind");
 		}
 
 	}

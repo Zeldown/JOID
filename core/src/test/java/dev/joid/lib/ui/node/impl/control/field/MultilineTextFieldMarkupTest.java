@@ -365,6 +365,11 @@ public class MultilineTextFieldMarkupTest {
 		}
 
 		@Override
+		public double getLineHeight(final TextInfo info) {
+			return 20D;
+		}
+
+		@Override
 		public double getWidth(final String text, final TextInfo info) {
 			final TextStyle style = info.getStyle().derive();
 			double width = 0D;
@@ -383,11 +388,6 @@ public class MultilineTextFieldMarkupTest {
 
 		@Override
 		public double getHeight(final String text, final TextInfo info) {
-			return 20D;
-		}
-
-		@Override
-		public double getLineHeight(final TextInfo info) {
 			return 20D;
 		}
 

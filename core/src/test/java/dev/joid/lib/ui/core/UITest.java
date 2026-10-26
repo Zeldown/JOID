@@ -2892,13 +2892,13 @@ public class UITest {
 		}
 
 		@Override
-		public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
-			this.trace.add("dragged " + this.name);
+		public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
+			this.trace.add("released " + this.name);
 		}
 
 		@Override
-		public void mouseReleased(final @NonNull NodeMouseEvent<?> event) {
-			this.trace.add("released " + this.name);
+		public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
+			this.trace.add("dragged " + this.name);
 		}
 
 		@Override

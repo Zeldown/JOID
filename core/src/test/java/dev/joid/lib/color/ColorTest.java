@@ -731,27 +731,6 @@ public class ColorTest {
 		Assert.assertNotEquals(Color.RED.toGradient(Color.BLUE), Color.RED.toGradient(Color.GREEN));
 	}
 
-	private static void assertComponents(final Color expected, final Color actual) {
-		Assert.assertEquals(expected.getRedF(), actual.getRedF(), 0F);
-		Assert.assertEquals(expected.getGreenF(), actual.getGreenF(), 0F);
-		Assert.assertEquals(expected.getBlueF(), actual.getBlueF(), 0F);
-		Assert.assertEquals(expected.getAlphaF(), actual.getAlphaF(), 0F);
-	}
-
-	private static void assertRainbow(final Color color) {
-		final float[] hsb = color.RGBtoHSB(null);
-		Assert.assertEquals(0.8F, hsb[1], 0.01F);
-		Assert.assertEquals(0.8F, hsb[2], 0.01F);
-		Assert.assertEquals(1F, color.getAlphaF(), 0F);
-	}
-
-	private static void assertLoading(final Color color) {
-		Assert.assertEquals(color.getRedF(), color.getGreenF(), 0F);
-		Assert.assertEquals(color.getRedF(), color.getBlueF(), 0F);
-		Assert.assertEquals(0.17F, color.getRedF(), 0.0201F);
-		Assert.assertEquals(1F, color.getAlphaF(), 0F);
-	}
-
 	@Test
 	public void bindsItsComponentsOnTheRenderer() {
 		new Color(0.2F, 0.4F, 0.6F, 0.8F).bind();
@@ -808,6 +787,27 @@ public class ColorTest {
 	@Test
 	public void decodesItsOwnEncoding() {
 		Assert.assertEquals(Color.WHITE, Color.decode(Color.WHITE.encode()));
+	}
+
+	private static void assertComponents(final Color expected, final Color actual) {
+		Assert.assertEquals(expected.getRedF(), actual.getRedF(), 0F);
+		Assert.assertEquals(expected.getGreenF(), actual.getGreenF(), 0F);
+		Assert.assertEquals(expected.getBlueF(), actual.getBlueF(), 0F);
+		Assert.assertEquals(expected.getAlphaF(), actual.getAlphaF(), 0F);
+	}
+
+	private static void assertRainbow(final Color color) {
+		final float[] hsb = color.RGBtoHSB(null);
+		Assert.assertEquals(0.8F, hsb[1], 0.01F);
+		Assert.assertEquals(0.8F, hsb[2], 0.01F);
+		Assert.assertEquals(1F, color.getAlphaF(), 0F);
+	}
+
+	private static void assertLoading(final Color color) {
+		Assert.assertEquals(color.getRedF(), color.getGreenF(), 0F);
+		Assert.assertEquals(color.getRedF(), color.getBlueF(), 0F);
+		Assert.assertEquals(0.17F, color.getRedF(), 0.0201F);
+		Assert.assertEquals(1F, color.getAlphaF(), 0F);
 	}
 
 }

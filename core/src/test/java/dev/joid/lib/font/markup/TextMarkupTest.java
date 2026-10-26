@@ -80,10 +80,6 @@ public class TextMarkupTest {
 		Assert.assertFalse(TextMarkup.getRegistered().contains(TextMarkupTest.BOLD));
 	}
 
-	private static TextStyle style() {
-		return TextStyle.create(FontWeight.REGULAR, false, Color.WHITE).derive();
-	}
-
 	@Test
 	public void parsesFromTheGivenIndex() {
 		final TextStyle style = TextMarkupTest.style();
@@ -98,6 +94,10 @@ public class TextMarkupTest {
 		final List<ITextMarkup> registered = new ArrayList<>(TextMarkup.getRegistered());
 		TextMarkup.unregister(TextMarkupTest.BOLD);
 		Assert.assertEquals(registered, TextMarkup.getRegistered());
+	}
+
+	private static TextStyle style() {
+		return TextStyle.create(FontWeight.REGULAR, false, Color.WHITE).derive();
 	}
 
 }

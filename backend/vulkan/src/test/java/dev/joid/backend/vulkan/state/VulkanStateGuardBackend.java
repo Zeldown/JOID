@@ -25,13 +25,13 @@ public final class VulkanStateGuardBackend implements IStateGuardBackend {
 	private final VulkanSnapshotBackend backend = new VulkanSnapshotBackend();
 
 	@Override
-	public void destroy() {
-		this.backend.destroy();
+	public void create(final int width, final int height) {
+		this.backend.create(width, height);
 	}
 
 	@Override
-	public void create(final int width, final int height) {
-		this.backend.create(width, height);
+	public void destroy() {
+		this.backend.destroy();
 	}
 
 	@Override

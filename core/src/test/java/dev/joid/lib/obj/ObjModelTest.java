@@ -460,6 +460,10 @@ public class ObjModelTest {
 		return ObjModel.of("test", new ByteArrayInputStream(String.join("\n", lines).getBytes(StandardCharsets.UTF_8)), ObjModelTest.TEXTURE);
 	}
 
+	private static ObjGroup lastGroup(final ObjModel model) {
+		return model.getGroups().get(model.getGroups().size() - 1);
+	}
+
 	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 	private static final class FailingStream extends InputStream {
 
@@ -528,10 +532,6 @@ public class ObjModelTest {
 		@Override
 		public void delete() {}
 
-	}
-
-	private static ObjGroup lastGroup(final ObjModel model) {
-		return model.getGroups().get(model.getGroups().size() - 1);
 	}
 
 }

@@ -95,8 +95,8 @@ public class StreamAssetTest {
 
 	private static final class BrokenStream extends InputStream {
 
-		private boolean started;
 		private boolean closed;
+		private boolean started;
 
 		@Override
 		public int read() throws IOException {

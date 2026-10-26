@@ -362,6 +362,13 @@ public class ShaderPipelineTest {
 		private ShaderPassContext context;
 
 		@Override
+		public void bind(final @NonNull ShaderPassContext context) {
+			this.context = context;
+			this.log.add(this.name + " texture");
+			this.shader.bind();
+		}
+
+		@Override
 		public void unbind() {
 			this.log.add(this.name + " unbind");
 			this.shader.unbind();
@@ -370,13 +377,6 @@ public class ShaderPipelineTest {
 		@Override
 		public float expansion() {
 			return this.expansion;
-		}
-
-		@Override
-		public void bind(final @NonNull ShaderPassContext context) {
-			this.context = context;
-			this.log.add(this.name + " texture");
-			this.shader.bind();
 		}
 
 	}

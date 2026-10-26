@@ -64,12 +64,12 @@ public class SnapshotRunnerTest {
 	public static final class HeadlessBackend implements ISnapshotBackend {
 
 		@Override
-		public void destroy() {}
-
-		@Override
 		public void create(final int width, final int height) {
 			BridgeHandler.RENDER.register(new RecordingRenderBridge());
 		}
+
+		@Override
+		public void destroy() {}
 
 		@Override
 		public void present() {}
@@ -89,13 +89,13 @@ public class SnapshotRunnerTest {
 	public static final class FailingBackend implements ISnapshotBackend {
 
 		@Override
-		public void destroy() {}
-
-		@Override
 		public void create(final int width, final int height) {
 			BridgeHandler.RENDER.register(new RecordingRenderBridge());
 			throw new IllegalStateException("No window");
 		}
+
+		@Override
+		public void destroy() {}
 
 		@Override
 		public void present() {}

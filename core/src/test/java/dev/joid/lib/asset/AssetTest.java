@@ -21,17 +21,6 @@ public class AssetTest {
 
 	private static File file;
 
-	@Test
-	public void peeksPastTheEndOfAFile() {
-		Assert.assertEquals(AssetTest.CONTENT.length, Asset.of(AssetTest.file).peek(4096).length);
-	}
-
-	@Test
-	public void identifiesAUrlWithoutOpeningIt() {
-		final Asset asset = Asset.of("https://example.invalid/image.png");
-		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());
-	}
-
 	@BeforeClass
 	public static void write() throws IOException {
 		AssetTest.file = File.createTempFile("joid-asset-", ".bin");
@@ -42,6 +31,17 @@ public class AssetTest {
 	@AfterClass
 	public static void delete() {
 		Assert.assertTrue(AssetTest.file.delete());
+	}
+
+	@Test
+	public void peeksPastTheEndOfAFile() {
+		Assert.assertEquals(AssetTest.CONTENT.length, Asset.of(AssetTest.file).peek(4096).length);
+	}
+
+	@Test
+	public void identifiesAUrlWithoutOpeningIt() {
+		final Asset asset = Asset.of("https://example.invalid/image.png");
+		Assert.assertEquals("https://example.invalid/image.png", asset.getUniqueId());
 	}
 
 	@Test

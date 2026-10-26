@@ -30,13 +30,13 @@ public final class Lwjgl2StateGuardBackend implements IStateGuardBackend {
 	private final Lwjgl2SnapshotBackend backend = new Lwjgl2SnapshotBackend();
 
 	@Override
-	public void destroy() {
-		this.backend.destroy();
+	public void create(final int width, final int height) {
+		this.backend.create(width, height);
 	}
 
 	@Override
-	public void create(final int width, final int height) {
-		this.backend.create(width, height);
+	public void destroy() {
+		this.backend.destroy();
 	}
 
 	@Override

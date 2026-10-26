@@ -23,8 +23,8 @@ public class InteractiveValueTest {
 	private static final EventType<NodeChangeEvent.Pre<RectNode, Boolean>>  BEFORE_OPEN  = EventType.create("beforeOpen");
 	private static final EventType<NodeChangeEvent.Pre<RectNode, Boolean>>  BEFORE_CLOSE = EventType.create("beforeClose");
 
-	private final List<String> trace    = new ArrayList<>();
 	private final RectNode     node     = RectNode.create(0D, 0D, 10D, 10D);
+	private final List<String> trace    = new ArrayList<>();
 	private final NodeBindings bindings = new NodeBindings(this.node, EventBus.create(() -> "RectNode"), () -> "RectNode", Runnable::run);
 
 	private int     amount;

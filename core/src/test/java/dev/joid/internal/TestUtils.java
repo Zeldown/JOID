@@ -162,6 +162,11 @@ public final class TestUtils {
 		TestUtils.await("The video did not settle", decoder::isSettled);
 	}
 
+	private static boolean isBlockedOn(final Thread thread, final Object monitor) {
+		final ThreadInfo info = ManagementFactory.getThreadMXBean().getThreadInfo(thread.getId());
+		return info != null && info.getThreadState() == Thread.State.BLOCKED && info.getLockInfo() != null && info.getLockInfo().getIdentityHashCode() == System.identityHashCode(monitor);
+	}
+
 	private static boolean isWaitingIn(final Thread thread, final Class<?> type, final String method) {
 		final ThreadInfo info = ManagementFactory.getThreadMXBean().getThreadInfo(thread.getId(), Integer.MAX_VALUE);
 		if (info == null || info.getThreadState() != Thread.State.WAITING) {
@@ -174,11 +179,6 @@ public final class TestUtils {
 			}
 		}
 		return false;
-	}
-
-	private static boolean isBlockedOn(final Thread thread, final Object monitor) {
-		final ThreadInfo info = ManagementFactory.getThreadMXBean().getThreadInfo(thread.getId());
-		return info != null && info.getThreadState() == Thread.State.BLOCKED && info.getLockInfo() != null && info.getLockInfo().getIdentityHashCode() == System.identityHashCode(monitor);
 	}
 
 	@FunctionalInterface

@@ -606,6 +606,13 @@ public class GlyphTextRendererTest {
 		}
 
 		@Override
+		protected void begin() {
+			super.begin();
+			this.events.add("begin");
+			this.runs.add(new double[] {this.run("runX"), this.run("runY"), this.run("runWidth"), this.run("runHeight")});
+		}
+
+		@Override
 		protected void end() {
 			super.end();
 			this.events.add("end");
@@ -621,13 +628,6 @@ public class GlyphTextRendererTest {
 			}
 
 			super.bindColor(glyph.getColor());
-		}
-
-		@Override
-		protected void begin() {
-			super.begin();
-			this.events.add("begin");
-			this.runs.add(new double[] {this.run("runX"), this.run("runY"), this.run("runWidth"), this.run("runHeight")});
 		}
 
 		@Override

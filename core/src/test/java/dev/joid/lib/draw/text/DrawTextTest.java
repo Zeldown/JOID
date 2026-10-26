@@ -450,6 +450,11 @@ public class DrawTextTest {
 		}
 
 		@Override
+		public double getLineHeight(final TextInfo info) {
+			return info.getFontSize() * 2D;
+		}
+
+		@Override
 		public double getWidth(final String text, final TextInfo info) {
 			final List<ITextMarkup> markups = info.getMarkups();
 			final TextStyle style = info.getStyle().derive();
@@ -471,11 +476,6 @@ public class DrawTextTest {
 
 		@Override
 		public double getHeight(final String text, final TextInfo info) {
-			return info.getFontSize() * 2D;
-		}
-
-		@Override
-		public double getLineHeight(final TextInfo info) {
 			return info.getFontSize() * 2D;
 		}
 

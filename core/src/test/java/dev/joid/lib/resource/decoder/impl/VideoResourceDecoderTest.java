@@ -1044,6 +1044,31 @@ public class VideoResourceDecoderTest {
 		Assert.assertEquals(160, VideoResourceDecoderTest.shade(data), 3);
 	}
 
+	private VideoResourceDecoder frames() {
+		return this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv"));
+	}
+
+	private VideoResourceDecoder decoder(final Object handle) {
+		final VideoResourceDecoder decoder = VideoResourceDecoder.create(Asset.of(handle));
+		this.decoders.add(decoder);
+		return decoder;
+	}
+
+	private void play(final VideoResourceDecoder decoder, final ResourceData data, final int frames) throws InterruptedException {
+		for (int i = 0; i < frames; i++) {
+			this.bridges.getClock().advance(16L);
+			TestUtils.awaitSettled(decoder);
+			decoder.update(data);
+		}
+	}
+
+	private void hear(final VideoResourceDecoder decoder, final ResourceData data, final PlayingAudioSource source, final int frames) throws InterruptedException {
+		for (int i = 0; i < frames; i++) {
+			this.play(decoder, data, 1);
+			source.advance(768);
+		}
+	}
+
 	private static int queuedSamples(final VideoAudioPlayer player) throws ReflectiveOperationException {
 		final Field field = VideoAudioPlayer.class.getDeclaredField("sampleQueue");
 		field.setAccessible(true);
@@ -1072,31 +1097,6 @@ public class VideoResourceDecoderTest {
 			}
 		} finally {
 			Files.delete(file.toPath());
-		}
-	}
-
-	private VideoResourceDecoder frames() {
-		return this.decoder(VideoResourceDecoderTest.class.getResourceAsStream("/dev/joid/lib/resource/decoder/impl/frames.mkv"));
-	}
-
-	private VideoResourceDecoder decoder(final Object handle) {
-		final VideoResourceDecoder decoder = VideoResourceDecoder.create(Asset.of(handle));
-		this.decoders.add(decoder);
-		return decoder;
-	}
-
-	private void play(final VideoResourceDecoder decoder, final ResourceData data, final int frames) throws InterruptedException {
-		for (int i = 0; i < frames; i++) {
-			this.bridges.getClock().advance(16L);
-			TestUtils.awaitSettled(decoder);
-			decoder.update(data);
-		}
-	}
-
-	private void hear(final VideoResourceDecoder decoder, final ResourceData data, final PlayingAudioSource source, final int frames) throws InterruptedException {
-		for (int i = 0; i < frames; i++) {
-			this.play(decoder, data, 1);
-			source.advance(768);
 		}
 	}
 
@@ -1135,9 +1135,9 @@ public class VideoResourceDecoderTest {
 
 	private static final class RecordingAudioBridge implements IAudioBridge {
 
-		private final AtomicInteger samples = new AtomicInteger();
-		private final List<String>  calls   = new CopyOnWriteArrayList<>();
 		private final List<Float>   gains   = new CopyOnWriteArrayList<>();
+		private final List<String>  calls   = new CopyOnWriteArrayList<>();
+		private final AtomicInteger samples = new AtomicInteger();
 
 		@Override
 		public @NonNull IAudioSource createSource(final int sampleRate, final int channels) {
@@ -1204,8 +1204,8 @@ public class VideoResourceDecoderTest {
 
 	private static final class PlayingAudioSource implements IAudioSource {
 
-		private int     written;
 		private int     played;
+		private int     written;
 		private boolean playing;
 
 		@Override

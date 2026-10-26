@@ -404,17 +404,17 @@ public class UIStoreHookTest {
 		}
 
 		@Override
-		public void fromJson(final @NonNull JsonObject json) {
-			this.loaded = true;
-			this.order = (this.order + " fromJson").trim();
-			this.value = json.get("value").getAsString();
-		}
-
-		@Override
 		public @NonNull JsonObject toJson() {
 			final JsonObject json = new JsonObject();
 			json.addProperty("value", this.value);
 			return json;
+		}
+
+		@Override
+		public void fromJson(final @NonNull JsonObject json) {
+			this.loaded = true;
+			this.order = (this.order + " fromJson").trim();
+			this.value = json.get("value").getAsString();
 		}
 
 	}
@@ -427,15 +427,15 @@ public class UIStoreHookTest {
 		private IntegerSignal count = new IntegerSignal(3);
 
 		@Override
-		public void fromJson(final @NonNull JsonObject json) {
-			this.count = SignalStore.GSON.fromJson(json.get("count"), IntegerSignal.class);
-		}
-
-		@Override
 		public @NonNull JsonObject toJson() {
 			final JsonObject json = new JsonObject();
 			json.add("count", SignalStore.GSON.toJsonTree(this.count));
 			return json;
+		}
+
+		@Override
+		public void fromJson(final @NonNull JsonObject json) {
+			this.count = SignalStore.GSON.fromJson(json.get("count"), IntegerSignal.class);
 		}
 
 	}
@@ -448,15 +448,15 @@ public class UIStoreHookTest {
 		private ListSignal<String> names = new ListSignal<>(Collections.singletonList("a"));
 
 		@Override
-		public void fromJson(final @NonNull JsonObject json) {
-			this.names = ListStore.GSON.fromJson(json.get("names"), new TypeToken<ListSignal<String>>() {}.getType());
-		}
-
-		@Override
 		public @NonNull JsonObject toJson() {
 			final JsonObject json = new JsonObject();
 			json.add("names", ListStore.GSON.toJsonTree(this.names));
 			return json;
+		}
+
+		@Override
+		public void fromJson(final @NonNull JsonObject json) {
+			this.names = ListStore.GSON.fromJson(json.get("names"), new TypeToken<ListSignal<String>>() {}.getType());
 		}
 
 	}
