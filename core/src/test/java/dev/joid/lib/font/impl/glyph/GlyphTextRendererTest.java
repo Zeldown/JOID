@@ -525,11 +525,6 @@ public class GlyphTextRendererTest {
 		private final boolean    spaced;
 
 		@Override
-		public @NonNull String getName() {
-			return "Test";
-		}
-
-		@Override
 		public float getAscender() {
 			return 0.8F;
 		}
@@ -552,6 +547,11 @@ public class GlyphTextRendererTest {
 		@Override
 		public float getUnderlineThickness() {
 			return 0.05F;
+		}
+
+		@Override
+		public @NonNull String getName() {
+			return "Test";
 		}
 
 		@Override

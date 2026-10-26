@@ -58,13 +58,13 @@ public final class SnapshotUrlAssetLocator implements IAssetLocator {
 		}
 
 		@Override
-		public boolean isRemote() {
-			return SnapshotUrlAssetLocator.AREA.entry(this.key) == null;
+		public @NonNull InputStream open() throws IOException {
+			return new FileInputStream(SnapshotUrlAssetLocator.AREA.compute(this.key, file -> SnapshotUrlAssetLocator.download(super.getUniqueId(), file)));
 		}
 
 		@Override
-		public @NonNull InputStream open() throws IOException {
-			return new FileInputStream(SnapshotUrlAssetLocator.AREA.compute(this.key, file -> SnapshotUrlAssetLocator.download(super.getUniqueId(), file)));
+		public boolean isRemote() {
+			return SnapshotUrlAssetLocator.AREA.entry(this.key) == null;
 		}
 
 	}

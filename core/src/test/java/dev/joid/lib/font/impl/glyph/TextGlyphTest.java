@@ -89,11 +89,6 @@ public class TextGlyphTest {
 		private final boolean    italic;
 
 		@Override
-		public @NonNull String getName() {
-			return "Test";
-		}
-
-		@Override
 		public float getAscender() {
 			return 0.8F;
 		}
@@ -116,6 +111,11 @@ public class TextGlyphTest {
 		@Override
 		public float getUnderlineThickness() {
 			return 0.05F;
+		}
+
+		@Override
+		public @NonNull String getName() {
+			return "Test";
 		}
 
 		@Override

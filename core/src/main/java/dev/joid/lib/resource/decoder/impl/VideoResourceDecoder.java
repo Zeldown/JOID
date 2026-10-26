@@ -252,6 +252,23 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 		return new VideoResourceDecoder(this.origin);
 	}
 
+	@Override
+	public boolean isSettled() {
+		if (!this.running.get() || this.frameQueue == null) {
+			return true;
+		}
+
+		final DecodedFrame next = this.frameQueue.peek();
+		if (this.paused.get()) {
+			return !this.seeked || next != null || this.ended;
+		}
+
+		if (next == null) {
+			return this.ended || this.isAudioFull();
+		}
+		return this.ended || this.isAudioFull() || this.frameQueue.remainingCapacity() == 0 || next.time > this.getPlaybackTime();
+	}
+
 	public void release() {
 		this.released = true;
 		this.running.set(false);
@@ -366,6 +383,18 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 		return this;
 	}
 
+	@Override
+	public @NonNull VideoResourceDecoder loop(final boolean loop) {
+		this.loop = loop;
+		return this;
+	}
+
+	@Override
+	public @NonNull VideoResourceDecoder autoplay(final boolean autoplay) {
+		this.autoplay = autoplay;
+		return this;
+	}
+
 	public @NonNull VideoResourceDecoder volume(final float volume) {
 		this.volume = volume;
 		return this;
@@ -373,12 +402,6 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 
 	public @NonNull VideoResourceDecoder audioGroup(final Object audioGroup) {
 		this.audioGroup = audioGroup;
-		return this;
-	}
-
-	@Override
-	public @NonNull VideoResourceDecoder loop(final boolean loop) {
-		this.loop = loop;
 		return this;
 	}
 
@@ -398,12 +421,6 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	}
 
 	@Override
-	public @NonNull VideoResourceDecoder autoplay(final boolean autoplay) {
-		this.autoplay = autoplay;
-		return this;
-	}
-
-	@Override
 	public boolean isPaused() {
 		return this.paused.get();
 	}
@@ -411,23 +428,6 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	@Override
 	public boolean isPlaying() {
 		return this.running.get() && !this.paused.get();
-	}
-
-	@Override
-	public boolean isSettled() {
-		if (!this.running.get() || this.frameQueue == null) {
-			return true;
-		}
-
-		final DecodedFrame next = this.frameQueue.peek();
-		if (this.paused.get()) {
-			return !this.seeked || next != null || this.ended;
-		}
-
-		if (next == null) {
-			return this.ended || this.isAudioFull();
-		}
-		return this.ended || this.isAudioFull() || this.frameQueue.remainingCapacity() == 0 || next.time > this.getPlaybackTime();
 	}
 
 	@Override

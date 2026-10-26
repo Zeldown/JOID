@@ -66,6 +66,18 @@ public abstract class Shader implements IShader {
 	}
 
 	@Override
+	public final void delete() {
+		if (this.lineShader != null) {
+			this.lineShader.delete();
+		}
+
+		if (this.compiled) {
+			this.compiled = false;
+			this.deleteProgram();
+		}
+	}
+
+	@Override
 	public final void bind() {
 		if (!this.bound) {
 			this.previousBlend = this.bridge.getState().getBlend();
@@ -87,22 +99,6 @@ public abstract class Shader implements IShader {
 		}
 
 		this.bound = false;
-	}
-
-	@Override
-	public final void delete() {
-		if (this.lineShader != null) {
-			this.lineShader.delete();
-		}
-
-		if (this.compiled) {
-			this.compiled = false;
-			this.deleteProgram();
-		}
-	}
-
-	public final @NonNull Map<String, UniformSampler> getSamplerMap() {
-		return Collections.unmodifiableMap(this.samplerMap);
 	}
 
 	@Override
@@ -162,6 +158,10 @@ public abstract class Shader implements IShader {
 
 		sampler.value(texture, filter, wrap);
 		return this;
+	}
+
+	public final @NonNull Map<String, UniformSampler> getSamplerMap() {
+		return Collections.unmodifiableMap(this.samplerMap);
 	}
 
 	public final @NonNull UniformBlock builtins(final @NonNull RenderState state, final @NonNull VertexBuffer buffer, final @NonNull float[] projection, final @NonNull MatrixStack modelView) {

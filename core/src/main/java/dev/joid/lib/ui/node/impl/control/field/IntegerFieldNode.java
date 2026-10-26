@@ -56,13 +56,13 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	}
 
 	@Override
-	protected final boolean accepts(final @NonNull String text) {
-		return text.matches(this.min < 0 ? "-?[0-9]*" : "[0-9]*");
+	protected final Integer correct(final @NonNull Integer value) {
+		return Math.max(this.min, Math.min(this.max, value));
 	}
 
 	@Override
-	protected final Integer correct(final @NonNull Integer value) {
-		return Math.max(this.min, Math.min(this.max, value));
+	protected final boolean accepts(final @NonNull String text) {
+		return text.matches(this.min < 0 ? "-?[0-9]*" : "[0-9]*");
 	}
 
 	@Override

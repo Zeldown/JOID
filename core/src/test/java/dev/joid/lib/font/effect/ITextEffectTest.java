@@ -35,16 +35,6 @@ public class ITextEffectTest {
 		}
 
 		@Override
-		public @NonNull String getName() {
-			return "Test";
-		}
-
-		@Override
-		public FontWeight getWeight() {
-			return FontWeight.REGULAR;
-		}
-
-		@Override
 		public float getAscender() {
 			return 0F;
 		}
@@ -67,6 +57,16 @@ public class ITextEffectTest {
 		@Override
 		public float getUnderlineThickness() {
 			return 0F;
+		}
+
+		@Override
+		public @NonNull String getName() {
+			return "Test";
+		}
+
+		@Override
+		public FontWeight getWeight() {
+			return FontWeight.REGULAR;
 		}
 
 		@Override

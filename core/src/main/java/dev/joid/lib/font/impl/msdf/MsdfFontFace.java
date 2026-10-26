@@ -46,14 +46,6 @@ public final class MsdfFontFace implements IFontFace {
 		return new MsdfFontFace(atlas, metrics, glyphs, kerningPairs, MsdfFontFace.BUILDER.of(image).blocking(), name, weight, italic);
 	}
 
-	public @NonNull Map<Long, Float> getKerningPairs() {
-		return Collections.unmodifiableMap(this.kerningPairs);
-	}
-
-	public @NonNull Map<Integer, MsdfGlyph> getGlyphs() {
-		return Collections.unmodifiableMap(this.glyphs);
-	}
-
 	@Override
 	public float getAscender() {
 		return this.metrics.getAscender();
@@ -85,10 +77,6 @@ public final class MsdfFontFace implements IFontFace {
 		return glyph == null ? 0F : glyph.getAdvance();
 	}
 
-	public MsdfGlyph getGlyph(final int codepoint) {
-		return this.glyphs.get(codepoint);
-	}
-
 	@Override
 	public float getKerning(final int previous, final int current) {
 		final Float value = this.kerningPairs.get(MsdfFontFace.pair(previous, current));
@@ -98,6 +86,18 @@ public final class MsdfFontFace implements IFontFace {
 	@Override
 	public boolean hasGlyph(final int codepoint) {
 		return this.glyphs.containsKey(codepoint);
+	}
+
+	public MsdfGlyph getGlyph(final int codepoint) {
+		return this.glyphs.get(codepoint);
+	}
+
+	public @NonNull Map<Integer, MsdfGlyph> getGlyphs() {
+		return Collections.unmodifiableMap(this.glyphs);
+	}
+
+	public @NonNull Map<Long, Float> getKerningPairs() {
+		return Collections.unmodifiableMap(this.kerningPairs);
 	}
 
 	public static long pair(final int previous, final int current) {

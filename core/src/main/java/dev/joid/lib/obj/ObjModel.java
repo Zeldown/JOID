@@ -58,6 +58,21 @@ public final class ObjModel implements IDrawableModel {
 		this.texture.bind(TextureWrap.REPEAT, () -> this.groups.forEach(ObjGroup::render));
 	}
 
+	@Override
+	public double getDepth() {
+		return this.extent(ObjVertex::getZ);
+	}
+
+	@Override
+	public double getWidth() {
+		return this.extent(ObjVertex::getX);
+	}
+
+	@Override
+	public double getHeight() {
+		return this.extent(ObjVertex::getY);
+	}
+
 	public @NonNull List<ObjVertex> getVertices() {
 		return Collections.unmodifiableList(this.vertices);
 	}
@@ -72,21 +87,6 @@ public final class ObjModel implements IDrawableModel {
 
 	public @NonNull List<ObjGroup> getGroups() {
 		return Collections.unmodifiableList(this.groups);
-	}
-
-	@Override
-	public double getDepth() {
-		return this.extent(ObjVertex::getZ);
-	}
-
-	@Override
-	public double getWidth() {
-		return this.extent(ObjVertex::getX);
-	}
-
-	@Override
-	public double getHeight() {
-		return this.extent(ObjVertex::getY);
 	}
 
 	private void load(final Object handle) {

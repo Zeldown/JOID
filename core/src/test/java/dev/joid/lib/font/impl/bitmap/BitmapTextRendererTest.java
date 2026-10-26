@@ -209,16 +209,6 @@ public class BitmapTextRendererTest {
 		}
 
 		@Override
-		public @NonNull String getName() {
-			return "Bitmap";
-		}
-
-		@Override
-		public @NonNull FontWeight getWeight() {
-			return FontWeight.REGULAR;
-		}
-
-		@Override
 		public float getAscender() {
 			return 7F / 8F;
 		}
@@ -241,6 +231,16 @@ public class BitmapTextRendererTest {
 		@Override
 		public float getUnderlineThickness() {
 			return 1F / 8F;
+		}
+
+		@Override
+		public @NonNull String getName() {
+			return "Bitmap";
+		}
+
+		@Override
+		public @NonNull FontWeight getWeight() {
+			return FontWeight.REGULAR;
 		}
 
 		@Override

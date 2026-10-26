@@ -24,6 +24,11 @@ public final class RecordingShader implements IShader {
 	private boolean active = true;
 
 	@Override
+	public void delete() {
+		this.active = false;
+	}
+
+	@Override
 	public void bind() {
 		BridgeHandler.RENDER.get().getState().shader(this);
 		this.bound = true;
@@ -33,11 +38,6 @@ public final class RecordingShader implements IShader {
 	public void unbind() {
 		BridgeHandler.RENDER.get().getState().shader(null);
 		this.bound = false;
-	}
-
-	@Override
-	public void delete() {
-		this.active = false;
 	}
 
 	@Override

@@ -29,6 +29,20 @@ public final class UrlAsset extends Asset {
 	}
 
 	@Override
+	public @NonNull InputStream open() throws IOException {
+		try {
+			return UrlAsset.connect(this.url);
+		} catch (final SSLException exception) {
+			try {
+				return UrlAsset.connect(this.url.replaceFirst("^https:", "http:"));
+			} catch (final IOException fallback) {
+				exception.addSuppressed(fallback);
+				throw exception;
+			}
+		}
+	}
+
+	@Override
 	public File getFile() {
 		if (!this.url.startsWith("file:")) {
 			return null;
@@ -44,20 +58,6 @@ public final class UrlAsset extends Asset {
 	@Override
 	public boolean isRemote() {
 		return !this.url.startsWith("file:") && !this.url.startsWith("jar:");
-	}
-
-	@Override
-	public @NonNull InputStream open() throws IOException {
-		try {
-			return UrlAsset.connect(this.url);
-		} catch (final SSLException exception) {
-			try {
-				return UrlAsset.connect(this.url.replaceFirst("^https:", "http:"));
-			} catch (final IOException fallback) {
-				exception.addSuppressed(fallback);
-				throw exception;
-			}
-		}
 	}
 
 	private static @NonNull InputStream connect(final String url) throws IOException {

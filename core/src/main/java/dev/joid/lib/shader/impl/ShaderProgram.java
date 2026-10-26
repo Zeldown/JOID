@@ -32,6 +32,13 @@ public abstract class ShaderProgram {
 		}
 	}
 
+	public void delete() {
+		if (this.shader != null) {
+			this.shader.delete();
+			this.shader = null;
+		}
+	}
+
 	public void bind() {
 		final IShader current = this.getShader();
 		if (current != null && current.isActive()) {
@@ -42,13 +49,6 @@ public abstract class ShaderProgram {
 	public void unbind() {
 		if (this.shader != null) {
 			this.shader.unbind();
-		}
-	}
-
-	public void delete() {
-		if (this.shader != null) {
-			this.shader.delete();
-			this.shader = null;
 		}
 	}
 

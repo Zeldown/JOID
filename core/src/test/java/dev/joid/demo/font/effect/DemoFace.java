@@ -28,16 +28,6 @@ public final class DemoFace implements IFontFace {
 	}
 
 	@Override
-	public @NonNull String getName() {
-		return "Demo";
-	}
-
-	@Override
-	public @NonNull FontWeight getWeight() {
-		return FontWeight.REGULAR;
-	}
-
-	@Override
 	public float getAscender() {
 		return 0.8F;
 	}
@@ -60,6 +50,16 @@ public final class DemoFace implements IFontFace {
 	@Override
 	public float getUnderlineThickness() {
 		return 0.05F;
+	}
+
+	@Override
+	public @NonNull String getName() {
+		return "Demo";
+	}
+
+	@Override
+	public @NonNull FontWeight getWeight() {
+		return FontWeight.REGULAR;
 	}
 
 	@Override

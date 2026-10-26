@@ -55,6 +55,11 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
+	public T get() {
+		return this.constant ? this.value : super.get();
+	}
+
+	@Override
 	public @NonNull ComputedSignal<T> onChange(final @NonNull SignalListener<? super T> listener) {
 		final boolean listened = super.hasListeners();
 		super.onChange(listener);
@@ -79,11 +84,6 @@ public class ComputedSignal<T> extends Signal<T> {
 	}
 
 	@Override
-	public T get() {
-		return this.constant ? this.value : super.get();
-	}
-
-	@Override
 	public T peek() {
 		this.refresh();
 		return this.value;
@@ -92,6 +92,11 @@ public class ComputedSignal<T> extends Signal<T> {
 	@Override
 	public boolean isWritable() {
 		return false;
+	}
+
+	@Override
+	protected @NonNull String refuse(final @NonNull String action) {
+		return "The " + JOIDLog.nameOf(this.getClass()) + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
 	}
 
 	@Override
@@ -184,11 +189,6 @@ public class ComputedSignal<T> extends Signal<T> {
 		this.collectedDependencies[this.collectedCount] = signal;
 		this.collectedVersions[this.collectedCount] = signal.getVersion();
 		this.collectedCount++;
-	}
-
-	@Override
-	protected @NonNull String refuse(final @NonNull String action) {
-		return "The " + JOIDLog.nameOf(this.getClass()) + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
 	}
 
 	private boolean isOutdated() {

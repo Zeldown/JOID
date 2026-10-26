@@ -68,7 +68,7 @@ public final class TweenEquations {
 		TweenEquations.EXPO_OUT, TweenEquations.EXPO_INOUT, TweenEquations.BACK_IN, TweenEquations.BACK_OUT, TweenEquations.BACK_INOUT,
 		TweenEquations.BOUNCE_IN, TweenEquations.BOUNCE_OUT, TweenEquations.BOUNCE_INOUT, TweenEquations.ELASTIC_IN, TweenEquations.ELASTIC_OUT,
 		TweenEquations.ELASTIC_INOUT
-	};
+	};
 
 	public static TweenEquation of(final @NonNull String name) {
 		for (final TweenEquation easing : TweenEquations.EASINGS) {

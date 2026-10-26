@@ -7,10 +7,10 @@ import lombok.NonNull;
 
 public interface IShader {
 
+	public void delete();
+
 	public void bind();
 	public void unbind();
-
-	public void delete();
 
 	public boolean isBound();
 	public boolean isActive();

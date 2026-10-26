@@ -27,6 +27,11 @@ public final class ClasspathAsset extends Asset {
 	}
 
 	@Override
+	public @NonNull InputStream open() throws IOException {
+		return this.url.openStream();
+	}
+
+	@Override
 	public File getFile() {
 		if (!"file".equals(this.url.getProtocol())) {
 			return null;
@@ -37,11 +42,6 @@ public final class ClasspathAsset extends Asset {
 		} catch (final URISyntaxException exception) {
 			return null;
 		}
-	}
-
-	@Override
-	public @NonNull InputStream open() throws IOException {
-		return this.url.openStream();
 	}
 
 }
