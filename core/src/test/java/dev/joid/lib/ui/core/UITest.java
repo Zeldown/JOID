@@ -2872,18 +2872,13 @@ public class UITest {
 		}
 
 		@Override
-		public void draw(final double mouseX, final double mouseY) {
-			this.trace.add("draw " + this.name);
-		}
-
-		@Override
 		public void update() {
 			this.trace.add("update " + this.name);
 		}
 
 		@Override
-		public void detach() {
-			this.trace.add("detach " + this.name);
+		public void draw(final double mouseX, final double mouseY) {
+			this.trace.add("draw " + this.name);
 		}
 
 		@Override
@@ -2907,6 +2902,14 @@ public class UITest {
 		}
 
 		@Override
+		public void charTyped(final @NonNull NodeCharEvent<?> event) {
+			this.trace.add("char " + this.name);
+			if (this.cancel) {
+				event.consume();
+			}
+		}
+
+		@Override
 		public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
 			this.trace.add("key " + this.name);
 			if (this.cancel) {
@@ -2920,11 +2923,8 @@ public class UITest {
 		}
 
 		@Override
-		public void charTyped(final @NonNull NodeCharEvent<?> event) {
-			this.trace.add("char " + this.name);
-			if (this.cancel) {
-				event.consume();
-			}
+		public void detach() {
+			this.trace.add("detach " + this.name);
 		}
 
 	}
@@ -3009,14 +3009,14 @@ public class UITest {
 		private double interfaceScale = 1D;
 
 		@Override
-		public double getInterfaceScale(final @NonNull UI ui) {
-			this.scaleQueries++;
-			return this.interfaceScale;
+		public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {
+			this.hovers.add(content + " " + mouseX + " " + mouseY);
 		}
 
 		@Override
-		public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {
-			this.hovers.add(content + " " + mouseX + " " + mouseY);
+		public double getInterfaceScale(final @NonNull UI ui) {
+			this.scaleQueries++;
+			return this.interfaceScale;
 		}
 
 	}

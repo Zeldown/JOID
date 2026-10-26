@@ -50,18 +50,6 @@ public final class VulkanStateGuardBackend implements IStateGuardBackend {
 	}
 
 	@Override
-	public void fill(final int x, final int y, final int width, final int height, final int color) {
-		try (final MemoryStack stack = MemoryStack.stackPush()) {
-			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).colorAttachment(0);
-			attachment.clearValue().color().float32(0, (color >> 16 & 255) / 255F).float32(1, (color >> 8 & 255) / 255F).float32(2, (color & 255) / 255F).float32(3, (color >>> 24) / 255F);
-			final VkClearRect.Buffer rect = VkClearRect.calloc(1, stack).baseArrayLayer(0).layerCount(1);
-			rect.rect().offset().set(x, y);
-			rect.rect().extent().set(width, height);
-			VK10.vkCmdClearAttachments(this.backend.getHost().getCommandBuffer(), attachment, rect);
-		}
-	}
-
-	@Override
 	public void drawExternal() {
 		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkCommandBuffer buffer = this.backend.getHost().getCommandBuffer();
@@ -82,6 +70,18 @@ public final class VulkanStateGuardBackend implements IStateGuardBackend {
 	@Override
 	public boolean supports(final @NonNull StateTrap trap) {
 		return false;
+	}
+
+	@Override
+	public void fill(final int x, final int y, final int width, final int height, final int color) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
+			final VkClearAttachment.Buffer attachment = VkClearAttachment.calloc(1, stack).aspectMask(VK10.VK_IMAGE_ASPECT_COLOR_BIT).colorAttachment(0);
+			attachment.clearValue().color().float32(0, (color >> 16 & 255) / 255F).float32(1, (color >> 8 & 255) / 255F).float32(2, (color & 255) / 255F).float32(3, (color >>> 24) / 255F);
+			final VkClearRect.Buffer rect = VkClearRect.calloc(1, stack).baseArrayLayer(0).layerCount(1);
+			rect.rect().offset().set(x, y);
+			rect.rect().extent().set(width, height);
+			VK10.vkCmdClearAttachments(this.backend.getHost().getCommandBuffer(), attachment, rect);
+		}
 	}
 
 	@Override

@@ -326,6 +326,19 @@ public class BackendTest {
 		}
 
 		@Override
+		protected @NonNull IWindowBridge createWindowBridge() {
+			this.windowed.run();
+			this.trace.add("window");
+			return this.window;
+		}
+
+		@Override
+		protected @NonNull IRenderBridge createRenderBridge() {
+			this.trace.add("render");
+			return this.render;
+		}
+
+		@Override
 		protected IAudioBridge createAudioBridge() {
 			this.trace.add("audio");
 			return this.audio;
@@ -339,19 +352,6 @@ public class BackendTest {
 
 			this.trace.add("thread");
 			return this.thread;
-		}
-
-		@Override
-		protected @NonNull IWindowBridge createWindowBridge() {
-			this.windowed.run();
-			this.trace.add("window");
-			return this.window;
-		}
-
-		@Override
-		protected @NonNull IRenderBridge createRenderBridge() {
-			this.trace.add("render");
-			return this.render;
 		}
 
 		@Override

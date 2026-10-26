@@ -137,6 +137,11 @@ public class TextureTest {
 		private int maxLevels = Integer.MAX_VALUE;
 
 		@Override
+		protected int getMaxLevels(final int width, final int height) {
+			return this.maxLevels;
+		}
+
+		@Override
 		protected void allocateStorage(final @NonNull MipmapChain chain) {
 			this.calls.add("allocate " + chain.getWidth() + "x" + chain.getHeight() + " " + chain.getLevels());
 		}
@@ -154,11 +159,6 @@ public class TextureTest {
 		@Override
 		protected void deleteStorage() {
 			this.calls.add("delete");
-		}
-
-		@Override
-		protected int getMaxLevels(final int width, final int height) {
-			return this.maxLevels;
 		}
 
 	}

@@ -113,9 +113,9 @@ public final class TestUtils {
 		}
 	}
 
-	public static boolean awaitWaiting(final @NonNull Thread thread, final @NonNull Class<?> type, final @NonNull String method) {
+	public static boolean awaitBlocked(final @NonNull Thread thread, final @NonNull Object monitor) {
 		final long deadline = System.currentTimeMillis() + 30000L;
-		while (!TestUtils.isWaitingIn(thread, type, method)) {
+		while (!TestUtils.isBlockedOn(thread, monitor)) {
 			if (System.currentTimeMillis() > deadline) {
 				return false;
 			}
@@ -124,9 +124,9 @@ public final class TestUtils {
 		return true;
 	}
 
-	public static boolean awaitBlocked(final @NonNull Thread thread, final @NonNull Object monitor) {
+	public static boolean awaitWaiting(final @NonNull Thread thread, final @NonNull Class<?> type, final @NonNull String method) {
 		final long deadline = System.currentTimeMillis() + 30000L;
-		while (!TestUtils.isBlockedOn(thread, monitor)) {
+		while (!TestUtils.isWaitingIn(thread, type, method)) {
 			if (System.currentTimeMillis() > deadline) {
 				return false;
 			}
@@ -150,16 +150,16 @@ public final class TestUtils {
 		TestUtils.join(thread);
 	}
 
+	public static void awaitSettled(final @NonNull VideoResourceDecoder decoder) throws InterruptedException {
+		TestUtils.await("The video did not settle", decoder::isSettled);
+	}
+
 	public static void await(final @NonNull String failure, final @NonNull BooleanSupplier condition) throws InterruptedException {
 		final long deadline = System.currentTimeMillis() + 30000L;
 		while (!condition.getAsBoolean()) {
 			Assert.assertTrue(failure + " in 30 s", System.currentTimeMillis() < deadline);
 			Thread.sleep(1L);
 		}
-	}
-
-	public static void awaitSettled(final @NonNull VideoResourceDecoder decoder) throws InterruptedException {
-		TestUtils.await("The video did not settle", decoder::isSettled);
 	}
 
 	private static boolean isBlockedOn(final Thread thread, final Object monitor) {

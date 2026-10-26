@@ -533,13 +533,9 @@ public class ResourceTest {
 		private final boolean mipmappable;
 
 		@Override
-		public void init(final @NonNull ResourceData resource) {
-			this.calls.add("init");
-		}
-
-		@Override
-		public void clear(final @NonNull ResourceData resource) {
-			this.calls.add("clear");
+		public void prepare(final @NonNull ResourceData resource) {
+			this.calls.add("prepare");
+			resource.texture(this.texture);
 		}
 
 		@Override
@@ -549,19 +545,23 @@ public class ResourceTest {
 		}
 
 		@Override
-		public void update(final @NonNull ResourceData resource) {
-			this.calls.add("update");
-		}
-
-		@Override
 		public void upload(final @NonNull ResourceData resource) {
 			this.calls.add("upload");
 		}
 
 		@Override
-		public void prepare(final @NonNull ResourceData resource) {
-			this.calls.add("prepare");
-			resource.texture(this.texture);
+		public void clear(final @NonNull ResourceData resource) {
+			this.calls.add("clear");
+		}
+
+		@Override
+		public void init(final @NonNull ResourceData resource) {
+			this.calls.add("init");
+		}
+
+		@Override
+		public void update(final @NonNull ResourceData resource) {
+			this.calls.add("update");
 		}
 
 		@Override

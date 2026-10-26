@@ -99,13 +99,6 @@ public class VulkanDescriptorCacheTest {
 		ContractDraw.frame(this.backend, 64, 64, render -> resource.bind(TextureWrap.CLAMP_TO_EDGE, () -> render.draw(Primitive.TRIANGLES, ContractDraw.quad(0F, 0F, 64F, 64F, 0F, true, 0, false, 0F, 1F))));
 	}
 
-	private static boolean isCached(final long view) throws ReflectiveOperationException {
-		final VulkanDescriptorCache cache = BridgeHandler.RENDER.getBridge(VulkanRenderBridge.class).getDescriptorCache();
-		final Field sets = VulkanDescriptorCache.class.getDeclaredField("setMap");
-		sets.setAccessible(true);
-		return ((Map<List<Long>, ?>) sets.get(cache)).keySet().stream().anyMatch(key -> key.contains(view));
-	}
-
 	private static long createPool(final VkDevice device) {
 		try (final MemoryStack stack = MemoryStack.stackPush()) {
 			final VkDescriptorPoolSize.Buffer sizes = VkDescriptorPoolSize.calloc(1, stack);
@@ -113,6 +106,16 @@ public class VulkanDescriptorCacheTest {
 			final LongBuffer pool = stack.mallocLong(1);
 			VulkanContext.check(VK10.vkCreateDescriptorPool(device, VkDescriptorPoolCreateInfo.calloc(stack).sType$Default().flags(VK10.VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT).maxSets(1).pPoolSizes(sizes), null, pool), "vkCreateDescriptorPool");
 			return pool.get(0);
+		}
+	}
+
+	private static long createLayout(final VkDevice device) {
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
+			final VkDescriptorSetLayoutBinding.Buffer bindings = VkDescriptorSetLayoutBinding.calloc(1, stack);
+			bindings.get(0).binding(0).descriptorType(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(1).stageFlags(VK10.VK_SHADER_STAGE_VERTEX_BIT);
+			final LongBuffer layout = stack.mallocLong(1);
+			VulkanContext.check(VK10.vkCreateDescriptorSetLayout(device, VkDescriptorSetLayoutCreateInfo.calloc(stack).sType$Default().pBindings(bindings), null, layout), "vkCreateDescriptorSetLayout");
+			return layout.get(0);
 		}
 	}
 
@@ -134,14 +137,11 @@ public class VulkanDescriptorCacheTest {
 		}
 	}
 
-	private static long createLayout(final VkDevice device) {
-		try (final MemoryStack stack = MemoryStack.stackPush()) {
-			final VkDescriptorSetLayoutBinding.Buffer bindings = VkDescriptorSetLayoutBinding.calloc(1, stack);
-			bindings.get(0).binding(0).descriptorType(VK10.VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC).descriptorCount(1).stageFlags(VK10.VK_SHADER_STAGE_VERTEX_BIT);
-			final LongBuffer layout = stack.mallocLong(1);
-			VulkanContext.check(VK10.vkCreateDescriptorSetLayout(device, VkDescriptorSetLayoutCreateInfo.calloc(stack).sType$Default().pBindings(bindings), null, layout), "vkCreateDescriptorSetLayout");
-			return layout.get(0);
-		}
+	private static boolean isCached(final long view) throws ReflectiveOperationException {
+		final VulkanDescriptorCache cache = BridgeHandler.RENDER.getBridge(VulkanRenderBridge.class).getDescriptorCache();
+		final Field sets = VulkanDescriptorCache.class.getDeclaredField("setMap");
+		sets.setAccessible(true);
+		return ((Map<List<Long>, ?>) sets.get(cache)).keySet().stream().anyMatch(key -> key.contains(view));
 	}
 
 }

@@ -1220,16 +1220,16 @@ public class UIBridgeTest {
 		}
 
 		@Override
-		public void update() {
-			this.trace.add("update " + this.name);
-		}
-
-		@Override
 		public void init() {
 			super.add(new DrawingNode(() -> {
 				this.trace.add("draw " + this.name);
 				this.depth = ((RenderBridge) BridgeHandler.RENDER.get()).getModelView().getMatrix()[14];
 			}));
+		}
+
+		@Override
+		public void update() {
+			this.trace.add("update " + this.name);
 		}
 
 	}

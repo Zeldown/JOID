@@ -43,11 +43,6 @@ public final class RecordingRenderBridge extends RenderBridge {
 	private Color clearedColor;
 
 	@Override
-	public boolean canWrap(final @NonNull TextureWrap wrap) {
-		return !this.borderless || wrap != TextureWrap.CLAMP_TO_BORDER;
-	}
-
-	@Override
 	protected void beginFrameCommands() {
 		if (this.frameFailure != null) {
 			throw this.frameFailure;
@@ -104,6 +99,11 @@ public final class RecordingRenderBridge extends RenderBridge {
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
 		return new RecordingShader();
+	}
+
+	@Override
+	public boolean canWrap(final @NonNull TextureWrap wrap) {
+		return !this.borderless || wrap != TextureWrap.CLAMP_TO_BORDER;
 	}
 
 	public @NonNull List<@NonNull Draw> getDraws(final float red, final float green, final float blue) {

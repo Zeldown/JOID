@@ -180,6 +180,15 @@ public final class GlStateSnapshot {
 		return Collections.unmodifiableMap(this.stateMap);
 	}
 
+	private void readAttribute(final int index) {
+		final int[] names = {GlConstants.VERTEX_ATTRIB_ARRAY_ENABLED, GlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, GlConstants.VERTEX_ATTRIB_ARRAY_SIZE, GlConstants.VERTEX_ATTRIB_ARRAY_TYPE, GlConstants.VERTEX_ATTRIB_ARRAY_NORMALIZED, GlConstants.VERTEX_ATTRIB_ARRAY_STRIDE};
+		final int[] values = new int[names.length];
+		for (int i = 0; i < names.length; i++) {
+			values[i] = this.binding.getVertexAttribi(index, names[i]);
+		}
+		this.stateMap.put("VERTEX_ATTRIB " + index, Arrays.toString(values) + " @" + this.binding.getVertexAttribPointer(index, GlConstants.VERTEX_ATTRIB_ARRAY_POINTER));
+	}
+
 	private void readUnit(final int unit, final boolean compatibility) {
 		this.binding.activeTexture(GlConstants.TEXTURE0 + unit);
 		final int texture = this.binding.getInteger(GlConstants.TEXTURE_BINDING_2D);
@@ -196,15 +205,6 @@ public final class GlStateSnapshot {
 				this.stateMap.put("TEXTURE " + texture + " " + name, Integer.toString(this.binding.getTexParameteri(GlConstants.TEXTURE_2D, name)));
 			}
 		}
-	}
-
-	private void readAttribute(final int index) {
-		final int[] names = {GlConstants.VERTEX_ATTRIB_ARRAY_ENABLED, GlConstants.VERTEX_ATTRIB_ARRAY_BUFFER_BINDING, GlConstants.VERTEX_ATTRIB_ARRAY_SIZE, GlConstants.VERTEX_ATTRIB_ARRAY_TYPE, GlConstants.VERTEX_ATTRIB_ARRAY_NORMALIZED, GlConstants.VERTEX_ATTRIB_ARRAY_STRIDE};
-		final int[] values = new int[names.length];
-		for (int i = 0; i < names.length; i++) {
-			values[i] = this.binding.getVertexAttribi(index, names[i]);
-		}
-		this.stateMap.put("VERTEX_ATTRIB " + index, Arrays.toString(values) + " @" + this.binding.getVertexAttribPointer(index, GlConstants.VERTEX_ATTRIB_ARRAY_POINTER));
 	}
 
 	private void capability(final String name, final int capability) {

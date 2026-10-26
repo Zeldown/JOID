@@ -27,7 +27,7 @@ public class IResourceDecoderTest {
 	private static final class Decoder implements IResourceDecoder {
 
 		@Override
-		public void clear(final @NonNull ResourceData resource) {}
+		public void prepare(final @NonNull ResourceData resource) {}
 
 		@Override
 		public void decode(final @NonNull ResourceData resource) {}
@@ -36,7 +36,7 @@ public class IResourceDecoderTest {
 		public void upload(final @NonNull ResourceData resource) {}
 
 		@Override
-		public void prepare(final @NonNull ResourceData resource) {}
+		public void clear(final @NonNull ResourceData resource) {}
 
 	}
 

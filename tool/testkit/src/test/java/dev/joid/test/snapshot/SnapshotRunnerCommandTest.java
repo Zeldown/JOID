@@ -295,7 +295,7 @@ public class SnapshotRunnerCommandTest {
 	private static final class RestlessDecoder implements IResourceDecoder {
 
 		@Override
-		public void clear(final @NonNull ResourceData resource) {}
+		public void prepare(final @NonNull ResourceData resource) {}
 
 		@Override
 		public void decode(final @NonNull ResourceData resource) {}
@@ -304,7 +304,7 @@ public class SnapshotRunnerCommandTest {
 		public void upload(final @NonNull ResourceData resource) {}
 
 		@Override
-		public void prepare(final @NonNull ResourceData resource) {}
+		public void clear(final @NonNull ResourceData resource) {}
 
 		@Override
 		public boolean isSettled() {
@@ -320,11 +320,6 @@ public class SnapshotRunnerCommandTest {
 		}
 
 		@Override
-		public boolean isRemote() {
-			return true;
-		}
-
-		@Override
 		public @NonNull InputStream open() {
 			try {
 				Thread.sleep(300L);
@@ -332,6 +327,11 @@ public class SnapshotRunnerCommandTest {
 				Thread.currentThread().interrupt();
 			}
 			return JOID.class.getResourceAsStream("/assets/dev/textures/icons/eye.png");
+		}
+
+		@Override
+		public boolean isRemote() {
+			return true;
 		}
 
 	}

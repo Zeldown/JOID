@@ -631,13 +631,8 @@ public class ResourceDataTest {
 		private volatile Thread thread;
 
 		@Override
-		public void init(final @NonNull ResourceData resource) {
-			this.calls.add("init");
-		}
-
-		@Override
-		public void clear(final @NonNull ResourceData resource) {
-			this.calls.add("clear");
+		public void prepare(final @NonNull ResourceData resource) {
+			this.calls.add("prepare");
 		}
 
 		@Override
@@ -648,18 +643,23 @@ public class ResourceDataTest {
 		}
 
 		@Override
-		public void update(final @NonNull ResourceData resource) {
-			this.calls.add("update");
-		}
-
-		@Override
 		public void upload(final @NonNull ResourceData resource) {
 			this.calls.add("upload");
 		}
 
 		@Override
-		public void prepare(final @NonNull ResourceData resource) {
-			this.calls.add("prepare");
+		public void clear(final @NonNull ResourceData resource) {
+			this.calls.add("clear");
+		}
+
+		@Override
+		public void init(final @NonNull ResourceData resource) {
+			this.calls.add("init");
+		}
+
+		@Override
+		public void update(final @NonNull ResourceData resource) {
+			this.calls.add("update");
 		}
 
 	}

@@ -25,6 +25,11 @@ public final class RecordingWindowBridge implements IWindowBridge {
 	private String  clipboard = "";
 	private boolean mouseGrabbed;
 
+	@Override
+	public boolean isKeyDown(final @NonNull Key key) {
+		return this.keys.contains(key);
+	}
+
 	public @NonNull Cursor getCursor() {
 		return this.cursors.isEmpty() ? Cursor.DEFAULT : this.cursors.get(this.cursors.size() - 1);
 	}
@@ -32,11 +37,6 @@ public final class RecordingWindowBridge implements IWindowBridge {
 	@Override
 	public void setCursor(final @NonNull Cursor cursor) {
 		this.cursors.add(cursor);
-	}
-
-	@Override
-	public boolean isKeyDown(final @NonNull Key key) {
-		return this.keys.contains(key);
 	}
 
 }

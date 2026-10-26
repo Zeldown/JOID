@@ -4360,11 +4360,6 @@ public class NodeTest {
 		}
 
 		@Override
-		public void detach() {
-			this.events.add(this.name + " detach");
-		}
-
-		@Override
 		public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 			this.events.add(this.name + " pressed");
 		}
@@ -4385,13 +4380,18 @@ public class NodeTest {
 		}
 
 		@Override
+		public void charTyped(final @NonNull NodeCharEvent<?> event) {
+			this.events.add(this.name + " char");
+		}
+
+		@Override
 		public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
 			this.events.add(this.name + " key");
 		}
 
 		@Override
-		public void charTyped(final @NonNull NodeCharEvent<?> event) {
-			this.events.add(this.name + " char");
+		public void detach() {
+			this.events.add(this.name + " detach");
 		}
 
 	}
@@ -4408,15 +4408,15 @@ public class NodeTest {
 		}
 
 		@Override
-		public void detach(final @NonNull Node node) {
-			this.events.add(this.name + " detach");
-		}
-
-		@Override
 		public void draw(final @NonNull Node node, final @NonNull Runnable body) {
 			this.events.add(this.name + " open");
 			body.run();
 			this.events.add(this.name + " close");
+		}
+
+		@Override
+		public void detach(final @NonNull Node node) {
+			this.events.add(this.name + " detach");
 		}
 
 	}

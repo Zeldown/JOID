@@ -491,7 +491,9 @@ public class DrawResourceTest {
 		@Getter private int height;
 
 		@Override
-		public void clear(final @NonNull ResourceData resource) {}
+		public void prepare(final @NonNull ResourceData resource) {
+			resource.texture(BridgeHandler.RENDER.get().createTexture().allocate(64, 32));
+		}
 
 		@Override
 		public void decode(final @NonNull ResourceData resource) {
@@ -502,9 +504,7 @@ public class DrawResourceTest {
 		public void upload(final @NonNull ResourceData resource) {}
 
 		@Override
-		public void prepare(final @NonNull ResourceData resource) {
-			resource.texture(BridgeHandler.RENDER.get().createTexture().allocate(64, 32));
-		}
+		public void clear(final @NonNull ResourceData resource) {}
 
 		@Override
 		public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {
