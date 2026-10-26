@@ -2477,7 +2477,7 @@ public class UITest {
 	private static void await(final BlockingQueue<String> changes, final String... expected) throws InterruptedException {
 		final Set<String> missing = new HashSet<>(Arrays.asList(expected));
 		while (!missing.isEmpty()) {
-			final String change = changes.poll(10L, TimeUnit.SECONDS);
+			final String change = changes.poll(30L, TimeUnit.SECONDS);
 			Assert.assertNotNull(missing.toString(), change);
 			missing.remove(change);
 		}

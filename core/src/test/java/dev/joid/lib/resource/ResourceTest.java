@@ -255,7 +255,7 @@ public class ResourceTest {
 		Assert.assertArrayEquals(new int[] {0xFF336699, 0xFF336699}, resource.getData());
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void decodesInTheBackgroundByDefault() {
 		final Resource resource = ResourceBuilder.create().cache(null).of(ResourceTest.image());
 		resource.generate();

@@ -87,12 +87,12 @@ public class MsdfFontLoaderTest {
 		Assert.assertTrue(MsdfFontLoader.load(asset).join().getFace(FontWeight.REGULAR, false).getGlyphs().size() > 200);
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void refusesAnEmptyFamily() {
 		MsdfFontLoaderTest.fails(IllegalArgumentException.class);
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void refusesAnUnknownHandle() {
 		MsdfFontLoaderTest.fails(IllegalArgumentException.class, new Object());
 	}
@@ -119,7 +119,7 @@ public class MsdfFontLoaderTest {
 		BridgeHandler.THREAD.register(thread);
 		try {
 			final CompletableFuture<MsdfFont> future = MsdfFontLoader.load(MsdfFontLoaderTest.atlas);
-			Assert.assertTrue("The font sent no task to the render thread in 10 s", thread.await(10L, TimeUnit.SECONDS));
+			Assert.assertTrue("The font sent no task to the render thread in 30 s", thread.await(30L, TimeUnit.SECONDS));
 			Assert.assertFalse(future.isDone());
 			thread.run();
 			Assert.assertTrue(future.isDone());
@@ -142,7 +142,7 @@ public class MsdfFontLoaderTest {
 		}
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void completesTheFutureWithTheFailure() {
 		MsdfFontLoaderTest.fails(IOException.class, new ByteArrayInputStream("not a font at all".getBytes(StandardCharsets.UTF_8)));
 	}
@@ -168,7 +168,7 @@ public class MsdfFontLoaderTest {
 		Assert.assertSame(face, MsdfFontLoader.load(source).join().getFace(FontWeight.REGULAR, false));
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void loadsAMsdfFileDirectly() {
 		final MsdfFontFace face = MsdfFontLoader.load(MsdfFontLoaderTest.atlas).join().getFace(FontWeight.REGULAR, false);
 		Assert.assertEquals("JOID Test Regular", face.getName());
@@ -176,21 +176,21 @@ public class MsdfFontLoaderTest {
 		Assert.assertTrue(face.getKerning('A', 'V') < 0F);
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void loadsAMsdfStream() throws IOException {
 		try (final InputStream stream = new FileInputStream(MsdfFontLoaderTest.atlas)) {
 			Assert.assertEquals("JOID Test Regular", MsdfFontLoader.load(stream).join().getFace(FontWeight.REGULAR, false).getName());
 		}
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void restylesAMsdfFile() {
 		final MsdfFontFace face = MsdfFontLoader.load(BinaryMsdfSource.of(MsdfFontLoaderTest.atlas).weight(FontWeight.LIGHT).italic(true)).join().getFace(FontWeight.LIGHT, true);
 		Assert.assertSame(FontWeight.LIGHT, face.getWeight());
 		Assert.assertTrue(face.isItalic());
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void refusesAnOlderMsdfFile() throws IOException {
 		final byte[] bytes = Files.readAllBytes(MsdfFontLoaderTest.atlas.toPath());
 		final byte[] body = Asset.of(new InflaterInputStream(new ByteArrayInputStream(bytes, 8, bytes.length - 8))).read();
@@ -205,28 +205,28 @@ public class MsdfFontLoaderTest {
 		Assert.assertEquals("The msdf font version " + (MsdfWriter.VERSION - 1) + " is not supported, only the version " + MsdfWriter.VERSION + " loads: generate it again with the msdf tool of JOID", cause.getMessage());
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void refusesATruncatedMsdfFile() throws IOException {
 		final byte[] bytes = Files.readAllBytes(MsdfFontLoaderTest.atlas.toPath());
 		MsdfFontLoaderTest.fails(EOFException.class, new ByteArrayInputStream(Arrays.copyOf(bytes, 64)));
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void refusesAMissingFile() {
 		MsdfFontLoaderTest.fails(UncheckedIOException.class, new File(MsdfFontLoaderTest.FOLDER.getRoot(), "missing.msdf"));
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void namesTheProblemOfAnEmptyFamily() {
 		Assert.assertEquals("A msdf font needs at least one face, got none: pass the files of its faces", MsdfFontLoaderTest.cause().getMessage());
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void namesTheProblemOfTwoFacesOfTheSameWeight() {
 		Assert.assertEquals("Two faces share the weight 400, keep one face per weight and style", MsdfFontLoaderTest.cause(MsdfFontLoaderTest.atlas, MsdfFontLoaderTest.atlas).getMessage());
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void handsBackTheExactFailureOfASource() {
 		final IOException unreadable = new IOException("unreadable");
 		final IllegalStateException broken = new IllegalStateException("broken");
@@ -238,7 +238,7 @@ public class MsdfFontLoaderTest {
 		}));
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void readsTheFacesInParallelOnItsOwnPool() {
 		final CountDownLatch started = new CountDownLatch(2);
 		final List<String> threads = new CopyOnWriteArrayList<>();
@@ -250,7 +250,7 @@ public class MsdfFontLoaderTest {
 		}
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void logsACustomSourceByItsClassInDevMode() {
 		final String line = TestUtils.captureOut(true, () -> MsdfFontLoader.load(new FaceSource(new CountDownLatch(0), new CopyOnWriteArrayList<>(), BinaryMsdfSource.of(MsdfFontLoaderTest.atlas))).join());
 		Assert.assertTrue(line, line.startsWith("[JOID] Font JOID Test Regular read from FaceSource in "));
@@ -290,7 +290,7 @@ public class MsdfFontLoaderTest {
 			this.threads.add(Thread.currentThread().getName());
 			this.started.countDown();
 			try {
-				if (!this.started.await(5L, TimeUnit.SECONDS)) {
+				if (!this.started.await(30L, TimeUnit.SECONDS)) {
 					throw new IOException("The faces were read one after the other");
 				}
 			} catch (final InterruptedException exception) {

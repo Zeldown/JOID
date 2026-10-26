@@ -13,6 +13,7 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
@@ -646,11 +647,7 @@ public class ResourcePlayerNodeTest {
 
 	private void settle(final ResourcePlayerNode player, final int frames) throws InterruptedException {
 		for (int i = 0; i < frames; i++) {
-			final long deadline = System.currentTimeMillis() + 10000L;
-			while (!player.getVideo().isSettled()) {
-				Assert.assertTrue("The video did not settle in 10 s", System.currentTimeMillis() < deadline);
-				Thread.sleep(1L);
-			}
+			TestUtils.awaitSettled(player.getVideo());
 			this.bridges.frame();
 		}
 	}

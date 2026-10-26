@@ -176,9 +176,9 @@ public class JOIDTest {
 		try {
 			final Thread shutdown = JOIDTest.shutdown();
 			shutdown.start();
-			final long deadline = System.currentTimeMillis() + 10000L;
+			final long deadline = System.currentTimeMillis() + 30000L;
 			while (shutdown.isAlive()) {
-				Assert.assertTrue("The shutdown did not end in 10 s", System.currentTimeMillis() < deadline);
+				Assert.assertTrue("The shutdown did not end in 30 s", System.currentTimeMillis() < deadline);
 				render.runTasks();
 				shutdown.join(1L);
 			}

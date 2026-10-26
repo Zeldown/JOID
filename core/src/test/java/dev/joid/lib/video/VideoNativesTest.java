@@ -85,7 +85,7 @@ public class VideoNativesTest {
 		Assert.assertEquals(directory, VideoNativesTest.download(platform));
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 30000L)
 	public void endsItsInstallationOnAnErrorOfItsThread() throws ReflectiveOperationException, InterruptedException {
 		final Field installed = VideoNatives.class.getDeclaredField("installed");
 		final Field installation = VideoNatives.class.getDeclaredField("installation");

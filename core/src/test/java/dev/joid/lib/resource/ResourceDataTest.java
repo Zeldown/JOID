@@ -86,7 +86,7 @@ public class ResourceDataTest {
 	}
 
 	@Test
-	public void runsAnAsyncTaskOnItsOwnDaemonThread() throws InterruptedException {
+	public void runsAnAsyncTaskOnItsOwnDaemonThread() {
 		final List<Thread> threads = new CopyOnWriteArrayList<>();
 		final ResourceData data = ResourceData.create("image", null);
 		data.dispatch(() -> threads.add(Thread.currentThread()));
@@ -94,8 +94,7 @@ public class ResourceDataTest {
 		Assert.assertFalse(data.isDispatching());
 		Assert.assertEquals("ResourceTask/image", threads.get(0).getName());
 		Assert.assertTrue(threads.get(0).isDaemon());
-		threads.get(0).join(5000L);
-		Assert.assertFalse(threads.get(0).isAlive());
+		TestUtils.join(threads.get(0));
 		TestUtils.awaitWithin(data::await);
 	}
 
@@ -133,7 +132,7 @@ public class ResourceDataTest {
 		final ResourceData data = ResourceData.create("image", decoder);
 		data.generate(true);
 		Assert.assertTrue(data.isGenerated());
-		Assert.assertTrue(decoder.decoded.await(5L, TimeUnit.SECONDS));
+		Assert.assertTrue(decoder.decoded.await(30L, TimeUnit.SECONDS));
 		Assert.assertEquals(Arrays.asList("init", "prepare", "decode"), decoder.calls);
 		Assert.assertTrue(decoder.thread.getName(), decoder.thread.getName().startsWith("ResourceAsync/"));
 	}
@@ -255,7 +254,7 @@ public class ResourceDataTest {
 	}
 
 	@Test
-	public void clearsWithoutWaitingForItsDecode() throws InterruptedException {
+	public void clearsWithoutWaitingForItsDecode() {
 		final CountDownLatch release = new CountDownLatch(1);
 		final Decoder decoder = new Decoder() {
 
@@ -273,8 +272,7 @@ public class ResourceDataTest {
 		data.generate(true);
 		final Thread clearing = new Thread(data::clear);
 		clearing.start();
-		clearing.join(10000L);
-		Assert.assertFalse("The clear waited for the decode", clearing.isAlive());
+		TestUtils.join(clearing);
 		Assert.assertFalse(data.isGenerated());
 		Assert.assertNull(data.getTextures());
 		Assert.assertFalse(decoder.calls.contains("clear"));

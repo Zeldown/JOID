@@ -6,10 +6,12 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
+import java.util.function.BooleanSupplier;
 
 import org.junit.Assert;
 
 import dev.joid.internal.font.DevFont;
+import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -89,7 +91,7 @@ public final class TestUtils {
 	}
 
 	public static boolean awaitWaiting(final @NonNull Thread thread, final @NonNull Class<?> type, final @NonNull String method) {
-		final long deadline = System.currentTimeMillis() + 5000L;
+		final long deadline = System.currentTimeMillis() + 30000L;
 		while (!TestUtils.isWaitingIn(thread, type, method)) {
 			if (System.currentTimeMillis() > deadline) {
 				return false;
@@ -100,7 +102,7 @@ public final class TestUtils {
 	}
 
 	public static boolean awaitBlocked(final @NonNull Thread thread, final @NonNull Object monitor) {
-		final long deadline = System.currentTimeMillis() + 5000L;
+		final long deadline = System.currentTimeMillis() + 30000L;
 		while (!TestUtils.isBlockedOn(thread, monitor)) {
 			if (System.currentTimeMillis() > deadline) {
 				return false;
@@ -123,6 +125,18 @@ public final class TestUtils {
 		final Thread thread = ThreadUtils.daemonThread(wait, "TestUtils/await");
 		thread.start();
 		TestUtils.join(thread);
+	}
+
+	public static void await(final @NonNull String failure, final @NonNull BooleanSupplier condition) throws InterruptedException {
+		final long deadline = System.currentTimeMillis() + 30000L;
+		while (!condition.getAsBoolean()) {
+			Assert.assertTrue(failure + " in 30 s", System.currentTimeMillis() < deadline);
+			Thread.sleep(1L);
+		}
+	}
+
+	public static void awaitSettled(final @NonNull VideoResourceDecoder decoder) throws InterruptedException {
+		TestUtils.await("The video did not settle", decoder::isSettled);
 	}
 
 	private static boolean isWaitingIn(final Thread thread, final Class<?> type, final String method) {

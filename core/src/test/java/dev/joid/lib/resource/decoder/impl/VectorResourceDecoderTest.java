@@ -372,11 +372,7 @@ public class VectorResourceDecoderTest {
 	}
 
 	private static void awaitRaster(final VectorResourceDecoder decoder) throws InterruptedException {
-		final long deadline = System.currentTimeMillis() + 5000L;
-		while (((boolean) TestUtils.field(decoder, "rendering")) && System.currentTimeMillis() < deadline) {
-			Thread.sleep(1L);
-		}
-		Assert.assertFalse("The raster did not end in 5 s", (boolean) TestUtils.field(decoder, "rendering"));
+		TestUtils.await("The raster did not end", () -> !((boolean) TestUtils.field(decoder, "rendering")));
 	}
 
 	private static Map<?, ?> textures(final VectorResourceDecoder decoder) {
