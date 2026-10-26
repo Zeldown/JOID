@@ -46,6 +46,18 @@ public final class TestUtils {
 		}
 	}
 
+	public static @NonNull String captureOutChecked(final @NonNull CheckedRunnable runnable) throws Exception {
+		final PrintStream previous = System.out;
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		try {
+			System.setOut(new PrintStream(output, true));
+			runnable.run();
+		} finally {
+			System.setOut(previous);
+		}
+		return new String(output.toByteArray(), StandardCharsets.UTF_8);
+	}
+
 	public static @NonNull String captureErr(final @NonNull Runnable runnable) {
 		final PrintStream previous = System.err;
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -167,6 +179,13 @@ public final class TestUtils {
 	private static boolean isBlockedOn(final Thread thread, final Object monitor) {
 		final ThreadInfo info = ManagementFactory.getThreadMXBean().getThreadInfo(thread.getId());
 		return info != null && info.getThreadState() == Thread.State.BLOCKED && info.getLockInfo() != null && info.getLockInfo().getIdentityHashCode() == System.identityHashCode(monitor);
+	}
+
+	@FunctionalInterface
+	public interface CheckedRunnable {
+
+		public void run() throws Exception;
+
 	}
 
 }

@@ -1,11 +1,9 @@
 package dev.joid.lib.ui.core;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -2101,27 +2099,25 @@ public class UITest {
 		final File location = this.folder.newFolder("classes");
 		final UI first = UITest.hotReloaded(location, new AtomicInteger());
 		final UI second = UITest.hotReloaded(location, new AtomicInteger());
-		final PrintStream previous = System.out;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		JOIDEnv.devMode(true);
-		System.setOut(new PrintStream(output, true));
-		try {
-			first.load(1920D, 1080D);
-			second.load(1920D, 1080D);
-			Assert.assertNotNull(UITest.monitor(first));
-			Assert.assertEquals(UITest.location(first), UITest.location(second));
-			final BlockingQueue<String> changes = UITest.listen(first);
-			Files.write(new File(location, "ShopNode.class").toPath(), new byte[] {1});
-			UITest.await(changes, "file create ShopNode.class");
-			UITest.await(changes, "stop");
-			Assert.assertTrue(UITest.isReloadPending(first));
-			Assert.assertTrue(UITest.isReloadPending(second));
-		} finally {
-			first.dispose();
-			second.dispose();
-			System.setOut(previous);
-		}
-		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] ShopNode.class changed, the UIs that use it reload"));
+		final String output = TestUtils.captureOutChecked(() -> {
+			try {
+				first.load(1920D, 1080D);
+				second.load(1920D, 1080D);
+				Assert.assertNotNull(UITest.monitor(first));
+				Assert.assertEquals(UITest.location(first), UITest.location(second));
+				final BlockingQueue<String> changes = UITest.listen(first);
+				Files.write(new File(location, "ShopNode.class").toPath(), new byte[] {1});
+				UITest.await(changes, "file create ShopNode.class");
+				UITest.await(changes, "stop");
+				Assert.assertTrue(UITest.isReloadPending(first));
+				Assert.assertTrue(UITest.isReloadPending(second));
+			} finally {
+				first.dispose();
+				second.dispose();
+			}
+		});
+		Assert.assertTrue(output, output.contains("[JOID] ShopNode.class changed, the UIs that use it reload"));
 	}
 
 	@Test
@@ -2180,28 +2176,26 @@ public class UITest {
 		final AtomicInteger inits = new AtomicInteger();
 		Files.write(location.toPath(), new byte[] {1});
 		final UI ui = UITest.hotReloaded(location, inits);
-		final PrintStream previous = System.out;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		JOIDEnv.devMode(true);
-		System.setOut(new PrintStream(output, true));
-		try {
-			ui.load(1920D, 1080D);
-			final BlockingQueue<String> changes = UITest.listen(ui);
-			Files.write(location.toPath(), new byte[] {1, 2});
-			UITest.await(changes, "file change ui.jar");
-			UITest.await(changes, "stop");
-			Assert.assertTrue(UITest.isReloadPending(ui));
-			Assert.assertEquals(1, inits.get());
-			final String reload = TestUtils.captureOut(() -> ui.draw(0D, 0D));
-			Assert.assertFalse(UITest.isReloadPending(ui));
-			Assert.assertEquals(2, inits.get());
-			Assert.assertTrue(ui.isInitialized());
-			Assert.assertTrue(reload, reload.matches("\\[JOID\\] \\w* ?reloaded in \\d+\\.\\d\\dms" + System.lineSeparator()));
-		} finally {
-			ui.dispose();
-			System.setOut(previous);
-		}
-		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] ui.jar changed, the UIs that use it reload"));
+		final String output = TestUtils.captureOutChecked(() -> {
+			try {
+				ui.load(1920D, 1080D);
+				final BlockingQueue<String> changes = UITest.listen(ui);
+				Files.write(location.toPath(), new byte[] {1, 2});
+				UITest.await(changes, "file change ui.jar");
+				UITest.await(changes, "stop");
+				Assert.assertTrue(UITest.isReloadPending(ui));
+				Assert.assertEquals(1, inits.get());
+				final String reload = TestUtils.captureOut(() -> ui.draw(0D, 0D));
+				Assert.assertFalse(UITest.isReloadPending(ui));
+				Assert.assertEquals(2, inits.get());
+				Assert.assertTrue(ui.isInitialized());
+				Assert.assertTrue(reload, reload.matches("\\[JOID\\] \\w* ?reloaded in \\d+\\.\\d\\dms" + System.lineSeparator()));
+			} finally {
+				ui.dispose();
+			}
+		});
+		Assert.assertTrue(output, output.contains("[JOID] ui.jar changed, the UIs that use it reload"));
 	}
 
 	@Test
@@ -2211,31 +2205,29 @@ public class UITest {
 		final AtomicInteger inits = new AtomicInteger();
 		Assert.assertTrue(type.getParentFile().mkdir());
 		final UI ui = UITest.hotReloaded(location, inits);
-		final PrintStream previous = System.out;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		JOIDEnv.devMode(true);
-		System.setOut(new PrintStream(output, true));
-		try {
-			ui.load(1920D, 1080D);
-			final BlockingQueue<String> changes = UITest.listen(ui);
-			Files.write(type.toPath(), new byte[] {1});
-			UITest.await(changes, "file create ShopNode.class");
-			UITest.await(changes, "stop");
-			Assert.assertTrue(UITest.isReloadPending(ui));
-			Assert.assertEquals(1, inits.get());
-			ui.draw(0D, 0D);
-			Assert.assertEquals(2, inits.get());
-			Files.write(type.toPath(), new byte[] {1, 2});
-			Assert.assertTrue(type.setLastModified(type.lastModified() + 10000L));
-			UITest.await(changes, "file change ShopNode.class");
-			UITest.await(changes, "stop");
-			ui.draw(0D, 0D);
-			Assert.assertEquals(3, inits.get());
-		} finally {
-			ui.dispose();
-			System.setOut(previous);
-		}
-		Assert.assertTrue(output.toString(), output.toString().contains("[JOID] ShopNode.class changed, the UIs that use it reload"));
+		final String output = TestUtils.captureOutChecked(() -> {
+			try {
+				ui.load(1920D, 1080D);
+				final BlockingQueue<String> changes = UITest.listen(ui);
+				Files.write(type.toPath(), new byte[] {1});
+				UITest.await(changes, "file create ShopNode.class");
+				UITest.await(changes, "stop");
+				Assert.assertTrue(UITest.isReloadPending(ui));
+				Assert.assertEquals(1, inits.get());
+				ui.draw(0D, 0D);
+				Assert.assertEquals(2, inits.get());
+				Files.write(type.toPath(), new byte[] {1, 2});
+				Assert.assertTrue(type.setLastModified(type.lastModified() + 10000L));
+				UITest.await(changes, "file change ShopNode.class");
+				UITest.await(changes, "stop");
+				ui.draw(0D, 0D);
+				Assert.assertEquals(3, inits.get());
+			} finally {
+				ui.dispose();
+			}
+		});
+		Assert.assertTrue(output, output.contains("[JOID] ShopNode.class changed, the UIs that use it reload"));
 	}
 
 	@Test
