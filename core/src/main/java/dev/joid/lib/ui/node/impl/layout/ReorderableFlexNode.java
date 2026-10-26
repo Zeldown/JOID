@@ -62,12 +62,12 @@ public class ReorderableFlexNode extends FlexNode {
 		this.autoDrag     = true;
 	}
 
-	public static @NonNull ReorderableFlexNode vertical(final double x, final double y, final double width) {
-		return new ReorderableFlexNode(x, y, width, 0D, Axis.VERTICAL);
-	}
-
 	public static @NonNull ReorderableFlexNode horizontal(final double x, final double y, final double height) {
 		return new ReorderableFlexNode(x, y, 0D, height, Axis.HORIZONTAL);
+	}
+
+	public static @NonNull ReorderableFlexNode vertical(final double x, final double y, final double width) {
+		return new ReorderableFlexNode(x, y, width, 0D, Axis.VERTICAL);
 	}
 
 	@Override

@@ -18,8 +18,8 @@ import lombok.NonNull;
 public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
 	@Getter private final Asset            asset;
-	private final IResourceAnimationReader reader;
 	private final AnimatedResourceDecoder  origin;
+	private final IResourceAnimationReader reader;
 
 	private ITexture          texture;
 	private ResourceAnimation source;
@@ -31,10 +31,10 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	private long            position;
 	private int             displayed = -1;
 	private boolean         seeked;
-	@Getter private boolean paused;
 	private long            startTime;
 	private long            pauseTime;
 	private boolean         running;
+	@Getter private boolean paused;
 
 	protected AnimatedResourceDecoder(final Asset asset, final IResourceAnimationReader reader) {
 		this.asset = asset;

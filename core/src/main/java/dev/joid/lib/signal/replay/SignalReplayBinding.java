@@ -8,10 +8,10 @@ import dev.joid.lib.signal.SignalContext;
 
 public final class SignalReplayBinding<T> implements Supplier<T> {
 
+	private final long              epoch;
 	private final SignalReplayCall  call;
 	private final SignalReplayMatch match;
 	private final List<Signal<?>>   readList;
-	private final long              epoch;
 
 	private T       value;
 	private boolean started;

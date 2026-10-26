@@ -70,17 +70,6 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 		return (int) Math.max(this.min, Math.min(this.max, (long) value + (long) this.step * count));
 	}
 
-	public final <T extends IntegerFieldNode> @NonNull T max(final int max) {
-		return this.max(Signal.from(max));
-	}
-
-	public final <T extends IntegerFieldNode> @NonNull T max(final @NonNull Supplier<Integer> max) {
-		return super.follow("max", max, value -> {
-			this.max = value;
-			super.revalidate();
-		});
-	}
-
 	public final <T extends IntegerFieldNode> @NonNull T min(final int min) {
 		return this.min(Signal.from(min));
 	}
@@ -88,6 +77,17 @@ public class IntegerFieldNode extends LineFieldNode<Integer> {
 	public final <T extends IntegerFieldNode> @NonNull T min(final @NonNull Supplier<Integer> min) {
 		return super.follow("min", min, value -> {
 			this.min = value;
+			super.revalidate();
+		});
+	}
+
+	public final <T extends IntegerFieldNode> @NonNull T max(final int max) {
+		return this.max(Signal.from(max));
+	}
+
+	public final <T extends IntegerFieldNode> @NonNull T max(final @NonNull Supplier<Integer> max) {
+		return super.follow("max", max, value -> {
+			this.max = value;
 			super.revalidate();
 		});
 	}

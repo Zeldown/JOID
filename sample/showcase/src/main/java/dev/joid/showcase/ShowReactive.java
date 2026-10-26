@@ -22,8 +22,8 @@ import dev.joid.lib.utils.geom.Point;
 public class ShowReactive extends ShowUI {
 
 	private final DoubleSignal  space  = new DoubleSignal(0.3D);
-	private final DoubleSignal  warmth = new DoubleSignal(0.2D);
 	private final BooleanSignal halo   = new BooleanSignal(false);
+	private final DoubleSignal  warmth = new DoubleSignal(0.2D);
 	private final DoubleSignal  energy = new DoubleSignal(0.35D);
 
 	@Override

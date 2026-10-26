@@ -32,6 +32,15 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 	private SnapshotBridgeRestorer restorer;
 
 	@Override
+	public void create(final int width, final int height) {
+		this.restorer = new SnapshotBridgeRestorer();
+		this.window  = GlfwSnapshotWindow.create(width, height, () -> GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API));
+		this.host    = SnapshotVulkanHost.create(width, height);
+		this.backend = VulkanBackend.create(this.window.getWindow(), this.host).audio(false).register();
+		this.host.beginFrame();
+	}
+
+	@Override
 	public void destroy() {
 		if (this.host.isFrameActive()) {
 			this.host.endFrame();
@@ -41,15 +50,6 @@ public final class VulkanSnapshotBackend implements ISnapshotBackend {
 		this.host.destroy();
 		this.window.destroy();
 		this.restorer.restore();
-	}
-
-	@Override
-	public void create(final int width, final int height) {
-		this.restorer = new SnapshotBridgeRestorer();
-		this.window  = GlfwSnapshotWindow.create(width, height, () -> GLFW.glfwWindowHint(GLFW.GLFW_CLIENT_API, GLFW.GLFW_NO_API));
-		this.host    = SnapshotVulkanHost.create(width, height);
-		this.backend = VulkanBackend.create(this.window.getWindow(), this.host).audio(false).register();
-		this.host.beginFrame();
 	}
 
 	@Override

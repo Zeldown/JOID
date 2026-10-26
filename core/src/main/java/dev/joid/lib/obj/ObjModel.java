@@ -27,13 +27,13 @@ import lombok.NonNull;
 @Getter
 public final class ObjModel implements IDrawableModel {
 
-	private static final Pattern FACE_VERTEX_PATTERN  = Pattern.compile("f( -?\\d+){3,} *");
 	private static final Pattern FACE_PATTERN         = Pattern.compile("f( -?\\d+/-?\\d+/-?\\d+){3,} *");
-	private static final Pattern FACE_TEXTURE_PATTERN = Pattern.compile("f( -?\\d+/-?\\d+){3,} *");
-	private static final Pattern FACE_NORMAL_PATTERN  = Pattern.compile("f( -?\\d+//-?\\d+){3,} *");
 	private static final Pattern VERTEX_PATTERN       = Pattern.compile("v( [-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?){3,7} *");
 	private static final Pattern NORMAL_PATTERN       = Pattern.compile("vn( [-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?){3,4} *");
 	private static final Pattern TEXTURE_PATTERN      = Pattern.compile("vt( [-+]?(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?){2,3} *");
+	private static final Pattern FACE_VERTEX_PATTERN  = Pattern.compile("f( -?\\d+){3,} *");
+	private static final Pattern FACE_NORMAL_PATTERN  = Pattern.compile("f( -?\\d+//-?\\d+){3,} *");
+	private static final Pattern FACE_TEXTURE_PATTERN = Pattern.compile("f( -?\\d+/-?\\d+){3,} *");
 
 	private final List<ObjGroup>             groups             = new ArrayList<>();
 	private final List<ObjVertex>            vertices           = new ArrayList<>();
@@ -51,6 +51,42 @@ public final class ObjModel implements IDrawableModel {
 
 	public static @NonNull ObjModel of(final @NonNull String name, final @NonNull Object handle, final @NonNull Resource texture) {
 		return new ObjModel(name, handle, texture);
+	}
+
+	@Override
+	public void render() {
+		this.texture.bind(TextureWrap.REPEAT, () -> this.groups.forEach(ObjGroup::render));
+	}
+
+	public @NonNull List<ObjVertex> getVertices() {
+		return Collections.unmodifiableList(this.vertices);
+	}
+
+	public @NonNull List<ObjVertex> getVertexNormals() {
+		return Collections.unmodifiableList(this.vertexNormals);
+	}
+
+	public @NonNull List<ObjTextureCoordinate> getTextureCoordinates() {
+		return Collections.unmodifiableList(this.textureCoordinates);
+	}
+
+	public @NonNull List<ObjGroup> getGroups() {
+		return Collections.unmodifiableList(this.groups);
+	}
+
+	@Override
+	public double getDepth() {
+		return this.extent(ObjVertex::getZ);
+	}
+
+	@Override
+	public double getWidth() {
+		return this.extent(ObjVertex::getX);
+	}
+
+	@Override
+	public double getHeight() {
+		return this.extent(ObjVertex::getY);
 	}
 
 	private void load(final Object handle) {
@@ -115,42 +151,6 @@ public final class ObjModel implements IDrawableModel {
 		} catch (final IOException e) {
 			JOIDLog.warn("The file of the OBJ model " + this.name + " cannot be closed (" + e.getMessage() + "), the model is loaded anyway: check the stream or the file it was read from");
 		}
-	}
-
-	@Override
-	public void render() {
-		this.texture.bind(TextureWrap.REPEAT, () -> this.groups.forEach(ObjGroup::render));
-	}
-
-	public @NonNull List<ObjVertex> getVertices() {
-		return Collections.unmodifiableList(this.vertices);
-	}
-
-	public @NonNull List<ObjVertex> getVertexNormals() {
-		return Collections.unmodifiableList(this.vertexNormals);
-	}
-
-	public @NonNull List<ObjTextureCoordinate> getTextureCoordinates() {
-		return Collections.unmodifiableList(this.textureCoordinates);
-	}
-
-	public @NonNull List<ObjGroup> getGroups() {
-		return Collections.unmodifiableList(this.groups);
-	}
-
-	@Override
-	public double getDepth() {
-		return this.extent(ObjVertex::getZ);
-	}
-
-	@Override
-	public double getWidth() {
-		return this.extent(ObjVertex::getX);
-	}
-
-	@Override
-	public double getHeight() {
-		return this.extent(ObjVertex::getY);
 	}
 
 	private double extent(final ToDoubleFunction<ObjVertex> axis) {

@@ -49,16 +49,6 @@ public final class JsonFiles {
 		return null;
 	}
 
-	public static void keep(final @NonNull File file, final @NonNull String failure, final @NonNull String consequence) {
-		final File corrupt = new File(file.getPath() + ".corrupt");
-		try {
-			Files.move(file.toPath(), corrupt.toPath(), StandardCopyOption.REPLACE_EXISTING);
-			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + failure + "), it is kept as " + corrupt.getAbsolutePath() + " and " + consequence);
-		} catch (final IOException exception) {
-			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + failure + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + exception + "), it is left untouched and " + consequence);
-		}
-	}
-
 	public static void write(final @NonNull File file, final @NonNull String json) {
 		Path temporary = null;
 		try {
@@ -71,6 +61,16 @@ public final class JsonFiles {
 				temporary.toFile().delete();
 			}
 			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be saved (" + exception + "), check that the data folder can be written");
+		}
+	}
+
+	public static void keep(final @NonNull File file, final @NonNull String failure, final @NonNull String consequence) {
+		final File corrupt = new File(file.getPath() + ".corrupt");
+		try {
+			Files.move(file.toPath(), corrupt.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + failure + "), it is kept as " + corrupt.getAbsolutePath() + " and " + consequence);
+		} catch (final IOException exception) {
+			JOIDLog.warn("The file " + file.getAbsolutePath() + " cannot be read (" + failure + ") nor renamed to " + corrupt.getAbsolutePath() + " (" + exception + "), it is left untouched and " + consequence);
 		}
 	}
 

@@ -17,17 +17,17 @@ public class DemoInvertShaderPass implements IShaderPass {
 	}
 
 	@Override
-	public void unbind() {
-		DemoInvertShader.inst().unbind();
-	}
-
-	@Override
 	public void bind(final @NonNull ShaderPassContext context) {
 		if (!DemoInvertShader.inst().canDraw()) {
 			return;
 		}
 
 		DemoInvertShader.inst().bind(this.amount);
+	}
+
+	@Override
+	public void unbind() {
+		DemoInvertShader.inst().unbind();
 	}
 
 }

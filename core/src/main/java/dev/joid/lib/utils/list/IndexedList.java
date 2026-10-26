@@ -73,14 +73,14 @@ public final class IndexedList<E extends IIndexedElement> implements Iterable<E>
 		return this.orderedList.contains(element);
 	}
 
-	public E getLast() {
-		this.sort();
-		return this.orderedList.isEmpty() ? null : this.orderedList.get(this.orderedList.size() - 1);
-	}
-
 	public E getFirst() {
 		this.sort();
 		return this.orderedList.isEmpty() ? null : this.orderedList.get(0);
+	}
+
+	public E getLast() {
+		this.sort();
+		return this.orderedList.isEmpty() ? null : this.orderedList.get(this.orderedList.size() - 1);
 	}
 
 	public E get(final int index) {

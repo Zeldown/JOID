@@ -29,16 +29,6 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 	private SnapshotBridgeRestorer restorer;
 
 	@Override
-	public void destroy() {
-		if (this.buffer == null) {
-			Display.destroy();
-		} else {
-			this.buffer.destroy();
-		}
-		this.restorer.restore();
-	}
-
-	@Override
 	public void create(final int width, final int height) {
 		this.restorer = new SnapshotBridgeRestorer();
 		final Lwjgl2Backend backend = Lwjgl2Backend.create().audio(false);
@@ -58,6 +48,16 @@ public final class Lwjgl2SnapshotBackend implements ISnapshotBackend {
 
 		backend.register();
 		this.bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
+	}
+
+	@Override
+	public void destroy() {
+		if (this.buffer == null) {
+			Display.destroy();
+		} else {
+			this.buffer.destroy();
+		}
+		this.restorer.restore();
 	}
 
 	@Override

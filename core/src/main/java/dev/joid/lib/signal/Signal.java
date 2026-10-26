@@ -202,6 +202,21 @@ public class Signal<T> implements Supplier<T> {
 		}
 	}
 
+	protected final void fire() {
+		final SignalContext context = SignalContext.current();
+		this.version++;
+		SignalContext.nextEpoch();
+		context.open();
+		try {
+			if (!context.isSilent() && this.hasListeners()) {
+				context.schedule(this);
+			}
+			this.invalidate(context);
+		} finally {
+			context.close();
+		}
+	}
+
 	private void store(final T value) {
 		final T oldValue;
 		synchronized (this) {
@@ -223,21 +238,6 @@ public class Signal<T> implements Supplier<T> {
 			this.sealedValue = this.value;
 		}
 		return this.value;
-	}
-
-	protected final void fire() {
-		final SignalContext context = SignalContext.current();
-		this.version++;
-		SignalContext.nextEpoch();
-		context.open();
-		try {
-			if (!context.isSilent() && this.hasListeners()) {
-				context.schedule(this);
-			}
-			this.invalidate(context);
-		} finally {
-			context.close();
-		}
 	}
 
 	@Override

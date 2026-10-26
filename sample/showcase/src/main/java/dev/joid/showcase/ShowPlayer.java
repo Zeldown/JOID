@@ -38,9 +38,9 @@ public class ShowPlayer extends ShowUI {
 
 	private final DoubleSignal  hover    = new DoubleSignal(0D);
 	private final DoubleSignal  scrub    = new DoubleSignal(-1D);
+	private final TweenAnimator reveal   = TweenAnimator.create(0F);
 	private final DoubleSignal  progress = new DoubleSignal(0D);
 	private final BooleanSignal playing  = new BooleanSignal(true);
-	private final TweenAnimator reveal   = TweenAnimator.create(0F);
 
 	private long   peekTime;
 	private double peeked = -1D;

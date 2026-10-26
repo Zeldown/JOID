@@ -18,8 +18,8 @@ public @interface UIData {
 	public boolean closeable()       default true;
 
 	public boolean zoomable()        default true;
-	public boolean background()      default false;
 	public boolean projection()      default true;
+	public boolean background()      default false;
 	public String  backgroundColor() default "#101010C0";
 
 	public int    zindex()           default 0;

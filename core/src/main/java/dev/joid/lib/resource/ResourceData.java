@@ -34,8 +34,8 @@ public final class ResourceData {
 	private static final Queue<ResourceData> COLLECTED      = new ConcurrentLinkedQueue<>();
 	private static final ExecutorService     ASYNC_EXECUTOR = Executors.newFixedThreadPool(16, ThreadUtils.daemonFactory("ResourceAsync"));
 
-	private final Set<Resource>     resources = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 	private final Set<Resource>     waiting   = new HashSet<>();
+	private final Set<Resource>     resources = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 	private final Set<ResourceData> forks     = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
 
 	@Getter private String                    uniqueId;
@@ -307,12 +307,6 @@ public final class ResourceData {
 		return clazz.isInstance(decoder) ? clazz.cast(decoder) : null;
 	}
 
-	private @NonNull List<@NonNull Resource> getResources() {
-		synchronized (this.resources) {
-			return new ArrayList<>(this.resources);
-		}
-	}
-
 	public int getWidth() {
 		if (this.region != null) {
 			return this.region[2];
@@ -402,6 +396,12 @@ public final class ResourceData {
 	public static void releaseCollected() {
 		for (ResourceData data = ResourceData.COLLECTED.poll(); data != null; data = ResourceData.COLLECTED.poll()) {
 			data.clear();
+		}
+	}
+
+	private @NonNull List<@NonNull Resource> getResources() {
+		synchronized (this.resources) {
+			return new ArrayList<>(this.resources);
 		}
 	}
 

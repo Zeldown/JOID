@@ -20,17 +20,17 @@ public class CircleShaderPass implements IShaderPass {
 	}
 
 	@Override
-	public void unbind() {
-		CircleShader.inst().unbind();
-	}
-
-	@Override
 	public void bind(final @NonNull ShaderPassContext context) {
 		if (!CircleShader.inst().canDraw()) {
 			return;
 		}
 
 		CircleShader.inst().bind(this.radius, this.centerX, this.centerY, ShaderFillType.TEXTURE);
+	}
+
+	@Override
+	public void unbind() {
+		CircleShader.inst().unbind();
 	}
 
 }

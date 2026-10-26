@@ -4,8 +4,8 @@ import lombok.NonNull;
 
 public interface IShaderPass {
 
-	public void unbind();
 	public void bind(final @NonNull ShaderPassContext context);
+	public void unbind();
 
 	public default float expansion() {
 		return 0F;

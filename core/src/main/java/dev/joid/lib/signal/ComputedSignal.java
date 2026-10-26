@@ -186,6 +186,11 @@ public class ComputedSignal<T> extends Signal<T> {
 		this.collectedCount++;
 	}
 
+	@Override
+	protected @NonNull String refuse(final @NonNull String action) {
+		return "The " + JOIDLog.nameOf(this.getClass()) + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
+	}
+
 	private boolean isOutdated() {
 		for (int index = 0; index < this.dependencyCount; index++) {
 			final Signal<?> dependency = this.dependencies[index];
@@ -243,11 +248,6 @@ public class ComputedSignal<T> extends Signal<T> {
 			super.nextVersion();
 		}
 		this.computed = true;
-	}
-
-	@Override
-	protected @NonNull String refuse(final @NonNull String action) {
-		return "The " + JOIDLog.nameOf(this.getClass()) + " is computed from other signals and cannot be " + action + ", set the signals it reads instead";
 	}
 
 	private synchronized void follow() {

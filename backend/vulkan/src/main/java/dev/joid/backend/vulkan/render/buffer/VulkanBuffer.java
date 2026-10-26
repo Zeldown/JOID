@@ -10,11 +10,11 @@ import lombok.Getter;
 @Getter
 public final class VulkanBuffer {
 
-	private final VulkanContext context;
+	private final long          size;
 	private final long          buffer;
 	private final long          memory;
-	private final long          size;
 	private final long          address;
+	private final VulkanContext context;
 
 	public VulkanBuffer(final VulkanContext context, final long size, final int usage) {
 		final long[] handles = context.createBuffer(size, usage, VK10.VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK10.VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);

@@ -37,9 +37,9 @@ public final class NodeBindings {
 	private final Consumer<Runnable> runner;
 
 	private final List<NodeWatch>             watchList;
+	private final Deque<Runnable>             eventQueue;
 	private final List<InteractiveValue<?>>   valueList;
 	private final Map<String, NodeBinding<?>> bindingMap;
-	private final Deque<Runnable>             eventQueue;
 
 	@Getter
 	private boolean subscribed;

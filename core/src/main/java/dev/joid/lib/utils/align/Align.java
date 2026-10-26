@@ -6,12 +6,12 @@ public enum Align {
 	CENTER,
 	END;
 
-	public boolean isEnd() {
-		return this == Align.END;
-	}
-
 	public boolean isStart() {
 		return this == Align.START;
+	}
+
+	public boolean isEnd() {
+		return this == Align.END;
 	}
 
 	public boolean isCenter() {

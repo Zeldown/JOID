@@ -407,6 +407,11 @@ public final class Color extends LockableValue<Color> {
 		BridgeHandler.RENDER.get().getState().color(1F, 1F, 1F, 1F);
 	}
 
+	@Override
+	protected @NonNull String describeLocked() {
+		return this.constant != null ? "Color." + this.constant + " is a constant" : super.describeLocked();
+	}
+
 	private @NonNull Color constant(final String name) {
 		this.constant = name;
 		return super.lock();
@@ -466,11 +471,6 @@ public final class Color extends LockableValue<Color> {
 			}
 		}
 		throw new NumberFormatException("The color " + text + " cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)");
-	}
-
-	@Override
-	protected @NonNull String describeLocked() {
-		return this.constant != null ? "Color." + this.constant + " is a constant" : super.describeLocked();
 	}
 
 	@Override

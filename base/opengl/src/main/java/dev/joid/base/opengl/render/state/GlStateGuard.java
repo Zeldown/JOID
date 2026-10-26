@@ -24,16 +24,16 @@ public final class GlStateGuard {
 		this.binding      = new JournalGlBinding(binding, this.journal);
 	}
 
-	public void exit() {
-		if (--this.depth == 0) {
-			this.journal.restore();
-		}
-	}
-
 	public void enter() {
 		if (this.depth++ == 0) {
 			this.journal.start();
 			this.resetPipeline();
+		}
+	}
+
+	public void exit() {
+		if (--this.depth == 0) {
+			this.journal.restore();
 		}
 	}
 

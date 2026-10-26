@@ -18,15 +18,15 @@ public class DemoPermanentStore extends UIStore {
 	private long time;
 
 	@Override
-	public void fromJson(final @NonNull JsonObject json) {
-		this.time = json.has("time") ? json.get("time").getAsLong() : BridgeHandler.CLOCK.get().currentTimeMillis();
-	}
-
-	@Override
 	public @NonNull JsonObject toJson() {
 		final JsonObject json = new JsonObject();
 		json.addProperty("time", this.time);
 		return json;
+	}
+
+	@Override
+	public void fromJson(final @NonNull JsonObject json) {
+		this.time = json.has("time") ? json.get("time").getAsLong() : BridgeHandler.CLOCK.get().currentTimeMillis();
 	}
 
 }

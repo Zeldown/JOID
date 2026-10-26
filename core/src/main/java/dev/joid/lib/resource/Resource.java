@@ -231,10 +231,6 @@ public final class Resource {
 		this.data.upload();
 	}
 
-	public void unbind() {
-		BridgeHandler.RENDER.get().getState().texture(null);
-	}
-
 	public void bind(final @NonNull TextureWrap wrap, final @NonNull Runnable runnable) {
 		this.bindTextureOnly(wrap);
 		try {
@@ -242,6 +238,10 @@ public final class Resource {
 		} finally {
 			this.unbind();
 		}
+	}
+
+	public void unbind() {
+		BridgeHandler.RENDER.get().getState().texture(null);
 	}
 
 	public void request(final int width, final int height) {

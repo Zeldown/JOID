@@ -13,12 +13,12 @@ public class IntegerSignal extends Signal<Integer> {
 		super(value);
 	}
 
-	public @NonNull IntegerSignal decrement() {
-		return super.transform(current -> current - 1);
-	}
-
 	public @NonNull IntegerSignal increment() {
 		return super.transform(current -> current + 1);
+	}
+
+	public @NonNull IntegerSignal decrement() {
+		return super.transform(current -> current - 1);
 	}
 
 	public @NonNull IntegerSignal add(final int value) {

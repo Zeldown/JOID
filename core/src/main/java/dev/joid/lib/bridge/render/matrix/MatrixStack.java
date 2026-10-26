@@ -17,6 +17,10 @@ public final class MatrixStack {
 		this.matrix = MatrixStack.identityMatrix();
 	}
 
+	public void push() {
+		this.stack.push(this.matrix.clone());
+	}
+
 	public void pop() {
 		this.matrix = this.stack.pop();
 	}
@@ -25,10 +29,6 @@ public final class MatrixStack {
 		while (this.stack.size() > depth) {
 			this.pop();
 		}
-	}
-
-	public void push() {
-		this.stack.push(this.matrix.clone());
 	}
 
 	public void with(final @NonNull Consumer<MatrixStack> body) {

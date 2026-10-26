@@ -30,15 +30,6 @@ public abstract class ChartNode extends Node {
 		super.<ChartNode>require("Y axis", "call yAxis(...) before attaching it", node -> node.yAxis != null);
 	}
 
-	public final Number getMax() {
-		return ChartNode.scaleMax(this.getDataMin(), this.getDataMax());
-	}
-
-	public final Number getMax(final @NonNull String data) {
-		final ChartData series = this.getSeries(data);
-		return ChartNode.scaleMax(series.getMin().doubleValue(), series.getMax().doubleValue());
-	}
-
 	public final Number getMin() {
 		return ChartNode.scaleMin(this.getDataMin(), this.getDataMax());
 	}
@@ -46,6 +37,15 @@ public abstract class ChartNode extends Node {
 	public final Number getMin(final @NonNull String data) {
 		final ChartData series = this.getSeries(data);
 		return ChartNode.scaleMin(series.getMin().doubleValue(), series.getMax().doubleValue());
+	}
+
+	public final Number getMax() {
+		return ChartNode.scaleMax(this.getDataMin(), this.getDataMax());
+	}
+
+	public final Number getMax(final @NonNull String data) {
+		final ChartData series = this.getSeries(data);
+		return ChartNode.scaleMax(series.getMin().doubleValue(), series.getMax().doubleValue());
 	}
 
 	public final Number getAverage() {
@@ -132,12 +132,12 @@ public abstract class ChartNode extends Node {
 			this.name = name;
 		}
 
-		public static @NonNull YChartAxis y(final @NonNull String name) {
-			return new YChartAxis(name);
-		}
-
 		public static @NonNull XChartAxis x(final @NonNull String name, final @NonNull String... labels) {
 			return new XChartAxis(name, labels);
+		}
+
+		public static @NonNull YChartAxis y(final @NonNull String name) {
+			return new YChartAxis(name);
 		}
 
 		@Getter
@@ -240,12 +240,12 @@ public abstract class ChartNode extends Node {
 			return this.dataMap.isEmpty();
 		}
 
-		public Number getMax() {
-			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).max().orElse(0D);
-		}
-
 		public Number getMin() {
 			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).min().orElse(0D);
+		}
+
+		public Number getMax() {
+			return this.dataMap.values().stream().mapToDouble(Number::doubleValue).max().orElse(0D);
 		}
 
 		public Number getAverage() {
@@ -264,13 +264,13 @@ public abstract class ChartNode extends Node {
 			return Collections.unmodifiableMap(this.dataMap);
 		}
 
-		public final <T extends ChartData> @NonNull T remove(final @NonNull String label) {
-			this.dataMap.remove(label);
+		public final <T extends ChartData> @NonNull T add(final @NonNull String label, final @NonNull Number data) {
+			this.dataMap.put(label, data);
 			return (T) this;
 		}
 
-		public final <T extends ChartData> @NonNull T add(final @NonNull String label, final @NonNull Number data) {
-			this.dataMap.put(label, data);
+		public final <T extends ChartData> @NonNull T remove(final @NonNull String label) {
+			this.dataMap.remove(label);
 			return (T) this;
 		}
 

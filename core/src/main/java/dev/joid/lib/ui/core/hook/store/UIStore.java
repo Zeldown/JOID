@@ -14,11 +14,11 @@ public abstract class UIStore {
 		UIStoreHook.saveStore(this);
 	}
 
-	public void fromJson(final @NonNull JsonObject json) {}
-
 	public @NonNull JsonObject toJson() {
 		return new JsonObject();
 	}
+
+	public void fromJson(final @NonNull JsonObject json) {}
 
 	public UIStoreData getData() {
 		return UIStoreHook.getData(this.getClass());

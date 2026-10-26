@@ -31,8 +31,8 @@ public final class Lwjgl2GlBinding implements IGlBinding {
 	private final IGlFrameBufferBinding coreFrameBufferBinding = new Lwjgl2CoreGlFrameBufferBinding();
 
 	private final IntBuffer   intBuffer     = BufferUtils.createIntBuffer(16);
-	private final FloatBuffer floatBuffer   = BufferUtils.createFloatBuffer(16);
 	private final IntBuffer   uploadBuffer  = BufferUtils.createIntBuffer(1 << 20);
+	private final FloatBuffer floatBuffer   = BufferUtils.createFloatBuffer(16);
 	private final ByteBuffer  pointerBuffer = BufferUtils.createByteBuffer(PointerBuffer.getPointerSize());
 
 	public static @NonNull Lwjgl2GlBinding inst() {

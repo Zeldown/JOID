@@ -102,7 +102,8 @@ public class UIDemoChoice extends UI {
 		DemoEntry.create(UIDemoModel.class)
 	);
 
-	@Getter private static Supplier<UI> menu = UIDemoChoice::new;
+	@Getter
+	private static Supplier<UI> menu = UIDemoChoice::new;
 
 	@Override
 	public void init() {

@@ -71,6 +71,18 @@ public final class ObjFace {
 		}
 	}
 
+	public ObjVertex[] getVertices() {
+		return this.vertices.clone();
+	}
+
+	public ObjVertex[] getVertexNormals() {
+		return this.vertexNormals == null ? null : this.vertexNormals.clone();
+	}
+
+	public ObjTextureCoordinate[] getTextureCoordinates() {
+		return this.textureCoordinates == null ? null : this.textureCoordinates.clone();
+	}
+
 	private @NonNull ObjVertex normal() {
 		final double x1 = this.vertices[1].getX() - this.vertices[0].getX();
 		final double y1 = this.vertices[1].getY() - this.vertices[0].getY();
@@ -88,18 +100,6 @@ public final class ObjFace {
 
 		final double norm = 1D / Math.sqrt(length);
 		return ObjVertex.of((float) (x * norm), (float) (y * norm), (float) (z * norm));
-	}
-
-	public ObjVertex[] getVertices() {
-		return this.vertices.clone();
-	}
-
-	public ObjVertex[] getVertexNormals() {
-		return this.vertexNormals == null ? null : this.vertexNormals.clone();
-	}
-
-	public ObjTextureCoordinate[] getTextureCoordinates() {
-		return this.textureCoordinates == null ? null : this.textureCoordinates.clone();
 	}
 
 }

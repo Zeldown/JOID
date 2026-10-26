@@ -18,11 +18,6 @@ public class BlurShaderPass implements IShaderPass {
 	}
 
 	@Override
-	public void unbind() {
-		BlurShader.inst().unbind();
-	}
-
-	@Override
 	public void bind(final @NonNull ShaderPassContext context) {
 		if (!BlurShader.inst().canDraw()) {
 			return;
@@ -30,6 +25,11 @@ public class BlurShaderPass implements IShaderPass {
 
 		final double scale = this.horizontal ? context.getGrid().getScaleX() : context.getGrid().getScaleY();
 		BlurShader.inst().bind((float) (this.radius * scale), this.horizontal ? 1F : 0F, this.horizontal ? 0F : 1F, context.getTexelWidth(), context.getTexelHeight());
+	}
+
+	@Override
+	public void unbind() {
+		BlurShader.inst().unbind();
 	}
 
 	@Override

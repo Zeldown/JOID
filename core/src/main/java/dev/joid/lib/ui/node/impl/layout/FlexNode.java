@@ -33,12 +33,12 @@ public class FlexNode extends Node {
 		this.margin    = 0D;
 	}
 
-	public static @NonNull FlexNode vertical(final double x, final double y, final double width) {
-		return new FlexNode(x, y, width, 0D, Axis.VERTICAL);
-	}
-
 	public static @NonNull FlexNode horizontal(final double x, final double y, final double height) {
 		return new FlexNode(x, y, 0D, height, Axis.HORIZONTAL);
+	}
+
+	public static @NonNull FlexNode vertical(final double x, final double y, final double width) {
+		return new FlexNode(x, y, width, 0D, Axis.VERTICAL);
 	}
 
 	@Override

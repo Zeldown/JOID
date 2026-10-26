@@ -86,12 +86,12 @@ public final class UniformBlock {
 		return this;
 	}
 
-	public @NonNull Map<String, UniformMember> getMemberMap() {
-		return Collections.unmodifiableMap(this.memberMap);
-	}
-
 	public int getSize() {
 		return this.data.capacity();
+	}
+
+	public @NonNull Map<String, UniformMember> getMemberMap() {
+		return Collections.unmodifiableMap(this.memberMap);
 	}
 
 	public UniformMember getMember(final @NonNull String name) {

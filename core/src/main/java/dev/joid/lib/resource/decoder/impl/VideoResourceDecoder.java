@@ -43,12 +43,12 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 
 	private static final FileCacheArea AREA = FileCache.area("video").retention(Duration.ofDays(7L));
 
-	@Getter private final Asset        asset;
-	private final VideoResourceDecoder origin;
 	private final Object               grabberLock = new Object();
+	@Getter private final Asset        asset;
 	private final AtomicInteger        seeks       = new AtomicInteger(0);
 	private final AtomicBoolean        paused      = new AtomicBoolean(false);
 	private final AtomicBoolean        running     = new AtomicBoolean(false);
+	private final VideoResourceDecoder origin;
 
 	private File   file;
 	private String codec;
@@ -71,8 +71,8 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	private long startTime;
 	private long pauseTime;
 
-	private volatile boolean released;
 	private boolean          playRequested;
+	private volatile boolean released;
 
 	private int        currentBuffer;
 	private ITexture[] textures;
@@ -86,8 +86,8 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 
 	@Getter private boolean loop;
 	@Getter private float   volume   = 1F;
-	@Getter private Object  audioGroup;
 	@Getter private boolean autoplay = true;
+	@Getter private Object  audioGroup;
 
 	@Getter private Point location;
 	@Getter private float maxDistance       = 50F;

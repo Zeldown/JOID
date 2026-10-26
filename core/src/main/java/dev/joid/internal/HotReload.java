@@ -26,10 +26,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HotReload {
 
+	private static final ExecutorService                  MONITOR_EXECUTOR = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("UI/monitor"));
 	private static final Set<FileAlterationMonitor>       RUNNING_SET      = new HashSet<>();
 	private static final Map<File, Map<UI, Runnable>>     WATCHER_MAP      = new HashMap<>();
 	private static final Map<File, FileAlterationMonitor> MONITOR_MAP      = new HashMap<>();
-	private static final ExecutorService                  MONITOR_EXECUTOR = Executors.newSingleThreadExecutor(ThreadUtils.daemonFactory("UI/monitor"));
 
 	public static void watch(final UI ui, final Runnable reload) {
 		final File location = HotReload.locate(ui.getClass());

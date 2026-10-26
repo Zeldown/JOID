@@ -267,16 +267,6 @@ public final class VulkanRenderBridge extends RenderBridge {
 		this.descriptorCache.invalidate(handle, this::dispose);
 	}
 
-	private void endPass() {
-		if (this.passActive) {
-			VK10.vkCmdEndRenderPass(this.host.getCommandBuffer());
-			if (this.passTarget != null) {
-				VulkanContext.transition(this.host.getCommandBuffer(), this.passImage, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-			}
-			this.passActive = false;
-		}
-	}
-
 	private void beginPass(final VulkanFrameBuffer target) {
 		if (this.passActive && this.passTarget == target) {
 			return;
@@ -315,6 +305,16 @@ public final class VulkanRenderBridge extends RenderBridge {
 		this.passActive    = true;
 		this.passTarget    = target;
 		this.boundPipeline = VK10.VK_NULL_HANDLE;
+	}
+
+	private void endPass() {
+		if (this.passActive) {
+			VK10.vkCmdEndRenderPass(this.host.getCommandBuffer());
+			if (this.passTarget != null) {
+				VulkanContext.transition(this.host.getCommandBuffer(), this.passImage, VK10.VK_IMAGE_ASPECT_COLOR_BIT, VK10.VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, VK10.VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+			}
+			this.passActive = false;
+		}
 	}
 
 	private long createScreenFramebuffer(final MemoryStack stack) {

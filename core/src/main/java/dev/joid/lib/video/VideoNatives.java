@@ -42,17 +42,17 @@ public final class VideoNatives {
 	private static final boolean             CLASSPATH = VideoNatives.class.getResource("/org/bytedeco/ffmpeg/" + Loader.getPlatform() + "/" + System.mapLibraryName("jniavutil")) != null;
 	private static final Map<String, String> CHECKSUMS = new HashMap<>();
 
+	@Getter private static String           repository = "https://repo1.maven.org/maven2";
+	@Getter private static volatile boolean installed  = VideoNatives.CLASSPATH;
+
+	private static CompletableFuture<Void> installation;
+
 	static {
 		VideoNatives.CHECKSUMS.put("linux-x86_64", "3b26dc266a24da542c012a08e445b8a212703d152d0f0e4663dd7d253bebe819");
 		VideoNatives.CHECKSUMS.put("macosx-arm64", "d627ceb140fa627f131f7ae341c2e0143ba4501f57245578b8bdd3f5f6a6e5d0");
 		VideoNatives.CHECKSUMS.put("macosx-x86_64", "910f35440b75f341787be21be5e5f72a70a8d43b27022f10a31d833652117534");
 		VideoNatives.CHECKSUMS.put("windows-x86_64", "c2dba4e82e5ad865412f72b8f02ff5462088666100f9734b46a4023bac3e2a5c");
 	}
-
-	@Getter private static String           repository = "https://repo1.maven.org/maven2";
-	@Getter private static volatile boolean installed  = VideoNatives.CLASSPATH;
-
-	private static CompletableFuture<Void> installation;
 
 	public static void repository(final @NonNull String repository) {
 		VideoNatives.repository = repository;

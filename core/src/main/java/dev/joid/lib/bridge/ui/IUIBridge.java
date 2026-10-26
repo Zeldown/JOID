@@ -18,13 +18,15 @@ public interface IUIBridge extends IBridge {
 	public boolean isOpen(final @NonNull UI ui);
 	public boolean isOnTop(final @NonNull UI ui);
 
+	public default boolean canHandle(final @NonNull UI ui) {
+		return this.canHandle(ui.getClass());
+	}
+
 	public boolean canHandle(final @NonNull Class<? extends UI> clazz);
 
 	@NonNull public List<@NonNull UI> getUiList();
 
-	public default boolean canHandle(final @NonNull UI ui) {
-		return this.canHandle(ui.getClass());
-	}
+	public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY);
 
 	public default void closeAll() {
 		for (final UI ui : new ArrayList<>(this.getUiList())) {
@@ -47,7 +49,5 @@ public interface IUIBridge extends IBridge {
 	public default double getInterfaceScale(final @NonNull UI ui) {
 		return 1D;
 	}
-
-	public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY);
 
 }

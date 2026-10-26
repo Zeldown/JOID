@@ -42,6 +42,16 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 		this.loop();
 	}
 
+	protected abstract String getBackendName();
+
+	protected abstract void configureWindow();
+
+	protected abstract @NonNull Backend registerBackend(final long window);
+
+	protected abstract void present();
+
+	protected void destroyBackend() {}
+
 	private void loop() {
 		while (!GLFW.glfwWindowShouldClose(this.window)) {
 			if (GLFW.glfwGetWindowAttrib(this.window, GLFW.GLFW_ICONIFIED) == GLFW.GLFW_TRUE) {
@@ -61,15 +71,5 @@ public abstract class GlfwDemoWindow extends DemoUIBridge {
 		GLFW.glfwTerminate();
 		System.exit(0);
 	}
-
-	protected abstract String getBackendName();
-
-	protected abstract void configureWindow();
-
-	protected abstract @NonNull Backend registerBackend(final long window);
-
-	protected abstract void present();
-
-	protected void destroyBackend() {}
 
 }

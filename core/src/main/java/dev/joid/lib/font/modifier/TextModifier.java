@@ -14,8 +14,10 @@ public interface TextModifier {
 
 	public static final TextModifier LOWER_CASE       = text -> text.toLowerCase(Locale.ROOT);
 	public static final TextModifier UPPER_CASE       = text -> text.toUpperCase(Locale.ROOT);
+
 	public static final TextModifier CAMEL_CASE       = text -> TextModifier.camelCase(text, false);
 	public static final TextModifier UPPER_CAMEL_CASE = text -> TextModifier.camelCase(text, true);
+
 	public static final TextModifier SNAKE_CASE       = text -> text.toLowerCase(Locale.ROOT).replace(" ", "_");
 
 	public static final TextModifier CAPITALIZE       = StringUtils::capitalize;

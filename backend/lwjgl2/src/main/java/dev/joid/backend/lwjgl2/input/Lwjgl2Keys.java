@@ -58,6 +58,10 @@ public final class Lwjgl2Keys {
 		Lwjgl2Keys.map(Key.MENU, Keyboard.KEY_APPS);
 	}
 
+	public static @NonNull Key getPhysicalKey(final int code) {
+		return Lwjgl2Keys.KEY_ARRAY[code];
+	}
+
 	public static @NonNull Key getKey(final int code, final char character) {
 		final Key position = Lwjgl2Keys.getPhysicalKey(code);
 		if (!KeyLayout.isLayoutKey(position)) {
@@ -79,10 +83,6 @@ public final class Lwjgl2Keys {
 
 		Lwjgl2Keys.LAYOUT_MAP.put(position, key);
 		return key;
-	}
-
-	public static @NonNull Key getPhysicalKey(final int code) {
-		return Lwjgl2Keys.KEY_ARRAY[code];
 	}
 
 	public static boolean isKeyDown(final @NonNull Key key) {

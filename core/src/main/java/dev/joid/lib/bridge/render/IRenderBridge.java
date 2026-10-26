@@ -18,8 +18,31 @@ import lombok.NonNull;
 
 public interface IRenderBridge extends IBridge {
 
-	public default void endFrame() {}
+	public void screen(final int width, final int height);
+	public void quantize(final double motionX, final double motionY);
+
+	public void pushState();
+	public void popState();
+
+	public int getStateDepth();
+
+	public void clearDepth();
+	public void clearStencil();
+	public void clearColor(final float red, final float green, final float blue, final float alpha);
+
+	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer);
+
+	public @NonNull ITexture createTexture();
+	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height);
+	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend);
+
+	public @NonNull RenderState getState();
+	public @NonNull PixelGrid getPixelGrid();
+	public @NonNull MatrixStack getModelView();
+	public @NonNull MatrixStack getProjection();
+
 	public default void beginFrame() {}
+	public default void endFrame() {}
 
 	public default boolean isFrameActive() {
 		return true;
@@ -33,12 +56,6 @@ public interface IRenderBridge extends IBridge {
 		this.suspend(draw);
 	}
 
-	public void screen(final int width, final int height);
-	public void quantize(final double motionX, final double motionY);
-
-	public void popState();
-	public void pushState();
-
 	public default void withState(final @NonNull Consumer<IRenderBridge> body) {
 		this.pushState();
 		try {
@@ -48,25 +65,8 @@ public interface IRenderBridge extends IBridge {
 		}
 	}
 
-	public int getStateDepth();
-
-	public void clearDepth();
-	public void clearStencil();
-	public void clearColor(final float red, final float green, final float blue, final float alpha);
-
-	public void draw(final @NonNull Primitive primitive, final @NonNull VertexBuffer buffer);
-
 	public default boolean canWrap(final @NonNull TextureWrap wrap) {
 		return true;
 	}
-
-	public @NonNull ITexture createTexture();
-	public @NonNull IFrameBuffer createFrameBuffer(final int width, final int height);
-	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend);
-
-	public @NonNull RenderState getState();
-	public @NonNull PixelGrid getPixelGrid();
-	public @NonNull MatrixStack getModelView();
-	public @NonNull MatrixStack getProjection();
 
 }

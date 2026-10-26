@@ -138,12 +138,12 @@ public abstract class StackUIBridge extends UIBridge {
 		this.keepScreen(() -> super.replace(ui, replacement));
 	}
 
-	@Override
-	public boolean canHandle(final @NonNull Class<? extends UI> clazz) {
+	public boolean canReplace(final @NonNull UI ui) {
 		return true;
 	}
 
-	public boolean canReplace(final @NonNull UI ui) {
+	@Override
+	public boolean canHandle(final @NonNull Class<? extends UI> clazz) {
 		return true;
 	}
 

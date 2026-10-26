@@ -72,6 +72,15 @@ public abstract class BaseScrollbarNode extends Node {
 		return this.scrollNode != null && (this.isHorizontal() ? this.scrollNode.hasOverflowX() : this.scrollNode.hasOverflowY());
 	}
 
+	public final double getRatio() {
+		if (!this.isOverflowing()) {
+			return 1D;
+		}
+
+		final double visible = this.isHorizontal() ? this.scrollNode.getWidth() : this.scrollNode.getHeight();
+		return visible / (visible + (this.isHorizontal() ? this.scrollNode.getMaxScrollX() : this.scrollNode.getMaxScrollY()));
+	}
+
 	public final double getProgress() {
 		if (!this.isOverflowing()) {
 			return 0D;
@@ -83,15 +92,6 @@ public abstract class BaseScrollbarNode extends Node {
 
 		final double scroll = this.isHorizontal() ? this.scrollNode.getScrollX() / this.scrollNode.getMaxScrollX() : this.scrollNode.getScrollY() / this.scrollNode.getMaxScrollY();
 		return Math.min(1D, Math.max(0D, Math.abs(scroll)));
-	}
-
-	public final double getRatio() {
-		if (!this.isOverflowing()) {
-			return 1D;
-		}
-
-		final double visible = this.isHorizontal() ? this.scrollNode.getWidth() : this.scrollNode.getHeight();
-		return visible / (visible + (this.isHorizontal() ? this.scrollNode.getMaxScrollX() : this.scrollNode.getMaxScrollY()));
 	}
 
 	public final double getThumbLength() {

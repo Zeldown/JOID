@@ -9,8 +9,8 @@ import lombok.NonNull;
 @Getter
 public abstract class NodeReorderEvent<N extends Node> extends NodeEvent<N> {
 
-	private final Node child;
 	private final int  index;
+	private final Node child;
 	private final int  previous;
 
 	private NodeReorderEvent(final N node, final Node child, final int previous, final int index) {

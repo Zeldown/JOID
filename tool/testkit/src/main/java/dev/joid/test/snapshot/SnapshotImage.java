@@ -23,6 +23,14 @@ public final class SnapshotImage {
 	private final int   height;
 	private final int[] pixels;
 
+	public static @NonNull SnapshotImage from(final @NonNull ByteBuffer buffer, final int width, final int height, final boolean bottomUp, final @NonNull PixelLayout layout) {
+		final int[] pixels = layout.read(buffer, width, height, bottomUp);
+		for (int i = 0; i < pixels.length; i++) {
+			pixels[i] |= 0xFF000000;
+		}
+		return new SnapshotImage(width, height, pixels);
+	}
+
 	public static @NonNull SnapshotImage read(final @NonNull File file) {
 		try {
 			final BufferedImage image = ImageIO.read(file);
@@ -34,14 +42,6 @@ public final class SnapshotImage {
 		} catch (final IOException e) {
 			throw new UncheckedIOException(e);
 		}
-	}
-
-	public static @NonNull SnapshotImage from(final @NonNull ByteBuffer buffer, final int width, final int height, final boolean bottomUp, final @NonNull PixelLayout layout) {
-		final int[] pixels = layout.read(buffer, width, height, bottomUp);
-		for (int i = 0; i < pixels.length; i++) {
-			pixels[i] |= 0xFF000000;
-		}
-		return new SnapshotImage(width, height, pixels);
 	}
 
 	public void write(final @NonNull File file) {

@@ -40,16 +40,16 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 		return this.radiusSupplier.get();
 	}
 
-	public boolean isTop() {
-		return this.topSupplier.get();
-	}
-
 	public boolean isLeft() {
 		return this.leftSupplier.get();
 	}
 
 	public boolean isRight() {
 		return this.rightSupplier.get();
+	}
+
+	public boolean isTop() {
+		return this.topSupplier.get();
 	}
 
 	public boolean isBottom() {

@@ -13,12 +13,12 @@ public class FloatSignal extends Signal<Float> {
 		super(value);
 	}
 
-	public @NonNull FloatSignal decrement() {
-		return super.transform(current -> current - 1F);
-	}
-
 	public @NonNull FloatSignal increment() {
 		return super.transform(current -> current + 1F);
+	}
+
+	public @NonNull FloatSignal decrement() {
+		return super.transform(current -> current - 1F);
 	}
 
 	public @NonNull FloatSignal add(final float value) {

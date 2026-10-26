@@ -20,8 +20,8 @@ public final class SnapshotWindowBridge implements IWindowBridge {
 	private int    height;
 	private double mouseX;
 	private double mouseY;
-	private String clipboard = "";
 	private Cursor cursor    = Cursor.DEFAULT;
+	private String clipboard = "";
 
 	@Override
 	public boolean isMouseGrabbed() {

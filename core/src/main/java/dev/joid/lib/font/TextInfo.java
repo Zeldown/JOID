@@ -43,6 +43,10 @@ public final class TextInfo extends LockableValue<TextInfo> {
 		this(font, fontSize, FontWeight.REGULAR, 0F, 0F, Color.BLACK, true, false, null, null, null, null, null, new ITextEffect[0]);
 	}
 
+	public double getWidth(final @NonNull String text) {
+		return this.font.getTextRenderer().getWidth(text, this);
+	}
+
 	public double getHeight() {
 		return this.font.getTextRenderer().getLineHeight(this);
 	}
@@ -73,10 +77,6 @@ public final class TextInfo extends LockableValue<TextInfo> {
 
 	public @NonNull List<ITextMarkup> getMarkups() {
 		return this.markups == null ? TextMarkup.getRegistered() : Collections.unmodifiableList(Arrays.asList(this.markups));
-	}
-
-	public double getWidth(final @NonNull String text) {
-		return this.font.getTextRenderer().getWidth(text, this);
 	}
 
 	public @NonNull FontBounds getBounds(final @NonNull String text) {

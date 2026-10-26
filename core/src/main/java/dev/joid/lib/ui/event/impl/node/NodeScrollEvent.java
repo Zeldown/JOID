@@ -10,9 +10,9 @@ import lombok.NonNull;
 @Getter
 public abstract class NodeScrollEvent<N extends Node> extends NodeEvent<N> {
 
-	private final double     offset;
-	private final double     previous;
-	private final Axis axis;
+	private final Axis   axis;
+	private final double offset;
+	private final double previous;
 
 	private NodeScrollEvent(final N node, final Axis axis, final double previous, final double offset) {
 		super(node);

@@ -18,12 +18,12 @@ import dev.joid.lib.utils.align.Align;
 
 public class ShowDesign extends ShowUI {
 
+	private final StringSignal  name     = new StringSignal("Ada Lovelace");
 	private final DoubleSignal  volume   = new DoubleSignal(0.3D);
 	private final BooleanSignal paper    = new BooleanSignal(false);
 	private final TweenAnimator level    = TweenAnimator.create(0F);
 	private final BooleanSignal notify   = new BooleanSignal(false);
 	private final BooleanSignal autoplay = new BooleanSignal(true);
-	private final StringSignal  name     = new StringSignal("Ada Lovelace");
 
 	private long saved;
 

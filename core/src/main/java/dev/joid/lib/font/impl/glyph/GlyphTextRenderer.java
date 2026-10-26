@@ -122,10 +122,6 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 		return GlyphLayout.of(placements, placements.isEmpty() ? 0D : pen - spacing);
 	}
 
-	protected void end() {
-		this.shader.unbind();
-	}
-
 	protected void begin() {
 		this.color = null;
 		this.pixelX = 0F;
@@ -134,6 +130,10 @@ public abstract class GlyphTextRenderer<F extends IFontFace> implements ITextRen
 
 		Color.reset();
 		this.shader.bind();
+	}
+
+	protected void end() {
+		this.shader.unbind();
 	}
 
 	protected abstract void drawGlyph(final @NonNull TextGlyph<F> glyph);

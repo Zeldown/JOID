@@ -46,6 +46,7 @@ public final class SnapshotRunner {
 	private static final String SHIFTED_DIGITS  = ")!@#$%^&*(";
 	private static final String SHIFTED_SYMBOLS = " \"_<>?:+{|}~";
 
+	private final boolean                 devMode;
 	private final List<int[]>             masks;
 	private final ManualClockBridge       clock;
 	private final SnapshotUIBridge        bridge;
@@ -53,7 +54,6 @@ public final class SnapshotRunner {
 	private final SnapshotWindowBridge    window;
 	private final SnapshotBridgeRestorer  restorer;
 	private final SnapshotUrlAssetLocator locator;
-	private final boolean                 devMode;
 
 	private SnapshotRunner(final ISnapshotBackend backend) {
 		this.clock     = new ManualClockBridge(1735689600000L);

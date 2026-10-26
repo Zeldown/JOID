@@ -20,8 +20,8 @@ public abstract class Backend {
 
 	private final String version;
 
-	private boolean audio;
 	private File    dataDir;
+	private boolean audio;
 	private File    cacheDir;
 	private boolean registered;
 

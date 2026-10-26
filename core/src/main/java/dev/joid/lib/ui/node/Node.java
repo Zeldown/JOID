@@ -260,8 +260,8 @@ public abstract class Node implements INode {
 	private transient long lastKeyTime;
 	private transient int  lastCodepoint;
 
-	private transient long renderTime;
 	private transient long loadCount;
+	private transient long renderTime;
 
 	protected Node(final double x, final double y) {
 		this(x, y, 0D, 0D);

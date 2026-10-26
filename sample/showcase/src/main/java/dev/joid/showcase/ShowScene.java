@@ -29,14 +29,6 @@ public enum ShowScene {
 	private final String                  caption;
 	private final Color                   accent;
 
-	public ShowUI create() {
-		try {
-			return this.type.newInstance();
-		} catch (final ReflectiveOperationException exception) {
-			throw new IllegalStateException("The showcase scene " + this.title + " cannot be created (" + exception + "), give its UI a public constructor without argument", exception);
-		}
-	}
-
 	public static ShowScene of(final UI ui) {
 		for (final ShowScene scene : ShowScene.values()) {
 			if (scene.type == ui.getClass()) {
@@ -44,6 +36,14 @@ public enum ShowScene {
 			}
 		}
 		return null;
+	}
+
+	public ShowUI create() {
+		try {
+			return this.type.newInstance();
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException("The showcase scene " + this.title + " cannot be created (" + exception + "), give its UI a public constructor without argument", exception);
+		}
 	}
 
 }

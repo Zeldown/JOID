@@ -4,8 +4,8 @@ import lombok.NonNull;
 
 public interface ISnapshotBackend {
 
-	public void destroy();
 	public void create(final int width, final int height);
+	public void destroy();
 
 	public void present();
 	public @NonNull SnapshotImage capture(final int width, final int height);

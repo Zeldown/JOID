@@ -28,8 +28,8 @@ public final class InteractiveValue<V> {
 	private final Map<V, ValueEvents<V>> eventMap;
 
 	private ValueEvents<V>   events;
-	private UnaryOperator<V> clamp;
 	private BiConsumer<V, V> then;
+	private UnaryOperator<V> clamp;
 
 	private V       pending;
 	private V       requested;

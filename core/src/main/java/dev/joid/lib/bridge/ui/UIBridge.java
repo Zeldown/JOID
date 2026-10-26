@@ -349,12 +349,12 @@ public abstract class UIBridge implements IUIBridge {
 		return inputList;
 	}
 
-	private static boolean isConsumed(final UI ui, final boolean cancel) {
-		return !ui.getOverlay().active() || cancel;
-	}
-
 	private static boolean isClosedBy(final UI ui, final Key key) {
 		return key == Key.ESCAPE && ui.getData().closeable() && !ui.getOverlay().active();
+	}
+
+	private static boolean isConsumed(final UI ui, final boolean cancel) {
+		return !ui.getOverlay().active() || cancel;
 	}
 
 }

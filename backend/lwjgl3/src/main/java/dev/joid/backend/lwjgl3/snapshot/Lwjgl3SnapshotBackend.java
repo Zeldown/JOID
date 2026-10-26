@@ -28,12 +28,6 @@ public final class Lwjgl3SnapshotBackend implements ISnapshotBackend {
 	private SnapshotBridgeRestorer restorer;
 
 	@Override
-	public void destroy() {
-		this.window.destroy();
-		this.restorer.restore();
-	}
-
-	@Override
 	public void create(final int width, final int height) {
 		this.restorer = new SnapshotBridgeRestorer();
 		this.window = GlfwSnapshotWindow.create(width, height, this.profile.getRequest()::apply);
@@ -43,6 +37,12 @@ public final class Lwjgl3SnapshotBackend implements ISnapshotBackend {
 		Lwjgl3Backend.create(this.window.getWindow()).binding(ProfileGlBinding.from(Lwjgl3GlBinding.inst(), this.profile)).audio(false).register();
 		this.bridge = (GlRenderBridge) BridgeHandler.RENDER.get();
 		this.profile.check(this.bridge.getCapabilities());
+	}
+
+	@Override
+	public void destroy() {
+		this.window.destroy();
+		this.restorer.restore();
 	}
 
 	@Override

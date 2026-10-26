@@ -13,12 +13,12 @@ public class DoubleSignal extends Signal<Double> {
 		super(value);
 	}
 
-	public @NonNull DoubleSignal decrement() {
-		return super.transform(current -> current - 1D);
-	}
-
 	public @NonNull DoubleSignal increment() {
 		return super.transform(current -> current + 1D);
+	}
+
+	public @NonNull DoubleSignal decrement() {
+		return super.transform(current -> current - 1D);
 	}
 
 	public @NonNull DoubleSignal add(final double value) {

@@ -396,15 +396,6 @@ public abstract class FieldNode<V> extends Node {
 		return super.follow("marginLeft", marginLeft, value -> this.marginLeft = value);
 	}
 
-	public final <T extends FieldNode<V>> @NonNull T marginVertical(final double marginVertical) {
-		return this.marginVertical(Signal.from(marginVertical));
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T marginVertical(final @NonNull Supplier<Double> marginVertical) {
-		this.marginTop(marginVertical);
-		return this.marginBottom(marginVertical);
-	}
-
 	public final <T extends FieldNode<V>> @NonNull T marginHorizontal(final double marginHorizontal) {
 		return this.marginHorizontal(Signal.from(marginHorizontal));
 	}
@@ -412,6 +403,15 @@ public abstract class FieldNode<V> extends Node {
 	public final <T extends FieldNode<V>> @NonNull T marginHorizontal(final @NonNull Supplier<Double> marginHorizontal) {
 		this.marginLeft(marginHorizontal);
 		return this.marginRight(marginHorizontal);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginVertical(final double marginVertical) {
+		return this.marginVertical(Signal.from(marginVertical));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginVertical(final @NonNull Supplier<Double> marginVertical) {
+		this.marginTop(marginVertical);
+		return this.marginBottom(marginVertical);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginRight(final double marginRight) {
@@ -601,14 +601,14 @@ public abstract class FieldNode<V> extends Node {
 		}
 	}
 
-	protected final void decreaseCursor(final int value) {
-		this.cursorValue.set(this.snap(this.getCursorPosition() - value, false));
-		this.followCursorBackward();
-	}
-
 	protected final void increaseCursor(final int value) {
 		this.cursorValue.set(this.snap(this.getCursorPosition() + value, true));
 		this.followCursorForward();
+	}
+
+	protected final void decreaseCursor(final int value) {
+		this.cursorValue.set(this.snap(this.getCursorPosition() - value, false));
+		this.followCursorBackward();
 	}
 
 	protected final @NonNull TextInfo getShownInfo() {
@@ -651,13 +651,6 @@ public abstract class FieldNode<V> extends Node {
 		}
 
 		return previous;
-	}
-
-	private void release() {
-		if (FieldNode.settle(this.focusedValue, false)) {
-			this.selectionValue.set(FieldSelection.of(0, 0));
-			this.pressCount = 0;
-		}
 	}
 
 	private void applyFocus(final boolean focused) {
@@ -974,6 +967,13 @@ public abstract class FieldNode<V> extends Node {
 		this.anchorEnd = this.pressCount == 1 ? range[0] : range[1];
 		this.cursorValue.set(range[1]);
 		this.selectionValue.set(FieldSelection.of(range[0], range[1]));
+	}
+
+	private void release() {
+		if (FieldNode.settle(this.focusedValue, false)) {
+			this.selectionValue.set(FieldSelection.of(0, 0));
+			this.pressCount = 0;
+		}
 	}
 
 	private void drag(final int position) {

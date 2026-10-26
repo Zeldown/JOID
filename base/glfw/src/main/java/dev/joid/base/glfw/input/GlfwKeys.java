@@ -17,9 +17,9 @@ import lombok.NonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class GlfwKeys {
 
+	private static final KeyLayout         LAYOUT   = KeyLayout.from(key -> GLFW.glfwGetKeyName(GlfwKeys.getCode(key), 0));
 	private static final Map<Integer, Key> KEY_MAP  = new HashMap<>();
 	private static final Map<Key, Integer> CODE_MAP = new EnumMap<>(Key.class);
-	private static final KeyLayout         LAYOUT   = KeyLayout.from(key -> GLFW.glfwGetKeyName(GlfwKeys.getCode(key), 0));
 
 	static {
 		GlfwKeys.map(Key.A, Key.Z, GLFW.GLFW_KEY_A);

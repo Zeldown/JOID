@@ -123,6 +123,12 @@ public final class JOID {
 		return null;
 	}
 
+	public static @NonNull IUIBridge open(final @NonNull UI ui) {
+		final IUIBridge bridge = JOID.getOpeningBridge(ui);
+		ThreadUtils.runOnRenderThread(() -> bridge.open(ui));
+		return bridge;
+	}
+
 	public static void close(final @NonNull UI ui) {
 		ThreadUtils.runOnRenderThread(() -> {
 			final IUIBridge bridge = BridgeHandler.UI.get(ui);
@@ -130,6 +136,12 @@ public final class JOID {
 				bridge.close(ui);
 			}
 		});
+	}
+
+	public static @NonNull IUIBridge forceOpen(final @NonNull UI ui) {
+		final IUIBridge bridge = JOID.getOpeningBridge(ui);
+		ThreadUtils.runOnRenderThread(() -> bridge.forceOpen(ui));
+		return bridge;
 	}
 
 	public static void forceClose(final @NonNull UI ui) {
@@ -144,18 +156,6 @@ public final class JOID {
 			}
 			bridge.close(ui);
 		});
-	}
-
-	public static @NonNull IUIBridge open(final @NonNull UI ui) {
-		final IUIBridge bridge = JOID.getOpeningBridge(ui);
-		ThreadUtils.runOnRenderThread(() -> bridge.open(ui));
-		return bridge;
-	}
-
-	public static @NonNull IUIBridge forceOpen(final @NonNull UI ui) {
-		final IUIBridge bridge = JOID.getOpeningBridge(ui);
-		ThreadUtils.runOnRenderThread(() -> bridge.forceOpen(ui));
-		return bridge;
 	}
 
 	private static void shutdown() {

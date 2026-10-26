@@ -153,10 +153,10 @@ public abstract class UI implements IIndexedElement {
 	@Getter
 	private Node devNode;
 
-	private List<Node> hoveredPath;
 	private double     lastHoveredX;
 	private double     lastHoveredY;
 	private long       lastHoveredFrame;
+	private List<Node> hoveredPath;
 
 	protected UI() {
 		this.annotationMap = UI.annotations(this.getClass());

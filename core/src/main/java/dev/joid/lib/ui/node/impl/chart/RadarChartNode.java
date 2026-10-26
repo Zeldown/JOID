@@ -25,12 +25,12 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 		return Collections.unmodifiableList(this.dataList);
 	}
 
-	public final Number getMax() {
-		return ChartNode.scaleMax(this.getValues().min().orElse(0D), this.getValues().max().orElse(0D));
-	}
-
 	public final Number getMin() {
 		return ChartNode.scaleMin(this.getValues().min().orElse(0D), this.getValues().max().orElse(0D));
+	}
+
+	public final Number getMax() {
+		return ChartNode.scaleMax(this.getValues().min().orElse(0D), this.getValues().max().orElse(0D));
 	}
 
 	public final Number getAverage() {

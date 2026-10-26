@@ -85,13 +85,13 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
-	public final void popState() {
-		this.state.load(this.stateStack.pop());
+	public final void pushState() {
+		this.stateStack.push(this.state.copy());
 	}
 
 	@Override
-	public final void pushState() {
-		this.stateStack.push(this.state.copy());
+	public final void popState() {
+		this.state.load(this.stateStack.pop());
 	}
 
 	@Override

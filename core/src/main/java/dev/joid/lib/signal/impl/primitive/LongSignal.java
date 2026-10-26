@@ -13,12 +13,12 @@ public class LongSignal extends Signal<Long> {
 		super(value);
 	}
 
-	public @NonNull LongSignal decrement() {
-		return super.transform(current -> current - 1);
-	}
-
 	public @NonNull LongSignal increment() {
 		return super.transform(current -> current + 1);
+	}
+
+	public @NonNull LongSignal decrement() {
+		return super.transform(current -> current - 1);
 	}
 
 	public @NonNull LongSignal add(final long value) {

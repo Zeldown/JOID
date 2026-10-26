@@ -44,12 +44,12 @@ public final class Kerning {
 		return reader;
 	}
 
-	public Map<Long, Integer> getKerning() {
-		return Collections.unmodifiableMap(this.kerning);
-	}
-
 	public int getUnitsPerEm() {
 		return this.file.getUnitsPerEm();
+	}
+
+	public Map<Long, Integer> getKerning() {
+		return Collections.unmodifiableMap(this.kerning);
 	}
 
 	private void parse() {

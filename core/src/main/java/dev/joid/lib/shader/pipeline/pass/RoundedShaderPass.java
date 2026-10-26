@@ -23,11 +23,6 @@ public class RoundedShaderPass implements IShaderPass {
 	}
 
 	@Override
-	public void unbind() {
-		RoundedShader.inst().unbind();
-	}
-
-	@Override
 	public void bind(final @NonNull ShaderPassContext context) {
 		if (!RoundedShader.inst().canDraw()) {
 			return;
@@ -35,6 +30,11 @@ public class RoundedShaderPass implements IShaderPass {
 
 		RoundedShader.inst().bind(this.radius, this.x1, this.y1, this.x2, this.y2, ShaderFillType.TEXTURE);
 		RoundedShader.inst().aligned(BridgeHandler.RENDER.get().getPixelGrid().isAligned());
+	}
+
+	@Override
+	public void unbind() {
+		RoundedShader.inst().unbind();
 	}
 
 }

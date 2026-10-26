@@ -46,38 +46,6 @@ public final class ShaderSource {
 		this.features = EnumSet.noneOf(ShaderFeature.class);
 	}
 
-	public @NonNull List<ShaderVariable> getInputs() {
-		return Collections.unmodifiableList(this.inputs);
-	}
-
-	public @NonNull Set<ShaderBuiltin> getBuiltins() {
-		return Collections.unmodifiableSet(this.builtins);
-	}
-
-	public @NonNull Set<ShaderFeature> getFeatures() {
-		return Collections.unmodifiableSet(this.features);
-	}
-
-	public @NonNull List<ShaderVariable> getOutputs() {
-		return Collections.unmodifiableList(this.outputs);
-	}
-
-	public @NonNull List<ShaderVariable> getUniforms() {
-		return Collections.unmodifiableList(this.uniforms);
-	}
-
-	public @NonNull List<ShaderVariable> getSamplers() {
-		return Collections.unmodifiableList(this.samplers);
-	}
-
-	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull Object handle) {
-		try (final InputStream stream = Asset.of(handle).open()) {
-			return ShaderSource.from(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
-		} catch (final IOException exception) {
-			throw new UncheckedIOException(exception);
-		}
-	}
-
 	public static @NonNull ShaderSource from(final @NonNull ShaderStage stage, final @NonNull String code) {
 		final ShaderSource source = new ShaderSource(stage);
 		final StringBuilder body = new StringBuilder();
@@ -116,6 +84,38 @@ public final class ShaderSource {
 		source.features.addAll(ShaderFeature.find(instructions));
 		source.body = body.toString();
 		return source;
+	}
+
+	public static @NonNull ShaderSource read(final @NonNull ShaderStage stage, final @NonNull Object handle) {
+		try (final InputStream stream = Asset.of(handle).open()) {
+			return ShaderSource.from(stage, IOUtils.toString(stream, StandardCharsets.UTF_8));
+		} catch (final IOException exception) {
+			throw new UncheckedIOException(exception);
+		}
+	}
+
+	public @NonNull List<ShaderVariable> getInputs() {
+		return Collections.unmodifiableList(this.inputs);
+	}
+
+	public @NonNull Set<ShaderBuiltin> getBuiltins() {
+		return Collections.unmodifiableSet(this.builtins);
+	}
+
+	public @NonNull Set<ShaderFeature> getFeatures() {
+		return Collections.unmodifiableSet(this.features);
+	}
+
+	public @NonNull List<ShaderVariable> getOutputs() {
+		return Collections.unmodifiableList(this.outputs);
+	}
+
+	public @NonNull List<ShaderVariable> getUniforms() {
+		return Collections.unmodifiableList(this.uniforms);
+	}
+
+	public @NonNull List<ShaderVariable> getSamplers() {
+		return Collections.unmodifiableList(this.samplers);
 	}
 
 	public @NonNull ShaderSource toLine() {
