@@ -111,32 +111,32 @@ public abstract class Node implements INode {
 
 	private static final EventType<NodeEvent<Node>>      INIT         = EventType.create("onInit");
 	private static final EventType<NodeEvent<Node>>      UPDATE       = EventType.create("onUpdate");
-	private static final EventType<NodeEvent<Node>>      DETACH       = EventType.create("onDetach");
-	private static final EventType<NodeDrawEvent<Node>>  DRAW         = EventType.create("onDraw");
 	private static final EventType<NodeDrawEvent<Node>>  RENDER       = EventType.create("onRender");
+	private static final EventType<NodeDrawEvent<Node>>  DRAW         = EventType.create("onDraw");
 	private static final EventType<NodeChildEvent<Node>> CHILD_APPEND = EventType.create("onChildAppend");
+	private static final EventType<NodeEvent<Node>>      DETACH       = EventType.create("onDetach");
 
 	private static final EventType<NodeEvent<Node>>        MOUNT   = EventType.create("onMount");
 	private static final EventType<NodeWatchEvent<Node>>   WATCH   = EventType.create("onWatch");
 	private static final EventType<NodeAnimateEvent<Node>> ANIMATE = EventType.create("onAnimate");
 
-	private static final EventType<NodeScrollEvent.Post<Node>> SCROLL             = EventType.create("onScroll");
 	private static final EventType<NodeScrollEvent.Pre<Node>>  BEFORE_SCROLL      = EventType.create("beforeScroll");
+	private static final EventType<NodeScrollEvent.Post<Node>> SCROLL             = EventType.create("onScroll");
 	private static final EventType<NodeScrollEvent.Post<Node>> SCROLL_TO_END      = EventType.create("onScrollToEnd");
 	private static final EventType<NodeScrollEvent.Post<Node>> SCROLL_END_REACHED = EventType.create("onScrollEndReached");
 
-	private static final EventType<NodeChangeEvent.Post<Node, Point>> MOVE        = EventType.create("onMove");
 	private static final EventType<NodeChangeEvent.Pre<Node, Point>>  BEFORE_MOVE = EventType.create("beforeMove");
+	private static final EventType<NodeChangeEvent.Post<Node, Point>> MOVE        = EventType.create("onMove");
 
+	private static final EventType<NodeDragEvent.Pre<Node>>  BEFORE_DRAG_START = EventType.create("beforeDragStart");
+	private static final EventType<NodeDragEvent.Post<Node>> DRAG_START        = EventType.create("onDragStart");
 	private static final EventType<NodeDragEvent.Post<Node>> DRAG              = EventType.create("onDrag");
+	private static final EventType<NodeDragEvent.Pre<Node>>  BEFORE_DRAG_DROP  = EventType.create("beforeDragDrop");
 	private static final EventType<NodeDragEvent.Post<Node>> DRAG_DROP         = EventType.create("onDragDrop");
 	private static final EventType<NodeDragEvent.Post<Node>> DRAG_SNAP         = EventType.create("onDragSnap");
-	private static final EventType<NodeDragEvent.Post<Node>> DRAG_START        = EventType.create("onDragStart");
-	private static final EventType<NodeDragEvent.Pre<Node>>  BEFORE_DRAG_DROP  = EventType.create("beforeDragDrop");
-	private static final EventType<NodeDragEvent.Pre<Node>>  BEFORE_DRAG_START = EventType.create("beforeDragStart");
 
-	private static final EventType<NodeHoverEvent<Node>> HOVER       = EventType.create("onHover");
 	private static final EventType<NodeHoverEvent<Node>> HOVER_START = EventType.create("onHoverStart");
+	private static final EventType<NodeHoverEvent<Node>> HOVER       = EventType.create("onHover");
 	private static final EventType<NodeHoverEvent<Node>> HOVER_END   = EventType.create("onHoverEnd");
 
 	private final transient EventBus      eventBus;
@@ -1314,12 +1314,12 @@ public abstract class Node implements INode {
 		return this.listen(Node.DRAG_SNAP, listener);
 	}
 
-	public final <T extends Node> @NonNull T onHover(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
-		return this.listen(Node.HOVER, listener);
-	}
-
 	public final <T extends Node> @NonNull T onHoverStart(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
 		return this.listen(Node.HOVER_START, listener);
+	}
+
+	public final <T extends Node> @NonNull T onHover(final @NonNull EventListener<NodeHoverEvent<T>> listener) {
+		return this.listen(Node.HOVER, listener);
 	}
 
 	public final <T extends Node> @NonNull T onHoverEnd(final @NonNull EventListener<NodeHoverEvent<T>> listener) {

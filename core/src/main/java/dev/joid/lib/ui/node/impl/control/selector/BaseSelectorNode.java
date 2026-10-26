@@ -12,10 +12,10 @@ import lombok.NonNull;
 
 public abstract class BaseSelectorNode<V> extends BaseChoiceNode<V> {
 
-	private static final EventType<NodeChangeEvent.Post<?, Boolean>> OPEN         = EventType.create("onOpen");
-	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CLOSE        = EventType.create("onClose");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_OPEN  = EventType.create("beforeOpen");
+	private static final EventType<NodeChangeEvent.Post<?, Boolean>> OPEN         = EventType.create("onOpen");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CLOSE = EventType.create("beforeClose");
+	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CLOSE        = EventType.create("onClose");
 
 	private final transient InteractiveValue<Boolean> activeValue;
 

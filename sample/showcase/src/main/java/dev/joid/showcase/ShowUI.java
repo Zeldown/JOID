@@ -72,6 +72,18 @@ public abstract class ShowUI extends UI {
 		return equation.compute((float) ((t - from) / (to - from)));
 	}
 
+	private void navigate(final int offset) {
+		final ShowScene scene = ShowScene.of(this);
+		final int index = scene != null ? scene.ordinal() : offset > 0 ? -1 : 0;
+		ShowUI.open(ShowScene.values()[Math.floorMod(index + offset, ShowScene.values().length)].create());
+	}
+
+	private void menu() {
+		if (ShowScene.of(this) != null) {
+			ShowUI.open(new ShowMenu());
+		}
+	}
+
 	protected static CircleNode blob(final double x, final double y, final double size, final Color color, final double phase, final double range) {
 		return CircleNode
 		.create(x, y, size)
@@ -88,18 +100,6 @@ public abstract class ShowUI extends UI {
 		.effect(RoundedNodeEffect.create(radius))
 		.effect(BorderNodeEffect.create(Color.WHITE.withAlpha(0.14F), 1.5F).mode(BorderMode.IN))
 		.effect(ShadowNodeEffect.create(Color.BLACK.withAlpha(0.45F), 48F).offsetY(24D));
-	}
-
-	private void navigate(final int offset) {
-		final ShowScene scene = ShowScene.of(this);
-		final int index = scene != null ? scene.ordinal() : offset > 0 ? -1 : 0;
-		ShowUI.open(ShowScene.values()[Math.floorMod(index + offset, ShowScene.values().length)].create());
-	}
-
-	private void menu() {
-		if (ShowScene.of(this) != null) {
-			ShowUI.open(new ShowMenu());
-		}
 	}
 
 	protected static void open(final UI ui) {

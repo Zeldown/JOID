@@ -83,11 +83,11 @@ public abstract class UI implements IIndexedElement {
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_RELEASED   = EventType.create("handleKeyReleased");
 
-	private static final EventType<UICloseEvent.Post<UI>> CLOSE        = EventType.create("onClose");
 	private static final EventType<UICloseEvent.Pre<UI>>  BEFORE_CLOSE = EventType.create("beforeClose");
+	private static final EventType<UICloseEvent.Post<UI>> CLOSE        = EventType.create("onClose");
 
-	private static final EventType<UIChangeEvent.Post<UI, Double>> ZOOM        = EventType.create("onZoom");
 	private static final EventType<UIChangeEvent.Pre<UI, Double>>  BEFORE_ZOOM = EventType.create("beforeZoom");
+	private static final EventType<UIChangeEvent.Post<UI, Double>> ZOOM        = EventType.create("onZoom");
 
 	@Getter
 	private static UI current;

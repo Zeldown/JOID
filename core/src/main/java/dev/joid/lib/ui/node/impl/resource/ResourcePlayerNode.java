@@ -20,10 +20,10 @@ import lombok.NonNull;
 
 public class ResourcePlayerNode extends Node {
 
-	private static final EventType<NodeEvent<?>>         END      = EventType.create("onEnd");
 	private static final EventType<NodeEvent<?>>         PLAY     = EventType.create("onPlay");
-	private static final EventType<NodeEvent<?>>         STOP     = EventType.create("onStop");
 	private static final EventType<NodeEvent<?>>         PAUSE    = EventType.create("onPause");
+	private static final EventType<NodeEvent<?>>         STOP     = EventType.create("onStop");
+	private static final EventType<NodeEvent<?>>         END      = EventType.create("onEnd");
 	private static final EventType<NodeProgressEvent<?>> PROGRESS = EventType.create("onProgress");
 
 	@Getter

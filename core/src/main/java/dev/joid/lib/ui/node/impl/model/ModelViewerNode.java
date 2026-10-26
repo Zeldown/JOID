@@ -18,11 +18,11 @@ import lombok.NonNull;
 @Getter
 public class ModelViewerNode extends BaseModelNode {
 
-	private static final EventType<NodeChangeEvent.Post<?, Double>> ZOOM        = EventType.create("onZoom");
 	private static final EventType<NodeChangeEvent.Pre<?, Double>>  BEFORE_ZOOM = EventType.create("beforeZoom");
+	private static final EventType<NodeChangeEvent.Post<?, Double>> ZOOM        = EventType.create("onZoom");
 
-	private static final EventType<NodeChangeEvent.Post<?, Point>> ROTATE        = EventType.create("onRotate");
 	private static final EventType<NodeChangeEvent.Pre<?, Point>>  BEFORE_ROTATE = EventType.create("beforeRotate");
+	private static final EventType<NodeChangeEvent.Post<?, Point>> ROTATE        = EventType.create("onRotate");
 
 	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Double> zoomValue;
 	@Getter(AccessLevel.NONE) private final transient InteractiveValue<Point>  rotationValue;

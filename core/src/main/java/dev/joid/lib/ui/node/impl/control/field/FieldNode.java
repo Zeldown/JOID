@@ -30,19 +30,19 @@ import lombok.NonNull;
 
 public abstract class FieldNode<V> extends Node {
 
-	private static final EventType<NodeFieldChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeFieldChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
+	private static final EventType<NodeFieldChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 
-	private static final EventType<NodeChangeEvent.Post<?, Boolean>> FOCUS        = EventType.create("onFocus");
-	private static final EventType<NodeChangeEvent.Post<?, Boolean>> BLUR         = EventType.create("onBlur");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_FOCUS = EventType.create("beforeFocus");
+	private static final EventType<NodeChangeEvent.Post<?, Boolean>> FOCUS        = EventType.create("onFocus");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_BLUR  = EventType.create("beforeBlur");
+	private static final EventType<NodeChangeEvent.Post<?, Boolean>> BLUR         = EventType.create("onBlur");
 
-	private static final EventType<NodeChangeEvent.Post<?, Integer>> CURSOR_MOVE        = EventType.create("onCursorMove");
 	private static final EventType<NodeChangeEvent.Pre<?, Integer>>  BEFORE_CURSOR_MOVE = EventType.create("beforeCursorMove");
+	private static final EventType<NodeChangeEvent.Post<?, Integer>> CURSOR_MOVE        = EventType.create("onCursorMove");
 
-	private static final EventType<NodeChangeEvent.Post<?, FieldSelection>> SELECT        = EventType.create("onSelect");
 	private static final EventType<NodeChangeEvent.Pre<?, FieldSelection>>  BEFORE_SELECT = EventType.create("beforeSelect");
+	private static final EventType<NodeChangeEvent.Post<?, FieldSelection>> SELECT        = EventType.create("onSelect");
 
 	private final transient InteractiveValue<String>         textValue;
 	private final transient InteractiveValue<Integer>        cursorValue;

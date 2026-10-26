@@ -25,9 +25,9 @@ import lombok.NonNull;
 
 public class ReorderableFlexNode extends FlexNode {
 
-	private static final EventType<NodeReorderEvent.Post<?>> REORDER        = EventType.create("onReorder");
-	private static final EventType<NodeReorderEvent.Pre<?>>  BEFORE_REORDER = EventType.create("beforeReorder");
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER_START  = EventType.create("onReorderStart");
+	private static final EventType<NodeReorderEvent.Pre<?>>  BEFORE_REORDER = EventType.create("beforeReorder");
+	private static final EventType<NodeReorderEvent.Post<?>> REORDER        = EventType.create("onReorder");
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER_END    = EventType.create("onReorderEnd");
 
 	private final Set<Node>                   pinnedNodes;
@@ -189,16 +189,16 @@ public class ReorderableFlexNode extends FlexNode {
 		return (T) this;
 	}
 
+	public final <T extends ReorderableFlexNode> @NonNull T onReorderStart(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
+		return super.listen(ReorderableFlexNode.REORDER_START, listener);
+	}
+
 	public final <T extends ReorderableFlexNode> @NonNull T beforeReorder(final @NonNull EventListener<NodeReorderEvent.Pre<T>> listener) {
 		return super.listen(ReorderableFlexNode.BEFORE_REORDER, listener);
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T onReorder(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
 		return super.listen(ReorderableFlexNode.REORDER, listener);
-	}
-
-	public final <T extends ReorderableFlexNode> @NonNull T onReorderStart(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {
-		return super.listen(ReorderableFlexNode.REORDER_START, listener);
 	}
 
 	public final <T extends ReorderableFlexNode> @NonNull T onReorderEnd(final @NonNull EventListener<NodeReorderEvent.Post<T>> listener) {

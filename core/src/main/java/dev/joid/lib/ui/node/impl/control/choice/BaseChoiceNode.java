@@ -18,8 +18,8 @@ import lombok.NonNull;
 
 public abstract class BaseChoiceNode<V> extends Node {
 
-	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
+	private static final EventType<NodeChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 
 	private final transient InteractiveValue<V> choiceValue;
 

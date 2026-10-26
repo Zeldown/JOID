@@ -12,8 +12,8 @@ import lombok.NonNull;
 
 public abstract class BaseCheckboxNode extends Node {
 
-	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_CHANGE = EventType.create("beforeChange");
+	private static final EventType<NodeChangeEvent.Post<?, Boolean>> CHANGE        = EventType.create("onChange");
 
 	private final transient InteractiveValue<Boolean> checkedValue;
 
