@@ -12,7 +12,6 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
 import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.render.CapturingRenderBridge;
@@ -45,7 +44,7 @@ public class MsdfTextRendererTest {
 
 	@BeforeClass
 	public static void load() {
-		TestUtils.captureOut(false, () -> MsdfTextRendererTest.font = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf"), JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Bold.ttf")).join());
+		MsdfTextRendererTest.font = TestUtils.loadMontserrat();
 		MsdfTextRendererTest.regular = MsdfTextRendererTest.font.getFace(FontWeight.REGULAR, false);
 	}
 

@@ -11,6 +11,8 @@ import java.util.function.BooleanSupplier;
 import org.junit.Assert;
 
 import dev.joid.internal.font.DevFont;
+import dev.joid.lib.font.impl.msdf.MsdfFont;
+import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.lib.resource.decoder.impl.VideoResourceDecoder;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
@@ -19,6 +21,8 @@ import lombok.NonNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TestUtils {
+
+	private static MsdfFont montserrat;
 
 	public static @NonNull String captureOut(final @NonNull Runnable runnable) {
 		final PrintStream previous = System.out;
@@ -78,6 +82,13 @@ public final class TestUtils {
 		if (DevFont.MONTSERRAT == null) {
 			TestUtils.captureOut(false, DevFont::load);
 		}
+	}
+
+	public static @NonNull MsdfFont loadMontserrat() {
+		if (TestUtils.montserrat == null) {
+			TestUtils.captureOut(false, () -> TestUtils.montserrat = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf"), JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Bold.ttf")).join());
+		}
+		return TestUtils.montserrat;
 	}
 
 	public static Object field(final @NonNull Object target, final @NonNull String name) {

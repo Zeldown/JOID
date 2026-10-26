@@ -11,7 +11,6 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import dev.joid.internal.JOID;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.cache.TemporaryCache;
 import dev.joid.lib.draw.DrawUtils;
@@ -22,7 +21,6 @@ import dev.joid.lib.font.ITextRenderer;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.font.TextStyle;
 import dev.joid.lib.font.impl.msdf.MsdfFont;
-import dev.joid.lib.font.impl.msdf.MsdfFontLoader;
 import dev.joid.lib.font.markup.ITextMarkup;
 import dev.joid.lib.font.markup.TextMarkup;
 import dev.joid.lib.font.modifier.TextModifier;
@@ -54,7 +52,7 @@ public class DrawTextTest {
 
 	@BeforeClass
 	public static void load() {
-		TestUtils.captureOut(false, () -> DrawTextTest.montserrat = MsdfFontLoader.load(JOID.class.getResourceAsStream("/assets/dev/fonts/Montserrat/Montserrat-Regular.ttf")).join());
+		DrawTextTest.montserrat = TestUtils.loadMontserrat();
 	}
 
 	@Test
