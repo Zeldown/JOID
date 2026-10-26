@@ -9,11 +9,13 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.node.property.PositionProperty;
+import dev.joid.lib.utils.align.Align;
 
 public class GridNodeTest {
 
@@ -30,6 +32,66 @@ public class GridNodeTest {
 		GridNodeTest.assertPlaced(cells[2], 200D, 0D);
 		GridNodeTest.assertPlaced(cells[3], 0D, 50D);
 		GridNodeTest.assertPlaced(cells[4], 100D, 50D);
+		Assert.assertEquals(Align.START, grid.getAlignX());
+	}
+
+	@Test
+	public void centersEachRowOnItsOwnWidth() {
+		final GridNode grid = GridNode.create(0D, 0D, 350D, 100D).alignX(Align.CENTER);
+		final RectNode[] cells = GridNodeTest.cells(grid, 5);
+		this.bridges.open(new NodeUI(grid));
+		GridNodeTest.assertPlaced(cells[0], 25D, 0D);
+		GridNodeTest.assertPlaced(cells[2], 225D, 0D);
+		GridNodeTest.assertPlaced(cells[3], 75D, 50D);
+		GridNodeTest.assertPlaced(cells[4], 175D, 50D);
+		Assert.assertEquals(Align.CENTER, grid.getAlignX());
+	}
+
+	@Test
+	public void pushesAnIncompleteLastRowToTheEnd() {
+		final GridNode grid = GridNode.create(0D, 0D, 350D, 100D).alignX(Align.END);
+		final RectNode[] cells = GridNodeTest.cells(grid, 5);
+		this.bridges.open(new NodeUI(grid));
+		GridNodeTest.assertPlaced(cells[0], 50D, 0D);
+		GridNodeTest.assertPlaced(cells[2], 250D, 0D);
+		GridNodeTest.assertPlaced(cells[3], 150D, 50D);
+		GridNodeTest.assertPlaced(cells[4], 250D, 50D);
+	}
+
+	@Test
+	public void countsTheMarginsInTheWidthOfARow() {
+		final GridNode grid = GridNode.create(0D, 0D, 350D, 100D).alignX(Align.END).margin(10D);
+		final RectNode[] cells = GridNodeTest.cells(grid, 4);
+		this.bridges.open(new NodeUI(grid));
+		GridNodeTest.assertPlaced(cells[0], 30D, 0D);
+		GridNodeTest.assertPlaced(cells[2], 250D, 0D);
+		GridNodeTest.assertPlaced(cells[3], 250D, 60D);
+	}
+
+	@Test
+	public void alignsRowsOfCellsWithDifferentWidths() {
+		final RectNode first = RectNode.create(0D, 0D, 60D, 40D);
+		final RectNode third = RectNode.create(0D, 0D, 40D, 40D);
+		final RectNode wrapped = RectNode.create(0D, 0D, 120D, 40D);
+		final RectNode last = RectNode.create(0D, 0D, 80D, 40D);
+		this.bridges.open(new NodeUI(GridNode.create(0D, 0D, 250D, 100D).alignX(Align.CENTER).append(first, RectNode.create(0D, 0D, 100D, 40D), third, wrapped, last)));
+		GridNodeTest.assertPlaced(first, 25D, 0D);
+		GridNodeTest.assertPlaced(third, 185D, 0D);
+		GridNodeTest.assertPlaced(wrapped, 25D, 40D);
+		GridNodeTest.assertPlaced(last, 145D, 40D);
+	}
+
+	@Test
+	public void followsASuppliedRowAlignment() {
+		final Signal<Align> align = new Signal<>(Align.START);
+		final GridNode grid = GridNode.create(0D, 0D, 350D, 100D).alignX(align);
+		final RectNode[] cells = GridNodeTest.cells(grid, 5);
+		this.bridges.open(new NodeUI(grid));
+		GridNodeTest.assertPlaced(cells[4], 100D, 50D);
+		align.set(Align.END);
+		this.bridges.frame();
+		GridNodeTest.assertPlaced(cells[0], 50D, 0D);
+		GridNodeTest.assertPlaced(cells[4], 250D, 50D);
 	}
 
 	@Test
@@ -185,6 +247,7 @@ public class GridNodeTest {
 		Assert.assertSame(grid, grid.marginHorizontal(1D));
 		Assert.assertSame(grid, grid.marginVertical(2D));
 		Assert.assertSame(grid, grid.margin(3D));
+		Assert.assertSame(grid, grid.alignX(Align.END));
 	}
 
 	@Test

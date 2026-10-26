@@ -5,6 +5,7 @@ import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.Signal;
 import dev.joid.lib.signal.impl.primitive.BooleanSignal;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.node.impl.layout.FlexNode;
@@ -29,6 +30,7 @@ public class UIDemoLayout extends UIDemo {
 		final BooleanSignal shown = new BooleanSignal(false);
 		final BooleanSignal row = new BooleanSignal(false);
 		final BooleanSignal grown = new BooleanSignal(false);
+		final Signal<Align> aligned = new Signal<>(Align.START);
 
 		RectNode
 		.create(80, 40, 320, 260)
@@ -322,15 +324,22 @@ public class UIDemoLayout extends UIDemo {
 		.color(UIDemoLayout.PLACEHOLDER)
 		.body(rect -> {
 			GridNode
-			.create(20, 20, 280, 200)
+			.create(20, 20, 280, 160)
 			.margin(10D)
+			.alignX(aligned)
 			.body(grid -> {
 				for (int i = 0; i < 14; i++) {
 					RectNode.create(0, 0, 46, 46).color(i % 2 == 0 ? UIDemoLayout.INK : Color.WHITE).attach(grid);
 				}
 			})
 			.attach(rect);
-			TextNode.create(160, 275).text(Text.create("Grid", info)).anchorX(Align.CENTER).attach(rect);
+			RectNode
+			.create(100, 195, 120, 50)
+			.color(UIDemoLayout.INK)
+			.onClick(event -> aligned.set(Align.values()[(aligned.get().ordinal() + 1) % Align.values().length]))
+			.label(Text.create("Align", label))
+			.attach(rect);
+			TextNode.create(160, 275).text(Text.create("Grid align", info)).anchorX(Align.CENTER).attach(rect);
 		})
 		.attach(this);
 

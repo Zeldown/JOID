@@ -314,12 +314,22 @@ wait 100
 press LEFT
 release LEFT
 wait 100
+move 1680 600
+wait 100
+press LEFT
+release LEFT
+wait 100
+move 1680 600
+wait 100
+press LEFT
+release LEFT
+wait 100
 move 1680 940
 wait 100
 press LEFT
 release LEFT
 wait 100
-wait 600
+wait 200
 shot inter-layout
 ui dev.joid.demo.ui.overflow.UIDemoOverflow
 wait 800

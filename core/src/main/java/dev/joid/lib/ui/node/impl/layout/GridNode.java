@@ -1,5 +1,6 @@
 package dev.joid.lib.ui.node.impl.layout;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import dev.joid.lib.signal.Signal;
@@ -7,17 +8,22 @@ import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.node.property.PositionProperty;
+import dev.joid.lib.utils.align.Align;
 import lombok.Getter;
 import lombok.NonNull;
 
 @Getter
 public final class GridNode extends Node {
 
+	private Align alignX;
+
 	private double marginVertical;
 	private double marginHorizontal;
 
 	private GridNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
+
+		this.alignX = Align.START;
 	}
 
 	public static @NonNull GridNode create(final double x, final double y, final double width, final double height) {
@@ -40,6 +46,14 @@ public final class GridNode extends Node {
 	@Override
 	public void update() {
 		this.updateGrid();
+	}
+
+	public final @NonNull GridNode alignX(final @NonNull Align alignX) {
+		return this.alignX(Signal.from(alignX));
+	}
+
+	public final @NonNull GridNode alignX(final @NonNull Supplier<@NonNull Align> alignX) {
+		return super.follow("alignX", alignX, value -> this.alignX = value);
 	}
 
 	public final @NonNull GridNode marginVertical(final double marginVertical) {
@@ -68,26 +82,35 @@ public final class GridNode extends Node {
 	}
 
 	private void updateGrid() {
+		final List<Node> children = super.getChildren();
+		int rowStart = 0;
 		double ox = 0D;
 		double oy = 0D;
+		double rowWidth = 0D;
 		double rowHeight = 0D;
-		for (final Node child : super.getChildren()) {
-			if (child.getPosition() == PositionProperty.ABSOLUTE || !child.isVisibleProperty()) {
+		for (int i = 0; i < children.size(); i++) {
+			final Node child = children.get(i);
+			if (!this.isLaidOut(child)) {
 				continue;
 			}
 
 			if (ox > 0D && child.getDefaultX() + child.getWidth() + ox > super.getWidth()) {
+				this.alignRow(children.subList(rowStart, i), rowWidth);
+				rowStart = i;
 				ox = 0D;
 				oy += rowHeight + this.marginVertical;
+				rowWidth = 0D;
 				rowHeight = 0D;
 			}
 
 			child.layoutPosition(ox, oy);
 
+			rowWidth = Math.max(rowWidth, child.getDefaultX() + child.getWidth() + ox);
 			ox += child.getWidth() + this.marginHorizontal;
 			rowHeight = Math.max(rowHeight, child.getHeight());
 		}
 
+		this.alignRow(children.subList(rowStart, children.size()), rowWidth);
 		oy += rowHeight;
 
 		if (super.getDefaultHeight() == 0D) {
@@ -95,6 +118,23 @@ public final class GridNode extends Node {
 		} else if (super.getOverflow() == OverflowProperty.NONE) {
 			super.layoutSize(super.getWidth(), Math.max(oy, super.getDefaultHeight()));
 		}
+	}
+
+	private void alignRow(final List<Node> row, final double rowWidth) {
+		if (this.alignX.isStart()) {
+			return;
+		}
+
+		final double shift = this.alignX.isCenter() ? super.dw(2D) - rowWidth / 2D : super.aw(-rowWidth);
+		for (final Node child : row) {
+			if (this.isLaidOut(child)) {
+				child.layoutPosition(child.getLayoutX() + shift, child.getLayoutY());
+			}
+		}
+	}
+
+	private boolean isLaidOut(final Node child) {
+		return child.getPosition() != PositionProperty.ABSOLUTE && child.isVisibleProperty();
 	}
 
 }
