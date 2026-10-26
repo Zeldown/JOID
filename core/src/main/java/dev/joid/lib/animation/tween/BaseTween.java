@@ -23,18 +23,18 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 
 	private final EventBus eventBus = EventBus.create(() -> JOIDLog.nameOf(this.getClass()));
 
-	@Getter private int     step;
+	@Getter protected float delay;
 	@Getter private boolean isYoyo;
 	@Getter private int     repeatCount;
-	private boolean         isIterationStep;
+	@Getter protected float duration;
+	@Getter private float   repeatDelay;
 
 	private float           deltaTime;
+	@Getter private int     step;
 	private boolean         isKilled;
 	private boolean         isFinished;
-	@Getter protected float delay;
-	@Getter protected float duration;
+	private boolean         isIterationStep;
 	@Getter private boolean isPaused;
-	@Getter private float   repeatDelay;
 	@Getter private float   currentTime;
 	@Getter private boolean isStarted;
 	@Getter private boolean isInitialized;
@@ -46,7 +46,7 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		this.step = -2;
 	}
 
-	public @NonNull T start() {
+	public final @NonNull T start() {
 		this.build();
 		if (this.repeatCount < 0 && this.duration + this.repeatDelay <= 0F) {
 			throw new IllegalStateException("A tween or timeline that repeats forever needs a duration or a repeat delay above 0, give it one or a finite repeat count");
@@ -59,6 +59,7 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		this.isFinished = false;
 		this.isInitialized = false;
 		this.isIterationStep = false;
+		this.startChildren();
 		return (T) this;
 	}
 
@@ -67,17 +68,14 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		return (T) this;
 	}
 
-	public @NonNull T build() {
+	public final @NonNull T build() {
+		this.buildChildren();
 		return (T) this;
 	}
 
-	public final @NonNull T delay(final float delay) {
-		this.delay += delay;
-		return (T) this;
-	}
-
-	public @NonNull T kill() {
+	public final @NonNull T kill() {
 		this.isKilled = true;
+		this.killChildren();
 		return (T) this;
 	}
 
@@ -88,6 +86,11 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 
 	public final @NonNull T resume() {
 		this.isPaused = false;
+		return (T) this;
+	}
+
+	public final @NonNull T delay(final float delay) {
+		this.delay += delay;
 		return (T) this;
 	}
 
@@ -197,6 +200,10 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 	protected final boolean isReverse(final int step) {
 		return this.isYoyo && Math.abs(step % 4) == 2;
 	}
+
+	protected void killChildren() {}
+	protected void startChildren() {}
+	protected void buildChildren() {}
 
 	protected void initializeValues() {}
 

@@ -1,7 +1,10 @@
 package dev.joid.lib.animation.tween;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class TweenEquation {
 
 	public abstract float compute(final float t);

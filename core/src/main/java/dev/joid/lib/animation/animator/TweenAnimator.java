@@ -19,7 +19,7 @@ import dev.joid.lib.ui.event.EventListener;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class TweenAnimator extends Signal<Float> {
+public final class TweenAnimator extends Signal<Float> {
 
 	private static final Set<TweenAnimator> RUNNING_SET = Collections.synchronizedSet(new HashSet<>());
 
@@ -35,7 +35,7 @@ public class TweenAnimator extends Signal<Float> {
 	@Getter
 	private Timeline timeline;
 
-	protected TweenAnimator(final float value) {
+	private TweenAnimator(final float value) {
 		super(value);
 		this.speed = 1F;
 	}
@@ -53,11 +53,6 @@ public class TweenAnimator extends Signal<Float> {
 		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
 		TweenAnimator.RUNNING_SET.add(this);
 		return this;
-	}
-
-	public @NonNull TweenAnimator clear() {
-		this.speed = 1F;
-		return this.value(0F);
 	}
 
 	public @NonNull TweenAnimator sequence(final float duration, final float value) {
@@ -172,6 +167,11 @@ public class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
+	public @NonNull TweenAnimator clear() {
+		this.speed = 1F;
+		return this.value(0F);
+	}
+
 	@Override
 	public @NonNull TweenAnimator onChange(final @NonNull SignalListener<? super Float> listener) {
 		super.onChange(listener);
@@ -193,13 +193,13 @@ public class TweenAnimator extends Signal<Float> {
 		return TweenAnimator.RUNNING_SET.contains(this);
 	}
 
-	protected void writeValue(final float value) {
-		super.transform(current -> value);
-	}
-
 	@Override
 	protected @NonNull String refuse(final @NonNull String action) {
 		return "The " + this + " is animated and cannot be " + action + ", use value(...) or start a tween";
+	}
+
+	private void writeValue(final float value) {
+		super.transform(current -> value);
 	}
 
 	private void killTimeline() {

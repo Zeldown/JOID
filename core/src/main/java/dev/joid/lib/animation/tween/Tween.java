@@ -62,11 +62,6 @@ public final class Tween extends BaseTween<Tween> {
 		return new Tween(null, null, 0F);
 	}
 
-	public @NonNull Tween path(final @NonNull ITweenPath path) {
-		this.path = path;
-		return this;
-	}
-
 	public @NonNull Tween target(final float target) {
 		this.isRelative = false;
 		this.target = target;
@@ -87,6 +82,11 @@ public final class Tween extends BaseTween<Tween> {
 
 		this.waypoints[this.waypointCount] = waypoint;
 		this.waypointCount++;
+		return this;
+	}
+
+	public @NonNull Tween path(final @NonNull ITweenPath path) {
+		this.path = path;
 		return this;
 	}
 

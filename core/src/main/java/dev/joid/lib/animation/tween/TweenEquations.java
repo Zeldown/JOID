@@ -11,8 +11,11 @@ import dev.joid.lib.animation.tween.equation.QuadTweenEquation;
 import dev.joid.lib.animation.tween.equation.QuartTweenEquation;
 import dev.joid.lib.animation.tween.equation.QuintTweenEquation;
 import dev.joid.lib.animation.tween.equation.SineTweenEquation;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public interface TweenEquations {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TweenEquations {
 
 	public static final LinearTweenEquation LINEAR = LinearTweenEquation.INOUT;
 

@@ -3,8 +3,10 @@ package dev.joid.lib.animation.tween.equation;
 import dev.joid.lib.animation.tween.TweenEquation;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NonNull;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BackTweenEquation extends TweenEquation {
 

@@ -1,7 +1,10 @@
 package dev.joid.lib.animation.tween.equation;
 
 import dev.joid.lib.animation.tween.TweenEquation;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class SineTweenEquation extends TweenEquation {
 
 	public static final SineTweenEquation IN = new SineTweenEquation() {
