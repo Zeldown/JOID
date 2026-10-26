@@ -192,6 +192,13 @@ public class TweenTest {
 	}
 
 	@Test
+	public void movesToAnAbsoluteTargetSetAfterARelativeOne() {
+		final TweenValue value = new TweenValue(5F);
+		value.to(1F).targetRelative(10F).target(20F).easing(TweenEquations.LINEAR).start().update(2F);
+		Assert.assertEquals(20F, value.getValue(), 0F);
+	}
+
+	@Test
 	public void addsItsRelativeTargetToItsNewStartWhenStartedAgain() {
 		final TweenValue value = new TweenValue(5F);
 		final Tween tween = value.to(1F).targetRelative(10F).start();

@@ -68,6 +68,7 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	public @NonNull Tween target(final float target) {
+		this.isRelative = false;
 		this.target = target;
 		this.resolve();
 		return this;
