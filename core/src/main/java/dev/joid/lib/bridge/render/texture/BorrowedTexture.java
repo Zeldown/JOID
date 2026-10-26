@@ -32,10 +32,6 @@ public abstract class BorrowedTexture<H> implements ITexture {
 	@Override
 	public final void delete() {}
 
-	public final H getHandle() {
-		return this.supplier.get();
-	}
-
 	@Override
 	public final int getWidth() {
 		final H handle = this.getHandle();
@@ -48,15 +44,19 @@ public abstract class BorrowedTexture<H> implements ITexture {
 		return handle != null ? this.getHeight(handle) : 0;
 	}
 
-	public final boolean isValid() {
-		final H handle = this.getHandle();
-		return handle != null && this.isValid(handle);
-	}
-
 	@Override
 	public final boolean isMipmapped() {
 		final H handle = this.getHandle();
 		return handle != null && this.isMipmapped(handle);
+	}
+
+	public final H getHandle() {
+		return this.supplier.get();
+	}
+
+	public final boolean isValid() {
+		final H handle = this.getHandle();
+		return handle != null && this.isValid(handle);
 	}
 
 	protected abstract int getWidth(final @NonNull H handle);
