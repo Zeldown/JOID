@@ -55,6 +55,23 @@ public final class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
+	@Override
+	public @NonNull TweenAnimator onChange(final @NonNull SignalListener<? super Float> listener) {
+		super.onChange(listener);
+		return this;
+	}
+
+	@Override
+	public @NonNull TweenAnimator removeOnChange(final @NonNull SignalListener<? super Float> listener) {
+		super.removeOnChange(listener);
+		return this;
+	}
+
+	@Override
+	public boolean isWritable() {
+		return false;
+	}
+
 	public @NonNull TweenAnimator sequence(final float duration, final float value) {
 		return this.sequence(duration, value, TweenEquations.LINEAR);
 	}
@@ -170,23 +187,6 @@ public final class TweenAnimator extends Signal<Float> {
 	public @NonNull TweenAnimator clear() {
 		this.speed = 1F;
 		return this.value(0F);
-	}
-
-	@Override
-	public @NonNull TweenAnimator onChange(final @NonNull SignalListener<? super Float> listener) {
-		super.onChange(listener);
-		return this;
-	}
-
-	@Override
-	public @NonNull TweenAnimator removeOnChange(final @NonNull SignalListener<? super Float> listener) {
-		super.removeOnChange(listener);
-		return this;
-	}
-
-	@Override
-	public boolean isWritable() {
-		return false;
 	}
 
 	public boolean isAutomatic() {

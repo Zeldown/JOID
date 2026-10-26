@@ -43,8 +43,6 @@ public abstract class BaseChoiceNode<V> extends Node {
 		super.<BaseChoiceNode<V>>require("values", "call values(...) before attaching it", node -> !node.valueList.isEmpty());
 	}
 
-	protected void createOptions() {}
-
 	public final V getValue() {
 		if (this.valueList.isEmpty()) {
 			throw new IllegalStateException("The " + JOIDLog.nameOf(this.getClass()) + " has no values, call values(...) before getValue()");
@@ -103,6 +101,8 @@ public abstract class BaseChoiceNode<V> extends Node {
 	public final <T extends BaseChoiceNode<V>> @NonNull T onChange(final @NonNull EventListener<NodeChangeEvent.Post<T, V>> listener) {
 		return this.choiceValue.on(listener);
 	}
+
+	protected void createOptions() {}
 
 	private void select(final int index) {
 		if (index < 0 || index >= this.valueList.size()) {

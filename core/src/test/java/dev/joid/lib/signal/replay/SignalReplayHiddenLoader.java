@@ -79,15 +79,15 @@ public final class SignalReplayHiddenLoader extends ClassLoader {
 				return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, methodName, descriptor, signature, exceptions)) {
 
 					@Override
+					public void visitMethodInsn(final int opcode, final String owner, final String calledName, final String calledDescriptor, final boolean isInterface) {
+						super.visitMethodInsn(opcode, owner, calledName.equals(renamed) ? replacement : calledName, calledDescriptor, isInterface);
+					}
+
+					@Override
 					public void visitLineNumber(final int line, final Label start) {
 						if (lines) {
 							super.visitLineNumber(line, start);
 						}
-					}
-
-					@Override
-					public void visitMethodInsn(final int opcode, final String owner, final String calledName, final String calledDescriptor, final boolean isInterface) {
-						super.visitMethodInsn(opcode, owner, calledName.equals(renamed) ? replacement : calledName, calledDescriptor, isInterface);
 					}
 
 				};

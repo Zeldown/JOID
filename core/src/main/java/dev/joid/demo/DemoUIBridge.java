@@ -26,10 +26,6 @@ public abstract class DemoUIBridge extends WindowUIBridge {
 		super.load();
 	}
 
-	protected void openMenu() {
-		JOID.open(new UIDemoChoice());
-	}
-
 	public final <T extends DemoUIBridge> @NonNull T interfaceScale(final double interfaceScale) {
 		this.interfaceScale = interfaceScale;
 		return (T) this;
@@ -38,6 +34,10 @@ public abstract class DemoUIBridge extends WindowUIBridge {
 	@Override
 	public double getInterfaceScale(final @NonNull UI ui) {
 		return this.interfaceScale;
+	}
+
+	protected void openMenu() {
+		JOID.open(new UIDemoChoice());
 	}
 
 }
