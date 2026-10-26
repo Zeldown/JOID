@@ -17,11 +17,6 @@ public final class DemoFace implements IFontFace {
 		return new DemoFace(advance);
 	}
 
-	public @NonNull DemoFace wide(final int wide) {
-		this.wide = wide;
-		return this;
-	}
-
 	@Override
 	public boolean isItalic() {
 		return false;
@@ -75,6 +70,11 @@ public final class DemoFace implements IFontFace {
 	@Override
 	public boolean hasGlyph(final int codepoint) {
 		return true;
+	}
+
+	public @NonNull DemoFace wide(final int wide) {
+		this.wide = wide;
+		return this;
 	}
 
 }

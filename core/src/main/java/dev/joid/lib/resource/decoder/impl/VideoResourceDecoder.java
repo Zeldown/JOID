@@ -39,7 +39,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback {
+public final class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
 	private static final FileCacheArea AREA = FileCache.area("video").retention(Duration.ofDays(7L));
 
@@ -93,7 +93,7 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	@Getter private float maxDistance       = 50F;
 	@Getter private float referenceDistance = 5F;
 
-	protected VideoResourceDecoder(final Asset asset) {
+	private VideoResourceDecoder(final Asset asset) {
 		this.asset = asset;
 		this.origin = this;
 	}

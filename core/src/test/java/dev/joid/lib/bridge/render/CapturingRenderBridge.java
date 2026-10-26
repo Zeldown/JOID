@@ -56,12 +56,6 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 		};
 	}
 
-	public @NonNull CapturingRenderBridge resize(final int width, final int height) {
-		super.getState().viewport(0, 0, width, height);
-		super.getProjection().ortho(0D, width, height, 0D, 0D, 10000D);
-		return this;
-	}
-
 	@Override
 	protected void clearDepthBuffer() {}
 
@@ -98,6 +92,12 @@ public final class CapturingRenderBridge extends RenderBridge implements TestRul
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
 		return new RecordingShader();
+	}
+
+	public @NonNull CapturingRenderBridge resize(final int width, final int height) {
+		super.getState().viewport(0, 0, width, height);
+		super.getProjection().ortho(0D, width, height, 0D, 0D, 10000D);
+		return this;
 	}
 
 	public @NonNull Capture getLast() {

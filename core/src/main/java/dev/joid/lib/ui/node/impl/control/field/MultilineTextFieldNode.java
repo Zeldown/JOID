@@ -32,6 +32,22 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	@Override
+	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
+		final double notchesY = event.getNotchesY();
+		if (event.isConsumed() || notchesY == 0D || !super.isHovered()) {
+			return;
+		}
+
+		final double lineHeight = this.getLineHeight();
+		final double maxOffset = Math.max(0D, this.getLayout().getLines().size() * lineHeight - this.getRawHeight());
+		final double offset = notchesY > 0D ? Math.max(0D, this.yOffset - lineHeight) : Math.min(maxOffset, this.yOffset + lineHeight);
+		if (notchesY > 0D ? offset < this.yOffset : offset > this.yOffset) {
+			this.yOffset = offset;
+			event.consume();
+		}
+	}
+
+	@Override
 	protected void drawField() {
 		final String text = super.getText();
 		final double maxWidth = this.getRawWidth();
@@ -173,22 +189,6 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	@Override
 	protected final @NonNull String format(final @NonNull String value) {
 		return value;
-	}
-
-	@Override
-	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
-		final double notchesY = event.getNotchesY();
-		if (event.isConsumed() || notchesY == 0D || !super.isHovered()) {
-			return;
-		}
-
-		final double lineHeight = this.getLineHeight();
-		final double maxOffset = Math.max(0D, this.getLayout().getLines().size() * lineHeight - this.getRawHeight());
-		final double offset = notchesY > 0D ? Math.max(0D, this.yOffset - lineHeight) : Math.min(maxOffset, this.yOffset + lineHeight);
-		if (notchesY > 0D ? offset < this.yOffset : offset > this.yOffset) {
-			this.yOffset = offset;
-			event.consume();
-		}
 	}
 
 	private double getRawWidth() {

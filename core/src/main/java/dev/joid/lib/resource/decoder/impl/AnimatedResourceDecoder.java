@@ -15,7 +15,7 @@ import dev.joid.lib.resource.playback.IResourcePlayback;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayback {
+public final class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
 	@Getter private final Asset            asset;
 	private final AnimatedResourceDecoder  origin;
@@ -36,7 +36,7 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	private boolean         running;
 	@Getter private boolean paused;
 
-	protected AnimatedResourceDecoder(final Asset asset, final IResourceAnimationReader reader) {
+	private AnimatedResourceDecoder(final Asset asset, final IResourceAnimationReader reader) {
 		this.asset = asset;
 		this.reader = reader;
 		this.origin = this;

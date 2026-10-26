@@ -6,7 +6,7 @@ import java.util.List;
 
 import lombok.NonNull;
 
-public class TweenManager {
+public final class TweenManager {
 
 	private final Object             lock    = new Object();
 	private final List<BaseTween<?>> objects = new ArrayList<>();

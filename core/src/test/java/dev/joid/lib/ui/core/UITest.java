@@ -3047,21 +3047,6 @@ public class UITest {
 		private final BlockingQueue<String> changes = new LinkedBlockingQueue<>();
 
 		@Override
-		public void onFileCreate(final File file) {
-			this.changes.add("file create " + file.getName());
-		}
-
-		@Override
-		public void onFileChange(final File file) {
-			this.changes.add("file change " + file.getName());
-		}
-
-		@Override
-		public void onFileDelete(final File file) {
-			this.changes.add("file delete " + file.getName());
-		}
-
-		@Override
 		public void onDirectoryCreate(final File directory) {
 			this.changes.add("directory create " + directory.getName());
 		}
@@ -3074,6 +3059,21 @@ public class UITest {
 		@Override
 		public void onDirectoryDelete(final File directory) {
 			this.changes.add("directory delete " + directory.getName());
+		}
+
+		@Override
+		public void onFileCreate(final File file) {
+			this.changes.add("file create " + file.getName());
+		}
+
+		@Override
+		public void onFileChange(final File file) {
+			this.changes.add("file change " + file.getName());
+		}
+
+		@Override
+		public void onFileDelete(final File file) {
+			this.changes.add("file delete " + file.getName());
 		}
 
 		@Override

@@ -130,32 +130,6 @@ public abstract class FieldNode<V> extends Node {
 		super.<FieldNode<V>>require("info", "call info(...) before attaching it", node -> node.info != null);
 	}
 
-	protected abstract void drawField();
-
-	protected abstract boolean isMultiline();
-
-	protected abstract boolean handleKey(final @NonNull Key key);
-
-	protected abstract int getPositionAt(final double mouseX, final double mouseY);
-
-	protected abstract void followCursorForward();
-	protected abstract void followCursorBackward();
-
-	protected abstract V parse(final @NonNull String text);
-	protected abstract @NonNull String format(final @NonNull V value);
-
-	protected V correct(final @NonNull V value) {
-		return value;
-	}
-
-	protected boolean accepts(final @NonNull String text) {
-		return true;
-	}
-
-	protected V increment(final @NonNull V value, final int count) {
-		return null;
-	}
-
 	@Override
 	public void layout() {
 		if (this.background != null) {
@@ -520,6 +494,32 @@ public abstract class FieldNode<V> extends Node {
 
 	public final <T extends FieldNode<V>> @NonNull T onSelect(final @NonNull EventListener<NodeChangeEvent.Post<T, FieldSelection>> listener) {
 		return this.selectionValue.on(listener);
+	}
+
+	protected abstract void drawField();
+
+	protected abstract boolean isMultiline();
+
+	protected abstract boolean handleKey(final @NonNull Key key);
+
+	protected abstract int getPositionAt(final double mouseX, final double mouseY);
+
+	protected abstract void followCursorForward();
+	protected abstract void followCursorBackward();
+
+	protected abstract V parse(final @NonNull String text);
+	protected abstract @NonNull String format(final @NonNull V value);
+
+	protected V correct(final @NonNull V value) {
+		return value;
+	}
+
+	protected boolean accepts(final @NonNull String text) {
+		return true;
+	}
+
+	protected V increment(final @NonNull V value, final int count) {
+		return null;
 	}
 
 	protected final void fallback(final V fallback) {
