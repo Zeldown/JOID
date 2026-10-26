@@ -177,11 +177,6 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	@Override
-	public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {
-		JOIDLog.devWarnOnce("UIBridge.drawHover." + System.identityHashCode(this), () -> JOIDLog.nameOf(this.getClass()) + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them");
-	}
-
-	@Override
 	public void add(final @NonNull UI ui) {
 		this.uiList.add(ui);
 	}
@@ -189,11 +184,6 @@ public abstract class UIBridge implements IUIBridge {
 	@Override
 	public void remove(final @NonNull UI ui) {
 		this.uiList.remove(ui);
-	}
-
-	@Override
-	public @NonNull List<@NonNull UI> getUiList() {
-		return this.uiList.ordered();
 	}
 
 	@Override
@@ -209,6 +199,16 @@ public abstract class UIBridge implements IUIBridge {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public @NonNull List<@NonNull UI> getUiList() {
+		return this.uiList.ordered();
+	}
+
+	@Override
+	public void drawHover(final @NonNull UI ui, final @NonNull Object content, final double mouseX, final double mouseY) {
+		JOIDLog.devWarnOnce("UIBridge.drawHover." + System.identityHashCode(this), () -> JOIDLog.nameOf(this.getClass()) + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them");
 	}
 
 	public boolean isScreenOpen() {

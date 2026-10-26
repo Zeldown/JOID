@@ -24,16 +24,6 @@ public final class FontFile {
 		return new FontFile(data);
 	}
 
-	public Map<String, Integer> getTables() {
-		return Collections.unmodifiableMap(this.tables);
-	}
-
-	public boolean isItalic() {
-		final Integer os2 = this.tables.get("OS/2");
-		final Integer head = this.tables.get("head");
-		return os2 != null && (this.unsigned(os2 + 62) & (1 | 1 << 9)) != 0 || head != null && (this.unsigned(head + 44) & 1 << 1) != 0;
-	}
-
 	public int getWeight() {
 		final Integer os2 = this.tables.get("OS/2");
 		return os2 == null ? 400 : this.unsigned(os2 + 4);
@@ -44,16 +34,26 @@ public final class FontFile {
 		return head == null ? 1000 : this.unsigned(head + 18);
 	}
 
+	public Map<String, Integer> getTables() {
+		return Collections.unmodifiableMap(this.tables);
+	}
+
+	public boolean isItalic() {
+		final Integer os2 = this.tables.get("OS/2");
+		final Integer head = this.tables.get("head");
+		return os2 != null && (this.unsigned(os2 + 62) & (1 | 1 << 9)) != 0 || head != null && (this.unsigned(head + 44) & 1 << 1) != 0;
+	}
+
 	public int signed(final int offset) {
 		return (short) this.unsigned(offset);
 	}
 
-	public int integer(final int offset) {
-		return (this.data[offset] & 255) << 24 | (this.data[offset + 1] & 255) << 16 | (this.data[offset + 2] & 255) << 8 | this.data[offset + 3] & 255;
-	}
-
 	public int unsigned(final int offset) {
 		return (this.data[offset] & 255) << 8 | this.data[offset + 1] & 255;
+	}
+
+	public int integer(final int offset) {
+		return (this.data[offset] & 255) << 24 | (this.data[offset + 1] & 255) << 16 | (this.data[offset + 2] & 255) << 8 | this.data[offset + 3] & 255;
 	}
 
 }

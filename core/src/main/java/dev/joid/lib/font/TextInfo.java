@@ -35,12 +35,12 @@ public final class TextInfo extends LockableValue<TextInfo> {
 	private ITextMarkup[] markups;
 	private ITextEffect[] effects;
 
-	public static @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
-		return new TextInfo(font, fontSize);
-	}
-
 	private TextInfo(final IFont font, final float fontSize) {
 		this(font, fontSize, FontWeight.REGULAR, 0F, 0F, Color.BLACK, true, false, null, null, null, null, null, new ITextEffect[0]);
+	}
+
+	public static @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
+		return new TextInfo(font, fontSize);
 	}
 
 	public double getWidth(final @NonNull String text) {

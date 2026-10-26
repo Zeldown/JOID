@@ -1020,20 +1020,20 @@ public abstract class UI implements IIndexedElement {
 		SignalReplay.run(this, null, () -> this.scoped(runnable));
 	}
 
-	private void dispatch(final String input, final Runnable runnable) {
-		try {
-			this.untraced(runnable);
-		} catch (final RuntimeException exception) {
-			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + "." + exception.getClass().getName(), "The " + input + " of " + JOIDLog.nameOf(this.getClass()) + " failed (" + exception + "), the next inputs still run: catch the exception inside the handler to handle it", exception);
-		}
-	}
-
 	private void untraced(final Runnable runnable) {
 		final boolean tracing = SignalContext.current().tracing(false);
 		try {
 			this.scoped(runnable);
 		} finally {
 			SignalContext.current().tracing(tracing);
+		}
+	}
+
+	private void dispatch(final String input, final Runnable runnable) {
+		try {
+			this.untraced(runnable);
+		} catch (final RuntimeException exception) {
+			JOIDLog.warnOnce("UI." + input + "." + System.identityHashCode(this) + "." + exception.getClass().getName(), "The " + input + " of " + JOIDLog.nameOf(this.getClass()) + " failed (" + exception + "), the next inputs still run: catch the exception inside the handler to handle it", exception);
 		}
 	}
 

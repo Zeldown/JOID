@@ -35,16 +35,16 @@ public class BorderNodeEffect extends NodeEffect<Node> {
 		return this.widthSupplier.get();
 	}
 
-	public boolean isFill() {
-		return this.fillSupplier.get();
-	}
-
 	public @NonNull BorderMode getMode() {
 		return this.modeSupplier.get();
 	}
 
 	public @NonNull Color getColor(final @NonNull Node node) {
 		return this.colorFunction.apply(node);
+	}
+
+	public boolean isFill() {
+		return this.fillSupplier.get();
 	}
 
 	@Override

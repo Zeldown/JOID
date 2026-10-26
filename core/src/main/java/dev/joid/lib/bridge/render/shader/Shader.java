@@ -115,6 +115,27 @@ public abstract class Shader implements IShader {
 	}
 
 	@Override
+	public final @NonNull IShader getLineShader() {
+		if (this.vertex.isLine()) {
+			return this;
+		}
+
+		if (this.lineShader == null) {
+			this.lineShader = (Shader) this.bridge.createShader(this.vertex.toLine(), this.fragment, this.blend);
+		}
+
+		for (final UniformMember member : this.block.getMemberMap().values()) {
+			this.lineShader.getBlock().getMember(member.getName()).value(member);
+		}
+		for (final UniformSampler sampler : this.samplerMap.values()) {
+			if (sampler.getTexture() != null) {
+				this.lineShader.samplerMap.get(sampler.getName()).value(sampler.getTexture(), sampler.getFilter(), sampler.getWrap());
+			}
+		}
+		return this.lineShader;
+	}
+
+	@Override
 	public final @NonNull IShader uniform(final @NonNull String name, final boolean value) {
 		this.block.value(name, value);
 		return this;
@@ -141,27 +162,6 @@ public abstract class Shader implements IShader {
 
 		sampler.value(texture, filter, wrap);
 		return this;
-	}
-
-	@Override
-	public final @NonNull IShader getLineShader() {
-		if (this.vertex.isLine()) {
-			return this;
-		}
-
-		if (this.lineShader == null) {
-			this.lineShader = (Shader) this.bridge.createShader(this.vertex.toLine(), this.fragment, this.blend);
-		}
-
-		for (final UniformMember member : this.block.getMemberMap().values()) {
-			this.lineShader.getBlock().getMember(member.getName()).value(member);
-		}
-		for (final UniformSampler sampler : this.samplerMap.values()) {
-			if (sampler.getTexture() != null) {
-				this.lineShader.samplerMap.get(sampler.getName()).value(sampler.getTexture(), sampler.getFilter(), sampler.getWrap());
-			}
-		}
-		return this.lineShader;
 	}
 
 	public final @NonNull UniformBlock builtins(final @NonNull RenderState state, final @NonNull VertexBuffer buffer, final @NonNull float[] projection, final @NonNull MatrixStack modelView) {

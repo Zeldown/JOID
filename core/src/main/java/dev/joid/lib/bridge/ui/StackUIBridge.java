@@ -126,6 +126,11 @@ public abstract class StackUIBridge extends UIBridge {
 	}
 
 	@Override
+	public boolean canHandle(final @NonNull Class<? extends UI> clazz) {
+		return true;
+	}
+
+	@Override
 	public void forceOpen(final @NonNull UI ui) {
 		this.keepScreen(() -> {
 			super.closeAll();
@@ -139,11 +144,6 @@ public abstract class StackUIBridge extends UIBridge {
 	}
 
 	public boolean canReplace(final @NonNull UI ui) {
-		return true;
-	}
-
-	@Override
-	public boolean canHandle(final @NonNull Class<? extends UI> clazz) {
 		return true;
 	}
 

@@ -95,6 +95,10 @@ public final class DraggableProperty {
 		return null;
 	}
 
+	public @NonNull List<@NonNull Node> getSnapNodes() {
+		return Collections.unmodifiableList(this.snapNodes);
+	}
+
 	public @NonNull BoundingBox getBounds(final @NonNull Node node) {
 		switch (this.areaType) {
 		case CUSTOM:
@@ -118,6 +122,14 @@ public final class DraggableProperty {
 		}
 	}
 
+	public boolean hasSnapping() {
+		return !this.snapNodes.isEmpty();
+	}
+
+	public boolean isEnabled(final @NonNull Node node) {
+		return this.enabled.test(node);
+	}
+
 	public @NonNull DraggableProperty enabled(final @NonNull Predicate<@NonNull Node> enabled) {
 		this.enabled = enabled;
 		return this;
@@ -136,18 +148,6 @@ public final class DraggableProperty {
 	public @NonNull DraggableProperty snapType(final @NonNull DraggableSnapType snapType) {
 		this.snapType = snapType;
 		return this;
-	}
-
-	public boolean isEnabled(final @NonNull Node node) {
-		return this.enabled.test(node);
-	}
-
-	public @NonNull List<@NonNull Node> getSnapNodes() {
-		return Collections.unmodifiableList(this.snapNodes);
-	}
-
-	public boolean hasSnapping() {
-		return !this.snapNodes.isEmpty();
 	}
 
 	public @NonNull DraggableProperty copy() {

@@ -41,20 +41,20 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 		return this.radiusSupplier.get();
 	}
 
-	public boolean isLeft() {
-		return this.leftSupplier.get();
-	}
-
-	public boolean isRight() {
-		return this.rightSupplier.get();
-	}
-
 	public boolean isTop() {
 		return this.topSupplier.get();
 	}
 
 	public boolean isBottom() {
 		return this.bottomSupplier.get();
+	}
+
+	public boolean isLeft() {
+		return this.leftSupplier.get();
+	}
+
+	public boolean isRight() {
+		return this.rightSupplier.get();
 	}
 
 	@Override
@@ -77,24 +77,6 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 		return (E) this;
 	}
 
-	public final <E extends RoundedNodeEffect> @NonNull E left(final boolean left) {
-		return this.left(Signal.from(left));
-	}
-
-	public final <E extends RoundedNodeEffect> @NonNull E left(final @NonNull Supplier<Boolean> leftSupplier) {
-		this.leftSupplier = leftSupplier;
-		return (E) this;
-	}
-
-	public final <E extends RoundedNodeEffect> @NonNull E right(final boolean right) {
-		return this.right(Signal.from(right));
-	}
-
-	public final <E extends RoundedNodeEffect> @NonNull E right(final @NonNull Supplier<Boolean> rightSupplier) {
-		this.rightSupplier = rightSupplier;
-		return (E) this;
-	}
-
 	public final <E extends RoundedNodeEffect> @NonNull E top(final boolean top) {
 		return this.top(Signal.from(top));
 	}
@@ -110,6 +92,24 @@ public class RoundedNodeEffect extends NodeEffect<Node> {
 
 	public final <E extends RoundedNodeEffect> @NonNull E bottom(final @NonNull Supplier<Boolean> bottomSupplier) {
 		this.bottomSupplier = bottomSupplier;
+		return (E) this;
+	}
+
+	public final <E extends RoundedNodeEffect> @NonNull E left(final boolean left) {
+		return this.left(Signal.from(left));
+	}
+
+	public final <E extends RoundedNodeEffect> @NonNull E left(final @NonNull Supplier<Boolean> leftSupplier) {
+		this.leftSupplier = leftSupplier;
+		return (E) this;
+	}
+
+	public final <E extends RoundedNodeEffect> @NonNull E right(final boolean right) {
+		return this.right(Signal.from(right));
+	}
+
+	public final <E extends RoundedNodeEffect> @NonNull E right(final @NonNull Supplier<Boolean> rightSupplier) {
+		this.rightSupplier = rightSupplier;
 		return (E) this;
 	}
 
