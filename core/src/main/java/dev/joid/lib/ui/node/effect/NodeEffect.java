@@ -26,11 +26,11 @@ public abstract class NodeEffect<T extends Node> implements Cloneable {
 
 	public void init(final @NonNull T node, final @NonNull UI ui) {}
 
-	public void detach(final @NonNull T node) {}
-
 	public void draw(final @NonNull T node, final @NonNull Runnable body) {
 		body.run();
 	}
+
+	public void detach(final @NonNull T node) {}
 
 	public boolean shouldApply(final @NonNull T node) {
 		return true;

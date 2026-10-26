@@ -170,33 +170,6 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void charTyped(final @NonNull NodeCharEvent<?> event) {
-		if (event.isConsumed() || !this.focused) {
-			return;
-		}
-
-		if (!Character.isISOControl(event.getCodepoint()) && (!this.isShortcutKeyDown() || UI.isAltKeyDown())) {
-			this.insert(new String(Character.toChars(event.getCodepoint())));
-		}
-		event.consume();
-	}
-
-	@Override
-	public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
-		if (event.isConsumed() || !this.focused) {
-			return;
-		}
-
-		event.consume();
-		if (event.getKey() == Key.ESCAPE) {
-			this.focusedValue.set(false);
-			return;
-		}
-
-		this.pressKey(event.getKey());
-	}
-
-	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 		if (event.isConsumed() || !super.isHovered()) {
 			this.release();
@@ -227,6 +200,13 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
+	public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
+		if (this.selecting) {
+			this.drag(this.snap(this.getPositionAt(event.getMouseX(), event.getMouseY()), false));
+		}
+	}
+
+	@Override
 	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
 		if (event.isConsumed() || event.getNotchesY() == 0D || !this.focused || !super.isHovered() || !this.stepValue(event.getNotchesY() > 0D ? 1 : -1)) {
 			return;
@@ -236,10 +216,30 @@ public abstract class FieldNode<V> extends Node {
 	}
 
 	@Override
-	public void mouseDragged(final @NonNull NodeMouseEvent<?> event) {
-		if (this.selecting) {
-			this.drag(this.snap(this.getPositionAt(event.getMouseX(), event.getMouseY()), false));
+	public void charTyped(final @NonNull NodeCharEvent<?> event) {
+		if (event.isConsumed() || !this.focused) {
+			return;
 		}
+
+		if (!Character.isISOControl(event.getCodepoint()) && (!this.isShortcutKeyDown() || UI.isAltKeyDown())) {
+			this.insert(new String(Character.toChars(event.getCodepoint())));
+		}
+		event.consume();
+	}
+
+	@Override
+	public void keyPressed(final @NonNull NodeKeyEvent<?> event) {
+		if (event.isConsumed() || !this.focused) {
+			return;
+		}
+
+		event.consume();
+		if (event.getKey() == Key.ESCAPE) {
+			this.focusedValue.set(false);
+			return;
+		}
+
+		this.pressKey(event.getKey());
 	}
 
 	@Override

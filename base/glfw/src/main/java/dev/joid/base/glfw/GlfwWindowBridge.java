@@ -51,6 +51,16 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	}
 
 	@Override
+	public boolean isMouseGrabbed() {
+		return GLFW.glfwGetInputMode(this.window, GLFW.GLFW_CURSOR) == GLFW.GLFW_CURSOR_DISABLED;
+	}
+
+	@Override
+	public boolean isKeyDown(final @NonNull Key physicalKey) {
+		return GlfwKeys.isKeyDown(physicalKey, this::isCodeDown);
+	}
+
+	@Override
 	public @NonNull String getClipboard() {
 		final String clipboard = GLFW.glfwGetClipboardString(this.window);
 		return clipboard == null ? "" : clipboard;
@@ -59,16 +69,6 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	@Override
 	public void setClipboard(final @NonNull String text) {
 		GLFW.glfwSetClipboardString(this.window, text);
-	}
-
-	@Override
-	public boolean isMouseGrabbed() {
-		return GLFW.glfwGetInputMode(this.window, GLFW.GLFW_CURSOR) == GLFW.GLFW_CURSOR_DISABLED;
-	}
-
-	@Override
-	public boolean isKeyDown(final @NonNull Key physicalKey) {
-		return GlfwKeys.isKeyDown(physicalKey, this::isCodeDown);
 	}
 
 	@Override

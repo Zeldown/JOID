@@ -36,11 +36,6 @@ public final class VulkanBackend extends Backend {
 	}
 
 	@Override
-	protected @NonNull IAudioBridge createAudioBridge() {
-		return AlAudioBridge.create(Lwjgl3AlBinding.inst());
-	}
-
-	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
 		return new GlfwWindowBridge(this.window);
 	}
@@ -49,6 +44,11 @@ public final class VulkanBackend extends Backend {
 	protected @NonNull IRenderBridge createRenderBridge() {
 		this.render = new VulkanRenderBridge(this.host);
 		return this.render;
+	}
+
+	@Override
+	protected @NonNull IAudioBridge createAudioBridge() {
+		return AlAudioBridge.create(Lwjgl3AlBinding.inst());
 	}
 
 	@Override

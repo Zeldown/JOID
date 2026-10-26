@@ -40,6 +40,11 @@ public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 	}
 
 	@Override
+	public double getAdvance(final int codepoint) {
+		return this.face.getAdvance(codepoint) * this.size;
+	}
+
+	@Override
 	public double getAscender() {
 		return this.face.getAscender() * this.size;
 	}
@@ -57,11 +62,6 @@ public final class TextGlyph<F extends IFontFace> implements ITextGlyph {
 	@Override
 	public double getUnderlineThickness() {
 		return this.face.getUnderlineThickness() * this.size;
-	}
-
-	@Override
-	public double getAdvance(final int codepoint) {
-		return this.face.getAdvance(codepoint) * this.size;
 	}
 
 	@Override

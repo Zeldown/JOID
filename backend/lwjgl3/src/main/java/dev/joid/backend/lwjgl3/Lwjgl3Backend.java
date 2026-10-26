@@ -34,11 +34,6 @@ public final class Lwjgl3Backend extends Backend {
 	}
 
 	@Override
-	protected @NonNull IAudioBridge createAudioBridge() {
-		return AlAudioBridge.create(Lwjgl3AlBinding.inst());
-	}
-
-	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
 		return new GlfwWindowBridge(this.window);
 	}
@@ -46,6 +41,11 @@ public final class Lwjgl3Backend extends Backend {
 	@Override
 	protected @NonNull IRenderBridge createRenderBridge() {
 		return new GlRenderBridge(this.binding);
+	}
+
+	@Override
+	protected @NonNull IAudioBridge createAudioBridge() {
+		return AlAudioBridge.create(Lwjgl3AlBinding.inst());
 	}
 
 	@Override

@@ -62,30 +62,13 @@ public class GlRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void suspend(final @NonNull Runnable draw) {
-		this.guard.suspend(draw);
+	protected void clearDepthBuffer() {
+		this.clearBuffer(GlConstants.DEPTH_BUFFER_BIT, () -> this.binding.depthMask(true));
 	}
 
 	@Override
-	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
-		super.requireFrame();
-		this.guard.suspend(() -> {
-			final int[] viewport = new int[4];
-			final int previous = this.binding.getInteger(GlConstants.DRAW_FRAMEBUFFER_BINDING);
-			final int previousRead = this.capabilities.hasFrameBufferBlit() ? this.binding.getInteger(GlConstants.READ_FRAMEBUFFER_BINDING) : previous;
-			this.binding.getIntegers(GlConstants.VIEWPORT, viewport);
-			this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, ((GlFrameBuffer) target).getId());
-			this.binding.viewport(0, 0, width, height);
-			try {
-				draw.run();
-			} finally {
-				this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, previous);
-				if (previousRead != previous) {
-					this.frameBufferBinding.bindFramebuffer(GlConstants.READ_FRAMEBUFFER, previousRead);
-				}
-				this.binding.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
-			}
-		});
+	protected void clearStencilBuffer() {
+		this.clearBuffer(GlConstants.STENCIL_BUFFER_BIT, () -> this.binding.stencilMask(0xFF));
 	}
 
 	@Override
@@ -94,16 +77,6 @@ public class GlRenderBridge extends RenderBridge {
 			this.binding.colorMask(true, true, true, true);
 			this.binding.clearColor(red, green, blue, alpha);
 		});
-	}
-
-	@Override
-	protected void clearDepthBuffer() {
-		this.clearBuffer(GlConstants.DEPTH_BUFFER_BIT, () -> this.binding.depthMask(true));
-	}
-
-	@Override
-	protected void clearStencilBuffer() {
-		this.clearBuffer(GlConstants.STENCIL_BUFFER_BIT, () -> this.binding.stencilMask(0xFF));
 	}
 
 	@Override
@@ -148,6 +121,33 @@ public class GlRenderBridge extends RenderBridge {
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
 		return GlShader.create(this, vertex, fragment, blend);
+	}
+
+	@Override
+	public void suspend(final @NonNull Runnable draw) {
+		this.guard.suspend(draw);
+	}
+
+	@Override
+	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+		super.requireFrame();
+		this.guard.suspend(() -> {
+			final int[] viewport = new int[4];
+			final int previous = this.binding.getInteger(GlConstants.DRAW_FRAMEBUFFER_BINDING);
+			final int previousRead = this.capabilities.hasFrameBufferBlit() ? this.binding.getInteger(GlConstants.READ_FRAMEBUFFER_BINDING) : previous;
+			this.binding.getIntegers(GlConstants.VIEWPORT, viewport);
+			this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, ((GlFrameBuffer) target).getId());
+			this.binding.viewport(0, 0, width, height);
+			try {
+				draw.run();
+			} finally {
+				this.frameBufferBinding.bindFramebuffer(GlConstants.FRAMEBUFFER, previous);
+				if (previousRead != previous) {
+					this.frameBufferBinding.bindFramebuffer(GlConstants.READ_FRAMEBUFFER, previousRead);
+				}
+				this.binding.viewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+			}
+		});
 	}
 
 	private void bindTexture(final int unit, final SamplerBinding resolved) {

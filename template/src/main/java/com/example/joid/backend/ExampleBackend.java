@@ -18,11 +18,6 @@ public final class ExampleBackend extends Backend {
 	}
 
 	@Override
-	protected IAudioBridge createAudioBridge() {
-		return new ExampleAudioBridge();
-	}
-
-	@Override
 	protected IWindowBridge createWindowBridge() {
 		return new ExampleWindowBridge();
 	}
@@ -30,6 +25,11 @@ public final class ExampleBackend extends Backend {
 	@Override
 	protected IRenderBridge createRenderBridge() {
 		return new ExampleRenderBridge();
+	}
+
+	@Override
+	protected IAudioBridge createAudioBridge() {
+		return new ExampleAudioBridge();
 	}
 
 }

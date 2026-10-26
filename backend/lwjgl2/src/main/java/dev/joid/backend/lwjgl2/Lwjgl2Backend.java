@@ -21,11 +21,6 @@ public final class Lwjgl2Backend extends Backend {
 	}
 
 	@Override
-	protected @NonNull IAudioBridge createAudioBridge() {
-		return AlAudioBridge.create(Lwjgl2AlBinding.inst());
-	}
-
-	@Override
 	protected @NonNull IWindowBridge createWindowBridge() {
 		return new Lwjgl2WindowBridge();
 	}
@@ -33,6 +28,11 @@ public final class Lwjgl2Backend extends Backend {
 	@Override
 	protected @NonNull IRenderBridge createRenderBridge() {
 		return new GlRenderBridge(Lwjgl2GlBinding.inst());
+	}
+
+	@Override
+	protected @NonNull IAudioBridge createAudioBridge() {
+		return AlAudioBridge.create(Lwjgl2AlBinding.inst());
 	}
 
 }

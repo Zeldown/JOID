@@ -84,16 +84,6 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 	}
 
 	@Override
-	protected final String parse(final @NonNull String text) {
-		return text;
-	}
-
-	@Override
-	protected final @NonNull String format(final @NonNull String value) {
-		return value;
-	}
-
-	@Override
 	protected final boolean isMultiline() {
 		return true;
 	}
@@ -173,6 +163,16 @@ public class MultilineTextFieldNode extends FieldNode<String> {
 		if (cursorY - this.yOffset < super.getY() + super.getMarginTop() + super.getCursorMargin()) {
 			this.yOffset = cursorY - super.getY() - super.getMarginTop() - super.getCursorMargin();
 		}
+	}
+
+	@Override
+	protected final String parse(final @NonNull String text) {
+		return text;
+	}
+
+	@Override
+	protected final @NonNull String format(final @NonNull String value) {
+		return value;
 	}
 
 	@Override

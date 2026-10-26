@@ -41,6 +41,16 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 	}
 
 	@Override
+	public boolean isMouseGrabbed() {
+		return Mouse.isGrabbed();
+	}
+
+	@Override
+	public boolean isKeyDown(final @NonNull Key physicalKey) {
+		return Lwjgl2Keys.isKeyDown(physicalKey);
+	}
+
+	@Override
 	public @NonNull String getClipboard() {
 		try {
 			final Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
@@ -61,16 +71,6 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 		} catch (final Exception exception) {
 			JOIDLog.devWarnOnce("Lwjgl2WindowBridge.setClipboard", () -> "The clipboard cannot be written, the text stays out of it: " + exception);
 		}
-	}
-
-	@Override
-	public boolean isMouseGrabbed() {
-		return Mouse.isGrabbed();
-	}
-
-	@Override
-	public boolean isKeyDown(final @NonNull Key physicalKey) {
-		return Lwjgl2Keys.isKeyDown(physicalKey);
 	}
 
 	@Override

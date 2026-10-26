@@ -143,6 +143,13 @@ public final class FileCacheArea {
 		return freed;
 	}
 
+	public static @NonNull String check(final @NonNull String kind, final @NonNull String name) {
+		if (!FileCacheArea.NAME.matcher(name).matches()) {
+			throw new IllegalArgumentException("The cache " + kind + " name " + name + " is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'");
+		}
+		return name;
+	}
+
 	private long expireEntry(final File entry, final long limit) {
 		final int separator = entry.getName().indexOf('~');
 		synchronized (this.lock(separator < 0 ? entry.getName() : entry.getName().substring(0, separator))) {
@@ -246,13 +253,6 @@ public final class FileCacheArea {
 
 	private Object lock(final String key) {
 		return this.lockMap.computeIfAbsent(key, ignored -> new Object());
-	}
-
-	public static @NonNull String check(final @NonNull String kind, final @NonNull String name) {
-		if (!FileCacheArea.NAME.matcher(name).matches()) {
-			throw new IllegalArgumentException("The cache " + kind + " name " + name + " is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'");
-		}
-		return name;
 	}
 
 	private static Duration readRetention(final File directory) {

@@ -229,17 +229,17 @@ public final class WindowVulkanHost implements IVulkanHost {
 	}
 
 	@Override
+	public @NonNull VkCommandBuffer getCommandBuffer() {
+		return this.commandBuffers[this.frameIndex];
+	}
+
+	@Override
 	public long getTargetView() {
 		return this.views[this.imageIndex];
 	}
 
 	public long getTargetImage() {
 		return this.images[this.imageIndex];
-	}
-
-	@Override
-	public @NonNull VkCommandBuffer getCommandBuffer() {
-		return this.commandBuffers[this.frameIndex];
 	}
 
 	private boolean isOutdated() {

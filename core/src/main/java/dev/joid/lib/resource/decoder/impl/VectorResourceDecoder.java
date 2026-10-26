@@ -82,6 +82,25 @@ public class VectorResourceDecoder implements IResourceDecoder {
 	}
 
 	@Override
+	public void clear(final @NonNull ResourceData resource) {
+		for (final ITexture cached : this.textures.values()) {
+			cached.delete();
+		}
+
+		this.textures.clear();
+		this.document = null;
+		this.pending.set(null);
+	}
+
+	@Override
+	public void update(final @NonNull ResourceData resource) {
+		final Raster raster = this.pending.getAndSet(null);
+		if (raster != null && raster.document == this.document) {
+			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(raster.width, raster.height).upload(raster.pixels));
+		}
+	}
+
+	@Override
 	public void request(final @NonNull ResourceData resource, final int width, final int height, final boolean async, final boolean resizing) {
 		if (this.textures.isEmpty()) {
 			return;
@@ -114,25 +133,6 @@ public class VectorResourceDecoder implements IResourceDecoder {
 		} else {
 			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(exactWidth, exactHeight).upload(VectorResourceDecoder.render(this.document, exactWidth, exactHeight)));
 		}
-	}
-
-	@Override
-	public void update(final @NonNull ResourceData resource) {
-		final Raster raster = this.pending.getAndSet(null);
-		if (raster != null && raster.document == this.document) {
-			this.store(resource, BridgeHandler.RENDER.get().createTexture().allocate(raster.width, raster.height).upload(raster.pixels));
-		}
-	}
-
-	@Override
-	public void clear(final @NonNull ResourceData resource) {
-		for (final ITexture cached : this.textures.values()) {
-			cached.delete();
-		}
-
-		this.textures.clear();
-		this.document = null;
-		this.pending.set(null);
 	}
 
 	@Override

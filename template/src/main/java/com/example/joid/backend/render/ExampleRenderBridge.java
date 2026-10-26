@@ -27,13 +27,13 @@ public final class ExampleRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	protected void drawPrimitive(final Primitive primitive, final VertexBuffer buffer, final IShader shader) {
-		throw new UnsupportedOperationException("ExampleRenderBridge.drawPrimitive() is not implemented, implement it with the API of your engine");
+	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
+		throw new UnsupportedOperationException("ExampleRenderBridge.clearColorBuffer() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override
-	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
-		throw new UnsupportedOperationException("ExampleRenderBridge.clearColorBuffer() is not implemented, implement it with the API of your engine");
+	protected void drawPrimitive(final Primitive primitive, final VertexBuffer buffer, final IShader shader) {
+		throw new UnsupportedOperationException("ExampleRenderBridge.drawPrimitive() is not implemented, implement it with the API of your engine");
 	}
 
 	@Override

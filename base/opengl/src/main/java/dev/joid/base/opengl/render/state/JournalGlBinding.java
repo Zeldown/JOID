@@ -98,15 +98,15 @@ public final class JournalGlBinding implements IGlBinding {
 	}
 
 	@Override
-	public void clearStencil(final int stencil) {
-		this.journal.touch(GlStateKey.CLEAR_STENCIL);
-		this.binding.clearStencil(stencil);
-	}
-
-	@Override
 	public void clearDepth(final double depth) {
 		this.journal.touch(GlStateKey.CLEAR_DEPTH);
 		this.binding.clearDepth(depth);
+	}
+
+	@Override
+	public void clearStencil(final int stencil) {
+		this.journal.touch(GlStateKey.CLEAR_STENCIL);
+		this.binding.clearStencil(stencil);
 	}
 
 	@Override

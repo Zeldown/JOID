@@ -93,16 +93,6 @@ public class ModelViewerNode extends BaseModelNode {
 	}
 
 	@Override
-	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
-		if (event.isConsumed() || event.getNotchesY() == 0D || !super.isHovered()) {
-			return;
-		}
-
-		this.zoomValue.set(this.zoomValue.get() + event.getNotchesY() / 25D);
-		event.consume();
-	}
-
-	@Override
 	public void mousePressed(final @NonNull NodeMouseEvent<?> event) {
 		if (event.isConsumed() || !event.getButton().isLeft() || !super.isHovered()) {
 			return;
@@ -132,6 +122,16 @@ public class ModelViewerNode extends BaseModelNode {
 		this.draggedMouseX = event.getMouseX();
 		this.draggedMouseY = event.getMouseY();
 		this.rotationValue.set(Point.of(rotationYaw, rotationPitch));
+	}
+
+	@Override
+	public void mouseScroll(final @NonNull NodeMouseScrollEvent<?> event) {
+		if (event.isConsumed() || event.getNotchesY() == 0D || !super.isHovered()) {
+			return;
+		}
+
+		this.zoomValue.set(this.zoomValue.get() + event.getNotchesY() / 25D);
+		event.consume();
 	}
 
 	@Override

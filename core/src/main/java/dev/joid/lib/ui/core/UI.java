@@ -260,6 +260,33 @@ public abstract class UI implements IIndexedElement {
 		this.refreshWatch();
 	}
 
+	public final void dispose() {
+		if (this.transition != null) {
+			this.transition.getIn().stop();
+			this.transition.getOut().stop();
+		}
+
+		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
+		this.taskList.forEach(Task::detach);
+		this.shortcutList.forEach(Shortcut::detach);
+		this.bindings.unsubscribe();
+		this.closed = true;
+		this.initialized = false;
+
+		if (this.watched) {
+			this.watched = false;
+			HotReload.unwatch(this);
+		}
+
+		UIStoreHook.saveAll();
+		this.storeMap.values().forEach(UIStoreHook::destroyStore);
+		this.storeMap.clear();
+
+		UIPropertyHook.save(this);
+		this.bindings.fire(UI.CLOSE, () -> UICloseEvent.Post.create(this));
+		this.eventBus.reset();
+	}
+
 	public final <T extends UI> @NonNull T handleMousePressed(final @NonNull EventListener<UIMouseEvent<T>> listener) {
 		return this.bindings.listen(UI.HANDLE_MOUSE_PRESSED, listener);
 	}
@@ -540,33 +567,6 @@ public abstract class UI implements IIndexedElement {
 
 	public final IUIBridge getBridge() {
 		return BridgeHandler.UI.get(this);
-	}
-
-	public final void dispose() {
-		if (this.transition != null) {
-			this.transition.getIn().stop();
-			this.transition.getOut().stop();
-		}
-
-		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
-		this.taskList.forEach(Task::detach);
-		this.shortcutList.forEach(Shortcut::detach);
-		this.bindings.unsubscribe();
-		this.closed = true;
-		this.initialized = false;
-
-		if (this.watched) {
-			this.watched = false;
-			HotReload.unwatch(this);
-		}
-
-		UIStoreHook.saveAll();
-		this.storeMap.values().forEach(UIStoreHook::destroyStore);
-		this.storeMap.clear();
-
-		UIPropertyHook.save(this);
-		this.bindings.fire(UI.CLOSE, () -> UICloseEvent.Post.create(this));
-		this.eventBus.reset();
 	}
 
 	public final void draw(final double mouseX, final double mouseY) {

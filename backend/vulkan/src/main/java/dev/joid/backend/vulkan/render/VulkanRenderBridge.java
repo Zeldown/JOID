@@ -179,40 +179,6 @@ public final class VulkanRenderBridge extends RenderBridge {
 	}
 
 	@Override
-	public void suspend(final @NonNull Runnable draw) {
-		this.endPass();
-		try {
-			draw.run();
-		} finally {
-			this.boundPipeline = VK10.VK_NULL_HANDLE;
-		}
-	}
-
-	@Override
-	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
-		super.requireFrame();
-		this.beginPass((VulkanFrameBuffer) target);
-		try (final MemoryStack stack = MemoryStack.stackPush()) {
-			final VkCommandBuffer buffer = this.host.getCommandBuffer();
-			VK10.vkCmdSetViewport(buffer, 0, VkViewport.calloc(1, stack).width(width).height(height).minDepth(0F).maxDepth(1F));
-			final VkRect2D.Buffer scissor = VkRect2D.calloc(1, stack);
-			scissor.extent().set(width, height);
-			VK10.vkCmdSetScissor(buffer, 0, scissor);
-		}
-
-		try {
-			draw.run();
-		} finally {
-			this.boundPipeline = VK10.VK_NULL_HANDLE;
-		}
-	}
-
-	@Override
-	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
-		this.clearAttachment(VK10.VK_IMAGE_ASPECT_COLOR_BIT, value -> value.color().float32(0, red).float32(1, green).float32(2, blue).float32(3, alpha));
-	}
-
-	@Override
 	protected void clearDepthBuffer() {
 		this.clearAttachment(VK10.VK_IMAGE_ASPECT_DEPTH_BIT, value -> value.depthStencil().depth(1F));
 	}
@@ -220,6 +186,11 @@ public final class VulkanRenderBridge extends RenderBridge {
 	@Override
 	protected void clearStencilBuffer() {
 		this.clearAttachment(VK10.VK_IMAGE_ASPECT_STENCIL_BIT, value -> value.depthStencil().stencil(0));
+	}
+
+	@Override
+	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {
+		this.clearAttachment(VK10.VK_IMAGE_ASPECT_COLOR_BIT, value -> value.color().float32(0, red).float32(1, green).float32(2, blue).float32(3, alpha));
 	}
 
 	@Override
@@ -261,6 +232,35 @@ public final class VulkanRenderBridge extends RenderBridge {
 	@Override
 	public @NonNull IShader createShader(final @NonNull ShaderSource vertex, final @NonNull ShaderSource fragment, final @NonNull BlendState blend) {
 		return VulkanShader.create(this, vertex, fragment, blend);
+	}
+
+	@Override
+	public void suspend(final @NonNull Runnable draw) {
+		this.endPass();
+		try {
+			draw.run();
+		} finally {
+			this.boundPipeline = VK10.VK_NULL_HANDLE;
+		}
+	}
+
+	@Override
+	public void raster(final @NonNull IFrameBuffer target, final int width, final int height, final @NonNull Runnable draw) {
+		super.requireFrame();
+		this.beginPass((VulkanFrameBuffer) target);
+		try (final MemoryStack stack = MemoryStack.stackPush()) {
+			final VkCommandBuffer buffer = this.host.getCommandBuffer();
+			VK10.vkCmdSetViewport(buffer, 0, VkViewport.calloc(1, stack).width(width).height(height).minDepth(0F).maxDepth(1F));
+			final VkRect2D.Buffer scissor = VkRect2D.calloc(1, stack);
+			scissor.extent().set(width, height);
+			VK10.vkCmdSetScissor(buffer, 0, scissor);
+		}
+
+		try {
+			draw.run();
+		} finally {
+			this.boundPipeline = VK10.VK_NULL_HANDLE;
+		}
 	}
 
 	public void releaseHandle(final long handle) {

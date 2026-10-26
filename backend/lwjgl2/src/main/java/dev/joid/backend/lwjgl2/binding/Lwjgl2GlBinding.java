@@ -126,13 +126,13 @@ public final class Lwjgl2GlBinding implements IGlBinding {
 	}
 
 	@Override
-	public void clearStencil(final int stencil) {
-		GL11.glClearStencil(stencil);
+	public void clearDepth(final double depth) {
+		GL11.glClearDepth(depth);
 	}
 
 	@Override
-	public void clearDepth(final double depth) {
-		GL11.glClearDepth(depth);
+	public void clearStencil(final int stencil) {
+		GL11.glClearStencil(stencil);
 	}
 
 	@Override

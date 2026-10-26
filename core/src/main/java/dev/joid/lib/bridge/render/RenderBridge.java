@@ -69,6 +69,12 @@ public abstract class RenderBridge implements IRenderBridge {
 	}
 
 	@Override
+	public final void screen(final int width, final int height) {
+		this.state.frameBuffer(null).viewport(0, 0, width, height);
+		this.projection.ortho(0D, width, height, 0D, 0D, 10000D);
+	}
+
+	@Override
 	public final void quantize(final double motionX, final double motionY) {
 		if (motionX == 0D && motionY == 0D) {
 			return;
@@ -76,12 +82,6 @@ public abstract class RenderBridge implements IRenderBridge {
 
 		final PixelGrid grid = this.getPixelGrid();
 		this.modelView.translate(grid.quantizeX(motionX) - motionX, grid.quantizeY(motionY) - motionY, 0D);
-	}
-
-	@Override
-	public final void screen(final int width, final int height) {
-		this.state.frameBuffer(null).viewport(0, 0, width, height);
-		this.projection.ortho(0D, width, height, 0D, 0D, 10000D);
 	}
 
 	@Override
@@ -97,11 +97,6 @@ public abstract class RenderBridge implements IRenderBridge {
 	@Override
 	public final int getStateDepth() {
 		return this.stateStack.size();
-	}
-
-	@Override
-	public final @NonNull PixelGrid getPixelGrid() {
-		return PixelGrid.of(this.projection.getRawMatrix(), this.modelView.getRawMatrix(), this.state.getViewportWidth(), this.state.getViewportHeight());
 	}
 
 	@Override
@@ -131,6 +126,11 @@ public abstract class RenderBridge implements IRenderBridge {
 		}
 
 		this.drawPrimitive(primitive, buffer, shader);
+	}
+
+	@Override
+	public final @NonNull PixelGrid getPixelGrid() {
+		return PixelGrid.of(this.projection.getRawMatrix(), this.modelView.getRawMatrix(), this.state.getViewportWidth(), this.state.getViewportHeight());
 	}
 
 	protected void beginFrameCommands() {}

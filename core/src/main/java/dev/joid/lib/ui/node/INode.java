@@ -10,10 +10,9 @@ import lombok.NonNull;
 
 public interface INode extends IIndexedElement {
 
+	public default void init(final @NonNull UI ui) {}
 	public default void update() {}
 	public default void layout() {}
-	public default void detach() {}
-	public default void init(final @NonNull UI ui) {}
 
 	public default void draw(final double mouseX, final double mouseY) {}
 	public default void drawSkeleton(final double mouseX, final double mouseY) {}
@@ -26,5 +25,7 @@ public interface INode extends IIndexedElement {
 	public default void charTyped(final @NonNull NodeCharEvent<?> event) {}
 	public default void keyPressed(final @NonNull NodeKeyEvent<?> event) {}
 	public default void keyReleased(final @NonNull NodeKeyEvent<?> event) {}
+
+	public default void detach() {}
 
 }

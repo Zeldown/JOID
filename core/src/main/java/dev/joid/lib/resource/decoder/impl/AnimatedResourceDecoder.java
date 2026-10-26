@@ -76,6 +76,16 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 	}
 
 	@Override
+	public void clear(final @NonNull ResourceData resource) {
+		this.running = false;
+		this.animation = null;
+		this.displayed = -1;
+		if (this.origin == this) {
+			this.clearSource();
+		}
+	}
+
+	@Override
 	public void update(final @NonNull ResourceData resource) {
 		if (this.displayed < 0) {
 			return;
@@ -93,16 +103,6 @@ public class AnimatedResourceDecoder implements IResourceDecoder, IResourcePlayb
 		if (index != this.displayed) {
 			this.texture.upload(this.animation.getFrames().get(index).getPixels());
 			this.displayed = index;
-		}
-	}
-
-	@Override
-	public void clear(final @NonNull ResourceData resource) {
-		this.running = false;
-		this.animation = null;
-		this.displayed = -1;
-		if (this.origin == this) {
-			this.clearSource();
 		}
 	}
 

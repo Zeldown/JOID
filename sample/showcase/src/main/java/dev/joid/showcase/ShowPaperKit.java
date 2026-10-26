@@ -49,13 +49,8 @@ public class ShowPaperKit implements IKit {
 	}
 
 	@Override
-	public @NonNull TextInfo display() {
-		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 136F).color(ShowPaperKit.INK);
-	}
-
-	@Override
-	public @NonNull TextInfo accent() {
-		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 136F).color(ShowPaperKit.TOMATO);
+	public @NonNull TextInfo hint() {
+		return ShowUI.font(FontWeight.MEDIUM, 25F, ShowPaperKit.MUTE);
 	}
 
 	@Override
@@ -69,8 +64,18 @@ public class ShowPaperKit implements IKit {
 	}
 
 	@Override
-	public @NonNull TextInfo hint() {
-		return ShowUI.font(FontWeight.MEDIUM, 25F, ShowPaperKit.MUTE);
+	public @NonNull TextInfo accent() {
+		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 136F).color(ShowPaperKit.TOMATO);
+	}
+
+	@Override
+	public @NonNull TextInfo display() {
+		return TextInfo.create(DemoFont.PLAYFAIR_DISPLAY, 136F).color(ShowPaperKit.INK);
+	}
+
+	@Override
+	public @NonNull RectNode divider(final double x, final double y, final double width) {
+		return RectNode.create(x, y, width, 2D).color(ShowPaperKit.INK.withAlpha(0.18F));
 	}
 
 	@Override
@@ -82,11 +87,6 @@ public class ShowPaperKit implements IKit {
 			RectNode.create(16, 16, width, height).color(ShowPaperKit.INK).attach(panel);
 			RectNode.create(0, 0, width, height).color(ShowPaperKit.CARD).effect(BorderNodeEffect.create(ShowPaperKit.INK, 4F).mode(BorderMode.IN)).attach(panel);
 		});
-	}
-
-	@Override
-	public @NonNull RectNode divider(final double x, final double y, final double width) {
-		return RectNode.create(x, y, width, 2D).color(ShowPaperKit.INK.withAlpha(0.18F));
 	}
 
 	@Override
@@ -132,13 +132,13 @@ public class ShowPaperKit implements IKit {
 	}
 
 	@Override
-	public @NonNull DoubleSliderNode slider(final double x, final double y, final double width) {
-		return ShowPaperSliderNode.create(x, y, width);
+	public @NonNull TextFieldNode field(final double x, final double y, final double width) {
+		return ShowPaperFieldNode.create(x, y, width).info(ShowUI.font(FontWeight.SEMI_BOLD, 25F, ShowPaperKit.INK)).marginHorizontal(24D);
 	}
 
 	@Override
-	public @NonNull TextFieldNode field(final double x, final double y, final double width) {
-		return ShowPaperFieldNode.create(x, y, width).info(ShowUI.font(FontWeight.SEMI_BOLD, 25F, ShowPaperKit.INK)).marginHorizontal(24D);
+	public @NonNull DoubleSliderNode slider(final double x, final double y, final double width) {
+		return ShowPaperSliderNode.create(x, y, width);
 	}
 
 }

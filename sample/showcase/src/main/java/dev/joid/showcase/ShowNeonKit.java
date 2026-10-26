@@ -29,13 +29,8 @@ public class ShowNeonKit implements IKit {
 	}
 
 	@Override
-	public @NonNull TextInfo display() {
-		return ShowUI.font(FontWeight.BLACK, 124F, ShowUI.TEXT);
-	}
-
-	@Override
-	public @NonNull TextInfo accent() {
-		return ShowUI.font(FontWeight.BLACK, 124F, ShowUI.FUCHSIA.toGradient(ShowUI.CYAN));
+	public @NonNull TextInfo hint() {
+		return ShowUI.font(FontWeight.MEDIUM, 25F, ShowUI.MUTED);
 	}
 
 	@Override
@@ -49,18 +44,23 @@ public class ShowNeonKit implements IKit {
 	}
 
 	@Override
-	public @NonNull TextInfo hint() {
-		return ShowUI.font(FontWeight.MEDIUM, 25F, ShowUI.MUTED);
+	public @NonNull TextInfo accent() {
+		return ShowUI.font(FontWeight.BLACK, 124F, ShowUI.FUCHSIA.toGradient(ShowUI.CYAN));
 	}
 
 	@Override
-	public @NonNull RectNode panel(final double x, final double y, final double width, final double height) {
-		return ShowUI.glass(x, y, width, height, 36F);
+	public @NonNull TextInfo display() {
+		return ShowUI.font(FontWeight.BLACK, 124F, ShowUI.TEXT);
 	}
 
 	@Override
 	public @NonNull RectNode divider(final double x, final double y, final double width) {
 		return RectNode.create(x, y, width, 1.5D).color(Color.WHITE.withAlpha(0.1F));
+	}
+
+	@Override
+	public @NonNull RectNode panel(final double x, final double y, final double width, final double height) {
+		return ShowUI.glass(x, y, width, height, 36F);
 	}
 
 	@Override
@@ -94,13 +94,13 @@ public class ShowNeonKit implements IKit {
 	}
 
 	@Override
-	public @NonNull DoubleSliderNode slider(final double x, final double y, final double width) {
-		return ShowSliderNode.create(x, y, width, ShowUI.FUCHSIA, ShowUI.PINK);
+	public @NonNull TextFieldNode field(final double x, final double y, final double width) {
+		return ShowFieldNode.create(x, y, width, ShowUI.CYAN).info(ShowUI.font(FontWeight.MEDIUM, 25F, ShowUI.TEXT)).marginHorizontal(24D);
 	}
 
 	@Override
-	public @NonNull TextFieldNode field(final double x, final double y, final double width) {
-		return ShowFieldNode.create(x, y, width, ShowUI.CYAN).info(ShowUI.font(FontWeight.MEDIUM, 25F, ShowUI.TEXT)).marginHorizontal(24D);
+	public @NonNull DoubleSliderNode slider(final double x, final double y, final double width) {
+		return ShowSliderNode.create(x, y, width, ShowUI.FUCHSIA, ShowUI.PINK);
 	}
 
 }

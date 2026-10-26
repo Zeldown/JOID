@@ -47,17 +47,17 @@ public class FlexNode extends Node {
 	}
 
 	@Override
+	public void update() {
+		this.updateFlex();
+	}
+
+	@Override
 	public void layout() {
 		this.updateFlex();
 	}
 
 	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {}
-
-	@Override
-	public void update() {
-		this.updateFlex();
-	}
 
 	public final <T extends FlexNode> @NonNull T direction(final @NonNull Axis direction) {
 		return this.direction(Signal.from(direction));

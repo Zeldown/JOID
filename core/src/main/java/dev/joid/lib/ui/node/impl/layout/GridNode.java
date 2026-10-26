@@ -36,17 +36,17 @@ public final class GridNode extends Node {
 	}
 
 	@Override
+	public void update() {
+		this.updateGrid();
+	}
+
+	@Override
 	public void layout() {
 		this.updateGrid();
 	}
 
 	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {}
-
-	@Override
-	public void update() {
-		this.updateGrid();
-	}
 
 	public final @NonNull GridNode alignX(final @NonNull Align alignX) {
 		return this.alignX(Signal.from(alignX));

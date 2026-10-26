@@ -190,6 +190,24 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	}
 
 	@Override
+	public void clear(final @NonNull ResourceData resource) {
+		this.release();
+
+		this.file = null;
+		if (this.origin == this) {
+			this.forget();
+		}
+
+		if (this.textures != null) {
+			this.textures[0].delete();
+			this.textures[1].delete();
+			this.textures = null;
+		}
+
+		this.released = false;
+	}
+
+	@Override
 	public void update(final @NonNull ResourceData resource) {
 		if (this.audioPlayer != null) {
 			this.audioPlayer.update(this.getPlaybackTime() - this.audioOrigin);
@@ -227,24 +245,6 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 				this.audioPlayer.stop();
 			}
 		}
-	}
-
-	@Override
-	public void clear(final @NonNull ResourceData resource) {
-		this.release();
-
-		this.file = null;
-		if (this.origin == this) {
-			this.forget();
-		}
-
-		if (this.textures != null) {
-			this.textures[0].delete();
-			this.textures[1].delete();
-			this.textures = null;
-		}
-
-		this.released = false;
 	}
 
 	@Override
