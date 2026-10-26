@@ -105,7 +105,7 @@ public final class GridNode extends Node {
 
 			child.layoutPosition(ox, oy);
 
-			rowWidth = Math.max(rowWidth, child.getDefaultX() + child.getWidth() + ox);
+			rowWidth = Math.max(rowWidth, ox + child.getWidth());
 			ox += child.getWidth() + this.marginHorizontal;
 			rowHeight = Math.max(rowHeight, child.getHeight());
 		}

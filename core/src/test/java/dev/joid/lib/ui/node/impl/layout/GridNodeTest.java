@@ -9,10 +9,12 @@ import org.junit.Test;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.color.Color;
+import dev.joid.lib.input.mouse.MouseButton;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.core.NodeUI;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.property.DraggableProperty;
 import dev.joid.lib.ui.node.property.OverflowProperty;
 import dev.joid.lib.ui.node.property.PositionProperty;
 import dev.joid.lib.utils.align.Align;
@@ -125,6 +127,41 @@ public class GridNodeTest {
 		this.bridges.open(new NodeUI(grid));
 		GridNodeTest.assertPlaced(first, 5D, 5D);
 		GridNodeTest.assertPlaced(second, 100D, 0D);
+	}
+
+	@Test
+	public void addsTheOwnOffsetOfACellAfterAligningItsRow() {
+		final RectNode first = RectNode.create(0D, 0D, 100D, 50D);
+		final RectNode second = RectNode.create(20D, 0D, 100D, 50D);
+		this.bridges.open(new NodeUI(GridNode.create(0D, 0D, 350D, 100D).alignX(Align.CENTER).append(first, second)));
+		GridNodeTest.assertPlaced(first, 75D, 0D);
+		GridNodeTest.assertPlaced(second, 195D, 0D);
+	}
+
+	@Test
+	public void keepsADraggedCellUnderTheMouseInARowAlignedToTheEnd() {
+		final RectNode first = RectNode.create(0D, 0D, 100D, 50D);
+		final RectNode dragged = RectNode.create(0D, 0D, 100D, 50D).draggable(DraggableProperty.free());
+		this.bridges.open(new NodeUI(GridNode.create(0D, 0D, 500D, 100D).alignX(Align.END).append(first, dragged)));
+		this.drag(dragged);
+		GridNodeTest.assertPlaced(first, 300D, 0D);
+		GridNodeTest.assertPlaced(dragged, 430D, 0D);
+		Assert.assertEquals(30D, dragged.getDefaultX(), 0D);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.frames(60);
+		GridNodeTest.assertPlaced(first, 300D, 0D);
+		GridNodeTest.assertPlaced(dragged, 430D, 0D);
+	}
+
+	@Test
+	public void movesADraggedCellByTheDragInACenteredRow() {
+		final RectNode first = RectNode.create(0D, 0D, 100D, 50D);
+		final RectNode dragged = RectNode.create(0D, 0D, 100D, 50D).draggable(DraggableProperty.free());
+		this.bridges.open(new NodeUI(GridNode.create(0D, 0D, 500D, 100D).alignX(Align.CENTER).append(first, dragged)));
+		this.drag(dragged);
+		GridNodeTest.assertPlaced(first, 150D, 0D);
+		GridNodeTest.assertPlaced(dragged, 280D, 0D);
+		Assert.assertEquals(30D, dragged.getDefaultX(), 0D);
 	}
 
 	@Test
@@ -307,6 +344,14 @@ public class GridNodeTest {
 		final List<Draw> draws = this.bridges.getRender().getDraws(red, green, blue);
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0);
+	}
+
+	private void drag(final Node node) {
+		this.bridges.frames(30).move(node.getX() + 50D, 25D).frames(2);
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.move(node.getX() + 80D, 25D).frame();
+		this.bridges.getUi().mouseMoved();
+		this.bridges.frames(60);
 	}
 
 	private static RectNode[] cells(final GridNode grid, final int count) {
