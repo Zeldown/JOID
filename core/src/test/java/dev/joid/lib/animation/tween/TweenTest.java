@@ -20,7 +20,7 @@ public class TweenTest {
 	@Test
 	public void movesItsValueToItsTarget() {
 		final TweenValue value = new TweenValue(0F);
-		final Tween tween = value.to(1F).target(10F).ease(TweenEquations.LINEAR).start();
+		final Tween tween = value.to(1F).target(10F).easing(TweenEquations.LINEAR).start();
 		tween.update(0.5F);
 		Assert.assertEquals(5F, value.getValue(), 0F);
 		tween.update(1F);
@@ -40,7 +40,7 @@ public class TweenTest {
 	@Test
 	public void easesWithItsEquation() {
 		final TweenValue value = new TweenValue(0F);
-		value.to(1F).target(10F).ease(TweenEquations.QUAD_INOUT).start().update(0.25F);
+		value.to(1F).target(10F).easing(TweenEquations.QUAD_INOUT).start().update(0.25F);
 		Assert.assertEquals(1.25F, value.getValue(), 0F);
 	}
 
@@ -68,7 +68,7 @@ public class TweenTest {
 	@Test
 	public void movesItsValueFromItsTarget() {
 		final TweenValue value = new TweenValue(10F);
-		final Tween tween = Tween.from(value::getValue, value::setValue, 1F).target(0F).ease(TweenEquations.LINEAR).start();
+		final Tween tween = Tween.from(value::getValue, value::setValue, 1F).target(0F).easing(TweenEquations.LINEAR).start();
 		tween.update(0.25F);
 		Assert.assertEquals(2.5F, value.getValue(), 0F);
 		tween.update(1F);
@@ -148,7 +148,7 @@ public class TweenTest {
 	@Test
 	public void takesAsManyWaypointsAsGiven() {
 		final TweenValue value = new TweenValue(0F);
-		final Tween tween = value.to(1F).waypoint(10F).waypoint(20F).waypoint(30F).waypoint(40F).waypoint(50F).target(60F).path(TweenPaths.LINEAR).ease(TweenEquations.LINEAR).start();
+		final Tween tween = value.to(1F).waypoint(10F).waypoint(20F).waypoint(30F).waypoint(40F).waypoint(50F).target(60F).path(TweenPaths.LINEAR).easing(TweenEquations.LINEAR).start();
 		tween.update(0.5F);
 		Assert.assertEquals(30F, value.getValue(), 1E-4F);
 		tween.update(0.25F);
@@ -158,7 +158,7 @@ public class TweenTest {
 	@Test
 	public void curvesThroughItsWaypoint() {
 		final TweenValue value = new TweenValue(0F);
-		final Tween tween = value.to(1F).target(30F).waypoint(10F).ease(TweenEquations.LINEAR).start();
+		final Tween tween = value.to(1F).target(30F).waypoint(10F).easing(TweenEquations.LINEAR).start();
 		tween.update(0.25F);
 		Assert.assertEquals(3.75F, value.getValue(), 0.0001F);
 		tween.update(0.25F);
@@ -168,7 +168,7 @@ public class TweenTest {
 	@Test
 	public void followsItsPathThroughItsWaypoint() {
 		final TweenValue value = new TweenValue(0F);
-		final Tween tween = value.to(1F).target(30F).waypoint(10F).path(TweenPaths.LINEAR).ease(TweenEquations.LINEAR).start();
+		final Tween tween = value.to(1F).target(30F).waypoint(10F).path(TweenPaths.LINEAR).easing(TweenEquations.LINEAR).start();
 		tween.update(0.25F);
 		Assert.assertEquals(5F, value.getValue(), 0F);
 		tween.update(0.5F);
@@ -178,7 +178,7 @@ public class TweenTest {
 	@Test
 	public void addsTheRelativeTargetToTheStartValue() {
 		final TweenValue value = new TweenValue(5F);
-		value.to(1F).targetRelative(10F).ease(TweenEquations.LINEAR).start().update(2F);
+		value.to(1F).targetRelative(10F).easing(TweenEquations.LINEAR).start().update(2F);
 		Assert.assertEquals(15F, value.getValue(), 0F);
 	}
 
@@ -203,7 +203,7 @@ public class TweenTest {
 	@Test
 	public void shiftsItsWaypointsWithARelativeTarget() {
 		final TweenValue value = new TweenValue(5F);
-		final Tween tween = value.to(1F).targetRelative(20F).waypoint(10F).path(TweenPaths.LINEAR).ease(TweenEquations.LINEAR).start();
+		final Tween tween = value.to(1F).targetRelative(20F).waypoint(10F).path(TweenPaths.LINEAR).easing(TweenEquations.LINEAR).start();
 		tween.update(0.5F);
 		Assert.assertEquals(15F, value.getValue(), 0F);
 		tween.update(1F);
@@ -217,7 +217,7 @@ public class TweenTest {
 
 	@Test(expected = NullPointerException.class)
 	public void refusesAMissingEquation() {
-		new TweenValue(0F).to(1F).ease(null);
+		new TweenValue(0F).to(1F).easing(null);
 	}
 
 }

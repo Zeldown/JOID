@@ -1,12 +1,10 @@
 package dev.joid.lib.animation.tween.equation;
 
-
-
 import dev.joid.lib.animation.tween.TweenEquation;
 
-public abstract class Quad extends TweenEquation {
+public abstract class QuadTweenEquation extends TweenEquation {
 
-	public static final Quad IN = new Quad() {
+	public static final QuadTweenEquation IN = new QuadTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
@@ -20,7 +18,7 @@ public abstract class Quad extends TweenEquation {
 
 	};
 
-	public static final Quad OUT = new Quad() {
+	public static final QuadTweenEquation OUT = new QuadTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
@@ -34,7 +32,7 @@ public abstract class Quad extends TweenEquation {
 
 	};
 
-	public static final Quad INOUT = new Quad() {
+	public static final QuadTweenEquation INOUT = new QuadTweenEquation() {
 
 		@Override
 		public final float compute(final float time) {

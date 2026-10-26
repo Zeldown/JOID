@@ -40,7 +40,7 @@ public class TimelineTest {
 	public void playsAParallelTogether() {
 		final TweenValue first = new TweenValue(0F);
 		final TweenValue second = new TweenValue(0F);
-		final Timeline timeline = Timeline.createParallel().push(TimelineTest.tween(first, 10F)).push(second.to(2F).target(20F).ease(TweenEquations.LINEAR)).start();
+		final Timeline timeline = Timeline.createParallel().push(TimelineTest.tween(first, 10F)).push(second.to(2F).target(20F).easing(TweenEquations.LINEAR)).start();
 		Assert.assertEquals(2F, timeline.getDuration(), 0F);
 		timeline.update(1F);
 		Assert.assertEquals(10F, first.getValue(), 0F);
@@ -235,7 +235,7 @@ public class TimelineTest {
 	@Test
 	public void refusesAnInfiniteChild() {
 		try {
-			Timeline.createSequence().push(Tween.mark().repeat(Tween.INFINITY, 0F)).start();
+			Timeline.createSequence().push(Tween.mark().repeat(BaseTween.INFINITY, 0F)).start();
 			Assert.fail("A child that repeats forever must be refused");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("A timeline cannot hold a child that repeats forever (repeat count -1), give it a finite repeat count", expected.getMessage());
@@ -358,7 +358,7 @@ public class TimelineTest {
 	}
 
 	private static Tween tween(final TweenValue value, final float target) {
-		return value.to(1F).target(target).ease(TweenEquations.LINEAR);
+		return value.to(1F).target(target).easing(TweenEquations.LINEAR);
 	}
 
 }

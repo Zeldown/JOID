@@ -1,16 +1,14 @@
 package dev.joid.lib.animation.tween.equation;
 
-
-
 import dev.joid.lib.animation.tween.TweenEquation;
 
-public abstract class Bounce extends TweenEquation {
+public abstract class BounceTweenEquation extends TweenEquation {
 
-	public static final Bounce IN = new Bounce() {
+	public static final BounceTweenEquation IN = new BounceTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
-			return 1 - Bounce.OUT.compute(1 - t);
+			return 1F - BounceTweenEquation.OUT.compute(1F - t);
 		}
 
 		@Override
@@ -20,7 +18,7 @@ public abstract class Bounce extends TweenEquation {
 
 	};
 
-	public static final Bounce OUT = new Bounce() {
+	public static final BounceTweenEquation OUT = new BounceTweenEquation() {
 
 		@Override
 		public final float compute(final float time) {
@@ -29,7 +27,7 @@ public abstract class Bounce extends TweenEquation {
 				return 7.5625F * t * t;
 			} else if (t < (2F / 2.75F)) {
 				return 7.5625F * (t -= (1.5F / 2.75F)) * t + 0.75F;
-			} else if (t < (2.5D / 2.75D)) {
+			} else if (t < (2.5F / 2.75F)) {
 				return 7.5625F * (t -= (2.25F / 2.75F)) * t + 0.9375F;
 			} else {
 				return 7.5625F * (t -= (2.625F / 2.75F)) * t + 0.984375F;
@@ -43,14 +41,14 @@ public abstract class Bounce extends TweenEquation {
 
 	};
 
-	public static final Bounce INOUT = new Bounce() {
+	public static final BounceTweenEquation INOUT = new BounceTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
 			if (t < 0.5F) {
-				return Bounce.IN.compute(t * 2F) * 0.5F;
+				return BounceTweenEquation.IN.compute(t * 2F) * 0.5F;
 			} else {
-				return Bounce.OUT.compute(t * 2F - 1F) * 0.5F + 0.5F;
+				return BounceTweenEquation.OUT.compute(t * 2F - 1F) * 0.5F + 0.5F;
 			}
 		}
 

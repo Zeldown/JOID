@@ -1,18 +1,14 @@
 package dev.joid.lib.animation.tween.equation;
 
-
-
 import dev.joid.lib.animation.tween.TweenEquation;
 
-public abstract class Sine extends TweenEquation {
+public abstract class SineTweenEquation extends TweenEquation {
 
-	private static final float PI = 3.14159265F;
-
-	public static final Sine IN = new Sine() {
+	public static final SineTweenEquation IN = new SineTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
-			return (float) -Math.cos(t * (Sine.PI / 2D)) + 1F;
+			return (float) -Math.cos(t * (Math.PI / 2D)) + 1F;
 		}
 
 		@Override
@@ -22,11 +18,11 @@ public abstract class Sine extends TweenEquation {
 
 	};
 
-	public static final Sine OUT = new Sine() {
+	public static final SineTweenEquation OUT = new SineTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
-			return (float) Math.sin(t * (Sine.PI / 2D));
+			return (float) Math.sin(t * (Math.PI / 2D));
 		}
 
 		@Override
@@ -36,11 +32,11 @@ public abstract class Sine extends TweenEquation {
 
 	};
 
-	public static final Sine INOUT = new Sine() {
+	public static final SineTweenEquation INOUT = new SineTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
-			return -0.5F * ((float) Math.cos(Sine.PI * t) - 1F);
+			return -0.5F * ((float) Math.cos(Math.PI * t) - 1F);
 		}
 
 		@Override

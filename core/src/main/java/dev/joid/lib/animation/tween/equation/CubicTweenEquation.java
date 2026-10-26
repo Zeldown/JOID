@@ -1,12 +1,10 @@
 package dev.joid.lib.animation.tween.equation;
 
-
-
 import dev.joid.lib.animation.tween.TweenEquation;
 
-public abstract class Cubic extends TweenEquation {
+public abstract class CubicTweenEquation extends TweenEquation {
 
-	public static final Cubic IN = new Cubic() {
+	public static final CubicTweenEquation IN = new CubicTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
@@ -20,7 +18,7 @@ public abstract class Cubic extends TweenEquation {
 
 	};
 
-	public static final Cubic OUT = new Cubic() {
+	public static final CubicTweenEquation OUT = new CubicTweenEquation() {
 
 		@Override
 		public final float compute(final float time) {
@@ -35,7 +33,7 @@ public abstract class Cubic extends TweenEquation {
 
 	};
 
-	public static final Cubic INOUT = new Cubic() {
+	public static final CubicTweenEquation INOUT = new CubicTweenEquation() {
 
 		@Override
 		public final float compute(final float time) {

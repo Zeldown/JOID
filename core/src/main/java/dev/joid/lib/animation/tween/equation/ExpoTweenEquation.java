@@ -1,12 +1,10 @@
 package dev.joid.lib.animation.tween.equation;
 
-
-
 import dev.joid.lib.animation.tween.TweenEquation;
 
-public abstract class Expo extends TweenEquation {
+public abstract class ExpoTweenEquation extends TweenEquation {
 
-	public static final Expo IN = new Expo() {
+	public static final ExpoTweenEquation IN = new ExpoTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
@@ -20,7 +18,7 @@ public abstract class Expo extends TweenEquation {
 
 	};
 
-	public static final Expo OUT = new Expo() {
+	public static final ExpoTweenEquation OUT = new ExpoTweenEquation() {
 
 		@Override
 		public final float compute(final float t) {
@@ -34,7 +32,7 @@ public abstract class Expo extends TweenEquation {
 
 	};
 
-	public static final Expo INOUT = new Expo() {
+	public static final ExpoTweenEquation INOUT = new ExpoTweenEquation() {
 
 		@Override
 		public final float compute(final float time) {

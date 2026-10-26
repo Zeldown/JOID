@@ -5,30 +5,29 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import dev.joid.lib.ui.event.EventListener;
+import lombok.Getter;
 import lombok.NonNull;
 
 public final class Tween extends BaseTween<Tween> {
 
-	public static final int INFINITY = -1;
-
 	private final Supplier<Float> getter;
 	private final Consumer<Float> setter;
 
-	private float         end;
-	private float         start;
-	private float         origin;
-	private float         target;
-	private TweenPath     path;
-	private int           waypointCount;
-	private TweenEquation equation;
-	private float[]       waypoints  = new float[0];
-	private float[]       pathBuffer = new float[2];
+	private float                 end;
+	private float                 start;
+	private float                 origin;
+	private float                 target;
+	private ITweenPath            path;
+	private int                   waypointCount;
+	private float[]               waypoints  = new float[0];
+	private float[]               pathBuffer = new float[2];
+	@Getter private TweenEquation easing;
 
 	private boolean isFrom;
 	private boolean isRelative;
 
 	private Tween(final Supplier<Float> getter, final Consumer<Float> setter, final float duration) {
-		if (duration < 0) {
+		if (duration < 0F) {
 			throw new IllegalArgumentException("The duration of a tween cannot be negative, got " + duration + ": pass 0 or more");
 		}
 
@@ -36,7 +35,7 @@ public final class Tween extends BaseTween<Tween> {
 		this.setter    = setter;
 		super.duration = duration;
 		this.path      = TweenPaths.CATMULL_ROM;
-		this.equation  = TweenEquations.LINEAR;
+		this.easing    = TweenEquations.LINEAR;
 	}
 
 	public static @NonNull Tween to(final @NonNull Supplier<Float> getter, final @NonNull Consumer<Float> setter, final float duration) {
@@ -61,7 +60,7 @@ public final class Tween extends BaseTween<Tween> {
 		return new Tween(null, null, 0F);
 	}
 
-	public @NonNull Tween path(final @NonNull TweenPath path) {
+	public @NonNull Tween path(final @NonNull ITweenPath path) {
 		this.path = path;
 		return this;
 	}
@@ -88,17 +87,13 @@ public final class Tween extends BaseTween<Tween> {
 		return this;
 	}
 
-	public @NonNull Tween ease(final @NonNull TweenEquation equation) {
-		this.equation = equation;
+	public @NonNull Tween easing(final @NonNull TweenEquation easing) {
+		this.easing = easing;
 		return this;
 	}
 
-	public @NonNull TweenEquation getEasing() {
-		return this.equation;
-	}
-
 	@Override
-	protected void initializeOverride() {
+	protected void initializeValues() {
 		if (this.getter != null) {
 			this.origin = this.getter.get();
 			this.resolve();
@@ -106,7 +101,7 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	@Override
-	protected void updateOverride(final int step, final int lastStep, final boolean isIterationStep, final float delta) {
+	protected void updateValues(final int step, final int lastStep, final boolean isIterationStep, final float delta) {
 		if (this.setter == null) {
 			return;
 		}
@@ -132,7 +127,7 @@ public final class Tween extends BaseTween<Tween> {
 		}
 
 		final float time = super.isReverse(step) ? super.duration - super.getCurrentTime() : super.getCurrentTime();
-		final float progress = this.equation.compute(time / super.duration);
+		final float progress = this.easing.compute(time / super.duration);
 
 		if (this.waypointCount == 0) {
 			this.setter.accept(this.start + progress * (this.end - this.start));
@@ -149,16 +144,16 @@ public final class Tween extends BaseTween<Tween> {
 	}
 
 	@Override
-	protected void forceEndValues() {
+	protected void forceStartValues() {
 		if (this.setter != null) {
-			this.setter.accept(this.end);
+			this.setter.accept(this.start);
 		}
 	}
 
 	@Override
-	protected void forceStartValues() {
+	protected void forceEndValues() {
 		if (this.setter != null) {
-			this.setter.accept(this.start);
+			this.setter.accept(this.end);
 		}
 	}
 

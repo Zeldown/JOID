@@ -1,51 +1,59 @@
 package dev.joid.lib.animation.tween;
 
-
-
-import dev.joid.lib.animation.tween.equation.Back;
-import dev.joid.lib.animation.tween.equation.Bounce;
-import dev.joid.lib.animation.tween.equation.Circ;
-import dev.joid.lib.animation.tween.equation.Cubic;
-import dev.joid.lib.animation.tween.equation.Elastic;
-import dev.joid.lib.animation.tween.equation.Expo;
-import dev.joid.lib.animation.tween.equation.Linear;
-import dev.joid.lib.animation.tween.equation.Quad;
-import dev.joid.lib.animation.tween.equation.Quart;
-import dev.joid.lib.animation.tween.equation.Quint;
-import dev.joid.lib.animation.tween.equation.Sine;
+import dev.joid.lib.animation.tween.equation.BackTweenEquation;
+import dev.joid.lib.animation.tween.equation.BounceTweenEquation;
+import dev.joid.lib.animation.tween.equation.CircTweenEquation;
+import dev.joid.lib.animation.tween.equation.CubicTweenEquation;
+import dev.joid.lib.animation.tween.equation.ElasticTweenEquation;
+import dev.joid.lib.animation.tween.equation.ExpoTweenEquation;
+import dev.joid.lib.animation.tween.equation.LinearTweenEquation;
+import dev.joid.lib.animation.tween.equation.QuadTweenEquation;
+import dev.joid.lib.animation.tween.equation.QuartTweenEquation;
+import dev.joid.lib.animation.tween.equation.QuintTweenEquation;
+import dev.joid.lib.animation.tween.equation.SineTweenEquation;
 
 public interface TweenEquations {
 
-	public static final Quad    QUAD_IN       = Quad.IN;
-	public static final Circ    CIRC_IN       = Circ.IN;
-	public static final Sine    SINE_IN       = Sine.IN;
-	public static final Expo    EXPO_IN       = Expo.IN;
-	public static final Back    BACK_IN       = Back.IN;
-	public static final Linear  LINEAR        = Linear.INOUT;
-	public static final Quad    QUAD_OUT      = Quad.OUT;
-	public static final Circ    CIRC_OUT      = Circ.OUT;
-	public static final Sine    SINE_OUT      = Sine.OUT;
-	public static final Expo    EXPO_OUT      = Expo.OUT;
-	public static final Back    BACK_OUT      = Back.OUT;
-	public static final Cubic   CUBIC_IN      = Cubic.IN;
-	public static final Quart   QUART_IN      = Quart.IN;
-	public static final Quint   QUINT_IN      = Quint.IN;
-	public static final Quad    QUAD_INOUT    = Quad.INOUT;
-	public static final Cubic   CUBIC_OUT     = Cubic.OUT;
-	public static final Quart   QUART_OUT     = Quart.OUT;
-	public static final Quint   QUINT_OUT     = Quint.OUT;
-	public static final Circ    CIRC_INOUT    = Circ.INOUT;
-	public static final Sine    SINE_INOUT    = Sine.INOUT;
-	public static final Expo    EXPO_INOUT    = Expo.INOUT;
-	public static final Back    BACK_INOUT    = Back.INOUT;
-	public static final Bounce  BOUNCE_IN     = Bounce.IN;
-	public static final Cubic   CUBIC_INOUT   = Cubic.INOUT;
-	public static final Quart   QUART_INOUT   = Quart.INOUT;
-	public static final Quint   QUINT_INOUT   = Quint.INOUT;
-	public static final Bounce  BOUNCE_OUT    = Bounce.OUT;
-	public static final Elastic ELASTIC_IN    = Elastic.IN;
-	public static final Bounce  BOUNCE_INOUT  = Bounce.INOUT;
-	public static final Elastic ELASTIC_OUT   = Elastic.OUT;
-	public static final Elastic ELASTIC_INOUT = Elastic.INOUT;
+	public static final LinearTweenEquation LINEAR = LinearTweenEquation.INOUT;
+
+	public static final QuadTweenEquation QUAD_IN    = QuadTweenEquation.IN;
+	public static final QuadTweenEquation QUAD_OUT   = QuadTweenEquation.OUT;
+	public static final QuadTweenEquation QUAD_INOUT = QuadTweenEquation.INOUT;
+
+	public static final CubicTweenEquation CUBIC_IN    = CubicTweenEquation.IN;
+	public static final CubicTweenEquation CUBIC_OUT   = CubicTweenEquation.OUT;
+	public static final CubicTweenEquation CUBIC_INOUT = CubicTweenEquation.INOUT;
+
+	public static final QuartTweenEquation QUART_IN    = QuartTweenEquation.IN;
+	public static final QuartTweenEquation QUART_OUT   = QuartTweenEquation.OUT;
+	public static final QuartTweenEquation QUART_INOUT = QuartTweenEquation.INOUT;
+
+	public static final QuintTweenEquation QUINT_IN    = QuintTweenEquation.IN;
+	public static final QuintTweenEquation QUINT_OUT   = QuintTweenEquation.OUT;
+	public static final QuintTweenEquation QUINT_INOUT = QuintTweenEquation.INOUT;
+
+	public static final CircTweenEquation CIRC_IN    = CircTweenEquation.IN;
+	public static final CircTweenEquation CIRC_OUT   = CircTweenEquation.OUT;
+	public static final CircTweenEquation CIRC_INOUT = CircTweenEquation.INOUT;
+
+	public static final SineTweenEquation SINE_IN    = SineTweenEquation.IN;
+	public static final SineTweenEquation SINE_OUT   = SineTweenEquation.OUT;
+	public static final SineTweenEquation SINE_INOUT = SineTweenEquation.INOUT;
+
+	public static final ExpoTweenEquation EXPO_IN    = ExpoTweenEquation.IN;
+	public static final ExpoTweenEquation EXPO_OUT   = ExpoTweenEquation.OUT;
+	public static final ExpoTweenEquation EXPO_INOUT = ExpoTweenEquation.INOUT;
+
+	public static final BackTweenEquation BACK_IN    = BackTweenEquation.IN;
+	public static final BackTweenEquation BACK_OUT   = BackTweenEquation.OUT;
+	public static final BackTweenEquation BACK_INOUT = BackTweenEquation.INOUT;
+
+	public static final BounceTweenEquation BOUNCE_IN    = BounceTweenEquation.IN;
+	public static final BounceTweenEquation BOUNCE_OUT   = BounceTweenEquation.OUT;
+	public static final BounceTweenEquation BOUNCE_INOUT = BounceTweenEquation.INOUT;
+
+	public static final ElasticTweenEquation ELASTIC_IN    = ElasticTweenEquation.IN;
+	public static final ElasticTweenEquation ELASTIC_OUT   = ElasticTweenEquation.OUT;
+	public static final ElasticTweenEquation ELASTIC_INOUT = ElasticTweenEquation.INOUT;
 
 }

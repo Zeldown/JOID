@@ -127,7 +127,7 @@ public class BaseTweenTest {
 	@Test
 	public void repeatsForeverWithAnInfiniteCount() {
 		final TweenValue value = new TweenValue(0F);
-		final Tween tween = BaseTweenTest.tween(value).repeat(Tween.INFINITY, 0F).start();
+		final Tween tween = BaseTweenTest.tween(value).repeat(BaseTween.INFINITY, 0F).start();
 		Assert.assertEquals(-1F, tween.getFullDuration(), 0F);
 		tween.update(1.5F);
 		Assert.assertEquals(5F, value.getValue(), 0F);
@@ -141,7 +141,7 @@ public class BaseTweenTest {
 	@Test
 	public void refusesToRepeatForeverWithoutDurationNorRepeatDelay() {
 		final TweenValue value = new TweenValue(0F);
-		final List<BaseTween<?>> tweenList = Arrays.asList(value.to(0F).target(10F).repeat(Tween.INFINITY, 0F), Timeline.createSequence().push(value.to(0F).target(10F)).repeatYoyo(Tween.INFINITY, 0F));
+		final List<BaseTween<?>> tweenList = Arrays.asList(value.to(0F).target(10F).repeat(BaseTween.INFINITY, 0F), Timeline.createSequence().push(value.to(0F).target(10F)).repeatYoyo(BaseTween.INFINITY, 0F));
 		for (final BaseTween<?> tween : tweenList) {
 			try {
 				tween.start();
@@ -150,7 +150,7 @@ public class BaseTweenTest {
 				Assert.assertEquals("A tween or timeline that repeats forever needs a duration or a repeat delay above 0, give it one or a finite repeat count", expected.getMessage());
 			}
 		}
-		value.to(0F).target(10F).repeat(Tween.INFINITY, 1F).start().update(2.5F);
+		value.to(0F).target(10F).repeat(BaseTween.INFINITY, 1F).start().update(2.5F);
 		Assert.assertEquals(10F, value.getValue(), 0F);
 	}
 
@@ -245,7 +245,7 @@ public class BaseTweenTest {
 	public void rewindsForeverWithAnInfiniteCount() {
 		final List<String> events = new ArrayList<>();
 		final TweenValue value = new TweenValue(0F);
-		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(value).repeat(Tween.INFINITY, 0F), events).start();
+		final Tween tween = BaseTweenTest.record(BaseTweenTest.tween(value).repeat(BaseTween.INFINITY, 0F), events).start();
 		tween.update(0.5F);
 		events.clear();
 		tween.update(-1F);
@@ -397,7 +397,7 @@ public class BaseTweenTest {
 	}
 
 	private static Tween tween(final TweenValue value) {
-		return value.to(1F).target(10F).ease(TweenEquations.LINEAR);
+		return value.to(1F).target(10F).easing(TweenEquations.LINEAR);
 	}
 
 	private static Tween record(final Tween tween, final List<String> events) {

@@ -1,13 +1,11 @@
 package dev.joid.lib.animation.tween;
 
-
-
-import dev.joid.lib.animation.tween.path.CatmullRom;
-import dev.joid.lib.animation.tween.path.Linear;
+import dev.joid.lib.animation.tween.path.CatmullRomTweenPath;
+import dev.joid.lib.animation.tween.path.LinearTweenPath;
 
 public interface TweenPaths {
 
-	public static final Linear     LINEAR      = new Linear();
-	public static final CatmullRom CATMULL_ROM = new CatmullRom();
+	public static final LinearTweenPath     LINEAR      = new LinearTweenPath();
+	public static final CatmullRomTweenPath CATMULL_ROM = new CatmullRomTweenPath();
 
 }

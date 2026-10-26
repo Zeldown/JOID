@@ -13,7 +13,7 @@ public class TweenManager {
 
 	private boolean isPaused;
 
-	public TweenManager add(final @NonNull BaseTween<?> object) {
+	public @NonNull TweenManager add(final @NonNull BaseTween<?> object) {
 		synchronized (this.lock) {
 			if (!this.objects.contains(object)) {
 				this.objects.add(object);
@@ -24,20 +24,24 @@ public class TweenManager {
 		return this;
 	}
 
-	public void killAll() {
+	public @NonNull TweenManager killAll() {
 		synchronized (this.lock) {
 			for (final BaseTween<?> object : this.objects) {
 				object.kill();
 			}
 		}
+
+		return this;
 	}
 
-	public void pause() {
+	public @NonNull TweenManager pause() {
 		this.isPaused = true;
+		return this;
 	}
 
-	public void resume() {
+	public @NonNull TweenManager resume() {
 		this.isPaused = false;
+		return this;
 	}
 
 	public void update(final float delta) {
@@ -46,7 +50,7 @@ public class TweenManager {
 
 			if (!this.isPaused) {
 				final List<BaseTween<?>> objectList = new ArrayList<>(this.objects);
-				if (delta >= 0) {
+				if (delta >= 0F) {
 					for (final BaseTween<?> object : objectList) {
 						object.update(delta);
 					}

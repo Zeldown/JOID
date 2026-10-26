@@ -64,10 +64,10 @@ public class TweenAnimator extends Signal<Float> {
 		return this.sequence(duration, value, TweenEquations.LINEAR);
 	}
 
-	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation equation) {
+	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation easing) {
 		this.killTimeline();
 		this.timeline = Timeline.createSequence();
-		this.push(duration, value, equation);
+		this.push(duration, value, easing);
 		return this;
 	}
 
@@ -108,8 +108,8 @@ public class TweenAnimator extends Signal<Float> {
 		return this.push(duration, value, TweenEquations.LINEAR);
 	}
 
-	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation equation) {
-		this.requireTimeline().push(this.tween(duration).target(value).ease(equation));
+	public @NonNull TweenAnimator push(final float duration, final float value, final @NonNull TweenEquation easing) {
+		this.requireTimeline().push(this.tween(duration).target(value).easing(easing));
 		return this;
 	}
 
@@ -184,13 +184,13 @@ public class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
-	public boolean isAutomatic() {
-		return TweenAnimator.RUNNING_SET.contains(this);
-	}
-
 	@Override
 	public boolean isWritable() {
 		return false;
+	}
+
+	public boolean isAutomatic() {
+		return TweenAnimator.RUNNING_SET.contains(this);
 	}
 
 	protected void writeValue(final float value) {

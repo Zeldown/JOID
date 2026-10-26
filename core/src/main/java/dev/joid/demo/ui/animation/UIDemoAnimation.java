@@ -3,7 +3,7 @@ package dev.joid.demo.ui.animation;
 import dev.joid.demo.DemoFont;
 import dev.joid.demo.ui.UIDemo;
 import dev.joid.lib.animation.animator.TweenAnimator;
-import dev.joid.lib.animation.tween.Tween;
+import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -29,19 +29,19 @@ public class UIDemoAnimation extends UIDemo {
 		final TextInfo label = TextInfo.create(DemoFont.MONTSERRAT, 22).color(Color.WHITE);
 		final IntegerSignal plays = new IntegerSignal(0);
 		final TweenAnimator[] lines = {
-			TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).start(),
-			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_INOUT).repeatYoyo(Tween.INFINITY, 0F).start(),
-			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BOUNCE_OUT).repeatYoyo(Tween.INFINITY, 0F).start(),
-			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.ELASTIC_OUT).repeatYoyo(Tween.INFINITY, 0F).start(),
-			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_OUT).repeat(Tween.INFINITY, 0F).start(),
-			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_INOUT).repeatYoyo(Tween.INFINITY, 500F).start(),
-			TweenAnimator.create(0F).sequence(600F, 1F, TweenEquations.QUAD_OUT).push(600F, 0.3F, TweenEquations.QUAD_IN).repeat(Tween.INFINITY, 300F).start(),
-			TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).speed(0.5F).start()
+			TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(BaseTween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BOUNCE_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.ELASTIC_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_OUT).repeat(BaseTween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_INOUT).repeatYoyo(BaseTween.INFINITY, 500F).start(),
+			TweenAnimator.create(0F).sequence(600F, 1F, TweenEquations.QUAD_OUT).push(600F, 0.3F, TweenEquations.QUAD_IN).repeat(BaseTween.INFINITY, 300F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(BaseTween.INFINITY, 0F).speed(0.5F).start()
 		};
 		final String[] names = {"Linear", "Quad in out", "Bounce out", "Elastic out", "Repeat", "Yoyo with delay", "Sequence", "Half speed"};
-		final TweenAnimator color = TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator size = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(Tween.INFINITY, 0F).start();
-		final TweenAnimator rotation = TweenAnimator.create(0F).sequence(2000F, 1F).repeat(Tween.INFINITY, 0F).start();
+		final TweenAnimator color = TweenAnimator.create(0F).sequence(1000F, 1F).repeatYoyo(BaseTween.INFINITY, 0F).start();
+		final TweenAnimator size = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).start();
+		final TweenAnimator rotation = TweenAnimator.create(0F).sequence(2000F, 1F).repeat(BaseTween.INFINITY, 0F).start();
 		final TweenAnimator once = TweenAnimator.create(0F);
 
 		for (int i = 0; i < lines.length; i++) {

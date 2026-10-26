@@ -20,16 +20,16 @@ public final class Timeline extends BaseTween<Timeline> {
 		this.current = this;
 	}
 
-	public static Timeline createSequence() {
+	public static @NonNull Timeline createSequence() {
 		return new Timeline(Mode.SEQUENCE);
 	}
 
-	public static Timeline createParallel() {
+	public static @NonNull Timeline createParallel() {
 		return new Timeline(Mode.PARALLEL);
 	}
 
 	@Override
-	public Timeline start() {
+	public @NonNull Timeline start() {
 		super.start();
 
 		for (final BaseTween<?> child : this.children) {
@@ -40,25 +40,23 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	@Override
-	public void kill() {
+	public @NonNull Timeline kill() {
 		super.kill();
 
 		for (final BaseTween<?> child : this.children) {
 			child.kill();
 		}
+
+		return this;
 	}
 
-	public List<BaseTween<?>> getChildren() {
-		return Collections.unmodifiableList(this.current.children);
-	}
-
-	public Timeline push(final @NonNull Tween tween) {
+	public @NonNull Timeline push(final @NonNull Tween tween) {
 		this.requireOpen();
 		this.current.children.add(tween);
 		return this;
 	}
 
-	public Timeline push(final @NonNull Timeline timeline) {
+	public @NonNull Timeline push(final @NonNull Timeline timeline) {
 		this.requireOpen();
 		if (timeline.current != timeline) {
 			throw new IllegalArgumentException("The pushed timeline still has an open beginSequence() or beginParallel(), close each one with end() before pushing it");
@@ -68,21 +66,21 @@ public final class Timeline extends BaseTween<Timeline> {
 		return this;
 	}
 
-	public Timeline pushPause(final float time) {
+	public @NonNull Timeline pushPause(final float time) {
 		this.requireOpen();
 		this.current.children.add(Tween.mark().delay(time));
 		return this;
 	}
 
-	public Timeline beginSequence() {
+	public @NonNull Timeline beginSequence() {
 		return this.begin(Mode.SEQUENCE);
 	}
 
-	public Timeline beginParallel() {
+	public @NonNull Timeline beginParallel() {
 		return this.begin(Mode.PARALLEL);
 	}
 
-	public Timeline end() {
+	public @NonNull Timeline end() {
 		this.requireOpen();
 		if (this.current == this) {
 			throw new IllegalStateException("The timeline has no open beginSequence() or beginParallel() to close, remove this end()");
@@ -92,8 +90,12 @@ public final class Timeline extends BaseTween<Timeline> {
 		return this;
 	}
 
+	public @NonNull List<BaseTween<?>> getChildren() {
+		return Collections.unmodifiableList(this.current.children);
+	}
+
 	@Override
-	public Timeline build() {
+	public @NonNull Timeline build() {
 		if (this.isBuilt) {
 			return this;
 		}
@@ -102,7 +104,7 @@ public final class Timeline extends BaseTween<Timeline> {
 			throw new IllegalStateException("The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()");
 		}
 
-		super.duration = 0;
+		super.duration = 0F;
 		for (final BaseTween<?> child : this.children) {
 			if (child.getRepeatCount() < 0) {
 				throw new IllegalArgumentException("A timeline cannot hold a child that repeats forever (repeat count " + child.getRepeatCount() + "), give it a finite repeat count");
@@ -124,14 +126,14 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	@Override
-	protected void updateOverride(final int step, final int lastStep, final boolean isIterationStep, final float delta) {
+	protected void updateValues(final int step, final int lastStep, final boolean isIterationStep, final float delta) {
 		if (!isIterationStep && step > lastStep) {
-			this.updateForward(super.isReverse(lastStep) ? -delta - 1 : delta + 1);
+			this.updateForward(super.isReverse(lastStep) ? -delta - 1F : delta + 1F);
 			return;
 		}
 
 		if (!isIterationStep && step < lastStep) {
-			this.updateBackward(super.isReverse(lastStep) ? -delta + 1 : delta - 1);
+			this.updateBackward(super.isReverse(lastStep) ? -delta + 1F : delta - 1F);
 			return;
 		}
 
@@ -149,7 +151,7 @@ public final class Timeline extends BaseTween<Timeline> {
 				this.forceEndValues();
 			}
 			this.updateBackward(0F);
-		} else if (delta >= 0) {
+		} else if (delta >= 0F) {
 			this.updateForward(super.isReverse(step) ? -delta : delta);
 		} else {
 			this.updateBackward(super.isReverse(step) ? -delta : delta);
@@ -157,16 +159,16 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	@Override
-	protected void forceEndValues() {
-		for (final BaseTween<?> child : this.children) {
-			child.forceToEnd(super.duration);
+	protected void forceStartValues() {
+		for (int i = this.children.size() - 1; i >= 0; i--) {
+			this.children.get(i).forceToStart();
 		}
 	}
 
 	@Override
-	protected void forceStartValues() {
-		for (int i = this.children.size() - 1; i >= 0; i--) {
-			this.children.get(i).forceToStart();
+	protected void forceEndValues() {
+		for (final BaseTween<?> child : this.children) {
+			child.forceToEnd(super.duration);
 		}
 	}
 
