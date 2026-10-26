@@ -102,14 +102,13 @@ public class TimelineTest {
 	}
 
 	@Test
-	public void listsTheChildrenOfTheOpenedTimeline() {
+	public void listsTheRootChildrenWhileAParallelIsOpened() {
 		final Tween first = Tween.mark();
 		final Tween second = Tween.mark();
 		final Timeline timeline = Timeline.createSequence().push(first).beginParallel().push(second);
-		Assert.assertEquals(Collections.singletonList(second), timeline.getChildren());
-		timeline.end();
 		Assert.assertEquals(2, timeline.getChildren().size());
 		Assert.assertSame(first, timeline.getChildren().get(0));
+		Assert.assertEquals(Collections.singletonList(second), ((Timeline) timeline.getChildren().get(1)).getChildren());
 	}
 
 	@Test(expected = UnsupportedOperationException.class)

@@ -91,7 +91,7 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	public @NonNull List<BaseTween<?>> getChildren() {
-		return Collections.unmodifiableList(this.current.children);
+		return Collections.unmodifiableList(this.children);
 	}
 
 	@Override
