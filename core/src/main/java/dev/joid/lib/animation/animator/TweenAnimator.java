@@ -66,7 +66,7 @@ public class TweenAnimator extends Signal<Float> {
 
 	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation easing) {
 		this.killTimeline();
-		this.timeline = Timeline.createSequence();
+		this.timeline = Timeline.sequence();
 		this.push(duration, value, easing);
 		return this;
 	}

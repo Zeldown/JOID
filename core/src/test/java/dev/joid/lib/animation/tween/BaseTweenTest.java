@@ -141,7 +141,7 @@ public class BaseTweenTest {
 	@Test
 	public void refusesToRepeatForeverWithoutDurationNorRepeatDelay() {
 		final TweenValue value = new TweenValue(0F);
-		final List<BaseTween<?>> tweenList = Arrays.asList(value.to(0F).target(10F).repeat(BaseTween.INFINITY, 0F), Timeline.createSequence().push(value.to(0F).target(10F)).repeatYoyo(BaseTween.INFINITY, 0F));
+		final List<BaseTween<?>> tweenList = Arrays.asList(value.to(0F).target(10F).repeat(BaseTween.INFINITY, 0F), Timeline.sequence().push(value.to(0F).target(10F)).repeatYoyo(BaseTween.INFINITY, 0F));
 		for (final BaseTween<?> tween : tweenList) {
 			try {
 				tween.start();

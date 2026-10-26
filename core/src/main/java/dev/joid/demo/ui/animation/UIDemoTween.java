@@ -34,9 +34,9 @@ public class UIDemoTween extends UIDemo {
 	public void init() {
 		final TextInfo caption = TextInfo.create(DemoFont.MONTSERRAT, 24).color(UIDemoTween.INK);
 		final TweenAnimator paused = TweenAnimator.create(0F);
-		paused.timeline(Timeline.createSequence().push(paused.tween(600F).target(1F).easing(TweenEquations.QUAD_OUT)).pushPause(600F).push(paused.tween(600F).target(0F).easing(TweenEquations.QUAD_IN))).repeat(BaseTween.INFINITY, 300F).start();
+		paused.timeline(Timeline.sequence().push(paused.tween(600F).target(1F).easing(TweenEquations.QUAD_OUT)).pushPause(600F).push(paused.tween(600F).target(0F).easing(TweenEquations.QUAD_IN))).repeat(BaseTween.INFINITY, 300F).start();
 		final TweenAnimator waypoints = TweenAnimator.create(0F);
-		waypoints.timeline(Timeline.createSequence().push(waypoints.tween(2000F).waypoint(1F).waypoint(0.2F).target(1F).easing(TweenEquations.QUAD_INOUT).path(TweenPaths.CATMULL_ROM))).repeatYoyo(BaseTween.INFINITY, 0F).start();
+		waypoints.timeline(Timeline.sequence().push(waypoints.tween(2000F).waypoint(1F).waypoint(0.2F).target(1F).easing(TweenEquations.QUAD_INOUT).path(TweenPaths.CATMULL_ROM))).repeatYoyo(BaseTween.INFINITY, 0F).start();
 		final TweenAnimator delayed = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_INOUT).delay(1000F).repeatYoyo(BaseTween.INFINITY, 0F).start();
 		final TweenAnimator[] lines = {
 			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BACK_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),

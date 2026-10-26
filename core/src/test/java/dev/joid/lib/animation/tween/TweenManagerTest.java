@@ -34,21 +34,21 @@ public class TweenManagerTest {
 
 	@Test
 	public void countsItsRunningTweensAndTimelines() {
-		final Timeline inner = Timeline.createParallel().push(Tween.mark());
-		final TweenManager manager = new TweenManager().add(Tween.mark()).add(Timeline.createSequence().push(Tween.mark()).push(Tween.mark()).push(inner));
+		final Timeline inner = Timeline.parallel().push(Tween.mark());
+		final TweenManager manager = new TweenManager().add(Tween.mark()).add(Timeline.sequence().push(Tween.mark()).push(Tween.mark()).push(inner));
 		Assert.assertEquals(4, manager.getRunningTweensCount());
 		Assert.assertEquals(2, manager.getRunningTimelinesCount());
 	}
 
 	@Test
 	public void countsTheTweensOfANestedSequence() {
-		final TweenManager manager = new TweenManager().add(Timeline.createSequence().push(Tween.mark()).beginSequence().push(Tween.mark()).push(Tween.mark()).end());
+		final TweenManager manager = new TweenManager().add(Timeline.sequence().push(Tween.mark()).beginSequence().push(Tween.mark()).push(Tween.mark()).end());
 		Assert.assertEquals(3, manager.getRunningTweensCount());
 	}
 
 	@Test
 	public void countsTheTimelinesOfANestedParallel() {
-		final TweenManager manager = new TweenManager().add(Timeline.createSequence().push(Tween.mark()).beginParallel().push(Tween.mark()).end());
+		final TweenManager manager = new TweenManager().add(Timeline.sequence().push(Tween.mark()).beginParallel().push(Tween.mark()).end());
 		Assert.assertEquals(2, manager.getRunningTimelinesCount());
 	}
 
@@ -113,7 +113,7 @@ public class TweenManagerTest {
 	@Test
 	public void killsEveryObject() {
 		final Tween tween = Tween.mark();
-		final Timeline timeline = Timeline.createSequence();
+		final Timeline timeline = Timeline.sequence();
 		new TweenManager().add(tween).add(timeline).killAll();
 		Assert.assertTrue(tween.isFinished());
 		Assert.assertTrue(timeline.isFinished());

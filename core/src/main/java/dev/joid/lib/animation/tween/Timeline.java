@@ -20,11 +20,11 @@ public final class Timeline extends BaseTween<Timeline> {
 		this.current = this;
 	}
 
-	public static @NonNull Timeline createSequence() {
+	public static @NonNull Timeline sequence() {
 		return new Timeline(Mode.SEQUENCE);
 	}
 
-	public static @NonNull Timeline createParallel() {
+	public static @NonNull Timeline parallel() {
 		return new Timeline(Mode.PARALLEL);
 	}
 

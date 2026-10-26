@@ -216,7 +216,7 @@ public class TweenAnimatorTest {
 	public void takesATimelineInPlaceOfTheRunningOne() {
 		final TweenAnimator animator = TweenAnimator.create().sequence(10F, 1F).start();
 		final Timeline running = animator.getTimeline();
-		final Timeline timeline = Timeline.createSequence().push(animator.tween(10F).target(4F));
+		final Timeline timeline = Timeline.sequence().push(animator.tween(10F).target(4F));
 		animator.timeline(timeline).start();
 		Assert.assertSame(timeline, animator.getTimeline());
 		Assert.assertNotSame(running, animator.getTimeline());
@@ -235,8 +235,8 @@ public class TweenAnimatorTest {
 	@Test
 	public void restartsATimelineItKilled() {
 		final TweenAnimator animator = TweenAnimator.create();
-		final Timeline in = Timeline.createSequence().push(animator.tween(10F).target(1F));
-		final Timeline out = Timeline.createSequence().push(animator.tween(10F).target(0F));
+		final Timeline in = Timeline.sequence().push(animator.tween(10F).target(1F));
+		final Timeline out = Timeline.sequence().push(animator.tween(10F).target(0F));
 		animator.timeline(in).start();
 		animator.update(5F);
 		animator.timeline(out).start();
@@ -296,7 +296,7 @@ public class TweenAnimatorTest {
 	public void tweensItsOwnValueLinearly() {
 		final TweenAnimator animator = TweenAnimator.create(2F);
 		final Tween tween = animator.tween(10F).target(6F);
-		animator.timeline(Timeline.createSequence().push(tween)).start();
+		animator.timeline(Timeline.sequence().push(tween)).start();
 		animator.update(5F);
 		Assert.assertEquals(4F, animator.get(), 0F);
 	}
