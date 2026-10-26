@@ -1,7 +1,5 @@
 package dev.joid.lib.bridge.ui;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,7 +12,6 @@ import org.junit.Test;
 
 import dev.joid.demo.DemoUIBridge;
 import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -449,24 +446,15 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		menu.failure = new IllegalStateException("broken");
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
-			this.bridges.draw();
-		} finally {
-			System.setErr(previous);
-		}
-		Assert.assertTrue(output.toString(), output.toString().contains("broken"));
+		final String output = TestUtils.captureErr(() -> this.bridges.draw());
+		Assert.assertTrue(output, output.contains("broken"));
 		Assert.assertEquals(0F, UIBridgeTest.depth(), 0F);
 	}
 
 	@Test
 	public void givesBackTheStacksAndTheTessellatorOfAFailedDraw() {
 		final RenderBridge render = this.bridges.getRender();
-		final PrintStream previous = System.err;
-		System.setErr(new PrintStream(new ByteArrayOutputStream(), true));
-		try {
+		TestUtils.captureErr(() -> {
 			this.bridges.open(new NodeUI(new DrawingNode(() -> {
 				render.pushState();
 				render.getModelView().push();
@@ -474,9 +462,7 @@ public class UIBridgeTest {
 				Tessellator.inst().start(DrawMode.QUADS);
 				throw new IllegalStateException("half drawn");
 			})));
-		} finally {
-			System.setErr(previous);
-		}
+		});
 		Assert.assertEquals(0, render.getStateDepth());
 		Assert.assertEquals(0, render.getModelView().getDepth());
 		Assert.assertEquals(0, render.getProjection().getDepth());
@@ -592,17 +578,13 @@ public class UIBridgeTest {
 		menu.transition(PopTransition.create());
 		this.bridges.open(menu).open(new PopupUI("popup", this.trace)).frames(20);
 		JOID.close(menu);
-		final PrintStream previous = System.err;
-		System.setErr(new PrintStream(new ByteArrayOutputStream(), true));
-		try {
+		TestUtils.captureErr(() -> {
 			for (int frame = 0; frame < 20; frame++) {
 				this.trace.clear();
 				this.bridges.frame();
 				Assert.assertTrue(this.trace.toString(), this.trace.stream().anyMatch(line -> line.startsWith("draw popup")));
 			}
-		} finally {
-			System.setErr(previous);
-		}
+		});
 		Assert.assertFalse(this.bridges.getUi().isOpen(menu));
 	}
 
@@ -1000,19 +982,11 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		final UIBridge bridge = new StackUIBridge() {};
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		final boolean devMode = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
+		final String output = TestUtils.captureErr(true, () -> {
 			bridge.drawHover(menu, "Play", 100D, 100D);
 			bridge.drawHover(menu, "Play", 100D, 100D);
-		} finally {
-			JOIDEnv.devMode(devMode);
-			System.setErr(previous);
-		}
-		Assert.assertEquals("[JOID] " + bridge.getClass().getName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them" + System.lineSeparator(), output.toString());
+		});
+		Assert.assertEquals("[JOID] " + bridge.getClass().getName() + " draws no tooltip, override drawHover(UI, Object, double, double) to draw them" + System.lineSeparator(), output);
 	}
 
 	@Test
@@ -1020,18 +994,8 @@ public class UIBridgeTest {
 		final TraceUI menu = new TraceUI("menu", this.trace);
 		this.bridges.open(menu);
 		this.bridges.getRender().getDraws().clear();
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		final boolean devMode = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(false);
-		try {
-			new StackUIBridge() {}.drawHover(menu, "Play", 100D, 100D);
-		} finally {
-			JOIDEnv.devMode(devMode);
-			System.setErr(previous);
-		}
-		Assert.assertEquals("", output.toString());
+		final String output = TestUtils.captureErr(false, () -> new StackUIBridge() {}.drawHover(menu, "Play", 100D, 100D));
+		Assert.assertEquals("", output);
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 
@@ -1077,19 +1041,11 @@ public class UIBridgeTest {
 		this.bridges.open(menu);
 		this.bridges.getRender().getDraws().clear();
 		final WindowUIBridge bridge = WindowUIBridge.create();
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		final boolean devMode = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
+		final String output = TestUtils.captureErr(true, () -> {
 			bridge.drawHover(menu, "Play", 100D, 100D);
 			bridge.drawHover(menu, "Play", 100D, 100D);
-		} finally {
-			JOIDEnv.devMode(devMode);
-			System.setErr(previous);
-		}
-		Assert.assertEquals("[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them" + System.lineSeparator(), output.toString());
+		});
+		Assert.assertEquals("[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them" + System.lineSeparator(), output);
 		Assert.assertTrue(this.bridges.getRender().getDraws().isEmpty());
 	}
 

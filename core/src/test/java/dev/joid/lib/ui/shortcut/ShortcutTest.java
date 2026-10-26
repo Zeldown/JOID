@@ -1,8 +1,5 @@
 package dev.joid.lib.ui.shortcut;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,7 +13,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.internal.JOID;
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.cache.TemporaryCache;
@@ -258,21 +254,12 @@ public class ShortcutTest {
 
 	@Test
 	public void warnsOnceInDevModeForABindingWithoutResolver() {
-		final boolean previous = JOIDEnv.isDevMode();
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		JOIDEnv.devMode(true);
-		try {
-			System.setErr(new PrintStream(output, true));
+		final String printed = TestUtils.captureErr(true, () -> {
 			final NodeUI ui = this.open();
 			Shortcut.create("unknown binding").onTrigger(event -> this.trace.add("shortcut")).attach(ui);
 			Shortcut.create("unknown binding");
 			Assert.assertFalse(ui.fireKeyPressed(Key.S, Key.S));
-		} finally {
-			System.setErr(error);
-			JOIDEnv.devMode(previous);
-		}
-		final String printed = new String(output.toByteArray(), StandardCharsets.UTF_8);
+		});
 		Assert.assertTrue(printed, printed.startsWith("[JOID] No key resolver knows the shortcut binding unknown binding of type java.lang.String yet, the shortcut fires only once an IKeyResolver that knows it is registered"));
 		Assert.assertEquals(printed, printed.indexOf("[JOID]"), printed.lastIndexOf("[JOID]"));
 		Assert.assertTrue(this.trace.isEmpty());

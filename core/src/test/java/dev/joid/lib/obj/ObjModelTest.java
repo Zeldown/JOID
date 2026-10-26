@@ -1,11 +1,9 @@
 package dev.joid.lib.obj;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.bridge.render.RecordingRenderBridge.Draw;
 import dev.joid.lib.bridge.render.texture.ITexture;
@@ -346,17 +345,10 @@ public class ObjModelTest {
 	@Test
 	public void warnsAboutAStreamFailingToClose() {
 		final TrackedStream stream = new TrackedStream("v 1 2 3", true);
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
-			Assert.assertEquals(1, ObjModel.of("tracked", stream, ObjModelTest.TEXTURE).getVertices().size());
-		} finally {
-			System.setErr(previous);
-		}
+		final String output = TestUtils.captureErr(() -> Assert.assertEquals(1, ObjModel.of("tracked", stream, ObjModelTest.TEXTURE).getVertices().size()));
 		Assert.assertTrue(stream.closed);
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The stream stream_"));
-		Assert.assertTrue(output.toString(), output.toString().contains(" cannot be closed ("));
+		Assert.assertTrue(output, output.startsWith("[JOID] The stream stream_"));
+		Assert.assertTrue(output, output.contains(" cannot be closed ("));
 	}
 
 	@Test(expected = NullPointerException.class)

@@ -1,8 +1,5 @@
 package dev.joid.lib.ui.task;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,16 +60,9 @@ public class TaskTest {
 			trace.add("high");
 			throw new IllegalStateException("broken");
 		})).onRun(EventListener.priority(EventPriority.MONITOR, event -> trace.add("monitor " + event.getTask().isAttached()))).attach(ui);
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
-			this.bridges.frame();
-		} finally {
-			System.setErr(error);
-		}
+		final String output = TestUtils.captureErr(() -> this.bridges.frame());
 		Assert.assertEquals(Arrays.asList("high", "normal", "monitor false"), trace);
-		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The onRun listener of Task failed (java.lang.IllegalStateException: broken"));
+		Assert.assertTrue(output.startsWith("[JOID] The onRun listener of Task failed (java.lang.IllegalStateException: broken"));
 	}
 
 	@Test

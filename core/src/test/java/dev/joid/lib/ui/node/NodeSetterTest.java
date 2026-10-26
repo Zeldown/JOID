@@ -1,9 +1,6 @@
 package dev.joid.lib.ui.node;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
@@ -13,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import dev.joid.demo.replay.SetterUI;
-import dev.joid.internal.JOIDEnv;
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.TextMode;
@@ -101,18 +98,8 @@ public class NodeSetterTest {
 	@Test
 	public void followsABooleanSignalReadInAConditionOrAConcatenationWithoutWarning() {
 		final SetterUI ui = new SetterUI();
-		final PrintStream error = System.err;
-		final boolean devMode = JOIDEnv.isDevMode();
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			JOIDEnv.devMode(true);
-			System.setErr(new PrintStream(output, true));
-			this.bridges.open(ui);
-		} finally {
-			System.setErr(error);
-			JOIDEnv.devMode(devMode);
-		}
-		Assert.assertEquals("", new String(output.toByteArray(), StandardCharsets.UTF_8));
+		final String output = TestUtils.captureErr(true, () -> this.bridges.open(ui));
+		Assert.assertEquals("", output);
 		ui.getMuted().set(true);
 		this.bridges.frame();
 		Assert.assertEquals("Muted", ui.getState().getText().getText());
@@ -233,19 +220,14 @@ public class NodeSetterTest {
 		final Switch node = new Switch().values(index.map(value -> value == 0 ? Arrays.asList("low", "high") : Collections.<String>emptyList()));
 		final RectNode rect = RectNode.create(0D, 0D, 10D, 10D).width(width);
 		this.bridges.open(new NodeUI(node, rect));
-		final PrintStream error = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setErr(new PrintStream(output, true));
+		final String output = TestUtils.captureErr(() -> {
 			index.set(5);
 			width.set(30D);
 			this.bridges.frame();
-		} finally {
-			System.setErr(error);
-		}
+		});
 		Assert.assertEquals("low", node.getValue());
 		Assert.assertEquals(30D, rect.getWidth(), 0D);
-		Assert.assertTrue(new String(output.toByteArray(), StandardCharsets.UTF_8).startsWith("[JOID] The values of Switch cannot take its new value (java.lang.IllegalArgumentException: The Switch needs at least one value"));
+		Assert.assertTrue(output.startsWith("[JOID] The values of Switch cannot take its new value (java.lang.IllegalArgumentException: The Switch needs at least one value"));
 	}
 
 	@Test

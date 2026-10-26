@@ -1,11 +1,9 @@
 package dev.joid.internal;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -609,16 +607,9 @@ public class JOIDTest {
 		TestUtils.demoMode(false);
 		final JOID joid = JOIDTest.create();
 		JOIDTest.quietly(joid);
-		final PrintStream previous = System.out;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setOut(new PrintStream(output, true));
-		try {
-			Assert.assertSame(joid, joid.load());
-		} finally {
-			System.setOut(previous);
-		}
+		final String output = TestUtils.captureOut(() -> Assert.assertSame(joid, joid.load()));
 		Assert.assertTrue(joid.isReady());
-		Assert.assertEquals(0, output.size());
+		Assert.assertEquals("", output);
 	}
 
 	@Test
@@ -667,13 +658,7 @@ public class JOIDTest {
 	}
 
 	private static void quietly(final JOID joid) {
-		final PrintStream previous = System.out;
-		System.setOut(new PrintStream(new ByteArrayOutputStream(), true));
-		try {
-			joid.load();
-		} finally {
-			System.setOut(previous);
-		}
+		TestUtils.captureOut(() -> joid.load());
 	}
 
 	private static void assertNoBridge(final Runnable open) {

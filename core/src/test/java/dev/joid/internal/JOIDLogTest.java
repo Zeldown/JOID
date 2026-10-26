@@ -1,8 +1,5 @@
 package dev.joid.internal;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
@@ -18,15 +15,7 @@ public class JOIDLogTest {
 
 	@Test
 	public void writesItsInformationOnTheStandardOutput() {
-		final PrintStream previous = System.out;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		try {
-			System.setOut(new PrintStream(output, true));
-			JOIDLog.info("Font Inter loaded in 1.23ms");
-		} finally {
-			System.setOut(previous);
-		}
-		Assert.assertEquals("[JOID] Font Inter loaded in 1.23ms" + System.lineSeparator(), new String(output.toByteArray(), StandardCharsets.UTF_8));
+		Assert.assertEquals("[JOID] Font Inter loaded in 1.23ms" + System.lineSeparator(), TestUtils.captureOut(() -> JOIDLog.info("Font Inter loaded in 1.23ms")));
 	}
 
 	@Test

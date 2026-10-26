@@ -1,8 +1,5 @@
 package dev.joid.lib.bridge.thread;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -77,22 +74,14 @@ public class FrameThreadBridgeTest {
 	public void keepsRunningTheTasksAfterOneThrows() {
 		final FrameThreadBridge thread = new FrameThreadBridge();
 		final List<String> trace = new ArrayList<>();
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		FrameThreadBridgeTest.fromWorker(() -> {
 			thread.execute(() -> {
 				throw new IllegalStateException("broken");
 			});
 			thread.execute(() -> trace.add("next"));
 		});
-		System.setErr(new PrintStream(output, true));
-		try {
-			thread.runTasks();
-		} finally {
-			System.setErr(previous);
-		}
+		final String text = TestUtils.captureErr(() -> thread.runTasks());
 		Assert.assertEquals(Collections.singletonList("next"), trace);
-		final String text = new String(output.toByteArray(), StandardCharsets.UTF_8);
 		Assert.assertTrue(text, text.startsWith("[JOID] A task sent to the render thread from another thread failed (java.lang.IllegalStateException: broken), the next tasks still run: catch the exception inside the task to handle it"));
 	}
 
@@ -104,20 +93,12 @@ public class FrameThreadBridgeTest {
 		}, () -> {
 			throw new IllegalStateException("second");
 		});
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		FrameThreadBridgeTest.fromWorker(() -> {
 			for (int turn = 0; turn < 2; turn++) {
 				failures.forEach(failure -> thread.execute(() -> failure.run()));
 			}
 		});
-		System.setErr(new PrintStream(output, true));
-		try {
-			thread.runTasks();
-		} finally {
-			System.setErr(previous);
-		}
-		final String text = new String(output.toByteArray(), StandardCharsets.UTF_8);
+		final String text = TestUtils.captureErr(() -> thread.runTasks());
 		Assert.assertEquals(text, 2, text.split("\\[JOID\\] A task sent to the render thread", -1).length - 1);
 		Assert.assertTrue(text, text.contains("(java.lang.IllegalStateException: first)"));
 		Assert.assertTrue(text, text.contains("(java.lang.IllegalStateException: second)"));

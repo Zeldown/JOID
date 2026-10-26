@@ -1,7 +1,5 @@
 package dev.joid.lib.bridge.ui;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -13,7 +11,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 
-import dev.joid.internal.JOIDEnv;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.HeadlessBridges;
@@ -56,19 +53,9 @@ public class StackUIBridgeTest {
 		final ScreenUI menu = new ScreenUI("menu", this);
 		menu.closeable = false;
 		this.bridge.open(menu);
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		final boolean devMode = JOIDEnv.isDevMode();
-		JOIDEnv.devMode(true);
-		try {
-			this.bridge.open(new ScreenUI("settings", this));
-		} finally {
-			JOIDEnv.devMode(devMode);
-			System.setErr(previous);
-		}
+		final String output = TestUtils.captureErr(true, () -> this.bridge.open(new ScreenUI("settings", this)));
 		Assert.assertEquals(Collections.singletonList(menu), this.bridge.getUiList());
-		Assert.assertEquals("[JOID] ScreenUI refused to close: a beforeClose listener cancelled the event, so ScreenUI is not opened: do not cancel it to let the UI close" + System.lineSeparator(), output.toString());
+		Assert.assertEquals("[JOID] ScreenUI refused to close: a beforeClose listener cancelled the event, so ScreenUI is not opened: do not cancel it to let the UI close" + System.lineSeparator(), output);
 	}
 
 	@Test

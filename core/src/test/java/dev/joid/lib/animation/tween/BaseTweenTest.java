@@ -1,7 +1,5 @@
 package dev.joid.lib.animation.tween;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,6 +8,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.internal.TestUtils;
 import dev.joid.lib.ui.event.EventListener;
 import dev.joid.lib.ui.event.EventPriority;
 
@@ -342,18 +341,11 @@ public class BaseTweenTest {
 		final Tween tween = BaseTweenTest.tween(value).repeat(1, 0F).onIterationEnd(event -> {
 			throw new IllegalStateException("boom");
 		}).onIterationEnd(event -> calls.add("end")).onComplete(event -> calls.add("complete")).start();
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
-			tween.update(3F);
-		} finally {
-			System.setErr(previous);
-		}
+		final String output = TestUtils.captureErr(() -> tween.update(3F));
 		Assert.assertEquals(Arrays.asList("end", "end", "complete"), calls);
 		Assert.assertEquals(10F, value.getValue(), 0F);
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The onIterationEnd listener of Tween failed (java.lang.IllegalStateException: boom"));
-		Assert.assertEquals(output.toString(), output.toString().indexOf("[JOID]"), output.toString().lastIndexOf("[JOID]"));
+		Assert.assertTrue(output, output.startsWith("[JOID] The onIterationEnd listener of Tween failed (java.lang.IllegalStateException: boom"));
+		Assert.assertEquals(output, output.indexOf("[JOID]"), output.lastIndexOf("[JOID]"));
 	}
 
 	@Test

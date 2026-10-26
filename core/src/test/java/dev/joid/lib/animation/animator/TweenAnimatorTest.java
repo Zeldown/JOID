@@ -1,7 +1,5 @@
 package dev.joid.lib.animation.animator;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -368,21 +366,16 @@ public class TweenAnimatorTest {
 			throw new IllegalStateException("boom at " + value);
 		});
 		new AnimatorUI(failing, other).load(1920D, 1080D);
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
+		final String output = TestUtils.captureErr(() -> {
 			this.clock.advance(16L);
 			BridgeHandler.UI.fireFrame();
 			this.clock.advance(16L);
 			BridgeHandler.UI.fireFrame();
-		} finally {
-			System.setErr(previous);
-		}
+		});
 		Assert.assertEquals(0.5F, other.get(), 0F);
 		Assert.assertEquals(0.5F, failing.get(), 0F);
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The update of TweenAnimator failed (java.lang.IllegalStateException: boom"));
-		Assert.assertEquals(output.toString(), output.toString().indexOf("[JOID]"), output.toString().lastIndexOf("[JOID]"));
+		Assert.assertTrue(output, output.startsWith("[JOID] The update of TweenAnimator failed (java.lang.IllegalStateException: boom"));
+		Assert.assertEquals(output, output.indexOf("[JOID]"), output.lastIndexOf("[JOID]"));
 	}
 
 	@Test
@@ -394,20 +387,15 @@ public class TweenAnimatorTest {
 			throw new IllegalStateException("boom");
 		}).onComplete(event -> calls.add("complete"));
 		new AnimatorUI(failing, other).load(1920D, 1080D);
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
+		final String output = TestUtils.captureErr(() -> {
 			this.clock.advance(32L);
 			BridgeHandler.UI.fireFrame();
-		} finally {
-			System.setErr(previous);
-		}
+		});
 		Assert.assertEquals(Collections.singletonList("complete"), calls);
 		Assert.assertEquals(1F, failing.get(), 0F);
 		Assert.assertEquals(0.5F, other.get(), 0F);
 		Assert.assertFalse(failing.isAutomatic());
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The onComplete listener of Timeline failed (java.lang.IllegalStateException: boom"));
+		Assert.assertTrue(output, output.startsWith("[JOID] The onComplete listener of Timeline failed (java.lang.IllegalStateException: boom"));
 	}
 
 	@Test

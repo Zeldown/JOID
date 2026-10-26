@@ -1,11 +1,10 @@
 package dev.joid.lib.ui.node.impl.resource;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -96,17 +95,10 @@ public class ResourcePlayerNodeTest {
 
 	@Test
 	public void showsAFailedResourceWithoutSizeAtTheSizeOfItsMissingTexture() {
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		final Resource missing;
-		System.setErr(new PrintStream(output, true));
-		try {
-			missing = ResourceBuilder.create().cache(null).of("missing/absent.png").blocking();
-		} finally {
-			System.setErr(previous);
-		}
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The resource missing/absent.png cannot be read: The asset missing/absent.png is not found in the classpath nor as a file"));
-		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D).resource(missing);
+		final AtomicReference<Resource> missing = new AtomicReference<>();
+		final String output = TestUtils.captureErr(() -> missing.set(ResourceBuilder.create().cache(null).of("missing/absent.png").blocking()));
+		Assert.assertTrue(output, output.startsWith("[JOID] The resource missing/absent.png cannot be read: The asset missing/absent.png is not found in the classpath nor as a file"));
+		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D).resource(missing.get());
 		this.bridges.open(new NodeUI(player)).frame();
 		Assert.assertEquals(64D, player.getWidth(), 0D);
 		Assert.assertEquals(64D, player.getHeight(), 0D);
@@ -461,15 +453,8 @@ public class ResourcePlayerNodeTest {
 		final List<Boolean> drawn = new ArrayList<>();
 		final ResourcePlayerNode player = ResourcePlayerNode.create(100D, 100D, 80D, 80D).resource(ResourcePlayerNodeTest.blink()).onEnd(event -> BridgeHandler.UI.get(event.getNode().getUi()).open(new NodeUI()));
 		final RectNode after = RectNode.create(0D, 0D, 10D, 10D).layer((rect, mouseX, mouseY) -> drawn.add(rect.isAttached()));
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
-			this.bridges.open(new NodeUI(player, after)).frames(20);
-		} finally {
-			System.setErr(previous);
-		}
-		Assert.assertEquals("", output.toString());
+		final String output = TestUtils.captureErr(() -> this.bridges.open(new NodeUI(player, after)).frames(20));
+		Assert.assertEquals("", output);
 		Assert.assertEquals(16, drawn.size());
 		Assert.assertFalse(drawn.contains(false));
 	}

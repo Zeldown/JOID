@@ -962,15 +962,8 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		this.bridges.open(ui);
 		this.bridges.getWindow().getKeys().addAll(Arrays.asList(Key.LEFT_CONTROL, Key.LEFT_SHIFT));
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
-			this.bridges.getUi().keyPressed(Key.R, Key.R);
-		} finally {
-			System.setErr(previous);
-		}
-		Assert.assertTrue(output.toString(), output.toString().startsWith("[JOID] The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead"));
+		final String output = TestUtils.captureErr(() -> this.bridges.getUi().keyPressed(Key.R, Key.R));
+		Assert.assertTrue(output, output.startsWith("[JOID] The UI " + TraceUI.class.getName() + " has no constructor without argument, it cannot be renewed: use Ctrl + R to reload it instead"));
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertEquals(1, ui.inits);
 	}
@@ -1165,15 +1158,8 @@ public class UITest {
 		final ProfiledUI ui = new ProfiledUI(this.trace);
 		TestUtils.captureOut(() -> this.bridges.open(ui));
 		ui.pause = 20L;
-		final PrintStream previous = System.err;
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		System.setErr(new PrintStream(output, true));
-		try {
-			this.bridges.frame();
-		} finally {
-			System.setErr(previous);
-		}
-		Assert.assertTrue(output.toString(), output.toString().matches("\\[JOID\\] ProfiledUI took \\d+\\.\\d\\dms to draw a frame, more than the 16\\.66ms of 60 fps: move the heavy work out of draw\\(\\) or spread it over several frames" + System.lineSeparator()));
+		final String output = TestUtils.captureErr(() -> this.bridges.frame());
+		Assert.assertTrue(output, output.matches("\\[JOID\\] ProfiledUI took \\d+\\.\\d\\dms to draw a frame, more than the 16\\.66ms of 60 fps: move the heavy work out of draw\\(\\) or spread it over several frames" + System.lineSeparator()));
 	}
 
 	@Test
