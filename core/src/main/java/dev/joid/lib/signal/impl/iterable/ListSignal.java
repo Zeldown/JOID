@@ -35,16 +35,16 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return this.mutate(list -> list.remove(index));
 	}
 
+	public E get(final int index) {
+		return super.get().get(index);
+	}
+
 	public @NonNull ListSignal<E> set(final int index, final E element) {
 		return this.mutate(list -> list.set(index, element));
 	}
 
 	public boolean contains(final E e) {
 		return super.get().contains(e);
-	}
-
-	public E get(final int index) {
-		return super.get().get(index);
 	}
 
 	public int indexOf(final E e) {

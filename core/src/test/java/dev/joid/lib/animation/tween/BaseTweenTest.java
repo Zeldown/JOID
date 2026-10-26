@@ -421,12 +421,12 @@ public class BaseTweenTest {
 		}
 
 		@Override
-		protected void forceEndValues() {}
-
-		@Override
 		protected void forceStartValues() {
 			this.starts++;
 		}
+
+		@Override
+		protected void forceEndValues() {}
 
 	}
 

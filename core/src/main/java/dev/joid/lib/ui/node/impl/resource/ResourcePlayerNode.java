@@ -155,6 +155,19 @@ public class ResourcePlayerNode extends Node {
 		return (T) this;
 	}
 
+	public final <T extends ResourcePlayerNode> @NonNull T stop() {
+		if (!this.resourceStarted) {
+			this.pendingTime = null;
+			this.pendingPlaying = false;
+			return (T) this;
+		}
+
+		this.requirePlayback().stop();
+		this.wasPlaying = false;
+		super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
+		return (T) this;
+	}
+
 	public final <T extends ResourcePlayerNode> @NonNull T pause() {
 		if (!this.resourceStarted) {
 			this.pendingPlaying = false;
@@ -171,19 +184,6 @@ public class ResourcePlayerNode extends Node {
 
 	public final <T extends ResourcePlayerNode> @NonNull T toggle() {
 		return this.isPlaying() ? this.pause() : this.play();
-	}
-
-	public final <T extends ResourcePlayerNode> @NonNull T stop() {
-		if (!this.resourceStarted) {
-			this.pendingTime = null;
-			this.pendingPlaying = false;
-			return (T) this;
-		}
-
-		this.requirePlayback().stop();
-		this.wasPlaying = false;
-		super.fire(ResourcePlayerNode.STOP, () -> NodeEvent.create(this));
-		return (T) this;
 	}
 
 	public final <T extends ResourcePlayerNode> @NonNull T restart() {

@@ -6,10 +6,10 @@ import lombok.NonNull;
 public final class SnapshotAudioSource implements IAudioSource {
 
 	@Override
-	public void stop() {}
+	public void play() {}
 
 	@Override
-	public void play() {}
+	public void stop() {}
 
 	@Override
 	public void pause() {}

@@ -36,13 +36,6 @@ public final class VideoAudioPlayer {
 		VideoAudioPlayer.audioListenerPosition = audioListenerPosition;
 	}
 
-	public void stop() {
-		this.playing = false;
-		if (this.source != null) {
-			this.source.stop();
-		}
-	}
-
 	public void play() {
 		if (!this.initialized) {
 			this.initialized = true;
@@ -60,6 +53,13 @@ public final class VideoAudioPlayer {
 		this.playing = true;
 		this.buffersQueued = false;
 		this.clearQueue();
+	}
+
+	public void stop() {
+		this.playing = false;
+		if (this.source != null) {
+			this.source.stop();
+		}
 	}
 
 	public void pause() {

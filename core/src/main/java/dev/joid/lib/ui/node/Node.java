@@ -101,13 +101,13 @@ public abstract class Node implements INode {
 
 	private static final EventType<NodeMouseEvent<Node>> CLICK = EventType.create("onClick");
 
+	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
+	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_RELEASED = EventType.create("handleMouseReleased");
+	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
+	private static final EventType<NodeMouseScrollEvent<Node>> HANDLE_MOUSE_SCROLL   = EventType.create("handleMouseScroll");
 	private static final EventType<NodeCharEvent<Node>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
 	private static final EventType<NodeKeyEvent<Node>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
 	private static final EventType<NodeKeyEvent<Node>>         HANDLE_KEY_RELEASED   = EventType.create("handleKeyReleased");
-	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
-	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
-	private static final EventType<NodeMouseEvent<Node>>       HANDLE_MOUSE_RELEASED = EventType.create("handleMouseReleased");
-	private static final EventType<NodeMouseScrollEvent<Node>> HANDLE_MOUSE_SCROLL   = EventType.create("handleMouseScroll");
 
 	private static final EventType<NodeEvent<Node>>      INIT         = EventType.create("onInit");
 	private static final EventType<NodeEvent<Node>>      UPDATE       = EventType.create("onUpdate");
@@ -482,67 +482,6 @@ public abstract class Node implements INode {
 		return this.listen(Node.DETACH, listener);
 	}
 
-	public final <T extends Node> @NonNull T handleMouseScroll(final @NonNull EventListener<NodeMouseScrollEvent<T>> listener) {
-		return this.listen(Node.HANDLE_MOUSE_SCROLL, listener);
-	}
-
-	public final boolean fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY) {
-		final NodeMouseScrollEvent<Node> input = NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, null);
-		this.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, input);
-		return input.isConsumed();
-	}
-
-	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull IConsumableEvent source) {
-		if (!this.isVisible() || !this.isInteractive()) {
-			return;
-		}
-
-		this.dispatch(NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, source), this.isEnabled(), Node.HANDLE_MOUSE_SCROLL, (node, event) -> node.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event), event -> {
-			if (!event.isConsumed() && this.isHovered()) {
-				final double speed = UI.isCtrlKeyDown() ? this.scrollSpeed * 2D : this.scrollSpeed;
-				if (notchesY != 0D && this.hasOverflowY()) {
-					if (this.canScroll(this.scrollYValue, this.maxScrollY, notchesY)) {
-						this.scrollYValue.set(this.scrollYValue.get() + notchesY * 30D * speed);
-						event.consume();
-					}
-				} else if (notchesY != 0D && notchesX == 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesY)) {
-					this.scrollXValue.set(this.scrollXValue.get() + notchesY * 30D * speed);
-					event.consume();
-				}
-
-				if (notchesX != 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesX)) {
-					this.scrollXValue.set(this.scrollXValue.get() + notchesX * 30D * speed);
-					event.consume();
-				}
-			}
-
-			this.mouseScroll(event);
-		});
-	}
-
-	public final <T extends Node> @NonNull T handleMouseDragged(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
-		return this.listen(Node.HANDLE_MOUSE_DRAGGED, listener);
-	}
-
-	public final boolean fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime) {
-		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, null);
-		this.fireMouseDragged(mouseX, mouseY, button, deltaTime, input);
-		return input.isConsumed();
-	}
-
-	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull IConsumableEvent source) {
-		if (this.isVisible() && this.isInteractive()) {
-			this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, source), this.isEnabled(), Node.HANDLE_MOUSE_DRAGGED, (node, event) -> node.fireMouseDragged(mouseX, mouseY, button, deltaTime, event), this::mouseDragged);
-		}
-
-		if (this.dragging) {
-			this.fireDrag(() -> {
-				this.targetDragX = mouseX - this.dragX;
-				this.targetDragY = mouseY - this.dragY;
-			});
-		}
-	}
-
 	public final <T extends Node> @NonNull T handleMousePressed(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
 		return this.listen(Node.HANDLE_MOUSE_PRESSED, listener);
 	}
@@ -593,6 +532,67 @@ public abstract class Node implements INode {
 		}
 
 		this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source), true, Node.HANDLE_MOUSE_RELEASED, (node, event) -> node.fireMouseReleased(mouseX, mouseY, button, event), this::mouseReleased);
+	}
+
+	public final <T extends Node> @NonNull T handleMouseDragged(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
+		return this.listen(Node.HANDLE_MOUSE_DRAGGED, listener);
+	}
+
+	public final boolean fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime) {
+		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, null);
+		this.fireMouseDragged(mouseX, mouseY, button, deltaTime, input);
+		return input.isConsumed();
+	}
+
+	public final void fireMouseDragged(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull IConsumableEvent source) {
+		if (this.isVisible() && this.isInteractive()) {
+			this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, source), this.isEnabled(), Node.HANDLE_MOUSE_DRAGGED, (node, event) -> node.fireMouseDragged(mouseX, mouseY, button, deltaTime, event), this::mouseDragged);
+		}
+
+		if (this.dragging) {
+			this.fireDrag(() -> {
+				this.targetDragX = mouseX - this.dragX;
+				this.targetDragY = mouseY - this.dragY;
+			});
+		}
+	}
+
+	public final <T extends Node> @NonNull T handleMouseScroll(final @NonNull EventListener<NodeMouseScrollEvent<T>> listener) {
+		return this.listen(Node.HANDLE_MOUSE_SCROLL, listener);
+	}
+
+	public final boolean fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY) {
+		final NodeMouseScrollEvent<Node> input = NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, null);
+		this.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, input);
+		return input.isConsumed();
+	}
+
+	public final void fireMouseScroll(final double mouseX, final double mouseY, final double notchesX, final double notchesY, final @NonNull IConsumableEvent source) {
+		if (!this.isVisible() || !this.isInteractive()) {
+			return;
+		}
+
+		this.dispatch(NodeMouseScrollEvent.create(this, mouseX, mouseY, notchesX, notchesY, source), this.isEnabled(), Node.HANDLE_MOUSE_SCROLL, (node, event) -> node.fireMouseScroll(mouseX, mouseY, notchesX, notchesY, event), event -> {
+			if (!event.isConsumed() && this.isHovered()) {
+				final double speed = UI.isCtrlKeyDown() ? this.scrollSpeed * 2D : this.scrollSpeed;
+				if (notchesY != 0D && this.hasOverflowY()) {
+					if (this.canScroll(this.scrollYValue, this.maxScrollY, notchesY)) {
+						this.scrollYValue.set(this.scrollYValue.get() + notchesY * 30D * speed);
+						event.consume();
+					}
+				} else if (notchesY != 0D && notchesX == 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesY)) {
+					this.scrollXValue.set(this.scrollXValue.get() + notchesY * 30D * speed);
+					event.consume();
+				}
+
+				if (notchesX != 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesX)) {
+					this.scrollXValue.set(this.scrollXValue.get() + notchesX * 30D * speed);
+					event.consume();
+				}
+			}
+
+			this.mouseScroll(event);
+		});
 	}
 
 	public final <T extends Node> @NonNull T handleCharTyped(final @NonNull EventListener<NodeCharEvent<T>> listener) {

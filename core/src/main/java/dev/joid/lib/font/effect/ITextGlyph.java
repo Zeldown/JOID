@@ -15,8 +15,8 @@ public interface ITextGlyph {
 	public double getOffsetX();
 	public double getOffsetY();
 	public double getAscender();
-	public double getBaseline();
 	public double getDescender();
+	public double getBaseline();
 	public double getUnderlineY();
 	public @NonNull Color getColor();
 	public @NonNull TextStyle getStyle();

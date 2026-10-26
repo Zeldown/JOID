@@ -18,6 +18,8 @@ import lombok.NonNull;
 @Getter
 public final class DraggableProperty {
 
+	private final List<Node> snapNodes;
+
 	private DraggableType     type;
 	private Predicate<Node>   enabled;
 
@@ -27,7 +29,6 @@ public final class DraggableProperty {
 	@Getter(AccessLevel.NONE)
 	private BoundingBox area;
 
-	private final List<Node>  snapNodes;
 	private DraggableSnapType snapType;
 
 	private DraggableProperty(final DraggableAreaType areaType, final BoundingBox area, final Node areaNode) {

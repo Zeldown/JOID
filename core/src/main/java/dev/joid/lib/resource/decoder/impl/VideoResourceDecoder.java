@@ -112,20 +112,6 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 	}
 
 	@Override
-	public @NonNull VideoResourceDecoder stop() {
-		this.playRequested = false;
-		this.running.set(false);
-		this.paused.set(false);
-		this.seeked = false;
-		this.joinDecodeThread();
-
-		if (this.audioPlayer != null) {
-			this.audioPlayer.stop();
-		}
-		return this;
-	}
-
-	@Override
 	public void prepare(final @NonNull ResourceData resource) {
 		this.released = false;
 		this.texturesAllocated = false;
@@ -337,6 +323,20 @@ public class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback
 		}
 
 		this.startDecodeThread();
+		return this;
+	}
+
+	@Override
+	public @NonNull VideoResourceDecoder stop() {
+		this.playRequested = false;
+		this.running.set(false);
+		this.paused.set(false);
+		this.seeked = false;
+		this.joinDecodeThread();
+
+		if (this.audioPlayer != null) {
+			this.audioPlayer.stop();
+		}
 		return this;
 	}
 

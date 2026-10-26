@@ -130,10 +130,6 @@ public final class InteractiveValue<V> {
 		return this.changed ? this.clamp.apply(this.pending) : this.getter.get();
 	}
 
-	public V getRequested() {
-		return this.requested != null ? this.requested : this.getter.get();
-	}
-
 	public void set(final V value) {
 		if (!this.tracked) {
 			this.change(value);
@@ -142,6 +138,10 @@ public final class InteractiveValue<V> {
 
 		this.pending = value;
 		this.changed = true;
+	}
+
+	public V getRequested() {
+		return this.requested != null ? this.requested : this.getter.get();
 	}
 
 	public void mark() {

@@ -75,13 +75,13 @@ import lombok.NonNull;
 
 public abstract class UI implements IIndexedElement {
 
+	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
+	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_RELEASED = EventType.create("handleMouseReleased");
+	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
+	private static final EventType<UIMouseScrollEvent<UI>> HANDLE_MOUSE_SCROLL   = EventType.create("handleMouseScroll");
+	private static final EventType<UICharEvent<UI>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_PRESSED    = EventType.create("handleKeyPressed");
 	private static final EventType<UIKeyEvent<UI>>         HANDLE_KEY_RELEASED   = EventType.create("handleKeyReleased");
-	private static final EventType<UICharEvent<UI>>        HANDLE_CHAR_TYPED     = EventType.create("handleCharTyped");
-	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_PRESSED  = EventType.create("handleMousePressed");
-	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_DRAGGED  = EventType.create("handleMouseDragged");
-	private static final EventType<UIMouseEvent<UI>>       HANDLE_MOUSE_RELEASED = EventType.create("handleMouseReleased");
-	private static final EventType<UIMouseScrollEvent<UI>> HANDLE_MOUSE_SCROLL   = EventType.create("handleMouseScroll");
 
 	private static final EventType<UICloseEvent.Post<UI>> CLOSE        = EventType.create("onClose");
 	private static final EventType<UICloseEvent.Pre<UI>>  BEFORE_CLOSE = EventType.create("beforeClose");
@@ -260,22 +260,6 @@ public abstract class UI implements IIndexedElement {
 		this.refreshWatch();
 	}
 
-	public final <T extends UI> @NonNull T handleMouseScroll(final @NonNull EventListener<UIMouseScrollEvent<T>> listener) {
-		return this.bindings.listen(UI.HANDLE_MOUSE_SCROLL, listener);
-	}
-
-	public final boolean fireMouseScroll(final double notchesX, final double notchesY) {
-		final double mx = this.getMouseX();
-		final double my = this.getMouseY();
-		final UIMouseScrollEvent<UI> event = UIMouseScrollEvent.create(this, mx, my, notchesX, notchesY);
-		return this.fireInput(UI.HANDLE_MOUSE_SCROLL, "mouseScroll", event, node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event), () -> {
-			if (!event.isConsumed() && JOIDEnv.isDevMode() && this.data.zoomable() && UI.isAltKeyDown() && notchesY != 0D) {
-				this.zoomValue.change(this.getZoom() + notchesY * (UI.isShiftKeyDown() ? 0.12D : 0.012D));
-				event.consume();
-			}
-		});
-	}
-
 	public final <T extends UI> @NonNull T handleMousePressed(final @NonNull EventListener<UIMouseEvent<T>> listener) {
 		return this.bindings.listen(UI.HANDLE_MOUSE_PRESSED, listener);
 	}
@@ -307,6 +291,22 @@ public abstract class UI implements IIndexedElement {
 		final double my = this.getMouseY();
 		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, deltaTime);
 		return this.fireInput(UI.HANDLE_MOUSE_DRAGGED, "mouseDragged", event, node -> node.fireMouseDragged(mx, my, button, deltaTime, event), () -> {});
+	}
+
+	public final <T extends UI> @NonNull T handleMouseScroll(final @NonNull EventListener<UIMouseScrollEvent<T>> listener) {
+		return this.bindings.listen(UI.HANDLE_MOUSE_SCROLL, listener);
+	}
+
+	public final boolean fireMouseScroll(final double notchesX, final double notchesY) {
+		final double mx = this.getMouseX();
+		final double my = this.getMouseY();
+		final UIMouseScrollEvent<UI> event = UIMouseScrollEvent.create(this, mx, my, notchesX, notchesY);
+		return this.fireInput(UI.HANDLE_MOUSE_SCROLL, "mouseScroll", event, node -> node.fireMouseScroll(mx, my, notchesX, notchesY, event), () -> {
+			if (!event.isConsumed() && JOIDEnv.isDevMode() && this.data.zoomable() && UI.isAltKeyDown() && notchesY != 0D) {
+				this.zoomValue.change(this.getZoom() + notchesY * (UI.isShiftKeyDown() ? 0.12D : 0.012D));
+				event.consume();
+			}
+		});
 	}
 
 	public final <T extends UI> @NonNull T handleCharTyped(final @NonNull EventListener<UICharEvent<T>> listener) {

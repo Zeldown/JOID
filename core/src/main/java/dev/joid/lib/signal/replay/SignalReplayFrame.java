@@ -988,13 +988,6 @@ public final class SignalReplayFrame {
 		return value instanceof Byte || value instanceof Short ? ((Number) value).intValue() : value;
 	}
 
-	private static Object[] convert(final Object[] arguments, final Class<?>[] types) {
-		for (int position = 0; position < arguments.length; position++) {
-			arguments[position] = SignalReplayFrame.convert(arguments[position], types[position]);
-		}
-		return arguments;
-	}
-
 	public static Object convert(final Object value, final Class<?> type) {
 		if (!(value instanceof Integer)) {
 			return value;
@@ -1013,6 +1006,13 @@ public final class SignalReplayFrame {
 			return (byte) number;
 		}
 		return type == short.class || type == Short.class ? (Object) (short) number : value;
+	}
+
+	private static Object[] convert(final Object[] arguments, final Class<?>[] types) {
+		for (int position = 0; position < arguments.length; position++) {
+			arguments[position] = SignalReplayFrame.convert(arguments[position], types[position]);
+		}
+		return arguments;
 	}
 
 	private static int toInt(final Object value) {
