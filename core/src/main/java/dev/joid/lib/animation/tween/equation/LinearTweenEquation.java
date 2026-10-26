@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class LinearTweenEquation extends TweenEquation {
 
-	public static final LinearTweenEquation INOUT = new LinearTweenEquation() {
+	public static final LinearTweenEquation IN_OUT = new LinearTweenEquation() {
 
 		@Override
 		public float compute(final float t) {
@@ -16,7 +16,7 @@ public abstract class LinearTweenEquation extends TweenEquation {
 
 		@Override
 		public String toString() {
-			return "Linear.INOUT";
+			return "Linear.IN_OUT";
 		}
 
 	};

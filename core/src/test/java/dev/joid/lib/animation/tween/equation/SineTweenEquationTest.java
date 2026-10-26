@@ -7,7 +7,7 @@ public class SineTweenEquationTest {
 
 	@Test
 	public void startsAtZeroAndEndsAtOne() {
-		for (final SineTweenEquation sine : new SineTweenEquation[] {SineTweenEquation.IN, SineTweenEquation.OUT, SineTweenEquation.INOUT}) {
+		for (final SineTweenEquation sine : new SineTweenEquation[] {SineTweenEquation.IN, SineTweenEquation.OUT, SineTweenEquation.IN_OUT}) {
 			Assert.assertEquals(0F, sine.compute(0F), 0F);
 			Assert.assertEquals(1F, sine.compute(1F), 0.0001F);
 		}
@@ -25,9 +25,9 @@ public class SineTweenEquationTest {
 
 	@Test
 	public void acceleratesThenDeceleratesInOut() {
-		Assert.assertEquals(0.1464466F, SineTweenEquation.INOUT.compute(0.25F), 0.0001F);
-		Assert.assertEquals(0.5F, SineTweenEquation.INOUT.compute(0.5F), 0.0001F);
-		Assert.assertEquals(0.8535534F, SineTweenEquation.INOUT.compute(0.75F), 0.0001F);
+		Assert.assertEquals(0.1464466F, SineTweenEquation.IN_OUT.compute(0.25F), 0.0001F);
+		Assert.assertEquals(0.5F, SineTweenEquation.IN_OUT.compute(0.5F), 0.0001F);
+		Assert.assertEquals(0.8535534F, SineTweenEquation.IN_OUT.compute(0.75F), 0.0001F);
 	}
 
 	@Test
@@ -35,13 +35,13 @@ public class SineTweenEquationTest {
 		for (int i = 0; i <= 20; i++) {
 			final float t = i / 20F;
 			Assert.assertEquals(1F - SineTweenEquation.IN.compute(1F - t), SineTweenEquation.OUT.compute(t), 0.0001F);
-			Assert.assertEquals(1F - SineTweenEquation.INOUT.compute(1F - t), SineTweenEquation.INOUT.compute(t), 0.0001F);
+			Assert.assertEquals(1F - SineTweenEquation.IN_OUT.compute(1F - t), SineTweenEquation.IN_OUT.compute(t), 0.0001F);
 		}
 	}
 
 	@Test
 	public void keepsGrowing() {
-		for (final SineTweenEquation sine : new SineTweenEquation[] {SineTweenEquation.IN, SineTweenEquation.OUT, SineTweenEquation.INOUT}) {
+		for (final SineTweenEquation sine : new SineTweenEquation[] {SineTweenEquation.IN, SineTweenEquation.OUT, SineTweenEquation.IN_OUT}) {
 			for (int i = 1; i <= 20; i++) {
 				Assert.assertTrue(sine.compute(i / 20F) > sine.compute((i - 1) / 20F));
 			}
@@ -52,7 +52,7 @@ public class SineTweenEquationTest {
 	public void namesItself() {
 		Assert.assertEquals("Sine.IN", SineTweenEquation.IN.toString());
 		Assert.assertEquals("Sine.OUT", SineTweenEquation.OUT.toString());
-		Assert.assertEquals("Sine.INOUT", SineTweenEquation.INOUT.toString());
+		Assert.assertEquals("Sine.IN_OUT", SineTweenEquation.IN_OUT.toString());
 	}
 
 }

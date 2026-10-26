@@ -35,7 +35,7 @@ public abstract class SineTweenEquation extends TweenEquation {
 
 	};
 
-	public static final SineTweenEquation INOUT = new SineTweenEquation() {
+	public static final SineTweenEquation IN_OUT = new SineTweenEquation() {
 
 		@Override
 		public float compute(final float t) {
@@ -44,7 +44,7 @@ public abstract class SineTweenEquation extends TweenEquation {
 
 		@Override
 		public String toString() {
-			return "Sine.INOUT";
+			return "Sine.IN_OUT";
 		}
 
 	};

@@ -7,7 +7,7 @@ public class QuartTweenEquationTest {
 
 	@Test
 	public void startsAtZeroAndEndsAtOne() {
-		for (final QuartTweenEquation quart : new QuartTweenEquation[] {QuartTweenEquation.IN, QuartTweenEquation.OUT, QuartTweenEquation.INOUT}) {
+		for (final QuartTweenEquation quart : new QuartTweenEquation[] {QuartTweenEquation.IN, QuartTweenEquation.OUT, QuartTweenEquation.IN_OUT}) {
 			Assert.assertEquals(0F, quart.compute(0F), 0F);
 			Assert.assertEquals(1F, quart.compute(1F), 0F);
 		}
@@ -27,9 +27,9 @@ public class QuartTweenEquationTest {
 
 	@Test
 	public void acceleratesThenDeceleratesInOut() {
-		Assert.assertEquals(0.03125F, QuartTweenEquation.INOUT.compute(0.25F), 0F);
-		Assert.assertEquals(0.5F, QuartTweenEquation.INOUT.compute(0.5F), 0F);
-		Assert.assertEquals(0.96875F, QuartTweenEquation.INOUT.compute(0.75F), 0F);
+		Assert.assertEquals(0.03125F, QuartTweenEquation.IN_OUT.compute(0.25F), 0F);
+		Assert.assertEquals(0.5F, QuartTweenEquation.IN_OUT.compute(0.5F), 0F);
+		Assert.assertEquals(0.96875F, QuartTweenEquation.IN_OUT.compute(0.75F), 0F);
 	}
 
 	@Test
@@ -37,13 +37,13 @@ public class QuartTweenEquationTest {
 		for (int i = 0; i <= 20; i++) {
 			final float t = i / 20F;
 			Assert.assertEquals(1F - QuartTweenEquation.IN.compute(1F - t), QuartTweenEquation.OUT.compute(t), 0.0001F);
-			Assert.assertEquals(1F - QuartTweenEquation.INOUT.compute(1F - t), QuartTweenEquation.INOUT.compute(t), 0.0001F);
+			Assert.assertEquals(1F - QuartTweenEquation.IN_OUT.compute(1F - t), QuartTweenEquation.IN_OUT.compute(t), 0.0001F);
 		}
 	}
 
 	@Test
 	public void keepsGrowing() {
-		for (final QuartTweenEquation quart : new QuartTweenEquation[] {QuartTweenEquation.IN, QuartTweenEquation.OUT, QuartTweenEquation.INOUT}) {
+		for (final QuartTweenEquation quart : new QuartTweenEquation[] {QuartTweenEquation.IN, QuartTweenEquation.OUT, QuartTweenEquation.IN_OUT}) {
 			for (int i = 1; i <= 20; i++) {
 				Assert.assertTrue(quart.compute(i / 20F) > quart.compute((i - 1) / 20F));
 			}
@@ -54,7 +54,7 @@ public class QuartTweenEquationTest {
 	public void namesItself() {
 		Assert.assertEquals("Quart.IN", QuartTweenEquation.IN.toString());
 		Assert.assertEquals("Quart.OUT", QuartTweenEquation.OUT.toString());
-		Assert.assertEquals("Quart.INOUT", QuartTweenEquation.INOUT.toString());
+		Assert.assertEquals("Quart.IN_OUT", QuartTweenEquation.IN_OUT.toString());
 	}
 
 }

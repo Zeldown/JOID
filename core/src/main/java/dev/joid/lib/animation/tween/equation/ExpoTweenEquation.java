@@ -35,7 +35,7 @@ public abstract class ExpoTweenEquation extends TweenEquation {
 
 	};
 
-	public static final ExpoTweenEquation INOUT = new ExpoTweenEquation() {
+	public static final ExpoTweenEquation IN_OUT = new ExpoTweenEquation() {
 
 		@Override
 		public float compute(final float time) {
@@ -57,7 +57,7 @@ public abstract class ExpoTweenEquation extends TweenEquation {
 
 		@Override
 		public String toString() {
-			return "Expo.INOUT";
+			return "Expo.IN_OUT";
 		}
 
 	};

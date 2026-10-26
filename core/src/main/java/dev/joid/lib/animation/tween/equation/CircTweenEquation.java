@@ -36,7 +36,7 @@ public abstract class CircTweenEquation extends TweenEquation {
 
 	};
 
-	public static final CircTweenEquation INOUT = new CircTweenEquation() {
+	public static final CircTweenEquation IN_OUT = new CircTweenEquation() {
 
 		@Override
 		public float compute(final float time) {
@@ -50,7 +50,7 @@ public abstract class CircTweenEquation extends TweenEquation {
 
 		@Override
 		public String toString() {
-			return "Circ.INOUT";
+			return "Circ.IN_OUT";
 		}
 
 	};

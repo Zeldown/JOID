@@ -36,7 +36,7 @@ public abstract class QuartTweenEquation extends TweenEquation {
 
 	};
 
-	public static final QuartTweenEquation INOUT = new QuartTweenEquation() {
+	public static final QuartTweenEquation IN_OUT = new QuartTweenEquation() {
 
 		@Override
 		public float compute(final float time) {
@@ -50,7 +50,7 @@ public abstract class QuartTweenEquation extends TweenEquation {
 
 		@Override
 		public String toString() {
-			return "Quart.INOUT";
+			return "Quart.IN_OUT";
 		}
 
 	};

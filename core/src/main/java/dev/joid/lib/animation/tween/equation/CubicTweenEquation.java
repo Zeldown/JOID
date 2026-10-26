@@ -36,7 +36,7 @@ public abstract class CubicTweenEquation extends TweenEquation {
 
 	};
 
-	public static final CubicTweenEquation INOUT = new CubicTweenEquation() {
+	public static final CubicTweenEquation IN_OUT = new CubicTweenEquation() {
 
 		@Override
 		public float compute(final float time) {
@@ -50,7 +50,7 @@ public abstract class CubicTweenEquation extends TweenEquation {
 
 		@Override
 		public String toString() {
-			return "Cubic.INOUT";
+			return "Cubic.IN_OUT";
 		}
 
 	};

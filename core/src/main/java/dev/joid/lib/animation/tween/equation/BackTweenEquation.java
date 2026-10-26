@@ -10,9 +10,9 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BackTweenEquation extends TweenEquation {
 
-	public static final BackTweenEquation IN    = BackTweenEquation.in(1.70158F);
-	public static final BackTweenEquation OUT   = BackTweenEquation.out(1.70158F);
-	public static final BackTweenEquation INOUT = BackTweenEquation.inOut(1.70158F);
+	public static final BackTweenEquation IN     = BackTweenEquation.in(1.70158F);
+	public static final BackTweenEquation OUT    = BackTweenEquation.out(1.70158F);
+	public static final BackTweenEquation IN_OUT = BackTweenEquation.inOut(1.70158F);
 
 	protected final float overshoot;
 
@@ -84,7 +84,7 @@ public abstract class BackTweenEquation extends TweenEquation {
 
 			@Override
 			public String toString() {
-				return "Back.INOUT";
+				return "Back.IN_OUT";
 			}
 
 		};

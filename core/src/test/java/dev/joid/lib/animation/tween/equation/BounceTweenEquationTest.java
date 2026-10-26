@@ -7,7 +7,7 @@ public class BounceTweenEquationTest {
 
 	@Test
 	public void startsAtZeroAndEndsAtOne() {
-		for (final BounceTweenEquation bounce : new BounceTweenEquation[] {BounceTweenEquation.IN, BounceTweenEquation.OUT, BounceTweenEquation.INOUT}) {
+		for (final BounceTweenEquation bounce : new BounceTweenEquation[] {BounceTweenEquation.IN, BounceTweenEquation.OUT, BounceTweenEquation.IN_OUT}) {
 			Assert.assertEquals(0F, bounce.compute(0F), 0.0001F);
 			Assert.assertEquals(1F, bounce.compute(1F), 0.0001F);
 		}
@@ -38,12 +38,12 @@ public class BounceTweenEquationTest {
 
 	@Test
 	public void bouncesInThenOutInOut() {
-		Assert.assertEquals(0.1171875F, BounceTweenEquation.INOUT.compute(0.25F), 0.0001F);
-		Assert.assertEquals(0.5F, BounceTweenEquation.INOUT.compute(0.5F), 0F);
-		Assert.assertEquals(0.8828125F, BounceTweenEquation.INOUT.compute(0.75F), 0.0001F);
+		Assert.assertEquals(0.1171875F, BounceTweenEquation.IN_OUT.compute(0.25F), 0.0001F);
+		Assert.assertEquals(0.5F, BounceTweenEquation.IN_OUT.compute(0.5F), 0F);
+		Assert.assertEquals(0.8828125F, BounceTweenEquation.IN_OUT.compute(0.75F), 0.0001F);
 		for (int i = 0; i <= 20; i++) {
 			final float t = i / 20F;
-			Assert.assertEquals(1F - BounceTweenEquation.INOUT.compute(1F - t), BounceTweenEquation.INOUT.compute(t), 0.0001F);
+			Assert.assertEquals(1F - BounceTweenEquation.IN_OUT.compute(1F - t), BounceTweenEquation.IN_OUT.compute(t), 0.0001F);
 		}
 	}
 
@@ -51,7 +51,7 @@ public class BounceTweenEquationTest {
 	public void namesItself() {
 		Assert.assertEquals("Bounce.IN", BounceTweenEquation.IN.toString());
 		Assert.assertEquals("Bounce.OUT", BounceTweenEquation.OUT.toString());
-		Assert.assertEquals("Bounce.INOUT", BounceTweenEquation.INOUT.toString());
+		Assert.assertEquals("Bounce.IN_OUT", BounceTweenEquation.IN_OUT.toString());
 	}
 
 }

@@ -44,7 +44,7 @@ public abstract class BounceTweenEquation extends TweenEquation {
 
 	};
 
-	public static final BounceTweenEquation INOUT = new BounceTweenEquation() {
+	public static final BounceTweenEquation IN_OUT = new BounceTweenEquation() {
 
 		@Override
 		public float compute(final float t) {
@@ -57,7 +57,7 @@ public abstract class BounceTweenEquation extends TweenEquation {
 
 		@Override
 		public String toString() {
-			return "Bounce.INOUT";
+			return "Bounce.IN_OUT";
 		}
 
 	};

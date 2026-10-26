@@ -22,7 +22,7 @@ public class ShowInspect extends ShowLists {
 	}
 
 	private Color veil(final double delay) {
-		return ShowInspect.VEIL.withAlpha((float) (1D - super.ease(TweenEquations.QUAD_INOUT, 0.1D + delay, 0.55D + delay)));
+		return ShowInspect.VEIL.withAlpha((float) (1D - super.ease(TweenEquations.QUAD_IN_OUT, 0.1D + delay, 0.55D + delay)));
 	}
 
 }

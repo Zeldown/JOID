@@ -10,9 +10,9 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class ElasticTweenEquation extends TweenEquation {
 
-	public static final ElasticTweenEquation IN    = ElasticTweenEquation.in(0.3F, 0F);
-	public static final ElasticTweenEquation OUT   = ElasticTweenEquation.out(0.3F, 0F);
-	public static final ElasticTweenEquation INOUT = ElasticTweenEquation.inOut(0.3F * 1.5F, 0F);
+	public static final ElasticTweenEquation IN     = ElasticTweenEquation.in(0.3F, 0F);
+	public static final ElasticTweenEquation OUT    = ElasticTweenEquation.out(0.3F, 0F);
+	public static final ElasticTweenEquation IN_OUT = ElasticTweenEquation.inOut(0.3F * 1.5F, 0F);
 
 	protected final float period;
 	protected final float amplitude;
@@ -152,7 +152,7 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 
 			@Override
 			public String toString() {
-				return "Elastic.INOUT";
+				return "Elastic.IN_OUT";
 			}
 
 		};

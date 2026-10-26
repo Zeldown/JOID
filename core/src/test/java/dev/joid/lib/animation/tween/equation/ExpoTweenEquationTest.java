@@ -7,7 +7,7 @@ public class ExpoTweenEquationTest {
 
 	@Test
 	public void startsAtZeroAndEndsAtOne() {
-		for (final ExpoTweenEquation expo : new ExpoTweenEquation[] {ExpoTweenEquation.IN, ExpoTweenEquation.OUT, ExpoTweenEquation.INOUT}) {
+		for (final ExpoTweenEquation expo : new ExpoTweenEquation[] {ExpoTweenEquation.IN, ExpoTweenEquation.OUT, ExpoTweenEquation.IN_OUT}) {
 			Assert.assertEquals(0F, expo.compute(0F), 0F);
 			Assert.assertEquals(1F, expo.compute(1F), 0F);
 		}
@@ -27,9 +27,9 @@ public class ExpoTweenEquationTest {
 
 	@Test
 	public void acceleratesThenDeceleratesInOut() {
-		Assert.assertEquals(0.015625F, ExpoTweenEquation.INOUT.compute(0.25F), 0F);
-		Assert.assertEquals(0.5F, ExpoTweenEquation.INOUT.compute(0.5F), 0F);
-		Assert.assertEquals(0.984375F, ExpoTweenEquation.INOUT.compute(0.75F), 0F);
+		Assert.assertEquals(0.015625F, ExpoTweenEquation.IN_OUT.compute(0.25F), 0F);
+		Assert.assertEquals(0.5F, ExpoTweenEquation.IN_OUT.compute(0.5F), 0F);
+		Assert.assertEquals(0.984375F, ExpoTweenEquation.IN_OUT.compute(0.75F), 0F);
 	}
 
 	@Test
@@ -37,13 +37,13 @@ public class ExpoTweenEquationTest {
 		for (int i = 1; i < 20; i++) {
 			final float t = i / 20F;
 			Assert.assertEquals(1F - ExpoTweenEquation.IN.compute(1F - t), ExpoTweenEquation.OUT.compute(t), 0.0001F);
-			Assert.assertEquals(1F - ExpoTweenEquation.INOUT.compute(1F - t), ExpoTweenEquation.INOUT.compute(t), 0.0001F);
+			Assert.assertEquals(1F - ExpoTweenEquation.IN_OUT.compute(1F - t), ExpoTweenEquation.IN_OUT.compute(t), 0.0001F);
 		}
 	}
 
 	@Test
 	public void keepsGrowing() {
-		for (final ExpoTweenEquation expo : new ExpoTweenEquation[] {ExpoTweenEquation.IN, ExpoTweenEquation.OUT, ExpoTweenEquation.INOUT}) {
+		for (final ExpoTweenEquation expo : new ExpoTweenEquation[] {ExpoTweenEquation.IN, ExpoTweenEquation.OUT, ExpoTweenEquation.IN_OUT}) {
 			for (int i = 1; i <= 20; i++) {
 				Assert.assertTrue(expo.compute(i / 20F) > expo.compute((i - 1) / 20F));
 			}
@@ -54,7 +54,7 @@ public class ExpoTweenEquationTest {
 	public void namesItself() {
 		Assert.assertEquals("Expo.IN", ExpoTweenEquation.IN.toString());
 		Assert.assertEquals("Expo.OUT", ExpoTweenEquation.OUT.toString());
-		Assert.assertEquals("Expo.INOUT", ExpoTweenEquation.INOUT.toString());
+		Assert.assertEquals("Expo.IN_OUT", ExpoTweenEquation.IN_OUT.toString());
 	}
 
 }

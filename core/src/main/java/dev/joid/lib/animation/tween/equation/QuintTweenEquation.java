@@ -36,7 +36,7 @@ public abstract class QuintTweenEquation extends TweenEquation {
 
 	};
 
-	public static final QuintTweenEquation INOUT = new QuintTweenEquation() {
+	public static final QuintTweenEquation IN_OUT = new QuintTweenEquation() {
 
 		@Override
 		public float compute(final float time) {
@@ -50,7 +50,7 @@ public abstract class QuintTweenEquation extends TweenEquation {
 
 		@Override
 		public String toString() {
-			return "Quint.INOUT";
+			return "Quint.IN_OUT";
 		}
 
 	};

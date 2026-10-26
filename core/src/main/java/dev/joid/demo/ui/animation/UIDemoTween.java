@@ -36,28 +36,28 @@ public class UIDemoTween extends UIDemo {
 		final TweenAnimator paused = TweenAnimator.create(0F);
 		paused.timeline(Timeline.sequence().push(paused.tween(600F).target(1F).easing(TweenEquations.QUAD_OUT)).pushPause(600F).push(paused.tween(600F).target(0F).easing(TweenEquations.QUAD_IN))).repeat(BaseTween.INFINITY, 300F).start();
 		final TweenAnimator waypoints = TweenAnimator.create(0F);
-		waypoints.timeline(Timeline.sequence().push(waypoints.tween(2000F).waypoint(1F).waypoint(0.2F).target(1F).easing(TweenEquations.QUAD_INOUT).path(TweenPaths.CATMULL_ROM))).repeatYoyo(BaseTween.INFINITY, 0F).start();
-		final TweenAnimator delayed = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_INOUT).delay(1000F).repeatYoyo(BaseTween.INFINITY, 0F).start();
+		waypoints.timeline(Timeline.sequence().push(waypoints.tween(2000F).waypoint(1F).waypoint(0.2F).target(1F).easing(TweenEquations.QUAD_IN_OUT).path(TweenPaths.CATMULL_ROM))).repeatYoyo(BaseTween.INFINITY, 0F).start();
+		final TweenAnimator delayed = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CUBIC_IN_OUT).delay(1000F).repeatYoyo(BaseTween.INFINITY, 0F).start();
 		final TweenAnimator[] lines = {
-			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BACK_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
-			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CIRC_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.BACK_IN_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.CIRC_IN_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
 			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.EXPO_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
-			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUINT_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
+			TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUINT_IN_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start(),
 			paused,
 			waypoints,
 			delayed
 		};
 		final String[] names = {"Back in out", "Circ in out", "Expo out", "Quint in out", "Timeline pause", "Waypoints", "Start delay"};
 		final int[][] positions = {{100, 40}, {540, 40}, {980, 40}, {1420, 40}, {540, 380}, {1420, 380}, {980, 720}};
-		final TweenAnimator horizontal = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).start();
-		final TweenAnimator vertical = TweenAnimator.create(0F).sequence(500F, 1F, TweenEquations.SINE_INOUT).push(500F, 1F).repeatYoyo(BaseTween.INFINITY, 0F).start();
+		final TweenAnimator horizontal = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.QUAD_IN_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start();
+		final TweenAnimator vertical = TweenAnimator.create(0F).sequence(500F, 1F, TweenEquations.SINE_IN_OUT).push(500F, 1F).repeatYoyo(BaseTween.INFINITY, 0F).start();
 		final IntegerSignal starts = new IntegerSignal(0);
 		final IntegerSignal laps = new IntegerSignal(0);
-		final TweenAnimator events = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).onStart(event -> starts.increment()).onIterationEnd(event -> laps.increment()).start();
+		final TweenAnimator events = TweenAnimator.create(0F).sequence(1000F, 1F, TweenEquations.SINE_IN_OUT).repeatYoyo(BaseTween.INFINITY, 0F).onStart(event -> starts.increment()).onIterationEnd(event -> laps.increment()).start();
 
 		this.manager.killAll();
 		this.value = 0F;
-		Tween.to(() -> this.value, value -> this.value = value, 1000F).target(1F).easing(TweenEquations.CUBIC_INOUT).repeatYoyo(BaseTween.INFINITY, 0F).start(this.manager);
+		Tween.to(() -> this.value, value -> this.value = value, 1000F).target(1F).easing(TweenEquations.CUBIC_IN_OUT).repeatYoyo(BaseTween.INFINITY, 0F).start(this.manager);
 
 		for (int i = 0; i < lines.length; i++) {
 			final int index = i;

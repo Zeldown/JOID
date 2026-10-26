@@ -19,54 +19,54 @@ public class TweenEquationsTest {
 
 	@Test
 	public void namesTheLinearEquation() {
-		Assert.assertSame(LinearTweenEquation.INOUT, TweenEquations.LINEAR);
+		Assert.assertSame(LinearTweenEquation.IN_OUT, TweenEquations.LINEAR);
 	}
 
 	@Test
 	public void namesEveryPowerEquation() {
 		Assert.assertSame(QuadTweenEquation.IN, TweenEquations.QUAD_IN);
 		Assert.assertSame(QuadTweenEquation.OUT, TweenEquations.QUAD_OUT);
-		Assert.assertSame(QuadTweenEquation.INOUT, TweenEquations.QUAD_INOUT);
+		Assert.assertSame(QuadTweenEquation.IN_OUT, TweenEquations.QUAD_IN_OUT);
 		Assert.assertSame(CubicTweenEquation.IN, TweenEquations.CUBIC_IN);
 		Assert.assertSame(CubicTweenEquation.OUT, TweenEquations.CUBIC_OUT);
-		Assert.assertSame(CubicTweenEquation.INOUT, TweenEquations.CUBIC_INOUT);
+		Assert.assertSame(CubicTweenEquation.IN_OUT, TweenEquations.CUBIC_IN_OUT);
 		Assert.assertSame(QuartTweenEquation.IN, TweenEquations.QUART_IN);
 		Assert.assertSame(QuartTweenEquation.OUT, TweenEquations.QUART_OUT);
-		Assert.assertSame(QuartTweenEquation.INOUT, TweenEquations.QUART_INOUT);
+		Assert.assertSame(QuartTweenEquation.IN_OUT, TweenEquations.QUART_IN_OUT);
 		Assert.assertSame(QuintTweenEquation.IN, TweenEquations.QUINT_IN);
 		Assert.assertSame(QuintTweenEquation.OUT, TweenEquations.QUINT_OUT);
-		Assert.assertSame(QuintTweenEquation.INOUT, TweenEquations.QUINT_INOUT);
+		Assert.assertSame(QuintTweenEquation.IN_OUT, TweenEquations.QUINT_IN_OUT);
 	}
 
 	@Test
 	public void namesEveryCurvedEquation() {
 		Assert.assertSame(CircTweenEquation.IN, TweenEquations.CIRC_IN);
 		Assert.assertSame(CircTweenEquation.OUT, TweenEquations.CIRC_OUT);
-		Assert.assertSame(CircTweenEquation.INOUT, TweenEquations.CIRC_INOUT);
+		Assert.assertSame(CircTweenEquation.IN_OUT, TweenEquations.CIRC_IN_OUT);
 		Assert.assertSame(SineTweenEquation.IN, TweenEquations.SINE_IN);
 		Assert.assertSame(SineTweenEquation.OUT, TweenEquations.SINE_OUT);
-		Assert.assertSame(SineTweenEquation.INOUT, TweenEquations.SINE_INOUT);
+		Assert.assertSame(SineTweenEquation.IN_OUT, TweenEquations.SINE_IN_OUT);
 		Assert.assertSame(ExpoTweenEquation.IN, TweenEquations.EXPO_IN);
 		Assert.assertSame(ExpoTweenEquation.OUT, TweenEquations.EXPO_OUT);
-		Assert.assertSame(ExpoTweenEquation.INOUT, TweenEquations.EXPO_INOUT);
+		Assert.assertSame(ExpoTweenEquation.IN_OUT, TweenEquations.EXPO_IN_OUT);
 	}
 
 	@Test
 	public void namesEveryOvershootingEquation() {
 		Assert.assertSame(BackTweenEquation.IN, TweenEquations.BACK_IN);
 		Assert.assertSame(BackTweenEquation.OUT, TweenEquations.BACK_OUT);
-		Assert.assertSame(BackTweenEquation.INOUT, TweenEquations.BACK_INOUT);
+		Assert.assertSame(BackTweenEquation.IN_OUT, TweenEquations.BACK_IN_OUT);
 		Assert.assertSame(BounceTweenEquation.IN, TweenEquations.BOUNCE_IN);
 		Assert.assertSame(BounceTweenEquation.OUT, TweenEquations.BOUNCE_OUT);
-		Assert.assertSame(BounceTweenEquation.INOUT, TweenEquations.BOUNCE_INOUT);
+		Assert.assertSame(BounceTweenEquation.IN_OUT, TweenEquations.BOUNCE_IN_OUT);
 		Assert.assertSame(ElasticTweenEquation.IN, TweenEquations.ELASTIC_IN);
 		Assert.assertSame(ElasticTweenEquation.OUT, TweenEquations.ELASTIC_OUT);
-		Assert.assertSame(ElasticTweenEquation.INOUT, TweenEquations.ELASTIC_INOUT);
+		Assert.assertSame(ElasticTweenEquation.IN_OUT, TweenEquations.ELASTIC_IN_OUT);
 	}
 
 	@Test
 	public void findsEveryEquationByName() {
-		for (final TweenEquation equation : new TweenEquation[] {TweenEquations.LINEAR, TweenEquations.QUAD_IN, TweenEquations.QUAD_OUT, TweenEquations.QUAD_INOUT, TweenEquations.CUBIC_IN, TweenEquations.CUBIC_OUT, TweenEquations.CUBIC_INOUT, TweenEquations.QUART_IN, TweenEquations.QUART_OUT, TweenEquations.QUART_INOUT, TweenEquations.QUINT_IN, TweenEquations.QUINT_OUT, TweenEquations.QUINT_INOUT, TweenEquations.CIRC_IN, TweenEquations.CIRC_OUT, TweenEquations.CIRC_INOUT, TweenEquations.SINE_IN, TweenEquations.SINE_OUT, TweenEquations.SINE_INOUT, TweenEquations.EXPO_IN, TweenEquations.EXPO_OUT, TweenEquations.EXPO_INOUT, TweenEquations.BACK_IN, TweenEquations.BACK_OUT, TweenEquations.BACK_INOUT, TweenEquations.BOUNCE_IN, TweenEquations.BOUNCE_OUT, TweenEquations.BOUNCE_INOUT, TweenEquations.ELASTIC_IN, TweenEquations.ELASTIC_OUT, TweenEquations.ELASTIC_INOUT}) {
+		for (final TweenEquation equation : new TweenEquation[] {TweenEquations.LINEAR, TweenEquations.QUAD_IN, TweenEquations.QUAD_OUT, TweenEquations.QUAD_IN_OUT, TweenEquations.CUBIC_IN, TweenEquations.CUBIC_OUT, TweenEquations.CUBIC_IN_OUT, TweenEquations.QUART_IN, TweenEquations.QUART_OUT, TweenEquations.QUART_IN_OUT, TweenEquations.QUINT_IN, TweenEquations.QUINT_OUT, TweenEquations.QUINT_IN_OUT, TweenEquations.CIRC_IN, TweenEquations.CIRC_OUT, TweenEquations.CIRC_IN_OUT, TweenEquations.SINE_IN, TweenEquations.SINE_OUT, TweenEquations.SINE_IN_OUT, TweenEquations.EXPO_IN, TweenEquations.EXPO_OUT, TweenEquations.EXPO_IN_OUT, TweenEquations.BACK_IN, TweenEquations.BACK_OUT, TweenEquations.BACK_IN_OUT, TweenEquations.BOUNCE_IN, TweenEquations.BOUNCE_OUT, TweenEquations.BOUNCE_IN_OUT, TweenEquations.ELASTIC_IN, TweenEquations.ELASTIC_OUT, TweenEquations.ELASTIC_IN_OUT}) {
 			Assert.assertSame(equation, TweenEquations.of(equation.toString()));
 		}
 	}

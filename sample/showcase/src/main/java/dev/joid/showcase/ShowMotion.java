@@ -31,11 +31,11 @@ public class ShowMotion extends ShowUI {
 		TextNode.create(158, 206).text(Text.create("Every property can ease: position, size, color, rotation.", ShowUI.font(FontWeight.MEDIUM, 20F, ShowUI.MUTED))).attach(this);
 
 		this.row(0, "Linear", "LINEAR", TweenEquations.LINEAR, ShowUI.SKY, ShowUI.CYAN);
-		this.row(1, "Smooth", "QUAD_INOUT", TweenEquations.QUAD_INOUT, ShowUI.VIOLET, ShowUI.SKY);
+		this.row(1, "Smooth", "QUAD_IN_OUT", TweenEquations.QUAD_IN_OUT, ShowUI.VIOLET, ShowUI.SKY);
 		this.row(2, "Overshoot", "BACK_OUT", TweenEquations.BACK_OUT, ShowUI.FUCHSIA, ShowUI.VIOLET);
 		this.row(3, "Elastic", "ELASTIC_OUT", TweenEquations.ELASTIC_OUT, ShowUI.PINK, ShowUI.FUCHSIA);
 		this.row(4, "Bounce", "BOUNCE_OUT", TweenEquations.BOUNCE_OUT, ShowUI.AMBER, ShowUI.ORANGE);
-		this.row(5, "Expo", "EXPO_INOUT", TweenEquations.EXPO_INOUT, ShowUI.EMERALD, ShowUI.CYAN);
+		this.row(5, "Expo", "EXPO_IN_OUT", TweenEquations.EXPO_IN_OUT, ShowUI.EMERALD, ShowUI.CYAN);
 	}
 
 	private void row(final int index, final String name, final String constant, final TweenEquation equation, final Color from, final Color to) {

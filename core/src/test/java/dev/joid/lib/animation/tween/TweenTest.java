@@ -40,7 +40,7 @@ public class TweenTest {
 	@Test
 	public void easesWithItsEquation() {
 		final TweenValue value = new TweenValue(0F);
-		value.to(1F).target(10F).easing(TweenEquations.QUAD_INOUT).start().update(0.25F);
+		value.to(1F).target(10F).easing(TweenEquations.QUAD_IN_OUT).start().update(0.25F);
 		Assert.assertEquals(1.25F, value.getValue(), 0F);
 	}
 

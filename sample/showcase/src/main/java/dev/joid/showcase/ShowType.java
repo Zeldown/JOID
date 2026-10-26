@@ -73,7 +73,7 @@ public class ShowType extends ShowUI {
 	}
 
 	private double zoom() {
-		return super.ease(TweenEquations.QUINT_INOUT, 2.2D, 3.6D) - super.ease(TweenEquations.QUINT_INOUT, 5D, 6.3D);
+		return super.ease(TweenEquations.QUINT_IN_OUT, 2.2D, 3.6D) - super.ease(TweenEquations.QUINT_IN_OUT, 5D, 6.3D);
 	}
 
 }
