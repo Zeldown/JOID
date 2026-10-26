@@ -55,6 +55,9 @@ public class JOIDTest {
 	@Rule
 	public final HeadlessBridges bridges = new HeadlessBridges();
 
+	@Rule
+	public final TemporaryFolder folder = new TemporaryFolder();
+
 	private File    dataDir;
 	private boolean devMode;
 	private boolean demoMode;
@@ -64,9 +67,6 @@ public class JOIDTest {
 	private MsdfFont      montserrat;
 	private DemoPixelFont pixel;
 	private MsdfFont      playfairDisplay;
-
-	@Rule
-	public final TemporaryFolder folder = new TemporaryFolder();
 
 	@Before
 	public void rememberTheSettings() {

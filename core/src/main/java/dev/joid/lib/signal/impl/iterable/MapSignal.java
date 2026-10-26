@@ -25,6 +25,10 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return this.mutate(Map::clear);
 	}
 
+	public V get(final K key) {
+		return super.get().get(key);
+	}
+
 	public @NonNull MapSignal<K, V> put(final K key, final V value) {
 		return this.mutate(map -> map.put(key, value));
 	}
@@ -39,10 +43,6 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 
 	public Set<Entry<K, V>> entrySet() {
 		return super.get().entrySet();
-	}
-
-	public V get(final K key) {
-		return super.get().get(key);
 	}
 
 	public boolean isEmpty() {

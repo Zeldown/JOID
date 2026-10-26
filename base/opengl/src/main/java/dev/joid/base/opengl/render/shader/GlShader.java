@@ -50,17 +50,17 @@ public final class GlShader extends Shader {
 	}
 
 	@Override
+	protected void compileProgram(final @NonNull ShaderTranslation translation) {
+		this.program       = this.binding.createProgram();
+		this.programActive = GlShader.link(this.binding, translation.getDialect(), this.program, translation.getVertex(), translation.getFragment());
+	}
+
+	@Override
 	protected void deleteProgram() {
 		this.binding.deleteProgram(this.program);
 		this.locationMap.clear();
 		this.program       = 0;
 		this.programActive = false;
-	}
-
-	@Override
-	protected void compileProgram(final @NonNull ShaderTranslation translation) {
-		this.program       = this.binding.createProgram();
-		this.programActive = GlShader.link(this.binding, translation.getDialect(), this.program, translation.getVertex(), translation.getFragment());
 	}
 
 	private void upload(final UniformMember member) {

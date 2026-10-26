@@ -187,8 +187,8 @@ public abstract class Shader implements IShader {
 
 	protected abstract boolean isProgramActive();
 
-	protected abstract void deleteProgram();
 	protected abstract void compileProgram(final @NonNull ShaderTranslation translation);
+	protected abstract void deleteProgram();
 
 	private void builtin(final String name, final boolean value) {
 		final UniformMember member = this.block.getMember(name);

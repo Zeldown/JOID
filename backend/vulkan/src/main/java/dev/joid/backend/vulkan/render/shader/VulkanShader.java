@@ -40,30 +40,6 @@ public final class VulkanShader extends Shader {
 	}
 
 	@Override
-	protected void deleteProgram() {
-		final VulkanRenderBridge bridge = (VulkanRenderBridge) super.getBridge();
-		final VkDevice device = bridge.getContext().getDevice();
-		final long vertexModule = this.vertexModule;
-		final long fragmentModule = this.fragmentModule;
-		final long pipelineLayout = this.pipelineLayout;
-		final long descriptorSetLayout = this.descriptorSetLayout;
-		bridge.getPipelineCache().invalidate(this, bridge::dispose);
-		bridge.getDescriptorCache().invalidate(descriptorSetLayout, bridge::dispose);
-		bridge.dispose(() -> {
-			VK10.vkDestroyShaderModule(device, vertexModule, null);
-			VK10.vkDestroyShaderModule(device, fragmentModule, null);
-			VK10.vkDestroyPipelineLayout(device, pipelineLayout, null);
-			VK10.vkDestroyDescriptorSetLayout(device, descriptorSetLayout, null);
-		});
-
-		this.vertexModule        = VK10.VK_NULL_HANDLE;
-		this.programActive       = false;
-		this.fragmentModule      = VK10.VK_NULL_HANDLE;
-		this.pipelineLayout      = VK10.VK_NULL_HANDLE;
-		this.descriptorSetLayout = VK10.VK_NULL_HANDLE;
-	}
-
-	@Override
 	protected void compileProgram(final @NonNull ShaderTranslation translation) {
 		final ByteBuffer vertex = VulkanShaderCompiler.compile(translation.getVertex(), ShaderStage.VERTEX);
 		final ByteBuffer fragment = VulkanShaderCompiler.compile(translation.getFragment(), ShaderStage.FRAGMENT);
@@ -92,6 +68,30 @@ public final class VulkanShader extends Shader {
 			this.fragmentModule      = VulkanShader.createModule(stack, context, fragment);
 			this.programActive       = true;
 		}
+	}
+
+	@Override
+	protected void deleteProgram() {
+		final VulkanRenderBridge bridge = (VulkanRenderBridge) super.getBridge();
+		final VkDevice device = bridge.getContext().getDevice();
+		final long vertexModule = this.vertexModule;
+		final long fragmentModule = this.fragmentModule;
+		final long pipelineLayout = this.pipelineLayout;
+		final long descriptorSetLayout = this.descriptorSetLayout;
+		bridge.getPipelineCache().invalidate(this, bridge::dispose);
+		bridge.getDescriptorCache().invalidate(descriptorSetLayout, bridge::dispose);
+		bridge.dispose(() -> {
+			VK10.vkDestroyShaderModule(device, vertexModule, null);
+			VK10.vkDestroyShaderModule(device, fragmentModule, null);
+			VK10.vkDestroyPipelineLayout(device, pipelineLayout, null);
+			VK10.vkDestroyDescriptorSetLayout(device, descriptorSetLayout, null);
+		});
+
+		this.vertexModule        = VK10.VK_NULL_HANDLE;
+		this.programActive       = false;
+		this.fragmentModule      = VK10.VK_NULL_HANDLE;
+		this.pipelineLayout      = VK10.VK_NULL_HANDLE;
+		this.descriptorSetLayout = VK10.VK_NULL_HANDLE;
 	}
 
 	private static long createModule(final MemoryStack stack, final VulkanContext context, final ByteBuffer code) {

@@ -372,13 +372,13 @@ public class ShaderTest {
 		}
 
 		@Override
-		protected void deleteProgram() {
-			this.deletions++;
+		protected void compileProgram(final @NonNull ShaderTranslation translation) {
+			this.compilations++;
 		}
 
 		@Override
-		protected void compileProgram(final @NonNull ShaderTranslation translation) {
-			this.compilations++;
+		protected void deleteProgram() {
+			this.deletions++;
 		}
 
 	}
