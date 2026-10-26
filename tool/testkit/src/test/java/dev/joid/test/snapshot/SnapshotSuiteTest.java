@@ -45,6 +45,7 @@ public class SnapshotSuiteTest {
 	public void restoreTheProperties() {
 		SnapshotSuite.stopRunner();
 		HeadlessBridges.forgetTheCursor();
+		HeadlessBridges.forgetTheScreenSize();
 		System.setProperties(this.previous);
 	}
 

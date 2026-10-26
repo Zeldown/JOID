@@ -46,6 +46,7 @@ public class SnapshotRunnerCommandTest {
 	public static void stopRunner() {
 		SnapshotRunnerCommandTest.runner.stop();
 		HeadlessBridges.forgetTheCursor();
+		HeadlessBridges.forgetTheScreenSize();
 	}
 
 	@Test
