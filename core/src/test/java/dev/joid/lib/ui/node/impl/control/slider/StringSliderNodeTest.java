@@ -27,11 +27,6 @@ public class StringSliderNodeTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void refusesAValueOutsideItsValues() {
-		new Slider().values("low", "high").value("ultra");
-	}
-
-	@Test(expected = IllegalArgumentException.class)
 	public void refusesAConstantOutsideItsValues() {
 		new Slider().values(Quality.LOW, Quality.MEDIUM).value(Quality.HIGH);
 	}

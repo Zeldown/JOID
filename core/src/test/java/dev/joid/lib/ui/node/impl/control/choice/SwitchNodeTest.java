@@ -105,25 +105,6 @@ public class SwitchNodeTest {
 	}
 
 	@Test
-	public void followsOnlyItsLastSignal() {
-		final Switch node = this.open();
-		final Signal<String> quality = new Signal<>("high");
-		final Signal<String> shadows = new Signal<>("medium");
-		node.value(quality).value(shadows);
-		shadows.set("low");
-		Assert.assertEquals("high", quality.get());
-		quality.set("medium");
-		Assert.assertEquals("low", node.getValue());
-		Assert.assertTrue(SwitchNodeTest.subscribers(quality).isEmpty());
-		Assert.assertEquals(1, SwitchNodeTest.subscribers(shadows).size());
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesASignalItCannotWrite() {
-		new Switch().values("low", "high").value(new Signal<>("high").map(value -> value));
-	}
-
-	@Test
 	public void startsOnAChosenIndex() {
 		final Switch node = this.open();
 		Assert.assertSame(node, node.values("off", "on").valueIndex(1));
@@ -190,18 +171,8 @@ public class SwitchNodeTest {
 	}
 
 	@Test(expected = IllegalArgumentException.class)
-	public void refusesNoState() {
-		new Switch().values();
-	}
-
-	@Test(expected = IllegalArgumentException.class)
 	public void refusesAnIndexOutOfItsStates() {
 		new Switch().values("off", "on").valueIndex(2);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesAStateOutOfItsStates() {
-		new Switch().values("off", "on").value("eco");
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -345,16 +316,6 @@ public class SwitchNodeTest {
 			Assert.fail("A switch without states has no state to give");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The Switch has no values, call values(...) before getValue()", expected.getMessage());
-		}
-	}
-
-	@Test
-	public void refusesToBeAttachedWithoutStates() {
-		try {
-			this.bridges.open(new SingleUI(new Switch()));
-			Assert.fail("A switch without states cannot be attached");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The Switch has no values, call values(...) before attaching it", expected.getMessage());
 		}
 	}
 

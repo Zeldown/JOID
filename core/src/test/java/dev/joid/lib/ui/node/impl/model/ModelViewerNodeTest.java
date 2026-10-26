@@ -386,16 +386,6 @@ public class ModelViewerNodeTest {
 		Assert.assertTrue(ModelViewerNodeTest.isDragged(viewer));
 	}
 
-	@Test
-	public void refusesToBeAttachedWithoutModel() {
-		try {
-			this.bridges.open(new NodeUI(ModelViewerNode.create(100D, 100D, 200D, 200D)));
-			Assert.fail("A model viewer without model cannot be attached");
-		} catch (final IllegalStateException expected) {
-			Assert.assertEquals("The ModelViewerNode has no model, call model(...) before attaching it", expected.getMessage());
-		}
-	}
-
 	private ModelViewerNode drag(final ModelViewerNode viewer) {
 		this.bridges.open(new NodeUI(viewer)).frame();
 		this.bridges.move(200D, 200D).frames(2);

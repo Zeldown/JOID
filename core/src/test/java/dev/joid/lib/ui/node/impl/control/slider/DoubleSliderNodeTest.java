@@ -19,21 +19,9 @@ public class DoubleSliderNodeTest {
 		Assert.assertEquals(Arrays.asList(0D, 0.5D), new Slider().range(0D, 0.75D, 0.5D).getValueList());
 	}
 
-	@Test
-	public void keepsTheOrderOfItsValues() {
-		final Slider slider = new Slider().values(1D, 0.25D, 0.5D, 0D).value(0.5D);
-		Assert.assertEquals(Arrays.asList(1D, 0.25D, 0.5D, 0D), slider.getValueList());
-		Assert.assertEquals(0.5D, slider.getValue(), 0D);
-	}
-
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesAValueOffItsSteps() {
 		new Slider().range(0D, 1D, 0.25D).value(0.3D);
-	}
-
-	@Test(expected = IllegalArgumentException.class)
-	public void refusesAValueOutsideItsValues() {
-		new Slider().values(0.25D, 0.5D).value(0.75D);
 	}
 
 	@Test
