@@ -15,12 +15,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BridgeHandler {
 
-	public static final UIBridgeRegistry                      UI            = new UIBridgeRegistry();
-	public static final BridgeRegistry<IAudioBridge>          AUDIO         = new BridgeRegistry<>("AUDIO");
-	public static final BridgeRegistry<IClockBridge>          CLOCK         = new BridgeRegistry<>("CLOCK");
-	public static final BridgeRegistry<IWindowBridge>         WINDOW        = new BridgeRegistry<>("WINDOW");
-	public static final BridgeRegistry<IRenderBridge>         RENDER        = new BridgeRegistry<>("RENDER");
-	public static final BridgeRegistry<IThreadBridge>         THREAD        = new BridgeRegistry<>("THREAD");
+	public static final UIBridgeRegistry                    UI            = new UIBridgeRegistry();
+	public static final BridgeRegistry<IAudioBridge>        AUDIO         = new BridgeRegistry<>("AUDIO");
+	public static final BridgeRegistry<IClockBridge>        CLOCK         = new BridgeRegistry<>("CLOCK");
+	public static final BridgeRegistry<IWindowBridge>       WINDOW        = new BridgeRegistry<>("WINDOW");
+	public static final BridgeRegistry<IRenderBridge>       RENDER        = new BridgeRegistry<>("RENDER");
+	public static final BridgeRegistry<IThreadBridge>       THREAD        = new BridgeRegistry<>("THREAD");
 	public static final BridgeRegistry<ISignalReplayBridge> SIGNAL_REPLAY = new BridgeRegistry<>("SIGNAL_REPLAY");
 
 	static {

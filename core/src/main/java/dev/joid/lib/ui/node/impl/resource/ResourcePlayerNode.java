@@ -39,8 +39,8 @@ public class ResourcePlayerNode extends Node {
 
 	@Getter private boolean loop;
 	@Getter private float   volume;
-	@Getter private Object  audioGroup;
 	@Getter private boolean autoplay;
+	@Getter private Object  audioGroup;
 
 	@Getter private Point location;
 	@Getter private Float maxDistance;

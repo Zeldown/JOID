@@ -7,9 +7,9 @@ import lombok.Setter;
 @Getter
 public final class GlyphEntry {
 
-	private final Shape   shape;
-	private final int     codepoint;
-	private final double  advance;
+	private final Shape    shape;
+	private final int      codepoint;
+	private final double   advance;
 	private final double[] bounds;
 
 	@Setter private int x;

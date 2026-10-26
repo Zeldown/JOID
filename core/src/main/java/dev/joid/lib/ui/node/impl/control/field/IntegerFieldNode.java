@@ -10,8 +10,8 @@ import lombok.NonNull;
 @Getter
 public class IntegerFieldNode extends LineFieldNode<Integer> {
 
-	private int max;
 	private int min;
+	private int max;
 	private int step;
 
 	protected IntegerFieldNode(final double x, final double y, final double width, final double height) {

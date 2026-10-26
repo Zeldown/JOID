@@ -17,7 +17,7 @@ public final class DemoEntry {
 	private final String   label;
 	private final Runnable action;
 
-	private String            hover;
+	private String          hover;
 	private BooleanSupplier state;
 
 	public static @NonNull DemoEntry create(final @NonNull Class<? extends UI> clazz) {

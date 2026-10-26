@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class PositionedHoverElement implements IHoverElement {
 
-	private final IHoverElement element;
+	private final IHoverElement        element;
 	private final HoverElementPosition position;
 
 	@Override

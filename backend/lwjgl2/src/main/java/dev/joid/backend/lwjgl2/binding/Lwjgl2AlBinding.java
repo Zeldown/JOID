@@ -102,13 +102,13 @@ public final class Lwjgl2AlBinding implements IAlBinding {
 	}
 
 	@Override
-	public int unqueueBuffer(final int source) {
-		return AL10.alSourceUnqueueBuffers(source);
+	public void queueBuffer(final int source, final int buffer) {
+		AL10.alSourceQueueBuffers(source, buffer);
 	}
 
 	@Override
-	public void queueBuffer(final int source, final int buffer) {
-		AL10.alSourceQueueBuffers(source, buffer);
+	public int unqueueBuffer(final int source) {
+		return AL10.alSourceUnqueueBuffers(source);
 	}
 
 	@Override

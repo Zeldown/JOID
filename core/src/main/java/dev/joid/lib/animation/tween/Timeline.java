@@ -40,6 +40,37 @@ public final class Timeline extends BaseTween<Timeline> {
 	}
 
 	@Override
+	public @NonNull Timeline build() {
+		if (this.isBuilt) {
+			return this;
+		}
+
+		if (this.current != this) {
+			throw new IllegalStateException("The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()");
+		}
+
+		super.duration = 0F;
+		for (final BaseTween<?> child : this.children) {
+			if (child.getRepeatCount() < 0) {
+				throw new IllegalArgumentException("A timeline cannot hold a child that repeats forever (repeat count " + child.getRepeatCount() + "), give it a finite repeat count");
+			}
+
+			child.build();
+
+			if (this.mode == Mode.SEQUENCE) {
+				final float delay = super.duration;
+				super.duration += child.getFullDuration();
+				child.delay += delay;
+			} else {
+				super.duration = Math.max(super.duration, child.getFullDuration());
+			}
+		}
+
+		this.isBuilt = true;
+		return this;
+	}
+
+	@Override
 	public @NonNull Timeline kill() {
 		super.kill();
 
@@ -92,37 +123,6 @@ public final class Timeline extends BaseTween<Timeline> {
 
 	public @NonNull List<BaseTween<?>> getChildren() {
 		return Collections.unmodifiableList(this.children);
-	}
-
-	@Override
-	public @NonNull Timeline build() {
-		if (this.isBuilt) {
-			return this;
-		}
-
-		if (this.current != this) {
-			throw new IllegalStateException("The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()");
-		}
-
-		super.duration = 0F;
-		for (final BaseTween<?> child : this.children) {
-			if (child.getRepeatCount() < 0) {
-				throw new IllegalArgumentException("A timeline cannot hold a child that repeats forever (repeat count " + child.getRepeatCount() + "), give it a finite repeat count");
-			}
-
-			child.build();
-
-			if (this.mode == Mode.SEQUENCE) {
-				final float delay = super.duration;
-				super.duration += child.getFullDuration();
-				child.delay += delay;
-			} else {
-				super.duration = Math.max(super.duration, child.getFullDuration());
-			}
-		}
-
-		this.isBuilt = true;
-		return this;
 	}
 
 	@Override

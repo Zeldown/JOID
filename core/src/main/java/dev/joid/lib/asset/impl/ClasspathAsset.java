@@ -13,7 +13,7 @@ import lombok.NonNull;
 @Getter
 public final class ClasspathAsset extends Asset {
 
-	private final URL url;
+	private final URL    url;
 	private final String path;
 
 	private ClasspathAsset(final String path, final URL url) {

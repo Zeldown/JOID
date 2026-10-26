@@ -197,6 +197,11 @@ public abstract class UIBridge implements IUIBridge {
 	}
 
 	@Override
+	public boolean isOpen(final @NonNull UI ui) {
+		return this.uiList.contains(ui);
+	}
+
+	@Override
 	public boolean isOnTop(final @NonNull UI ui) {
 		for (final UI current : this.getInputList()) {
 			if (current.getOverlay().active() == ui.getOverlay().active()) {
@@ -204,11 +209,6 @@ public abstract class UIBridge implements IUIBridge {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public boolean isOpen(final @NonNull UI ui) {
-		return this.uiList.contains(ui);
 	}
 
 	public boolean isScreenOpen() {

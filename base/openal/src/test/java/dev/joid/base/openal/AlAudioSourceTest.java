@@ -360,14 +360,14 @@ public class AlAudioSourceTest {
 		}
 
 		@Override
-		public int unqueueBuffer(final int source) {
-			this.played.merge(source, -1, Integer::sum);
-			return this.queues.get(source).poll();
+		public void queueBuffer(final int source, final int buffer) {
+			this.queues.get(source).add(buffer);
 		}
 
 		@Override
-		public void queueBuffer(final int source, final int buffer) {
-			this.queues.get(source).add(buffer);
+		public int unqueueBuffer(final int source) {
+			this.played.merge(source, -1, Integer::sum);
+			return this.queues.get(source).poll();
 		}
 
 		@Override

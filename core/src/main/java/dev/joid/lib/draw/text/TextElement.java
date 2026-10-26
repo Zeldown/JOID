@@ -15,8 +15,8 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class TextElement {
 
-	private TextInfo      info;
-	private Supplier<?>   text;
+	private TextInfo     info;
+	private Supplier<?>  text;
 	private TextModifier modifier;
 
 	public static @NonNull TextElement create(final @NonNull Object text, final @NonNull TextInfo info) {

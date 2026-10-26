@@ -25,7 +25,7 @@ public final class ResourceBuilder {
 	private final Map<ResourceData, String> computed;
 
 	@Getter private final IResourceCache cache;
-	private final ResourceProperties properties;
+	private final ResourceProperties     properties;
 
 	private ResourceBuilder(final IResourceCache cache, final ResourceProperties properties) {
 		this.cache = cache;

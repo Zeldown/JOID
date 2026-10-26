@@ -11,14 +11,15 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 
 	public static final int INFINITY = -1;
 
-	private static final EventType<TweenEvent> START                   = EventType.create("onStart");
-	private static final EventType<TweenEvent> COMPLETE                = EventType.create("onComplete");
-	private static final EventType<TweenEvent> ITERATION_END           = EventType.create("onIterationEnd");
+	private static final EventType<TweenEvent> START           = EventType.create("onStart");
+	private static final EventType<TweenEvent> ITERATION_START = EventType.create("onIterationStart");
+	private static final EventType<TweenEvent> ITERATION_END   = EventType.create("onIterationEnd");
+	private static final EventType<TweenEvent> COMPLETE        = EventType.create("onComplete");
+
 	private static final EventType<TweenEvent> REVERSE_START           = EventType.create("onReverseStart");
-	private static final EventType<TweenEvent> ITERATION_START         = EventType.create("onIterationStart");
-	private static final EventType<TweenEvent> REVERSE_COMPLETE        = EventType.create("onReverseComplete");
-	private static final EventType<TweenEvent> REVERSE_ITERATION_END   = EventType.create("onReverseIterationEnd");
 	private static final EventType<TweenEvent> REVERSE_ITERATION_START = EventType.create("onReverseIterationStart");
+	private static final EventType<TweenEvent> REVERSE_ITERATION_END   = EventType.create("onReverseIterationEnd");
+	private static final EventType<TweenEvent> REVERSE_COMPLETE        = EventType.create("onReverseComplete");
 
 	private final EventBus eventBus = EventBus.create(() -> JOIDLog.nameOf(this.getClass()));
 
@@ -61,7 +62,7 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		return (T) this;
 	}
 
-	public @NonNull T start(final @NonNull TweenManager manager) {
+	public final @NonNull T start(final @NonNull TweenManager manager) {
 		manager.add(this);
 		return (T) this;
 	}
@@ -70,7 +71,7 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		return (T) this;
 	}
 
-	public @NonNull T delay(final float delay) {
+	public final @NonNull T delay(final float delay) {
 		this.delay += delay;
 		return (T) this;
 	}
@@ -80,74 +81,62 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		return (T) this;
 	}
 
-	public @NonNull T pause() {
+	public final @NonNull T pause() {
 		this.isPaused = true;
 		return (T) this;
 	}
 
-	public @NonNull T resume() {
+	public final @NonNull T resume() {
 		this.isPaused = false;
 		return (T) this;
 	}
 
-	public @NonNull T repeat(final int count, final float delay) {
+	public final @NonNull T repeat(final int count, final float delay) {
 		return this.repeat(count, delay, false, "repeat");
 	}
 
-	public @NonNull T repeatYoyo(final int count, final float delay) {
+	public final @NonNull T repeatYoyo(final int count, final float delay) {
 		return this.repeat(count, delay, true, "repeatYoyo");
 	}
 
-	public @NonNull T userData(final Object userData) {
+	public final @NonNull T userData(final Object userData) {
 		this.userData = userData;
 		return (T) this;
 	}
 
-	public @NonNull T onStart(final @NonNull EventListener<TweenEvent> listener) {
+	public final @NonNull T onStart(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.START, listener);
 	}
 
-	public @NonNull T onIterationStart(final @NonNull EventListener<TweenEvent> listener) {
+	public final @NonNull T onIterationStart(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.ITERATION_START, listener);
 	}
 
-	public @NonNull T onIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
+	public final @NonNull T onIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.ITERATION_END, listener);
 	}
 
-	public @NonNull T onComplete(final @NonNull EventListener<TweenEvent> listener) {
+	public final @NonNull T onComplete(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.COMPLETE, listener);
 	}
 
-	public @NonNull T onReverseStart(final @NonNull EventListener<TweenEvent> listener) {
+	public final @NonNull T onReverseStart(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.REVERSE_START, listener);
 	}
 
-	public @NonNull T onReverseIterationStart(final @NonNull EventListener<TweenEvent> listener) {
+	public final @NonNull T onReverseIterationStart(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.REVERSE_ITERATION_START, listener);
 	}
 
-	public @NonNull T onReverseIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
+	public final @NonNull T onReverseIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.REVERSE_ITERATION_END, listener);
 	}
 
-	public @NonNull T onReverseComplete(final @NonNull EventListener<TweenEvent> listener) {
+	public final @NonNull T onReverseComplete(final @NonNull EventListener<TweenEvent> listener) {
 		return this.listen(BaseTween.REVERSE_COMPLETE, listener);
 	}
 
-	public float getFullDuration() {
-		if (this.repeatCount < 0) {
-			return -1F;
-		}
-
-		return this.delay + this.duration + (this.repeatDelay + this.duration) * this.repeatCount;
-	}
-
-	public boolean isFinished() {
-		return this.isFinished || this.isKilled;
-	}
-
-	public @NonNull T forceToStart() {
+	public final @NonNull T forceToStart() {
 		this.currentTime = -this.delay;
 		this.step = -1;
 		this.isIterationStep = false;
@@ -155,7 +144,7 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		return (T) this;
 	}
 
-	public @NonNull T forceToEnd(final float time) {
+	public final @NonNull T forceToEnd(final float time) {
 		this.currentTime = time - this.getFullDuration();
 		this.step = this.repeatCount * 2 + 1;
 		this.isIterationStep = false;
@@ -168,7 +157,7 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		return (T) this;
 	}
 
-	public void update(final float delta) {
+	public final void update(final float delta) {
 		if (!this.isStarted || this.isPaused || this.isKilled) {
 			return;
 		}
@@ -189,20 +178,32 @@ public abstract class BaseTween<T extends BaseTween<T>> {
 		this.deltaTime = 0F;
 	}
 
-	protected boolean isValid(final int step) {
+	public final float getFullDuration() {
+		if (this.repeatCount < 0) {
+			return -1F;
+		}
+
+		return this.delay + this.duration + (this.repeatDelay + this.duration) * this.repeatCount;
+	}
+
+	public final boolean isFinished() {
+		return this.isFinished || this.isKilled;
+	}
+
+	protected final boolean isValid(final int step) {
 		return (step >= 0 && step <= this.repeatCount * 2) || this.repeatCount < 0;
 	}
 
-	protected boolean isReverse(final int step) {
+	protected final boolean isReverse(final int step) {
 		return this.isYoyo && Math.abs(step % 4) == 2;
 	}
-
-	protected abstract void forceStartValues();
-	protected abstract void forceEndValues();
 
 	protected void initializeValues() {}
 
 	protected void updateValues(final int step, final int lastStep, final boolean isIterationStep, final float delta) {}
+
+	protected abstract void forceStartValues();
+	protected abstract void forceEndValues();
 
 	private void initialize() {
 		if (this.currentTime + this.deltaTime >= this.delay) {

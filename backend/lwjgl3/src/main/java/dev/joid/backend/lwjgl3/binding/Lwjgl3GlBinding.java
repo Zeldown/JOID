@@ -433,13 +433,13 @@ public final class Lwjgl3GlBinding implements IGlBinding {
 	}
 
 	@Override
-	public void activeTexture(final int unit) {
-		GL13C.glActiveTexture(unit);
+	public void deleteTexture(final int texture) {
+		GL11C.glDeleteTextures(texture);
 	}
 
 	@Override
-	public void deleteTexture(final int texture) {
-		GL11C.glDeleteTextures(texture);
+	public void activeTexture(final int unit) {
+		GL13C.glActiveTexture(unit);
 	}
 
 	@Override

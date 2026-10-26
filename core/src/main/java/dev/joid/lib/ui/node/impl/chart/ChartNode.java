@@ -143,7 +143,7 @@ public abstract class ChartNode extends Node {
 		@Getter
 		public static final class XChartAxis extends ChartAxis {
 
-			private final Set<String> labelSet;
+			private final Set<String>            labelSet;
 			private final Map<String, ChartData> dataMap;
 
 			private XChartAxis(final String name, final String... labels) {

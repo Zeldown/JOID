@@ -33,10 +33,10 @@ public abstract class FieldNode<V> extends Node {
 	private static final EventType<NodeFieldChangeEvent.Post<?, ?>> CHANGE        = EventType.create("onChange");
 	private static final EventType<NodeFieldChangeEvent.Pre<?, ?>>  BEFORE_CHANGE = EventType.create("beforeChange");
 
-	private static final EventType<NodeChangeEvent.Post<?, Boolean>> BLUR         = EventType.create("onBlur");
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> FOCUS        = EventType.create("onFocus");
-	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_BLUR  = EventType.create("beforeBlur");
+	private static final EventType<NodeChangeEvent.Post<?, Boolean>> BLUR         = EventType.create("onBlur");
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_FOCUS = EventType.create("beforeFocus");
+	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_BLUR  = EventType.create("beforeBlur");
 
 	private static final EventType<NodeChangeEvent.Post<?, Integer>> CURSOR_MOVE        = EventType.create("onCursorMove");
 	private static final EventType<NodeChangeEvent.Pre<?, Integer>>  BEFORE_CURSOR_MOVE = EventType.create("beforeCursorMove");
@@ -83,14 +83,14 @@ public abstract class FieldNode<V> extends Node {
 	private double lastPressX;
 	private double lastPressY;
 
-	private int     anchorEnd;
 	private int     anchorStart;
+	private int     anchorEnd;
 	private boolean selecting;
 
 	@Getter private double marginTop;
+	@Getter private double marginBottom;
 	@Getter private double marginLeft;
 	@Getter private double marginRight;
-	@Getter private double marginBottom;
 	@Getter private double cursorMargin;
 
 	private Key     inputType;
@@ -388,12 +388,28 @@ public abstract class FieldNode<V> extends Node {
 		return super.follow("marginTop", marginTop, value -> this.marginTop = value);
 	}
 
+	public final <T extends FieldNode<V>> @NonNull T marginBottom(final double marginBottom) {
+		return this.marginBottom(Signal.from(marginBottom));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginBottom(final @NonNull Supplier<Double> marginBottom) {
+		return super.follow("marginBottom", marginBottom, value -> this.marginBottom = value);
+	}
+
 	public final <T extends FieldNode<V>> @NonNull T marginLeft(final double marginLeft) {
 		return this.marginLeft(Signal.from(marginLeft));
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginLeft(final @NonNull Supplier<Double> marginLeft) {
 		return super.follow("marginLeft", marginLeft, value -> this.marginLeft = value);
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginRight(final double marginRight) {
+		return this.marginRight(Signal.from(marginRight));
+	}
+
+	public final <T extends FieldNode<V>> @NonNull T marginRight(final @NonNull Supplier<Double> marginRight) {
+		return super.follow("marginRight", marginRight, value -> this.marginRight = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T marginHorizontal(final double marginHorizontal) {
@@ -412,22 +428,6 @@ public abstract class FieldNode<V> extends Node {
 	public final <T extends FieldNode<V>> @NonNull T marginVertical(final @NonNull Supplier<Double> marginVertical) {
 		this.marginTop(marginVertical);
 		return this.marginBottom(marginVertical);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T marginRight(final double marginRight) {
-		return this.marginRight(Signal.from(marginRight));
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T marginRight(final @NonNull Supplier<Double> marginRight) {
-		return super.follow("marginRight", marginRight, value -> this.marginRight = value);
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T marginBottom(final double marginBottom) {
-		return this.marginBottom(Signal.from(marginBottom));
-	}
-
-	public final <T extends FieldNode<V>> @NonNull T marginBottom(final @NonNull Supplier<Double> marginBottom) {
-		return super.follow("marginBottom", marginBottom, value -> this.marginBottom = value);
 	}
 
 	public final <T extends FieldNode<V>> @NonNull T cursorMargin(final double cursorMargin) {

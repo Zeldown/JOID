@@ -119,11 +119,6 @@ public class TextGlyphTest {
 		}
 
 		@Override
-		public boolean hasGlyph(final int codepoint) {
-			return codepoint != '#';
-		}
-
-		@Override
 		public float getAdvance(final int codepoint) {
 			return 0.6F;
 		}
@@ -131,6 +126,11 @@ public class TextGlyphTest {
 		@Override
 		public float getKerning(final int previous, final int current) {
 			return 0F;
+		}
+
+		@Override
+		public boolean hasGlyph(final int codepoint) {
+			return codepoint != '#';
 		}
 
 	}

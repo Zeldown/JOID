@@ -11,11 +11,11 @@ import lombok.NonNull;
 @Getter
 public final class ResourceAnimation {
 
-	private final int                  width;
-	private final int                  height;
-	private final int                  plays;
+	private final int                          width;
+	private final int                          height;
+	private final int                          plays;
+	private final long[]                       ends;
 	private final List<ResourceAnimationFrame> frames;
-	private final long[]               ends;
 
 	private ResourceAnimation(final int width, final int height, final int plays, final List<ResourceAnimationFrame> frames) {
 		this.width = width;

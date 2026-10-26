@@ -10,7 +10,7 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class BlurShaderPass implements IShaderPass {
 
-	private final float radius;
+	private final float   radius;
 	private final boolean horizontal;
 
 	public static @NonNull BlurShaderPass create(final float radius, final boolean horizontal) {

@@ -17,6 +17,11 @@ public final class DemoFace implements IFontFace {
 		return new DemoFace(advance);
 	}
 
+	public @NonNull DemoFace wide(final int wide) {
+		this.wide = wide;
+		return this;
+	}
+
 	@Override
 	public boolean isItalic() {
 		return false;
@@ -25,6 +30,11 @@ public final class DemoFace implements IFontFace {
 	@Override
 	public @NonNull String getName() {
 		return "Demo";
+	}
+
+	@Override
+	public @NonNull FontWeight getWeight() {
+		return FontWeight.REGULAR;
 	}
 
 	@Override
@@ -53,28 +63,18 @@ public final class DemoFace implements IFontFace {
 	}
 
 	@Override
-	public @NonNull FontWeight getWeight() {
-		return FontWeight.REGULAR;
-	}
-
-	@Override
-	public boolean hasGlyph(final int codepoint) {
-		return true;
-	}
-
-	@Override
 	public float getAdvance(final int codepoint) {
 		return codepoint == this.wide ? this.advance * 3F : this.advance;
-	}
-
-	public @NonNull DemoFace wide(final int wide) {
-		this.wide = wide;
-		return this;
 	}
 
 	@Override
 	public float getKerning(final int previous, final int current) {
 		return 0F;
+	}
+
+	@Override
+	public boolean hasGlyph(final int codepoint) {
+		return true;
 	}
 
 }

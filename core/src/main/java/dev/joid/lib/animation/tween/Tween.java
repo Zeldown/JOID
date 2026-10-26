@@ -13,14 +13,14 @@ public final class Tween extends BaseTween<Tween> {
 	private final Supplier<Float> getter;
 	private final Consumer<Float> setter;
 
-	private float                 end;
 	private float                 start;
+	private float                 end;
 	private float                 origin;
 	private float                 target;
 	private ITweenPath            path;
 	private int                   waypointCount;
-	private float[]               waypoints  = new float[0];
-	private float[]               pathBuffer = new float[2];
+	private float[]               waypoints;
+	private float[]               pathBuffer;
 	@Getter private TweenEquation easing;
 
 	private boolean isFrom;
@@ -31,11 +31,13 @@ public final class Tween extends BaseTween<Tween> {
 			throw new IllegalArgumentException("The duration of a tween cannot be negative, got " + duration + ": pass 0 or more");
 		}
 
-		this.getter    = getter;
-		this.setter    = setter;
-		super.duration = duration;
-		this.path      = TweenPaths.CATMULL_ROM;
-		this.easing    = TweenEquations.LINEAR;
+		this.getter     = getter;
+		this.setter     = setter;
+		super.duration  = duration;
+		this.path       = TweenPaths.CATMULL_ROM;
+		this.easing     = TweenEquations.LINEAR;
+		this.waypoints  = new float[0];
+		this.pathBuffer = new float[2];
 	}
 
 	public static @NonNull Tween to(final @NonNull Supplier<Float> getter, final @NonNull Consumer<Float> setter, final float duration) {

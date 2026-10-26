@@ -337,10 +337,6 @@ public class OpenTypeMsdfSourceTest {
 		Assert.assertEquals("JOID Test Regular", MsdfFontLoader.load(new ByteArrayInputStream(font)).join().getFace(FontWeight.REGULAR, false).getName());
 	}
 
-	private String[] entries() {
-		return this.directory.list((parent, name) -> !name.startsWith("."));
-	}
-
 	public static File find(final byte[] font) {
 		return OpenTypeMsdfSourceTest.area().entry(OpenTypeMsdfSourceTest.key(font));
 	}
@@ -352,6 +348,10 @@ public class OpenTypeMsdfSourceTest {
 	public static File regenerate(final byte[] font) throws IOException {
 		OpenTypeMsdfSourceTest.area().remove(OpenTypeMsdfSourceTest.key(font));
 		return OpenTypeMsdfSourceTest.resolve(font);
+	}
+
+	private String[] entries() {
+		return this.directory.list((parent, name) -> !name.startsWith("."));
 	}
 
 	private static FileCacheArea area() {

@@ -407,16 +407,16 @@ public final class JournalGlBinding implements IGlBinding {
 	}
 
 	@Override
+	public void deleteTexture(final int texture) {
+		this.journal.includeTexture(texture);
+		this.binding.deleteTexture(texture);
+	}
+
+	@Override
 	public void activeTexture(final int unit) {
 		this.journal.touch(GlStateKey.ACTIVE_TEXTURE);
 		this.journal.trackActiveTexture(unit);
 		this.binding.activeTexture(unit);
-	}
-
-	@Override
-	public void deleteTexture(final int texture) {
-		this.journal.includeTexture(texture);
-		this.binding.deleteTexture(texture);
 	}
 
 	@Override

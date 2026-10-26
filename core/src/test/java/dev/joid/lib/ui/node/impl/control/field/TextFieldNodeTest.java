@@ -1856,6 +1856,15 @@ public class TextFieldNodeTest {
 		Assert.assertEquals("", field.text("").getValue());
 	}
 
+	public static int anchor(final FieldNode<?> field) {
+		final FieldSelection selection = field.getSelection();
+		if (selection.isEmpty()) {
+			return -1;
+		}
+
+		return field.getCursorPosition() == selection.getStart() ? selection.getEnd() : selection.getStart();
+	}
+
 	private TextInfo info() {
 		return TextInfo.create(this.font, 10F).color(TextFieldNodeTest.INK);
 	}
@@ -1913,15 +1922,6 @@ public class TextFieldNodeTest {
 
 	private List<Draw> selections() {
 		return this.bridges.getRender().getDraws(50 / 255F, 152 / 255F, 253 / 255F);
-	}
-
-	public static int anchor(final FieldNode<?> field) {
-		final FieldSelection selection = field.getSelection();
-		if (selection.isEmpty()) {
-			return -1;
-		}
-
-		return field.getCursorPosition() == selection.getStart() ? selection.getEnd() : selection.getStart();
 	}
 
 	private static Set<?> subscribers(final Signal<?> signal) {

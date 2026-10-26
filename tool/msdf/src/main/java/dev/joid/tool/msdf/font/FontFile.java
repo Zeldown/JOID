@@ -7,7 +7,7 @@ import java.util.Map;
 
 public final class FontFile {
 
-	private final byte[] data;
+	private final byte[]               data;
 	private final Map<String, Integer> tables = new HashMap<>();
 
 	private FontFile(final byte[] data) {

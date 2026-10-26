@@ -466,14 +466,14 @@ public class SliderNodeTest {
 		Assert.assertTrue(slider.isSliding());
 	}
 
+	public static RectNode thumb() {
+		return RectNode.create(0D, 0D, 50D, 50D).color(new Color(0.6F, 0.4F, 0.2F, 1F));
+	}
+
 	private Draw thumbDraw() {
 		final List<Draw> draws = this.bridges.getRender().getDraws(0.6F, 0.4F, 0.2F);
 		Assert.assertEquals(1, draws.size());
 		return draws.get(0);
-	}
-
-	public static RectNode thumb() {
-		return RectNode.create(0D, 0D, 50D, 50D).color(new Color(0.6F, 0.4F, 0.2F, 1F));
 	}
 
 	private static void drag(final SliderNode<?> slider) {

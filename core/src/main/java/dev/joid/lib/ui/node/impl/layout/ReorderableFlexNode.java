@@ -26,9 +26,9 @@ import lombok.NonNull;
 public class ReorderableFlexNode extends FlexNode {
 
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER        = EventType.create("onReorder");
-	private static final EventType<NodeReorderEvent.Post<?>> REORDER_END    = EventType.create("onReorderEnd");
 	private static final EventType<NodeReorderEvent.Pre<?>>  BEFORE_REORDER = EventType.create("beforeReorder");
 	private static final EventType<NodeReorderEvent.Post<?>> REORDER_START  = EventType.create("onReorderStart");
+	private static final EventType<NodeReorderEvent.Post<?>> REORDER_END    = EventType.create("onReorderEnd");
 
 	private final Set<Node>                   pinnedNodes;
 	private final transient List<Node>        logicalOrder;

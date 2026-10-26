@@ -136,8 +136,8 @@ public abstract class Node implements INode {
 	private static final EventType<NodeDragEvent.Pre<Node>>  BEFORE_DRAG_START = EventType.create("beforeDragStart");
 
 	private static final EventType<NodeHoverEvent<Node>> HOVER       = EventType.create("onHover");
-	private static final EventType<NodeHoverEvent<Node>> HOVER_END   = EventType.create("onHoverEnd");
 	private static final EventType<NodeHoverEvent<Node>> HOVER_START = EventType.create("onHoverStart");
+	private static final EventType<NodeHoverEvent<Node>> HOVER_END   = EventType.create("onHoverEnd");
 
 	private final transient EventBus      eventBus;
 	private final transient TweenAnimator hoverAnimator;

@@ -20,9 +20,9 @@ public final class Text {
 
 	private final List<TextElement> elementList;
 
-	@Getter private Align         alignX;
-	@Getter private Align         alignY;
-	@Getter private TextOverflow  overflow;
+	@Getter private Align        alignX;
+	@Getter private Align        alignY;
+	@Getter private TextOverflow overflow;
 	@Getter private TextModifier modifier;
 
 	private double       width;

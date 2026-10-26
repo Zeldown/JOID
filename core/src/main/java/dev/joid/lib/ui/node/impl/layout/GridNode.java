@@ -17,8 +17,8 @@ public final class GridNode extends Node {
 
 	private Align alignX;
 
-	private double marginVertical;
 	private double marginHorizontal;
+	private double marginVertical;
 
 	private GridNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
@@ -56,6 +56,15 @@ public final class GridNode extends Node {
 		return super.follow("alignX", alignX, value -> this.alignX = value);
 	}
 
+	public final @NonNull GridNode margin(final double margin) {
+		return this.margin(Signal.from(margin));
+	}
+
+	public final @NonNull GridNode margin(final @NonNull Supplier<Double> margin) {
+		this.marginVertical(margin);
+		return this.marginHorizontal(margin);
+	}
+
 	public final @NonNull GridNode marginHorizontal(final double marginHorizontal) {
 		return this.marginHorizontal(Signal.from(marginHorizontal));
 	}
@@ -70,15 +79,6 @@ public final class GridNode extends Node {
 
 	public final @NonNull GridNode marginVertical(final @NonNull Supplier<Double> marginVertical) {
 		return super.follow("marginVertical", marginVertical, value -> this.marginVertical = value);
-	}
-
-	public final @NonNull GridNode margin(final double margin) {
-		return this.margin(Signal.from(margin));
-	}
-
-	public final @NonNull GridNode margin(final @NonNull Supplier<Double> margin) {
-		this.marginVertical(margin);
-		return this.marginHorizontal(margin);
 	}
 
 	private void updateGrid() {

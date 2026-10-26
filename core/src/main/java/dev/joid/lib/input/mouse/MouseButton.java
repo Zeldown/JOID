@@ -29,16 +29,8 @@ public enum MouseButton {
 		return MouseButton.OTHER;
 	}
 
-	public boolean isBack() {
-		return this == MouseButton.BACK;
-	}
-
 	public boolean isLeft() {
 		return this == MouseButton.LEFT;
-	}
-
-	public boolean isOther() {
-		return this == MouseButton.OTHER;
 	}
 
 	public boolean isRight() {
@@ -49,8 +41,16 @@ public enum MouseButton {
 		return this == MouseButton.MIDDLE;
 	}
 
+	public boolean isBack() {
+		return this == MouseButton.BACK;
+	}
+
 	public boolean isForward() {
 		return this == MouseButton.FORWARD;
+	}
+
+	public boolean isOther() {
+		return this == MouseButton.OTHER;
 	}
 
 }

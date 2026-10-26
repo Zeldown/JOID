@@ -58,7 +58,7 @@ public abstract class RadarChartNode<DATA extends RadarChartData> extends Node {
 
 	public static class RadarChartData {
 
-		private Supplier<String> label;
+		private Supplier<String>           label;
 		private Supplier<? extends Number> value;
 
 		protected RadarChartData(final @NonNull String label) {

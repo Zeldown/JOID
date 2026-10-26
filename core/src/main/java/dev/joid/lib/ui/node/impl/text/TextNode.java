@@ -15,7 +15,7 @@ import lombok.NonNull;
 @Getter
 public class TextNode extends Node {
 
-	private Text text;
+	private Text     text;
 	private TextMode mode;
 
 	protected TextNode(final double x, final double y, final double width, final double height) {

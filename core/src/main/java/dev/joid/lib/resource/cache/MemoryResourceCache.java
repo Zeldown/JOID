@@ -13,7 +13,7 @@ import lombok.NonNull;
 
 public final class MemoryResourceCache implements IResourceCache {
 
-	@Getter private int size;
+	@Getter private int  size;
 	@Getter private long expiry;
 
 	private final Cache<String, ResourceData> live = CacheBuilder.newBuilder().weakValues().build();

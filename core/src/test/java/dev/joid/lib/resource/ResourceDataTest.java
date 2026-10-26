@@ -597,10 +597,6 @@ public class ResourceDataTest {
 		ResourceData.create(null, null);
 	}
 
-	private static Resource resource(final ResourceData data) {
-		return Resource.create(ResourceBuilder.create().cache(null), data);
-	}
-
 	public static ResourceData load(final ResourceData data) {
 		try {
 			final Method method = ResourceData.class.getDeclaredMethod("fireLoad");
@@ -621,6 +617,10 @@ public class ResourceDataTest {
 		} catch (final ReflectiveOperationException exception) {
 			throw new AssertionError(exception);
 		}
+	}
+
+	private static Resource resource(final ResourceData data) {
+		return Resource.create(ResourceBuilder.create().cache(null), data);
 	}
 
 	private static class Decoder implements IResourceDecoder {

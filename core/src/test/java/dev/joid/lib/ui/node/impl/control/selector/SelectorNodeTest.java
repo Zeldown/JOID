@@ -33,6 +33,7 @@ public class SelectorNodeTest {
 	private final List<String> changes = new ArrayList<>();
 
 	private Selector selector;
+
 	private RectNode first;
 	private RectNode second;
 	private RectNode third;

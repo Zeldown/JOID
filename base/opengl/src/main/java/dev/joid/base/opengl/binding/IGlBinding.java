@@ -97,8 +97,8 @@ public interface IGlBinding {
 	public void uniformMatrixfv(final int location, final int columns, final @NonNull FloatBuffer values);
 
 	public int genTexture();
-	public void activeTexture(final int unit);
 	public void deleteTexture(final int texture);
+	public void activeTexture(final int unit);
 	public void bindSampler(final int unit, final int sampler);
 	public void bindTexture(final int target, final int texture);
 	public void texParameteri(final int target, final int name, final int value);

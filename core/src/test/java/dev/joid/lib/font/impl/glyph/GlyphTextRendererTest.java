@@ -555,11 +555,6 @@ public class GlyphTextRendererTest {
 		}
 
 		@Override
-		public boolean hasGlyph(final int codepoint) {
-			return codepoint != '#' && codepoint != ' ' && (codepoint != ' ' || this.spaced);
-		}
-
-		@Override
 		public float getAdvance(final int codepoint) {
 			return codepoint == ' ' ? this.scale * 0.3F : this.scale * 0.5F;
 		}
@@ -567,6 +562,11 @@ public class GlyphTextRendererTest {
 		@Override
 		public float getKerning(final int previous, final int current) {
 			return previous == 'A' && current == 'V' ? -0.1F : 0F;
+		}
+
+		@Override
+		public boolean hasGlyph(final int codepoint) {
+			return codepoint != '#' && codepoint != ' ' && (codepoint != ' ' || this.spaced);
 		}
 
 	}

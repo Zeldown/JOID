@@ -184,11 +184,6 @@ public class FontFamilyTest {
 		}
 
 		@Override
-		public boolean hasGlyph(final int codepoint) {
-			return false;
-		}
-
-		@Override
 		public float getAdvance(final int codepoint) {
 			return 0F;
 		}
@@ -196,6 +191,11 @@ public class FontFamilyTest {
 		@Override
 		public float getKerning(final int previous, final int current) {
 			return 0F;
+		}
+
+		@Override
+		public boolean hasGlyph(final int codepoint) {
+			return false;
 		}
 
 	}

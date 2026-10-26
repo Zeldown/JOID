@@ -20,8 +20,8 @@ public interface IAlBinding {
 	public void pause(final int source);
 	public void gain(final int source, final float gain);
 
-	public int unqueueBuffer(final int source);
 	public void queueBuffer(final int source, final int buffer);
+	public int unqueueBuffer(final int source);
 
 	public boolean isPlaying(final int source);
 	public int getQueuedBuffers(final int source);

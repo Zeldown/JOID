@@ -24,8 +24,8 @@ import lombok.Getter;
 @Getter
 public final class SignalReplaySlice {
 
-	private final int                end;
 	private final int                start;
+	private final int                end;
 	private final Type               type;
 	private final String             signature;
 	private final SignalReplayMethod method;

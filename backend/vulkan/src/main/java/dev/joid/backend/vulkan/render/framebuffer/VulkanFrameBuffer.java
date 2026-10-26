@@ -18,8 +18,8 @@ import lombok.Getter;
 @Getter
 public final class VulkanFrameBuffer extends FrameBufferHandle<VulkanTexture> {
 
-	private final long               framebuffer;
-	private final VulkanRenderBridge bridge;
+	private final long                             framebuffer;
+	private final VulkanRenderBridge               bridge;
 	@Getter(AccessLevel.NONE) private final long[] depth;
 
 	public VulkanFrameBuffer(final VulkanRenderBridge bridge, final int width, final int height) {

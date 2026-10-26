@@ -9,8 +9,8 @@ import lombok.NonNull;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MsdfGlyph {
 
-	private final int codepoint;
-	private final float advance;
+	private final int        codepoint;
+	private final float      advance;
 	private final MsdfBounds planeBounds;
 	private final MsdfBounds atlasBounds;
 

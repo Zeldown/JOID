@@ -40,6 +40,11 @@ public class ITextEffectTest {
 		}
 
 		@Override
+		public FontWeight getWeight() {
+			return FontWeight.REGULAR;
+		}
+
+		@Override
 		public float getAscender() {
 			return 0F;
 		}
@@ -60,18 +65,8 @@ public class ITextEffectTest {
 		}
 
 		@Override
-		public FontWeight getWeight() {
-			return FontWeight.REGULAR;
-		}
-
-		@Override
 		public float getUnderlineThickness() {
 			return 0F;
-		}
-
-		@Override
-		public boolean hasGlyph(final int codepoint) {
-			return true;
 		}
 
 		@Override
@@ -82,6 +77,11 @@ public class ITextEffectTest {
 		@Override
 		public float getKerning(final int previous, final int current) {
 			return 0F;
+		}
+
+		@Override
+		public boolean hasGlyph(final int codepoint) {
+			return true;
 		}
 
 	}

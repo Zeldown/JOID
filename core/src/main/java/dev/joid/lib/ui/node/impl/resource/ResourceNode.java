@@ -21,8 +21,8 @@ public class ResourceNode extends Node {
 	private Resource filteredResource;
 	private Resource filteredHoveredResource;
 
-	private Color hoveredColor;
 	private Color color;
+	private Color hoveredColor;
 
 	private Boolean linear;
 
