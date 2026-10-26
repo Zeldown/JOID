@@ -15,6 +15,7 @@ import dev.joid.internal.JOID;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
+import dev.joid.lib.bridge.HeadlessBridges;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.input.key.Key;
 import dev.joid.lib.resource.Resource;
@@ -44,6 +45,7 @@ public class SnapshotRunnerCommandTest {
 	@AfterClass
 	public static void stopRunner() {
 		SnapshotRunnerCommandTest.runner.stop();
+		HeadlessBridges.forgetTheCursor();
 	}
 
 	@Test

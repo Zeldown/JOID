@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import dev.joid.internal.ConsoleCapture;
+import dev.joid.lib.bridge.HeadlessBridges;
 import lombok.NonNull;
 
 public class SnapshotSuiteTest {
@@ -43,6 +44,7 @@ public class SnapshotSuiteTest {
 	@After
 	public void restoreTheProperties() {
 		SnapshotSuite.stopRunner();
+		HeadlessBridges.forgetTheCursor();
 		System.setProperties(this.previous);
 	}
 
