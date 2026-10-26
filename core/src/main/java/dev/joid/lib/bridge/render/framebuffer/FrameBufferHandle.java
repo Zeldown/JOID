@@ -16,16 +16,6 @@ public abstract class FrameBufferHandle<T extends Texture> implements IFrameBuff
 	private boolean deleted;
 
 	@Override
-	public final int getWidth() {
-		return this.texture.getWidth();
-	}
-
-	@Override
-	public final int getHeight() {
-		return this.texture.getHeight();
-	}
-
-	@Override
 	public final void delete() {
 		if (this.deleted) {
 			return;
@@ -34,6 +24,16 @@ public abstract class FrameBufferHandle<T extends Texture> implements IFrameBuff
 		this.deleteHandle();
 		this.texture.delete();
 		this.deleted = true;
+	}
+
+	@Override
+	public final int getWidth() {
+		return this.texture.getWidth();
+	}
+
+	@Override
+	public final int getHeight() {
+		return this.texture.getHeight();
 	}
 
 	protected abstract void deleteHandle();

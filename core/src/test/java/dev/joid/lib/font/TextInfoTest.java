@@ -24,6 +24,11 @@ public class TextInfoTest {
 		}
 
 		@Override
+		public double getLineHeight(final TextInfo info) {
+			return 25D;
+		}
+
+		@Override
 		public double getWidth(final String text, final TextInfo info) {
 			return text.length() * 10D;
 		}
@@ -31,11 +36,6 @@ public class TextInfoTest {
 		@Override
 		public double getHeight(final String text, final TextInfo info) {
 			return 20D;
-		}
-
-		@Override
-		public double getLineHeight(final TextInfo info) {
-			return 25D;
 		}
 
 	};

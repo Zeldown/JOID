@@ -24,7 +24,7 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 		return new ElasticTweenEquation(period, amplitude) {
 
 			@Override
-			public final float compute(final float time) {
+			public float compute(final float time) {
 				float t = time;
 				float a = super.amplitude;
 				final float p = super.period;
@@ -69,7 +69,7 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 		return new ElasticTweenEquation(period, amplitude) {
 
 			@Override
-			public final float compute(final float t) {
+			public float compute(final float t) {
 				float a = super.amplitude;
 				final float p = super.period;
 				if (t == 0F) {
@@ -113,7 +113,7 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 		return new ElasticTweenEquation(period, amplitude) {
 
 			@Override
-			public final float compute(final float time) {
+			public float compute(final float time) {
 				float t = time;
 				float a = super.amplitude;
 				final float p = super.period;

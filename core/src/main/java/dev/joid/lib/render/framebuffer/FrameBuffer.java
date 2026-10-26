@@ -25,6 +25,10 @@ public final class FrameBuffer {
 		return new FrameBuffer(BridgeHandler.RENDER.get().createFrameBuffer(width, height), filter);
 	}
 
+	public void delete() {
+		this.handle.delete();
+	}
+
 	public @NonNull FrameBuffer fill(final @NonNull Runnable runnable) {
 		return this.fill(0D, 0D, this.getWidth(), this.getHeight(), runnable);
 	}
@@ -69,10 +73,6 @@ public final class FrameBuffer {
 
 	public int getHeight() {
 		return this.handle.getHeight();
-	}
-
-	public void delete() {
-		this.handle.delete();
 	}
 
 }

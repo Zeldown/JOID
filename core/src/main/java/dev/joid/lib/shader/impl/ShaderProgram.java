@@ -32,18 +32,6 @@ public abstract class ShaderProgram {
 		}
 	}
 
-	public IShader getShader() {
-		if (this.shader == null && this.vertex != null) {
-			try {
-				this.shader = BridgeHandler.RENDER.get().createShader(this.vertex, this.fragment, BlendState.NORMAL);
-			} catch (final Exception e) {
-				this.vertex = null;
-				JOIDLog.warn("The shader " + JOIDLog.nameOf(this.getClass()) + " cannot be created (" + e.getMessage() + "), what it draws is skipped: fix its vertex and fragment sources from this error", e);
-			}
-		}
-		return this.shader;
-	}
-
 	public void bind() {
 		final IShader current = this.getShader();
 		if (current != null && current.isActive()) {
@@ -62,6 +50,18 @@ public abstract class ShaderProgram {
 			this.shader.delete();
 			this.shader = null;
 		}
+	}
+
+	public IShader getShader() {
+		if (this.shader == null && this.vertex != null) {
+			try {
+				this.shader = BridgeHandler.RENDER.get().createShader(this.vertex, this.fragment, BlendState.NORMAL);
+			} catch (final Exception e) {
+				this.vertex = null;
+				JOIDLog.warn("The shader " + JOIDLog.nameOf(this.getClass()) + " cannot be created (" + e.getMessage() + "), what it draws is skipped: fix its vertex and fragment sources from this error", e);
+			}
+		}
+		return this.shader;
 	}
 
 	public boolean canDraw() {

@@ -10,12 +10,12 @@ public interface ITexture {
 
 	public @NonNull ITexture upload(final @NonNull int[] pixels);
 
+	public void delete();
+
 	public int getWidth();
 	public int getHeight();
 
 	public boolean isMipmapped();
-
-	public void delete();
 
 	public default boolean isAllocated() {
 		return this.getWidth() > 0;

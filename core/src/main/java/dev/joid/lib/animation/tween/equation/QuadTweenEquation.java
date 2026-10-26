@@ -10,7 +10,7 @@ public abstract class QuadTweenEquation extends TweenEquation {
 	public static final QuadTweenEquation IN = new QuadTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return t * t;
 		}
 
@@ -24,7 +24,7 @@ public abstract class QuadTweenEquation extends TweenEquation {
 	public static final QuadTweenEquation OUT = new QuadTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return -t * (t - 2F);
 		}
 
@@ -38,7 +38,7 @@ public abstract class QuadTweenEquation extends TweenEquation {
 	public static final QuadTweenEquation INOUT = new QuadTweenEquation() {
 
 		@Override
-		public final float compute(final float time) {
+		public float compute(final float time) {
 			float t = time;
 			if ((t *= 2F) < 1F) {
 				return 0.5F * t * t;

@@ -696,13 +696,13 @@ public class ResourceDataTest {
 		}
 
 		@Override
-		public boolean isMipmapped() {
-			return false;
+		public void delete() {
+			this.deleted = true;
 		}
 
 		@Override
-		public void delete() {
-			this.deleted = true;
+		public boolean isMipmapped() {
+			return false;
 		}
 
 	}

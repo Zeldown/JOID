@@ -10,7 +10,7 @@ public abstract class LinearTweenEquation extends TweenEquation {
 	public static final LinearTweenEquation INOUT = new LinearTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return t;
 		}
 

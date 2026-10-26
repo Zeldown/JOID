@@ -64,6 +64,9 @@ public class TextureResourceResolverTest {
 		}
 
 		@Override
+		public void delete() {}
+
+		@Override
 		public int getWidth() {
 			return 1;
 		}
@@ -77,9 +80,6 @@ public class TextureResourceResolverTest {
 		public boolean isMipmapped() {
 			return false;
 		}
-
-		@Override
-		public void delete() {}
 
 	}
 

@@ -36,6 +36,17 @@ public final class VideoAudioPlayer {
 		VideoAudioPlayer.audioListenerPosition = audioListenerPosition;
 	}
 
+	public void cleanup() {
+		if (this.source != null) {
+			this.source.stop();
+			this.source.delete();
+			this.source = null;
+		}
+
+		this.clearQueue();
+		this.initialized = false;
+	}
+
 	public void play() {
 		if (!this.initialized) {
 			this.initialized = true;
@@ -128,17 +139,6 @@ public final class VideoAudioPlayer {
 
 	public boolean isFull() {
 		return this.source != null && this.sampleQueue.remainingCapacity() == 0;
-	}
-
-	public void cleanup() {
-		if (this.source != null) {
-			this.source.stop();
-			this.source.delete();
-			this.source = null;
-		}
-
-		this.clearQueue();
-		this.initialized = false;
 	}
 
 	private void clearQueue() {

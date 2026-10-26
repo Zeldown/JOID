@@ -490,6 +490,11 @@ public class VideoAudioPlayerTest {
 		@Getter private boolean playing;
 
 		@Override
+		public void delete() {
+			this.calls.add("delete");
+		}
+
+		@Override
 		public void play() {
 			this.calls.add("play");
 			this.playing = true;
@@ -526,11 +531,6 @@ public class VideoAudioPlayerTest {
 		@Override
 		public int getBufferedSamples() {
 			return this.getWrittenSamples() - this.played;
-		}
-
-		@Override
-		public void delete() {
-			this.calls.add("delete");
 		}
 
 		private float lastGain() {

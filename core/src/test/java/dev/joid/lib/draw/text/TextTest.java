@@ -34,17 +34,17 @@ public class TextTest {
 		}
 
 		@Override
+		public double getLineHeight(final TextInfo info) {
+			return info.getFontSize() * 2D;
+		}
+
+		@Override
 		public double getWidth(final String text, final TextInfo info) {
 			return text.length() * info.getFontSize();
 		}
 
 		@Override
 		public double getHeight(final String text, final TextInfo info) {
-			return info.getFontSize() * 2D;
-		}
-
-		@Override
-		public double getLineHeight(final TextInfo info) {
 			return info.getFontSize() * 2D;
 		}
 

@@ -10,7 +10,7 @@ public abstract class ExpoTweenEquation extends TweenEquation {
 	public static final ExpoTweenEquation IN = new ExpoTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return (t == 0F) ? 0F : (float) Math.pow(2D, 10D * (t - 1D));
 		}
 
@@ -24,7 +24,7 @@ public abstract class ExpoTweenEquation extends TweenEquation {
 	public static final ExpoTweenEquation OUT = new ExpoTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return (t == 1F) ? 1F : -(float) Math.pow(2D, -10D * t) + 1F;
 		}
 
@@ -38,7 +38,7 @@ public abstract class ExpoTweenEquation extends TweenEquation {
 	public static final ExpoTweenEquation INOUT = new ExpoTweenEquation() {
 
 		@Override
-		public final float compute(final float time) {
+		public float compute(final float time) {
 			float t = time;
 			if (t == 0F) {
 				return 0F;

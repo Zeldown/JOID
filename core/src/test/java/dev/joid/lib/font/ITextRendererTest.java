@@ -20,17 +20,17 @@ public class ITextRendererTest {
 			}
 
 			@Override
+			public double getLineHeight(final TextInfo info) {
+				return 0D;
+			}
+
+			@Override
 			public double getWidth(final String text, final TextInfo info) {
 				return 0D;
 			}
 
 			@Override
 			public double getHeight(final String text, final TextInfo info) {
-				return 0D;
-			}
-
-			@Override
-			public double getLineHeight(final TextInfo info) {
 				return 0D;
 			}
 

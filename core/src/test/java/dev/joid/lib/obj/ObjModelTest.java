@@ -515,6 +515,9 @@ public class ObjModelTest {
 		}
 
 		@Override
+		public void delete() {}
+
+		@Override
 		public int getWidth() {
 			return 1;
 		}
@@ -528,9 +531,6 @@ public class ObjModelTest {
 		public boolean isMipmapped() {
 			return false;
 		}
-
-		@Override
-		public void delete() {}
 
 	}
 

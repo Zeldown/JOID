@@ -32,11 +32,6 @@ public class TransitionStep {
 		return new TransitionStep(duration, equation);
 	}
 
-	public final <T extends TransitionStep> @NonNull T draw(final @NonNull TransitionDrawing draw) {
-		this.draw = draw;
-		return (T) this;
-	}
-
 	public void init(final @NonNull UI ui) {}
 
 	public final void start() {
@@ -73,6 +68,11 @@ public class TransitionStep {
 		} finally {
 			this.endFrame();
 		}
+	}
+
+	public final <T extends TransitionStep> @NonNull T draw(final @NonNull TransitionDrawing draw) {
+		this.draw = draw;
+		return (T) this;
 	}
 
 	public final <T extends TransitionStep> @NonNull T enabled(final boolean enabled) {

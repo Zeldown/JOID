@@ -22,7 +22,7 @@ public abstract class BackTweenEquation extends TweenEquation {
 		return new BackTweenEquation(overshoot) {
 
 			@Override
-			public final float compute(final float t) {
+			public float compute(final float t) {
 				final float s = super.overshoot;
 				return t * t * ((s + 1F) * t - s);
 			}
@@ -44,7 +44,7 @@ public abstract class BackTweenEquation extends TweenEquation {
 		return new BackTweenEquation(overshoot) {
 
 			@Override
-			public final float compute(final float time) {
+			public float compute(final float time) {
 				float t = time;
 				final float s = super.overshoot;
 				return (t -= 1F) * t * ((s + 1F) * t + s) + 1F;
@@ -67,7 +67,7 @@ public abstract class BackTweenEquation extends TweenEquation {
 		return new BackTweenEquation(overshoot) {
 
 			@Override
-			public final float compute(final float time) {
+			public float compute(final float time) {
 				float t = time;
 				float s = super.overshoot;
 				if ((t *= 2F) < 1F) {

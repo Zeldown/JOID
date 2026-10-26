@@ -6,6 +6,9 @@ import lombok.NonNull;
 public final class SnapshotAudioSource implements IAudioSource {
 
 	@Override
+	public void delete() {}
+
+	@Override
 	public void play() {}
 
 	@Override
@@ -32,8 +35,5 @@ public final class SnapshotAudioSource implements IAudioSource {
 	public int getBufferedSamples() {
 		return 0;
 	}
-
-	@Override
-	public void delete() {}
 
 }

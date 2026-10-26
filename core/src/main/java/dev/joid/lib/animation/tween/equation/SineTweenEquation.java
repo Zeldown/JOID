@@ -10,7 +10,7 @@ public abstract class SineTweenEquation extends TweenEquation {
 	public static final SineTweenEquation IN = new SineTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return (float) -Math.cos(t * (Math.PI / 2D)) + 1F;
 		}
 
@@ -24,7 +24,7 @@ public abstract class SineTweenEquation extends TweenEquation {
 	public static final SineTweenEquation OUT = new SineTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return (float) Math.sin(t * (Math.PI / 2D));
 		}
 
@@ -38,7 +38,7 @@ public abstract class SineTweenEquation extends TweenEquation {
 	public static final SineTweenEquation INOUT = new SineTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return -0.5F * ((float) Math.cos(Math.PI * t) - 1F);
 		}
 

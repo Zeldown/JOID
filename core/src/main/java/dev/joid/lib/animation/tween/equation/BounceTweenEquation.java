@@ -10,7 +10,7 @@ public abstract class BounceTweenEquation extends TweenEquation {
 	public static final BounceTweenEquation IN = new BounceTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return 1F - BounceTweenEquation.OUT.compute(1F - t);
 		}
 
@@ -24,7 +24,7 @@ public abstract class BounceTweenEquation extends TweenEquation {
 	public static final BounceTweenEquation OUT = new BounceTweenEquation() {
 
 		@Override
-		public final float compute(final float time) {
+		public float compute(final float time) {
 			float t = time;
 			if (t < (1F / 2.75F)) {
 				return 7.5625F * t * t;
@@ -47,7 +47,7 @@ public abstract class BounceTweenEquation extends TweenEquation {
 	public static final BounceTweenEquation INOUT = new BounceTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			if (t < 0.5F) {
 				return BounceTweenEquation.IN.compute(t * 2F) * 0.5F;
 			} else {

@@ -1155,6 +1155,11 @@ public class VideoResourceDecoderTest {
 		private final AtomicInteger samples;
 
 		@Override
+		public void delete() {
+			this.calls.add("delete");
+		}
+
+		@Override
 		public void play() {
 			this.calls.add("play");
 		}
@@ -1195,11 +1200,6 @@ public class VideoResourceDecoderTest {
 			return 0;
 		}
 
-		@Override
-		public void delete() {
-			this.calls.add("delete");
-		}
-
 	}
 
 	private static final class PlayingAudioSource implements IAudioSource {
@@ -1207,6 +1207,9 @@ public class VideoResourceDecoderTest {
 		private int     played;
 		private int     written;
 		private boolean playing;
+
+		@Override
+		public void delete() {}
 
 		@Override
 		public void play() {
@@ -1244,9 +1247,6 @@ public class VideoResourceDecoderTest {
 		public int getBufferedSamples() {
 			return this.written - this.played;
 		}
-
-		@Override
-		public void delete() {}
 
 		private void advance(final int samples) {
 			if (this.isPlaying()) {

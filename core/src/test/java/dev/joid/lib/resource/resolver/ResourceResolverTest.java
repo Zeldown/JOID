@@ -138,6 +138,9 @@ public class ResourceResolverTest {
 		}
 
 		@Override
+		public void delete() {}
+
+		@Override
 		public int getWidth() {
 			return 1;
 		}
@@ -151,9 +154,6 @@ public class ResourceResolverTest {
 		public boolean isMipmapped() {
 			return false;
 		}
-
-		@Override
-		public void delete() {}
 
 	}
 

@@ -41,6 +41,25 @@ public final class AlAudioSource implements IAudioSource {
 	}
 
 	@Override
+	public void delete() {
+		this.bridge.releaseSource(this);
+		if (this.context != null && this.context == this.binding.getCurrentContext()) {
+			this.binding.stop(this.source);
+			this.binding.deleteSource(this.source);
+			for (final int buffer : this.bufferList) {
+				this.binding.deleteBuffer(buffer);
+			}
+		}
+
+		this.context = null;
+		this.playing = false;
+		this.bufferList.clear();
+		this.freeBufferQueue.clear();
+		this.sampleCountQueue.clear();
+		this.bufferedSamples = 0;
+	}
+
+	@Override
 	public void play() {
 		this.playing = true;
 		if (this.sync()) {
@@ -112,25 +131,6 @@ public final class AlAudioSource implements IAudioSource {
 
 		this.reclaim();
 		return this.bufferedSamples;
-	}
-
-	@Override
-	public void delete() {
-		this.bridge.releaseSource(this);
-		if (this.context != null && this.context == this.binding.getCurrentContext()) {
-			this.binding.stop(this.source);
-			this.binding.deleteSource(this.source);
-			for (final int buffer : this.bufferList) {
-				this.binding.deleteBuffer(buffer);
-			}
-		}
-
-		this.context = null;
-		this.playing = false;
-		this.bufferList.clear();
-		this.freeBufferQueue.clear();
-		this.sampleCountQueue.clear();
-		this.bufferedSamples = 0;
 	}
 
 	public boolean sync() {

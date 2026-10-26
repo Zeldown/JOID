@@ -4,6 +4,8 @@ import lombok.NonNull;
 
 public interface IAudioSource {
 
+	public void delete();
+
 	public void play();
 	public void stop();
 	public void pause();
@@ -14,7 +16,5 @@ public interface IAudioSource {
 
 	public boolean isPlaying();
 	public int getBufferedSamples();
-
-	public void delete();
 
 }

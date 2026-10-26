@@ -10,7 +10,7 @@ public abstract class CubicTweenEquation extends TweenEquation {
 	public static final CubicTweenEquation IN = new CubicTweenEquation() {
 
 		@Override
-		public final float compute(final float t) {
+		public float compute(final float t) {
 			return t * t * t;
 		}
 
@@ -24,7 +24,7 @@ public abstract class CubicTweenEquation extends TweenEquation {
 	public static final CubicTweenEquation OUT = new CubicTweenEquation() {
 
 		@Override
-		public final float compute(final float time) {
+		public float compute(final float time) {
 			float t = time;
 			return (t -= 1F) * t * t + 1F;
 		}
@@ -39,7 +39,7 @@ public abstract class CubicTweenEquation extends TweenEquation {
 	public static final CubicTweenEquation INOUT = new CubicTweenEquation() {
 
 		@Override
-		public final float compute(final float time) {
+		public float compute(final float time) {
 			float t = time;
 			if ((t *= 2F) < 1F) {
 				return 0.5F * t * t * t;
