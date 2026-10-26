@@ -18,9 +18,9 @@ public final class GlyphEntry {
 	private int    width;
 	private int    height;
 	private double top;
+	private double bottom;
 	private double left;
 	private double right;
-	private double bottom;
 
 	public GlyphEntry(final int codepoint, final double advance, final Shape shape) {
 		this.codepoint = codepoint;

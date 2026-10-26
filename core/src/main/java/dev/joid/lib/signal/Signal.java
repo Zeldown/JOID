@@ -66,13 +66,11 @@ public class Signal<T> implements Supplier<T> {
 		}
 	}
 
-	public @NonNull Signal<T> reset() {
-		if (!this.isWritable()) {
-			throw new IllegalStateException(this.refuse("reset"));
-		}
-
-		this.set(this.defaultValue);
-		return this;
+	@Override
+	public T get() {
+		final T current = this.peek();
+		SignalContext.current().read(this);
+		return current;
 	}
 
 	public @NonNull Signal<T> set(final T value) {
@@ -81,6 +79,15 @@ public class Signal<T> implements Supplier<T> {
 		}
 
 		return this.write(() -> this.store(value));
+	}
+
+	public @NonNull Signal<T> reset() {
+		if (!this.isWritable()) {
+			throw new IllegalStateException(this.refuse("reset"));
+		}
+
+		this.set(this.defaultValue);
+		return this;
 	}
 
 	public @NonNull Signal<T> onChange(final @NonNull SignalListener<? super T> listener) {
@@ -104,13 +111,6 @@ public class Signal<T> implements Supplier<T> {
 
 	public <R> @NonNull ComputedSignal<R> map(final @NonNull Function<? super T, ? extends R> function) {
 		return Signal.from(() -> function.apply(this.get()));
-	}
-
-	@Override
-	public T get() {
-		final T current = this.peek();
-		SignalContext.current().read(this);
-		return current;
 	}
 
 	public T peek() {

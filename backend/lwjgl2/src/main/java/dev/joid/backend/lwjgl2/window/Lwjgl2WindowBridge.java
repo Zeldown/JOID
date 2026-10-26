@@ -55,6 +55,15 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 	}
 
 	@Override
+	public void setClipboard(final @NonNull String text) {
+		try {
+			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
+		} catch (final Exception exception) {
+			JOIDLog.devWarnOnce("Lwjgl2WindowBridge.setClipboard", () -> "The clipboard cannot be written, the text stays out of it: " + exception);
+		}
+	}
+
+	@Override
 	public boolean isMouseGrabbed() {
 		return Mouse.isGrabbed();
 	}
@@ -68,15 +77,6 @@ public final class Lwjgl2WindowBridge implements IWindowBridge {
 	public void setCursor(final @NonNull Cursor cursor) {
 		if (this.nativeCursor != null && !Mouse.isGrabbed()) {
 			this.nativeCursor.apply(cursor);
-		}
-	}
-
-	@Override
-	public void setClipboard(final @NonNull String text) {
-		try {
-			Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
-		} catch (final Exception exception) {
-			JOIDLog.devWarnOnce("Lwjgl2WindowBridge.setClipboard", () -> "The clipboard cannot be written, the text stays out of it: " + exception);
 		}
 	}
 

@@ -213,7 +213,7 @@ public class ResourceFailureTest {
 
 	private static final class BytesAsset extends Asset {
 
-		private final byte[]  bytes;
+		private final byte[]          bytes;
 		@Getter private final boolean remote;
 
 		private BytesAsset(final String uniqueId, final boolean remote, final byte[] bytes) {

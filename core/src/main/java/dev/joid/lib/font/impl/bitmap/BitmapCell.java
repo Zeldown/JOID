@@ -8,16 +8,16 @@ import lombok.NonNull;
 public final class BitmapCell {
 
 	private final int      texelTop;
+	private final int      texelBottom;
 	private final int      texelLeft;
 	private final int      texelRight;
-	private final int      texelBottom;
 	private final ITexture texture;
 
 	private double  top;
+	private double  bottom;
 	private double  left;
 	private double  right;
 	private boolean bold;
-	private double  bottom;
 	private boolean grayscale;
 
 	private BitmapCell(final ITexture texture, final int texelLeft, final int texelTop, final int texelRight, final int texelBottom) {

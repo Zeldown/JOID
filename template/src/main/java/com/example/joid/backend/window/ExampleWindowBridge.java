@@ -31,6 +31,11 @@ public final class ExampleWindowBridge implements IWindowBridge {
 	}
 
 	@Override
+	public void setClipboard(final String text) {
+		throw new UnsupportedOperationException("ExampleWindowBridge.setClipboard() is not implemented, implement it with the API of your engine");
+	}
+
+	@Override
 	public boolean isMouseGrabbed() {
 		throw new UnsupportedOperationException("ExampleWindowBridge.isMouseGrabbed() is not implemented, implement it with the API of your engine");
 	}
@@ -38,11 +43,6 @@ public final class ExampleWindowBridge implements IWindowBridge {
 	@Override
 	public boolean isKeyDown(final Key physicalKey) {
 		throw new UnsupportedOperationException("ExampleWindowBridge.isKeyDown() is not implemented, implement it with the API of your engine");
-	}
-
-	@Override
-	public void setClipboard(final String text) {
-		throw new UnsupportedOperationException("ExampleWindowBridge.setClipboard() is not implemented, implement it with the API of your engine");
 	}
 
 }

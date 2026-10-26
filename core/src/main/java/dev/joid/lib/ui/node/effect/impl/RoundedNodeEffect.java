@@ -13,11 +13,12 @@ import lombok.NonNull;
 
 public class RoundedNodeEffect extends NodeEffect<Node> {
 
+	private Supplier<Float> radiusSupplier;
+
 	private Supplier<Boolean> topSupplier;
-	private Supplier<Float>   radiusSupplier;
+	private Supplier<Boolean> bottomSupplier;
 	private Supplier<Boolean> leftSupplier;
 	private Supplier<Boolean> rightSupplier;
-	private Supplier<Boolean> bottomSupplier;
 
 	protected RoundedNodeEffect(final @NonNull Supplier<Float> radiusSupplier) {
 		super(100);

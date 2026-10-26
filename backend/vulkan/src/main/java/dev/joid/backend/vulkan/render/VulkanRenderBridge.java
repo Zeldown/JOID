@@ -73,10 +73,10 @@ public final class VulkanRenderBridge extends RenderBridge {
 	private long                 frame;
 	private long[]               depth;
 	private int                  passWidth;
-	private int                  depthWidth;
 	private int                  passHeight;
-	private long                 passImage;
+	private int                  depthWidth;
 	private int                  depthHeight;
+	private long                 passImage;
 	private boolean              passActive;
 	private long                 boundPipeline;
 	private boolean              screenCleared;

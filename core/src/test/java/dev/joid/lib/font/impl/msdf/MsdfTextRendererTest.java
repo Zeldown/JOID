@@ -35,8 +35,8 @@ public class MsdfTextRendererTest {
 	@ClassRule
 	public static final TemporaryCache CACHE = new TemporaryCache();
 
-	private static MsdfFont font;
-	private static MsdfFont sample;
+	private static MsdfFont     font;
+	private static MsdfFont     sample;
 	private static MsdfFontFace regular;
 
 	@Rule

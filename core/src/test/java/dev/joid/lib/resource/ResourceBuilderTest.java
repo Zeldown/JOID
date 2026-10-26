@@ -474,7 +474,7 @@ public class ResourceBuilderTest {
 		private final List<Thread>   readers = new CopyOnWriteArrayList<>();
 		private final CountDownLatch release = new CountDownLatch(1);
 
-		private final byte[]  bytes;
+		private final byte[]          bytes;
 		@Getter private final boolean remote;
 
 		private HeldAsset(final String uniqueId, final boolean remote, final Asset source) {
@@ -506,7 +506,7 @@ public class ResourceBuilderTest {
 		private final AtomicInteger opened  = new AtomicInteger();
 		private final List<Thread>  readers = new CopyOnWriteArrayList<>();
 
-		private final byte[]  bytes;
+		private final byte[]          bytes;
 		@Getter private final boolean remote;
 
 		private FlakyAsset(final String uniqueId, final boolean remote, final byte[] bytes) {

@@ -57,6 +57,11 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	}
 
 	@Override
+	public void setClipboard(final @NonNull String text) {
+		GLFW.glfwSetClipboardString(this.window, text);
+	}
+
+	@Override
 	public boolean isMouseGrabbed() {
 		return GLFW.glfwGetInputMode(this.window, GLFW.GLFW_CURSOR) == GLFW.GLFW_CURSOR_DISABLED;
 	}
@@ -69,11 +74,6 @@ public final class GlfwWindowBridge implements IWindowBridge {
 	@Override
 	public void setCursor(final @NonNull Cursor cursor) {
 		GLFW.glfwSetCursor(this.window, cursor == Cursor.DEFAULT ? 0L : this.cursorMap.computeIfAbsent(cursor, GlfwWindowBridge::createCursor));
-	}
-
-	@Override
-	public void setClipboard(final @NonNull String text) {
-		GLFW.glfwSetClipboardString(this.window, text);
 	}
 
 	private boolean isCodeDown(final int code) {

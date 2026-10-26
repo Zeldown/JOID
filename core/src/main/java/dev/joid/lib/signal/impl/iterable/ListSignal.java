@@ -35,6 +35,10 @@ public class ListSignal<E> extends Signal<List<E>> {
 		return this.mutate(list -> list.remove(index));
 	}
 
+	public @NonNull ListSignal<E> set(final int index, final E element) {
+		return this.mutate(list -> list.set(index, element));
+	}
+
 	public boolean contains(final E e) {
 		return super.get().contains(e);
 	}
@@ -49,10 +53,6 @@ public class ListSignal<E> extends Signal<List<E>> {
 
 	public boolean isEmpty() {
 		return super.get().isEmpty();
-	}
-
-	public @NonNull ListSignal<E> set(final int index, final E element) {
-		return this.mutate(list -> list.set(index, element));
 	}
 
 	public int size() {

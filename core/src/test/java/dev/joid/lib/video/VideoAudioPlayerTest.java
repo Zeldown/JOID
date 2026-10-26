@@ -485,8 +485,8 @@ public class VideoAudioPlayerTest {
 
 		private final int channels;
 
-		private int     played;
-		private Object  group;
+		private int             played;
+		private Object          group;
 		@Getter private boolean playing;
 
 		@Override

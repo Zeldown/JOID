@@ -17,8 +17,8 @@ public final class UIView {
 	private double width;
 	private double height;
 	private double viewportWidth;
-	private double interfaceScale;
 	private double viewportHeight;
+	private double interfaceScale;
 
 	private UIView(final double anchorX, final double anchorY) {
 		this.anchorX = anchorX;

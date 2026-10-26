@@ -25,6 +25,14 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 		return this.mutate(Map::clear);
 	}
 
+	public @NonNull MapSignal<K, V> put(final K key, final V value) {
+		return this.mutate(map -> map.put(key, value));
+	}
+
+	public @NonNull MapSignal<K, V> remove(final K key) {
+		return this.mutate(map -> map.remove(key));
+	}
+
 	public boolean containsKey(final K key) {
 		return super.get().containsKey(key);
 	}
@@ -43,14 +51,6 @@ public class MapSignal<K, V> extends Signal<Map<K, V>> {
 
 	public Set<K> keySet() {
 		return super.get().keySet();
-	}
-
-	public @NonNull MapSignal<K, V> put(final K key, final V value) {
-		return this.mutate(map -> map.put(key, value));
-	}
-
-	public @NonNull MapSignal<K, V> remove(final K key) {
-		return this.mutate(map -> map.remove(key));
 	}
 
 	public int size() {
