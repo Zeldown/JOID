@@ -147,7 +147,6 @@ public class UIDemoDraggable extends UIDemo {
 		.create(980, 380, 400, 260)
 		.color(UIDemoDraggable.PLACEHOLDER)
 		.body(rect -> {
-			RectNode.create(40, 40, 320, 180).color(UIDemoDraggable.PLACEHOLDER).effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN)).attach(rect);
 			RectNode
 			.create(40, 40, 320, 180)
 			.color(UIDemoDraggable.PLACEHOLDER)
@@ -161,6 +160,7 @@ public class UIDemoDraggable extends UIDemo {
 				.draggable(DraggableProperty.parent())
 				.attach(container);
 			})
+			.effect(BorderNodeEffect.create(UIDemoDraggable.INK, 2F).mode(BorderMode.IN))
 			.onMount(event -> event.getNode().scrollY(-40D))
 			.attach(rect);
 			TextNode.create(200, 275).text(Text.create("Scrolled parent", caption)).anchorX(Align.CENTER).attach(rect);
