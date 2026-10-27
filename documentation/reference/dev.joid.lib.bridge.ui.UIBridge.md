@@ -42,7 +42,7 @@ Sends a typed character, as a Unicode code point, to the UIs from the top down; 
 ## keyPressed(Key,Key)
 
 Sends a key press to the UIs from the top down.
-Escape closes the top closeable screen when no node consumed it ([Know who receives the keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard)).
+Escape closes the top closeable UI that is not an overlay when no node consumed it ([Know who receives the keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard)).
 
 ## keyReleased(Key,Key)
 

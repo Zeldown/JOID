@@ -56,7 +56,7 @@ The members with a default, which you override when your API needs it:
 ## Guarantees
 
 What your implementation must ensure.
-[[RenderBridgeContractSuite]] checks most rows in a few seconds ([Testing a backend](/build/testing-a-backend/)); the rows marked *review* are covered only by the snapshots or by reading your code.
+[[RenderBridgeContractSuite]] checks these rules in a few seconds ([Testing a backend](/build/testing-a-backend/)).
 
 | Rule | Why |
 |---|---|
@@ -67,7 +67,7 @@ What your implementation must ensure.
 | Read the vertices with the layout of [[VertexAttribute]]: 32 bytes per vertex, missing attributes completed. | Every vertex buffer of JOID uses it ([Render pipeline](/build/pipeline/#vertices)). |
 | Follow the OpenGL clip space, in which the projection of `screen` maps the top-left corner of the window to `(0, 0)`, and the rules of [Depth](/build/framebuffers-and-depth/#depth). | The core builds its projections and sorts its 3D content for that clip space. |
 | Store a framebuffer as OpenGL does: texture coordinate `v = 0` samples the bottom row of what was drawn. | The core samples framebuffers with that convention ([Orientation](/build/framebuffers-and-depth/#orientation)). |
-| Draw `LINES` one pixel wide (*review*). | Wide and smooth lines reach the bridge as triangles already. |
+| Draw `LINES` one pixel wide. | Wide and smooth lines reach the bridge as triangles already. |
 | Send the uniforms of a shader at the draw, never at `bind()`. | JOID sets uniform values before it binds the shader. |
 | Let a shader that fails to compile report `isActive() == false` and print one warning that starts with `[JOID]` and names the compilation, without throwing. | `draw` skips its draws and the frame goes on. |
 | Throw an `IllegalArgumentException` that starts with `A texture of <width>x<height> exceeds the maximum size` when a texture is too large for your API. | The message tells the developer to downscale the image, on every backend alike. |

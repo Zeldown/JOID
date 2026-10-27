@@ -15,9 +15,13 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 
 Starts JOID from a packaged jar, opens a UI, draws 60 frames and exits with the result, for the jar checks of a backend.
 
+## Description
+
+Call it from a main of your own, run on a packaged jar with its libraries, to check that the jar starts JOID in the modes of its variant.
+
 ## Learn more
 
-- [Run the tests of your backend](/build/testing-a-backend/#run-the-tests-of-your-backend)
+- [Three jars per module](/build/demos/#three-jars-per-module)
 
 <a id="JarCheck-methods"></a>
 

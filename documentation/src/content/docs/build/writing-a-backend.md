@@ -33,7 +33,7 @@ Each release publishes `joid-backend-template-<version>.zip`, a Gradle project t
    Put the base modules you reuse into the `embed` configuration, so that they go inside your jars; `joid-base-glfw` needs `joid-base-openal` next to it.
 
 **Check**: `./gradlew compileJava` succeeds.
-The bridges of the template throw an `UnsupportedOperationException` that names the method to implement, so `register()` fails until you have implemented them.
+The bridges of the template throw an `UnsupportedOperationException` that names the method to implement, so the first UI that opens, or the first `frame()`, fails until you have implemented them.
 
 ## Extend Backend
 
@@ -154,13 +154,13 @@ Implement its methods as [Testing a backend](/build/testing-a-backend/#give-the-
 ## Check it against LWJGL 3
 
 The testkit compares your rendering with the official one, image by image.
-Run these steps in order; each one assumes that the previous one is green.
+Run these steps in order, each one once the previous one is green; [Run the tests of your backend](/build/testing-a-backend/#run-the-tests-of-your-backend) says what each task does.
 
-1. `./gradlew test` runs the contract suites in a few seconds, then `SnapshotTest`, which renders every scenario; the first run fails until the references of your GPU exist.
-2. `./gradlew updateSnapshots` records the references of your GPU.
-3. `./gradlew crossBackendTest` runs the tests and renders the same scenarios with the LWJGL 3 backend, then compares your shots with those, one level per channel at most.
+1. `./gradlew test`: the first run fails until the references of your GPU exist.
+2. `./gradlew updateSnapshots`.
+3. `./gradlew crossBackendTest`.
 4. Open the `report.html` that a failure prints, fix, and run `crossBackendTest` again.
-5. `./gradlew build` produces your `prod`, `dev` and `demo` jars; `./gradlew testDemoJar testDevJar testProdJar` runs the tests against them.
+5. `./gradlew build`, then `./gradlew testDemoJar testDevJar testProdJar`.
 
 When a shot differs, check these first:
 
@@ -171,5 +171,3 @@ When a shot differs, check these first:
 | Masks and scroll areas do not clip | The screen has no 8-bit stencil buffer, or `clearStencilBuffer` clears nothing. |
 | Text and images are blocky when drawn smaller | The mip levels are not filled with `forEachStep`, or the sampler ignores `isMipmapFiltered()`. |
 | Colors are off by a few levels | The surface or the texture format is sRGB where JOID reads linear `UNORM`. |
-
-The suites, the references and the reports are detailed on [Testing a backend](/build/testing-a-backend/).

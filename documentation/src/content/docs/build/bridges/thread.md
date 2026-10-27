@@ -48,4 +48,4 @@ The user side of this rule is on [Threads](/use/learn/running/threads/).
 |---|---|
 | Run the tasks of `execute` before the next frame, in order. | A UI opened from another thread must appear on the next frame, and an open followed by a close must not swap. |
 | Never run a task of `execute` on the calling thread when it is not the render thread. | The task touches the node tree and the GPU. |
-| Answer `isRenderThread` without locking. | The core asks it on every listener that it runs. |
+| Answer `isRenderThread` without locking. | The core asks it at every signal write and every call that must reach the render thread. |

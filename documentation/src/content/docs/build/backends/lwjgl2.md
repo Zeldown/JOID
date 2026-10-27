@@ -48,7 +48,8 @@ The forwarder returns nothing to the loop: LWJGL 2 has no handler to chain to.
 
 [[Lwjgl2Keys]] maps the key codes of LWJGL 2 to [[Key]] values.
 LWJGL 2 cannot name a key by layout, so `getKey(code, character)` reads the printed key from the character that the press types, and remembers it for that position.
-While Shift, Ctrl or Alt is held, the character does not name the key, so the remembered key serves; before the first press of a key without a modifier, its position serves.
+With Ctrl, a letter types a control character that names its letter.
+While Shift or Alt is held, or Ctrl on another key, the character does not name the key, so the remembered key serves; before the first press of a key without a modifier, its position serves.
 
 ### Window
 
@@ -68,5 +69,5 @@ OpenGL 2.1 to 4.x contexts work, with the framebuffer objects of OpenGL 3.0 or o
 
 ## Tests
 
-[[Lwjgl2SnapshotBackend]] renders into a `Pbuffer` with a 24-bit depth and an 8-bit stencil, and into a `Display` on Linux.
+[[Lwjgl2SnapshotBackend]] renders into a `Display` on Linux and into a `Pbuffer` elsewhere, both with a 24-bit depth and an 8-bit stencil.
 The backend runs every contract suite and the snapshot suite ([Testing a backend](/build/testing-a-backend/)).

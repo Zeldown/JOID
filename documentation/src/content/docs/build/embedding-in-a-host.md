@@ -62,7 +62,7 @@ A JOID call made inside the drawing of the host, such as a nested raster, opens 
 The host draws with its own matrices, so the node gives it screen pixels, read from the [[PixelGrid]].
 
 [[IRenderBridge#raster]] does the same into a JOID framebuffer at its pixel size, so that the effects of the node apply to the drawing of the host; the OpenGL bridge binds that framebuffer and its viewport around the drawing.
-The user side is [[DrawUtils#RASTER]] ([Drawing](/use/learn/going-further/drawing/#show-what-another-renderer-draws)).
+The user side is [[DrawUtils#RASTER]] ([Drawing shapes and text](/use/learn/going-further/drawing/#show-what-another-renderer-draws)).
 
 ### Import the matrices of a fixed-function host
 

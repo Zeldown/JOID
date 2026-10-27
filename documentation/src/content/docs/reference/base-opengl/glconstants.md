@@ -210,7 +210,7 @@ The value of `GL_ONE`, the integer `1`, as a blend factor or a boolean.
 
 `int ZERO` 
 
-The value of `GL_ZERO`, the integer `1`, as a blend factor or a boolean.
+The value of `GL_ZERO`, the integer `0`, as a blend factor or a boolean.
 
 <a id="GlConstants-constant-TRUE"></a>
 

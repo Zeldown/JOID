@@ -27,7 +27,7 @@ What a subclass of [[UIBridge]] implements; a [[StackUIBridge]] implements all o
 
 | Member | Called when | On a `StackUIBridge` |
 |---|---|---|
-| [[IUIBridge#open]], [[IUIBridge#close]] | [[JOID#open]] and `JOID.close` reach this bridge, and Escape closes the top closeable screen. | An overlay or a popup is added; a screen first closes the open screens and popups that `canReplace` accepts, waiting for their closing transition. `close` removes the UI. |
+| [[IUIBridge#open]], [[IUIBridge#close]] | [[JOID#open]] and `JOID.close` reach this bridge, and Escape closes the top closeable UI that is not an overlay. | An overlay or a popup is added; a screen first closes the open screens and popups that `canReplace` accepts, waiting for their closing transition. `close` removes the UI. |
 | [[IUIBridge#canHandle]] with a class | `JOID.open(ui)` looks for a bridge, through `canHandle(ui)`, which asks it for the class of the UI. | `true`. |
 
 ## Provided

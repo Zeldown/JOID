@@ -2,7 +2,9 @@
 summary: Starts JOID from a packaged jar, opens a UI, draws 60 frames and exits with the result, for the jar checks of a backend.
 ---
 
-Learn: [Run the tests of your backend](/build/testing-a-backend/#run-the-tests-of-your-backend).
+Call it from a main of your own, run on a packaged jar with its libraries, to check that the jar starts JOID in the modes of its variant.
+
+Learn: [Three jars per module](/build/demos/#three-jars-per-module).
 
 ## run(String,Supplier,Runnable)
 

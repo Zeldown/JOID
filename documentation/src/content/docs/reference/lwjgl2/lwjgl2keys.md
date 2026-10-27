@@ -51,7 +51,8 @@ Returns the key at the physical position of the LWJGL 2 code, or `Key.UNKNOWN`.
 `Key getKey(int code, char character)` <span class="joid-qualifier">static</span>
 
 Returns the key that the press typed on the current layout: the key of the character for a letter or symbol key, the key of the position for the others.
-With Shift, Control or Alt held, it returns the key that this position typed last without a modifier.
+With Control, a letter types a control character, which gives its letter.
+With Shift or Alt held, or Control on another key, it returns the key that this position typed last without a modifier.
 
 <a id="Lwjgl2Keys-method-isKeyDown"></a>
 
