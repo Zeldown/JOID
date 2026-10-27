@@ -11,7 +11,7 @@ A custom node is a class that extends [[Node]]: it draws itself, takes its prope
 
 **You will learn**
 - How to write a node that draws itself
-- Which hooks of a node you can override
+- Which hooks of a node you can override, and how a node places its children
 - How to give a node a property that follows a signal
 - How a node reacts to the mouse and holds a value that the user changes
 - How to fire an event of your own, and make the node duplicable
@@ -50,6 +50,11 @@ It draws in the coordinates of the parent: the node sits at `getX()`, `getY()`, 
 
 ## Override the hooks you need
 
+The stamp of [Framebuffers and models](/use/learn/going-further/framebuffers-and-models/) creates a framebuffer in `draw` and releases it when it leaves its UI:
+
+```java file="com/example/further/StampNode.java" region="detach"
+```
+
 [[Node]] implements [[INode]], whose hooks JOID calls at each step of the life of a node.
 Every hook does nothing by default, except `drawSkeleton`; override only the ones your node needs:
 
@@ -57,7 +62,7 @@ Every hook does nothing by default, except `drawSkeleton`; override only the one
 |---|---|
 | `init(UI ui)` | Each time the node joins a UI, after its children. A node can join several times: keep it repeatable. |
 | `update()` | Once per frame, in the update step, after its children; a hidden node runs it too. |
-| `layout()` | On every frame while the node is visible, right before it draws: place the children here. |
+| `layout()` | On every frame while the node is visible, right before it draws: place the children here, with `layoutPosition` on each child ([Place the children yourself](#place-the-children-yourself)). |
 | `draw(double mouseX, double mouseY)` | On every frame while the node is visible and its `wait` conditions hold. |
 | `drawSkeleton(double mouseX, double mouseY)` | Instead of `draw` while a `wait` condition fails. It fills the bounds with [[Color#LOADING]] by default. |
 | `mousePressed`, `mouseReleased`, `mouseDragged`, `mouseScroll` | For every mouse event that reaches the node. |
@@ -69,6 +74,33 @@ An exception thrown by `update` or `detach` is printed once as a warning, and th
 
 A hook is the node's own step; the listeners that users add with `onX(...)` and `handleX(...)` run around it.
 None of these hooks is `final`, so a subclass of a built-in node overrides them too.
+
+## Place the children yourself
+
+A node that places its children by a rule of its own overrides `layout()`.
+This one splits its width between its children, with a gap of 10 design pixels:
+
+```java file="com/example/further/SplitNode.java" region="layout"
+```
+
+```java file="com/example/further/CustomNodesUI.java" region="split"
+```
+
+<figure>
+
+![Three white panels side by side in three equal slots; the first and the last fill their slot, the middle one starts lower and is shorter](/captures/further-custom-nodes-split.webp)
+
+<figcaption>
+Each panel takes its slot; the middle one keeps its own `y` of 20 and its height of 80 inside it.
+</figcaption>
+</figure>
+
+- [[Node#layoutPosition]] gives a child its slot; the `x` and `y` of the child stay an offset inside it, so that the user of your node can still move it.
+- [[Node#fit]] gives the size of the slot to a child created with a length of 0, and keeps a length that the child declares.
+- [[Node#layoutSize]] imposes a size on the frame, whatever the child declares, without changing its declared size.
+- Skip the hidden children and the `ABSOLUTE` ones, as the layouts of JOID do.
+
+A layout that changes the order of its children, as a reorderable list does, gives the new order to [[Node#reorderChildren]], which the drawing follows too.
 
 ## Give the node a property
 
@@ -83,6 +115,7 @@ A `Supplier` that reads signals is computed again only when one of them changes;
 The value setter passes its argument to [[Signal#from]], which gives a constant that `follow` applies once and does not keep.
 The first argument names the property: a second call with the same name replaces the first source.
 [[Node#start]] applies a plain value once and drops the source of the property, and [[Node#bind]] binds the property to a writable signal both ways, [[Node#bindNullable]] when the signal can hold `null`.
+When the node changes such a property itself, [[Node#sync]] writes the new value back to the bound signal; a value that the user changes belongs in an [[InteractiveValue]] instead ([Hold a value that the user changes](#hold-a-value-that-the-user-changes)).
 
 A setter is `public final`, generic in `<T extends YourNode>`, returns `(T) this` through the helper, and is named after the property, without `set`.
 The node draws with the field:
@@ -164,7 +197,12 @@ For an event that carries a change, use [[NodeChangeEvent]], whose `Pre` form a 
 `copy()` and the ghost of a drag of type `COPY` build your node again with its `(x, y, width, height)`, `(x, y)` or argument-free constructor, the first one it finds, then copy its fields.
 A node with none of them overrides [[Node#instantiate]] to build itself.
 
-Mark `transient` a field that belongs to one instance only, such as a framebuffer or a cache: the copy leaves it out and builds its own.
+The swatch keeps the value that the user changes in a field that belongs to its own instance:
+
+```java file="com/example/further/SwatchNode.java" region="transient"
+```
+
+Mark `transient` a field that belongs to one instance only, such as this one, a framebuffer or a cache: the copy leaves it out, and keeps what its own constructor gives it.
 A field that the copy cannot set throws `IllegalStateException` with the name of the field.
 [Position and size](/use/learn/describing-the-ui/position-and-size/) explains what `copy()` gives.
 
@@ -173,6 +211,7 @@ A field that the copy cannot set throws `IllegalStateException` with the name of
 - A custom node extends [[Node]], with a **`protected` constructor** `(x, y, width, height)` and a **`create(...)` factory**.
 - **`draw`** runs on every frame, in the coordinates of the parent: the node sits at `getX()`, `getY()`.
 - Override only the **hooks** you need: `init`, `update`, `layout`, `draw`, the input hooks and `detach`.
+- A layout node places each child with **`layoutPosition`** and sizes it with **`fit`**.
 - Each property has a **value setter and a `Supplier` setter**, both through **`follow`**.
 - An **input hook** checks `isHovered()` and `isConsumed()`, then calls `consume()`.
 - A value that the user changes lives in an **`InteractiveValue`**, with `start`, `bind`, `change` and a **`beforeX`/`onX`** pair.

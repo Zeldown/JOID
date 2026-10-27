@@ -37,6 +37,7 @@ public class StampNode extends Node {
 	}
 	// #endregion
 
+	// #region detach
 	@Override
 	public void detach() {
 		if (this.frameBuffer != null) {
@@ -44,6 +45,7 @@ public class StampNode extends Node {
 			this.frameBuffer = null;
 		}
 	}
+	// #endregion
 
 }
 // #endregion

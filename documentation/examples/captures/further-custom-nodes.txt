@@ -14,3 +14,6 @@ wait 500
 moveto 1300 600 400
 wait 300
 cut
+# crop further-custom-nodes-split 100 380 560 160
+wait 100
+shot further-custom-nodes-split
