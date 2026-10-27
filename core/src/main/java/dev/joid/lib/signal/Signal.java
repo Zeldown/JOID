@@ -39,11 +39,11 @@ public class Signal<T> implements Supplier<T> {
 
 	public static <T> @NonNull ComputedSignal<T> from(final T value) {
 		final Supplier<T> replay = SignalReplay.replay(value);
-		return replay != null ? new ComputedSignal<>(replay) : ComputedSignal.constant(value);
+		return replay != null ? ComputedSignal.computed(replay) : ComputedSignal.constant(value);
 	}
 
 	public static <T> @NonNull ComputedSignal<T> from(final @NonNull Supplier<? extends T> supplier) {
-		return new ComputedSignal<>(supplier);
+		return ComputedSignal.computed(supplier);
 	}
 
 	public static void batch(final @NonNull Runnable runnable) {
