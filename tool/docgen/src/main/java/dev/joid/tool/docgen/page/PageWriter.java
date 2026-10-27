@@ -17,7 +17,6 @@ import dev.joid.tool.docgen.description.DescriptionFile;
 import dev.joid.tool.docgen.model.ApiMember;
 import dev.joid.tool.docgen.model.ApiMessage;
 import dev.joid.tool.docgen.model.ApiType;
-import dev.joid.tool.docgen.model.Audience;
 import dev.joid.tool.docgen.model.MemberKind;
 import dev.joid.tool.docgen.page.Backlinks.Backlink;
 import dev.joid.tool.docgen.report.Coverage;
@@ -111,7 +110,7 @@ public final class PageWriter {
 		out.append("title: ").append(new Gson().toJson(page.getTitle())).append('\n');
 		out.append("description: ").append(new Gson().toJson(summary.isEmpty() ? "Reference of " + type.getName() + "." : PageWriter.plain(summary))).append('\n');
 		out.append("genre: reference\n");
-		out.append("topic: ").append(page.getSection()).append('\n');
+		out.append("topic: reference\n");
 		out.append("tableOfContents:\n  maxHeadingLevel: 3\n");
 		out.append("editUrl: ").append(description == null ? "https://github.com/Zeldown/JOID/new/main/documentation/reference?filename=" + type.getFqcn() + ".md" : "https://github.com/Zeldown/JOID/edit/main/" + descriptionPath).append('\n');
 		out.append("---\n\n");
@@ -130,12 +129,7 @@ public final class PageWriter {
 		}
 		out.append("\n\n");
 
-		final TypePage other = this.registry.get(type.getFqcn(), page.getAudience() == Audience.USER ? Audience.CONTRIBUTOR : Audience.USER);
-		if (other != null && page.getAudience() == Audience.CONTRIBUTOR) {
-			out.append(":::note\nThis page lists the members of `").append(type.getName()).append("` that a backend author uses. The other members are on [").append(type.getName()).append("](").append(other.getUrl()).append(").\n:::\n\n");
-		}
-
-		this.coverage.expect(page.getFamily(), descriptionPath, "summary", !summary.isEmpty());
+		this.coverage.expect(page.getFamily().getId(), descriptionPath, "summary", !summary.isEmpty());
 		out.append(summary.isEmpty() ? PageWriter.missing("summary", descriptionPath) : this.text(page, summary, descriptionPath)).append("\n\n");
 		final String[] capture = description != null && description.option("capture") != null ? new String[] {description.option("capture"), description.option("alt")} : this.captures.get(type.getFqcn());
 		if (capture != null) {
@@ -151,7 +145,7 @@ public final class PageWriter {
 
 		final Map<String, String> related = new LinkedHashMap<>();
 		final Set<String> linked = new LinkedHashSet<>();
-		final boolean described = description != null && !description.getDescription().isEmpty() && (page.getAudience() == Audience.USER || other == null);
+		final boolean described = description != null && !description.getDescription().isEmpty();
 		if (described) {
 			final StringBuilder text = new StringBuilder();
 			for (final String line : description.getDescription().split("\n")) {
@@ -185,7 +179,7 @@ public final class PageWriter {
 	private void related(final TypePage page, final Map<String, String> related, final Set<String> linked, final String path, final StringBuilder out) {
 		final Map<String, String> all = new LinkedHashMap<>();
 		final Set<String> pages = new LinkedHashSet<>(linked);
-		final String owner = this.backlinks.ownerOf(page.getType().getFqcn(), page.getSection());
+		final String owner = this.backlinks.ownerOf(page.getType().getFqcn());
 		if (owner != null && !pages.contains(owner)) {
 			final String anchored = related.keySet().stream().filter(url -> url.replaceFirst("#.*$", "").equals(owner)).findFirst().orElse(null);
 			final String title = anchored != null ? related.get(anchored) : this.backlinks.getTitles().get(owner);
@@ -200,7 +194,7 @@ public final class PageWriter {
 				all.put(link.getKey(), link.getValue());
 			}
 		}
-		final List<Backlink> backlinks = new ArrayList<>(this.backlinks.of(page.getType().getFqcn(), page.getSection()));
+		final List<Backlink> backlinks = new ArrayList<>(this.backlinks.of(page.getType().getFqcn()));
 		backlinks.sort((left, right) -> Integer.compare(PageWriter.rank(left.getUrl()), PageWriter.rank(right.getUrl())));
 		for (final Backlink backlink : backlinks) {
 			if (pages.add(backlink.getUrl())) {
@@ -239,7 +233,7 @@ public final class PageWriter {
 
 		final List<String> subtypes = new ArrayList<>();
 		for (final ApiType candidate : this.registry.getTypes().values()) {
-			if (candidate.getSupertypes().contains(type.getFqcn()) && this.registry.linkable(page, candidate.getFqcn()) != null) {
+			if (candidate.getSupertypes().contains(type.getFqcn()) && this.registry.get(candidate.getFqcn()) != null) {
 				subtypes.add(this.typeLink(page, candidate, candidate.getName()));
 			}
 		}
@@ -413,39 +407,11 @@ public final class PageWriter {
 			}
 			page.getProperties().values().forEach(property -> property.getMembers().forEach(member -> known.add(member.getKey())));
 			for (final String key : description.getEntries().keySet()) {
-				if (!known.contains(key) && !this.belongsToOther(page, key)) {
+				if (!known.contains(key)) {
 					this.coverage.unknown(path, key);
 				}
 			}
 		}
-	}
-
-	private boolean belongsToOther(final TypePage page, final String key) {
-		final TypePage other = this.registry.get(page.getType().getFqcn(), page.getAudience() == Audience.USER ? Audience.CONTRIBUTOR : Audience.USER);
-		if (other == null) {
-			return false;
-		}
-
-		if (other.getProperties().containsKey(key)) {
-			return true;
-		}
-
-		for (final List<ApiMember> group : PageWriter.groups(other)) {
-			for (final ApiMember member : group) {
-				if (member.getKey().equals(key)) {
-					return true;
-				}
-			}
-		}
-
-		for (final ApiProperty property : other.getProperties().values()) {
-			for (final ApiMember member : property.getMembers()) {
-				if (member.getKey().equals(key)) {
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 	private void groups(final TypePage page, final List<ApiMember> members, final DescriptionFile description, final String path, final StringBuilder out) {
@@ -484,12 +450,12 @@ public final class PageWriter {
 			}
 		}
 
-		this.coverage.expect(page.getFamily(), path, key, text != null);
+		this.coverage.expect(page.getFamily().getId(), path, key, text != null);
 		out.append(text == null ? PageWriter.missing(key, path) : this.text(page, text, path)).append("\n\n");
 	}
 
 	private String text(final TypePage page, final String text, final String path) {
-		return this.links.resolve(page, text, path);
+		return this.links.resolve(text, path);
 	}
 
 	private boolean hasInherited(final TypePage page, final String category) {
@@ -498,7 +464,7 @@ public final class PageWriter {
 
 	private void inherited(final TypePage page, final String category, final StringBuilder out) {
 		for (final Map.Entry<ApiType, Map<String, String>> ancestor : this.inheritedNames(page, category).entrySet()) {
-			final TypePage target = this.registry.linkable(page, ancestor.getKey().getFqcn());
+			final TypePage target = this.registry.get(ancestor.getKey().getFqcn());
 			final String name = ancestor.getKey().getName();
 			out.append("<details>\n<summary>Inherited from ").append(target == null ? "<code>" + name + "</code>" : "<a href=\"" + target.getUrl() + "#" + target.getAnchorPrefix() + "-" + category + "\"><code>" + name + "</code></a>").append(" (").append(ancestor.getValue().size()).append(")</summary>\n\n");
 			final List<String> items = new ArrayList<>();
@@ -516,8 +482,7 @@ public final class PageWriter {
 
 		final Map<ApiType, Map<String, String>> inherited = new LinkedHashMap<>();
 		for (final ApiType ancestor : page.getInherited()) {
-			final TypePage origin = this.registry.get(ancestor.getFqcn(), page.getAudience());
-			final TypePage source = origin != null ? origin : this.registry.preferred(ancestor.getFqcn());
+			final TypePage source = this.registry.get(ancestor.getFqcn());
 			if (source == null) {
 				continue;
 			}
@@ -554,7 +519,7 @@ public final class PageWriter {
 			return code;
 		}
 
-		final TypePage target = this.registry.linkable(page, resolved);
+		final TypePage target = this.registry.get(resolved);
 		return target == null ? code : "[" + code + "](" + target.getUrl() + ")";
 	}
 
@@ -562,8 +527,7 @@ public final class PageWriter {
 		final ApiType type = page.getType();
 		final List<String> rows = new ArrayList<>();
 		for (final ApiType ancestor : page.getInherited()) {
-			final TypePage same = this.registry.get(ancestor.getFqcn(), page.getAudience());
-			final TypePage origin = same != null ? same : this.registry.preferred(ancestor.getFqcn());
+			final TypePage origin = this.registry.get(ancestor.getFqcn());
 			if (origin == null) {
 				continue;
 			}

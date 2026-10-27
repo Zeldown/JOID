@@ -1,11 +1,7 @@
 package dev.joid.tool.docgen.page;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -20,49 +16,30 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import dev.joid.tool.docgen.model.ApiMessage;
-import dev.joid.tool.docgen.model.Audience;
+import dev.joid.tool.docgen.model.Family;
 import dev.joid.tool.docgen.report.Coverage;
-import dev.joid.tool.docgen.scope.Scope;
 
 public final class ErrorsPage {
 
 	private static final String PATH = "documentation/reference/errors.md";
 
-	private static final Set<String>           BUILD_FAMILIES = new HashSet<>(Arrays.asList("bridges", "pipeline", "backend-testing"));
-	private static final Map<String, Audience> OVERRIDES      = ErrorsPage.overrides();
-	private static final Map<String, String>   USE_FAMILIES   = new LinkedHashMap<>();
-	private static final Set<String>           STOP_WORDS     = new HashSet<>(Arrays.asList("a", "an", "the", "of", "is", "are", "to", "in", "on", "for", "and", "or", "its", "it", "be", "by", "with", "at", "as", "you", "your", "this", "that"));
-
-	static {
-		ErrorsPage.USE_FAMILIES.put("bridges", "shaders");
-		ErrorsPage.USE_FAMILIES.put("pipeline", "shaders");
-		ErrorsPage.USE_FAMILIES.put("base-glfw", "backends");
-		ErrorsPage.USE_FAMILIES.put("base-openal", "backends");
-		ErrorsPage.USE_FAMILIES.put("base-opengl", "backends");
-		ErrorsPage.USE_FAMILIES.put("lwjgl2", "backends");
-		ErrorsPage.USE_FAMILIES.put("lwjgl3", "backends");
-		ErrorsPage.USE_FAMILIES.put("vulkan", "backends");
-		ErrorsPage.USE_FAMILIES.put("backend-testing", "testing");
-		ErrorsPage.USE_FAMILIES.put("tools", "text");
-	}
+	private static final Set<String> STOP_WORDS = new HashSet<>(Arrays.asList("a", "an", "the", "of", "is", "are", "to", "in", "on", "for", "and", "or", "its", "it", "be", "by", "with", "at", "as", "you", "your", "this", "that"));
 
 	private final Map<String, List<ApiMessage>> messages;
 	private final Map<String, String>           texts;
-	private final Map<String, Audience>         audiences;
-	private final Map<String, String>           families;
+	private final Map<String, Family>           families;
 	private final Map<String, String>           anchors;
 	private final Map<String, String>           titles;
 
 	private ErrorsPage() {
-		this.messages  = new LinkedHashMap<>();
-		this.texts     = new LinkedHashMap<>();
-		this.audiences = new LinkedHashMap<>();
-		this.families  = new LinkedHashMap<>();
-		this.anchors   = new LinkedHashMap<>();
-		this.titles    = new LinkedHashMap<>();
+		this.messages = new LinkedHashMap<>();
+		this.texts    = new LinkedHashMap<>();
+		this.families = new LinkedHashMap<>();
+		this.anchors  = new LinkedHashMap<>();
+		this.titles   = new LinkedHashMap<>();
 	}
 
-	public static ErrorsPage create(final List<ApiMessage> messages, final File descriptions, final Scope scope) throws IOException {
+	public static ErrorsPage create(final List<ApiMessage> messages, final File descriptions) throws IOException {
 		final ErrorsPage page = new ErrorsPage();
 		messages.stream().filter(ApiMessage::isWarning).forEach(message -> page.messages.computeIfAbsent(message.getKey(), key -> new ArrayList<>()).add(message));
 		messages.stream().filter(message -> !message.isWarning()).forEach(message -> page.messages.computeIfAbsent(message.getKey(), key -> new ArrayList<>()).add(message));
@@ -71,9 +48,7 @@ public final class ErrorsPage {
 		final Map<String, List<String>> titles = new LinkedHashMap<>();
 		for (final Map.Entry<String, List<ApiMessage>> entry : page.messages.entrySet()) {
 			final ApiMessage first = entry.getValue().get(0);
-			final String family = ErrorsPage.family(scope.familyOfMessage(first), first);
-			page.audiences.put(entry.getKey(), ErrorsPage.audience(entry.getKey(), family));
-			page.families.put(entry.getKey(), family);
+			page.families.put(entry.getKey(), ErrorsPage.family(first));
 			bases.computeIfAbsent(ErrorsPage.base(page.wordsOf(entry.getKey())), base -> new ArrayList<>()).add(entry.getKey());
 			titles.computeIfAbsent(ErrorsPage.title(first), title -> new ArrayList<>()).add(entry.getKey());
 		}
@@ -107,33 +82,26 @@ public final class ErrorsPage {
 		return page;
 	}
 
-	public String write(final Audience audience, final Map<String, String> labels, final PageRegistry registry, final LinkChecker links, final Coverage coverage) {
-		final String path = audience.getSection() + "/reference/errors.md";
+	public String write(final PageRegistry registry, final LinkChecker links, final Coverage coverage) {
+		final String path = "reference/errors.md";
 		final StringBuilder out = new StringBuilder("---\ntitle: \"Warnings and errors\"\n");
-		out.append(audience == Audience.USER ? "description: \"Every warning and every exception message that JOID gives while you build interfaces, with its cause and its fix.\"\n" : "description: \"Every warning and every exception message that a backend author meets, with its cause and its fix.\"\n");
-		out.append("genre: reference\ntopic: ").append(audience.getSection()).append("\nsidebar:\n  order: 1\ntableOfContents:\n  maxHeadingLevel: 3\n---\n\n<!-- Generated by tool-docgen from the sources and ").append(ErrorsPage.PATH).append(". Do not edit. -->\n\n");
-		out.append(audience == Audience.USER ? "Each entry gives the exact message, the method that emits it when you can call that method, its cause and its fix.\n" : "Each entry gives the exact message, the method that emits it, its cause and its fix.\n");
-		out.append("`…` stands for a part of the message that JOID fills at run time.\n");
-		if (audience == Audience.CONTRIBUTOR) {
-			out.append("The messages that any application can meet are on [Warnings and errors](/use/reference/errors/).\n");
-		}
-		out.append('\n');
+		out.append("description: \"Every warning and every exception message of JOID, with its cause and its fix.\"\n");
+		out.append("genre: reference\ntopic: reference\nsidebar:\n  order: 1\ntableOfContents:\n  maxHeadingLevel: 3\n---\n\n<!-- Generated by tool-docgen from the sources and ").append(ErrorsPage.PATH).append(". Do not edit. -->\n\n");
+		out.append("Each entry gives the exact message, the method that emits it, its cause and its fix.\n");
+		out.append("`…` stands for a part of the message that JOID fills at run time.\n\n");
 
-		final Map<String, List<String>> sections = new LinkedHashMap<>();
-		labels.keySet().forEach(family -> sections.put(family, new ArrayList<>()));
-		for (final String key : this.messages.keySet()) {
-			if (this.audiences.get(key) == audience) {
-				final String family = this.families.get(key);
-				sections.computeIfAbsent(audience == Audience.USER ? ErrorsPage.USE_FAMILIES.getOrDefault(family, family) : family, name -> new ArrayList<>()).add(key);
-			}
+		final Map<Family, List<String>> sections = new LinkedHashMap<>();
+		for (final Family family : Family.values()) {
+			sections.put(family, new ArrayList<>());
 		}
+		this.messages.keySet().forEach(key -> sections.get(this.families.get(key)).add(key));
 
-		for (final Map.Entry<String, List<String>> section : sections.entrySet()) {
+		for (final Map.Entry<Family, List<String>> section : sections.entrySet()) {
 			if (section.getValue().isEmpty()) {
 				continue;
 			}
 
-			out.append("## ").append(labels.getOrDefault(section.getKey(), "Other")).append("\n\n");
+			out.append("## ").append(section.getKey().getLabel()).append("\n\n");
 			for (final String key : section.getValue()) {
 				final ApiMessage first = this.messages.get(key).get(0);
 				out.append("### ").append(ErrorsPage.markdown(this.titles.get(key))).append(" {#").append(this.anchors.get(key)).append("}\n\n");
@@ -145,7 +113,7 @@ public final class ErrorsPage {
 				}
 				final List<String> origins = new ArrayList<>();
 				for (final ApiMessage message : this.messages.get(key)) {
-					final String origin = ErrorsPage.origin(message, audience, registry);
+					final String origin = ErrorsPage.origin(message, registry);
 					if (origin != null && !origins.contains(origin)) {
 						origins.add(origin);
 					}
@@ -157,7 +125,7 @@ public final class ErrorsPage {
 				final String text = this.texts.get(key);
 				coverage.expect("errors", ErrorsPage.PATH, key, text != null);
 				this.messages.get(key).stream().map(ApiMessage::getDetail).filter(Objects::nonNull).distinct().forEach(detail -> coverage.expect("errors", ErrorsPage.PATH, key + " · " + detail, text != null && text.contains("`" + ErrorsPage.code(detail) + "`")));
-				out.append(text == null ? "<div class=\"joid-missing\">Missing cause and fix: add <code>## " + ErrorsPage.html(key) + "</code> to <code>" + ErrorsPage.PATH + "</code>.</div>" : links.resolve(audience, text, ErrorsPage.PATH + " (" + path + ")")).append("\n\n");
+				out.append(text == null ? "<div class=\"joid-missing\">Missing cause and fix: add <code>## " + ErrorsPage.html(key) + "</code> to <code>" + ErrorsPage.PATH + "</code>.</div>" : links.resolve(text, ErrorsPage.PATH + " (" + path + ")")).append("\n\n");
 			}
 		}
 		return out.toString();
@@ -179,10 +147,6 @@ public final class ErrorsPage {
 		return this.anchors;
 	}
 
-	public Map<String, Audience> getAudiences() {
-		return this.audiences;
-	}
-
 	private void store(final String key, final StringBuilder text) {
 		if (key != null && text.toString().trim().length() > 0) {
 			this.texts.put(key, text.toString().trim());
@@ -190,7 +154,7 @@ public final class ErrorsPage {
 		text.setLength(0);
 	}
 
-	private static String origin(final ApiMessage message, final Audience audience, final PageRegistry registry) {
+	private static String origin(final ApiMessage message, final PageRegistry registry) {
 		final String origin = message.getOrigin();
 		final String type = origin.replaceFirst("#.*$", "");
 		final String method = origin.contains("#") ? origin.substring(origin.indexOf('#') + 1) : "";
@@ -205,7 +169,7 @@ public final class ErrorsPage {
 		final String label = "`" + name + (method.isEmpty() || method.equals(simple) ? "" : "." + method) + "`";
 		String candidate = type;
 		while (candidate.contains(".") && Character.isUpperCase(candidate.charAt(candidate.lastIndexOf('.') + 1))) {
-			final TypePage target = registry.linkable(audience, candidate);
+			final TypePage target = registry.get(candidate);
 			if (target != null) {
 				final String anchor = candidate.equals(type) ? PageWriter.memberAnchors(target).get(method) : null;
 				if (anchor == null && !method.isEmpty() && !method.equals(simple)) {
@@ -215,49 +179,12 @@ public final class ErrorsPage {
 			}
 			candidate = candidate.substring(0, candidate.lastIndexOf('.'));
 		}
-		return audience == Audience.USER ? null : label;
+		return label;
 	}
 
-	private static Audience audience(final String key, final String family) {
-		for (final Map.Entry<String, Audience> override : ErrorsPage.OVERRIDES.entrySet()) {
-			if (key.equals(override.getKey()) || !override.getKey().endsWith("…") && key.startsWith(override.getKey())) {
-				return override.getValue();
-			}
-		}
-		return ErrorsPage.BUILD_FAMILIES.contains(family) ? Audience.CONTRIBUTOR : Audience.USER;
-	}
-
-	private static Map<String, Audience> overrides() {
-		final Map<String, Audience> overrides = new LinkedHashMap<>();
-		try (InputStream input = ErrorsPage.class.getResourceAsStream("/errors-audience.txt")) {
-			if (input == null) {
-				return overrides;
-			}
-
-			for (final String line : new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8)).lines().collect(Collectors.toList())) {
-				final String trimmed = line.trim();
-				if (trimmed.startsWith("use ")) {
-					overrides.put(trimmed.substring(4).trim(), Audience.USER);
-				} else if (trimmed.startsWith("build ")) {
-					overrides.put(trimmed.substring(6).trim(), Audience.CONTRIBUTOR);
-				}
-			}
-		} catch (final IOException exception) {
-			throw new UncheckedIOException(exception);
-		}
-		return overrides;
-	}
-
-	private static String family(final String family, final ApiMessage message) {
-		if (!"base".equals(family) && !"backend".equals(family) && !"test".equals(family) && !"other".equals(family)) {
-			return family;
-		}
-
-		final String[] parts = message.getFile().split("/");
-		if ("base".equals(parts[0])) {
-			return "base-" + parts[1];
-		}
-		return "backend".equals(parts[0]) ? parts[1] : "tool".equals(parts[0]) && "testkit".equals(parts[1]) ? "testing" : "utilities";
+	private static Family family(final ApiMessage message) {
+		final Family family = Family.of(message.getOrigin().replaceFirst("#.*$", ""));
+		return family == Family.OTHER ? Family.UTILITIES : family;
 	}
 
 	private String textOf(final String key) {

@@ -24,10 +24,10 @@ import lombok.Getter;
 public final class Backlinks {
 
 	private static final Pattern REFERENCE = Pattern.compile("\\[\\[([A-Za-z0-9_.$]+)(?:#[A-Za-z0-9_<>]+(?:\\([A-Za-z0-9_.$\\[\\], ]*\\))?)?\\]\\]");
-	private static final Pattern LINK      = Pattern.compile("\\]\\((/(?:use|build)/reference/[^)#\\s]*?)/?(?:#[^)\\s]*)?\\)");
+	private static final Pattern LINK      = Pattern.compile("\\]\\((/reference/[^)#\\s]*?)/?(?:#[^)\\s]*)?\\)");
 	private static final Pattern TITLE     = Pattern.compile("^title:\\s*\"?(.*?)\"?\\s*$", Pattern.MULTILINE);
-	private static final Pattern HIDDEN    = Pattern.compile("^(?:.*/)?(?:index|changelog|migrating-[\\w-]*)\\.mdx?$|^use/get-started/quick-start\\.mdx?$");
-	private static final Pattern HISTORY   = Pattern.compile("^/.*/(?:changelog|migrating-[\\w-]*|quick-start)/$");
+	private static final Pattern HIDDEN    = Pattern.compile("^(?:.*/)?index\\.mdx?$|^use/get-started/quick-start\\.mdx?$");
+	private static final Pattern START     = Pattern.compile("^/use/get-started/quick-start/$");
 	private static final Pattern NOTION    = Pattern.compile("`@?([A-Za-z][\\w.]*)`");
 	private static final Pattern OWNER     = Pattern.compile("^((?:use|build)(?:/[\\w<>.-]+)*)");
 
@@ -58,7 +58,7 @@ public final class Backlinks {
 
 		for (final Path path : files) {
 			final String relative = docs.toPath().relativize(path).toString().replace('\\', '/');
-			if (relative.contains("/reference/") || relative.equals("use/catalog.md") || relative.equals("use/catalog.mdx")) {
+			if (relative.startsWith("reference/") || relative.equals("use/catalog.md") || relative.equals("use/catalog.mdx")) {
 				continue;
 			}
 
@@ -96,18 +96,13 @@ public final class Backlinks {
 		return backlinks;
 	}
 
-	public List<Backlink> of(final String fqcn, final String section) {
-		final List<Backlink> list = new ArrayList<>();
-		for (final Backlink backlink : this.links.getOrDefault(fqcn, new ArrayList<>())) {
-			if (backlink.getUrl().startsWith("/" + section + "/")) {
-				list.add(backlink);
-			}
-		}
-		return list;
+	public List<Backlink> of(final String fqcn) {
+		return new ArrayList<>(this.links.getOrDefault(fqcn, new ArrayList<>()));
 	}
 
-	public String ownerOf(final String fqcn, final String section) {
-		return this.owners.get(section + ":" + fqcn);
+	public String ownerOf(final String fqcn) {
+		final String use = this.owners.get("use:" + fqcn);
+		return use != null ? use : this.owners.get("build:" + fqcn);
 	}
 
 	public boolean isHidden(final String url) {
@@ -130,12 +125,12 @@ public final class Backlinks {
 			}
 
 			final Matcher owner = Backlinks.OWNER.matcher(cells[1].trim());
-			if (!owner.find() || owner.group(1).contains("<") || owner.group(1).equals("use/reference")) {
+			if (!owner.find() || owner.group(1).contains("<")) {
 				continue;
 			}
 
 			final String url = "/" + owner.group(1).replaceFirst("/index$", "") + "/";
-			if (Backlinks.HISTORY.matcher(url).matches()) {
+			if (Backlinks.START.matcher(url).matches()) {
 				continue;
 			}
 

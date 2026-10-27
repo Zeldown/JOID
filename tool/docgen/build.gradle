@@ -5,19 +5,20 @@ dependencies {
     compile "com.google.code.gson:gson:2.2.4"
 
     runtime project(':tool-testkit')
+    runtime project(':backend-lwjgl3')
 }
 
 jar.enabled = false
 
 task run(type: JavaExec) {
     group = 'JOID'
-    description = 'Generates the reference pages of the documentation, with -Pstrict to fail on a missing description or a broken link.'
+    description = 'Generates the reference pages of the documentation, with -Pstrict to fail on a missing description or a broken link, and -Pdescriptions to read the descriptions from another folder.'
     main = 'dev.joid.tool.docgen.DocGenerator'
     classpath = sourceSets.main.runtimeClasspath
     systemProperty 'joid.data', file("$buildDir/data").absolutePath
     systemProperty 'java.awt.headless', 'true'
     args '--root', rootProject.rootDir.absolutePath,
-         '--scope', project.findProperty('scope') ?: rootProject.file('documentation/reference/scope.json').absolutePath,
+         '--descriptions', project.findProperty('descriptions') ?: rootProject.file('documentation/reference').absolutePath,
          '--report', file("$buildDir/docgen").absolutePath
     if (project.hasProperty('strict')) {
         args '--strict'

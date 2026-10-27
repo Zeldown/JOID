@@ -6,8 +6,8 @@ const tasks = [':tool-docgen:run', '-q'];
 for (const arg of process.argv.slice(2)) {
 	if (arg === '--strict') {
 		tasks.push('-Pstrict');
-	} else if (arg.startsWith('--scope=')) {
-		tasks.push(`"-Pscope=${arg.slice(8)}"`);
+	} else if (arg.startsWith('--descriptions=')) {
+		tasks.push(`"-Pdescriptions=${arg.slice(15)}"`);
 	}
 }
 withLock(() => {

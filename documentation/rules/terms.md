@@ -1,6 +1,6 @@
 # Terms
 
-The controlled list of terms of the JOID documentation, and the source of the glossary page (`npm run docgen` generates `use/reference/glossary`).
+The controlled list of terms of the JOID documentation, and the source of the glossary page (`npm run docgen` generates `reference/glossary`).
 Each `##` is a term as the documentation writes it; the text under it is its definition (1 to 3 sentences, present tense).
 
 `Avoid:` lists words that the `terms` check refuses in every page (prose only, code is ignored).

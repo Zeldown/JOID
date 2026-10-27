@@ -11,18 +11,16 @@ import java.util.Set;
 
 import dev.joid.tool.docgen.model.ApiMember;
 import dev.joid.tool.docgen.model.ApiType;
-import dev.joid.tool.docgen.model.Audience;
+import dev.joid.tool.docgen.model.Family;
 import dev.joid.tool.docgen.model.MemberKind;
-import dev.joid.tool.docgen.scope.Scope;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 public final class TypePage {
 
-	private final ApiType  type;
-	private final Audience audience;
-	private final String   family;
+	private final ApiType type;
+	private final Family  family;
 
 	private final List<ApiMember>          factories;
 	private final List<ApiMember>          constructors;
@@ -39,9 +37,8 @@ public final class TypePage {
 	@Setter private String slug;
 	@Setter private String title;
 
-	private TypePage(final ApiType type, final Audience audience, final String family) {
+	private TypePage(final ApiType type, final Family family) {
 		this.type         = type;
-		this.audience     = audience;
 		this.family       = family;
 		this.factories    = new ArrayList<>();
 		this.constructors = new ArrayList<>();
@@ -58,33 +55,13 @@ public final class TypePage {
 		this.title        = type.getName();
 	}
 
-	public static TypePage create(final ApiType type, final Audience audience, final String family) {
-		return new TypePage(type, audience, family);
+	public static TypePage create(final ApiType type) {
+		return new TypePage(type, Family.of(type.getFqcn()));
 	}
 
-	public TypePage collect(final Map<String, ApiType> types, final Scope scope) {
-		final List<ApiMember> members = new ArrayList<>();
-		final Set<String> keys = new HashSet<>();
-		for (final ApiMember member : this.type.getMembers()) {
-			if (scope.audienceOf(this.type, member) == this.audience) {
-				members.add(member);
-				keys.add(member.getKey());
-			}
-		}
-
-		for (final ApiType ancestor : TypePage.ancestors(this.type, types)) {
-			if (scope.audienceOf(ancestor).isDocumented()) {
-				this.inherited.add(ancestor);
-				continue;
-			}
-
-			for (final ApiMember member : ancestor.getMembers()) {
-				final boolean instance = member.getKind() != MemberKind.CONSTRUCTOR && member.getKind() != MemberKind.FACTORY && !member.isStaticMember();
-				if (instance && scope.audienceOf(ancestor, member) == this.audience && keys.add(member.getKey())) {
-					members.add(member);
-				}
-			}
-		}
+	public TypePage collect(final Map<String, ApiType> types) {
+		final List<ApiMember> members = new ArrayList<>(this.type.getMembers());
+		this.inherited.addAll(TypePage.ancestors(this.type, types));
 
 		final Map<String, ApiProperty> candidates = new LinkedHashMap<>();
 		for (final ApiMember member : members) {
@@ -135,16 +112,12 @@ public final class TypePage {
 		return this;
 	}
 
-	public String getSection() {
-		return this.audience.getSection();
-	}
-
 	public String getUrl() {
-		return "/" + this.audience.getSection() + "/reference/" + this.family + "/" + this.slug + "/";
+		return "/reference/" + this.family.getId() + "/" + this.slug + "/";
 	}
 
 	public String getFile() {
-		return this.audience.getSection() + "/reference/" + this.family + "/" + this.slug + ".md";
+		return "reference/" + this.family.getId() + "/" + this.slug + ".md";
 	}
 
 	public String getAnchorPrefix() {

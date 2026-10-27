@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -26,7 +27,6 @@ import com.google.gson.JsonParser;
 import dev.joid.tool.docgen.description.DescriptionFile;
 import dev.joid.tool.docgen.model.ApiMember;
 import dev.joid.tool.docgen.model.ApiType;
-import dev.joid.tool.docgen.model.Audience;
 import dev.joid.tool.docgen.model.TypeKind;
 import dev.joid.tool.docgen.page.Backlinks;
 import dev.joid.tool.docgen.page.ErrorsPage;
@@ -36,7 +36,6 @@ import dev.joid.tool.docgen.page.PageRegistry;
 import dev.joid.tool.docgen.page.PageWriter;
 import dev.joid.tool.docgen.page.TypePage;
 import dev.joid.tool.docgen.report.Coverage;
-import dev.joid.tool.docgen.scope.Scope;
 import dev.joid.tool.docgen.source.DefaultReader;
 import dev.joid.tool.docgen.source.SourceReader;
 import lombok.AccessLevel;
@@ -45,8 +44,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DocGenerator {
 
-	private static final Map<String, String> MODULES  = new LinkedHashMap<>();
-	private static final Map<String, String> FAMILIES = new LinkedHashMap<>();
+	private static final Map<String, String> MODULES = new LinkedHashMap<>();
 
 	static {
 		DocGenerator.MODULES.put("core", "core");
@@ -58,34 +56,6 @@ public final class DocGenerator {
 		DocGenerator.MODULES.put("backend-vulkan", "backend/vulkan");
 		DocGenerator.MODULES.put("tool-msdf", "tool/msdf");
 		DocGenerator.MODULES.put("tool-testkit", "tool/testkit");
-
-		DocGenerator.FAMILIES.put("ui", "UI");
-		DocGenerator.FAMILIES.put("annotations", "Annotations");
-		DocGenerator.FAMILIES.put("nodes", "Nodes");
-		DocGenerator.FAMILIES.put("controls", "Controls");
-		DocGenerator.FAMILIES.put("layout", "Layout");
-		DocGenerator.FAMILIES.put("events", "Events");
-		DocGenerator.FAMILIES.put("effects", "Effects");
-		DocGenerator.FAMILIES.put("signals", "Signals");
-		DocGenerator.FAMILIES.put("animation", "Animation");
-		DocGenerator.FAMILIES.put("text", "Text");
-		DocGenerator.FAMILIES.put("resources", "Resources");
-		DocGenerator.FAMILIES.put("drawing", "Drawing");
-		DocGenerator.FAMILIES.put("shaders", "Shaders");
-		DocGenerator.FAMILIES.put("input", "Input and keys");
-		DocGenerator.FAMILIES.put("backends", "Backends");
-		DocGenerator.FAMILIES.put("testing", "Testing");
-		DocGenerator.FAMILIES.put("utilities", "Utilities");
-		DocGenerator.FAMILIES.put("bridges", "Bridges");
-		DocGenerator.FAMILIES.put("pipeline", "Pipeline");
-		DocGenerator.FAMILIES.put("base-glfw", "base-glfw");
-		DocGenerator.FAMILIES.put("base-openal", "base-openal");
-		DocGenerator.FAMILIES.put("base-opengl", "base-opengl");
-		DocGenerator.FAMILIES.put("lwjgl2", "LWJGL 2 backend");
-		DocGenerator.FAMILIES.put("lwjgl3", "LWJGL 3 backend");
-		DocGenerator.FAMILIES.put("vulkan", "Vulkan backend");
-		DocGenerator.FAMILIES.put("backend-testing", "Backend testing");
-		DocGenerator.FAMILIES.put("tools", "Tools");
 	}
 
 	public static void main(final String[] arguments) throws Exception {
@@ -93,75 +63,58 @@ public final class DocGenerator {
 		final File root = new File(options.getOrDefault("root", "."));
 		final File documentation = new File(root, "documentation");
 		final File docs = new File(documentation, "src/content/docs");
+		final File reference = new File(options.getOrDefault("descriptions", new File(documentation, "reference").getPath()));
 		final File report = new File(options.getOrDefault("report", new File(root, "build/docgen").getPath()));
 		final boolean strict = options.containsKey("strict");
 
 		final SourceReader reader = SourceReader.create(root);
 		final Map<String, ApiType> types = reader.read(DocGenerator.MODULES);
 		DocGenerator.inheritHooks(types);
-		final Scope scope = Scope.load(new File(options.getOrDefault("scope", new File(documentation, "reference/scope.json").getPath())));
 		final Coverage coverage = Coverage.create();
 		final PageRegistry registry = PageRegistry.create(types);
 		for (final ApiType type : types.values()) {
-			final Audience audience = scope.audienceOf(type);
-			if (!audience.isDocumented()) {
-				continue;
-			}
-
-			final String family = scope.familyOf(type);
-			registry.add(TypePage.create(type, audience, family).collect(types, scope));
-			if (audience == Audience.USER) {
-				final TypePage contributor = TypePage.create(type, Audience.CONTRIBUTOR, family).collect(types, scope);
-				if (!contributor.isEmpty() && DocGenerator.hasOwnMember(contributor, type)) {
-					registry.add(contributor);
-				}
-			}
+			registry.add(TypePage.create(type).collect(types));
 		}
-		coverage.getUnclassified().addAll(scope.getUnclassified());
 		DocGenerator.disambiguate(registry);
 
 		final DefaultReader defaults = DefaultReader.create(types, !options.containsKey("no-instances"));
 		registry.all().forEach(defaults::apply);
 
-		final Map<String, DescriptionFile> descriptions = DocGenerator.descriptions(new File(documentation, "reference"));
+		final Map<String, DescriptionFile> descriptions = DocGenerator.descriptions(reference);
 		for (final DescriptionFile description : descriptions.values()) {
-			if (registry.preferred(description.getFqcn()) == null) {
-				coverage.unknown("documentation/reference/" + description.getFile().getName(), description.getFqcn() + " is not a documented type");
+			if (registry.get(description.getFqcn()) == null) {
+				coverage.unknown("documentation/reference/" + description.getFile().getName(), description.getFqcn() + " is not a public type");
 			}
 		}
 
 		final LinkChecker links = LinkChecker.create(docs, registry, coverage);
 		final Backlinks backlinks = Backlinks.scan(docs, registry, links.getNames());
 		final PageWriter writer = PageWriter.create(registry, descriptions, coverage, links, backlinks, DocGenerator.captures(documentation));
-		for (final Audience audience : new Audience[] {Audience.USER, Audience.CONTRIBUTOR}) {
-			DocGenerator.clean(new File(docs, audience.getSection() + "/reference"));
-		}
-
+		DocGenerator.clean(new File(docs, "reference"));
 		for (final TypePage page : registry.all()) {
 			DocGenerator.write(new File(docs, page.getFile()), writer.write(page));
 		}
 
-		final ErrorsPage errors = ErrorsPage.create(reader.getMessages(), new File(documentation, "reference/errors.md"), scope);
-		for (final Audience audience : new Audience[] {Audience.USER, Audience.CONTRIBUTOR}) {
-			DocGenerator.write(new File(docs, audience.getSection() + "/reference/errors.md"), errors.write(audience, DocGenerator.FAMILIES, registry, links, coverage));
-		}
+		final ErrorsPage errors = ErrorsPage.create(reader.getMessages(), new File(reference, "errors.md"));
+		DocGenerator.write(new File(docs, "reference/errors.md"), errors.write(registry, links, coverage));
 		errors.check(coverage);
 		final Map<String, String> anchors = new LinkedHashMap<>();
-		errors.getAnchors().forEach((key, anchor) -> anchors.put("message-" + Integer.toHexString(key.hashCode()), "/" + errors.getAudiences().get(key).getSection() + "/reference/errors/#" + anchor));
+		errors.getAnchors().forEach((key, anchor) -> anchors.put("message-" + Integer.toHexString(key.hashCode()), "/reference/errors/#" + anchor));
 		DocGenerator.write(new File(report, "error-anchors.json"), new GsonBuilder().setPrettyPrinting().create().toJson(anchors));
 
-		final FamilyPage families = FamilyPage.create(registry, descriptions, links, coverage, new File(documentation, "reference/families.md"));
-		final Map<String, Object> sidebar = new LinkedHashMap<>();
-		for (final Audience audience : new Audience[] {Audience.USER, Audience.CONTRIBUTOR}) {
-			sidebar.put(audience.getSection(), families.write(docs, audience, DocGenerator.FAMILIES));
-		}
+		final FamilyPage families = FamilyPage.create(registry, descriptions, links, coverage, new File(reference, "families.md"));
+		final List<Map<String, Object>> sidebar = families.write(docs);
 
 		final File generated = new File(documentation, "src/generated");
 		final Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		DocGenerator.write(new File(generated, "reference-sidebar.json"), gson.toJson(sidebar));
 		DocGenerator.write(new File(generated, "reference-index.json"), gson.toJson(DocGenerator.index(registry, descriptions, types)));
 
+		final Map<String, Object> inventory = DocGenerator.inventory(registry);
+		inventory.put("defaultsWithoutInstance", defaults.getFailed());
+		DocGenerator.write(new File(report, "inventory.json"), gson.toJson(inventory));
 		coverage.write(report);
+		System.out.println("Inventory: " + inventory.get("typeCount") + " public types, " + inventory.get("memberCount") + " public members");
 		System.out.println("Reference: " + registry.all().size() + " pages, defaults read on " + defaults.getInstances() + " instances (" + defaults.getFailures() + " types without instance)");
 		System.out.println("Messages: " + errors.getMessages().size() + " warnings and exceptions");
 		System.out.println("Coverage: " + coverage.summary());
@@ -194,17 +147,6 @@ public final class DocGenerator {
 			}
 		}
 		return false;
-	}
-
-	private static boolean hasOwnMember(final TypePage page, final ApiType type) {
-		final List<ApiMember> all = new ArrayList<>(page.getMethods());
-		all.addAll(page.getFactories());
-		all.addAll(page.getConstructors());
-		all.addAll(page.getEvents());
-		all.addAll(page.getConstants());
-		all.addAll(page.getFields());
-		page.getProperties().values().forEach(property -> all.addAll(property.getMembers()));
-		return all.stream().anyMatch(member -> member.getDeclaringType().equals(type.getFqcn()));
 	}
 
 	private static void disambiguate(final PageRegistry registry) {
@@ -266,20 +208,19 @@ public final class DocGenerator {
 	private static Map<String, Object> index(final PageRegistry registry, final Map<String, DescriptionFile> descriptions, final Map<String, ApiType> api) {
 		final Map<String, Object> types = new LinkedHashMap<>();
 		final Map<String, Integer> names = new HashMap<>();
-		registry.getPages().keySet().forEach(fqcn -> names.merge(registry.preferred(fqcn).getType().getName(), 1, Integer::sum));
+		registry.all().forEach(page -> names.merge(page.getType().getName(), 1, Integer::sum));
 		for (final String fqcn : registry.getPages().keySet()) {
-			final TypePage page = registry.preferred(fqcn);
+			final TypePage page = registry.get(fqcn);
 			final Map<String, Object> entry = new LinkedHashMap<>();
 			final DescriptionFile description = descriptions.get(fqcn);
 			entry.put("fqcn", fqcn);
 			entry.put("name", page.getType().getName());
 			entry.put("kind", page.getType().getKind().getKeyword());
 			entry.put("abstract", page.getType().isAbstractType() || page.getType().getKind() == TypeKind.INTERFACE);
-			entry.put("family", page.getFamily());
+			entry.put("family", page.getFamily().getId());
 			entry.put("summary", description == null ? "" : description.getSummary());
 			entry.put("ancestors", TypePage.ancestors(page.getType(), api).stream().map(ApiType::getFqcn).collect(Collectors.toList()));
 			entry.put("url", page.getUrl());
-			entry.put("section", page.getSection());
 			entry.put("members", PageWriter.memberAnchors(page));
 			entry.put("overloads", PageWriter.memberKeys(page));
 			types.put(fqcn, entry);
@@ -291,6 +232,50 @@ public final class DocGenerator {
 		final Map<String, Object> index = new LinkedHashMap<>();
 		index.put("types", types);
 		return index;
+	}
+
+	private static Map<String, Object> inventory(final PageRegistry registry) {
+		final List<Map<String, Object>> types = new ArrayList<>();
+		final Map<String, Integer> kinds = new TreeMap<>();
+		final Map<String, Integer> families = new LinkedHashMap<>();
+		int members = 0;
+		for (final TypePage page : registry.all()) {
+			final ApiType type = page.getType();
+			final Map<String, Object> entry = new LinkedHashMap<>();
+			entry.put("fqcn", type.getFqcn());
+			entry.put("kind", type.getKind().getKeyword());
+			entry.put("module", type.getModule());
+			entry.put("family", page.getFamily().getId());
+			entry.put("declaration", type.getDeclaration());
+			final Map<String, Object> properties = new LinkedHashMap<>();
+			page.getProperties().values().forEach(property -> properties.put(property.getName(), property.getDefaultValue()));
+			entry.put("properties", properties);
+			final List<Map<String, Object>> own = new ArrayList<>();
+			for (final ApiMember member : type.getMembers()) {
+				final Map<String, Object> item = new LinkedHashMap<>();
+				item.put("key", member.getKey());
+				item.put("kind", member.getKind().getAnchor());
+				item.put("signature", member.getSignature());
+				item.put("qualifiers", member.getQualifiers());
+				if (member.getDefaultValue() != null) {
+					item.put("default", member.getDefaultValue());
+				}
+				own.add(item);
+			}
+			entry.put("members", own);
+			types.add(entry);
+			members += own.size();
+			kinds.merge(type.getKind().getKeyword(), 1, Integer::sum);
+			families.merge(page.getFamily().getId(), 1, Integer::sum);
+		}
+
+		final Map<String, Object> inventory = new LinkedHashMap<>();
+		inventory.put("typeCount", types.size());
+		inventory.put("memberCount", members);
+		inventory.put("kinds", kinds);
+		inventory.put("families", families);
+		inventory.put("types", types);
+		return inventory;
 	}
 
 	private static Map<String, DescriptionFile> descriptions(final File directory) throws IOException {

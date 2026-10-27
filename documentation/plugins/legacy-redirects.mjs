@@ -12,7 +12,7 @@ export function legacyRedirects() {
 	for (const [legacy, target] of Object.entries(redirects)) {
 		if (target.startsWith('@')) {
 			const type = index.types[target.slice(1)];
-			resolved[legacy] = type ? type.url : '/use/reference/';
+			resolved[legacy] = type ? type.url : '/reference/';
 		} else {
 			resolved[legacy] = target;
 		}
@@ -22,17 +22,15 @@ export function legacyRedirects() {
 
 export function renamedFamilyRedirects() {
 	const redirects = {};
-	for (const section of ['use', 'build']) {
-		for (const [legacy, family] of Object.entries(RENAMED_FAMILIES)) {
-			const directory = new URL(`../src/content/docs/${section}/reference/${family}/`, import.meta.url);
-			if (!existsSync(directory)) {
-				continue;
-			}
-			for (const name of readdirSync(directory).filter((file) => /\.mdx?$/.test(file))) {
-				const page = name.replace(/(?:^index)?\.mdx?$/, '');
-				const path = page === '' ? '' : `${page}/`;
-				redirects[`/${section}/reference/${legacy}/${path}`] = `/${section}/reference/${family}/${path}`;
-			}
+	for (const [legacy, family] of Object.entries(RENAMED_FAMILIES)) {
+		const directory = new URL(`../src/content/docs/reference/${family}/`, import.meta.url);
+		if (!existsSync(directory)) {
+			continue;
+		}
+		for (const name of readdirSync(directory).filter((file) => /\.mdx?$/.test(file))) {
+			const page = name.replace(/(?:^index)?\.mdx?$/, '');
+			const path = page === '' ? '' : `${page}/`;
+			redirects[`/reference/${legacy}/${path}`] = `/reference/${family}/${path}`;
 		}
 	}
 	return redirects;

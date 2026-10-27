@@ -49,6 +49,6 @@
 	"integration/ui-bridge": "/use/learn/running/embedding/",
 	"integration/writing-a-backend": "/build/writing-a-backend/",
 	"integration/testkit": "/use/learn/running/testing/",
-	"reference/utilities": "/use/reference/",
-	"changelog/8.0.0": "/use/changelog/"
+	"reference/utilities": "/reference/utilities/",
+	"changelog/8.0.0": "/use/"
 }

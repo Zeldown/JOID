@@ -23,10 +23,8 @@ export function topics(reference) {
 				},
 				'use/catalog',
 				group('Guides', 'use/guides', true),
-				{ label: 'Reference', collapsed: true, items: ['use/reference', 'use/reference/errors', 'use/reference/glossary', ...reference.use] },
 				group('In depth', 'use/in-depth', true),
 				{ label: 'Help', collapsed: true, items: ['use/troubleshooting', 'use/best-practices'] },
-				{ label: 'Versions', collapsed: true, items: ['use/migrating-to-8', 'use/changelog'] },
 			],
 		},
 		{
@@ -41,9 +39,13 @@ export function topics(reference) {
 				group('Base modules', 'build/base-modules'),
 				{ label: 'Pipeline', items: ['build/pipeline', 'build/shader-translation', 'build/framebuffers-and-depth'] },
 				{ label: 'Testing and demos', items: ['build/testing-a-backend', 'build/demos'] },
-				{ label: 'Versions', items: ['build/migrating-a-backend-to-8'] },
-				{ label: 'Reference', collapsed: true, items: ['build/reference', 'build/reference/errors', ...reference.build] },
 			],
+		},
+		{
+			id: 'reference',
+			label: 'Reference',
+			link: '/reference/',
+			items: ['reference', 'reference/errors', 'reference/glossary', ...reference],
 		},
 	];
 }

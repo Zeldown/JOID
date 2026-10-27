@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import dev.joid.tool.docgen.model.Audience;
 import dev.joid.tool.docgen.model.TypeNames;
 import dev.joid.tool.docgen.report.Coverage;
 import lombok.Getter;
@@ -46,32 +45,23 @@ public final class LinkChecker {
 		return checker;
 	}
 
-	public String resolve(final TypePage page, final String text, final String path) {
-		return this.resolve(page.getAudience(), text, path);
-	}
-
-	public String resolve(final Audience audience, final String text, final String path) {
+	public String resolve(final String text, final String path) {
 		final Matcher matcher = LinkChecker.REFERENCE.matcher(text);
 		final StringBuffer resolved = new StringBuffer();
 		while (matcher.find()) {
-			matcher.appendReplacement(resolved, Matcher.quoteReplacement(this.reference(audience, matcher.group(1), matcher.group(2), matcher.group(3), path, matcher.group())));
+			matcher.appendReplacement(resolved, Matcher.quoteReplacement(this.reference(matcher.group(1), matcher.group(2), matcher.group(3), path, matcher.group())));
 		}
 		matcher.appendTail(resolved);
 
 		final Matcher links = LinkChecker.LINK.matcher(resolved);
 		while (links.find()) {
-			this.check(audience, links.group(1), links.group(2), path);
+			this.check(links.group(1), links.group(2), path);
 		}
 		return resolved.toString();
 	}
 
-	public void check(final Audience audience, final String url, final String anchor, final String path) {
+	public void check(final String url, final String anchor, final String path) {
 		final String normalized = url.endsWith("/") ? url : url + "/";
-		if (audience == Audience.USER && normalized.startsWith("/build/")) {
-			this.coverage.broken(path, "a Use JOID page links to Build on JOID: " + url);
-			return;
-		}
-
 		final Set<String> known = this.anchors.get(normalized);
 		if (known != null) {
 			if (anchor != null && !anchor.isEmpty() && !known.contains(anchor)) {
@@ -87,38 +77,31 @@ public final class LinkChecker {
 		}
 	}
 
-	private String reference(final Audience audience, final String name, final String member, final String parameters, final String path, final String raw) {
+	private String reference(final String name, final String member, final String parameters, final String path, final String raw) {
 		final List<String> fqcns = this.names.get(name);
 		if (fqcns == null || fqcns.size() != 1) {
 			this.coverage.broken(path, raw + (fqcns == null ? " names no documented type" : " is ambiguous, use the fully qualified name"));
 			return "`" + name + "`";
 		}
 
-		final TypePage target = this.registry.linkable(audience, fqcns.get(0));
-		if (target == null) {
-			this.coverage.broken(path, raw + " points to Build on JOID from a Use JOID page");
-			return "`" + name + "`";
-		}
-
+		final TypePage target = this.registry.get(fqcns.get(0));
 		if (member == null) {
 			return "[`" + target.getType().getName() + "`](" + target.getUrl() + ")";
 		}
 
-		final TypePage user = this.registry.get(fqcns.get(0), Audience.USER);
-		final TypePage owner = PageWriter.memberAnchors(target).containsKey(member) || audience == Audience.USER || user == null ? target : user;
-		final String anchor = PageWriter.memberAnchors(owner).get(member);
+		final String anchor = PageWriter.memberAnchors(target).get(member);
 		if (anchor == null) {
 			this.coverage.broken(path, raw + " names no documented member of " + target.getType().getName());
 			return "`" + name + "." + member + "`";
 		}
 		if (parameters == null) {
-			return "[`" + owner.getType().getName() + "." + member + "`](" + owner.getUrl() + "#" + anchor + ")";
+			return "[`" + target.getType().getName() + "." + member + "`](" + target.getUrl() + "#" + anchor + ")";
 		}
 
-		if (!PageWriter.memberKeys(owner).contains(TypeNames.normalizeKey(member + parameters))) {
-			this.coverage.broken(path, raw + " names no overload of " + owner.getType().getName() + "." + member);
+		if (!PageWriter.memberKeys(target).contains(TypeNames.normalizeKey(member + parameters))) {
+			this.coverage.broken(path, raw + " names no overload of " + target.getType().getName() + "." + member);
 		}
-		return "[`" + owner.getType().getName() + "." + member + parameters + "`](" + owner.getUrl() + "#" + anchor + ")";
+		return "[`" + target.getType().getName() + "." + member + parameters + "`](" + target.getUrl() + "#" + anchor + ")";
 	}
 
 }

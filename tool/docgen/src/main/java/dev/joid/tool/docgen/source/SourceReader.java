@@ -68,7 +68,8 @@ import dev.joid.tool.docgen.model.TypeNames;
 
 public final class SourceReader {
 
-	private static final Set<String> FACTORY_NAMES = new HashSet<>(Arrays.asList("create", "of", "inst"));
+	private static final Set<String> FACTORY_NAMES = new HashSet<>(Arrays.asList("create", "of", "from", "inst"));
+	private static final Set<String> LOG_NAMES     = new HashSet<>(Arrays.asList("warn", "warnOnce", "devWarnOnce"));
 
 	private final File                 root;
 	private final JavaParser           parser;
@@ -110,6 +111,10 @@ public final class SourceReader {
 
 					final CompilationUnit unit = result.getResult().get();
 					final String relative = this.root.toPath().relativize(file).toString().replace('\\', '/');
+					if (SourceReader.isDemo(unit.getPackageDeclaration().map(declaration -> declaration.getNameAsString()).orElse(""))) {
+						continue;
+					}
+
 					units.add(unit);
 					this.collectMessages(unit, relative);
 					locations.add(new String[] {module.getKey(), relative});
@@ -460,9 +465,6 @@ public final class SourceReader {
 
 	private void collectMessages(final CompilationUnit unit, final String file) {
 		final String packageName = unit.getPackageDeclaration().map(declaration -> declaration.getNameAsString()).orElse("");
-		if (packageName.startsWith("dev.joid.demo") || packageName.contains(".demo.") || packageName.endsWith(".demo")) {
-			return;
-		}
 
 		for (final ThrowStmt statement : unit.findAll(ThrowStmt.class)) {
 			if (statement.getExpression() instanceof ObjectCreationExpr) {
@@ -492,7 +494,16 @@ public final class SourceReader {
 		}
 
 		for (final MethodCallExpr call : unit.findAll(MethodCallExpr.class)) {
-			if ("println".equals(call.getNameAsString()) && call.getScope().map(scope -> "System.err".equals(scope.toString())).orElse(false) && !call.getArguments().isEmpty()) {
+			final int index = "warn".equals(call.getNameAsString()) ? 0 : 1;
+			if ("JOIDLog".equals(call.getScope().map(Expression::toString).orElse("")) && SourceReader.LOG_NAMES.contains(call.getNameAsString()) && call.getArguments().size() > index) {
+				final Expression argument = SourceReader.unwrapSupplier(call.getArgument(index));
+				final String text = "[JOID] " + (argument instanceof NameExpr ? SourceReader.builderText(call, ((NameExpr) argument).getNameAsString()) : SourceReader.messageText(argument));
+				final int line = call.getBegin().map(position -> position.line).orElse(0);
+				SourceReader.origins(unit, call).forEach(origin -> this.messages.add(ApiMessage.create(true, "warning", text.replace("……", "…"), SourceReader.origin(origin, packageName), file, line)));
+				continue;
+			}
+
+			if ("println".equals(call.getNameAsString()) && !file.endsWith("/JOIDLog.java") && call.getScope().map(scope -> "System.err".equals(scope.toString())).orElse(false) && !call.getArguments().isEmpty()) {
 				final Expression argument = call.getArgument(0);
 				final String text = argument instanceof NameExpr ? SourceReader.builderText(call, ((NameExpr) argument).getNameAsString()) : SourceReader.messageText(argument);
 				if (text.startsWith("[JOID]") || (!file.startsWith("tool/") || SourceReader.isFailure(call)) && text.matches(".*[A-Za-z]{3}.*")) {
@@ -575,6 +586,17 @@ public final class SourceReader {
 			current = current.get().getParentNode();
 		}
 		return current.map(type::cast);
+	}
+
+	private static boolean isDemo(final String packageName) {
+		return packageName.startsWith("dev.joid.demo") || packageName.contains(".demo.") || packageName.endsWith(".demo");
+	}
+
+	private static Expression unwrapSupplier(final Expression expression) {
+		if (expression instanceof LambdaExpr && ((LambdaExpr) expression).getParameters().isEmpty() && ((LambdaExpr) expression).getExpressionBody().isPresent()) {
+			return ((LambdaExpr) expression).getExpressionBody().get();
+		}
+		return expression;
 	}
 
 	private static boolean isFailure(final MethodCallExpr call) {

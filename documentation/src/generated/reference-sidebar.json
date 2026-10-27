@@ -1,0 +1,106 @@
+[
+  {
+    "label": "UI",
+    "link": "/reference/ui/"
+  },
+  {
+    "label": "Annotations",
+    "link": "/reference/annotations/"
+  },
+  {
+    "label": "Nodes",
+    "link": "/reference/nodes/"
+  },
+  {
+    "label": "Controls",
+    "link": "/reference/controls/"
+  },
+  {
+    "label": "Layout",
+    "link": "/reference/layout/"
+  },
+  {
+    "label": "Events",
+    "link": "/reference/events/"
+  },
+  {
+    "label": "Effects",
+    "link": "/reference/effects/"
+  },
+  {
+    "label": "Signals",
+    "link": "/reference/signals/"
+  },
+  {
+    "label": "Animation",
+    "link": "/reference/animation/"
+  },
+  {
+    "label": "Text",
+    "link": "/reference/text/"
+  },
+  {
+    "label": "Resources",
+    "link": "/reference/resources/"
+  },
+  {
+    "label": "Drawing",
+    "link": "/reference/drawing/"
+  },
+  {
+    "label": "Shaders",
+    "link": "/reference/shaders/"
+  },
+  {
+    "label": "Input and keys",
+    "link": "/reference/input/"
+  },
+  {
+    "label": "Utilities",
+    "link": "/reference/utilities/"
+  },
+  {
+    "label": "Backends",
+    "link": "/reference/backends/"
+  },
+  {
+    "label": "Bridges",
+    "link": "/reference/bridges/"
+  },
+  {
+    "label": "Pipeline",
+    "link": "/reference/pipeline/"
+  },
+  {
+    "label": "Testing",
+    "link": "/reference/testing/"
+  },
+  {
+    "label": "base-glfw",
+    "link": "/reference/base-glfw/"
+  },
+  {
+    "label": "base-openal",
+    "link": "/reference/base-openal/"
+  },
+  {
+    "label": "base-opengl",
+    "link": "/reference/base-opengl/"
+  },
+  {
+    "label": "LWJGL 2 backend",
+    "link": "/reference/lwjgl2/"
+  },
+  {
+    "label": "LWJGL 3 backend",
+    "link": "/reference/lwjgl3/"
+  },
+  {
+    "label": "Vulkan backend",
+    "link": "/reference/vulkan/"
+  },
+  {
+    "label": "Tools",
+    "link": "/reference/tools/"
+  }
+]

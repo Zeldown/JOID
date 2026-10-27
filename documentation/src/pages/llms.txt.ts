@@ -13,11 +13,11 @@ export async function GET() {
 		const rest = pages.filter((page) => page.id.startsWith(`${topic.id}/`) && !ids.includes(page.id)).map((page) => page.id).sort();
 		return [...ids, ...rest].map((id) => line(byId.get(id)));
 	};
-	const [use, build] = topics(reference);
+	const [use, build, api] = topics(reference);
 	const body = [
 		'# JOID',
 		'',
-		'> JOID builds interfaces in Java on a design canvas, rendered by OpenGL or Vulkan. The pages follow the order of the sidebar; the reference has one page per type under /use/reference/<family>/ and /build/reference/<family>/.',
+		'> JOID builds interfaces in Java on a design canvas, rendered by OpenGL or Vulkan. The pages follow the order of the sidebar; the reference has one page per public type under /reference/<family>/.',
 		'',
 		'## Use JOID',
 		'',
@@ -26,6 +26,10 @@ export async function GET() {
 		'## Build on JOID',
 		'',
 		...section(build),
+		'',
+		'## Reference',
+		'',
+		...section(api),
 		'',
 	].join('\n');
 	return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

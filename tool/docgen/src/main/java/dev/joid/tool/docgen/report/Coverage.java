@@ -21,14 +21,12 @@ public final class Coverage {
 	private final Map<String, List<String>> missing;
 	private final List<String>              unknown;
 	private final List<String>              broken;
-	private final List<String>              unclassified;
 
 	private Coverage() {
-		this.families     = new TreeMap<>();
-		this.missing      = new TreeMap<>();
-		this.unknown      = new ArrayList<>();
-		this.broken       = new ArrayList<>();
-		this.unclassified = new ArrayList<>();
+		this.families = new TreeMap<>();
+		this.missing  = new TreeMap<>();
+		this.unknown  = new ArrayList<>();
+		this.broken   = new ArrayList<>();
 	}
 
 	public static Coverage create() {
@@ -72,7 +70,7 @@ public final class Coverage {
 	public String summary() {
 		final int expected = this.getExpected();
 		final double percent = expected == 0 ? 100D : this.getDescribed() * 100D / expected;
-		return String.format(Locale.ROOT, "%d/%d descriptions (%.1f%%), %d missing, %d unknown keys, %d broken links, %d unclassified types", this.getDescribed(), expected, percent, this.getMissingCount(), this.unknown.size(), this.broken.size(), this.unclassified.size());
+		return String.format(Locale.ROOT, "%d/%d descriptions (%.1f%%), %d missing, %d unknown keys, %d broken links", this.getDescribed(), expected, percent, this.getMissingCount(), this.unknown.size(), this.broken.size());
 	}
 
 	public void write(final File directory) throws IOException {
@@ -85,7 +83,6 @@ public final class Coverage {
 
 		Coverage.section(markdown, "Unknown keys", this.unknown);
 		Coverage.section(markdown, "Broken links", this.broken);
-		Coverage.section(markdown, "Unclassified types (missing from the scope file)", this.unclassified);
 		markdown.append("\n## Missing descriptions\n");
 		for (final Map.Entry<String, List<String>> file : this.missing.entrySet()) {
 			markdown.append("\n### ").append(file.getKey()).append("\n\n");

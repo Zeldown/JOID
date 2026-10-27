@@ -1,12 +1,18 @@
 package dev.joid.tool.docgen.source;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.gson.Gson;
@@ -23,6 +29,7 @@ public final class DefaultReader {
 
 	private final Map<String, ApiType> types;
 	private final boolean              runtime;
+	private final Map<String, String>  failed;
 
 	private int instances;
 	private int failures;
@@ -30,6 +37,7 @@ public final class DefaultReader {
 	private DefaultReader(final Map<String, ApiType> types, final boolean runtime) {
 		this.types   = types;
 		this.runtime = runtime;
+		this.failed  = new TreeMap<>();
 	}
 
 	public static DefaultReader create(final Map<String, ApiType> types, final boolean runtime) {
@@ -81,25 +89,13 @@ public final class DefaultReader {
 		}
 
 		final AtomicReference<Object> result = new AtomicReference<>();
+		final AtomicReference<String> reason = new AtomicReference<>("no public factory nor constructor");
 		final Thread thread = new Thread(() -> {
 			try {
 				final Class<?> clazz = Class.forName(type.getPackageName() + "." + type.getName().replace('.', '$'));
-				Method factory = null;
-				for (final Method method : clazz.getMethods()) {
-					if ("create".equals(method.getName()) && Modifier.isStatic(method.getModifiers()) && clazz.isAssignableFrom(method.getReturnType()) && (factory == null || method.getParameterCount() < factory.getParameterCount())) {
-						factory = method;
-					}
-				}
-
-				if (factory != null) {
-					final Object[] arguments = new Object[factory.getParameterCount()];
-					for (int i = 0; i < arguments.length; i++) {
-						arguments[i] = DefaultReader.argument(factory.getParameterTypes()[i]);
-					}
-					result.set(factory.invoke(null, arguments));
-				}
-			} catch (final Throwable ignored) {
-				result.set(null);
+				result.set(DefaultReader.create(clazz, 0, reason));
+			} catch (final Throwable throwable) {
+				reason.set(String.valueOf(throwable));
 			}
 		}, "docgen-defaults");
 		thread.setDaemon(true);
@@ -112,10 +108,49 @@ public final class DefaultReader {
 
 		if (result.get() == null) {
 			this.failures++;
+			this.failed.put(type.getFqcn(), thread.isAlive() ? "timed out after 3 s" : reason.get());
 		} else {
 			this.instances++;
 		}
 		return result.get();
+	}
+
+	private static Object create(final Class<?> clazz, final int depth, final AtomicReference<String> reason) throws ReflectiveOperationException {
+		for (final Executable creator : DefaultReader.creators(clazz)) {
+			final Object[] arguments = new Object[creator.getParameterCount()];
+			for (int i = 0; i < arguments.length; i++) {
+				arguments[i] = DefaultReader.argument(creator.getParameterTypes()[i], depth);
+			}
+
+			try {
+				return creator instanceof Method ? ((Method) creator).invoke(null, arguments) : ((Constructor<?>) creator).newInstance(arguments);
+			} catch (final InvocationTargetException exception) {
+				if (depth == 0) {
+					reason.set(creator.getName() + ": " + exception.getCause());
+				}
+			}
+		}
+		return null;
+	}
+
+	private static List<Executable> creators(final Class<?> clazz) {
+		final List<Executable> factories = new ArrayList<>();
+		final List<Executable> others = new ArrayList<>();
+		for (final Method method : clazz.getMethods()) {
+			if (Modifier.isStatic(method.getModifiers()) && method.getDeclaringClass() == clazz && clazz.isAssignableFrom(method.getReturnType())) {
+				("create".equals(method.getName()) ? factories : others).add(method);
+			}
+		}
+		factories.sort(Comparator.comparingInt(Executable::getParameterCount));
+
+		final List<Executable> constructors = new ArrayList<>(Arrays.asList(clazz.getConstructors()));
+		constructors.sort(Comparator.comparingInt(Executable::getParameterCount));
+		others.sort(Comparator.comparingInt(Executable::getParameterCount));
+
+		final List<Executable> creators = new ArrayList<>(factories);
+		creators.addAll(constructors);
+		creators.addAll(others);
+		return creators;
 	}
 
 	private static Object read(final Object instance, final ApiMember getter) {
@@ -128,7 +163,7 @@ public final class DefaultReader {
 		}
 	}
 
-	private static Object argument(final Class<?> type) {
+	private static Object argument(final Class<?> type, final int depth) throws ReflectiveOperationException {
 		if (type == boolean.class) {
 			return false;
 		}
@@ -168,7 +203,23 @@ public final class DefaultReader {
 		if (type.isEnum()) {
 			return type.getEnumConstants()[0];
 		}
-		return type.isArray() ? Array.newInstance(type.getComponentType(), 0) : null;
+
+		if (type.isArray()) {
+			return Array.newInstance(type.getComponentType(), 0);
+		}
+
+		if (type.isInterface()) {
+			return Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] {type}, (proxy, method, arguments) -> DefaultReader.neutral(method.getReturnType()));
+		}
+
+		if (depth >= 2 || Modifier.isAbstract(type.getModifiers()) || type.getName().startsWith("java.")) {
+			return null;
+		}
+		return DefaultReader.create(type, depth + 1, new AtomicReference<>());
+	}
+
+	private static Object neutral(final Class<?> type) throws ReflectiveOperationException {
+		return type.isPrimitive() && type != void.class ? DefaultReader.argument(type, 2) : null;
 	}
 
 	private static boolean isLiteral(final Object value) {
