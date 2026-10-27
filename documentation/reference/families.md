@@ -22,6 +22,10 @@ Learn: [Layout](/use/learn/describing-the-ui/layout/), [Flex layout](/use/learn/
 The events that listeners receive, with the bus, the types and the priorities that order the listeners of a node or a UI.
 Learn: [Events](/use/learn/interactivity/events/), [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/).
 
+## effects
+The effects that change how a node is drawn without touching its layout: rounded corners, circle, border, shadow, blur, mask and transform, and the base class of your own effects.
+Learn: [Effects](/use/learn/style-and-motion/effects/), [Custom effects](/use/learn/going-further/custom-effects/).
+
 ## signals
 The signals that hold a value the interface follows, the typed signals and collections, the derived signals computed from them, and the bindings that tie them to nodes and controls.
 Learn: [Signals](/use/learn/interactivity/signals/), [Derived values](/use/learn/state/derived-values/), [Rebuilding the tree](/use/learn/state/rebuilding/), [How signals work](/use/in-depth/how-signals-work/).
@@ -61,6 +65,10 @@ Learn: [Choosing a backend](/use/learn/running/backends/), [Embedding JOID](/use
 ## bridges
 The registries of bridges and the bridge contracts of the render, audio, clock, thread and signal replay services, with the textures, framebuffers, shaders and resource resolvers of the render bridge.
 Learn: [The bridges](/build/bridges/), [Render bridge](/build/bridges/render/), [Resource resolvers](/build/resource-resolvers/).
+
+## pipeline
+What a draw call carries to the render bridge: the matrices and the pixel grid, the render state with its blending and stencil, the vertices, and the JOID GLSL sources with their translation and uniforms.
+Learn: [Render pipeline](/build/pipeline/), [Shader translation](/build/shader-translation/), [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/).
 
 ## testing
 The testkit: the snapshot runner that renders UIs on a hidden surface, the snapshot suite and the contract suites that check a backend, and the tools that compare renders.

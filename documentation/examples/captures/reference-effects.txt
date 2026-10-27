@@ -1,0 +1,4 @@
+# crop reference-effects-badge 60 60 290 180
+ui com.example.reference.effects.BadgeUI
+wait 200
+shot reference-effects-badge
