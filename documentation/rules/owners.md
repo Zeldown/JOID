@@ -26,12 +26,12 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Text, `TextNode`, `TextInfo` | use/learn/describing-the-ui/text |
 | Fonts: loading a font (`MsdfFontLoader`), MSDF vs bitmap (user side) | use/learn/describing-the-ui/fonts |
 | Text markup (`ITextMarkup`, `TextMarkup`), text styles (`TextStyle`), text effects (`ITextEffect`) and modifiers (`TextModifier`), text converters (`ITextConverter`, `TextConverter`) | use/learn/describing-the-ui/text-markup-and-effects |
-| Images, resources, assets, playback (video/audio), `ResourcePlayerNode`, `StretchType`, the FFmpeg download (`VideoNatives`); the supported formats (image, animated, vector, video, audio), listed in this place only | use/learn/describing-the-ui/media (section "Supported formats" for the formats) |
+| Images, resources, assets, playback (video/audio), `ResourcePlayerNode`, `StretchType`, the FFmpeg download (`VideoNatives`); preloading a resource before its first draw (`Resource.generate`, section "Know when an image is loaded"); the supported formats (image, animated, vector, video, audio), listed in this place only | use/learn/describing-the-ui/media (section "Supported formats" for the formats) |
 | Showing a texture of the application (a resource of `GlBorrowedTexture.of` on LWJGL 2 and 3, `VulkanBorrowedTexture.of` on Vulkan) | use/learn/describing-the-ui/media (section "Show a texture of your application"); build/resource-resolvers keeps writing a resolver and links to it |
 | Events: the three kinds of event methods (the prefix handle for the raw input, before for a change that a listener can cancel, on for what happened), the path of an input through the tree, consuming an input, cancelling a change, listener priorities and `MONITOR`, interactive(false) (routing to the bridges: one sentence and a link to running/embedding) | use/learn/interactivity/events |
 | Hover, `isHovered`, tooltips and hover elements, hover progress (`hoverValue`, `hoverDuration`, `hoverEquation`) | use/learn/interactivity/hover-and-tooltips |
 | Drag and drop, `DraggableProperty` | use/learn/interactivity/drag-and-drop |
-| Keyboard, `Key`, `keyPressed`/`charTyped`, focus | use/learn/interactivity/keyboard |
+| Keyboard, `Key`, `handleKeyPressed`/`handleCharTyped`, focus | use/learn/interactivity/keyboard |
 | Escape closes the top UI when it is closeable and no node consumed the key | use/learn/interactivity/keyboard (section "Know who receives the keyboard"); uis gives one sentence and a link |
 | Controls pattern (values/value/range, onChange, signal binding) | use/learn/interactivity/controls |
 | Signals, `get`/`peek`, typed signals, collections, never changing the collection that `get()` returns | use/learn/interactivity/signals |
@@ -48,7 +48,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Drawing API: `DrawUtils` shapes and text | use/learn/going-further/drawing |
 | Drawing resources, matrix stack, render state and blending (`Transformation`, `MatrixStack`, `RenderState`, `BlendState`) | use/learn/going-further/drawing-resources-and-transforms |
 | `FrameBuffer`, `FrameBufferPool` (section "Borrow a temporary target"), `DrawModel`, `Tessellator` | use/learn/going-further/framebuffers-and-models (loading an `ObjModel`: one sentence and a link to 3d-models) |
-| The texture of a resource in your own drawing (`Resource.bind`, `Resource.getTexture`, `Resource.generate`, `Resource.upload`) | use/learn/going-further/framebuffers-and-models (section "Use the texture of a resource"); fonts and the reference of `Resource.upload` give one sentence and a link |
+| The texture of a resource in your own drawing (`Resource.bind`, `Resource.getTexture`, `Resource.prepareBind`) | use/learn/going-further/framebuffers-and-models (section "Use the texture of a resource"); fonts give one sentence and a link |
 | Shaders for users (shader passes, uniforms, writing a GLSL pass) | use/learn/going-further/shaders |
 | The JOID GLSL language: its rules and the list of built-in inputs, outputs and functions | use/learn/going-further/shaders (section "Write JOID GLSL"); build/shader-translation links to it for the list |
 | Custom effects (`NodeEffect`) | use/learn/going-further/custom-effects |
@@ -79,7 +79,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | The pending value of a control (a value that the bounds refuse, kept until they allow it) | use/learn/interactivity/controls (section "Keep a value that the bounds refuse") |
 | The order of the events of one change of a control | use/learn/interactivity/controls (section "Know the order of a change") |
 | What updates and what freezes in a reactive expression (native expressions rule) | use/learn/interactivity/signals (section "What JOID follows") |
-| UI masks (`UI.mask`, `startMask`/`stopMask`) | use/learn/style-and-motion/effects (section "Clip your own drawing") |
+| UI masks (`UI.mask`) | use/learn/style-and-motion/effects (section "Clip your own drawing") |
 | `ReorderableFlexNode` | use/learn/interactivity/reorderable-lists |
 | Charts (`ChartNode`, `RadarChartNode`) | use/learn/going-further/charts |
 | 3D models (`ModelNode`, `ModelViewerNode`), loading a Wavefront `.obj` file with `ObjModel` | use/learn/going-further/3d-models |
@@ -87,7 +87,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Threads: JOID is not thread-safe, the render thread, `ThreadUtils.runOnRenderThread`, futures brought back to the render thread (`RenderThreadFuture`) | use/learn/running/threads (tasks and signals written from another thread: one sentence and a link to state/tasks) |
 | `WindowUIBridge` settings (background, hoverInfo, hover colors) and the default bridge | use/learn/running/backends (section "Style the window bridge") |
 | Several UI bridges, their priorities and the routing across them, from the user side (`BridgeHandler`, `StackUIBridge`, `register(bridge, priority)`, which bridge opens a UI, receives the input, clears the window and sets the cursor), with the only example and the only diagram of the bridge stack | use/learn/running/embedding (section "Add a UI bridge of your own"); build/bridges, build/bridges/ui and the `BridgeRegistry` reference give one sentence and a link |
-| Where JOID stores files (`dataDir`, `cacheDir`, system properties, defaults per OS), cache areas of your own (`FileCache`) | use/learn/running/files |
+| Where JOID stores files (`dataDir`, `cacheDir`, system properties, defaults per OS), cache areas of your own (`FileCacheArea`) | use/learn/running/files |
 | Shipping your application (prod jar, fonts, files) | use/guides/ship-your-application |
 | Building a UI kit end to end | use/guides/build-a-ui-kit |
 | Copying a mockup pixel for pixel (no tool named) | use/guides/copy-a-mockup |

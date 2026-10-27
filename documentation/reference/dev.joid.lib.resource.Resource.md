@@ -163,7 +163,7 @@ It waits for the format to be detected.
 
 ## generate()
 
-Starts the decode, on a background thread unless the handle is blocking; drawing the resource does it for you.
+Starts the decode, on a background thread unless the handle is blocking; drawing the resource does it for you, and calling it earlier has a large image ready for its first draw ([Know when an image is loaded](/use/learn/describing-the-ui/media/#know-when-an-image-is-loaded)).
 
 ## upload()
 

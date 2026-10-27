@@ -41,7 +41,7 @@ On OpenGL and Vulkan, [[GlBorrowedTexture]] and [[VulkanBorrowedTexture]] do it 
 
 ## Write the resolver
 
-A resolver turns an object of the engine into a resource:
+A resolver implements [[IResourceResolver]] and turns an object of the engine into a resource:
 
 ```java file="com/example/backend/EngineSpriteResourceResolver.java" region="resolver"
 ```
