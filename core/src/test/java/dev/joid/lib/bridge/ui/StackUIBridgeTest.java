@@ -194,7 +194,7 @@ public class StackUIBridgeTest {
 			}
 
 			this.bridge.open(settings);
-			Assert.assertTrue(menu.getTransition().getOut().isRunning());
+			Assert.assertTrue(menu.getTransitionOut().isRunning());
 			for (int frame = 0; frame < 30; frame++) {
 				this.bridges.frame().draw(this.bridge);
 			}

@@ -350,7 +350,7 @@ public class JOIDTest {
 		JOID.open(menu);
 		this.bridges.frames(30);
 		JOID.open(waiting);
-		Assert.assertTrue(menu.getTransition().getOut().isRunning());
+		Assert.assertTrue(menu.getTransitionOut().isRunning());
 		JOID.forceOpen(next);
 		this.bridges.frames(30);
 		Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
@@ -466,7 +466,7 @@ public class JOIDTest {
 			JOID.close(menu);
 			this.bridges.frames(30);
 			Assert.assertEquals(Collections.singletonList(next), this.bridges.getUi().getUiList());
-			Assert.assertFalse(menu.getTransition().getOut().isRunning());
+			Assert.assertFalse(menu.getTransitionOut().isRunning());
 			Assert.assertEquals(round, menu.closes);
 			Assert.assertEquals(round, next.inits);
 		}

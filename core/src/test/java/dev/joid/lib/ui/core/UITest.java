@@ -50,6 +50,7 @@ import dev.joid.internal.JOIDWarnings;
 import dev.joid.internal.TestUtils;
 import dev.joid.lib.JOID;
 import dev.joid.lib.JOIDEnv;
+import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.bridge.BridgeHandler;
@@ -1209,7 +1210,7 @@ public class UITest {
 		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui).frames(20);
 		Assert.assertFalse(ui.fireClose());
-		Assert.assertTrue(ui.getTransition().getOut().isRunning());
+		Assert.assertTrue(ui.getTransitionOut().isRunning());
 		Assert.assertFalse(ui.fireClose());
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertFalse(this.trace.contains("detach node"));
@@ -1249,14 +1250,65 @@ public class UITest {
 	}
 
 	@Test
+	public void leavesTheHiddenUiOfASharedTransitionOpen() {
+		final Transition transition = PopTransition.create();
+		final PopupUI first = new PopupUI(this.trace).transition(transition);
+		final PopupUI second = new PopupUI(this.trace).transition(transition);
+		this.bridges.open(first).open(second).frames(20);
+		Assert.assertFalse(first.fireClose());
+		second.getData().visible(false);
+		this.bridges.frames(3);
+		Assert.assertTrue(this.bridges.getUi().isOpen(second));
+		Assert.assertFalse(second.isClosed());
+	}
+
+	@Test
+	public void closesWhenTheOtherUiOfASharedTransitionIsDisposed() {
+		final Transition transition = PopTransition.create();
+		final PopupUI first = new PopupUI(this.trace).transition(transition);
+		final PopupUI second = new PopupUI(this.trace).transition(transition);
+		this.bridges.open(first).open(second).frames(20);
+		Assert.assertFalse(first.fireClose());
+		this.bridges.frame();
+		JOID.forceClose(second);
+		this.bridges.frames(20);
+		Assert.assertFalse(this.bridges.getUi().isOpen(first));
+		Assert.assertTrue(first.isClosed());
+	}
+
+	@Test
+	public void closesWhileTheOtherUiOfASharedTransitionLeaves() {
+		final Transition transition = PopTransition.create();
+		final PopupUI first = new PopupUI(this.trace).transition(transition);
+		final PopupUI second = new PopupUI(this.trace).transition(transition);
+		this.bridges.open(first).open(second).frames(20);
+		Assert.assertFalse(first.fireClose());
+		this.bridges.frame();
+		Assert.assertFalse(second.fireClose());
+		this.bridges.frames(20);
+		Assert.assertFalse(this.bridges.getUi().isOpen(first));
+		Assert.assertFalse(this.bridges.getUi().isOpen(second));
+	}
+
+	@Test
+	public void leavesNoListenerOnTheTransitionItIsGiven() throws ReflectiveOperationException {
+		final Transition transition = PopTransition.create();
+		new PopupUI(this.trace).transition(transition);
+		new PopupUI(this.trace).transition(transition).transition(PopTransition.create()).transition(transition);
+		final Field field = TweenAnimator.class.getDeclaredField("listenerList");
+		field.setAccessible(true);
+		Assert.assertEquals(Collections.emptyList(), field.get(transition.getOut().getAnimator()));
+	}
+
+	@Test
 	public void leavesFromTheProgressItsInTransitionReached() {
 		final PopupUI ui = new PopupUI(this.trace, new TraceNode("node", this.trace, 0));
 		this.bridges.open(ui).frames(2);
-		final float shown = ui.getTransition().getIn().getAnimator().peek();
+		final float shown = ui.getTransitionIn().getAnimator().peek();
 		Assert.assertTrue(shown > 0F && shown < 1F);
 		Assert.assertFalse(ui.fireClose());
-		Assert.assertFalse(ui.getTransition().getIn().isRunning());
-		Assert.assertEquals(1F - shown, ui.getTransition().getOut().getAnimator().peek(), 0F);
+		Assert.assertFalse(ui.getTransitionIn().isRunning());
+		Assert.assertEquals(1F - shown, ui.getTransitionOut().getAnimator().peek(), 0F);
 	}
 
 	@Test
@@ -1292,7 +1344,7 @@ public class UITest {
 		ui.getData().visible(false);
 		this.bridges.frames(3);
 		Assert.assertFalse(this.bridges.getUi().isOpen(ui));
-		Assert.assertFalse(ui.getTransition().getOut().isRunning());
+		Assert.assertFalse(ui.getTransitionOut().isRunning());
 		Assert.assertEquals(1, Collections.frequency(this.trace, "detach node"));
 	}
 
@@ -1305,7 +1357,7 @@ public class UITest {
 		this.bridges.frames(20);
 		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
 		Assert.assertFalse(ui.isClosed());
-		Assert.assertFalse(ui.getTransition().getOut().isRunning());
+		Assert.assertFalse(ui.getTransitionOut().isRunning());
 		Assert.assertFalse(this.trace.contains("detach node"));
 	}
 

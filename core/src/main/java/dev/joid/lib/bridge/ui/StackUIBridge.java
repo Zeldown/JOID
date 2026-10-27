@@ -18,8 +18,8 @@ public abstract class StackUIBridge extends UIBridge {
 	@Override
 	public void open(final @NonNull UI ui) {
 		if (super.isOpen(ui)) {
-			if (ui.getTransition() != null && ui.getTransition().getOut().isRunning()) {
-				ui.getTransition().getOut().stop();
+			if (ui.getTransitionOut() != null && ui.getTransitionOut().isRunning()) {
+				ui.getTransitionOut().stop();
 			}
 
 			if (ui == this.leaving) {
@@ -50,7 +50,7 @@ public abstract class StackUIBridge extends UIBridge {
 				}
 
 				final boolean result = current.fireClose();
-				if (current.getTransition() != null && current.getTransition().getOut().isRunning()) {
+				if (current.getTransitionOut() != null && current.getTransitionOut().isRunning()) {
 					this.deferred = true;
 					this.leaving  = current;
 					this.pending  = ui;

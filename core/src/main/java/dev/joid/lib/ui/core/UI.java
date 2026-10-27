@@ -120,8 +120,9 @@ public abstract class UI implements IIndexedElement {
 	@Getter private final UIDataScaleObject   scale;
 	@Getter private final UIDataOverlayObject overlay;
 
-	@Getter
-	private Transition transition;
+	@Getter private Transition     transition;
+	@Getter private TransitionStep transitionIn;
+	@Getter private TransitionStep transitionOut;
 
 	private Timeline                                     closeTimeline;
 	private PopupTransition                              popupTransition;
@@ -240,13 +241,13 @@ public abstract class UI implements IIndexedElement {
 			}
 
 			if (this.transition != null) {
-				if (this.transition.getIn().isEnabled()) {
-					this.transition.getIn().init(this);
-					this.transition.getIn().start();
+				if (this.transitionIn.isEnabled()) {
+					this.transitionIn.init(this);
+					this.transitionIn.start();
 				}
 
-				if (this.transition.getOut().isEnabled()) {
-					this.transition.getOut().init(this);
+				if (this.transitionOut.isEnabled()) {
+					this.transitionOut.init(this);
 				}
 			}
 
@@ -265,8 +266,8 @@ public abstract class UI implements IIndexedElement {
 
 	public final void dispose() {
 		if (this.transition != null) {
-			this.transition.getIn().stop();
-			this.transition.getOut().stop();
+			this.transitionIn.stop();
+			this.transitionOut.stop();
 		}
 
 		this.scoped(() -> this.nodeList.forEach(Node::fireDetach));
@@ -402,8 +403,8 @@ public abstract class UI implements IIndexedElement {
 	public final void fireUpdate() {
 		this.dispatch("update", () -> {
 			this.bindings.pull();
-			if (this.transition != null && this.transition.getOut().isRunning() && this.drawnFrame + 1L < UI.frameNumber) {
-				this.transition.getOut().stop();
+			if (this.transition != null && this.transitionOut.isRunning() && this.drawnFrame + 1L < UI.frameNumber) {
+				this.transitionOut.stop();
 				this.dispose();
 				this.getBridge().close(this);
 				return;
@@ -427,7 +428,7 @@ public abstract class UI implements IIndexedElement {
 			return true;
 		}
 
-		if (this.transition != null && this.transition.getOut().isRunning()) {
+		if (this.transition != null && this.transitionOut.isRunning()) {
 			return false;
 		}
 
@@ -436,12 +437,11 @@ public abstract class UI implements IIndexedElement {
 			return false;
 		}
 
-		if (this.transition != null && this.transition.getOut().isEnabled() && this.data.visible() && this.drawnFrame + 1L >= UI.frameNumber) {
-			final TransitionStep in = this.transition.getIn();
-			final float progress = in.isRunning() ? Math.min(1F, Math.max(0F, 1F - in.getAnimator().peek())) : 0F;
-			in.stop();
-			this.transition.getOut().start(progress);
-			this.closeTimeline = this.transition.getOut().getAnimator().getTimeline();
+		if (this.transition != null && this.transitionOut.isEnabled() && this.data.visible() && this.drawnFrame + 1L >= UI.frameNumber) {
+			final float progress = this.transitionIn.isRunning() ? Math.min(1F, Math.max(0F, 1F - this.transitionIn.getAnimator().peek())) : 0F;
+			this.transitionIn.stop();
+			this.transitionOut.start(progress);
+			this.closeTimeline = this.transitionOut.getAnimator().getTimeline();
 			return false;
 		}
 
@@ -731,7 +731,7 @@ public abstract class UI implements IIndexedElement {
 	public final <T extends UI> @NonNull T transition(final Transition transition) {
 		if (transition != this.transition) {
 			this.transition = transition;
-			this.listenTransition();
+			this.copyTransition();
 		}
 		this.customTransition = true;
 		return (T) this;
@@ -801,15 +801,19 @@ public abstract class UI implements IIndexedElement {
 
 		this.popupTransition = popupTransition;
 		this.transition = UI.createPopupTransition(popupTransition);
-		this.listenTransition();
+		this.copyTransition();
 	}
 
-	private void listenTransition() {
+	private void copyTransition() {
 		if (this.transition == null) {
+			this.transitionIn = null;
+			this.transitionOut = null;
 			return;
 		}
 
-		this.transition.getOut().getAnimator().onComplete(event -> {
+		this.transitionIn = this.transition.getIn().copy();
+		this.transitionOut = this.transition.getOut().copy();
+		this.transitionOut.getAnimator().onComplete(event -> {
 			if (event.getTween() == this.closeTimeline) {
 				this.dispose();
 				this.getBridge().close(this);
@@ -925,17 +929,18 @@ public abstract class UI implements IIndexedElement {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
 
-		final Transition transition = this.transition;
+		final TransitionStep in = this.transitionIn;
+		final TransitionStep out = this.transitionOut;
 		if (this.data.background()) {
 			final float alpha = this.data.getBackgroundColor().getAlpha() / 255F;
 			float opacity = alpha;
-			if (transition != null) {
-				if (transition.getIn().isRunning()) {
-					opacity = Math.min(1F, Math.max(0F, transition.getIn().getAnimator().peek())) * alpha;
+			if (in != null) {
+				if (in.isRunning()) {
+					opacity = Math.min(1F, Math.max(0F, in.getAnimator().peek())) * alpha;
 				}
 
-				if (transition.getOut().isRunning()) {
-					opacity = Math.min(1F, Math.max(0F, 1F - transition.getOut().getAnimator().peek())) * alpha;
+				if (out.isRunning()) {
+					opacity = Math.min(1F, Math.max(0F, 1F - out.getAnimator().peek())) * alpha;
 				}
 			}
 			DrawUtils.SHAPE.drawRect(0D, 0D, this.view.getWidth(), this.view.getHeight(), this.data.getBackgroundColor().withAlpha(opacity));
@@ -963,8 +968,8 @@ public abstract class UI implements IIndexedElement {
 			}
 		});
 
-		if (transition != null) {
-			transition.getIn().render(this, () -> transition.getOut().render(this, body));
+		if (in != null) {
+			in.render(this, () -> out.render(this, body));
 		} else {
 			body.run();
 		}

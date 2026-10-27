@@ -6,13 +6,13 @@ import dev.joid.lib.ui.core.UI;
 import lombok.Getter;
 import lombok.NonNull;
 
-public class TransitionStep {
+public class TransitionStep implements Cloneable {
 
 	private final float         duration;
 	private final TweenEquation equation;
 
 	@Getter
-	private final TweenAnimator animator;
+	private TweenAnimator animator;
 
 	private boolean           drawn;
 	private TransitionDrawing draw;
@@ -30,6 +30,18 @@ public class TransitionStep {
 
 	public static @NonNull TransitionStep create(final float duration, final @NonNull TweenEquation equation) {
 		return new TransitionStep(duration, equation);
+	}
+
+	public @NonNull TransitionStep copy() {
+		try {
+			final TransitionStep copy = (TransitionStep) super.clone();
+			copy.animator = TweenAnimator.create(0F);
+			copy.drawn = false;
+			copy.running = false;
+			return copy;
+		} catch (final CloneNotSupportedException exception) {
+			throw new IllegalStateException(exception);
+		}
 	}
 
 	public void init(final @NonNull UI ui) {}

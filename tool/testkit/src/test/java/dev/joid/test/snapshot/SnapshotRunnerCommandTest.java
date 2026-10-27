@@ -141,9 +141,9 @@ public class SnapshotRunnerCommandTest {
 		SnapshotRunnerCommandTest.runner.execute("ui " + TraceUI.class.getName(), "open " + PopupUI.class.getName(), "shot opening", "wait 60", "shot growing", "wait 300", "shot opened", "key ESCAPE", "shot closing", "wait 60", "shot shrinking");
 		final PopupUI ui = JOID.getUi(PopupUI.class);
 		Assert.assertNotNull(ui);
-		Assert.assertTrue(ui.getTransition().getOut().isRunning());
-		Assert.assertTrue(ui.getTransition().getOut().getAnimator().peek() > 0F);
-		Assert.assertTrue(ui.getTransition().getOut().getAnimator().peek() < 1F);
+		Assert.assertTrue(ui.getTransitionOut().isRunning());
+		Assert.assertTrue(ui.getTransitionOut().getAnimator().peek() > 0F);
+		Assert.assertTrue(ui.getTransitionOut().getAnimator().peek() < 1F);
 	}
 
 	@Test
