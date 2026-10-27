@@ -36,7 +36,7 @@ It does not run for a value equal to the current one.
 
 ## isChecked()
 
-Returns `true` while the box is checked.
+If `true`, the box is checked.
 
 ## mousePressed(NodeMouseEvent)
 

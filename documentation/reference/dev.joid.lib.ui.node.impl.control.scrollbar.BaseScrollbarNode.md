@@ -24,11 +24,11 @@ The smallest length of the thumb, in design pixels, so that a long content keeps
 
 ## isHorizontal()
 
-Returns `true` when the bar is wider than high: it then scrolls the node horizontally.
+If `true`, the bar is wider than high: it then scrolls the node horizontally.
 
 ## isOverflowing()
 
-Returns `true` when the content of the node goes beyond it on the axis of the bar.
+If `true`, the content of the node goes beyond it on the axis of the bar.
 
 ## getRatio()
 
@@ -44,7 +44,7 @@ Returns the length of the thumb, in design pixels: the length of the bar times `
 
 ## isDragging()
 
-Returns `true` while the user drags the bar.
+If `true`, the user drags the bar.
 
 ## drawSkeleton(double,double)
 

@@ -25,4 +25,4 @@ Returns the height of the canvas.
 
 ## getPixels()
 
-Returns the pixels of the canvas, as the next frame will see them.
+Returns the pixels of the canvas, as the next frame reads them.

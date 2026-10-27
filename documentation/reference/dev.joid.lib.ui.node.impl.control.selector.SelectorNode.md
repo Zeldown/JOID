@@ -28,7 +28,7 @@ The side where the list opens: `DOWN` under the selected row, `UP` above it, nea
 
 ## isSelected(Node)
 
-Returns `true` when a node is the node of the selected option.
+If `true`, a node is the node of the selected option.
 
 ## getSelected()
 

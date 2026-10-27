@@ -15,4 +15,4 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 ## isCancelled()
 
-Returns `true` once a listener refused the change.
+If `true`, a listener refused the change.

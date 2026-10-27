@@ -17,4 +17,4 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 ## isCancelled()
 
-Returns `true` once a listener refused the step.
+If `true`, a listener refused the step.

@@ -16,7 +16,7 @@ Returns the text after the change.
 
 ## isValid()
 
-Returns `true` when the new text is a valid value, as [[FieldNode#isValid]] would.
+If `true`, the new text is a valid value, as [[FieldNode#isValid]] would.
 
 ## getPrevious()
 

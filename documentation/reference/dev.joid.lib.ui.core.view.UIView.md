@@ -104,7 +104,7 @@ Converts a height in design pixels to screen pixels.
 
 ## clampZoom(double)
 
-Returns the zoom kept between `0.1` and the largest zoom that the interface scale allows: `1`, or `1 / interfaceScale` when the scale is below 1.
+Returns the zoom kept between `0.1D` and the largest zoom that the interface scale allows: `1D`, or `1D / interfaceScale` when the scale is below `1D`.
 
 ## resize(double,double)
 

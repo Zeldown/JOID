@@ -12,7 +12,7 @@ Creates a range from two indexes in any order.
 
 ## isEmpty()
 
-Returns `true` when the range holds no character.
+If `true`, the range holds no character.
 
 ## getStart()
 

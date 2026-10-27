@@ -12,12 +12,12 @@ Learn: [Keyboard](/use/learn/interactivity/keyboard/#tell-a-letter-from-its-plac
 
 ## isDown()
 
-Returns `true` while a key that the layout names this way is held.
+If `true`, a key that the layout names this way is held.
 For a letter or punctuation key, it tests every held place that typed this key; for the other keys, it gives the same answer as `isPhysicalDown()`.
 
 ## isPhysicalDown()
 
-Returns `true` while the key at this place of a US QWERTY keyboard is held, whatever the layout names it.
+If `true`, the key at this place of a US QWERTY keyboard is held, whatever the layout names it.
 It asks the window bridge, so it answers even for a key that no UI received.
 
 ## A
@@ -266,11 +266,13 @@ The function key F25.
 
 ## ESCAPE
 
-The Escape key. Unconsumed, it closes the top UI when that UI is closeable; a focused text field consumes it to lose the focus.
+The Escape key.
+Unconsumed, it closes the top UI when that UI is closeable; a focused text field consumes it to lose the focus.
 
 ## ENTER
 
-The Enter key of the main block. A one-line text field submits on it; a multiline field starts a new line.
+The Enter key of the main block.
+A one-line text field submits on it; a multiline field starts a new line.
 
 ## TAB
 
@@ -354,7 +356,8 @@ The punctuation key that types `,` in the layout of the user.
 
 ## MINUS
 
-The punctuation key that types `-` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
+The punctuation key that types `-` in the layout of the user.
+In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
 
 ## PERIOD
 
@@ -370,7 +373,8 @@ The punctuation key that types `;` in the layout of the user.
 
 ## EQUAL
 
-The punctuation key that types `=` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
+The punctuation key that types `=` in the layout of the user.
+In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
 
 ## LEFT_BRACKET
 
@@ -442,11 +446,13 @@ The multiply key of the numeric keypad.
 
 ## NUMPAD_SUBTRACT
 
-The minus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
+The minus key of the numeric keypad.
+In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
 
 ## NUMPAD_ADD
 
-The plus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
+The plus key of the numeric keypad.
+In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
 
 ## NUMPAD_ENTER
 

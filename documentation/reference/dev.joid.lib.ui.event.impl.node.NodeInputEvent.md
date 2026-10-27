@@ -19,4 +19,4 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 ## isConsumed()
 
-Returns `true` once a listener or a node consumed the input.
+If `true`, a listener or a node consumed the input.

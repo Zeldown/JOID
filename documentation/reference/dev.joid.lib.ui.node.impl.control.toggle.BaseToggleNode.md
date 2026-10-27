@@ -43,7 +43,7 @@ Adds a listener that runs after each real change of the state, whatever its sour
 
 ## isToggle()
 
-Returns `true` while the toggle is on.
+If `true`, the toggle is on.
 
 ## getState()
 

@@ -50,7 +50,7 @@ Adds a listener that runs each time the list closes, whatever its source.
 
 ## isActive()
 
-Returns `true` while the list is open.
+If `true`, the list is open.
 
 ## mousePressed(NodeMouseEvent)
 

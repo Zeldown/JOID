@@ -24,7 +24,7 @@ During a drag, the place of the pointer, so that a thumb follows it between the 
 
 ## isSliding()
 
-Returns `true` while the user drags the slider.
+If `true`, the user drags the slider.
 
 ## mousePressed(NodeMouseEvent)
 

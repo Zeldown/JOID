@@ -320,7 +320,7 @@ F3 shows or hides it.
 ## zoom(double)
 
 Sets the zoom of the UI: `2D` shows the canvas twice as large around its anchor.
-The value is kept between `0.1` and the largest zoom that the interface scale allows; the requested value applies again when the scale changes.
+The value is kept between `0.1D` and the largest zoom that the interface scale allows; the requested value applies again when the scale changes.
 
 ## zoom(Signal)
 

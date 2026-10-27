@@ -9,7 +9,7 @@ Learn: [Keyboard](/use/learn/interactivity/keyboard/#use-the-key-bindings-of-you
 
 ## supports(Object)
 
-Returns `true` when this resolver knows the binding.
+If `true`, this resolver knows the binding.
 JOID calls `resolve` only for a binding that this method accepts.
 
 ## resolve(Object)

@@ -41,7 +41,7 @@ Default: the height of the node, read on every frame
 
 ## resource
 
-[[Resource]] stretched over the visible rectangle, whose opaque part forms the mask: it keeps the pixels where the image has an alpha above `0.5`, so the edges are hard.
+[[Resource]] stretched over the visible rectangle, whose opaque part forms the mask: it keeps the pixels where the image has an alpha above `0.5F`, so the edges are hard.
 `null` masks with the plain rectangle.
 
 ## draw(Node,Runnable)

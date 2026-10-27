@@ -18,7 +18,7 @@ Removes a resolver; the shortcuts whose binding only it knew stop firing.
 
 ## supports(Object)
 
-Returns `true` when the binding is a [[Key]] or when a registered resolver supports it.
+If `true`, the binding is a [[Key]] or when a registered resolver supports it.
 
 ## resolve(Object)
 

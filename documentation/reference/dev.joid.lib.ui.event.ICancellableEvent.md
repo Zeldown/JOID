@@ -12,4 +12,4 @@ Refuses the change: it does not apply, and its `onX` event does not fire.
 
 ## isCancelled()
 
-Returns `true` once a listener cancelled the event.
+If `true`, a listener cancelled the event.

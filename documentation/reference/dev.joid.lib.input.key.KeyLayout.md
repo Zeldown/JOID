@@ -24,4 +24,4 @@ Returns the letter or punctuation key that types a character, whatever its case,
 
 ## isLayoutKey(Key)
 
-Returns `true` for a key that depends on the layout: a letter or a punctuation key.
+If `true`, the key depends on the layout: a letter or a punctuation key.

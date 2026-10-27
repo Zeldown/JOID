@@ -50,11 +50,11 @@ The event is read-only for them: `cancel()` or `consume()` throws an `IllegalSta
 
 ## has(EventType)
 
-Returns `true` when at least one listener listens to the type.
+If `true`, at least one listener listens to the type.
 
 ## isEmpty()
 
-Returns `true` when the bus holds no listener.
+If `true`, the bus holds no listener.
 
 ## count(EventType)
 

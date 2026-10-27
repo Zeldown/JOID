@@ -159,7 +159,7 @@ Adds a listener that runs each time the field loses the focus, after it rewrote 
 
 ## isFocused()
 
-Returns `true` while the field has the focus.
+If `true`, the field has the focus.
 
 ## getValue()
 
@@ -168,7 +168,7 @@ A text that is not a value gives the last valid value; an empty text with `allow
 
 ## isValid()
 
-Returns `true` when the text passes `accept`, reads as a value and that value is already within its bounds; an empty text with `allowEmpty(true)` is valid.
+If `true`, the text passes `accept`, reads as a value and that value is already within its bounds; an empty text with `allowEmpty(true)` is valid.
 
 ## getSelection()
 

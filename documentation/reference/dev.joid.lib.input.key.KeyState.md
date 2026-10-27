@@ -21,7 +21,7 @@ Forgets a place that went up and returns the key that its press typed, or the pl
 
 ## isDown(Key)
 
-Returns `true` while a key is held.
+If `true`, a key is held.
 For a key that depends on the layout, it tests every held place that typed it; for any other key, it asks the window bridge.
 
 ## getKey(Key)
