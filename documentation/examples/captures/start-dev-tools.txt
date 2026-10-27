@@ -1,5 +1,4 @@
 # crop start-dev-inspect 700 400 1220 680
-# crop start-dev-grid 0 0 1920 1080
 dev true
 ui com.example.start.CounterUI
 key F3
@@ -7,11 +6,4 @@ move 960 540
 wait 600
 mask 845 445 80 30
 shot start-dev-inspect
-unmask
-ui com.example.start.CounterUI
-key F3
-key G
-move 600 300
-wait 300
-shot start-dev-grid
 dev false

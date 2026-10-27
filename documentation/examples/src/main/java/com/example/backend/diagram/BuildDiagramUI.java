@@ -5,6 +5,7 @@ import com.example.ExampleFont;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.DrawUtils;
 import dev.joid.lib.draw.text.Text;
+import dev.joid.lib.draw.text.TextMode;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
@@ -44,19 +45,17 @@ public abstract class BuildDiagramUI extends UI {
 		final double directionX = (toX - fromX) / length;
 		final double directionY = (toY - fromY) / length;
 		node.layer((current, mouseX, mouseY) -> {
-			final double endX = current.getX() + toX;
-			final double endY = current.getY() + toY;
-			final Point end = Point.of(endX, endY);
-			final Point left = Point.of(endX - directionX * 14D - directionY * 9D, endY - directionY * 14D + directionX * 9D);
-			final Point right = Point.of(endX - directionX * 14D + directionY * 9D, endY - directionY * 14D - directionX * 9D);
-			DrawUtils.SHAPE.drawLine(BuildDiagramUI.INK, 3F, Point.of(current.getX() + fromX, current.getY() + fromY), end);
+			final Point end = Point.of(toX, toY);
+			final Point left = Point.of(toX - directionX * 14D - directionY * 9D, toY - directionY * 14D + directionX * 9D);
+			final Point right = Point.of(toX - directionX * 14D + directionY * 9D, toY - directionY * 14D - directionX * 9D);
+			DrawUtils.SHAPE.drawLine(BuildDiagramUI.INK, 3F, Point.of(fromX, fromY), end);
 			DrawUtils.SHAPE.drawLine(BuildDiagramUI.INK, 3F, left, end, right);
 		});
 	}
 
 	private static RectNode block(final double x, final double y, final double width, final double height, final String title, final String detail, final Color fill, final Color color) {
-		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 24F).weight(FontWeight.BOLD).color(color);
-		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 20F).color(color);
+		final TextInfo bold = TextInfo.create(ExampleFont.REGULAR, 22F).weight(FontWeight.BOLD).color(color);
+		final TextInfo regular = TextInfo.create(ExampleFont.REGULAR, 16F).color(color);
 		final double middle = detail.isEmpty() ? height : height / 2D + 4D;
 		return RectNode
 		.create(x, y, width, height)
@@ -64,7 +63,7 @@ public abstract class BuildDiagramUI extends UI {
 		.effect(RoundedNodeEffect.create(10F))
 		.body(rect -> {
 			TextNode.create(0, 0, width, middle).text(Text.create(title, bold).alignX(Align.CENTER).alignY(detail.isEmpty() ? Align.CENTER : Align.END)).attach(rect);
-			TextNode.create(0, height / 2D + 10D, width, height / 2D - 10D).text(Text.create(detail, regular).alignX(Align.CENTER).alignY(Align.START)).attach(rect);
+			TextNode.create(10, height / 2D + 10D, width - 20D, height / 2D - 10D).text(Text.create(detail, regular).alignX(Align.CENTER).alignY(Align.START)).mode(TextMode.SPLIT).attach(rect);
 		});
 	}
 

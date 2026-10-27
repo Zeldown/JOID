@@ -8,10 +8,11 @@ import dev.joid.lib.font.TextInfo;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.UIDataOverlay;
+import dev.joid.lib.ui.core.data.UIDataOverlayRender;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
 @UIData(zindex = 10)
-@UIDataOverlay(active = true)
+@UIDataOverlay(active = true, render = @UIDataOverlayRender(aboveScreens = true))
 public class VolumeOverlay extends UI {
 
 	private static final Color INK = new Color(153, 153, 153).lock();

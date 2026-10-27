@@ -1,5 +1,6 @@
 # crop style-pop 660 340 600 400
 # hold style-pop 600
+# still style-pop 16
 ui com.example.style.MenuUI
 move 680 190
 press LEFT

@@ -29,8 +29,8 @@ public class ModesUI extends UI {
 		.body(card -> {
 			RectNode.create(40, 60, 440, 40).color(Color.WHITE).attach(card);
 			RectNode.create(520, 60, 440, 40).color(Color.WHITE).attach(card);
-			RectNode.create(40, 300, 440, 40).color(Color.WHITE).attach(card);
-			RectNode.create(520, 300, 440, 40).color(Color.WHITE).attach(card);
+			RectNode.create(40, 220, 440, 40).color(Color.WHITE).attach(card);
+			RectNode.create(40, 380, 440, 40).color(Color.WHITE).attach(card);
 			// #region modes
 			TextNode
 			.create(40, 60, 440, 40)
@@ -38,13 +38,13 @@ public class ModesUI extends UI {
 			.mode(TextMode.OVERFLOW)
 			.attach(card);
 			TextNode.create(520, 60, 440, 40).text(Text.create(sentence, info)).mode(TextMode.SPLIT).attach(card);
-			TextNode.create(520, 300, 440, 40).text(Text.create(sentence, info)).mode(TextMode.BOX).attach(card);
-			TextNode.create(40, 300, 440, 40).text(Text.create(sentence, info)).attach(card);
+			TextNode.create(40, 220, 440, 40).text(Text.create(sentence, info)).mode(TextMode.BOX).attach(card);
+			TextNode.create(40, 380, 440, 40).text(Text.create(sentence, info)).attach(card);
 			// #endregion
 			TextNode.create(40, 20).text(Text.create("OVERFLOW", caption)).attach(card);
 			TextNode.create(520, 20).text(Text.create("SPLIT", caption)).attach(card);
-			TextNode.create(520, 260).text(Text.create("BOX", caption)).attach(card);
-			TextNode.create(40, 260).text(Text.create("NORMAL", caption)).attach(card);
+			TextNode.create(40, 180).text(Text.create("BOX", caption)).attach(card);
+			TextNode.create(40, 340).text(Text.create("NORMAL", caption)).attach(card);
 		})
 		.attach(this);
 	}

@@ -34,12 +34,14 @@ public class ChartsRadarChartNode extends RadarChartNode<RadarChartData> {
 			final double ratio = data.getValue().doubleValue() / super.getMax().doubleValue();
 			outline[i] = this.getPoint(i, super.dw(2D));
 			values[i] = this.getPoint(i, super.dw(2D) * ratio);
-			final Point label = this.getPoint(i, super.dw(2D) + 16D);
-			DrawUtils.TEXT.drawText(label.getX(), label.getY(), data.getLabel(), info, Align.CENTER, Align.CENTER);
 		}
 
 		DrawUtils.SHAPE.drawPolygon(Color.WHITE, outline);
 		DrawUtils.SHAPE.drawPolygon(ChartsRadarChartNode.INK.withAlpha(0.5F), values);
+		for (int i = 0; i < size; i++) {
+			final Point label = this.getPoint(i, super.dw(2D) + 32D);
+			DrawUtils.TEXT.drawText(label.getX(), label.getY(), super.getDataList().get(i).getLabel(), info, Align.CENTER, Align.CENTER);
+		}
 	}
 
 	private Point getPoint(final int index, final double radius) {

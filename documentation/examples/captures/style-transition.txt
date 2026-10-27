@@ -1,5 +1,6 @@
 # crop style-transition 660 340 600 720
 # hold style-transition 600
+# still style-transition 28
 ui com.example.style.MenuUI
 move 960 190
 press LEFT
