@@ -1,0 +1,24 @@
+# crop describing-canvas-diagram 360 290 1200 500
+# crop describing-canvas-wide 0 0 1200 514
+# crop describing-canvas-tall 0 0 900 675
+# crop describing-canvas-pinned 0 0 1200 514
+# crop describing-canvas-zoom 800 380 320 320
+ui com.example.describing.canvas.CanvasDiagramUI
+wait 100
+shot describing-canvas-diagram
+resize 1200 514
+ui com.example.describing.canvas.EdgesUI
+wait 100
+shot describing-canvas-wide
+resize 900 675
+wait 100
+shot describing-canvas-tall
+resize 1200 514
+ui com.example.describing.canvas.MinimapUI
+wait 100
+shot describing-canvas-pinned
+resize 1920 1080
+ui com.example.describing.canvas.ZoomUI
+zoom 0.8
+wait 100
+shot describing-canvas-zoom
