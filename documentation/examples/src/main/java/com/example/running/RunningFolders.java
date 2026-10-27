@@ -7,14 +7,13 @@ import java.nio.file.Files;
 import java.time.Duration;
 
 import dev.joid.backend.lwjgl3.Lwjgl3Backend;
-import dev.joid.internal.JOIDEnv;
-import dev.joid.lib.cache.FileCache;
+import dev.joid.lib.JOIDEnv;
 import dev.joid.lib.cache.FileCacheArea;
 
 public final class RunningFolders {
 
 	// #region area
-	private static final FileCacheArea REPORTS = FileCache.area("reports").retention(Duration.ofDays(7L));
+	private static final FileCacheArea REPORTS = FileCacheArea.of("reports").retention(Duration.ofDays(7L));
 	// #endregion
 
 	private RunningFolders() {}

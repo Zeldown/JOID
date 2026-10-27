@@ -64,7 +64,7 @@ Besides the declarations, each translated shader carries uniforms that the core 
 |---|---|---|
 | `joid_AlphaTest`, `joid_AlphaThreshold` | `alphaCutoff` | The fragment is discarded when its alpha is at most the threshold. |
 | `joid_CurrentColor`, `joid_VertexColor` | `color(...)`, `isColor()` | Every read of `aColor` becomes the vertex color, or the current color when the buffer has none. |
-| `joid_LineWidth`, `joid_LineViewport` | `lineWidth`, viewport | The line variant of the shader widens each segment in screen space and smooths its edges. |
+| `joid_LineWidth`, `joid_LineViewport` | `lineWidth` multiplied by the scale of the [[PixelGrid]], viewport | The line variant of the shader widens each segment in screen space and smooths its edges. |
 | `joid_Border_<sampler>` | the wrap of the sampler | With border emulation, a sample outside the texture fades to transparent. |
 | `joid_Stencil…` | the stencil state | With stencil emulation, the stencil test and write in the fragment shader. |
 

@@ -16,7 +16,7 @@ Learn: [3D models](/use/learn/going-further/3d-models/).
 
 ## of(String,Object,Resource)
 
-Reads the model `name` from anything [[Asset#of]] accepts, drawn with `texture`.
+Reads the model `name` from anything [[Asset#of]] accepts, as UTF-8 text, drawn with `texture`.
 Throws `IllegalArgumentException` that names the line when the file is malformed: a line that does not parse, an index out of range, or a group that mixes faces with and without texture coordinates.
 Throws `UncheckedIOException` when the file cannot be read.
 

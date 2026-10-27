@@ -67,6 +67,7 @@ The stages of a `CompletableFuture` run on the thread that completes it, often a
 
 `join()` or `get()` of a `RenderThreadFuture`, called on the render thread, waits for the source future and completes at once, without waiting for the next frame.
 Waiting there freezes every UI until the work ends, so keep it for startup.
+A stage such as `exceptionally` or `whenComplete` receives the exception that failed the work, never a `CompletionException` around it.
 
 JOID follows the same rule for its own loads: the future of [[MsdfFontLoader#load]] is a `RenderThreadFuture`, and `onLoad` and `onError` of a [[Resource]] run on the render thread.
 

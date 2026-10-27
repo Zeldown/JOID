@@ -31,7 +31,7 @@ How the frames fill the bounds.
 
 ## autoplay
 
-If `true`, the playback starts as soon as the resource is ready.
+If `true`, the playback starts as soon as the resource is ready; if `false`, it waits paused on its first frame, an animated image as a video.
 
 ## loop
 

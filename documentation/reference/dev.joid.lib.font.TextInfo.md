@@ -120,7 +120,7 @@ Returns a copy with `shadowTint` set.
 
 ## getShadowColor()
 
-Returns the color of the shadow, or `null` when the text has no shadow of its own color.
+Returns the color of the shadow as it is drawn, the color of the text darkened for `shadow()`, or `null` when the text has no shadow of its own color.
 
 ## getBaseline()
 
@@ -148,7 +148,7 @@ Returns the font, the size and the color, for logs.
 
 ## shadow()
 
-Adds a shadow in the color of the text darkened by 30 %.
+Adds a shadow in the color of the text darkened by 30 %; it follows a color set later.
 Throws `IllegalStateException` on a locked style.
 
 ## shadow(Color)
@@ -191,7 +191,7 @@ Returns a copy that reads only `markups`.
 
 ## withShadow()
 
-Returns a copy with a shadow in the color of the text darkened by 30 %.
+Returns a copy with a shadow in the color of the text darkened by 30 %, which follows a color set later.
 
 ## withShadow(Color)
 

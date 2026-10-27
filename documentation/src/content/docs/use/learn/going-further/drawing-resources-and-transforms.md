@@ -126,7 +126,7 @@ Change it inside `withState(...)`, so that what follows draws as before:
 
 <figure>
 
-![A grey triangle outlined by a 6 pixel line with smooth edges, on a light grey background](/captures/further-transforms-state.webp)
+![A grey triangle outlined by a thick line with smooth edges, on a light grey background](/captures/further-transforms-state.webp)
 
 <figcaption>
 `lineSmooth` and `lineWidth` apply to the next lines, until `withState` ends.

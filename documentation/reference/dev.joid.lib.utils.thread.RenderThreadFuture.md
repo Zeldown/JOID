@@ -9,7 +9,7 @@ Learn: [Threads](/use/learn/running/threads/).
 
 ## from(CompletableFuture)
 
-Returns a future that completes on the render thread with the result or the failure of `source`.
+Returns a future that completes on the render thread with the result or the failure of `source`; a failure is the exception of the work itself, never a `CompletionException` around it.
 
 ## join()
 

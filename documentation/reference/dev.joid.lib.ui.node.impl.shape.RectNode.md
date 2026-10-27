@@ -39,7 +39,7 @@ Default: none, the border keeps its color on hover
 
 Thickness of the border, in design pixels; `0` draws no border.
 
-## borderFill
+## borderCorners
 
 If `true`, the border covers its corners; if `false`, the corners stay empty.
 

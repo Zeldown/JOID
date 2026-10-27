@@ -121,7 +121,7 @@ Name of the `int` uniform that holds the reference of the comparison and of the 
 
 ## LINE_WIDTH
 
-Name of the `float` uniform of a line shader that holds the line width of the render state, in screen pixels.
+Name of the `float` uniform of a line shader that holds the line width of the render state, in screen pixels: `lineWidth` multiplied by the scale of the [[PixelGrid]].
 
 ## LINE_VIEWPORT
 

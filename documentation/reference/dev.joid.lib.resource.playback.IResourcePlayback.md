@@ -21,7 +21,7 @@ Pauses the playback at the current time.
 
 ## seek(double)
 
-Moves the playback to `seconds` from the start; while stopped, it is the point where the next `play()` starts.
+Moves the playback to `seconds` from the start; while stopped, the playback pauses on that frame, and the next `play()` starts there.
 
 ## loop(boolean)
 

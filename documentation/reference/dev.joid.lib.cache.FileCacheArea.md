@@ -2,16 +2,17 @@
 summary: One folder of the cache, whose entries are written once by key, read many times, and deleted after a period without use.
 ---
 
-Get one with [[FileCache#area]].
+Get one with `of(name)`, and keep it in a constant.
 Each entry is written into a temporary file and moved into place in one step, so a reader never sees a half-written entry, and two threads that compute the same key write it once.
 Reading an entry marks it as used; the retention counts from the last use.
 The methods are thread-safe; call them off the render thread, since they touch the disk.
 
 Learn: [Files](/use/learn/running/files/).
 
-## FileCacheArea(String)
+## of(String)
 
-Creates an area object for the folder `name`; [[FileCache#area]] returns the shared one, which is the one to use.
+Returns the area `name`, the same instance for the same name, in the folder of that name under the cache folder.
+Throws `IllegalArgumentException` when `name` is not a plain file name: a letter or a digit, then letters, digits, `.`, `-` and `_`.
 
 ## retention
 
@@ -47,10 +48,6 @@ An entry still open elsewhere is left to the next cleaning, with a dev-mode warn
 
 Deletes the entries unused since `now` minus the retention, and the temporary files older than one day, adds the number of deleted files to `files` and returns the bytes freed.
 [[FileCache#clean]] calls it for every area.
-
-## check(String,String)
-
-Returns `name` when it is a plain file name, otherwise throws `IllegalArgumentException` that names its `kind`.
 
 ## getName()
 

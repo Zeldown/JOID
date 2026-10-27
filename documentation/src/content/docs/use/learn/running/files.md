@@ -77,7 +77,7 @@ When several settings name a folder, the first one present wins:
 ## Keep files of your own in the cache
 
 Your application can keep its own rebuildable files in the cache folder, with the same cleaning as JOID's.
-Declare an area once, with [[FileCache#area]] and the time an unused entry stays:
+Declare an area once, with [[FileCacheArea#of]] and the time an unused entry stays:
 
 ```java file="com/example/running/RunningFolders.java" region="area"
 ```
@@ -113,7 +113,7 @@ Declaring the same name again with another duration throws `IllegalStateExceptio
 - The data folder defaults to **`joid` in the working directory**; the cache folder to the **cache folder of the system**.
 - Priority: **`dataDir`/`cacheDir` on the backend**, then **`-Djoid.data`/`-Djoid.cache`**, then the defaults.
 - **`JOIDEnv.getDataDir()`** and **`getCacheDir()`** give the folders in use; the banner prints them.
-- **`FileCache.area(name)`** keeps files of your own, written once by `compute` and deleted after their retention.
+- **`FileCacheArea.of(name)`** keeps files of your own, written once by `compute` and deleted after their retention.
 
 ## Try it
 
@@ -137,7 +137,7 @@ Declare the area.
 <summary>Solution</summary>
 
 ```java fragment
-private static final FileCacheArea THUMBNAILS = FileCache.area("thumbnails").retention(Duration.ofDays(7L));
+private static final FileCacheArea THUMBNAILS = FileCacheArea.of("thumbnails").retention(Duration.ofDays(7L));
 ```
 
 Then `THUMBNAILS.compute(level, file -> ...)` renders a thumbnail the first time and returns the file afterwards.

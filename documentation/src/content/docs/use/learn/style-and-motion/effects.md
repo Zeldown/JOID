@@ -54,7 +54,7 @@ Each effect takes its main values in `create(...)` and the others through setter
 - `RoundedNodeEffect.create(radius)` rounds every corner; `top(false)`, `bottom(false)`, `left(false)` and `right(false)` keep a side square, and a corner is rounded only when both of its sides are.
   The radius never goes past half the shorter side, so `create(1000F)` turns a rectangle into a pill.
 - `BorderNodeEffect.create(color, width)` outlines the pixels that the node draws: rounded corners, circles, glyphs, the opaque part of an image.
-  `mode(...)` takes a [[BorderShader.BorderMode]]: `BorderMode.OUT`, the default, draws it outside the shape, and `BorderMode.IN` inside; `fill(false)` leaves the corners of an `OUT` border open.
+  `mode(...)` takes a [[BorderShader.BorderMode]]: `BorderMode.OUT`, the default, draws it outside the shape, and `BorderMode.IN` inside; `corners(false)` leaves the corners of an `OUT` border open.
 - `ShadowNodeEffect.create(color, blur)` draws a shadow of the shape of the node, moved by `offsetX(...)` and `offsetY(...)` in design pixels.
   It does not read the pixels of the node: it draws a rounded rectangle with the radius of the `RoundedNodeEffect` of the node, a disc for a [[CircleNode]] or a node with a `CircleNodeEffect`, and a plain rectangle otherwise.
 - `BlurNodeEffect.create(radius)` blurs the node, by a radius in design pixels.
@@ -64,7 +64,7 @@ Each effect takes its main values in `create(...)` and the others through setter
 A border, a blur or a rounding of `0` does nothing, so a value that drops to `0` turns the effect off.
 
 :::caution
-The `borderColor(...)`, `borderStroke(...)` and `borderFill(...)` setters of a [[RectNode]] drive the `BorderNodeEffect` of the node.
+The `borderColor(...)`, `borderStroke(...)` and `borderCorners(...)` setters of a [[RectNode]] drive the `BorderNodeEffect` of the node.
 Give a rectangle one or the other: a `BorderNodeEffect` added after them replaces theirs, and the setters called after it change its color and its width.
 :::
 

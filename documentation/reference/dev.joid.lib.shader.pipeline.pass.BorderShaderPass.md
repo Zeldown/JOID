@@ -14,9 +14,9 @@ Creates a border of `color`, gradient and animated colors included, `width` desi
 
 Creates the pass, for a subclass.
 
-## fill
+## corners
 
-If `true`, the stroke also runs past the corners of the area; if `false`, the corner zones outside the area keep the previous result unchanged.
+If `true`, the stroke also covers the outer corners of the area; if `false`, the corner zones, where the stroke goes past the area in x and in y at once, keep the previous result unchanged.
 
 ## mode
 

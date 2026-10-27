@@ -155,6 +155,7 @@ Here a video waits for the user, at half volume, and closes its UI when it ends:
 
 - [[ResourcePlayerNode#play]], [[ResourcePlayerNode#pause]], [[ResourcePlayerNode#toggle]], [[ResourcePlayerNode#stop]] and [[ResourcePlayerNode#restart]] control the playback, and [[ResourcePlayerNode#seek]] jumps to a time in seconds from the start, paused if the player was stopped.
 - Called before the player first draws, these calls wait for it to start.
+  With `autoplay(false)`, the player waits paused on its first frame: `isPaused()` is `true`.
 - [[ResourcePlayerNode#isPlaying]], [[ResourcePlayerNode#isPaused]], [[ResourcePlayerNode#getDuration]] (seconds) and [[ResourcePlayerNode#getProgress]] (on 1) read the playback.
 - [[ResourcePlayerNode#onPlay]], [[ResourcePlayerNode#onPause]], [[ResourcePlayerNode#onStop]] and [[ResourcePlayerNode#onEnd]] follow it; `onEnd` never fires on a loop.
   [[ResourcePlayerNode#onProgress]] receives a [[NodeProgressEvent]], with the progress on 1 and the current time in seconds.

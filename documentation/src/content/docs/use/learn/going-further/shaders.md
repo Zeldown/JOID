@@ -170,7 +170,7 @@ It renders only the part of the rectangle that the screen shows, plus the `reach
 | [[RoundedShaderPass]] | `create(radius, x1, y1, x2, y2)`, the box to round | `0` |
 | [[CircleShaderPass]] | `create(radius, centerX, centerY)` | `0` |
 | [[BlurShaderPass]] | `create(radius, horizontal)`: one pass blurs one direction, so a blur takes two | `radius` |
-| [[BorderShaderPass]] | `create(color, width)`, then `fill(...)` and `mode(...)` | `width + 2` |
+| [[BorderShaderPass]] | `create(color, width)`, then `corners(...)` and `mode(...)` | `width + 2` |
 
 The effects of nodes run through this pipeline ([Effects](/use/learn/style-and-motion/effects/)).
 

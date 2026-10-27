@@ -101,6 +101,7 @@ Lines and curves go through points, given as [[Point]] in design pixels:
 - `drawLine(color, stroke, points...)` joins the points with smooth edges.
 - `drawDashedLine(color, pattern, stroke, points...)` alternates dashes and gaps of `pattern` design pixels; a pattern of 0 or less throws `IllegalArgumentException`.
 - `drawCurvedLine(color, stroke, start, control, end)` draws a quadratic Bézier curve; with two control points, `(start, startControl, endControl, end)`, a cubic one.
+- `stroke` is in design pixels, like the thickness of a border, so a line grows with the UI.
 - `drawShape(mode, color, points...)` sends the points as they are, as `LINES`, `LINE_STRIP`, `LINE_LOOP`, `TRIANGLES`, `QUADS` or a `POLYGON` ([[DrawMode]]).
 
 The stroke of lines and curves is in screen pixels, so a line keeps its weight whatever the size of the window; without a stroke, a line is 1 pixel wide.

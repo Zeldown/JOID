@@ -30,7 +30,7 @@ Thickness of the border, in design pixels; `0F` or less turns the effect off.
 
 Side of the edge where the border lies: `BorderMode.OUT` around the shape, `BorderMode.IN` over its outer pixels.
 
-## fill
+## corners
 
 If `false`, an `OUT` border leaves the corners of the node open and runs along its four sides only.
 
@@ -44,4 +44,4 @@ Returns `false` while the width is `0F` or less.
 
 ## toShaderPass(Node)
 
-Returns a [[BorderShaderPass]] with the current color, width, mode and fill.
+Returns a [[BorderShaderPass]] with the current color, width, mode and corners.

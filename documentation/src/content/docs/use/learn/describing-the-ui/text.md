@@ -50,7 +50,7 @@ Three styles from one font: a bold title, a body, and a smaller caption with spa
 | `color(...)` | The color of the glyphs, a [[Color]] ([Styling](/use/learn/style-and-motion/styling/)). |
 | `letterSpacing(float)` | The space added between letters, on 1 of the size: `0.15F` adds 15 % of the size. |
 | `lineHeight(float)` | The height of a line, on 1 of the size: `1.5F` is 150 %; `0F` keeps the height of the font. |
-| `shadow()`, `shadow(Color)` | Adds a shadow under the text; `shadow()` takes the color of the text at the call, 30 % darker, so call it after `color(...)`. |
+| `shadow()`, `shadow(Color)` | Adds a shadow under the text; `shadow()` follows the color of the text, 30 % darker, and `shadow(Color)` keeps a fixed color. |
 | `shadow(float, float)` | Moves the shadow, in design pixels; by default it sits one 13.5th of the size to the right and below. |
 | `shadowTint(Float)` | Draws the shadow in the color of each glyph multiplied by the tint (`0.3F` gives a dark shade of each color), for a text of several colors. |
 

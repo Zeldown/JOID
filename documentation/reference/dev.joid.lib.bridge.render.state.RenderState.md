@@ -21,8 +21,8 @@ If `true`, the default shader shades each vertex by its normal, with a light tha
 
 ## lineWidth
 
-Width of the lines that the [[Tessellator]] draws, in screen pixels.
-A width other than `1F` draws each segment as a quad.
+Width of the lines that the [[Tessellator]] draws, in design pixels like every other thickness: `2F` covers 4 screen pixels at a scale of 2.
+A width other than `1F`, or a smooth line, draws each segment as a quad; a line of `1F` without `lineSmooth` stays the line of one screen pixel of the GPU.
 
 ## depthTest
 
