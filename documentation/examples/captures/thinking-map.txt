@@ -1,0 +1,4 @@
+# crop thinking-map 390 250 1140 580
+ui com.example.thinking.ThinkingMapUI
+wait 100
+shot thinking-map
