@@ -40,7 +40,8 @@ public class ChartsRadarChartNode extends RadarChartNode<RadarChartData> {
 		DrawUtils.SHAPE.drawPolygon(ChartsRadarChartNode.INK.withAlpha(0.5F), values);
 		for (int i = 0; i < size; i++) {
 			final Point label = this.getPoint(i, super.dw(2D) + 32D);
-			DrawUtils.TEXT.drawText(label.getX(), label.getY(), super.getDataList().get(i).getLabel(), info, Align.CENTER, Align.CENTER);
+			final String text = super.getDataList().get(i).getLabel();
+			DrawUtils.TEXT.drawText(label.getX(), label.getY(), text, info, Align.CENTER, Align.CENTER);
 		}
 	}
 
