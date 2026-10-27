@@ -44,27 +44,42 @@ public final class DocCapture {
 		Arrays.sort(files);
 		output.mkdirs();
 		final double[] mouse = {-5000D, -5000D};
+		final List<String> failures = new ArrayList<>();
 		final SnapshotRunner runner = SnapshotRunner.start(new Lwjgl3SnapshotBackend());
 		try {
 			for (final File file : files) {
-				final List<String> commands = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
-				final Map<String, double[]> pointers = DocCapture.trackPointer(commands, mouse);
-				final Map<String, List<int[]>> masks = DocCapture.trackRegions(commands, "mask");
-				final Map<String, List<int[]>> mirrors = DocCapture.trackRegions(commands, "mirror");
-				final Map<String, SnapshotImage> shots = runner.execute(commands.stream().filter(line -> !line.trim().startsWith("mirror ")).toArray(String[]::new));
-				for (final Map.Entry<String, SnapshotImage> shot : shots.entrySet()) {
-					final File target = new File(output, shot.getKey() + ".png");
-					shot.getValue().write(target);
-					DocCapture.paintMasks(target, masks.get(shot.getKey()));
-					DocCapture.paintMirrors(target, mirrors.get(shot.getKey()));
-					DocCapture.drawPointer(target, pointers.get(shot.getKey()));
-					System.out.println(file.getName() + " -> " + shot.getKey() + ".png");
+				try {
+					DocCapture.capture(runner, file, output, mouse);
+				} catch (final RuntimeException | Error exception) {
+					exception.printStackTrace();
+					failures.add(file.getName() + " " + exception);
 				}
 			}
 		} finally {
 			runner.stop();
 		}
-		System.exit(0);
+
+		for (final String failure : failures) {
+			System.err.println("[DocCapture] FAIL " + failure);
+		}
+		System.err.println("[DocCapture] " + (files.length - failures.size()) + " of " + files.length + " scenarios rendered");
+		System.exit(failures.isEmpty() ? 0 : 1);
+	}
+
+	private static void capture(final SnapshotRunner runner, final File file, final File output, final double[] mouse) throws IOException {
+		final List<String> commands = Files.readAllLines(file.toPath(), StandardCharsets.UTF_8);
+		final Map<String, double[]> pointers = DocCapture.trackPointer(commands, mouse);
+		final Map<String, List<int[]>> masks = DocCapture.trackRegions(commands, "mask");
+		final Map<String, List<int[]>> mirrors = DocCapture.trackRegions(commands, "mirror");
+		final Map<String, SnapshotImage> shots = runner.execute(commands.stream().filter(line -> !line.trim().startsWith("mirror ")).toArray(String[]::new));
+		for (final Map.Entry<String, SnapshotImage> shot : shots.entrySet()) {
+			final File target = new File(output, shot.getKey() + ".png");
+			shot.getValue().write(target);
+			DocCapture.paintMasks(target, masks.get(shot.getKey()));
+			DocCapture.paintMirrors(target, mirrors.get(shot.getKey()));
+			DocCapture.drawPointer(target, pointers.get(shot.getKey()));
+			System.out.println(file.getName() + " -> " + shot.getKey() + ".png");
+		}
 	}
 
 	private static Map<String, double[]> trackPointer(final List<String> commands, final double[] mouse) {

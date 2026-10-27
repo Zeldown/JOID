@@ -113,7 +113,12 @@ function render() {
 	if (only) {
 		tasks.push(`-Pcapture=${only}`);
 	}
-	gradle(...tasks);
+	try {
+		gradle(...tasks);
+		return true;
+	} catch {
+		return false;
+	}
 }
 
 function directives() {
@@ -157,9 +162,7 @@ async function bounds(file, pad) {
 
 async function main() {
 	const films = scenarios();
-	if (!args.includes('--skip-render')) {
-		render();
-	}
+	const rendered = args.includes('--skip-render') || render();
 	if (!existsSync(RAW)) {
 		throw new Error(`No raw capture in ${RAW}`);
 	}
@@ -204,6 +207,9 @@ async function main() {
 			await sharp(buffers[still]).webp({ lossless: true }).toFile(join(OUTPUT, `${name}.still.webp`));
 		}
 		console.log(`${name}.webp ${region.width}x${region.height}${film ? `, ${frames.length} frames, ${film.times[film.times.length - 1]} ms` : ''}`);
+	}
+	if (!rendered) {
+		throw new Error('Some scenarios did not render, see the [DocCapture] FAIL lines above: the captures of the other scenarios are written');
 	}
 }
 

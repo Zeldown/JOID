@@ -15,6 +15,7 @@ task captures(type: JavaExec) {
     workingDir = file("$buildDir/captures")
     systemProperty 'joid.data', file("$buildDir/data").absolutePath
     systemProperty 'joid.snapshot.cache', rootProject.file('.snapshots/cache').absolutePath
+    systemProperty 'java.awt.headless', 'true'
     args file("$buildDir/captures/scenarios").absolutePath, file("$buildDir/captures/raw").absolutePath
     if (project.hasProperty('capture')) {
         args project.property('capture')
@@ -36,6 +37,7 @@ task runExamples(type: JavaExec) {
     workingDir = file("$buildDir/run-examples")
     systemProperty 'joid.data', file("$buildDir/run-examples/data").absolutePath
     systemProperty 'joid.snapshot.cache', rootProject.file('.snapshots/cache').absolutePath
+    systemProperty 'java.awt.headless', 'true'
     args sourceSets.main.output.classesDir.absolutePath, file('run-examples.txt').absolutePath, file("$buildDir/run-examples/report.txt").absolutePath
     if (project.hasProperty('example')) {
         args project.property('example')
@@ -63,6 +65,7 @@ dependencies {
 task ecj(type: JavaExec) {
     group = 'JOID'
     description = 'Compiles the examples with the Eclipse compiler and the settings of the repository, and fails on any warning.'
+    dependsOn 'compileJava'
     def output = new ByteArrayOutputStream()
     main = 'org.eclipse.jdt.internal.compiler.batch.Main'
     classpath = configurations.ecj
