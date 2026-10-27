@@ -44,13 +44,11 @@ public class DoubleSliderNodeTest {
 		Assert.assertEquals(0.5D, new Slider().<Slider>range(0D, 1D, 0.5D).value(new Signal<>(0.75D)).getValue(), 0D);
 	}
 
-	@Test(timeout = 1000L)
-	public void hashesAWideRangeWithoutListingEachValue() {
-		final List<Double> values = new Slider().range(0D, 1E9D, 1D).getValueList();
-		final List<Double> same = new Slider().range(0D, 1E9D, 1D).getValueList();
-		Assert.assertEquals(values, same);
-		Assert.assertEquals(values.hashCode(), same.hashCode());
-		Assert.assertNotEquals(values.hashCode(), new Slider().range(0D, 1E9D, 2D).getValueList().hashCode());
+	@Test
+	public void hashesItsRangeLikeAListOfItsValues() {
+		final List<Double> values = new Slider().range(0D, 1D, 0.25D).getValueList();
+		Assert.assertEquals(Arrays.asList(0D, 0.25D, 0.5D, 0.75D, 1D), values);
+		Assert.assertEquals(Arrays.asList(0D, 0.25D, 0.5D, 0.75D, 1D).hashCode(), values.hashCode());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

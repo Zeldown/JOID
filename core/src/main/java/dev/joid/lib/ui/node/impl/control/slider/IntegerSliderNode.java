@@ -1,7 +1,6 @@
 package dev.joid.lib.ui.node.impl.control.slider;
 
 import java.util.List;
-import java.util.Objects;
 
 import dev.joid.internal.RangeList;
 import dev.joid.lib.signal.Signal;
@@ -105,11 +104,6 @@ public abstract class IntegerSliderNode extends SliderNode<Integer> {
 
 			final IntegerRangeList range = (IntegerRangeList) object;
 			return this.min == range.min && this.size == range.size && (this.size == 1 || this.step == range.step);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(this.min, this.size, this.size == 1 ? 0 : this.step);
 		}
 
 	}
