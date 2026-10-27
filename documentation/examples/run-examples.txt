@@ -2,4 +2,13 @@
 # skip <class> <reason>: the class cannot run in the capture runner, and the reason says why.
 # call <class> <static method or field>: the runner calls the method (or reads the field) with no argument, then draws 10 frames.
 # expect <class> <message>: the class prints this message on purpose, for example on a line marked with a cross.
-# A class that no UI and no call loads, and that has no skip line, fails the check.
+# A class that no UI and no call loads, and that has no skip line, fails the check.call com.example.further.FontsSources LIGHT
+skip com.example.running.RunningApp creates its own GLFW window and loop
+skip com.example.running.HostApp creates its own GLFW window and loop
+skip com.example.running.MenuSnapshotTest JUnit test that starts its own snapshot backend
+skip com.example.running.RunningFolders registers a backend on a window of its own
+skip com.example.running.RunningLibrary registers JOID.onReady for a program that starts later
+skip com.example.running.PanelPlugin registers a UI bridge into the global registry
+skip com.example.running.SceneUIBridge UI bridge registered by HostApp
+skip com.example.running.GameUIBridge UI bridge of a host loop
+skip com.example.running.PanelUIBridge UI bridge registered by PanelPlugin

@@ -1,0 +1,10 @@
+# crop running-testing-menu 760 390 400 300
+ui com.example.running.RunningMenuUI
+wait 100
+shot running-testing-menu
+# crop running-testing-clicked 760 390 400 300
+moveto 960 540 300
+press LEFT
+release LEFT
+wait 100
+shot running-testing-clicked
