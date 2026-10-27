@@ -4,6 +4,10 @@ summary: The base class of a texture owned by JOID, which checks every call and 
 
 Learn: [Textures](/build/writing-a-backend/#textures).
 
+## Texture()
+
+Creates a texture, for a subclass.
+
 ## getWidth()
 
 Returns the width, in pixels.

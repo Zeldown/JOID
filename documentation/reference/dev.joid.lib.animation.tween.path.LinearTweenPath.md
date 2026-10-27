@@ -6,6 +6,10 @@ Use the instance [[TweenPaths#LINEAR]].
 
 Learn: [Animation](/use/learn/style-and-motion/animation/).
 
+## LinearTweenPath()
+
+Creates the path.
+
 ## compute(float,float[],int)
 
 Returns the value at `t` on the straight segment between the two points that surround it, each segment taking the same share of the progress.

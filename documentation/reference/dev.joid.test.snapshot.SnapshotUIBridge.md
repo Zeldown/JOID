@@ -12,6 +12,6 @@ Creates the bridge.
 
 Returns the interface scale set by the `scale` command, `1D` by default.
 
-## setInterfaceScale(double)
+## interfaceScale
 
-The setter `interfaceScale(double)`: sets the interface scale of every UI of the bridge and returns the bridge.
+Sets the interface scale of every UI of the bridge and returns the bridge.

@@ -34,3 +34,11 @@ Returns the start point, on 1 of the drawn area.
 ## getEndPoint()
 
 Returns the end point, on 1 of the drawn area.
+
+## equals(Object)
+
+If `true`, the other object is of the same class with the same colors and points.
+
+## hashCode()
+
+Returns a hash of the values that `equals` compares.

@@ -13,26 +13,18 @@ Creates the options with the default values of [[UIDataScale]].
 
 Returns the interface scale that the UI uses for this scale of the bridge: `1` when the option is off, at most `limit` when it is limited.
 
-## isActive()
+## active
 
 If `false`, the UI ignores the interface scale.
 
-## setActive(boolean)
-
-Lets the UI follow the interface scale or not.
-
-## isLimited()
+## limited
 
 If `true`, the interface scale never goes above `limit`.
 
-## setLimited(boolean)
-
-Caps the interface scale at `limit` or not.
-
-## getLimit()
+## limit
 
 Largest interface scale applied when the scale is limited.
 
-## setLimit(double)
+## toString()
 
-Sets the largest interface scale applied when the scale is limited.
+Returns the class and the value of every option, for logs.

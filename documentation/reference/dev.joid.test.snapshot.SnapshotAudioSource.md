@@ -6,6 +6,10 @@ summary: An audio source that plays nothing, so that snapshot tests need no soun
 
 Learn: [Keep every run identical](/use/learn/running/testing/#keep-every-run-identical).
 
+## SnapshotAudioSource()
+
+Creates a simulated audio source.
+
 ## delete()
 
 Does nothing.

@@ -7,6 +7,10 @@ Each test name states the rule it checks; the rules are those of the render cont
 
 Learn: [The suites](/build/testing-a-backend/#the-suites), [Render bridge](/build/bridges/render/#guarantees).
 
+## RenderBridgeContractSuite()
+
+Creates the suite, for a subclass.
+
 ## drawsVertexColors()
 
 Checks that a quad takes the colors of its vertices.

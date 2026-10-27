@@ -6,6 +6,10 @@ summary: The LWJGL 2 framebuffer binding that calls the core framebuffer functio
 
 Learn: [LWJGL 2 backend](/build/backends/lwjgl2/).
 
+## Lwjgl2CoreGlFrameBufferBinding()
+
+Creates the binding.
+
 ## genFramebuffer()
 
 Calls `glGenFramebuffers`.

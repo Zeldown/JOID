@@ -15,6 +15,10 @@ Create and use it on the render thread.
 
 Learn: [Shaders](/use/learn/going-further/shaders/).
 
+## ShaderProgram()
+
+Creates a program, for a subclass.
+
 ## delete()
 
 Frees the shader on the GPU; the next use creates it again.

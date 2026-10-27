@@ -6,6 +6,10 @@ Use the instance [[TweenPaths#CATMULL_ROM]].
 
 Learn: [Animation](/use/learn/style-and-motion/animation/).
 
+## CatmullRomTweenPath()
+
+Creates the path.
+
 ## compute(float,float[],int)
 
 Returns the value at `t` on the curve through the points, each segment between two points taking the same share of the progress.

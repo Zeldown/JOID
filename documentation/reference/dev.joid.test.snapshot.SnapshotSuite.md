@@ -6,6 +6,10 @@ Extend it in the tests of your backend and return your snapshot backend from `cr
 
 Learn: [The suites](/build/testing-a-backend/#the-suites), [References and the report](/build/testing-a-backend/#references-and-the-report).
 
+## SnapshotSuite()
+
+Creates the suite, for a subclass.
+
 ## stopRunner()
 
 Deletes the references that no scenario takes any more, writes the report and stops the runner, after the last test of the class.

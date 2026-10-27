@@ -6,6 +6,10 @@ A PNG with an animation control chunk plays as an animated image; any other PNG 
 
 Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
+## ApngResourceFormat()
+
+Creates the format.
+
 ## supports(byte[])
 
 If `true`, `header` starts with the PNG signature.

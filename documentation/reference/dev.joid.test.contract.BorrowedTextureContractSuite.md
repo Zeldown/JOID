@@ -4,6 +4,10 @@ summary: The contract tests of the textures that a backend borrows from its host
 
 Learn: [The suites](/build/testing-a-backend/#the-suites), [Lend a texture of the host](/build/resource-resolvers/#lend-a-texture-of-the-host).
 
+## BorrowedTextureContractSuite()
+
+Creates the suite, for a subclass.
+
 ## startBackend()
 
 Creates the snapshot backend at the first test of the class.

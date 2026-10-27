@@ -6,6 +6,10 @@ The root element must be `<svg>`; an XML declaration, comments and a doctype bef
 
 Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
+## SvgResourceFormat()
+
+Creates the format.
+
 ## supports(byte[])
 
 If `true`, the first element of `header` is `<svg`.

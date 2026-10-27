@@ -11,93 +11,53 @@ Learn: [UIs](/use/learn/describing-the-ui/uis/#configure-a-ui).
 
 Creates the options with the default values of [[UIData]].
 
-## isActive()
+## active
 
 If `false`, the UI is drawn but receives no input.
 
-## setActive(boolean)
-
-Lets the UI receive the input or not.
-
-## isVisible()
+## visible
 
 If `false`, the UI is neither drawn nor sent any input.
 
-## setVisible(boolean)
-
-Shows or hides the UI.
-
-## isCloseable()
+## closeable
 
 If `false`, Escape leaves the UI open.
 
-## setCloseable(boolean)
-
-Lets Escape close the UI or not.
-
-## isZoomable()
+## zoomable
 
 If `false`, the zoom keys leave the zoom of the UI unchanged.
 
-## setZoomable(boolean)
-
-Turns the zoom keys on or off for the UI.
-
-## isProjection()
+## projection
 
 If `true`, the UI sets its own projection over the window.
 
-## setProjection(boolean)
-
-Lets the UI set its own projection, or draw inside the projection of the host.
-
-## isBackground()
+## background
 
 If `true`, the UI draws the UI backdrop behind its nodes.
 
-## setBackground(boolean)
-
-Turns the UI backdrop on or off.
-
 ## backgroundColor
 
-Color of the UI backdrop: the getter returns it as a [[Color]], the setter takes a hexadecimal string.
+Color of the UI backdrop, as a hexadecimal string `#RRGGBB` or `#RRGGBBAA`.
 
-## setBackgroundColor(String)
+## getBackgroundColor()
 
-Sets the color of the UI backdrop from a hexadecimal string `#RRGGBB` or `#RRGGBBAA`.
+Returns the color of the UI backdrop as a [[Color]], decoded once when `backgroundColor` changes.
 
-## getZindex()
+## zindex
 
 Order of the UI among the open UIs of its bridge.
 
-## setZindex(int)
-
-Moves the UI among the open UIs of its bridge.
-
-## getZlevel()
+## zlevel
 
 Depth added along the Z axis before the UI is drawn.
 
-## setZlevel(double)
-
-Sets the depth added before the UI is drawn.
-
-## getAnchorX()
+## anchorX
 
 Side of the window that the canvas is pinned to horizontally.
 
-## setAnchorX(Align)
-
-Pins the canvas to another side horizontally, from the next frame.
-
-## getAnchorY()
+## anchorY
 
 Side of the window that the canvas is pinned to vertically.
-
-## setAnchorY(Align)
-
-Pins the canvas to another side vertically, from the next frame.
 
 ## getAnchorPositionX()
 
@@ -106,3 +66,7 @@ The horizontal anchor as a position on the canvas: `0`, `960` or `1920` design p
 ## getAnchorPositionY()
 
 The vertical anchor as a position on the canvas: `0`, `540` or `1080` design pixels.
+
+## toString()
+
+Returns the class and the value of every option, for logs.

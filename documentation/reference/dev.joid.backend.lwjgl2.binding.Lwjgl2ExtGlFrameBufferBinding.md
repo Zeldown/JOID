@@ -6,6 +6,10 @@ summary: The LWJGL 2 framebuffer binding that calls the functions of `GL_EXT_fra
 
 Learn: [LWJGL 2 backend](/build/backends/lwjgl2/).
 
+## Lwjgl2ExtGlFrameBufferBinding()
+
+Creates the binding.
+
 ## genFramebuffer()
 
 Calls `glGenFramebuffersEXT`.

@@ -7,6 +7,10 @@ A backend whose `createThreadBridge()` returns `null` keeps it.
 
 Learn: [Thread bridge](/build/bridges/thread/#the-default-fits-a-loop-on-the-thread-that-registers).
 
+## DirectThreadBridge()
+
+Creates the thread bridge.
+
 ## isRenderThread()
 
 Returns `true` on every thread.

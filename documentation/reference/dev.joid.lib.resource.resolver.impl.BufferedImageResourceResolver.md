@@ -4,6 +4,10 @@ summary: The resolver that turns a `BufferedImage` into a resource, one resource
 
 Learn: [How Resource.of picks a resolver](/build/resource-resolvers/#how-resourceof-picks-a-resolver).
 
+## BufferedImageResourceResolver()
+
+Creates the resolver.
+
 ## supports(Object)
 
 If `true`, the input is a `BufferedImage`.

@@ -10,18 +10,14 @@ Learn: [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/).
 
 Creates the options of a UI that is not a popup.
 
-## isActive()
+## active
 
 If `true`, the UI is a popup.
 
-## setActive(boolean)
-
-Makes the UI a popup or not.
-
-## getTransition()
+## transition
 
 Which steps of the pop transition the popup plays.
 
-## setTransition(PopupTransition)
+## toString()
 
-Changes which steps of the pop transition the popup plays.
+Returns the class and the value of every option, for logs.

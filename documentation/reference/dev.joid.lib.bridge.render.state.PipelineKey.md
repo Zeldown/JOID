@@ -47,3 +47,11 @@ Returns the topology of the draw: segments or triangles.
 ## isStencil()
 
 If `true`, the key belongs to the `WRITE` pass of the stencil emulation, built by `stencil(...)`.
+
+## equals(Object)
+
+If `true`, the other object is of the same class with the same shader, blending and switches.
+
+## hashCode()
+
+Returns a hash of the values that `equals` compares.

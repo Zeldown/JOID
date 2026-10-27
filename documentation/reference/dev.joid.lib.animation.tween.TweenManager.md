@@ -8,6 +8,10 @@ Its methods can be called from several threads.
 
 Learn: [Animation](/use/learn/style-and-motion/animation/).
 
+## TweenManager()
+
+Creates an empty manager that is not paused.
+
 ## add(BaseTween)
 
 Adds `object` once and starts it, then returns this manager; adding it again starts it again.

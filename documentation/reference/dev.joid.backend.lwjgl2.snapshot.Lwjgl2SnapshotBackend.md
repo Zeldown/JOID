@@ -6,6 +6,10 @@ It renders into a pixel buffer, or into a `Display` on Linux, and ships in the d
 
 Learn: [Give the testkit a surface](/build/testing-a-backend/#give-the-testkit-a-surface).
 
+## Lwjgl2SnapshotBackend()
+
+Creates the snapshot backend; the window and the surface are created when a run starts.
+
 ## create(int,int)
 
 Installs the natives, creates the OpenGL context of that size in pixels, with 24-bit depth and 8-bit stencil, and registers the backend without audio.

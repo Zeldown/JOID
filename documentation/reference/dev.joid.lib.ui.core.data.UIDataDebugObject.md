@@ -10,18 +10,14 @@ Learn: [UIs](/use/learn/describing-the-ui/uis/#configure-a-ui).
 
 Creates the options with the default values of [[UIDataDebug]].
 
-## isProfiler()
+## profiler
 
 If `true`, dev mode prints the load time of the UI and warns about slow frames.
 
-## setProfiler(boolean)
-
-Turns the profiler of the UI on or off.
-
-## isHotreload()
+## hotreload
 
 If `true`, dev mode reloads the UI when its classes change.
 
-## setHotreload(boolean)
+## toString()
 
-Turns hot reload on or off for the UI, from the next frame.
+Returns the class and the value of every option, for logs.

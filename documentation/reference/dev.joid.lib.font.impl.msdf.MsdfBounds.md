@@ -25,3 +25,7 @@ Returns the right edge.
 ## getTop()
 
 Returns the top edge.
+
+## toString()
+
+Returns the four edges, for logs.

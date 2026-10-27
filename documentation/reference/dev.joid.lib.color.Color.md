@@ -295,3 +295,11 @@ An animated color that cycles through the hues every 3 seconds, at 80 % saturati
 ## LOADING
 
 An animated color that pulses slightly around a dark gray every 2 seconds, the look of a loading placeholder; its alpha is kept.
+
+## equals(Object)
+
+If `true`, the other object is of the same class with the same channels, update and gradient; the name of a constant is ignored.
+
+## hashCode()
+
+Returns a hash of the values that `equals` compares.

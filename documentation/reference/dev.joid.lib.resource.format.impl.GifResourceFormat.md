@@ -6,6 +6,10 @@ A GIF of one frame plays as an animation of one frame.
 
 Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
+## GifResourceFormat()
+
+Creates the format.
+
 ## supports(byte[])
 
 If `true`, `header` starts with `GIF87a` or `GIF89a`.

@@ -7,6 +7,10 @@ A trap that the context lacks is skipped.
 
 Learn: [The suites](/build/testing-a-backend/#the-suites), [Check the guard](/build/embedding-in-a-host/#check-the-guard).
 
+## StateGuardContractSuite()
+
+Creates the suite, for a subclass.
+
 ## drawsThroughTheScissorSetBeforeJoid()
 
 Checks the frame with a scissor test left on by the host.

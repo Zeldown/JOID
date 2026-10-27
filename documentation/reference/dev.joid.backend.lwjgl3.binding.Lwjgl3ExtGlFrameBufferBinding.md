@@ -6,6 +6,10 @@ summary: The LWJGL 3 framebuffer binding that calls the functions of `GL_EXT_fra
 
 Learn: [LWJGL 3 backend](/build/backends/lwjgl3/#the-opengl-binding-is-replaceable).
 
+## Lwjgl3ExtGlFrameBufferBinding()
+
+Creates the binding.
+
 ## genFramebuffer()
 
 Calls `glGenFramebuffersEXT`.

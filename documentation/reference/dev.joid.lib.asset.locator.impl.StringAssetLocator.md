@@ -4,6 +4,10 @@ summary: The built-in locator that turns a String into a URL, classpath or file 
 
 Learn: [Custom formats](/use/learn/going-further/custom-formats/).
 
+## StringAssetLocator()
+
+Creates the locator.
+
 ## supports(Object)
 
 If `true`, `handle` is a `String`.

@@ -25,3 +25,15 @@ Returns the vertical coordinate.
 ## getZ()
 
 Returns the depth coordinate, `0D` for a point of the plane.
+
+## equals(Object)
+
+If `true`, the other object is of the same class with the same coordinates.
+
+## hashCode()
+
+Returns a hash of the values that `equals` compares.
+
+## toString()
+
+Returns the coordinates, for logs.

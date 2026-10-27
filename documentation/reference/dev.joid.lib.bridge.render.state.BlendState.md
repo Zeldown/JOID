@@ -52,3 +52,11 @@ Returns the factor applied to the alpha of the color being drawn.
 ## getDestinationAlpha()
 
 Returns the factor applied to the alpha already on the target.
+
+## equals(Object)
+
+If `true`, the other object is of the same class with the same switch, equation and factors.
+
+## hashCode()
+
+Returns a hash of the values that `equals` compares.

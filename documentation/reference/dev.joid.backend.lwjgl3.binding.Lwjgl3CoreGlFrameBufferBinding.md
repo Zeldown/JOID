@@ -6,6 +6,10 @@ summary: The LWJGL 3 framebuffer binding that calls the core framebuffer functio
 
 Learn: [LWJGL 3 backend](/build/backends/lwjgl3/#the-opengl-binding-is-replaceable).
 
+## Lwjgl3CoreGlFrameBufferBinding()
+
+Creates the binding.
+
 ## genFramebuffer()
 
 Calls `glGenFramebuffers`.

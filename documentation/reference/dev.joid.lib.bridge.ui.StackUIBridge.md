@@ -10,6 +10,10 @@ This bridge takes every overlay and draws it at a scale that the host sets:
 
 Learn: [Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own), [UI bridge](/build/bridges/ui/).
 
+## StackUIBridge()
+
+Creates a UI bridge with no open UI, for a subclass.
+
 ## open(UI)
 
 Opens the UI.

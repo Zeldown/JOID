@@ -4,6 +4,10 @@ summary: The resolver that turns a texture of the render bridge, owned or borrow
 
 Learn: [How Resource.of picks a resolver](/build/resource-resolvers/#how-resourceof-picks-a-resolver).
 
+## TextureResourceResolver()
+
+Creates the resolver.
+
 ## supports(Object)
 
 If `true`, the input is an [[ITexture]].

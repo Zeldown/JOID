@@ -4,6 +4,10 @@ summary: The window bridge of the `Display` of LWJGL 2, in screen pixels, with t
 
 Learn: [Window](/build/backends/lwjgl2/#window), [Cursors](/build/backends/lwjgl2/#cursors).
 
+## Lwjgl2WindowBridge()
+
+Creates the window bridge of the current LWJGL 2 display.
+
 ## getWidth()
 
 Returns the width of the `Display` times its pixel scale factor.

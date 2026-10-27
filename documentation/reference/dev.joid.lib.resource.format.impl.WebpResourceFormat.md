@@ -6,6 +6,10 @@ An animated WebP plays as an animated image; any other WebP is a still image.
 
 Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
+## WebpResourceFormat()
+
+Creates the format.
+
 ## supports(byte[])
 
 If `true`, `header` is a RIFF file of type `WEBP`.

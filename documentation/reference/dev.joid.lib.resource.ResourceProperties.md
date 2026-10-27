@@ -39,3 +39,11 @@ Returns a copy of these settings.
 ## set(ResourceProperties)
 
 Copies every setting of `properties` into these.
+
+## equals(Object)
+
+If `true`, the other object is of the same class with the same mipmap, texture coordinates and interpolation.
+
+## hashCode()
+
+Returns a hash of the values that `equals` compares.

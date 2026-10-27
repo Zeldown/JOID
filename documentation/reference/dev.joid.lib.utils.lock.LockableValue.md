@@ -6,6 +6,10 @@ summary: Mutable value that can be locked, after which its setters refuse to cha
 
 Learn: [Colors and styling](/use/learn/style-and-motion/styling/), [Text](/use/learn/describing-the-ui/text/).
 
+## LockableValue()
+
+Creates a value that is not locked, for a subclass.
+
 ## lock()
 
 Locks the value for good, then returns it.

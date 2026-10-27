@@ -6,6 +6,10 @@ A frame duration of 10 ms or less shows for 100 ms.
 
 Learn: [Custom formats](/use/learn/going-further/custom-formats/).
 
+## WebpResourceAnimationReader()
+
+Creates the reader.
+
 ## read(InputStream)
 
 Reads every frame of the WebP, composed with its blend and disposal, and its play count.

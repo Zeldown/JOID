@@ -6,6 +6,10 @@ A hidden GLFW window without client API gives the window and input bridges; it s
 
 Learn: [Give the testkit a surface](/build/testing-a-backend/#give-the-testkit-a-surface), [Tests](/build/backends/vulkan/#tests).
 
+## VulkanSnapshotBackend()
+
+Creates the snapshot backend; the window and the surface are created when a run starts.
+
 ## create(int,int)
 
 Opens the hidden window, creates the host and registers the backend without audio, then begins the first frame.

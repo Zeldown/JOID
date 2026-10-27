@@ -45,3 +45,11 @@ Returns the operation applied when the comparison and the depth test pass.
 ## DISABLED
 
 The state with the stencil off, the stencil of a fresh render state.
+
+## equals(Object)
+
+If `true`, the other object is of the same class with the same switch, function, reference, mask and operations.
+
+## hashCode()
+
+Returns a hash of the values that `equals` compares.

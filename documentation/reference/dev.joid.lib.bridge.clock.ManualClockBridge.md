@@ -28,6 +28,6 @@ Returns the time of the clock converted to nanoseconds.
 
 Returns the time of the clock, in milliseconds.
 
-## setTime(long)
+## time
 
-The setter `time(long)`: sets the clock to an absolute time, in milliseconds, and returns the clock.
+Sets the clock to an absolute time, in milliseconds, and returns the clock.

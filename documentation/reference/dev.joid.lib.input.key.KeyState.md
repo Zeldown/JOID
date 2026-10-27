@@ -7,6 +7,10 @@ The UI bridge registry keeps one `KeyState`: a press records its place and its k
 
 Learn: [Input forwarding](/build/input/#send-the-position-and-the-printed-key).
 
+## KeyState()
+
+Creates a state in which no key is held.
+
 ## press(Key,Key)
 
 Records that the place `physicalKey` went down and typed `key`.

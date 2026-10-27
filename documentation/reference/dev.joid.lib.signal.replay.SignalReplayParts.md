@@ -6,6 +6,10 @@ The replay deduces each hole from the text that the setter received.
 
 Learn: [How signals work](/use/in-depth/how-signals-work/).
 
+## SignalReplayParts()
+
+Creates an empty text with no part.
+
 ## add(Object)
 
 Adds a known part at the end.

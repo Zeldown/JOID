@@ -6,6 +6,10 @@ JOID registers it in `BridgeHandler.CLOCK` before any backend.
 
 Learn: [Clock bridge](/build/bridges/clock/).
 
+## SystemClockBridge()
+
+Creates the clock bridge.
+
 ## nanoTime()
 
 Returns `System.nanoTime()`.

@@ -4,6 +4,10 @@ summary: Reads the frames of an animated PNG (APNG).
 
 Learn: [Custom formats](/use/learn/going-further/custom-formats/).
 
+## ApngResourceAnimationReader()
+
+Creates the reader.
+
 ## read(InputStream)
 
 Reads every frame of the APNG, composed with its blend and disposal, and the play count of the file.

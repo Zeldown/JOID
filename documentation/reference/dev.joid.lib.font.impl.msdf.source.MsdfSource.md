@@ -8,6 +8,10 @@ MsdfFontLoader.load(OpenTypeMsdfSource.of("fonts/Logo.ttf").weight(FontWeight.BO
 
 Learn: [Fonts](/use/learn/going-further/fonts/).
 
+## MsdfSource()
+
+Creates a source, for a subclass.
+
 ## italic
 
 If set, the face read by this source declares this style instead of the one of its file.

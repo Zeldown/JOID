@@ -6,6 +6,10 @@ The system property `joid.snapshot.profile` picks a [[SnapshotProfile]]; it ship
 
 Learn: [Give the testkit a surface](/build/testing-a-backend/#give-the-testkit-a-surface), [OpenGL profiles](/build/backends/lwjgl3/#opengl-profiles).
 
+## Lwjgl3SnapshotBackend()
+
+Creates the snapshot backend; the window and the surface are created when a run starts.
+
 ## create(int,int)
 
 Opens a hidden window of that size in pixels with the context of the profile, registers the backend without audio and without vsync, and checks that the context matches the profile.

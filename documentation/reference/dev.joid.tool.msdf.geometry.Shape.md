@@ -4,6 +4,10 @@ summary: The outline of a glyph, as closed contours of edges.
 
 Learn: [MSDF text](/use/in-depth/msdf-text/).
 
+## Shape()
+
+Creates a shape with no contour.
+
 ## add(List)
 
 Adds a contour.

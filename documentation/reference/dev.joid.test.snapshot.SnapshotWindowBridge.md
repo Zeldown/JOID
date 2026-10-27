@@ -4,6 +4,10 @@ summary: The window bridge of the snapshot runner, whose size, mouse, held keys,
 
 Learn: [Testing your UIs](/use/learn/running/testing/).
 
+## SnapshotWindowBridge()
+
+Creates a simulated window of size 0 × 0, with the default cursor and an empty clipboard.
+
 ## getWidth()
 
 Returns the width of the window, in screen pixels.

@@ -6,6 +6,10 @@ A video needs the FFmpeg natives, which JOID downloads on the first use ([[Video
 
 Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
+## VideoResourceFormat()
+
+Creates the format.
+
 ## supports(byte[])
 
 If `true`, `header` is an MP4, Matroska or AVI file.

@@ -7,6 +7,10 @@ A listener of the priority [[EventPriority#MONITOR]] receives it read-only: a su
 
 Learn: [Events](/use/learn/interactivity/events/), [Custom nodes](/use/learn/going-further/custom-nodes/#fire-an-event-of-your-own).
 
+## Event()
+
+Creates an event, for a subclass.
+
 ## monitor(boolean)
 
 Marks the event read-only while the `MONITOR` listeners of an [[EventBus]] run, and writable again after them.

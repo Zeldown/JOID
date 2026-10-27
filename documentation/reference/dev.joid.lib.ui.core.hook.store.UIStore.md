@@ -6,6 +6,10 @@ A `PERMANENT` store is read from the data folder when it is created and written 
 
 Learn: [Stores and properties](/use/learn/state/stores-and-properties/).
 
+## UIStore()
+
+Creates a store, for a subclass.
+
 ## init()
 
 Fills the store with its starting values.

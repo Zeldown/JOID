@@ -4,6 +4,10 @@ summary: Downloads an `http` or `https` resource once into the `snapshot` area o
 
 Learn: [Keep every run identical](/use/learn/running/testing/#keep-every-run-identical).
 
+## SnapshotUrlAssetLocator()
+
+Creates the locator.
+
 ## supports(Object)
 
 If `true`, the handle is a string that starts with `http://` or `https://`.

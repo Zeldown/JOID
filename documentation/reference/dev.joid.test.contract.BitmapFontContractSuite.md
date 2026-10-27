@@ -4,6 +4,10 @@ summary: The contract tests of the drawing of bitmap fonts by a render bridge: w
 
 Learn: [The suites](/build/testing-a-backend/#the-suites).
 
+## BitmapFontContractSuite()
+
+Creates the suite, for a subclass.
+
 ## startBackend()
 
 Creates the snapshot backend at the first test of the class, at 128×64 pixels, and resets the matrices and the state before each test.

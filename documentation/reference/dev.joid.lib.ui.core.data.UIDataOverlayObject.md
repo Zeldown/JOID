@@ -9,18 +9,18 @@ Learn: [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/).
 
 Creates the options of a UI that is not an overlay.
 
-## isActive()
+## active
 
 If `true`, the UI is an overlay.
 
-## setActive(boolean)
-
-Makes the UI an overlay or a screen.
-
-## getRender()
+## render()
 
 The drawing options of the overlay.
 
-## getInteraction()
+## interaction()
 
 The input options of the overlay.
+
+## toString()
+
+Returns the class and the value of every option, for logs.

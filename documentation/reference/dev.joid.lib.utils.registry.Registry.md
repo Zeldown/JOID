@@ -6,6 +6,10 @@ The registries of formats, resolvers, asset locators, markups, converters and ke
 
 Learn: [Custom formats](/use/learn/going-further/custom-formats/).
 
+## Registry()
+
+Creates an empty registry.
+
 ## register(T)
 
 Puts `value` first; a value already registered moves to the front.
