@@ -1,0 +1,481 @@
+{
+	"roots": [
+		"dev.joid.lib.ui.node.Node",
+		"dev.joid.lib.ui.node.effect.NodeEffect",
+		"dev.joid.lib.ui.core.transition.Transition",
+		"dev.joid.lib.animation.tween.TweenEquation"
+	],
+	"excluded": {
+		"dev.joid.lib.ui.node.Node": "base class of every node, see Nodes and the tree",
+		"dev.joid.lib.ui.node.effect.NodeEffect": "base class of every effect, see Custom effects",
+		"dev.joid.lib.ui.core.transition.Transition": "base class of every transition, see Transitions",
+		"dev.joid.lib.ui.core.transition.Transition.In": "base class of opening transitions",
+		"dev.joid.lib.ui.core.transition.Transition.Out": "base class of closing transitions",
+		"dev.joid.lib.ui.core.transition.Transition.TransitionState": "state of a running transition",
+		"dev.joid.lib.ui.core.transition.impl.PopTransition.PopInTransition": "opening half of PopTransition, shown on its card",
+		"dev.joid.lib.ui.core.transition.impl.PopTransition.PopOutTransition": "closing half of PopTransition, shown on its card",
+		"dev.joid.lib.animation.tween.TweenEquation": "base class of every easing curve",
+		"dev.joid.lib.ui.node.impl.design.textfield.FieldNode": "base class of the text fields, see Text fields",
+		"dev.joid.lib.ui.node.impl.design.textfield.LineFieldNode": "base class of the one-line text fields",
+		"dev.joid.lib.ui.node.impl.structure.slider.SliderNode": "base class of the sliders, shown by its three subclasses",
+		"dev.joid.lib.ui.node.impl.structure.slider.SliderThumbNode": "thumb drawn by a slider skin, shown on the slider cards"
+	},
+	"sections": [
+		{
+			"id": "nodes",
+			"title": "Nodes",
+			"scene": "com.example.catalog.NodesCatalogUI",
+			"intro": "The nodes that draw shapes, text, images, media, charts and 3D models, and the nodes that arrange other nodes.",
+			"cards": [
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.shape.RectNode",
+					"learn": "use/learn/describing-the-ui/nodes",
+					"alt": "A grey square on a light card"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.shape.CircleNode",
+					"learn": "use/learn/describing-the-ui/nodes",
+					"alt": "A grey disc on a light card"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.text.TextNode",
+					"learn": "use/learn/describing-the-ui/text",
+					"alt": "The word Text in grey, centered on a light card"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.resource.ResourceNode",
+					"learn": "use/learn/describing-the-ui/media",
+					"alt": "A placeholder image crossed by two diagonals"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.resource.ResourcePlayerNode",
+					"learn": "use/learn/describing-the-ui/media",
+					"alt": "An animated image: a grey square slides from left to right",
+					"film": 767,
+					"still": 12
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.progress.ProgressNode",
+					"learn": "use/learn/interactivity/controls",
+					"alt": "A progress bar filled at 60 %"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.model.ModelNode",
+					"learn": "use/learn/going-further/3d-models",
+					"alt": "A textured cube turned to show its front, side and top faces"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.model.ModelViewerNode",
+					"learn": "use/learn/going-further/3d-models",
+					"alt": "A textured cube turned the other way, which the mouse can turn and zoom"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.container.ContainerNode",
+					"learn": "use/learn/describing-the-ui/layout",
+					"alt": "A white container holding two grey squares at fixed positions"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.flex.FlexNode",
+					"learn": "use/learn/describing-the-ui/flex-layout",
+					"alt": "Four grey rectangles in a row, evenly spaced"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.grid.GridNode",
+					"learn": "use/learn/describing-the-ui/grid-layout",
+					"alt": "Twelve squares in rows and columns, alternating grey and white"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.reorderable.ReorderableFlexNode",
+					"learn": "use/learn/interactivity/reorderable-lists",
+					"alt": "A vertical list of four rows, the second one grey"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.chart.ChartNode",
+					"learn": "use/learn/going-further/charts",
+					"alt": "A line chart of visits from Monday to Friday"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.chart.RadarChartNode",
+					"learn": "use/learn/going-further/charts",
+					"alt": "A radar chart over four axes A, B, C and D"
+				}
+			]
+		},
+		{
+			"id": "controls",
+			"title": "Controls",
+			"scene": "com.example.catalog.ControlsCatalogUI",
+			"intro": "Text fields draw themselves; the other controls are abstract and need a skin.\nThese cards use plain skins like the ones that [Give your controls a look](/use/learn/going-further/ui-kit/) writes.",
+			"cards": [
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.textfield.TextFieldNode",
+					"learn": "use/learn/interactivity/text-fields",
+					"alt": "A one-line text field holding the words Text field"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.textfield.MultilineTextFieldNode",
+					"learn": "use/learn/interactivity/text-fields",
+					"alt": "A multiline text field whose sentence wraps on two lines"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.design.textfield.impl.IntegerFieldNode",
+					"learn": "use/learn/interactivity/text-fields",
+					"alt": "A number field holding 42"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.checkbox.CheckboxNode",
+					"learn": "use/learn/interactivity/controls",
+					"alt": "Two checkboxes, the second one checked"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.toggle.ToggleNode",
+					"learn": "use/learn/interactivity/controls",
+					"alt": "Two toggles, off and on"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.sw.SwitchNode",
+					"learn": "use/learn/interactivity/controls",
+					"alt": "A switch with three states, Two selected"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.selector.SelectorNode",
+					"learn": "use/learn/interactivity/controls",
+					"alt": "A closed selector showing its first option"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.slider.impl.IntegerSliderNode",
+					"learn": "use/learn/interactivity/controls",
+					"alt": "A slider whose thumb sits at 4 of 10"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.slider.impl.DoubleSliderNode",
+					"learn": "use/learn/interactivity/controls",
+					"alt": "A slider whose thumb sits at three quarters"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.slider.impl.StringSliderNode",
+					"learn": "use/learn/interactivity/controls",
+					"alt": "A slider above the labels Low, Medium and High, its thumb on Medium"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.impl.structure.scrollbar.ScrollbarNode",
+					"learn": "use/learn/describing-the-ui/layout#scroll-a-long-content",
+					"alt": "A scrollable list of white rows, cut at the bottom, with a grey scrollbar thumb at the top of its right edge"
+				}
+			]
+		},
+		{
+			"id": "effects",
+			"title": "Effects",
+			"scene": "com.example.catalog.EffectsCatalogUI",
+			"intro": "Effects change how a node is drawn, never its layout.",
+			"cards": [
+				{
+					"type": "dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect",
+					"learn": "use/learn/style-and-motion/effects",
+					"alt": "A grey rectangle with rounded corners"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.effect.impl.CircleNodeEffect",
+					"learn": "use/learn/style-and-motion/effects",
+					"alt": "A grey square cut into a disc"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.effect.impl.BorderNodeEffect",
+					"learn": "use/learn/style-and-motion/effects",
+					"alt": "A white rectangle with a thick grey border"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.effect.impl.ShadowNodeEffect",
+					"learn": "use/learn/style-and-motion/effects",
+					"alt": "A white rectangle casting a soft grey shadow below it"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.effect.impl.BlurNodeEffect",
+					"learn": "use/learn/style-and-motion/effects",
+					"alt": "The placeholder image, blurred"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.effect.impl.MaskNodeEffect",
+					"learn": "use/learn/style-and-motion/effects",
+					"alt": "A gradient window inside a white rectangle with a grey outline: the white part is the rest of the node, which the mask hides"
+				},
+				{
+					"type": "dev.joid.lib.ui.node.effect.impl.TransformNodeEffect",
+					"learn": "use/learn/style-and-motion/effects",
+					"alt": "A grey rectangle rotated by 20 degrees"
+				}
+			]
+		},
+		{
+			"id": "transitions",
+			"title": "Transitions",
+			"scene": null,
+			"intro": "A transition animates a UI when it opens and when it closes.",
+			"commands": [
+				"ui com.example.catalog.TransitionsCatalogUI",
+				"open com.example.catalog.PopupCatalogUI",
+				"# film {shot}",
+				"wait 480"
+			],
+			"crop": [
+				790,
+				390,
+				340,
+				300
+			],
+			"cards": [
+				{
+					"type": "dev.joid.lib.ui.core.transition.impl.PopTransition",
+					"learn": "use/learn/style-and-motion/transitions",
+					"alt": "A white popup grows into view on a light card, then stays open",
+					"hold": 1000
+				}
+			]
+		},
+		{
+			"id": "easing",
+			"title": "Easing curves",
+			"scene": "com.example.catalog.EasingCatalogUI",
+			"intro": "Each card plots the IN (grey), OUT (dark grey) and INOUT (white) curves of a family, from the start of an animation (left) to its end (right).",
+			"cards": [
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Linear",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Linear easing curve, a straight grey line across a white frame that marks 0 and 1"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Quad",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Quad easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Cubic",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Cubic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Quart",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Quart easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Quint",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Quint easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Sine",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Sine easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Expo",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Expo easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Circ",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Circ easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Back",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Back easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Bounce",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Bounce easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				},
+				{
+					"type": "dev.joid.lib.animation.tween.equation.Elastic",
+					"learn": "use/learn/style-and-motion/animation",
+					"alt": "The Elastic easing curves in a white frame that marks 0 and 1: IN in grey, OUT in dark grey, INOUT in white"
+				}
+			]
+		},
+		{
+			"id": "text",
+			"title": "Text effects, markup and modifiers",
+			"scene": "com.example.catalog.TextCatalogUI",
+			"intro": "Text effects move or color each glyph: JOID ships the `ITextEffect` interface, and the effects and the markup of these cards are written like the ones in [Text markup and effects](/use/learn/describing-the-ui/text-markup-and-effects/).\nText modifiers change the characters before layout.",
+			"complete": "dev.joid.lib.draw.text.builder.modifier.TextModifier",
+			"cards": [
+				{
+					"name": "Wave effect",
+					"example": "com/example/text/WaveTextEffect.java",
+					"reference": "ITextEffect",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "A sentence whose glyphs move up and down in a wave",
+					"film": 933
+				},
+				{
+					"name": "Rainbow effect",
+					"example": "com/example/text/RainbowTextEffect.java",
+					"reference": "ITextEffect",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "A sentence whose glyphs cycle through colors",
+					"film": 2967
+				},
+				{
+					"name": "Underline effect",
+					"example": "com/example/text/UnderlineTextEffect.java",
+					"reference": "ITextEffect",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "An underlined sentence"
+				},
+				{
+					"name": "Highlight effect",
+					"example": "com/example/text/HighlightTextEffect.java",
+					"reference": "ITextEffect",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "A sentence on a highlight band"
+				},
+				{
+					"name": "Scramble effect",
+					"example": "com/example/text/ScrambleTextEffect.java",
+					"reference": "ITextEffect",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "A sentence whose characters are scrambled while keeping their width",
+					"film": 600,
+					"fps": 25,
+					"hold": 40
+				},
+				{
+					"name": "Markup",
+					"example": "com/example/text/ExampleTextMarkup.java",
+					"reference": "ITextMarkup",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "A sentence with a bold word, a tinted word and an underlined word"
+				},
+				{
+					"name": "UPPER_CASE",
+					"reference": "TextModifier#UPPER_CASE",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "HELLO JOID WORLD, all in capitals"
+				},
+				{
+					"name": "LOWER_CASE",
+					"reference": "TextModifier#LOWER_CASE",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "hello joid world, all in lower case"
+				},
+				{
+					"name": "CAPITALIZE",
+					"reference": "TextModifier#CAPITALIZE",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "Hello joid world, with a capital on the first word only"
+				},
+				{
+					"name": "WORD_CAPITALIZE",
+					"reference": "TextModifier#WORD_CAPITALIZE",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "Hello Joid World, with a capital on every word"
+				},
+				{
+					"name": "CAMEL_CASE",
+					"reference": "TextModifier#CAMEL_CASE",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "helloJoidWorld, the words joined and each one after the first capitalized"
+				},
+				{
+					"name": "UPPER_CAMEL_CASE",
+					"reference": "TextModifier#UPPER_CAMEL_CASE",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "HelloJoidWorld, the words joined and each one capitalized"
+				},
+				{
+					"name": "SNAKE_CASE",
+					"reference": "TextModifier#SNAKE_CASE",
+					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
+					"alt": "hello_joid_world, the words joined by underscores"
+				}
+			]
+		},
+		{
+			"id": "cursors",
+			"title": "Cursors",
+			"scene": null,
+			"intro": "The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system.\n[Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/) shows how a node asks for one.",
+			"complete": "dev.joid.lib.input.cursor.Cursor",
+			"cards": [
+				{
+					"name": "DEFAULT",
+					"reference": "Cursor#DEFAULT",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "The usual arrow."
+				},
+				{
+					"name": "POINTER",
+					"reference": "Cursor#POINTER",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "A hand: something that reacts to a click."
+				},
+				{
+					"name": "TEXT",
+					"reference": "Cursor#TEXT",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "An I-beam: text that you select or type."
+				},
+				{
+					"name": "CROSSHAIR",
+					"reference": "Cursor#CROSSHAIR",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "A cross: a precise point to pick."
+				},
+				{
+					"name": "MOVE",
+					"reference": "Cursor#MOVE",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "Four arrows: something that you move."
+				},
+				{
+					"name": "NOT_ALLOWED",
+					"reference": "Cursor#NOT_ALLOWED",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "A crossed circle: an action that is refused here."
+				},
+				{
+					"name": "RESIZE_EW",
+					"reference": "Cursor#RESIZE_EW",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "A left-right arrow: a horizontal resize."
+				},
+				{
+					"name": "RESIZE_NS",
+					"reference": "Cursor#RESIZE_NS",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "An up-down arrow: a vertical resize."
+				},
+				{
+					"name": "RESIZE_NWSE",
+					"reference": "Cursor#RESIZE_NWSE",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "A diagonal arrow from the top left to the bottom right: a corner resize."
+				},
+				{
+					"name": "RESIZE_NESW",
+					"reference": "Cursor#RESIZE_NESW",
+					"learn": "use/learn/interactivity/hover-and-tooltips",
+					"capture": false,
+					"text": "A diagonal arrow from the top right to the bottom left: a corner resize."
+				}
+			],
+			"columns": [
+				"Cursor",
+				"What the system shows, and when to use it"
+			]
+		}
+	]
+}

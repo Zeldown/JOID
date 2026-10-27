@@ -1,0 +1,17 @@
+---
+import Default from '@astrojs/starlight/components/Footer.astro';
+
+const { entry } = Astro.locals.starlightRoute;
+const page = new URL(Astro.url.pathname, 'https://documentation.joid.dev').href;
+const issue = `https://github.com/Zeldown/JOID/issues/new?title=${encodeURIComponent(`Documentation: ${entry.data.title}`)}&body=${encodeURIComponent(`Page: ${page}\n\nWhat is wrong or missing:\n`)}&labels=documentation`;
+---
+
+<p class="joid-report"><a href={issue}>Report a problem with this page</a></p>
+<Default><slot /></Default>
+
+<style>
+	.joid-report {
+		font-size: var(--sl-text-sm);
+		margin-block: 1.5rem 0;
+	}
+</style>

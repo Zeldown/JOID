@@ -1,0 +1,130 @@
+:root {
+	--sl-color-accent-low: #26205a;
+	--sl-color-accent: #7c5cff;
+	--sl-color-accent-high: #d4caff;
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: #e3ddff;
+	--sl-color-accent: #5b3df5;
+	--sl-color-accent-high: #2a1a8a;
+}
+
+.sl-markdown-content pre,
+.sl-markdown-content code {
+	tab-size: 4;
+}
+
+.sl-markdown-content figure {
+	margin-inline: 0;
+}
+
+.sl-markdown-content figcaption {
+	color: var(--sl-color-gray-3);
+	font-size: var(--sl-text-sm);
+	margin-top: 0.5rem;
+}
+
+.sl-markdown-content video,
+.sl-markdown-content img {
+	border-radius: 0.5rem;
+	max-width: 100%;
+}
+
+.joid-qualifier {
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.25rem;
+	color: var(--sl-color-gray-2);
+	font-family: var(--sl-font-mono);
+	font-size: 0.75em;
+	padding: 0 0.3em;
+	white-space: nowrap;
+}
+
+.joid-signature {
+	font-family: var(--sl-font-mono);
+	font-size: var(--sl-text-sm);
+	list-style: none;
+	padding-inline-start: 0;
+}
+
+.joid-missing {
+	border-inline-start: 4px solid var(--sl-color-orange);
+	background: var(--sl-color-orange-low);
+	padding: 0.5rem 1rem;
+	font-size: var(--sl-text-sm);
+}
+
+.joid-badge {
+	background: var(--sl-color-accent-low);
+	border-radius: 0.25rem;
+	color: var(--sl-color-accent-high);
+	font-size: 0.75em;
+	padding: 0.1em 0.45em;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.joid-catalog {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+}
+
+.sl-markdown-content .joid-card {
+	border: 1px solid var(--sl-color-gray-5);
+	border-radius: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	margin: 0;
+	overflow: hidden;
+}
+
+.sl-markdown-content .joid-card img,
+.joid-card-empty {
+	aspect-ratio: 34 / 30;
+	border-radius: 0;
+	height: auto;
+	object-fit: cover;
+	width: 100%;
+}
+
+.joid-card-empty {
+	align-items: center;
+	background: #dddddd;
+	color: #999999;
+	display: flex;
+	justify-content: center;
+}
+
+.joid-card figcaption {
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+	margin: 0;
+	padding: 0.6rem 0.75rem 0.75rem;
+}
+
+.joid-card figcaption span {
+	color: var(--sl-color-gray-2);
+	font-size: var(--sl-text-sm);
+}
+
+.sl-markdown-content img[src^='/captures/'] {
+	border: 1px solid var(--sl-color-gray-5);
+}
+
+:root[data-theme='dark'] .sl-markdown-content img[src^='/captures/'],
+:root[data-theme='dark'] .joid-card-empty {
+	filter: brightness(0.82);
+}
+
+.sl-markdown-content .joid-source {
+	font-size: var(--sl-text-sm);
+	margin-top: 0.25rem;
+	text-align: end;
+}
+
+.joid-sidebar-section {
+	font-weight: 600;
+}

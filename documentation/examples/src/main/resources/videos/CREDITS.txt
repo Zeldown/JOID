@@ -1,0 +1,3 @@
+intro.mp4: 10 s excerpt (1:15 to 1:25) of Charge, (c) Blender Foundation, https://studio.blender.org/films/charge/
+License: Creative Commons Attribution 4.0, https://creativecommons.org/licenses/by/4.0/
+Cropped to 16:9 and re-encoded to 1920x1080 24 fps VP9 and Opus in MP4.

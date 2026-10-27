@@ -1,0 +1,35 @@
+name: Documentation checks
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'documentation/**'
+      - '.github/workflows/documentation.yml'
+  pull_request:
+    paths:
+      - 'documentation/**'
+  workflow_dispatch:
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK 8
+        uses: actions/setup-java@v4
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: documentation/package-lock.json
+      - name: Run the checks
+        working-directory: documentation
+        run: chmod +x ../gradlew && npm ci && npm run check -- --fresh

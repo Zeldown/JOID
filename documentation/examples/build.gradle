@@ -1,0 +1,83 @@
+archivesBaseName = "joid-documentation-examples"
+
+dependencies {
+    compile project(':backend-lwjgl3')
+    compile project(':tool-testkit')
+}
+
+jar.enabled = false
+
+task captures(type: JavaExec) {
+    group = 'JOID'
+    description = 'Renders the scenarios expanded by npm run captures into build/captures/scenarios as PNG shots, then converted to WebP.'
+    main = 'com.example.capture.DocCapture'
+    classpath = sourceSets.main.runtimeClasspath
+    workingDir = file("$buildDir/captures")
+    systemProperty 'joid.data', file("$buildDir/data").absolutePath
+    systemProperty 'joid.snapshot.cache', rootProject.file('.snapshots/cache').absolutePath
+    args file("$buildDir/captures/scenarios").absolutePath, file("$buildDir/captures/raw").absolutePath
+    if (project.hasProperty('capture')) {
+        args project.property('capture')
+    }
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+    doFirst {
+        project.delete("$buildDir/data")
+        workingDir.mkdirs()
+    }
+}
+
+task runExamples(type: JavaExec) {
+    group = 'JOID'
+    description = 'Opens every UI of the examples in the capture runner, hovers and clicks its interactive nodes, and writes the failures to build/run-examples/report.txt.'
+    main = 'com.example.capture.RunExamples'
+    classpath = sourceSets.main.runtimeClasspath
+    workingDir = file("$buildDir/run-examples")
+    systemProperty 'joid.data', file("$buildDir/run-examples/data").absolutePath
+    systemProperty 'joid.snapshot.cache', rootProject.file('.snapshots/cache').absolutePath
+    args sourceSets.main.output.classesDir.absolutePath, file('run-examples.txt').absolutePath, file("$buildDir/run-examples/report.txt").absolutePath
+    if (project.hasProperty('example')) {
+        args project.property('example')
+    }
+    if (JavaVersion.current().isJava9Compatible()) {
+        jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+    }
+    if (org.gradle.internal.os.OperatingSystem.current().isMacOsX()) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+    doFirst {
+        project.delete("$buildDir/run-examples/data")
+        workingDir.mkdirs()
+    }
+}
+
+configurations {
+    ecj
+}
+
+dependencies {
+    ecj 'org.eclipse.jdt.core.compiler:ecj:4.6.1'
+}
+
+task ecj(type: JavaExec) {
+    group = 'JOID'
+    description = 'Compiles the examples with the Eclipse compiler and the settings of the repository, and fails on any warning.'
+    def output = new ByteArrayOutputStream()
+    main = 'org.eclipse.jdt.internal.compiler.batch.Main'
+    classpath = configurations.ecj
+    standardOutput = output
+    errorOutput = output
+    ignoreExitValue = true
+    doFirst {
+        def lombok = configurations.compile.find { jar -> jar.name.startsWith('lombok-') }
+        jvmArgs "-javaagent:${lombok.absolutePath}=ECJ"
+        args '-1.8', '-encoding', 'UTF-8', '-proceedOnError', '-properties', file('ecj.prefs').absolutePath, '-d', 'none', '-cp', sourceSets.main.compileClasspath.asPath, file('src/main/java').absolutePath
+    }
+    doLast {
+        def text = output.toString('UTF-8')
+        if (text.contains('WARNING in') || text.contains('ERROR in')) {
+            throw new GradleException("The examples do not compile cleanly with ecj:\n" + text)
+        }
+    }
+}

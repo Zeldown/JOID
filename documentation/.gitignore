@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.astro/
+captures/raw/
+!/src/content/docs/build/
+public/legacy-redirects.js

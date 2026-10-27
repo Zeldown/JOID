@@ -3,8 +3,9 @@ rootProject.name = 'JOID'
 include 'core'
 include 'base-glfw', 'base-openal', 'base-opengl'
 include 'backend-lwjgl2', 'backend-lwjgl3', 'backend-vulkan'
-include 'tool-msdf', 'tool-testkit'
+include 'tool-msdf', 'tool-testkit', 'tool-docgen'
 include 'sample-showcase'
+include 'documentation-examples'
 
 rootProject.children.each { module ->
     module.projectDir = file(module.name.replaceFirst('-', '/'))
