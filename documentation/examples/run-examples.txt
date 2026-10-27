@@ -1,0 +1,5 @@
+# How run-examples treats the example classes that are not UIs (every UI runs on its own).
+# skip <class> <reason>: the class cannot run in the capture runner, and the reason says why.
+# call <class> <static method or field>: the runner calls the method (or reads the field) with no argument, then draws 10 frames.
+# expect <class> <message>: the class prints this message on purpose, for example on a line marked with a cross.
+# A class that no UI and no call loads, and that has no skip line, fails the check.

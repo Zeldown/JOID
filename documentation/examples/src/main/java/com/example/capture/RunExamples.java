@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -27,6 +28,7 @@ import java.util.concurrent.CompletableFuture;
 import dev.joid.backend.lwjgl3.snapshot.Lwjgl3SnapshotBackend;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.event.EventType;
 import dev.joid.lib.ui.node.Node;
 import dev.joid.test.snapshot.SnapshotRunner;
 import dev.joid.test.snapshot.SnapshotUIBridge;
@@ -173,16 +175,34 @@ public final class RunExamples {
 	}
 
 	private static void collectTargets(final UI ui, final Node node, final List<double[]> targets, final Set<String> seen) {
-		if (!node.getCallbackMap().isEmpty() && node.isVisible() && node.isInteractive() && node.getWidth() > 0D && node.getHeight() > 0D) {
+		if (RunExamples.hasListener(node) && node.isVisible() && node.isInteractive() && node.getWidth() > 0D && node.getHeight() > 0D) {
 			final double x = Math.round(ui.getView().toScreenX(node.getAbsoluteX() + node.getWidth() / 2D));
 			final double y = Math.round(ui.getView().toScreenY(node.getAbsoluteY() + node.getHeight() / 2D));
-			if (x >= 0D && y >= 0D && x < ui.getWidth() && y < ui.getHeight() && seen.add(x + " " + y)) {
+			if (x >= 0D && y >= 0D && x < ui.getWindowWidth() && y < ui.getWindowHeight() && seen.add(x + " " + y)) {
 				targets.add(new double[] {x, y});
 			}
 		}
 		for (final Node child : node.getChildren(Node.class)) {
 			RunExamples.collectTargets(ui, child, targets, seen);
 		}
+	}
+
+	private static boolean hasListener(final Node node) {
+		for (Class<?> type = node.getClass(); type != null; type = type.getSuperclass()) {
+			for (final Field field : type.getDeclaredFields()) {
+				if (Modifier.isStatic(field.getModifiers()) && field.getType() == EventType.class) {
+					try {
+						field.setAccessible(true);
+						if (node.hasListener((EventType<?>) field.get(null))) {
+							return true;
+						}
+					} catch (final IllegalAccessException exception) {
+						throw new IllegalStateException(exception);
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	private static String[] interactions(final String ui, final List<double[]> targets) {
@@ -263,10 +283,9 @@ public final class RunExamples {
 	}
 
 	private static void settle() {
-		final SnapshotUIBridge bridge = BridgeHandler.UI.getBridge(SnapshotUIBridge.class);
 		final long deadline = System.currentTimeMillis() + 15000L;
 		do {
-			bridge.frame();
+			BridgeHandler.UI.frame();
 			RunExamples.sleep();
 		} while (RunExamples.isLoading() && System.currentTimeMillis() < deadline);
 
@@ -274,7 +293,7 @@ public final class RunExamples {
 			System.err.println("[run-examples] A resource or a font still loads 15 s after the example ran");
 		}
 		for (int frame = 0; frame < 10; frame++) {
-			bridge.frame();
+			BridgeHandler.UI.frame();
 		}
 	}
 
