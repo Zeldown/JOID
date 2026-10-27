@@ -24,7 +24,6 @@ import com.google.common.hash.Hashing;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.JOIDEnv;
-import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.utils.thread.ThreadUtils;
 import lombok.AccessLevel;
@@ -37,7 +36,7 @@ public final class VideoNatives {
 
 	private static final String VERSION = "6.0-1.5.9";
 
-	private static final FileCacheArea AREA = FileCache.area("ffmpeg").retention(Duration.ofDays(30L));
+	private static final FileCacheArea AREA = FileCacheArea.of("ffmpeg").retention(Duration.ofDays(30L));
 
 	private static final boolean             CLASSPATH = VideoNatives.class.getResource("/org/bytedeco/ffmpeg/" + Loader.getPlatform() + "/" + System.mapLibraryName("jniavutil")) != null;
 	private static final Map<String, String> CHECKSUMS = new HashMap<>();

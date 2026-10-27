@@ -131,6 +131,7 @@ public abstract class UI implements IIndexedElement {
 	private int              maskDepth;
 	private boolean          loaded;
 	private boolean          watched;
+	private boolean          reloading;
 	private boolean          customTransition;
 	private volatile boolean reloadPending;
 
@@ -251,7 +252,7 @@ public abstract class UI implements IIndexedElement {
 				this.devNode = DevNode.create(1900, 1060).visible(this::isOnTop).enabled(this::isOnTop).draggable(DraggableProperty.screen()).zindex(Integer.MAX_VALUE).zlevel(999);
 			}
 
-			if (JOIDEnv.isDevMode() && this.debug.profiler()) {
+			if (JOIDEnv.isDevMode() && this.debug.profiler() && !this.reloading) {
 				final long end = System.nanoTime();
 				JOIDLog.info(JOIDLog.nameOf(this.getClass()) + " loaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
 			}
@@ -572,13 +573,7 @@ public abstract class UI implements IIndexedElement {
 	public final void draw(final double mouseX, final double mouseY) {
 		if (this.reloadPending) {
 			this.reloadPending = false;
-			this.reloadInDev(() -> {
-				final long start = System.nanoTime();
-				this.reload();
-				final long end = System.nanoTime();
-
-				JOIDLog.info(JOIDLog.nameOf(this.getClass()) + " reloaded in " + String.format(Locale.ROOT, "%.2f", (end - start) / 1000000F) + "ms");
-			});
+			this.reloadInDev(this::reload);
 		}
 
 		this.drawnFrame = UI.frameNumber;
@@ -608,6 +603,8 @@ public abstract class UI implements IIndexedElement {
 
 	public final void reload() {
 		this.scoped(() -> {
+			final long start = System.nanoTime();
+
 			if (this.devNode != null) {
 				final DevNode devNode = (DevNode) this.devNode;
 				devNode.getReloadAnimator().sequence(100F, 1F).push(100F, 0F);
@@ -628,7 +625,16 @@ public abstract class UI implements IIndexedElement {
 			this.refreshTransition();
 
 			this.initialized = false;
-			this.load(this.view.getWidth(), this.view.getHeight());
+			this.reloading = true;
+			try {
+				this.load(this.view.getWidth(), this.view.getHeight());
+			} finally {
+				this.reloading = false;
+			}
+
+			if (JOIDEnv.isDevMode()) {
+				JOIDLog.info(JOIDLog.nameOf(this.getClass()) + " reloaded in " + String.format(Locale.ROOT, "%.2f", (System.nanoTime() - start) / 1000000F) + "ms");
+			}
 		});
 	}
 

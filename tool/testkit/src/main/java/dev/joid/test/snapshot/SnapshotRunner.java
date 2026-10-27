@@ -124,7 +124,7 @@ public final class SnapshotRunner {
 	public @NonNull Map<String, SnapshotImage> execute(final @NonNull String... commands) {
 		this.bridge.closeAll();
 		this.bridge.interfaceScale(1D);
-		this.window.getKeys().clear();
+		this.window.release(Key.values());
 		this.masks.clear();
 		this.clock.time(1735689600000L);
 		JOIDEnv.devMode(false);
@@ -173,11 +173,11 @@ public final class SnapshotRunner {
 				this.key(arguments[1]);
 				break;
 			case "down":
-				this.window.getKeys().add(Key.valueOf(arguments[1]));
+				this.window.press(Key.valueOf(arguments[1]));
 				BridgeHandler.UI.keyPressed(Key.valueOf(arguments[1]), Key.valueOf(arguments[1]));
 				break;
 			case "up":
-				this.window.getKeys().remove(Key.valueOf(arguments[1]));
+				this.window.release(Key.valueOf(arguments[1]));
 				BridgeHandler.UI.keyReleased(Key.valueOf(arguments[1]));
 				break;
 			case "resize":
@@ -214,17 +214,21 @@ public final class SnapshotRunner {
 	private void type(final String text) {
 		for (final int codepoint : text.codePoints().toArray()) {
 			final char character = Character.isBmpCodePoint(codepoint) ? (char) codepoint : 0;
-			final boolean shift = SnapshotRunner.isShifted(character) && this.window.getKeys().add(Key.LEFT_SHIFT);
+			final boolean shift = SnapshotRunner.isShifted(character) && !this.window.isKeyDown(Key.LEFT_SHIFT);
 			final Key key = SnapshotRunner.getKey(character);
-			final boolean held = this.window.getKeys().add(key);
+			final boolean held = !this.window.isKeyDown(key);
+			if (shift) {
+				this.window.press(Key.LEFT_SHIFT);
+			}
+			this.window.press(key);
 			BridgeHandler.UI.keyPressed(key, key);
 			BridgeHandler.UI.charTyped(codepoint);
 			BridgeHandler.UI.keyReleased(key);
 			if (held) {
-				this.window.getKeys().remove(key);
+				this.window.release(key);
 			}
 			if (shift) {
-				this.window.getKeys().remove(Key.LEFT_SHIFT);
+				this.window.release(Key.LEFT_SHIFT);
 			}
 		}
 	}
@@ -254,14 +258,15 @@ public final class SnapshotRunner {
 		Key key = Key.UNKNOWN;
 		for (final String name : combination.split("\\+")) {
 			key = Key.valueOf(name);
-			if (this.window.getKeys().add(key)) {
+			if (!this.window.isKeyDown(key)) {
 				added.add(key);
+				this.window.press(key);
 			}
 		}
 
 		BridgeHandler.UI.keyPressed(key, key);
 		BridgeHandler.UI.keyReleased(key);
-		this.window.getKeys().removeAll(added);
+		this.window.release(added.toArray(new Key[0]));
 	}
 
 	private void resize(final int width, final int height) {

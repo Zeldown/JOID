@@ -71,6 +71,17 @@ public class InteractiveValueTest {
 		Assert.assertEquals(Arrays.asList("on 2 > 7", "on 7 > 9"), this.trace);
 	}
 
+	@Test
+	public void refusesAListenerWithoutEvents() {
+		final InteractiveValue<Integer> amount = InteractiveValue.create(this.bindings, "amount", () -> this.amount, value -> this.amount = value);
+		try {
+			amount.on(event -> {});
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The value amount has no events to listen to, declare them with events(...) first", exception.getMessage());
+		}
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void refusesASignalThatCannotBeWritten() {
 		this.amount().bind(Signal.from(1));

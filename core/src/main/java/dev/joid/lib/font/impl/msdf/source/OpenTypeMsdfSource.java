@@ -10,7 +10,6 @@ import com.google.common.hash.Hashing;
 
 import dev.joid.lib.JOID;
 import dev.joid.lib.asset.Asset;
-import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.cache.FileCacheWriter;
 import dev.joid.lib.font.impl.msdf.MsdfFontFace;
@@ -29,7 +28,7 @@ public final class OpenTypeMsdfSource extends MsdfSource {
 
 	private static final byte[][] SIGNATURES = {{0, 1, 0, 0}, {'t', 'r', 'u', 'e'}, {'O', 'T', 'T', 'O'}, {'t', 't', 'c', 'f'}};
 
-	private static final FileCacheArea AREA = FileCache.area("msdf").retention(Duration.ofDays(30L));
+	private static final FileCacheArea AREA = FileCacheArea.of("msdf").retention(Duration.ofDays(30L));
 
 	private final Asset asset;
 

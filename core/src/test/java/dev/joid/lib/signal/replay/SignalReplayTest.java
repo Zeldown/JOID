@@ -481,7 +481,7 @@ public class SignalReplayTest {
 		final SignalReplayHiddenLoader loader = SignalReplayHiddenLoader.create("ReplayHiddenRenamed", true, true, "get", "obtain");
 		final SignalReplayNode node = SignalReplayNode.create();
 		final IntegerSignal clicks = new IntegerSignal(0);
-		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads clicks but cannot follow it: the method dev.joid.lib.signal.impl.primitive.IntegerSignal.obtain(...) does not exist at runtime. The value stays \"Hidden 0\". Configure the ISignalReplayBridge or use map(...).\n", SignalReplayTest.hidden(loader, node, clicks));
+		Assert.assertEquals("[JOID] ReplayHiddenFixture.java:N text(...) reads clicks but cannot follow it: the method dev.joid.lib.signal.impl.primitive.IntegerSignal.obtain(...) does not exist at runtime. The value stays \"Hidden 0\". Use map(...) or a lambda.\n", SignalReplayTest.hidden(loader, node, clicks));
 	}
 
 	@Test

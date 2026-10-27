@@ -154,36 +154,36 @@ public abstract class ChartNode extends Node {
 				this.dataMap = new LinkedHashMap<>();
 			}
 
-			public final ChartData get(final @NonNull String data) {
+			public ChartData get(final @NonNull String data) {
 				return this.dataMap.get(data);
 			}
 
-			public final @NonNull Set<String> getLabelSet() {
+			public @NonNull Set<String> getLabelSet() {
 				return Collections.unmodifiableSet(this.labelSet);
 			}
 
-			public final @NonNull Map<String, ChartData> getDataMap() {
+			public @NonNull Map<String, ChartData> getDataMap() {
 				return Collections.unmodifiableMap(this.dataMap);
 			}
 
-			public final @NonNull XChartAxis labelSet(final @NonNull String... labels) {
+			public @NonNull XChartAxis labelSet(final @NonNull String... labels) {
 				this.labelSet.clear();
 				Collections.addAll(this.labelSet, labels);
 				return this;
 			}
 
-			public final @NonNull XChartAxis labelSet(final @NonNull Set<@NonNull String> labelSet) {
+			public @NonNull XChartAxis labelSet(final @NonNull Set<@NonNull String> labelSet) {
 				this.labelSet.clear();
 				this.labelSet.addAll(labelSet);
 				return this;
 			}
 
-			public final @NonNull XChartAxis data(final @NonNull String dataName, final @NonNull ChartData data) {
+			public @NonNull XChartAxis data(final @NonNull String dataName, final @NonNull ChartData data) {
 				this.dataMap.put(dataName, data);
 				return this;
 			}
 
-			public final @NonNull XChartAxis remove(final @NonNull String data) {
+			public @NonNull XChartAxis remove(final @NonNull String data) {
 				this.dataMap.remove(data);
 				return this;
 			}
@@ -200,17 +200,17 @@ public abstract class ChartNode extends Node {
 				super(name);
 			}
 
-			public final @NonNull YChartAxis prefix(final @NonNull String prefix) {
+			public @NonNull YChartAxis prefix(final @NonNull String prefix) {
 				this.prefix = prefix;
 				return this;
 			}
 
-			public final @NonNull YChartAxis suffix(final @NonNull String suffix) {
+			public @NonNull YChartAxis suffix(final @NonNull String suffix) {
 				this.suffix = suffix;
 				return this;
 			}
 
-			public final @NonNull String format(final @NonNull Number value) {
+			public @NonNull String format(final @NonNull Number value) {
 				return (this.prefix == null ? "" : this.prefix) + value + (this.suffix == null ? "" : this.suffix);
 			}
 

@@ -334,6 +334,18 @@ public class UITest {
 	}
 
 	@Test
+	public void printsOneTimeLineForAHotReload() throws ReflectiveOperationException {
+		final PopupUI ui = new PopupUI(this.trace);
+		this.bridges.open(ui);
+		ui.getDebug().profiler(true);
+		final Field field = UI.class.getDeclaredField("reloadPending");
+		field.setAccessible(true);
+		field.setBoolean(ui, true);
+		final String output = TestUtils.captureOut(true, () -> ui.draw(0D, 0D));
+		Assert.assertTrue(output, output.matches("\\[JOID\\] PopupUI reloaded in \\d+\\.\\d\\dms" + System.lineSeparator()));
+	}
+
+	@Test
 	public void keepsItsValuesChangedAtRuntimeOnReload() {
 		final PopupUI ui = new PopupUI(this.trace);
 		this.bridges.open(ui);
@@ -344,7 +356,7 @@ public class UITest {
 			ui.reload();
 			this.bridges.frame();
 		});
-		Assert.assertTrue(output, output.startsWith("[JOID] PopupUI loaded in "));
+		Assert.assertTrue(output, output.startsWith("[JOID] PopupUI reloaded in "));
 		Assert.assertEquals(4D, ui.getData().zlevel(), 0D);
 		Assert.assertEquals(0D, ui.getView().getAnchorX(), 0D);
 		Assert.assertTrue(ui.getDebug().profiler());

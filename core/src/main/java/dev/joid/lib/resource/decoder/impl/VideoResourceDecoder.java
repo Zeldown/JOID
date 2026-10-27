@@ -24,7 +24,6 @@ import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.FileAsset;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.render.texture.ITexture;
-import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.resource.ResourceData;
 import dev.joid.lib.resource.decoder.IResourceDecoder;
@@ -41,7 +40,7 @@ import lombok.NonNull;
 
 public final class VideoResourceDecoder implements IResourceDecoder, IResourcePlayback {
 
-	private static final FileCacheArea AREA = FileCache.area("video").retention(Duration.ofDays(7L));
+	private static final FileCacheArea AREA = FileCacheArea.of("video").retention(Duration.ofDays(7L));
 
 	private final Object               grabberLock = new Object();
 	@Getter private final Asset        asset;

@@ -9,7 +9,7 @@ import lombok.Getter;
 public enum SignalReplayFailure {
 
 	CLASS_NOT_FOUND("the bytecode of %s cannot be read", "Use map(...) or a lambda."),
-	MEMBER_NOT_FOUND("%s does not exist at runtime", "Configure the ISignalReplayBridge or use map(...)."),
+	MEMBER_NOT_FOUND("%s does not exist at runtime", "Use map(...) or a lambda."),
 	CALL_NOT_FOUND("no call to %s(...) is found %s, the .class file on disk may no longer match the loaded class (recompiled since the launch)", "Restart the application, or use map(...) or a lambda."),
 	AMBIGUOUS_CALL("several calls to %s(...) on this line give the same value from the same signals", "Write one call per line."),
 	UNSUPPORTED_INSTRUCTION("the instruction %s is not supported", "Use map(...) or a lambda."),

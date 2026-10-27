@@ -161,19 +161,19 @@ public final class InteractiveValue<V> {
 	}
 
 	public <T> @NonNull T before(final @NonNull EventListener<?> listener) {
-		return this.bindings.listen(this.events.beforeType, listener);
+		return this.bindings.listen(this.requireEvents(this.events).beforeType, listener);
 	}
 
 	public <T> @NonNull T before(final V target, final @NonNull EventListener<?> listener) {
-		return this.bindings.listen(this.eventMap.get(target).beforeType, listener);
+		return this.bindings.listen(this.requireEvents(this.eventMap.get(target)).beforeType, listener);
 	}
 
 	public <T> @NonNull T on(final @NonNull EventListener<?> listener) {
-		return this.bindings.listen(this.events.onType, listener);
+		return this.bindings.listen(this.requireEvents(this.events).onType, listener);
 	}
 
 	public <T> @NonNull T on(final V target, final @NonNull EventListener<?> listener) {
-		return this.bindings.listen(this.eventMap.get(target).onType, listener);
+		return this.bindings.listen(this.requireEvents(this.eventMap.get(target)).onType, listener);
 	}
 
 	private void apply(final V previous, final V next) {
@@ -192,6 +192,13 @@ public final class InteractiveValue<V> {
 			this.bindings.fireSubscribed(events.onType, () -> events.on.apply(previous, next));
 		}
 		this.then.accept(previous, next);
+	}
+
+	private ValueEvents<V> requireEvents(final ValueEvents<V> events) {
+		if (events == null) {
+			throw new IllegalStateException("The value " + this.property + " has no events to listen to, declare them with events(...) first");
+		}
+		return events;
 	}
 
 	private ValueEvents<V> getEvents(final V value) {

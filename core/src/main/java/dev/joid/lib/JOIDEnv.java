@@ -22,7 +22,7 @@ public final class JOIDEnv {
 
 	public static void devMode(final boolean devMode) {
 		if (devMode && !JOIDEnv.DEV) {
-			throw new IllegalStateException("The dev mode needs the dev classes of JOID, use its dev or demo jar");
+			throw new IllegalStateException("The dev mode needs the dev classes of JOID, use its dev jar");
 		}
 
 		JOIDEnv.devMode = devMode;

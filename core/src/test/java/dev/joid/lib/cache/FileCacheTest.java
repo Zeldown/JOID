@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -53,38 +54,38 @@ public class FileCacheTest {
 
 	@Test
 	public void returnsTheSameAreaForTheSameName() {
-		Assert.assertSame(FileCache.area("same"), FileCache.area("same"));
-		Assert.assertEquals(new File(this.folder.getRoot(), "same"), FileCache.area("same").getDirectory());
+		Assert.assertSame(FileCacheArea.of("same"), FileCacheArea.of("same"));
+		Assert.assertEquals(new File(this.folder.getRoot(), "same"), FileCacheArea.of("same").getDirectory());
 	}
 
 	@Test
 	public void keepsThirtyDaysByDefault() {
-		Assert.assertEquals(Duration.ofDays(30L), FileCache.area("default").getRetention());
+		Assert.assertEquals(Duration.ofDays(30L), FileCacheArea.of("default").getRetention());
 	}
 
 	@Test
 	public void acceptsTheSameDeclarationTwice() {
-		final FileCacheArea area = FileCache.area("twice").retention(Duration.ofDays(7L));
-		Assert.assertSame(area, FileCache.area("twice").retention(Duration.ofDays(7L)));
+		final FileCacheArea area = FileCacheArea.of("twice").retention(Duration.ofDays(7L));
+		Assert.assertSame(area, FileCacheArea.of("twice").retention(Duration.ofDays(7L)));
 		Assert.assertEquals(Duration.ofDays(7L), area.getRetention());
 	}
 
 	@Test
 	public void refusesAnotherRetentionForADeclaredArea() {
-		FileCache.area("conflict").retention(Duration.ofDays(7L));
+		FileCacheArea.of("conflict").retention(Duration.ofDays(7L));
 		try {
-			FileCache.area("conflict").retention(Duration.ofDays(14L));
+			FileCacheArea.of("conflict").retention(Duration.ofDays(14L));
 			Assert.fail("The area must not be declared again");
 		} catch (final IllegalStateException expected) {
 			Assert.assertEquals("The cache area conflict is already declared with a retention of 7 days, it cannot be declared again with 14 days: give one of them another name", expected.getMessage());
 		}
-		Assert.assertEquals(Duration.ofDays(7L), FileCache.area("conflict").getRetention());
+		Assert.assertEquals(Duration.ofDays(7L), FileCacheArea.of("conflict").getRetention());
 	}
 
 	@Test
 	public void refusesANegativeRetention() {
 		try {
-			FileCache.area("negative").retention(Duration.ofHours(-1L));
+			FileCacheArea.of("negative").retention(Duration.ofHours(-1L));
 			Assert.fail("The retention must be positive");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertEquals("The retention PT-1H of the cache area negative is not positive, pass a duration above 0", expected.getMessage());
@@ -95,7 +96,7 @@ public class FileCacheTest {
 	public void refusesANameThatIsNotAPlainFileName() {
 		for (final String name : new String[] {"", ".hidden", "../escape", "a/b", "a\\b"}) {
 			try {
-				FileCache.area(name);
+				FileCacheArea.of(name);
 				Assert.fail(name);
 			} catch (final IllegalArgumentException expected) {
 				Assert.assertEquals("The cache area name " + name + " is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'", expected.getMessage());
@@ -103,7 +104,7 @@ public class FileCacheTest {
 		}
 
 		try {
-			FileCache.area("keys").entry("../escape");
+			FileCacheArea.of("keys").entry("../escape");
 			Assert.fail("The key must be a plain file name");
 		} catch (final IllegalArgumentException expected) {
 			Assert.assertTrue(expected.getMessage(), expected.getMessage().startsWith("The cache entry name ../escape is not a plain file name"));
@@ -112,7 +113,7 @@ public class FileCacheTest {
 
 	@Test
 	public void computesAnEntryOnlyOnce() throws IOException {
-		final FileCacheArea area = FileCache.area("once");
+		final FileCacheArea area = FileCacheArea.of("once");
 		final AtomicInteger writes = new AtomicInteger();
 		Assert.assertNull(area.entry("key"));
 		final File file = area.compute("key", entry -> FileCacheTest.write(entry, "value " + writes.incrementAndGet()));
@@ -125,7 +126,7 @@ public class FileCacheTest {
 
 	@Test
 	public void writesIntoATemporaryFileBeforeTheEntryAppears() throws IOException {
-		final FileCacheArea area = FileCache.area("atomic");
+		final FileCacheArea area = FileCacheArea.of("atomic");
 		final File file = area.compute("key", entry -> {
 			Assert.assertEquals(area.getDirectory(), entry.getParentFile());
 			Assert.assertTrue(entry.getName(), entry.getName().startsWith(".") && entry.getName().endsWith(".tmp"));
@@ -139,7 +140,7 @@ public class FileCacheTest {
 
 	@Test
 	public void leavesNothingWhenTheWriterFails() {
-		final FileCacheArea area = FileCache.area("failure");
+		final FileCacheArea area = FileCacheArea.of("failure");
 		try {
 			area.compute("key", entry -> {
 				FileCacheTest.write(entry, "half");
@@ -154,7 +155,7 @@ public class FileCacheTest {
 
 	@Test
 	public void refusesAWriterThatWritesNothing() {
-		final FileCacheArea area = FileCache.area("nothing");
+		final FileCacheArea area = FileCacheArea.of("nothing");
 		try {
 			area.compute("key", entry -> {
 			});
@@ -166,7 +167,7 @@ public class FileCacheTest {
 
 	@Test
 	public void storesAnEntryUnderTheHashOfItsContent() throws IOException, NoSuchAlgorithmException {
-		final FileCacheArea area = FileCache.area("content");
+		final FileCacheArea area = FileCacheArea.of("content");
 		final File file = area.store(entry -> FileCacheTest.write(entry, "video"));
 		Assert.assertEquals(String.format(Locale.ROOT, "%040x", new BigInteger(1, MessageDigest.getInstance("SHA-1").digest("video".getBytes(StandardCharsets.UTF_8)))), file.getName());
 		Assert.assertEquals(file, area.store(entry -> FileCacheTest.write(entry, "video")));
@@ -175,7 +176,7 @@ public class FileCacheTest {
 
 	@Test
 	public void removesAnEntry() throws IOException {
-		final FileCacheArea area = FileCache.area("remove");
+		final FileCacheArea area = FileCacheArea.of("remove");
 		area.compute("key", entry -> FileCacheTest.write(entry, "value"));
 		Assert.assertTrue(area.remove("key"));
 		Assert.assertFalse(area.remove("key"));
@@ -185,7 +186,7 @@ public class FileCacheTest {
 
 	@Test
 	public void datesTheLastUseOfAnEntry() throws IOException {
-		final FileCacheArea area = FileCache.area("touch");
+		final FileCacheArea area = FileCacheArea.of("touch");
 		final File file = area.compute("key", entry -> FileCacheTest.write(entry, "value"));
 		Assert.assertTrue(file.setLastModified(System.currentTimeMillis() - TimeUnit.DAYS.toMillis(10L)));
 		area.entry("key");
@@ -194,7 +195,7 @@ public class FileCacheTest {
 
 	@Test
 	public void cleansTheEntriesUnusedForTheRetentionOfTheirArea() throws IOException {
-		final FileCacheArea area = FileCache.area("retention").retention(Duration.ofDays(7L));
+		final FileCacheArea area = FileCacheArea.of("retention").retention(Duration.ofDays(7L));
 		final File old = FileCacheTest.age(area.compute("old", entry -> FileCacheTest.write(entry, "12345")), 8L);
 		final File recent = FileCacheTest.age(area.compute("recent", entry -> FileCacheTest.write(entry, "12345")), 6L);
 		final File folder = FileCacheTest.age(area.compute("folder", entry -> {
@@ -232,7 +233,7 @@ public class FileCacheTest {
 
 	@Test
 	public void cleansTheOrphanTemporaryFilesAfterADay() throws IOException {
-		final FileCacheArea area = FileCache.area("orphan");
+		final FileCacheArea area = FileCacheArea.of("orphan");
 		area.compute("key", entry -> FileCacheTest.write(entry, "value"));
 		final File orphan = FileCacheTest.age(FileCacheTest.write(new File(area.getDirectory(), ".crashed.tmp"), "12"), 2L);
 		final File writing = FileCacheTest.write(new File(area.getDirectory(), ".writing.tmp"), "12");
@@ -245,7 +246,7 @@ public class FileCacheTest {
 
 	@Test
 	public void writesTheRetentionIntoTheMarkerOfItsArea() throws IOException {
-		final FileCacheArea area = FileCache.area("marked").retention(Duration.ofDays(7L));
+		final FileCacheArea area = FileCacheArea.of("marked").retention(Duration.ofDays(7L));
 		area.compute("key", entry -> FileCacheTest.write(entry, "value"));
 		Assert.assertEquals("PT168H", FileCacheTest.read(new File(area.getDirectory(), ".area")));
 	}
@@ -254,10 +255,10 @@ public class FileCacheTest {
 	public void updatesTheMarkerWhenTheAreaIsDeclaredAgain() throws IOException {
 		final File directory = this.folder.newFolder("redeclared");
 		FileCacheTest.write(new File(directory, ".area"), "PT1H");
-		FileCache.area("redeclared").retention(Duration.ofDays(3L));
+		FileCacheArea.of("redeclared").retention(Duration.ofDays(3L));
 		Assert.assertEquals("PT72H", FileCacheTest.read(new File(directory, ".area")));
 		FileCacheTest.write(new File(directory, ".area"), "PT1H");
-		FileCache.area("redeclared").retention(Duration.ofDays(3L));
+		FileCacheArea.of("redeclared").retention(Duration.ofDays(3L));
 		Assert.assertEquals("PT72H", FileCacheTest.read(new File(directory, ".area")));
 	}
 
@@ -277,7 +278,7 @@ public class FileCacheTest {
 		final File directory = this.folder.newFolder("cleaned");
 		FileCacheTest.write(new File(directory, ".area"), "PT48H");
 		TestUtils.captureOut(FileCache::clean);
-		Assert.assertSame(FileCacheTest.areaMap().get("cleaned"), FileCache.area("cleaned"));
+		Assert.assertSame(FileCacheTest.areaMap().get("cleaned"), FileCacheArea.of("cleaned"));
 	}
 
 	@Test
@@ -293,7 +294,7 @@ public class FileCacheTest {
 
 	@Test
 	public void replacesAnEntryThatIsOpenedElsewhere() throws IOException {
-		final FileCacheArea area = FileCache.area("opened");
+		final FileCacheArea area = FileCacheArea.of("opened");
 		final File old = area.compute("key", entry -> FileCacheTest.write(entry, "old"));
 		final File file;
 		try (final InputStream reader = new FileInputStream(old)) {
@@ -311,7 +312,7 @@ public class FileCacheTest {
 
 	@Test
 	public void leavesAnEntryItCannotRemoveToTheNextCleaning() throws IOException {
-		final FileCacheArea area = FileCache.area("locked");
+		final FileCacheArea area = FileCacheArea.of("locked");
 		final File file = area.compute("key", entry -> FileCacheTest.write(entry, "value"));
 		try (final InputStream reader = new FileInputStream(file)) {
 			TestUtils.captureErr(() -> Assert.assertTrue(area.remove("key")));
@@ -325,8 +326,8 @@ public class FileCacheTest {
 
 	@Test
 	public void sharesItsFolderWithAnotherProcess() throws IOException {
-		final FileCacheArea first = new FileCacheArea("shared");
-		final FileCacheArea second = new FileCacheArea("shared");
+		final FileCacheArea first = FileCacheTest.process("shared");
+		final FileCacheArea second = FileCacheTest.process("shared");
 		final File file = first.compute("key", entry -> {
 			FileCacheTest.write(entry, "first");
 			Assert.assertEquals(0L, second.clean(System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1L), new AtomicInteger()));
@@ -359,9 +360,19 @@ public class FileCacheTest {
 		return area.getDirectory().list((parent, name) -> !name.startsWith("."));
 	}
 
+	private static FileCacheArea process(final String name) {
+		try {
+			final Constructor<FileCacheArea> constructor = FileCacheArea.class.getDeclaredConstructor(String.class);
+			constructor.setAccessible(true);
+			return constructor.newInstance(name);
+		} catch (final ReflectiveOperationException exception) {
+			throw new AssertionError(exception);
+		}
+	}
+
 	private static Map<String, FileCacheArea> areaMap() {
 		try {
-			final Field field = FileCache.class.getDeclaredField("AREA_MAP");
+			final Field field = FileCacheArea.class.getDeclaredField("AREA_MAP");
 			field.setAccessible(true);
 			return (Map<String, FileCacheArea>) field.get(null);
 		} catch (final ReflectiveOperationException exception) {

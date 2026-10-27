@@ -48,36 +48,36 @@ public final class GridNode extends Node {
 	@Override
 	public void drawSkeleton(final double mouseX, final double mouseY) {}
 
-	public final @NonNull GridNode alignX(final @NonNull Align alignX) {
+	public @NonNull GridNode alignX(final @NonNull Align alignX) {
 		return this.alignX(Signal.from(alignX));
 	}
 
-	public final @NonNull GridNode alignX(final @NonNull Supplier<@NonNull Align> alignX) {
+	public @NonNull GridNode alignX(final @NonNull Supplier<@NonNull Align> alignX) {
 		return super.follow("alignX", alignX, value -> this.alignX = value);
 	}
 
-	public final @NonNull GridNode margin(final double margin) {
+	public @NonNull GridNode margin(final double margin) {
 		return this.margin(Signal.from(margin));
 	}
 
-	public final @NonNull GridNode margin(final @NonNull Supplier<Double> margin) {
+	public @NonNull GridNode margin(final @NonNull Supplier<Double> margin) {
 		this.marginVertical(margin);
 		return this.marginHorizontal(margin);
 	}
 
-	public final @NonNull GridNode marginHorizontal(final double marginHorizontal) {
+	public @NonNull GridNode marginHorizontal(final double marginHorizontal) {
 		return this.marginHorizontal(Signal.from(marginHorizontal));
 	}
 
-	public final @NonNull GridNode marginHorizontal(final @NonNull Supplier<Double> marginHorizontal) {
+	public @NonNull GridNode marginHorizontal(final @NonNull Supplier<Double> marginHorizontal) {
 		return super.follow("marginHorizontal", marginHorizontal, value -> this.marginHorizontal = value);
 	}
 
-	public final @NonNull GridNode marginVertical(final double marginVertical) {
+	public @NonNull GridNode marginVertical(final double marginVertical) {
 		return this.marginVertical(Signal.from(marginVertical));
 	}
 
-	public final @NonNull GridNode marginVertical(final @NonNull Supplier<Double> marginVertical) {
+	public @NonNull GridNode marginVertical(final @NonNull Supplier<Double> marginVertical) {
 		return super.follow("marginVertical", marginVertical, value -> this.marginVertical = value);
 	}
 

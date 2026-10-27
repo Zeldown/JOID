@@ -15,13 +15,12 @@ import java.util.Locale;
 import dev.joid.lib.asset.Asset;
 import dev.joid.lib.asset.impl.UrlAsset;
 import dev.joid.lib.asset.locator.IAssetLocator;
-import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
 import lombok.NonNull;
 
 public final class SnapshotUrlAssetLocator implements IAssetLocator {
 
-	private static final FileCacheArea AREA = FileCache.area("snapshot").retention(Duration.ofDays(30L));
+	private static final FileCacheArea AREA = FileCacheArea.of("snapshot").retention(Duration.ofDays(30L));
 
 	@Override
 	public boolean supports(final @NonNull Object handle) {

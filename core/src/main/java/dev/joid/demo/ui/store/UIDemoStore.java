@@ -13,7 +13,6 @@ import dev.joid.demo.ui.core.hook.store.DemoGlobalStore;
 import dev.joid.demo.ui.core.hook.store.DemoLocalStore;
 import dev.joid.demo.ui.core.hook.store.DemoPermanentStore;
 import dev.joid.lib.bridge.BridgeHandler;
-import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
@@ -30,7 +29,7 @@ public class UIDemoStore extends UIDemo {
 	private static final Color INK         = new Color(153, 153, 153).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
-	private static final FileCacheArea CACHE = FileCache.area("demo").retention(Duration.ofDays(1L));
+	private static final FileCacheArea CACHE = FileCacheArea.of("demo").retention(Duration.ofDays(1L));
 
 	@UIProperty
 	private int clicks;

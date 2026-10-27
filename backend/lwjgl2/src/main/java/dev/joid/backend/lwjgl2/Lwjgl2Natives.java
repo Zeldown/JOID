@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.util.Arrays;
 
-import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.cache.FileCacheArea;
 import dev.joid.lib.utils.platform.Platform;
 import lombok.AccessLevel;
@@ -16,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Lwjgl2Natives {
 
-	private static final FileCacheArea AREA = FileCache.area("lwjgl").retention(Duration.ofDays(30L));
+	private static final FileCacheArea AREA = FileCacheArea.of("lwjgl").retention(Duration.ofDays(30L));
 
 	private static boolean installed;
 

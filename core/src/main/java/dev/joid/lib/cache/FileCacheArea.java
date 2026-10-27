@@ -32,16 +32,22 @@ public final class FileCacheArea {
 
 	private static final Pattern NAME = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._-]*");
 
+	private static final Map<String, FileCacheArea> AREA_MAP = new ConcurrentHashMap<>();
+
 	@Getter private final String      name;
 	private final Map<String, Object> lockMap;
 
 	private boolean          declared;
 	@Getter private Duration retention;
 
-	public FileCacheArea(final @NonNull String name) {
+	private FileCacheArea(final String name) {
 		this.name = name;
 		this.lockMap = new ConcurrentHashMap<>();
 		this.retention = Duration.ofDays(30L);
+	}
+
+	public static @NonNull FileCacheArea of(final @NonNull String name) {
+		return FileCacheArea.AREA_MAP.computeIfAbsent(FileCacheArea.check("area", name), FileCacheArea::new);
 	}
 
 	public synchronized @NonNull FileCacheArea retention(final @NonNull Duration retention) {
