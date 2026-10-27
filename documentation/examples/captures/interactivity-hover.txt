@@ -1,0 +1,42 @@
+# crop interactivity-hover 660 390 600 300
+# crop interactivity-underline 660 390 600 300
+# crop interactivity-enter 660 340 600 400
+# crop interactivity-tooltip-text 60 340 560 400
+# crop interactivity-tooltip-node 680 340 560 400
+# crop interactivity-tooltip-custom 1300 340 560 400
+ui com.example.interactivity.hover.HoverUI
+move 760 640
+# film interactivity-hover
+wait 200
+moveto 830 520 300
+wait 500
+moveto 760 640 300
+wait 500
+cut
+move 1000 640
+# film interactivity-underline
+wait 200
+moveto 1090 520 300
+wait 500
+cut
+ui com.example.interactivity.hover.EnterUI
+move 700 640
+# film interactivity-enter
+moveto 760 420 400
+moveto 980 540 600
+moveto 800 560 500
+moveto 1150 650 400
+wait 300
+cut
+ui com.example.interactivity.hover.TooltipUI
+move 220 430
+press LEFT
+release LEFT
+wait 300
+shot interactivity-tooltip-text
+move 1000 515
+wait 300
+shot interactivity-tooltip-node
+move 1580 510
+wait 300
+shot interactivity-tooltip-custom

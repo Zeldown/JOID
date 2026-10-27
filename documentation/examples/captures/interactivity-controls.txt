@@ -1,0 +1,45 @@
+# crop interactivity-settings 560 340 800 400
+# crop interactivity-refuse 660 390 600 300
+# crop interactivity-pending 660 390 600 300
+# crop interactivity-switch 1000 140 820 380
+# crop interactivity-selector 100 560 820 380
+# crop interactivity-slider 1000 560 820 380
+# crop interactivity-progress 660 390 600 300
+ui com.example.interactivity.controls.SettingsUI
+move 1002 500
+press LEFT
+moveto 1062 500 300
+release LEFT
+wait 300
+shot interactivity-settings
+ui com.example.interactivity.controls.RefuseUI
+move 960 470
+press LEFT
+moveto 1200 470 400
+release LEFT
+wait 300
+shot interactivity-refuse
+ui com.example.interactivity.controls.PendingUI
+move 945 455
+press LEFT
+release LEFT
+wait 300
+shot interactivity-pending
+ui com.example.interactivity.controls.ChoicesUI
+move 1560 230
+press LEFT
+release LEFT
+wait 300
+shot interactivity-switch
+move 300 630
+press LEFT
+release LEFT
+move 300 690
+wait 300
+shot interactivity-selector
+move 1700 900
+wait 100
+shot interactivity-slider
+ui com.example.interactivity.controls.ProgressUI
+wait 100
+shot interactivity-progress

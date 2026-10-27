@@ -1,0 +1,43 @@
+# crop interactivity-field 660 390 600 300
+# crop interactivity-focus 660 390 600 300
+# crop interactivity-field-rules 660 390 600 300
+# crop interactivity-field-number 660 390 600 300
+# crop interactivity-field-color 660 390 600 300
+ui com.example.interactivity.fields.NameFieldUI
+move 960 480
+press LEFT
+release LEFT
+type Ada
+key ENTER
+wait 100
+shot interactivity-field
+ui com.example.interactivity.fields.FocusFieldUI
+move 820 590
+press LEFT
+release LEFT
+wait 300
+shot interactivity-focus
+ui com.example.interactivity.fields.RulesFieldUI
+move 960 480
+press LEFT
+release LEFT
+type  ab1
+key ENTER
+wait 100
+shot interactivity-field-rules
+ui com.example.interactivity.fields.NumberFieldUI
+move 840 480
+press LEFT
+release LEFT
+key UP
+key UP
+wait 100
+shot interactivity-field-number
+ui com.example.interactivity.fields.ColorFieldUI
+move 870 480
+press LEFT
+release LEFT
+key LEFT_CONTROL+A
+type #7C5CFF
+wait 100
+shot interactivity-field-color

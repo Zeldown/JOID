@@ -1,0 +1,49 @@
+package com.example.interactivity.reorder;
+
+import com.example.ExampleFont;
+
+import dev.joid.lib.color.Color;
+import dev.joid.lib.draw.text.Text;
+import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.StringSignal;
+import dev.joid.lib.ui.core.UI;
+import dev.joid.lib.ui.node.impl.layout.ReorderableFlexNode;
+import dev.joid.lib.ui.node.impl.shape.RectNode;
+import dev.joid.lib.ui.node.impl.text.TextNode;
+
+public class PlaylistUI extends UI {
+
+	private static final Color INK         = new Color(153, 153, 153).lock();
+	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
+
+	private final StringSignal moved = new StringSignal("none");
+
+	@Override
+	public void init() {
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(PlaylistUI.INK);
+
+		RectNode
+		.create(660, 240, 600, 600)
+		.color(PlaylistUI.PLACEHOLDER)
+		.body(card -> {
+			// #region list
+			ReorderableFlexNode
+			.vertical(60, 40, 480)
+			.onReorderEnd(event -> {
+				final String song = event.getChild().getLabel().getText();
+				this.moved.set(song + " from " + event.getPrevious() + " to " + event.getIndex());
+			})
+			.margin(10D)
+			.body(list -> {
+				for (final String song : new String[] {"Intro", "Ocean", "Night drive", "Echoes", "Outro"}) {
+					RectNode.create(0, 0, 480, 70).color(Color.WHITE).label(Text.create(song, info)).attach(list);
+				}
+			})
+			.attach(card);
+			// #endregion
+			TextNode.create(60, 480).text(Text.create("Moved: " + this.moved.get(), info)).attach(card);
+		})
+		.attach(this);
+	}
+
+}
