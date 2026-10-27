@@ -29,7 +29,7 @@ Sets the folder where JOID writes the caches it can rebuild; it wins over the `j
 
 ## register()
 
-Connects the backend to JOID, loads JOID and runs the [[JOID#onReady]] callbacks: [What register() does](/use/learn/running/backends/#what-register-does) lists every step.
+Connects the backend to JOID, loads JOID and runs the [[JOID#onReady]] listeners: [What register() does](/use/learn/running/backends/#what-register-does) lists every step.
 Call it once, on the thread of your loop, with the graphics context current; a second call throws an `IllegalStateException`.
 
 ## frame()

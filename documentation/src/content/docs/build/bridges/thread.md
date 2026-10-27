@@ -6,7 +6,7 @@ sidebar:
   order: 4
 ---
 
-JOID is not thread-safe: it opens UIs, runs callbacks and touches GPU objects on one thread, the render thread.
+JOID is not thread-safe: it opens UIs, runs listeners and touches GPU objects on one thread, the render thread.
 The thread bridge tells the core which thread that is, and how to post work to it.
 The core reads it through [[IThreadBridge]], from [[BridgeHandler#THREAD]].
 
@@ -39,7 +39,7 @@ Return your own bridge from `createThreadBridge()` when the engine draws on a th
 ## Provided
 
 Every entry point of the core that must run on the render thread goes through [[ThreadUtils#runOnRenderThread]]: it runs the task at once on the render thread, and calls `execute` from any other thread.
-That covers [[JOID#open]], `JOID.close`, the [[JOID#onReady]] callbacks and the callbacks that a loading thread delivers to the UIs.
+That covers [[JOID#open]], `JOID.close`, the [[JOID#onReady]] listeners and the listeners that a loading thread delivers to the UIs.
 The user side of this rule is on [Threads](/use/learn/running/threads/).
 
 ## Guarantees
@@ -48,4 +48,4 @@ The user side of this rule is on [Threads](/use/learn/running/threads/).
 |---|---|
 | Run the tasks of `execute` before the next frame, in order. | A UI opened from another thread must appear on the next frame, and an open followed by a close must not swap. |
 | Never run a task of `execute` on the calling thread when it is not the render thread. | The task touches the node tree and the GPU. |
-| Answer `isRenderThread` without locking. | The core asks it on every callback. |
+| Answer `isRenderThread` without locking. | The core asks it on every listener that it runs. |

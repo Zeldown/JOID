@@ -74,7 +74,7 @@ In the demos:
 | `UIDemoResource` | Images, SVG, URLs, a failed resource, crops, mipmaps, custom formats and locators. |
 | `UIDemoPlayer` | Video and animated images. |
 | `UIDemoAudio` | The sound of videos: volume and positional sound. |
-| `UIDemoEvent` | Mouse and key events, lifecycle callbacks, tasks and shortcuts, tooltips. |
+| `UIDemoEvent` | Mouse and key events, lifecycle listeners, tasks and shortcuts, tooltips. |
 | `UIDemoEventFlow` | The order of the events: priorities, consumption, listeners of the UI, the printed key against the physical position. |
 | `UIDemoCursor` | Cursors and click-through. |
 | `UIDemoDraggable` | Dragging and snapping. |

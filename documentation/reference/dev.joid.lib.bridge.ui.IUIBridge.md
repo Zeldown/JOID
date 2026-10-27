@@ -14,7 +14,7 @@ It decides what the UI replaces, then adds it.
 
 ## close(UI)
 
-JOID calls it on the render thread from `JOID.close(ui)` once the closing callbacks accepted, from `JOID.forceClose(ui)`, and when Escape closes a UI.
+JOID calls it on the render thread from `JOID.close(ui)` once the close listeners accepted, from `JOID.forceClose(ui)`, and when Escape closes a UI.
 It removes the UI from the bridge.
 
 ## add(UI)
@@ -23,7 +23,7 @@ Adds the UI to the bridge without closing anything.
 
 ## remove(UI)
 
-Removes the UI from the bridge, without any closing callback.
+Removes the UI from the bridge, without any close listener.
 
 ## isOpen(UI)
 
@@ -52,7 +52,7 @@ It draws the tooltip.
 
 ## closeAll()
 
-Disposes and removes every UI of the bridge: their close listeners and the `onDetach` callbacks of their nodes run, and their stores and remembered fields are saved.
+Disposes and removes every UI of the bridge: their close listeners and the `onDetach` listeners of their nodes run, and their stores and remembered fields are saved.
 Call it after your loop: [Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends).
 
 ## forceOpen(UI)
@@ -61,7 +61,7 @@ Closes every UI of the bridge with `closeAll()`, then opens the UI.
 
 ## replace(UI,UI)
 
-Disposes and removes the first UI and adds the second, without transition or closing callback.
+Disposes and removes the first UI and adds the second, without transition or close listener.
 
 ## getInterfaceScale(UI)
 

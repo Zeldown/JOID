@@ -21,9 +21,9 @@ No fix is needed; the reason is in the parentheses.
 
 ## warning [JOID] A JOID.onReady callback failed (…), the next callbacks still run: catch the exception inside the callback to handle it
 
-A callback given to [[JOID#onReady]] threw a `RuntimeException`; JOID runs the next callbacks anyway.
+A listener given to [[JOID#onReady]] threw a `RuntimeException`; JOID runs the next listeners anyway.
 
-Catch the exception inside the callback, or fix the code it names: [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).
+Catch the exception inside the listener, or fix the code it names: [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).
 
 ## warning [JOID] …
 
@@ -174,7 +174,7 @@ Catch the exception inside `update()`, or fix the code it names: [Node lifecycle
 
 ## warning [JOID] The detach of … failed (…), the node is detached anyway: catch the exception inside detach() to handle it
 
-The `detach()` of a node, or one of its detach callbacks, threw; JOID detaches the node anyway.
+The `detach()` of a node, or one of its detach listeners, threw; JOID detaches the node anyway.
 
 Catch the exception inside `detach()`, or fix the code it names: [Release what a node started](/use/learn/describing-the-ui/node-lifecycle/#release-what-a-node-started).
 
@@ -444,7 +444,7 @@ Catch the exception in the listener, the getter or the setter, or fix the code i
 
 ## IllegalStateException The animator has no timeline, call sequence(...) first
 
-A method of a [[TweenAnimator]] that works on its timeline, such as `start()`, `delay(...)`, `repeat(...)`, `push(...)` or an `onX(...)` callback, was called before the animator received a timeline.
+A method of a [[TweenAnimator]] that works on its timeline, such as `start()`, `delay(...)`, `repeat(...)`, `push(...)` or an `onX(...)` listener method, was called before the animator received a timeline.
 
 Call `sequence(...)` first: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
@@ -633,7 +633,7 @@ Check that the file can still be read, and that it is not damaged.
 ## warning [JOID] The resource … cannot be read: …. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.
 
 With the dev jar, JOID could not read or decode a resource: the file or the URL does not exist, cannot be read, or holds a format that JOID does not decode.
-The cause follows the colon; the [[Resource#onError]] callbacks receive it.
+The cause follows the colon; the [[Resource#onError]] listeners receive it.
 
 Check the path or the URL for a read error, convert the file to a supported format otherwise: [Supported formats](/use/learn/describing-the-ui/media/#supported-formats), [My image shows a checkerboard or nothing](/use/troubleshooting/#my-image-shows-a-checkerboard-or-nothing).
 
@@ -1039,7 +1039,7 @@ Pair each `beginFrame()` with one `endFrame()`; `Backend.frame()` opens and clos
 
 ## IllegalStateException … draws only inside a frame and no frame has begun: draw between beginFrame() and endFrame(), from the draw of a UI or of the backend loop
 
-Something drew or cleared outside a frame of the render bridge, such as a draw from a callback of input, from a worker thread, or before the loop.
+Something drew or cleared outside a frame of the render bridge, such as a draw from an input handler, from a worker thread, or before the loop.
 
 Draw from the draw of a node or of a UI, which runs inside the frame: [Frame lifecycle](/use/in-depth/frame-lifecycle/).
 

@@ -112,7 +112,7 @@ If `true`, the decode has started.
 
 ## isFailed()
 
-If `true`, the resource could not be read; the error went to the `onError` callbacks.
+If `true`, the resource could not be read; the error went to the `onError` listeners.
 
 ## getBuilder()
 
@@ -188,18 +188,18 @@ Frees the textures and the pixels of the data, for every handle on it, so that t
 
 ## fireLoad()
 
-Calls the `onLoad` callbacks of this handle on the render thread; the data calls it once the decode ends.
+Calls the `onLoad` listeners of this handle on the render thread; the data calls it once the decode ends.
 
 ## fireError(Throwable)
 
-Calls the `onError` callbacks of this handle on the render thread with `error`; the data calls it when the resource fails.
+Calls the `onError` listeners of this handle on the render thread with `error`; the data calls it when the resource fails.
 
 ## onLoad(Consumer)
 
-Calls `callback` with this resource when its data is decoded, through `runOnRenderThread` of the thread bridge, or at once when it is already decoded.
+Adds a listener that runs with this resource when its data is decoded, through `runOnRenderThread` of the thread bridge, or at once when it is already decoded.
 The data keeps the handle alive until the load or the failure is notified, so a handle thrown away right after `onLoad` still receives it.
-[[Resource#copy]] does not copy the callbacks.
+[[Resource#copy]] does not copy the listeners.
 
 ## onError(BiConsumer)
 
-Calls `callback` with this resource and the error when it fails, through `runOnRenderThread` of the thread bridge, or at once when it already failed.
+Adds a listener that runs with this resource and the error when it fails, through `runOnRenderThread` of the thread bridge, or at once when it already failed.

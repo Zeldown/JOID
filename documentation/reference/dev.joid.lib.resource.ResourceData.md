@@ -3,7 +3,7 @@ summary: The shared state of one resource, its decoder, pixels, textures, size a
 ---
 
 You meet it when you write a decoder or a resolver: the [[IResourceDecoder]] fills it, the [[Resource]] handles draw it.
-Decoding runs on a pool of 16 background threads; the upload and the callbacks run on the render thread.
+Decoding runs on a pool of 16 background threads; the upload and the listeners run on the render thread.
 When no handle uses it any more, its textures are freed at the next frame.
 
 Learn: [Custom formats](/use/learn/going-further/custom-formats/).
@@ -136,7 +136,7 @@ Allocates each texture at the size of the data and uploads its pixels; a decoder
 
 ## fail(Throwable)
 
-Makes the data fail with `error` and notifies the `onError` callbacks of every handle; only the first error counts.
+Makes the data fail with `error` and notifies the `onError` listeners of every handle; only the first error counts.
 In dev mode, it warns with the cause.
 
 ## listen(Resource)

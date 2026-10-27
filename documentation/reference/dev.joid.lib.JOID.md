@@ -16,7 +16,7 @@ The single instance of `JOID`.
 
 ## load()
 
-Loads JOID once: prints the version, the mode and the data and cache folders, cleans the cache in the background, loads the fonts of the dev tools in dev mode, installs the hook that saves the stores and properties when the JVM stops, then runs the `onReady` callbacks.
+Loads JOID once: prints the version, the mode and the data and cache folders, cleans the cache in the background, loads the fonts of the dev tools in dev mode, installs the hook that saves the stores and properties when the JVM stops, then runs the `onReady` listeners.
 [[Backend]] calls it at the end of `register()`; a second call does nothing.
 
 ## isReady()
@@ -25,8 +25,8 @@ If `true`, `load()` has finished; another thread sees it at once.
 
 ## onReady(Runnable)
 
-Runs the callback on the render thread once JOID has loaded, or at once (on the render thread) when it has already loaded.
-A callback that throws prints a warning and does not stop the next ones.
+Runs the listener on the render thread once JOID has loaded, or at once (on the render thread) when it has already loaded.
+A listener that throws prints a warning and does not stop the next ones.
 
 ## checkVersion(String)
 

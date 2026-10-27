@@ -1,6 +1,6 @@
 ---
 title: "base-glfw"
-description: "The GLFW module: a window bridge in screen pixels, an input forwarder that chains to the callbacks of the application, the key table, the OpenAL binding of LWJGL 3 and hidden windows for tests."
+description: "The GLFW module: a window bridge in screen pixels, an input forwarder that chains to the input handlers of the application, the key table, the OpenAL binding of LWJGL 3 and hidden windows for tests."
 genre: build
 sidebar:
   order: 1
@@ -26,15 +26,15 @@ The LWJGL 3 and Vulkan backends use it as it is.
 
 ## Input forwarder
 
-[[GlfwInputForwarder#attach]] installs the character, cursor, scroll, key and mouse button callbacks of a window and forwards each event to [[BridgeHandler#UI]]:
+[[GlfwInputForwarder#attach]] installs the character, cursor, scroll, key and mouse button handlers of a window and forwards each event to [[BridgeHandler#UI]]:
 
 - a key press becomes `keyPressed(position, printed key)`, a release `keyReleased(position)`;
-- a key repeat never reaches JOID as a press: the forwarder asks `isKeyConsumed` whether the callback of the application may see it;
+- a key repeat never reaches JOID as a press: the forwarder asks `isKeyConsumed` whether the handler of the application may see it;
 - a button press becomes `mousePressed`, a release `mouseReleased`;
 - the scroll offsets go through as notches, fractions included, and the characters as whole code points.
 
-The forwarder keeps the callbacks that the window had before `attach` and calls them for every event that JOID does not consume.
-An application that sets its callbacks before registering the backend therefore keeps them, behind JOID ([Respect the consumption](/build/input/#respect-the-consumption)).
+The forwarder keeps the handlers that the window had before `attach` and calls them for every event that JOID does not consume.
+An application that sets its handlers before registering the backend therefore keeps them, behind JOID ([Respect the consumption](/build/input/#respect-the-consumption)).
 
 ## Keys
 
@@ -49,6 +49,6 @@ It lives here, with the OpenAL library of LWJGL 3 and its natives, so that base-
 
 ## Hidden windows
 
-[[GlfwSnapshotWindow]] opens a hidden, undecorated window of a fixed size for the snapshot backends of the tests; a callback sets the hints of the backend before the window exists.
+[[GlfwSnapshotWindow]] opens a hidden, undecorated window of a fixed size for the snapshot backends of the tests; a `Runnable` sets the hints of the backend before the window exists.
 Undecorated, its framebuffer has the size asked for, whatever the screens of the machine.
 It ships in the dev and demo jars of the backends; the published `joid-base-glfw` jar does not hold it.

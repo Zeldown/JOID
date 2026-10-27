@@ -39,7 +39,7 @@ Each call returns `true` when JOID consumed the event.
 3. When it returns `false`, give it to the host as if JOID did not exist.
 
 When the window already had handlers before the backend registered, keep them and call them only for the events that JOID did not consume.
-The GLFW forwarder of [base-glfw](/build/base-modules/glfw/) does exactly that with the callbacks set before `register()`.
+The GLFW forwarder of [base-glfw](/build/base-modules/glfw/) does exactly that with the handlers set before `register()`.
 
 ## Send the position and the printed key
 
