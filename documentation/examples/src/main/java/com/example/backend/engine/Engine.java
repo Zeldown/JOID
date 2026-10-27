@@ -29,6 +29,7 @@ public interface Engine {
 	public boolean isRenderThread();
 	public void post(final Runnable task);
 
+	public long getGameNanos();
 	public boolean isInterfaceHidden();
 	public float getVolume(final Object group);
 

@@ -3,6 +3,10 @@ summary: The bridge that tells JOID which thread draws and runs the work of othe
 ---
 
 Every entry point of JOID that must run on the render thread goes through [[ThreadUtils#runOnRenderThread]], which calls this bridge.
+This bridge hands the work to the queue of an engine that draws on a thread of its own:
+
+```java file="com/example/backend/EngineThreadBridge.java" region="thread"
+```
 
 Learn: [Thread bridge](/build/bridges/thread/), [Threads](/use/learn/running/threads/).
 

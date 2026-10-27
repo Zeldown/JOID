@@ -34,6 +34,7 @@ public final class EngineRenderBridge extends RenderBridge {
 		return this.device;
 	}
 
+	// #region draw
 	@Override
 	protected void drawPrimitive(final Primitive primitive, final VertexBuffer buffer, final IShader shader) {
 		super.requireFrame();
@@ -56,6 +57,7 @@ public final class EngineRenderBridge extends RenderBridge {
 		final ByteBuffer vertices = VertexFill.complete(buffer, this.getVertices(buffer));
 		this.device.draw(primitive == Primitive.LINES, vertices, buffer.getCount(), program.getProgram());
 	}
+	// #endregion
 
 	@Override
 	protected void clearColorBuffer(final float red, final float green, final float blue, final float alpha) {

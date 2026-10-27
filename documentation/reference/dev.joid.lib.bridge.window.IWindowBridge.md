@@ -4,6 +4,10 @@ summary: The bridge that reads the drawable size, the mouse, the held keys and t
 
 It never creates a window: the backend or the host owns it.
 The input events do not go through it; the backend forwards them to `BridgeHandler.UI`.
+This bridge reads everything from the engine that owns the window:
+
+```java file="com/example/backend/EngineWindowBridge.java" region="window"
+```
 
 Learn: [Window bridge](/build/bridges/window/), [Input forwarding](/build/input/).
 
