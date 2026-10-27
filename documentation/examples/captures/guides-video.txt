@@ -1,5 +1,6 @@
 # crop guides-video 550 190 820 600
 # still guides-video 0
+# quality guides-video 82
 ui com.example.guides.VideoGuideUI
 wait 2000
 move 1250 760

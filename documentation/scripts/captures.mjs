@@ -9,7 +9,7 @@ const SCENARIOS = join(DOCUMENTATION, 'examples', 'captures');
 const EXPANDED = join(DOCUMENTATION, 'examples', 'build', 'captures', 'scenarios');
 const RAW = join(DOCUMENTATION, 'examples', 'build', 'captures', 'raw');
 const OUTPUT = join(DOCUMENTATION, 'public', 'captures');
-const DIRECTIVE = /^#\s*(crop|pad|still|hold)\s+(\S+)\s+(.*)$/;
+const DIRECTIVE = /^#\s*(crop|pad|still|hold|quality)\s+(\S+)\s+(.*)$/;
 const FILM = /^#\s*film\s+(\S+)(?:\s+(\d+))?\s*$/;
 
 const args = process.argv.slice(2);
@@ -202,9 +202,10 @@ async function main() {
 			}
 			const delay = film.times.map((time, index) => (index + 1 < film.times.length ? film.times[index + 1] - time : setting.hold?.[0] ?? Math.round(1000 / film.fps)));
 			const buffers = await Promise.all(frames.map((frame) => sharp(frame).extract(region).png().toBuffer()));
-			await sharp(buffers, { join: { animated: true } }).webp({ lossless: true, loop: 0, delay }).toFile(target);
+			const encoding = setting.quality ? { quality: setting.quality[0], smartSubsample: true } : { lossless: true };
+			await sharp(buffers, { join: { animated: true } }).webp({ ...encoding, loop: 0, delay }).toFile(target);
 			const still = Math.min(setting.still?.[0] ?? buffers.length - 1, buffers.length - 1);
-			await sharp(buffers[still]).webp({ lossless: true }).toFile(join(OUTPUT, `${name}.still.webp`));
+			await sharp(buffers[still]).webp(encoding).toFile(join(OUTPUT, `${name}.still.webp`));
 		}
 		console.log(`${name}.webp ${region.width}x${region.height}${film ? `, ${frames.length} frames, ${film.times[film.times.length - 1]} ms` : ''}`);
 	}
