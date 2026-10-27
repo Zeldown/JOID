@@ -1,6 +1,6 @@
 ---
 title: "base-glfw"
-description: "The GLFW module: a window bridge in screen pixels, an input forwarder that chains to the input handlers of the application, the key table, the OpenAL binding of LWJGL 3 and hidden windows for tests."
+description: "The GLFW module: a window bridge in screen pixels, an input forwarder that chains to the GLFW callbacks of the application, the key table, the OpenAL binding of LWJGL 3 and hidden windows for tests."
 genre: build
 sidebar:
   order: 1
@@ -26,15 +26,15 @@ The LWJGL 3 and Vulkan backends use it as it is.
 
 ## Input forwarder
 
-[[GlfwInputForwarder#attach]] installs the character, cursor, scroll, key and mouse button handlers of a window and forwards each event to [[BridgeHandler#UI]]:
+[[GlfwInputForwarder#attach]] installs the character, cursor, scroll, key and mouse button callbacks of a GLFW window and forwards each event to [[BridgeHandler#UI]]:
 
 - a key press becomes `keyPressed(position, printed key)`, a release `keyReleased(position)`;
-- a key repeat never reaches JOID as a press: the forwarder asks `isKeyConsumed` whether the handler of the application may see it;
+- a key repeat never reaches JOID as a press: the forwarder asks `isKeyConsumed` whether the callback of the application may receive it;
 - a button press becomes `mousePressed`, a release `mouseReleased`;
 - the scroll offsets go through as notches, fractions included, and the characters as whole code points.
 
-The forwarder keeps the handlers that the window had before `attach` and calls them for every event that JOID does not consume.
-An application that sets its handlers before registering the backend therefore keeps them, behind JOID ([Input forwarding](/build/input/#guarantees)).
+The forwarder keeps the callbacks that the window had before `attach` and calls them for every event that JOID does not consume.
+An application that sets its callbacks before registering the backend therefore keeps them, behind JOID ([Input forwarding](/build/input/#guarantees)).
 
 ## Keys
 

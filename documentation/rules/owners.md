@@ -67,7 +67,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Every warning and exception message | reference/errors (generated) |
 | Every key constant | reference (Key page, generated) |
 | Terms | reference/glossary |
-| How JOID thinks: the map of JOID without code (UIs and their stacking, the node tree and the life of a node, the design canvas, signals, the backend and its bridges, one frame), first Learn page; each notion in one to three sentences and a link to its owner | use/learn/how-joid-thinks |
+| How JOID works: the map of JOID without code (UIs and their stacking, the node tree and the life of a node, the design canvas, signals, the backend and its bridges, one frame), first Learn page; each notion in one to three sentences and a link to its owner | use/learn/how-joid-thinks |
 | Position, size, anchors, aspect ratio, node `zindex`/`zlevel`, `visible`, `enabled`, `copy` | use/learn/describing-the-ui/position-and-size |
 | Node lifecycle and its callbacks (`onInit`, `onChildAppend`, `onMount`, `onUpdate`, `onRender`, `onDraw`, `onDetach`) | use/learn/describing-the-ui/node-lifecycle |
 | No production font is shipped: loading your own font is required | use/learn/describing-the-ui/fonts (the Pitfall); quick-start and the other pages give one sentence |

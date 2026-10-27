@@ -2,7 +2,7 @@
 summary: The backend for LWJGL 3, which draws with OpenGL into a GLFW window and plays sound with the OpenAL of LWJGL 3.
 ---
 
-Create the window and make its context current, then register the backend; it attaches the input handlers of the window itself.
+Create the window and make its context current, then register the backend; it attaches the GLFW input callbacks of the window itself.
 
 Learn: [Start a backend](/use/learn/running/backends/#start-a-backend), [LWJGL 3 backend](/build/backends/lwjgl3/).
 
