@@ -97,7 +97,13 @@ The passes of all the effects of a node run in one pipeline per scope, in the or
 
 ## Place your effect among the others
 
+The constructor of the hard shadow gives its priority to `super(...)`:
+
+```java file="com/example/further/HardShadowNodeEffect.java" region="priority"
+```
+
 The priority orders the effects of a node: the lowest priority wraps all the others, and its passes run first.
+At `-60`, the hard shadow wraps every built-in effect but the transform, at `-100`, which turns the shadow with the node.
 The built-in effects use priorities from `-100`, the transform, to `200`, the border ([Effects](/use/learn/style-and-motion/effects/) lists them).
 `priority(...)` changes the priority of one effect, and both `priority` and `scope` also take a `Supplier`.
 

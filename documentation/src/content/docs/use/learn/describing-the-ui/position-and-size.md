@@ -106,6 +106,8 @@ The order of whole UIs is another `zindex`, set on the UI ([Overlays and popups]
 
 ## Hide or disable a node
 
+`shown` is a [[BooleanSignal]] field of the UI: `visible(this.shown)` follows it, and the white square toggles it ([Signals](/use/learn/interactivity/signals/)).
+
 ```java file="com/example/describing/position/HideUI.java" region="hide"
 ```
 
@@ -120,9 +122,9 @@ The hidden square is neither drawn nor clickable; the disabled one is drawn but 
 
 - [[Node#visible(boolean)]] `false` hides the node and its children: they are not drawn and receive no input.
 - [[Node#enabled(boolean)]] `false` keeps the node and its children drawn, but they receive no input and show no hover.
-- `interactive(false)` lets the mouse go through a node to what is below it ([Events](/use/learn/interactivity/events/)).
 
 `isVisible()` and `isEnabled()` take the parents into account: a child of a hidden node is hidden.
+[Events](/use/learn/interactivity/events/#let-the-pointer-through-a-decoration) compares both with `interactive(false)`, which lets the pointer through a node.
 
 ## Copy a node
 

@@ -80,6 +80,11 @@ The handle receives every press of the UI, so it tests `isHovered()` before it s
 
 ## Pin items in place
 
+The header of `HandleListUI` stays first, whatever the user drags:
+
+```java file="com/example/interactivity/reorder/HandleListUI.java" region="pin"
+```
+
 [[ReorderableFlexNode#pin]] keeps children in their slot: the user cannot drag them, and the other children move around them.
 [[ReorderableFlexNode#unpin]] frees them again, and [[ReorderableFlexNode#isPinned]] tells whether a child is pinned.
 

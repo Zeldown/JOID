@@ -131,7 +131,7 @@ This window moves only from its grey bar:
 A drag that started goes to its end, drop animation included, even when the pointer leaves the bar during a fast move.
 [[DraggableProperty#disabled]] turns the drag off, and `draggable(...)` again replaces the property; it stops a drag in progress when the new property has another `DraggableType` or refuses the node.
 
-## Keep the position writable during a drag
+## Know how a drag writes the position
 
 After the release, the node still eases toward the pointer, its target or its start.
 

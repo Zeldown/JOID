@@ -36,8 +36,9 @@ On a 16:9 window, the canvas fills it exactly.
 On a wider window, the window shows more space on the left and on the right of the canvas; on a taller one, above and below.
 That space is still part of the UI: nodes can be drawn there, at negative positions or beyond 1920 and 1080.
 
-The size of the window is in screen pixels ([[UI#getWindowWidth]], [[UI#getWindowHeight]]), the only place where JOID uses them.
+The size of the window is in screen pixels: [[UI#getWindowWidth]], [[UI#getWindowHeight]].
 The position of the mouse is in design pixels, like the nodes: [[UI#getMouseX]] and [[UI#getMouseY]].
+[[UI#getView]] converts between the two units: `toScreenX(x)` gives the screen pixel of a design position, `toUiX(x)` the design position of a screen pixel, and `toScreenY`, `toUiY`, `toScreenWidth` and `toScreenHeight` do the same for the other axis and the sizes.
 
 ## Reach the edges of the window
 
@@ -122,15 +123,16 @@ The zoom makes a UI smaller around its anchor, on top of the fit and the interfa
 ![A window whose light grey UI is drawn smaller than the window, framed by the dark window around it, with a white card in its middle that reads 80 % above two grey buttons marked minus and plus; the pointer clicks plus and the UI grows to 90 %, then clicks minus and the UI shrinks back to 80 %.](/captures/describing-canvas-zoom.webp)
 
 <figcaption>
-At a zoom of 0.8, the whole UI is drawn at 80 % of its size, around the center of the window.
+At a zoom of `0.8D`, the whole UI is drawn at 80 % of its size, around the center of the window.
 </figcaption>
 </figure>
 
-[[UI#getZoom]] reads the zoom; 1 is the size of the fit.
+[[UI#getZoom]] reads the zoom shown; `1D` is the size of the fit.
+The zoom shown stays between `0.1D` and `1D`, and goes up to the size of the fit when the interface scale is below `1D`.
 
 - [[UI#zoom(double)]] sets the zoom, like any setter; [[UI#zoom(Signal)]] ties it to a signal, both ways.
-  A zoom beyond the bounds below stays asked for, and applies once the interface scale allows it.
-- [[UI#zoomTo]] and [[UI#zoomBy]] change it the way the user does, between 0.1 and 1, or up to the size of the fit when the interface scale is below 1.
+  A value beyond the bounds stays asked for: `zoom(1.5D)` shows `1D` until the interface scale allows more.
+- [[UI#zoomTo]] and [[UI#zoomBy]] change it the way the user does, within the bounds.
 - In [dev mode](/use/get-started/dev-tools/), keys and the mouse wheel zoom the UI unless `@UIData(zoomable = false)`; an application that lets the user zoom gives its own controls, which call `zoomTo` or `zoomBy`.
 
 A change by the user, `zoomTo` or `zoomBy` asks the [[UI#beforeZoom]] listeners first, then tells the [[UI#onZoom]] listeners:
@@ -138,8 +140,8 @@ A change by the user, `zoomTo` or `zoomBy` asks the [[UI#beforeZoom]] listeners 
 ```java file="com/example/describing/canvas/ZoomUI.java" region="limit"
 ```
 
-Here the zoom never goes below 0.5: the listener cancels any change below it.
-The listeners see the zoom shown: a request that the bounds keep off the screen runs none of them.
+Here the zoom never goes below `0.5D`: the listener cancels any change below it.
+The listeners run only for a zoom that changes what is shown: a request that the bounds clamp to the current zoom runs none of them.
 
 ## Recap
 

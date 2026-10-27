@@ -17,7 +17,7 @@ public class HandleUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(HandleUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(HandleUI.INK);
 
 		RectNode
 		.create(560, 340, 800, 400)

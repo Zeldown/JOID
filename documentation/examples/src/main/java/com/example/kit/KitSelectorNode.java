@@ -19,7 +19,7 @@ public class KitSelectorNode<V> extends SelectorNode<V> {
 		.create(0, 0, 0, 0)
 		.color(KitColors.SURFACE)
 		.hoveredColor(KitSelectorNode.HOVER)
-		.label(Text.create(value, TextInfo.create(ExampleFont.REGULAR, 22).color(KitColors.INK))));
+		.label(Text.create(value, TextInfo.create(ExampleFont.REGULAR, 22F).color(KitColors.INK))));
 	}
 
 	public static <V> KitSelectorNode<V> create(final double x, final double y, final double width, final double height) {

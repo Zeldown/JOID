@@ -19,7 +19,7 @@ public class ThroughUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(ThroughUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(ThroughUI.INK);
 		final IntegerSignal blocked = new IntegerSignal(0);
 		final IntegerSignal through = new IntegerSignal(0);
 

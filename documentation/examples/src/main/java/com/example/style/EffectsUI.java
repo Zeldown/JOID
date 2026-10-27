@@ -99,7 +99,7 @@ public class EffectsUI extends UI {
 			final Node node = event.getNode();
 			final double centerX = node.getX() + node.getWidth() / 2D;
 			final double centerY = node.getY() + node.getHeight() / 2D;
-			this.mask(node.getX(), node.getY(), node.getWidth(), node.getHeight() / 2D, () -> {
+			super.mask(node.getX(), node.getY(), node.getWidth(), node.getHeight() / 2D, () -> {
 				DrawUtils.SHAPE.drawCircle(centerX, centerY, EffectsUI.INK, 90D);
 			});
 		})

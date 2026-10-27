@@ -18,7 +18,7 @@ public class DragUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(DragUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(DragUI.INK);
 		final IntegerSignal drops = new IntegerSignal(0);
 
 		RectNode

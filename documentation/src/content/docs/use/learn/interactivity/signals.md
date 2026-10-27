@@ -108,7 +108,9 @@ Some code cannot be replayed, and then the value stays fixed:
 
 | In the expression | Result |
 |---|---|
-| `get()` on a signal held by a field, a local variable or a store | Followed |
+| `get()` on a signal held by a field or a local variable | Followed |
+| `get()` on a signal returned by a getter of a field, such as `this.settings.getMusic().get()` | Followed |
+| `get()` on a signal returned by a getter of a local variable that holds no signal, such as a store from `useStore(...)` or a variable that the lambda of a `body` uses | Followed, except after a condition on a signal in the same expression (`music.get() ? ... : ...`): frozen |
 | A field of the class that is not a signal, such as `this.bonus` | Read again each time a signal of the expression changes, never on its own |
 | A local variable set before the call, from fields or signals | Followed |
 | The variable of a loop inside a text, such as `name + ": " + score.get()` | Followed |

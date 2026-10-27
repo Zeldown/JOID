@@ -20,7 +20,7 @@ public class WalkUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(WalkUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(WalkUI.INK);
 
 		RectNode
 		.create(660, 390, 600, 300)

@@ -12,7 +12,7 @@ JOID ships as jars attached to each [GitHub release](https://github.com/Zeldown/
 This page adds one backend jar to a Gradle project, declares the libraries next to it, and checks that Gradle compiles against it.
 
 **Prerequisites**
-- A JDK 8 or later, and Gradle.
+- A JDK 8 or later, and Gradle 6.4 or later.
 - A machine that meets the [prerequisites of your backend](/use/learn/running/backends/#check-the-prerequisites).
   If you do not know which backend to pick, take LWJGL 3: [Choosing a backend](/use/learn/running/backends/) compares the three.
 
@@ -28,7 +28,7 @@ Download from the release the jar of your backend, in its `-dev` flavor while yo
 
 Put it in a `libs/` folder at the root of your project.
 A backend jar holds the JOID core and the libraries that JOID uses for images, SVG, WebP, video and JSON.
-All but the video libraries are relocated under `dev.joid.shaded`, so that they never clash with the versions your application uses.
+All but the video libraries, and JNA in the LWJGL 2 jar, are relocated under `dev.joid.shaded`, so that they never clash with the versions your application uses.
 Put exactly one backend jar on each classpath: two backend jars hold the same classes and break each other.
 
 The release also holds two optional tools, each a plain jar next to your backend jar:

@@ -43,6 +43,7 @@ Each event goes to the UIs first; an event that no UI [consumes](/use/learn/inte
 ```
 
 Here, Escape closes the window only when no UI used it, for example to [close a screen](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard).
+To compare a position of your own with the nodes of a UI, [[UI#getView]] converts between screen pixels and design pixels ([Place nodes on the canvas](/use/learn/describing-the-ui/design-canvas/#place-nodes-on-the-canvas)).
 The same rule holds for releases: when a UI consumed a press, your callback receives neither the press nor its release.
 An overlay that receives the input is the exception: `cancelClick`, `cancelScroll` and `cancelKeyboard` of [[UIDataOverlayInteraction]] decide whether an event it used still reaches your callback ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)).
 
@@ -132,7 +133,7 @@ The UI registry, [[BridgeHandler#UI]], orders its bridges by priority:
   An open UI stays with the bridge that holds it, whatever you register afterwards.
 - Input goes to the bridges from the highest and stops at the first one that consumes it.
   A key release goes to every bridge, and a mouse release to every bridge that received the press.
-- Only the lowest bridge clears the window, so the bridges above it never need a background.
+- Only the lowest bridge clears the window, so the bridges above it never clear the window background.
 - Each bridge draws its own tooltips with its own `hoverInfo`, and the window shows the cursor of the highest bridge whose hovered node sets one.
 
 [[BridgeRegistry#getBridgeList]] lists the bridges from the lowest to the highest priority, and [[BridgeRegistry#unregister]] removes one.
@@ -146,7 +147,7 @@ Writing the contract of a UI bridge of your own belongs to the Build on JOID doc
 
 - Call **`frame()`** once per frame, between polling the events and showing the frame.
 - An event that no UI **consumes** reaches the GLFW callbacks you set **before `register()`**.
-- To draw JOID **over your own scene**, register before the backend a bridge whose background clears only the depth and the stencil.
+- To draw JOID **over your own scene**, register before the backend a bridge whose `drawBackground()` clears only the depth and the stencil.
 - **`attachScreen()`** and **`detachScreen()`** tell your bridge when the first JOID screen or popup opens and when the last one closes.
 - **`projection = false`** draws a UI inside the projection of the host, and `zlevel` keeps the UIs of that scene in order.
 - **`register(bridge, priority)`**: the highest priority receives input first and is drawn on top; equal priorities favor the latest.

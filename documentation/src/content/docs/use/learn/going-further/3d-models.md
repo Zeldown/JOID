@@ -55,6 +55,9 @@ The first one turns by 45 degrees on each click of the button; the second one tu
 Each property takes a value or a `Supplier`, so a model can turn with a signal, as the yaw does here.
 JOID draws the model with lighting and its own depth test, then clears the depth, so the model never cuts into the nodes drawn after it.
 
+Both nodes extend [[BaseModelNode]], which holds the model: a [custom node](/use/learn/going-further/custom-nodes/) that extends it turns the model by a rule of its own and calls `drawModel(zoom, rotationYaw, rotationPitch)` from its `draw`.
+[Draw a 3D model](/use/learn/going-further/framebuffers-and-models/#draw-a-3d-model) draws a model without a node.
+
 ## Let the user rotate and zoom
 
 A [[ModelViewerNode]] turns its model while the user drags it with the left button, and zooms it with the mouse wheel:
@@ -64,7 +67,8 @@ A [[ModelViewerNode]] turns its model while the user drags it with the left butt
 
 - A drag of 5 design pixels turns the model by 1 degree; a notch of the wheel zooms by `0.04D`.
 - The drawn model eases toward the requested rotation and zoom, so a drag stays smooth.
-- `zoomRange(min, max)` bounds the zoom, `0.1D` to `2D` by default; `rotationYawRange` and `rotationPitchRange` bound the rotation, which is free by default. A range of `0D, 0D` locks an axis.
+- `zoomRange(min, max)` bounds the zoom, `0.1D` to `2D` by default; `rotationYawRange` and `rotationPitchRange` bound the rotation, which is free by default.
+  A range of `0D, 0D` locks an axis.
 
 The rotation and the zoom are values that both the user and your code change, like the value of a control ([Controls](/use/learn/interactivity/controls/) teaches the pattern):
 

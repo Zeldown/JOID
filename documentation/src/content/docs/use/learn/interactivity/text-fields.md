@@ -53,7 +53,7 @@ A field takes the keyboard only while it has the focus: it then consumes every k
 - A press on the field gives it the focus and puts the cursor under the pointer.
 - A press anywhere else takes the focus, and so do Enter in a one-line field, Escape, and the detach of the field.
 - Escape keeps the typed text ([Know who receives the keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard) gives what a second Escape does).
-- One field has the focus at a time, in all the UIs on the screen: a press on a field first takes the focus from the field that had it, which runs its `onBlur`, then gives it to the new one.
+- One field has the focus at a time among the UIs of a [UI bridge](/use/learn/running/embedding/) (the UIs of one window): a press on a field first takes the focus from the field that had it, which runs its `onBlur`, then gives it to the new one.
 
 [[FieldNode#focus]] and [[FieldNode#blur]] act from your code, and `focused(...)` binds the focus to a signal:
 
@@ -155,7 +155,7 @@ A field for another type extends [[LineFieldNode]] and says how a text becomes a
 | `correct(value)` | Brings a value back into its bounds, as `min` and `max` do |
 | `increment(value, count)` | Gives the value of `count` steps of Up and Down, or `null` for none |
 
-`startValue(...)` and `bindValue(...)` are the two forms of a value setter: give them a public name, as `value(...)` above.
+`startValue(...)` and `bindValue(...)` are `protected`: expose them under the name of your property, as `value(...)` does above.
 `write(value, true)` acts like the user, for a `change(...)` of your own.
 
 ```java file="com/example/interactivity/fields/ColorFieldUI.java" region="use"

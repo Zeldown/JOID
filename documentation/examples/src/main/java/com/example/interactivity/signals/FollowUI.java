@@ -18,7 +18,7 @@ public class FollowUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(FollowUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(FollowUI.INK);
 
 		RectNode
 		.create(660, 340, 600, 400)

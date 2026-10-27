@@ -20,8 +20,8 @@ public class PressUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(PressUI.INK);
-		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 24).color(Color.WHITE);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(PressUI.INK);
+		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 24F).color(Color.WHITE);
 		final IntegerSignal button = new IntegerSignal(0);
 		final IntegerSignal heard = new IntegerSignal(0);
 		final IntegerSignal hovered = new IntegerSignal(0);

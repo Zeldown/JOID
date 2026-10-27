@@ -15,7 +15,7 @@ public class NotesFieldUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(NotesFieldUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(NotesFieldUI.INK);
 
 		RectNode
 		.create(660, 340, 600, 400)

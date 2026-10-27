@@ -287,7 +287,7 @@ Text modifiers change the characters before layout.
 ## Cursors
 
 The cursor shapes a node asks for with `cursor(...)`; the operating system draws them, so their look follows the system.
-[Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/) shows how a node asks for one.
+[Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node) shows how a node asks for one.
 
 | Cursor | What the system shows, and when to use it |
 |---|---|

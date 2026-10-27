@@ -19,7 +19,7 @@ public class EnterUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(EnterUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(EnterUI.INK);
 
 		RectNode
 		.create(660, 340, 600, 400)

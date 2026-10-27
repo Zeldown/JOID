@@ -17,7 +17,7 @@ public class LimitUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(LimitUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(LimitUI.INK);
 		final IntegerSignal refused = new IntegerSignal(0);
 
 		RectNode

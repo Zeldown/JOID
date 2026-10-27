@@ -20,7 +20,7 @@ public class PlaylistUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(PlaylistUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(PlaylistUI.INK);
 
 		RectNode
 		.create(660, 240, 600, 600)

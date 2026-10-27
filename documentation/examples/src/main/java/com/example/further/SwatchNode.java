@@ -18,9 +18,11 @@ public class SwatchNode extends Node {
 
 	private static final EventType<NodeChangeEvent.Pre<?, Boolean>>  BEFORE_SELECT = EventType.create("beforeSelect");
 	private static final EventType<NodeChangeEvent.Post<?, Boolean>> SELECT        = EventType.create("onSelect");
-	private static final EventType<NodeEvent<SwatchNode>>      RESET         = EventType.create("onReset");
+	private static final EventType<NodeEvent<SwatchNode>>            RESET         = EventType.create("onReset");
 
+	// #region transient
 	private final transient InteractiveValue<Boolean> selectedValue;
+	// #endregion
 
 	private Color   color;
 	private boolean selected;

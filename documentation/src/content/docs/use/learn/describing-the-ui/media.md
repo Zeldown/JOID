@@ -185,7 +185,7 @@ ResourcePlayerNode.create(0, 0, 640, 360).resource(intro).audioGroup("music").at
 BridgeHandler.AUDIO.getBridge(AlAudioBridge.class).groupVolume("music", 0.4F);
 ```
 
-[[ResourcePlayerNode#location]] places the sound at a [[Point]] of your world.
+For a video placed in a 3D scene of your application, [[ResourcePlayerNode#location]] places the sound at a [[Point]] of that scene.
 It plays at full volume up to [[ResourcePlayerNode#referenceDistance]] from the listener (5 by default), then fades out until [[ResourcePlayerNode#maxDistance]] (50 by default).
 The listener stands at the origin until [[VideoAudioPlayer#audioListenerPosition]] gives it an [[AudioListenerPosition]], which JOID asks for the position of the listener every frame.
 
@@ -269,7 +269,7 @@ ResourceNode.create(100, 100).resource(logo).color(new Color(85, 85, 85)).hovere
 
 </details>
 
-**A looping background.**
+**A looping video behind the menu.**
 Play a silent video in a loop behind a whole menu, filling the 1920 × 1080 canvas without distortion.
 
 <details>

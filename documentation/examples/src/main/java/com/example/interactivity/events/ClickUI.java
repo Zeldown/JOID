@@ -19,7 +19,7 @@ public class ClickUI extends UI {
 	@Override
 	public void init() {
 		// #region click
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(ClickUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(ClickUI.INK);
 		final IntegerSignal clicks = new IntegerSignal(0);
 
 		RectNode

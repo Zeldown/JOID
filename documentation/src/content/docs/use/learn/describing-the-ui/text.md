@@ -51,10 +51,9 @@ Three styles from one font: a bold title, a body, and a smaller caption with spa
 | `letterSpacing(float)` | The space added between letters, on 1 of the size: `0.15F` adds 15 % of the size. |
 | `lineHeight(float)` | The height of a line, on 1 of the size: `1.5F` is 150 %; `0F` keeps the height of the font. |
 | `shadow()`, `shadow(Color)` | Adds a shadow under the text; `shadow()` follows the color of the text, 30 % darker, and `shadow(Color)` keeps a fixed color. |
-| `shadow(float, float)` | Moves the shadow, in design pixels; by default it sits one 13.5th of the size to the right and below. |
-| `shadowTint(Float)` | Draws the shadow in the color of each glyph multiplied by the tint (`0.3F` gives a dark shade of each color), for a text of several colors. |
 
-The other properties, markup and effects, belong to [Text markup and effects](/use/learn/describing-the-ui/text-markup-and-effects/).
+[[TextInfo]] lists the other settings, such as the offset and the tint of the shadow.
+The markup and the effects belong to [Text markup and effects](/use/learn/describing-the-ui/text-markup-and-effects/).
 
 Each setter changes the `TextInfo` itself, and every text built on it follows.
 Each one has a `with...` twin, such as [[TextInfo#withFontSize]], that leaves the style as it is and returns a changed copy: the caption above derives from the body without changing it.

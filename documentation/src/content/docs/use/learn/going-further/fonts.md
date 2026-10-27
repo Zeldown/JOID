@@ -104,17 +104,9 @@ A line with a shadow runs these methods twice: once for the shadow, then once fo
 Inside `drawGlyph`, `getShader()` returns the compiled shader, `getGrid()` the [[PixelGrid]] of the frame, and `bindColor(color)` sets the color of the glyph, a gradient included.
 
 Draw a [[TextGlyph]] from its getters, read in `drawGlyph`: the text effects change them before the call.
+`getX()` and `getBaseline()` give the pen position in design pixels, `getOffsetX()` and `getOffsetY()` the offset that an effect adds, `getCodepoint()` the character and `getColor()` the color, the shadow color in the shadow pass; [[TextGlyph]] lists the metrics of the face.
 
-| Getter | Gives |
-|---|---|
-| `getX()`, `getBaseline()` | The pen position and the baseline, in design pixels. |
-| `getOffsetX()`, `getOffsetY()` | The offset that a text effect adds. |
-| `getCodepoint()` | The character to draw, which an effect may replace. |
-| `getColor()` | The color to draw with: the shadow color in the shadow pass. |
-| `getSize()`, `getAscender()`, `getDescender()`, `getAdvance(codepoint)` | The size of the text and the metrics of the face at that size. |
-| `getFace()`, `getStyle()`, `isSlanted()` | The face, the requested style, and whether italic was asked from an upright face. |
-
-## Write a raw font
+## Know what a raw font must do
 
 When text is not a row of glyphs on a baseline, implement [[IFont]] and its [[ITextRenderer]] yourself.
 Markup, text effects, shadows, letter spacing and weights are then yours to implement.

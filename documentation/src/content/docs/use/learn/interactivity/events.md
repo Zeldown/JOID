@@ -33,8 +33,9 @@ Each press on the button runs its listener once.
 </figcaption>
 </figure>
 
-The listener receives a [[NodeMouseEvent]]: `getNode()` is the node, `getMouseX()` and `getMouseY()` the pointer in [design pixels](/use/learn/describing-the-ui/design-canvas/), `getButton()` the [[MouseButton]].
+The listener receives a [[NodeMouseEvent]]: `getNode()` is the node, `getMouseX()` and `getMouseY()` the pointer in [design pixels](/use/learn/describing-the-ui/design-canvas/).
 `onClick` runs when the left button goes down over the node, not when it goes up.
+For the right or the middle button, listen to the raw press with `handleMousePressed` and test the [[MouseButton]] that `getButton()` returns ([Hear the raw input](#hear-the-raw-input)).
 The text under the button reads `clicks`, so it changes with it: [Signals](/use/learn/interactivity/signals/) explains why.
 
 ## Let the pointer through a decoration
@@ -202,7 +203,7 @@ A listener of a UI added in `init()` lasts one opening, one added in the constru
 - [[Node#onClick]] runs when the left button goes down over the node, and **consumes** the press.
 - The **hovered** node is the frontmost interactive node under the pointer, with all its parents; `interactive(false)` lets the pointer through a node.
 - The **`handle`** listeners hear the raw input of the whole UI, wherever the pointer is, before the node handles it; `consume()` stops the input.
-- A consumed input reaches no other handler, no UI below and not the host; only the **`MONITOR`** listeners still hear it.
+- A consumed input reaches no other `handle` listener, no UI below and not the host; only the **`MONITOR`** listeners still hear it.
 - A **`before`** listener cancels a change that a gesture or a call such as `move(...)` asks for; setters and signals are never refused.
 - The **`on`** listeners tell what happened.
 - Listeners run by **priority**, then in the order you added them.

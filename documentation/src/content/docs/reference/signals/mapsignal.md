@@ -26,7 +26,6 @@ The keys keep the order in which they were first put.
 - [Signals](/use/learn/interactivity/signals/)
 - [Drag and drop](/use/learn/interactivity/drag-and-drop/)
 - [Best practices](/use/best-practices/)
-- [Troubleshooting](/use/troubleshooting/)
 
 ## Creation
 

@@ -30,11 +30,11 @@ public class DispatchDiagramUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo title = TextInfo.create(ExampleFont.REGULAR, 30).color(DispatchDiagramUI.LABEL);
-		final TextInfo small = TextInfo.create(ExampleFont.REGULAR, 22).color(DispatchDiagramUI.INK);
-		final TextInfo white = TextInfo.create(ExampleFont.REGULAR, 24).color(Color.WHITE);
-		final TextInfo step = TextInfo.create(ExampleFont.REGULAR, 24).color(DispatchDiagramUI.LABEL);
-		final TextInfo accent = TextInfo.create(ExampleFont.REGULAR, 24).color(DispatchDiagramUI.ACCENT);
+		final TextInfo title = TextInfo.create(ExampleFont.REGULAR, 30F).color(DispatchDiagramUI.LABEL);
+		final TextInfo small = TextInfo.create(ExampleFont.REGULAR, 22F).color(DispatchDiagramUI.INK);
+		final TextInfo white = TextInfo.create(ExampleFont.REGULAR, 24F).color(Color.WHITE);
+		final TextInfo step = TextInfo.create(ExampleFont.REGULAR, 24F).color(DispatchDiagramUI.LABEL);
+		final TextInfo accent = TextInfo.create(ExampleFont.REGULAR, 24F).color(DispatchDiagramUI.ACCENT);
 
 		RectNode
 		.create(360, 170, 1200, 740)

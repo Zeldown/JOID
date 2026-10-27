@@ -26,7 +26,7 @@ public class SettingsUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(SettingsUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(SettingsUI.INK);
 
 		RectNode
 		.create(560, 340, 800, 400)

@@ -9,7 +9,9 @@ import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 
+// #region permanent
 @UIStoreData(id = "sound", scope = UIStoreScope.PERMANENT)
+// #endregion
 public class SettingsStore extends UIStore {
 
 	private final IntegerSignal volume = new IntegerSignal(5);

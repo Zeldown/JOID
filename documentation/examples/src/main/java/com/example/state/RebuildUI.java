@@ -42,7 +42,7 @@ public class RebuildUI extends UI {
 		.create(980, 240, 280, 60)
 		.color(RebuildUI.INK)
 		.onClick(event -> this.items.remove(this.items.size() - 1))
-		.visible(() -> !this.items.isEmpty())
+		.visible(!this.items.isEmpty())
 		.label(Text.create("Remove", label))
 		.attach(this);
 		// #endregion

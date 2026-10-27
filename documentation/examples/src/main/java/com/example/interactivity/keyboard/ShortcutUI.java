@@ -23,7 +23,7 @@ public class ShortcutUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(ShortcutUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(ShortcutUI.INK);
 
 		// #region shortcut
 		Shortcut.create(Key.S).ctrl(true).onTrigger(event -> this.saves.increment()).attach(this);

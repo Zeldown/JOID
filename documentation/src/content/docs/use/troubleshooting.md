@@ -53,8 +53,7 @@ A node follows a value only when JOID can compute it again ([Signals](/use/learn
 1. **The value is not a signal.** A plain field or a local variable, read once, never updates the node: hold it in a signal.
 2. **JOID could not follow the expression.** A lambda inside the expression, or a local variable in a calculation, leaves it fixed, and the dev jar prints `[JOID] … but cannot follow it: …` with the line, the reason and the fix ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 3. **The signal object was replaced.** A node follows the signal it read: give the existing signal a value with `set(...)` instead of creating another signal.
-4. **The collection changed behind the signal.** Change a [[ListSignal]], [[MapSignal]] or [[SetSignal]] through its own methods, never through the collection that `get()` returns.
-5. **The number of nodes depends on the value.** Rows that follow a list need a rebuild ([Rebuilding the tree](/use/learn/state/rebuilding/)).
+4. **The number of nodes depends on the value.** Rows that follow a list need a rebuild ([Rebuilding the tree](/use/learn/state/rebuilding/)).
 
 ## My click does nothing
 

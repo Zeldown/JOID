@@ -20,14 +20,14 @@ public class ChoicesUI extends UI {
 	private static final Color INK         = new Color(153, 153, 153).lock();
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
-	private final Signal<String> quality = new Signal<>("HIGH");
-	private final BooleanSignal night = new BooleanSignal(false);
-	private final Signal<String> language = new Signal<>("English");
+	private final Signal<String> quality    = new Signal<>("HIGH");
+	private final BooleanSignal  night      = new BooleanSignal(false);
+	private final Signal<String> language   = new Signal<>("English");
 	private final Signal<String> difficulty = new Signal<>("Normal");
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(ChoicesUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(ChoicesUI.INK);
 
 		RectNode
 		.create(100, 140, 820, 380)

@@ -35,17 +35,18 @@ Create `SettingsStore.java`:
 - `toJson()` writes the values when JOID saves the store; `fromJson(...)` reads them back when a file exists, and without one the store keeps the defaults of its fields.
 - The values are signals, so every node built from them follows them.
 
-The values travel in a `Map`, and a number comes back from the file as a `Long` or a `Double`: `((Number) json.get("volume")).intValue()` reads it as an `int`.
+The values travel in a `Map`, and a number comes back from the file as a `Long` or a `Double`: `((Number) json.get("volume")).intValue()` reads it as an `int` ([Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk)).
 Nothing uses the store yet, so the menu looks the same.
 
 ## 2. Change the settings in the popup
 
 `SettingsUI` gets the store with `useStore(...)`, and replaces the two fixed lines with buttons:
 
-```java file="com/example/tutorial/settings/SettingsUI.java" title="SettingsUI.java" ins={13,24,31-58}
+```java file="com/example/tutorial/settings/SettingsUI.java" title="SettingsUI.java" ins={8-9,15,26-28,35-62}
 ```
 
 - `useStore(SettingsStore.class, SettingsStore::new)` returns the store, and creates it with the factory the first time.
+- `music` and `volume` hold the two signals of the store: JOID follows a signal read from a local variable anywhere in an expression, while a getter of `settings` read after a condition on a signal is not followed ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 - The On/Off button toggles `music`, and its label is built from it.
 - The minus and plus buttons change `volume` by one step, between 0 and 10; the text shows it as a percentage.
 
@@ -65,16 +66,16 @@ Add a line under the buttons, built from both settings:
 ```java file="com/example/tutorial/settings/MenuUI.java" region="footer"
 ```
 
-The two signals go into local variables first: JOID follows `music.get()`, but not `settings.getMusic().get()` read through the local variable `settings` ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
+As in `SettingsUI`, the two signals go into local variables first: the line decides between `Music on` and `Music off` from `music` before it reads the volume.
 
 **Run it.**
 Open the settings and change the music and the volume: the line under the buttons changes at once, behind the popup.
 
-## 4. Save when the program stops
+## 4. Close the UIs when the program stops
 
-JOID saves the store when a UI that uses it closes.
-When the player closes the window instead, the menu is still open when the loop ends.
-Close every open UI after the loop, before the window is destroyed:
+JOID saves the store when a UI that uses it closes, and again when the program exits normally.
+When the player closes the window, the menu is still open when the loop ends.
+Close every open UI after the loop, before the window is destroyed: their close listeners run and the store reaches the disk at that moment, while a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
 
 ```java file="com/example/tutorial/settings/Main.java" title="Main.java" ins={44}
 ```
@@ -117,5 +118,5 @@ A property suits a value that belongs to one UI; a store suits values that sever
 
 - A [store](/use/learn/state/stores-and-properties/) holds values that outlive a UI; its scope decides how long it lives and whether it is saved.
 - Two UIs that ask for the same `PERMANENT` store share its signals.
-- JOID saves stores and properties when a UI closes, so [close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends).
+- JOID saves stores and properties when a UI closes; [close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends) so that they close properly.
 - A field marked `@UIProperty` keeps its value from one run to the next ([Stores and remembered properties](/use/learn/state/stores-and-properties/#remember-a-field-of-a-ui)).

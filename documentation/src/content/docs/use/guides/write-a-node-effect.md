@@ -28,43 +28,34 @@ The badge that the effect draws over the button, until a click sets the count to
 
 ## 1. Create the effect
 
-Extend [[NodeEffect]] typed for [[Node]], so that every node takes it.
-Keep each setting in a `Supplier`, and give the class a `create(...)` factory for its required value:
+Extend [[NodeEffect]] typed for [[Node]], so that every node takes it, keep each setting in a `Supplier`, and give the class a `create(...)` factory for its required value ([Custom effects](/use/learn/going-further/custom-effects/)):
 
 ```java file="com/example/guides/BadgeNodeEffect.java" region="class"
 ```
-
-[[Signal#from]] turns the color into a `Supplier` that never changes.
 
 **Check:** the class compiles.
 
 ## 2. Draw the badge
 
-JOID calls `draw(node, body)` with the drawing of the node and its children as `body`.
-Run `body` first, then draw the badge, so that it sits on top of them:
+Run `body` first, then draw the badge on top of it ([Draw around a node](/use/learn/going-further/custom-effects/#draw-around-a-node)):
 
 ```java file="com/example/guides/BadgeNodeEffect.java" region="draw"
 ```
-
-`node.getX()` and `node.getY()` are the position of the node in the coordinates the effect draws in.
 
 **Check:** give a node the effect in white [[Color]], with `effect(BadgeNodeEffect.create(Color.WHITE))`: a dot shows on its top-right corner.
 
 ## 3. Add the setters
 
-Give each setting a value setter and a `Supplier` setter, as the built-in effects do:
+Give each setting a value setter and a `Supplier` setter, as a node does for its properties ([Give the node a property](/use/learn/going-further/custom-nodes/#give-the-node-a-property)):
 
 ```java file="com/example/guides/BadgeNodeEffect.java" region="setters"
 ```
-
-The value setter passes its value to `Signal.from`, so a value that reads a signal follows it, as with the setters of the nodes ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 
 **Check:** `BadgeNodeEffect.create(Color.WHITE).shown(false)` compiles, and the dot still shows: nothing reads `shown` yet.
 
 ## 4. Hide it when the count is zero
 
-JOID asks `shouldApply(node)` each time the node draws, before it runs the effect.
-Return the `shown` setting, so the badge disappears while it is `false`:
+Return the `shown` setting from `shouldApply(node)`, so the badge disappears while it is `false` ([Change how a node draws](/use/learn/going-further/custom-effects/#change-how-a-node-draws)):
 
 ```java file="com/example/guides/BadgeNodeEffect.java" region="apply"
 ```
@@ -88,9 +79,9 @@ The count of unread messages is an [[IntegerSignal]] that starts at 3:
 ## If it does not work
 
 1. Nothing appears: `shouldApply` returns `false`, or the badge is drawn away from the node; draw from `node.getX()` and `node.getY()`.
-2. The badge appears under the node: `draw` draws it before `body.run()`; run `body` first.
+2. The badge appears under the node: run `body` before drawing it ([Draw around a node](/use/learn/going-further/custom-effects/#draw-around-a-node)).
 3. The badge does not follow the count: the count is a plain `int`, read once; keep it in a signal and pass `unread.get() > 0` ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
-4. `effect(...)` does not compile: the effect is typed for another node class; type it `NodeEffect<Node>` to accept every node.
+4. `effect(...)` does not compile: type the effect `NodeEffect<Node>` ([Place your effect among the others](/use/learn/going-further/custom-effects/#place-your-effect-among-the-others)).
 5. The badge is cut at the edge of a parent: the parent clips its children ([Layout](/use/learn/describing-the-ui/layout/)); move the badge inside the node, or leave room around the node.
 
 ## Reference

@@ -59,7 +59,9 @@ The state of a playing transition is on the UI: [[UI#getTransitionIn]] and [[UI#
 ## Write a transition of your own
 
 A transition is a class that extends [[Transition]] and passes two [[TransitionStep]] values to its constructor: one for the opening, one for the closing.
-This one slides the UI up from below its place with a small overshoot, and drops it down when it closes:
+This one slides the UI up from below its place with a small overshoot, and drops it down when it closes.
+`getModelView()` of the render bridge is the matrix stack that every drawing goes through: `with(...)` saves it, runs the lambda, which translates it and draws `body`, then restores it.
+
 
 ```java file="com/example/style/SlideTransition.java"
 ```
@@ -75,8 +77,7 @@ This one slides the UI up from below its place with a small overshoot, and drops
 `draw((ui, progress, body) -> ...)` receives the progress of the step, from `0F` to `1F` with its easing applied, and `body`, which draws the UI: wrap `body.run()` in the transformation of this progress.
 Both steps count their progress from `0F` at their start, so the opening places the UI at `1F - progress` away, and the closing at `progress` away.
 
-The matrix stack of the render bridge moves, scales or turns what `body` draws ([Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/)).
-Its translations are in design pixels, like the positions of the nodes: `300D` moves the UI by 300 design pixels whatever the size of the window.
+The translations of the matrix stack ([Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/)) are in design pixels, like the positions of the nodes: `300D` moves the UI by 300 design pixels whatever the size of the window.
 `enabled(false)` on a step turns it off, and an override of [[TransitionStep#init]] prepares what depends on the UI, such as its size, each time the UI loads.
 
 ## Know what happens while a transition plays

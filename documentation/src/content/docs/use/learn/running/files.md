@@ -91,12 +91,7 @@ Then ask the area for an entry by its key:
 Otherwise it gives your writer a temporary path, then moves what the writer created there to the key, so a crash never leaves half a file behind.
 Two threads that compute the same key wait for each other, and the second one reads the file of the first.
 
-| Method | What it does |
-|---|---|
-| `compute(key, writer)` | Returns the entry of the key, written by `writer` the first time. |
-| `entry(key)` | Returns the entry of the key, or `null` when there is none. |
-| `store(writer)` | Writes a content once and names it by its SHA-1, so the same content is stored once. |
-| `remove(key)` | Deletes the entry of the key, to force the next `compute` to write it again. |
+[[FileCacheArea#remove]] deletes an entry, so that the next `compute` writes it again; [[FileCacheArea]] lists the other methods.
 
 The writer creates a file, or a folder for an entry made of several files.
 Area names and keys are plain file names: a letter or a digit, then letters, digits, `.`, `-` and `_`.

@@ -21,8 +21,8 @@ public class TooltipUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(TooltipUI.INK);
-		final TextInfo white = TextInfo.create(ExampleFont.REGULAR, 22).color(Color.WHITE);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(TooltipUI.INK);
+		final TextInfo white = TextInfo.create(ExampleFont.REGULAR, 22F).color(Color.WHITE);
 		final IntegerSignal coins = new IntegerSignal(120);
 
 		RectNode

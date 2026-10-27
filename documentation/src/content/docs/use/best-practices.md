@@ -50,7 +50,7 @@ JOID cannot follow it, keeps the first value, and the dev jar prints a `[JOID] �
 [What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)
 
 **Don't** change the collection that `get()` of a [[ListSignal]], [[MapSignal]] or [[SetSignal]] returns.
-Nothing tells JOID about the change; call the methods of the signal (`add`, `remove`, `put`…).
+That collection is a copy that cannot change: changing it throws an `UnsupportedOperationException`; call the methods of the signal (`add`, `remove`, `put`…).
 [Signals](/use/learn/interactivity/signals/)
 
 **Do** bind a control to a signal when its value matters outside the control, such as a setting in a store.

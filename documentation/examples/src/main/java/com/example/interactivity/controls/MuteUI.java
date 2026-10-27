@@ -24,7 +24,7 @@ public class MuteUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(MuteUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(MuteUI.INK);
 
 		RectNode
 		.create(560, 340, 800, 400)
