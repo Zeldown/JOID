@@ -27,15 +27,15 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | Fonts: loading a font (`MsdfFontLoader`), MSDF vs bitmap (user side) | use/learn/describing-the-ui/fonts |
 | Text markup (`ITextMarkup`, `TextMarkup`), text styles (`TextStyle`), text effects (`ITextEffect`) and modifiers (`TextModifier`), text converters (`ITextConverter`, `TextConverter`) | use/learn/describing-the-ui/text-markup-and-effects |
 | Images, resources, assets, playback (video/audio), `ResourcePlayerNode`, `StretchType`, the FFmpeg download (`VideoNatives`); the supported formats (image, animated, vector, video, audio), listed in this place only | use/learn/describing-the-ui/media (section "Supported formats" for the formats) |
-| Showing a texture of the application (`Resource.of` with `GlBorrowedTexture.of` on LWJGL 2 and 3, `VulkanBorrowedTexture.of` on Vulkan) | use/learn/describing-the-ui/media (section "Show a texture of your application"); build/resource-resolvers keeps writing a resolver and links to it |
-| Events: the three kinds (`handle` raw input, `before` changes that a listener can cancel, `on` what happened), the path of an input through the tree, consuming an input, cancelling a change, listener priorities and `MONITOR`, interactive(false) (routing to the bridges: one sentence and a link to running/embedding) | use/learn/interactivity/events |
+| Showing a texture of the application (a resource of `GlBorrowedTexture.of` on LWJGL 2 and 3, `VulkanBorrowedTexture.of` on Vulkan) | use/learn/describing-the-ui/media (section "Show a texture of your application"); build/resource-resolvers keeps writing a resolver and links to it |
+| Events: the three kinds of event methods (the prefix handle for the raw input, before for a change that a listener can cancel, on for what happened), the path of an input through the tree, consuming an input, cancelling a change, listener priorities and `MONITOR`, interactive(false) (routing to the bridges: one sentence and a link to running/embedding) | use/learn/interactivity/events |
 | Hover, `isHovered`, tooltips and hover elements, hover progress (`hoverValue`, `hoverDuration`, `hoverEquation`) | use/learn/interactivity/hover-and-tooltips |
 | Drag and drop, `DraggableProperty` | use/learn/interactivity/drag-and-drop |
 | Keyboard, `Key`, `keyPressed`/`charTyped`, focus | use/learn/interactivity/keyboard |
 | Escape closes the top UI when it is closeable and no node consumed the key | use/learn/interactivity/keyboard (section "Know who receives the keyboard"); uis gives one sentence and a link |
 | Controls pattern (values/value/range, onChange, signal binding) | use/learn/interactivity/controls |
 | Signals, `get`/`peek`, typed signals, collections, never changing the collection that `get()` returns | use/learn/interactivity/signals |
-| Derived values (`map`, `Signal.from`), batch, your own code on a change (`onChange`, `removeOnChange`) | use/learn/state/derived-values |
+| Derived values (`map`, `Signal.from`), batch, your own code on a change (onChange and removeOnChange of a signal) | use/learn/state/derived-values |
 | `watch`, `wait`, skeleton, rebuilding the tree | use/learn/state/rebuilding |
 | Stores (`UIStore`, `UIStoreScope`), `@UIProperty` | use/learn/state/stores-and-properties |
 | Tasks (`Task`): code run on a period or once after a delay, attached to a UI or a node | use/learn/state/tasks |
@@ -114,7 +114,7 @@ A writer who needs a notion that is not listed adds a row here (owner = the page
 | The demo jar, demo launchers, running every demo on a backend, demo index (Use JOID never mentions demos) | build/demos |
 | Texture and resource resolvers of a backend | build/resource-resolvers |
 | Each final backend (lwjgl2, lwjgl3, vulkan): what it is made of, what differs | build/backends/<backend> |
-| The contract of a Vulkan host (`IVulkanHost`, `WindowVulkanHost`, frame number, `releaseHandle`) | build/backends/vulkan (section "Run inside a Vulkan host"); build/embedding-in-a-host gives one sentence and a link |
+| The contract of a Vulkan host (`IVulkanHost`, frame number, `releaseHandle`) | build/backends/vulkan (section "Run inside a Vulkan host"); build/embedding-in-a-host gives one sentence and a link |
 | Embedding JOID in a GL host (contexts, state journal, sharing the window) | build/embedding-in-a-host |
 | Input forwarding contract (press/release, consumption, `keyReleased`) | build/input |
 | Writing your own UI bridge: the contract to implement, in the tables Required, Provided and Guarantees (`StackUIBridge`, `drawBackground`, `canHandle`, the hooks) | build/bridges/ui (it links to running/embedding for priorities and routing and shows no registration example; build/bridges and build/input give one sentence and a link) |

@@ -87,7 +87,7 @@ A [[Task]] runs code after a delay, once or periodically, on the clock of JOID a
 - `JOID.open`, `JOID.close`, `JOID.onReady` and **signal writes** are safe from any thread: they apply at the start of the next frame.
 - From a worker thread, hand a node change to **`runOnRenderThread(task)`**.
 - **`RenderThreadFuture.from(future)`** completes a future, and the stages after it, on the render thread.
-- A **`Task`** runs code later or periodically, on the clock of JOID.
+- A `Task` runs code later or periodically, on the clock of JOID ([Tasks](/use/learn/state/tasks/)).
 
 ## Try it
 

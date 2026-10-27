@@ -3,7 +3,7 @@ summary: Annotation that turns off, for one UI, the profiler and the hot reload 
 ---
 Outside dev mode it changes nothing.
 
-Learn: [UIs](/use/learn/describing-the-ui/uis/#configure-a-ui), [Dev tools](/use/get-started/dev-tools/).
+Learn: [Dev tools](/use/get-started/dev-tools/), [UIs](/use/learn/describing-the-ui/uis/#configure-a-ui).
 
 ## profiler()
 
