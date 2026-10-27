@@ -6,7 +6,7 @@ sidebar:
   order: 7
 ---
 
-A child sits where you put it, relative to its parent, until a node decides otherwise.
+A child sits where you put it, relative to its parent, until a layout node places it.
 This page gives the rule that says which nodes place their children, then shows how to group nodes, clip them and scroll them.
 
 **You will learn**
@@ -98,6 +98,9 @@ The node measures its content on every frame: the bottom and the right edge of i
 The gap of the first child from the top-left corner is kept after the last child too, so the content ends with the same margin it starts with.
 [[Node#hasOverflowX]] and [[Node#hasOverflowY]] tell whether the content is larger than the node on each axis.
 
+A flex or a grid created with a length of 0 takes the length of its content, and a length that you give it is a minimum that it grows past when the content needs more room.
+With an overflow other than `NONE`, the length that you give is fixed and the content scrolls; a layout node of length 0 grows with its content and never scrolls.
+
 One notch of the wheel scrolls 30 design pixels, times [[Node#scrollSpeed]] (`1D` by default), and twice that while Ctrl is held.
 The vertical wheel scrolls horizontally a node whose content overflows only in width.
 The content glides to its new offset over a few frames instead of jumping.
@@ -122,7 +125,7 @@ A positive offset, such as `scrollY(40D)`, comes back to `0D`, with a warning in
 
 ## React to scrolling
 
-Four callbacks follow the scroll of a node, for both axes; the event names the axis with `getAxis()`:
+Four listeners follow the scroll of a node, for both axes; the event names the axis with `getAxis()`:
 
 - [[Node#beforeScroll]] fires before the offset changes; `cancel()` keeps the node where it is.
 - [[Node#onScroll]] fires once the offset changed; `getPrevious()` and `getOffset()` give both offsets.
@@ -135,7 +138,7 @@ Append more children when the end is reached, and the list grows as the user rea
 ```
 
 The node measures its new content on the next frame, and the wheel scrolls further.
-[Events](/use/learn/interactivity/events/) explains callbacks, their phases and cancellation.
+[Events](/use/learn/interactivity/events/) explains listeners, their phases and cancellation.
 
 ## Add a scrollbar
 
@@ -148,7 +151,7 @@ The node measures its new content on the next frame, and the wheel scrolls furth
 
 `KitScrollbarNode` stands for your skin of [[ScrollbarNode]], an abstract control.
 The scrollbar is positioned from the scrolling node, does not scroll with its content, and is drawn only while the content overflows.
-[Controls](/use/learn/interactivity/controls/) describes its options and [UI kit](/use/learn/going-further/ui-kit/) how to draw it.
+Its reference page lists its options, and [Give your controls a look](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) shows how to draw it.
 
 ## Recap
 

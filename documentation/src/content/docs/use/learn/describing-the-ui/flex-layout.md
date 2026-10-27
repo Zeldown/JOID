@@ -88,7 +88,7 @@ The white bar, created at (40, 30), moves 40 design pixels right and gets 30 mor
 </figcaption>
 </figure>
 
-Along the line, the offset of a child is extra space before it: the children after it move too.
+Along the line, the offset moves the child alone: the next children keep their place, so an offset larger than the margin makes the child overlap the next one.
 Across the line, the offset applies only while `align` is not set: an alignment places the child exactly.
 
 ## Let the flex node take its size
@@ -108,12 +108,11 @@ The column measures 170 design pixels, three bars and two gaps, and the panel fo
 </figcaption>
 </figure>
 
-A length that you give with [[Node#height]] on a column, or [[Node#width]] on a row, is a minimum: the flex node keeps it while its children fit, and grows past it when they need more room.
-A flex node with no child measures 0 along its line.
+A length that you give with [[Node#height]] on a column, or [[Node#width]] on a row, is a minimum ([Scroll a node](/use/learn/describing-the-ui/layout/#scroll-a-node)).
 
 ## Scroll a long list
 
-A declared length with an [[OverflowProperty]] other than `NONE` is a fixed length: the flex node keeps it whatever its content, and the content scrolls or is clipped ([Layout](/use/learn/describing-the-ui/layout/#scroll-a-node)).
+Give the column a length and an [[OverflowProperty]] other than `NONE`: the length is then fixed, and the content scrolls or is clipped ([Scroll a node](/use/learn/describing-the-ui/layout/#scroll-a-node)).
 
 ```java file="com/example/describing/flex/FlexCasesUI.java" region="scroll"
 ```
@@ -127,16 +126,9 @@ The column stays 260 design pixels high, and its eight bars scroll inside it.
 </figcaption>
 </figure>
 
-:::caution
-A flex node created with a length of 0 keeps growing with its content even with `OverflowProperty.SCROLL`, so it never scrolls.
-Give it a length along its line, such as `.height(260)` on a column.
-:::
+## Know when a child leaves the line
 
-## Hide or remove a child
-
-A child that is not visible, `visible(false)`, gets no place in the line: the next children close the gap, and open it again when it shows.
-A removed child leaves the line the same way, and an appended child takes its place at the end, both from the next frame.
-A child whose position is `ABSOLUTE` stays out of the line, where you put it ([Position and size](/use/learn/describing-the-ui/position-and-size/)).
+A hidden, removed or `ABSOLUTE` child gets no place in the line ([Know who places a child](/use/learn/describing-the-ui/layout/#know-who-places-a-child)), and the next children close the gap from the next frame.
 
 ## Nest rows inside a column
 
@@ -162,7 +154,7 @@ A row that the user can drag into another order is a [[ReorderableFlexNode]] ([R
 - **`FlexNode.vertical(x, y, width)`** stacks children in a column, **`FlexNode.horizontal(x, y, height)`** in a row, in attach order.
 - **`margin`** is the gap between two children.
 - **`align`** places every child across the line; without it, each child keeps its own cross position.
-- The own **offset** of a child adds to its place; along the line, it pushes the next children.
+- The own **offset** of a child adds to its place; along the line, it moves that child only.
 - A length of **0** follows the content; a declared length is a **minimum**; a declared length with an **overflow** is fixed.
 - Hidden, removed and `ABSOLUTE` children **leave no gap**.
 
@@ -176,12 +168,7 @@ Build a row of five white squares of 60 design pixels, 15 design pixels apart, c
 
 The row is 100 high; `align(Align.CENTER)` centers each square on that height:
 
-```java fragment
-FlexNode.horizontal(20, 20, 100).margin(15D).align(Align.CENTER).body(flex -> {
-	for (int i = 0; i < 5; i++) {
-		RectNode.create(0, 0, 60, 60).color(Color.WHITE).attach(flex);
-	}
-}).attach(card);
+```java file="com/example/describing/flex/ToolbarUI.java" region="toolbar"
 ```
 
 </details>

@@ -24,7 +24,7 @@ Run your application with the dev jar while you look for a problem: JOID then pr
 
 ## My node does not appear
 
-1. **It is not attached.** A node shows only once attached, to the UI with `attach(this)` or to a parent node ([Nodes](/use/learn/describing-the-ui/nodes/)).
+1. **It is not attached.** A node shows only once attached, to the UI with `attach(this)` or to a parent node ([Nodes and the tree](/use/learn/describing-the-ui/nodes/)).
 2. **It is created in the constructor of the UI.** Create every node in `init()` ([UIs](/use/learn/describing-the-ui/uis/)).
 3. **It is outside the window.** Positions are in design pixels on the 1920 × 1080 canvas, and a child is placed relative to its parent: a child at 900 of a parent at 1500 sits at 2400, off the canvas.
 4. **It is hidden or covered.** Look for a `visible(false)` on it or on a parent, for a parent that clips its children, and for a node drawn above it ([Position and size](/use/learn/describing-the-ui/position-and-size/)).
@@ -54,14 +54,14 @@ A node follows a value only when JOID can compute it again ([Signals](/use/learn
 2. **JOID could not follow the expression.** A lambda inside the expression, or a local variable in a calculation, leaves it fixed, and the dev jar prints `[JOID] … but cannot follow it: …` with the line, the reason and the fix ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 3. **The signal object was replaced.** A node follows the signal it read: give the existing signal a value with `set(...)` instead of creating another signal.
 4. **The collection changed behind the signal.** Change a [[ListSignal]], [[MapSignal]] or [[SetSignal]] through its own methods, never through the collection that `get()` returns.
-5. **The number of nodes depends on the value.** Rows that follow a list need a rebuild ([Rebuilding](/use/learn/state/rebuilding/)).
+5. **The number of nodes depends on the value.** Rows that follow a list need a rebuild ([Rebuilding the tree](/use/learn/state/rebuilding/)).
 
 ## My click does nothing
 
 1. **Another node is on top.** The press goes to the topmost node under the pointer, and a node drawn above yours takes it ([Events](/use/learn/interactivity/events/)).
 2. **The node is disabled**, or a parent is: `enabled(false)` turns off its reactions.
 3. **A popup is open.** While a popup is open, the UIs under it receive no input ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)).
-4. **The callback is on another node.** `onClick` on a child does not fire when the press lands on the parent outside the child.
+4. **The listener is on another node.** `onClick` on a child does not fire when the press lands on the parent outside the child.
 
 ## Tooltips do not show
 
@@ -76,7 +76,7 @@ The first video also downloads the FFmpeg natives into the cache folder ([Show a
 ## My settings are lost after a restart
 
 1. **The program was killed.** JOID saves stores and properties when a UI closes and when the JVM shuts down normally; a killed process saves nothing ([Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)).
-2. **The store is not permanent.** Only a store of scope `PERMANENT` writes a file ([Stores and properties](/use/learn/state/stores-and-properties/)).
+2. **The store is not permanent.** Only a store of scope `PERMANENT` writes a file ([Stores and remembered properties](/use/learn/state/stores-and-properties/)).
 3. **The working directory changed.** The data folder is relative to the working directory by default ([Where JOID stores files](/use/learn/running/files/)).
 
 ## Escape closes my screen

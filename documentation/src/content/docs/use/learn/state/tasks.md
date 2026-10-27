@@ -17,7 +17,7 @@ A task runs your code on the render thread after a delay or on a period, and a s
 
 ## Run code on a period
 
-A [[Task]] runs its [[Task#onRun]] callbacks once its delay has passed, and again after each period given to [[Task#every]]:
+A [[Task]] runs its [[Task#onRun]] listeners once its delay has passed, and again after each period given to [[Task#every]]:
 
 ```java file="com/example/state/TimerUI.java" region="every"
 ```
@@ -49,7 +49,7 @@ Attaching it again starts its delay over, so one task hides a message three seco
 ```java file="com/example/state/TimerUI.java" region="click"
 ```
 
-[[Task#detach]] cancels a task before it runs, and stops a periodic one; a callback stops its own task with `event.getTask().detach()`.
+[[Task#detach]] cancels a task before it runs, and stops a periodic one; a listener stops its own task with `event.getTask().detach()`.
 
 ## Know how long a task lives
 
@@ -62,7 +62,7 @@ A task attached to the UI in its constructor comes back at each opening, with it
 
 ## Set a signal from another thread
 
-JOID draws and calls your callbacks on the render thread ([Threads](/use/learn/running/threads/)).
+JOID draws and calls your listeners on the render thread ([Threads](/use/learn/running/threads/)).
 A download or a long computation belongs on another thread, and its result comes back through a signal:
 
 ```java file="com/example/state/LoaderUI.java" region="load"
@@ -93,7 +93,7 @@ A write from another thread reaches signals only: changing a node or opening a U
 
 ## Recap
 
-- A **`Task`** runs its `onRun` callbacks after its delay, once, or on the period of **`every`**, in milliseconds of the JOID clock.
+- A **`Task`** runs its `onRun` listeners after its delay, once, or on the period of **`every`**, in milliseconds of the JOID clock.
 - A task runs on the **render thread**, while its UI or its node is drawn.
 - **Attaching** a task again starts its delay over; **`detach()`** cancels it.
 - A task attached in **`init()`** lasts one opening; one attached in the constructor comes back at each opening.
@@ -109,12 +109,7 @@ Show "Starts in 3", "Starts in 2", "Starts in 1", then "Go".
 
 A periodic task counts an [[IntegerSignal]] named `left` down from 3, and stops itself:
 
-```java fragment
-Task.create(1000L).every(1000L).onRun(event -> {
-	if (left.decrement().peek() == 0) {
-		event.getTask().detach();
-	}
-}).attach(this);
+```java file="com/example/state/CountdownUI.java" region="countdown"
 ```
 
 Then show `left.map(value -> value > 0 ? "Starts in " + value : "Go")`.

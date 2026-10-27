@@ -36,10 +36,7 @@ On every frame, every attached node updates, and every visible node places its c
 A node outside the visible area of a container that clips its content (`HIDDEN` or `SCROLL` overflow) is neither drawn nor tested for hover, and its children are skipped.
 It still updates: a list of a thousand rows costs a thousand small updates on every frame.
 A node outside the window, without such a container around it, is drawn for nothing.
-
-- Detach the nodes you do not show: a detached node costs nothing.
-  `visible(false)` skips the draw, but the node keeps its updates, its animators and its subscriptions.
-- For a long list, attach the rows near the visible area and replace them as the scroll moves, with a rebuild ([Rebuilding](/use/learn/state/rebuilding/)) or your own code.
+A detached node costs nothing, while `visible(false)` skips the draw but keeps the updates, the animators and the subscriptions of the node.
 
 ## Every frame: the lambdas
 
@@ -48,7 +45,6 @@ JOID compares the result with the current value and applies it only when it diff
 
 Keep a lambda to reading and combining values.
 A lambda that builds a large object, parses text or reads a file does it twice per frame for each node that uses it.
-For a value that depends on signals, an expression or a derived value computes only when one of its signals changes ([Derived values](/use/learn/state/derived-values/)).
 
 ## Effects that render off screen
 
@@ -84,3 +80,10 @@ A framebuffer of yours lives until you delete it: [Framebuffers and models](/use
 
 In dev mode, JOID prints the load time of each UI and every frame of a UI that takes more than 16.66 ms to draw, and the inspector shows each node.
 [Dev tools](/use/get-started/dev-tools/) explains both.
+
+## What it means for your code
+
+- Detach the nodes you do not show, and for a long list attach only the rows near the visible area, replaced as the scroll moves ([Rebuilding the tree](/use/learn/state/rebuilding/)).
+- Keep lambdas to reading and combining values; for a value that depends on signals, give an expression or a [derived value](/use/learn/state/derived-values/), computed only when one of its signals changes.
+- Keep `blocking()` for small images, and preload a large one with `generate()` ([Know when an image is loaded](/use/learn/describing-the-ui/media/#know-when-an-image-is-loaded)).
+- Delete the framebuffers you create ([Framebuffers and models](/use/learn/going-further/framebuffers-and-models/)).

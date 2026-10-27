@@ -97,7 +97,7 @@ The anchor is also the point that stays in place when the UI is scaled or zoomed
 ## Follow the interface scale
 
 The interface scale is a factor that the UI bridge applies on top of the fit, to make every UI larger or smaller, such as a scale option of the application that hosts JOID.
-The default window bridge gives 1; a UI bridge of your own gives another value ([Embedding](/use/learn/running/embedding/)).
+The default window bridge gives 1; a UI bridge of your own gives another value ([Embedding JOID](/use/learn/running/embedding/)).
 
 [[UIDataScale]] tells how a UI follows it:
 
@@ -179,7 +179,7 @@ Add a button to `ZoomUI` that brings the zoom back to 1.
 <details>
 <summary>Solution</summary>
 
-`zoomTo` changes the zoom the way the user does, so the `beforeZoom` listener sees it:
+`zoomTo` changes the zoom the way the user does, so the `beforeZoom` listener receives it:
 
 ```java fragment
 .onClick(event -> super.zoomTo(1D))

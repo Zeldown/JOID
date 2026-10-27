@@ -37,7 +37,7 @@ The user types `hello`: each key goes down once, and each character arrives as a
 - [[UI#handleCharTyped]] and [[Node#handleCharTyped]] receive each typed character as a code point, with the layout and the Shift key applied; control characters, such as the one of Enter, never arrive there.
 
 A key event is a [[NodeKeyEvent]] on a node and a [[UIKeyEvent]] on a UI; a character event is a [[NodeCharEvent]] or a [[UICharEvent]].
-The release always reaches every node, even hidden or disabled, so that what a press started always ends.
+The release always reaches every node, even hidden or disabled ([Let the pointer through a decoration](/use/learn/interactivity/events/#let-the-pointer-through-a-decoration)).
 
 ## Know who receives the keyboard
 
@@ -56,7 +56,7 @@ Escape closes the top UI when it is closeable, is not an overlay, and no node or
 A focused text field consumes Escape to lose the focus, so the first Escape leaves the field and the second one closes the UI.
 A key that the top screen does not consume goes on to the UI below it, except under a popup ([How UIs stack](/use/learn/describing-the-ui/overlays-and-popups/#see-how-uis-stack)).
 
-JOID has no focus of its own outside the text fields: a node that wants the keys tests its own state in its listener, and consumes what it handles.
+JOID has no focus of its own outside the text fields: a node that needs the keys tests its own state in its listener, and consumes what it handles.
 [Text fields](/use/learn/interactivity/text-fields/#give-and-take-the-focus) explains the focus of a field.
 
 ## Tell a letter from its place
@@ -116,7 +116,7 @@ Ctrl + S counts once before the field takes the focus; F1 counts twice, the seco
 
 `attach(ui)` and `attach(node)` add the shortcut to a UI or a node, like [[UI#addShortcut]] and [[Node#addShortcut]]; [[Shortcut#detach]] removes it.
 A shortcut of a node works only while the node is visible and enabled, and the shortcuts of the nodes in front run before the others.
-Like a listener, a shortcut added in the constructor of a UI stays across its openings, and one added in `init()` lasts one opening.
+A shortcut lives like a listener ([Open and close a UI](/use/learn/describing-the-ui/uis/#open-and-close-a-ui)).
 
 ### Use the key bindings of your application
 

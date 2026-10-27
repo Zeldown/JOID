@@ -33,7 +33,7 @@ It is split into areas, one folder each:
 |---|---|---|
 | `msdf/` | the atlases that JOID [generates from your fonts](/use/in-depth/msdf-text/#what-happens-when-a-font-loads) | 30 days |
 | `video/` | a copy of each video read from the classpath, a stream or a URL; a video read from a plain file plays from that file | 7 days |
-| `ffmpeg/` | the FFmpeg natives that the first video downloads for the system, unless the classpath already holds them ([Media](/use/learn/describing-the-ui/media/)) | 30 days |
+| `ffmpeg/` | the FFmpeg natives that the first video downloads for the system, unless the classpath already holds them ([Images and media](/use/learn/describing-the-ui/media/)) | 30 days |
 | `lwjgl/` | the LWJGL 2 natives, with the LWJGL 2 backend only | 30 days |
 
 JOID creates a folder the first time it writes into it.

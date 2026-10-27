@@ -106,12 +106,16 @@ The order of whole UIs is another `zindex`, set on the UI ([Overlays and popups]
 
 ## Hide or disable a node
 
+```java file="com/example/describing/position/HideUI.java" region="hide"
+```
+
+A click on the white square hides the first square, and a second click shows it again; the second square stays grey under the pointer, because it is disabled.
+
 - [[Node#visible(boolean)]] `false` hides the node and its children: they are not drawn and receive no input.
 - [[Node#enabled(boolean)]] `false` keeps the node and its children drawn, but they receive no input and show no hover.
 - `interactive(false)` lets the mouse go through a node to what is below it ([Events](/use/learn/interactivity/events/)).
 
 `isVisible()` and `isEnabled()` take the parents into account: a child of a hidden node is hidden.
-A hidden child of a layout node leaves no gap ([Flex layout](/use/learn/describing-the-ui/flex-layout/)).
 
 ## Copy a node
 

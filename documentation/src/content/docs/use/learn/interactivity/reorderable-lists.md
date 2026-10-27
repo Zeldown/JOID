@@ -41,6 +41,11 @@ A child that consumes the press, such as a button or a text field, keeps the dra
 
 ## React to a new order
 
+The playlist of the first example writes the move once the drag ends:
+
+```java file="com/example/interactivity/reorder/PlaylistUI.java" region="end"
+```
+
 | Event | When it runs |
 |---|---|
 | [[ReorderableFlexNode#onReorderStart]] | A child starts to be dragged |
@@ -52,7 +57,7 @@ Each listener receives a [[NodeReorderEvent]]: `getChild()` is the dragged child
 Save the new order in `onReorderEnd`: it runs once per drag, also when the list or the child is removed during the drag.
 The dragged child runs its own [drag events](/use/learn/interactivity/drag-and-drop/#react-to-the-drag), `onDragStart` to `onDragDrop`, and its `beforeDragStart` can refuse the drag.
 
-During a drag, [[ReorderableFlexNode#getLogicalOrder]] gives the order that the children will take, [[ReorderableFlexNode#isDragging]] tells which child is dragged, and [[ReorderableFlexNode#getChildIndex]] gives the slot of a child.
+During a drag, [[ReorderableFlexNode#getLogicalOrder]] gives the order that the children take at the release, [[ReorderableFlexNode#isDragging]] tells which child is dragged, and [[ReorderableFlexNode#getChildIndex]] gives the slot of a child.
 
 ## Drag by a handle only
 
@@ -70,7 +75,7 @@ A press on a handle drags its task; a press anywhere else on the task does nothi
 </figcaption>
 </figure>
 
-The handle hears every press of the UI, so it tests `isHovered()` before it starts the drag ([Hear the raw input](/use/learn/interactivity/events/#hear-the-raw-input)).
+The handle receives every press of the UI, so it tests `isHovered()` before it starts the drag ([Hear the raw input](/use/learn/interactivity/events/#hear-the-raw-input)).
 [[ReorderableFlexNode#endDrag]] ends a drag from your code.
 
 ## Pin items in place

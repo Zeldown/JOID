@@ -39,8 +39,7 @@ The effect draws the dark rectangle, then runs `body`, which draws the node over
 Always run `body` once, or the node disappears.
 The constructor passes the priority to `super(...)`; the last section explains it.
 
-[[Node#effect]] adds the effect; a node holds one effect per class, so a second effect of the same class replaces the first.
-`removeEffect(class)` and `clearEffects()` remove them, and `getEffect(class)` returns the one a node holds.
+[[Node#effect]] adds the effect, as for the effects of JOID ([Add effects to a node](/use/learn/style-and-motion/effects/#add-effects-to-a-node)).
 
 ## Change how a node draws
 
@@ -62,7 +61,7 @@ This effect lifts the node while the pointer is over it, by moving the matrix:
 </figcaption>
 </figure>
 
-[[Node#hoverValue]] scales a value by the hover progress of the node, from `0F` to `1F` ([Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/)).
+[[Node#hoverValue]] scales a value by the hover progress of the node, from `0F` to `1F` ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)).
 The node is drawn higher, but the area that receives the mouse stays where the layout put it.
 Restore what you change, here with `with(...)` of the [[MatrixStack]] ([Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/#use-the-matrix-stack)).
 
@@ -153,7 +152,7 @@ Make the hard shadow stay on the ground while the node lifts.
 <details>
 <summary>Solution</summary>
 
-The shadow must wrap the lift, so give it the lower priority: `-60` is above `-70`, so lower it, for example with `.priority(-80)` on the shadow.
+The shadow must wrap the lift, so give it the lower priority: `HardShadowNodeEffect` passes `-60` and `LiftNodeEffect` passes `-70`, so lower the shadow below the lift, for example with `.priority(-80)`.
 The shadow then draws first and stays in place, and the lift moves only the node.
 
 </details>

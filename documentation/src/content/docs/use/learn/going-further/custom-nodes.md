@@ -13,10 +13,8 @@ A custom node is a class that extends [[Node]]: it draws itself, takes its prope
 - How to write a node that draws itself
 - Which hooks of a node you can override
 - How to give a node a property that follows a signal
-- How a node reacts to the mouse
-- How to hold a value that the user changes, with its events
-- How to fire an event of your own
-- What a node needs so that JOID can duplicate it
+- How a node reacts to the mouse and holds a value that the user changes
+- How to fire an event of your own, and make the node duplicable
 
 ## Write a node that draws itself
 
@@ -84,6 +82,7 @@ Its color is a property: a value setter and a `Supplier` setter, like every prop
 A `Supplier` that reads signals is computed again only when one of them changes; [Signals](/use/learn/interactivity/signals/) explains when JOID computes a value again.
 The value setter passes its argument to [[Signal#from]], which gives a constant that `follow` applies once and does not keep.
 The first argument names the property: a second call with the same name replaces the first source.
+[[Node#start]] applies a plain value once and drops the source of the property, and [[Node#bind]] binds the property to a writable signal both ways, [[Node#bindNullable]] when the signal can hold `null`.
 
 A setter is `public final`, generic in `<T extends YourNode>`, returns `(T) this` through the helper, and is named after the property, without `set`.
 The node draws with the field:
@@ -162,8 +161,8 @@ For an event that carries a change, use [[NodeChangeEvent]], whose `Pre` form a 
 
 ## Make your node duplicable
 
-`copy()` and the ghost of a drag of type `COPY` build your node again with its `(x, y, width, height)` constructor, then copy its fields.
-A node without that constructor overrides [[Node#instantiate]] to build itself.
+`copy()` and the ghost of a drag of type `COPY` build your node again with its `(x, y, width, height)`, `(x, y)` or argument-free constructor, the first one it finds, then copy its fields.
+A node with none of them overrides [[Node#instantiate]] to build itself.
 
 Mark `transient` a field that belongs to one instance only, such as a framebuffer or a cache: the copy leaves it out and builds its own.
 A field that the copy cannot set throws `IllegalStateException` with the name of the field.

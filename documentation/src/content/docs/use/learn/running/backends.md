@@ -24,7 +24,6 @@ They draw the same pixels for the same UI, so the choice depends on your applica
 | | LWJGL 3 | Vulkan | LWJGL 2 |
 |---|---|---|---|
 | Class | [[Lwjgl3Backend]] | [[VulkanBackend]] | [[Lwjgl2Backend]] |
-| Draws with | OpenGL 2.1 or later, core or compatibility profile | Vulkan 1.3 | OpenGL 2.1 or later |
 | Window and input | GLFW (LWJGL 3.3.4) | GLFW (LWJGL 3.3.4) | `Display`, `Mouse` and `Keyboard` (LWJGL 2.9.1) |
 | Input | attached by the backend | attached by the backend | read by [[Lwjgl2InputForwarder]] in your loop |
 | Show a frame | `glfwSwapBuffers` | `endFrame()` of the Vulkan host | `Display.update()` |
@@ -38,7 +37,7 @@ Choose **LWJGL 2** when your application already runs on LWJGL 2.
 | Requirement | LWJGL 3 | Vulkan | LWJGL 2 |
 |---|---|---|---|
 | Java | 8 or later | 8 or later | 8 or later |
-| Graphics | an OpenGL 2.1 context with GLSL 1.20 and framebuffer objects | a Vulkan 1.3 device able to present to the window | an OpenGL 2.1 context with GLSL 1.20 and framebuffer objects |
+| Graphics | an OpenGL 2.1 or later context, core or compatibility profile, with GLSL 1.20 and framebuffer objects | a Vulkan 1.3 device able to present to the window | an OpenGL 2.1 context with GLSL 1.20 and framebuffer objects |
 | Buffers | 24-bit depth, 8-bit stencil | created by the Vulkan host | 24-bit depth, 8-bit stencil |
 | macOS | start the JVM with `-XstartOnFirstThread` | start the JVM with `-XstartOnFirstThread` | nothing to add |
 
@@ -84,7 +83,7 @@ It follows the size of the window by itself, so you need no resize callback.
 
 ### Close the UIs before the program ends
 
-`closeAll()` of the window bridge, after the loop, closes every UI that the bridge holds: their close listeners and the `onDetach` callbacks of their nodes run, their [stores and remembered fields](/use/learn/state/stores-and-properties/) reach the disk.
+`closeAll()` of the window bridge, after the loop, closes every UI that the bridge holds: their close listeners and the `onDetach` listeners of their nodes run, their [stores and remembered fields](/use/learn/state/stores-and-properties/) reach the disk.
 Call it on each UI bridge of your own as well, once the loop is over.
 
 A program that ends with UIs still open closes none of them.
@@ -143,7 +142,7 @@ Display.update();
 6. It adds the window bridge, unless you registered a UI bridge of your own before ([Embedding JOID](/use/learn/running/embedding/#draw-joid-over-your-own-scene)).
 7. It attaches the input to the window (LWJGL 3 and Vulkan).
 8. It loads JOID: it prints a banner with the version, the dev mode and the two folders (`[JOID] … loaded in dev mode, data in …, cache in …`), cleans the [cache folder](/use/learn/running/files/#keep-files-of-your-own-in-the-cache) on a background thread, and installs the shutdown hook that saves the stores.
-9. It runs the callbacks given to [[JOID#onReady]].
+9. It runs the code given to [[JOID#onReady]].
 
 The settings of a backend come between `create(...)` and `register()`, all optional:
 
@@ -164,11 +163,11 @@ A library, a plugin or a module that does not control the startup order gives it
 ```java file="com/example/running/RunningLibrary.java" region="ready"
 ```
 
-Before `register()`, JOID keeps the callback and runs it at the end of `register()`, on the render thread.
-Once the backend is registered, the callback runs at once on the render thread, or at the start of the next frame when you call `onReady` from another thread.
+Before `register()`, JOID keeps that code and runs it at the end of `register()`, on the render thread.
+Once the backend is registered, the code runs at once on the render thread, or at the start of the next frame when you call `onReady` from another thread.
 `JOID.inst().isReady()` tells you which case you are in.
 
-A callback that throws prints `[JOID] A JOID.onReady callback failed (…)`, and the next callbacks still run.
+Code that throws prints `[JOID] A JOID.onReady callback failed (…)`, and the next `onReady` code still runs.
 
 ## Style the window bridge
 
@@ -200,7 +199,7 @@ With the dev jar, it prints `[JOID] WindowUIBridge draws no tooltip, set its hov
 :::
 
 `getBridge(WindowUIBridge.class)` returns the highest bridge of that class or of a subclass, and `null` when you registered a UI bridge of another kind before the backend.
-[Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/) shows how a node declares its tooltip.
+[Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/) shows how a node declares its tooltip.
 
 ## Write a backend of your own
 
@@ -219,7 +218,7 @@ To run JOID on another library or engine, implement its bridges: [Writing a back
 ## Try it
 
 **A light window.**
-Give the window a light grey background `#F4F4F5` and tooltips with dark text on a white box.
+Give the window the background `#DDDDDD` and tooltips with dark grey text on a white box.
 
 <details>
 <summary>Solution</summary>
@@ -227,9 +226,9 @@ Give the window a light grey background `#F4F4F5` and tooltips with dark text on
 ```java fragment
 BridgeHandler.UI
 .getBridge(WindowUIBridge.class)
-.background(Color.decode("#F4F4F5"))
+.background(Color.decode("#DDDDDD"))
 .hoverColor(Color.WHITE)
-.hoverInfo(TextInfo.create(font, 20F).color(Color.decode("#18181B")));
+.hoverInfo(TextInfo.create(font, 20F).color(new Color(85, 85, 85)));
 ```
 
 </details>
@@ -241,6 +240,6 @@ Move the `JOID.open(...)` call of the program above into a library class that do
 <summary>Solution</summary>
 
 Wrap it in `JOID.onReady(() -> JOID.open(new RunningStartUI()));`.
-The callback runs at the end of `register()`, or at once if the backend is already registered.
+The code runs at the end of `register()`, or at once if the backend is already registered.
 
 </details>

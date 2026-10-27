@@ -83,7 +83,7 @@ Build the suppliers that read the node inside [[Node#self]], which hands you the
 <figcaption>The radius goes from 8 to 48 design pixels and the border from 1 to 6 with the hover progress.</figcaption>
 </figure>
 
-`hoverValue(max)` is the hover progress of the node scaled to `max` ([Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/)).
+`hoverValue(max)` is the hover progress of the node scaled to `max` ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)).
 An [animator](/use/learn/style-and-motion/animation/) drives an effect the same way: `RoundedNodeEffect.create(() -> 40F * appear.get())`.
 
 ## Round a node with its children
@@ -160,10 +160,10 @@ The same rule places a shadow: at its own `-50`, it turns and moves with the nod
 <figcaption>The circle is drawn whole, and the mask keeps the top half of the node.</figcaption>
 </figure>
 
-The overload that takes a [[Resource]] first keeps the pixels where the image is opaque (alpha above `0.5`), to cut a drawing to a star, a logo or a rounded frame.
+The overload that takes a [[Resource]] first keeps the pixels where the image is opaque (alpha above `0.5F`), to cut a drawing to a star, a logo or a rounded frame.
 Masks nest: a mask started inside another one shows only what both of them keep.
 Call `mask` while JOID draws, such as in [[Node#onDraw]] or in the `draw` of a [custom node](/use/learn/going-further/custom-nodes/): outside a frame, drawing throws.
-[Drawing](/use/learn/going-further/drawing/) explains the drawing calls.
+[Drawing shapes and text](/use/learn/going-further/drawing/) explains the drawing calls.
 
 ## Recap
 

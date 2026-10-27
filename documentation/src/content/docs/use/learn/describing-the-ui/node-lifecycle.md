@@ -1,13 +1,13 @@
 ---
 title: "Node lifecycle"
-description: "When a node joins a UI, lives there frame after frame and leaves it, and the callbacks that run at each moment."
+description: "When a node joins a UI, lives there frame after frame and leaves it, and the listeners that run at each moment."
 genre: learn
 sidebar:
   order: 3
 ---
 
 A node joins a UI, lives there for many frames, then leaves.
-Callbacks run your code at each of these moments: to start a counter when the node appears, to draw a decoration, to stop work when it goes.
+Listeners run your code at each of these moments: to start a counter when the node appears, to draw a decoration, to stop work when it goes.
 
 **You will learn**
 - Which moments a node goes through, in which order
@@ -23,11 +23,11 @@ Callbacks run your code at each of these moments: to start a counter when the no
 ![A flow from left to right: attach to a UI, then onInit once per attach, then onUpdate before drawing, onMount on the first drawn frame, onDraw and onRender while drawing, with a loop arrow from the drawing back to onUpdate labelled every frame while attached, and finally onDetach after remove.](/captures/describing-lifecycle-flow.webp)
 
 <figcaption>
-`onInit` and `onDetach` frame the life of a node; the callbacks in between run on every frame.
+`onInit` and `onDetach` frame the life of a node; the listeners in between run on every frame.
 </figcaption>
 </figure>
 
-| Callback | When it runs |
+| Listener | When it runs |
 |---|---|
 | [[Node#onInit]] | The node joins a UI: it is attached to the UI, or to a node that is in a UI. |
 | [[Node#onUpdate]] | Every frame, before JOID draws anything. |
@@ -37,8 +37,8 @@ Callbacks run your code at each of these moments: to start a counter when the no
 | [[Node#onDetach]] | The node leaves its UI: it is removed, its parent is removed, or the UI closes. |
 | [[Node#onChildAppend]] | A child is appended to the node. |
 
-Each callback receives an event; `event.getNode()` returns the node.
-A node that is not visible skips its drawing callbacks (`onMount`, `onDraw`, `onRender`), but `onUpdate` still runs.
+Each listener receives an event; `event.getNode()` returns the node.
+A node that is not visible skips its drawing listeners (`onMount`, `onDraw`, `onRender`), but `onUpdate` still runs.
 
 ## Run code when a node joins its UI and on every frame
 
@@ -91,7 +91,7 @@ It comes after `onInit`, and it waits for the conditions of [[Node#wait]]: an im
 </figure>
 
 `onRender` runs later, once the children are drawn, to draw over them.
-[Drawing](/use/learn/going-further/drawing/) lists the shapes you can draw, and [Custom nodes](/use/learn/going-further/custom-nodes/) shows how to make a node that draws itself.
+[Drawing shapes and text](/use/learn/going-further/drawing/) lists the shapes you can draw, and [Custom nodes](/use/learn/going-further/custom-nodes/) shows how to make a node that draws itself.
 
 ## Release what a node started
 
@@ -103,15 +103,15 @@ What `onInit` starts outside JOID, `onDetach` stops:
 The card checks something every 5 seconds while it is in the UI, and stops when it leaves.
 `onDetach` runs for the node and for each of its children, children first, when you remove the node, when you remove its parent and when the UI closes.
 
-A node that leaves keeps its callbacks: attached again, it runs `onInit` again, then `onMount` on its next drawn frame.
+A node that leaves keeps its listeners: attached again, it runs `onInit` again, then `onMount` on its next drawn frame.
 Moving a node to another parent detaches it, then attaches it again.
 
 :::caution
-The callbacks of JOID run on the render thread, and the code of an executor does not.
+The listeners of JOID run on the render thread, and the code of an executor does not.
 Give the result back to the render thread before it changes a node: [Threads](/use/learn/running/threads/) shows how.
 :::
 
-JOID stops by itself what it owns: the signals that a node follows, its hover and drag state, and the tasks of the node ([Tasks](/use/learn/state/tasks/#know-how-long-a-task-lives)).
+JOID stops by itself what it owns: the signals that a node follows, its hover and drag state, and the tasks of the node ([Tasks and background updates](/use/learn/state/tasks/#know-how-long-a-task-lives)).
 
 ## Recap
 
@@ -119,9 +119,9 @@ JOID stops by itself what it owns: the signals that a node follows, its hover an
 - **`onUpdate`** runs on every frame, before anything is drawn; children update before their parent.
 - **`onMount`** runs on the first drawn frame, once the conditions of **`wait(...)`** hold.
 - **`onDraw`** runs after the node draws itself, **`onRender`** after its children.
-- A hidden node skips the drawing callbacks but still updates.
+- A **hidden node** skips the drawing listeners but still updates.
 - The children of a detached branch **wait for their root** to join a UI.
-- Stop in `onDetach` what you start in `onInit` outside JOID.
+- Stop in **`onDetach`** what you start in `onInit` outside JOID.
 
 ## Try it
 
@@ -145,7 +145,7 @@ Make the timer of `LifecycleUI` stop while the card is hidden with `visible(fals
 <details>
 <summary>Solution</summary>
 
-`onUpdate` runs for a hidden node too, while the drawing callbacks do not: add the frame time in `onDraw` instead.
+`onUpdate` runs for a hidden node too, while the drawing listeners do not: add the frame time in `onDraw` instead.
 
 ```java fragment
 .onDraw(event -> this.open += super.getFrameTime() / 1000D)

@@ -73,6 +73,8 @@ A markup adds an effect to part of a string with `style.effect(...)`, as `<em>` 
 ```java file="com/example/describing/markup/UnderlineTextEffect.java" region="class"
 ```
 
+`decorate` draws the line with [[DrawUtils]], the drawing API that [Drawing shapes and text](/use/learn/going-further/drawing/) teaches.
+
 An effect never changes the layout: the text keeps its width and its line breaks, wherever `apply` moves the glyphs.
 An effect that reads the time in `apply` animates, because JOID draws the text again on every frame.
 A style with a shadow draws the glyphs twice: `apply` moves the shadow with its glyph, and `decorate` runs for the shadow too, where [[ITextGlyph#isShadow]] is `true`.
@@ -85,7 +87,7 @@ A [[TextModifier]] rewrites the string before it is drawn and measured.
 ```java file="com/example/describing/markup/MarkupUI.java" region="modifier"
 ```
 
-The modifier sees the text of every run as one string, and leaves the tags of the markup untouched.
+The modifier receives the text of every run as one string, and leaves the tags of the markup untouched.
 `TextModifier` holds the common ones: `UPPER_CASE`, `LOWER_CASE`, `CAPITALIZE`, `WORD_CAPITALIZE`, `CAMEL_CASE`, `UPPER_CAMEL_CASE` and `SNAKE_CASE`.
 Any lambda from a string to a string is a modifier too: `text -> text.replace("-", " ")`.
 

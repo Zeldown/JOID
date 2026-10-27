@@ -96,7 +96,7 @@ A locked color refuses `alpha(...)` and the other changes with an `IllegalStateE
 The presets of `Color` are locked, and [[Color#copy]] gives an unlocked copy of any color.
 
 The color of a node can also follow the state of your UI: give `color(...)` an expression that reads a signal, or a lambda ([Signals](/use/learn/interactivity/signals/)).
-A second color for the hovered state is set with `hoveredColor(...)` ([Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/)).
+A second color for the hovered state is set with `hoveredColor(...)` ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)).
 
 ## Use the colors that change on their own
 
@@ -138,7 +138,7 @@ Make a button 25 % darker while the mouse is over it, without writing the darker
 <summary>Solution</summary>
 
 ```java fragment
-RectNode.create(0, 0, 200, 60).color(BRAND).hoveredColor(BRAND.darker(0.25F)).attach(this);
+RectNode.create(0, 0, 200, 60).color(ColorsUI.BRAND).hoveredColor(ColorsUI.BRAND.darker(0.25F)).attach(this);
 ```
 
 </details>

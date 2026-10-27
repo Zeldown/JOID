@@ -78,7 +78,7 @@ The minimap overlay is drawn above the screen and takes the clicks on it.
 [[UIDataOverlayRender]] sets how the overlay is drawn:
 
 - `aboveScreens = true` draws it above the screens and the popups.
-- `always = true` draws it even when the UI bridge hides its overlays, as a host can do while it shows its own menus ([Embedding](/use/learn/running/embedding/)).
+- `always = true` draws it even when the UI bridge hides its overlays, as a host can do while it shows its own menus ([Embedding JOID](/use/learn/running/embedding/)).
 
 [[UIDataOverlayInteraction]] sets its input:
 
@@ -104,7 +104,7 @@ JOID draws the open UIs from the bottom of this stack to its top, and sends the 
 - Opening a UI that is already open brings it to the top of its group.
 
 [[UI#isOnTop]] tells whether a UI is the top one of its kind that receives input: the top screen or popup, or the top overlay with interaction.
-With several UI bridges, each one stacks its own UIs, and the bridges stack by priority ([Embedding](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own)).
+With several UI bridges, each one stacks its own UIs, and the bridges stack by priority ([Embedding JOID](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own)).
 
 ## Recap
 

@@ -92,9 +92,7 @@ The white cell sets the height of the first row; the cells of a row are aligned 
 ## Let the grid take its height
 
 A grid created with a height of 0 takes the height of its rows, gaps included, and keeps the width you gave it.
-A height that you give is a minimum: the grid keeps it while its rows fit and grows past it when they need more room.
-
-A height with an overflow is a fixed height: the grid keeps it, and its rows scroll or are clipped ([Layout](/use/learn/describing-the-ui/layout/#scroll-a-node)).
+A height that you give is a minimum, and a fixed height with an overflow, which lets the rows scroll ([Scroll a node](/use/learn/describing-the-ui/layout/#scroll-a-node)).
 
 ```java file="com/example/describing/grid/GridCasesUI.java" region="scroll"
 ```
@@ -108,8 +106,7 @@ The grid stays 260 design pixels high, and its five rows scroll inside it.
 </figcaption>
 </figure>
 
-A child that is not visible gets no cell, and a child whose position is `ABSOLUTE` stays where you put it, out of the rows ([Position and size](/use/learn/describing-the-ui/position-and-size/)).
-A removed child lets the next cells move up from the next frame.
+A hidden, removed or `ABSOLUTE` child gets no cell ([Know who places a child](/use/learn/describing-the-ui/layout/#know-who-places-a-child)), and the next cells move up from the next frame.
 
 ## Recap
 
@@ -129,12 +126,7 @@ Build a grid of 16 white squares of 40 design pixels, four per row, 8 design pix
 
 Four squares and three gaps take 4 × 40 + 3 × 8 = 184 design pixels: a grid of that width wraps after the fourth square.
 
-```java fragment
-GridNode.create(20, 20, 184, 0).margin(8D).body(grid -> {
-	for (int i = 0; i < 16; i++) {
-		RectNode.create(0, 0, 40, 40).color(Color.WHITE).attach(grid);
-	}
-}).attach(card);
+```java file="com/example/describing/grid/PaletteUI.java" region="palette"
 ```
 
 </details>

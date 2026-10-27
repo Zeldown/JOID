@@ -6,7 +6,7 @@ sidebar:
   order: 1
 ---
 
-A node tells you what the user does to it through events.
+A node reports what the user does to it through events.
 You subscribe to an event with a method of the node, and JOID calls your listener when the event happens.
 This page shows the three kinds of events, the path of an input through the node tree, and how a listener stops it.
 
@@ -33,14 +33,13 @@ Each press on the button runs its listener once.
 </figcaption>
 </figure>
 
-The listener receives a [[NodeMouseEvent]]: `getNode()` is the node, `getMouseX()` and `getMouseY()` the pointer in [design pixels](/use/learn/describing-the-ui/design-canvas/), `getButton()` the button.
+The listener receives a [[NodeMouseEvent]]: `getNode()` is the node, `getMouseX()` and `getMouseY()` the pointer in [design pixels](/use/learn/describing-the-ui/design-canvas/), `getButton()` the [[MouseButton]].
 `onClick` runs when the left button goes down over the node, not when it goes up.
 The text under the button reads `clicks`, so it changes with it: [Signals](/use/learn/interactivity/signals/) explains why.
 
 ## Let the pointer through a decoration
 
-The pointer always hovers one node: the frontmost node under it that is interactive.
-That node and all its parents are hovered, and `onClick` runs only on a hovered node.
+`onClick` runs only on a hovered node ([Know which node is hovered](/use/learn/interactivity/hover-and-tooltips/#know-which-node-is-hovered)).
 A child that has no `onClick` of its own, such as the label of a button, lets the press reach the `onClick` of its parent.
 
 A node drawn over the button that is not its child takes the pointer for itself.
@@ -96,7 +95,7 @@ The card heard the press outside it, and missed the press that the button consum
 A listener stops an input with [[NodeInputEvent#consume]].
 A consumed input reaches no other `handle` listener, no `onClick`, none of the handling that a node does by itself (a checkbox that toggles, a field that types), no UI below and not the host application.
 The `onClick` of the button consumed the first press, so the listener of the card never heard it.
-Only a listener of the priority `MONITOR` still hears a consumed input ([Order the listeners of one event](#order-the-listeners-of-one-event)).
+Only a listener of the priority `MONITOR` still receives a consumed input ([Order the listeners of one event](#order-the-listeners-of-one-event)).
 
 Because the listeners of a node run before its own handling, a listener can keep an input from the node itself.
 This field never receives a digit:
@@ -112,6 +111,8 @@ This field never receives a digit:
 The user types `R2D2`: the listener consumes both digits before the field sees them.
 </figcaption>
 </figure>
+
+`KitTextFieldNode` is the text field of the example kit ([Text fields](/use/learn/interactivity/text-fields/)).
 
 ### Follow an input through the tree
 
@@ -194,8 +195,7 @@ A `MONITOR` listener only reads: it runs even after a consume or a cancel, and c
 
 A listener that throws an exception does not stop the others: JOID prints a [warning](/reference/errors/) once and runs the next listener.
 
-A listener that you add in the constructor of a UI stays as long as the UI object lives.
-A listener that you add in `init()` lasts one opening: JOID removes it when the UI closes or reloads, and `init()` adds it again.
+A listener of a UI added in `init()` lasts one opening, one added in the constructor stays ([Open and close a UI](/use/learn/describing-the-ui/uis/#open-and-close-a-ui)).
 
 ## Recap
 
@@ -215,7 +215,7 @@ Count the presses of the right button on the button of `ClickUI`, and only those
 <details>
 <summary>Solution</summary>
 
-`onClick` hears only the left button, so listen to the raw press and test the pointer yourself:
+`onClick` reacts only to the left button, so listen to the raw press and test the pointer yourself:
 
 ```java fragment
 .handleMousePressed(event -> {
@@ -233,7 +233,7 @@ In `PressUI`, count the presses that no node consumed: a press on the button mus
 <details>
 <summary>Solution</summary>
 
-The UI hears the input after its nodes, and only when no node consumed it:
+The UI receives the input after its nodes, and only when no node consumed it:
 
 ```java fragment
 super.handleMousePressed(event -> free.increment());

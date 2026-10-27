@@ -20,7 +20,7 @@ Learn the pattern once on this page, then the options of each control.
 ## Bind a control to a signal
 
 A control is abstract: its look comes from a skin, a small subclass that gives it its parts.
-The controls of this page use the skins of the example kit (`KitCheckboxNode`, `KitIntegerSliderNode`…), which [UI kit](/use/learn/going-further/ui-kit/) writes.
+The controls of this page use the skins of the [example kit](https://github.com/Zeldown/JOID/tree/main/documentation/examples/src/main/java/com/example/kit) (`KitCheckboxNode`, `KitIntegerSliderNode`…), which [Give your controls a look](/use/learn/going-further/ui-kit/) writes; [Know the parts of each control](/use/learn/going-further/ui-kit/#know-the-parts-of-each-control) lists the parts that each skin gives.
 
 ```java file="com/example/interactivity/controls/SettingsUI.java" region="signals"
 ```
@@ -120,12 +120,12 @@ In an `onChange` listener, every node bound to the same signal already shows the
 When a listener corrects the value, such as `if (event.getValue() > 50) slider.change(50)`, the listeners receive `0 > 80`, then `80 > 50`: the last `onChange` always gives the final value.
 Inside your own [[Signal#batch]], `onChange` runs at once, and the nodes bound to the signal follow when the batch ends ([Derived values](/use/learn/state/derived-values/)).
 
-Two controls bound to one signal with bounds that never agree, such as a slider from `0` to `100` and a field limited to `95`, stop correcting each other after a few writes: the signal keeps the value of the gesture, each control shows its own bound, and the dev mode prints a warning.
-
 ## Turn an option on or off
 
-[[BaseCheckboxNode]] holds a `boolean`: `checked(...)` gives it, `isChecked()` reads it, and a press on the box toggles it.
-A [[CheckboxNode]] draws a `box` and a `mark`, which shows while the box is checked.
+```java file="com/example/interactivity/controls/SettingsUI.java" region="checkbox"
+```
+
+[[BaseCheckboxNode]] holds a `boolean`: `checked(...)` gives it, `isChecked()` reads it, and a press toggles it.
 
 ## Choose between two values
 
@@ -134,7 +134,7 @@ A [[CheckboxNode]] draws a `box` and a `mark`, which shows while the box is chec
 
 [[BaseToggleNode]] holds a `boolean` with `toggle(...)`, and a press switches it.
 `state(onValue, offValue)` gives the two values that `getValue()` returns, here `"Night"` and `"Day"`.
-A [[ToggleNode]] slides its `knob` along its `track`: [[ToggleNode#speed]] is the part of the way done in 1/60 s, and `1F` moves it at once.
+[[ToggleNode#speed]] sets how fast a [[ToggleNode]] slides to its new state: the part of the way done in 1/60 s, and `1F` moves at once.
 
 ## Choose one of a few options
 
@@ -205,9 +205,8 @@ A slider is a choice whose options sit along a track: a press on the track jumps
 | [[DoubleSliderNode]] | `range(min, max, step)` |
 | [[StringSliderNode]] | `values(...)` of texts or of the constants of an enum, and `value(constant)` |
 
-A [[SliderNode]] places a `thumb` on a `track`.
 [[BaseSliderNode#inset]] keeps the first and the last step away from the ends, by half the thumb by default.
-A range builds no list: `range(1, Integer.MAX_VALUE)` costs nothing, and a range of more values than `Integer.MAX_VALUE` throws an `IllegalArgumentException`.
+A range builds no list: `range(1, Integer.MAX_VALUE)` costs nothing.
 [[SliderNode#speed]] eases the thumb to a new value, and `1F`, the default, moves it at once; [[BaseSliderNode#isSliding]] is `true` during a drag.
 
 ## Show a progress
@@ -228,7 +227,6 @@ The bars follow the slider: at 6, `0.6F` fills 60 % of the track, from the side 
 
 The progress goes from `0F` to `1F`, and a value out of it shows an empty or a full bar.
 [[ProgressNode#direction]] fills from the left (the default), the right, the top or the bottom.
-The `fill` part is required, the `track` part is optional.
 
 ## Recap
 
@@ -251,12 +249,7 @@ In `SettingsUI`, uncheck "Subtitles" when the volume reaches `0`.
 
 An action on a change goes in `onChange`:
 
-```java fragment
-KitIntegerSliderNode
-.create(240, 140, 300, 40)
-.range(0, 10)
-.value(this.volume)
-.onChange(event -> this.subtitles.set(event.getValue() > 0 && this.subtitles.peek()));
+```java file="com/example/interactivity/controls/MuteUI.java" region="mute" ins={5}
 ```
 
 </details>

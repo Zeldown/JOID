@@ -6,7 +6,7 @@ sidebar:
   order: 8
 ---
 
-[[Resource#of]] reads images, animations, vector images and videos from files, streams, URLs and the classpath ([Media](/use/learn/describing-the-ui/media/) lists the supported formats).
+[[Resource#of]] reads images, animations, vector images and videos from files, streams, URLs and the classpath ([Images and media](/use/learn/describing-the-ui/media/) lists the supported formats).
 When your images live somewhere else, or in a file type that JOID does not read, teach JOID where to find them and how to decode them: they then load, cache and draw like a PNG.
 
 **You will learn**
@@ -19,7 +19,7 @@ When your images live somewhere else, or in a file type that JOID does not read,
 
 `Resource.of(input)` goes through three registries, and in each one the last registered entry is asked first:
 
-1. A resource resolver turns an input that is already a texture or a `BufferedImage` into a resource ([Media](/use/learn/describing-the-ui/media/) shows the textures of your application).
+1. A resource resolver turns an input that is already a texture or a `BufferedImage` into a resource ([Images and media](/use/learn/describing-the-ui/media/) shows the textures of your application).
 2. Otherwise, an asset locator of [[AssetLocator]] turns the input into an [[Asset]]: the bytes and a unique id.
    The built-in locators read a `File`, an `InputStream`, and a `String` that is a URL with its scheme, a path in the classpath or a path on the disk.
 3. A resource format of [[ResourceFormat]] reads the first 4 096 bytes of the asset and returns the decoder that reads it.
@@ -106,7 +106,7 @@ A sprite strip has no header that a format could recognize, so the resource name
 ```java file="com/example/further/FormatsUI.java" region="coin"
 ```
 
-The animation plays, pauses and loops like any animated image ([Media](/use/learn/describing-the-ui/media/) shows the playback).
+The animation plays, pauses and loops like any animated image ([Images and media](/use/learn/describing-the-ui/media/) shows the playback).
 When the frames of your format cover only part of the image, as in a GIF, compose them on a [[ResourceAnimationCanvas]]: `compose(frame, x, y, width, height, blend, disposal)` draws a partial frame over the previous ones and returns the whole image, with the [[ResourceAnimationCanvas.Blend]] and the [[ResourceAnimationCanvas.Disposal]] of the frame.
 
 ## Recap

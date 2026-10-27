@@ -12,7 +12,7 @@ Each page builds on the previous one.
 
 ## Events
 
-A node tells you what happens to it through listeners that you give to its methods.
+A node reports what happens to it through listeners that you give to its methods.
 An input travels through the node tree from the front to the back, and the first listener that consumes it keeps it.
 
 ```java fragment
@@ -33,7 +33,7 @@ Read [Signals](/use/learn/interactivity/signals/) to learn when JOID computes a 
 
 ## Hover, tooltips and cursors
 
-A node knows when the pointer is over it, and can change its look, show a tooltip or set the cursor.
+A node tracks whether the pointer is over it, and can change its look, show a tooltip or set the cursor.
 
 ```java fragment
 button.hoveredColor(Color.GRAY).hover(() -> "Opens the shop").cursor(Cursor.POINTER);

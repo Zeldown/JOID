@@ -11,8 +11,7 @@ JOID lets you write one in JOID GLSL, a GLSL that every backend translates, and 
 
 **You will learn**
 - When you need a shader, and when you do not
-- How to write a shader and bind it around a drawing
-- What JOID GLSL allows, and what it gives you
+- How to write a shader in JOID GLSL and bind it around a drawing
 - How to set uniforms and textures
 - How to post-process a drawing with shader passes, and how to write a pass
 - How to build a shader while the application runs

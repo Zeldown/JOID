@@ -25,7 +25,7 @@ JOID reads models from Wavefront `.obj` files: a format that every 3D tool expor
 The first argument names the model in error messages.
 The file is any input that [[Resource#of]] takes: a path in the classpath, a file, a stream or a URL ([Custom formats](/use/learn/going-further/custom-formats/) explains how JOID finds it).
 `of` reads the whole file at once, on the calling thread, and throws when a line is wrong: load a model once, here in a constant, and share it between nodes.
-The texture is a [[Resource]], loaded like any image ([Media](/use/learn/describing-the-ui/media/)), and repeats when the texture coordinates go past its edges.
+The texture is a [[Resource]], loaded like any image ([Images and media](/use/learn/describing-the-ui/media/)), and repeats when the texture coordinates go past its edges.
 
 ## Show and turn a model
 

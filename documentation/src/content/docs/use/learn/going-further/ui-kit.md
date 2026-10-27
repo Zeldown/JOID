@@ -56,16 +56,18 @@ A part follows the state of its control through a reactive setter, as the thumb 
 ```
 
 A control without one of its required parts throws when it is attached, for example `The KitCheckboxNode has no mark, give it one with mark(...)`.
+A control of your own that takes parts sets each one with [[Node#part]], which puts the new part at the place of the previous one among the children.
 
 ## Know the parts of each control
 
 | Control | Parts | What the control does with them |
 |---|---|---|
 | [[CheckboxNode]] | `box`, `mark` (required) | The box covers the control; the mark is centered and shown while checked. |
-| [[ToggleNode]] | `track`, `knob` (required) | The track covers the control; the knob is half its width by default and slides from left to right. `speed` sets how fast it slides: `1F` jumps at once. |
-| [[SliderNode]] | `track`, `thumb` (required) | The track covers the control; the thumb is a square of its height by default and moves with the value. `speed` sets how fast the thumb catches up with a value set from the code. |
+| [[ToggleNode]] | `track`, `knob` (required) | The track covers the control; the knob is half its width by default and slides from left to right. |
+| [[SliderNode]] | `track`, `thumb` (required) | The track covers the control; the thumb is a square of its height by default and moves with the value. |
 | [[SwitchNode]] | `option((value, index) -> node)` (required) | Creates one node per value and splits the width between them; a click on one selects its value. |
-| [[SelectorNode]] | `field`, `option(value -> node)` (required) | The field covers the list, open or closed; each option is one row of the height of the control, shown while the list is open, and the selected one while it is closed. `direction` opens the list `DOWN` or `UP`. |
+| [[SelectorNode]] | `field`, `option(value -> node)` (required) | The field covers the list, open or closed; each option is one row of the height of the control, shown while the list is open, and the selected one while it is closed. |
+| [[ProgressNode]] | `fill` (required), `track` | The track covers the control; the fill covers the part that the progress reaches, from the side of its direction. |
 | [[ScrollbarNode]] | `track`, `thumb` (required) | The track covers the bar; the thumb is sized and moved from the scroll of the node it serves. |
 | Text fields ([[FieldNode]]) | `background` | The background covers the field. A text field draws its text itself and needs no skin. |
 
@@ -85,7 +87,7 @@ This pill toggle slides a circle in a rounded track whose color follows the circ
 - Animate on a change with a [[TweenAnimator]] started in `onChange`; `sequence` starts from the value the animator holds, so a quick second click turns the animation back from where it is ([Animation](/use/learn/style-and-motion/animation/) teaches animators).
 - Set the animator to the current value in `init`, so that the control opens in place, without animating.
 
-A listener added in the constructor lasts as long as the node; [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/) explains which listeners survive a reopening.
+A listener added in the constructor of a skin lasts as long as the node, as one added in the constructor of a UI does ([Open and close a UI](/use/learn/describing-the-ui/uis/#open-and-close-a-ui)).
 
 ## Gather your skins in a UI kit
 
