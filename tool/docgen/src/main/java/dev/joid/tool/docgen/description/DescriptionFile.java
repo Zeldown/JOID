@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ public final class DescriptionFile {
 	private final String              fqcn;
 	private final Map<String, String> front;
 	private final Map<String, String> entries;
+	private final Map<String, String> defaults;
 
 	private String summary;
 	private String description;
@@ -27,6 +29,7 @@ public final class DescriptionFile {
 		this.fqcn        = fqcn;
 		this.front       = new LinkedHashMap<>();
 		this.entries     = new LinkedHashMap<>();
+		this.defaults    = new LinkedHashMap<>();
 		this.summary     = "";
 		this.description = "";
 	}
@@ -90,7 +93,15 @@ public final class DescriptionFile {
 		if (key == null) {
 			this.description = text;
 		} else {
-			this.entries.put(key, text);
+			final List<String> lines = new ArrayList<>();
+			for (final String line : text.split("\n")) {
+				if (line.startsWith("Default: ")) {
+					this.defaults.put(key, line.substring("Default: ".length()).trim());
+				} else {
+					lines.add(line);
+				}
+			}
+			this.entries.put(key, String.join("\n", lines).trim());
 		}
 	}
 
