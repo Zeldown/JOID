@@ -23,7 +23,7 @@ Learn: [base-opengl](/build/base-modules/opengl/), [Embedding in a host](/build/
 | [`GlEnums`](/reference/base-opengl/glenums/) | class | Converts the render states of JOID to the OpenGL values that the binding takes. |
 | [`GlFrameBuffer`](/reference/base-opengl/glframebuffer/) | class | A framebuffer of OpenGL with a color texture and a 24-bit depth renderbuffer, without stencil. |
 | [`GlFrameBufferFamily`](/reference/base-opengl/glframebufferfamily/) | enum | The family of framebuffer functions that an OpenGL context offers. |
-| [`GlProfile`](/reference/base-opengl/glprofile/) | enum | The profile of an OpenGL context. |
+| [`GlProfile`](/reference/base-opengl/glprofile/) | enum | Whether an OpenGL context keeps the fixed pipeline (compatibility) or drops it (core, forward-compatible core). |
 | [`GlRenderBridge`](/reference/base-opengl/glrenderbridge/) | class | The render bridge of OpenGL, shared by every OpenGL backend, which calls OpenGL through a binding and gives the host its state back. |
 | [`GlShader`](/reference/base-opengl/glshader/) | class | A shader program of OpenGL, linked from the translation of the two stages of a JOID shader. |
 | [`GlSnapshotCapture`](/reference/base-opengl/glsnapshotcapture/) | class | Reads the back buffer of an OpenGL context into a snapshot image. |

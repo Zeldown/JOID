@@ -21884,7 +21884,7 @@
       "kind": "class",
       "abstract": false,
       "family": "nodes",
-      "summary": "An axis of a chart, with its name.",
+      "summary": "The base of the X and Y axes of a chart, created by `ChartAxis.x(...)` and `ChartAxis.y(...)`, with the name of the axis.",
       "ancestors": [],
       "url": "/reference/nodes/chartnode-chartaxis/",
       "members": {
@@ -21906,7 +21906,7 @@
       "kind": "class",
       "abstract": false,
       "family": "nodes",
-      "summary": "An axis of a chart, with its name.",
+      "summary": "The base of the X and Y axes of a chart, created by `ChartAxis.x(...)` and `ChartAxis.y(...)`, with the name of the axis.",
       "ancestors": [],
       "url": "/reference/nodes/chartnode-chartaxis/",
       "members": {
@@ -30098,7 +30098,7 @@
       "kind": "enum",
       "abstract": false,
       "family": "base-opengl",
-      "summary": "The profile of an OpenGL context.",
+      "summary": "Whether an OpenGL context keeps the fixed pipeline (compatibility) or drops it (core, forward-compatible core).",
       "ancestors": [],
       "url": "/reference/base-opengl/glprofile/",
       "members": {
@@ -30118,7 +30118,7 @@
       "kind": "enum",
       "abstract": false,
       "family": "base-opengl",
-      "summary": "The profile of an OpenGL context.",
+      "summary": "Whether an OpenGL context keeps the fixed pipeline (compatibility) or drops it (core, forward-compatible core).",
       "ancestors": [],
       "url": "/reference/base-opengl/glprofile/",
       "members": {

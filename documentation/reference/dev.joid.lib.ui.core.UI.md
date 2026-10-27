@@ -182,7 +182,7 @@ Masks nest: inside another mask, the drawing is clipped to both, and the mask al
 
 ## mask(Resource,double,double,double,double,Runnable)
 
-Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is at least 0.5.
+Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is at least `0.5F`.
 A resource that has not loaded yet hides the whole drawing.
 
 ## draw(double,double)
@@ -319,7 +319,7 @@ F3 shows or hides it.
 
 ## zoom(double)
 
-Sets the zoom of the UI: `2D` shows the canvas twice as large around its anchor.
+Sets the zoom of the UI around its anchor: `0.5D` shows the canvas at half its size.
 The value is kept between `0.1D` and the largest zoom that the interface scale allows; the requested value applies again when the scale changes.
 
 ## zoom(Signal)

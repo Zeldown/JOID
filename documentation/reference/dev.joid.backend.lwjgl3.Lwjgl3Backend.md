@@ -12,4 +12,4 @@ Creates the backend for the GLFW window of that handle.
 
 ## binding
 
-The OpenGL binding that the render bridge calls, [[Lwjgl3GlBinding]] by default; set another one before `register()` to wrap or replace the OpenGL calls.
+The OpenGL binding that the render bridge calls; set another one before `register()` to wrap or replace the OpenGL calls.

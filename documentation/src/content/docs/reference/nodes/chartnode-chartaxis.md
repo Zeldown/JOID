@@ -1,6 +1,6 @@
 ---
 title: "ChartNode.ChartAxis"
-description: "An axis of a chart, with its name."
+description: "The base of the X and Y axes of a chart, created by ChartAxis.x(...) and ChartAxis.y(...), with the name of the axis."
 genre: reference
 topic: reference
 tableOfContents:
@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Known subtypes:** [`ChartNode.ChartAxis.XChartAxis`](/reference/nodes/chartnode-chartaxis-xchartaxis/), [`ChartNode.ChartAxis.YChartAxis`](/reference/nodes/chartnode-chartaxis-ychartaxis/)<br/>
 **Package:** `dev.joid.lib.ui.node.impl.chart` · **Module:** `core` · **Source:** [ChartNode.java](https://github.com/Zeldown/JOID/blob/main/core/src/main/java/dev/joid/lib/ui/node/impl/chart/ChartNode.java)
 
-An axis of a chart, with its name.
+The base of the X and Y axes of a chart, created by `ChartAxis.x(...)` and `ChartAxis.y(...)`, with the name of the axis.
 
 ## Learn more
 

@@ -37,26 +37,26 @@ The OpenAL binding of LWJGL 2, given to `AlAudioBridge` by the LWJGL 2 backend.
 | Returns | Signature | Summary |
 |---|---|---|
 | `Object` | [getCurrentContext](#Lwjgl2AlBinding-method-getCurrentContext)() | Returns the current context of OpenAL, or `null` while LWJGL 2 has no OpenAL context. |
-| `boolean` | [isPlaying](#Lwjgl2AlBinding-method-isPlaying)(int source) | If `true`, the source is in the playing state. |
-| `int` | [getQueuedBuffers](#Lwjgl2AlBinding-method-getQueuedBuffers)(int source) | Returns the number of buffers in the queue of the source, played or not. |
-| `int` | [getProcessedBuffers](#Lwjgl2AlBinding-method-getProcessedBuffers)(int source) | Returns the number of queued buffers that the source has finished playing. |
+| `boolean` | [isPlaying](#Lwjgl2AlBinding-method-isPlaying)(int source) | Calls `alGetSourcei` with `AL_SOURCE_STATE`. |
+| `int` | [getQueuedBuffers](#Lwjgl2AlBinding-method-getQueuedBuffers)(int source) | Calls `alGetSourcei` with `AL_BUFFERS_QUEUED`. |
+| `int` | [getProcessedBuffers](#Lwjgl2AlBinding-method-getProcessedBuffers)(int source) | Calls `alGetSourcei` with `AL_BUFFERS_PROCESSED`. |
 
 ### Actions
 
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [createContext](#Lwjgl2AlBinding-method-createContext)() | Creates the OpenAL context of LWJGL 2 with `AL.create()`. |
-| `int` | [genSource](#Lwjgl2AlBinding-method-genSource)() | Creates a source placed at the listener, so that no position attenuates or pans it, and returns its name. |
-| `void` | [deleteSource](#Lwjgl2AlBinding-method-deleteSource)(int source) | Deletes the source. |
-| `int` | [genBuffer](#Lwjgl2AlBinding-method-genBuffer)() | Creates a buffer and returns its name. |
-| `void` | [deleteBuffer](#Lwjgl2AlBinding-method-deleteBuffer)(int buffer) | Deletes the buffer. |
-| `void` | [bufferData](#Lwjgl2AlBinding-method-bufferData)(int buffer, int channels, short[] samples, int sampleRate) | Copies the samples into a direct buffer that it reuses, then fills the OpenAL buffer, mono for one channel and stereo for two. |
-| `void` | [play](#Lwjgl2AlBinding-method-play)(int source) | Plays the source. |
-| `void` | [stop](#Lwjgl2AlBinding-method-stop)(int source) | Stops the source; its queued buffers become processed. |
-| `void` | [pause](#Lwjgl2AlBinding-method-pause)(int source) | Pauses the source. |
-| `void` | [gain](#Lwjgl2AlBinding-method-gain)(int source, float gain) | Sets the gain of the source, `1F` for 100 %. |
-| `void` | [queueBuffer](#Lwjgl2AlBinding-method-queueBuffer)(int source, int buffer) | Appends the buffer to the queue of the source. |
-| `int` | [unqueueBuffer](#Lwjgl2AlBinding-method-unqueueBuffer)(int source) | Removes the oldest buffer from the queue of the source and returns its name. |
+| `int` | [genSource](#Lwjgl2AlBinding-method-genSource)() | Calls `alGenSources`, then places the source at the listener with `AL_SOURCE_RELATIVE` and a position of zero. |
+| `void` | [deleteSource](#Lwjgl2AlBinding-method-deleteSource)(int source) | Calls `alDeleteSources`. |
+| `int` | [genBuffer](#Lwjgl2AlBinding-method-genBuffer)() | Calls `alGenBuffers`. |
+| `void` | [deleteBuffer](#Lwjgl2AlBinding-method-deleteBuffer)(int buffer) | Calls `alDeleteBuffers`. |
+| `void` | [bufferData](#Lwjgl2AlBinding-method-bufferData)(int buffer, int channels, short[] samples, int sampleRate) | Calls `alBufferData` through a direct buffer that it reuses, with `AL_FORMAT_MONO16` or `AL_FORMAT_STEREO16`. |
+| `void` | [play](#Lwjgl2AlBinding-method-play)(int source) | Calls `alSourcePlay`. |
+| `void` | [stop](#Lwjgl2AlBinding-method-stop)(int source) | Calls `alSourceStop`. |
+| `void` | [pause](#Lwjgl2AlBinding-method-pause)(int source) | Calls `alSourcePause`. |
+| `void` | [gain](#Lwjgl2AlBinding-method-gain)(int source, float gain) | Calls `alSourcef` with `AL_GAIN`. |
+| `void` | [queueBuffer](#Lwjgl2AlBinding-method-queueBuffer)(int source, int buffer) | Calls `alSourceQueueBuffers`. |
+| `int` | [unqueueBuffer](#Lwjgl2AlBinding-method-unqueueBuffer)(int source) | Calls `alSourceUnqueueBuffers`. |
 | `void` | [destroyContext](#Lwjgl2AlBinding-method-destroyContext)() | Destroys the OpenAL context of LWJGL 2 when it exists. |
 
 ## Creation details
@@ -85,7 +85,7 @@ Returns the current context of OpenAL, or `null` while LWJGL 2 has no OpenAL con
 
 `boolean isPlaying(int source)` 
 
-If `true`, the source is in the playing state.
+Calls `alGetSourcei` with `AL_SOURCE_STATE`.
 
 <a id="Lwjgl2AlBinding-method-getQueuedBuffers"></a>
 
@@ -93,7 +93,7 @@ If `true`, the source is in the playing state.
 
 `int getQueuedBuffers(int source)` 
 
-Returns the number of buffers in the queue of the source, played or not.
+Calls `alGetSourcei` with `AL_BUFFERS_QUEUED`.
 
 <a id="Lwjgl2AlBinding-method-getProcessedBuffers"></a>
 
@@ -101,7 +101,7 @@ Returns the number of buffers in the queue of the source, played or not.
 
 `int getProcessedBuffers(int source)` 
 
-Returns the number of queued buffers that the source has finished playing.
+Calls `alGetSourcei` with `AL_BUFFERS_PROCESSED`.
 
 <a id="Lwjgl2AlBinding-method-createContext"></a>
 
@@ -122,7 +122,7 @@ Throws an `IllegalStateException` with the reason of LWJGL when no output device
 
 `int genSource()` 
 
-Creates a source placed at the listener, so that no position attenuates or pans it, and returns its name.
+Calls `alGenSources`, then places the source at the listener with `AL_SOURCE_RELATIVE` and a position of zero.
 
 <a id="Lwjgl2AlBinding-method-deleteSource"></a>
 
@@ -130,7 +130,7 @@ Creates a source placed at the listener, so that no position attenuates or pans 
 
 `void deleteSource(int source)` 
 
-Deletes the source.
+Calls `alDeleteSources`.
 
 <a id="Lwjgl2AlBinding-method-genBuffer"></a>
 
@@ -138,7 +138,7 @@ Deletes the source.
 
 `int genBuffer()` 
 
-Creates a buffer and returns its name.
+Calls `alGenBuffers`.
 
 <a id="Lwjgl2AlBinding-method-deleteBuffer"></a>
 
@@ -146,7 +146,7 @@ Creates a buffer and returns its name.
 
 `void deleteBuffer(int buffer)` 
 
-Deletes the buffer.
+Calls `alDeleteBuffers`.
 
 <a id="Lwjgl2AlBinding-method-bufferData"></a>
 
@@ -154,7 +154,7 @@ Deletes the buffer.
 
 `void bufferData(int buffer, int channels, short[] samples, int sampleRate)` 
 
-Copies the samples into a direct buffer that it reuses, then fills the OpenAL buffer, mono for one channel and stereo for two.
+Calls `alBufferData` through a direct buffer that it reuses, with `AL_FORMAT_MONO16` or `AL_FORMAT_STEREO16`.
 
 <a id="Lwjgl2AlBinding-method-play"></a>
 
@@ -162,7 +162,7 @@ Copies the samples into a direct buffer that it reuses, then fills the OpenAL bu
 
 `void play(int source)` 
 
-Plays the source.
+Calls `alSourcePlay`.
 
 <a id="Lwjgl2AlBinding-method-stop"></a>
 
@@ -170,7 +170,7 @@ Plays the source.
 
 `void stop(int source)` 
 
-Stops the source; its queued buffers become processed.
+Calls `alSourceStop`.
 
 <a id="Lwjgl2AlBinding-method-pause"></a>
 
@@ -178,7 +178,7 @@ Stops the source; its queued buffers become processed.
 
 `void pause(int source)` 
 
-Pauses the source.
+Calls `alSourcePause`.
 
 <a id="Lwjgl2AlBinding-method-gain"></a>
 
@@ -186,7 +186,7 @@ Pauses the source.
 
 `void gain(int source, float gain)` 
 
-Sets the gain of the source, `1F` for 100 %.
+Calls `alSourcef` with `AL_GAIN`.
 
 <a id="Lwjgl2AlBinding-method-queueBuffer"></a>
 
@@ -194,7 +194,7 @@ Sets the gain of the source, `1F` for 100 %.
 
 `void queueBuffer(int source, int buffer)` 
 
-Appends the buffer to the queue of the source.
+Calls `alSourceQueueBuffers`.
 
 <a id="Lwjgl2AlBinding-method-unqueueBuffer"></a>
 
@@ -202,7 +202,7 @@ Appends the buffer to the queue of the source.
 
 `int unqueueBuffer(int source)` 
 
-Removes the oldest buffer from the queue of the source and returns its name.
+Calls `alSourceUnqueueBuffers`.
 
 <a id="Lwjgl2AlBinding-method-destroyContext"></a>
 

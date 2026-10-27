@@ -1,6 +1,6 @@
 ---
 title: "GlProfile"
-description: "The profile of an OpenGL context."
+description: "Whether an OpenGL context keeps the fixed pipeline (compatibility) or drops it (core, forward-compatible core)."
 genre: reference
 topic: reference
 tableOfContents:
@@ -14,7 +14,7 @@ editUrl: https://github.com/Zeldown/JOID/edit/main/documentation/reference/dev.j
 **Package:** `dev.joid.base.opengl.capability` · **Module:** `base-opengl` · **Source:** [GlProfile.java](https://github.com/Zeldown/JOID/blob/main/base/opengl/src/main/java/dev/joid/base/opengl/capability/GlProfile.java)<br/>
 **Backends:** <span class="joid-badge">LWJGL 2</span> <span class="joid-badge">LWJGL 3</span>
 
-The profile of an OpenGL context.
+Whether an OpenGL context keeps the fixed pipeline (compatibility) or drops it (core, forward-compatible core).
 
 ## Learn more
 

@@ -1,5 +1,5 @@
 ---
-summary: The profile of an OpenGL context.
+summary: Whether an OpenGL context keeps the fixed pipeline (compatibility) or drops it (core, forward-compatible core).
 ---
 
 Learn: [Capabilities and paths](/build/base-modules/opengl/#capabilities-and-paths).

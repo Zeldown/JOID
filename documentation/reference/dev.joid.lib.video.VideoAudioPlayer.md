@@ -3,7 +3,7 @@ summary: Plays the sound of one video through the audio bridge, in step with its
 ---
 
 Each [[VideoResourceDecoder]] creates its own when the video has sound and an audio bridge is registered; you only call `audioListenerPosition`.
-The volume is the volume of the video times 0.3, and with a location, times the falloff of the distance to the listener.
+The gain of its source is the volume of the video, times the falloff of the distance to the listener when the video has a location; the audio bridge then applies its own volumes.
 
 Learn: [Images and media](/use/learn/describing-the-ui/media/).
 

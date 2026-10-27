@@ -38,7 +38,7 @@ Create the window and make its context current, then register the backend; it at
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [binding](#Lwjgl3Backend-property-binding) | [`IGlBinding`](/reference/base-opengl/iglbinding/) | `Lwjgl3GlBinding.inst()` | The OpenGL binding that the render bridge calls, [`Lwjgl3GlBinding`](/reference/lwjgl3/lwjgl3glbinding/) by default; set another one before `register()` to wrap or replace the OpenGL calls. |
+| [binding](#Lwjgl3Backend-property-binding) | [`IGlBinding`](/reference/base-opengl/iglbinding/) | `Lwjgl3GlBinding.inst()` | The OpenGL binding that the render bridge calls; set another one before `register()` to wrap or replace the OpenGL calls. |
 
 <details>
 <summary>Inherited from <a href="/reference/backends/backend/#Backend-properties"><code>Backend</code></a> (3)</summary>
@@ -78,7 +78,7 @@ Creates the backend for the GLFW window of that handle.
 
 **Default:** `Lwjgl3GlBinding.inst()`
 
-The OpenGL binding that the render bridge calls, [`Lwjgl3GlBinding`](/reference/lwjgl3/lwjgl3glbinding/) by default; set another one before `register()` to wrap or replace the OpenGL calls.
+The OpenGL binding that the render bridge calls; set another one before `register()` to wrap or replace the OpenGL calls.
 
 ---
 

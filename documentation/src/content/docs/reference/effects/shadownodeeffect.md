@@ -22,11 +22,10 @@ Draws a soft shadow of the shape of a node under it, or a glow when the color is
 
 The shadow does not read the pixels of the node: it draws a rounded rectangle with the radius and the sides of the [`RoundedNodeEffect`](/reference/effects/roundednodeeffect/) of the node, a disc for a [`CircleNode`](/reference/nodes/circlenode/) or a node with a [`CircleNodeEffect`](/reference/effects/circlenodeeffect/), and a plain rectangle otherwise.
 It is drawn before the node and its children, which cover it.
-Its priority is `-50`: a [`TransformNodeEffect`](/reference/effects/transformnodeeffect/), at `-100`, moves and turns the shadow with the node, and a priority under `-100` keeps the shadow where the layout puts the node.
+Its priority is `-50` ([Control the order of effects](/use/learn/style-and-motion/effects/#control-the-order-of-effects)).
 
 ## Learn more
 
-- [Effects](/use/learn/style-and-motion/effects/)
 - [Copy a mockup](/use/guides/copy-a-mockup/)
 - [Polish with effects and motion](/use/tutorial/polish/)
 

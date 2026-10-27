@@ -100,7 +100,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [mask](#UI-method-mask)(double maskX, double maskY, double maskWidth, double maskHeight, Runnable drawing) | Runs the drawing clipped to this rectangle, in the coordinates of the current drawing. |
-| `void` | [mask](#UI-method-mask)(Resource resource, double maskX, double maskY, double maskWidth, double maskHeight, Runnable drawing) | Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is at least 0.5. |
+| `void` | [mask](#UI-method-mask)(Resource resource, double maskX, double maskY, double maskWidth, double maskHeight, Runnable drawing) | Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is at least `0.5F`. |
 
 ### Drawing
 
@@ -153,7 +153,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | Returns | Signature | Summary |
 |---|---|---|
 | `T` | [beforeClose](#UI-method-beforeClose)(EventListener<UICloseEvent.Pre<T>> listener) | Adds a listener that runs before the UI closes through [`JOID.close`](/reference/ui/joid/#JOID-method-close) or Escape; cancelling the event keeps the UI open. |
-| `T` | [zoom](#UI-method-zoom)(double zoom) | Sets the zoom of the UI: `2D` shows the canvas twice as large around its anchor. |
+| `T` | [zoom](#UI-method-zoom)(double zoom) | Sets the zoom of the UI around its anchor: `0.5D` shows the canvas at half its size. |
 | `T` | [zoom](#UI-method-zoom)(Signal<Double> zoom) | Binds the zoom to a signal: the UI follows the signal, and a zoom by the user or by `zoomTo` writes back to it. |
 | `this` | [zoomTo](#UI-method-zoomTo)(double zoom) <span class="joid-qualifier">fluent</span> | Zooms to this value as a change: the `beforeZoom` listeners can refuse it and `onZoom` fires. |
 | `this` | [zoomBy](#UI-method-zoomBy)(double delta) <span class="joid-qualifier">fluent</span> | Zooms by this amount from the current zoom, as a change, like `zoomTo`. |
@@ -410,7 +410,7 @@ Masks nest: inside another mask, the drawing is clipped to both, and the mask al
 
 `void mask(Resource resource, double maskX, double maskY, double maskWidth, double maskHeight, Runnable drawing)` 
 
-Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is at least 0.5.
+Runs the drawing clipped to the pixels of the resource, drawn in this rectangle, whose alpha is at least `0.5F`.
 A resource that has not loaded yet hides the whole drawing.
 
 <a id="UI-method-draw"></a>
@@ -682,7 +682,7 @@ Adds a listener that runs before the UI closes through [`JOID.close`](/reference
 
 `<T extends UI> T zoom(double zoom)` 
 
-Sets the zoom of the UI: `2D` shows the canvas twice as large around its anchor.
+Sets the zoom of the UI around its anchor: `0.5D` shows the canvas at half its size.
 The value is kept between `0.1D` and the largest zoom that the interface scale allows; the requested value applies again when the scale changes.
 
 `<T extends UI> T zoom(Signal<Double> zoom)` 

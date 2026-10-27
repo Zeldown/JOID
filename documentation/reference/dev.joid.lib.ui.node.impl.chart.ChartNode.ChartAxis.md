@@ -1,5 +1,5 @@
 ---
-summary: An axis of a chart, with its name.
+summary: The base of the X and Y axes of a chart, created by `ChartAxis.x(...)` and `ChartAxis.y(...)`, with the name of the axis.
 ---
 Learn: [Charts](/use/learn/going-further/charts/).
 

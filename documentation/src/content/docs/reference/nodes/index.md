@@ -53,7 +53,7 @@ Nested types and listeners that the main types use.
 
 | Type | Kind | Summary |
 |---|---|---|
-| [`ChartNode.ChartAxis`](/reference/nodes/chartnode-chartaxis/) | class | An axis of a chart, with its name. |
+| [`ChartNode.ChartAxis`](/reference/nodes/chartnode-chartaxis/) | class | The base of the X and Y axes of a chart, created by `ChartAxis.x(...)` and `ChartAxis.y(...)`, with the name of the axis. |
 | [`ChartNode.ChartAxis.XChartAxis`](/reference/nodes/chartnode-chartaxis-xchartaxis/) | class | The X axis of a chart, which holds its labels and its series. |
 | [`ChartNode.ChartAxis.YChartAxis`](/reference/nodes/chartnode-chartaxis-ychartaxis/) | class | The Y axis of a chart, which formats its values. |
 | [`ChartNode.ChartData`](/reference/nodes/chartnode-chartdata/) | class | One series of a chart: a value for each label of the X axis. |

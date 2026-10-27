@@ -22,12 +22,8 @@ Hides every pixel of a node and its children outside a rectangle, or outside the
 
 The rectangle starts at the top-left corner of the node and, without a size, covers the bounds of the node: `MaskNodeEffect.create()` alone hides what the children draw outside the node.
 Masks nest: a masked node inside another mask shows only what both keep.
-Its priority is `0`, so a [`TransformNodeEffect`](/reference/effects/transformnodeeffect/), at `-100`, turns the mask with the node; a priority under `-100` keeps the mask in place while the node turns under it.
+Its priority is `0` ([Control the order of effects](/use/learn/style-and-motion/effects/#control-the-order-of-effects)).
 The mask clips the drawing only: the hidden part of the node still receives the mouse.
-
-## Learn more
-
-- [Effects](/use/learn/style-and-motion/effects/)
 
 ## Creation
 

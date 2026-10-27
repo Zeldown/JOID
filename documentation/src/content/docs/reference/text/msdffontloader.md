@@ -24,7 +24,7 @@ MsdfFontLoader.load("fonts/Inter-Regular.ttf", "fonts/Inter-Bold.ttf").thenAccep
 ```
 
 A TrueType or OpenType file generates its MSDF atlas on the first load and reads it from the cache folder afterwards; a `.msdf` file made by the msdf tool loads as it is.
-The future completes through `runOnRenderThread` of the thread bridge, which with JOID's backends runs on the thread that finished loading ([Threads](/use/learn/running/threads/)); `join()` on the render thread waits for the load there.
+The future completes on the render thread, at the next frame, through `runOnRenderThread` of the thread bridge ([Threads](/use/learn/running/threads/)); `join()` on the render thread waits for the load there.
 
 ## Learn more
 
@@ -53,7 +53,7 @@ The future completes through `runOnRenderThread` of the thread bridge, which wit
 Reads every face in parallel and completes with one [`MsdfFont`](/reference/text/msdffont/) that holds them all.
 Each argument is an [`IMsdfSource`](/reference/text/imsdfsource/), or anything [`Asset.of`](/reference/resources/asset/#Asset-factory-of) accepts (a path, a `File`, a URL, a stream, an [`Asset`](/reference/resources/asset/)): its first bytes pick [`OpenTypeMsdfSource`](/reference/text/opentypemsdfsource/) or [`BinaryMsdfSource`](/reference/text/binarymsdfsource/).
 The weight and the style of each face come from the file; wrap the file in a source and call `weight(...)` or `italic(...)` to override them.
-The future completes exceptionally with `IllegalArgumentException` when no face is given, two faces share a weight and a style, or a file cannot be read or generated.
+The future completes exceptionally with `IllegalArgumentException` when no face is given or two faces share a weight and a style, and with `IOException` when a file cannot be read or generated.
 In dev mode, the time each face took is logged.
 
 ---

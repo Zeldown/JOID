@@ -168,10 +168,10 @@ JOID calls every hook and every listener of a node on the render thread.
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `this` | [handleMousePressed](#Node-method-handleMousePressed)(EventListener<NodeMouseEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears a mouse press over the node, after its children in front and before its children behind; it does not run while the node is disabled. |
+| `this` | [handleMousePressed](#Node-method-handleMousePressed)(EventListener<NodeMouseEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears every mouse press of the UI, wherever the pointer is, after the children of the node in front and before its children behind; check `isHovered()` to react only over the node. |
 | `this` | [handleMouseReleased](#Node-method-handleMouseReleased)(EventListener<NodeMouseEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears a mouse release, wherever the mouse is. |
 | `this` | [handleMouseDragged](#Node-method-handleMouseDragged)(EventListener<NodeMouseEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears a mouse move while a button is held. |
-| `this` | [handleMouseScroll](#Node-method-handleMouseScroll)(EventListener<NodeMouseScrollEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears a wheel turn over the node, before the node scrolls. |
+| `this` | [handleMouseScroll](#Node-method-handleMouseScroll)(EventListener<NodeMouseScrollEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears every wheel turn of the UI, wherever the pointer is, before the node scrolls; check `isHovered()` to react only over the node. |
 | `this` | [handleCharTyped](#Node-method-handleCharTyped)(EventListener<NodeCharEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears a typed character, as a Unicode code point. |
 | `this` | [handleKeyPressed](#Node-method-handleKeyPressed)(EventListener<NodeKeyEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears a key press. |
 | `this` | [handleKeyReleased](#Node-method-handleKeyReleased)(EventListener<NodeKeyEvent<T>> listener) <span class="joid-qualifier">fluent</span> | Adds a listener that hears a key release. |
@@ -1039,7 +1039,8 @@ If `true`, the mouse is over the node or one of its children, and its UI is on t
 
 `this handleMousePressed(EventListener<NodeMouseEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
-Adds a listener that hears a mouse press over the node, after its children in front and before its children behind; it does not run while the node is disabled.
+Adds a listener that hears every mouse press of the UI, wherever the pointer is, after the children of the node in front and before its children behind; check `isHovered()` to react only over the node.
+It does not run while the node is hidden, disabled or not interactive.
 Consuming the event stops the nodes behind, the UI and the host; a `MONITOR` listener always hears it.
 
 <a id="Node-method-handleMouseReleased"></a>
@@ -1049,6 +1050,7 @@ Consuming the event stops the nodes behind, the UI and the host; a `MONITOR` lis
 `this handleMouseReleased(EventListener<NodeMouseEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
 Adds a listener that hears a mouse release, wherever the mouse is.
+It runs even on a hidden or disabled node, so that a gesture always ends.
 
 <a id="Node-method-handleMouseDragged"></a>
 
@@ -1057,6 +1059,7 @@ Adds a listener that hears a mouse release, wherever the mouse is.
 `this handleMouseDragged(EventListener<NodeMouseEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
 Adds a listener that hears a mouse move while a button is held.
+It does not run while the node is hidden, disabled or not interactive.
 
 <a id="Node-method-handleMouseScroll"></a>
 
@@ -1064,7 +1067,8 @@ Adds a listener that hears a mouse move while a button is held.
 
 `this handleMouseScroll(EventListener<NodeMouseScrollEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
-Adds a listener that hears a wheel turn over the node, before the node scrolls.
+Adds a listener that hears every wheel turn of the UI, wherever the pointer is, before the node scrolls; check `isHovered()` to react only over the node.
+It does not run while the node is hidden, disabled or not interactive.
 
 <a id="Node-method-handleCharTyped"></a>
 
@@ -1073,6 +1077,7 @@ Adds a listener that hears a wheel turn over the node, before the node scrolls.
 `this handleCharTyped(EventListener<NodeCharEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
 Adds a listener that hears a typed character, as a Unicode code point.
+It does not run while the node is hidden or disabled, nor while it is scrolled out of view unless it holds the input.
 
 <a id="Node-method-handleKeyPressed"></a>
 
@@ -1081,6 +1086,7 @@ Adds a listener that hears a typed character, as a Unicode code point.
 `this handleKeyPressed(EventListener<NodeKeyEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
 Adds a listener that hears a key press.
+It does not run while the node is hidden or disabled, nor while it is scrolled out of view unless it holds the input.
 
 <a id="Node-method-handleKeyReleased"></a>
 
@@ -1089,6 +1095,7 @@ Adds a listener that hears a key press.
 `this handleKeyReleased(EventListener<NodeKeyEvent<T>> listener)` <span class="joid-qualifier">fluent</span>
 
 Adds a listener that hears a key release.
+It runs even on a hidden or disabled node, so that a held key always ends.
 
 <a id="Node-method-getLastClickTime"></a>
 

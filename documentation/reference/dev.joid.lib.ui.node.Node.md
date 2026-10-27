@@ -343,32 +343,39 @@ The first color blended toward the second by the hover progress; a `null` second
 
 ## handleMousePressed(EventListener)
 
-Adds a listener that hears a mouse press over the node, after its children in front and before its children behind; it does not run while the node is disabled.
+Adds a listener that hears every mouse press of the UI, wherever the pointer is, after the children of the node in front and before its children behind; check `isHovered()` to react only over the node.
+It does not run while the node is hidden, disabled or not interactive.
 Consuming the event stops the nodes behind, the UI and the host; a `MONITOR` listener always hears it.
 
 ## handleMouseReleased(EventListener)
 
 Adds a listener that hears a mouse release, wherever the mouse is.
+It runs even on a hidden or disabled node, so that a gesture always ends.
 
 ## handleMouseDragged(EventListener)
 
 Adds a listener that hears a mouse move while a button is held.
+It does not run while the node is hidden, disabled or not interactive.
 
 ## handleMouseScroll(EventListener)
 
-Adds a listener that hears a wheel turn over the node, before the node scrolls.
+Adds a listener that hears every wheel turn of the UI, wherever the pointer is, before the node scrolls; check `isHovered()` to react only over the node.
+It does not run while the node is hidden, disabled or not interactive.
 
 ## handleCharTyped(EventListener)
 
 Adds a listener that hears a typed character, as a Unicode code point.
+It does not run while the node is hidden or disabled, nor while it is scrolled out of view unless it holds the input.
 
 ## handleKeyPressed(EventListener)
 
 Adds a listener that hears a key press.
+It does not run while the node is hidden or disabled, nor while it is scrolled out of view unless it holds the input.
 
 ## handleKeyReleased(EventListener)
 
 Adds a listener that hears a key release.
+It runs even on a hidden or disabled node, so that a held key always ends.
 
 ## getLastClickTime()
 

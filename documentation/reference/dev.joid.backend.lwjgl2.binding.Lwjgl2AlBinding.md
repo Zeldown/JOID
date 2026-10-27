@@ -23,56 +23,56 @@ Returns the current context of OpenAL, or `null` while LWJGL 2 has no OpenAL con
 
 ## genSource()
 
-Creates a source placed at the listener, so that no position attenuates or pans it, and returns its name.
+Calls `alGenSources`, then places the source at the listener with `AL_SOURCE_RELATIVE` and a position of zero.
 
 ## deleteSource(int)
 
-Deletes the source.
+Calls `alDeleteSources`.
 
 ## genBuffer()
 
-Creates a buffer and returns its name.
+Calls `alGenBuffers`.
 
 ## deleteBuffer(int)
 
-Deletes the buffer.
+Calls `alDeleteBuffers`.
 
 ## bufferData(int,int,short[],int)
 
-Copies the samples into a direct buffer that it reuses, then fills the OpenAL buffer, mono for one channel and stereo for two.
+Calls `alBufferData` through a direct buffer that it reuses, with `AL_FORMAT_MONO16` or `AL_FORMAT_STEREO16`.
 
 ## play(int)
 
-Plays the source.
+Calls `alSourcePlay`.
 
 ## stop(int)
 
-Stops the source; its queued buffers become processed.
+Calls `alSourceStop`.
 
 ## pause(int)
 
-Pauses the source.
+Calls `alSourcePause`.
 
 ## gain(int,float)
 
-Sets the gain of the source, `1F` for 100 %.
+Calls `alSourcef` with `AL_GAIN`.
 
 ## queueBuffer(int,int)
 
-Appends the buffer to the queue of the source.
+Calls `alSourceQueueBuffers`.
 
 ## unqueueBuffer(int)
 
-Removes the oldest buffer from the queue of the source and returns its name.
+Calls `alSourceUnqueueBuffers`.
 
 ## isPlaying(int)
 
-If `true`, the source is in the playing state.
+Calls `alGetSourcei` with `AL_SOURCE_STATE`.
 
 ## getQueuedBuffers(int)
 
-Returns the number of buffers in the queue of the source, played or not.
+Calls `alGetSourcei` with `AL_BUFFERS_QUEUED`.
 
 ## getProcessedBuffers(int)
 
-Returns the number of queued buffers that the source has finished playing.
+Calls `alGetSourcei` with `AL_BUFFERS_PROCESSED`.

@@ -306,7 +306,8 @@ Catch the exception inside `update()`, or fix the code it names: [Node lifecycle
 
 Emitted by [`Node.fireDetach`](/reference/nodes/node/#Node-method-fireDetach).
 
-The `detach()` of a node, or one of its detach listeners, threw; JOID detaches the node anyway.
+The `detach()` of a node threw; JOID detaches the node anyway.
+A detach listener that throws gives the [listener warning](#listener-failed-other-listeners) instead.
 
 Catch the exception inside `detach()`, or fix the code it names: [Release what a node started](/use/learn/describing-the-ui/node-lifecycle/#release-what-a-node-started).
 
@@ -754,7 +755,7 @@ Catch the exception in the listener, the getter or the setter, or fix the code i
 
 Emitted by [`TweenAnimator.start`](/reference/animation/tweenanimator/#TweenAnimator-method-start), [`TweenAnimator.delay`](/reference/animation/tweenanimator/#TweenAnimator-method-delay), [`TweenAnimator.repeat`](/reference/animation/tweenanimator/#TweenAnimator-method-repeat), [`TweenAnimator.repeatYoyo`](/reference/animation/tweenanimator/#TweenAnimator-method-repeatYoyo), [`TweenAnimator.push`](/reference/animation/tweenanimator/#TweenAnimator-method-push).
 
-A method of a [`TweenAnimator`](/reference/animation/tweenanimator/) that works on its timeline, such as `start()`, `delay(...)`, `repeat(...)`, `push(...)` or an `onX(...)` listener method, was called before the animator received a timeline.
+A method of a [`TweenAnimator`](/reference/animation/tweenanimator/) that works on its timeline, such as `start()`, `delay(...)`, `repeat(...)` or `push(...)`, was called before the animator received a timeline.
 
 Call `sequence(...)` first: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
