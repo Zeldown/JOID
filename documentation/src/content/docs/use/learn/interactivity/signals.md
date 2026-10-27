@@ -196,7 +196,7 @@ After you change an object held by a `Signal<T>` in place, call [[Signal#fireCha
 [Rebuilding the tree](/use/learn/state/rebuilding/) uses an empty signal to wait for a value.
 
 :::note
-A signal can be written from any thread: JOID applies the write on the render thread ([Stores and properties](/use/learn/state/stores-and-properties/)).
+A signal can be written from any thread: JOID applies the write on the render thread ([Tasks](/use/learn/state/tasks/#set-a-signal-from-another-thread)).
 :::
 
 ## Recap

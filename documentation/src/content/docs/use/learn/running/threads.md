@@ -29,7 +29,7 @@ A few calls are safe from any thread, because they hand their work to the render
 |---|---|
 | [[JOID#open]], `JOID.close`, `JOID.forceOpen`, `JOID.forceClose` | open or close the UI at the start of the next frame |
 | [[JOID#onReady]] | runs the callback at the start of the next frame, once JOID is ready |
-| `set(...)` and the other writes of a [[Signal]] | apply the write at the start of the next frame ([Stores and properties](/use/learn/state/stores-and-properties/) explains what that means for your state) |
+| `set(...)` and the other writes of a [[Signal]] | apply the write at the start of the next frame ([Tasks](/use/learn/state/tasks/#set-a-signal-from-another-thread) explains what that means for your state) |
 | [[ThreadUtils#runOnRenderThread]] | runs your task at the start of the next frame |
 
 ## Bring a result back from a worker thread
@@ -78,7 +78,7 @@ A program that registers the backend, then waits with `join()` on another thread
 ## Run code later or periodically
 
 A [[Task]] runs code after a delay, once or periodically, on the clock of JOID and on the render thread, while it stays attached to a UI or a node.
-[Stores and properties](/use/learn/state/stores-and-properties/) shows how to create and attach one.
+[Tasks](/use/learn/state/tasks/#run-code-on-a-period) shows how to create and attach one.
 
 ## Recap
 

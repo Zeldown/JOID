@@ -111,7 +111,7 @@ The callbacks of JOID run on the render thread, and the code of an executor does
 Give the result back to the render thread before it changes a node: [Threads](/use/learn/running/threads/) shows how.
 :::
 
-JOID stops by itself what it owns: the signals that a node follows, its hover and drag state, and the tasks of the node ([Stores and properties](/use/learn/state/stores-and-properties/)).
+JOID stops by itself what it owns: the signals that a node follows, its hover and drag state, and the tasks of the node ([Tasks](/use/learn/state/tasks/#know-how-long-a-task-lives)).
 
 ## Recap
 

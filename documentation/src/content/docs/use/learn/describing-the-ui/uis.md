@@ -37,7 +37,7 @@ Positions and sizes are design pixels on a 1920 × 1080 canvas, whatever the siz
 
 [[UI]] has no abstract method.
 You override the hooks you need: [[UI#init]] builds the content, [[UI#update]] runs code on every frame, before the nodes are drawn.
-A UI also holds input handlers ([Events](/use/learn/interactivity/events/)), shortcuts ([Keyboard](/use/learn/interactivity/keyboard/)), tasks and stores ([Stores and properties](/use/learn/state/stores-and-properties/)).
+A UI also holds input handlers ([Events](/use/learn/interactivity/events/)), shortcuts ([Keyboard](/use/learn/interactivity/keyboard/)), tasks ([Tasks](/use/learn/state/tasks/)) and stores ([Stores and properties](/use/learn/state/stores-and-properties/)).
 
 ## Open and close a UI
 
