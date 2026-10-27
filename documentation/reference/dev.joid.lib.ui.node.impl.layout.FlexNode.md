@@ -30,6 +30,8 @@ Called by a subclass with the direction.
 
 Where the children sit across the line: `START`, `CENTER` or `END`; `null` keeps their own cross position.
 
+Default: none, the children keep their own cross position
+
 ## margin
 
 Space between two children, in design pixels.

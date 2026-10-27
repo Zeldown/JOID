@@ -49,13 +49,19 @@ Group of the sound of a video, for the audio bridge to set the volume of several
 
 Position of the sound of a video in the scene of the audio bridge; `null` plays it without position.
 
+Default: none, the sound plays without position
+
 ## referenceDistance
 
 Distance from `location` within which the sound plays at full volume; `null` keeps the value of the audio bridge.
 
+Default: the value of the audio bridge
+
 ## maxDistance
 
 Distance from `location` beyond which the sound stops getting quieter; `null` keeps the value of the audio bridge.
+
+Default: the value of the audio bridge
 
 ## play()
 

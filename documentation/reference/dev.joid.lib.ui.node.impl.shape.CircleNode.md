@@ -21,6 +21,8 @@ Fill color of the disc.
 
 Fill color while the node is hovered, reached with the hover progress; `null` keeps the fill unchanged.
 
+Default: none, the fill keeps `color` on hover
+
 ## draw(double,double)
 
 Draws the disc with the color blended toward `hoveredColor` by the hover progress.

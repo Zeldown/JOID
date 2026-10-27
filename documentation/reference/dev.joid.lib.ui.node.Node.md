@@ -64,6 +64,8 @@ Which point of the node sits at `y` and stays in place when the height changes: 
 Width divided by height that the node keeps on every frame: JOID computes the height from the width, or the width from the height when the width is `0`.
 A value of `0` or below turns it off.
 
+Default: none, the width and the height stay free
+
 ## zindex
 
 Order of the node among its siblings: a higher value is drawn above and receives the input first.

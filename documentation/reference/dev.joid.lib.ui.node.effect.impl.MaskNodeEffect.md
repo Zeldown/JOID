@@ -30,10 +30,14 @@ Vertical offset of the visible rectangle from the top edge of the node, in desig
 Width of the visible rectangle, in design pixels; without a value, the width of the node.
 `getWidth()` returns the width that the mask used on the last frame, `0D` before the node is drawn.
 
+Default: the width of the node, read on every frame
+
 ## height
 
 Height of the visible rectangle, in design pixels; without a value, the height of the node.
 `getHeight()` returns the height that the mask used on the last frame, `0D` before the node is drawn.
+
+Default: the height of the node, read on every frame
 
 ## resource
 

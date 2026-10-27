@@ -86,10 +86,14 @@ A channel that you set later with `red`, `green`, `blue` or `alpha` overrides th
 The red channel: `getRed()` reads it from 0 to 255, `getRedF()` on 1.
 `red(float)` sets it in place, on 1, and throws `IllegalStateException` on a locked color such as a named constant.
 
+Default: set at creation
+
 ## blue
 
 The blue channel: `getBlue()` reads it from 0 to 255, `getBlueF()` on 1.
 `blue(float)` sets it in place, on 1, and throws `IllegalStateException` on a locked color.
+
+Default: set at creation
 
 ## alpha
 
@@ -100,6 +104,8 @@ The opacity: `getAlpha()` reads it from 0 to 255, `getAlphaF()` on 1, where `0F`
 
 The green channel: `getGreen()` reads it from 0 to 255, `getGreenF()` on 1.
 `green(float)` sets it in place, on 1, and throws `IllegalStateException` on a locked color.
+
+Default: set at creation
 
 ## bind()
 

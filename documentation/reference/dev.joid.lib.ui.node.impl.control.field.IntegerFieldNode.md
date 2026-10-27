@@ -24,6 +24,8 @@ Creates the field, from the constructor of a subclass.
 
 The smallest value; a typed value below it shows as `min` when the field loses the focus.
 
+Default: no lower bound (`Integer.MIN_VALUE`)
+
 ## max
 
 The largest value; a typed value above it shows as `max` when the field loses the focus.

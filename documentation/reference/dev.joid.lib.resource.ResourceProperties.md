@@ -16,6 +16,8 @@ The [[TextureFilter]] used when the texture is scaled: `LINEAR` smooths, `NEARES
 
 `true` to always use mipmaps, `false` to never use them; `null` lets JOID turn them on when the image is drawn smaller than its texture with linear filtering.
 
+Default: not forced
+
 ## linear()
 
 Sets the filtering to `LINEAR`.

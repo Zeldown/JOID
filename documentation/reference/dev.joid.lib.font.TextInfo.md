@@ -26,6 +26,8 @@ The [[IFont]] that draws the text; its text renderer measures and draws it.
 
 The size of the text, in design pixels: the em size of the font.
 
+Default: set at creation, by `TextInfo.create(font, fontSize)`
+
 ## weight
 
 The [[FontWeight]] of the text; a font without that weight draws its closest one.
@@ -37,6 +39,8 @@ The extra space after each character, on 1 of the font size: `0.1F` adds a tenth
 ## lineHeight
 
 The height of one line, on 1 of the font size; `0F` takes the line height of the font.
+
+Default: the line height of the font
 
 ## color
 
@@ -63,6 +67,8 @@ The [[ITextEffect]] list applied to every glyph, such as a wave or a typewriter;
 
 The tint of a shadow drawn in the color of each glyph multiplied by this factor, alpha kept; `null` for none.
 When it is set, it replaces the color of `shadow(Color)`.
+
+Default: none, the shadow takes the color of `shadow(Color)`
 
 ## getWidth(String)
 

@@ -36,9 +36,13 @@ Tint multiplied with the image; white draws the image as it is.
 
 Tint while the node is hovered, reached with the hover progress; `null` keeps the tint.
 
+Default: none, the tint stays the same on hover
+
 ## linear
 
 If `true`, the image is smoothed when scaled; if `false`, its pixels stay sharp; `null` keeps the filtering of the resource.
+
+Default: the filtering of the resource
 
 ## stretch
 

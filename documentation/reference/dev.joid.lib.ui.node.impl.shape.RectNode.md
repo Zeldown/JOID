@@ -23,6 +23,8 @@ A transparent fill draws nothing but the node can still be hovered and clicked.
 
 Fill color while the node is hovered, reached with the hover progress; `null` keeps the fill unchanged on hover.
 
+Default: none, the fill keeps `color` on hover
+
 ## borderColor
 
 Color of the border.
@@ -30,6 +32,8 @@ Color of the border.
 ## hoveredBorderColor
 
 Color of the border while the node is hovered; `null` keeps the border unchanged on hover.
+
+Default: none, the border keeps its color on hover
 
 ## borderStroke
 

@@ -64,6 +64,8 @@ If `false`, a field that the user empties takes back its last value when it lose
 The largest number of characters of the text; `-1` means no limit.
 Typing and pasting stop at the limit, and a longer text from code is cut.
 
+Default: no limit
+
 ## markup
 
 If `true`, the text is read with the markups of `info`, so that the tags in the text style it; if `false`, the field shows the tags as typed.
