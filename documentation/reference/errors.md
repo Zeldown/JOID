@@ -10,14 +10,14 @@ Run the application from a folder of classes or from a jar file, as an IDE or Gr
 With the dev jar, the watcher of the folder or jar of the UI failed to start, for example because the system limits the number of watched folders.
 The UI works without hot reload; the reason is in the parentheses.
 
-Check that the folder exists and can be watched, or raise the limit of watched files of the system.
+Check that the folder exists and can be watched, or raise the limit of watched files of the system: [Reload a UI while you work](/use/get-started/dev-tools/#reload-a-ui-while-you-work).
 
 ## warning [JOID] A hot reload watcher cannot stop (…), it stops with the JVM
 
 With the dev jar, the last UI watched from a folder closed, and its watcher failed to stop.
 Nothing else is affected: the watcher stops when the JVM exits.
 
-No fix is needed; the reason is in the parentheses.
+No fix is needed; the reason is in the parentheses: [Reload a UI while you work](/use/get-started/dev-tools/#reload-a-ui-while-you-work).
 
 ## warning [JOID] A JOID.onReady callback failed (…), the next callbacks still run: catch the exception inside the callback to handle it
 
@@ -57,7 +57,7 @@ Make `fromJson()` accept the files that older versions of your store wrote: [Kee
 
 The `destroy()` of a [[UIStore]] threw when its scope ended; JOID forgets the store anyway.
 
-Catch the exception inside `destroy()`, or fix the code it names.
+Catch the exception inside `destroy()`, or fix the code it names: [Write a store](/use/learn/state/stores-and-properties/#write-a-store).
 
 ## warning [JOID] The store … cannot be saved (…), the other stores are saved anyway: catch the exception inside toJson() to handle it
 
@@ -139,7 +139,7 @@ Add a constructor without argument, of any visibility, or reload the UI instead:
 
 [[UI#renew]] called the constructor without argument of the class, and it threw; the open UI stays as it was.
 
-Fix the constructor from the error in the parentheses.
+Fix the constructor from the error in the parentheses: [UIs](/use/learn/describing-the-ui/uis/).
 
 ## IllegalStateException The UI … cannot be a popup and an overlay at the same time, keep only one of @UIDataPopup and @UIDataOverlay
 
@@ -151,20 +151,20 @@ Keep one annotation: [Overlays and popups](/use/learn/describing-the-ui/overlays
 
 An object that changes a UI setting while the UI runs was applied to a target that lacks the public method of one of its values.
 
-Add the public method that the message names, with the parameter type of the value.
+Add the public method that the message names, with the parameter type of the value: [Configure a UI](/use/learn/describing-the-ui/uis/#configure-a-ui).
 
 ## IllegalStateException The method … of … failed for an annotation value (…)
 
 The method that applies an annotation value threw; the cause is in the parentheses.
 
-Fix the method from that cause.
+Fix the method from that cause: [Configure a UI](/use/learn/describing-the-ui/uis/#configure-a-ui).
 
 ## warning [JOID] The dev panel cannot read the field … of … (…), the panel leaves it out
 
 With the dev jar, the inspector could not read one field of the selected node, often a field that the module system hides.
 The panel shows the other fields.
 
-No fix is needed; the reason is in the parentheses.
+No fix is needed; the reason is in the parentheses: [Inspect a UI](/use/get-started/dev-tools/#inspect-a-ui).
 
 ## warning [JOID] The update of … failed (…), the next updates still run: catch the exception inside update() to handle it
 
@@ -226,7 +226,7 @@ Give the node a video or an animated image, or show the image with a [[ResourceN
 A node of your own declared a setting as required with `require(...)`, and the node was loaded without it.
 The end of the message is the advice that the node gives.
 
-Set what the message names before the node is attached.
+Set what the message names before the node is attached: [Give the node a property](/use/learn/going-further/custom-nodes/#give-the-node-a-property).
 
 ## IllegalStateException The node … cannot be copied: its constructor … failed (…)
 
@@ -304,7 +304,7 @@ Pass one of the options, or add the value with `values(...)` first: [Choose one 
 
 `valueIndex(...)` of a choice control received an index outside its options.
 
-Pass an index from `0` to the number of options minus one.
+Pass an index from `0` to the number of options minus one: [Choose one of a few options](/use/learn/interactivity/controls/#choose-one-of-a-few-options).
 
 ## IllegalArgumentException The step … of the IntegerFieldNode must be positive, pass a step of 1 or more
 
@@ -334,7 +334,7 @@ Pass a narrower range or a larger step: [Pick a value on a track](/use/learn/int
 
 `get(index)` of the `getValueList()` of an [[IntegerSliderNode]] or a [[DoubleSliderNode]] received an index below `0` or past the last option.
 
-Pass an index from `0` to `size()` minus one.
+Pass an index from `0` to `size()` minus one: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
 
 ## IllegalArgumentException The step … of the slider range must be positive, pass a step of 1 or more
 
@@ -385,7 +385,7 @@ Follow the advice, or give the setter a lambda, which JOID reads at every frame:
 With the dev jar, the replay of an expression given to a setter failed on an error of JOID itself; the stack trace follows.
 The property keeps the value of the first read.
 
-Give the setter a lambda instead, and report the stack trace to JOID.
+Give the setter a lambda instead, and report the stack trace to JOID: [How signals track reads](/use/in-depth/how-signals-work/).
 
 ## warning [JOID] The … of … cannot take its new value (…), it keeps the previous one: check the value its signal gives
 
@@ -409,13 +409,13 @@ Remove that read from the function: [Combine several signals](/use/learn/state/d
 
 `divide(0)` was called on an [[IntegerSignal]].
 
-Check the divisor before you divide.
+Check the divisor before you divide: [Choose a signal type](/use/learn/interactivity/signals/#choose-a-signal-type).
 
 ## IllegalArgumentException The LongSignal of value … cannot be divided by 0, check the divisor before calling divide(...)
 
 `divide(0)` was called on a [[LongSignal]].
 
-Check the divisor before you divide.
+Check the divisor before you divide: [Choose a signal type](/use/learn/interactivity/signals/#choose-a-signal-type).
 
 ## SignalReplayException …
 
@@ -464,37 +464,37 @@ Set the repetitions before `start()`: [Chain, repeat and replay](/use/learn/styl
 
 `push(timeline)` received a timeline in which a `beginSequence()` or `beginParallel()` has no matching `end()`.
 
-Close each group with `end()` before you push the timeline.
+Close each group with `end()` before you push the timeline: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
 ## IllegalStateException The timeline has no open beginSequence() or beginParallel() to close, remove this end()
 
 `end()` was called on a timeline that has no open group.
 
-Remove the extra `end()`, or open the group it closes.
+Remove the extra `end()`, or open the group it closes: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
 ## IllegalStateException The timeline still has an open beginSequence() or beginParallel(), close each one with end() before start()
 
 The timeline was started while a `beginSequence()` or `beginParallel()` has no matching `end()`.
 
-Close each group with `end()` before `start()`.
+Close each group with `end()` before `start()`: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
 ## IllegalArgumentException A timeline cannot hold a child that repeats forever (repeat count …), give it a finite repeat count
 
 A timeline was started with a child that repeats forever, which would make the timeline itself endless.
 
-Give the child a finite repeat count, or repeat the whole timeline instead.
+Give the child a finite repeat count, or repeat the whole timeline instead: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
 ## IllegalStateException A timeline takes no new child once it is built (start() builds it), push its children before start()
 
 A child was added to a timeline, or a group opened or closed, after `start()` built it.
 
-Build the whole timeline before `start()`.
+Build the whole timeline before `start()`: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
 ## IllegalArgumentException The duration of a tween cannot be negative, got …: pass 0 or more
 
 A [[Tween]] was created with a negative duration.
 
-Pass a duration of `0` or more, in milliseconds.
+Pass a duration of `0` or more, in milliseconds: [Animate values of your own](/use/learn/style-and-motion/animation/#animate-values-of-your-own).
 
 ## warning [JOID] The font weight … is not loaded in the family of …, … is drawn instead (loaded: …)
 
@@ -513,13 +513,13 @@ Mix only fonts of the same kind in one text: [Choose MSDF or bitmap](/use/learn/
 
 With the dev jar, the shader that draws a kind of font did not compile on this graphics context, so its texts are not drawn.
 
-Read the compilation error that JOID printed before this message; on OpenGL, updating the graphics driver often fixes it.
+Read the compilation error that JOID printed before this message; on OpenGL, updating the graphics driver often fixes it: [Choose MSDF or bitmap](/use/learn/describing-the-ui/fonts/#choose-msdf-or-bitmap).
 
 ## IndexOutOfBoundsException The text has no element at index …, give an index from 0 and lower than its element count (…)
 
 `get(index)` of a [[Text]] received an index outside its elements.
 
-Pass an index from `0` to the element count minus one.
+Pass an index from `0` to the element count minus one: [Mix styles on one line](/use/learn/describing-the-ui/text/#mix-styles-on-one-line).
 
 ## IllegalArgumentException A bitmap cell needs at least one texel, got the texels …, …, …, …: give a right above the left and a bottom above the top
 
@@ -561,7 +561,7 @@ Draw with the renderer of the font, `info.getFont().getTextRenderer()`: [Draw gl
 
 An MSDF face was created with an empty name.
 
-Give the face the name of its font.
+Give the face the name of its font: [Load a font family](/use/learn/describing-the-ui/fonts/#load-a-font-family).
 
 ## CompletionException …
 
@@ -597,7 +597,7 @@ Check the font file and the [cache folder](/use/learn/running/files/#find-the-fo
 
 A [[StreamAsset]] read its stream, and closing it threw; the content is used anyway.
 
-Check the stream that you gave, for example one already closed by its owner.
+Check the stream that you gave, for example one already closed by its owner: [Read resources from your own source](/use/learn/going-further/custom-formats/#read-resources-from-your-own-source).
 
 ## warning [JOID] The retention of the cache area … cannot be written into … (…), check that the cache folder can be written
 
@@ -609,26 +609,26 @@ Check that the [cache folder](/use/learn/running/files/#find-the-folders) can be
 
 An entry of a cache area could not be deleted, usually because a file of it is open, on Windows for example; JOID marks it as old and deletes it at a later cleaning.
 
-No fix is needed.
+No fix is needed: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
 ## warning [JOID] The video … cannot be reopened (…), check that the file can still be read
 
 A video that plays again after its end, or after a seek, could not open its file again.
 The video stops.
 
-Check that the file or the URL can still be read.
+Check that the file or the URL can still be read: [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
 
 ## warning [JOID] The video … cannot seek to …us (…), check that the file can still be read
 
 A seek of a video, or its return to the start, failed in the decoder.
 
-Check that the file can still be read; a damaged file can refuse some positions.
+Check that the file can still be read; a damaged file can refuse some positions: [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
 
 ## warning [JOID] The video … stops decoding (…), check that the file can still be read
 
 The decoder of a playing video threw; the video stops where it was.
 
-Check that the file can still be read, and that it is not damaged.
+Check that the file can still be read, and that it is not damaged: [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
 
 ## warning [JOID] The resource … cannot be read: …. It is drawn as a magenta and black checkerboard in dev mode, and nothing is drawn in production.
 
@@ -649,7 +649,7 @@ Check the audio device of the machine, or the `createSource` of your audio bridg
 
 JOID reads the first bytes of an asset to detect its format, and reading them failed.
 
-Check that the file or the URL can be read; the cause follows the message.
+Check that the file or the URL can be read; the cause follows the message: [Load from the jar, the disk or the web](/use/learn/describing-the-ui/media/#load-from-the-jar-the-disk-or-the-web).
 
 ## IllegalArgumentException No asset locator knows the input … of type …, register an IAssetLocator that supports it with AssetLocator.register(...)
 
@@ -679,13 +679,13 @@ Give each area its own name: [Keep files of your own in the cache](/use/learn/ru
 
 `store(...)` of a [[FileCacheArea]] names its entry by the hash of the file that the writer wrote, and that file cannot be read.
 
-Write a file at the path that the writer receives.
+Write a file at the path that the writer receives: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
 ## IllegalArgumentException The cache … name … is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'
 
 The name of a cache area or of an entry would not be a safe file name.
 
-Use a name of letters, digits, `.`, `-` and `_`, that starts with a letter or a digit.
+Use a name of letters, digits, `.`, `-` and `_`, that starts with a letter or a digit: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
 ## IOException The cache area … cannot be created in …, check that the cache folder can be written
 
@@ -697,19 +697,19 @@ Check that the [cache folder](/use/learn/running/files/#find-the-folders) exists
 
 The writer given to `compute(...)` or `store(...)` of a [[FileCacheArea]] returned without creating its entry.
 
-Create the file or the folder at the path that the writer receives.
+Create the file or the folder at the path that the writer receives: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
 ## IllegalStateException The file cache cannot name the content of …: this JVM has no SHA-1 digest, run JOID on a standard JVM
 
 The JVM offers no SHA-1, which the file cache uses to name its entries.
 
-Run JOID on a standard JVM.
+Run JOID on a standard JVM: [Keep files of your own in the cache](/use/learn/running/files/#keep-files-of-your-own-in-the-cache).
 
 ## IllegalArgumentException The PNG has no IHDR chunk before its image data, the file is damaged: export it again
 
 The animated PNG is damaged.
 
-Export the image again.
+Export the image again: [Media](/use/learn/describing-the-ui/media/).
 
 ## IllegalArgumentException The PNG has no acTL chunk or no frame control, it is not an animated PNG: draw it as a still image or export it as an APNG
 
@@ -721,19 +721,19 @@ Show it with a [[ResourceNode]], or export it as an APNG: [Play animated images 
 
 A file decoded as an animated WebP is not a WebP.
 
-Check the file and its extension.
+Check the file and its extension: [Media](/use/learn/describing-the-ui/media/).
 
 ## IllegalArgumentException The WebP chunk … runs past the end of the file, the file is damaged: export it again
 
 The WebP file is truncated or damaged.
 
-Export the image again.
+Export the image again: [Media](/use/learn/describing-the-ui/media/).
 
 ## IllegalArgumentException The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation
 
 A WebP was decoded as an animation but holds a single image.
 
-Show it with a [[ResourceNode]], or export it with its animation.
+Show it with a [[ResourceNode]], or export it with its animation: [Media](/use/learn/describing-the-ui/media/).
 
 ## IllegalArgumentException An animation needs at least one frame, got none: check that the file holds its frames
 
@@ -746,14 +746,14 @@ Give the animation at least one frame: [Build an animation from your own frames]
 Reading the file of an animated image failed; the cause follows the message.
 The resource fails and prints [`The resource … cannot be read`](#resource-cannot-read-drawn) with the dev jar.
 
-Check that the file or the URL can be read.
+Check that the file or the URL can be read: [Know when an image is loaded](/use/learn/describing-the-ui/media/#know-when-an-image-is-loaded).
 
 ## UncheckedIOException The image … cannot be read
 
 Reading the file of an image failed; the cause follows the message.
 The resource fails and prints [`The resource … cannot be read`](#resource-cannot-read-drawn) with the dev jar.
 
-Check that the file or the URL can be read.
+Check that the file or the URL can be read: [Know when an image is loaded](/use/learn/describing-the-ui/media/#know-when-an-image-is-loaded).
 
 ## IllegalArgumentException … is not an image that ImageIO can decode, convert it to PNG, JPEG or WebP
 
@@ -765,19 +765,19 @@ Convert it to PNG, JPEG or WebP: [Supported formats](/use/learn/describing-the-u
 
 Reading the file of an SVG image failed; the cause follows the message.
 
-Check that the file or the URL can be read.
+Check that the file or the URL can be read: [Know when an image is loaded](/use/learn/describing-the-ui/media/#know-when-an-image-is-loaded).
 
 ## IllegalArgumentException … is not an SVG document that can be parsed
 
 The file was read, but it is not a valid SVG document.
 
-Check the file in an SVG editor and export it again.
+Check the file in an SVG editor and export it again: [Media](/use/learn/describing-the-ui/media/).
 
 ## UncheckedIOException The video … cannot be read
 
 Opening the file of a video failed; the cause follows the message.
 
-Check that the file or the URL can be read.
+Check that the file or the URL can be read: [Play animated images and videos](/use/learn/describing-the-ui/media/#play-animated-images-and-videos).
 
 ## IllegalStateException The video … cannot be decoded
 
@@ -814,7 +814,7 @@ Borrow a texture that exists in the graphics context of JOID: [Show a texture of
 
 The machine runs a system or a processor for which JOID has no FFmpeg natives to download.
 
-Play videos on one of the platforms that the message lists, or put the FFmpeg natives of your platform on the classpath.
+Play videos on one of the platforms that the message lists, or put the FFmpeg natives of your platform on the classpath: [Play videos without network access](/use/get-started/installation/#play-videos-without-network-access).
 
 ## VideoNativesException The FFmpeg natives of … cannot be written into …, check that the cache folder can be written
 
@@ -832,13 +832,13 @@ Check the connection, or ship the natives with the application: [Play videos on 
 
 The downloaded natives differ from the files that JOID expects; JOID refuses them.
 
-Check the repository and the network, then try again.
+Check the repository and the network, then try again: [Play videos without network access](/use/get-started/installation/#play-videos-without-network-access).
 
 ## warning [JOID] The file of the OBJ model … cannot be closed (…), the model is loaded anyway: check the stream or the file it was read from
 
 Closing the reader of an OBJ file threw after the model was read; the model is used anyway.
 
-Check the stream or the file it was read from.
+Check the stream or the file it was read from: [Load a model](/use/learn/going-further/3d-models/#load-a-model).
 
 ## NumberFormatException The color … cannot be decoded, write it as #RRGGBB, #RRGGBBAA, rgb(r, g, b), rgba(r, g, b, a) or gradient(from, to)
 
@@ -856,19 +856,19 @@ Pass a dash length above `0`, in design pixels: [Draw lines and curves](/use/lea
 
 [[ObjFace#of]] received a face that is not a triangle.
 
-Split the polygon into triangles; [[ObjModel]] does it for the faces of an OBJ file.
+Split the polygon into triangles; [[ObjModel]] does it for the faces of an OBJ file: [Load a model](/use/learn/going-further/3d-models/#load-a-model).
 
 ## IllegalArgumentException An ObjFace has 3 texture coordinates or none, got …
 
 [[ObjFace#of]] received a number of texture coordinates other than 0 or 3.
 
-Give one texture coordinate per vertex, or none.
+Give one texture coordinate per vertex, or none: [Load a model](/use/learn/going-further/3d-models/#load-a-model).
 
 ## IllegalArgumentException An ObjFace has 3 vertex normals or none, got …
 
 [[ObjFace#of]] received a number of normals other than 0 or 3.
 
-Give one normal per vertex, or none.
+Give one normal per vertex, or none: [Load a model](/use/learn/going-further/3d-models/#load-a-model).
 
 ## UncheckedIOException The OBJ model … cannot be read (…), check that the file exists and can be read
 
@@ -1059,25 +1059,25 @@ Create a texture of JOID to hold pixels of your own: [Build your own geometry](/
 
 `upload(...)` was called on a texture borrowed from the host.
 
-Write the pixels with the API of the host, or create a texture of JOID.
+Write the pixels with the API of the host, or create a texture of JOID: [Lend a texture of the host](/build/resource-resolvers/#lend-a-texture-of-the-host).
 
 ## IllegalStateException The texture is deleted, create a new one with IRenderBridge.createTexture()
 
 `allocate(...)` or `upload(...)` was called on a deleted texture.
 
-Create a new texture.
+Create a new texture: [Textures and samplers](/build/pipeline/#textures-and-samplers).
 
 ## IllegalStateException The texture is not allocated, call allocate(width, height) before upload(pixels)
 
 `upload(...)` was called on a texture without storage.
 
-Call `allocate(width, height)` first.
+Call `allocate(width, height)` first: [Textures and samplers](/build/pipeline/#textures-and-samplers).
 
 ## IllegalArgumentException The texture of …x… needs … pixels and got …, pass one pixel per texel
 
 `upload(...)` received fewer pixels than the texture has texels.
 
-Pass one ARGB pixel per texel, row after row.
+Pass one ARGB pixel per texel, row after row: [Textures and samplers](/build/pipeline/#textures-and-samplers).
 
 ## IllegalArgumentException No resource resolver knows the input … of type …, register an IResourceResolver that supports it with ResourceResolver.register(...)
 
@@ -1132,7 +1132,7 @@ Fix the name, or declare the uniform in the source: [Set uniforms and textures](
 
 The length of a uniform array is a name that no `#define` of the source gives a number.
 
-Write the length as a number, or `#define` it in the source.
+Write the length as a number, or `#define` it in the source: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
 ## IllegalArgumentException The uniform … cannot take …
 
@@ -1222,7 +1222,7 @@ Journal every state that your bridge changes, and restore it at the end of the f
 
 [[JarCheck]] drew 60 frames from a packaged jar, and a stack trace reached the error stream.
 
-Read the stack traces above the message: a class or a file is often missing from the jar.
+Read the stack traces above the message: a class or a file is often missing from the jar: [Run the tests of your backend](/build/testing-a-backend/#run-the-tests-of-your-backend).
 
 ## IllegalStateException The demo UI … cannot be created: the class does not exist, check the name and the excludes of gradle/variants.gradle
 
@@ -1234,13 +1234,13 @@ Check the name, and what the variant includes and excludes: [Three jars per modu
 
 [[JarCheck]] created the UI that it opens in the packaged jar, and its constructor threw.
 
-Fix the constructor from the error in the parentheses.
+Fix the constructor from the error in the parentheses: [Run the tests of your backend](/build/testing-a-backend/#run-the-tests-of-your-backend).
 
 ## IllegalStateException The demo UI … cannot be created: give it a public constructor without argument
 
 The UI that [[JarCheck]] opens in the packaged jar has no public constructor without argument.
 
-Give it one.
+Give it one: [Run the tests of your backend](/build/testing-a-backend/#run-the-tests-of-your-backend).
 
 ## IllegalStateException The … jar runs with the dev mode … and the demo mode …: check the excludes of gradle/variants.gradle
 
@@ -1252,13 +1252,13 @@ Check what each variant includes and excludes: [Three jars per module](/build/de
 
 The UI that [[JarCheck]] opened closed during its 60 frames.
 
-Check what closes the UI with that jar.
+Check what closes the UI with that jar: [Run the tests of your backend](/build/testing-a-backend/#run-the-tests-of-your-backend).
 
 ## IOException The folder … cannot be created, check that its parent folder can be written
 
 [[GlslExport]] could not create a folder of its output.
 
-Check that the output folder can be written.
+Check that the output folder can be written: [Check your translation](/build/shader-translation/#check-your-translation).
 
 ## failure [JOID] No snapshot rendered in …, render the snapshots first
 
@@ -1288,13 +1288,13 @@ Check the cursor that the hovered node sets: [Change the cursor over a node](/us
 
 A `resize` command asked for a window larger than the 1920×1080 surface of the runner.
 
-Resize to 1920×1080 at most.
+Resize to 1920×1080 at most: [Drive the UI with commands](/use/learn/running/testing/#drive-the-ui-with-commands).
 
 ## IllegalArgumentException The snapshot UI … cannot be created: its constructor threw …
 
 The `ui` or `open` command created the UI, and its constructor threw.
 
-Fix the constructor from the error.
+Fix the constructor from the error: [Drive the UI with commands](/use/learn/running/testing/#drive-the-ui-with-commands).
 
 ## IllegalArgumentException The snapshot UI … cannot be created: give it a constructor without arguments, of any visibility
 
@@ -1324,7 +1324,7 @@ Read the time from `BridgeHandler.CLOCK`, or mask the area: [Keep every run iden
 
 The picture of a shot became stable, but a resource was still decoding.
 
-Pause or stop what keeps decoding before the shot.
+Pause or stop what keeps decoding before the shot: [Keep every run identical](/use/learn/running/testing/#keep-every-run-identical).
 
 ## AssertionError [JOID] No reference for the GPU … in …, the shots of … were not compared: record them on this GPU with updateSnapshots…
 
@@ -1348,7 +1348,7 @@ Give the full name of a snapshot backend, such as [[Lwjgl3SnapshotBackend]]: [Co
 
 [[SnapshotBaseline]] created the snapshot backend, and its constructor threw.
 
-Fix the constructor from the error.
+Fix the constructor from the error: [Compare with LWJGL 3](/build/testing-a-backend/#compare-with-lwjgl-3).
 
 ## IllegalArgumentException The snapshot backend … cannot be created: give it a constructor without arguments, of any visibility
 
@@ -1372,7 +1372,7 @@ Connect or enable an audio output, or register the backend with `audio(false)`: 
 
 The default audio device opened but refused an OpenAL context.
 
-Close the application that holds the device exclusively, or update its driver.
+Close the application that holds the device exclusively, or update its driver: [base-openal](/build/base-modules/openal/#create-the-bridge).
 
 ## IllegalStateException GLFW cannot be initialized, check that the system has a display (DISPLAY or WAYLAND_DISPLAY on Linux)
 
@@ -1384,7 +1384,7 @@ Run the tests with a display, or a virtual one such as Xvfb on a server: [Give t
 
 The graphics driver refused the hidden window of a snapshot backend.
 
-Update the graphics driver, or run on a machine that supports the API of the backend.
+Update the graphics driver, or run on a machine that supports the API of the backend: [Hidden windows](/build/base-modules/glfw/#hidden-windows).
 
 ## warning [JOID] OpenGL cannot link a shader program, fix its sources from the log of the driver: …
 
@@ -1433,7 +1433,7 @@ Create the context with the compatibility profile: [Import the matrices of a fix
 
 On a context without framebuffer blits, the shader that draws the mipmaps did not compile.
 
-Update the graphics driver.
+Update the graphics driver: [Mipmaps](/build/pipeline/#mipmaps).
 
 ## IllegalStateException No OpenGL render bridge is registered, register an OpenGL backend before GlBorrowedTexture.of(...)
 
@@ -1463,37 +1463,37 @@ Check the version of LWJGL 2 on the classpath: [Cursors](/build/backends/lwjgl2/
 
 With the dev jar, the system has no cursor for one of the cursors of JOID; that one shows the default cursor.
 
-Check the cursor theme of the system.
+Check the cursor theme of the system: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
 
 ## warning [JOID] libXcursor cannot be loaded, the X11 cursors come from the cursor font: …
 
 With the dev jar, on Linux, libXcursor is missing, so the cursors come from the older cursor font of X11.
 
-Install libXcursor to get the cursors of the theme.
+Install libXcursor to get the cursors of the theme: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
 
 ## warning [JOID] The clipboard cannot be read, an empty text replaces it: …
 
 With the dev jar, the LWJGL 2 backend could not read the clipboard through AWT; a paste inserts nothing.
 
-Check that AWT can reach the clipboard, which a headless JVM cannot.
+Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
 
 ## warning [JOID] The clipboard cannot be written, the text stays out of it: …
 
 With the dev jar, the LWJGL 2 backend could not write the clipboard through AWT; a copy does nothing.
 
-Check that AWT can reach the clipboard, which a headless JVM cannot.
+Check that AWT can reach the clipboard, which a headless JVM cannot: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
 
 ## IllegalStateException LWJGL 2 cannot create the OpenAL context (…), check that an audio output device is connected and enabled
 
 The first video with sound asked LWJGL 2 for an OpenAL context, and it failed.
 
-Connect or enable an audio output, or register the backend with `audio(false)`.
+Connect or enable an audio output, or register the backend with `audio(false)`: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
 
 ## IllegalStateException The LWJGL 2 native … is missing from the backend
 
 [[Lwjgl2Natives#install]] did not find a native library in the backend jar, which is damaged or was stripped.
 
-Ship the backend jar whole, or provide the natives with `org.lwjgl.librarypath`.
+Ship the backend jar whole, or provide the natives with `org.lwjgl.librarypath`: [LWJGL 2 backend](/build/backends/lwjgl2/#what-it-is-made-of).
 
 ## IllegalStateException Unable to extract the LWJGL 2 natives into …, check that the cache folder can be written
 
@@ -1505,7 +1505,7 @@ Check that the [cache folder](/use/learn/running/files/#find-the-folders) can be
 
 The LWJGL 2 snapshot backend could not create its offscreen OpenGL context.
 
-Update the graphics driver, or run the tests with a display.
+Update the graphics driver, or run the tests with a display: [LWJGL 2 tests](/build/backends/lwjgl2/#tests).
 
 ## IllegalStateException The snapshot profile … needs OpenGL ….… …, this context offers … …: force its version with MESA_GL_VERSION_OVERRIDE and MESA_GLSL_VERSION_OVERRIDE
 
@@ -1523,7 +1523,7 @@ Fix the source from the error: [Write JOID GLSL](/use/learn/going-further/shader
 
 [[WindowVulkanHost#create]] received a number of frames in flight below `1`.
 
-Pass `1` or more.
+Pass `1` or more: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
 
 ## IllegalStateException The Vulkan window frame has already begun, call endFrame() first
 
@@ -1535,7 +1535,7 @@ Pair each `beginFrame()` with one `endFrame()`: [Start the other backends](/use/
 
 `endFrame()` of the [[WindowVulkanHost]] was called without `beginFrame()`.
 
-Begin the frame of the host before the JOID frame.
+Begin the frame of the host before the JOID frame: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
 
 ## IllegalStateException Vulkan is not supported on this system, update the graphics driver or use an OpenGL backend
 
@@ -1565,13 +1565,13 @@ Update the graphics driver; with a host of your own, run with the validation lay
 
 The device offers no memory type that JOID needs for an image or a buffer.
 
-Update the graphics driver, or use another device.
+Update the graphics driver, or use another device: [Requirements](/build/backends/vulkan/#requirements).
 
 ## IllegalStateException The Vulkan device supports none of the depth formats …, use a device that supports one of them
 
 The device supports none of the depth formats that the renderer can use.
 
-Use another device, or update its driver.
+Use another device, or update its driver: [Requirements](/build/backends/vulkan/#requirements).
 
 ## IllegalArgumentException The Vulkan host … has … frames in flight, getFramesInFlight() must return 1 or more
 
@@ -1589,13 +1589,13 @@ Create the instance and the device with `VK_API_VERSION_1_3`: [Run inside a Vulk
 
 The Vulkan snapshot host found no device with Vulkan 1.3 and a graphics queue.
 
-Update the graphics driver, or run the Vulkan tests on another machine.
+Update the graphics driver, or run the Vulkan tests on another machine: [Requirements](/build/backends/vulkan/#requirements).
 
 ## IllegalStateException VulkanBackend has no render bridge to destroy: call register() first and destroy() only once
 
 [[VulkanBackend#destroy]] was called before `register()`, or twice.
 
-Destroy the backend once, after the loop.
+Destroy the backend once, after the loop: [Run inside a Vulkan host](/build/backends/vulkan/#run-inside-a-vulkan-host).
 
 ## IllegalStateException The glyphs do not fit in …x… even at …px, raise --width and --height or shrink the charset
 
@@ -1613,16 +1613,16 @@ Pass the options of the message: [Generate MSDF atlases before you ship](/use/le
 
 `--charset` received neither the path of a file nor a list of ranges and code points.
 
-Check the path, or write the ranges in brackets and separate the values with commas.
+Check the path, or write the ranges in brackets and separate the values with commas: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
 
 ## IllegalStateException The glyphs do not fit in …x… at …px, raise --width and --height or lower --size
 
 The glyphs of the charset do not fit in the atlas at the size given with `--size`.
 
-Raise `--width` and `--height`, or lower `--size`.
+Raise `--width` and `--height`, or lower `--size`: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
 
 ## IllegalArgumentException The option … has no value, give it one after a space: … <value>
 
 The last option on the command line of the MSDF generator has no value.
 
-Give the option its value after a space.
+Give the option its value after a space: [Generate MSDF atlases before you ship](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship).
