@@ -2,7 +2,7 @@
 # still interactivity-click 60
 # crop interactivity-through 520 390 880 300
 # still interactivity-through 100
-# crop interactivity-press 680 340 560 400
+# crop interactivity-press 760 340 400 400
 # still interactivity-press 120
 # crop interactivity-consume 760 440 400 200
 # still interactivity-consume 90
@@ -51,7 +51,7 @@ moveto 960 650 500
 wait 300
 cut
 ui com.example.interactivity.events.PressUI
-move 720 700
+move 1110 720
 # film interactivity-press
 wait 300
 moveto 990 440 600
@@ -64,12 +64,12 @@ wait 200
 press LEFT
 release LEFT
 wait 900
-moveto 720 560 600
+moveto 560 560 700
 wait 200
 press LEFT
 release LEFT
 wait 900
-moveto 720 700 300
+moveto 1110 720 700
 wait 300
 cut
 ui com.example.interactivity.events.NoDigitsUI

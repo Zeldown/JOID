@@ -82,7 +82,7 @@ Every node of the UI receives every press, wherever the pointer is: a listener t
 
 <figure>
 
-![A grey card with a "Button" and four counts at 0; the pointer presses the button, the card, then outside the card, and the counts end at "Button: 1", "Card heard: 2", "Card hovered: 1" and "Monitor: 3"](/captures/interactivity-press.webp)
+![A grey card with a "Button" and four counts at 0; the pointer presses the button, the card, then leaves the card to press outside it, and the counts end at "Button: 1", "Card heard: 2", "Card hovered: 1" and "Monitor: 3"](/captures/interactivity-press.webp)
 
 <figcaption>
 Three presses: on the button, on the card, then outside the card.

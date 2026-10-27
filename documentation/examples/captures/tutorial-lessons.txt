@@ -5,7 +5,7 @@
 # still tutorial-interaction-popup 90
 # crop tutorial-interaction-hover 740 140 1040 400
 # still tutorial-interaction-hover 40
-# crop tutorial-state 140 140 1640 800
+# crop tutorial-state 740 140 1040 800
 # still tutorial-state 110
 # crop tutorial-settings 140 140 1180 700
 # still tutorial-settings 50
