@@ -1,0 +1,16 @@
+# crop state-derived 540 270 840 540
+ui com.example.state.DerivedUI
+wait 100
+move 960 380
+press LEFT
+release LEFT
+wait 50
+press LEFT
+release LEFT
+wait 50
+move 1200 380
+press LEFT
+release LEFT
+move 1700 950
+wait 100
+shot state-derived

@@ -1,0 +1,9 @@
+# crop state-loader 540 370 840 340
+ui com.example.state.LoaderUI
+wait 100
+move 750 480
+press LEFT
+release LEFT
+move 1700 950
+wait 1500
+shot state-loader

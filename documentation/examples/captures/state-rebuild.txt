@@ -1,0 +1,9 @@
+# crop state-rebuild 640 220 640 360
+ui com.example.state.RebuildUI
+wait 100
+move 800 270
+press LEFT
+release LEFT
+move 1700 950
+wait 100
+shot state-rebuild

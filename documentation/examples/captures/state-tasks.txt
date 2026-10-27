@@ -1,0 +1,9 @@
+# crop state-tasks 540 320 840 440
+ui com.example.state.TimerUI
+wait 3100
+move 750 530
+press LEFT
+release LEFT
+move 1700 950
+wait 100
+shot state-tasks
