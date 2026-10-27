@@ -25,7 +25,7 @@ Entry point that opens and closes UIs, finds the open ones and runs code once JO
 - [UIs](/use/learn/describing-the-ui/uis/)
 - [Backends](/use/learn/running/backends/#run-code-once-joid-is-ready)
 - [Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)
-- [How JOID thinks](/use/learn/how-joid-thinks/)
+- [How JOID works](/use/learn/how-joid-thinks/)
 - [Embedding JOID](/use/learn/running/embedding/)
 
 ## Creation

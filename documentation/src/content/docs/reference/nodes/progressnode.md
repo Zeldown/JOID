@@ -25,6 +25,7 @@ The fill and the track are nodes of your own: the progress node sizes and places
 ## Learn more
 
 - [Controls](/use/learn/interactivity/controls/#show-a-progress)
+- [Give your controls a look](/use/learn/going-further/ui-kit/)
 
 ## Creation
 

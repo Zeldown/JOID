@@ -29,8 +29,8 @@ Your code reaches a registry when it needs a bridge directly, to read one or to 
 - [Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own)
 - [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/)
 - [Framebuffers and models](/use/learn/going-further/framebuffers-and-models/)
+- [Signals](/use/learn/interactivity/signals/)
 - [Testing your UIs](/use/learn/running/testing/)
-- [Architecture and layers](/build/architecture/)
 
 ## Constants and fields
 

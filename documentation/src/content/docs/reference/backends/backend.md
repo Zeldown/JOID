@@ -29,7 +29,7 @@ A backend author extends it and implements the `create...` hooks, which `registe
 
 - [Choosing a backend](/use/learn/running/backends/)
 - [Writing a backend](/build/writing-a-backend/#extend-backend)
-- [How JOID thinks](/use/learn/how-joid-thinks/)
+- [How JOID works](/use/learn/how-joid-thinks/)
 - [Embedding JOID](/use/learn/running/embedding/)
 - [Where JOID stores files](/use/learn/running/files/)
 

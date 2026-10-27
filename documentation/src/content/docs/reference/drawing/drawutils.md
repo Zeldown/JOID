@@ -30,10 +30,10 @@ Call them on the render thread, during a frame; outside a frame the render bridg
 ## Learn more
 
 - [Drawing shapes and text](/use/learn/going-further/drawing/)
+- [Text markup and effects](/use/learn/describing-the-ui/text-markup-and-effects/)
 - [3D models](/use/learn/going-further/3d-models/)
 - [Charts](/use/learn/going-further/charts/)
 - [Custom nodes](/use/learn/going-further/custom-nodes/)
-- [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/)
 
 ## Constants and fields
 
