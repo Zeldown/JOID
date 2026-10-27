@@ -1,0 +1,4 @@
+# crop describing-fonts-weights 660 365 600 350
+ui com.example.describing.fonts.TitleUI
+wait 100
+shot describing-fonts-weights

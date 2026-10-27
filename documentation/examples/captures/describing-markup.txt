@@ -1,0 +1,4 @@
+# crop describing-markup-lines 560 315 800 450
+ui com.example.describing.markup.MarkupUI
+wait 100
+shot describing-markup-lines

@@ -13,3 +13,12 @@ skip com.example.tutorial.interaction.Main program that opens its own GLFW windo
 skip com.example.tutorial.state.Main program that opens its own GLFW window
 skip com.example.tutorial.settings.Main program that opens its own GLFW window
 skip com.example.tutorial.polish.Main program that opens its own GLFW window
+call com.example.describing.uis.Navigation open
+skip com.example.describing.DiagramUI abstract base of the diagram scenes
+call com.example.describing.fonts.AppFonts MONTSERRAT
+skip com.example.describing.markup.TagTextMarkup markup used by MarkupUI
+skip com.example.describing.markup.UnderlineTextEffect effect used by TagTextMarkup in MarkupUI
+skip com.example.describing.markup.WaveTextEffect effect used by MarkupUI
+skip com.example.describing.markup.DurationTextConverter converter registered by MarkupUI
+skip com.example.describing.media.MediaSources reads a URL and a file of the disk that the runner does not have
+skip com.example.describing.media.MinimapPanel needs an OpenGL texture of a host renderer

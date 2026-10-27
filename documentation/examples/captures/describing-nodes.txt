@@ -1,0 +1,8 @@
+# crop describing-nodes-tree 360 190 1200 560
+ui com.example.describing.nodes.TreeDiagramUI
+wait 100
+shot describing-nodes-tree
+# crop describing-nodes-profile 660 290 600 500
+ui com.example.describing.nodes.ProfileUI
+wait 100
+shot describing-nodes-profile

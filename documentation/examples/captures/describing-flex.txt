@@ -1,0 +1,22 @@
+ui com.example.describing.flex.FlexCasesUI
+wait 100
+# crop describing-flex-column 60 100 400 300
+shot describing-flex-column
+# crop describing-flex-row 520 100 400 300
+shot describing-flex-row
+# crop describing-flex-align 980 100 400 300
+shot describing-flex-align
+# crop describing-flex-offset 1440 100 400 300
+shot describing-flex-offset
+# crop describing-flex-grow 60 460 400 300
+shot describing-flex-grow
+# crop describing-flex-scroll 520 460 400 300
+move 720 610
+# film describing-flex-scroll
+scroll -4
+wait 1200
+cut
+# crop describing-flex-list 660 340 600 400
+ui com.example.describing.flex.SettingsListUI
+wait 100
+shot describing-flex-list

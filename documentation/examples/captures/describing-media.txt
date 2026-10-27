@@ -1,0 +1,11 @@
+# crop describing-media-gallery 430 300 1060 480
+ui com.example.describing.media.GalleryUI
+wait 500
+shot describing-media-gallery
+# crop describing-media-animation 760 410 400 260
+# hold describing-media-animation 100
+ui com.example.describing.media.AnimationUI
+wait 500
+# film describing-media-animation 10
+wait 700
+cut

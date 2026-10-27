@@ -1,0 +1,16 @@
+# crop describing-position-panel 560 290 800 500
+ui com.example.describing.position.PanelUI
+wait 100
+shot describing-position-panel
+# crop describing-position-anchors 660 340 600 400
+ui com.example.describing.position.AnchorUI
+wait 100
+shot describing-position-anchors
+# crop describing-position-order 660 340 600 400
+ui com.example.describing.position.OrderUI
+wait 100
+shot describing-position-order
+# crop describing-position-copy 560 390 800 300
+ui com.example.describing.position.CopyUI
+wait 100
+shot describing-position-copy

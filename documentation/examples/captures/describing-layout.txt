@@ -1,0 +1,18 @@
+# crop describing-layout-group 660 390 600 300
+ui com.example.describing.layout.GroupUI
+wait 100
+shot describing-layout-group
+# crop describing-layout-overflow 530 390 860 300
+ui com.example.describing.layout.OverflowUI
+wait 100
+shot describing-layout-overflow
+# crop describing-layout-scroll 720 310 480 440
+ui com.example.describing.layout.FeedUI
+wait 100
+move 960 480
+# film describing-layout-scroll
+scroll -3
+wait 800
+scroll -12
+wait 1500
+cut
