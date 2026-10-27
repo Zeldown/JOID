@@ -15,6 +15,8 @@ The user side of framebuffers is on [Framebuffers and models](/use/learn/going-f
 [[IRenderBridge#createFrameBuffer]] returns an [[IFrameBuffer]] of a size in pixels.
 Extend [[FrameBufferHandle]]: it keeps the color texture, answers the size from it, and deletes once, your `deleteHandle()` first, then the texture.
 
+**Required**
+
 | Attachment | Rule |
 |---|---|
 | Color | A texture of your backend, the one `getTexture()` returns, so that JOID samples it like any texture. |
@@ -43,6 +45,8 @@ The contract suite checks the horizontal orientation with `rendersIntoFrameBuffe
 
 The projection follows OpenGL: depth from -1 to 1 in clip space.
 [[DepthRange#toZeroToOne]] rewrites a projection for an API whose depth goes from 0 to 1, as Vulkan does.
+
+**Guarantees**
 
 | Rule | Why |
 |---|---|

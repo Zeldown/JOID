@@ -34,7 +34,7 @@ The LWJGL 3 and Vulkan backends use it as it is.
 - the scroll offsets go through as notches, fractions included, and the characters as whole code points.
 
 The forwarder keeps the handlers that the window had before `attach` and calls them for every event that JOID does not consume.
-An application that sets its handlers before registering the backend therefore keeps them, behind JOID ([Respect the consumption](/build/input/#respect-the-consumption)).
+An application that sets its handlers before registering the backend therefore keeps them, behind JOID ([Input forwarding](/build/input/#guarantees)).
 
 ## Keys
 

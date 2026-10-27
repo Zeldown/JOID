@@ -170,6 +170,6 @@ When a shot differs, check these first:
 | Shapes vanish behind others, or 3D models look inside out | The depth range is 0 to 1 and the projection was not converted with [[DepthRange]], or the depth is not cleared to 1. |
 | Masks and scroll areas do not clip | The screen has no 8-bit stencil buffer, or `clearStencilBuffer` clears nothing. |
 | Text and images are blocky when drawn smaller | The mip levels are not filled with `forEachStep`, or the sampler ignores `isMipmapFiltered()`. |
-| Colors are off by a few levels | The surface or the texture format is sRGB where JOID expects linear `UNORM`. |
+| Colors are off by a few levels | The surface or the texture format is sRGB where JOID reads linear `UNORM`. |
 
 The suites, the references and the reports are detailed on [Testing a backend](/build/testing-a-backend/).

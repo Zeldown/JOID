@@ -6,7 +6,7 @@ A window library reports a key by its place on a US QWERTY keyboard: on a French
 A window bridge gives each key press two keys, its place and the key that the layout names; a `KeyLayout` computes the second from the first.
 Only the letters `A` to `Z` and the punctuation keys from [[Key#APOSTROPHE]] to [[Key#GRAVE_ACCENT]] depend on the layout; every other key passes through unchanged.
 
-Learn: [Input forwarding](/build/input/#send-the-position-and-the-printed-key).
+Learn: [Input forwarding](/build/input/#guarantees).
 
 ## from(Function)
 

@@ -5,7 +5,7 @@ summary: Remembers which key each held place of the keyboard typed, so that a re
 The UI bridge registry keeps one `KeyState`: a press records its place and its key, and the release of that place reports the same key, even when the layout changed in between.
 [[Key#isDown]] reads it.
 
-Learn: [Input forwarding](/build/input/#send-the-position-and-the-printed-key).
+Learn: [Input forwarding](/build/input/#guarantees).
 
 ## KeyState()
 

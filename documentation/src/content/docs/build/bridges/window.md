@@ -35,7 +35,7 @@ The rest of the core only reads the window bridge:
 
 - [[UIBridgeRegistry#frame]] compares the size with the previous frame and, when it changed and is not zero, resizes the projection and lays every UI out again;
 - each UI converts the mouse position into design pixels;
-- [[Key#isDown]] asks `isKeyDown` for the keys that do not depend on the layout, and the key state of the UI registry for the others ([Input forwarding](/build/input/#send-the-position-and-the-printed-key));
+- [[Key#isDown]] asks `isKeyDown` for the keys that do not depend on the layout, and the key state of the UI registry for the others ([Input forwarding](/build/input/#guarantees));
 - the cursor is set once per change, and never while `isMouseGrabbed()` returns `true`.
 
 ## Guarantees
