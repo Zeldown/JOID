@@ -97,7 +97,7 @@ Adds a listener that hears a typed character after the nodes of the UI, unless a
 
 ## handleKeyPressed(EventListener)
 
-Adds a listener that hears a key press after the shortcuts and the nodes of the UI, unless one of them consumed it, and before the zoom and dev-mode keys.
+Adds a listener that runs on a key press after the shortcuts set with `overrideFocus(true)` and the nodes of the UI, unless one of them consumed it, and before the other shortcuts, the zoom keys and the dev-mode keys.
 
 ## handleKeyReleased(EventListener)
 

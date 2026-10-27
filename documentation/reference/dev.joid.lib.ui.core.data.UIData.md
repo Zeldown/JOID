@@ -37,7 +37,7 @@ Color of the UI backdrop, as a hexadecimal string `#RRGGBB` or `#RRGGBBAA`.
 
 ## zindex()
 
-Order of the UI among the open UIs of its bridge: a higher value is drawn above and receives the input first.
+Order of the UI inside its group of the stack of its bridge (overlays below the screens, screens and popups, overlays above them): a higher value is drawn above and receives the input first.
 
 ## zlevel()
 

@@ -47,21 +47,21 @@ Group of the sound of a video, for the audio bridge to set the volume of several
 
 ## location
 
-Position of the sound of a video in the scene of the audio bridge; `null` plays it without position.
+Position of the sound of a video, whose volume falls with its distance to the position of [[VideoAudioPlayer#audioListenerPosition]]; `null` plays it without position.
 
 Default: none, the sound plays without position
 
 ## referenceDistance
 
-Distance from `location` within which the sound plays at full volume; `null` keeps the value of the audio bridge.
+Distance from `location` within which the sound plays at full volume; `null` keeps 5.
 
-Default: the value of the audio bridge
+Default: 5, the distance of the video decoder
 
 ## maxDistance
 
-Distance from `location` beyond which the sound stops getting quieter; `null` keeps the value of the audio bridge.
+Distance from `location` from which the sound is silent; in between, the volume falls as `(1 − t)²`, `t` going from 0 to 1 between the two distances; `null` keeps 50.
 
-Default: the value of the audio bridge
+Default: 50, the distance of the video decoder
 
 ## play()
 

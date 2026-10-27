@@ -39,7 +39,7 @@ With a `location`, the distance from the listener under which the sound plays at
 
 ## maxDistance
 
-With a `location`, the distance from the listener at which the sound fades out completely; in between, the volume falls with the square of the distance.
+With a `location`, the distance from the listener at which the sound fades out completely; in between, the volume falls as `(1 − t)²`, `t` going from 0 to 1 between the two distances.
 
 ## isSettled()
 
