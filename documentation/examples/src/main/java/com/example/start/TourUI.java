@@ -2,7 +2,7 @@ package com.example.start;
 
 import com.example.ExampleFont;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.BaseTween;
 import dev.joid.lib.animation.tween.TweenEquations;

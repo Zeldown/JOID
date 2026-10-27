@@ -279,7 +279,7 @@ Any other build tool works the same way: the backend jar, and the LWJGL modules 
 Step 3 fails on the first two symptoms below.
 The others show when JOID draws for the first time, in the [Quick Start](/use/get-started/quick-start/).
 
-1. **`package dev.joid.internal does not exist`**: Gradle finds no backend jar; check that the jar is in `libs/` and that `files(...)` names it exactly.
+1. **`package dev.joid.lib does not exist`**: Gradle finds no backend jar; check that the jar is in `libs/` and that `files(...)` names it exactly.
 2. **`Could not find or load main class`**: the `mainClass` of the `application` block does not name `com.example.start.VersionCheck`.
 3. **`NoClassDefFoundError: org/lwjgl/...`, `UnsatisfiedLinkError` or `Failed to locate library`**: an LWJGL module of step 2 is missing, or its natives are missing or for another system; check the `runtimeOnly` lines and the classifier.
 4. **The JVM stops on macOS with a thread error**: start it with `-XstartOnFirstThread`, as the `application` block does.

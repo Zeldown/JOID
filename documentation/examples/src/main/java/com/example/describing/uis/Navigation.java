@@ -1,6 +1,6 @@
 package com.example.describing.uis;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 
 public final class Navigation {
 

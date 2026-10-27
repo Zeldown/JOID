@@ -3,7 +3,7 @@ package com.example.tutorial.polish;
 import java.util.List;
 import java.util.Random;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 import dev.joid.lib.animation.animator.TweenAnimator;
 import dev.joid.lib.animation.tween.TweenEquations;
 import dev.joid.lib.color.Color;

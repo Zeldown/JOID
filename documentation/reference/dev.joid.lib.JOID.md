@@ -47,7 +47,7 @@ If `true`, a UI of this class (or of a subclass) is open in any UI bridge.
 
 ## getUi(Class)
 
-The first open UI of this class or of a subclass, searched in every UI bridge, or `null` when none is open.
+The first open UI of this class or of a subclass, searched in every UI bridge from the highest priority down, or `null` when none is open.
 
 ## open(UI)
 

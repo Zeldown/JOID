@@ -1,6 +1,6 @@
 package com.example.running;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 
 public final class RunningLibrary {
 

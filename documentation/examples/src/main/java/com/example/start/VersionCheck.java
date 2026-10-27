@@ -1,6 +1,6 @@
 package com.example.start;
 
-import dev.joid.internal.JOID;
+import dev.joid.lib.JOID;
 
 public final class VersionCheck {
 

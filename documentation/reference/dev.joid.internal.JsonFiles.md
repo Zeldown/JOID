@@ -15,6 +15,7 @@ A file that holds no JSON object is renamed to `<name>.corrupt`; the warning end
 ## write(File,String)
 
 Writes `json` to `file` through a temporary file in the same folder, created when missing, then moves it in place in one step, so a crash never leaves half a file.
+It does nothing when `json` is the text that it last read or wrote for that file and the file exists.
 
 ## keep(File,String,String)
 
