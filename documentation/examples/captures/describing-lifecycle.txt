@@ -1,0 +1,10 @@
+# crop describing-lifecycle-flow 160 340 1600 340
+ui com.example.describing.lifecycle.LifecycleDiagramUI
+wait 100
+shot describing-lifecycle-flow
+# crop describing-lifecycle-frames 660 290 600 160
+# crop describing-lifecycle-draw 760 480 400 120
+ui com.example.describing.lifecycle.LifecycleUI
+wait 100
+shot describing-lifecycle-frames
+shot describing-lifecycle-draw

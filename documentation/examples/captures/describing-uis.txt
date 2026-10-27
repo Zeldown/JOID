@@ -1,0 +1,4 @@
+# crop describing-uis-menu 760 340 400 400
+ui com.example.describing.uis.MenuUI
+wait 100
+shot describing-uis-menu
