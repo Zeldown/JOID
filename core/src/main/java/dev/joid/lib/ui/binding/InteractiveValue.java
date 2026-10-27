@@ -27,6 +27,7 @@ public final class InteractiveValue<V> {
 
 	private final Map<V, ValueEvents<V>> eventMap;
 
+	private Supplier<V>      source;
 	private ValueEvents<V>   events;
 	private BiConsumer<V, V> then;
 	private UnaryOperator<V> clamp;
@@ -42,6 +43,7 @@ public final class InteractiveValue<V> {
 		this.getter = getter;
 		this.setter = setter;
 		this.bindings = bindings;
+		this.source = getter;
 		this.eventMap = new HashMap<>();
 		this.clamp = UnaryOperator.identity();
 		this.then = (previous, next) -> {};
@@ -50,6 +52,11 @@ public final class InteractiveValue<V> {
 
 	public static <V> @NonNull InteractiveValue<V> create(final @NonNull NodeBindings bindings, final @NonNull String property, final @NonNull Supplier<V> getter, final @NonNull Consumer<V> setter) {
 		return new InteractiveValue<>(bindings, property, getter, setter);
+	}
+
+	public @NonNull InteractiveValue<V> source(final @NonNull Supplier<V> source) {
+		this.source = source;
+		return this;
 	}
 
 	public @NonNull InteractiveValue<V> clamp(final @NonNull UnaryOperator<V> clamp) {
@@ -87,10 +94,11 @@ public final class InteractiveValue<V> {
 		}
 
 		final V next = this.clamp.apply(value);
-		final V previous = this.getter.get();
+		final V previous = this.getApplied();
 		if (InteractiveValue.same(previous, next)) {
 			this.held = next;
 			this.requested = next;
+			this.keep(next);
 			this.bindings.see(this.property);
 			this.bindings.sync(this.property, next);
 			return true;
@@ -115,11 +123,12 @@ public final class InteractiveValue<V> {
 	}
 
 	public void update(final V value) {
-		this.requested = value;
+		final V previous = this.getApplied();
 		final V next = this.clamp.apply(value);
-		final V previous = this.getter.get();
+		this.requested = value;
 		this.held = next;
 		if (InteractiveValue.same(previous, next)) {
+			this.keep(next);
 			this.bindings.sync(this.property, next);
 		} else {
 			this.apply(previous, next);
@@ -145,7 +154,7 @@ public final class InteractiveValue<V> {
 	}
 
 	public V getRequested() {
-		final V current = this.getter.get();
+		final V current = this.source.get();
 		return this.requested != null && InteractiveValue.same(this.held, current) ? this.requested : current;
 	}
 
@@ -186,8 +195,15 @@ public final class InteractiveValue<V> {
 		this.fireChange(previous, next);
 	}
 
+	private void keep(final V next) {
+		final V stored = this.getStored(next);
+		if (!InteractiveValue.same(this.source.get(), stored)) {
+			this.setter.accept(stored);
+		}
+	}
+
 	private void store(final V next) {
-		this.setter.accept(next);
+		this.setter.accept(this.getStored(next));
 		this.bindings.sync(this.property, next);
 	}
 
@@ -197,6 +213,14 @@ public final class InteractiveValue<V> {
 			this.bindings.fireSubscribed(events.onType, () -> events.on.apply(previous, next));
 		}
 		this.then.accept(previous, next);
+	}
+
+	private V getApplied() {
+		return this.source != this.getter && InteractiveValue.same(this.source.get(), this.requested) ? this.held : this.getter.get();
+	}
+
+	private V getStored(final V next) {
+		return this.source != this.getter ? this.requested : next;
 	}
 
 	private ValueEvents<V> requireEvents(final ValueEvents<V> events) {

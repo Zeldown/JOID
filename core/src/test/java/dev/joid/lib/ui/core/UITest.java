@@ -1801,6 +1801,42 @@ public class UITest {
 	}
 
 	@Test
+	public void announcesOnlyTheZoomItShows() {
+		final List<String> events = new ArrayList<>();
+		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
+		ui.onZoom(event -> events.add(event.getPrevious() + " " + event.getValue()));
+		this.bridges.open(ui).frame();
+		ui.getView().zoom(3D);
+		ui.zoom(1D);
+		ui.zoomTo(1D);
+		ui.zoom(2D);
+		this.bridges.getUi().interfaceScale(0.5D);
+		this.bridges.frame();
+		Assert.assertEquals(Collections.singletonList("1.0 2.0"), events);
+	}
+
+	@Test
+	public void givesItsPendingZoomThroughItsView() {
+		final NodeUI ui = new NodeUI(RectNode.create(0D, 0D, 10D, 10D));
+		this.bridges.open(ui).frame();
+		ui.zoom(2D);
+		Assert.assertEquals(1D, ui.getZoom(), 0D);
+		Assert.assertEquals(2D, ui.getView().getRequestedZoom(), 0D);
+		this.bridges.getUi().interfaceScale(0.5D);
+		this.bridges.frame();
+		Assert.assertEquals(2D, ui.getZoom(), 0D);
+		this.bridges.getUi().interfaceScale(1D);
+		this.bridges.frame();
+		Assert.assertEquals(1D, ui.getZoom(), 0D);
+		Assert.assertEquals(2D, ui.getView().getRequestedZoom(), 0D);
+		ui.getView().zoom(3D);
+		this.bridges.getUi().interfaceScale(0.5D);
+		this.bridges.frame();
+		Assert.assertEquals(2D, ui.getZoom(), 0D);
+		Assert.assertEquals(3D, ui.getView().getRequestedZoom(), 0D);
+	}
+
+	@Test
 	public void keepsTheFittedSizeWhenItsScaleIsInactive() {
 		final HoverBridge bridge = new HoverBridge();
 		final NodeUI ui = new NodeUI(RectNode.create(860D, 490D, 200D, 100D));

@@ -186,7 +186,7 @@ public abstract class UI implements IIndexedElement {
 		this.keptTaskList     = new ArrayList<>();
 		this.shortcutList     = new CopyOnWriteArrayList<>();
 		this.keptShortcutList = new ArrayList<>();
-		this.zoomValue        = InteractiveValue.create(this.bindings, "zoom", this.view::getRequestedZoom, this.view::zoom).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
+		this.zoomValue        = InteractiveValue.create(this.bindings, "zoom", this.view::getZoom, this.view::zoom).source(this.view::getRequestedZoom).clamp(zoom -> this.view.clampZoom(zoom)).events(UI.BEFORE_ZOOM, (previous, zoom) -> UIChangeEvent.Pre.create(this, previous, zoom), UI.ZOOM, (previous, zoom) -> UIChangeEvent.Post.create(this, previous, zoom));
 
 		this.drawnFrame = Long.MIN_VALUE;
 		this.lastHoveredFrame = -1L;
