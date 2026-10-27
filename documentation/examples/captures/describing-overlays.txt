@@ -1,0 +1,14 @@
+# crop describing-overlays-stack 410 190 1100 700
+# crop describing-overlays-popup 660 340 600 400
+# crop describing-overlays-minimap 1540 20 360 360
+ui com.example.describing.overlays.StackDiagramUI
+wait 100
+shot describing-overlays-stack
+ui com.example.describing.overlays.SettingsUI
+open com.example.describing.overlays.ConfirmPopup
+wait 600
+shot describing-overlays-popup
+ui com.example.describing.overlays.SettingsUI
+open com.example.describing.overlays.MinimapOverlay
+wait 100
+shot describing-overlays-minimap
