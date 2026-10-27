@@ -142,10 +142,10 @@ The node measures its new content on the next frame, and the wheel scrolls furth
 
 ```java fragment
 .overflow(OverflowProperty.SCROLL)
-.scrollbar(PlainScrollbarNode.create(0, 168, 360, 12))
+.scrollbar(KitScrollbarNode.create(0, 168, 360, 12))
 ```
 
-`PlainScrollbarNode` stands for your skin of [[ScrollbarNode]], an abstract control.
+`KitScrollbarNode` stands for your skin of [[ScrollbarNode]], an abstract control.
 The scrollbar is positioned from the scrolling node, does not scroll with its content, and is drawn only while the content overflows.
 [Controls](/use/learn/interactivity/controls/) describes its options and [UI kit](/use/learn/going-further/ui-kit/) how to draw it.
 

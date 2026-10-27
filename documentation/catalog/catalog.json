@@ -307,7 +307,7 @@
 			"cards": [
 				{
 					"name": "Wave effect",
-					"example": "com/example/text/WaveTextEffect.java",
+					"example": "com/example/describing/markup/WaveTextEffect.java",
 					"reference": "ITextEffect",
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
 					"alt": "A sentence whose glyphs move up and down in a wave",
@@ -323,7 +323,7 @@
 				},
 				{
 					"name": "Underline effect",
-					"example": "com/example/text/UnderlineTextEffect.java",
+					"example": "com/example/describing/markup/UnderlineTextEffect.java",
 					"reference": "ITextEffect",
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
 					"alt": "An underlined sentence"
@@ -347,10 +347,10 @@
 				},
 				{
 					"name": "Markup",
-					"example": "com/example/text/ExampleTextMarkup.java",
+					"example": "com/example/describing/markup/TagTextMarkup.java",
 					"reference": "ITextMarkup",
 					"learn": "use/learn/describing-the-ui/text-markup-and-effects",
-					"alt": "A sentence with a bold word, a tinted word and an underlined word"
+					"alt": "A sentence with a bold word and a tinted, underlined word"
 				},
 				{
 					"name": "UPPER_CASE",
