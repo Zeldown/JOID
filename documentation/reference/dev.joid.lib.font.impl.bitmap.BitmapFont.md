@@ -5,7 +5,7 @@ summary: Base class of the pixel fonts, glyph fonts drawn from texture cells at 
 Extend it with a [[BitmapTextRenderer]] of your own that returns the [[BitmapCell]] of each glyph.
 At a font size equal to the bitmap size, one texel of a cell is one design pixel; other sizes scale the cells.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## BitmapFont(FontFamily,int)
 

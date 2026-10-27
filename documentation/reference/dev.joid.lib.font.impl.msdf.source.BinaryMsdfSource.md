@@ -5,7 +5,7 @@ summary: Reads a face from a .msdf file made by the msdf tool of JOID, with no g
 Ship `.msdf` files to skip the generation of the first load.
 The read fails with `IOException` when the file does not start with `JOIDMSDF` or was written in another format version of the tool.
 
-Learn: [Fonts](/use/learn/going-further/fonts/), [MSDF text](/use/in-depth/msdf-text/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/), [MSDF text](/use/in-depth/msdf-text/).
 
 ## of(Object)
 

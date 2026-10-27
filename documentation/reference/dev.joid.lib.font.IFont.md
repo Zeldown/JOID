@@ -4,7 +4,7 @@ summary: A font that JOID can draw, which names the text renderer that measures 
 
 [[MsdfFont]] and [[BitmapFont]] implement it, through [[GlyphFont]]; implement it yourself for a font that another renderer draws.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## getTextRenderer()
 

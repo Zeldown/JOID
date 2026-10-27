@@ -4,7 +4,7 @@ summary: The faces of one font, by weight and style, from which a text picks the
 
 A [[GlyphFont]] holds one family; [[MsdfFontLoader]] builds it for you from the files you load.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## of(F[])
 

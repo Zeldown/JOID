@@ -4,7 +4,7 @@ summary: The built-in format that recognizes HEIF and AVIF images, which JOID ca
 
 The resource fails, and the dev-mode warning asks for PNG, JPEG or WebP instead.
 
-Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
 ## HeifResourceFormat()
 

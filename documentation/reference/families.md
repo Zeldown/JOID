@@ -1,6 +1,6 @@
 ## ui
 The classes that describe a UI, open and close it, keep its state and its files, run its tasks and shortcuts, and animate it when it opens and closes.
-Learn: [UIs](/use/learn/describing-the-ui/uis/), [Transitions](/use/learn/style-and-motion/transitions/), [Stores and properties](/use/learn/state/stores-and-properties/).
+Learn: [UIs](/use/learn/describing-the-ui/uis/), [Transitions](/use/learn/style-and-motion/transitions/), [Stores and remembered properties](/use/learn/state/stores-and-properties/).
 
 ## annotations
 The annotations that configure a UI, an overlay, a popup and its scale, and the objects that hold those options while the UI runs.
@@ -12,7 +12,7 @@ Learn: [Nodes and the tree](/use/learn/describing-the-ui/nodes/), [Position and 
 
 ## controls
 The nodes that hold a value the user changes (checkboxes, toggles, switches, selectors, sliders, text fields) and the scrollbars, each one a behavior class with a skin class of named parts.
-Learn: [Controls](/use/learn/interactivity/controls/), [Text fields](/use/learn/interactivity/text-fields/), [UI kit](/use/learn/going-further/ui-kit/).
+Learn: [Controls](/use/learn/interactivity/controls/), [Text fields](/use/learn/interactivity/text-fields/), [Give your controls a look](/use/learn/going-further/ui-kit/).
 
 ## layout
 The nodes that place their children (containers, flex rows and columns, grids, reorderable lists) and the settings of position, overflow and alignment.
@@ -36,7 +36,7 @@ Learn: [Animation](/use/learn/style-and-motion/animation/).
 
 ## text
 The text runs and their styles, the fonts (MSDF, bitmap and glyph fonts of your own) with their loader and sources, and the markups, effects, modifiers and converters that change what a text shows.
-Learn: [Text](/use/learn/describing-the-ui/text/), [Fonts](/use/learn/describing-the-ui/fonts/), [Text markup and effects](/use/learn/describing-the-ui/text-markup-and-effects/), [Custom fonts](/use/learn/going-further/fonts/).
+Learn: [Text](/use/learn/describing-the-ui/text/), [Fonts](/use/learn/describing-the-ui/fonts/), [Text markup and effects](/use/learn/describing-the-ui/text-markup-and-effects/), [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## resources
 Images, animated images, vector images and videos, the assets they are read from, the formats and decoders that read them, their memory cache, the file cache of JOID and the video natives.
@@ -44,7 +44,7 @@ Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats]
 
 ## drawing
 Colors and gradients, the immediate drawing helpers, transformations, framebuffers, the tessellator and Wavefront OBJ models that a custom node draws with.
-Learn: [Colors and styling](/use/learn/style-and-motion/styling/), [Drawing](/use/learn/going-further/drawing/), [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/), [Framebuffers and models](/use/learn/going-further/framebuffers-and-models/).
+Learn: [Colors and styling](/use/learn/style-and-motion/styling/), [Drawing shapes and text](/use/learn/going-further/drawing/), [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/), [Framebuffers and models](/use/learn/going-further/framebuffers-and-models/).
 
 ## shaders
 The shader programs of JOID and of your own, the shader passes and the pipeline that chains them over an offscreen framebuffer.
@@ -52,7 +52,7 @@ Learn: [Shaders](/use/learn/going-further/shaders/).
 
 ## input
 The keys, the mouse buttons and the cursors, with the classes that follow the keyboard layout and turn the key bindings of an application into keys.
-Learn: [Keyboard](/use/learn/interactivity/keyboard/), [Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
+Learn: [Keyboard and shortcuts](/use/learn/interactivity/keyboard/), [Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
 
 ## utilities
 The small helpers that the other families share: points and boxes, Bézier curves, sorted and registry lists, lockable values, threads, platform folders, JSON files and pixel buffers.
@@ -100,4 +100,4 @@ Learn: [Vulkan backend](/build/backends/vulkan/).
 
 ## tools
 The MSDF generator, which builds the atlas of a font file ahead of time or at its first load.
-Learn: [Fonts](/use/learn/going-further/fonts/), [MSDF text](/use/in-depth/msdf-text/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/), [MSDF text](/use/in-depth/msdf-text/).

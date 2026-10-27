@@ -12,7 +12,7 @@ DrawUtils.TEXT.drawText(x + 12D, y + 12D, "Play", info, Align.START, Align.START
 Every call draws at once, in the coordinates of the current model-view matrix: design pixels inside a UI.
 Call them on the render thread, during a frame; outside a frame the render bridge throws.
 
-Learn: [Drawing](/use/learn/going-further/drawing/).
+Learn: [Drawing shapes and text](/use/learn/going-further/drawing/).
 
 ## TEXT
 

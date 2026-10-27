@@ -385,7 +385,7 @@ Follow the advice, or give the setter a lambda, which JOID reads at every frame:
 With the dev jar, the replay of an expression given to a setter failed on an error of JOID itself; the stack trace follows.
 The property keeps the value of the first read.
 
-Give the setter a lambda instead, and report the stack trace to JOID: [How signals track reads](/use/in-depth/how-signals-work/).
+Give the setter a lambda instead, and report the stack trace to JOID: [How signals work](/use/in-depth/how-signals-work/).
 
 ## warning [JOID] The … of … cannot take its new value (…), it keeps the previous one: check the value its signal gives
 
@@ -709,7 +709,7 @@ Run JOID on a standard JVM: [Keep files of your own in the cache](/use/learn/run
 
 The animated PNG is damaged.
 
-Export the image again: [Media](/use/learn/describing-the-ui/media/).
+Export the image again: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## IllegalArgumentException The PNG has no acTL chunk or no frame control, it is not an animated PNG: draw it as a still image or export it as an APNG
 
@@ -721,19 +721,19 @@ Show it with a [[ResourceNode]], or export it as an APNG: [Play animated images 
 
 A file decoded as an animated WebP is not a WebP.
 
-Check the file and its extension: [Media](/use/learn/describing-the-ui/media/).
+Check the file and its extension: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## IllegalArgumentException The WebP chunk … runs past the end of the file, the file is damaged: export it again
 
 The WebP file is truncated or damaged.
 
-Export the image again: [Media](/use/learn/describing-the-ui/media/).
+Export the image again: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## IllegalArgumentException The WebP has no ANMF frame or no VP8X size, it is not an animated WebP: draw it as a still image or export it with its animation
 
 A WebP was decoded as an animation but holds a single image.
 
-Show it with a [[ResourceNode]], or export it with its animation: [Media](/use/learn/describing-the-ui/media/).
+Show it with a [[ResourceNode]], or export it with its animation: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## IllegalArgumentException An animation needs at least one frame, got none: check that the file holds its frames
 
@@ -771,7 +771,7 @@ Check that the file or the URL can be read: [Know when an image is loaded](/use/
 
 The file was read, but it is not a valid SVG document.
 
-Check the file in an SVG editor and export it again: [Media](/use/learn/describing-the-ui/media/).
+Check the file in an SVG editor and export it again: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## UncheckedIOException The video … cannot be read
 
@@ -1041,7 +1041,7 @@ Pair each `beginFrame()` with one `endFrame()`; `Backend.frame()` opens and clos
 
 Something drew or cleared outside a frame of the render bridge, such as a draw from an input handler, from a worker thread, or before the loop.
 
-Draw from the draw of a node or of a UI, which runs inside the frame: [Frame lifecycle](/use/in-depth/frame-lifecycle/).
+Draw from the draw of a node or of a UI, which runs inside the frame: [The frame lifecycle](/use/in-depth/frame-lifecycle/).
 
 ## IllegalArgumentException The shader declares no sampler …, declare it in the shader source or fix its name (samplers: …)
 
@@ -1282,7 +1282,7 @@ Fix the command from the table of `execute`: [Drive the UI with commands](/use/l
 
 The `cursor` command of a scenario expected another cursor than the one that the UI shows.
 
-Check the cursor that the hovered node sets: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/).
+Check the cursor that the hovered node sets: [Change the cursor over a node](/use/learn/interactivity/hover-and-tooltips/#change-the-cursor-over-a-node).
 
 ## IllegalArgumentException The snapshot window …x… does not fit the …x… snapshot surface, give a smaller window
 

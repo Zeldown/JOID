@@ -2,7 +2,7 @@
 summary: A texture of the render bridge, owned by JOID or borrowed from the host.
 ---
 
-Learn: [The texture of a resource in your own drawing](/use/learn/going-further/framebuffers-and-models/), [Textures](/build/writing-a-backend/#textures).
+Learn: [Use the texture of a resource](/use/learn/going-further/framebuffers-and-models/#use-the-texture-of-a-resource), [Textures](/build/writing-a-backend/#textures).
 
 ## mipmap(boolean)
 

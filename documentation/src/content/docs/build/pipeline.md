@@ -8,7 +8,7 @@ sidebar:
 
 Every pixel of JOID, from a rectangle to a 3D model, reaches the render bridge through one method: `draw(primitive, buffer)`.
 This page follows a drawing from the node to the API of the backend, then describes each piece of data the bridge reads.
-The contract itself is on [Render bridge](/build/bridges/render/); the user side of drawing is on [Drawing](/use/learn/going-further/drawing/).
+The contract itself is on [Render bridge](/build/bridges/render/); the user side of drawing is on [Drawing shapes and text](/use/learn/going-further/drawing/).
 
 <figure>
 

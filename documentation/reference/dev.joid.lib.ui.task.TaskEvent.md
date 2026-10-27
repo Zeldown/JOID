@@ -1,7 +1,7 @@
 ---
 summary: Event that a task passes to its listeners when it runs.
 ---
-Learn: [Tasks](/use/learn/state/tasks/).
+Learn: [Tasks and background updates](/use/learn/state/tasks/).
 
 ## create(Task)
 

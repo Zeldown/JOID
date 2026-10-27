@@ -4,7 +4,7 @@ summary: The default resource cache, which keeps the data in memory while it is 
 
 Data stays as long as a resource uses it, then for `expiry` after its last access, within `size` entries.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## create()
 

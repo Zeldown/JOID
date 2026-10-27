@@ -4,7 +4,7 @@ summary: The drawing of another renderer, which JOID runs into an offscreen fram
 
 Pass it to [[DrawRaster#drawRaster]] as a lambda.
 
-Learn: [Drawing](/use/learn/going-further/drawing/).
+Learn: [Drawing shapes and text](/use/learn/going-further/drawing/).
 
 ## draw(int,int)
 

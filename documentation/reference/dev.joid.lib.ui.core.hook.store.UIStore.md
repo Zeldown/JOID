@@ -4,7 +4,7 @@ summary: Base class of a store, a container of values that lives as long as its 
 Annotate the subclass with [[UIStoreData]] and get it with [[UI#useStore]] or [[Node#useStore]].
 A `PERMANENT` store is read from the data folder when it is created and written back when a UI closes and when the JVM stops.
 
-Learn: [Stores and properties](/use/learn/state/stores-and-properties/).
+Learn: [Stores and remembered properties](/use/learn/state/stores-and-properties/).
 
 ## UIStore()
 

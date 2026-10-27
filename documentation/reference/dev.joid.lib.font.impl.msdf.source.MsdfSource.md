@@ -6,7 +6,7 @@ summary: Base class of the MSDF sources, which can override the weight and the s
 MsdfFontLoader.load(OpenTypeMsdfSource.of("fonts/Logo.ttf").weight(FontWeight.BOLD));
 ```
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## MsdfSource()
 

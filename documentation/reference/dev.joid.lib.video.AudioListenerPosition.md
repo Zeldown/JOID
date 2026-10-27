@@ -4,7 +4,7 @@ summary: Gives the position of the listener that the sound of placed videos fade
 
 Pass it as a lambda to [[VideoAudioPlayer#audioListenerPosition]].
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## getListenerPosition()
 

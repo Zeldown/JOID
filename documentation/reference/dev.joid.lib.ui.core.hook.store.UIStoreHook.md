@@ -3,7 +3,7 @@ summary: Creates, caches, saves and destroys the stores that the UIs use.
 ---
 [[UI#useStore]] goes through it; you call it yourself only to reach a shared store outside a UI.
 
-Learn: [Stores and properties](/use/learn/state/stores-and-properties/).
+Learn: [Stores and remembered properties](/use/learn/state/stores-and-properties/).
 
 ## useStore(Class,Supplier)
 

@@ -5,7 +5,7 @@ summary: Base class of the text renderers of pixel fonts, which draws each glyph
 Extend it for your [[BitmapFont]] and implement `getCell`; layout, markups, effects, shadows and colors come from [[GlyphTextRenderer]].
 The origin, the baseline and the offsets of the glyphs snap to whole screen pixels, and the texture of each cell is sampled with `NEAREST` filtering and filtered by area in the shader.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## BitmapTextRenderer()
 

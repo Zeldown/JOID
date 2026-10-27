@@ -11,7 +11,7 @@ private static final ResourceBuilder PIXEL_ART = ResourceBuilder.create().neares
 
 Every setting returns a new builder and leaves this one unchanged.
 
-Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
 ## create()
 

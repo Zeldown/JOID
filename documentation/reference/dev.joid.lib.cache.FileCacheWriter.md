@@ -4,7 +4,7 @@ summary: Writes the content of a cache entry into the file it is given.
 
 Pass it as a lambda to [[FileCacheArea#compute]] or [[FileCacheArea#store]].
 
-Learn: [Files](/use/learn/running/files/).
+Learn: [Where JOID stores files](/use/learn/running/files/).
 
 ## write(File)
 

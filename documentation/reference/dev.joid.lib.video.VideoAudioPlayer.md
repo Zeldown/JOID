@@ -5,7 +5,7 @@ summary: Plays the sound of one video through the audio bridge, in step with its
 Each [[VideoResourceDecoder]] creates its own when the video has sound and an audio bridge is registered; you only call `audioListenerPosition`.
 The volume is the volume of the video times 0.3, and with a location, times the falloff of the distance to the listener.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## VideoAudioPlayer(int,int,VideoResourceDecoder)
 

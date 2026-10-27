@@ -6,7 +6,7 @@ Reach it through `DrawUtils.RASTER`.
 The framebuffer has the size of the area in screen pixels, at most 4096 on each side, so the result stays sharp at every interface scale.
 JOID keeps one framebuffer per nesting depth, grows it when an area does not fit and frees it after 5 seconds without use.
 
-Learn: [Drawing](/use/learn/going-further/drawing/).
+Learn: [Drawing shapes and text](/use/learn/going-further/drawing/).
 
 ## inst()
 

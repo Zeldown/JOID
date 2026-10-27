@@ -4,7 +4,7 @@ summary: The ITextGlyph that a GlyphTextRenderer lays out and draws, with the fa
 
 [[GlyphTextRenderer]] creates one per drawn character, passes it to the text effects, then to its `drawGlyph` hook.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## create(GlyphFont,F,int,int,TextStyle,double,double,double,double,Color)
 

@@ -7,7 +7,7 @@ Extend it for a [[GlyphFont]] of your own: pass the core shader that draws your 
 On each draw, the renderer lays out the string with [[TextMarkup]], runs the text effects, draws the shadow then the glyphs between `begin()` and `end()`, inside a pushed render state.
 The shader is created on the first draw; when the backend cannot compile it, the text is skipped with one dev-mode warning and its bounds are still returned.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## GlyphTextRenderer(CoreShader)
 

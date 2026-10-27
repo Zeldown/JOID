@@ -7,7 +7,7 @@ Each entry is written into a temporary file and moved into place in one step, so
 Reading an entry marks it as used; the retention counts from the last use.
 The methods are thread-safe; call them off the render thread, since they touch the disk.
 
-Learn: [Files](/use/learn/running/files/).
+Learn: [Where JOID stores files](/use/learn/running/files/).
 
 ## of(String)
 

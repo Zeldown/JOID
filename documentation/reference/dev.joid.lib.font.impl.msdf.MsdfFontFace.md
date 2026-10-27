@@ -5,7 +5,7 @@ summary: One face of an MsdfFont, with its atlas texture, its metrics, its glyph
 An [[IMsdfSource]] reads it; [[MsdfFontLoader]] does that for you.
 Metrics, advances and kerning are on 1 of the font size.
 
-Learn: [Fonts](/use/learn/going-further/fonts/), [MSDF text](/use/in-depth/msdf-text/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/), [MSDF text](/use/in-depth/msdf-text/).
 
 ## of(MsdfAtlas,MsdfMetrics,Map,Map,BufferedImage,String,FontWeight,boolean)
 

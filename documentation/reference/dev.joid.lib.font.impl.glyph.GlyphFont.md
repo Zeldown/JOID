@@ -5,7 +5,7 @@ summary: Base class of the fonts made of glyphs, which hold a FontFamily of face
 [[MsdfFont]] and [[BitmapFont]] extend it.
 Extend it with your own [[IFontFace]] and [[GlyphTextRenderer]] for another kind of glyph font; `getTextRenderer()` must return a renderer that draws this class.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## GlyphFont(FontFamily)
 

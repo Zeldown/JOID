@@ -75,5 +75,5 @@ When a host has data of its own (its textures, its asset paths, its key bindings
 |---|---|---|
 | [[ResourceResolver]] | an object of the host (a sprite, a texture handle) into a resource | [Resource resolvers](/build/resource-resolvers/) |
 | [[AssetLocator]] | a path of the host into a stream | [Custom formats](/use/learn/going-further/custom-formats/) |
-| [[KeyResolver]] | a key binding of the host into keys | [Keyboard](/use/learn/interactivity/keyboard/) |
+| [[KeyResolver]] | a key binding of the host into keys | [Keyboard and shortcuts](/use/learn/interactivity/keyboard/) |
 | [[TextConverter]] | a text object of the host into a string | [Text markup and effects](/use/learn/describing-the-ui/text-markup-and-effects/) |

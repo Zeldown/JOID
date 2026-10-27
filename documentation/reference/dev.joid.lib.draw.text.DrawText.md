@@ -6,7 +6,7 @@ Reach it through `DrawUtils.TEXT`.
 Positions and sizes are in design pixels; every method returns the bounds of what it drew, and a text cut or wrapped to fit a box returns the width of the box.
 Markup tags inside the text are never cut in half when a line wraps or is cut, and the elements of a [[Text]] share one baseline.
 
-Learn: [Drawing](/use/learn/going-further/drawing/), [Text](/use/learn/describing-the-ui/text/).
+Learn: [Drawing shapes and text](/use/learn/going-further/drawing/), [Text](/use/learn/describing-the-ui/text/).
 
 ## inst()
 

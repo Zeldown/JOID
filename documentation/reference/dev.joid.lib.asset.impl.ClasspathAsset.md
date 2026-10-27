@@ -4,7 +4,7 @@ summary: An asset found in the classpath, such as a file packed in the jar of yo
 
 A `String` path without a scheme gives one when the classpath has it, with or without a leading `/`; its id is `classpath:` followed by the path.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## of(String,URL)
 

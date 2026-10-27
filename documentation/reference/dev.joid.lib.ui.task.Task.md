@@ -5,7 +5,7 @@ A task counts its delay from the moment it is attached, and runs on the render t
 A task attached to a node runs while the node belongs to an open UI; a one-shot task detaches itself when it runs.
 A task attached in the constructor of a UI comes back at every opening; one attached in `init()` lasts until the UI closes.
 
-Learn: [Tasks](/use/learn/state/tasks/).
+Learn: [Tasks and background updates](/use/learn/state/tasks/).
 
 ## create(long)
 

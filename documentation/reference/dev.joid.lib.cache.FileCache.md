@@ -11,7 +11,7 @@ private static final FileCacheArea THUMBNAILS = FileCacheArea.of("thumbnails").r
 Every entry that has not been read for longer than the retention of its area is deleted when JOID starts.
 Use the cache for files that you can build again; data that must survive goes in the data folder.
 
-Learn: [Files](/use/learn/running/files/).
+Learn: [Where JOID stores files](/use/learn/running/files/).
 
 ## clean()
 

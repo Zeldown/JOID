@@ -4,7 +4,7 @@ summary: The built-in format of WebP files, still or animated.
 
 An animated WebP plays as an animated image; any other WebP is a still image.
 
-Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
 ## WebpResourceFormat()
 

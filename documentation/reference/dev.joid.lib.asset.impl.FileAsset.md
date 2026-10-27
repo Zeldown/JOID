@@ -4,7 +4,7 @@ summary: An asset read from a file on disk.
 
 A `File`, or a `String` path that is not in the classpath but exists on disk, gives one; its id is the absolute path.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## of(File)
 

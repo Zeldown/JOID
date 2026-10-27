@@ -4,7 +4,7 @@ summary: The built-in format of SVG files, rendered as vector images at the size
 
 The root element must be `<svg>`; an XML declaration, comments and a doctype before it are skipped.
 
-Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
 ## SvgResourceFormat()
 

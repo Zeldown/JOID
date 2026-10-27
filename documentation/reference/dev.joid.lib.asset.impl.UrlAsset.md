@@ -5,7 +5,7 @@ summary: An asset read from a URL, over the network or from a file:, jar: or oth
 A `String` that starts with a scheme (`https:`, `file:`, `jar:`) gives one; its id is the URL.
 A connection waits 10 seconds to connect and 30 seconds for data; an `https:` URL that fails on a TLS error is tried once more over `http:`, and any other error goes up as it is.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## of(String)
 

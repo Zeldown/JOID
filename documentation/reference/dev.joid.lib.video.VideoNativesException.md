@@ -4,7 +4,7 @@ summary: The FFmpeg natives that videos need cannot be installed on this machine
 
 A video whose natives fail to install fails with this exception as its error; the message names the cause and the fix.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## VideoNativesException(String)
 

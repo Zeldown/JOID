@@ -7,7 +7,7 @@ The first decode waits for the FFmpeg natives ([[VideoNatives]]); a video that i
 Frames are decoded ahead on a thread of their own and shown at the time of the JOID clock; the sound plays when an audio bridge is registered, otherwise the video plays silent with one warning.
 Get it from [[Resource#getPlayback]] and cast it to set the sound; each fork of the same file plays on its own.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## create(File)
 

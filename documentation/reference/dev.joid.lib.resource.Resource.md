@@ -13,7 +13,7 @@ A `Resource` is a light handle: every handle of the same input shares one [[Reso
 Its own settings (interpolation, mipmaps, region, blocking) belong to the handle.
 The file is decoded on a background thread the first time the resource is drawn, then uploaded on the render thread; a resource that cannot be read fails and draws a checkerboard in dev mode, nothing in production.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## create(ResourceBuilder,ResourceData)
 

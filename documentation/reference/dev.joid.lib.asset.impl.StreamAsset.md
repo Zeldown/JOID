@@ -5,7 +5,7 @@ summary: An asset read once from an InputStream and kept in memory, so that it c
 An `InputStream` gives one; its id is `stream_` followed by a counter, so two streams never share a cache entry.
 The first `open()` reads the stream to its end and closes it; a stream that fails to close only warns.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## of(InputStream)
 

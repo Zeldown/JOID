@@ -2,7 +2,7 @@
 summary: The drawing settings of a resource handle, its filtering, its mipmaps and its region.
 ---
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## create()
 

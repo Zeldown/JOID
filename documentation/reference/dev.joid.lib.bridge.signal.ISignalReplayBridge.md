@@ -9,7 +9,7 @@ This bridge reads the names of the run time from two tables that the host provid
 ```java file="com/example/backend/EngineSignalReplayBridge.java" region="replay"
 ```
 
-Learn: [Signal replay bridge](/build/bridges/signal-replay/), [How signals track reads](/use/in-depth/how-signals-work/).
+Learn: [Signal replay bridge](/build/bridges/signal-replay/), [How signals work](/use/in-depth/how-signals-work/).
 
 ## mapClass(String)
 

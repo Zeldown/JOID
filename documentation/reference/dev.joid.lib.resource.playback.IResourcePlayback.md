@@ -5,7 +5,7 @@ summary: The playback controls of an animated image or a video, to play, pause, 
 Get them from [[Resource#getPlayback]], or from a resource player node.
 Times are in seconds; call the controls on the render thread.
 
-Learn: [Media](/use/learn/describing-the-ui/media/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/).
 
 ## play()
 

@@ -4,7 +4,7 @@ summary: The built-in format of MP4, Matroska (MKV, WebM) and AVI files, played 
 
 A video needs the FFmpeg natives, which JOID downloads on the first use ([[VideoNatives]]).
 
-Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
 ## VideoResourceFormat()
 

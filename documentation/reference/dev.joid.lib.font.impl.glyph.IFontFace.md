@@ -5,7 +5,7 @@ summary: One face of a glyph font, a weight and a style, with its metrics on 1 o
 [[MsdfFontFace]] implements it; implement it with your own [[GlyphTextRenderer]] for another kind of glyph font.
 Every metric is on 1 of the font size: a line height of `1.2F` at a size of 20 design pixels is 24 design pixels.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## isItalic()
 

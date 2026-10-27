@@ -5,7 +5,7 @@ summary: A source that reads one MsdfFontFace, from a font file or from anything
 Pass one to [[MsdfFontLoader#load]] in place of a file.
 Extend [[MsdfSource]] rather than implementing this interface, so that `weight(...)` and `italic(...)` work on your source too.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## read()
 

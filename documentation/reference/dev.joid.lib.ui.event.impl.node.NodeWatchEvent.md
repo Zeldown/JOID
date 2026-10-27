@@ -4,7 +4,7 @@ summary: The event of `onWatch`, which fires after a watch of a node applied its
 
 [[Node#watch]] applies its properties each time its signal changes, then fires [[Node#onWatch]].
 
-Learn: [Rebuilding](/use/learn/state/rebuilding/).
+Learn: [Rebuilding the tree](/use/learn/state/rebuilding/).
 
 ## create(N,Object,WatchProperty[])
 

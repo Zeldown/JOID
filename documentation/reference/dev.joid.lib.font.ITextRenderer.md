@@ -6,7 +6,7 @@ summary: Measures and draws the strings of one kind of font.
 Implement it for a font that is not made of glyphs; for a font of glyphs, extend [[GlyphTextRenderer]], which lays out, kerns and styles the text for you.
 Positions and sizes are in design pixels.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## drawText(double,double,String,TextInfo)
 

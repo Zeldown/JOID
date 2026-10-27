@@ -2,7 +2,7 @@
 summary: The place of one character in a GlyphLayout, with the font, the face and the style it draws with.
 ---
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## of(int,int,GlyphFont,F,double,TextStyle)
 

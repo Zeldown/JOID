@@ -7,7 +7,7 @@ Positions and sizes are in design pixels, in the coordinates you draw in; every 
 Edges stay sharp by themselves: on the pixel grid they snap to whole pixels, and under a rotation or a fractional scale they are smoothed, so no method has a thin or smooth variant.
 A rectangle without width or height draws nothing.
 
-Learn: [Drawing](/use/learn/going-further/drawing/), [Pixel alignment](/use/in-depth/pixel-alignment/).
+Learn: [Drawing shapes and text](/use/learn/going-further/drawing/), [Pixel alignment](/use/in-depth/pixel-alignment/).
 
 ## inst()
 

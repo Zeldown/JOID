@@ -4,7 +4,7 @@ summary: The built-in format of GIF files, played as animated images.
 
 A GIF of one frame plays as an animation of one frame.
 
-Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
 ## GifResourceFormat()
 

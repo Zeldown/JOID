@@ -29,7 +29,7 @@ The jar bundles the LWJGL 2 natives for Windows, Linux and macOS.
 [[Lwjgl2Natives#install]] installs them; whoever creates the `Display` calls it before `Display.create()`, and the backend never calls it itself:
 
 1. When `org.lwjgl.librarypath` is set, or the natives are already on `java.library.path`, it does nothing.
-2. Otherwise it extracts them into the cache folder of JOID ([Files](/use/learn/running/files/)), under `lwjgl`, and sets `org.lwjgl.librarypath`.
+2. Otherwise it extracts them into the cache folder of JOID ([Where JOID stores files](/use/learn/running/files/)), under `lwjgl`, and sets `org.lwjgl.librarypath`.
 
 An extraction that fails throws an `IllegalStateException` that names the folder, and the next call tries again.
 

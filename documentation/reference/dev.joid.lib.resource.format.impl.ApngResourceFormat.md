@@ -4,7 +4,7 @@ summary: The built-in format of PNG files, still or animated (APNG).
 
 A PNG with an animation control chunk plays as an animated image; any other PNG is a still image.
 
-Learn: [Media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
+Learn: [Images and media](/use/learn/describing-the-ui/media/), [Custom formats](/use/learn/going-further/custom-formats/).
 
 ## ApngResourceFormat()
 

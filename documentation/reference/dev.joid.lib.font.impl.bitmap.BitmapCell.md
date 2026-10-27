@@ -6,7 +6,7 @@ summary: The rectangle of a texture that holds one glyph of a bitmap font, and w
 The texel coordinates pick the glyph in the texture; the bounds place it, in units of the bitmap size, from the left edge of the glyph and from the top of its ascender.
 Each texel is filtered by the area it covers on screen, so the glyph stays crisp at its bitmap size and smooth at other sizes.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## create(ITexture,int,int,int,int)
 

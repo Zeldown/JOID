@@ -4,7 +4,7 @@ summary: The mode JOID runs in and the folders where it writes its data and its 
 JOID turns dev mode on by itself when the dev classes are on the classpath (the dev jar), and demo mode when the demo classes are.
 The folders come from the system properties `joid.data` and `joid.cache` when they are set.
 
-Learn: [Dev tools](/use/get-started/dev-tools/), [Files](/use/learn/running/files/).
+Learn: [Dev tools](/use/get-started/dev-tools/), [Where JOID stores files](/use/learn/running/files/).
 
 ## isDevMode()
 

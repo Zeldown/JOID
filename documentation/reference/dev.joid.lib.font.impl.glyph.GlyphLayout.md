@@ -4,7 +4,7 @@ summary: A string laid out on one line, as the list of its glyph placements and 
 
 [[GlyphTextRenderer#layout]] builds it: markup tags read, faces resolved, kerning and letter spacing applied.
 
-Learn: [Fonts](/use/learn/going-further/fonts/).
+Learn: [Custom fonts and MSDF](/use/learn/going-further/fonts/).
 
 ## of(List,double)
 
