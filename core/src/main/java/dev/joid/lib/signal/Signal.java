@@ -173,6 +173,10 @@ public class Signal<T> implements Supplier<T> {
 		return !this.listenerSet.isEmpty();
 	}
 
+	protected final void copyListeners(final @NonNull Signal<T> signal) {
+		signal.listenerSet.addAll(this.listenerSet);
+	}
+
 	protected final void invalidate(final SignalContext context) {
 		for (final ComputedSignal<?> observer : this.observerList) {
 			observer.markStale(context);

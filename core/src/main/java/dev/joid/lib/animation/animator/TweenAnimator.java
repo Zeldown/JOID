@@ -61,6 +61,14 @@ public final class TweenAnimator extends Signal<Float> {
 		return this;
 	}
 
+	public @NonNull TweenAnimator copy() {
+		final TweenAnimator copy = new TweenAnimator(super.peek());
+		copy.speed = this.speed;
+		copy.listenerList.addAll(this.listenerList);
+		super.copyListeners(copy);
+		return copy;
+	}
+
 	@Override
 	public @NonNull TweenAnimator onChange(final @NonNull SignalListener<? super Float> listener) {
 		super.onChange(listener);

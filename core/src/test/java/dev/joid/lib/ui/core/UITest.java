@@ -1291,6 +1291,34 @@ public class UITest {
 	}
 
 	@Test
+	public void playsItsOutTransitionAtTheSpeedOfTheAnimatorItIsGiven() {
+		final Transition transition = PopTransition.create();
+		transition.getOut().getAnimator().speed(0.01F);
+		final PopupUI ui = new PopupUI(this.trace).transition(transition);
+		this.bridges.open(ui).frames(20);
+		Assert.assertFalse(ui.fireClose());
+		this.bridges.frames(20);
+		Assert.assertTrue(this.bridges.getUi().isOpen(ui));
+		Assert.assertEquals(0.01F, ui.getTransitionOut().getAnimator().getSpeed(), 0F);
+	}
+
+	@Test
+	public void callsTheListenersOfASharedTransitionForEachUi() {
+		final Transition transition = PopTransition.create();
+		transition.getOut().getAnimator().onComplete(event -> this.trace.add("out"));
+		final PopupUI first = new PopupUI(this.trace).transition(transition);
+		final PopupUI second = new PopupUI(this.trace).transition(transition);
+		this.bridges.open(first).open(second).frames(20);
+		Assert.assertFalse(first.fireClose());
+		this.bridges.frame();
+		Assert.assertFalse(second.fireClose());
+		this.bridges.frames(20);
+		Assert.assertFalse(this.bridges.getUi().isOpen(first));
+		Assert.assertFalse(this.bridges.getUi().isOpen(second));
+		Assert.assertEquals(2, Collections.frequency(this.trace, "out"));
+	}
+
+	@Test
 	public void leavesNoListenerOnTheTransitionItIsGiven() throws ReflectiveOperationException {
 		final Transition transition = PopTransition.create();
 		new PopupUI(this.trace).transition(transition);

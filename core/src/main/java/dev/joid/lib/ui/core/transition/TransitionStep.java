@@ -32,13 +32,13 @@ public class TransitionStep implements Cloneable {
 		return new TransitionStep(duration, equation);
 	}
 
-	public @NonNull TransitionStep copy() {
+	public final <T extends TransitionStep> @NonNull T copy() {
 		try {
 			final TransitionStep copy = (TransitionStep) super.clone();
-			copy.animator = TweenAnimator.create(0F);
+			copy.animator = this.animator.copy();
 			copy.drawn = false;
 			copy.running = false;
-			return copy;
+			return (T) copy;
 		} catch (final CloneNotSupportedException exception) {
 			throw new IllegalStateException(exception);
 		}

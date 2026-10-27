@@ -597,6 +597,35 @@ public class TweenAnimatorTest {
 		Assert.assertEquals(2, new HashSet<>(Arrays.asList(TweenAnimator.create(), TweenAnimator.create())).size());
 	}
 
+	@Test
+	public void copiesItsValueItsSpeedAndItsListeners() {
+		final List<Float> changes = new ArrayList<>();
+		final List<String> calls = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create(2F).speed(2F).onChange(changes::add).onComplete(event -> calls.add("complete"));
+		final TweenAnimator copy = animator.copy();
+		Assert.assertEquals(2F, copy.get(), 0F);
+		Assert.assertEquals(2F, copy.getSpeed(), 0F);
+		copy.sequence(1F, 10F).start();
+		copy.update(0.25F);
+		Assert.assertEquals(6F, copy.get(), 0F);
+		copy.update(1F);
+		Assert.assertEquals(Arrays.asList(6F, 10F), changes);
+		Assert.assertEquals(Collections.singletonList("complete"), calls);
+		Assert.assertEquals(2F, animator.get(), 0F);
+	}
+
+	@Test
+	public void keepsItsSettingsApartFromItsCopy() {
+		final List<String> calls = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create();
+		animator.copy().speed(3F).onChange(value -> calls.add("change")).onComplete(event -> calls.add("complete"));
+		animator.sequence(1F, 10F).start();
+		animator.update(0.5F);
+		Assert.assertEquals(5F, animator.get(), 0F);
+		animator.update(1F);
+		Assert.assertTrue(calls.isEmpty());
+	}
+
 	private static long lastUpdate(final TweenAnimator animator) {
 		return (long) TestUtils.field(animator, "lastUpdate");
 	}
