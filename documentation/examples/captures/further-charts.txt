@@ -1,0 +1,11 @@
+# crop further-charts-start 80 80 800 370
+# crop further-charts-next 80 80 800 370
+ui com.example.further.ChartsUI
+wait 100
+shot further-charts-start
+moveto 200 405 200
+press LEFT
+release LEFT
+moveto 1300 800 100
+wait 100
+shot further-charts-next

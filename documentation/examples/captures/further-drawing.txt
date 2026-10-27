@@ -1,0 +1,10 @@
+ui com.example.further.DrawingUI
+wait 100
+# crop further-drawing-layer 60 60 440 240
+shot further-drawing-layer
+# crop further-drawing-shapes 70 350 920 180
+shot further-drawing-shapes
+# crop further-drawing-lines 70 610 920 180
+shot further-drawing-lines
+# crop further-drawing-text 1120 100 440 260
+shot further-drawing-text

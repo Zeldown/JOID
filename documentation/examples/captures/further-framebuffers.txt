@@ -1,0 +1,10 @@
+ui com.example.further.FramebuffersUI
+wait 100
+# crop further-framebuffers-stamp 80 96 300 168
+shot further-framebuffers-stamp
+# crop further-framebuffers-triangle 440 60 240 240
+shot further-framebuffers-triangle
+# crop further-framebuffers-pool 740 80 300 200
+shot further-framebuffers-pool
+# crop further-framebuffers-model 1120 80 200 200
+shot further-framebuffers-model

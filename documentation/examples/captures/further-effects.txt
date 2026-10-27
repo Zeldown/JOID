@@ -1,0 +1,15 @@
+ui com.example.further.EffectsUI
+wait 100
+# crop further-effects-shadow 80 80 250 170
+shot further-effects-shadow
+# crop further-effects-invert 680 80 540 160
+shot further-effects-invert
+# crop further-effects-lift 380 70 240 170
+# film further-effects-lift
+moveto 1300 700 100
+wait 200
+moveto 500 160 300
+wait 500
+moveto 1300 700 300
+wait 400
+cut

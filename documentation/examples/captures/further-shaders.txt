@@ -1,0 +1,16 @@
+ui com.example.further.ShadersUI
+wait 100
+# crop further-shaders-tint 540 60 240 160
+shot further-shaders-tint
+# crop further-shaders-pipeline 120 300 320 200
+shot further-shaders-pipeline
+# crop further-shaders-invert 560 320 400 160
+shot further-shaders-invert
+# crop further-shaders-wave 60 60 440 160
+# film further-shaders-wave
+wait 2000
+cut
+ui com.example.further.PipelineDiagramUI
+wait 100
+# crop further-shaders-diagram 60 80 1280 180
+shot further-shaders-diagram

@@ -1,0 +1,4 @@
+# crop further-fonts-pixel 80 80 520 200
+ui com.example.further.FontsUI
+wait 100
+shot further-fonts-pixel
