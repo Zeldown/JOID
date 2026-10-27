@@ -24,7 +24,7 @@ The methods are thread-safe; call them off the render thread, since they touch t
 
 ## Learn more
 
-- [Files](/use/learn/running/files/)
+- [Where JOID stores files](/use/learn/running/files/)
 
 ## Creation
 

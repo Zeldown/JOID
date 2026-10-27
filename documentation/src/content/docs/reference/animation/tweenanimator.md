@@ -109,7 +109,7 @@ The event listeners belong to the animator: give them once, before or after the 
 
 | Event | Listener | Summary |
 |---|---|---|
-| [onChange](#TweenAnimator-event-onChange) | [`SignalListener<? super Float>`](/reference/signals/signallistener/) | Calls `listener` with the value after each change, on the render thread, then returns this animator. |
+| [onChange](#TweenAnimator-event-onChange) | [`SignalListener<? super Float>`](/reference/signals/signallistener/) | Adds a listener that runs with the value after each change, on the render thread, then returns this animator. |
 | [onStart](#TweenAnimator-event-onStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs when the timeline starts playing, after its delay. |
 | [onIterationStart](#TweenAnimator-event-onIterationStart) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the start of each play of the timeline. |
 | [onIterationEnd](#TweenAnimator-event-onIterationEnd) | [`EventListener<TweenEvent>`](/reference/animation/tweenevent/) | Adds a listener that runs at the end of each play of the timeline. |
@@ -295,7 +295,7 @@ Returns a [`Tween`](/reference/animation/tween/) of `duration` ms that moves the
 
 `this onChange(SignalListener<? super Float> listener)` <span class="joid-qualifier">fluent</span>
 
-Calls `listener` with the value after each change, on the render thread, then returns this animator.
+Adds a listener that runs with the value after each change, on the render thread, then returns this animator.
 
 <a id="TweenAnimator-event-onStart"></a>
 

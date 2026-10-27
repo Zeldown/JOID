@@ -20,10 +20,9 @@ A clock that moves only when you set or advance it, so that every animation give
 
 Register it above the system clock in a test, then unregister it at the end: the system clock takes over again.
 
-```java fragment
-final ManualClockBridge clock = new ManualClockBridge(0L);
-BridgeHandler.CLOCK.register(clock);
-clock.advance(16L);
+This method plays frames 16 ms apart, whatever time they take:
+
+```java file="com/example/backend/SteppedFrames.java" region="clock"
 ```
 
 ## Learn more

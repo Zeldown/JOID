@@ -40,7 +40,7 @@ JOID creates one event per node on the path of an input, all bound to the input 
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [consume](#NodeInputEvent-method-consume)() | Stops the input: no other `handle` listener, no `onClick`, none of the handling of a node, no UI below and not the host application receive it; only the `MONITOR` listeners still hear it. |
-| `boolean` | [isConsumed](#NodeInputEvent-method-isConsumed)() | Returns `true` once a listener or a node consumed the input. |
+| `boolean` | [isConsumed](#NodeInputEvent-method-isConsumed)() | If `true`, a listener or a node consumed the input. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/nodeevent/#NodeEvent-methods"><code>NodeEvent</code></a> (1)</summary>
@@ -77,7 +77,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isConsumed()` 
 
-Returns `true` once a listener or a node consumed the input.
+If `true`, a listener or a node consumed the input.
 
 ---
 

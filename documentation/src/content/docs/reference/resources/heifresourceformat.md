@@ -22,7 +22,7 @@ The resource fails, and the dev-mode warning asks for PNG, JPEG or WebP instead.
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 - [Custom formats](/use/learn/going-further/custom-formats/)
 
 ## Creation

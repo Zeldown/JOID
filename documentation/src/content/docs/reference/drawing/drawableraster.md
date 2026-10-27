@@ -21,7 +21,7 @@ Pass it to [`DrawRaster.drawRaster`](/reference/drawing/drawraster/#DrawRaster-m
 
 ## Learn more
 
-- [Drawing](/use/learn/going-further/drawing/)
+- [Drawing shapes and text](/use/learn/going-further/drawing/)
 
 <a id="DrawableRaster-methods"></a>
 

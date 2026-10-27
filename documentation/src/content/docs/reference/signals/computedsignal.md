@@ -80,7 +80,7 @@ While nothing follows it, it computes on demand; once a listener or another deri
 
 | Event | Listener | Summary |
 |---|---|---|
-| [onChange](#ComputedSignal-event-onChange) | [`SignalListener<? super T>`](/reference/signals/signallistener/) | Calls `listener` with the result after each change of the result, on the render thread, then returns this signal. |
+| [onChange](#ComputedSignal-event-onChange) | [`SignalListener<? super T>`](/reference/signals/signallistener/) | Adds a listener that runs with the result after each change of the result, on the render thread, then returns this signal. |
 
 ## Creation details
 
@@ -221,7 +221,7 @@ Records `signal` as read by the computation in progress.
 
 `this onChange(SignalListener<? super T> listener)` <span class="joid-qualifier">fluent</span>
 
-Calls `listener` with the result after each change of the result, on the render thread, then returns this signal.
+Adds a listener that runs with the result after each change of the result, on the render thread, then returns this signal.
 From the first listener on, the signal follows the signals it reads instead of computing on demand.
 
 ---

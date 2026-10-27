@@ -29,7 +29,7 @@ Call them on the render thread, during a frame; outside a frame the render bridg
 
 ## Learn more
 
-- [Drawing](/use/learn/going-further/drawing/)
+- [Drawing shapes and text](/use/learn/going-further/drawing/)
 - [3D models](/use/learn/going-further/3d-models/)
 - [Charts](/use/learn/going-further/charts/)
 - [Custom nodes](/use/learn/going-further/custom-nodes/)

@@ -24,7 +24,7 @@ A rectangle without width or height draws nothing.
 
 ## Learn more
 
-- [Drawing](/use/learn/going-further/drawing/)
+- [Drawing shapes and text](/use/learn/going-further/drawing/)
 - [Pixel alignment](/use/in-depth/pixel-alignment/)
 - [Write a node effect](/use/guides/write-a-node-effect/)
 

@@ -22,7 +22,7 @@ The ITextGlyph that a GlyphTextRenderer lays out and draws, with the face and th
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

@@ -31,7 +31,7 @@ The `beforeX` events implement it: a `beforeMove`, `beforeChange` or `beforeClos
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [cancel](#ICancellableEvent-method-cancel)() <span class="joid-qualifier">abstract</span> | Refuses the change: it does not apply, and its `onX` event does not fire. |
-| `boolean` | [isCancelled](#ICancellableEvent-method-isCancelled)() <span class="joid-qualifier">abstract</span> | Returns `true` once a listener cancelled the event. |
+| `boolean` | [isCancelled](#ICancellableEvent-method-isCancelled)() <span class="joid-qualifier">abstract</span> | If `true`, a listener cancelled the event. |
 
 ## Method details
 
@@ -49,7 +49,7 @@ Refuses the change: it does not apply, and its `onX` event does not fire.
 
 `boolean isCancelled()` <span class="joid-qualifier">abstract</span>
 
-Returns `true` once a listener cancelled the event.
+If `true`, a listener cancelled the event.
 
 ---
 

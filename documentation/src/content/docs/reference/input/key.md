@@ -37,8 +37,8 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isDown](#Key-method-isDown)() | Returns `true` while a key that the layout names this way is held. |
-| `boolean` | [isPhysicalDown](#Key-method-isPhysicalDown)() | Returns `true` while the key at this place of a US QWERTY keyboard is held, whatever the layout names it. |
+| `boolean` | [isDown](#Key-method-isDown)() | If `true`, a key that the layout names this way is held. |
+| `boolean` | [isPhysicalDown](#Key-method-isPhysicalDown)() | If `true`, the key at this place of a US QWERTY keyboard is held, whatever the layout names it. |
 
 ## Values
 
@@ -105,8 +105,8 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 | [`F23`](#Key-value-F23) | The function key F23. |
 | [`F24`](#Key-value-F24) | The function key F24. |
 | [`F25`](#Key-value-F25) | The function key F25. |
-| [`ESCAPE`](#Key-value-ESCAPE) | The Escape key. Unconsumed, it closes the top UI when that UI is closeable; a focused text field consumes it to lose the focus. |
-| [`ENTER`](#Key-value-ENTER) | The Enter key of the main block. A one-line text field submits on it; a multiline field starts a new line. |
+| [`ESCAPE`](#Key-value-ESCAPE) | The Escape key. |
+| [`ENTER`](#Key-value-ENTER) | The Enter key of the main block. |
 | [`TAB`](#Key-value-TAB) | The Tab key. |
 | [`BACKSPACE`](#Key-value-BACKSPACE) | The Backspace key, which deletes the character before the cursor of a text field. |
 | [`INSERT`](#Key-value-INSERT) | The Insert key. |
@@ -127,11 +127,11 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 | [`SPACE`](#Key-value-SPACE) | The space bar. |
 | [`APOSTROPHE`](#Key-value-APOSTROPHE) | The punctuation key that types `'` in the layout of the user. |
 | [`COMMA`](#Key-value-COMMA) | The punctuation key that types `,` in the layout of the user. |
-| [`MINUS`](#Key-value-MINUS) | The punctuation key that types `-` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI. |
+| [`MINUS`](#Key-value-MINUS) | The punctuation key that types `-` in the layout of the user. |
 | [`PERIOD`](#Key-value-PERIOD) | The punctuation key that types `.` in the layout of the user. |
 | [`SLASH`](#Key-value-SLASH) | The punctuation key that types `/` in the layout of the user. |
 | [`SEMICOLON`](#Key-value-SEMICOLON) | The punctuation key that types `;` in the layout of the user. |
-| [`EQUAL`](#Key-value-EQUAL) | The punctuation key that types `=` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI. |
+| [`EQUAL`](#Key-value-EQUAL) | The punctuation key that types `=` in the layout of the user. |
 | [`LEFT_BRACKET`](#Key-value-LEFT_BRACKET) | The punctuation key that types `[` in the layout of the user. |
 | [`BACKSLASH`](#Key-value-BACKSLASH) | The punctuation key that types `\` in the layout of the user. |
 | [`RIGHT_BRACKET`](#Key-value-RIGHT_BRACKET) | The punctuation key that types `]` in the layout of the user. |
@@ -149,8 +149,8 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 | [`NUMPAD_DECIMAL`](#Key-value-NUMPAD_DECIMAL) | The decimal point key of the numeric keypad. |
 | [`NUMPAD_DIVIDE`](#Key-value-NUMPAD_DIVIDE) | The divide key of the numeric keypad. |
 | [`NUMPAD_MULTIPLY`](#Key-value-NUMPAD_MULTIPLY) | The multiply key of the numeric keypad. |
-| [`NUMPAD_SUBTRACT`](#Key-value-NUMPAD_SUBTRACT) | The minus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI. |
-| [`NUMPAD_ADD`](#Key-value-NUMPAD_ADD) | The plus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI. |
+| [`NUMPAD_SUBTRACT`](#Key-value-NUMPAD_SUBTRACT) | The minus key of the numeric keypad. |
+| [`NUMPAD_ADD`](#Key-value-NUMPAD_ADD) | The plus key of the numeric keypad. |
 | [`NUMPAD_ENTER`](#Key-value-NUMPAD_ENTER) | The Enter key of the numeric keypad; text fields treat it as `ENTER`. |
 | [`NUMPAD_EQUAL`](#Key-value-NUMPAD_EQUAL) | The equal key of the numeric keypad. |
 | [`LEFT_SHIFT`](#Key-value-LEFT_SHIFT) | The left Shift key. [`UI.isShiftKeyDown`](/reference/ui/ui/#UI-method-isShiftKeyDown) tests both Shift keys. |
@@ -172,7 +172,7 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 
 `boolean isDown()` 
 
-Returns `true` while a key that the layout names this way is held.
+If `true`, a key that the layout names this way is held.
 For a letter or punctuation key, it tests every held place that typed this key; for the other keys, it gives the same answer as `isPhysicalDown()`.
 
 <a id="Key-method-isPhysicalDown"></a>
@@ -181,7 +181,7 @@ For a letter or punctuation key, it tests every held place that typed this key; 
 
 `boolean isPhysicalDown()` 
 
-Returns `true` while the key at this place of a US QWERTY keyboard is held, whatever the layout names it.
+If `true`, the key at this place of a US QWERTY keyboard is held, whatever the layout names it.
 It asks the window bridge, so it answers even for a key that no UI received.
 
 ## Value details
@@ -680,7 +680,8 @@ The function key F25.
 
 `ESCAPE` 
 
-The Escape key. Unconsumed, it closes the top UI when that UI is closeable; a focused text field consumes it to lose the focus.
+The Escape key.
+Unconsumed, it closes the top UI when that UI is closeable; a focused text field consumes it to lose the focus.
 
 <a id="Key-value-ENTER"></a>
 
@@ -688,7 +689,8 @@ The Escape key. Unconsumed, it closes the top UI when that UI is closeable; a fo
 
 `ENTER` 
 
-The Enter key of the main block. A one-line text field submits on it; a multiline field starts a new line.
+The Enter key of the main block.
+A one-line text field submits on it; a multiline field starts a new line.
 
 <a id="Key-value-TAB"></a>
 
@@ -856,7 +858,8 @@ The punctuation key that types `,` in the layout of the user.
 
 `MINUS` 
 
-The punctuation key that types `-` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
+The punctuation key that types `-` in the layout of the user.
+In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
 
 <a id="Key-value-PERIOD"></a>
 
@@ -888,7 +891,8 @@ The punctuation key that types `;` in the layout of the user.
 
 `EQUAL` 
 
-The punctuation key that types `=` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
+The punctuation key that types `=` in the layout of the user.
+In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
 
 <a id="Key-value-LEFT_BRACKET"></a>
 
@@ -1032,7 +1036,8 @@ The multiply key of the numeric keypad.
 
 `NUMPAD_SUBTRACT` 
 
-The minus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
+The minus key of the numeric keypad.
+In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
 
 <a id="Key-value-NUMPAD_ADD"></a>
 
@@ -1040,7 +1045,8 @@ The minus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms out
 
 `NUMPAD_ADD` 
 
-The plus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
+The plus key of the numeric keypad.
+In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
 
 <a id="Key-value-NUMPAD_ENTER"></a>
 

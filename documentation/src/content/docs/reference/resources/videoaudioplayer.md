@@ -22,7 +22,7 @@ The volume is the volume of the video times 0.3, and with a location, times the 
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 ## Creation
 

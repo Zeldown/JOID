@@ -46,7 +46,7 @@ The mask clips the drawing only: the hidden part of the node still receives the 
 | [y](#MaskNodeEffect-property-y) <span class="joid-qualifier">signal</span> | `double` | `0D` | Vertical offset of the visible rectangle from the top edge of the node, in design pixels. |
 | [width](#MaskNodeEffect-property-width) <span class="joid-qualifier">signal</span> | `double` | the width of the node, read on every frame | Width of the visible rectangle, in design pixels; without a value, the width of the node. |
 | [height](#MaskNodeEffect-property-height) <span class="joid-qualifier">signal</span> | `double` | the height of the node, read on every frame | Height of the visible rectangle, in design pixels; without a value, the height of the node. |
-| [resource](#MaskNodeEffect-property-resource) <span class="joid-qualifier">signal</span> | [`Resource`](/reference/resources/resource/) | `null` | [`Resource`](/reference/resources/resource/) stretched over the visible rectangle, whose opaque part forms the mask: it keeps the pixels where the image has an alpha above `0.5`, so the edges are hard. |
+| [resource](#MaskNodeEffect-property-resource) <span class="joid-qualifier">signal</span> | [`Resource`](/reference/resources/resource/) | `null` | [`Resource`](/reference/resources/resource/) stretched over the visible rectangle, whose opaque part forms the mask: it keeps the pixels where the image has an alpha above `0.5F`, so the edges are hard. |
 
 <details>
 <summary>Inherited from <a href="/reference/effects/nodeeffect/#NodeEffect-properties"><code>NodeEffect</code></a> (2)</summary>
@@ -150,7 +150,7 @@ Height of the visible rectangle, in design pixels; without a value, the height o
 
 **Default:** `null`
 
-[`Resource`](/reference/resources/resource/) stretched over the visible rectangle, whose opaque part forms the mask: it keeps the pixels where the image has an alpha above `0.5`, so the edges are hard.
+[`Resource`](/reference/resources/resource/) stretched over the visible rectangle, whose opaque part forms the mask: it keeps the pixels where the image has an alpha above `0.5F`, so the edges are hard.
 `null` masks with the plain rectangle.
 
 ## Method details

@@ -26,7 +26,7 @@ The shader is created on the first draw; when the backend cannot compile it, the
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

@@ -23,7 +23,7 @@ The origin, the baseline and the offsets of the glyphs snap to whole screen pixe
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

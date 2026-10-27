@@ -23,7 +23,7 @@ The read fails with `IOException` when the file does not start with `JOIDMSDF` o
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 - [MSDF text](/use/in-depth/msdf-text/)
 
 ## Creation

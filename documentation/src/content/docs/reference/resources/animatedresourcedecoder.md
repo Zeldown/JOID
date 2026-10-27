@@ -24,7 +24,7 @@ The time follows the JOID clock, so the animation keeps its pace whatever the fr
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 - [Custom formats](/use/learn/going-further/custom-formats/)
 
 ## Creation

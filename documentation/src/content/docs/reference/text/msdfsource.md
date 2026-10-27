@@ -25,7 +25,7 @@ MsdfFontLoader.load(OpenTypeMsdfSource.of("fonts/Logo.ttf").weight(FontWeight.BO
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

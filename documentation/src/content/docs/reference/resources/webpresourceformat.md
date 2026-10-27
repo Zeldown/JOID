@@ -22,7 +22,7 @@ An animated WebP plays as an animated image; any other WebP is a still image.
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 - [Custom formats](/use/learn/going-further/custom-formats/)
 
 ## Creation

@@ -33,7 +33,7 @@ In dev mode, a shortcut whose binding no resolver knows prints a warning when it
 |---|---|---|
 | `void` | [register](#KeyResolver-method-register)(IKeyResolver resolver) <span class="joid-qualifier">static</span> | Adds a resolver, asked before every resolver registered earlier. |
 | `void` | [unregister](#KeyResolver-method-unregister)(IKeyResolver resolver) <span class="joid-qualifier">static</span> | Removes a resolver; the shortcuts whose binding only it knew stop firing. |
-| `boolean` | [supports](#KeyResolver-method-supports)(Object binding) <span class="joid-qualifier">static</span> | Returns `true` when the binding is a [`Key`](/reference/input/key/) or when a registered resolver supports it. |
+| `boolean` | [supports](#KeyResolver-method-supports)(Object binding) <span class="joid-qualifier">static</span> | If `true`, the binding is a [`Key`](/reference/input/key/) or when a registered resolver supports it. |
 | [`Key`](/reference/input/key/) | [resolve](#KeyResolver-method-resolve)(Object binding) <span class="joid-qualifier">static</span> | Returns the key of a binding: a [`Key`](/reference/input/key/) as it is, any other object through the first resolver that supports it. |
 
 ## Method details
@@ -61,7 +61,7 @@ Removes a resolver; the shortcuts whose binding only it knew stop firing.
 
 `boolean supports(Object binding)` <span class="joid-qualifier">static</span>
 
-Returns `true` when the binding is a [`Key`](/reference/input/key/) or when a registered resolver supports it.
+If `true`, the binding is a [`Key`](/reference/input/key/) or when a registered resolver supports it.
 
 <a id="KeyResolver-method-resolve"></a>
 

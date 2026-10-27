@@ -45,8 +45,8 @@ A listener that throws does not stop the others: JOID prints a warning once for 
 | `void` | [fire](#EventBus-method-fire)(EventType<?> type, Event event) | Runs the listeners of a type: first `fireListeners`, then `fireMonitor`. |
 | `void` | [fireListeners](#EventBus-method-fireListeners)(EventType<?> type, Event event) | Runs the listeners of a type that are not `MONITOR`, in their order, and stops as soon as one of them cancels or consumes the event. |
 | `void` | [fireMonitor](#EventBus-method-fireMonitor)(EventType<?> type, Event event) | Runs the `MONITOR` listeners of a type, even when the event is cancelled or consumed. |
-| `boolean` | [has](#EventBus-method-has)(EventType<?> type) | Returns `true` when at least one listener listens to the type. |
-| `boolean` | [isEmpty](#EventBus-method-isEmpty)() | Returns `true` when the bus holds no listener. |
+| `boolean` | [has](#EventBus-method-has)(EventType<?> type) | If `true`, at least one listener listens to the type. |
+| `boolean` | [isEmpty](#EventBus-method-isEmpty)() | If `true`, the bus holds no listener. |
 | `int` | [count](#EventBus-method-count)(EventType<?> type) | Returns the number of listeners of a type. |
 | `Set<EventType<?>>` | [getTypes](#EventBus-method-getTypes)() | Returns the types that have at least one listener, as a read-only view. |
 
@@ -136,7 +136,7 @@ The event is read-only for them: `cancel()` or `consume()` throws an `IllegalSta
 
 `boolean has(EventType<?> type)` 
 
-Returns `true` when at least one listener listens to the type.
+If `true`, at least one listener listens to the type.
 
 <a id="EventBus-method-isEmpty"></a>
 
@@ -144,7 +144,7 @@ Returns `true` when at least one listener listens to the type.
 
 `boolean isEmpty()` 
 
-Returns `true` when the bus holds no listener.
+If `true`, the bus holds no listener.
 
 <a id="EventBus-method-count"></a>
 

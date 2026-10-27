@@ -24,7 +24,7 @@ Extend it with your own [`IFontFace`](/reference/text/ifontface/) and [`GlyphTex
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

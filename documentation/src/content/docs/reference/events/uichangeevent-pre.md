@@ -34,7 +34,7 @@ The event of a `beforeX` listener of a UI, which can refuse the change it announ
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [cancel](#UIChangeEvent-Pre-method-cancel)() | Refuses the change: the value stays, and the `onX` event does not fire. |
-| `boolean` | [isCancelled](#UIChangeEvent-Pre-method-isCancelled)() | Returns `true` once a listener refused the change. |
+| `boolean` | [isCancelled](#UIChangeEvent-Pre-method-isCancelled)() | If `true`, a listener refused the change. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/uichangeevent/#UIChangeEvent-methods"><code>UIChangeEvent</code></a> (2)</summary>
@@ -77,7 +77,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isCancelled()` 
 
-Returns `true` once a listener refused the change.
+If `true`, a listener refused the change.
 
 ---
 

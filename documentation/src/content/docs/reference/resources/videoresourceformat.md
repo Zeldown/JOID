@@ -22,7 +22,7 @@ A video needs the FFmpeg natives, which JOID downloads on the first use ([`Video
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 - [Custom formats](/use/learn/going-further/custom-formats/)
 
 ## Creation

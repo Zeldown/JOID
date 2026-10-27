@@ -23,7 +23,7 @@ The change of a value of a UI, with the value before and the value after, in a c
 
 ## Learn more
 
-- [Design canvas](/use/learn/describing-the-ui/design-canvas/)
+- [The design canvas](/use/learn/describing-the-ui/design-canvas/)
 - [Events](/use/learn/interactivity/events/#refuse-a-change-before-it-happens)
 
 <a id="UIChangeEvent-methods"></a>

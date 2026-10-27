@@ -17,7 +17,7 @@ The place of one character in a GlyphLayout, with the font, the face and the sty
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

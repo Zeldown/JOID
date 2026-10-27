@@ -17,7 +17,7 @@ The drawing settings of a resource handle, its filtering, its mipmaps and its re
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 ## Creation
 

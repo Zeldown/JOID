@@ -23,7 +23,7 @@ Markup tags inside the text are never cut in half when a line wraps or is cut, a
 
 ## Learn more
 
-- [Drawing](/use/learn/going-further/drawing/)
+- [Drawing shapes and text](/use/learn/going-further/drawing/)
 - [Text](/use/learn/describing-the-ui/text/)
 
 ## Creation

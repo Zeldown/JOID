@@ -22,7 +22,7 @@ Data stays as long as a resource uses it, then for `expiry` after its last acces
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 ## Creation
 

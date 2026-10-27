@@ -38,7 +38,7 @@ It fires for a scroll that the wheel, a scrollbar or a call such as `scrollTo(..
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [cancel](#NodeScrollEvent-Pre-method-cancel)() | Refuses the scroll: the content stays where it is. |
-| `boolean` | [isCancelled](#NodeScrollEvent-Pre-method-isCancelled)() | Returns `true` once a listener refused the scroll. |
+| `boolean` | [isCancelled](#NodeScrollEvent-Pre-method-isCancelled)() | If `true`, a listener refused the scroll. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/nodescrollevent/#NodeScrollEvent-methods"><code>NodeScrollEvent</code></a> (3)</summary>
@@ -81,7 +81,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isCancelled()` 
 
-Returns `true` once a listener refused the scroll.
+If `true`, a listener refused the scroll.
 
 ---
 

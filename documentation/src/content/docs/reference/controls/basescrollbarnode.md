@@ -57,12 +57,12 @@ Use [`ScrollbarNode`](/reference/controls/scrollbarnode/) for a look made of a t
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isHorizontal](#BaseScrollbarNode-method-isHorizontal)() | Returns `true` when the bar is wider than high: it then scrolls the node horizontally. |
-| `boolean` | [isOverflowing](#BaseScrollbarNode-method-isOverflowing)() | Returns `true` when the content of the node goes beyond it on the axis of the bar. |
+| `boolean` | [isHorizontal](#BaseScrollbarNode-method-isHorizontal)() | If `true`, the bar is wider than high: it then scrolls the node horizontally. |
+| `boolean` | [isOverflowing](#BaseScrollbarNode-method-isOverflowing)() | If `true`, the content of the node goes beyond it on the axis of the bar. |
 | `double` | [getRatio](#BaseScrollbarNode-method-getRatio)() | Returns the part of the content that the node shows on the axis of the bar, from `0D` to `1D`; `1D` while the content fits. |
 | `double` | [getProgress](#BaseScrollbarNode-method-getProgress)() | Returns how far the node scrolled on the axis of the bar, from `0D` at the start to `1D` at the end; during a drag, the place of the pointer. |
 | `double` | [getThumbLength](#BaseScrollbarNode-method-getThumbLength)() | Returns the length of the thumb, in design pixels: the length of the bar times `getRatio()`, at least `minThumb` and at most the bar. |
-| `boolean` | [isDragging](#BaseScrollbarNode-method-isDragging)() | Returns `true` while the user drags the bar. |
+| `boolean` | [isDragging](#BaseScrollbarNode-method-isDragging)() | If `true`, the user drags the bar. |
 
 ### For subclasses
 
@@ -136,7 +136,7 @@ The smallest length of the thumb, in design pixels, so that a long content keeps
 
 `boolean isHorizontal()` 
 
-Returns `true` when the bar is wider than high: it then scrolls the node horizontally.
+If `true`, the bar is wider than high: it then scrolls the node horizontally.
 
 <a id="BaseScrollbarNode-method-isOverflowing"></a>
 
@@ -144,7 +144,7 @@ Returns `true` when the bar is wider than high: it then scrolls the node horizon
 
 `boolean isOverflowing()` 
 
-Returns `true` when the content of the node goes beyond it on the axis of the bar.
+If `true`, the content of the node goes beyond it on the axis of the bar.
 
 <a id="BaseScrollbarNode-method-getRatio"></a>
 
@@ -176,7 +176,7 @@ Returns the length of the thumb, in design pixels: the length of the bar times `
 
 `boolean isDragging()` 
 
-Returns `true` while the user drags the bar.
+If `true`, the user drags the bar.
 
 <a id="BaseScrollbarNode-method-drawSkeleton"></a>
 

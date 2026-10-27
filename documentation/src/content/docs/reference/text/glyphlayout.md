@@ -21,7 +21,7 @@ A string laid out on one line, as the list of its glyph placements and its width
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

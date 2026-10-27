@@ -23,7 +23,7 @@ At a font size equal to the bitmap size, one texel of a cell is one design pixel
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 - [Fonts](/use/learn/describing-the-ui/fonts/)
 
 ## Creation

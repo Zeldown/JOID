@@ -54,7 +54,7 @@ The value follows the pattern of every control: a start value, a signal bound bo
 | `T` | [checked](#BaseCheckboxNode-method-checked)(Signal<Boolean> checked) | Binds the value to a signal both ways: the box shows the signal, and a press writes the new value into it. |
 | `this` | [change](#BaseCheckboxNode-method-change)(boolean checked) <span class="joid-qualifier">fluent</span> | Sets the value as if the user pressed the box: `beforeChange` can refuse it, then `onChange` fires. |
 | `T` | [beforeChange](#BaseCheckboxNode-method-beforeChange)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before a change that a press or `change(...)` asks for, with the value now and the value asked for; `cancel()` refuses it. |
-| `boolean` | [isChecked](#BaseCheckboxNode-method-isChecked)() | Returns `true` while the box is checked. |
+| `boolean` | [isChecked](#BaseCheckboxNode-method-isChecked)() | If `true`, the box is checked. |
 
 ### For subclasses
 
@@ -132,7 +132,7 @@ Adds a listener that runs before a change that a press or `change(...)` asks for
 
 `boolean isChecked()` 
 
-Returns `true` while the box is checked.
+If `true`, the box is checked.
 
 <a id="BaseCheckboxNode-method-mousePressed"></a>
 

@@ -56,7 +56,7 @@ Extend [`ToggleNode`](/reference/controls/togglenode/) for a look made of a trac
 | `T` | [toggle](#BaseToggleNode-method-toggle)(Signal<Boolean> toggle) | Binds the on state to a signal both ways: the toggle shows the signal, and a press writes the new state into it. |
 | `this` | [change](#BaseToggleNode-method-change)(boolean toggle) <span class="joid-qualifier">fluent</span> | Sets the state as if the user pressed the toggle: `beforeChange` can refuse it, then `onChange` fires. |
 | `T` | [beforeChange](#BaseToggleNode-method-beforeChange)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before a change that a press or `change(...)` asks for; `cancel()` refuses it. |
-| `boolean` | [isToggle](#BaseToggleNode-method-isToggle)() | Returns `true` while the toggle is on. |
+| `boolean` | [isToggle](#BaseToggleNode-method-isToggle)() | If `true`, the toggle is on. |
 | [`ToggleState<F,S>`](/reference/controls/togglestate/) | [getState](#BaseToggleNode-method-getState)() | Returns the pair given to `state(...)`, or `null` before it. |
 
 ### For subclasses
@@ -151,7 +151,7 @@ Adds a listener that runs before a change that a press or `change(...)` asks for
 
 `boolean isToggle()` 
 
-Returns `true` while the toggle is on.
+If `true`, the toggle is on.
 
 <a id="BaseToggleNode-method-getState"></a>
 

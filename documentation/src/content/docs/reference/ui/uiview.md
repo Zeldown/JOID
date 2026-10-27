@@ -76,7 +76,7 @@ Use it to place your own drawing in screen pixels or to read where the window ed
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `double` | [clampZoom](#UIView-method-clampZoom)(double zoom) | Returns the zoom kept between `0.1` and the largest zoom that the interface scale allows: `1`, or `1 / interfaceScale` when the scale is below 1. |
+| `double` | [clampZoom](#UIView-method-clampZoom)(double zoom) | Returns the zoom kept between `0.1D` and the largest zoom that the interface scale allows: `1D`, or `1D / interfaceScale` when the scale is below `1D`. |
 | `this` | [resize](#UIView-method-resize)(double width, double height) <span class="joid-qualifier">fluent</span> | Fits the view to a window of this size, in screen pixels. |
 | `void` | [render](#UIView-method-render)(IRenderBridge render, boolean projection, Runnable draw) | Runs the drawing in the coordinates of the design canvas. |
 
@@ -282,7 +282,7 @@ Height of the window measured in design pixels at a scale of 1: at least 1080, l
 
 `double clampZoom(double zoom)` 
 
-Returns the zoom kept between `0.1` and the largest zoom that the interface scale allows: `1`, or `1 / interfaceScale` when the scale is below 1.
+Returns the zoom kept between `0.1D` and the largest zoom that the interface scale allows: `1D`, or `1D / interfaceScale` when the scale is below `1D`.
 
 <a id="UIView-method-resize"></a>
 

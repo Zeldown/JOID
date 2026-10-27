@@ -38,7 +38,7 @@ It fires for what the user types, pastes, cuts or deletes, and for `change(...)`
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [cancel](#NodeFieldChangeEvent-Pre-method-cancel)() | Refuses the edit: the text stays as it was. |
-| `boolean` | [isCancelled](#NodeFieldChangeEvent-Pre-method-isCancelled)() | Returns `true` once a listener refused the edit. |
+| `boolean` | [isCancelled](#NodeFieldChangeEvent-Pre-method-isCancelled)() | If `true`, a listener refused the edit. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/nodefieldchangeevent/#NodeFieldChangeEvent-methods"><code>NodeFieldChangeEvent</code></a> (4)</summary>
@@ -81,7 +81,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isCancelled()` 
 
-Returns `true` once a listener refused the edit.
+If `true`, a listener refused the edit.
 
 ---
 

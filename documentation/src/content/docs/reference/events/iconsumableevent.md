@@ -32,7 +32,7 @@ A consumed input reaches no other listener except the `MONITOR` ones, none of th
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [consume](#IConsumableEvent-method-consume)() <span class="joid-qualifier">abstract</span> | Stops the input. |
-| `boolean` | [isConsumed](#IConsumableEvent-method-isConsumed)() <span class="joid-qualifier">abstract</span> | Returns `true` once a listener or a node consumed the input. |
+| `boolean` | [isConsumed](#IConsumableEvent-method-isConsumed)() <span class="joid-qualifier">abstract</span> | If `true`, a listener or a node consumed the input. |
 
 ## Method details
 
@@ -50,7 +50,7 @@ Stops the input.
 
 `boolean isConsumed()` <span class="joid-qualifier">abstract</span>
 
-Returns `true` once a listener or a node consumed the input.
+If `true`, a listener or a node consumed the input.
 
 ---
 

@@ -22,7 +22,7 @@ A font that JOID can draw, which names the text renderer that measures and draws
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 <a id="IFont-methods"></a>
 

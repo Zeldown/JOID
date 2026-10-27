@@ -22,7 +22,7 @@ A PNG with an animation control chunk plays as an animated image; any other PNG 
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 - [Custom formats](/use/learn/going-further/custom-formats/)
 
 ## Creation

@@ -25,7 +25,7 @@ Get it from [`Resource.getPlayback`](/reference/resources/resource/#Resource-met
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 ## Creation
 

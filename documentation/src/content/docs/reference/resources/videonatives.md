@@ -23,7 +23,7 @@ Otherwise the jar of the platform (Windows x64, Linux x64, macOS x64 and arm64) 
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 - [Ship your application](/use/guides/ship-your-application/)
 
 <a id="VideoNatives-methods"></a>

@@ -64,7 +64,7 @@ While the list is open, a left press anywhere closes it; the list closes too whe
 | `this` | [close](#BaseSelectorNode-method-close)() <span class="joid-qualifier">fluent</span> | Closes the list as if the user pressed it: `beforeClose` can refuse it, then `onClose` fires. |
 | `T` | [beforeOpen](#BaseSelectorNode-method-beforeOpen)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before the list opens on a press or `open()`; `cancel()` keeps it closed. |
 | `T` | [beforeClose](#BaseSelectorNode-method-beforeClose)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before the list closes on a press or `close()`; `cancel()` keeps it open. |
-| `boolean` | [isActive](#BaseSelectorNode-method-isActive)() | Returns `true` while the list is open. |
+| `boolean` | [isActive](#BaseSelectorNode-method-isActive)() | If `true`, the list is open. |
 
 ### For subclasses
 
@@ -182,7 +182,7 @@ Adds a listener that runs before the list closes on a press or `close()`; `cance
 
 `boolean isActive()` 
 
-Returns `true` while the list is open.
+If `true`, the list is open.
 
 <a id="BaseSelectorNode-method-mousePressed"></a>
 

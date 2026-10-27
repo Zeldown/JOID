@@ -111,7 +111,7 @@ Listeners always run on the render thread.
 
 | Event | Listener | Summary |
 |---|---|---|
-| [onChange](#Signal-event-onChange) | [`SignalListener<? super T>`](/reference/signals/signallistener/) | Calls `listener` with the value after each change, on the render thread, then returns this signal. |
+| [onChange](#Signal-event-onChange) | [`SignalListener<? super T>`](/reference/signals/signallistener/) | Adds a listener that runs with the value after each change, on the render thread, then returns this signal. |
 
 ## Creation details
 
@@ -406,7 +406,7 @@ Increases the version, marks the derived signals as outdated and schedules the l
 
 `this onChange(SignalListener<? super T> listener)` <span class="joid-qualifier">fluent</span>
 
-Calls `listener` with the value after each change, on the render thread, then returns this signal.
+Adds a listener that runs with the value after each change, on the render thread, then returns this signal.
 Inside a batch, the listener runs once when the batch ends; inside `silent(...)`, it does not run.
 Adding the same listener twice keeps one; when a listener throws, the others still run and the first exception is thrown afterwards.
 

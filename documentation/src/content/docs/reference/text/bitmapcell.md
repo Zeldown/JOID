@@ -23,7 +23,7 @@ Each texel is filtered by the area it covers on screen, so the glyph stays crisp
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

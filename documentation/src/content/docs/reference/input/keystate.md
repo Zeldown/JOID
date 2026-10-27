@@ -22,7 +22,7 @@ The UI bridge registry keeps one `KeyState`: a press records its place and its k
 
 ## Learn more
 
-- [Input forwarding](/build/input/#send-the-position-and-the-printed-key)
+- [Input forwarding](/build/input/#guarantees)
 
 ## Creation
 
@@ -38,7 +38,7 @@ The UI bridge registry keeps one `KeyState`: a press records its place and its k
 |---|---|---|
 | `void` | [press](#KeyState-method-press)(Key physicalKey, Key key) | Records that the place `physicalKey` went down and typed `key`. |
 | [`Key`](/reference/input/key/) | [release](#KeyState-method-release)(Key physicalKey) | Forgets a place that went up and returns the key that its press typed, or the place itself when no press was recorded. |
-| `boolean` | [isDown](#KeyState-method-isDown)(Key key) | Returns `true` while a key is held. |
+| `boolean` | [isDown](#KeyState-method-isDown)(Key key) | If `true`, a key is held. |
 | [`Key`](/reference/input/key/) | [getKey](#KeyState-method-getKey)(Key physicalKey) | Returns the key that a held place typed, or the place itself when it is not held. |
 
 ## Creation details
@@ -75,7 +75,7 @@ Forgets a place that went up and returns the key that its press typed, or the pl
 
 `boolean isDown(Key key)` 
 
-Returns `true` while a key is held.
+If `true`, a key is held.
 For a key that depends on the layout, it tests every held place that typed it; for any other key, it asks the window bridge.
 
 <a id="KeyState-method-getKey"></a>

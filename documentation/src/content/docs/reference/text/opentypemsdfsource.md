@@ -23,7 +23,7 @@ It is stored in the `msdf` area of the cache folder under a hash of the font and
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 - [MSDF text](/use/in-depth/msdf-text/)
 
 ## Creation

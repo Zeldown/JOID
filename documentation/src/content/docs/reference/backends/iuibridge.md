@@ -21,6 +21,10 @@ The contract of a UI bridge, the place where JOID opens, holds and closes the UI
 
 [`JOID.open`](/reference/ui/joid/#JOID-method-open) asks [`UIBridgeRegistry.get`](/reference/backends/uibridgeregistry/#UIBridgeRegistry-method-get) for a bridge and opens the UI there; the UI stays in that bridge until it closes.
 A bridge registered in `BridgeHandler.UI` extends [`UIBridge`](/reference/backends/uibridge/), which implements this interface.
+This bridge takes the panels of the application only, so `JOID.open` sends every other UI to the bridges below it:
+
+```java file="com/example/running/PanelUIBridge.java"
+```
 
 ## Learn more
 

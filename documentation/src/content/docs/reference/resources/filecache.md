@@ -28,7 +28,7 @@ Use the cache for files that you can build again; data that must survive goes in
 
 ## Learn more
 
-- [Files](/use/learn/running/files/)
+- [Where JOID stores files](/use/learn/running/files/)
 
 <a id="FileCache-methods"></a>
 

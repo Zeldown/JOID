@@ -109,14 +109,14 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 | `T` | [focused](#FieldNode-method-focused)(Signal<Boolean> focused) | Binds the focus to a signal both ways: the field takes or loses the focus with the signal, and writes into it when the user gives or takes the focus. |
 | `this` | [focus](#FieldNode-method-focus)() <span class="joid-qualifier">fluent</span> | Gives the field the focus as a press would: `beforeFocus` can refuse it, then `onFocus` fires. |
 | `T` | [beforeFocus](#FieldNode-method-beforeFocus)(EventListener<NodeChangeEvent.Pre<T,Boolean>> listener) | Adds a listener that runs before the field takes the focus on a press or `focus()`; `cancel()` refuses the focus. |
-| `boolean` | [isFocused](#FieldNode-method-isFocused)() | Returns `true` while the field has the focus. |
+| `boolean` | [isFocused](#FieldNode-method-isFocused)() | If `true`, the field has the focus. |
 
 ### Queries
 
 | Returns | Signature | Summary |
 |---|---|---|
 | `V` | [getValue](#FieldNode-method-getValue)() | Returns the value read from the text, normalized and brought into its bounds. |
-| `boolean` | [isValid](#FieldNode-method-isValid)() | Returns `true` when the text passes `accept`, reads as a value and that value is already within its bounds; an empty text with `allowEmpty(true)` is valid. |
+| `boolean` | [isValid](#FieldNode-method-isValid)() | If `true`, the text passes `accept`, reads as a value and that value is already within its bounds; an empty text with `allowEmpty(true)` is valid. |
 | [`FieldSelection`](/reference/controls/fieldselection/) | [getSelection](#FieldNode-method-getSelection)() | Returns the selected range of the text; an empty range when nothing is selected. |
 
 ### Actions
@@ -525,7 +525,7 @@ Adds a listener that runs before the field takes the focus on a press or `focus(
 
 `boolean isFocused()` 
 
-Returns `true` while the field has the focus.
+If `true`, the field has the focus.
 
 <a id="FieldNode-method-getValue"></a>
 
@@ -542,7 +542,7 @@ A text that is not a value gives the last valid value; an empty text with `allow
 
 `boolean isValid()` 
 
-Returns `true` when the text passes `accept`, reads as a value and that value is already within its bounds; an empty text with `allowEmpty(true)` is valid.
+If `true`, the text passes `accept`, reads as a value and that value is already within its bounds; an empty text with `allowEmpty(true)` is valid.
 
 <a id="FieldNode-method-getSelection"></a>
 

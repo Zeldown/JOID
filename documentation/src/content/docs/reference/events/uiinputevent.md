@@ -40,7 +40,7 @@ The nodes and the UI share the same input: the event of the UI is the source of 
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [consume](#UIInputEvent-method-consume)() | Stops the input: no other listener except the `MONITOR` ones, no UI below and not the host application receive it. |
-| `boolean` | [isConsumed](#UIInputEvent-method-isConsumed)() | Returns `true` once a node or a listener consumed the input. |
+| `boolean` | [isConsumed](#UIInputEvent-method-isConsumed)() | If `true`, a node or a listener consumed the input. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/uievent/#UIEvent-methods"><code>UIEvent</code></a> (1)</summary>
@@ -76,7 +76,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isConsumed()` 
 
-Returns `true` once a node or a listener consumed the input.
+If `true`, a node or a listener consumed the input.
 
 ---
 

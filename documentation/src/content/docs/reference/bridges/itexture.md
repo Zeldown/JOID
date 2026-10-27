@@ -18,7 +18,7 @@ A texture of the render bridge, owned by JOID or borrowed from the host.
 
 ## Learn more
 
-- [The texture of a resource in your own drawing](/use/learn/going-further/framebuffers-and-models/)
+- [Use the texture of a resource](/use/learn/going-further/framebuffers-and-models/#use-the-texture-of-a-resource)
 - [Textures](/build/writing-a-backend/#textures)
 - [Shaders](/use/learn/going-further/shaders/)
 - [Resource resolvers](/build/resource-resolvers/)

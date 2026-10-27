@@ -35,7 +35,7 @@ The start is never after the end; an empty range has the start equal to the end.
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isEmpty](#FieldSelection-method-isEmpty)() | Returns `true` when the range holds no character. |
+| `boolean` | [isEmpty](#FieldSelection-method-isEmpty)() | If `true`, the range holds no character. |
 | `int` | [getStart](#FieldSelection-method-getStart)() | Returns the index of the first character of the range. |
 | `int` | [getEnd](#FieldSelection-method-getEnd)() | Returns the index after the last character of the range. |
 | `String` | [toString](#FieldSelection-method-toString)() | Returns the start and the end, for logs. |
@@ -60,7 +60,7 @@ Creates a range from two indexes in any order.
 
 `boolean isEmpty()` 
 
-Returns `true` when the range holds no character.
+If `true`, the range holds no character.
 
 <a id="FieldSelection-method-getStart"></a>
 

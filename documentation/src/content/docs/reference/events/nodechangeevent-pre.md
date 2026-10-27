@@ -38,7 +38,7 @@ It fires for a change that a gesture or a call such as `move(...)` or `change(..
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [cancel](#NodeChangeEvent-Pre-method-cancel)() | Refuses the change: the value stays, and the `onX` event does not fire. |
-| `boolean` | [isCancelled](#NodeChangeEvent-Pre-method-isCancelled)() | Returns `true` once a listener refused the change. |
+| `boolean` | [isCancelled](#NodeChangeEvent-Pre-method-isCancelled)() | If `true`, a listener refused the change. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/nodechangeevent/#NodeChangeEvent-methods"><code>NodeChangeEvent</code></a> (2)</summary>
@@ -81,7 +81,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isCancelled()` 
 
-Returns `true` once a listener refused the change.
+If `true`, a listener refused the change.
 
 ---
 

@@ -22,7 +22,7 @@ A video whose natives fail to install fails with this exception as its error; th
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 ## Creation
 

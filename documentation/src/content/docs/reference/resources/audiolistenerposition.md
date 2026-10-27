@@ -21,7 +21,7 @@ Pass it as a lambda to [`VideoAudioPlayer.audioListenerPosition`](/reference/res
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 <a id="AudioListenerPosition-methods"></a>
 

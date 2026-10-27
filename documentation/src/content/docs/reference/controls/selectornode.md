@@ -66,7 +66,7 @@ Attaching a selector without a field or without an `option` function throws an `
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [isSelected](#SelectorNode-method-isSelected)(Node option) | Returns `true` when a node is the node of the selected option. |
+| `boolean` | [isSelected](#SelectorNode-method-isSelected)(Node option) | If `true`, a node is the node of the selected option. |
 | [`Node`](/reference/nodes/node/) | [getSelected](#SelectorNode-method-getSelected)() | Returns the node of the selected option, or `null` before the options exist. |
 | `List<Node>` | [getOptionList](#SelectorNode-method-getOptionList)() | Returns the nodes of the options, in the order of the options, as a read-only list. |
 
@@ -179,7 +179,7 @@ The side where the list opens: `DOWN` under the selected row, `UP` above it, nea
 
 `boolean isSelected(Node option)` 
 
-Returns `true` when a node is the node of the selected option.
+If `true`, a node is the node of the selected option.
 
 <a id="SelectorNode-method-getSelected"></a>
 

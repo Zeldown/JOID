@@ -38,7 +38,7 @@ A refused start leaves the node in place; a refused drop sends it back to where 
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [cancel](#NodeDragEvent-Pre-method-cancel)() | Refuses the start or the drop. |
-| `boolean` | [isCancelled](#NodeDragEvent-Pre-method-isCancelled)() | Returns `true` once a listener refused the step. |
+| `boolean` | [isCancelled](#NodeDragEvent-Pre-method-isCancelled)() | If `true`, a listener refused the step. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/nodedragevent/#NodeDragEvent-methods"><code>NodeDragEvent</code></a> (1)</summary>
@@ -81,7 +81,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isCancelled()` 
 
-Returns `true` once a listener refused the step.
+If `true`, a listener refused the step.
 
 ---
 

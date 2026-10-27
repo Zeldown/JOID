@@ -63,7 +63,7 @@ Use [`IntegerSliderNode`](/reference/controls/integerslidernode/), [`DoubleSlide
 | Returns | Signature | Summary |
 |---|---|---|
 | `double` | [getProgress](#BaseSliderNode-method-getProgress)() | Returns the place of the value along the track, from `0D` at the first option to `1D` at the last. |
-| `boolean` | [isSliding](#BaseSliderNode-method-isSliding)() | Returns `true` while the user drags the slider. |
+| `boolean` | [isSliding](#BaseSliderNode-method-isSliding)() | If `true`, the user drags the slider. |
 
 ### For subclasses
 
@@ -148,7 +148,7 @@ During a drag, the place of the pointer, so that a thumb follows it between the 
 
 `boolean isSliding()` 
 
-Returns `true` while the user drags the slider.
+If `true`, the user drags the slider.
 
 <a id="BaseSliderNode-method-mousePressed"></a>
 

@@ -21,7 +21,7 @@ A [`GlyphFont`](/reference/text/glyphfont/) holds one family; [`MsdfFontLoader`]
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 ## Creation
 

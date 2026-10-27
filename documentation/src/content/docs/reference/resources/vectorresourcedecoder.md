@@ -25,7 +25,7 @@ While the size keeps changing, the closest texture already rendered is drawn, so
 ## Learn more
 
 - [Custom formats](/use/learn/going-further/custom-formats/)
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 ## Creation
 

@@ -24,7 +24,7 @@ Positions and sizes are in design pixels.
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 <a id="ITextRenderer-methods"></a>
 

@@ -23,7 +23,7 @@ A task attached in the constructor of a UI comes back at every opening; one atta
 
 ## Learn more
 
-- [Tasks](/use/learn/state/tasks/)
+- [Tasks and background updates](/use/learn/state/tasks/)
 - [Threads](/use/learn/running/threads/)
 - [The frame lifecycle](/use/in-depth/frame-lifecycle/)
 

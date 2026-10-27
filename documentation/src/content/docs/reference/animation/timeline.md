@@ -22,6 +22,10 @@ Plays tweens and other timelines one after the other or all together, as one twe
 `beginSequence()` and `beginParallel()` open a nested block that `end()` closes.
 A timeline takes its children before `start()`: after it, `push(...)`, `pushPause(...)`, `begin...()` and `end()` throw an `IllegalStateException`.
 At the start, a child that repeats forever throws an `IllegalArgumentException` and a block left open throws an `IllegalStateException`.
+This sequence moves `x`, waits, moves `y`, then plays back and forth forever:
+
+```java file="com/example/style/TweenUI.java" region="timeline"
+```
 
 ## Learn more
 

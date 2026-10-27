@@ -18,7 +18,7 @@ Event that a task passes to its listeners when it runs.
 
 ## Learn more
 
-- [Tasks](/use/learn/state/tasks/)
+- [Tasks and background updates](/use/learn/state/tasks/)
 
 ## Creation
 

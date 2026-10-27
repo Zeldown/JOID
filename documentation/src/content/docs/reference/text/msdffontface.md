@@ -23,7 +23,7 @@ Metrics, advances and kerning are on 1 of the font size.
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 - [MSDF text](/use/in-depth/msdf-text/)
 
 ## Creation

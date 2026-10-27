@@ -34,7 +34,7 @@ The change of the text of a field, with the text before and after and the value 
 |---|---|---|
 | `V` | [getValue](#NodeFieldChangeEvent-method-getValue)() | Returns the value that the field reads from the new text, as [`FieldNode.getValue`](/reference/controls/fieldnode/#FieldNode-method-getValue) would. |
 | `String` | [getText](#NodeFieldChangeEvent-method-getText)() | Returns the text after the change. |
-| `boolean` | [isValid](#NodeFieldChangeEvent-method-isValid)() | Returns `true` when the new text is a valid value, as [`FieldNode.isValid`](/reference/controls/fieldnode/#FieldNode-method-isValid) would. |
+| `boolean` | [isValid](#NodeFieldChangeEvent-method-isValid)() | If `true`, the new text is a valid value, as [`FieldNode.isValid`](/reference/controls/fieldnode/#FieldNode-method-isValid) would. |
 | `String` | [getPrevious](#NodeFieldChangeEvent-method-getPrevious)() | Returns the text before the change. |
 
 <details>
@@ -68,7 +68,7 @@ Returns the text after the change.
 
 `boolean isValid()` 
 
-Returns `true` when the new text is a valid value, as [`FieldNode.isValid`](/reference/controls/fieldnode/#FieldNode-method-isValid) would.
+If `true`, the new text is a valid value, as [`FieldNode.isValid`](/reference/controls/fieldnode/#FieldNode-method-isValid) would.
 
 <a id="NodeFieldChangeEvent-method-getPrevious"></a>
 

@@ -20,6 +20,10 @@ The base class of a render bridge, which keeps the matrices, the render state an
 ## Description
 
 A subclass implements the clears, `drawPrimitive` and the three `create...` methods, and calls `requireFrame()` before it touches the GPU in a frame.
+Its `drawPrimitive` reads the render state and the samplers that the base class resolved, then draws:
+
+```java file="com/example/backend/EngineRenderBridge.java" region="draw"
+```
 
 ## Learn more
 

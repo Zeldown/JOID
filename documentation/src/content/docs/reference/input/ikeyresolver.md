@@ -30,7 +30,7 @@ JOID asks the resolver again at every key, so a binding that changes applies at 
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `boolean` | [supports](#IKeyResolver-method-supports)(Object binding) <span class="joid-qualifier">abstract</span> | Returns `true` when this resolver knows the binding. |
+| `boolean` | [supports](#IKeyResolver-method-supports)(Object binding) <span class="joid-qualifier">abstract</span> | If `true`, this resolver knows the binding. |
 | [`Key`](/reference/input/key/) | [resolve](#IKeyResolver-method-resolve)(Object binding) <span class="joid-qualifier">abstract</span> | Returns the [`Key`](/reference/input/key/) that the binding stands for now, compared with [`NodeKeyEvent.getKey`](/reference/events/nodekeyevent/#NodeKeyEvent-method-getKey), the key that the layout names. |
 
 ## Method details
@@ -41,7 +41,7 @@ JOID asks the resolver again at every key, so a binding that changes applies at 
 
 `boolean supports(Object binding)` <span class="joid-qualifier">abstract</span>
 
-Returns `true` when this resolver knows the binding.
+If `true`, this resolver knows the binding.
 JOID calls `resolve` only for a binding that this method accepts.
 
 <a id="IKeyResolver-method-resolve"></a>

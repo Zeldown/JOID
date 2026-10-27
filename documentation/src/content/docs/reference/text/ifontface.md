@@ -23,7 +23,7 @@ Every metric is on 1 of the font size: a line height of `1.2F` at a size of 20 d
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 <a id="IFontFace-methods"></a>
 

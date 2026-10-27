@@ -22,7 +22,7 @@ The event of `onWatch`, which fires after a watch of a node applied its properti
 
 ## Learn more
 
-- [Rebuilding](/use/learn/state/rebuilding/)
+- [Rebuilding the tree](/use/learn/state/rebuilding/)
 
 ## Creation
 

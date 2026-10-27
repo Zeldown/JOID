@@ -23,7 +23,7 @@ The folders come from the system properties `joid.data` and `joid.cache` when th
 ## Learn more
 
 - [Dev tools](/use/get-started/dev-tools/)
-- [Files](/use/learn/running/files/)
+- [Where JOID stores files](/use/learn/running/files/)
 - [Ship your application](/use/guides/ship-your-application/)
 - [Demos](/build/demos/)
 - [Testing a backend](/build/testing-a-backend/)

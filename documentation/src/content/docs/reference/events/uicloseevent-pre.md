@@ -34,7 +34,7 @@ The event of `beforeClose`, which can keep a UI open.
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [cancel](#UICloseEvent-Pre-method-cancel)() | Keeps the UI open: the closing does not start, and `onClose` does not fire. |
-| `boolean` | [isCancelled](#UICloseEvent-Pre-method-isCancelled)() | Returns `true` once a listener kept the UI open. |
+| `boolean` | [isCancelled](#UICloseEvent-Pre-method-isCancelled)() | If `true`, a listener kept the UI open. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/uievent/#UIEvent-methods"><code>UIEvent</code></a> (1)</summary>
@@ -70,7 +70,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isCancelled()` 
 
-Returns `true` once a listener kept the UI open.
+If `true`, a listener kept the UI open.
 
 ---
 

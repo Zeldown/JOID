@@ -23,7 +23,7 @@ JOID keeps one framebuffer per nesting depth, grows it when an area does not fit
 
 ## Learn more
 
-- [Drawing](/use/learn/going-further/drawing/)
+- [Drawing shapes and text](/use/learn/going-further/drawing/)
 
 ## Creation
 

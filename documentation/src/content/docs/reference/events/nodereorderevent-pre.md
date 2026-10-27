@@ -38,7 +38,7 @@ A refused move keeps the child at its place; the drag goes on.
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [cancel](#NodeReorderEvent-Pre-method-cancel)() | Refuses the move. |
-| `boolean` | [isCancelled](#NodeReorderEvent-Pre-method-isCancelled)() | Returns `true` once a listener refused the move. |
+| `boolean` | [isCancelled](#NodeReorderEvent-Pre-method-isCancelled)() | If `true`, a listener refused the move. |
 
 <details>
 <summary>Inherited from <a href="/reference/events/nodereorderevent/#NodeReorderEvent-methods"><code>NodeReorderEvent</code></a> (3)</summary>
@@ -81,7 +81,7 @@ Throws an `IllegalStateException` in a `MONITOR` listener.
 
 `boolean isCancelled()` 
 
-Returns `true` once a listener refused the move.
+If `true`, a listener refused the move.
 
 ---
 

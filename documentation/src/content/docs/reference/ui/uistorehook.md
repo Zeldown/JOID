@@ -21,7 +21,7 @@ Creates, caches, saves and destroys the stores that the UIs use.
 
 ## Learn more
 
-- [Stores and properties](/use/learn/state/stores-and-properties/)
+- [Stores and remembered properties](/use/learn/state/stores-and-properties/)
 
 <a id="UIStoreHook-methods"></a>
 

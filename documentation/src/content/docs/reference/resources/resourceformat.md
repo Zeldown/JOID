@@ -23,7 +23,7 @@ The last registered format is asked first.
 ## Learn more
 
 - [Custom formats](/use/learn/going-further/custom-formats/)
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 <a id="ResourceFormat-methods"></a>
 

@@ -21,7 +21,7 @@ Pass it as a lambda to [`FileCacheArea.compute`](/reference/resources/filecachea
 
 ## Learn more
 
-- [Files](/use/learn/running/files/)
+- [Where JOID stores files](/use/learn/running/files/)
 
 <a id="FileCacheWriter-methods"></a>
 

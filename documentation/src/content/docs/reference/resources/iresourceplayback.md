@@ -23,7 +23,7 @@ Times are in seconds; call the controls on the render thread.
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 
 <a id="IResourcePlayback-properties"></a>
 

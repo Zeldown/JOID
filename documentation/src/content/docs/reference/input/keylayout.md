@@ -23,7 +23,7 @@ Only the letters `A` to `Z` and the punctuation keys from [`Key.APOSTROPHE`](/re
 
 ## Learn more
 
-- [Input forwarding](/build/input/#send-the-position-and-the-printed-key)
+- [Input forwarding](/build/input/#guarantees)
 - [base-glfw](/build/base-modules/glfw/)
 
 ## Creation
@@ -40,7 +40,7 @@ Only the letters `A` to `Z` and the punctuation keys from [`Key.APOSTROPHE`](/re
 |---|---|---|
 | [`Key`](/reference/input/key/) | [translate](#KeyLayout-method-translate)(Key key) | Returns the key that the layout types at a place. |
 | [`Key`](/reference/input/key/) | [fromCharacter](#KeyLayout-method-fromCharacter)(char character) <span class="joid-qualifier">static</span> | Returns the letter or punctuation key that types a character, whatever its case, or `null` for any other character. |
-| `boolean` | [isLayoutKey](#KeyLayout-method-isLayoutKey)(Key key) <span class="joid-qualifier">static</span> | Returns `true` for a key that depends on the layout: a letter or a punctuation key. |
+| `boolean` | [isLayoutKey](#KeyLayout-method-isLayoutKey)(Key key) <span class="joid-qualifier">static</span> | If `true`, the key depends on the layout: a letter or a punctuation key. |
 
 ## Creation details
 
@@ -78,7 +78,7 @@ Returns the letter or punctuation key that types a character, whatever its case,
 
 `boolean isLayoutKey(Key key)` <span class="joid-qualifier">static</span>
 
-Returns `true` for a key that depends on the layout: a letter or a punctuation key.
+If `true`, the key depends on the layout: a letter or a punctuation key.
 
 ---
 

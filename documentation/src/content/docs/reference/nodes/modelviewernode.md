@@ -20,7 +20,7 @@ Draws a 3D model that the user turns by dragging and zooms with the wheel, withi
 
 ## Description
 
-A drag with the left button turns the model, one degree per 5 design pixels; one wheel notch zooms by `0.04`.
+A drag with the left button turns the model, one degree per 5 design pixels; one wheel notch zooms by `0.04D`.
 The model moves smoothly toward the requested zoom and rotation.
 A requested value outside its range is kept and applied again when the range changes.
 

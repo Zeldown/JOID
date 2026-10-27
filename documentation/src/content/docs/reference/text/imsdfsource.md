@@ -23,7 +23,7 @@ Extend [`MsdfSource`](/reference/text/msdfsource/) rather than implementing this
 
 ## Learn more
 
-- [Fonts](/use/learn/going-further/fonts/)
+- [Custom fonts and MSDF](/use/learn/going-further/fonts/)
 
 <a id="IMsdfSource-methods"></a>
 

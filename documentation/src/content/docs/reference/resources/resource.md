@@ -30,7 +30,7 @@ The file is decoded on a background thread the first time the resource is drawn,
 
 ## Learn more
 
-- [Media](/use/learn/describing-the-ui/media/)
+- [Images and media](/use/learn/describing-the-ui/media/)
 - [3D models](/use/learn/going-further/3d-models/)
 - [Custom formats](/use/learn/going-further/custom-formats/)
 - [Drawing resources and transforms](/use/learn/going-further/drawing-resources-and-transforms/)

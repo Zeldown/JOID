@@ -22,7 +22,7 @@ A `PERMANENT` store is read from the data folder when it is created and written 
 
 ## Learn more
 
-- [Stores and properties](/use/learn/state/stores-and-properties/)
+- [Stores and remembered properties](/use/learn/state/stores-and-properties/)
 - [Build a settings screen](/use/guides/build-a-settings-screen/)
 
 ## Creation
