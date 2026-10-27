@@ -22,19 +22,16 @@ Each control reads and writes a signal of the store.
 
 ## Before you start
 
-- Stores and their scopes: [Stores and properties](/use/learn/state/stores-and-properties/).
+- Stores and their scopes: [Stores and remembered properties](/use/learn/state/stores-and-properties/).
 - Controls and their signal binding: [Controls](/use/learn/interactivity/controls/).
 - Skins for the controls: this guide uses the plain checkbox and slider that [Build a UI kit](/use/guides/build-a-ui-kit/) writes in its first step.
 
 ## 1. Write the store
 
-A [[UIStore]] annotated with [[UIStoreData]] and the scope [[UIStoreScope#PERMANENT]] lives as long as the application and is written to disk.
-Give it one signal per setting, and a getter for each:
+Write a [[UIStore]] of scope [[UIStoreScope#PERMANENT]], with one signal per setting, a getter for each, and the `toJson`/`fromJson` that keep them on disk, as [Write a store](/use/learn/state/stores-and-properties/#write-a-store) and [Keep a store on disk](/use/learn/state/stores-and-properties/#keep-a-store-on-disk) show.
+This guide names its file `audio` in [[UIStoreData]] and keeps two signals:
 
 ```java file="com/example/guides/SettingsGuideStore.java" region="fields"
-```
-
-```java file="com/example/guides/SettingsGuideStore.java" region="getters"
 ```
 
 **Check:** the class compiles.
@@ -59,27 +56,10 @@ The control then shows the signal and writes the value the user picks into it:
 - `enabled(store.getSound())` greys the slider out while the sound is off.
 - The label derives its text from the volume with `map(...)` ([Derived values](/use/learn/state/derived-values/)).
 
+Another UI that asks for the store gets the same signals, so it follows this screen ([Use a store from several UIs](/use/learn/state/stores-and-properties/#use-a-store-from-several-uis)).
+
 **Check:** move the volume to 30, then uncheck the sound: the label reads `Volume 30`, and the slider greys out.
-
-## 3. Read and write the file
-
-JOID writes what `toJson()` returns, and gives the content of the file to `fromJson(...)` when the store is created again.
-Read each key only when the file has it, and each number through `Number`, since the file gives it back as a `Long` or a `Double`:
-
-```java file="com/example/guides/SettingsGuideStore.java" region="json"
-```
-
-A file written before you added a setting keeps working: the setting it lacks keeps its default value.
-
-**Check:** set the volume to 30, close the application and start it again: the screen shows the volume at 30.
-The file is `store/audio.store` in the [data folder](/use/learn/running/files/).
-
-## 4. Read the settings elsewhere
-
-Every UI that calls `useStore(SettingsGuideStore.class, ...)` gets the same instance, with the same signals.
-A text of another UI that reads `getVolume()` follows the slider of this screen, and the factory runs only once.
-
-**Check:** open an overlay ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)) that shows the volume with the same `map(...)`, then move the slider: the text of the overlay follows it.
+Close the application and start it again: the screen shows the same values, read from `store/audio.store` in the [data folder](/use/learn/running/files/).
 
 ## If it does not work
 

@@ -60,8 +60,7 @@ The cache folder already defaults to the cache folder of the system ([Where JOID
 
 Ship the libraries of your backend with their natives for each target system, as [Installation](/use/get-started/installation/) lists them, and check the prerequisites of your backend, such as the JVM option `-XstartOnFirstThread` on macOS ([Choosing a backend](/use/learn/running/backends/)).
 
-If your application plays videos, JOID downloads the FFmpeg natives into the cache folder the first time a machine plays one.
-For a machine without network access, put them on the classpath instead ([Installation](/use/get-started/installation/)).
+If your application plays videos on machines without network access, put the FFmpeg natives on the classpath ([Play videos without network access](/use/get-started/installation/#play-videos-without-network-access)).
 
 **Check:** the application starts and plays its media on each target system, from the package you ship.
 

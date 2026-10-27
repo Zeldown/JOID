@@ -75,7 +75,7 @@ Give it one after the backend is registered, for example when your first UI open
 ## If it does not work
 
 1. The first access to `FontGuideStyle` throws an `ExceptionInInitializerError` caused by `IllegalArgumentException: The asset … is not found in the classpath nor as a file`: the path is wrong.
-   Check that the files are in the resources and that the path starts with `/`.
+   Check that the files are in the resources, under that path from their root (a leading `/` changes nothing).
 2. `join()` throws a `CompletionException` that says the atlas cannot be generated: the file is not a valid TrueType or OpenType font, or the cache folder cannot be written.
 3. A text shows in another weight, and the dev jar prints `[JOID] The font weight … is not loaded in the family of …`: the style asks for a weight that the family lacks; load that face, or use a loaded weight.
 4. No tooltip appears, and the dev jar prints `[JOID] WindowUIBridge draws no tooltip, set its hoverInfo(TextInfo) to draw them`: the window bridge has no text style yet.

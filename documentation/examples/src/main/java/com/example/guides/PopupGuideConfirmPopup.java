@@ -30,32 +30,33 @@ public class PopupGuideConfirmPopup extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 26F).color(PopupGuideConfirmPopup.INK);
+		final TextInfo title = TextInfo.create(ExampleFont.REGULAR, 32F).color(PopupGuideConfirmPopup.INK);
+		final TextInfo label = TextInfo.create(ExampleFont.REGULAR, 26F).color(Color.WHITE);
 
-		// #region card
 		RectNode
 		.create(710, 390, 500, 300)
 		.color(PopupGuideConfirmPopup.PLACEHOLDER)
 		.body(card -> {
-			TextNode.create(250, 90).text(Text.create("Delete the file?", info)).anchor(Align.CENTER).attach(card);
+			TextNode.create(250, 90).text(Text.create("Delete the file?", title)).anchor(Align.CENTER).attach(card);
 			RectNode
-			.create(40, 190, 200, 70)
-			.color(Color.WHITE)
-			.label(Text.create("Cancel", info))
+			.create(50, 190, 180, 70)
+			.color(PopupGuideConfirmPopup.INK)
+			.label(Text.create("Cancel", label))
 			.onClick(event -> JOID.close(this))
 			.attach(card);
+			// #region delete
 			RectNode
-			.create(260, 190, 200, 70)
-			.color(Color.WHITE)
-			.label(Text.create("Delete", info))
+			.create(270, 190, 180, 70)
+			.color(PopupGuideConfirmPopup.INK)
+			.label(Text.create("Delete", label))
 			.onClick(event -> {
 				this.action.run();
 				JOID.close(this);
 			})
 			.attach(card);
+			// #endregion
 		})
 		.attach(this);
-		// #endregion
 	}
 
 }
