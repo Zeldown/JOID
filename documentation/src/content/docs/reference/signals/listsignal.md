@@ -28,7 +28,6 @@ The read methods (`get(int)`, `size()`, `contains(...)`…) record the read like
 - [Rebuilding the tree](/use/learn/state/rebuilding/)
 - [Keep the state](/use/tutorial/state/)
 - [Best practices](/use/best-practices/)
-- [Troubleshooting](/use/troubleshooting/)
 
 ## Creation
 

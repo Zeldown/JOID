@@ -63,8 +63,8 @@ JOID still follows it:
 5. When both match, the expression becomes a derived value that runs these instructions on each change; otherwise the value stays fixed, and the dev jar prints `[JOID] … but cannot follow it: …` with the reason and the fix.
 
 The rules of [What JOID follows](/use/learn/interactivity/signals/#what-joid-follows) come from this replay.
-The replay runs outside your method: a field of your class is read again each time, and a local variable that holds a signal is found from the reads.
-Any other local variable has no value in the replay: inside a text, JOID finds it in the text it received, but in a calculation or a condition nothing gives it back, and the expression stays fixed.
+The replay runs outside your method: a field of your class is read again each time, and a signal held by a local variable, or returned by a getter of one, is found from the reads.
+Any other local variable has no value in the replay: inside a text, JOID finds it in the text it received, but in a calculation with a signal, in a condition, or after a condition on a signal, nothing gives it back, and the expression stays fixed.
 A lambda written inside the expression cannot be replayed, so such an expression stays fixed.
 
 JOID reads the bytecode of a class once and keeps the analysis of each call, so the cost comes the first time a UI opens.

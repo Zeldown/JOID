@@ -25,7 +25,6 @@ The elements keep the order in which they were added.
 
 - [Signals](/use/learn/interactivity/signals/)
 - [Best practices](/use/best-practices/)
-- [Troubleshooting](/use/troubleshooting/)
 
 ## Creation
 

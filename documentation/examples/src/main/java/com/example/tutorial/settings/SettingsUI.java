@@ -5,6 +5,8 @@ import dev.joid.lib.color.Color;
 import dev.joid.lib.draw.text.Text;
 import dev.joid.lib.font.FontWeight;
 import dev.joid.lib.font.TextInfo;
+import dev.joid.lib.signal.impl.primitive.BooleanSignal;
+import dev.joid.lib.signal.impl.primitive.IntegerSignal;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.data.UIData;
 import dev.joid.lib.ui.core.data.UIDataPopup;
@@ -22,6 +24,8 @@ public class SettingsUI extends UI {
 		final TextInfo caption = TextInfo.create(Theme.FONT, 30F).color(Theme.INK);
 		final TextInfo label = TextInfo.create(Theme.FONT, 30F).color(Color.WHITE);
 		final SettingsStore settings = super.useStore(SettingsStore.class, SettingsStore::new);
+		final BooleanSignal music = settings.getMusic();
+		final IntegerSignal volume = settings.getVolume();
 
 		RectNode
 		.create(660, 290, 600, 500)
@@ -33,27 +37,27 @@ public class SettingsUI extends UI {
 			.create(392, 130, 160, 70)
 			.color(Theme.INK)
 			.hoveredColor(Theme.DARK)
-			.onClick(event -> settings.getMusic().toggle())
-			.label(Text.create(settings.getMusic().get() ? "On" : "Off", label))
+			.onClick(event -> music.toggle())
+			.label(Text.create(music.get() ? "On" : "Off", label))
 			.attach(card);
 			TextNode.create(48, 275).text(Text.create("Volume", caption)).anchorY(Align.CENTER).attach(card);
 			RectNode
 			.create(312, 240, 70, 70)
 			.color(Theme.INK)
 			.hoveredColor(Theme.DARK)
-			.onClick(event -> settings.getVolume().set(Math.max(0, settings.getVolume().peek() - 1)))
+			.onClick(event -> volume.set(Math.max(0, volume.peek() - 1)))
 			.label(Text.create("-", label))
 			.attach(card);
 			TextNode
 			.create(432, 275)
-			.text(Text.create(settings.getVolume().get() * 10 + " %", caption))
+			.text(Text.create(volume.get() * 10 + " %", caption))
 			.anchor(Align.CENTER)
 			.attach(card);
 			RectNode
 			.create(482, 240, 70, 70)
 			.color(Theme.INK)
 			.hoveredColor(Theme.DARK)
-			.onClick(event -> settings.getVolume().set(Math.min(10, settings.getVolume().peek() + 1)))
+			.onClick(event -> volume.set(Math.min(10, volume.peek() + 1)))
 			.label(Text.create("+", label))
 			.attach(card);
 			RectNode
