@@ -76,7 +76,7 @@ public class ProgressNode extends Node {
 		TOP_TO_BOTTOM,
 		BOTTOM_TO_TOP;
 
-		public final boolean isHorizontal() {
+		public boolean isHorizontal() {
 			return this == ProgressDirection.LEFT_TO_RIGHT || this == ProgressDirection.RIGHT_TO_LEFT;
 		}
 

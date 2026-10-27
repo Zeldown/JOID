@@ -119,7 +119,7 @@ public abstract class SelectorNode<V> extends BaseSelectorNode<V> {
 		UP,
 		DOWN;
 
-		public final boolean isDown() {
+		public boolean isDown() {
 			return this == SelectorDirection.DOWN;
 		}
 

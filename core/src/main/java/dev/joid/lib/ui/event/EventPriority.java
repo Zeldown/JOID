@@ -9,7 +9,7 @@ public enum EventPriority {
 	LOWEST,
 	MONITOR;
 
-	public final boolean isMonitor() {
+	public boolean isMonitor() {
 		return this == EventPriority.MONITOR;
 	}
 
