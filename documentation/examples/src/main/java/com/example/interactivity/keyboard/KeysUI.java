@@ -20,7 +20,7 @@ public class KeysUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(KeysUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(KeysUI.INK);
 
 		// #region keys
 		super.handleKeyPressed(event -> this.key.set(event.getKey().name()));

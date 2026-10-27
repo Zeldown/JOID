@@ -20,7 +20,7 @@ public class NumberFieldUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(NumberFieldUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(NumberFieldUI.INK);
 
 		RectNode
 		.create(660, 390, 600, 300)

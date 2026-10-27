@@ -22,7 +22,7 @@ public class CounterUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(CounterUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(CounterUI.INK);
 
 		RectNode
 		.create(660, 340, 600, 400)

@@ -15,7 +15,7 @@ public class NoDigitsUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(NoDigitsUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(NoDigitsUI.INK);
 
 		RectNode
 		.create(760, 440, 400, 200)

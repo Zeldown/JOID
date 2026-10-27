@@ -21,7 +21,7 @@ public class CounterUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28).color(CounterUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 28F).color(CounterUI.INK);
 
 		TextNode.create(80, 80).text(Text.create("Clicks: " + this.clicks.get(), info)).attach(this);
 

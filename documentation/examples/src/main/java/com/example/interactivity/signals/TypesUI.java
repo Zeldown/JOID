@@ -19,13 +19,13 @@ public class TypesUI extends UI {
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
 	// #region types
-	private final BooleanSignal details = new BooleanSignal(true);
-	private final ListSignal<String> names = new ListSignal<>(Arrays.asList("Ada", "Grace"));
+	private final BooleanSignal      details = new BooleanSignal(true);
+	private final ListSignal<String> names   = new ListSignal<>(Arrays.asList("Ada", "Grace"));
 	// #endregion
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(TypesUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(TypesUI.INK);
 
 		RectNode
 		.create(560, 340, 800, 400)

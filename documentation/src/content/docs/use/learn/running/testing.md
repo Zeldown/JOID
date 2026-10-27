@@ -130,8 +130,8 @@ Which commands do you play?
 <summary>Solution</summary>
 
 ```java fragment
-runner.execute("ui " + FormUI.class.getName(), "moveto 960 540 200",
-		"press LEFT", "release LEFT", "type Ada", "shot typed")
+final String ui = "ui " + FormUI.class.getName();
+runner.execute(ui, "moveto 960 540 200", "press LEFT", "release LEFT", "type Ada", "shot typed");
 ```
 
 The click focuses the field at the center of the window, `type` sends the three characters, and the shot shows the result.

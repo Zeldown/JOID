@@ -17,7 +17,7 @@ public class ColorFieldUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(ColorFieldUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(ColorFieldUI.INK);
 
 		RectNode
 		.create(660, 390, 600, 300)

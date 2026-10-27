@@ -18,7 +18,7 @@ public class SnapUI extends UI {
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(SnapUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(SnapUI.INK);
 		final StringSignal slot = new StringSignal("none");
 
 		RectNode

@@ -229,7 +229,7 @@ public final class RunExamples {
 			urls.add(new File(entry).toURI().toURL());
 		}
 
-		try (URLClassLoader discovery = new URLClassLoader(urls.toArray(new URL[0]), ClassLoader.getSystemClassLoader().getParent())) {
+		try (final URLClassLoader discovery = new URLClassLoader(urls.toArray(new URL[0]), ClassLoader.getSystemClassLoader().getParent())) {
 			final Class<?> base = Class.forName(UI.class.getName(), false, discovery);
 			for (final String name : classes) {
 				if (name.startsWith(RunExamples.CAPTURE) || name.matches(".*\\$\\d.*")) {

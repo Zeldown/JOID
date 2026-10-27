@@ -18,13 +18,13 @@ public class NameFieldUI extends UI {
 	private static final Color PLACEHOLDER = new Color(221, 221, 221).lock();
 
 	// #region signal
-	private final StringSignal name = new StringSignal("");
+	private final StringSignal  name    = new StringSignal("");
 	private final IntegerSignal submits = new IntegerSignal(0);
 	// #endregion
 
 	@Override
 	public void init() {
-		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24).color(NameFieldUI.INK);
+		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 24F).color(NameFieldUI.INK);
 
 		RectNode
 		.create(660, 390, 600, 300)
