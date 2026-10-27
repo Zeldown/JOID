@@ -1,0 +1,4 @@
+# crop style-effect-order 390 200 1140 680
+ui com.example.style.EffectOrderUI
+wait 100
+shot style-effect-order

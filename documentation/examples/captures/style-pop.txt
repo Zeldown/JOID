@@ -1,0 +1,11 @@
+# crop style-pop 660 340 600 400
+# hold style-pop 600
+ui com.example.style.MenuUI
+move 680 190
+press LEFT
+release LEFT
+move 1700 1050
+# film style-pop
+wait 600
+key ESCAPE
+wait 400

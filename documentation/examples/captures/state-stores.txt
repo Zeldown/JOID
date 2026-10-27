@@ -1,0 +1,13 @@
+# crop state-stores 540 20 1360 740
+ui com.example.state.SettingsUI
+open com.example.state.VolumeOverlay
+wait 100
+move 820 430
+press LEFT
+release LEFT
+wait 50
+press LEFT
+release LEFT
+move 1700 950
+wait 100
+shot state-stores
