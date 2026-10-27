@@ -53,8 +53,7 @@ The opening transition starts once `init()` has run, so a transition set in `ini
 
 A transition is a configuration that several UIs can share, such as a constant.
 `transition(...)` copies its two steps into the UI, and each UI plays its own copies: a UI that closes never stops another one.
-The settings are read at that moment: an `enabled(...)`, a `draw(...)` or a listener given to the shared transition later reaches no UI that already has it.
-A listener given before, such as `getOut().getAnimator().onComplete(...)`, runs once for each UI that plays the step.
+The settings and the listeners are copied at that moment, so a change made later to the shared transition reaches no UI that already has it.
 The state of a playing transition is on the UI: [[UI#getTransitionIn]] and [[UI#getTransitionOut]] return the steps it plays, with `isRunning()` and `getAnimator()`.
 
 ## Write a transition of your own
@@ -90,7 +89,7 @@ Its translations are in design pixels, like the positions of the nodes: `300D` m
   When several screens are opened during that time, the last one wins.
 - [[JOID#forceClose]] closes at once, without the closing transition, and so does a close of a UI that is hidden or not drawn.
 
-[Open and close a UI](/use/learn/describing-the-ui/uis/) says when the opening transition plays.
+[Open and close a UI](/use/learn/describing-the-ui/uis/#open-and-close-a-ui) says when the opening transition plays.
 
 ## Recap
 

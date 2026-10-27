@@ -59,10 +59,10 @@ A control given a plain value keeps the value to itself.
 
 **Prefer** rebuilding the children only when their number or their kind depends on a value, such as the rows of a list.
 For one text or one color, an expression that reads the signal is enough.
-[Rebuilding](/use/learn/state/rebuilding/)
+[Rebuilding the tree](/use/learn/state/rebuilding/)
 
 **Prefer** a store for a value that several UIs share, and a [[UIProperty]] field for a value that belongs to one UI.
-[Stores and properties](/use/learn/state/stores-and-properties/)
+[Stores and remembered properties](/use/learn/state/stores-and-properties/)
 
 **Do** close the open UIs before your program ends: closing a UI saves its stores and properties.
 [Close the UIs before the program ends](/use/learn/running/backends/#close-the-uis-before-the-program-ends)

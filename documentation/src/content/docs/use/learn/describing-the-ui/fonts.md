@@ -58,7 +58,7 @@ The italic line has no italic face to draw, so the regular face is slanted.
 - `italic(true)` draws the italic face closest to the weight; a family without an italic face slants its upright face.
 - Two faces of the same weight and slant in one `load(...)` call throw an `IllegalArgumentException`.
 
-A face whose file declares the wrong weight can be given another one: [Custom fonts](/use/learn/going-further/fonts/) shows the MSDF sources that do it.
+A face whose file declares the wrong weight can be given another one: [Custom fonts and MSDF](/use/learn/going-further/fonts/) shows the MSDF sources that do it.
 
 ## Load a font without blocking
 
@@ -70,7 +70,7 @@ To keep the window responsive while a large font loads, react to the future inst
 ```
 
 The UI opens at once with an empty card, and the text appears when the font is ready.
-JOID completes the future on the render thread, so the callback may attach nodes, open and close UIs ([Threads](/use/learn/running/threads/)).
+JOID completes the future on the render thread, so the code that reacts to it may attach nodes, open and close UIs ([Threads](/use/learn/running/threads/)).
 
 ## Choose MSDF or bitmap
 
@@ -83,7 +83,7 @@ JOID draws two kinds of fonts:
 | Use it for | Every interface text | Pixel-art interfaces |
 
 `MsdfFontLoader` loads an MSDF font, the right choice in almost every case.
-A bitmap font is a [[BitmapFont]] that you write for your own glyphs: [Custom fonts](/use/learn/going-further/fonts/) shows how, and [MSDF text](/use/in-depth/msdf-text/) explains how MSDF keeps the edges sharp.
+A bitmap font is a [[BitmapFont]] that you write for your own glyphs: [Custom fonts and MSDF](/use/learn/going-further/fonts/) shows how, and [MSDF text](/use/in-depth/msdf-text/) explains how MSDF keeps the edges sharp.
 
 ## Recap
 

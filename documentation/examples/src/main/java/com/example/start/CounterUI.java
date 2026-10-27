@@ -14,7 +14,7 @@ import dev.joid.lib.ui.node.impl.shape.RectNode;
 public class CounterUI extends UI {
 
 	private static final MsdfFont FONT = MsdfFontLoader.load(
-		CounterUI.class.getResourceAsStream("/fonts/Montserrat/Montserrat-Regular.ttf")
+		"fonts/Montserrat/Montserrat-Regular.ttf"
 	).join();
 
 	private static final Color INK  = new Color(153, 153, 153).lock();

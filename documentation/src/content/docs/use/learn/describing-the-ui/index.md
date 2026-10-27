@@ -30,14 +30,14 @@ Read [Nodes and the tree](/use/learn/describing-the-ui/nodes/) to learn how to n
 
 ## Node lifecycle
 
-A node joins a UI, lives there for many frames and leaves; callbacks run your code at each of these moments.
+A node joins a UI, lives there for many frames and leaves; listeners run your code at each of these moments.
 
 ```java fragment
 .onInit(event -> this.frames = 0L)
 .onUpdate(event -> this.frames++)
 ```
 
-Read [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/) to learn when each callback runs and what to release when a node leaves.
+Read [Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/) to learn when each listener runs and what to release when a node leaves.
 
 ## The design canvas
 

@@ -21,11 +21,11 @@ The prod jar has none of them, so the application you ship carries no debug code
 Put the dev jar of your backend on the classpath, as [Installation](/use/get-started/installation/#choose-the-dev-or-the-prod-jar) shows: JOID turns its **dev mode** on when it finds the dev classes, and there is nothing to call.
 The line that JOID prints when the backend registers confirms it with `loaded in dev mode`.
 
-Your own code reads the mode with [[JOIDEnv#isDevMode]], for example to show a panel of your own during development only:
+Your own code reads the mode with [[JOIDEnv#isDevMode]], for example to show a text during development only:
 
 ```java fragment
 if (JOIDEnv.isDevMode()) {
-	DebugPanelNode.create(20, 20).attach(this);
+	TextNode.create(20, 20).text(Text.create("Dev build", style)).attach(this);
 }
 ```
 
@@ -69,10 +69,10 @@ The dev mode adds zoom shortcuts to every zoomable UI: `Ctrl` or `Alt` with `+` 
 
 ## Reload a UI while you work
 
-| Shortcut | Effect |
+| Shortcut | Calls |
 |---|---|
-| `Ctrl+R` or `F5` | Calls [[UI#reload]]: the same instance runs `init()` again, its fields keep their values. |
-| `Ctrl+Shift+R` or `Shift+F5` | Calls [[UI#renew]]: a new instance replaces the UI, built by its constructor without argument. |
+| `Ctrl+R` or `F5` | [[UI#reload]] |
+| `Ctrl+Shift+R` or `Shift+F5` | [[UI#renew]] |
 
 [Rebuild an open UI](/use/learn/describing-the-ui/uis/#rebuild-an-open-ui) explains what each of them keeps.
 A reload that fails prints the exception instead of stopping the program: `[JOID] The reload of MenuUI failed (…), fix init() then reload it again`.

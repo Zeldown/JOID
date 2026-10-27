@@ -30,7 +30,9 @@ public class DragUI extends UI {
 			.create(40, 40, 80, 80)
 			.color(DragUI.INK)
 			.draggable(DraggableProperty.parent())
+			// #region drop
 			.onDragDrop(event -> drops.increment())
+			// #endregion
 			.attach(card);
 			// #endregion
 			TextNode.create(40, 340).text(Text.create("Drops: " + drops.get(), info)).attach(card);

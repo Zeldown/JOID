@@ -35,7 +35,9 @@ public class SettingsUI extends UI {
 			TextNode.create(60, 55).text(Text.create("Subtitles", info)).attach(card);
 			TextNode.create(60, 145).text(Text.create("Volume", info)).attach(card);
 			// #region bind
+			// #region checkbox
 			KitCheckboxNode.create(240, 40, 50).checked(this.subtitles).attach(card);
+			// #endregion
 			KitIntegerSliderNode.create(240, 140, 300, 40).range(0, 10).value(this.volume).attach(card);
 			KitIntegerFieldNode.create(580, 130, 160, 60).min(0).max(10).value(this.volume).info(info).attach(card);
 			// #endregion

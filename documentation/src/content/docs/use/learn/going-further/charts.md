@@ -23,7 +23,7 @@ A skin overrides `draw` and reads them:
 ```java file="com/example/further/ChartsLineChartNode.java" region="node"
 ```
 
-The skin is a [custom node](/use/learn/going-further/custom-nodes/) that draws with [[DrawUtils]] ([Drawing](/use/learn/going-further/drawing/) teaches the calls).
+The skin is a [custom node](/use/learn/going-further/custom-nodes/) that draws with [[DrawUtils]] ([Drawing shapes and text](/use/learn/going-further/drawing/) teaches the calls).
 Give the chart its axes, then its series:
 
 ```java file="com/example/further/ChartsUI.java" region="line"
@@ -92,7 +92,7 @@ The type parameter of `RadarChartNode` is the class of its data: extend `RadarCh
 ## Know what a chart shows without data
 
 A chart waits for its data before it draws.
-While it waits, it draws its skeleton, a pulsing grey block, instead of calling `draw` ([Rebuilding](/use/learn/state/rebuilding/) explains skeletons):
+While it waits, it draws its skeleton, a pulsing grey block, instead of calling `draw` ([Rebuilding the tree](/use/learn/state/rebuilding/) explains skeletons):
 
 - A [[ChartNode]] waits while it has no series, or while one of its series is empty.
 - A [[RadarChartNode]] waits while it has fewer than 3 axes, or while one of them has no value; `clear()` of a `RadarChartData` empties its value.

@@ -101,7 +101,6 @@ The map comes back with the types of JSON, whatever the type you put in it:
 
 Read a number through `Number`, as in `((Number) json.get("volume")).intValue()`, never with a cast to `Integer`.
 `toJson()` writes any other object field by field, and it comes back as a `Map`; a `null` value is not written.
-The texts `"NaN"`, `"Infinity"` and `"-Infinity"` come back as a `Double` too.
 JOID writes the file only when its text differs from the one it last read or wrote.
 
 Without an `id`, the file takes the full name of the class: give an `id` to a store that you may rename or move.

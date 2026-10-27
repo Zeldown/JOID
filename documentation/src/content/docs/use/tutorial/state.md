@@ -40,7 +40,7 @@ Nothing reads these fields yet, so the menu looks the same.
 
 Give Play an `onClick` that adds a round of 100 to 999 points:
 
-```java file="com/example/tutorial/state/MenuUI.java" region="play"
+```java file="com/example/tutorial/state/MenuUI.java" region="play" ins={5}
 ```
 
 Play now adds rounds, but nothing shows them yet: the panel still has fixed texts.
@@ -53,7 +53,7 @@ Build the value of each card from the signals instead of a fixed text:
 ```
 
 [[Text]]`.create(String.valueOf(this.best.get()), value)` reads the signal `best`.
-JOID remembers that this text depends on it, and builds the text again each time `best` changes: [Signals](/use/learn/interactivity/signals/) explains how.
+JOID records that this text depends on it, and builds the text again each time `best` changes: [Signals](/use/learn/interactivity/signals/) explains how.
 
 **Run it.**
 The three cards start at 0.

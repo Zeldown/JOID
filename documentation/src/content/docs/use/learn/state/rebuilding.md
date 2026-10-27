@@ -65,7 +65,7 @@ A text, a color, a size or a visibility that depends on a signal follows it thro
 .watch(this.size, (node, signal) -> node.width(60D + this.size.peek() * 60D))
 ```
 
-[[Node#onWatch]] calls your callback after the properties of each watch of the node ran; `watch(signal)` with no property only calls it.
+[[Node#onWatch]] calls your listener after the properties of each watch of the node ran; `watch(signal)` with no property only calls it.
 When a property throws, JOID warns once and the next properties of the watch still apply.
 
 `watch(signal, condition, properties...)` tests the condition on each change, and ignores the change while the condition returns `false`.

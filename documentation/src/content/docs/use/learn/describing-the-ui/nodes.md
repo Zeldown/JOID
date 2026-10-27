@@ -140,12 +140,12 @@ In the middle of a chain, the node has no variable yet.
 Here the height of the bar follows its width.
 Unlike `body`, which JOID runs again when it rebuilds the children, `self` runs once.
 
-## Find the node you need
+## Know where each node is taught
 
 The [Catalog](/use/catalog/) shows every node with a capture.
 These pages teach them by role:
 
-- Shapes, such as [[RectNode]] and [[CircleNode]]: [Styling](/use/learn/style-and-motion/styling/).
+- Shapes, such as [[RectNode]] and [[CircleNode]]: [Colors and styling](/use/learn/style-and-motion/styling/).
 - Text: [Text](/use/learn/describing-the-ui/text/).
 - Images, animations and videos: [Images and media](/use/learn/describing-the-ui/media/).
 - Nodes that arrange other nodes: [Layout](/use/learn/describing-the-ui/layout/).

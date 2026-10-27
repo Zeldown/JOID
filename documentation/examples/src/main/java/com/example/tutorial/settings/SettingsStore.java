@@ -9,7 +9,6 @@ import dev.joid.lib.ui.core.hook.store.UIStore;
 import dev.joid.lib.ui.core.hook.store.UIStoreData;
 import dev.joid.lib.ui.core.hook.store.UIStoreScope;
 
-// #region class
 @UIStoreData(id = "settings", scope = UIStoreScope.PERMANENT)
 public class SettingsStore extends UIStore {
 
@@ -44,4 +43,3 @@ public class SettingsStore extends UIStore {
 	}
 
 }
-// #endregion

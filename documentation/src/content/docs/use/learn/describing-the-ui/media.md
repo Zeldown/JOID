@@ -10,10 +10,10 @@ Icons, photos, animated images, video trailers: everything JOID shows from a fil
 This page shows how to load one, draw it, play it when it moves, and which formats JOID reads.
 
 **You will learn**
-- How to show an image from the jar, the disk, the web or a texture of your application
+- How to show an image from the jar, the disk or the web
 - How to fit, tint and crop an image
 - How to know when an image is loaded, and share settings between images
-- How to play animated images and videos, with their sound
+- How to play animated images and videos, with their sound, or a texture of your application
 - Which formats JOID reads
 
 ## Show an image
@@ -77,7 +77,7 @@ To read from a source of your own, such as an archive, write an asset locator ([
 | `COVER` | The image fills the box and keeps its proportions; what goes beyond the box is cut. |
 
 [[ResourceNode#color]] tints the image: JOID multiplies each pixel by the [[Color]], so white, the default, keeps the image as it is.
-[[ResourceNode#hoveredColor]] gives the tint under the mouse, and [[ResourceNode#hoveredResource]] another image, with a fade ([Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/)):
+[[ResourceNode#hoveredColor]] gives the tint under the mouse, and [[ResourceNode#hoveredResource]] another image, with a fade ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)):
 
 ```java file="com/example/describing/media/GalleryUI.java" region="tint"
 ```
@@ -112,8 +112,15 @@ A resource that cannot be read takes 64 × 64 design pixels in a node without a 
 
 :::caution
 That first frame waits for the whole decoding.
-Keep `blocking()` for small images that must never be missing.
+Keep `blocking()` for small images that must never be missing, and preload a large one.
 :::
+
+[[Resource#generate]] starts the decoding in the background without waiting for a node to draw the resource, for example in the constructor of the UI, before it opens:
+
+```java file="com/example/describing/media/PreloadUI.java" region="preload"
+```
+
+`onLoad` tells when that decoding ends, and the first node that draws the resource then shows it at once.
 
 ## Give a set of images the same settings
 
@@ -125,7 +132,8 @@ Images that share other settings, such as the sprites of a pixel-art game, come 
 
 [[ResourceBuilder#create]] starts with the settings of `Resource.of(...)`; `nearest()`, `linear()`, `mipmap(...)` and `textureCoords(...)` each return a builder with that setting.
 Each resource starts with a copy of the settings of its builder, and its own setters change that resource only; [[Resource#reset]] gives it back the settings of its builder.
-Resources of every builder share their decoded content; [[ResourceBuilder#cache]] with `null` makes each resource of a builder decode its own copy.
+Resources of every builder share their decoded content, kept in memory 5 minutes after its last use.
+[[ResourceBuilder#cache]] gives a builder a cache of its own, a [[MemoryResourceCache]] such as `MemoryResourceCache.create().size(50).expiry(60000L)` for 50 contents kept one minute, or `null` to make each resource decode its own copy.
 
 ## Play animated images and videos
 
@@ -190,7 +198,7 @@ Videos play on Windows (x64), macOS (Intel and Apple silicon) and Linux (x64).
 [[VideoNatives#install]] starts that download early and returns a `CompletableFuture`, for example behind a loading screen.
 [[VideoNatives#repository]] takes the URL of another Maven repository, such as a mirror of your company.
 When the natives cannot be found, downloaded or checked, the video fails with a [[VideoNativesException]] that says why, and `onError` receives it.
-[Ship your application](/use/guides/ship-your-application/) shows how to put the natives in your distribution instead.
+[Play videos without network access](/use/get-started/installation/#play-videos-without-network-access) shows how to put the natives on the classpath instead.
 
 ## Show a texture of your application
 

@@ -6,7 +6,7 @@ sidebar:
   order: 1
 ---
 
-You need this page only if you want to know when your code runs: when a click reaches your callback, when `update()` runs, when a followed value takes its new value, and in which order the nodes draw.
+You need this page only if you want to know when your code runs: when a click reaches your listener, when `update()` runs, when a followed value takes its new value, and in which order the nodes draw.
 
 <figure>
 
@@ -24,7 +24,7 @@ JOID has no loop and no thread of its own.
 Your application owns the window and calls [[Backend#frame]] once per turn of its loop, between polling the window events and presenting the image ([Choosing a backend](/use/learn/running/backends/)).
 
 The thread that registers the backend and calls `frame()` is the render thread.
-Every step on this page runs on it, one after the other: nothing in a frame runs at the same time as your callbacks.
+Every step on this page runs on it, one after the other: nothing in a frame runs at the same time as your listeners.
 [Threads](/use/learn/running/threads/) explains how work done on another thread gets back to it.
 
 ## Input arrives between two frames
@@ -32,7 +32,7 @@ Every step on this page runs on it, one after the other: nothing in a frame runs
 Polling the window events hands each event to JOID at once, before `frame()`.
 JOID offers it to the open UIs from the top one down ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/#see-how-uis-stack)), and inside a UI as [Events](/use/learn/interactivity/events/) explains.
 
-Your input callbacks (`handleMousePressed`, `onClick`, shortcuts…) therefore run before the frame, and what they change is drawn by the `frame()` call of the same turn.
+Your input listeners (`handleMousePressed`, `onClick`, shortcuts…) therefore run before the frame, and what they change is drawn by the `frame()` call of the same turn.
 
 ## One frame, step by step
 
@@ -44,7 +44,7 @@ Your input callbacks (`handleMousePressed`, `onClick`, shortcuts…) therefore r
    A [[Signal]] written from another thread takes its value here.
 3. **Update**: every open UI updates, hidden or not.
    It reads its own followed values, updates its nodes in their order, then runs its own `update()`.
-   A node reads its followed values, fires `onAnimate` for each animator whose value changed, updates its children, then runs its own `update()` and its `onUpdate` callbacks.
+   A node reads its followed values, fires `onAnimate` for each animator whose value changed, updates its children, then runs its own `update()` and its `onUpdate` listeners.
 4. **Background**: the UI bridge with the lowest priority, by default the window bridge, clears the window to its background color.
 5. **Draw UIs**: every UI bridge draws its visible UIs, from the lowest priority up ([Add a UI bridge of your own](/use/learn/running/embedding/#add-a-ui-bridge-of-your-own)).
    Inside a bridge, the overlays drawn under the screens come first, then the screens and popups, then the overlays drawn above them.
@@ -71,23 +71,23 @@ The UI reads the position of the mouse once, when it starts drawing: hover tests
 Drawing a node runs, in order:
 
 1. **Values**: the node and its children read their followed values again; a value that differs from the current one replaces it.
-   This is when a setter given a lambda runs it, and when a setter given an expression that reads signals takes their new value ([When does JOID compute this value again?](/use/learn/interactivity/signals/)).
+   This is when a setter given a lambda runs it, and when a setter given an expression that reads signals takes their new value ([When does JOID compute this value again?](/use/learn/interactivity/signals/#ask-when-does-joid-compute-this-value-again)).
 2. **Layout**: a [layout node](/use/learn/describing-the-ui/layout/) places its children.
 3. **Hover**: JOID tests whether the mouse is over the node and fires `onHoverStart` or `onHoverEnd` when the answer changes, and `onHover` while the mouse stays over it.
 4. **Scroll and drag**: a scrolling container moves its content, a dragged node moves toward the mouse, and a node in motion is shifted by whole pixels ([Pixel alignment](/use/in-depth/pixel-alignment/)).
    `onMount` fires on the frame the node becomes mounted.
 5. **Effects**: the [effects](/use/learn/style-and-motion/effects/) of the node open, by priority.
-6. **Draw**: the children with a negative `zindex`, the node itself followed by its `onDraw` callbacks, the other children, then its [layers](/use/learn/going-further/drawing/); the `onRender` callbacks run once all of that is drawn.
+6. **Draw**: the children with a negative `zindex`, the node itself followed by its `onDraw` listeners, the other children, then its [layers](/use/learn/going-further/drawing/); the `onRender` listeners run once all of that is drawn.
 7. The effects close, in reverse order.
 
 A hidden node, or a node outside the visible area of a container that clips its content, skips all of these steps except the first; it still updates in step 3 of the frame.
-[Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/) describes each callback; this list only places them in the frame.
+[Node lifecycle](/use/learn/describing-the-ui/node-lifecycle/) describes each listener; this list only places them in the frame.
 
 ## Where your code runs
 
 | Your code | When it runs |
 |---|---|
-| Input callbacks, shortcuts | When the event arrives, before the frame |
+| Input listeners, shortcuts | When the event arrives, before the frame |
 | `set(...)` on a signal, on the render thread | At once: the bound controls and the subscribers follow, and the nodes read it at their next update or draw |
 | `set(...)` on a signal, from another thread | Tasks step of the next frame |
 | `update()`, `onUpdate`, `onAnimate` | Update step, once per frame, before anything draws |
@@ -98,7 +98,7 @@ A hidden node, or a node outside the visible area of a container that clips its 
 
 ## What it means for your code
 
-- Change state in callbacks and in `update()`, and let the nodes read it: a value written in `update()` is drawn in the same frame.
+- Change state in listeners and in `update()`, and let the nodes read it: a value written in `update()` is drawn in the same frame.
 - A lambda given to a setter runs on every frame for every node that uses it, hidden or not: keep it to reading and combining values ([Performance](/use/in-depth/performance/)).
 - Draw by hand in `onDraw` or in a [layer](/use/learn/going-further/drawing/), never in `update()`: JOID draws only inside the draw step, and a draw call outside a frame throws.
 - Every duration JOID measures (animators, tasks, hover fades) comes from one clock, which the testkit replaces to make [snapshots](/use/learn/running/testing/) repeatable.

@@ -101,11 +101,8 @@ Lines and curves go through points, given as [[Point]] in design pixels:
 - `drawLine(color, stroke, points...)` joins the points with smooth edges.
 - `drawDashedLine(color, pattern, stroke, points...)` alternates dashes and gaps of `pattern` design pixels; a pattern of 0 or less throws `IllegalArgumentException`.
 - `drawCurvedLine(color, stroke, start, control, end)` draws a quadratic Bézier curve; with two control points, `(start, startControl, endControl, end)`, a cubic one.
-- `stroke` is in design pixels, like the thickness of a border, so a line grows with the UI.
+- `stroke` is in design pixels, like the thickness of a border, so a line grows with the UI; without a stroke, a line is 1 design pixel wide.
 - `drawShape(mode, color, points...)` sends the points as they are, as `LINES`, `LINE_STRIP`, `LINE_LOOP`, `TRIANGLES`, `QUADS` or a `POLYGON` ([[DrawMode]]).
-
-The stroke of lines and curves is in screen pixels, so a line keeps its weight whatever the size of the window; without a stroke, a line is 1 pixel wide.
-The stroke of `drawBorder` and `drawRoundedBorder` is in design pixels, like the shapes it outlines.
 
 ## Draw text
 
@@ -150,8 +147,8 @@ The drawable speaks the graphics API of the backend: OpenGL calls on LWJGL 2 and
 - [[DrawUtils]] draws **shapes**, **lines** and **text** on every frame, in design pixels.
 - Draw in a **layer**, in the `draw` of a custom node, in `onDraw` or in an effect, never outside a frame.
 - A **layer** draws in the coordinates of its node; the other places draw in the **coordinates of the parent**.
-- Each call draws over the previous ones and sets the render state it needs.
-- Line strokes are **screen pixels**; outline strokes and every position are design pixels.
+- Each call draws over the previous ones and sets the **render state** it needs.
+- Every **stroke**, of lines as of outlines, and every position are in **design pixels**.
 - `drawText` aligns text on a point, or places a `Text` in a box with a **`TextMode`**.
 - **`DrawUtils.RASTER`** shows what another renderer draws, in the graphics API of the backend.
 

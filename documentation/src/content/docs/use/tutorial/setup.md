@@ -19,8 +19,8 @@ The result of this lesson: one UI with one text node.
 
 ## Starting point
 
-Start from the project of [Installation](/use/get-started/installation/), with the LWJGL 3 dev jar.
-Running it prints the version of JOID, and opens no window yet.
+Start from the program of the [Quick Start](/use/get-started/quick-start/#write-your-first-program), with the LWJGL 3 dev jar.
+It opens a window with a counter button: this lesson replaces that UI with the menu of the game.
 
 ## 1. Open a window
 
@@ -42,13 +42,11 @@ For now it only fills the window behind it with a light grey, with the annotatio
 ```java file="com/example/tutorial/window/MenuUI.java" title="MenuUI.java"
 ```
 
-`Main` creates the window, starts the LWJGL 3 backend, opens the menu and runs the loop:
+`Main` is the program of the Quick Start, with the title of the game and the menu as the UI that [[JOID#open]] opens.
+Leave out the call to `closeAll()` for now: lesson 6 brings it back with its reason.
 
-```java file="com/example/tutorial/setup/Main.java" title="Main.java"
+```java file="com/example/tutorial/setup/Main.java" title="Main.java" ins={22,31}
 ```
-
-- The backend needs the OpenGL context current before `register()`, which creates GPU objects at once.
-- [[JOID#open]] opens the menu; `backend.frame()` then draws one frame of every open UI each time through the loop.
 
 **Run it** with `gradle run`.
 You should see a light grey window.
@@ -66,7 +64,6 @@ With another family, keep the folder and change the names in `Theme`.
 ```
 
 - [[MsdfFontLoader#load]] reads both faces into one font family, and `join()` waits until it is ready.
-  The first run on a machine takes a few seconds; later runs read a [cache](/use/in-depth/msdf-text/#what-happens-when-a-font-loads).
 - `lock()` keeps the shared color from being changed by accident ([Keep a palette safe](/use/learn/style-and-motion/styling/#keep-a-palette-safe)).
 
 The menu now shows the title at the center of the canvas:

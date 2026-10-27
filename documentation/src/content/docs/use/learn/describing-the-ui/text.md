@@ -47,7 +47,7 @@ Three styles from one font: a bold title, a body, and a smaller caption with spa
 | `fontSize(float)` | The size, in design pixels. |
 | `weight(...)` | The weight, a [[FontWeight]] from `THIN` (100) to `BLACK` (900): [Fonts](/use/learn/describing-the-ui/fonts/#let-a-style-pick-a-face) explains which face it draws. |
 | `italic(boolean)` | The italic face, or the upright face slanted when the font has none. |
-| `color(...)` | The color of the glyphs, a [[Color]] ([Styling](/use/learn/style-and-motion/styling/)). |
+| `color(...)` | The color of the glyphs, a [[Color]] ([Colors and styling](/use/learn/style-and-motion/styling/)). |
 | `letterSpacing(float)` | The space added between letters, on 1 of the size: `0.15F` adds 15 % of the size. |
 | `lineHeight(float)` | The height of a line, on 1 of the size: `1.5F` is 150 %; `0F` keeps the height of the font. |
 | `shadow()`, `shadow(Color)` | Adds a shadow under the text; `shadow()` follows the color of the text, 30 % darker, and `shadow(Color)` keeps a fixed color. |

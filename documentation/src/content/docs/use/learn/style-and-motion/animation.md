@@ -23,10 +23,10 @@ Start from what you want to see:
 
 | You want | Use |
 |---|---|
-| A node that changes while the mouse is over it | The hover progress of the node ([Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/)) |
+| A node that changes while the mouse is over it | The hover progress of the node ([Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)) |
 | A value that goes from A to B: once, in a loop, or when the user clicks | A [[TweenAnimator]] ([Animate a value](#animate-a-value)) |
 | A value that chases a target that keeps moving, such as the mouse | [[UI#lerpByFramerate]] ([Follow a moving target](#follow-a-moving-target)) |
-| Several values of your own, in timelines with pauses and callbacks | The tween engine: [[Tween]], [[Timeline]], [[TweenManager]] ([Animate values of your own](#animate-values-of-your-own)) |
+| Several values of your own, in timelines with pauses and listeners | The tween engine: [[Tween]], [[Timeline]], [[TweenManager]] ([Animate values of your own](#animate-values-of-your-own)) |
 | A UI that animates when it opens or closes | A [transition](/use/learn/style-and-motion/transitions/) |
 
 Every tool produces a number; a node turns it into motion by reading it in a setter.
@@ -108,9 +108,9 @@ To play an animation on demand, call `sequence(...)` again: it replaces the runn
 <figcaption>Each click starts a 400 ms step toward the other end, and `onComplete` counts the plays that reached their end.</figcaption>
 </figure>
 
-`onStart`, `onIterationEnd`, `onComplete` and the other callbacks of [[TweenAnimator]] belong to the animator and run for every sequence that follows.
-Give them once, where you create the animator: given in the `onClick` that starts a sequence, a callback adds up, and the tenth play runs it ten times.
-Once its steps end, the animator forgets them: `start()` alone then throws an `IllegalStateException` until the next `sequence(...)`.
+`onStart`, `onIterationEnd`, `onComplete` and the other listeners of [[TweenAnimator]] belong to the animator and run for every sequence that follows.
+Give them once, where you create the animator: given in the `onClick` that starts a sequence, a listener adds up, and the tenth play runs it ten times.
+Once its steps end, the animator drops them: `start()` alone then throws an `IllegalStateException` until the next `sequence(...)`.
 
 Two values that move apart need two animators, each read by its own setter.
 To update several properties from one animator, `animate(animator)` on a node calls [[Node#onAnimate]] on each frame where the value changed:
@@ -173,7 +173,7 @@ A [[Tween]] takes a getter, a setter and a duration, a [[Timeline]] arranges twe
 - `Tween.to(getter, setter, ms)` goes from the current value to `target(...)`, `Tween.from(...)` comes from `target(...)` to the current value, `Tween.set(...)` applies `target(...)` at once, and `Tween.call(listener)` runs code when a timeline reaches it.
 - `targetRelative(...)` adds an offset to the start value, and `waypoint(...)` adds values to pass through, on a smooth curve, or on straight segments with [[TweenPaths#LINEAR]] given to `path(...)`; a path of your own implements [[ITweenPath]].
 - `Timeline.sequence()` plays its children one after the other and `Timeline.parallel()` together; `beginSequence()`, `beginParallel()` and `end()` nest them, and `pushPause(ms)` waits.
-- A tween or a timeline has the `repeat`, `delay` and callbacks of an animator, and `pause()`, `resume()` and `kill()`.
+- A tween or a timeline has the `repeat`, `delay` and listeners of an animator, and `pause()`, `resume()` and `kill()`.
 - `start()` without a manager starts a tween that you advance with its own `update(delta)`.
 - [[TweenAnimator#timeline]] gives an animator a timeline that you build, such as one with a pause, from tweens made by its `tween(ms)`.
 

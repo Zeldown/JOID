@@ -55,6 +55,11 @@ The node moves through [[Node#move]], so [[Node#beforeMove]] can refuse or corre
 
 ## React to the drag
 
+The square of the first example counts its drops:
+
+```java file="com/example/interactivity/drag/DragUI.java" region="drop"
+```
+
 | Event | When it runs |
 |---|---|
 | [[Node#beforeDragStart]] | The press asks for a drag; `cancel()` refuses it |
@@ -124,13 +129,11 @@ This window moves only from its grey bar:
 ```
 
 A drag that started goes to its end, drop animation included, even when the pointer leaves the bar during a fast move.
-[[DraggableProperty#disabled]] turns the drag off, and `draggable(...)` again replaces the property, which stops a drag in progress.
+[[DraggableProperty#disabled]] turns the drag off, and `draggable(...)` again replaces the property; it stops a drag in progress when the new property has another `DraggableType` or refuses the node.
 
-## Place the node yourself after a drop
+## Keep the position writable during a drag
 
 After the release, the node still eases toward the pointer, its target or its start.
-A position that you give during that time wins, axis by axis: `onDragDrop(event -> event.getNode().move(event.getNode().getX(), 50D))` keeps the node on the line `y = 50`, while `x` finishes its way.
-A value equal to the current position changes nothing on its axis, which is how you change one axis only.
 
 :::caution
 A listener that writes the bound `x` signal on every change, for example to round it, stops the easing on `x` at its first write.
@@ -143,7 +146,7 @@ Give it a value or a writable signal, or drag a copy.
 ## Recap
 
 - **`draggable(property)`** makes a node follow the left button from a press on it to the release, inside the **area** of the property.
-- The node moves for good and is drawn above its siblings during the drag.
+- The node moves for good and is **drawn above its siblings** during the drag.
 - **`beforeDragStart`** and **`beforeDragDrop`** can refuse the start or send the node back; **`onDragStart`**, **`onDrag`**, **`onDragDrop`** and **`onDragSnap`** tell what happened.
 - **`snap(targets...)`** slides the dropped node onto a target, the nearest one or the overlapped one (`OVERLAP`).
 - **`DraggableType.COPY`** drags a copy that disappears at the drop; the listeners decide what it leaves.

@@ -37,7 +37,7 @@ The signal follows each key, so "Hello, Ada" changes while the user types; Enter
 </figure>
 
 [[TextFieldNode]] needs a [[TextInfo]] before it is attached; without one, the attach throws an `IllegalStateException`.
-With the factory without a height, the field takes the height of its font plus its margins.
+With the factory without a height, the field takes the height of its font plus its margins, set by [[FieldNode#margin]], or one side at a time with `marginTop(...)`, `marginBottom(...)`, `marginLeft(...)` and `marginRight(...)`.
 `KitTextFieldNode` is a [[TextFieldNode]] with a white `background(...)` and a border while it has the focus; any node can be the background.
 
 - [[FieldNode#onChange]] runs on each edit with a [[NodeFieldChangeEvent.Post]]: `getText()` is the text, `getValue()` the value, `isValid()` whether the text is a valid value.
@@ -52,7 +52,7 @@ A field takes the keyboard only while it has the focus: it then consumes every k
 
 - A press on the field gives it the focus and puts the cursor under the pointer.
 - A press anywhere else takes the focus, and so do Enter in a one-line field, Escape, and the detach of the field.
-- Escape keeps the typed text; a second Escape reaches the UI and closes it when it is closeable.
+- Escape keeps the typed text ([Know who receives the keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard) gives what a second Escape does).
 - One field has the focus at a time, in all the UIs on the screen: a press on a field first takes the focus from the field that had it, which runs its `onBlur`, then gives it to the new one.
 
 [[FieldNode#focus]] and [[FieldNode#blur]] act from your code, and `focused(...)` binds the focus to a signal:
@@ -84,7 +84,7 @@ The user edits the text with the keys of every text editor:
 | Ctrl + A, C, X, V (Cmd on macOS) | Select all, copy, cut, paste |
 
 From your code, [[FieldNode#cursorPosition]] and [[FieldNode#selection]] give the cursor and the selection, a plain value or a signal bound both ways; [[FieldNode#moveCursor]] and [[FieldNode#select]] act like the user, with `beforeCursorMove`, `onCursorMove`, `beforeSelect` and `onSelect`.
-Losing the focus clears the selection, even one asked for that the text is still too short to hold; a cursor position asked for stays pending.
+Losing the focus clears the selection.
 
 ## Shape what the user types
 

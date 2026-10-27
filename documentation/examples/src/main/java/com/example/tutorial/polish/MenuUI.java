@@ -101,7 +101,7 @@ public class MenuUI extends UI {
 		TextNode
 		.create(164, 760)
 		.text(Text.create(
-			() -> (settings.getMusic().get() ? "Music on" : "Music off")
+			(settings.getMusic().get() ? "Music on" : "Music off")
 			+ ", volume " + settings.getVolume().get() * 10 + " %",
 			caption
 		))

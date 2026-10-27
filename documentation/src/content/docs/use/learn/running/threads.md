@@ -18,7 +18,7 @@ Slow work belongs on other threads, and its results must come back to the one th
 ## Know which thread JOID runs on
 
 The **render thread** is the thread that calls `register()` on the backend, then `frame()` in your loop.
-JOID calls your callbacks there (`init()`, `onClick`, `onChange`…), so code inside them can change anything.
+JOID calls your code there (`init()`, `onClick`, `onChange`…), so code inside them can change anything.
 
 Nodes, UIs and drawing belong to the render thread: create and change them there only.
 A change from another thread can land in the middle of a frame and draw half of it, or get lost.
@@ -28,8 +28,8 @@ A few calls are safe from any thread, because they hand their work to the render
 | Call | From another thread |
 |---|---|
 | [[JOID#open]], `JOID.close`, `JOID.forceOpen`, `JOID.forceClose` | open or close the UI at the start of the next frame |
-| [[JOID#onReady]] | runs the callback at the start of the next frame, once JOID is ready |
-| `set(...)` and the other writes of a [[Signal]] | apply the write at the start of the next frame ([Tasks](/use/learn/state/tasks/#set-a-signal-from-another-thread) explains what that means for your state) |
+| [[JOID#onReady]] | runs the code at the start of the next frame, once JOID is ready |
+| `set(...)` and the other writes of a [[Signal]] | apply the write at the start of the next frame ([Tasks and background updates](/use/learn/state/tasks/#set-a-signal-from-another-thread) explains what that means for your state) |
 | [[ThreadUtils#runOnRenderThread]] | runs your task at the start of the next frame |
 
 ## Bring a result back from a worker thread
@@ -76,25 +76,25 @@ The render thread runs the queue only when your loop calls `frame()`.
 A program that registers the backend, then waits with `join()` on another thread before its loop starts, never sees the future complete.
 :::
 
-## Run code later or periodically
+## Know the thread of a task
 
 A [[Task]] runs code after a delay, once or periodically, on the clock of JOID and on the render thread, while it stays attached to a UI or a node.
-[Tasks](/use/learn/state/tasks/#run-code-on-a-period) shows how to create and attach one.
+[Tasks and background updates](/use/learn/state/tasks/#run-code-on-a-period) shows how to create and attach one.
 
 ## Recap
 
-- The **render thread** registers the backend and calls `frame()`; JOID calls your callbacks there.
+- The **render thread** registers the backend and calls `frame()`; JOID calls your listeners there.
 - Change nodes and UIs **only on the render thread**.
 - `JOID.open`, `JOID.close`, `JOID.onReady` and **signal writes** are safe from any thread: they apply at the start of the next frame.
 - From a worker thread, hand a node change to **`runOnRenderThread(task)`**.
 - **`RenderThreadFuture.from(future)`** completes a future, and the stages after it, on the render thread.
-- A `Task` runs code later or periodically, on the clock of JOID ([Tasks](/use/learn/state/tasks/)).
+- A `Task` runs code **later or periodically**, on the clock of JOID ([Tasks and background updates](/use/learn/state/tasks/)).
 
 ## Try it
 
 **A long computation.**
 A button starts a computation that takes two seconds, and a text node must show `Done` at the end.
-Write the click callback, with `label` a [[TextNode]] of the UI.
+Write the click listener, with `label` a [[TextNode]] of the UI.
 
 <details>
 <summary>Solution</summary>

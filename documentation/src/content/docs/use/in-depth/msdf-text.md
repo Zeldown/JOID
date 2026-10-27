@@ -48,13 +48,13 @@ The first launch on a machine pays for the generation, once per font file; every
 An atlas that no load used for 30 days leaves the cache.
 
 In dev mode, JOID prints for each face whether it was generated or read from the cache, with the time it took.
-A `.msdf` file made in advance by the [MSDF generator](/use/learn/going-further/fonts/) loads without any generation: give its path to `load` instead of the font file.
+A `.msdf` file made in advance by the MSDF generator ([Custom fonts and MSDF](/use/learn/going-further/fonts/#generate-msdf-atlases-before-you-ship)) loads without any generation: give its path to `load` instead of the font file.
 
 ## What the atlas holds
 
 Every generated atlas is 2048 × 2048 texels, with a distance range of 24 texels, and holds the characters from U+0020 to U+0233: Basic Latin, Latin-1, Latin Extended-A and Latin Extended-B.
 A character outside this range has no glyph: JOID does not draw it and gives it no width.
-The MSDF generator builds atlases with other characters ([Fonts](/use/learn/going-further/fonts/)).
+The MSDF generator builds atlases with other characters ([Custom fonts and MSDF](/use/learn/going-further/fonts/)).
 
 Each face of a family is a separate atlas, so a regular and a bold file make two atlases of 16 MB of GPU memory each.
 

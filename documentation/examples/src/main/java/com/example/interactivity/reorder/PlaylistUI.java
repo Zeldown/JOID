@@ -29,10 +29,12 @@ public class PlaylistUI extends UI {
 			// #region list
 			ReorderableFlexNode
 			.vertical(60, 40, 480)
+			// #region end
 			.onReorderEnd(event -> {
 				final String song = event.getChild().getLabel().getText();
 				this.moved.set(song + " from " + event.getPrevious() + " to " + event.getIndex());
 			})
+			// #endregion
 			.margin(10D)
 			.body(list -> {
 				for (final String song : new String[] {"Intro", "Ocean", "Night drive", "Echoes", "Outro"}) {

@@ -61,11 +61,12 @@ Each letter keeps its exact advance: snapping letters one by one would make the 
 Under a rotation, a skew or a 3D projection, edges do not follow the pixel grid, and snapping them would distort the shape.
 JOID draws them at their exact position instead, with edges smoothed over one screen pixel by the shaders, identical on every backend.
 Circles, curves, polygons and lines are drawn the same way at any angle.
+Your own geometry gets the same soft edge with [[EdgeSmoothing]].
 
 ## What it means for your code
 
 - Place nodes in design pixels, fractional values included: JOID handles the screen.
   Rounding positions yourself only adds error, because the scale of the canvas is fractional.
-- Draw rectangles and images with [[DrawUtils]] in custom nodes and layers: they snap like the built-in nodes ([Drawing](/use/learn/going-further/drawing/)).
+- Draw rectangles and images with [[DrawUtils]] in custom nodes and layers: they snap like the built-in nodes ([Drawing shapes and text](/use/learn/going-further/drawing/)).
 - Move nodes through their position, an animator or a transform effect: the motion is shifted to whole pixels for you.
 - To copy a mockup pixel for pixel, read [Copy a mockup](/use/guides/copy-a-mockup/).

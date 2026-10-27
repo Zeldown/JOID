@@ -37,7 +37,7 @@ Positions and sizes are design pixels on a 1920 × 1080 canvas, whatever the siz
 
 [[UI]] has no abstract method.
 You override the hooks you need: [[UI#init]] builds the content, [[UI#update]] runs code on every frame, before the nodes are drawn.
-A UI also holds input handlers ([Events](/use/learn/interactivity/events/)), shortcuts ([Keyboard](/use/learn/interactivity/keyboard/)), tasks ([Tasks](/use/learn/state/tasks/)) and stores ([Stores and properties](/use/learn/state/stores-and-properties/)).
+A UI also holds input handlers ([Events](/use/learn/interactivity/events/)), shortcuts ([Keyboard and shortcuts](/use/learn/interactivity/keyboard/)), tasks ([Tasks and background updates](/use/learn/state/tasks/)) and stores ([Stores and remembered properties](/use/learn/state/stores-and-properties/)).
 
 ## Open and close a UI
 
@@ -73,7 +73,7 @@ Build the nodes in `init()`, never in the constructor.
 Each opening clears the node list of the UI before `init()` runs, so a node attached in the constructor never shows.
 :::
 
-Escape closes the top UI when it is closeable and no node took the key ([Keyboard](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard)).
+Escape closes the top UI when it is closeable and no node took the key ([Keyboard and shortcuts](/use/learn/interactivity/keyboard/#know-who-receives-the-keyboard)).
 The opening and closing animations are transitions ([Transitions](/use/learn/style-and-motion/transitions/)).
 
 ## Keep a UI open
@@ -111,6 +111,12 @@ Overlays and popups open above the current screen instead of replacing it, so se
 
 ## Rebuild an open UI
 
+```java file="com/example/describing/uis/ReloadUI.java" region="rebuild"
+```
+
+Reload counts on: the instance and its field stay.
+Renew starts again from 1: a new instance replaces the UI.
+
 [[UI#reload]] rebuilds an open UI on the same instance: it reads the annotations of the class again, then runs `init()` again, so its fields keep their values.
 [[UI#renew]] starts from a fresh state instead: it replaces the open UI by a new instance of its class, built by its constructor without argument, and returns that instance.
 In dev mode, shortcuts call each of them for you ([Dev tools](/use/get-started/dev-tools/)).
@@ -143,6 +149,7 @@ Three more annotations configure a UI:
 The annotations are inherited: a subclass keeps the options of its parent class unless it declares the annotation again.
 
 [[UI#getData]] returns the options of the running UI, and each setter changes them from then on.
+[[UI#getPopup]], [[UI#getOverlay]], [[UI#getScale]] and [[UI#getDebug]] do the same for the other annotations.
 In `PauseUI`, a click on the card makes the UI closeable, so Escape closes it from the next press.
 
 ## Recap

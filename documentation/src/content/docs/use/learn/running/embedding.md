@@ -32,7 +32,7 @@ After the loop, `closeAll()` of each UI bridge [closes the UIs still open](/use/
 
 Call `frame()` from the thread that registered the backend: [Threads](/use/learn/running/threads/) explains how other threads hand their work to it.
 [[UIBridgeRegistry#onFrame]] of [[BridgeHandler#UI]] runs a task of yours at the start of every frame, before the UIs update.
-Outside a UI, `BridgeHandler.WINDOW.get()` returns the window as JOID sees it, an [[IWindowBridge]]: the size of the window in screen pixels, the position of the mouse, the keys held, and the clipboard of the system.
+Outside a UI, `BridgeHandler.WINDOW.get()` returns the window as JOID reads it, an [[IWindowBridge]]: the size of the window in screen pixels, the position of the mouse, the keys held, and the clipboard of the system.
 
 ## Keep your own input handlers
 

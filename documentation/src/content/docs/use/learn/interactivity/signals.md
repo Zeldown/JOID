@@ -6,8 +6,7 @@ sidebar:
   order: 2
 ---
 
-A node shows a value: a count, a name, a volume.
-When that value changes, the node must change with it, without rebuilding the screen.
+A node shows a value, a count, a name or a volume, and must change with it when it changes, without rebuilding the screen.
 A signal holds such a value, and the setters of every node follow it.
 The counter of [Events](/use/learn/interactivity/events/#react-to-a-click) already used one: this page explains why its text changes.
 
@@ -49,8 +48,7 @@ At each click, the text, the width and the color of the bar follow `clicks`, and
 When `clicks` changes, JOID computes `"Clicks: " + this.clicks.get()` again and gives the result to the text node.
 The width and the color of the bar follow `clicks` the same way.
 
-Every change of a signal ends in [[Signal#set]]: `increment()` sets the current value plus one.
-A `set` with a value equal to the current one (by `equals`) changes nothing and computes nothing again.
+Every change of a signal, through [[Signal#set]] or an operation such as `increment()`, stores the new value: a value equal to the current one (by `equals`) changes nothing and computes nothing again.
 [[Signal#reset]] goes back to the value that the signal was created with.
 
 A control, such as a checkbox or a slider, also writes its value into a signal: [Controls](/use/learn/interactivity/controls/#bind-a-control-to-a-signal) shows how.
@@ -72,6 +70,8 @@ The three bars below set the same property in the three possible ways:
 A plain value never changes, an expression changes after a click, a lambda on every frame.
 </figcaption>
 </figure>
+
+The lambda reads the time from [[BridgeHandler]]`.CLOCK`, the clock of JOID, which a [screen test](/use/learn/running/testing/#keep-every-run-identical) drives.
 
 | What you pass | Example | JOID computes it again |
 |---|---|---|
@@ -196,7 +196,7 @@ After you change an object held by a `Signal<T>` in place, call [[Signal#fireCha
 [Rebuilding the tree](/use/learn/state/rebuilding/) uses an empty signal to wait for a value.
 
 :::note
-A signal can be written from any thread: JOID applies the write on the render thread ([Tasks](/use/learn/state/tasks/#set-a-signal-from-another-thread)).
+A signal can be written from any thread: JOID applies the write on the render thread ([Tasks and background updates](/use/learn/state/tasks/#set-a-signal-from-another-thread)).
 :::
 
 ## Recap

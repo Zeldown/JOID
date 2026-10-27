@@ -31,7 +31,7 @@ A derived value computes it once, from its signals, and behaves like a signal of
 Like any signal, it is a `Supplier`, so every reactive setter takes it, and so does [[Text#create]].
 The function runs again only when `price` changes, never on a frame where nothing changed.
 
-A function given to `map` can hold any Java code: it is the way out for an expression that JOID cannot follow inside a setter ([What JOID follows](/use/learn/interactivity/signals/)).
+A function given to `map` can hold any Java code: it is the way out for an expression that JOID cannot follow inside a setter ([What JOID follows](/use/learn/interactivity/signals/#what-joid-follows)).
 
 ## Combine several signals
 
@@ -70,7 +70,7 @@ A derived value changes only when a signal that it reads changes.
 A `Signal.from(...)` that reads no signal never changes, and the [dev mode](/use/get-started/dev-tools/) warns about it once: read the signal with `get()`, or pass a lambda to the setter when the value comes from elsewhere.
 :::
 
-## A derived value is read-only
+## Write to a derived value through its sources
 
 A `ComputedSignal` takes its value from its function.
 `set(...)` and `reset()` throw an `IllegalStateException` whose message tells you to set the signals it reads instead, and [[Signal#isWritable]] returns `false`.

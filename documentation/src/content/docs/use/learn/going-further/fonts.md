@@ -12,8 +12,7 @@ This page covers the other cases: letters drawn from a pixel-art atlas, glyphs d
 **You will learn**
 - How to choose the level of a custom font
 - How to write a pixel-art font on a bitmap atlas
-- What a glyph font draws, and what JOID does for it
-- What a raw font must implement
+- What a glyph font and a raw font must implement
 - How to set the weight of a font file yourself
 - How to generate MSDF atlases before you ship
 
@@ -56,7 +55,7 @@ The renderer tells where each glyph lies in the atlas:
 
 `getCell` returns a [[BitmapCell]] for the glyph, or `null` to draw nothing.
 The renderer reads the texture of the atlas without drawing the resource, so `prepareBind()` decodes and uploads it first ([Framebuffers and models](/use/learn/going-further/framebuffers-and-models/) explains the texture of a resource).
-The atlas is loaded with nearest sampling, no mipmaps and no cache, and `blocking()` decodes it on its first use, so the text draws from the first frame ([Media](/use/learn/describing-the-ui/media/) explains these settings).
+The atlas is loaded with nearest sampling, no mipmaps and no cache, and `blocking()` decodes it on its first use, so the text draws from the first frame ([Images and media](/use/learn/describing-the-ui/media/) explains these settings).
 
 Load the font once, then use it like any other:
 
@@ -144,7 +143,7 @@ Both extend [[MsdfSource]], which takes `weight(...)` and `italic(...)`.
 ## Generate MSDF atlases before you ship
 
 The first time a font file loads on a machine, JOID generates its MSDF atlas and keeps it in the [cache folder](/use/learn/running/files/) ([MSDF text](/use/in-depth/msdf-text/) explains the atlas).
-To skip that delay, generate the atlas before you ship, with the MSDF generator: the jar `joid-tool-msdf-<version>.jar` of each release, which runs on Java 8 and needs nothing else.
+To skip that delay, generate the atlas before you ship, with the MSDF generator ([[MsdfGenerator]]): the jar `joid-tool-msdf-<version>.jar` of each release, which runs on Java 8 and needs nothing else.
 
 ```sh fragment
 java -jar joid-tool-msdf-<version>.jar --font Montserrat-Regular.ttf --output fonts/Montserrat-Regular

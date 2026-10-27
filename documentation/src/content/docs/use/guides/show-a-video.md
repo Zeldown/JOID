@@ -40,7 +40,7 @@ Give it the video, then the playback options:
 The variable `player` keeps the node for the next steps.
 
 The first video that a machine plays makes JOID download its FFmpeg natives into the cache folder; until they are ready, the node shows its skeleton.
-[Installation](/use/get-started/installation/) shows how to ship them with your application instead.
+[Play videos without network access](/use/get-started/installation/#play-videos-without-network-access) shows how to ship them with your application instead.
 
 **Check:** run the UI: the video plays in the center of the window, with its sound, and starts again when it ends.
 
@@ -65,13 +65,13 @@ The label reads `isPlaying()` on every frame, so it always names the next action
 **Check:** click the button.
 The video and its sound stop, the bar stops growing and the label reads `Play`; a second click plays it again.
 
-[Images and media](/use/learn/describing-the-ui/media/) lists the other controls of the player, such as `seek` and `restart`, and its callbacks.
+[Images and media](/use/learn/describing-the-ui/media/) lists the other controls of the player, such as `seek` and `restart`, and its listeners.
 
 ## If it does not work
 
 1. A magenta and black checkerboard shows instead of the video, or nothing with the prod jar: the file cannot be read, and the dev jar prints `[JOID] The resource … cannot be read: …` with the cause.
-   Check the path, which starts with `/` for a file of the resources.
-2. The error output prints `[JOID] The FFmpeg natives of … cannot be downloaded from …`: the machine has no access to the repository, and every video fails; put the natives on the classpath ([Installation](/use/get-started/installation/)).
+   Check that the file is in the resources, under that path from their root (a leading `/` changes nothing).
+2. The error output prints `[JOID] The FFmpeg natives of … cannot be downloaded from …`: the machine has no access to the repository, and every video fails; put the natives on the classpath ([Play videos without network access](/use/get-started/installation/#play-videos-without-network-access)).
 3. The video plays without sound: the backend was registered with `audio(false)`, or the volume is `0F`.
 4. The video starts before the user asks: add `autoplay(false)` and call `play()` from a click.
 5. The picture is stretched: the default [[ResourceNode.StretchType#STRETCH]] fills the node; `CONTAIN` keeps the proportions, and `COVER` fills the node and crops the rest.

@@ -24,7 +24,7 @@ The badge that the effect draws over the button, until a click sets the count to
 
 - What effects are and how they combine: [Effects](/use/learn/style-and-motion/effects/).
 - The model of an effect of your own: [Custom effects](/use/learn/going-further/custom-effects/).
-- The shapes you can draw: [Drawing](/use/learn/going-further/drawing/).
+- The shapes you can draw: [Drawing shapes and text](/use/learn/going-further/drawing/).
 
 ## 1. Create the effect
 

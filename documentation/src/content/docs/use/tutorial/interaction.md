@@ -132,7 +132,7 @@ Any node takes a tooltip, a button as well as a card.
 
 ## What you learned
 
-- `hoveredColor`, `onClick` and `hover` are the most common reactions of a node ([Events](/use/learn/interactivity/events/), [Hover and tooltips](/use/learn/interactivity/hover-and-tooltips/)).
+- `hoveredColor`, `onClick` and `hover` are the most common reactions of a node ([Events](/use/learn/interactivity/events/), [Hover, tooltips and cursors](/use/learn/interactivity/hover-and-tooltips/)).
 - A popup is a UI opened above another with `JOID.open`, and closed with `JOID.close` or Escape ([Overlays and popups](/use/learn/describing-the-ui/overlays-and-popups/)).
 - A shortcut runs code on a key press, for the UI that receives the keyboard ([Keyboard and shortcuts](/use/learn/interactivity/keyboard/#bind-a-shortcut)).
 - The window bridge draws tooltips once it has a text style ([Choosing a backend](/use/learn/running/backends/#style-the-window-bridge)).

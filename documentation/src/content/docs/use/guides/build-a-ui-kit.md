@@ -24,7 +24,7 @@ A click on a kit changes the skins of the controls; their values stay.
 
 - Abstract controls, their parts and how a skin sets them: [Give your controls a look](/use/learn/going-further/ui-kit/).
 - Binding a control to a signal: [Controls](/use/learn/interactivity/controls/).
-- Rebuilding the children of a node when a signal changes: [Rebuilding](/use/learn/state/rebuilding/).
+- Rebuilding the children of a node when a signal changes: [Rebuilding the tree](/use/learn/state/rebuilding/).
 
 ## 1. Write a skin for each control
 
@@ -62,7 +62,7 @@ Keep the kit in a signal, and the values in signals of their own, outside the co
 ```java file="com/example/guides/KitGuideUI.java" region="state"
 ```
 
-The card rebuilds its children each time the kit changes ([Rebuilding](/use/learn/state/rebuilding/)), and its color derives from the kit with `map(...)`.
+The card rebuilds its children each time the kit changes ([Rebuilding the tree](/use/learn/state/rebuilding/)), and its color derives from the kit with `map(...)`.
 The controls bind the same signals in each rebuild, so the values survive the change of kit:
 
 ```java file="com/example/guides/KitGuideUI.java" region="screen"
