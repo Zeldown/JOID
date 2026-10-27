@@ -6,9 +6,9 @@ import dev.joid.lib.ui.node.effect.impl.RoundedNodeEffect;
 import dev.joid.lib.ui.node.impl.control.checkbox.CheckboxNode;
 import dev.joid.lib.ui.node.impl.shape.RectNode;
 
-// #region skin
 public class RoundGuideCheckboxNode extends CheckboxNode {
 
+	// #region skin
 	private static final Color INK = new Color(153, 153, 153).lock();
 
 	protected RoundGuideCheckboxNode(final double x, final double y, final double width, final double height) {
@@ -27,10 +27,10 @@ public class RoundGuideCheckboxNode extends CheckboxNode {
 		super.box(box);
 		super.mark(mark);
 	}
+	// #endregion
 
 	public static RoundGuideCheckboxNode create(final double x, final double y, final double width, final double height) {
 		return new RoundGuideCheckboxNode(x, y, width, height);
 	}
 
 }
-// #endregion

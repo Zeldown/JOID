@@ -18,9 +18,9 @@ public final class FontGuideStyle {
 	// #region styles
 	private static final Color INK = new Color(153, 153, 153).lock();
 
-	public static final TextInfo TITLE   = TextInfo.create(FontGuideStyle.FONT, 40F).weight(FontWeight.BOLD).color(FontGuideStyle.INK).lock();
 	public static final TextInfo BODY    = TextInfo.create(FontGuideStyle.FONT, 24F).color(FontGuideStyle.INK).lock();
-	public static final TextInfo TOOLTIP = TextInfo.create(FontGuideStyle.FONT, 20F).color(Color.WHITE).lock();
+	public static final TextInfo TITLE   = FontGuideStyle.BODY.withFontSize(40F).withWeight(FontWeight.BOLD).lock();
+	public static final TextInfo TOOLTIP = FontGuideStyle.BODY.withFontSize(20F).withColor(Color.WHITE).lock();
 	// #endregion
 
 	private FontGuideStyle() {}

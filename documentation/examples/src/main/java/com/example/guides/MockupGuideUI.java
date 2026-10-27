@@ -29,8 +29,15 @@ public class MockupGuideUI extends UI {
 		final BooleanSignal mockup = new BooleanSignal(false);
 		// #endregion
 		// #region text
-		final TextInfo name = TextInfo.create(ExampleFont.REGULAR, 32F).weight(FontWeight.BOLD).letterSpacing(-0.02F).color(Color.decode("#555555"));
-		final TextInfo role = TextInfo.create(ExampleFont.REGULAR, 22F).lineHeight(1.4F).color(Color.decode("#999999"));
+		final TextInfo name = TextInfo
+		.create(ExampleFont.REGULAR, 32F)
+		.weight(FontWeight.BOLD)
+		.letterSpacing(-0.02F)
+		.color(Color.decode("#555555"));
+		final TextInfo role = TextInfo
+		.create(ExampleFont.REGULAR, 22F)
+		.lineHeight(1.4F)
+		.color(Color.decode("#999999"));
 		// #endregion
 
 		// #region card
