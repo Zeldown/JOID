@@ -2,7 +2,7 @@
 summary: Places its visible children one after the other in a column or a row, and takes the size of its content.
 ---
 On the main axis, a size of `0` takes the size of the content; a declared size is a minimum without overflow, and a fixed size with an overflow.
-The children keep their own position as an offset; an `ABSOLUTE` or hidden child is left out.
+The children keep their own position as an offset that moves the child alone, without pushing the next ones; an `ABSOLUTE` or hidden child is left out.
 
 Learn: [Flex layout](/use/learn/describing-the-ui/flex-layout/).
 

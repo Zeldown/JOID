@@ -65,15 +65,15 @@ Fills the polygon through `points`, in order; a convex polygon gets smoothed edg
 
 ## drawLine(Color,Point[])
 
-Draws a smoothed line through `points`, in order, with the line width of the render state.
+Draws a smoothed line through `points`, in order, with the line width of the render state, in design pixels.
 
 ## drawLine(Color,float,Point[])
 
-Draws a smoothed line through `points`, `stroke` wide.
+Draws a smoothed line through `points`, `stroke` design pixels wide.
 
 ## drawDashedLine(Color,int,float,Point[])
 
-Draws a dashed line through `points`, `stroke` wide: dashes of `pattern` design pixels separated by gaps of the same length, restarted at each point.
+Draws a dashed line through `points`, `stroke` design pixels wide: dashes of `pattern` design pixels separated by gaps of the same length, restarted at each point.
 Throws `IllegalArgumentException` when `pattern` is 0 or less.
 
 ## drawCurvedLine(Color,Point,Point,Point)
@@ -82,7 +82,7 @@ Draws a quadratic Bézier curve from `start` to `end`, pulled toward `control`, 
 
 ## drawCurvedLine(Color,float,Point,Point,Point)
 
-Draws the quadratic Bézier curve `stroke` wide.
+Draws the quadratic Bézier curve `stroke` design pixels wide.
 
 ## drawCurvedLine(Color,Point,Point,Point,Point)
 
@@ -90,7 +90,7 @@ Draws a cubic Bézier curve from `start` to `end`, shaped by `startControl` and 
 
 ## drawCurvedLine(Color,float,Point,Point,Point,Point)
 
-Draws the cubic Bézier curve `stroke` wide.
+Draws the cubic Bézier curve `stroke` design pixels wide.
 
 ## drawShape(DrawMode,Color,Point[])
 
