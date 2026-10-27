@@ -147,6 +147,11 @@ public class ObjModelTest {
 	}
 
 	@Test
+	public void readsTheGroupNamesInUtf8() {
+		Assert.assertEquals("pièce", ObjModelTest.load("v 0 0 0", "v 1 0 0", "v 0 1 0", "g pièce", "f 1 2 3").getGroups().get(0).getName());
+	}
+
+	@Test
 	public void readsAFaceWithTexturesAndNormals() {
 		final ObjModel model = ObjModelTest.triangle("f 1/3/1 2/2/1 3/1/1");
 		final ObjFace face = ObjModelTest.lastGroup(model).getFaces().get(0);

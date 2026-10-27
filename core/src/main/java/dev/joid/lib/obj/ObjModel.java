@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -92,7 +93,7 @@ public final class ObjModel implements IDrawableModel {
 	private void load(final Object handle) {
 		BufferedReader reader = null;
 		try {
-			reader = new BufferedReader(new InputStreamReader(Asset.of(handle).open()));
+			reader = new BufferedReader(new InputStreamReader(Asset.of(handle).open(), StandardCharsets.UTF_8));
 			ObjGroup group = null;
 			Boolean textured = null;
 			int lineCount = 0;

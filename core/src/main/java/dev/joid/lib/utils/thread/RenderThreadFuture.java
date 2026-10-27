@@ -59,7 +59,9 @@ public final class RenderThreadFuture<T> extends CompletableFuture<T> {
 	}
 
 	private void settle(final T value, final Throwable error) {
-		if (error != null) {
+		if (error instanceof CompletionException && error.getCause() != null) {
+			super.completeExceptionally(error.getCause());
+		} else if (error != null) {
 			super.completeExceptionally(error);
 		} else {
 			super.complete(value);

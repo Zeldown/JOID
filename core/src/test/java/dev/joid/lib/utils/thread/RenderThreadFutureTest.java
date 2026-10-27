@@ -68,4 +68,15 @@ public class RenderThreadFutureTest {
 		Assert.assertTrue(String.valueOf(received[0]), received[0] instanceof IllegalStateException);
 	}
 
+	@Test
+	public void givesItsCallbacksTheCauseOfADerivedSourceFailure() {
+		final CompletableFuture<String> origin = new CompletableFuture<>();
+		final RenderThreadFuture<String> future = RenderThreadFuture.from(origin.thenApply(String::trim));
+		final Throwable[] received = new Throwable[1];
+		future.whenComplete((value, error) -> received[0] = error);
+		this.thread.renderThread(true);
+		origin.completeExceptionally(new IllegalStateException("The font cannot be read"));
+		Assert.assertTrue(String.valueOf(received[0]), received[0] instanceof IllegalStateException);
+	}
+
 }
