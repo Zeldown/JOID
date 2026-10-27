@@ -20,7 +20,7 @@ Returns the vertical position of the pointer, in design pixels of the UI.
 
 ## getDeltaTime()
 
-Returns, for a drag, the time in ms since the button went down; `0` for a press or a release.
+Returns, for a drag or a release, the time in ms since the button went down (`0` for a release whose press JOID did not see); `0` for a press.
 
 ## getButton()
 

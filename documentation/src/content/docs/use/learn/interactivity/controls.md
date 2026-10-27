@@ -99,8 +99,12 @@ With the limit, the field shows `10` and `tickets` holds `10`; once the box is u
 - The value shown is the value asked for, kept within the bounds: `max(...)` and `min(...)` of a number field, the options of a switch, a selector or a slider.
 - The bound signal holds the value shown, so every node that reads it agrees with the control.
 - The value asked for waits until the bounds allow it: the next value that the user, a setter or the signal gives replaces it.
+- Writing to the signal the value that it already holds changes nothing, so the value asked for before stays pending.
 
-While the value asked for is not one of its options, a choice (switch, selector, slider) keeps its current value, or shows its first option when the current one is gone too.
+While the value asked for is not one of its options, a choice (switch, selector, slider) shows a fallback.
+An [[IntegerSliderNode]] or a [[DoubleSliderNode]] shows the option nearest to the value asked for, the smaller one on a tie: `50` on `range(0, 10)` shows `10`.
+Any other choice keeps its current value, or shows its first option when the current one is gone too.
+The [[BaseChoiceNode#fallback]] hook picks that value, for a choice of your own.
 The order of the setters does not matter either: `value(7)` before `values(...)` gives the same control as after it.
 
 ## Know the order of a change
@@ -153,7 +157,8 @@ The choice controls share the options of [[BaseChoiceNode]]:
 - `valueIndex(...)` selects an option by its index, a plain one or an [[IntegerSignal]] bound both ways;
 - `getValue()`, `getValueIndex()` and `getValueList()` read them.
 
-New options keep the value when it is still one of them; otherwise the control selects the first one.
+New options keep the value when it is still one of them; otherwise the control shows its [fallback](#keep-a-value-that-the-bounds-refuse).
+`getValueList()` is a read-only view that follows the options set later.
 A [[SwitchNode]] builds one node per option with its `option((value, index) -> node)` and lays them out side by side.
 
 ## Choose from a drop-down list
@@ -202,6 +207,7 @@ A slider is a choice whose options sit along a track: a press on the track jumps
 
 A [[SliderNode]] places a `thumb` on a `track`.
 [[BaseSliderNode#inset]] keeps the first and the last step away from the ends, by half the thumb by default.
+A range builds no list: `range(1, Integer.MAX_VALUE)` costs nothing, and a range of more values than `Integer.MAX_VALUE` throws an `IllegalArgumentException`.
 [[SliderNode#speed]] eases the thumb to a new value, and `1F`, the default, moves it at once; [[BaseSliderNode#isSliding]] is `true` during a drag.
 
 ## Show a progress
@@ -232,7 +238,7 @@ The `fill` part is required, the `track` part is optional.
 - **`beforeChange`** refuses what the user or `change(...)` asks for; setters and signals are never refused.
 - A control **keeps the value asked for** and shows it within its bounds, and the signal holds the value shown.
 - A change runs `beforeChange`, then applies, then updates the **bound nodes**, then runs `onChange`.
-- **Choices** take their options with `values(...)`; new options keep the value when they still hold it.
+- **Choices** take their options with `values(...)`; new options keep the value when they still hold it, else the choice shows its **fallback**.
 - **`ProgressNode`** shows a value from `0F` to `1F` and takes no input.
 
 ## Try it

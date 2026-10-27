@@ -69,6 +69,9 @@ Three settings take a node out of the input, and each one applies to the childre
 | [[Node#enabled]] `(false)` | Yes | Yes | No |
 | [[Node#visible]] `(false)` | No | No | No |
 
+A node scrolled out of the area of its container is out of the input too.
+A node that holds the input keeps it there: a focused text field still receives its keys, a text field that selects still receives its drags, and an open selector still closes on a click beside it.
+
 The release of a button and of a key is the exception: it reaches every node, even hidden or disabled, so that a press that started a gesture always ends it.
 
 ## Hear the raw input

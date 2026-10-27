@@ -30,7 +30,7 @@ public class HandleUI extends UI {
 			.create(60, 60, 300, 200)
 			.color(Color.WHITE)
 			.label(Text.create("Window", info))
-			.draggable(DraggableProperty.parent().enabled(node -> handle.isHovered() || node.isDragging()))
+			.draggable(DraggableProperty.parent().enabled(node -> handle.isHovered()))
 			.body(window -> handle.attach(window))
 			.attach(card);
 			// #endregion

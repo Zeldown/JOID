@@ -177,6 +177,7 @@ Returns the selected range of the text; an empty range when nothing is selected.
 ## selection(int,int)
 
 Gives the field its start selection, from `start` to `end` in any order, kept within the text.
+A loss of the focus clears it, even while the text is too short to hold it.
 
 ## selection(Signal)
 
@@ -358,3 +359,7 @@ Returns the horizontal offset, in design pixels, of a position within a line of 
 ## getLinePosition(String,int[],int,int,String,double)
 
 Returns the index of the line from `start` to `end` that is nearest to a horizontal offset, the inverse of `getLineX`.
+
+## holdsInput()
+
+If `true`, the field has the focus or a selection by drag goes on: it keeps its keys and its drags while it is scrolled out of the area of its container.

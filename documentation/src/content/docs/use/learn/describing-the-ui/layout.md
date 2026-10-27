@@ -117,6 +117,7 @@ The scroll offset of an axis goes from `0D`, the start, down to minus the overfl
 - [[Node#updateScroll]] jumps to the requested offset at once, without the glide; [[Node#updateScrollX]] and [[Node#updateScrollY]] do it for one axis.
 
 JOID keeps every offset between `0D` and the end of the content.
+A positive offset, such as `scrollY(40D)`, comes back to `0D`, with a warning in [dev mode](/use/get-started/dev-tools/): write `scrollY(-40D)`.
 [[Node#getTargetScrollY]] returns the offset that the node glides to, [[Node#getScrollY]] the offset drawn this frame, and [[Node#getMaxScrollY]] the overflow, a positive number; the same getters exist for `X`.
 
 ## React to scrolling

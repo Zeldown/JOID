@@ -393,7 +393,7 @@ The last character the node received, as a Unicode code point.
 ## scrollX(double)
 
 Sets the horizontal scroll, in design pixels: `0` shows the start, a negative value moves the content to the left.
-The value is kept between the end of the content and `0`.
+The value is kept between the end of the content and `0`; a positive value warns once in dev mode.
 
 ## scrollX(Signal)
 
@@ -402,6 +402,7 @@ Binds the horizontal scroll to a signal: the node follows it, and a scroll by th
 ## scrollY(double)
 
 Sets the vertical scroll, in design pixels: `0` shows the top, a negative value moves the content up.
+The value is kept between the end of the content and `0`; a positive value warns once in dev mode.
 
 ## scrollY(Signal)
 
@@ -794,11 +795,11 @@ Sends a mouse press at this point to the node and its children, as the UI does, 
 
 Sends a mouse press that belongs to this source event: consuming it consumes the source.
 
-## fireMouseReleased(double,double,MouseButton)
+## fireMouseReleased(double,double,MouseButton,long)
 
-Sends a mouse release to the node and its children and returns `true` when something consumed it.
+Sends a mouse release of this button, pressed `deltaTime` ms before, to the node and its children and returns `true` when something consumed it.
 
-## fireMouseReleased(double,double,MouseButton,IConsumableEvent)
+## fireMouseReleased(double,double,MouseButton,long,IConsumableEvent)
 
 Sends a mouse release that belongs to this source event.
 
@@ -890,6 +891,11 @@ Puts the children in this order, for drawing and for the layout.
 
 Creates the instance that `copy()` fills: it tries the constructors `(x, y, width, height)`, `(x, y)` and without argument.
 Override it when the class has none of them.
+
+## holdsInput()
+
+If `true`, the node keeps receiving the input while it is scrolled out of the area of its container; `false` by default.
+[[FieldNode]] holds it while it has the focus or a selection goes on, [[BaseSelectorNode]] while it is open.
 
 ## isDraggingChild(Node)
 

@@ -3,7 +3,7 @@ summary: The behavior shared by the controls that select one value among options
 ---
 
 A choice holds a list of options and the selected one.
-New options keep the selected value when it is still one of them; otherwise the choice selects the first one.
+New options keep the selected value when it is still one of them; otherwise the choice shows the value of `fallback(...)`.
 A value that is not an option yet waits until the options hold it, and the order of `values(...)` and `value(...)` does not matter.
 Attaching a choice without options throws an `IllegalStateException`.
 
@@ -31,7 +31,7 @@ A plain index is the start value, and throws an `IllegalArgumentException` when 
 
 ## getValueList()
 
-Returns the options, as a read-only list.
+Returns the options, as a read-only view that follows the options set later.
 
 ## change(V)
 
@@ -50,3 +50,8 @@ Adds a listener that runs after each real change of the selected value, whatever
 
 Hook that JOID calls each time the options change, after the choice stored them.
 The switch and the selector build one node per option there; the default does nothing.
+
+## fallback(V)
+
+Hook that picks the value to show when the value asked for is not one of the options.
+The default keeps the current value when it is still an option, else the first option; the sliders of numbers return the nearest option.

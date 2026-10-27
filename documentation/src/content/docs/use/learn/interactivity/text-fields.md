@@ -84,6 +84,7 @@ The user edits the text with the keys of every text editor:
 | Ctrl + A, C, X, V (Cmd on macOS) | Select all, copy, cut, paste |
 
 From your code, [[FieldNode#cursorPosition]] and [[FieldNode#selection]] give the cursor and the selection, a plain value or a signal bound both ways; [[FieldNode#moveCursor]] and [[FieldNode#select]] act like the user, with `beforeCursorMove`, `onCursorMove`, `beforeSelect` and `onSelect`.
+Losing the focus clears the selection, even one asked for that the text is still too short to hold; a cursor position asked for stays pending.
 
 ## Shape what the user types
 

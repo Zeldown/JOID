@@ -13,4 +13,9 @@ Creates the slider at `x`, `y` with a `width` and a `height` in design pixels, f
 ## range(double,double,double)
 
 Gives the options from `min` to `max` by `step`, computed in decimal so that `0.1D` steps stay exact; `max` is an option only when a step lands on it.
-Throws an `IllegalArgumentException` when the step is not positive or when `min` is above `max`.
+Throws an `IllegalArgumentException` when the step is not positive, when `min` is above `max`, or when the range holds more values than `Integer.MAX_VALUE`.
+The options are computed on demand, so a large range costs nothing.
+
+## fallback(Double)
+
+Returns the option nearest to the value asked for, the smaller one on a tie, whatever the order of the options.

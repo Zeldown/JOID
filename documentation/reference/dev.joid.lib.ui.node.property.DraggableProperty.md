@@ -35,7 +35,7 @@ A property that never lets the node be dragged.
 
 ## enabled
 
-Predicate that decides, for the node, whether it can be dragged now.
+Predicate that decides, for the node, whether a drag can start now; a drag that started goes to its end whatever it returns.
 
 ## type
 

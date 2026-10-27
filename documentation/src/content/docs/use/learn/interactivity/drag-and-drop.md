@@ -117,14 +117,14 @@ The events run on the original node.
 
 ## Drag from a handle only
 
-[[DraggableProperty#enabled]] takes a predicate that JOID tests on every frame.
+[[DraggableProperty#enabled]] takes a predicate that JOID tests when a drag would start.
 This window moves only from its grey bar:
 
 ```java file="com/example/interactivity/drag/HandleUI.java" region="handle"
 ```
 
-The predicate keeps `node.isDragging()`, so the drag goes on when the pointer leaves the bar during a fast move.
-[[DraggableProperty#disabled]] turns the drag off, and `draggable(...)` again replaces the property.
+A drag that started goes to its end, drop animation included, even when the pointer leaves the bar during a fast move.
+[[DraggableProperty#disabled]] turns the drag off, and `draggable(...)` again replaces the property, which stops a drag in progress.
 
 ## Place the node yourself after a drop
 
@@ -147,7 +147,7 @@ Give it a value or a writable signal, or drag a copy.
 - **`beforeDragStart`** and **`beforeDragDrop`** can refuse the start or send the node back; **`onDragStart`**, **`onDrag`**, **`onDragDrop`** and **`onDragSnap`** tell what happened.
 - **`snap(targets...)`** slides the dropped node onto a target, the nearest one or the overlapped one (`OVERLAP`).
 - **`DraggableType.COPY`** drags a copy that disappears at the drop; the listeners decide what it leaves.
-- **`enabled(predicate)`** turns the drag on and off on every frame, for example from a handle.
+- **`enabled(predicate)`** decides whether a drag can start, for example from a handle.
 
 ## Try it
 

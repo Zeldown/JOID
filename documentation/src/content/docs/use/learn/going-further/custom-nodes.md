@@ -104,6 +104,7 @@ The hook receives every press that reaches the node, wherever the pointer is.
 `isHovered()` tells whether the pointer is on the node, `event.isConsumed()` whether a node in front already took the press, and `event.consume()` stops it for the nodes behind and the UIs below.
 The children in front of the node and its own `handleMousePressed` listeners hear the press first; [Events](/use/learn/interactivity/events/) explains this path and consumption.
 The other input hooks follow the same pattern.
+A node scrolled out of the area of its container receives no input, unless [[Node#holdsInput]] returns `true`: override it to keep the input while a gesture of the node goes on, as a focused text field does.
 
 ## Hold a value that the user changes
 

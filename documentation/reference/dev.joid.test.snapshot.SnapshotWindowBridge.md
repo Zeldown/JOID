@@ -42,7 +42,15 @@ If `true`, a command holds that key.
 
 ## getKeys()
 
-Returns the held keys, which the commands change.
+Returns the held keys, which the commands change, as a read-only set.
+
+## press(Key[])
+
+Holds these keys, as the commands do, and returns the bridge.
+
+## release(Key[])
+
+Releases these keys and returns the bridge.
 
 ## getMouseX()
 

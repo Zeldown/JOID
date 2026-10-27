@@ -59,3 +59,7 @@ On a left press, opens the closed list when the press is over the selector, or c
 ## detach()
 
 Closes the list when the selector leaves the tree.
+
+## holdsInput()
+
+If `true`, the selector is open: a click beside it still closes it while it is scrolled out of the area of its container.

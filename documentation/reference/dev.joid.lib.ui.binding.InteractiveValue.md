@@ -13,6 +13,11 @@ Learn: [Controls](/use/learn/interactivity/controls/), [Give your controls a loo
 
 Creates the value `property` of the node that owns `bindings`; `getter` reads the applied value from the node and `setter` stores it there.
 
+## source
+
+The getter of the value asked for, when the field keeps it apart from the value shown, as the view keeps the zoom asked for a UI; the getter of the value by default.
+With a source, the setter receives the value asked for and the getter returns the value shown.
+
 ## clamp
 
 The function that bounds every requested value before it applies; the default keeps the value unchanged.
