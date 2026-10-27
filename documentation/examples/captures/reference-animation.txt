@@ -1,0 +1,10 @@
+# crop reference-animation-slide 60 60 440 100
+ui com.example.reference.animation.SlideUI
+wait 200
+move 280 110
+wait 100
+press LEFT
+release LEFT
+# film reference-animation-slide
+wait 1300
+cut
