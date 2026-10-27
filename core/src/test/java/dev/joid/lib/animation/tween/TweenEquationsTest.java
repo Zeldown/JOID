@@ -72,9 +72,21 @@ public class TweenEquationsTest {
 	}
 
 	@Test
+	public void findsATunedEquationByItsName() {
+		final BackTweenEquation back = (BackTweenEquation) TweenEquations.of(BackTweenEquation.OUT.overshoot(2.5F).toString());
+		final ElasticTweenEquation elastic = (ElasticTweenEquation) TweenEquations.of(ElasticTweenEquation.IN_OUT.amplitude(2F).period(0.5F).toString());
+		Assert.assertEquals(BackTweenEquation.OUT.overshoot(2.5F).compute(0.5F), back.compute(0.5F), 0F);
+		Assert.assertEquals("Back.OUT(2.5)", back.toString());
+		Assert.assertEquals(ElasticTweenEquation.IN_OUT.amplitude(2F).period(0.5F).compute(0.3F), elastic.compute(0.3F), 0F);
+		Assert.assertEquals("Elastic.IN_OUT(0.5, 2.0)", elastic.toString());
+	}
+
+	@Test
 	public void findsNothingFromAnUnknownName() {
 		Assert.assertNull(TweenEquations.of("Quad.SIDEWAYS"));
 		Assert.assertNull(TweenEquations.of("quad.in"));
+		Assert.assertNull(TweenEquations.of("Quad.IN(2.0)"));
+		Assert.assertNull(TweenEquations.of("Back.IN(2.0, 1.0)"));
 	}
 
 }

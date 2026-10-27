@@ -1271,6 +1271,17 @@ public class NodeTest {
 	}
 
 	@Test
+	public void bringsAPositiveScrollOffsetBackToZeroWithAWarning() {
+		final ContainerNode area = ContainerNode.create(100D, 100D, 400D, 300D).overflow(OverflowProperty.SCROLL);
+		RectNode.create(0D, 0D, 400D, 600D).attach(area);
+		this.bridges.open(new NodeUI(area));
+		this.bridges.frames(2);
+		final String output = TestUtils.captureErr(true, () -> area.scrollY(40D));
+		Assert.assertEquals(0D, area.getTargetScrollY(), 0D);
+		Assert.assertTrue(output, output.contains("[JOID] scrollY(40.0) on ContainerNode is brought back to 0: the scroll offsets are negative, from 0 down to minus the overflow, call scrollY(-40.0) instead"));
+	}
+
+	@Test
 	public void scrollsHorizontallyWithTheWheel() {
 		final ContainerNode row = NodeTest.row();
 		this.bridges.open(new NodeUI(row));
@@ -1456,10 +1467,10 @@ public class NodeTest {
 		final RectNode node = RectNode.create(100D, 100D, 50D, 50D).handleMouseReleased(event -> event.consume()).handleCharTyped(event -> event.consume()).handleKeyReleased(event -> event.consume());
 		final RectNode idle = RectNode.create(200D, 100D, 50D, 50D);
 		this.bridges.open(new NodeUI(ContainerNode.create(0D, 0D, 400D, 400D).append(node, idle))).frame();
-		Assert.assertTrue(node.fireMouseReleased(120D, 120D, MouseButton.LEFT));
+		Assert.assertTrue(node.fireMouseReleased(120D, 120D, MouseButton.LEFT, 0L));
 		Assert.assertTrue(node.fireCharTyped('a'));
 		Assert.assertTrue(node.fireKeyReleased(Key.A, Key.A));
-		Assert.assertFalse(idle.fireMouseReleased(220D, 120D, MouseButton.LEFT));
+		Assert.assertFalse(idle.fireMouseReleased(220D, 120D, MouseButton.LEFT, 0L));
 		Assert.assertFalse(idle.fireCharTyped('a'));
 		Assert.assertFalse(idle.fireKeyReleased(Key.A, Key.A));
 	}

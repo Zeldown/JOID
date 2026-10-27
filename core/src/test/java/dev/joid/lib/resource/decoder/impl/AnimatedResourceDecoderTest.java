@@ -317,12 +317,23 @@ public class AnimatedResourceDecoderTest {
 	}
 
 	@Test
-	public void seeksWhileStopped() {
+	public void pausesOnTheFrameItSeeksToWhileStopped() {
 		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng();
 		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
 		decoder.stop().seek(0.2D);
 		this.advance(decoder, data, 100L);
-		Assert.assertFalse(decoder.isPlaying());
+		Assert.assertTrue(decoder.isPaused());
+		Assert.assertEquals(0.2D, decoder.getCurrentTime(), 1E-9D);
+		Assert.assertEquals(2, ((int) TestUtils.field(decoder, "displayed")));
+	}
+
+	@Test
+	public void pausesOnTheFrameItSeeksToBeforeItsFirstPlay() {
+		final AnimatedResourceDecoder decoder = AnimatedResourceDecoderTest.apng().autoplay(false);
+		final ResourceData data = AnimatedResourceDecoderTest.load(decoder);
+		decoder.seek(0.2D);
+		this.advance(decoder, data, 100L);
+		Assert.assertTrue(decoder.isPaused());
 		Assert.assertEquals(0.2D, decoder.getCurrentTime(), 1E-9D);
 		Assert.assertEquals(2, ((int) TestUtils.field(decoder, "displayed")));
 	}

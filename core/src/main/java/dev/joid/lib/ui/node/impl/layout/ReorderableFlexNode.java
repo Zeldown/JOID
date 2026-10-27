@@ -445,7 +445,7 @@ public class ReorderableFlexNode extends FlexNode {
 				final double end = start + (vertical ? parent.getHeight() : parent.getWidth());
 				final double depth = mouse < start + zone ? Math.min(1D, (start + zone - mouse) / zone) : mouse > end - zone ? -Math.min(1D, (mouse - end + zone) / zone) : 0D;
 				final double delta = speed * depth * Math.abs(depth);
-				parent.scrollTo(parent.getTargetScrollX() + (vertical ? 0D : delta), parent.getTargetScrollY() + (vertical ? delta : 0D));
+				parent.scrollTo(Math.min(0D, parent.getTargetScrollX() + (vertical ? 0D : delta)), Math.min(0D, parent.getTargetScrollY() + (vertical ? delta : 0D)));
 				return;
 			}
 			parent = parent.getParent();

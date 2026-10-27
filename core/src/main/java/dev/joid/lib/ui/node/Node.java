@@ -520,18 +520,18 @@ public abstract class Node implements INode {
 		return this.listen(Node.HANDLE_MOUSE_RELEASED, listener);
 	}
 
-	public final boolean fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button) {
-		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, null);
-		this.fireMouseReleased(mouseX, mouseY, button, input);
+	public final boolean fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime) {
+		final NodeMouseEvent<Node> input = NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, null);
+		this.fireMouseReleased(mouseX, mouseY, button, deltaTime, input);
 		return input.isConsumed();
 	}
 
-	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final @NonNull IConsumableEvent source) {
+	public final void fireMouseReleased(final double mouseX, final double mouseY, final @NonNull MouseButton button, final long deltaTime, final @NonNull IConsumableEvent source) {
 		if (this.dragging && button.isLeft()) {
 			this.stopDragging();
 		}
 
-		this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, 0L, source), true, Node.HANDLE_MOUSE_RELEASED, (node, event) -> node.fireMouseReleased(mouseX, mouseY, button, event), this::mouseReleased);
+		this.dispatch(NodeMouseEvent.create(this, mouseX, mouseY, button, deltaTime, source), true, Node.HANDLE_MOUSE_RELEASED, (node, event) -> node.fireMouseReleased(mouseX, mouseY, button, deltaTime, event), this::mouseReleased);
 	}
 
 	public final <T extends Node> @NonNull T handleMouseDragged(final @NonNull EventListener<NodeMouseEvent<T>> listener) {
@@ -577,16 +577,16 @@ public abstract class Node implements INode {
 				final double speed = UI.isCtrlKeyDown() ? this.scrollSpeed * 2D : this.scrollSpeed;
 				if (notchesY != 0D && this.hasOverflowY()) {
 					if (this.canScroll(this.scrollYValue, this.maxScrollY, notchesY)) {
-						this.scrollYValue.set(this.scrollYValue.get() + notchesY * 30D * speed);
+						this.scrollYValue.set(Math.min(0D, this.scrollYValue.get() + notchesY * 30D * speed));
 						event.consume();
 					}
 				} else if (notchesY != 0D && notchesX == 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesY)) {
-					this.scrollXValue.set(this.scrollXValue.get() + notchesY * 30D * speed);
+					this.scrollXValue.set(Math.min(0D, this.scrollXValue.get() + notchesY * 30D * speed));
 					event.consume();
 				}
 
 				if (notchesX != 0D && this.hasOverflowX() && this.canScroll(this.scrollXValue, this.maxScrollX, notchesX)) {
-					this.scrollXValue.set(this.scrollXValue.get() + notchesX * 30D * speed);
+					this.scrollXValue.set(Math.min(0D, this.scrollXValue.get() + notchesX * 30D * speed));
 					event.consume();
 				}
 			}
@@ -2151,10 +2151,20 @@ public abstract class Node implements INode {
 		}
 	}
 
+	private double clampScroll(final Axis axis, final double offset) {
+		final String name = axis.isHorizontal() ? "scrollX" : "scrollY";
+		if (offset > 0D) {
+			JOIDLog.devWarnOnce("Node." + name + System.identityHashCode(this), () -> name + "(" + offset + ") on " + JOIDLog.nameOf(this.getClass()) + " is brought back to 0: the scroll offsets are negative, from 0 down to minus the overflow, call " + name + "(" + -offset + ") instead");
+		}
+
+		final double max = axis.isHorizontal() ? this.maxScrollX : this.maxScrollY;
+		return this.scrollMeasured ? Math.max(-max, Math.min(offset, 0D)) : Math.min(offset, 0D);
+	}
+
 	private InteractiveValue<Double> createScrollValue(final Axis axis) {
 		final boolean horizontal = axis.isHorizontal();
 		return InteractiveValue.create(this.bindings, horizontal ? "scrollX" : "scrollY", () -> horizontal ? this.targetScrollX : this.targetScrollY, (final Double offset) -> this.scroll(axis, offset))
-		.clamp(offset -> this.scrollMeasured ? Math.max(-(horizontal ? this.maxScrollX : this.maxScrollY), Math.min(offset, 0D)) : Math.min(offset, 0D))
+		.clamp(offset -> this.clampScroll(axis, offset))
 		.events(Node.BEFORE_SCROLL, (previous, offset) -> NodeScrollEvent.Pre.create(this, axis, previous, offset), Node.SCROLL, (previous, offset) -> NodeScrollEvent.Post.create(this, axis, previous, offset))
 		.then((previous, offset) -> {
 			if ((horizontal ? this.scrollEndX : this.scrollEndY) && this.scrollMeasured) {

@@ -222,6 +222,20 @@ public class UIBridgeTest {
 	}
 
 	@Test
+	public void givesTheReleaseTheTimeSinceItsPress() {
+		final List<Long> times = new ArrayList<>();
+		this.bridges.open(new TraceUI("menu", this.trace).handleMouseReleased(event -> times.add(event.getDeltaTime())));
+		this.bridges.getUi().mousePressed(MouseButton.LEFT);
+		this.bridges.getClock().advance(40L);
+		this.bridges.getUi().mousePressed(MouseButton.RIGHT);
+		this.bridges.getClock().advance(25L);
+		this.bridges.getUi().mouseReleased(MouseButton.RIGHT);
+		this.bridges.getUi().mouseReleased(MouseButton.LEFT);
+		this.bridges.getUi().mouseReleased(MouseButton.MIDDLE);
+		Assert.assertEquals(Arrays.asList(25L, 65L, 0L), times);
+	}
+
+	@Test
 	public void keepsTheReleaseInsideAPopup() {
 		final TraceUI inactive = new TraceUI("inactive", this.trace);
 		final TraceUI hidden = new TraceUI("hidden", this.trace);

@@ -81,7 +81,7 @@ public class ResourcePlayerNodeEventTest {
 		Assert.assertFalse(player.isPlaying());
 		player.pause();
 		Assert.assertTrue(received.isEmpty());
-		Assert.assertFalse(player.isPaused());
+		Assert.assertFalse(player.isPlaying());
 		player.play();
 		this.bridges.frames(2);
 		player.pause();

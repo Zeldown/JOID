@@ -20,6 +20,10 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 	public abstract @NonNull ElasticTweenEquation period(final float period);
 	public abstract @NonNull ElasticTweenEquation amplitude(final float amplitude);
 
+	private static String name(final String name, final ElasticTweenEquation easing, final ElasticTweenEquation standard) {
+		return easing.period == standard.period && easing.amplitude == standard.amplitude ? name : name + "(" + easing.period + ", " + easing.amplitude + ")";
+	}
+
 	private static ElasticTweenEquation in(final float period, final float amplitude) {
 		return new ElasticTweenEquation(period, amplitude) {
 
@@ -59,7 +63,7 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 
 			@Override
 			public String toString() {
-				return "Elastic.IN";
+				return ElasticTweenEquation.name("Elastic.IN", this, ElasticTweenEquation.IN);
 			}
 
 		};
@@ -103,7 +107,7 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 
 			@Override
 			public String toString() {
-				return "Elastic.OUT";
+				return ElasticTweenEquation.name("Elastic.OUT", this, ElasticTweenEquation.OUT);
 			}
 
 		};
@@ -152,7 +156,7 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 
 			@Override
 			public String toString() {
-				return "Elastic.IN_OUT";
+				return ElasticTweenEquation.name("Elastic.IN_OUT", this, ElasticTweenEquation.IN_OUT);
 			}
 
 		};

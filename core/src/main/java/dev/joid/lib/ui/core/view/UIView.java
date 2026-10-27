@@ -94,7 +94,7 @@ public final class UIView {
 	}
 
 	public @NonNull UIView zoom(final double zoom) {
-		this.zoom = zoom;
+		this.zoom = this.clampZoom(zoom);
 		return this;
 	}
 

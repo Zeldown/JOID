@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.function.Consumer;
 
 import dev.joid.internal.JOIDLog;
 import dev.joid.lib.animation.tween.Timeline;
@@ -26,6 +29,9 @@ public final class TweenAnimator extends Signal<Float> {
 	static {
 		BridgeHandler.UI.onFrame(TweenAnimator::updateRunning);
 	}
+
+	private final Map<Timeline, Integer>   listenedMap  = new WeakHashMap<>();
+	private final List<Consumer<Timeline>> listenerList = new ArrayList<>();
 
 	@Getter
 	private float speed;
@@ -79,6 +85,7 @@ public final class TweenAnimator extends Signal<Float> {
 	public @NonNull TweenAnimator sequence(final float duration, final float value, final @NonNull TweenEquation easing) {
 		this.killTimeline();
 		this.timeline = Timeline.sequence();
+		this.listenTimeline();
 		this.push(duration, value, easing);
 		return this;
 	}
@@ -89,6 +96,8 @@ public final class TweenAnimator extends Signal<Float> {
 		}
 
 		this.timeline = timeline;
+		this.lastUpdate = BridgeHandler.CLOCK.get().currentTimeMillis();
+		this.listenTimeline();
 		return this;
 	}
 
@@ -126,43 +135,35 @@ public final class TweenAnimator extends Signal<Float> {
 	}
 
 	public @NonNull TweenAnimator onStart(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline().onStart(listener);
-		return this;
+		return this.listen(timeline -> timeline.onStart(listener));
 	}
 
 	public @NonNull TweenAnimator onIterationStart(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline().onIterationStart(listener);
-		return this;
+		return this.listen(timeline -> timeline.onIterationStart(listener));
 	}
 
 	public @NonNull TweenAnimator onIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline().onIterationEnd(listener);
-		return this;
+		return this.listen(timeline -> timeline.onIterationEnd(listener));
 	}
 
 	public @NonNull TweenAnimator onComplete(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline().onComplete(listener);
-		return this;
+		return this.listen(timeline -> timeline.onComplete(listener));
 	}
 
 	public @NonNull TweenAnimator onReverseStart(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline().onReverseStart(listener);
-		return this;
+		return this.listen(timeline -> timeline.onReverseStart(listener));
 	}
 
 	public @NonNull TweenAnimator onReverseIterationStart(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline().onReverseIterationStart(listener);
-		return this;
+		return this.listen(timeline -> timeline.onReverseIterationStart(listener));
 	}
 
 	public @NonNull TweenAnimator onReverseIterationEnd(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline().onReverseIterationEnd(listener);
-		return this;
+		return this.listen(timeline -> timeline.onReverseIterationEnd(listener));
 	}
 
 	public @NonNull TweenAnimator onReverseComplete(final @NonNull EventListener<TweenEvent> listener) {
-		this.requireTimeline().onReverseComplete(listener);
-		return this;
+		return this.listen(timeline -> timeline.onReverseComplete(listener));
 	}
 
 	public @NonNull TweenAnimator update() {
@@ -196,6 +197,21 @@ public final class TweenAnimator extends Signal<Float> {
 	@Override
 	protected @NonNull String refuse(final @NonNull String action) {
 		return "The " + this + " is animated and cannot be " + action + ", use value(...) or start a tween";
+	}
+
+	private TweenAnimator listen(final Consumer<Timeline> listener) {
+		this.listenerList.add(listener);
+		if (this.timeline != null) {
+			this.listenTimeline();
+		}
+		return this;
+	}
+
+	private void listenTimeline() {
+		for (int index = this.listenedMap.getOrDefault(this.timeline, 0); index < this.listenerList.size(); index++) {
+			this.listenerList.get(index).accept(this.timeline);
+		}
+		this.listenedMap.put(this.timeline, this.listenerList.size());
 	}
 
 	private void writeValue(final float value) {

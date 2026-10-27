@@ -466,7 +466,7 @@ public class UITest {
 		final TraceUI ui = new TraceUI(this.trace);
 		ui.cancel = true;
 		Assert.assertFalse(ui.fireMousePressed(MouseButton.LEFT));
-		Assert.assertFalse(ui.fireMouseReleased(MouseButton.LEFT));
+		Assert.assertFalse(ui.fireMouseReleased(MouseButton.LEFT, 0L));
 		Assert.assertFalse(ui.fireMouseDragged(MouseButton.LEFT, 10L));
 		Assert.assertFalse(ui.fireMouseScroll(0D, 1D));
 		Assert.assertFalse(ui.fireKeyPressed(Key.A, Key.A));
@@ -525,7 +525,7 @@ public class UITest {
 		Assert.assertFalse(ui.fireCharTyped('a'));
 		ui.cancel = true;
 		Assert.assertTrue(ui.fireMousePressed(MouseButton.LEFT));
-		Assert.assertTrue(ui.fireMouseReleased(MouseButton.LEFT));
+		Assert.assertTrue(ui.fireMouseReleased(MouseButton.LEFT, 0L));
 		Assert.assertTrue(ui.fireMouseDragged(MouseButton.LEFT, 10L));
 		Assert.assertTrue(ui.fireMouseScroll(0D, 1D));
 		Assert.assertTrue(ui.fireKeyPressed(Key.A, Key.A));
@@ -540,7 +540,7 @@ public class UITest {
 		this.trace.clear();
 		ui.fireMouseScroll(0D, 1D);
 		ui.fireMouseDragged(MouseButton.LEFT, 10L);
-		ui.fireMouseReleased(MouseButton.LEFT);
+		ui.fireMouseReleased(MouseButton.LEFT, 0L);
 		ui.fireKeyPressed(Key.A, Key.A);
 		ui.fireKeyReleased(Key.A, Key.A);
 		ui.fireCharTyped('a');

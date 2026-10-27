@@ -148,6 +148,10 @@ public final class AnimatedResourceDecoder implements IResourceDecoder, IResourc
 
 	@Override
 	public @NonNull AnimatedResourceDecoder seek(final double seconds) {
+		if (this.animation != null && !this.running) {
+			this.play().pause();
+		}
+
 		final long end = this.animation == null ? Long.MAX_VALUE : this.animation.getDuration() - 1L;
 		final long time = Math.max(0L, Math.min((long) (seconds * 1000D), end));
 		this.position = time;

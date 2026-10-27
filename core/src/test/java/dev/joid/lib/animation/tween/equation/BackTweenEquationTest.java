@@ -63,10 +63,11 @@ public class BackTweenEquationTest {
 	}
 
 	@Test
-	public void keepsItsNameWithAnotherOvershoot() {
-		Assert.assertEquals("Back.IN", BackTweenEquation.IN.overshoot(3F).toString());
-		Assert.assertEquals("Back.OUT", BackTweenEquation.OUT.overshoot(3F).toString());
-		Assert.assertEquals("Back.IN_OUT", BackTweenEquation.IN_OUT.overshoot(3F).toString());
+	public void namesItsOvershootWhenItIsTuned() {
+		Assert.assertEquals("Back.IN(3.0)", BackTweenEquation.IN.overshoot(3F).toString());
+		Assert.assertEquals("Back.OUT(2.5)", BackTweenEquation.OUT.overshoot(2.5F).toString());
+		Assert.assertEquals("Back.IN_OUT(3.0)", BackTweenEquation.IN_OUT.overshoot(3F).toString());
+		Assert.assertEquals("Back.IN", BackTweenEquation.IN.overshoot(BackTweenEquation.IN.getOvershoot()).toString());
 	}
 
 	@Test

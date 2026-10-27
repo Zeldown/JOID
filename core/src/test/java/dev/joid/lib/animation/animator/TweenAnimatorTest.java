@@ -193,6 +193,39 @@ public class TweenAnimatorTest {
 	}
 
 	@Test
+	public void keepsItsListenersForEachNewSequence() {
+		final List<String> calls = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).onComplete(event -> calls.add("complete")).start();
+		animator.update(1.5F);
+		animator.sequence(1F, 0F).start();
+		animator.update(1.5F);
+		Assert.assertEquals(Arrays.asList("complete", "complete"), calls);
+	}
+
+	@Test
+	public void listensOnceToATimelineGivenAgain() {
+		final List<String> calls = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create();
+		final Timeline in = Timeline.sequence().push(animator.tween(10F).target(1F));
+		final Timeline out = Timeline.sequence().push(animator.tween(10F).target(0F));
+		animator.timeline(in).onComplete(event -> calls.add("complete")).start();
+		animator.timeline(out).start();
+		animator.timeline(in).start();
+		animator.update(15F);
+		Assert.assertEquals(Collections.singletonList("complete"), calls);
+	}
+
+	@Test
+	public void measuresTheElapsedTimeFromTheTimelineItIsGiven() {
+		final TweenAnimator animator = TweenAnimator.create();
+		this.clock.advance(500L);
+		animator.timeline(Timeline.sequence().push(animator.tween(100F).target(10F)).start());
+		this.clock.advance(25L);
+		animator.update();
+		Assert.assertEquals(2.5F, animator.get(), 0F);
+	}
+
+	@Test
 	public void killsItsTimelineWhenItClears() {
 		final List<BaseTween<?>> ends = new ArrayList<>();
 		final TweenAnimator animator = TweenAnimator.create().sequence(1F, 10F).onComplete(event -> ends.add(event.getTween())).start();
@@ -441,9 +474,13 @@ public class TweenAnimatorTest {
 		TweenAnimator.create().push(1F, 10F);
 	}
 
-	@Test(expected = IllegalStateException.class)
-	public void refusesACallbackWithoutTimeline() {
-		TweenAnimator.create().onComplete(event -> {});
+	@Test
+	public void keepsACallbackGivenBeforeItsTimeline() {
+		final List<String> calls = new ArrayList<>();
+		final TweenAnimator animator = TweenAnimator.create().onComplete(event -> calls.add("complete"));
+		animator.sequence(1F, 10F).start();
+		animator.update(1.5F);
+		Assert.assertEquals(Collections.singletonList("complete"), calls);
 	}
 
 	@Test(expected = NullPointerException.class)

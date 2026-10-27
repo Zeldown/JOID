@@ -302,11 +302,11 @@ public abstract class UI implements IIndexedElement {
 		return this.bindings.listen(UI.HANDLE_MOUSE_RELEASED, listener);
 	}
 
-	public final boolean fireMouseReleased(final @NonNull MouseButton button) {
+	public final boolean fireMouseReleased(final @NonNull MouseButton button, final long deltaTime) {
 		final double mx = this.getMouseX();
 		final double my = this.getMouseY();
-		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, 0L);
-		return this.fireInput(UI.HANDLE_MOUSE_RELEASED, "mouseReleased", event, node -> node.fireMouseReleased(mx, my, button, event), () -> {});
+		final UIMouseEvent<UI> event = UIMouseEvent.create(this, mx, my, button, deltaTime);
+		return this.fireInput(UI.HANDLE_MOUSE_RELEASED, "mouseReleased", event, node -> node.fireMouseReleased(mx, my, button, deltaTime, event), () -> {});
 	}
 
 	public final <T extends UI> @NonNull T handleMouseDragged(final @NonNull EventListener<UIMouseEvent<T>> listener) {

@@ -38,9 +38,9 @@ public abstract class UIBridge implements IUIBridge {
 	private final Set<MouseButton> consumedButtonSet;
 
 	private final Map<Key, Set<UI>>         pressedKeyMap;
+	private final Map<MouseButton, Long>    pressTimeMap;
 	private final Map<MouseButton, Set<UI>> pressedButtonMap;
 
-	private long        pressTime;
 	private MouseButton pressed;
 
 	private Node   pressedNode;
@@ -51,6 +51,7 @@ public abstract class UIBridge implements IUIBridge {
 		this.consumedKeySet = EnumSet.noneOf(Key.class);
 		this.consumedButtonSet = EnumSet.noneOf(MouseButton.class);
 		this.pressedKeyMap = new EnumMap<>(Key.class);
+		this.pressTimeMap = new EnumMap<>(MouseButton.class);
 		this.pressedButtonMap = new EnumMap<>(MouseButton.class);
 	}
 
@@ -65,7 +66,7 @@ public abstract class UIBridge implements IUIBridge {
 		}
 
 		final MouseButton button = this.pressed;
-		final long deltaTime = BridgeHandler.CLOCK.get().currentTimeMillis() - this.pressTime;
+		final long deltaTime = BridgeHandler.CLOCK.get().currentTimeMillis() - this.pressTimeMap.get(button);
 		final UI ui = this.dispatch(current -> current.fireMouseDragged(button, deltaTime));
 		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick());
 	}
@@ -73,9 +74,10 @@ public abstract class UIBridge implements IUIBridge {
 	public final boolean mousePressed(final @NonNull MouseButton button) {
 		if (this.pressed == null) {
 			this.pressed     = button;
-			this.pressTime   = BridgeHandler.CLOCK.get().currentTimeMillis();
 			this.pressedNode = this.getHoveredNode();
 		}
+
+		this.pressTimeMap.putIfAbsent(button, BridgeHandler.CLOCK.get().currentTimeMillis());
 
 		this.consumedButtonSet.remove(button);
 		final UI ui = this.dispatch(this.pressedButtonMap.computeIfAbsent(button, pressed -> new LinkedHashSet<>()), current -> current.fireMousePressed(button));
@@ -88,12 +90,14 @@ public abstract class UIBridge implements IUIBridge {
 
 	public final boolean mouseReleased(final @NonNull MouseButton button) {
 		final boolean consumed = this.consumedButtonSet.remove(button);
+		final Long pressTime = this.pressTimeMap.remove(button);
+		final long deltaTime = pressTime == null ? 0L : BridgeHandler.CLOCK.get().currentTimeMillis() - pressTime;
 		if (this.pressed == button) {
 			this.pressed     = null;
 			this.pressedNode = null;
 		}
 
-		final UI ui = this.release(this.pressedButtonMap.remove(button), current -> current.fireMouseReleased(button));
+		final UI ui = this.release(this.pressedButtonMap.remove(button), current -> current.fireMouseReleased(button, deltaTime));
 		return ui != null && UIBridge.isConsumed(ui, ui.getOverlay().interaction().cancelClick()) || consumed;
 	}
 

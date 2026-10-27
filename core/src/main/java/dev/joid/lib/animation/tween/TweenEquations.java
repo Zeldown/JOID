@@ -1,5 +1,8 @@
 package dev.joid.lib.animation.tween;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import dev.joid.lib.animation.tween.equation.BackTweenEquation;
 import dev.joid.lib.animation.tween.equation.BounceTweenEquation;
 import dev.joid.lib.animation.tween.equation.CircTweenEquation;
@@ -60,6 +63,8 @@ public final class TweenEquations {
 	public static final ElasticTweenEquation ELASTIC_OUT    = ElasticTweenEquation.OUT;
 	public static final ElasticTweenEquation ELASTIC_IN_OUT = ElasticTweenEquation.IN_OUT;
 
+	private static final Pattern TUNED_PATTERN = Pattern.compile("(\\w+\\.\\w+)\\((-?\\d+\\.\\d+(?:E-?\\d+)?)(?:, (-?\\d+\\.\\d+(?:E-?\\d+)?))?\\)");
+
 	private static final TweenEquation[] EASINGS = {
 		TweenEquations.LINEAR, TweenEquations.QUAD_IN, TweenEquations.QUAD_OUT, TweenEquations.QUAD_IN_OUT, TweenEquations.CUBIC_IN,
 		TweenEquations.CUBIC_OUT, TweenEquations.CUBIC_IN_OUT, TweenEquations.QUART_IN, TweenEquations.QUART_OUT, TweenEquations.QUART_IN_OUT,
@@ -75,6 +80,19 @@ public final class TweenEquations {
 			if (easing.isValueOf(name)) {
 				return easing;
 			}
+		}
+
+		final Matcher matcher = TweenEquations.TUNED_PATTERN.matcher(name);
+		if (!matcher.matches()) {
+			return null;
+		}
+
+		final TweenEquation standard = TweenEquations.of(matcher.group(1));
+		if (standard instanceof BackTweenEquation && matcher.group(3) == null) {
+			return ((BackTweenEquation) standard).overshoot(Float.parseFloat(matcher.group(2)));
+		}
+		if (standard instanceof ElasticTweenEquation && matcher.group(3) != null) {
+			return ((ElasticTweenEquation) standard).period(Float.parseFloat(matcher.group(2))).amplitude(Float.parseFloat(matcher.group(3)));
 		}
 		return null;
 	}

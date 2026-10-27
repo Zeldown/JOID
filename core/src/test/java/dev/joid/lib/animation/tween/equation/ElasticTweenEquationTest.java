@@ -76,10 +76,11 @@ public class ElasticTweenEquationTest {
 	}
 
 	@Test
-	public void keepsItsNameWithOtherParameters() {
-		Assert.assertEquals("Elastic.IN", ElasticTweenEquation.IN.amplitude(2F).toString());
-		Assert.assertEquals("Elastic.OUT", ElasticTweenEquation.OUT.period(0.6F).toString());
-		Assert.assertEquals("Elastic.IN_OUT", ElasticTweenEquation.IN_OUT.amplitude(2F).period(0.5F).toString());
+	public void namesItsParametersWhenTheyAreTuned() {
+		Assert.assertEquals("Elastic.IN(0.3, 2.0)", ElasticTweenEquation.IN.amplitude(2F).toString());
+		Assert.assertEquals("Elastic.OUT(0.6, 0.0)", ElasticTweenEquation.OUT.period(0.6F).toString());
+		Assert.assertEquals("Elastic.IN_OUT(0.5, 2.0)", ElasticTweenEquation.IN_OUT.amplitude(2F).period(0.5F).toString());
+		Assert.assertEquals("Elastic.OUT", ElasticTweenEquation.OUT.period(0.3F).toString());
 	}
 
 	@Test
