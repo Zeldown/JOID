@@ -32,7 +32,7 @@ The shader of the outline that BorderShaderPass draws around the alpha of a text
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `void` | [bind](#BorderShader-method-bind)(float borderWidth, Color borderColor, float texelW, float texelH, boolean fill, BorderMode mode, float rectX1, float rectY1, float rectX2, float rectY2) | Binds the shader with a stroke of `borderWidth` texels in `borderColor`, gradient and animated colors included, the size of one texel `texelW`, `texelH` on 1, the `fill` and `mode` of [`BorderShaderPass`](/reference/shaders/bordershaderpass/), and the area `rectX1`, `rectY1`, `rectX2`, `rectY2`. |
+| `void` | [bind](#BorderShader-method-bind)(float borderWidth, Color borderColor, float texelW, float texelH, boolean corners, BorderMode mode, float rectX1, float rectY1, float rectX2, float rectY2) | Binds the shader with a stroke of `borderWidth` texels in `borderColor`, gradient and animated colors included, the size of one texel `texelW`, `texelH` on 1, the `corners` and `mode` of [`BorderShaderPass`](/reference/shaders/bordershaderpass/), and the area `rectX1`, `rectY1`, `rectX2`, `rectY2`. |
 
 <details>
 <summary>Inherited from <a href="/reference/shaders/shaderprogram/#ShaderProgram-methods"><code>ShaderProgram</code></a> (7)</summary>
@@ -57,9 +57,9 @@ Returns the shared shader.
 
 ### bind
 
-`void bind(float borderWidth, Color borderColor, float texelW, float texelH, boolean fill, BorderMode mode, float rectX1, float rectY1, float rectX2, float rectY2)` 
+`void bind(float borderWidth, Color borderColor, float texelW, float texelH, boolean corners, BorderMode mode, float rectX1, float rectY1, float rectX2, float rectY2)` 
 
-Binds the shader with a stroke of `borderWidth` texels in `borderColor`, gradient and animated colors included, the size of one texel `texelW`, `texelH` on 1, the `fill` and `mode` of [`BorderShaderPass`](/reference/shaders/bordershaderpass/), and the area `rectX1`, `rectY1`, `rectX2`, `rectY2`.
+Binds the shader with a stroke of `borderWidth` texels in `borderColor`, gradient and animated colors included, the size of one texel `texelW`, `texelH` on 1, the `corners` and `mode` of [`BorderShaderPass`](/reference/shaders/bordershaderpass/), and the area `rectX1`, `rectY1`, `rectX2`, `rectY2`.
 
 ---
 

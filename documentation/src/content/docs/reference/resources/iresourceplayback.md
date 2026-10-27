@@ -43,7 +43,7 @@ Times are in seconds; call the controls on the render thread.
 | `this` | [play](#IResourcePlayback-method-play)() <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span> | Starts the playback from the start, or from the time of a `seek` made while stopped, or resumes it after `pause()`. |
 | `this` | [stop](#IResourcePlayback-method-stop)() <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span> | Stops the playback; the next `play()` starts from the start, unless a `seek` comes first. |
 | `this` | [pause](#IResourcePlayback-method-pause)() <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span> | Pauses the playback at the current time. |
-| `this` | [seek](#IResourcePlayback-method-seek)(double seconds) <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span> | Moves the playback to `seconds` from the start; while stopped, it is the point where the next `play()` starts. |
+| `this` | [seek](#IResourcePlayback-method-seek)(double seconds) <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span> | Moves the playback to `seconds` from the start; while stopped, the playback pauses on that frame, and the next `play()` starts there. |
 | `boolean` | [isPaused](#IResourcePlayback-method-isPaused)() <span class="joid-qualifier">abstract</span> | If `true`, the playback is paused. |
 | `boolean` | [isPlaying](#IResourcePlayback-method-isPlaying)() <span class="joid-qualifier">abstract</span> | If `true`, the playback is running. |
 | `double` | [getDuration](#IResourcePlayback-method-getDuration)() <span class="joid-qualifier">abstract</span> | Returns the length of the media, in seconds. |
@@ -107,7 +107,7 @@ Pauses the playback at the current time.
 
 `this seek(double seconds)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">abstract</span>
 
-Moves the playback to `seconds` from the start; while stopped, it is the point where the next `play()` starts.
+Moves the playback to `seconds` from the start; while stopped, the playback pauses on that frame, and the next `play()` starts there.
 
 <a id="IResourcePlayback-method-isPaused"></a>
 

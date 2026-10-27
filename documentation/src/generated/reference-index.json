@@ -72,144 +72,6 @@
         "unwatch(UI)"
       ]
     },
-    "dev.joid.internal.JOID": {
-      "fqcn": "dev.joid.internal.JOID",
-      "name": "JOID",
-      "kind": "class",
-      "abstract": false,
-      "family": "ui",
-      "summary": "Entry point that opens and closes UIs, finds the open ones and runs code once JOID has loaded.",
-      "ancestors": [],
-      "url": "/reference/ui/joid/",
-      "members": {
-        "inst": "JOID-factory-inst",
-        "load": "JOID-method-load",
-        "onReady": "JOID-method-onReady",
-        "checkVersion": "JOID-method-checkVersion",
-        "readVersion": "JOID-method-readVersion",
-        "isOpen": "JOID-method-isOpen",
-        "getUi": "JOID-method-getUi",
-        "open": "JOID-method-open",
-        "close": "JOID-method-close",
-        "forceOpen": "JOID-method-forceOpen",
-        "forceClose": "JOID-method-forceClose",
-        "isReady": "JOID-method-isReady",
-        "VERSION": "JOID-constant-VERSION"
-      },
-      "overloads": [
-        "inst()",
-        "load()",
-        "onReady(Runnable)",
-        "checkVersion(String)",
-        "readVersion(Class,String)",
-        "isOpen(UI)",
-        "isOpen(Class)",
-        "getUi(Class)",
-        "open(UI)",
-        "close(UI)",
-        "forceOpen(UI)",
-        "forceClose(UI)",
-        "isReady()",
-        "VERSION"
-      ]
-    },
-    "JOID": {
-      "fqcn": "dev.joid.internal.JOID",
-      "name": "JOID",
-      "kind": "class",
-      "abstract": false,
-      "family": "ui",
-      "summary": "Entry point that opens and closes UIs, finds the open ones and runs code once JOID has loaded.",
-      "ancestors": [],
-      "url": "/reference/ui/joid/",
-      "members": {
-        "inst": "JOID-factory-inst",
-        "load": "JOID-method-load",
-        "onReady": "JOID-method-onReady",
-        "checkVersion": "JOID-method-checkVersion",
-        "readVersion": "JOID-method-readVersion",
-        "isOpen": "JOID-method-isOpen",
-        "getUi": "JOID-method-getUi",
-        "open": "JOID-method-open",
-        "close": "JOID-method-close",
-        "forceOpen": "JOID-method-forceOpen",
-        "forceClose": "JOID-method-forceClose",
-        "isReady": "JOID-method-isReady",
-        "VERSION": "JOID-constant-VERSION"
-      },
-      "overloads": [
-        "inst()",
-        "load()",
-        "onReady(Runnable)",
-        "checkVersion(String)",
-        "readVersion(Class,String)",
-        "isOpen(UI)",
-        "isOpen(Class)",
-        "getUi(Class)",
-        "open(UI)",
-        "close(UI)",
-        "forceOpen(UI)",
-        "forceClose(UI)",
-        "isReady()",
-        "VERSION"
-      ]
-    },
-    "dev.joid.internal.JOIDEnv": {
-      "fqcn": "dev.joid.internal.JOIDEnv",
-      "name": "JOIDEnv",
-      "kind": "class",
-      "abstract": false,
-      "family": "ui",
-      "summary": "The mode JOID runs in and the folders where it writes its data and its caches.",
-      "ancestors": [],
-      "url": "/reference/ui/joidenv/",
-      "members": {
-        "devMode": "JOIDEnv-method-devMode",
-        "dataDir": "JOIDEnv-method-dataDir",
-        "cacheDir": "JOIDEnv-method-cacheDir",
-        "isDevMode": "JOIDEnv-method-isDevMode",
-        "isDemoMode": "JOIDEnv-method-isDemoMode",
-        "getDataDir": "JOIDEnv-method-getDataDir",
-        "getCacheDir": "JOIDEnv-method-getCacheDir"
-      },
-      "overloads": [
-        "devMode(boolean)",
-        "dataDir(File)",
-        "cacheDir(File)",
-        "isDevMode()",
-        "isDemoMode()",
-        "getDataDir()",
-        "getCacheDir()"
-      ]
-    },
-    "JOIDEnv": {
-      "fqcn": "dev.joid.internal.JOIDEnv",
-      "name": "JOIDEnv",
-      "kind": "class",
-      "abstract": false,
-      "family": "ui",
-      "summary": "The mode JOID runs in and the folders where it writes its data and its caches.",
-      "ancestors": [],
-      "url": "/reference/ui/joidenv/",
-      "members": {
-        "devMode": "JOIDEnv-method-devMode",
-        "dataDir": "JOIDEnv-method-dataDir",
-        "cacheDir": "JOIDEnv-method-cacheDir",
-        "isDevMode": "JOIDEnv-method-isDevMode",
-        "isDemoMode": "JOIDEnv-method-isDemoMode",
-        "getDataDir": "JOIDEnv-method-getDataDir",
-        "getCacheDir": "JOIDEnv-method-getCacheDir"
-      },
-      "overloads": [
-        "devMode(boolean)",
-        "dataDir(File)",
-        "cacheDir(File)",
-        "isDevMode()",
-        "isDemoMode()",
-        "getDataDir()",
-        "getCacheDir()"
-      ]
-    },
     "dev.joid.internal.JOIDLog": {
       "fqcn": "dev.joid.internal.JOIDLog",
       "name": "JOIDLog",
@@ -264,6 +126,840 @@
         "nameOf(Class)"
       ]
     },
+    "dev.joid.internal.JsonFiles": {
+      "fqcn": "dev.joid.internal.JsonFiles",
+      "name": "JsonFiles",
+      "kind": "class",
+      "abstract": false,
+      "family": "utilities",
+      "summary": "Reads and writes the JSON files of JOID safely: atomic writes, and a damaged file set aside instead of lost.",
+      "ancestors": [],
+      "url": "/reference/utilities/jsonfiles/",
+      "members": {
+        "read": "JsonFiles-method-read",
+        "write": "JsonFiles-method-write",
+        "keep": "JsonFiles-method-keep"
+      },
+      "overloads": [
+        "read(File,String)",
+        "write(File,String)",
+        "keep(File,String,String)"
+      ]
+    },
+    "JsonFiles": {
+      "fqcn": "dev.joid.internal.JsonFiles",
+      "name": "JsonFiles",
+      "kind": "class",
+      "abstract": false,
+      "family": "utilities",
+      "summary": "Reads and writes the JSON files of JOID safely: atomic writes, and a damaged file set aside instead of lost.",
+      "ancestors": [],
+      "url": "/reference/utilities/jsonfiles/",
+      "members": {
+        "read": "JsonFiles-method-read",
+        "write": "JsonFiles-method-write",
+        "keep": "JsonFiles-method-keep"
+      },
+      "overloads": [
+        "read(File,String)",
+        "write(File,String)",
+        "keep(File,String,String)"
+      ]
+    },
+    "dev.joid.internal.RangeList": {
+      "fqcn": "dev.joid.internal.RangeList",
+      "name": "RangeList",
+      "kind": "class",
+      "abstract": true,
+      "family": "controls",
+      "summary": "Read-only list of the options of a slider range, whose values are computed from their index instead of stored.",
+      "ancestors": [],
+      "url": "/reference/controls/rangelist/",
+      "members": {
+        "RangeList": "RangeList-constructor",
+        "nearest": "RangeList-method-nearest",
+        "lastIndexOf": "RangeList-method-lastIndexOf",
+        "contains": "RangeList-method-contains",
+        "toString": "RangeList-method-toString"
+      },
+      "overloads": [
+        "RangeList()",
+        "nearest(E)",
+        "lastIndexOf(Object)",
+        "contains(Object)",
+        "toString()"
+      ]
+    },
+    "RangeList": {
+      "fqcn": "dev.joid.internal.RangeList",
+      "name": "RangeList",
+      "kind": "class",
+      "abstract": true,
+      "family": "controls",
+      "summary": "Read-only list of the options of a slider range, whose values are computed from their index instead of stored.",
+      "ancestors": [],
+      "url": "/reference/controls/rangelist/",
+      "members": {
+        "RangeList": "RangeList-constructor",
+        "nearest": "RangeList-method-nearest",
+        "lastIndexOf": "RangeList-method-lastIndexOf",
+        "contains": "RangeList-method-contains",
+        "toString": "RangeList-method-toString"
+      },
+      "overloads": [
+        "RangeList()",
+        "nearest(E)",
+        "lastIndexOf(Object)",
+        "contains(Object)",
+        "toString()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayCall": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayCall",
+      "name": "SignalReplayCall",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "One setter call in the code of the application: the line of the caller and the name of the setter.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplaycall/",
+      "members": {
+        "of": "SignalReplayCall-factory-of",
+        "getKey": "SignalReplayCall-method-getKey",
+        "describe": "SignalReplayCall-method-describe",
+        "getCaller": "SignalReplayCall-method-getCaller",
+        "getSetter": "SignalReplayCall-method-getSetter"
+      },
+      "overloads": [
+        "of(StackTraceElement,String)",
+        "getKey()",
+        "describe(List,int)",
+        "getCaller()",
+        "getSetter()"
+      ]
+    },
+    "SignalReplayCall": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayCall",
+      "name": "SignalReplayCall",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "One setter call in the code of the application: the line of the caller and the name of the setter.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplaycall/",
+      "members": {
+        "of": "SignalReplayCall-factory-of",
+        "getKey": "SignalReplayCall-method-getKey",
+        "describe": "SignalReplayCall-method-describe",
+        "getCaller": "SignalReplayCall-method-getCaller",
+        "getSetter": "SignalReplayCall-method-getSetter"
+      },
+      "overloads": [
+        "of(StackTraceElement,String)",
+        "getKey()",
+        "describe(List,int)",
+        "getCaller()",
+        "getSetter()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayClass": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayClass",
+      "name": "SignalReplayClass",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Bytecode of one class of the application, read once for the replay, with the analyses of its methods.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayclass/",
+      "members": {
+        "read": "SignalReplayClass-factory-read",
+        "isStale": "SignalReplayClass-method-isStale",
+        "method": "SignalReplayClass-method-method",
+        "getFile": "SignalReplayClass-method-getFile",
+        "getModified": "SignalReplayClass-method-getModified",
+        "getNode": "SignalReplayClass-method-getNode",
+        "getLoader": "SignalReplayClass-method-getLoader",
+        "getMethodMap": "SignalReplayClass-method-getMethodMap"
+      },
+      "overloads": [
+        "read(String,Class,ClassLoader)",
+        "isStale()",
+        "method(MethodNode)",
+        "getFile()",
+        "getModified()",
+        "getNode()",
+        "getLoader()",
+        "getMethodMap()"
+      ]
+    },
+    "SignalReplayClass": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayClass",
+      "name": "SignalReplayClass",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Bytecode of one class of the application, read once for the replay, with the analyses of its methods.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayclass/",
+      "members": {
+        "read": "SignalReplayClass-factory-read",
+        "isStale": "SignalReplayClass-method-isStale",
+        "method": "SignalReplayClass-method-method",
+        "getFile": "SignalReplayClass-method-getFile",
+        "getModified": "SignalReplayClass-method-getModified",
+        "getNode": "SignalReplayClass-method-getNode",
+        "getLoader": "SignalReplayClass-method-getLoader",
+        "getMethodMap": "SignalReplayClass-method-getMethodMap"
+      },
+      "overloads": [
+        "read(String,Class,ClassLoader)",
+        "isStale()",
+        "method(MethodNode)",
+        "getFile()",
+        "getModified()",
+        "getNode()",
+        "getLoader()",
+        "getMethodMap()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayException": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayException",
+      "name": "SignalReplayException",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Reason why the replay cannot follow an expression, with the advice that the dev warning prints.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayexception/",
+      "members": {
+        "SignalReplayException": "SignalReplayException-constructor",
+        "getAdvice": "SignalReplayException-method-getAdvice",
+        "getArguments": "SignalReplayException-method-getArguments",
+        "getFailure": "SignalReplayException-method-getFailure"
+      },
+      "overloads": [
+        "SignalReplayException(SignalReplayFailure,Object[])",
+        "getAdvice()",
+        "getArguments()",
+        "getFailure()"
+      ]
+    },
+    "SignalReplayException": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayException",
+      "name": "SignalReplayException",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Reason why the replay cannot follow an expression, with the advice that the dev warning prints.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayexception/",
+      "members": {
+        "SignalReplayException": "SignalReplayException-constructor",
+        "getAdvice": "SignalReplayException-method-getAdvice",
+        "getArguments": "SignalReplayException-method-getArguments",
+        "getFailure": "SignalReplayException-method-getFailure"
+      },
+      "overloads": [
+        "SignalReplayException(SignalReplayFailure,Object[])",
+        "getAdvice()",
+        "getArguments()",
+        "getFailure()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayFailure": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayFailure",
+      "name": "SignalReplayFailure",
+      "kind": "enum",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Kinds of expression that the replay cannot follow, each with its reason and its advice.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayfailure/",
+      "members": {
+        "getReason": "SignalReplayFailure-method-getReason",
+        "getAdvice": "SignalReplayFailure-method-getAdvice",
+        "CLASS_NOT_FOUND": "SignalReplayFailure-value-CLASS_NOT_FOUND",
+        "MEMBER_NOT_FOUND": "SignalReplayFailure-value-MEMBER_NOT_FOUND",
+        "CALL_NOT_FOUND": "SignalReplayFailure-value-CALL_NOT_FOUND",
+        "AMBIGUOUS_CALL": "SignalReplayFailure-value-AMBIGUOUS_CALL",
+        "UNSUPPORTED_INSTRUCTION": "SignalReplayFailure-value-UNSUPPORTED_INSTRUCTION",
+        "LAMBDA": "SignalReplayFailure-value-LAMBDA",
+        "LOCAL_COMBINED": "SignalReplayFailure-value-LOCAL_COMBINED",
+        "LOCAL_CONDITION": "SignalReplayFailure-value-LOCAL_CONDITION",
+        "VALUE_DIFFERS": "SignalReplayFailure-value-VALUE_DIFFERS",
+        "SIGNALS_DIFFER": "SignalReplayFailure-value-SIGNALS_DIFFER",
+        "ACCESS_REFUSED": "SignalReplayFailure-value-ACCESS_REFUSED",
+        "REPLAY_FAILED": "SignalReplayFailure-value-REPLAY_FAILED"
+      },
+      "overloads": [
+        "getReason()",
+        "getAdvice()",
+        "CLASS_NOT_FOUND",
+        "MEMBER_NOT_FOUND",
+        "CALL_NOT_FOUND",
+        "AMBIGUOUS_CALL",
+        "UNSUPPORTED_INSTRUCTION",
+        "LAMBDA",
+        "LOCAL_COMBINED",
+        "LOCAL_CONDITION",
+        "VALUE_DIFFERS",
+        "SIGNALS_DIFFER",
+        "ACCESS_REFUSED",
+        "REPLAY_FAILED"
+      ]
+    },
+    "SignalReplayFailure": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayFailure",
+      "name": "SignalReplayFailure",
+      "kind": "enum",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Kinds of expression that the replay cannot follow, each with its reason and its advice.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayfailure/",
+      "members": {
+        "getReason": "SignalReplayFailure-method-getReason",
+        "getAdvice": "SignalReplayFailure-method-getAdvice",
+        "CLASS_NOT_FOUND": "SignalReplayFailure-value-CLASS_NOT_FOUND",
+        "MEMBER_NOT_FOUND": "SignalReplayFailure-value-MEMBER_NOT_FOUND",
+        "CALL_NOT_FOUND": "SignalReplayFailure-value-CALL_NOT_FOUND",
+        "AMBIGUOUS_CALL": "SignalReplayFailure-value-AMBIGUOUS_CALL",
+        "UNSUPPORTED_INSTRUCTION": "SignalReplayFailure-value-UNSUPPORTED_INSTRUCTION",
+        "LAMBDA": "SignalReplayFailure-value-LAMBDA",
+        "LOCAL_COMBINED": "SignalReplayFailure-value-LOCAL_COMBINED",
+        "LOCAL_CONDITION": "SignalReplayFailure-value-LOCAL_CONDITION",
+        "VALUE_DIFFERS": "SignalReplayFailure-value-VALUE_DIFFERS",
+        "SIGNALS_DIFFER": "SignalReplayFailure-value-SIGNALS_DIFFER",
+        "ACCESS_REFUSED": "SignalReplayFailure-value-ACCESS_REFUSED",
+        "REPLAY_FAILED": "SignalReplayFailure-value-REPLAY_FAILED"
+      },
+      "overloads": [
+        "getReason()",
+        "getAdvice()",
+        "CLASS_NOT_FOUND",
+        "MEMBER_NOT_FOUND",
+        "CALL_NOT_FOUND",
+        "AMBIGUOUS_CALL",
+        "UNSUPPORTED_INSTRUCTION",
+        "LAMBDA",
+        "LOCAL_COMBINED",
+        "LOCAL_CONDITION",
+        "VALUE_DIFFERS",
+        "SIGNALS_DIFFER",
+        "ACCESS_REFUSED",
+        "REPLAY_FAILED"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayFrame": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayFrame",
+      "name": "SignalReplayFrame",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Interpreter that runs the instructions of one expression of the bytecode with the current values of fields and signals.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayframe/",
+      "members": {
+        "SignalReplayFrame": "SignalReplayFrame-constructor",
+        "execute": "SignalReplayFrame-method-execute",
+        "convert": "SignalReplayFrame-method-convert",
+        "isLastLive": "SignalReplayFrame-method-isLastLive"
+      },
+      "overloads": [
+        "SignalReplayFrame(SignalReplayRun,SignalReplaySlice,int)",
+        "execute()",
+        "convert(Object,Class)",
+        "isLastLive()"
+      ]
+    },
+    "SignalReplayFrame": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayFrame",
+      "name": "SignalReplayFrame",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Interpreter that runs the instructions of one expression of the bytecode with the current values of fields and signals.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayframe/",
+      "members": {
+        "SignalReplayFrame": "SignalReplayFrame-constructor",
+        "execute": "SignalReplayFrame-method-execute",
+        "convert": "SignalReplayFrame-method-convert",
+        "isLastLive": "SignalReplayFrame-method-isLastLive"
+      },
+      "overloads": [
+        "SignalReplayFrame(SignalReplayRun,SignalReplaySlice,int)",
+        "execute()",
+        "convert(Object,Class)",
+        "isLastLive()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayMatch": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayMatch",
+      "name": "SignalReplayMatch",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Result of matching one slice of bytecode against the value a setter received and the signals read before it.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplaymatch/",
+      "members": {
+        "of": "SignalReplayMatch-factory-of",
+        "getReadList": "SignalReplayMatch-method-getReadList",
+        "getRemainingList": "SignalReplayMatch-method-getRemainingList",
+        "getSlice": "SignalReplayMatch-method-getSlice",
+        "getSelf": "SignalReplayMatch-method-getSelf",
+        "isDefinitions": "SignalReplayMatch-method-isDefinitions",
+        "getHoleMap": "SignalReplayMatch-method-getHoleMap",
+        "getPositionalMap": "SignalReplayMatch-method-getPositionalMap",
+        "getConsumed": "SignalReplayMatch-method-getConsumed"
+      },
+      "overloads": [
+        "of(SignalReplaySlice,SignalReplayRun,Map,boolean[])",
+        "getReadList(List)",
+        "getRemainingList(List)",
+        "getSlice()",
+        "getSelf()",
+        "isDefinitions()",
+        "getHoleMap()",
+        "getPositionalMap()",
+        "getConsumed()"
+      ]
+    },
+    "SignalReplayMatch": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayMatch",
+      "name": "SignalReplayMatch",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Result of matching one slice of bytecode against the value a setter received and the signals read before it.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplaymatch/",
+      "members": {
+        "of": "SignalReplayMatch-factory-of",
+        "getReadList": "SignalReplayMatch-method-getReadList",
+        "getRemainingList": "SignalReplayMatch-method-getRemainingList",
+        "getSlice": "SignalReplayMatch-method-getSlice",
+        "getSelf": "SignalReplayMatch-method-getSelf",
+        "isDefinitions": "SignalReplayMatch-method-isDefinitions",
+        "getHoleMap": "SignalReplayMatch-method-getHoleMap",
+        "getPositionalMap": "SignalReplayMatch-method-getPositionalMap",
+        "getConsumed": "SignalReplayMatch-method-getConsumed"
+      },
+      "overloads": [
+        "of(SignalReplaySlice,SignalReplayRun,Map,boolean[])",
+        "getReadList(List)",
+        "getRemainingList(List)",
+        "getSlice()",
+        "getSelf()",
+        "isDefinitions()",
+        "getHoleMap()",
+        "getPositionalMap()",
+        "getConsumed()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayMethod": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayMethod",
+      "name": "SignalReplayMethod",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Analysis of one method of the bytecode: frames, instructions, local variables and the expressions that define them.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplaymethod/",
+      "members": {
+        "of": "SignalReplayMethod-factory-of",
+        "indexOf": "SignalReplayMethod-method-indexOf",
+        "expressionStart": "SignalReplayMethod-method-expressionStart",
+        "localName": "SignalReplayMethod-method-localName",
+        "describeLocal": "SignalReplayMethod-method-describeLocal",
+        "signalName": "SignalReplayMethod-method-signalName",
+        "isSignal": "SignalReplayMethod-method-isSignal",
+        "isParameter": "SignalReplayMethod-method-isParameter",
+        "member": "SignalReplayMethod-method-member",
+        "type": "SignalReplayMethod-method-type",
+        "isStatic": "SignalReplayMethod-method-isStatic",
+        "getMethod": "SignalReplayMethod-method-getMethod",
+        "getFrames": "SignalReplayMethod-method-getFrames",
+        "getInstructions": "SignalReplayMethod-method-getInstructions",
+        "getDefinitionMap": "SignalReplayMethod-method-getDefinitionMap"
+      },
+      "overloads": [
+        "of(SignalReplayClass,MethodNode)",
+        "indexOf(AbstractInsnNode)",
+        "expressionStart(Collection,int)",
+        "localName(int,int)",
+        "describeLocal(int,int)",
+        "signalName(int)",
+        "isSignal(String)",
+        "isParameter(int)",
+        "member(AbstractInsnNode)",
+        "type(Type)",
+        "isStatic()",
+        "getMethod()",
+        "getFrames()",
+        "getInstructions()",
+        "getDefinitionMap()"
+      ]
+    },
+    "SignalReplayMethod": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayMethod",
+      "name": "SignalReplayMethod",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Analysis of one method of the bytecode: frames, instructions, local variables and the expressions that define them.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplaymethod/",
+      "members": {
+        "of": "SignalReplayMethod-factory-of",
+        "indexOf": "SignalReplayMethod-method-indexOf",
+        "expressionStart": "SignalReplayMethod-method-expressionStart",
+        "localName": "SignalReplayMethod-method-localName",
+        "describeLocal": "SignalReplayMethod-method-describeLocal",
+        "signalName": "SignalReplayMethod-method-signalName",
+        "isSignal": "SignalReplayMethod-method-isSignal",
+        "isParameter": "SignalReplayMethod-method-isParameter",
+        "member": "SignalReplayMethod-method-member",
+        "type": "SignalReplayMethod-method-type",
+        "isStatic": "SignalReplayMethod-method-isStatic",
+        "getMethod": "SignalReplayMethod-method-getMethod",
+        "getFrames": "SignalReplayMethod-method-getFrames",
+        "getInstructions": "SignalReplayMethod-method-getInstructions",
+        "getDefinitionMap": "SignalReplayMethod-method-getDefinitionMap"
+      },
+      "overloads": [
+        "of(SignalReplayClass,MethodNode)",
+        "indexOf(AbstractInsnNode)",
+        "expressionStart(Collection,int)",
+        "localName(int,int)",
+        "describeLocal(int,int)",
+        "signalName(int)",
+        "isSignal(String)",
+        "isParameter(int)",
+        "member(AbstractInsnNode)",
+        "type(Type)",
+        "isStatic()",
+        "getMethod()",
+        "getFrames()",
+        "getInstructions()",
+        "getDefinitionMap()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayParts": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayParts",
+      "name": "SignalReplayParts",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Text of a concatenation whose parts are known values and holes left by local variables.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayparts/",
+      "members": {
+        "SignalReplayParts": "SignalReplayParts-constructor",
+        "add": "SignalReplayParts-method-add",
+        "addHole": "SignalReplayParts-method-addHole",
+        "hasHoles": "SignalReplayParts-method-hasHoles",
+        "getDescription": "SignalReplayParts-method-getDescription",
+        "result": "SignalReplayParts-method-result",
+        "solve": "SignalReplayParts-method-solve",
+        "isLive": "SignalReplayParts-method-isLive",
+        "setLive": "SignalReplayParts-method-setLive"
+      },
+      "overloads": [
+        "SignalReplayParts()",
+        "add(Object)",
+        "addHole(String,String)",
+        "hasHoles()",
+        "getDescription()",
+        "result()",
+        "solve(String)",
+        "isLive()",
+        "setLive(boolean)"
+      ]
+    },
+    "SignalReplayParts": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayParts",
+      "name": "SignalReplayParts",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Text of a concatenation whose parts are known values and holes left by local variables.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayparts/",
+      "members": {
+        "SignalReplayParts": "SignalReplayParts-constructor",
+        "add": "SignalReplayParts-method-add",
+        "addHole": "SignalReplayParts-method-addHole",
+        "hasHoles": "SignalReplayParts-method-hasHoles",
+        "getDescription": "SignalReplayParts-method-getDescription",
+        "result": "SignalReplayParts-method-result",
+        "solve": "SignalReplayParts-method-solve",
+        "isLive": "SignalReplayParts-method-isLive",
+        "setLive": "SignalReplayParts-method-setLive"
+      },
+      "overloads": [
+        "SignalReplayParts()",
+        "add(Object)",
+        "addHole(String,String)",
+        "hasHoles()",
+        "getDescription()",
+        "result()",
+        "solve(String)",
+        "isLive()",
+        "setLive(boolean)"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayRun": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayRun",
+      "name": "SignalReplayRun",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "One execution of a slice of bytecode, during the match or during a replay, with the signals it reads.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayrun/",
+      "members": {
+        "match": "SignalReplayRun-factory-match",
+        "replay": "SignalReplayRun-factory-replay",
+        "run": "SignalReplayRun-method-run",
+        "define": "SignalReplayRun-method-define",
+        "position": "SignalReplayRun-method-position",
+        "getDefinitionList": "SignalReplayRun-method-getDefinitionList",
+        "getSelf": "SignalReplayRun-method-getSelf",
+        "isDefinitions": "SignalReplayRun-method-isDefinitions",
+        "getHoleMap": "SignalReplayRun-method-getHoleMap",
+        "getPositionalMap": "SignalReplayRun-method-getPositionalMap",
+        "getDirectList": "SignalReplayRun-method-getDirectList",
+        "getDefinitionCache": "SignalReplayRun-method-getDefinitionCache",
+        "isPositionalNeeded": "SignalReplayRun-method-isPositionalNeeded"
+      },
+      "overloads": [
+        "match(Object,boolean,List)",
+        "replay(Object,boolean,Map,Map)",
+        "run(SignalReplaySlice)",
+        "define(SignalReplaySlice,int)",
+        "position(Object,Class)",
+        "getDefinitionList()",
+        "getSelf()",
+        "isDefinitions()",
+        "getHoleMap()",
+        "getPositionalMap()",
+        "getDirectList()",
+        "getDefinitionCache()",
+        "isPositionalNeeded()"
+      ]
+    },
+    "SignalReplayRun": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayRun",
+      "name": "SignalReplayRun",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "One execution of a slice of bytecode, during the match or during a replay, with the signals it reads.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayrun/",
+      "members": {
+        "match": "SignalReplayRun-factory-match",
+        "replay": "SignalReplayRun-factory-replay",
+        "run": "SignalReplayRun-method-run",
+        "define": "SignalReplayRun-method-define",
+        "position": "SignalReplayRun-method-position",
+        "getDefinitionList": "SignalReplayRun-method-getDefinitionList",
+        "getSelf": "SignalReplayRun-method-getSelf",
+        "isDefinitions": "SignalReplayRun-method-isDefinitions",
+        "getHoleMap": "SignalReplayRun-method-getHoleMap",
+        "getPositionalMap": "SignalReplayRun-method-getPositionalMap",
+        "getDirectList": "SignalReplayRun-method-getDirectList",
+        "getDefinitionCache": "SignalReplayRun-method-getDefinitionCache",
+        "isPositionalNeeded": "SignalReplayRun-method-isPositionalNeeded"
+      },
+      "overloads": [
+        "match(Object,boolean,List)",
+        "replay(Object,boolean,Map,Map)",
+        "run(SignalReplaySlice)",
+        "define(SignalReplaySlice,int)",
+        "position(Object,Class)",
+        "getDefinitionList()",
+        "getSelf()",
+        "isDefinitions()",
+        "getHoleMap()",
+        "getPositionalMap()",
+        "getDirectList()",
+        "getDefinitionCache()",
+        "isPositionalNeeded()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplaySite": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplaySite",
+      "name": "SignalReplaySite",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Every argument expression of one setter call on one line, analysed once and kept for the next replays.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplaysite/",
+      "members": {
+        "analyze": "SignalReplaySite-factory-analyze",
+        "fail": "SignalReplaySite-factory-fail",
+        "isPassThrough": "SignalReplaySite-method-isPassThrough",
+        "getSliceList": "SignalReplaySite-method-getSliceList",
+        "getFailure": "SignalReplaySite-method-getFailure"
+      },
+      "overloads": [
+        "analyze(SignalReplayClass,StackTraceElement,String)",
+        "fail(SignalReplayException)",
+        "isPassThrough()",
+        "getSliceList()",
+        "getFailure()"
+      ]
+    },
+    "SignalReplaySite": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplaySite",
+      "name": "SignalReplaySite",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Every argument expression of one setter call on one line, analysed once and kept for the next replays.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplaysite/",
+      "members": {
+        "analyze": "SignalReplaySite-factory-analyze",
+        "fail": "SignalReplaySite-factory-fail",
+        "isPassThrough": "SignalReplaySite-method-isPassThrough",
+        "getSliceList": "SignalReplaySite-method-getSliceList",
+        "getFailure": "SignalReplaySite-method-getFailure"
+      },
+      "overloads": [
+        "analyze(SignalReplayClass,StackTraceElement,String)",
+        "fail(SignalReplayException)",
+        "isPassThrough()",
+        "getSliceList()",
+        "getFailure()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplaySlice": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplaySlice",
+      "name": "SignalReplaySlice",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Instructions of the bytecode that compute one argument of a setter call.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayslice/",
+      "members": {
+        "of": "SignalReplaySlice-factory-of",
+        "hasLambda": "SignalReplaySlice-method-hasLambda",
+        "isEnclosed": "SignalReplaySlice-method-isEnclosed",
+        "isParameter": "SignalReplaySlice-method-isParameter",
+        "isEquivalent": "SignalReplaySlice-method-isEquivalent",
+        "convert": "SignalReplaySlice-method-convert",
+        "getStart": "SignalReplaySlice-method-getStart",
+        "getEnd": "SignalReplaySlice-method-getEnd",
+        "getType": "SignalReplaySlice-method-getType",
+        "getSignature": "SignalReplaySlice-method-getSignature",
+        "getMethod": "SignalReplaySlice-method-getMethod",
+        "getSignalNameList": "SignalReplaySlice-method-getSignalNameList",
+        "getSignalCount": "SignalReplaySlice-method-getSignalCount"
+      },
+      "overloads": [
+        "of(SignalReplayMethod,int,int,Type)",
+        "hasLambda()",
+        "isEnclosed()",
+        "isParameter()",
+        "isEquivalent(SignalReplaySlice)",
+        "convert(Object)",
+        "getStart()",
+        "getEnd()",
+        "getType()",
+        "getSignature()",
+        "getMethod()",
+        "getSignalNameList()",
+        "getSignalCount()"
+      ]
+    },
+    "SignalReplaySlice": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplaySlice",
+      "name": "SignalReplaySlice",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Instructions of the bytecode that compute one argument of a setter call.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayslice/",
+      "members": {
+        "of": "SignalReplaySlice-factory-of",
+        "hasLambda": "SignalReplaySlice-method-hasLambda",
+        "isEnclosed": "SignalReplaySlice-method-isEnclosed",
+        "isParameter": "SignalReplaySlice-method-isParameter",
+        "isEquivalent": "SignalReplaySlice-method-isEquivalent",
+        "convert": "SignalReplaySlice-method-convert",
+        "getStart": "SignalReplaySlice-method-getStart",
+        "getEnd": "SignalReplaySlice-method-getEnd",
+        "getType": "SignalReplaySlice-method-getType",
+        "getSignature": "SignalReplaySlice-method-getSignature",
+        "getMethod": "SignalReplaySlice-method-getMethod",
+        "getSignalNameList": "SignalReplaySlice-method-getSignalNameList",
+        "getSignalCount": "SignalReplaySlice-method-getSignalCount"
+      },
+      "overloads": [
+        "of(SignalReplayMethod,int,int,Type)",
+        "hasLambda()",
+        "isEnclosed()",
+        "isParameter()",
+        "isEquivalent(SignalReplaySlice)",
+        "convert(Object)",
+        "getStart()",
+        "getEnd()",
+        "getType()",
+        "getSignature()",
+        "getMethod()",
+        "getSignalNameList()",
+        "getSignalCount()"
+      ]
+    },
+    "dev.joid.internal.signal.replay.SignalReplayUnknown": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayUnknown",
+      "name": "SignalReplayUnknown",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Value that the replay cannot compute, such as a local variable whose value it does not know.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayunknown/",
+      "members": {
+        "of": "SignalReplayUnknown-factory-of",
+        "getKey": "SignalReplayUnknown-method-getKey",
+        "getDescription": "SignalReplayUnknown-method-getDescription"
+      },
+      "overloads": [
+        "of(String)",
+        "of(String,Object)",
+        "getKey()",
+        "getDescription()"
+      ]
+    },
+    "SignalReplayUnknown": {
+      "fqcn": "dev.joid.internal.signal.replay.SignalReplayUnknown",
+      "name": "SignalReplayUnknown",
+      "kind": "class",
+      "abstract": false,
+      "family": "signals",
+      "summary": "Value that the replay cannot compute, such as a local variable whose value it does not know.",
+      "ancestors": [],
+      "url": "/reference/signals/signalreplayunknown/",
+      "members": {
+        "of": "SignalReplayUnknown-factory-of",
+        "getKey": "SignalReplayUnknown-method-getKey",
+        "getDescription": "SignalReplayUnknown-method-getDescription"
+      },
+      "overloads": [
+        "of(String)",
+        "of(String,Object)",
+        "getKey()",
+        "getDescription()"
+      ]
+    },
     "dev.joid.lib.animation.animator.TweenAnimator": {
       "fqcn": "dev.joid.lib.animation.animator.TweenAnimator",
       "name": "TweenAnimator",
@@ -280,6 +976,7 @@
         "speed": "TweenAnimator-property-speed",
         "create": "TweenAnimator-factory-create",
         "start": "TweenAnimator-method-start",
+        "copy": "TweenAnimator-method-copy",
         "removeOnChange": "TweenAnimator-method-removeOnChange",
         "isWritable": "TweenAnimator-method-isWritable",
         "sequence": "TweenAnimator-method-sequence",
@@ -310,6 +1007,7 @@
         "create()",
         "create(float)",
         "start()",
+        "copy()",
         "removeOnChange(SignalListener)",
         "isWritable()",
         "sequence(float,float)",
@@ -352,6 +1050,7 @@
         "speed": "TweenAnimator-property-speed",
         "create": "TweenAnimator-factory-create",
         "start": "TweenAnimator-method-start",
+        "copy": "TweenAnimator-method-copy",
         "removeOnChange": "TweenAnimator-method-removeOnChange",
         "isWritable": "TweenAnimator-method-isWritable",
         "sequence": "TweenAnimator-method-sequence",
@@ -382,6 +1081,7 @@
         "create()",
         "create(float)",
         "start()",
+        "copy()",
         "removeOnChange(SignalListener)",
         "isWritable()",
         "sequence(float,float)",
@@ -2852,6 +3552,8 @@
         "createTexture": "IRenderBridge-method-createTexture",
         "createFrameBuffer": "IRenderBridge-method-createFrameBuffer",
         "createShader": "IRenderBridge-method-createShader",
+        "suspend": "IRenderBridge-method-suspend",
+        "raster": "IRenderBridge-method-raster",
         "getState": "IRenderBridge-method-getState",
         "getPixelGrid": "IRenderBridge-method-getPixelGrid",
         "getModelView": "IRenderBridge-method-getModelView",
@@ -2859,8 +3561,6 @@
         "beginFrame": "IRenderBridge-method-beginFrame",
         "endFrame": "IRenderBridge-method-endFrame",
         "isFrameActive": "IRenderBridge-method-isFrameActive",
-        "suspend": "IRenderBridge-method-suspend",
-        "raster": "IRenderBridge-method-raster",
         "withState": "IRenderBridge-method-withState",
         "canWrap": "IRenderBridge-method-canWrap"
       },
@@ -2877,6 +3577,8 @@
         "createTexture()",
         "createFrameBuffer(int,int)",
         "createShader(ShaderSource,ShaderSource,BlendState)",
+        "suspend(Runnable)",
+        "raster(IFrameBuffer,int,int,Runnable)",
         "getState()",
         "getPixelGrid()",
         "getModelView()",
@@ -2884,8 +3586,6 @@
         "beginFrame()",
         "endFrame()",
         "isFrameActive()",
-        "suspend(Runnable)",
-        "raster(IFrameBuffer,int,int,Runnable)",
         "withState(Consumer)",
         "canWrap(TextureWrap)"
       ]
@@ -2914,6 +3614,8 @@
         "createTexture": "IRenderBridge-method-createTexture",
         "createFrameBuffer": "IRenderBridge-method-createFrameBuffer",
         "createShader": "IRenderBridge-method-createShader",
+        "suspend": "IRenderBridge-method-suspend",
+        "raster": "IRenderBridge-method-raster",
         "getState": "IRenderBridge-method-getState",
         "getPixelGrid": "IRenderBridge-method-getPixelGrid",
         "getModelView": "IRenderBridge-method-getModelView",
@@ -2921,8 +3623,6 @@
         "beginFrame": "IRenderBridge-method-beginFrame",
         "endFrame": "IRenderBridge-method-endFrame",
         "isFrameActive": "IRenderBridge-method-isFrameActive",
-        "suspend": "IRenderBridge-method-suspend",
-        "raster": "IRenderBridge-method-raster",
         "withState": "IRenderBridge-method-withState",
         "canWrap": "IRenderBridge-method-canWrap"
       },
@@ -2939,6 +3639,8 @@
         "createTexture()",
         "createFrameBuffer(int,int)",
         "createShader(ShaderSource,ShaderSource,BlendState)",
+        "suspend(Runnable)",
+        "raster(IFrameBuffer,int,int,Runnable)",
         "getState()",
         "getPixelGrid()",
         "getModelView()",
@@ -2946,8 +3648,6 @@
         "beginFrame()",
         "endFrame()",
         "isFrameActive()",
-        "suspend(Runnable)",
-        "raster(IFrameBuffer,int,int,Runnable)",
         "withState(Consumer)",
         "canWrap(TextureWrap)"
       ]
@@ -6948,11 +7648,9 @@
       "ancestors": [],
       "url": "/reference/resources/filecache/",
       "members": {
-        "area": "FileCache-method-area",
         "clean": "FileCache-method-clean"
       },
       "overloads": [
-        "area(String)",
         "clean()"
       ]
     },
@@ -6966,11 +7664,9 @@
       "ancestors": [],
       "url": "/reference/resources/filecache/",
       "members": {
-        "area": "FileCache-method-area",
         "clean": "FileCache-method-clean"
       },
       "overloads": [
-        "area(String)",
         "clean()"
       ]
     },
@@ -6985,28 +7681,26 @@
       "url": "/reference/resources/filecachearea/",
       "members": {
         "retention": "FileCacheArea-property-retention",
-        "FileCacheArea": "FileCacheArea-constructor",
+        "of": "FileCacheArea-factory-of",
         "getDirectory": "FileCacheArea-method-getDirectory",
         "entry": "FileCacheArea-method-entry",
         "compute": "FileCacheArea-method-compute",
         "store": "FileCacheArea-method-store",
         "remove": "FileCacheArea-method-remove",
         "clean": "FileCacheArea-method-clean",
-        "check": "FileCacheArea-method-check",
         "getName": "FileCacheArea-method-getName",
         "MARKER": "FileCacheArea-constant-MARKER"
       },
       "overloads": [
         "retention(Duration)",
         "getRetention()",
-        "FileCacheArea(String)",
+        "of(String)",
         "getDirectory()",
         "entry(String)",
         "compute(String,FileCacheWriter)",
         "store(FileCacheWriter)",
         "remove(String)",
         "clean(long,AtomicInteger)",
-        "check(String,String)",
         "getName()",
         "MARKER"
       ]
@@ -7022,28 +7716,26 @@
       "url": "/reference/resources/filecachearea/",
       "members": {
         "retention": "FileCacheArea-property-retention",
-        "FileCacheArea": "FileCacheArea-constructor",
+        "of": "FileCacheArea-factory-of",
         "getDirectory": "FileCacheArea-method-getDirectory",
         "entry": "FileCacheArea-method-entry",
         "compute": "FileCacheArea-method-compute",
         "store": "FileCacheArea-method-store",
         "remove": "FileCacheArea-method-remove",
         "clean": "FileCacheArea-method-clean",
-        "check": "FileCacheArea-method-check",
         "getName": "FileCacheArea-method-getName",
         "MARKER": "FileCacheArea-constant-MARKER"
       },
       "overloads": [
         "retention(Duration)",
         "getRetention()",
-        "FileCacheArea(String)",
+        "of(String)",
         "getDirectory()",
         "entry(String)",
         "compute(String,FileCacheWriter)",
         "store(FileCacheWriter)",
         "remove(String)",
         "clean(long,AtomicInteger)",
-        "check(String,String)",
         "getName()",
         "MARKER"
       ]
@@ -10020,6 +10712,7 @@
         "getStyle": "TextInfo-method-getStyle",
         "getShadowX": "TextInfo-method-getShadowX",
         "getShadowY": "TextInfo-method-getShadowY",
+        "getShadowColor": "TextInfo-method-getShadowColor",
         "getBounds": "TextInfo-method-getBounds",
         "dw": "TextInfo-method-dw",
         "dh": "TextInfo-method-dh",
@@ -10039,8 +10732,7 @@
         "withShadow": "TextInfo-method-withShadow",
         "withShadowTint": "TextInfo-method-withShadowTint",
         "copy": "TextInfo-method-copy",
-        "toString": "TextInfo-method-toString",
-        "getShadowColor": "TextInfo-method-getShadowColor"
+        "toString": "TextInfo-method-toString"
       },
       "overloads": [
         "font(IFont)",
@@ -10073,6 +10765,7 @@
         "getStyle()",
         "getShadowX()",
         "getShadowY()",
+        "getShadowColor()",
         "getBounds(String)",
         "dw(String,double)",
         "dh(double)",
@@ -10098,8 +10791,7 @@
         "withShadow(float,float)",
         "withShadowTint(Float)",
         "copy()",
-        "toString()",
-        "getShadowColor()"
+        "toString()"
       ]
     },
     "TextInfo": {
@@ -10132,6 +10824,7 @@
         "getStyle": "TextInfo-method-getStyle",
         "getShadowX": "TextInfo-method-getShadowX",
         "getShadowY": "TextInfo-method-getShadowY",
+        "getShadowColor": "TextInfo-method-getShadowColor",
         "getBounds": "TextInfo-method-getBounds",
         "dw": "TextInfo-method-dw",
         "dh": "TextInfo-method-dh",
@@ -10151,8 +10844,7 @@
         "withShadow": "TextInfo-method-withShadow",
         "withShadowTint": "TextInfo-method-withShadowTint",
         "copy": "TextInfo-method-copy",
-        "toString": "TextInfo-method-toString",
-        "getShadowColor": "TextInfo-method-getShadowColor"
+        "toString": "TextInfo-method-toString"
       },
       "overloads": [
         "font(IFont)",
@@ -10185,6 +10877,7 @@
         "getStyle()",
         "getShadowX()",
         "getShadowY()",
+        "getShadowColor()",
         "getBounds(String)",
         "dw(String,double)",
         "dh(double)",
@@ -10210,8 +10903,7 @@
         "withShadow(float,float)",
         "withShadowTint(Float)",
         "copy()",
-        "toString()",
-        "getShadowColor()"
+        "toString()"
       ]
     },
     "dev.joid.lib.font.TextStyle": {
@@ -11132,6 +11824,144 @@
         "BACK",
         "FORWARD",
         "OTHER"
+      ]
+    },
+    "dev.joid.lib.JOID": {
+      "fqcn": "dev.joid.lib.JOID",
+      "name": "JOID",
+      "kind": "class",
+      "abstract": false,
+      "family": "ui",
+      "summary": "Entry point that opens and closes UIs, finds the open ones and runs code once JOID has loaded.",
+      "ancestors": [],
+      "url": "/reference/ui/joid/",
+      "members": {
+        "inst": "JOID-factory-inst",
+        "load": "JOID-method-load",
+        "onReady": "JOID-method-onReady",
+        "checkVersion": "JOID-method-checkVersion",
+        "readVersion": "JOID-method-readVersion",
+        "isOpen": "JOID-method-isOpen",
+        "getUi": "JOID-method-getUi",
+        "open": "JOID-method-open",
+        "close": "JOID-method-close",
+        "forceOpen": "JOID-method-forceOpen",
+        "forceClose": "JOID-method-forceClose",
+        "isReady": "JOID-method-isReady",
+        "VERSION": "JOID-constant-VERSION"
+      },
+      "overloads": [
+        "inst()",
+        "load()",
+        "onReady(Runnable)",
+        "checkVersion(String)",
+        "readVersion(Class,String)",
+        "isOpen(UI)",
+        "isOpen(Class)",
+        "getUi(Class)",
+        "open(UI)",
+        "close(UI)",
+        "forceOpen(UI)",
+        "forceClose(UI)",
+        "isReady()",
+        "VERSION"
+      ]
+    },
+    "JOID": {
+      "fqcn": "dev.joid.lib.JOID",
+      "name": "JOID",
+      "kind": "class",
+      "abstract": false,
+      "family": "ui",
+      "summary": "Entry point that opens and closes UIs, finds the open ones and runs code once JOID has loaded.",
+      "ancestors": [],
+      "url": "/reference/ui/joid/",
+      "members": {
+        "inst": "JOID-factory-inst",
+        "load": "JOID-method-load",
+        "onReady": "JOID-method-onReady",
+        "checkVersion": "JOID-method-checkVersion",
+        "readVersion": "JOID-method-readVersion",
+        "isOpen": "JOID-method-isOpen",
+        "getUi": "JOID-method-getUi",
+        "open": "JOID-method-open",
+        "close": "JOID-method-close",
+        "forceOpen": "JOID-method-forceOpen",
+        "forceClose": "JOID-method-forceClose",
+        "isReady": "JOID-method-isReady",
+        "VERSION": "JOID-constant-VERSION"
+      },
+      "overloads": [
+        "inst()",
+        "load()",
+        "onReady(Runnable)",
+        "checkVersion(String)",
+        "readVersion(Class,String)",
+        "isOpen(UI)",
+        "isOpen(Class)",
+        "getUi(Class)",
+        "open(UI)",
+        "close(UI)",
+        "forceOpen(UI)",
+        "forceClose(UI)",
+        "isReady()",
+        "VERSION"
+      ]
+    },
+    "dev.joid.lib.JOIDEnv": {
+      "fqcn": "dev.joid.lib.JOIDEnv",
+      "name": "JOIDEnv",
+      "kind": "class",
+      "abstract": false,
+      "family": "ui",
+      "summary": "The mode JOID runs in and the folders where it writes its data and its caches.",
+      "ancestors": [],
+      "url": "/reference/ui/joidenv/",
+      "members": {
+        "devMode": "JOIDEnv-method-devMode",
+        "dataDir": "JOIDEnv-method-dataDir",
+        "cacheDir": "JOIDEnv-method-cacheDir",
+        "isDevMode": "JOIDEnv-method-isDevMode",
+        "isDemoMode": "JOIDEnv-method-isDemoMode",
+        "getDataDir": "JOIDEnv-method-getDataDir",
+        "getCacheDir": "JOIDEnv-method-getCacheDir"
+      },
+      "overloads": [
+        "devMode(boolean)",
+        "dataDir(File)",
+        "cacheDir(File)",
+        "isDevMode()",
+        "isDemoMode()",
+        "getDataDir()",
+        "getCacheDir()"
+      ]
+    },
+    "JOIDEnv": {
+      "fqcn": "dev.joid.lib.JOIDEnv",
+      "name": "JOIDEnv",
+      "kind": "class",
+      "abstract": false,
+      "family": "ui",
+      "summary": "The mode JOID runs in and the folders where it writes its data and its caches.",
+      "ancestors": [],
+      "url": "/reference/ui/joidenv/",
+      "members": {
+        "devMode": "JOIDEnv-method-devMode",
+        "dataDir": "JOIDEnv-method-dataDir",
+        "cacheDir": "JOIDEnv-method-cacheDir",
+        "isDevMode": "JOIDEnv-method-isDevMode",
+        "isDemoMode": "JOIDEnv-method-isDemoMode",
+        "getDataDir": "JOIDEnv-method-getDataDir",
+        "getCacheDir": "JOIDEnv-method-getCacheDir"
+      },
+      "overloads": [
+        "devMode(boolean)",
+        "dataDir(File)",
+        "cacheDir(File)",
+        "isDevMode()",
+        "isDemoMode()",
+        "getDataDir()",
+        "getCacheDir()"
       ]
     },
     "dev.joid.lib.obj.data.ObjFace": {
@@ -14630,7 +15460,7 @@
       ],
       "url": "/reference/shaders/bordershaderpass/",
       "members": {
-        "fill": "BorderShaderPass-property-fill",
+        "corners": "BorderShaderPass-property-corners",
         "mode": "BorderShaderPass-property-mode",
         "create": "BorderShaderPass-factory-create",
         "BorderShaderPass": "BorderShaderPass-constructor",
@@ -14640,7 +15470,7 @@
         "reach": "BorderShaderPass-method-reach"
       },
       "overloads": [
-        "fill(boolean)",
+        "corners(boolean)",
         "mode(BorderMode)",
         "create(Color,float)",
         "BorderShaderPass(Color,float)",
@@ -14662,7 +15492,7 @@
       ],
       "url": "/reference/shaders/bordershaderpass/",
       "members": {
-        "fill": "BorderShaderPass-property-fill",
+        "corners": "BorderShaderPass-property-corners",
         "mode": "BorderShaderPass-property-mode",
         "create": "BorderShaderPass-factory-create",
         "BorderShaderPass": "BorderShaderPass-constructor",
@@ -14672,7 +15502,7 @@
         "reach": "BorderShaderPass-method-reach"
       },
       "overloads": [
-        "fill(boolean)",
+        "corners(boolean)",
         "mode(BorderMode)",
         "create(Color,float)",
         "BorderShaderPass(Color,float)",
@@ -14925,7 +15755,7 @@
       "url": "/reference/signals/computedsignal/",
       "members": {
         "constant": "ComputedSignal-factory-constant",
-        "ComputedSignal": "ComputedSignal-constructor",
+        "computed": "ComputedSignal-factory-computed",
         "get": "ComputedSignal-method-get",
         "removeOnChange": "ComputedSignal-method-removeOnChange",
         "map": "ComputedSignal-method-map",
@@ -14943,7 +15773,7 @@
       },
       "overloads": [
         "constant(T)",
-        "ComputedSignal(Supplier)",
+        "computed(Supplier)",
         "get()",
         "removeOnChange(SignalListener)",
         "map(Function)",
@@ -14973,7 +15803,7 @@
       "url": "/reference/signals/computedsignal/",
       "members": {
         "constant": "ComputedSignal-factory-constant",
-        "ComputedSignal": "ComputedSignal-constructor",
+        "computed": "ComputedSignal-factory-computed",
         "get": "ComputedSignal-method-get",
         "removeOnChange": "ComputedSignal-method-removeOnChange",
         "map": "ComputedSignal-method-map",
@@ -14991,7 +15821,7 @@
       },
       "overloads": [
         "constant(T)",
-        "ComputedSignal(Supplier)",
+        "computed(Supplier)",
         "get()",
         "removeOnChange(SignalListener)",
         "map(Function)",
@@ -15676,752 +16506,6 @@
         "get()"
       ]
     },
-    "dev.joid.lib.signal.replay.SignalReplayCall": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayCall",
-      "name": "SignalReplayCall",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "One setter call in the code of the application: the line of the caller and the name of the setter.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplaycall/",
-      "members": {
-        "of": "SignalReplayCall-factory-of",
-        "getKey": "SignalReplayCall-method-getKey",
-        "describe": "SignalReplayCall-method-describe",
-        "getCaller": "SignalReplayCall-method-getCaller",
-        "getSetter": "SignalReplayCall-method-getSetter"
-      },
-      "overloads": [
-        "of(StackTraceElement,String)",
-        "getKey()",
-        "describe(List,int)",
-        "getCaller()",
-        "getSetter()"
-      ]
-    },
-    "SignalReplayCall": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayCall",
-      "name": "SignalReplayCall",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "One setter call in the code of the application: the line of the caller and the name of the setter.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplaycall/",
-      "members": {
-        "of": "SignalReplayCall-factory-of",
-        "getKey": "SignalReplayCall-method-getKey",
-        "describe": "SignalReplayCall-method-describe",
-        "getCaller": "SignalReplayCall-method-getCaller",
-        "getSetter": "SignalReplayCall-method-getSetter"
-      },
-      "overloads": [
-        "of(StackTraceElement,String)",
-        "getKey()",
-        "describe(List,int)",
-        "getCaller()",
-        "getSetter()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayClass": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayClass",
-      "name": "SignalReplayClass",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Bytecode of one class of the application, read once for the replay, with the analyses of its methods.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayclass/",
-      "members": {
-        "read": "SignalReplayClass-factory-read",
-        "isStale": "SignalReplayClass-method-isStale",
-        "method": "SignalReplayClass-method-method",
-        "getFile": "SignalReplayClass-method-getFile",
-        "getModified": "SignalReplayClass-method-getModified",
-        "getNode": "SignalReplayClass-method-getNode",
-        "getLoader": "SignalReplayClass-method-getLoader",
-        "getMethodMap": "SignalReplayClass-method-getMethodMap"
-      },
-      "overloads": [
-        "read(String,Class,ClassLoader)",
-        "isStale()",
-        "method(MethodNode)",
-        "getFile()",
-        "getModified()",
-        "getNode()",
-        "getLoader()",
-        "getMethodMap()"
-      ]
-    },
-    "SignalReplayClass": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayClass",
-      "name": "SignalReplayClass",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Bytecode of one class of the application, read once for the replay, with the analyses of its methods.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayclass/",
-      "members": {
-        "read": "SignalReplayClass-factory-read",
-        "isStale": "SignalReplayClass-method-isStale",
-        "method": "SignalReplayClass-method-method",
-        "getFile": "SignalReplayClass-method-getFile",
-        "getModified": "SignalReplayClass-method-getModified",
-        "getNode": "SignalReplayClass-method-getNode",
-        "getLoader": "SignalReplayClass-method-getLoader",
-        "getMethodMap": "SignalReplayClass-method-getMethodMap"
-      },
-      "overloads": [
-        "read(String,Class,ClassLoader)",
-        "isStale()",
-        "method(MethodNode)",
-        "getFile()",
-        "getModified()",
-        "getNode()",
-        "getLoader()",
-        "getMethodMap()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayException": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayException",
-      "name": "SignalReplayException",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Reason why the replay cannot follow an expression, with the advice that the dev warning prints.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayexception/",
-      "members": {
-        "SignalReplayException": "SignalReplayException-constructor",
-        "getAdvice": "SignalReplayException-method-getAdvice",
-        "getArguments": "SignalReplayException-method-getArguments",
-        "getFailure": "SignalReplayException-method-getFailure"
-      },
-      "overloads": [
-        "SignalReplayException(SignalReplayFailure,Object[])",
-        "getAdvice()",
-        "getArguments()",
-        "getFailure()"
-      ]
-    },
-    "SignalReplayException": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayException",
-      "name": "SignalReplayException",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Reason why the replay cannot follow an expression, with the advice that the dev warning prints.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayexception/",
-      "members": {
-        "SignalReplayException": "SignalReplayException-constructor",
-        "getAdvice": "SignalReplayException-method-getAdvice",
-        "getArguments": "SignalReplayException-method-getArguments",
-        "getFailure": "SignalReplayException-method-getFailure"
-      },
-      "overloads": [
-        "SignalReplayException(SignalReplayFailure,Object[])",
-        "getAdvice()",
-        "getArguments()",
-        "getFailure()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayFailure": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayFailure",
-      "name": "SignalReplayFailure",
-      "kind": "enum",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Kinds of expression that the replay cannot follow, each with its reason and its advice.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayfailure/",
-      "members": {
-        "getReason": "SignalReplayFailure-method-getReason",
-        "getAdvice": "SignalReplayFailure-method-getAdvice",
-        "CLASS_NOT_FOUND": "SignalReplayFailure-value-CLASS_NOT_FOUND",
-        "MEMBER_NOT_FOUND": "SignalReplayFailure-value-MEMBER_NOT_FOUND",
-        "CALL_NOT_FOUND": "SignalReplayFailure-value-CALL_NOT_FOUND",
-        "AMBIGUOUS_CALL": "SignalReplayFailure-value-AMBIGUOUS_CALL",
-        "UNSUPPORTED_INSTRUCTION": "SignalReplayFailure-value-UNSUPPORTED_INSTRUCTION",
-        "LAMBDA": "SignalReplayFailure-value-LAMBDA",
-        "LOCAL_COMBINED": "SignalReplayFailure-value-LOCAL_COMBINED",
-        "LOCAL_CONDITION": "SignalReplayFailure-value-LOCAL_CONDITION",
-        "VALUE_DIFFERS": "SignalReplayFailure-value-VALUE_DIFFERS",
-        "SIGNALS_DIFFER": "SignalReplayFailure-value-SIGNALS_DIFFER",
-        "ACCESS_REFUSED": "SignalReplayFailure-value-ACCESS_REFUSED",
-        "REPLAY_FAILED": "SignalReplayFailure-value-REPLAY_FAILED"
-      },
-      "overloads": [
-        "getReason()",
-        "getAdvice()",
-        "CLASS_NOT_FOUND",
-        "MEMBER_NOT_FOUND",
-        "CALL_NOT_FOUND",
-        "AMBIGUOUS_CALL",
-        "UNSUPPORTED_INSTRUCTION",
-        "LAMBDA",
-        "LOCAL_COMBINED",
-        "LOCAL_CONDITION",
-        "VALUE_DIFFERS",
-        "SIGNALS_DIFFER",
-        "ACCESS_REFUSED",
-        "REPLAY_FAILED"
-      ]
-    },
-    "SignalReplayFailure": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayFailure",
-      "name": "SignalReplayFailure",
-      "kind": "enum",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Kinds of expression that the replay cannot follow, each with its reason and its advice.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayfailure/",
-      "members": {
-        "getReason": "SignalReplayFailure-method-getReason",
-        "getAdvice": "SignalReplayFailure-method-getAdvice",
-        "CLASS_NOT_FOUND": "SignalReplayFailure-value-CLASS_NOT_FOUND",
-        "MEMBER_NOT_FOUND": "SignalReplayFailure-value-MEMBER_NOT_FOUND",
-        "CALL_NOT_FOUND": "SignalReplayFailure-value-CALL_NOT_FOUND",
-        "AMBIGUOUS_CALL": "SignalReplayFailure-value-AMBIGUOUS_CALL",
-        "UNSUPPORTED_INSTRUCTION": "SignalReplayFailure-value-UNSUPPORTED_INSTRUCTION",
-        "LAMBDA": "SignalReplayFailure-value-LAMBDA",
-        "LOCAL_COMBINED": "SignalReplayFailure-value-LOCAL_COMBINED",
-        "LOCAL_CONDITION": "SignalReplayFailure-value-LOCAL_CONDITION",
-        "VALUE_DIFFERS": "SignalReplayFailure-value-VALUE_DIFFERS",
-        "SIGNALS_DIFFER": "SignalReplayFailure-value-SIGNALS_DIFFER",
-        "ACCESS_REFUSED": "SignalReplayFailure-value-ACCESS_REFUSED",
-        "REPLAY_FAILED": "SignalReplayFailure-value-REPLAY_FAILED"
-      },
-      "overloads": [
-        "getReason()",
-        "getAdvice()",
-        "CLASS_NOT_FOUND",
-        "MEMBER_NOT_FOUND",
-        "CALL_NOT_FOUND",
-        "AMBIGUOUS_CALL",
-        "UNSUPPORTED_INSTRUCTION",
-        "LAMBDA",
-        "LOCAL_COMBINED",
-        "LOCAL_CONDITION",
-        "VALUE_DIFFERS",
-        "SIGNALS_DIFFER",
-        "ACCESS_REFUSED",
-        "REPLAY_FAILED"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayFrame": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayFrame",
-      "name": "SignalReplayFrame",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Interpreter that runs the instructions of one expression of the bytecode with the current values of fields and signals.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayframe/",
-      "members": {
-        "SignalReplayFrame": "SignalReplayFrame-constructor",
-        "execute": "SignalReplayFrame-method-execute",
-        "convert": "SignalReplayFrame-method-convert",
-        "isLastLive": "SignalReplayFrame-method-isLastLive"
-      },
-      "overloads": [
-        "SignalReplayFrame(SignalReplayRun,SignalReplaySlice,int)",
-        "execute()",
-        "convert(Object,Class)",
-        "isLastLive()"
-      ]
-    },
-    "SignalReplayFrame": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayFrame",
-      "name": "SignalReplayFrame",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Interpreter that runs the instructions of one expression of the bytecode with the current values of fields and signals.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayframe/",
-      "members": {
-        "SignalReplayFrame": "SignalReplayFrame-constructor",
-        "execute": "SignalReplayFrame-method-execute",
-        "convert": "SignalReplayFrame-method-convert",
-        "isLastLive": "SignalReplayFrame-method-isLastLive"
-      },
-      "overloads": [
-        "SignalReplayFrame(SignalReplayRun,SignalReplaySlice,int)",
-        "execute()",
-        "convert(Object,Class)",
-        "isLastLive()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayMatch": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayMatch",
-      "name": "SignalReplayMatch",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Result of matching one slice of bytecode against the value a setter received and the signals read before it.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplaymatch/",
-      "members": {
-        "of": "SignalReplayMatch-factory-of",
-        "getReadList": "SignalReplayMatch-method-getReadList",
-        "getRemainingList": "SignalReplayMatch-method-getRemainingList",
-        "getSlice": "SignalReplayMatch-method-getSlice",
-        "getSelf": "SignalReplayMatch-method-getSelf",
-        "isDefinitions": "SignalReplayMatch-method-isDefinitions",
-        "getHoleMap": "SignalReplayMatch-method-getHoleMap",
-        "getPositionalMap": "SignalReplayMatch-method-getPositionalMap",
-        "getConsumed": "SignalReplayMatch-method-getConsumed"
-      },
-      "overloads": [
-        "of(SignalReplaySlice,SignalReplayRun,Map,boolean[])",
-        "getReadList(List)",
-        "getRemainingList(List)",
-        "getSlice()",
-        "getSelf()",
-        "isDefinitions()",
-        "getHoleMap()",
-        "getPositionalMap()",
-        "getConsumed()"
-      ]
-    },
-    "SignalReplayMatch": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayMatch",
-      "name": "SignalReplayMatch",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Result of matching one slice of bytecode against the value a setter received and the signals read before it.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplaymatch/",
-      "members": {
-        "of": "SignalReplayMatch-factory-of",
-        "getReadList": "SignalReplayMatch-method-getReadList",
-        "getRemainingList": "SignalReplayMatch-method-getRemainingList",
-        "getSlice": "SignalReplayMatch-method-getSlice",
-        "getSelf": "SignalReplayMatch-method-getSelf",
-        "isDefinitions": "SignalReplayMatch-method-isDefinitions",
-        "getHoleMap": "SignalReplayMatch-method-getHoleMap",
-        "getPositionalMap": "SignalReplayMatch-method-getPositionalMap",
-        "getConsumed": "SignalReplayMatch-method-getConsumed"
-      },
-      "overloads": [
-        "of(SignalReplaySlice,SignalReplayRun,Map,boolean[])",
-        "getReadList(List)",
-        "getRemainingList(List)",
-        "getSlice()",
-        "getSelf()",
-        "isDefinitions()",
-        "getHoleMap()",
-        "getPositionalMap()",
-        "getConsumed()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayMethod": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayMethod",
-      "name": "SignalReplayMethod",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Analysis of one method of the bytecode: frames, instructions, local variables and the expressions that define them.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplaymethod/",
-      "members": {
-        "of": "SignalReplayMethod-factory-of",
-        "indexOf": "SignalReplayMethod-method-indexOf",
-        "expressionStart": "SignalReplayMethod-method-expressionStart",
-        "localName": "SignalReplayMethod-method-localName",
-        "describeLocal": "SignalReplayMethod-method-describeLocal",
-        "signalName": "SignalReplayMethod-method-signalName",
-        "isSignal": "SignalReplayMethod-method-isSignal",
-        "isParameter": "SignalReplayMethod-method-isParameter",
-        "member": "SignalReplayMethod-method-member",
-        "type": "SignalReplayMethod-method-type",
-        "isStatic": "SignalReplayMethod-method-isStatic",
-        "getMethod": "SignalReplayMethod-method-getMethod",
-        "getFrames": "SignalReplayMethod-method-getFrames",
-        "getInstructions": "SignalReplayMethod-method-getInstructions",
-        "getDefinitionMap": "SignalReplayMethod-method-getDefinitionMap"
-      },
-      "overloads": [
-        "of(SignalReplayClass,MethodNode)",
-        "indexOf(AbstractInsnNode)",
-        "expressionStart(Collection,int)",
-        "localName(int,int)",
-        "describeLocal(int,int)",
-        "signalName(int)",
-        "isSignal(String)",
-        "isParameter(int)",
-        "member(AbstractInsnNode)",
-        "type(Type)",
-        "isStatic()",
-        "getMethod()",
-        "getFrames()",
-        "getInstructions()",
-        "getDefinitionMap()"
-      ]
-    },
-    "SignalReplayMethod": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayMethod",
-      "name": "SignalReplayMethod",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Analysis of one method of the bytecode: frames, instructions, local variables and the expressions that define them.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplaymethod/",
-      "members": {
-        "of": "SignalReplayMethod-factory-of",
-        "indexOf": "SignalReplayMethod-method-indexOf",
-        "expressionStart": "SignalReplayMethod-method-expressionStart",
-        "localName": "SignalReplayMethod-method-localName",
-        "describeLocal": "SignalReplayMethod-method-describeLocal",
-        "signalName": "SignalReplayMethod-method-signalName",
-        "isSignal": "SignalReplayMethod-method-isSignal",
-        "isParameter": "SignalReplayMethod-method-isParameter",
-        "member": "SignalReplayMethod-method-member",
-        "type": "SignalReplayMethod-method-type",
-        "isStatic": "SignalReplayMethod-method-isStatic",
-        "getMethod": "SignalReplayMethod-method-getMethod",
-        "getFrames": "SignalReplayMethod-method-getFrames",
-        "getInstructions": "SignalReplayMethod-method-getInstructions",
-        "getDefinitionMap": "SignalReplayMethod-method-getDefinitionMap"
-      },
-      "overloads": [
-        "of(SignalReplayClass,MethodNode)",
-        "indexOf(AbstractInsnNode)",
-        "expressionStart(Collection,int)",
-        "localName(int,int)",
-        "describeLocal(int,int)",
-        "signalName(int)",
-        "isSignal(String)",
-        "isParameter(int)",
-        "member(AbstractInsnNode)",
-        "type(Type)",
-        "isStatic()",
-        "getMethod()",
-        "getFrames()",
-        "getInstructions()",
-        "getDefinitionMap()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayParts": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayParts",
-      "name": "SignalReplayParts",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Text of a concatenation whose parts are known values and holes left by local variables.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayparts/",
-      "members": {
-        "SignalReplayParts": "SignalReplayParts-constructor",
-        "add": "SignalReplayParts-method-add",
-        "addHole": "SignalReplayParts-method-addHole",
-        "hasHoles": "SignalReplayParts-method-hasHoles",
-        "getDescription": "SignalReplayParts-method-getDescription",
-        "result": "SignalReplayParts-method-result",
-        "solve": "SignalReplayParts-method-solve",
-        "isLive": "SignalReplayParts-method-isLive",
-        "setLive": "SignalReplayParts-method-setLive"
-      },
-      "overloads": [
-        "SignalReplayParts()",
-        "add(Object)",
-        "addHole(String,String)",
-        "hasHoles()",
-        "getDescription()",
-        "result()",
-        "solve(String)",
-        "isLive()",
-        "setLive(boolean)"
-      ]
-    },
-    "SignalReplayParts": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayParts",
-      "name": "SignalReplayParts",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Text of a concatenation whose parts are known values and holes left by local variables.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayparts/",
-      "members": {
-        "SignalReplayParts": "SignalReplayParts-constructor",
-        "add": "SignalReplayParts-method-add",
-        "addHole": "SignalReplayParts-method-addHole",
-        "hasHoles": "SignalReplayParts-method-hasHoles",
-        "getDescription": "SignalReplayParts-method-getDescription",
-        "result": "SignalReplayParts-method-result",
-        "solve": "SignalReplayParts-method-solve",
-        "isLive": "SignalReplayParts-method-isLive",
-        "setLive": "SignalReplayParts-method-setLive"
-      },
-      "overloads": [
-        "SignalReplayParts()",
-        "add(Object)",
-        "addHole(String,String)",
-        "hasHoles()",
-        "getDescription()",
-        "result()",
-        "solve(String)",
-        "isLive()",
-        "setLive(boolean)"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayRun": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayRun",
-      "name": "SignalReplayRun",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "One execution of a slice of bytecode, during the match or during a replay, with the signals it reads.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayrun/",
-      "members": {
-        "match": "SignalReplayRun-factory-match",
-        "replay": "SignalReplayRun-factory-replay",
-        "run": "SignalReplayRun-method-run",
-        "define": "SignalReplayRun-method-define",
-        "position": "SignalReplayRun-method-position",
-        "getDefinitionList": "SignalReplayRun-method-getDefinitionList",
-        "getSelf": "SignalReplayRun-method-getSelf",
-        "isDefinitions": "SignalReplayRun-method-isDefinitions",
-        "getHoleMap": "SignalReplayRun-method-getHoleMap",
-        "getPositionalMap": "SignalReplayRun-method-getPositionalMap",
-        "getDirectList": "SignalReplayRun-method-getDirectList",
-        "getDefinitionCache": "SignalReplayRun-method-getDefinitionCache",
-        "isPositionalNeeded": "SignalReplayRun-method-isPositionalNeeded"
-      },
-      "overloads": [
-        "match(Object,boolean,List)",
-        "replay(Object,boolean,Map,Map)",
-        "run(SignalReplaySlice)",
-        "define(SignalReplaySlice,int)",
-        "position(Object,Class)",
-        "getDefinitionList()",
-        "getSelf()",
-        "isDefinitions()",
-        "getHoleMap()",
-        "getPositionalMap()",
-        "getDirectList()",
-        "getDefinitionCache()",
-        "isPositionalNeeded()"
-      ]
-    },
-    "SignalReplayRun": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayRun",
-      "name": "SignalReplayRun",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "One execution of a slice of bytecode, during the match or during a replay, with the signals it reads.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayrun/",
-      "members": {
-        "match": "SignalReplayRun-factory-match",
-        "replay": "SignalReplayRun-factory-replay",
-        "run": "SignalReplayRun-method-run",
-        "define": "SignalReplayRun-method-define",
-        "position": "SignalReplayRun-method-position",
-        "getDefinitionList": "SignalReplayRun-method-getDefinitionList",
-        "getSelf": "SignalReplayRun-method-getSelf",
-        "isDefinitions": "SignalReplayRun-method-isDefinitions",
-        "getHoleMap": "SignalReplayRun-method-getHoleMap",
-        "getPositionalMap": "SignalReplayRun-method-getPositionalMap",
-        "getDirectList": "SignalReplayRun-method-getDirectList",
-        "getDefinitionCache": "SignalReplayRun-method-getDefinitionCache",
-        "isPositionalNeeded": "SignalReplayRun-method-isPositionalNeeded"
-      },
-      "overloads": [
-        "match(Object,boolean,List)",
-        "replay(Object,boolean,Map,Map)",
-        "run(SignalReplaySlice)",
-        "define(SignalReplaySlice,int)",
-        "position(Object,Class)",
-        "getDefinitionList()",
-        "getSelf()",
-        "isDefinitions()",
-        "getHoleMap()",
-        "getPositionalMap()",
-        "getDirectList()",
-        "getDefinitionCache()",
-        "isPositionalNeeded()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplaySite": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplaySite",
-      "name": "SignalReplaySite",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Every argument expression of one setter call on one line, analysed once and kept for the next replays.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplaysite/",
-      "members": {
-        "analyze": "SignalReplaySite-factory-analyze",
-        "fail": "SignalReplaySite-factory-fail",
-        "isPassThrough": "SignalReplaySite-method-isPassThrough",
-        "getSliceList": "SignalReplaySite-method-getSliceList",
-        "getFailure": "SignalReplaySite-method-getFailure"
-      },
-      "overloads": [
-        "analyze(SignalReplayClass,StackTraceElement,String)",
-        "fail(SignalReplayException)",
-        "isPassThrough()",
-        "getSliceList()",
-        "getFailure()"
-      ]
-    },
-    "SignalReplaySite": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplaySite",
-      "name": "SignalReplaySite",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Every argument expression of one setter call on one line, analysed once and kept for the next replays.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplaysite/",
-      "members": {
-        "analyze": "SignalReplaySite-factory-analyze",
-        "fail": "SignalReplaySite-factory-fail",
-        "isPassThrough": "SignalReplaySite-method-isPassThrough",
-        "getSliceList": "SignalReplaySite-method-getSliceList",
-        "getFailure": "SignalReplaySite-method-getFailure"
-      },
-      "overloads": [
-        "analyze(SignalReplayClass,StackTraceElement,String)",
-        "fail(SignalReplayException)",
-        "isPassThrough()",
-        "getSliceList()",
-        "getFailure()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplaySlice": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplaySlice",
-      "name": "SignalReplaySlice",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Instructions of the bytecode that compute one argument of a setter call.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayslice/",
-      "members": {
-        "of": "SignalReplaySlice-factory-of",
-        "hasLambda": "SignalReplaySlice-method-hasLambda",
-        "isEnclosed": "SignalReplaySlice-method-isEnclosed",
-        "isParameter": "SignalReplaySlice-method-isParameter",
-        "isEquivalent": "SignalReplaySlice-method-isEquivalent",
-        "convert": "SignalReplaySlice-method-convert",
-        "getStart": "SignalReplaySlice-method-getStart",
-        "getEnd": "SignalReplaySlice-method-getEnd",
-        "getType": "SignalReplaySlice-method-getType",
-        "getSignature": "SignalReplaySlice-method-getSignature",
-        "getMethod": "SignalReplaySlice-method-getMethod",
-        "getSignalNameList": "SignalReplaySlice-method-getSignalNameList",
-        "getSignalCount": "SignalReplaySlice-method-getSignalCount"
-      },
-      "overloads": [
-        "of(SignalReplayMethod,int,int,Type)",
-        "hasLambda()",
-        "isEnclosed()",
-        "isParameter()",
-        "isEquivalent(SignalReplaySlice)",
-        "convert(Object)",
-        "getStart()",
-        "getEnd()",
-        "getType()",
-        "getSignature()",
-        "getMethod()",
-        "getSignalNameList()",
-        "getSignalCount()"
-      ]
-    },
-    "SignalReplaySlice": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplaySlice",
-      "name": "SignalReplaySlice",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Instructions of the bytecode that compute one argument of a setter call.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayslice/",
-      "members": {
-        "of": "SignalReplaySlice-factory-of",
-        "hasLambda": "SignalReplaySlice-method-hasLambda",
-        "isEnclosed": "SignalReplaySlice-method-isEnclosed",
-        "isParameter": "SignalReplaySlice-method-isParameter",
-        "isEquivalent": "SignalReplaySlice-method-isEquivalent",
-        "convert": "SignalReplaySlice-method-convert",
-        "getStart": "SignalReplaySlice-method-getStart",
-        "getEnd": "SignalReplaySlice-method-getEnd",
-        "getType": "SignalReplaySlice-method-getType",
-        "getSignature": "SignalReplaySlice-method-getSignature",
-        "getMethod": "SignalReplaySlice-method-getMethod",
-        "getSignalNameList": "SignalReplaySlice-method-getSignalNameList",
-        "getSignalCount": "SignalReplaySlice-method-getSignalCount"
-      },
-      "overloads": [
-        "of(SignalReplayMethod,int,int,Type)",
-        "hasLambda()",
-        "isEnclosed()",
-        "isParameter()",
-        "isEquivalent(SignalReplaySlice)",
-        "convert(Object)",
-        "getStart()",
-        "getEnd()",
-        "getType()",
-        "getSignature()",
-        "getMethod()",
-        "getSignalNameList()",
-        "getSignalCount()"
-      ]
-    },
-    "dev.joid.lib.signal.replay.SignalReplayUnknown": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayUnknown",
-      "name": "SignalReplayUnknown",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Value that the replay cannot compute, such as a local variable whose value it does not know.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayunknown/",
-      "members": {
-        "of": "SignalReplayUnknown-factory-of",
-        "getKey": "SignalReplayUnknown-method-getKey",
-        "getDescription": "SignalReplayUnknown-method-getDescription"
-      },
-      "overloads": [
-        "of(String)",
-        "of(String,Object)",
-        "getKey()",
-        "getDescription()"
-      ]
-    },
-    "SignalReplayUnknown": {
-      "fqcn": "dev.joid.lib.signal.replay.SignalReplayUnknown",
-      "name": "SignalReplayUnknown",
-      "kind": "class",
-      "abstract": false,
-      "family": "signals",
-      "summary": "Value that the replay cannot compute, such as a local variable whose value it does not know.",
-      "ancestors": [],
-      "url": "/reference/signals/signalreplayunknown/",
-      "members": {
-        "of": "SignalReplayUnknown-factory-of",
-        "getKey": "SignalReplayUnknown-method-getKey",
-        "getDescription": "SignalReplayUnknown-method-getDescription"
-      },
-      "overloads": [
-        "of(String)",
-        "of(String,Object)",
-        "getKey()",
-        "getDescription()"
-      ]
-    },
     "dev.joid.lib.signal.Signal": {
       "fqcn": "dev.joid.lib.signal.Signal",
       "name": "Signal",
@@ -16456,6 +16540,7 @@
         "write": "Signal-method-write",
         "transform": "Signal-method-transform",
         "hasListeners": "Signal-method-hasListeners",
+        "copyListeners": "Signal-method-copyListeners",
         "invalidate": "Signal-method-invalidate",
         "nextVersion": "Signal-method-nextVersion",
         "fire": "Signal-method-fire",
@@ -16490,6 +16575,7 @@
         "write(Runnable)",
         "transform(UnaryOperator)",
         "hasListeners()",
+        "copyListeners(Signal)",
         "invalidate(SignalContext)",
         "nextVersion()",
         "fireChange(T)",
@@ -16532,6 +16618,7 @@
         "write": "Signal-method-write",
         "transform": "Signal-method-transform",
         "hasListeners": "Signal-method-hasListeners",
+        "copyListeners": "Signal-method-copyListeners",
         "invalidate": "Signal-method-invalidate",
         "nextVersion": "Signal-method-nextVersion",
         "fire": "Signal-method-fire",
@@ -16566,6 +16653,7 @@
         "write(Runnable)",
         "transform(UnaryOperator)",
         "hasListeners()",
+        "copyListeners(Signal)",
         "invalidate(SignalContext)",
         "nextVersion()",
         "fireChange(T)",
@@ -16732,6 +16820,7 @@
       "ancestors": [],
       "url": "/reference/signals/interactivevalue/",
       "members": {
+        "source": "InteractiveValue-property-source",
         "clamp": "InteractiveValue-property-clamp",
         "then": "InteractiveValue-property-then",
         "create": "InteractiveValue-factory-create",
@@ -16750,6 +16839,7 @@
         "on": "InteractiveValue-method-on"
       },
       "overloads": [
+        "source(Supplier)",
         "clamp(UnaryOperator)",
         "then(BiConsumer)",
         "create(NodeBindings,String,Supplier,Consumer)",
@@ -16781,6 +16871,7 @@
       "ancestors": [],
       "url": "/reference/signals/interactivevalue/",
       "members": {
+        "source": "InteractiveValue-property-source",
         "clamp": "InteractiveValue-property-clamp",
         "then": "InteractiveValue-property-then",
         "create": "InteractiveValue-factory-create",
@@ -16799,6 +16890,7 @@
         "on": "InteractiveValue-method-on"
       },
       "overloads": [
+        "source(Supplier)",
         "clamp(UnaryOperator)",
         "then(BiConsumer)",
         "create(NodeBindings,String,Supplier,Consumer)",
@@ -17830,7 +17922,7 @@
         "destroy()",
         "save()",
         "toJson()",
-        "fromJson(JsonObject)",
+        "fromJson(Map)",
         "getData()"
       ]
     },
@@ -17858,7 +17950,7 @@
         "destroy()",
         "save()",
         "toJson()",
-        "fromJson(JsonObject)",
+        "fromJson(Map)",
         "getData()"
       ]
     },
@@ -18120,6 +18212,7 @@
         "enabled": "TransitionStep-property-enabled",
         "create": "TransitionStep-factory-create",
         "TransitionStep": "TransitionStep-constructor",
+        "copy": "TransitionStep-method-copy",
         "init": "TransitionStep-method-init",
         "start": "TransitionStep-method-start",
         "stop": "TransitionStep-method-stop",
@@ -18133,6 +18226,7 @@
         "isEnabled()",
         "create(float,TweenEquation)",
         "TransitionStep(float,TweenEquation)",
+        "copy()",
         "init(UI)",
         "start()",
         "start(float)",
@@ -18156,6 +18250,7 @@
         "enabled": "TransitionStep-property-enabled",
         "create": "TransitionStep-factory-create",
         "TransitionStep": "TransitionStep-constructor",
+        "copy": "TransitionStep-method-copy",
         "init": "TransitionStep-method-init",
         "start": "TransitionStep-method-start",
         "stop": "TransitionStep-method-stop",
@@ -18169,6 +18264,7 @@
         "isEnabled()",
         "create(float,TweenEquation)",
         "TransitionStep(float,TweenEquation)",
+        "copy()",
         "init(UI)",
         "start()",
         "start(float)",
@@ -18260,6 +18356,8 @@
         "getPopup": "UI-method-getPopup",
         "getScale": "UI-method-getScale",
         "getOverlay": "UI-method-getOverlay",
+        "getTransitionIn": "UI-method-getTransitionIn",
+        "getTransitionOut": "UI-method-getTransitionOut",
         "isClosed": "UI-method-isClosed",
         "isInitialized": "UI-method-isInitialized",
         "getFps": "UI-method-getFps",
@@ -18283,7 +18381,7 @@
         "handleMousePressed(EventListener)",
         "fireMousePressed(MouseButton)",
         "handleMouseReleased(EventListener)",
-        "fireMouseReleased(MouseButton)",
+        "fireMouseReleased(MouseButton,long)",
         "handleMouseDragged(EventListener)",
         "fireMouseDragged(MouseButton,long)",
         "handleMouseScroll(EventListener)",
@@ -18345,6 +18443,8 @@
         "getPopup()",
         "getScale()",
         "getOverlay()",
+        "getTransitionIn()",
+        "getTransitionOut()",
         "isClosed()",
         "isInitialized()",
         "getFps()",
@@ -18438,6 +18538,8 @@
         "getPopup": "UI-method-getPopup",
         "getScale": "UI-method-getScale",
         "getOverlay": "UI-method-getOverlay",
+        "getTransitionIn": "UI-method-getTransitionIn",
+        "getTransitionOut": "UI-method-getTransitionOut",
         "isClosed": "UI-method-isClosed",
         "isInitialized": "UI-method-isInitialized",
         "getFps": "UI-method-getFps",
@@ -18461,7 +18563,7 @@
         "handleMousePressed(EventListener)",
         "fireMousePressed(MouseButton)",
         "handleMouseReleased(EventListener)",
-        "fireMouseReleased(MouseButton)",
+        "fireMouseReleased(MouseButton,long)",
         "handleMouseDragged(EventListener)",
         "fireMouseDragged(MouseButton,long)",
         "handleMouseScroll(EventListener)",
@@ -18523,6 +18625,8 @@
         "getPopup()",
         "getScale()",
         "getOverlay()",
+        "getTransitionIn()",
+        "getTransitionOut()",
         "isClosed()",
         "isInitialized()",
         "getFps()",
@@ -18549,6 +18653,7 @@
         "zoom": "UIView-property-zoom",
         "interfaceScale": "UIView-property-interfaceScale",
         "create": "UIView-factory-create",
+        "getRequestedZoom": "UIView-method-getRequestedZoom",
         "getScale": "UIView-method-getScale",
         "getOffsetX": "UIView-method-getOffsetX",
         "getOffsetY": "UIView-method-getOffsetY",
@@ -18580,6 +18685,7 @@
         "interfaceScale(double)",
         "getInterfaceScale()",
         "create(double,double)",
+        "getRequestedZoom()",
         "getScale()",
         "getOffsetX()",
         "getOffsetY()",
@@ -18617,6 +18723,7 @@
         "zoom": "UIView-property-zoom",
         "interfaceScale": "UIView-property-interfaceScale",
         "create": "UIView-factory-create",
+        "getRequestedZoom": "UIView-method-getRequestedZoom",
         "getScale": "UIView-method-getScale",
         "getOffsetX": "UIView-method-getOffsetX",
         "getOffsetY": "UIView-method-getOffsetY",
@@ -18648,6 +18755,7 @@
         "interfaceScale(double)",
         "getInterfaceScale()",
         "create(double,double)",
+        "getRequestedZoom()",
         "getScale()",
         "getOffsetX()",
         "getOffsetY()",
@@ -20867,7 +20975,7 @@
         "color": "BorderNodeEffect-property-color",
         "width": "BorderNodeEffect-property-width",
         "mode": "BorderNodeEffect-property-mode",
-        "fill": "BorderNodeEffect-property-fill",
+        "corners": "BorderNodeEffect-property-corners",
         "create": "BorderNodeEffect-factory-create",
         "BorderNodeEffect": "BorderNodeEffect-constructor",
         "getColor": "BorderNodeEffect-method-getColor",
@@ -20884,9 +20992,9 @@
         "mode(BorderMode)",
         "mode(Supplier)",
         "getMode()",
-        "fill(boolean)",
-        "fill(Supplier)",
-        "isFill()",
+        "corners(boolean)",
+        "corners(Supplier)",
+        "isCorners()",
         "create(Color,float)",
         "BorderNodeEffect(Supplier,Supplier)",
         "getColor(Node)",
@@ -20909,7 +21017,7 @@
         "color": "BorderNodeEffect-property-color",
         "width": "BorderNodeEffect-property-width",
         "mode": "BorderNodeEffect-property-mode",
-        "fill": "BorderNodeEffect-property-fill",
+        "corners": "BorderNodeEffect-property-corners",
         "create": "BorderNodeEffect-factory-create",
         "BorderNodeEffect": "BorderNodeEffect-constructor",
         "getColor": "BorderNodeEffect-method-getColor",
@@ -20926,9 +21034,9 @@
         "mode(BorderMode)",
         "mode(Supplier)",
         "getMode()",
-        "fill(boolean)",
-        "fill(Supplier)",
-        "isFill()",
+        "corners(boolean)",
+        "corners(Supplier)",
+        "isCorners()",
         "create(Color,float)",
         "BorderNodeEffect(Supplier,Supplier)",
         "getColor(Node)",
@@ -22274,6 +22382,7 @@
         "change": "BaseChoiceNode-method-change",
         "beforeChange": "BaseChoiceNode-method-beforeChange",
         "createOptions": "BaseChoiceNode-method-createOptions",
+        "fallback": "BaseChoiceNode-method-fallback",
         "onChange": "BaseChoiceNode-event-onChange"
       },
       "overloads": [
@@ -22290,6 +22399,7 @@
         "change(V)",
         "beforeChange(EventListener)",
         "createOptions()",
+        "fallback(V)",
         "onChange(EventListener)"
       ]
     },
@@ -22315,6 +22425,7 @@
         "change": "BaseChoiceNode-method-change",
         "beforeChange": "BaseChoiceNode-method-beforeChange",
         "createOptions": "BaseChoiceNode-method-createOptions",
+        "fallback": "BaseChoiceNode-method-fallback",
         "onChange": "BaseChoiceNode-event-onChange"
       },
       "overloads": [
@@ -22331,6 +22442,7 @@
         "change(V)",
         "beforeChange(EventListener)",
         "createOptions()",
+        "fallback(V)",
         "onChange(EventListener)"
       ]
     },
@@ -22441,6 +22553,7 @@
         "charTyped": "FieldNode-method-charTyped",
         "keyPressed": "FieldNode-method-keyPressed",
         "detach": "FieldNode-method-detach",
+        "holdsInput": "FieldNode-method-holdsInput",
         "getValue": "FieldNode-method-getValue",
         "isValid": "FieldNode-method-isValid",
         "getSelection": "FieldNode-method-getSelection",
@@ -22556,6 +22669,7 @@
         "charTyped(NodeCharEvent)",
         "keyPressed(NodeKeyEvent)",
         "detach()",
+        "holdsInput()",
         "getValue()",
         "isValid()",
         "getSelection()",
@@ -22653,6 +22767,7 @@
         "charTyped": "FieldNode-method-charTyped",
         "keyPressed": "FieldNode-method-keyPressed",
         "detach": "FieldNode-method-detach",
+        "holdsInput": "FieldNode-method-holdsInput",
         "getValue": "FieldNode-method-getValue",
         "isValid": "FieldNode-method-isValid",
         "getSelection": "FieldNode-method-getSelection",
@@ -22768,6 +22883,7 @@
         "charTyped(NodeCharEvent)",
         "keyPressed(NodeKeyEvent)",
         "detach()",
+        "holdsInput()",
         "getValue()",
         "isValid()",
         "getSelection()",
@@ -23390,6 +23506,7 @@
         "BaseSelectorNode": "BaseSelectorNode-constructor",
         "mousePressed": "BaseSelectorNode-method-mousePressed",
         "detach": "BaseSelectorNode-method-detach",
+        "holdsInput": "BaseSelectorNode-method-holdsInput",
         "getOptionRank": "BaseSelectorNode-method-getOptionRank",
         "active": "BaseSelectorNode-method-active",
         "open": "BaseSelectorNode-method-open",
@@ -23404,6 +23521,7 @@
         "BaseSelectorNode(double,double,double,double)",
         "mousePressed(NodeMouseEvent)",
         "detach()",
+        "holdsInput()",
         "getOptionRank(V)",
         "active(boolean)",
         "active(Signal)",
@@ -23434,6 +23552,7 @@
         "BaseSelectorNode": "BaseSelectorNode-constructor",
         "mousePressed": "BaseSelectorNode-method-mousePressed",
         "detach": "BaseSelectorNode-method-detach",
+        "holdsInput": "BaseSelectorNode-method-holdsInput",
         "getOptionRank": "BaseSelectorNode-method-getOptionRank",
         "active": "BaseSelectorNode-method-active",
         "open": "BaseSelectorNode-method-open",
@@ -23448,6 +23567,7 @@
         "BaseSelectorNode(double,double,double,double)",
         "mousePressed(NodeMouseEvent)",
         "detach()",
+        "holdsInput()",
         "getOptionRank(V)",
         "active(boolean)",
         "active(Signal)",
@@ -23682,11 +23802,13 @@
       "url": "/reference/controls/doubleslidernode/",
       "members": {
         "DoubleSliderNode": "DoubleSliderNode-constructor",
-        "range": "DoubleSliderNode-method-range"
+        "range": "DoubleSliderNode-method-range",
+        "fallback": "DoubleSliderNode-method-fallback"
       },
       "overloads": [
         "DoubleSliderNode(double,double,double,double)",
-        "range(double,double,double)"
+        "range(double,double,double)",
+        "fallback(Double)"
       ]
     },
     "DoubleSliderNode": {
@@ -23707,11 +23829,13 @@
       "url": "/reference/controls/doubleslidernode/",
       "members": {
         "DoubleSliderNode": "DoubleSliderNode-constructor",
-        "range": "DoubleSliderNode-method-range"
+        "range": "DoubleSliderNode-method-range",
+        "fallback": "DoubleSliderNode-method-fallback"
       },
       "overloads": [
         "DoubleSliderNode(double,double,double,double)",
-        "range(double,double,double)"
+        "range(double,double,double)",
+        "fallback(Double)"
       ]
     },
     "dev.joid.lib.ui.node.impl.control.slider.IntegerSliderNode": {
@@ -23732,12 +23856,14 @@
       "url": "/reference/controls/integerslidernode/",
       "members": {
         "IntegerSliderNode": "IntegerSliderNode-constructor",
-        "range": "IntegerSliderNode-method-range"
+        "range": "IntegerSliderNode-method-range",
+        "fallback": "IntegerSliderNode-method-fallback"
       },
       "overloads": [
         "IntegerSliderNode(double,double,double,double)",
         "range(int,int)",
-        "range(int,int,int)"
+        "range(int,int,int)",
+        "fallback(Integer)"
       ]
     },
     "IntegerSliderNode": {
@@ -23758,12 +23884,14 @@
       "url": "/reference/controls/integerslidernode/",
       "members": {
         "IntegerSliderNode": "IntegerSliderNode-constructor",
-        "range": "IntegerSliderNode-method-range"
+        "range": "IntegerSliderNode-method-range",
+        "fallback": "IntegerSliderNode-method-fallback"
       },
       "overloads": [
         "IntegerSliderNode(double,double,double,double)",
         "range(int,int)",
-        "range(int,int,int)"
+        "range(int,int,int)",
+        "fallback(Integer)"
       ]
     },
     "dev.joid.lib.ui.node.impl.control.slider.SliderNode": {
@@ -25367,7 +25495,7 @@
         "borderColor": "RectNode-property-borderColor",
         "hoveredBorderColor": "RectNode-property-hoveredBorderColor",
         "borderStroke": "RectNode-property-borderStroke",
-        "borderFill": "RectNode-property-borderFill",
+        "borderCorners": "RectNode-property-borderCorners",
         "create": "RectNode-factory-create",
         "RectNode": "RectNode-constructor",
         "draw": "RectNode-method-draw"
@@ -25388,9 +25516,9 @@
         "borderStroke(double)",
         "borderStroke(Supplier)",
         "getBorderStroke()",
-        "borderFill(boolean)",
-        "borderFill(Supplier)",
-        "isBorderFill()",
+        "borderCorners(boolean)",
+        "borderCorners(Supplier)",
+        "isBorderCorners()",
         "create(double,double,double,double)",
         "RectNode(double,double,double,double)",
         "draw(double,double)"
@@ -25415,7 +25543,7 @@
         "borderColor": "RectNode-property-borderColor",
         "hoveredBorderColor": "RectNode-property-hoveredBorderColor",
         "borderStroke": "RectNode-property-borderStroke",
-        "borderFill": "RectNode-property-borderFill",
+        "borderCorners": "RectNode-property-borderCorners",
         "create": "RectNode-factory-create",
         "RectNode": "RectNode-constructor",
         "draw": "RectNode-method-draw"
@@ -25436,9 +25564,9 @@
         "borderStroke(double)",
         "borderStroke(Supplier)",
         "getBorderStroke()",
-        "borderFill(boolean)",
-        "borderFill(Supplier)",
-        "isBorderFill()",
+        "borderCorners(boolean)",
+        "borderCorners(Supplier)",
+        "isBorderCorners()",
         "create(double,double,double,double)",
         "RectNode(double,double,double,double)",
         "draw(double,double)"
@@ -25786,6 +25914,7 @@
         "part": "Node-method-part",
         "reorderChildren": "Node-method-reorderChildren",
         "instantiate": "Node-method-instantiate",
+        "holdsInput": "Node-method-holdsInput",
         "isDraggingChild": "Node-method-isDraggingChild",
         "toString": "Node-method-toString",
         "getEventBus": "Node-method-getEventBus",
@@ -25935,8 +26064,8 @@
         "fireMousePressed(double,double,MouseButton)",
         "fireMousePressed(double,double,MouseButton,IConsumableEvent)",
         "handleMouseReleased(EventListener)",
-        "fireMouseReleased(double,double,MouseButton)",
-        "fireMouseReleased(double,double,MouseButton,IConsumableEvent)",
+        "fireMouseReleased(double,double,MouseButton,long)",
+        "fireMouseReleased(double,double,MouseButton,long,IConsumableEvent)",
         "handleMouseDragged(EventListener)",
         "fireMouseDragged(double,double,MouseButton,long)",
         "fireMouseDragged(double,double,MouseButton,long,IConsumableEvent)",
@@ -26050,6 +26179,7 @@
         "part(Node,N)",
         "reorderChildren(List)",
         "instantiate()",
+        "holdsInput()",
         "isDraggingChild(Node)",
         "toString()",
         "getEventBus()",
@@ -26264,6 +26394,7 @@
         "part": "Node-method-part",
         "reorderChildren": "Node-method-reorderChildren",
         "instantiate": "Node-method-instantiate",
+        "holdsInput": "Node-method-holdsInput",
         "isDraggingChild": "Node-method-isDraggingChild",
         "toString": "Node-method-toString",
         "getEventBus": "Node-method-getEventBus",
@@ -26413,8 +26544,8 @@
         "fireMousePressed(double,double,MouseButton)",
         "fireMousePressed(double,double,MouseButton,IConsumableEvent)",
         "handleMouseReleased(EventListener)",
-        "fireMouseReleased(double,double,MouseButton)",
-        "fireMouseReleased(double,double,MouseButton,IConsumableEvent)",
+        "fireMouseReleased(double,double,MouseButton,long)",
+        "fireMouseReleased(double,double,MouseButton,long,IConsumableEvent)",
         "handleMouseDragged(EventListener)",
         "fireMouseDragged(double,double,MouseButton,long)",
         "fireMouseDragged(double,double,MouseButton,long,IConsumableEvent)",
@@ -26528,6 +26659,7 @@
         "part(Node,N)",
         "reorderChildren(List)",
         "instantiate()",
+        "holdsInput()",
         "isDraggingChild(Node)",
         "toString()",
         "getEventBus()",
@@ -27604,46 +27736,6 @@
         "write(int[],ByteBuffer)",
         "RGBA8",
         "BGRA8"
-      ]
-    },
-    "dev.joid.lib.utils.json.JsonFiles": {
-      "fqcn": "dev.joid.lib.utils.json.JsonFiles",
-      "name": "JsonFiles",
-      "kind": "class",
-      "abstract": false,
-      "family": "utilities",
-      "summary": "Reads and writes the JSON files of JOID safely: atomic writes, and a damaged file set aside instead of lost.",
-      "ancestors": [],
-      "url": "/reference/utilities/jsonfiles/",
-      "members": {
-        "read": "JsonFiles-method-read",
-        "write": "JsonFiles-method-write",
-        "keep": "JsonFiles-method-keep"
-      },
-      "overloads": [
-        "read(File,String)",
-        "write(File,String)",
-        "keep(File,String,String)"
-      ]
-    },
-    "JsonFiles": {
-      "fqcn": "dev.joid.lib.utils.json.JsonFiles",
-      "name": "JsonFiles",
-      "kind": "class",
-      "abstract": false,
-      "family": "utilities",
-      "summary": "Reads and writes the JSON files of JOID safely: atomic writes, and a damaged file set aside instead of lost.",
-      "ancestors": [],
-      "url": "/reference/utilities/jsonfiles/",
-      "members": {
-        "read": "JsonFiles-method-read",
-        "write": "JsonFiles-method-write",
-        "keep": "JsonFiles-method-keep"
-      },
-      "overloads": [
-        "read(File,String)",
-        "write(File,String)",
-        "keep(File,String,String)"
       ]
     },
     "dev.joid.lib.utils.list.IIndexedElement": {
@@ -36658,6 +36750,8 @@
         "SnapshotWindowBridge": "SnapshotWindowBridge-constructor",
         "isMouseGrabbed": "SnapshotWindowBridge-method-isMouseGrabbed",
         "isKeyDown": "SnapshotWindowBridge-method-isKeyDown",
+        "press": "SnapshotWindowBridge-method-press",
+        "release": "SnapshotWindowBridge-method-release",
         "getKeys": "SnapshotWindowBridge-method-getKeys",
         "getWidth": "SnapshotWindowBridge-method-getWidth",
         "setWidth": "SnapshotWindowBridge-method-setWidth",
@@ -36676,6 +36770,8 @@
         "SnapshotWindowBridge()",
         "isMouseGrabbed()",
         "isKeyDown(Key)",
+        "press(Key[])",
+        "release(Key[])",
         "getKeys()",
         "getWidth()",
         "setWidth(int)",
@@ -36707,6 +36803,8 @@
         "SnapshotWindowBridge": "SnapshotWindowBridge-constructor",
         "isMouseGrabbed": "SnapshotWindowBridge-method-isMouseGrabbed",
         "isKeyDown": "SnapshotWindowBridge-method-isKeyDown",
+        "press": "SnapshotWindowBridge-method-press",
+        "release": "SnapshotWindowBridge-method-release",
         "getKeys": "SnapshotWindowBridge-method-getKeys",
         "getWidth": "SnapshotWindowBridge-method-getWidth",
         "setWidth": "SnapshotWindowBridge-method-setWidth",
@@ -36725,6 +36823,8 @@
         "SnapshotWindowBridge()",
         "isMouseGrabbed()",
         "isKeyDown(Key)",
+        "press(Key[])",
+        "release(Key[])",
         "getKeys()",
         "getWidth()",
         "setWidth(int)",

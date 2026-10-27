@@ -33,7 +33,7 @@ While nothing follows it, it computes on demand; once a listener or another deri
 | Returns | Signature | Summary |
 |---|---|---|
 | [`ComputedSignal<T>`](/reference/signals/computedsignal/) | [constant](#ComputedSignal-factory-constant)(T value) <span class="joid-qualifier">factory</span> <span class="joid-qualifier">protected</span> | Returns a signal whose value is `value` forever: it reads no signal and never notifies. |
-|  | [ComputedSignal](#ComputedSignal-constructor)(Supplier<? extends T> supplier) <span class="joid-qualifier">protected</span> | Creates a signal computed by `supplier`, for a subclass. |
+| [`ComputedSignal<T>`](/reference/signals/computedsignal/) | [computed](#ComputedSignal-factory-computed)(Supplier<? extends T> supplier) <span class="joid-qualifier">factory</span> <span class="joid-qualifier">protected</span> | Returns a signal computed by `supplier`, for the signals of JOID; create yours with [`Signal.from`](/reference/signals/signal/#Signal-method-from). |
 
 <a id="ComputedSignal-methods"></a>
 
@@ -92,13 +92,13 @@ While nothing follows it, it computes on demand; once a listener or another deri
 
 Returns a signal whose value is `value` forever: it reads no signal and never notifies.
 
-<a id="ComputedSignal-constructor"></a>
+<a id="ComputedSignal-factory-computed"></a>
 
-### ComputedSignal
+### computed
 
-`ComputedSignal(Supplier<? extends T> supplier)` <span class="joid-qualifier">protected</span>
+`<T> ComputedSignal<T> computed(Supplier<? extends T> supplier)` <span class="joid-qualifier">factory</span> <span class="joid-qualifier">protected</span>
 
-Creates a signal computed by `supplier`, for a subclass.
+Returns a signal computed by `supplier`, for the signals of JOID; create yours with [`Signal.from`](/reference/signals/signal/#Signal-method-from).
 
 ## Method details
 

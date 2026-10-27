@@ -39,7 +39,7 @@ A `handle` listener hears every press of the UI, wherever the pointer is: test [
 |---|---|---|
 | `double` | [getMouseX](#NodeMouseEvent-method-getMouseX)() | Returns the horizontal position of the pointer, in design pixels of the UI. |
 | `double` | [getMouseY](#NodeMouseEvent-method-getMouseY)() | Returns the vertical position of the pointer, in design pixels of the UI. |
-| `long` | [getDeltaTime](#NodeMouseEvent-method-getDeltaTime)() | Returns, for a drag, the time in ms since the button went down; `0` for a press, a release or a click. |
+| `long` | [getDeltaTime](#NodeMouseEvent-method-getDeltaTime)() | Returns, for a drag or a release, the time in ms since the button went down (`0` for a release whose press JOID did not see); `0` for a press or a click. |
 | [`MouseButton`](/reference/input/mousebutton/) | [getButton](#NodeMouseEvent-method-getButton)() | Returns the [`MouseButton`](/reference/input/mousebutton/) of the event; for a drag, the button held. |
 
 <details>
@@ -91,7 +91,7 @@ Returns the vertical position of the pointer, in design pixels of the UI.
 
 `long getDeltaTime()` 
 
-Returns, for a drag, the time in ms since the button went down; `0` for a press, a release or a click.
+Returns, for a drag or a release, the time in ms since the button went down (`0` for a release whose press JOID did not see); `0` for a press or a click.
 
 <a id="NodeMouseEvent-method-getButton"></a>
 

@@ -37,7 +37,7 @@ A face without normals is lit with the normal of its triangle.
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`ObjModel`](/reference/drawing/objmodel/) | [of](#ObjModel-factory-of)(String name, Object handle, Resource texture) <span class="joid-qualifier">factory</span> | Reads the model `name` from anything [`Asset.of`](/reference/resources/asset/#Asset-factory-of) accepts, drawn with `texture`. |
+| [`ObjModel`](/reference/drawing/objmodel/) | [of](#ObjModel-factory-of)(String name, Object handle, Resource texture) <span class="joid-qualifier">factory</span> | Reads the model `name` from anything [`Asset.of`](/reference/resources/asset/#Asset-factory-of) accepts, as UTF-8 text, drawn with `texture`. |
 
 <a id="ObjModel-methods"></a>
 
@@ -64,7 +64,7 @@ A face without normals is lit with the normal of its triangle.
 
 `ObjModel of(String name, Object handle, Resource texture)` <span class="joid-qualifier">factory</span>
 
-Reads the model `name` from anything [`Asset.of`](/reference/resources/asset/#Asset-factory-of) accepts, drawn with `texture`.
+Reads the model `name` from anything [`Asset.of`](/reference/resources/asset/#Asset-factory-of) accepts, as UTF-8 text, drawn with `texture`.
 Throws `IllegalArgumentException` that names the line when the file is malformed: a line that does not parse, an index out of range, or a group that mixes faces with and without texture coordinates.
 Throws `UncheckedIOException` when the file cannot be read.
 

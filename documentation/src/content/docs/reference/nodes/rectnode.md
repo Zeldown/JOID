@@ -49,7 +49,7 @@ The border properties drive a [`BorderNodeEffect`](/reference/effects/bordernode
 | [borderColor](#RectNode-property-borderColor) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) | `Color.TRANSPARENT` | Color of the border. |
 | [hoveredBorderColor](#RectNode-property-hoveredBorderColor) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) | none, the border keeps its color on hover | Color of the border while the node is hovered; `null` keeps the border unchanged on hover. |
 | [borderStroke](#RectNode-property-borderStroke) <span class="joid-qualifier">signal</span> | `double` | `0D` | Thickness of the border, in design pixels; `0` draws no border. |
-| [borderFill](#RectNode-property-borderFill) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `true`, the border covers its corners; if `false`, the corners stay empty. |
+| [borderCorners](#RectNode-property-borderCorners) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `true`, the border covers its corners; if `false`, the corners stay empty. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-properties"><code>Node</code></a> (24)</summary>
@@ -167,13 +167,13 @@ Color of the border while the node is hovered; `null` keeps the border unchanged
 
 Thickness of the border, in design pixels; `0` draws no border.
 
-<a id="RectNode-property-borderFill"></a>
+<a id="RectNode-property-borderCorners"></a>
 
-### borderFill
+### borderCorners
 
-- `this borderFill(boolean borderFill)` <span class="joid-qualifier">fluent</span>
-- `this borderFill(Supplier<Boolean> borderFill)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
-- `boolean isBorderFill()` 
+- `this borderCorners(boolean borderCorners)` <span class="joid-qualifier">fluent</span>
+- `this borderCorners(Supplier<Boolean> borderCorners)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
+- `boolean isBorderCorners()` 
 
 **Default:** `true`
 

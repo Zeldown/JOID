@@ -17,7 +17,7 @@ One folder of the cache, whose entries are written once by key, read many times,
 
 ## Description
 
-Get one with [`FileCache.area`](/reference/resources/filecache/#FileCache-method-area).
+Get one with `of(name)`, and keep it in a constant.
 Each entry is written into a temporary file and moved into place in one step, so a reader never sees a half-written entry, and two threads that compute the same key write it once.
 Reading an entry marks it as used; the retention counts from the last use.
 The methods are thread-safe; call them off the render thread, since they touch the disk.
@@ -30,7 +30,7 @@ The methods are thread-safe; call them off the render thread, since they touch t
 
 | Returns | Signature | Summary |
 |---|---|---|
-|  | [FileCacheArea](#FileCacheArea-constructor)(String name) | Creates an area object for the folder `name`; [`FileCache.area`](/reference/resources/filecache/#FileCache-method-area) returns the shared one, which is the one to use. |
+| [`FileCacheArea`](/reference/resources/filecachearea/) | [of](#FileCacheArea-factory-of)(String name) <span class="joid-qualifier">factory</span> | Returns the area `name`, the same instance for the same name, in the folder of that name under the cache folder. |
 
 <a id="FileCacheArea-properties"></a>
 
@@ -52,7 +52,6 @@ The methods are thread-safe; call them off the render thread, since they touch t
 | `File` | [store](#FileCacheArea-method-store)(FileCacheWriter writer) | Writes a content with `writer` and returns its file, named after the SHA-1 of the content: the same content is stored once. |
 | `boolean` | [remove](#FileCacheArea-method-remove)(String key) | Deletes the entry `key` and returns `true` when there was one. |
 | `long` | [clean](#FileCacheArea-method-clean)(long now, AtomicInteger files) | Deletes the entries unused since `now` minus the retention, and the temporary files older than one day, adds the number of deleted files to `files` and returns the bytes freed. |
-| `String` | [check](#FileCacheArea-method-check)(String kind, String name) <span class="joid-qualifier">static</span> | Returns `name` when it is a plain file name, otherwise throws `IllegalArgumentException` that names its `kind`. |
 | `String` | [getName](#FileCacheArea-method-getName)() | Returns the name of the area, the name of its folder. |
 
 ## Constants and fields
@@ -63,13 +62,14 @@ The methods are thread-safe; call them off the render thread, since they touch t
 
 ## Creation details
 
-<a id="FileCacheArea-constructor"></a>
+<a id="FileCacheArea-factory-of"></a>
 
-### FileCacheArea
+### of
 
-`FileCacheArea(String name)` 
+`FileCacheArea of(String name)` <span class="joid-qualifier">factory</span>
 
-Creates an area object for the folder `name`; [`FileCache.area`](/reference/resources/filecache/#FileCache-method-area) returns the shared one, which is the one to use.
+Returns the area `name`, the same instance for the same name, in the folder of that name under the cache folder.
+Throws `IllegalArgumentException` when `name` is not a plain file name: a letter or a digit, then letters, digits, `.`, `-` and `_`.
 
 ## Property details
 
@@ -149,18 +149,6 @@ An entry still open elsewhere is left to the next cleaning, with a dev-mode warn
 
 Deletes the entries unused since `now` minus the retention, and the temporary files older than one day, adds the number of deleted files to `files` and returns the bytes freed.
 [`FileCache.clean`](/reference/resources/filecache/#FileCache-method-clean) calls it for every area.
-
-<a id="FileCacheArea-method-check"></a>
-
-### check
-
-`String check(String kind, String name)` <span class="joid-qualifier">static</span>
-
-**Throws:**
-
-- `IllegalArgumentException`: The cache … name … is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'
-
-Returns `name` when it is a plain file name, otherwise throws `IllegalArgumentException` that names its `kind`.
 
 <a id="FileCacheArea-method-getName"></a>
 

@@ -72,6 +72,12 @@ A skin extends it and gives its parts as for any [`SliderNode`](/reference/contr
 |---|---|---|
 | `this` | [range](#DoubleSliderNode-method-range)(double min, double max, double step) <span class="joid-qualifier">fluent</span> | Gives the options from `min` to `max` by `step`, computed in decimal so that `0.1D` steps stay exact; `max` is an option only when a step lands on it. |
 
+### For subclasses
+
+| Returns | Signature | Summary |
+|---|---|---|
+| `Double` | [fallback](#DoubleSliderNode-method-fallback)(Double value) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | Returns the option nearest to the value asked for, the smaller one on a tie, whatever the order of the options. |
+
 <details>
 <summary>Inherited from <a href="/reference/controls/baseslidernode/#BaseSliderNode-methods"><code>BaseSliderNode</code></a> (2)</summary>
 
@@ -133,9 +139,19 @@ Creates the slider at `x`, `y` with a `width` and a `height` in design pixels, f
 
 - `IllegalArgumentException`: The step … of the slider range must be positive, pass a step above 0
 - `IllegalArgumentException`: The min … of the slider range is above its max …, pass a min of at most …
+- `IllegalArgumentException`: The slider range from … to … by … holds more than … values, pass a narrower range or a larger step
 
 Gives the options from `min` to `max` by `step`, computed in decimal so that `0.1D` steps stay exact; `max` is an option only when a step lands on it.
-Throws an `IllegalArgumentException` when the step is not positive or when `min` is above `max`.
+Throws an `IllegalArgumentException` when the step is not positive, when `min` is above `max`, or when the range holds more values than `Integer.MAX_VALUE`.
+The options are computed on demand, so a large range costs nothing.
+
+<a id="DoubleSliderNode-method-fallback"></a>
+
+### fallback
+
+`Double fallback(Double value)` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span>
+
+Returns the option nearest to the value asked for, the smaller one on a tie, whatever the order of the options.
 
 ---
 

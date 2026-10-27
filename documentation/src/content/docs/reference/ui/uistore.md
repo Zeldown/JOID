@@ -38,7 +38,7 @@ A `PERMANENT` store is read from the data folder when it is created and written 
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [save](#UIStore-method-save)() | Writes a `PERMANENT` store to its file now; a store of another scope ignores it. |
-| `JsonObject` | [toJson](#UIStore-method-toJson)() | Returns the values to save for a `PERMANENT` store. |
+| `Map<String,Object>` | [toJson](#UIStore-method-toJson)() | Returns the values to save for a `PERMANENT` store, as a map that JOID writes as JSON: numbers, texts, booleans, maps, lists and arrays, and any other object field by field. |
 | [`UIStoreData`](/reference/ui/uistoredata/) | [getData](#UIStore-method-getData)() | The `@UIStoreData` annotation of the store. |
 
 ### For subclasses
@@ -47,7 +47,7 @@ A `PERMANENT` store is read from the data folder when it is created and written 
 |---|---|---|
 | `void` | [init](#UIStore-method-init)() <span class="joid-qualifier">hook</span> | Fills the store with its starting values. |
 | `void` | [destroy](#UIStore-method-destroy)() <span class="joid-qualifier">hook</span> | Releases what the store holds when its scope ends: JOID calls it for a `LOCAL` store when the UI that holds it closes. |
-| `void` | [fromJson](#UIStore-method-fromJson)(JsonObject json) <span class="joid-qualifier">hook</span> | Restores the values that `toJson()` saved, right after `init()`. |
+| `void` | [fromJson](#UIStore-method-fromJson)(Map<String,Object> json) <span class="joid-qualifier">hook</span> | Restores the values that `toJson()` saved, right after `init()`. |
 
 ## Creation details
 
@@ -73,9 +73,9 @@ Writes a `PERMANENT` store to its file now; a store of another scope ignores it.
 
 ### toJson
 
-`JsonObject toJson()` 
+`Map<String,Object> toJson()` 
 
-Returns the values to save for a `PERMANENT` store.
+Returns the values to save for a `PERMANENT` store, as a map that JOID writes as JSON: numbers, texts, booleans, maps, lists and arrays, and any other object field by field.
 A `toJson()` that throws prints a warning, and the other stores are saved anyway.
 
 <a id="UIStore-method-getData"></a>
@@ -109,9 +109,10 @@ A `destroy()` that throws prints a warning, and the store is forgotten anyway.
 
 ### fromJson
 
-`void fromJson(JsonObject json)` <span class="joid-qualifier">hook</span>
+`void fromJson(Map<String,Object> json)` <span class="joid-qualifier">hook</span>
 
 Restores the values that `toJson()` saved, right after `init()`.
+The map holds the types of JSON: `Long` and `Double` for the numbers, `Boolean`, `String`, `List<Object>` and `Map<String, Object>`.
 A `fromJson()` that throws prints a warning, keeps a copy of the file aside, and the store starts again from `init()`.
 
 ---

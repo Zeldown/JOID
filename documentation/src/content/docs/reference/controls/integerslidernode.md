@@ -75,6 +75,12 @@ A skin extends it and gives its parts as for any [`SliderNode`](/reference/contr
 | `this` | [range](#IntegerSliderNode-method-range)(int min, int max) <span class="joid-qualifier">fluent</span> | Gives the options every integer from `min` to `max`, both included. |
 | `this` | [range](#IntegerSliderNode-method-range)(int min, int max, int step) <span class="joid-qualifier">fluent</span> | Gives the options from `min` to `max` by `step`; `max` is an option only when a step lands on it. |
 
+### For subclasses
+
+| Returns | Signature | Summary |
+|---|---|---|
+| `Integer` | [fallback](#IntegerSliderNode-method-fallback)(Integer value) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | Returns the option nearest to the value asked for, the smaller one on a tie, whatever the order of the options. |
+
 <details>
 <summary>Inherited from <a href="/reference/controls/baseslidernode/#BaseSliderNode-methods"><code>BaseSliderNode</code></a> (2)</summary>
 
@@ -133,7 +139,7 @@ Creates the slider at `x`, `y` with a `width` and a `height` in design pixels, f
 `this range(int min, int max)` <span class="joid-qualifier">fluent</span>
 
 Gives the options every integer from `min` to `max`, both included.
-Throws an `IllegalArgumentException` when `min` is above `max`.
+Throws an `IllegalArgumentException` when `min` is above `max`, or when the range holds more values than `Integer.MAX_VALUE`, as `range(0, Integer.MAX_VALUE)` does.
 
 `this range(int min, int max, int step)` <span class="joid-qualifier">fluent</span>
 
@@ -141,9 +147,19 @@ Throws an `IllegalArgumentException` when `min` is above `max`.
 
 - `IllegalArgumentException`: The step … of the slider range must be positive, pass a step of 1 or more
 - `IllegalArgumentException`: The min … of the slider range is above its max …, pass a min of at most …
+- `IllegalArgumentException`: The slider range from … to … by … holds more than … values, pass a narrower range or a larger step
 
 Gives the options from `min` to `max` by `step`; `max` is an option only when a step lands on it.
-Throws an `IllegalArgumentException` when the step is not positive or when `min` is above `max`.
+Throws an `IllegalArgumentException` when the step is not positive, when `min` is above `max`, or when the range holds more values than `Integer.MAX_VALUE`.
+The options are computed on demand, so a large range costs nothing.
+
+<a id="IntegerSliderNode-method-fallback"></a>
+
+### fallback
+
+`Integer fallback(Integer value)` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span>
+
+Returns the option nearest to the value asked for, the smaller one on a tie, whatever the order of the options.
 
 ---
 

@@ -40,6 +40,7 @@ A custom control creates one in its constructor and calls it from its own setter
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
+| [source](#InteractiveValue-property-source) <span class="joid-qualifier">signal</span> | `V` | set at creation | The getter of the value asked for, when the field keeps it apart from the value shown, as the view keeps the zoom asked for a UI; the getter of the value by default. |
 | [clamp](#InteractiveValue-property-clamp) | `UnaryOperator<V>` | `UnaryOperator.identity()` | The function that bounds every requested value before it applies; the default keeps the value unchanged. |
 | [then](#InteractiveValue-property-then) | `BiConsumer<V,V>` | `(previous, next) -> { }` | The action that runs with the previous and the applied value after each change; the default does nothing. |
 
@@ -84,6 +85,17 @@ A custom control creates one in its constructor and calls it from its own setter
 Creates the value `property` of the node that owns `bindings`; `getter` reads the applied value from the node and `setter` stores it there.
 
 ## Property details
+
+<a id="InteractiveValue-property-source"></a>
+
+### source
+
+- `this source(Supplier<V> source)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
+
+**Default:** set at creation
+
+The getter of the value asked for, when the field keeps it apart from the value shown, as the view keeps the zoom asked for a UI; the getter of the value by default.
+With a source, the setter receives the value asked for and the getter returns the value shown.
 
 <a id="InteractiveValue-property-clamp"></a>
 

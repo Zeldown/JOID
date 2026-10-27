@@ -20,6 +20,7 @@ The pair of steps that a UI plays when it opens and when it closes.
 
 Give one to a UI with [`UI.transition`](/reference/ui/ui/#UI-property-transition); a popup gets a [`PopTransition`](/reference/ui/poptransition/) from `@UIDataPopup`.
 Write your own by extending this class and passing two [`TransitionStep`](/reference/ui/transitionstep/) to the constructor.
+Several UIs can share one transition: each UI plays copies of its steps, made when the transition is set.
 
 ## Learn more
 
@@ -37,8 +38,8 @@ Write your own by extending this class and passing two [`TransitionStep`](/refer
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`TransitionStep`](/reference/ui/transitionstep/) | [getIn](#Transition-method-getIn)() | The step played when the UI opens. |
-| [`TransitionStep`](/reference/ui/transitionstep/) | [getOut](#Transition-method-getOut)() | The step played when the UI closes. |
+| [`TransitionStep`](/reference/ui/transitionstep/) | [getIn](#Transition-method-getIn)() | The opening step that the UIs copy; [`UI.getTransitionIn`](/reference/ui/ui/#UI-method-getTransitionIn) returns the copy that a UI plays. |
+| [`TransitionStep`](/reference/ui/transitionstep/) | [getOut](#Transition-method-getOut)() | The closing step that the UIs copy; [`UI.getTransitionOut`](/reference/ui/ui/#UI-method-getTransitionOut) returns the copy that a UI plays. |
 
 ## Creation details
 
@@ -58,7 +59,7 @@ Creates a transition from its opening step and its closing step.
 
 `TransitionStep getIn()` 
 
-The step played when the UI opens.
+The opening step that the UIs copy; [`UI.getTransitionIn`](/reference/ui/ui/#UI-method-getTransitionIn) returns the copy that a UI plays.
 
 <a id="Transition-method-getOut"></a>
 
@@ -66,7 +67,7 @@ The step played when the UI opens.
 
 `TransitionStep getOut()` 
 
-The step played when the UI closes.
+The closing step that the UIs copy; [`UI.getTransitionOut`](/reference/ui/ui/#UI-method-getTransitionOut) returns the copy that a UI plays.
 
 ---
 

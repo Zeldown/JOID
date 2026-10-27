@@ -20,7 +20,7 @@ The behavior shared by the controls that select one value among options: the swi
 ## Description
 
 A choice holds a list of options and the selected one.
-New options keep the selected value when it is still one of them; otherwise the choice selects the first one.
+New options keep the selected value when it is still one of them; otherwise the choice shows the value of `fallback(...)`.
 A value that is not an option yet waits until the options hold it, and the order of `values(...)` and `value(...)` does not matter.
 Attaching a choice without options throws an `IllegalStateException`.
 
@@ -57,7 +57,7 @@ Attaching a choice without options throws an `IllegalStateException`.
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `List<V>` | [getValueList](#BaseChoiceNode-method-getValueList)() | Returns the options, as a read-only list. |
+| `List<V>` | [getValueList](#BaseChoiceNode-method-getValueList)() | Returns the options, as a read-only view that follows the options set later. |
 | `this` | [change](#BaseChoiceNode-method-change)(V value) <span class="joid-qualifier">fluent</span> | Selects an option as if the user picked it: `beforeChange` can refuse it, then `onChange` fires. |
 | `T` | [beforeChange](#BaseChoiceNode-method-beforeChange)(EventListener<NodeChangeEvent.Pre<T,V>> listener) | Adds a listener that runs before a change that a gesture or `change(...)` asks for; `cancel()` refuses it. |
 
@@ -66,6 +66,7 @@ Attaching a choice without options throws an `IllegalStateException`.
 | Returns | Signature | Summary |
 |---|---|---|
 | `void` | [createOptions](#BaseChoiceNode-method-createOptions)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | Hook that JOID calls each time the options change, after the choice stored them. |
+| `V` | [fallback](#BaseChoiceNode-method-fallback)(V value) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | Hook that picks the value to show when the value asked for is not one of the options. |
 
 <details>
 <summary>Inherited from <a href="/reference/nodes/node/#Node-methods"><code>Node</code></a> (127)</summary>
@@ -152,7 +153,7 @@ A plain index is the start value, and throws an `IllegalArgumentException` when 
 
 `List<V> getValueList()` 
 
-Returns the options, as a read-only list.
+Returns the options, as a read-only view that follows the options set later.
 
 <a id="BaseChoiceNode-method-change"></a>
 
@@ -179,6 +180,15 @@ Adds a listener that runs before a change that a gesture or `change(...)` asks f
 
 Hook that JOID calls each time the options change, after the choice stored them.
 The switch and the selector build one node per option there; the default does nothing.
+
+<a id="BaseChoiceNode-method-fallback"></a>
+
+### fallback
+
+`V fallback(V value)` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span>
+
+Hook that picks the value to show when the value asked for is not one of the options.
+The default keeps the current value when it is still an option, else the first option; the sliders of numbers return the nearest option.
 
 ## Event details
 

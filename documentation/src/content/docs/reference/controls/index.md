@@ -46,6 +46,7 @@ The interfaces, enums and helper classes of this family that the main types use.
 | Type | Kind | Summary |
 |---|---|---|
 | [`FieldSelection`](/reference/controls/fieldselection/) | class | A range of characters of a field, from a start index to an end index. |
+| [`RangeList`](/reference/controls/rangelist/) | class | Read-only list of the options of a slider range, whose values are computed from their index instead of stored. |
 | [`ToggleState`](/reference/controls/togglestate/) | class | The two values that a toggle stands for, one while it is on and one while it is off. |
 
 ## Supporting types

@@ -35,7 +35,7 @@ JOID reads it into a [`UIDataObject`](/reference/annotations/uidataobject/), ret
 | `boolean` | [active](#UIData-element-active) | `true` | If `false`, the UI is drawn but receives no input, and the UIs below it receive the input instead. |
 | `boolean` | [visible](#UIData-element-visible) | `true` | If `false`, the UI is neither drawn nor sent any input, and closing it skips its closing transition. |
 | `boolean` | [closeable](#UIData-element-closeable) | `true` | If `false`, Escape leaves the UI open; [`JOID.close`](/reference/ui/joid/#JOID-method-close) still closes it. |
-| `boolean` | [zoomable](#UIData-element-zoomable) | `true` | If `false`, the zoom keys (Ctrl or Alt with + and -, and Alt with the wheel in dev mode) leave the zoom of the UI unchanged. |
+| `boolean` | [zoomable](#UIData-element-zoomable) | `true` | If `false`, the zoom keys of dev mode (Ctrl or Alt with + and -, and Alt with the wheel) leave the zoom of the UI unchanged. |
 | `boolean` | [projection](#UIData-element-projection) | `true` | If `true`, the UI sets its own projection over the window; if `false`, it draws inside the projection that the host has set. |
 | `boolean` | [background](#UIData-element-background) | `false` | If `true`, the UI draws the UI backdrop over the whole window, behind its nodes, in `backgroundColor`; the backdrop fades with the transition of the UI. |
 | `String` | [backgroundColor](#UIData-element-backgroundColor) | `"#101010C0"` | Color of the UI backdrop, as a hexadecimal string `#RRGGBB` or `#RRGGBBAA`. |
@@ -77,7 +77,7 @@ An overlay never closes with Escape.
 
 `boolean zoomable() default true` 
 
-If `false`, the zoom keys (Ctrl or Alt with + and -, and Alt with the wheel in dev mode) leave the zoom of the UI unchanged.
+If `false`, the zoom keys of dev mode (Ctrl or Alt with + and -, and Alt with the wheel) leave the zoom of the UI unchanged.
 
 <a id="UIData-element-projection"></a>
 

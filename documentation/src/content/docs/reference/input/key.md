@@ -127,11 +127,11 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 | [`SPACE`](#Key-value-SPACE) | The space bar. |
 | [`APOSTROPHE`](#Key-value-APOSTROPHE) | The punctuation key that types `'` in the layout of the user. |
 | [`COMMA`](#Key-value-COMMA) | The punctuation key that types `,` in the layout of the user. |
-| [`MINUS`](#Key-value-MINUS) | The punctuation key that types `-` in the layout of the user. With Ctrl or Alt, it zooms out a zoomable UI. |
+| [`MINUS`](#Key-value-MINUS) | The punctuation key that types `-` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI. |
 | [`PERIOD`](#Key-value-PERIOD) | The punctuation key that types `.` in the layout of the user. |
 | [`SLASH`](#Key-value-SLASH) | The punctuation key that types `/` in the layout of the user. |
 | [`SEMICOLON`](#Key-value-SEMICOLON) | The punctuation key that types `;` in the layout of the user. |
-| [`EQUAL`](#Key-value-EQUAL) | The punctuation key that types `=` in the layout of the user. With Ctrl or Alt, it zooms in a zoomable UI. |
+| [`EQUAL`](#Key-value-EQUAL) | The punctuation key that types `=` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI. |
 | [`LEFT_BRACKET`](#Key-value-LEFT_BRACKET) | The punctuation key that types `[` in the layout of the user. |
 | [`BACKSLASH`](#Key-value-BACKSLASH) | The punctuation key that types `\` in the layout of the user. |
 | [`RIGHT_BRACKET`](#Key-value-RIGHT_BRACKET) | The punctuation key that types `]` in the layout of the user. |
@@ -149,8 +149,8 @@ Backend note: on LWJGL 2, JOID learns the key that a place types from the charac
 | [`NUMPAD_DECIMAL`](#Key-value-NUMPAD_DECIMAL) | The decimal point key of the numeric keypad. |
 | [`NUMPAD_DIVIDE`](#Key-value-NUMPAD_DIVIDE) | The divide key of the numeric keypad. |
 | [`NUMPAD_MULTIPLY`](#Key-value-NUMPAD_MULTIPLY) | The multiply key of the numeric keypad. |
-| [`NUMPAD_SUBTRACT`](#Key-value-NUMPAD_SUBTRACT) | The minus key of the numeric keypad. With Ctrl or Alt, it zooms out a zoomable UI. |
-| [`NUMPAD_ADD`](#Key-value-NUMPAD_ADD) | The plus key of the numeric keypad. With Ctrl or Alt, it zooms in a zoomable UI. |
+| [`NUMPAD_SUBTRACT`](#Key-value-NUMPAD_SUBTRACT) | The minus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI. |
+| [`NUMPAD_ADD`](#Key-value-NUMPAD_ADD) | The plus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI. |
 | [`NUMPAD_ENTER`](#Key-value-NUMPAD_ENTER) | The Enter key of the numeric keypad; text fields treat it as `ENTER`. |
 | [`NUMPAD_EQUAL`](#Key-value-NUMPAD_EQUAL) | The equal key of the numeric keypad. |
 | [`LEFT_SHIFT`](#Key-value-LEFT_SHIFT) | The left Shift key. [`UI.isShiftKeyDown`](/reference/ui/ui/#UI-method-isShiftKeyDown) tests both Shift keys. |
@@ -856,7 +856,7 @@ The punctuation key that types `,` in the layout of the user.
 
 `MINUS` 
 
-The punctuation key that types `-` in the layout of the user. With Ctrl or Alt, it zooms out a zoomable UI.
+The punctuation key that types `-` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
 
 <a id="Key-value-PERIOD"></a>
 
@@ -888,7 +888,7 @@ The punctuation key that types `;` in the layout of the user.
 
 `EQUAL` 
 
-The punctuation key that types `=` in the layout of the user. With Ctrl or Alt, it zooms in a zoomable UI.
+The punctuation key that types `=` in the layout of the user. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
 
 <a id="Key-value-LEFT_BRACKET"></a>
 
@@ -1032,7 +1032,7 @@ The multiply key of the numeric keypad.
 
 `NUMPAD_SUBTRACT` 
 
-The minus key of the numeric keypad. With Ctrl or Alt, it zooms out a zoomable UI.
+The minus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms out a zoomable UI.
 
 <a id="Key-value-NUMPAD_ADD"></a>
 
@@ -1040,7 +1040,7 @@ The minus key of the numeric keypad. With Ctrl or Alt, it zooms out a zoomable U
 
 `NUMPAD_ADD` 
 
-The plus key of the numeric keypad. With Ctrl or Alt, it zooms in a zoomable UI.
+The plus key of the numeric keypad. In dev mode, with Ctrl or Alt, it zooms in a zoomable UI.
 
 <a id="Key-value-NUMPAD_ENTER"></a>
 

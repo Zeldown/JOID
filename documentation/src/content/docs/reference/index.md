@@ -17,7 +17,7 @@ Every warning and exception message is on [Warnings and errors](/reference/error
 | [UI](/reference/ui/) | The classes that describe a UI, open and close it, keep its state and its files, run its tasks and shortcuts, and animate it when it opens and closes. | 20 |
 | [Annotations](/reference/annotations/) | The annotations that configure a UI, an overlay, a popup and its scale, and the objects that hold those options while the UI runs. | 16 |
 | [Nodes](/reference/nodes/) | The base class `Node` and the nodes that draw shapes, text, images, media, progress bars, charts and 3D models, with their tooltips and their drag settings. | 32 |
-| [Controls](/reference/controls/) | The nodes that hold a value the user changes (checkboxes, toggles, switches, selectors, sliders, text fields) and the scrollbars, each one a behavior class with a skin class of named parts. | 23 |
+| [Controls](/reference/controls/) | The nodes that hold a value the user changes (checkboxes, toggles, switches, selectors, sliders, text fields) and the scrollbars, each one a behavior class with a skin class of named parts. | 24 |
 | [Layout](/reference/layout/) | The nodes that place their children (containers, flex rows and columns, grids, reorderable lists) and the settings of position, overflow and alignment. | 8 |
 | [Events](/reference/events/) | The events that listeners receive, with the bus, the types and the priorities that order the listeners of a node or a UI. | 46 |
 | [Effects](/reference/effects/) | The effects that change how a node is drawn without touching its layout: rounded corners, circle, border, shadow, blur, mask and transform, and the base class of your own effects. | 9 |

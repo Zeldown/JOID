@@ -82,10 +82,10 @@ Sizes are in design pixels; the letter spacing and the line height are on 1 of t
 
 | Returns | Signature | Summary |
 |---|---|---|
+| [`Color`](/reference/drawing/color/) | [getShadowColor](#TextInfo-method-getShadowColor)() | Returns the color of the shadow as it is drawn, the color of the text darkened for `shadow()`, or `null` when the text has no shadow of its own color. |
 | `this` | [withColor](#TextInfo-method-withColor)(Color color) <span class="joid-qualifier">fluent</span> | Returns a copy with `color` as its color. |
 | `this` | [withColored](#TextInfo-method-withColored)(boolean colored) <span class="joid-qualifier">fluent</span> | Returns a copy with `colored` set. |
 | `this` | [withShadowTint](#TextInfo-method-withShadowTint)(Float shadowTint) <span class="joid-qualifier">fluent</span> | Returns a copy with `shadowTint` set. |
-| [`Color`](/reference/drawing/color/) | [getShadowColor](#TextInfo-method-getShadowColor)() | Returns the color of the shadow, or `null` when the text has no shadow of its own color. |
 
 ### Queries
 
@@ -102,7 +102,7 @@ Sizes are in design pixels; the letter spacing and the line height are on 1 of t
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `this` | [shadow](#TextInfo-method-shadow)() <span class="joid-qualifier">fluent</span> | Adds a shadow in the color of the text darkened by 30 %. |
+| `this` | [shadow](#TextInfo-method-shadow)() <span class="joid-qualifier">fluent</span> | Adds a shadow in the color of the text darkened by 30 %; it follows a color set later. |
 | `this` | [shadow](#TextInfo-method-shadow)(Color color) <span class="joid-qualifier">fluent</span> | Sets the color of the shadow; `null` removes it. |
 | `this` | [shadow](#TextInfo-method-shadow)(float x, float y) <span class="joid-qualifier">fluent</span> | Sets the offset of the shadow, in design pixels; on the pixel grid it rounds to at least one screen pixel. |
 | `this` | [withFont](#TextInfo-method-withFont)(IFont font) <span class="joid-qualifier">fluent</span> | Returns a copy with `font` as its font. |
@@ -112,7 +112,7 @@ Sizes are in design pixels; the letter spacing and the line height are on 1 of t
 | `this` | [withLineHeight](#TextInfo-method-withLineHeight)(float lineHeight) <span class="joid-qualifier">fluent</span> | Returns a copy with `lineHeight` set. |
 | `this` | [withItalic](#TextInfo-method-withItalic)(boolean italic) <span class="joid-qualifier">fluent</span> | Returns a copy with `italic` set. |
 | `this` | [withMarkups](#TextInfo-method-withMarkups)(ITextMarkup... markups) <span class="joid-qualifier">fluent</span> | Returns a copy that reads only `markups`. |
-| `this` | [withShadow](#TextInfo-method-withShadow)() <span class="joid-qualifier">fluent</span> | Returns a copy with a shadow in the color of the text darkened by 30 %. |
+| `this` | [withShadow](#TextInfo-method-withShadow)() <span class="joid-qualifier">fluent</span> | Returns a copy with a shadow in the color of the text darkened by 30 %, which follows a color set later. |
 | `this` | [withShadow](#TextInfo-method-withShadow)(Color color) <span class="joid-qualifier">fluent</span> | Returns a copy with a shadow of `color`. |
 | `this` | [withShadow](#TextInfo-method-withShadow)(float x, float y) <span class="joid-qualifier">fluent</span> | Returns a copy with the shadow offset set. |
 | [`TextInfo`](/reference/text/textinfo/) | [copy](#TextInfo-method-copy)() | Returns an unlocked copy with every property of this style. |
@@ -322,6 +322,14 @@ Returns the line height plus `value`.
 
 Returns the height of `text` plus `value`.
 
+<a id="TextInfo-method-getShadowColor"></a>
+
+### getShadowColor
+
+`Color getShadowColor()` 
+
+Returns the color of the shadow as it is drawn, the color of the text darkened for `shadow()`, or `null` when the text has no shadow of its own color.
+
 <a id="TextInfo-method-withColor"></a>
 
 ### withColor
@@ -345,14 +353,6 @@ Returns a copy with `colored` set.
 `this withShadowTint(Float shadowTint)` <span class="joid-qualifier">fluent</span>
 
 Returns a copy with `shadowTint` set.
-
-<a id="TextInfo-method-getShadowColor"></a>
-
-### getShadowColor
-
-`Color getShadowColor()` 
-
-Returns the color of the shadow, or `null` when the text has no shadow of its own color.
 
 <a id="TextInfo-method-getBaseline"></a>
 
@@ -408,7 +408,7 @@ Returns the font, the size and the color, for logs.
 
 `this shadow()` <span class="joid-qualifier">fluent</span>
 
-Adds a shadow in the color of the text darkened by 30 %.
+Adds a shadow in the color of the text darkened by 30 %; it follows a color set later.
 Throws `IllegalStateException` on a locked style.
 
 `this shadow(Color color)` <span class="joid-qualifier">fluent</span>
@@ -483,7 +483,7 @@ Returns a copy that reads only `markups`.
 
 `this withShadow()` <span class="joid-qualifier">fluent</span>
 
-Returns a copy with a shadow in the color of the text darkened by 30 %.
+Returns a copy with a shadow in the color of the text darkened by 30 %, which follows a color set later.
 
 `this withShadow(Color color)` <span class="joid-qualifier">fluent</span>
 

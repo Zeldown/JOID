@@ -41,7 +41,7 @@ Create one with the factory of its area, then give it to [`Node.draggable`](/ref
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [enabled](#DraggableProperty-property-enabled) | `Predicate<Node>` | `node -> true` | Predicate that decides, for the node, whether it can be dragged now. |
+| [enabled](#DraggableProperty-property-enabled) | `Predicate<Node>` | `node -> true` | Predicate that decides, for the node, whether a drag can start now; a drag that started goes to its end whatever it returns. |
 | [type](#DraggableProperty-property-type) | [`DraggableType`](/reference/nodes/draggableproperty-draggabletype/) | `DraggableType.MOVE` | `MOVE` drags the node itself; `COPY` drags a copy and leaves the node in place. |
 | [snapType](#DraggableProperty-property-snapType) | [`DraggableSnapType`](/reference/nodes/draggableproperty-draggablesnaptype/) | `DraggableSnapType.NEAREST` | How the target is chosen when the node is dropped. |
 
@@ -130,7 +130,7 @@ A property that never lets the node be dragged.
 
 **Default:** `node -> true`
 
-Predicate that decides, for the node, whether it can be dragged now.
+Predicate that decides, for the node, whether a drag can start now; a drag that started goes to its end whatever it returns.
 
 <a id="DraggableProperty-property-type"></a>
 

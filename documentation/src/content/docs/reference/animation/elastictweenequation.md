@@ -21,7 +21,7 @@ Easing curves that oscillate like a spring at the start or at the end.
 ## Description
 
 Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/), as `ELASTIC_IN`, `ELASTIC_OUT` and `ELASTIC_IN_OUT`.
-`period(...)` and `amplitude(...)` give the same curve with other oscillations.
+`period(...)` and `amplitude(...)` give the same curve with other oscillations, whose `toString()` carries them, period first: `"Elastic.IN(0.3, 2.0)"`, which [`TweenEquations.of`](/reference/animation/tweenequations/#TweenEquations-method-of) reads back.
 
 ## Learn more
 

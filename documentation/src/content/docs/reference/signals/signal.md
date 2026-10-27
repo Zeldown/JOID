@@ -99,6 +99,7 @@ Listeners always run on the render thread.
 | `this` | [write](#Signal-method-write)(Runnable task) <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">protected</span> | Runs `task` now on the render thread, or queues it for the render thread when it is called from another thread, then returns this signal. |
 | `S` | [transform](#Signal-method-transform)(UnaryOperator<T> operator) <span class="joid-qualifier">protected</span> | Writes the result of `operator` applied to the value, then returns this signal. |
 | `boolean` | [hasListeners](#Signal-method-hasListeners)() <span class="joid-qualifier">protected</span> | If `true`, at least one `onChange` listener is registered. |
+| `void` | [copyListeners](#Signal-method-copyListeners)(Signal<T> signal) <span class="joid-qualifier">protected</span> | Adds the listeners of this signal to `signal`, for a subclass that copies itself, as [`TweenAnimator.copy`](/reference/animation/tweenanimator/#TweenAnimator-method-copy) does. |
 | `void` | [invalidate](#Signal-method-invalidate)(SignalContext context) <span class="joid-qualifier">protected</span> | Marks every derived signal that follows this signal as outdated. |
 | `void` | [nextVersion](#Signal-method-nextVersion)() <span class="joid-qualifier">protected</span> | Increases the version counter without notifying anyone. |
 | `void` | [fireChange](#Signal-method-fireChange)(T value) <span class="joid-qualifier">protected</span> | Calls every listener with `value`; when a listener throws, the others still run and the first exception is thrown at the end. |
@@ -364,6 +365,14 @@ The operator reads the value when the write runs, so increments queued from anot
 `boolean hasListeners()` <span class="joid-qualifier">protected</span>
 
 If `true`, at least one `onChange` listener is registered.
+
+<a id="Signal-method-copyListeners"></a>
+
+### copyListeners
+
+`void copyListeners(Signal<T> signal)` <span class="joid-qualifier">protected</span>
+
+Adds the listeners of this signal to `signal`, for a subclass that copies itself, as [`TweenAnimator.copy`](/reference/animation/tweenanimator/#TweenAnimator-method-copy) does.
 
 <a id="Signal-method-invalidate"></a>
 

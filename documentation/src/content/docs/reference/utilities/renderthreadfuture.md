@@ -29,7 +29,7 @@ Its callbacks run at the frame after the work ends; `join()` and `get()` called 
 
 | Returns | Signature | Summary |
 |---|---|---|
-| [`RenderThreadFuture<T>`](/reference/utilities/renderthreadfuture/) | [from](#RenderThreadFuture-factory-from)(CompletableFuture<T> source) <span class="joid-qualifier">factory</span> | Returns a future that completes on the render thread with the result or the failure of `source`. |
+| [`RenderThreadFuture<T>`](/reference/utilities/renderthreadfuture/) | [from](#RenderThreadFuture-factory-from)(CompletableFuture<T> source) <span class="joid-qualifier">factory</span> | Returns a future that completes on the render thread with the result or the failure of `source`; a failure is the exception of the work itself, never a `CompletionException` around it. |
 
 <a id="RenderThreadFuture-methods"></a>
 
@@ -51,7 +51,7 @@ Its callbacks run at the frame after the work ends; `join()` and `get()` called 
 
 **Thread:** runs on the render thread.
 
-Returns a future that completes on the render thread with the result or the failure of `source`.
+Returns a future that completes on the render thread with the result or the failure of `source`; a failure is the exception of the work itself, never a `CompletionException` around it.
 
 ## Method details
 

@@ -129,6 +129,7 @@ Returns the member called `name`, or `null` when the block has none.
 
 **Throws:**
 
+- `IllegalArgumentException`: The shader declares no builtin uniform …: JOID declares its joid_ uniforms only where they are used, translate the shader with stencil(...) for the stencil ones (uniforms: …)
 - `IllegalArgumentException`: The shader declares no uniform …, declare it in the shader source or fix its name (uniforms: …)
 
 Returns the member called `name`.

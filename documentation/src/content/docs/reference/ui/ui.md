@@ -109,6 +109,14 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `void` | [draw](#UI-method-draw)(double mouseX, double mouseY) | Draws one frame of the UI with the mouse at this point, in screen pixels: the UI backdrop, then the nodes inside the transition, then the drag copies and the tooltip of the hovered node. |
 | `void` | [drawGhost](#UI-method-drawGhost)(Node ghost) | Adds a drag copy to draw above every node of the UI during the current frame. |
 
+### Animation
+
+| Returns | Signature | Summary |
+|---|---|---|
+| `double` | [lerpByFramerate](#UI-method-lerpByFramerate)(double value, double target, double speed, double snapDiff) | Moves `value` toward `target` and returns the result, at the same pace whatever the frame rate. |
+| [`TransitionStep`](/reference/ui/transitionstep/) | [getTransitionIn](#UI-method-getTransitionIn)() | The copy of the opening step that the UI plays, or `null` without transition. |
+| [`TransitionStep`](/reference/ui/transitionstep/) | [getTransitionOut](#UI-method-getTransitionOut)() | The copy of the closing step that the UI plays, or `null` without transition. |
+
 ### Queries
 
 | Returns | Signature | Summary |
@@ -116,7 +124,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `List<Task>` | [getTaskList](#UI-method-getTaskList)() | The tasks attached to the UI itself, without those of its nodes; a read-only view. |
 | `List<Shortcut>` | [getShortcutList](#UI-method-getShortcutList)() | The shortcuts attached to the UI itself, without those of its nodes; a read-only view. |
 | `int` | [getIndex](#UI-method-getIndex)() | The `zindex` of the UI, which orders it among the open UIs of its bridge. |
-| `double` | [getZoom](#UI-method-getZoom)() | The zoom of the UI, `1` when it is not zoomed. |
+| `double` | [getZoom](#UI-method-getZoom)() | The zoom of the UI as it is shown, within the bounds of the interface scale, `1` when it is not zoomed. |
 | `double` | [getWindowWidth](#UI-method-getWindowWidth)() | Width of the window, in screen pixels. |
 | `double` | [getWindowHeight](#UI-method-getWindowHeight)() | Height of the window, in screen pixels. |
 | `double` | [getViewX](#UI-method-getViewX)() | Position of the left edge of the window on the design canvas. |
@@ -158,7 +166,6 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `this` | [addShortcut](#UI-method-addShortcut)(Shortcut shortcut) <span class="joid-qualifier">fluent</span> | Attaches a shortcut to the UI: it fires while the UI is open, after the shortcuts of its visible and enabled nodes. |
 | `this` | [removeShortcut](#UI-method-removeShortcut)(Shortcut shortcut) <span class="joid-qualifier">fluent</span> | Detaches a shortcut from the UI. |
 | `T` | [useStore](#UI-method-useStore)(Class<T> clazz, Supplier<T> factory) | Returns the store of this class, created by the factory the first time. |
-| `double` | [lerpByFramerate](#UI-method-lerpByFramerate)(double value, double target, double speed, double snapDiff) | Moves `value` toward `target` and returns the result, at the same pace whatever the frame rate. |
 
 ### For subclasses
 
@@ -167,7 +174,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | `void` | [init](#UI-method-init)() <span class="joid-qualifier">hook</span> | Builds the node tree of the UI. |
 | `void` | [update](#UI-method-update)() <span class="joid-qualifier">hook</span> | Runs your own code on every frame, after the nodes of the UI have been updated and before they are drawn. |
 | `boolean` | [fireMousePressed](#UI-method-fireMousePressed)(MouseButton button) | Sends a mouse press at the current mouse position to the nodes, then to the listeners of the UI, and returns `true` when something consumed it. |
-| `boolean` | [fireMouseReleased](#UI-method-fireMouseReleased)(MouseButton button) | Sends a mouse release to the nodes, then to the listeners of the UI, and returns `true` when something consumed it. |
+| `boolean` | [fireMouseReleased](#UI-method-fireMouseReleased)(MouseButton button, long deltaTime) | Sends a mouse release of this button, pressed `deltaTime` ms before, to the nodes, then to the listeners of the UI, and returns `true` when something consumed it. |
 | `boolean` | [fireMouseDragged](#UI-method-fireMouseDragged)(MouseButton button, long deltaTime) | Sends a mouse move with this button held for `deltaTime` ms to the nodes, then to the listeners of the UI, and returns `true` when something consumed it. |
 | `boolean` | [fireMouseScroll](#UI-method-fireMouseScroll)(double notchesX, double notchesY) | Sends a wheel turn, in notches, to the nodes, then to the listeners of the UI, and returns `true` when something consumed it. |
 | `boolean` | [fireCharTyped](#UI-method-fireCharTyped)(int codepoint) | Sends a typed character, as a Unicode code point, to the nodes, then to the listeners of the UI, and returns `true` when something consumed it. |
@@ -183,7 +190,7 @@ JOID calls the hooks and the listeners of a UI on the render thread.
 | Event | Callback | Fires when |
 |---|---|---|
 | [onClose](#UI-event-onClose) | EventListener<UICloseEvent.Post<T>> listener | Adds a listener that runs once the UI has closed, after its nodes are detached and its stores and properties are saved. |
-| [onZoom](#UI-event-onZoom) | EventListener<UIChangeEvent.Post<T,Double>> listener | Adds a listener that runs after the zoom has changed. |
+| [onZoom](#UI-event-onZoom) | EventListener<UIChangeEvent.Post<T,Double>> listener | Adds a listener that runs after the zoom shown has changed, also when a change of interface scale lets a zoom asked through the UI apply. |
 
 ## Creation details
 
@@ -222,6 +229,7 @@ JOID resets it to `0` at every frame; a node that draws in depth, such as a 3D m
 
 The animation played when the UI opens and closes.
 A popup gets a [`PopTransition`](/reference/ui/poptransition/) from `@UIDataPopup`; a transition set here replaces it, and `null` removes it.
+The UI plays copies of its steps, made here: a transition changed later does not reach it.
 
 ## Method details
 
@@ -423,6 +431,31 @@ The UI bridge calls it once per frame.
 Adds a drag copy to draw above every node of the UI during the current frame.
 A dragged node calls it for its `DraggableType.COPY` copy.
 
+<a id="UI-method-lerpByFramerate"></a>
+
+### lerpByFramerate
+
+`double lerpByFramerate(double value, double target, double speed, double snapDiff)` 
+
+Moves `value` toward `target` and returns the result, at the same pace whatever the frame rate.
+`speed` is the share of the remaining distance covered in 1/60 s (`1` reaches the target at once), and the result snaps to the target once it is within `snapDiff`.
+
+<a id="UI-method-getTransitionIn"></a>
+
+### getTransitionIn
+
+`TransitionStep getTransitionIn()` 
+
+The copy of the opening step that the UI plays, or `null` without transition.
+
+<a id="UI-method-getTransitionOut"></a>
+
+### getTransitionOut
+
+`TransitionStep getTransitionOut()` 
+
+The copy of the closing step that the UI plays, or `null` without transition.
+
 <a id="UI-method-getTaskList"></a>
 
 ### getTaskList
@@ -453,7 +486,7 @@ The `zindex` of the UI, which orders it among the open UIs of its bridge.
 
 `double getZoom()` 
 
-The zoom of the UI, `1` when it is not zoomed.
+The zoom of the UI as it is shown, within the bounds of the interface scale, `1` when it is not zoomed.
 
 <a id="UI-method-getWindowWidth"></a>
 
@@ -755,15 +788,6 @@ Detaches a shortcut from the UI.
 Returns the store of this class, created by the factory the first time.
 A `LOCAL` store lives as long as the UI is open; a `GLOBAL` or `PERMANENT` store is shared by every UI.
 
-<a id="UI-method-lerpByFramerate"></a>
-
-### lerpByFramerate
-
-`double lerpByFramerate(double value, double target, double speed, double snapDiff)` 
-
-Moves `value` toward `target` and returns the result, at the same pace whatever the frame rate.
-`speed` is the share of the remaining distance covered in 1/60 s (`1` reaches the target at once), and the result snaps to the target once it is within `snapDiff`.
-
 <a id="UI-method-init"></a>
 
 ### init
@@ -794,9 +818,9 @@ The UI bridge calls it; call it yourself only to simulate an input.
 
 ### fireMouseReleased
 
-`boolean fireMouseReleased(MouseButton button)` 
+`boolean fireMouseReleased(MouseButton button, long deltaTime)` 
 
-Sends a mouse release to the nodes, then to the listeners of the UI, and returns `true` when something consumed it.
+Sends a mouse release of this button, pressed `deltaTime` ms before, to the nodes, then to the listeners of the UI, and returns `true` when something consumed it.
 
 <a id="UI-method-fireMouseDragged"></a>
 
@@ -876,7 +900,7 @@ It may open another UI.
 
 `<T extends UI> T onZoom(EventListener<UIChangeEvent.Post<T,Double>> listener)` 
 
-Adds a listener that runs after the zoom has changed.
+Adds a listener that runs after the zoom shown has changed, also when a change of interface scale lets a zoom asked through the UI apply.
 
 ---
 

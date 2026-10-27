@@ -42,7 +42,7 @@ A change applies from the next frame; `reload()` reads the annotation again and 
 | [zlevel](#UIDataObject-property-zlevel) | `double` | `0D` | Depth added along the Z axis before the UI is drawn. |
 | [active](#UIDataObject-property-active) | `boolean` | `true` | If `false`, the UI is drawn but receives no input. |
 | [visible](#UIDataObject-property-visible) | `boolean` | `true` | If `false`, the UI is neither drawn nor sent any input. |
-| [zoomable](#UIDataObject-property-zoomable) | `boolean` | `true` | If `false`, the zoom keys leave the zoom of the UI unchanged. |
+| [zoomable](#UIDataObject-property-zoomable) | `boolean` | `true` | If `false`, the zoom keys of dev mode leave the zoom of the UI unchanged. |
 | [closeable](#UIDataObject-property-closeable) | `boolean` | `true` | If `false`, Escape leaves the UI open. |
 | [projection](#UIDataObject-property-projection) | `boolean` | `true` | If `true`, the UI sets its own projection over the window. |
 | [background](#UIDataObject-property-background) | `boolean` | `false` | If `true`, the UI draws the UI backdrop behind its nodes. |
@@ -136,7 +136,7 @@ If `false`, the UI is neither drawn nor sent any input.
 
 **Default:** `true`
 
-If `false`, the zoom keys leave the zoom of the UI unchanged.
+If `false`, the zoom keys of dev mode leave the zoom of the UI unchanged.
 
 <a id="UIDataObject-property-closeable"></a>
 

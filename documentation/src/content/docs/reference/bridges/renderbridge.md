@@ -82,9 +82,9 @@ A subclass implements the clears, `drawPrimitive` and the three `create...` meth
 | [`ITexture`](/reference/bridges/itexture/) | [getEmptyTexture](#RenderBridge-method-getEmptyTexture)() <span class="joid-qualifier">protected</span> | Returns the 1×1 opaque white texture, created on first use. |
 
 <details>
-<summary>Inherited from <a href="/reference/bridges/irenderbridge/#IRenderBridge-methods"><code>IRenderBridge</code></a> (4)</summary>
+<summary>Inherited from <a href="/reference/bridges/irenderbridge/#IRenderBridge-methods"><code>IRenderBridge</code></a> (2)</summary>
 
-[`canWrap`](/reference/bridges/irenderbridge/#IRenderBridge-method-canWrap) · [`suspend`](/reference/bridges/irenderbridge/#IRenderBridge-method-suspend) · [`raster`](/reference/bridges/irenderbridge/#IRenderBridge-method-raster) · [`withState`](/reference/bridges/irenderbridge/#IRenderBridge-method-withState)
+[`canWrap`](/reference/bridges/irenderbridge/#IRenderBridge-method-canWrap) · [`withState`](/reference/bridges/irenderbridge/#IRenderBridge-method-withState)
 
 </details>
 

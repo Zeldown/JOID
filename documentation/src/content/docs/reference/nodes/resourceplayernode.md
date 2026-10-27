@@ -45,7 +45,7 @@ The node waits for its resource like a [`ResourceNode`](/reference/nodes/resourc
 |---|---|---|---|
 | [resource](#ResourcePlayerNode-property-resource) <span class="joid-qualifier">signal</span> | [`Resource`](/reference/resources/resource/) | `null` | The video or animated image to play. |
 | [stretch](#ResourcePlayerNode-property-stretch) <span class="joid-qualifier">signal</span> | [`StretchType`](/reference/nodes/resourcenode-stretchtype/) | `StretchType.STRETCH` | How the frames fill the bounds. |
-| [autoplay](#ResourcePlayerNode-property-autoplay) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `true`, the playback starts as soon as the resource is ready. |
+| [autoplay](#ResourcePlayerNode-property-autoplay) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `true`, the playback starts as soon as the resource is ready; if `false`, it waits paused on its first frame, an animated image as a video. |
 | [loop](#ResourcePlayerNode-property-loop) <span class="joid-qualifier">signal</span> | `boolean` | `false` | If `true`, the playback starts again at the end instead of ending. |
 | [volume](#ResourcePlayerNode-property-volume) <span class="joid-qualifier">signal</span> | `float` | `1F` | Volume of the sound of a video, from `0` for silence to `1` for the full volume. |
 | [audioGroup](#ResourcePlayerNode-property-audioGroup) <span class="joid-qualifier">signal</span> | `Object` | `null` | Group of the sound of a video, for the audio bridge to set the volume of several players at once. |
@@ -180,7 +180,7 @@ How the frames fill the bounds.
 
 **Default:** `true`
 
-If `true`, the playback starts as soon as the resource is ready.
+If `true`, the playback starts as soon as the resource is ready; if `false`, it waits paused on its first frame, an animated image as a video.
 
 <a id="ResourcePlayerNode-property-loop"></a>
 

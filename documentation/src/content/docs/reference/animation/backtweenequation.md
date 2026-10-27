@@ -21,7 +21,7 @@ Easing curves that move back a little before they start or go past the end befor
 ## Description
 
 Each constant is also in [`TweenEquations`](/reference/animation/tweenequations/), as `BACK_IN`, `BACK_OUT` and `BACK_IN_OUT`.
-`overshoot(...)` gives the same curve with a larger or smaller swing.
+`overshoot(...)` gives the same curve with a larger or smaller swing, whose `toString()` carries it: `"Back.OUT(2.5)"`, which [`TweenEquations.of`](/reference/animation/tweenequations/#TweenEquations-method-of) reads back.
 
 ## Learn more
 

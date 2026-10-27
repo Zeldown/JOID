@@ -35,7 +35,14 @@ Renders every snapshot scenario with a given snapshot backend into a folder, the
 
 `void main(String[] arguments)` <span class="joid-qualifier">static</span>
 
+**Throws:**
+
+- `IllegalArgumentException`: The snapshot backend … cannot be created: the class does not exist, check the name and the classpath
+- `IllegalArgumentException`: The snapshot backend … cannot be created: its constructor threw …
+- `IllegalArgumentException`: The snapshot backend … cannot be created: give it a constructor without arguments, of any visibility
+
 Takes the class name of a snapshot backend and an output folder: deletes the PNG files of the folder, writes `renderer.txt` and one PNG per shot of every scenario, prints the count and exits.
+The backend needs a constructor without argument, of any visibility; a class that is missing or cannot be created throws an `IllegalArgumentException` that says why.
 
 ---
 

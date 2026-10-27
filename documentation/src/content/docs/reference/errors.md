@@ -49,16 +49,6 @@ Nothing else is affected: the watcher stops when the JVM exits.
 
 No fix is needed; the reason is in the parentheses.
 
-### A JOID.onReady callback failed (…), the next callbacks still run {#joid-onready-callback-failed}
-
-**Warning** · `[JOID] A JOID.onReady callback failed (…), the next callbacks still run: catch the exception inside the callback to handle it`
-
-Emitted by [`JOID.load`](/reference/ui/joid/#JOID-method-load).
-
-A callback given to [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) threw a `RuntimeException`; JOID runs the next callbacks anyway.
-
-Catch the exception inside the callback, or fix the code it names: [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).
-
 ### A warning that carries the message of an exception {#warning}
 
 **Warning** · `[JOID] …`
@@ -69,6 +59,16 @@ A warning whose whole text is the message of an exception, printed with its stac
 Each of these messages has its own entry on this page.
 
 Read the message and look it up on this page.
+
+### A JOID.onReady callback failed (…), the next callbacks still run {#joid-onready-callback-failed}
+
+**Warning** · `[JOID] A JOID.onReady callback failed (…), the next callbacks still run: catch the exception inside the callback to handle it`
+
+Emitted by [`JOID.load`](/reference/ui/joid/#JOID-method-load).
+
+A callback given to [`JOID.onReady`](/reference/ui/joid/#JOID-method-onReady) threw a `RuntimeException`; JOID runs the next callbacks anyway.
+
+Catch the exception inside the callback, or fix the code it names: [Run code once JOID is ready](/use/learn/running/backends/#run-code-once-joid-is-ready).
 
 ### The property … of … cannot be read into its field … (…), the field keeps … {#property-cannot-read-into}
 
@@ -199,7 +199,7 @@ Use the backend jar of the same release as the core jar: [Choosing a backend](/u
 
 ### The dev mode needs the dev classes of JOID {#dev-mode-needs-dev}
 
-**`IllegalStateException`** · `The dev mode needs the dev classes of JOID, use its dev or demo jar`
+**`IllegalStateException`** · `The dev mode needs the dev classes of JOID, use its dev jar`
 
 Emitted by [`JOIDEnv.devMode`](/reference/ui/joidenv/#JOIDEnv-method-devMode).
 
@@ -309,6 +309,16 @@ Emitted by [`Node.fireDetach`](/reference/nodes/node/#Node-method-fireDetach).
 The `detach()` of a node, or one of its detach callbacks, threw; JOID detaches the node anyway.
 
 Catch the exception inside `detach()`, or fix the code it names: [Release what a node started](/use/learn/describing-the-ui/node-lifecycle/#release-what-a-node-started).
+
+### …(…) on … is brought back to 0 {#brought-back-0-scroll}
+
+**Warning** · `[JOID] …(…) on … is brought back to 0: the scroll offsets are negative, from 0 down to minus the overflow, call …(…) instead`
+
+Emitted by [`Node`](/reference/nodes/node/#Node-constructor).
+
+In dev mode, `scrollX(...)`, `scrollY(...)`, `scrollTo(...)` or a bound signal gave a node a positive scroll offset; the node scrolls to `0` instead.
+
+Pass the negative offset that the message names: [Scroll from your code](/use/learn/describing-the-ui/layout/#scroll-from-your-code).
 
 ### A watch of … cannot apply its property when its signal changes (…), the … {#watch-cannot-apply-property}
 
@@ -540,6 +550,24 @@ Emitted by [`DoubleSliderNode.range`](/reference/controls/doubleslidernode/#Doub
 
 Pass a minimum lower than or equal to the maximum: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
 
+### The slider range from … to … by … holds more than … values, pass a … {#slider-range-from-holds}
+
+**`IllegalArgumentException`** · `The slider range from … to … by … holds more than … values, pass a narrower range or a larger step`
+
+Emitted by [`DoubleSliderNode.range`](/reference/controls/doubleslidernode/#DoubleSliderNode-method-range), [`IntegerSliderNode.range`](/reference/controls/integerslidernode/#IntegerSliderNode-method-range).
+
+`range(...)` of an [`IntegerSliderNode`](/reference/controls/integerslidernode/) or a [`DoubleSliderNode`](/reference/controls/doubleslidernode/) received a range of more values than `Integer.MAX_VALUE`, such as `range(0, Integer.MAX_VALUE)`.
+
+Pass a narrower range or a larger step: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
+
+### The index … is out of the … values of the slider range {#index-out-values-slider}
+
+**`IndexOutOfBoundsException`** · `The index … is out of the … values of the slider range`
+
+`get(index)` of the `getValueList()` of an [`IntegerSliderNode`](/reference/controls/integerslidernode/) or a [`DoubleSliderNode`](/reference/controls/doubleslidernode/) received an index below `0` or past the last option.
+
+Pass an index from `0` to `size()` minus one.
+
 ### The step … of the slider range must be positive, pass a step of 1 or … {#step-slider-range-must-step-1}
 
 **`IllegalArgumentException`** · `The step … of the slider range must be positive, pass a step of 1 or more`
@@ -639,6 +667,16 @@ With the dev jar, several controls bound to one signal kept writing it back, eac
 
 Give the controls bound to one signal bounds that agree: [Keep a value that the bounds refuse](/use/learn/interactivity/controls/#keep-a-value-that-the-bounds-refuse).
 
+### SignalReplayException that carries the message of its cause {#signalreplayexception}
+
+**`SignalReplayException`** · `…`
+
+Emitted by [`SignalReplayClass.method`](/reference/signals/signalreplayclass/#SignalReplayClass-method-method), [`SignalReplayClass.read`](/reference/signals/signalreplayclass/#SignalReplayClass-factory-read), [`SignalReplayFrame.execute`](/reference/signals/signalreplayframe/#SignalReplayFrame-method-execute), [`SignalReplayMethod.type`](/reference/signals/signalreplaymethod/#SignalReplayMethod-method-type), [`SignalReplayRun.position`](/reference/signals/signalreplayrun/#SignalReplayRun-method-position), [`SignalReplaySite.analyze`](/reference/signals/signalreplaysite/#SignalReplaySite-factory-analyze), [`SignalReplay.replay`](/reference/signals/signalreplay/#SignalReplay-method-replay), [`SignalReplayBinding.get`](/reference/signals/signalreplaybinding/#SignalReplayBinding-method-get).
+
+The replay of an expression given to a setter met something it cannot follow; JOID catches it and prints [`… but cannot follow it`](#but-cannot-follow-value) instead.
+
+See that entry.
+
 ### A ComputedSignal cannot read itself while it computes its value, remove … {#computedsignal-cannot-read-itself}
 
 **`IllegalStateException`** · `A ComputedSignal cannot read itself while it computes its value, remove the read of this signal from its function`
@@ -669,25 +707,25 @@ Emitted by [`LongSignal.divide`](/reference/signals/longsignal/#LongSignal-metho
 
 Check the divisor before you divide.
 
-### SignalReplayException that carries the message of its cause {#signalreplayexception}
-
-**`SignalReplayException`** · `…`
-
-Emitted by [`SignalReplay.replay`](/reference/signals/signalreplay/#SignalReplay-method-replay), [`SignalReplayBinding.get`](/reference/signals/signalreplaybinding/#SignalReplayBinding-method-get), [`SignalReplayClass.method`](/reference/signals/signalreplayclass/#SignalReplayClass-method-method), [`SignalReplayClass.read`](/reference/signals/signalreplayclass/#SignalReplayClass-factory-read), [`SignalReplayFrame.execute`](/reference/signals/signalreplayframe/#SignalReplayFrame-method-execute), [`SignalReplayMethod.type`](/reference/signals/signalreplaymethod/#SignalReplayMethod-method-type), [`SignalReplayRun.position`](/reference/signals/signalreplayrun/#SignalReplayRun-method-position), [`SignalReplaySite.analyze`](/reference/signals/signalreplaysite/#SignalReplaySite-factory-analyze).
-
-The replay of an expression given to a setter met something it cannot follow; JOID catches it and prints [`… but cannot follow it`](#but-cannot-follow-value) instead.
-
-See that entry.
-
 ### IllegalStateException that carries the message of its cause {#illegalstateexception}
 
 **`IllegalStateException`** · `…`
 
-Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset), [`NodeEffect.copy`](/reference/effects/nodeeffect/#NodeEffect-method-copy).
+Emitted by [`Signal.set`](/reference/signals/signal/#Signal-method-set), [`Signal.reset`](/reference/signals/signal/#Signal-method-reset), [`TransitionStep.copy`](/reference/ui/transitionstep/#TransitionStep-method-copy), [`NodeEffect.copy`](/reference/effects/nodeeffect/#NodeEffect-method-copy).
 
 An `IllegalStateException` whose message comes from your code: a refusal given to [`Signal.refuse`](/reference/signals/signal/#Signal-method-refuse), thrown again by `set(...)` or `reset()`, or the failure of the copy of an effect.
 
 Read the message that your code gave.
+
+### The value … has no events to listen to, declare them with events(...) … {#value-has-no-events}
+
+**`IllegalStateException`** · `The value … has no events to listen to, declare them with events(...) first`
+
+Emitted by [`InteractiveValue.before`](/reference/signals/interactivevalue/#InteractiveValue-method-before), [`InteractiveValue.on`](/reference/signals/interactivevalue/#InteractiveValue-method-on).
+
+`before(...)` or `on(...)` of an [`InteractiveValue`](/reference/signals/interactivevalue/) received a listener, but the value has no events.
+
+Declare the two events of the value with `events(...)` before: [Hold a value that the user changes](/use/learn/going-further/custom-nodes/#hold-a-value-that-the-user-changes).
 
 ### The … of … is changed by the user, so it cannot follow …, which cannot … {#changed-user-so-cannot}
 
@@ -714,7 +752,7 @@ Catch the exception in the listener, the getter or the setter, or fix the code i
 
 **`IllegalStateException`** · `The animator has no timeline, call sequence(...) first`
 
-Emitted by [`TweenAnimator.start`](/reference/animation/tweenanimator/#TweenAnimator-method-start), [`TweenAnimator.delay`](/reference/animation/tweenanimator/#TweenAnimator-method-delay), [`TweenAnimator.repeat`](/reference/animation/tweenanimator/#TweenAnimator-method-repeat), [`TweenAnimator.repeatYoyo`](/reference/animation/tweenanimator/#TweenAnimator-method-repeatYoyo), [`TweenAnimator.push`](/reference/animation/tweenanimator/#TweenAnimator-method-push), [`TweenAnimator.onStart`](/reference/animation/tweenanimator/#TweenAnimator-event-onStart), [`TweenAnimator.onIterationStart`](/reference/animation/tweenanimator/#TweenAnimator-event-onIterationStart), [`TweenAnimator.onIterationEnd`](/reference/animation/tweenanimator/#TweenAnimator-event-onIterationEnd), [`TweenAnimator.onComplete`](/reference/animation/tweenanimator/#TweenAnimator-event-onComplete), [`TweenAnimator.onReverseStart`](/reference/animation/tweenanimator/#TweenAnimator-event-onReverseStart), [`TweenAnimator.onReverseIterationStart`](/reference/animation/tweenanimator/#TweenAnimator-event-onReverseIterationStart), [`TweenAnimator.onReverseIterationEnd`](/reference/animation/tweenanimator/#TweenAnimator-event-onReverseIterationEnd), [`TweenAnimator.onReverseComplete`](/reference/animation/tweenanimator/#TweenAnimator-event-onReverseComplete).
+Emitted by [`TweenAnimator.start`](/reference/animation/tweenanimator/#TweenAnimator-method-start), [`TweenAnimator.delay`](/reference/animation/tweenanimator/#TweenAnimator-method-delay), [`TweenAnimator.repeat`](/reference/animation/tweenanimator/#TweenAnimator-method-repeat), [`TweenAnimator.repeatYoyo`](/reference/animation/tweenanimator/#TweenAnimator-method-repeatYoyo), [`TweenAnimator.push`](/reference/animation/tweenanimator/#TweenAnimator-method-push).
 
 A method of a [`TweenAnimator`](/reference/animation/tweenanimator/) that works on its timeline, such as `start()`, `delay(...)`, `repeat(...)`, `push(...)` or an `onX(...)` callback, was called before the animator received a timeline.
 
@@ -1098,16 +1136,6 @@ Emitted by [`FileCacheArea.store`](/reference/resources/filecachearea/#FileCache
 
 Write a file at the path that the writer receives.
 
-### The cache … name … is not a plain file name {#cache-name-not-plain}
-
-**`IllegalArgumentException`** · `The cache … name … is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'`
-
-Emitted by [`FileCacheArea.check`](/reference/resources/filecachearea/#FileCacheArea-method-check).
-
-The name of a cache area or of an entry would not be a safe file name.
-
-Use a name of letters, digits, `.`, `-` and `_`, that starts with a letter or a digit.
-
 ### The cache area … cannot be created in …, check that the cache folder can … {#cache-area-cannot-created}
 
 **`IOException`** · `The cache area … cannot be created in …, check that the cache folder can be written`
@@ -1127,6 +1155,16 @@ Emitted by [`FileCacheArea.compute`](/reference/resources/filecachearea/#FileCac
 The writer given to `compute(...)` or `store(...)` of a [`FileCacheArea`](/reference/resources/filecachearea/) returned without creating its entry.
 
 Create the file or the folder at the path that the writer receives.
+
+### The cache … name … is not a plain file name {#cache-name-not-plain}
+
+**`IllegalArgumentException`** · `The cache … name … is not a plain file name: start with a letter or a digit, then use only letters, digits, '.', '-' and '_'`
+
+Emitted by [`FileCacheArea.of`](/reference/resources/filecachearea/#FileCacheArea-factory-of), [`FileCacheArea.entry`](/reference/resources/filecachearea/#FileCacheArea-method-entry), [`FileCacheArea.compute`](/reference/resources/filecachearea/#FileCacheArea-method-compute), [`FileCacheArea.remove`](/reference/resources/filecachearea/#FileCacheArea-method-remove).
+
+The name of a cache area or of an entry would not be a safe file name.
+
+Use a name of letters, digits, `.`, `-` and `_`, that starts with a letter or a digit.
 
 ### The file cache cannot name the content of … {#file-cache-cannot-name}
 
@@ -1657,6 +1695,16 @@ With the dev jar, a shader uses a GLSL feature that OpenGL 2.1 contexts refuse; 
 
 Rewrite the shader without the feature that the message names: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
+### The FrameThreadBridge was created on the thread … but its frames run on … {#framethreadbridge-was-created-thread}
+
+**Warning** · `[JOID] The FrameThreadBridge was created on the thread … but its frames run on the thread …: create it on the render thread, or JOID takes the render thread for another thread`
+
+Emitted by [`FrameThreadBridge.runTasks`](/reference/bridges/framethreadbridge/#FrameThreadBridge-method-runTasks).
+
+The thread that runs the frames is not the thread that created the [`FrameThreadBridge`](/reference/bridges/framethreadbridge/), which is the thread that registered the backend; JOID then takes another thread for the render thread.
+
+Register the backend on the thread that runs the frames, or return a thread bridge of your own: [Thread bridge](/build/bridges/thread/).
+
 ### A task sent to the render thread from another thread failed (…), the … {#task-sent-render-thread}
 
 **Warning** · `[JOID] A task sent to the render thread from another thread failed (…), the next tasks still run: catch the exception inside the task to handle it`
@@ -1820,6 +1868,16 @@ Emitted by [`ShaderSource.from`](/reference/pipeline/shadersource/#ShaderSource-
 A fragment source declares an `out` variable; JOID declares the output of every fragment shader.
 
 Write the color to `fragColor`: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
+
+### The shader declares no builtin uniform … {#shader-declares-no-builtin}
+
+**`IllegalArgumentException`** · `The shader declares no builtin uniform …: JOID declares its joid_ uniforms only where they are used, translate the shader with stencil(...) for the stencil ones (uniforms: …)`
+
+Emitted by [`UniformBlock.requireMember`](/reference/pipeline/uniformblock/#UniformBlock-method-requireMember).
+
+`uniform(...)` received the name of a `joid_` uniform that the translated shader does not declare: JOID adds a builtin uniform only to the shaders that use it.
+
+Translate the shader with `stencil(...)` to get the stencil uniforms, or leave the builtin uniforms to JOID: [Shader translation](/build/shader-translation/#what-the-translator-adds).
 
 ### The shader declares no uniform …, declare it in the shader source or fix … {#shader-declares-no-uniform}
 
@@ -1993,6 +2051,36 @@ The UI that [`JarCheck`](/reference/testing/jarcheck/) opened closed during its 
 
 Check what closes the UI with that jar.
 
+### The demo UI … cannot be created: the class does not exist {#demo-ui-cannot-created-class}
+
+**`IllegalStateException`** · `The demo UI … cannot be created: the class does not exist, check the name and the excludes of gradle/variants.gradle`
+
+Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
+
+[`JarCheck`](/reference/testing/jarcheck/) did not find the UI that it opens in the packaged jar: the name is wrong, or the variant excludes the class.
+
+Check the name, and what the variant includes and excludes: [Three jars per module](/build/demos/#three-jars-per-module).
+
+### The demo UI … cannot be created: its constructor failed (…) {#demo-ui-cannot-created-constructor}
+
+**`IllegalStateException`** · `The demo UI … cannot be created: its constructor failed (…), fix the constructor from this error`
+
+Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
+
+[`JarCheck`](/reference/testing/jarcheck/) created the UI that it opens in the packaged jar, and its constructor threw.
+
+Fix the constructor from the error in the parentheses.
+
+### The demo UI … cannot be created: give it a public constructor without argument {#demo-ui-cannot-created-give}
+
+**`IllegalStateException`** · `The demo UI … cannot be created: give it a public constructor without argument`
+
+Emitted by [`JarCheck.run`](/reference/testing/jarcheck/#JarCheck-method-run).
+
+The UI that [`JarCheck`](/reference/testing/jarcheck/) opens in the packaged jar has no public constructor without argument.
+
+Give it one.
+
 ### The folder … cannot be created, check that its parent folder can be … {#folder-cannot-created-check}
 
 **`IOException`** · `The folder … cannot be created, check that its parent folder can be written`
@@ -2002,6 +2090,36 @@ Emitted by [`GlslExport.export`](/reference/testing/glslexport/#GlslExport-metho
 [`GlslExport`](/reference/testing/glslexport/) could not create a folder of its output.
 
 Check that the output folder can be written.
+
+### The snapshot backend … cannot be created: the class does not exist {#snapshot-backend-cannot-created-class}
+
+**`IllegalArgumentException`** · `The snapshot backend … cannot be created: the class does not exist, check the name and the classpath`
+
+Emitted by [`SnapshotBaseline.main`](/reference/testing/snapshotbaseline/#SnapshotBaseline-method-main).
+
+The class that [`SnapshotBaseline`](/reference/testing/snapshotbaseline/) received as its first argument is not on its classpath.
+
+Give the full name of a snapshot backend, such as [`Lwjgl3SnapshotBackend`](/reference/lwjgl3/lwjgl3snapshotbackend/): [Compare with LWJGL 3](/build/testing-a-backend/#compare-with-lwjgl-3).
+
+### The snapshot backend … cannot be created: its constructor threw … {#snapshot-backend-cannot-created-constructor}
+
+**`IllegalArgumentException`** · `The snapshot backend … cannot be created: its constructor threw …`
+
+Emitted by [`SnapshotBaseline.main`](/reference/testing/snapshotbaseline/#SnapshotBaseline-method-main).
+
+[`SnapshotBaseline`](/reference/testing/snapshotbaseline/) created the snapshot backend, and its constructor threw.
+
+Fix the constructor from the error.
+
+### The snapshot backend … cannot be created: give it a constructor without arguments {#snapshot-backend-cannot-created-give}
+
+**`IllegalArgumentException`** · `The snapshot backend … cannot be created: give it a constructor without arguments, of any visibility`
+
+Emitted by [`SnapshotBaseline.main`](/reference/testing/snapshotbaseline/#SnapshotBaseline-method-main).
+
+The snapshot backend that [`SnapshotBaseline`](/reference/testing/snapshotbaseline/) received has no constructor without argument.
+
+Give it one, of any visibility: [Give the testkit a surface](/build/testing-a-backend/#give-the-testkit-a-surface).
 
 ### No snapshot rendered in …, render the snapshots first {#no-snapshot-rendered-render}
 
@@ -2053,6 +2171,16 @@ A `resize` command asked for a window larger than the 1920×1080 surface of the 
 
 Resize to 1920×1080 at most.
 
+### The snapshot UI … cannot be created: the class does not exist {#snapshot-ui-cannot-created-class}
+
+**`IllegalArgumentException`** · `The snapshot UI … cannot be created: the class does not exist, check the name and the classpath`
+
+Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
+
+The class given to the `ui` or `open` command is not on the classpath of the test.
+
+Give the full name of the class, and check that the test sees it: [Render a screen](/use/learn/running/testing/#render-a-screen).
+
 ### The snapshot UI … cannot be created: its constructor threw … {#snapshot-ui-cannot-created-constructor}
 
 **`IllegalArgumentException`** · `The snapshot UI … cannot be created: its constructor threw …`
@@ -2069,7 +2197,7 @@ Fix the constructor from the error.
 
 Emitted by [`SnapshotRunner.execute`](/reference/testing/snapshotrunner/#SnapshotRunner-method-execute).
 
-The class given to the `ui` or `open` command is not found, or has no constructor without argument.
+The class given to the `ui` or `open` command has no constructor without argument.
 
 Give the full class name, and a constructor without argument: [Render a screen](/use/learn/running/testing/#render-a-screen).
 

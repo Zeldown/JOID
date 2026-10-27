@@ -37,7 +37,7 @@ The stroke follows the edge of what was drawn, so it wraps a rounded or circular
 
 | Property | Type | Default | Summary |
 |---|---|---|---|
-| [fill](#BorderShaderPass-property-fill) | `boolean` | `true` | If `true`, the stroke also runs past the corners of the area; if `false`, the corner zones outside the area keep the previous result unchanged. |
+| [corners](#BorderShaderPass-property-corners) | `boolean` | `true` | If `true`, the stroke also covers the outer corners of the area; if `false`, the corner zones, where the stroke goes past the area in x and in y at once, keep the previous result unchanged. |
 | [mode](#BorderShaderPass-property-mode) | [`BorderMode`](/reference/shaders/bordershader-bordermode/) | `BorderMode.OUT` | Where the stroke sits: [`BorderShader.BorderMode.OUT`](/reference/shaders/bordershader-bordermode/#BorderShader-BorderMode-value-OUT) outside the edge of the shape, [`BorderShader.BorderMode.IN`](/reference/shaders/bordershader-bordermode/#BorderShader-BorderMode-value-IN) inside it. |
 
 <a id="BorderShaderPass-methods"></a>
@@ -71,15 +71,15 @@ Creates the pass, for a subclass.
 
 ## Property details
 
-<a id="BorderShaderPass-property-fill"></a>
+<a id="BorderShaderPass-property-corners"></a>
 
-### fill
+### corners
 
-- `this fill(boolean fill)` <span class="joid-qualifier">fluent</span>
+- `this corners(boolean corners)` <span class="joid-qualifier">fluent</span>
 
 **Default:** `true`
 
-If `true`, the stroke also runs past the corners of the area; if `false`, the corner zones outside the area keep the previous result unchanged.
+If `true`, the stroke also covers the outer corners of the area; if `false`, the corner zones, where the stroke goes past the area in x and in y at once, keep the previous result unchanged.
 
 <a id="BorderShaderPass-property-mode"></a>
 

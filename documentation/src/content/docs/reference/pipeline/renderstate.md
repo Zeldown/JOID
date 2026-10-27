@@ -42,7 +42,7 @@ Change it inside `withState(...)` of the render bridge, which restores it afterw
 |---|---|---|---|
 | [cull](#RenderState-property-cull) | `boolean` | `false` | If `true`, the backend skips the triangles that face away from the viewer. |
 | [lighting](#RenderState-property-lighting) | `boolean` | `false` | If `true`, the default shader shades each vertex by its normal, with a light that faces the viewer, as for 3D models. |
-| [lineWidth](#RenderState-property-lineWidth) | `float` | `1F` | Width of the lines that the [`Tessellator`](/reference/drawing/tessellator/) draws, in screen pixels. |
+| [lineWidth](#RenderState-property-lineWidth) | `float` | `1F` | Width of the lines that the [`Tessellator`](/reference/drawing/tessellator/) draws, in design pixels like every other thickness: `2F` covers 4 screen pixels at a scale of 2. |
 | [depthTest](#RenderState-property-depthTest) | `boolean` | `false` | If `true`, a fragment farther than the depth already stored is discarded. |
 | [depthWrite](#RenderState-property-depthWrite) | `boolean` | `true` | If `true`, the draws write their depth into the depth buffer. |
 | [lineSmooth](#RenderState-property-lineSmooth) | `boolean` | `false` | If `true`, the lines get antialiased edges. |
@@ -119,8 +119,8 @@ If `true`, the default shader shades each vertex by its normal, with a light tha
 
 **Default:** `1F`
 
-Width of the lines that the [`Tessellator`](/reference/drawing/tessellator/) draws, in screen pixels.
-A width other than `1F` draws each segment as a quad.
+Width of the lines that the [`Tessellator`](/reference/drawing/tessellator/) draws, in design pixels like every other thickness: `2F` covers 4 screen pixels at a scale of 2.
+A width other than `1F`, or a smooth line, draws each segment as a quad; a line of `1F` without `lineSmooth` stays the line of one screen pixel of the GPU.
 
 <a id="RenderState-property-depthTest"></a>
 

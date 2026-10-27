@@ -38,7 +38,7 @@ The event of a press, a release or a drag on a UI, with the position of the poin
 |---|---|---|
 | `double` | [getMouseX](#UIMouseEvent-method-getMouseX)() | Returns the horizontal position of the pointer, in design pixels of the UI. |
 | `double` | [getMouseY](#UIMouseEvent-method-getMouseY)() | Returns the vertical position of the pointer, in design pixels of the UI. |
-| `long` | [getDeltaTime](#UIMouseEvent-method-getDeltaTime)() | Returns, for a drag, the time in ms since the button went down; `0` for a press or a release. |
+| `long` | [getDeltaTime](#UIMouseEvent-method-getDeltaTime)() | Returns, for a drag or a release, the time in ms since the button went down (`0` for a release whose press JOID did not see); `0` for a press. |
 | [`MouseButton`](/reference/input/mousebutton/) | [getButton](#UIMouseEvent-method-getButton)() | Returns the [`MouseButton`](/reference/input/mousebutton/) of the event; for a drag, the button held. |
 
 <details>
@@ -89,7 +89,7 @@ Returns the vertical position of the pointer, in design pixels of the UI.
 
 `long getDeltaTime()` 
 
-Returns, for a drag, the time in ms since the button went down; `0` for a press or a release.
+Returns, for a drag or a release, the time in ms since the button went down (`0` for a release whose press JOID did not see); `0` for a press.
 
 <a id="UIMouseEvent-method-getButton"></a>
 

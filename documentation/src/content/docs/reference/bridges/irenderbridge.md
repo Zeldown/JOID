@@ -46,8 +46,6 @@ Every method runs on the render thread.
 
 | Returns | Signature | Summary |
 |---|---|---|
-| `void` | [suspend](#IRenderBridge-method-suspend)(Runnable draw) <span class="joid-qualifier">default</span> | Runs a drawing of the host with its own state, inside a JOID frame; runs it as is by default. |
-| `void` | [raster](#IRenderBridge-method-raster)(IFrameBuffer target, int width, int height, Runnable draw) <span class="joid-qualifier">default</span> | Runs a drawing of the host into a framebuffer of JOID at that pixel size, for [`DrawUtils.RASTER`](/reference/drawing/drawutils/#DrawUtils-constant-RASTER); calls `suspend` by default. |
 | `void` | [withState](#IRenderBridge-method-withState)(Consumer<IRenderBridge> body) <span class="joid-qualifier">default</span> | Runs the body between `pushState()` and `popState()`, even when it throws. |
 
 ### For subclasses
@@ -66,6 +64,8 @@ Every method runs on the render thread.
 | [`ITexture`](/reference/bridges/itexture/) | [createTexture](#IRenderBridge-method-createTexture)() <span class="joid-qualifier">abstract</span> | Returns an empty texture, to `allocate` then `upload`. |
 | [`IFrameBuffer`](/reference/bridges/iframebuffer/) | [createFrameBuffer](#IRenderBridge-method-createFrameBuffer)(int width, int height) <span class="joid-qualifier">abstract</span> | Returns a framebuffer of that size in pixels, with a color texture and a depth buffer. |
 | [`IShader`](/reference/bridges/ishader/) | [createShader](#IRenderBridge-method-createShader)(ShaderSource vertex, ShaderSource fragment, BlendState blend) <span class="joid-qualifier">abstract</span> | Returns a shader for the two parsed stages and that blend state. |
+| `void` | [suspend](#IRenderBridge-method-suspend)(Runnable draw) <span class="joid-qualifier">abstract</span> | Runs a drawing of the host with its own state, inside a JOID frame: the state and the pass in progress are set aside until the drawing returns. |
+| `void` | [raster](#IRenderBridge-method-raster)(IFrameBuffer target, int width, int height, Runnable draw) <span class="joid-qualifier">abstract</span> | Runs a drawing of the host into a framebuffer of JOID at that pixel size, for [`DrawUtils.RASTER`](/reference/drawing/drawutils/#DrawUtils-constant-RASTER). |
 | [`RenderState`](/reference/pipeline/renderstate/) | [getState](#IRenderBridge-method-getState)() <span class="joid-qualifier">abstract</span> | Returns the live render state. |
 | [`PixelGrid`](/reference/pipeline/pixelgrid/) | [getPixelGrid](#IRenderBridge-method-getPixelGrid)() <span class="joid-qualifier">abstract</span> | Returns the screen pixel grid of the current matrices and viewport. |
 | [`MatrixStack`](/reference/pipeline/matrixstack/) | [getModelView](#IRenderBridge-method-getModelView)() <span class="joid-qualifier">abstract</span> | Returns the modelview matrix stack. |
@@ -91,22 +91,6 @@ If `true`, a frame is begun; `true` by default.
 
 If `true`, the API samples with that wrap; `true` by default.
 When it returns `false`, JOID samples with `CLAMP_TO_EDGE`, and emulates `CLAMP_TO_BORDER` in the shaders.
-
-<a id="IRenderBridge-method-suspend"></a>
-
-### suspend
-
-`void suspend(Runnable draw)` <span class="joid-qualifier">default</span>
-
-Runs a drawing of the host with its own state, inside a JOID frame; runs it as is by default.
-
-<a id="IRenderBridge-method-raster"></a>
-
-### raster
-
-`void raster(IFrameBuffer target, int width, int height, Runnable draw)` <span class="joid-qualifier">default</span>
-
-Runs a drawing of the host into a framebuffer of JOID at that pixel size, for [`DrawUtils.RASTER`](/reference/drawing/drawutils/#DrawUtils-constant-RASTER); calls `suspend` by default.
 
 <a id="IRenderBridge-method-withState"></a>
 
@@ -213,6 +197,23 @@ Returns a framebuffer of that size in pixels, with a color texture and a depth b
 `IShader createShader(ShaderSource vertex, ShaderSource fragment, BlendState blend)` <span class="joid-qualifier">abstract</span>
 
 Returns a shader for the two parsed stages and that blend state.
+
+<a id="IRenderBridge-method-suspend"></a>
+
+### suspend
+
+`void suspend(Runnable draw)` <span class="joid-qualifier">abstract</span>
+
+Runs a drawing of the host with its own state, inside a JOID frame: the state and the pass in progress are set aside until the drawing returns.
+
+<a id="IRenderBridge-method-raster"></a>
+
+### raster
+
+`void raster(IFrameBuffer target, int width, int height, Runnable draw)` <span class="joid-qualifier">abstract</span>
+
+Runs a drawing of the host into a framebuffer of JOID at that pixel size, for [`DrawUtils.RASTER`](/reference/drawing/drawutils/#DrawUtils-constant-RASTER).
+Throws an `IllegalStateException` outside a frame.
 
 <a id="IRenderBridge-method-getState"></a>
 

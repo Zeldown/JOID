@@ -310,8 +310,8 @@ JOID calls every hook and every listener of a node on the render thread.
 | `void` | [fireDetach](#Node-method-fireDetach)() | Detaches the node and its children from their UI: runs `detach`, ends the drag and the hover, detaches the effects and fires `onDetach`. |
 | `boolean` | [fireMousePressed](#Node-method-fireMousePressed)(double mouseX, double mouseY, MouseButton button) | Sends a mouse press at this point to the node and its children, as the UI does, and returns `true` when something consumed it; use it to simulate an input. |
 | `void` | [fireMousePressed](#Node-method-fireMousePressed)(double mouseX, double mouseY, MouseButton button, IConsumableEvent source) | Sends a mouse press that belongs to this source event: consuming it consumes the source. |
-| `boolean` | [fireMouseReleased](#Node-method-fireMouseReleased)(double mouseX, double mouseY, MouseButton button) | Sends a mouse release to the node and its children and returns `true` when something consumed it. |
-| `void` | [fireMouseReleased](#Node-method-fireMouseReleased)(double mouseX, double mouseY, MouseButton button, IConsumableEvent source) | Sends a mouse release that belongs to this source event. |
+| `boolean` | [fireMouseReleased](#Node-method-fireMouseReleased)(double mouseX, double mouseY, MouseButton button, long deltaTime) | Sends a mouse release of this button, pressed `deltaTime` ms before, to the node and its children and returns `true` when something consumed it. |
+| `void` | [fireMouseReleased](#Node-method-fireMouseReleased)(double mouseX, double mouseY, MouseButton button, long deltaTime, IConsumableEvent source) | Sends a mouse release that belongs to this source event. |
 | `boolean` | [fireMouseDragged](#Node-method-fireMouseDragged)(double mouseX, double mouseY, MouseButton button, long deltaTime) | Sends a mouse move with this button held for `deltaTime` ms and returns `true` when something consumed it. |
 | `void` | [fireMouseDragged](#Node-method-fireMouseDragged)(double mouseX, double mouseY, MouseButton button, long deltaTime, IConsumableEvent source) | Sends a mouse move that belongs to this source event. |
 | `boolean` | [fireMouseScroll](#Node-method-fireMouseScroll)(double mouseX, double mouseY, double notchesX, double notchesY) | Sends a wheel turn, in notches, and returns `true` when something consumed it. |
@@ -337,6 +337,7 @@ JOID calls every hook and every listener of a node on the render thread.
 | `N` | [part](#Node-method-part)(Node previous, N next) <span class="joid-qualifier">protected</span> | Replaces a part of the node, a child that the subclass places itself, by another one at the same place among the children, and returns it. |
 | `void` | [reorderChildren](#Node-method-reorderChildren)(List<Node> order) <span class="joid-qualifier">protected</span> | Puts the children in this order, for drawing and for the layout. |
 | [`Node`](/reference/nodes/node/) | [instantiate](#Node-method-instantiate)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | Creates the instance that `copy()` fills: it tries the constructors `(x, y, width, height)`, `(x, y)` and without argument. |
+| `boolean` | [holdsInput](#Node-method-holdsInput)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | If `true`, the node keeps receiving the input while it is scrolled out of the area of its container; `false` by default. |
 | `boolean` | [isDraggingChild](#Node-method-isDraggingChild)(Node child) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | If `true`, the parent raises this child above its siblings because it is being dragged; a layout node that drags its children overrides it. |
 | [`NodeBindings`](/reference/signals/nodebindings/) | [getBindings](#Node-method-getBindings)() <span class="joid-qualifier">protected</span> | The reactive bindings of the node's properties, for a subclass. |
 
@@ -1128,7 +1129,7 @@ Time of the last key press the node received, in ms of the clock bridge.
 `<T extends Node> T scrollX(double scrollX)` 
 
 Sets the horizontal scroll, in design pixels: `0` shows the start, a negative value moves the content to the left.
-The value is kept between the end of the content and `0`.
+The value is kept between the end of the content and `0`; a positive value warns once in dev mode.
 
 `<T extends Node> T scrollX(Signal<Double> scrollX)` 
 
@@ -1141,6 +1142,7 @@ Binds the horizontal scroll to a signal: the node follows it, and a scroll by th
 `<T extends Node> T scrollY(double scrollY)` 
 
 Sets the vertical scroll, in design pixels: `0` shows the top, a negative value moves the content up.
+The value is kept between the end of the content and `0`; a positive value warns once in dev mode.
 
 `<T extends Node> T scrollY(Signal<Double> scrollY)` 
 
@@ -1799,11 +1801,11 @@ Sends a mouse press that belongs to this source event: consuming it consumes the
 
 ### fireMouseReleased
 
-`boolean fireMouseReleased(double mouseX, double mouseY, MouseButton button)` 
+`boolean fireMouseReleased(double mouseX, double mouseY, MouseButton button, long deltaTime)` 
 
-Sends a mouse release to the node and its children and returns `true` when something consumed it.
+Sends a mouse release of this button, pressed `deltaTime` ms before, to the node and its children and returns `true` when something consumed it.
 
-`void fireMouseReleased(double mouseX, double mouseY, MouseButton button, IConsumableEvent source)` 
+`void fireMouseReleased(double mouseX, double mouseY, MouseButton button, long deltaTime, IConsumableEvent source)` 
 
 Sends a mouse release that belongs to this source event.
 
@@ -1994,6 +1996,15 @@ Puts the children in this order, for drawing and for the layout.
 
 Creates the instance that `copy()` fills: it tries the constructors `(x, y, width, height)`, `(x, y)` and without argument.
 Override it when the class has none of them.
+
+<a id="Node-method-holdsInput"></a>
+
+### holdsInput
+
+`boolean holdsInput()` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span>
+
+If `true`, the node keeps receiving the input while it is scrolled out of the area of its container; `false` by default.
+[`FieldNode`](/reference/controls/fieldnode/) holds it while it has the focus or a selection goes on, [`BaseSelectorNode`](/reference/controls/baseselectornode/) while it is open.
 
 <a id="Node-method-isDraggingChild"></a>
 

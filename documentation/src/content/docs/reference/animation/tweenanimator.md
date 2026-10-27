@@ -32,9 +32,10 @@ The durations are in milliseconds and each step starts from the value that the p
 After `start()`, JOID advances the animator once per frame until its timeline ends, until `clear()`, `value(...)` or a call to `sequence(...)`, or until you advance it by hand with `update(...)`.
 Its listeners and the steps run on the render thread.
 
-`sequence(...)` comes first: `delay(...)`, `repeat(...)`, `repeatYoyo(...)`, `push(...)`, `start()` and the event listeners act on the timeline it creates, and throw an `IllegalStateException` without one.
+`sequence(...)` comes first: `delay(...)`, `repeat(...)`, `repeatYoyo(...)`, `push(...)` and `start()` act on the timeline it creates, and throw an `IllegalStateException` without one.
 The steps and the repetitions are fixed by `start()`: call them before.
-A later `sequence(...)` replaces the timeline, its steps and its listeners.
+A later `sequence(...)` replaces the timeline and its steps.
+The event listeners belong to the animator: give them once, before or after the first timeline, and they run for every timeline that follows.
 `set(...)` and `reset()` throw an `IllegalStateException`; `value(...)` stops the animation and sets the value.
 
 ## Learn more
@@ -82,6 +83,7 @@ A later `sequence(...)` replaces the timeline, its steps and its listeners.
 | Returns | Signature | Summary |
 |---|---|---|
 | `this` | [start](#TweenAnimator-method-start)() <span class="joid-qualifier">fluent</span> | Starts the timeline from its beginning and lets JOID advance it once per frame, then returns this animator. |
+| [`TweenAnimator`](/reference/animation/tweenanimator/) | [copy](#TweenAnimator-method-copy)() | Returns a fresh animator with the value, the speed and the listeners of this one, `onChange` included, without its timeline; the two animators are independent afterwards. |
 | `this` | [removeOnChange](#TweenAnimator-method-removeOnChange)(SignalListener<? super Float> listener) <span class="joid-qualifier">fluent</span> | Removes a listener given to `onChange(...)`, then returns this animator. |
 | `this` | [sequence](#TweenAnimator-method-sequence)(float duration, float value) <span class="joid-qualifier">fluent</span> | Kills the current timeline and creates a sequence whose first step goes to `value` in `duration` ms, with a linear easing, then returns this animator. |
 | `this` | [sequence](#TweenAnimator-method-sequence)(float duration, float value, TweenEquation easing) <span class="joid-qualifier">fluent</span> | Kills the current timeline and creates a sequence whose first step goes to `value` in `duration` ms with `easing`, then returns this animator. |
@@ -143,7 +145,7 @@ Creates an animator whose value is `value`, without timeline.
 **Default:** `null`
 
 The timeline that moves the value, or `null` when none is playing.
-Setting another timeline kills the current one; give a timeline built from `tween(...)` to drive the animator with nested sequences and parallels.
+Setting another timeline kills the current one, and the next `update()` counts the time from that moment; give a timeline built from `tween(...)` to drive the animator with nested sequences and parallels.
 
 <a id="TweenAnimator-property-speed"></a>
 
@@ -195,6 +197,14 @@ If `true`, JOID advances the animator once per frame: from `start()` until the t
 
 Starts the timeline from its beginning and lets JOID advance it once per frame, then returns this animator.
 Throws an `IllegalStateException` without timeline, or when the timeline is invalid (a block left open, a repetition forever without duration).
+
+<a id="TweenAnimator-method-copy"></a>
+
+### copy
+
+`TweenAnimator copy()` 
+
+Returns a fresh animator with the value, the speed and the listeners of this one, `onChange` included, without its timeline; the two animators are independent afterwards.
 
 <a id="TweenAnimator-method-removeOnChange"></a>
 

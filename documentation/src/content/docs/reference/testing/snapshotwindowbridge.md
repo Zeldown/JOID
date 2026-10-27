@@ -52,7 +52,9 @@ The window bridge of the snapshot runner, whose size, mouse, held keys, cursor a
 |---|---|---|
 | `boolean` | [isMouseGrabbed](#SnapshotWindowBridge-method-isMouseGrabbed)() | Returns `false`. |
 | `boolean` | [isKeyDown](#SnapshotWindowBridge-method-isKeyDown)(Key physicalKey) | If `true`, a command holds that key. |
-| `Set<Key>` | [getKeys](#SnapshotWindowBridge-method-getKeys)() | Returns the held keys, which the commands change. |
+| `this` | [press](#SnapshotWindowBridge-method-press)(Key... keys) <span class="joid-qualifier">fluent</span> | Holds these keys, as the commands do, and returns the bridge. |
+| `this` | [release](#SnapshotWindowBridge-method-release)(Key... keys) <span class="joid-qualifier">fluent</span> | Releases these keys and returns the bridge. |
+| `Set<Key>` | [getKeys](#SnapshotWindowBridge-method-getKeys)() | Returns the held keys, which the commands change, as a read-only set. |
 | `double` | [getMouseX](#SnapshotWindowBridge-method-getMouseX)() | Returns the horizontal position of the mouse. |
 | `void` | [setMouseX](#SnapshotWindowBridge-method-setMouseX)(double mouseX) | Sets the horizontal position of the mouse, in screen pixels. |
 | `double` | [getMouseY](#SnapshotWindowBridge-method-getMouseY)() | Returns the vertical position of the mouse. |
@@ -146,13 +148,29 @@ Returns `false`.
 
 If `true`, a command holds that key.
 
+<a id="SnapshotWindowBridge-method-press"></a>
+
+### press
+
+`this press(Key... keys)` <span class="joid-qualifier">fluent</span>
+
+Holds these keys, as the commands do, and returns the bridge.
+
+<a id="SnapshotWindowBridge-method-release"></a>
+
+### release
+
+`this release(Key... keys)` <span class="joid-qualifier">fluent</span>
+
+Releases these keys and returns the bridge.
+
 <a id="SnapshotWindowBridge-method-getKeys"></a>
 
 ### getKeys
 
 `Set<Key> getKeys()` 
 
-Returns the held keys, which the commands change.
+Returns the held keys, which the commands change, as a read-only set.
 
 <a id="SnapshotWindowBridge-method-getMouseX"></a>
 

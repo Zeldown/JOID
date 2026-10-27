@@ -57,6 +57,7 @@ Use it to place your own drawing in screen pixels or to read where the window ed
 
 | Returns | Signature | Summary |
 |---|---|---|
+| `double` | [getRequestedZoom](#UIView-method-getRequestedZoom)() | Returns the zoom asked for, before the bounds of `clampZoom`, by `UI.zoom(...)` or by `zoom(...)` of the view. |
 | `double` | [getScale](#UIView-method-getScale)() | The interface scale multiplied by the zoom. |
 | `double` | [getOffsetX](#UIView-method-getOffsetX)() | Horizontal shift of the canvas inside the viewport, in design pixels, that keeps it pinned to its anchor when the window is wider than the canvas. |
 | `double` | [getOffsetY](#UIView-method-getOffsetY)() | Vertical shift of the canvas inside the viewport, in design pixels, that keeps it pinned to its anchor when the window is taller than the canvas. |
@@ -131,7 +132,7 @@ Vertical position, in design pixels, of the anchor that the canvas zooms around 
 **Default:** `1D`
 
 Zoom applied on top of the interface scale.
-The view does not bound it: [`UI.zoom(double)`](/reference/ui/ui/#UI-method-zoom) bounds the zoom of a UI with `clampZoom`.
+The view keeps the value asked for, even beyond the bounds, and `getZoom()` returns it kept within `clampZoom`; unlike [`UI.zoom(double)`](/reference/ui/ui/#UI-method-zoom), writing it here runs no listener.
 
 <a id="UIView-property-interfaceScale"></a>
 
@@ -161,6 +162,15 @@ Width of the window, in screen pixels.
 `double getHeight()` 
 
 Height of the window, in screen pixels.
+
+<a id="UIView-method-getRequestedZoom"></a>
+
+### getRequestedZoom
+
+`double getRequestedZoom()` 
+
+Returns the zoom asked for, before the bounds of `clampZoom`, by `UI.zoom(...)` or by `zoom(...)` of the view.
+A value written to the view that equals the zoom shown keeps a request of `UI.zoom(...)` for the next change of interface scale, while `getRequestedZoom()` returns the value written.
 
 <a id="UIView-method-getScale"></a>
 

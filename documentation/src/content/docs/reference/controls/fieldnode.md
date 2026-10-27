@@ -145,6 +145,7 @@ Attaching a field without a [`TextInfo`](/reference/text/textinfo/) throws an `I
 | `void` | [charTyped](#FieldNode-method-charTyped)(NodeCharEvent<?> event) <span class="joid-qualifier">hook</span> | While the field has the focus, inserts the character at the cursor, in place of the selection, and consumes it. |
 | `void` | [keyPressed](#FieldNode-method-keyPressed)(NodeKeyEvent<?> event) <span class="joid-qualifier">hook</span> | While the field has the focus, handles the editing, the cursor and the clipboard keys and consumes every key; Escape takes the focus. |
 | `void` | [detach](#FieldNode-method-detach)() <span class="joid-qualifier">hook</span> | Takes the focus from the field when it leaves the tree. |
+| `boolean` | [holdsInput](#FieldNode-method-holdsInput)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | If `true`, the field has the focus or a selection by drag goes on: it keeps its keys and its drags while it is scrolled out of the area of its container. |
 | `void` | [drawField](#FieldNode-method-drawField)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Hook that draws the text, the cursor and the selection, on every frame. |
 | `boolean` | [isMultiline](#FieldNode-method-isMultiline)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Hook that returns `true` when the text may hold line breaks; a one-line field drops them from a paste. |
 | `boolean` | [handleKey](#FieldNode-method-handleKey)(Key key) <span class="joid-qualifier">hook</span> <span class="joid-qualifier">abstract</span> <span class="joid-qualifier">protected</span> | Hook that JOID calls first with each key pressed while the field has the focus. |
@@ -558,6 +559,7 @@ Returns the selected range of the text; an empty range when nothing is selected.
 `<T extends FieldNode<V>> T selection(int start, int end)` 
 
 Gives the field its start selection, from `start` to `end` in any order, kept within the text.
+A loss of the focus clears it, even while the text is too short to hold it.
 
 `<T extends FieldNode<V>> T selection(Signal<FieldSelection> selection)` 
 
@@ -687,6 +689,14 @@ It asks `handleKey` first.
 `void detach()` <span class="joid-qualifier">hook</span>
 
 Takes the focus from the field when it leaves the tree.
+
+<a id="FieldNode-method-holdsInput"></a>
+
+### holdsInput
+
+`boolean holdsInput()` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span>
+
+If `true`, the field has the focus or a selection by drag goes on: it keeps its keys and its drags while it is scrolled out of the area of its container.
 
 <a id="FieldNode-method-drawField"></a>
 

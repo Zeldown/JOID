@@ -79,6 +79,7 @@ The catalog shows every curve.
 `TweenEquation of(String name)` <span class="joid-qualifier">static</span>
 
 Returns the curve named `name` (`"Linear.IN_OUT"`, `"Quad.IN"`, `"Elastic.IN_OUT"`…), or `null` for an unknown name.
+It also reads the names of tuned curves that `toString()` gives, such as `"Back.OUT(2.5)"` or `"Elastic.IN(0.3, 2.0)"` (period, then amplitude).
 
 ## Constant and field details
 

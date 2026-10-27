@@ -45,7 +45,7 @@ The border setters of a [`RectNode`](/reference/nodes/rectnode/) drive the `Bord
 | [color](#BorderNodeEffect-property-color) <span class="joid-qualifier">signal</span> | [`Color`](/reference/drawing/color/) |  | Color of the border. |
 | [width](#BorderNodeEffect-property-width) <span class="joid-qualifier">signal</span> | `float` | set at creation | Thickness of the border, in design pixels; `0F` or less turns the effect off. |
 | [mode](#BorderNodeEffect-property-mode) <span class="joid-qualifier">signal</span> | [`BorderMode`](/reference/shaders/bordershader-bordermode/) | `BorderMode.OUT` | Side of the edge where the border lies: `BorderMode.OUT` around the shape, `BorderMode.IN` over its outer pixels. |
-| [fill](#BorderNodeEffect-property-fill) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `false`, an `OUT` border leaves the corners of the node open and runs along its four sides only. |
+| [corners](#BorderNodeEffect-property-corners) <span class="joid-qualifier">signal</span> | `boolean` | `true` | If `false`, an `OUT` border leaves the corners of the node open and runs along its four sides only. |
 
 <details>
 <summary>Inherited from <a href="/reference/effects/nodeeffect/#NodeEffect-properties"><code>NodeEffect</code></a> (2)</summary>
@@ -62,7 +62,7 @@ The border setters of a [`RectNode`](/reference/nodes/rectnode/) drive the `Bord
 |---|---|---|
 | [`Color`](/reference/drawing/color/) | [getColor](#BorderNodeEffect-method-getColor)(Node node) | Returns the color of the border for this node, as the `Function` overload of `color` computes it. |
 | `boolean` | [shouldApply](#BorderNodeEffect-method-shouldApply)(Node node) | Returns `false` while the width is `0F` or less. |
-| [`IShaderPass`](/reference/shaders/ishaderpass/) | [toShaderPass](#BorderNodeEffect-method-toShaderPass)(Node node) | Returns a [`BorderShaderPass`](/reference/shaders/bordershaderpass/) with the current color, width, mode and fill. |
+| [`IShaderPass`](/reference/shaders/ishaderpass/) | [toShaderPass](#BorderNodeEffect-method-toShaderPass)(Node node) | Returns a [`BorderShaderPass`](/reference/shaders/bordershaderpass/) with the current color, width, mode and corners. |
 
 <details>
 <summary>Inherited from <a href="/reference/effects/nodeeffect/#NodeEffect-methods"><code>NodeEffect</code></a> (3)</summary>
@@ -128,13 +128,13 @@ Thickness of the border, in design pixels; `0F` or less turns the effect off.
 
 Side of the edge where the border lies: `BorderMode.OUT` around the shape, `BorderMode.IN` over its outer pixels.
 
-<a id="BorderNodeEffect-property-fill"></a>
+<a id="BorderNodeEffect-property-corners"></a>
 
-### fill
+### corners
 
-- `this fill(boolean fill)` <span class="joid-qualifier">fluent</span>
-- `this fill(Supplier<Boolean> fillSupplier)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
-- `boolean isFill()` 
+- `this corners(boolean corners)` <span class="joid-qualifier">fluent</span>
+- `this corners(Supplier<Boolean> cornersSupplier)` <span class="joid-qualifier">fluent</span> <span class="joid-qualifier">signal</span>
+- `boolean isCorners()` 
 
 **Default:** `true`
 
@@ -164,7 +164,7 @@ Returns `false` while the width is `0F` or less.
 
 `IShaderPass toShaderPass(Node node)` 
 
-Returns a [`BorderShaderPass`](/reference/shaders/bordershaderpass/) with the current color, width, mode and fill.
+Returns a [`BorderShaderPass`](/reference/shaders/bordershaderpass/) with the current color, width, mode and corners.
 
 ---
 

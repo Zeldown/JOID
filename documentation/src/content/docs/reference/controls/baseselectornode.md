@@ -72,6 +72,7 @@ While the list is open, a left press anywhere closes it; the list closes too whe
 |---|---|---|
 | `void` | [mousePressed](#BaseSelectorNode-method-mousePressed)(NodeMouseEvent<?> event) <span class="joid-qualifier">hook</span> | On a left press, opens the closed list when the press is over the selector, or closes the open list wherever the press is; a press over the selector is consumed. |
 | `void` | [detach](#BaseSelectorNode-method-detach)() <span class="joid-qualifier">hook</span> | Closes the list when the selector leaves the tree. |
+| `boolean` | [holdsInput](#BaseSelectorNode-method-holdsInput)() <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span> | If `true`, the selector is open: a click beside it still closes it while it is scrolled out of the area of its container. |
 
 <details>
 <summary>Inherited from <a href="/reference/controls/basechoicenode/#BaseChoiceNode-methods"><code>BaseChoiceNode</code></a> (3)</summary>
@@ -198,6 +199,14 @@ On a left press, opens the closed list when the press is over the selector, or c
 `void detach()` <span class="joid-qualifier">hook</span>
 
 Closes the list when the selector leaves the tree.
+
+<a id="BaseSelectorNode-method-holdsInput"></a>
+
+### holdsInput
+
+`boolean holdsInput()` <span class="joid-qualifier">hook</span> <span class="joid-qualifier">protected</span>
+
+If `true`, the selector is open: a click beside it still closes it while it is scrolled out of the area of its container.
 
 ## Event details
 
