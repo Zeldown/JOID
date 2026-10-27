@@ -89,11 +89,12 @@ If `true`, a frame is begun; `true` by default.
 
 ## suspend(Runnable)
 
-Runs a drawing of the host with its own state, inside a JOID frame; runs it as is by default.
+Runs a drawing of the host with its own state, inside a JOID frame: the state and the pass in progress are set aside until the drawing returns.
 
 ## raster(IFrameBuffer,int,int,Runnable)
 
-Runs a drawing of the host into a framebuffer of JOID at that pixel size, for [[DrawUtils#RASTER]]; calls `suspend` by default.
+Runs a drawing of the host into a framebuffer of JOID at that pixel size, for [[DrawUtils#RASTER]].
+Throws an `IllegalStateException` outside a frame.
 
 ## withState(Consumer)
 

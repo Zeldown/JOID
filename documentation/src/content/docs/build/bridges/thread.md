@@ -19,6 +19,7 @@ The core reads it through [[IThreadBridge]], from [[BridgeHandler#THREAD]].
 - a task that throws prints one warning and the next tasks still run.
 
 That is right when the loop that calls `frame()` runs on the thread that registered the backend, as in the usual window loop.
+When the frames run on another thread, the bridge warns once at the first frame: JOID then takes the wrong thread for the render thread.
 Before any backend, the registry holds a [[DirectThreadBridge]], which answers that every thread is the render thread and runs every task at once; a backend whose `createThreadBridge()` returns `null` keeps it.
 
 ## Write your own when the engine owns the render thread

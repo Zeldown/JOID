@@ -81,6 +81,8 @@ Extend [[RenderBridge]]: it keeps the matrices and the state, and your subclass 
 ```
 
 `drawPrimitive` applies the whole state at each draw: the core changed it since the previous draw without telling you.
+For the same reason, `suspend` runs the drawing of a host as is: the next draw applies the state of JOID again.
+`raster` targets the framebuffer at the given size and requires an open frame, like every draw.
 [Render bridge](/build/bridges/render/) lists every rule a draw respects, and [Render pipeline](/build/pipeline/) explains what reaches it.
 
 ### Textures
@@ -121,7 +123,7 @@ Both are optional.
 Without audio, delete the `createAudioBridge()` override of the template: the default returns `null`.
 
 - Audio: return an [[IAudioBridge]] from `createAudioBridge()` ([Audio bridge](/build/bridges/audio/)), or an [[AlAudioBridge]] on OpenAL ([base-openal](/build/base-modules/openal/)).
-- Render thread: return an [[IThreadBridge]] from `createThreadBridge()` when your engine draws on a thread that does not call `register()` ([Thread bridge](/build/bridges/thread/)).
+- Render thread: return an [[IThreadBridge]] from `createThreadBridge()` when your engine draws on a thread that does not call `register()`: the default bridge warns once when the frames run on another thread ([Thread bridge](/build/bridges/thread/)).
 
 ## Register the defaults
 

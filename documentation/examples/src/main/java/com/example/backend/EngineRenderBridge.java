@@ -94,6 +94,11 @@ public final class EngineRenderBridge extends RenderBridge {
 	}
 
 	@Override
+	public void suspend(final Runnable draw) {
+		draw.run();
+	}
+
+	@Override
 	public void raster(final IFrameBuffer target, final int width, final int height, final Runnable draw) {
 		super.requireFrame();
 		this.device.target(((EngineFrameBuffer) target).getTarget());

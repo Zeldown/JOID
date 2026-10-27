@@ -9,7 +9,7 @@ sidebar:
 The render bridge draws every pixel of JOID: it clears targets, draws triangles and lines, and creates textures, framebuffers and shaders.
 The core calls it through [[IRenderBridge]], read from [[BridgeHandler#RENDER]].
 
-Extend [[RenderBridge]] rather than implementing the interface: it keeps the matrices, the render state and the frame in Java, and leaves you seven methods to write.
+Extend [[RenderBridge]] rather than implementing the interface: it keeps the matrices, the render state and the frame in Java, and leaves you nine methods to write.
 [Writing a backend](/build/writing-a-backend/#implement-the-render-bridge) builds a complete one; [Render pipeline](/build/pipeline/) explains what reaches it.
 
 ## Required
@@ -25,6 +25,8 @@ What your subclass of [[RenderBridge]] implements.
 | [[IRenderBridge#createTexture]] | Returns an empty texture, a subclass of [[Texture]]. |
 | [[IRenderBridge#createFrameBuffer]] | Returns a framebuffer of that size in pixels, a subclass of [[FrameBufferHandle]]. |
 | [[IRenderBridge#createShader]] | Returns a shader for two parsed stages and a blend state, a subclass of [[Shader]]. |
+| [[IRenderBridge#suspend]] | Runs a drawing of a host with its own state inside a JOID frame: it sets the state and the pass in progress aside, runs the drawing, then takes them back ([Embedding in a host](/build/embedding-in-a-host/#let-the-host-draw-inside-a-frame)). |
+| [[IRenderBridge#raster]] | Runs a drawing into a JOID framebuffer at the given size in pixels, for [[DrawUtils#RASTER]], and requires an open frame. |
 
 ## Provided
 
@@ -50,8 +52,6 @@ The members with a default, which you override when your API needs it:
 |---|---|---|
 | [[RenderBridge#beginFrameCommands]], [[RenderBridge#submitFrameCommands]] | Do nothing. | Start recording and submit, for an API that records commands per frame, or give a host its state back. |
 | [[IRenderBridge#canWrap]] | Returns `true`. | Return `false` for a texture wrap your API lacks: JOID then samples with `CLAMP_TO_EDGE`, and emulates a refused `CLAMP_TO_BORDER` in the shaders. |
-| [[IRenderBridge#suspend]] | Runs the drawing as is. | Let a host draw with its own state inside a JOID frame ([Embedding in a host](/build/embedding-in-a-host/#let-the-host-draw-inside-a-frame)). |
-| [[IRenderBridge#raster]] | Calls `suspend`. | Run a drawing into a JOID framebuffer at its pixel size, for [[DrawUtils#RASTER]]. |
 
 ## Guarantees
 

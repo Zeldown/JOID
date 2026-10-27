@@ -22,4 +22,5 @@ Runs the task at once on the render thread; from another thread, queues it for t
 ## runTasks()
 
 Runs the queued tasks in order, including the tasks queued while it runs.
+Called from another thread than the one that created the bridge, it warns once.
 A task that throws a `RuntimeException` prints one warning per kind of failure, and the next tasks still run.
