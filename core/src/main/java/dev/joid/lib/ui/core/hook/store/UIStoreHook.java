@@ -1,6 +1,7 @@
 package dev.joid.lib.ui.core.hook.store;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
@@ -38,7 +39,7 @@ public final class UIStoreHook {
 			final JsonObject json = JsonFiles.read(file, "the store starts from init()");
 			if (json != null) {
 				try {
-					store.fromJson(UIStoreHook.GSON.fromJson(json, Map.class));
+					store.fromJson((Map<String, Object>) UIStoreHook.restore(UIStoreHook.GSON.fromJson(json, Map.class)));
 				} catch (final RuntimeException exception) {
 					JOIDLog.warnOnce("UIStore.fromJson." + clazz.getName() + "." + exception.getClass().getName(), "The store " + clazz.getName() + " cannot be restored from " + file.getAbsolutePath() + " (" + exception + "), it starts from init(): catch the exception inside fromJson() to handle it", exception);
 					JsonFiles.keep(file, exception.toString(), "the store starts from init()");
@@ -102,6 +103,17 @@ public final class UIStoreHook {
 
 	private static File getFile(final UIStore store) {
 		return new File(new File(JOIDEnv.getDataDir(), "store"), UIStoreHook.getId(store) + ".store");
+	}
+
+	private static Object restore(final Object value) {
+		if (value instanceof Map) {
+			((Map<Object, Object>) value).replaceAll((key, entry) -> UIStoreHook.restore(entry));
+		} else if (value instanceof List) {
+			((List<Object>) value).replaceAll(UIStoreHook::restore);
+		} else if ("NaN".equals(value) || "Infinity".equals(value) || "-Infinity".equals(value)) {
+			return Double.valueOf((String) value);
+		}
+		return value;
 	}
 
 }
