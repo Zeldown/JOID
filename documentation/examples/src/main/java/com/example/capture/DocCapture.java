@@ -8,14 +8,17 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -30,13 +33,16 @@ public final class DocCapture {
 
 	private static final int MASK = 0xFFFF00FF;
 
+	private static final Set<String> SETTINGS = new HashSet<>(Arrays.asList("dev", "resize", "scale", "mask", "unmask"));
+
 	private DocCapture() {}
 
 	public static void main(final String[] arguments) throws IOException {
 		Locale.setDefault(Locale.ROOT);
 		final File scenarios = new File(arguments[0]);
 		final File output = new File(arguments[1]);
-		final File[] files = scenarios.listFiles((parent, name) -> name.endsWith(".txt") && (arguments.length < 3 || name.equals(arguments[2] + ".txt")));
+		final List<String> names = arguments.length < 3 ? null : Arrays.asList(arguments[2].split(","));
+		final File[] files = scenarios.listFiles((parent, name) -> name.endsWith(".txt") && (names == null || names.contains(name.substring(0, name.length() - 4))));
 		if (files == null || files.length == 0) {
 			throw new IllegalArgumentException("No capture scenario in " + scenarios + (arguments.length < 3 ? "" : " named " + arguments[2]));
 		}
@@ -71,15 +77,55 @@ public final class DocCapture {
 		final Map<String, double[]> pointers = DocCapture.trackPointer(commands, mouse);
 		final Map<String, List<int[]>> masks = DocCapture.trackRegions(commands, "mask");
 		final Map<String, List<int[]>> mirrors = DocCapture.trackRegions(commands, "mirror");
-		final Map<String, SnapshotImage> shots = runner.execute(commands.stream().filter(line -> !line.trim().startsWith("mirror ")).toArray(String[]::new));
-		for (final Map.Entry<String, SnapshotImage> shot : shots.entrySet()) {
-			final File target = new File(output, shot.getKey() + ".png");
-			shot.getValue().write(target);
-			DocCapture.paintMasks(target, masks.get(shot.getKey()));
-			DocCapture.paintMirrors(target, mirrors.get(shot.getKey()));
-			DocCapture.drawPointer(target, pointers.get(shot.getKey()));
-			System.out.println(file.getName() + " -> " + shot.getKey() + ".png");
+		output.mkdirs();
+		int count = 0;
+		for (final List<String> part : DocCapture.split(commands)) {
+			final Map<String, SnapshotImage> shots = runner.execute(part.toArray(new String[0]));
+			DocCapture.write(shots, output, pointers, masks, mirrors);
+			count += shots.size();
 		}
+		System.out.println(file.getName() + " -> " + count + " shots");
+	}
+
+	private static List<List<String>> split(final List<String> commands) {
+		final List<List<String>> parts = new ArrayList<>();
+		final List<String> settings = new ArrayList<>();
+		List<String> part = new ArrayList<>();
+		boolean shot = false;
+		for (final String line : commands) {
+			final String command = line.trim().split("\\s+")[0];
+			if (command.equals("mirror")) {
+				continue;
+			}
+			if (command.equals("ui") && shot) {
+				parts.add(part);
+				part = new ArrayList<>(settings);
+				shot = false;
+			}
+			if (DocCapture.SETTINGS.contains(command)) {
+				settings.add(line);
+			}
+			shot |= command.equals("shot");
+			part.add(line);
+		}
+		parts.add(part);
+		return parts;
+	}
+
+	private static void write(final Map<String, SnapshotImage> shots, final File output, final Map<String, double[]> pointers, final Map<String, List<int[]>> masks, final Map<String, List<int[]>> mirrors) {
+		shots.entrySet().parallelStream().forEach(shot -> {
+			final SnapshotImage snapshot = shot.getValue();
+			final BufferedImage image = new BufferedImage(snapshot.getWidth(), snapshot.getHeight(), BufferedImage.TYPE_INT_RGB);
+			image.setRGB(0, 0, snapshot.getWidth(), snapshot.getHeight(), snapshot.getPixels(), 0, snapshot.getWidth());
+			DocCapture.paintMasks(image, masks.get(shot.getKey()));
+			DocCapture.paintMirrors(image, mirrors.get(shot.getKey()));
+			DocCapture.drawPointer(image, pointers.get(shot.getKey()));
+			try {
+				ImageIO.write(image, "png", new File(output, shot.getKey() + ".png"));
+			} catch (final IOException exception) {
+				throw new UncheckedIOException(exception);
+			}
+		});
 	}
 
 	private static Map<String, double[]> trackPointer(final List<String> commands, final double[] mouse) {
@@ -122,12 +168,7 @@ public final class DocCapture {
 		return regions;
 	}
 
-	private static void paintMasks(final File file, final List<int[]> masks) throws IOException {
-		if (masks.isEmpty()) {
-			return;
-		}
-
-		final BufferedImage image = ImageIO.read(file);
+	private static void paintMasks(final BufferedImage image, final List<int[]> masks) {
 		for (final int[] mask : masks) {
 			final int color = DocCapture.getSurrounding(image, mask);
 			for (int y = Math.max(0, mask[1]); y < Math.min(image.getHeight(), mask[1] + mask[3]); y++) {
@@ -136,15 +177,9 @@ public final class DocCapture {
 				}
 			}
 		}
-		ImageIO.write(image, "png", file);
 	}
 
-	private static void paintMirrors(final File file, final List<int[]> mirrors) throws IOException {
-		if (mirrors.isEmpty()) {
-			return;
-		}
-
-		final BufferedImage image = ImageIO.read(file);
+	private static void paintMirrors(final BufferedImage image, final List<int[]> mirrors) {
 		for (final int[] mirror : mirrors) {
 			final int[] pixels = image.getRGB(mirror[0], mirror[1], mirror[2], mirror[3], null, 0, mirror[2]);
 			for (int y = 0; y < mirror[3]; y++) {
@@ -153,7 +188,6 @@ public final class DocCapture {
 				}
 			}
 		}
-		ImageIO.write(image, "png", file);
 	}
 
 	private static int getSurrounding(final BufferedImage image, final int[] mask) {
@@ -169,8 +203,7 @@ public final class DocCapture {
 		return counts.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(0xFFDDDDDD);
 	}
 
-	private static void drawPointer(final File file, final double[] pointer) throws IOException {
-		final BufferedImage image = ImageIO.read(file);
+	private static void drawPointer(final BufferedImage image, final double[] pointer) {
 		final int x = (int) Math.round(pointer[0]);
 		final int y = (int) Math.round(pointer[1]);
 		if (x < 0 || y < 0 || x >= image.getWidth() || y >= image.getHeight()) {
@@ -193,7 +226,6 @@ public final class DocCapture {
 		} finally {
 			graphics.dispose();
 		}
-		ImageIO.write(image, "png", file);
 	}
 
 }

@@ -13,7 +13,7 @@ const DIRECTIVE = /^#\s*(crop|pad|still|hold)\s+(\S+)\s+(.*)$/;
 const FILM = /^#\s*film\s+(\S+)(?:\s+(\d+))?\s*$/;
 
 const args = process.argv.slice(2);
-const only = args.find((arg) => !arg.startsWith('--'));
+const only = args.filter((arg) => !arg.startsWith('--'));
 
 function coordinate(value) {
 	return String(Number(value.toFixed(3)));
@@ -110,8 +110,8 @@ function scenarios() {
 function render() {
 	rmSync(RAW, { recursive: true, force: true });
 	const tasks = [':documentation-examples:captures', '-q'];
-	if (only) {
-		tasks.push(`-Pcapture=${only}`);
+	if (only.length > 0) {
+		tasks.push(`-Pcapture=${only.join(',')}`);
 	}
 	try {
 		gradle(...tasks);
