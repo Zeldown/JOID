@@ -44,15 +44,15 @@ A node that is not visible skips its drawing callbacks (`onMount`, `onDraw`, `on
 
 `onInit` prepares the state of a node, and `onUpdate` changes it on every frame:
 
-```java file="com/example/describing/lifecycle/LifecycleUI.java" region="frames"
+```java file="com/example/describing/lifecycle/LifecycleUI.java" region="timer"
 ```
 
 <figure>
 
-![A light grey card that shows a count of frames in grey](/captures/describing-lifecycle-frames.webp)
+![A light grey card that shows in grey how long it has been in the UI, in seconds; the time grows, then starts again at 0 when the UI opens again](/captures/describing-lifecycle-frames.webp)
 
 <figcaption>
-The count starts again at 0 each time the card joins the UI.
+The time starts again at 0 each time the card joins the UI, here when the UI opens again.
 </figcaption>
 </figure>
 
@@ -139,16 +139,16 @@ Show how many times the frame card of `LifecycleUI` joined the UI.
 
 </details>
 
-**Pause the count.**
-Make the frame count of `LifecycleUI` stop while the card is hidden with `visible(false)`.
+**Pause the timer.**
+Make the timer of `LifecycleUI` stop while the card is hidden with `visible(false)`.
 
 <details>
 <summary>Solution</summary>
 
-`onUpdate` runs for a hidden node too, while the drawing callbacks do not: count in `onDraw` instead.
+`onUpdate` runs for a hidden node too, while the drawing callbacks do not: add the frame time in `onDraw` instead.
 
 ```java fragment
-.onDraw(event -> this.frames++)
+.onDraw(event -> this.open += super.getFrameTime() / 1000D)
 ```
 
 </details>

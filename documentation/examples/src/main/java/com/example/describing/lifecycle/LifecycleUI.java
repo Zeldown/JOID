@@ -25,7 +25,7 @@ public class LifecycleUI extends UI {
 
 	private static final ScheduledExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor(ThreadUtils.daemonFactory("poll"));
 
-	private long               frames;
+	private double             open;
 	private volatile long      checks;
 	private ScheduledFuture<?> poll;
 
@@ -33,15 +33,15 @@ public class LifecycleUI extends UI {
 	public void init() {
 		final TextInfo info = TextInfo.create(ExampleFont.REGULAR, 32F).color(LifecycleUI.INK);
 
-		// #region frames
+		// #region timer
 		RectNode
 		.create(660, 290, 600, 160)
 		.color(LifecycleUI.PLACEHOLDER)
-		.onInit(event -> this.frames = 0L)
-		.onUpdate(event -> this.frames++)
+		.onInit(event -> this.open = 0D)
+		.onUpdate(event -> this.open += super.getFrameTime() / 1000D)
 		.body(card -> TextNode
 			.create(300, 80)
-			.text(Text.create(() -> this.frames + " frames", info))
+			.text(Text.create(() -> String.format("%.1f s", this.open), info))
 			.anchor(Align.CENTER)
 			.attach(card))
 		.attach(this);

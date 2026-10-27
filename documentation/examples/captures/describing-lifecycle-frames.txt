@@ -1,4 +1,7 @@
 # crop describing-lifecycle-frames 660 290 600 160
+# still describing-lifecycle-frames 40
 ui com.example.describing.lifecycle.LifecycleUI
-wait 100
-shot describing-lifecycle-frames
+# film describing-lifecycle-frames
+wait 1500
+ui com.example.describing.lifecycle.LifecycleUI
+wait 1500
