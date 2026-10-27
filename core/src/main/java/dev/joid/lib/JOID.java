@@ -14,6 +14,7 @@ import dev.joid.internal.JOIDLog;
 import dev.joid.internal.font.DevFont;
 import dev.joid.lib.bridge.BridgeHandler;
 import dev.joid.lib.bridge.ui.IUIBridge;
+import dev.joid.lib.bridge.ui.UIBridge;
 import dev.joid.lib.cache.FileCache;
 import dev.joid.lib.ui.core.UI;
 import dev.joid.lib.ui.core.hook.property.UIPropertyHook;
@@ -113,8 +114,9 @@ public final class JOID {
 	}
 
 	public static <T extends UI> T getUi(final @NonNull Class<T> uiClass) {
-		for (final IUIBridge bridge : BridgeHandler.UI.getBridgeList()) {
-			for (final UI ui : bridge.getUiList()) {
+		final List<UIBridge> bridgeList = BridgeHandler.UI.getBridgeList();
+		for (int i = bridgeList.size() - 1; i >= 0; i--) {
+			for (final UI ui : bridgeList.get(i).getUiList()) {
 				if (uiClass.isInstance(ui)) {
 					return (T) ui;
 				}

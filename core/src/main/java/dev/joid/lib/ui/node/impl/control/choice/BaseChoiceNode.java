@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
+import dev.joid.internal.RangeList;
 import dev.joid.lib.signal.Signal;
 import dev.joid.lib.ui.binding.InteractiveValue;
 import dev.joid.lib.ui.event.EventListener;
@@ -23,21 +24,20 @@ public abstract class BaseChoiceNode<V> extends Node {
 
 	private final transient InteractiveValue<V> choiceValue;
 
-	private final List<V> valueList;
-
-	private V   value;
-	private int pendingIndex;
+	private V       value;
+	private int     pendingIndex;
+	private List<V> valueList;
 
 	protected BaseChoiceNode(final double x, final double y, final double width, final double height) {
 		super(x, y, width, height);
 
-		this.valueList    = new ArrayList<>();
+		this.valueList    = Collections.emptyList();
 		this.pendingIndex = -1;
 		this.choiceValue  = InteractiveValue.create(super.getBindings(), "value", () -> this.value, (final V value) -> {
 			this.value = value;
 			this.pendingIndex = -1;
 		})
-		.clamp(value -> this.valueList.isEmpty() || this.valueList.contains(value) ? value : this.valueList.contains(this.value) ? this.value : this.valueList.get(0))
+		.clamp(value -> this.valueList.isEmpty() || this.valueList.contains(value) ? value : this.fallback(value))
 		.events(BaseChoiceNode.BEFORE_CHANGE, (previous, value) -> NodeChangeEvent.Pre.create(this, previous, value), BaseChoiceNode.CHANGE, (previous, value) -> NodeChangeEvent.Post.create(this, previous, value));
 
 		super.<BaseChoiceNode<V>>require("values", "call values(...) before attaching it", node -> !node.valueList.isEmpty());
@@ -104,6 +104,10 @@ public abstract class BaseChoiceNode<V> extends Node {
 
 	protected void createOptions() {}
 
+	protected V fallback(final V value) {
+		return this.valueList.contains(this.value) ? this.value : this.valueList.get(0);
+	}
+
 	private void select(final int index) {
 		if (index < 0 || index >= this.valueList.size()) {
 			this.pendingIndex = index;
@@ -132,8 +136,7 @@ public abstract class BaseChoiceNode<V> extends Node {
 			this.requireOption(values, this.value);
 		}
 
-		this.valueList.clear();
-		this.valueList.addAll(values);
+		this.valueList = values instanceof RangeList ? values : new ArrayList<>(values);
 		this.createOptions();
 		if (valid) {
 			this.choose(values.get(index));

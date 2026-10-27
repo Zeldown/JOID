@@ -302,6 +302,14 @@ public class TextInfoTest {
 	}
 
 	@Test
+	public void derivesItsAutomaticShadowFromItsCurrentColor() {
+		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).color(Color.WHITE).shadow().color(Color.RED);
+		Assert.assertEquals(Color.RED.darker(0.3F).getGreenF(), info.getShadowColor().getGreenF(), 0F);
+		Assert.assertEquals(Color.BLUE.darker(0.3F).getRedF(), info.withColor(Color.BLUE).getShadowColor().getRedF(), 0F);
+		Assert.assertSame(Color.BLUE, info.withShadow(Color.BLUE).color(Color.WHITE).getShadowColor());
+	}
+
+	@Test
 	public void unlocksItsCopies() {
 		final TextInfo info = TextInfo.create(TextInfoTest.FONT, 20F).lock();
 		final TextInfo copy = info.withFontSize(40F).italic(true);

@@ -274,6 +274,21 @@ public class JOIDTest {
 	}
 
 	@Test
+	public void findsTheUiOfItsMostPrioritaryBridgeFirst() {
+		final RoutingBridge other = new RoutingBridge(MenuUI.class);
+		final MenuUI below = new MenuUI();
+		final MenuUI above = new MenuUI();
+		this.bridges.open(below);
+		BridgeHandler.UI.register(other, 1);
+		try {
+			other.add(above);
+			Assert.assertSame(above, JOID.getUi(MenuUI.class));
+		} finally {
+			BridgeHandler.UI.unregister(other);
+		}
+	}
+
+	@Test
 	public void findsNoUiWithoutBridge() {
 		this.bridges.open(new MenuUI());
 		BridgeHandler.UI.unregister(this.bridges.getUi());

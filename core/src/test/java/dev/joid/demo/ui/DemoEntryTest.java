@@ -4,6 +4,9 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import dev.joid.demo.ui.simple.UIDemoSimple;
+import dev.joid.lib.ui.core.UI;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 public class DemoEntryTest {
 
@@ -28,8 +31,51 @@ public class DemoEntryTest {
 	}
 
 	@Test
+	public void namesTheDemoThatCannotBeCreated() {
+		try {
+			DemoEntry.create(ArgumentUI.class).getAction().run();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The demo ArgumentUI cannot be created: give its UI a constructor without argument", exception.getMessage());
+		}
+	}
+
+	@Test
+	public void namesTheExceptionThrownByTheConstructorOfADemo() {
+		try {
+			DemoEntry.create(ThrowingUI.class).getAction().run();
+			Assert.fail();
+		} catch (final IllegalStateException exception) {
+			Assert.assertEquals("The demo ThrowingUI cannot be created: its constructor failed (java.lang.IllegalStateException: Broken), fix the constructor from this error", exception.getMessage());
+			Assert.assertEquals("Broken", exception.getCause().getMessage());
+		}
+	}
+
+	@Test
 	public void listsTheOverlayToggleInTheMenu() {
 		Assert.assertTrue(UIDemoChoice.getEntries().stream().anyMatch(entry -> "UIDemoOverlay: off".equals(entry.getText())));
+	}
+
+	@Getter
+	@RequiredArgsConstructor
+	public static final class ArgumentUI extends UI {
+
+		private final int argument;
+
+		@Override
+		public void init() {}
+
+	}
+
+	public static final class ThrowingUI extends UI {
+
+		public ThrowingUI() {
+			throw new IllegalStateException("Broken");
+		}
+
+		@Override
+		public void init() {}
+
 	}
 
 }

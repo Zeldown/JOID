@@ -1,5 +1,7 @@
 package dev.joid.demo.ui;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.BooleanSupplier;
 
 import dev.joid.demo.ui.core.transition.DemoPushTransition;
@@ -22,13 +24,21 @@ public final class DemoEntry {
 
 	public static @NonNull DemoEntry create(final @NonNull Class<? extends UI> clazz) {
 		return new DemoEntry(clazz.getSimpleName(), () -> {
+			final UI ui;
 			try {
-				final UI ui = clazz.newInstance();
-				ui.transition(DemoPushTransition.create());
-				JOID.open(ui);
+				final Constructor<? extends UI> constructor = clazz.getDeclaredConstructor();
+				constructor.setAccessible(true);
+				ui = constructor.newInstance();
+			} catch (final NoSuchMethodException exception) {
+				throw new IllegalStateException("The demo " + clazz.getSimpleName() + " cannot be created: give its UI a constructor without argument", exception);
+			} catch (final InvocationTargetException exception) {
+				throw new IllegalStateException("The demo " + clazz.getSimpleName() + " cannot be created: its constructor failed (" + exception.getCause() + "), fix the constructor from this error", exception.getCause());
 			} catch (final ReflectiveOperationException exception) {
-				throw new IllegalStateException("The demo " + clazz.getSimpleName() + " cannot be created (" + exception + "), give its UI a public constructor without argument", exception);
+				throw new IllegalStateException("The demo " + clazz.getSimpleName() + " cannot be created (" + exception + "), give its UI a constructor without argument", exception);
 			}
+
+			ui.transition(DemoPushTransition.create());
+			JOID.open(ui);
 		}).hover(clazz.getName());
 	}
 

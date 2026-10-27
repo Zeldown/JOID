@@ -31,6 +31,10 @@ public final class FrameThreadBridge implements IThreadBridge {
 	}
 
 	public void runTasks() {
+		if (!this.isRenderThread()) {
+			JOIDLog.warnOnce("FrameThreadBridge.thread", "The FrameThreadBridge was created on the thread " + this.thread.getName() + " but its frames run on the thread " + Thread.currentThread().getName() + ": create it on the render thread, or JOID takes the render thread for another thread");
+		}
+
 		Runnable task;
 		while ((task = this.taskQueue.poll()) != null) {
 			try {

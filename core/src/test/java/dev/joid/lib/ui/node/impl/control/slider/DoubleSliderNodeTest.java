@@ -5,6 +5,8 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.signal.Signal;
+
 public class DoubleSliderNodeTest {
 
 	@Test
@@ -17,6 +19,21 @@ public class DoubleSliderNodeTest {
 	@Test
 	public void stopsBeforeAStepPastItsMaximum() {
 		Assert.assertEquals(Arrays.asList(0D, 0.5D), new Slider().range(0D, 0.75D, 0.5D).getValueList());
+	}
+
+	@Test
+	public void spansAWideRangeWithoutListingEachValue() {
+		final Slider slider = new Slider().range(0D, 1E9D, 1D).value(123456789D);
+		Assert.assertEquals(1000000001, slider.getValueList().size());
+		Assert.assertEquals(123456789, slider.getValueIndex());
+		Assert.assertEquals(1E9D, slider.getValueList().get(1000000000), 0D);
+	}
+
+	@Test
+	public void takesTheNearestStepOfAValueOffItsSteps() {
+		Assert.assertEquals(0.25D, new Slider().<Slider>range(0D, 1D, 0.25D).value(new Signal<>(0.3D)).getValue(), 0D);
+		Assert.assertEquals(1D, new Slider().<Slider>range(0D, 1D, 0.25D).value(new Signal<>(0.9D)).getValue(), 0D);
+		Assert.assertEquals(0D, new Slider().<Slider>range(0D, 1D, 0.25D).value(new Signal<>(-4D)).getValue(), 0D);
 	}
 
 	@Test(expected = IllegalArgumentException.class)

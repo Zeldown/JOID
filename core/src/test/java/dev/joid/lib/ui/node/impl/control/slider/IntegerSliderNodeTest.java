@@ -5,6 +5,8 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 
+import dev.joid.lib.signal.Signal;
+
 public class IntegerSliderNodeTest {
 
 	@Test
@@ -19,6 +21,31 @@ public class IntegerSliderNodeTest {
 		final Slider slider = new Slider().range(0, 10, 4);
 		Assert.assertEquals(Arrays.asList(0, 4, 8), slider.getValueList());
 		Assert.assertEquals(0, slider.getValue().intValue());
+	}
+
+	@Test
+	public void spansAWholeRangeWithoutListingEachValue() {
+		final Slider slider = new Slider().range(1, Integer.MAX_VALUE).value(1000000);
+		Assert.assertEquals(Integer.MAX_VALUE, slider.getValueList().size());
+		Assert.assertEquals(999999, slider.getValueIndex());
+		Assert.assertEquals(Integer.MAX_VALUE, slider.getValueList().get(Integer.MAX_VALUE - 1).intValue());
+	}
+
+	@Test
+	public void refusesARangeOfMoreValuesThanAListHolds() {
+		try {
+			new Slider().range(0, Integer.MAX_VALUE);
+			Assert.fail("A list holds at most Integer.MAX_VALUE values");
+		} catch (final IllegalArgumentException expected) {
+			Assert.assertEquals("The slider range from 0 to 2147483647 by 1 holds more than 2147483647 values, pass a narrower range or a larger step", expected.getMessage());
+		}
+	}
+
+	@Test
+	public void takesTheNearestOptionOfAValueOutsideItsOptions() {
+		Assert.assertEquals(8, new Slider().<Slider>range(0, 10, 4).value(new Signal<>(7)).getValue().intValue());
+		Assert.assertEquals(0, new Slider().<Slider>range(0, 10, 4).value(new Signal<>(-3)).getValue().intValue());
+		Assert.assertEquals(8, new Slider().<Slider>range(0, 10, 4).value(new Signal<>(50)).getValue().intValue());
 	}
 
 	@Test

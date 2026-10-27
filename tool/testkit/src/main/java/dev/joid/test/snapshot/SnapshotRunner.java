@@ -283,6 +283,8 @@ public final class SnapshotRunner {
 			final Constructor<?> constructor = Class.forName(type).getDeclaredConstructor();
 			constructor.setAccessible(true);
 			ui = (UI) constructor.newInstance();
+		} catch (final ClassNotFoundException e) {
+			throw new IllegalArgumentException("The snapshot UI " + type + " cannot be created: the class does not exist, check the name and the classpath", e);
 		} catch (final InvocationTargetException e) {
 			throw new IllegalArgumentException("The snapshot UI " + type + " cannot be created: its constructor threw " + e.getCause(), e.getCause());
 		} catch (final ReflectiveOperationException e) {

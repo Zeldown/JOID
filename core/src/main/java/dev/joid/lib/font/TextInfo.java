@@ -32,11 +32,14 @@ public final class TextInfo extends LockableValue<TextInfo> {
 	private Float shadowY;
 	private Float shadowTint;
 
+	@Getter(AccessLevel.NONE)
+	private boolean shadowDerived;
+
 	private ITextMarkup[] markups;
 	private ITextEffect[] effects;
 
 	private TextInfo(final IFont font, final float fontSize) {
-		this(font, fontSize, FontWeight.REGULAR, 0F, 0F, Color.BLACK, true, false, null, null, null, null, null, new ITextEffect[0]);
+		this(font, fontSize, FontWeight.REGULAR, 0F, 0F, Color.BLACK, true, false, null, null, null, null, false, null, new ITextEffect[0]);
 	}
 
 	public static @NonNull TextInfo create(final @NonNull IFont font, final float fontSize) {
@@ -69,6 +72,10 @@ public final class TextInfo extends LockableValue<TextInfo> {
 
 	public float getShadowY() {
 		return this.shadowY != null ? this.shadowY : this.fontSize / 13.5F;
+	}
+
+	public Color getShadowColor() {
+		return this.shadowDerived ? this.color.darker(0.3F) : this.shadowColor;
 	}
 
 	public @NonNull List<ITextEffect> getEffects() {
@@ -148,11 +155,17 @@ public final class TextInfo extends LockableValue<TextInfo> {
 	}
 
 	public @NonNull TextInfo shadow() {
-		return super.mutate("withShadow", () -> this.shadowColor = this.color.darker(0.3F));
+		return super.mutate("withShadow", () -> {
+			this.shadowColor   = null;
+			this.shadowDerived = true;
+		});
 	}
 
 	public @NonNull TextInfo shadow(final Color color) {
-		return super.mutate("withShadow", () -> this.shadowColor = color);
+		return super.mutate("withShadow", () -> {
+			this.shadowColor   = color;
+			this.shadowDerived = false;
+		});
 	}
 
 	public @NonNull TextInfo shadow(final float x, final float y) {
@@ -224,7 +237,7 @@ public final class TextInfo extends LockableValue<TextInfo> {
 
 	@Override
 	public @NonNull TextInfo copy() {
-		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.shadowTint, this.markups, this.effects);
+		return new TextInfo(this.font, this.fontSize, this.weight, this.letterSpacing, this.lineHeight, this.color, this.colored, this.italic, this.shadowColor, this.shadowX, this.shadowY, this.shadowTint, this.shadowDerived, this.markups, this.effects);
 	}
 
 	@Override

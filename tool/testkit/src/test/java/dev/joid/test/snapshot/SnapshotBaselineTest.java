@@ -13,9 +13,24 @@ public class SnapshotBaselineTest {
 	@Rule
 	public final TemporaryFolder folder = new TemporaryFolder();
 
-	@Test(expected = ClassNotFoundException.class)
-	public void refusesAnUnknownBackend() throws Exception {
-		SnapshotBaseline.main(new String[] {"dev.joid.test.snapshot.MissingBackend", this.folder.getRoot().getPath()});
+	@Test
+	public void refusesAnUnknownBackend() {
+		try {
+			SnapshotBaseline.main(new String[] {"dev.joid.test.snapshot.MissingBackend", this.folder.getRoot().getPath()});
+			Assert.fail();
+		} catch (final IllegalArgumentException exception) {
+			Assert.assertEquals("The snapshot backend dev.joid.test.snapshot.MissingBackend cannot be created: the class does not exist, check the name and the classpath", exception.getMessage());
+		}
+	}
+
+	@Test
+	public void refusesABackendWithoutConstructorWithoutArguments() {
+		try {
+			SnapshotBaseline.main(new String[] {Integer.class.getName(), this.folder.getRoot().getPath()});
+			Assert.fail();
+		} catch (final IllegalArgumentException exception) {
+			Assert.assertEquals("The snapshot backend java.lang.Integer cannot be created: give it a constructor without arguments, of any visibility", exception.getMessage());
+		}
 	}
 
 	@Test(expected = ClassCastException.class)
@@ -24,7 +39,7 @@ public class SnapshotBaselineTest {
 	}
 
 	@Test
-	public void clearsThePreviousShotsBeforeRendering() throws IOException, ReflectiveOperationException {
+	public void clearsThePreviousShotsBeforeRendering() throws IOException {
 		final File output = this.folder.newFolder("renders");
 		Assert.assertTrue(new File(output, "static-home.png").createNewFile());
 		Assert.assertTrue(new File(output, "notes.txt").createNewFile());

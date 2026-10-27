@@ -116,8 +116,8 @@ public class SliderNodeTest {
 		final Signal<Integer> volume = new Signal<>(50);
 		final IntegerSlider slider = new IntegerSlider().<IntegerSlider>range(0, 10).value(volume);
 		this.bridges.open(new NodeUI(slider)).frame();
-		Assert.assertEquals(0, slider.getValue().intValue());
-		Assert.assertEquals(0, volume.get().intValue());
+		Assert.assertEquals(10, slider.getValue().intValue());
+		Assert.assertEquals(10, volume.get().intValue());
 		slider.range(0, 100);
 		this.bridges.frame();
 		Assert.assertEquals(50, slider.getValue().intValue());

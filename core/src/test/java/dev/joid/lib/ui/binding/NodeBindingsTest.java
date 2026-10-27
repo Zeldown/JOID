@@ -36,7 +36,7 @@ public class NodeBindingsTest {
 	@Test
 	public void keepsTheValueOfTheGestureWhenTheBoundsOfItsControlsCannotAgree() {
 		final IntegerSignal signal = new IntegerSignal(50);
-		final Slider slider = this.slider(signal);
+		final SliderNodeTest.Slider slider = this.choices(signal);
 		final IntegerFieldNode field = this.field(signal).max(95);
 		this.bridges.open(new NodeUI(slider, field)).frame();
 		NodeBindingsTest.guard(signal);
@@ -141,7 +141,7 @@ public class NodeBindingsTest {
 	public void settlesOnTheValueItsControlsAgreeOn() {
 		final IntegerSignal signal = new IntegerSignal(50);
 		final IntegerFieldNode capped = this.field(signal).max(85);
-		final Slider slider = this.slider(signal);
+		final SliderNodeTest.Slider slider = this.choices(signal);
 		final IntegerFieldNode free = this.field(signal).max(100);
 		this.bridges.open(new NodeUI(capped, slider, free)).frame();
 		free.change(97);
@@ -558,7 +558,7 @@ public class NodeBindingsTest {
 	@Test
 	public void warnsOnceInDevModeWhenTheBoundsOfItsControlsCannotAgree() {
 		final IntegerSignal signal = new IntegerSignal(50);
-		final Slider slider = this.slider(signal);
+		final SliderNodeTest.Slider slider = this.choices(signal);
 		final IntegerFieldNode field = this.field(signal).max(95);
 		this.bridges.open(new NodeUI(slider, field)).frame();
 		NodeBindingsTest.guard(signal);
@@ -580,6 +580,10 @@ public class NodeBindingsTest {
 
 	private Slider slider(final IntegerSignal signal) {
 		return new Slider().<Slider>thumb(SliderNodeTest.thumb()).<Slider>range(0, 100, 10).value(signal);
+	}
+
+	private SliderNodeTest.Slider choices(final IntegerSignal signal) {
+		return new SliderNodeTest.Slider().<SliderNodeTest.Slider>thumb(SliderNodeTest.thumb()).<SliderNodeTest.Slider>values(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100).value(signal);
 	}
 
 	private IntegerFieldNode field(final IntegerSignal signal) {

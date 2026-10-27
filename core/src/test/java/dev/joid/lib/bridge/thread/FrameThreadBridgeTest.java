@@ -104,6 +104,18 @@ public class FrameThreadBridgeTest {
 		Assert.assertTrue(text, text.contains("(java.lang.IllegalStateException: second)"));
 	}
 
+	@Test
+	public void warnsOnceWhenItsFramesRunOnAnotherThreadThanItsOwn() {
+		final List<FrameThreadBridge> threads = new ArrayList<>();
+		FrameThreadBridgeTest.fromWorker(() -> threads.add(new FrameThreadBridge()));
+		final String text = TestUtils.captureErr(() -> {
+			threads.get(0).runTasks();
+			threads.get(0).runTasks();
+		});
+		Assert.assertEquals("[JOID] The FrameThreadBridge was created on the thread worker but its frames run on the thread " + Thread.currentThread().getName() + ": create it on the render thread, or JOID takes the render thread for another thread" + System.lineSeparator(), text);
+		Assert.assertEquals("", TestUtils.captureErr(() -> new FrameThreadBridge().runTasks()));
+	}
+
 	private static void fromWorker(final Runnable task) {
 		final Thread worker = ThreadUtils.daemonThread(task, "worker");
 		worker.start();

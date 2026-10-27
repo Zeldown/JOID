@@ -111,6 +111,16 @@ public class SnapshotRunnerCommandTest {
 	}
 
 	@Test
+	public void namesTheUIClassThatDoesNotExist() {
+		try {
+			SnapshotRunnerCommandTest.runner.execute("ui dev.joid.test.snapshot.MissingUI");
+			Assert.fail();
+		} catch (final IllegalArgumentException exception) {
+			Assert.assertEquals("The snapshot UI dev.joid.test.snapshot.MissingUI cannot be created: the class does not exist, check the name and the classpath", exception.getMessage());
+		}
+	}
+
+	@Test
 	public void namesTheExceptionThrownByTheConstructorOfTheUI() {
 		try {
 			SnapshotRunnerCommandTest.runner.execute("ui " + ThrowingUI.class.getName());

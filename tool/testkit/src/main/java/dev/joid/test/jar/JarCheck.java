@@ -2,6 +2,7 @@ package dev.joid.test.jar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;
 
 import dev.joid.internal.JOIDLog;
@@ -40,12 +41,12 @@ public final class JarCheck {
 		System.exit(status);
 	}
 
-	private static UI open(final String variant, final Backend backend, final Runnable present) throws ReflectiveOperationException {
+	private static UI open(final String variant, final Backend backend, final Runnable present) {
 		if (JOIDEnv.isDevMode() == "prod".equals(variant) || JOIDEnv.isDemoMode() != "demo".equals(variant)) {
 			throw new IllegalStateException("The " + variant + " jar runs with the dev mode " + JOIDEnv.isDevMode() + " and the demo mode " + JOIDEnv.isDemoMode() + ": check the excludes of gradle/variants.gradle");
 		}
 
-		final UI ui = "demo".equals(variant) ? (UI) Class.forName("dev.joid.demo.ui.simple.UIDemoSimple").getDeclaredConstructor().newInstance() : new CheckUI();
+		final UI ui = "demo".equals(variant) ? JarCheck.createDemo() : new CheckUI();
 		JOID.open(ui);
 		for (int frame = 0; frame < 60; frame++) {
 			backend.frame();
@@ -56,6 +57,19 @@ public final class JarCheck {
 			throw new IllegalStateException(ui.getClass().getSimpleName() + " is no longer open after 60 frames of the " + variant + " jar, check what closes it in that jar");
 		}
 		return ui;
+	}
+
+	private static UI createDemo() {
+		final String type = "dev.joid.demo.ui.simple.UIDemoSimple";
+		try {
+			return (UI) Class.forName(type).getDeclaredConstructor().newInstance();
+		} catch (final ClassNotFoundException exception) {
+			throw new IllegalStateException("The demo UI " + type + " cannot be created: the class does not exist, check the name and the excludes of gradle/variants.gradle", exception);
+		} catch (final InvocationTargetException exception) {
+			throw new IllegalStateException("The demo UI " + type + " cannot be created: its constructor failed (" + exception.getCause() + "), fix the constructor from this error", exception.getCause());
+		} catch (final ReflectiveOperationException exception) {
+			throw new IllegalStateException("The demo UI " + type + " cannot be created: give it a public constructor without argument", exception);
+		}
 	}
 
 	private static final class CheckUI extends UI {

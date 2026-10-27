@@ -129,6 +129,21 @@ public class UIStoreHookTest {
 	}
 
 	@Test
+	public void leavesTheFileOfAnUnchangedStoreUntouched() throws IOException {
+		this.write("{\"value\":\"saved\"}");
+		final PermanentStore store = UIStoreHook.useStore(PermanentStore.class, PermanentStore::new);
+		Assert.assertTrue(this.file().setLastModified(1000L));
+		UIStoreHook.saveStore(store);
+		Assert.assertEquals(1000L, this.file().lastModified());
+		store.value = "changed";
+		UIStoreHook.saveStore(store);
+		Assert.assertEquals("{\"value\":\"changed\"}", this.read());
+		Assert.assertTrue(this.file().setLastModified(1000L));
+		UIStoreHook.saveStore(store);
+		Assert.assertEquals(1000L, this.file().lastModified());
+	}
+
+	@Test
 	public void writesIntoAnExistingStoreFolder() throws IOException {
 		Assert.assertTrue(new File(this.folder.getRoot(), "store").mkdirs());
 		UIStoreHook.saveStore(new PermanentStore());
