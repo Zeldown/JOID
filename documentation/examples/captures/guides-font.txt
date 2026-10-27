@@ -1,0 +1,5 @@
+# crop guides-font-card 640 320 640 440
+ui com.example.guides.FontGuideUI
+moveto 800 660 200
+wait 600
+shot guides-font-card
