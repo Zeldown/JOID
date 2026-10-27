@@ -93,7 +93,7 @@ An API whose `y` goes down flips its viewport, and the depth range is on [Depth]
 
 ## Textures and samplers
 
-In `drawPrimitive`, bind `resolveSampler(sampler)` on the unit of each sampler that the shader declares: the texture of the sampler, else the texture of the state, else a 1×1 opaque white texture.
+In `drawPrimitive`, bind `resolveSampler(sampler)` on the unit of each sampler that the shader declares ([Render bridge](/build/bridges/render/#provided) gives its fallbacks).
 Each returns a [[SamplerBinding]]: the texture, and a [[TextureSampling]] with its filter, its wrap and whether it has mip levels.
 
 - [[TextureSampling#isMipmapFiltered]] is `true` for a `LINEAR` filter on a texture with mip levels: sample with linear filtering between the levels too.

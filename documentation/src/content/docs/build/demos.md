@@ -12,13 +12,8 @@ They ship only in the demo jars, never to an application.
 
 ## Three jars per module
 
-The core and every backend of a release come in three variants, and `./gradlew build` in the template builds the same three for your backend:
-
-| Jar | Holds | For |
-|---|---|---|
-| `-prod` | JOID, without its dev tools | the applications that ship ([Installation](/use/get-started/installation/)) |
-| `-dev` | the prod content, the dev tools (inspector, reload, dev warnings and their font) and the `snapshot` packages of the base modules and of the backends | the developers of applications |
-| `-demo` | the dev content, the demo UIs with their fonts, models, textures and videos, and the demo windows | backend authors only |
+The core and every backend of a release come in three variants, and `./gradlew build` in the template builds the same three for your backend.
+The `-prod` and `-dev` jars are those of the applications ([Choose the dev or the prod jar](/use/get-started/installation/#choose-the-dev-or-the-prod-jar)); the `-demo` jar adds to the dev content the demo UIs with their fonts, models, textures and videos, and the demo windows, for backend authors only.
 
 The variants differ by package: `dev/joid/demo/**`, `assets/demo/**` and the `demo` packages of the base modules and of the backends leave the dev jar; the dev tools, `assets/dev/**` and the `snapshot` packages also leave the prod jar.
 

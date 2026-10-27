@@ -30,13 +30,8 @@ The snapshot backend uses it to hide extensions from the render bridge ([[Profil
 
 ### Context requests
 
-[[GlContextRequest]] sets the GLFW hints of the context before the window exists, with a 24-bit depth buffer and an 8-bit stencil buffer:
-
-| Request | Context |
-|---|---|
-| `COMPATIBILITY` | No version hint: the compatibility context that the driver gives. |
-| `CORE_32_FORWARD_COMPATIBLE` | OpenGL 3.2 core, forward-compatible. |
-| `CORE_33` | OpenGL 3.3 core, forward-compatible on macOS, which requires it. |
+[[GlContextRequest]] sets the GLFW hints of the context before the window exists; [Start a backend](/use/learn/running/backends/#start-a-backend) gives its three requests.
+On macOS, `CORE_33` also asks for a forward-compatible context, which macOS requires.
 
 ## OpenGL profiles
 
