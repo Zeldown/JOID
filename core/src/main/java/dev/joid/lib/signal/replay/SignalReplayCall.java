@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SignalReplayCall {
+final class SignalReplayCall {
 
 	private final StackTraceElement caller;
 	private final String            setter;

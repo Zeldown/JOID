@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SignalReplaySite {
+final class SignalReplaySite {
 
 	private final List<SignalReplaySlice> sliceList;
 	private final SignalReplayException   failure;

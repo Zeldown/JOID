@@ -12,7 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-public final class SignalReplayParts {
+final class SignalReplayParts {
 
 	private final List<Object> partList = new ArrayList<>();
 

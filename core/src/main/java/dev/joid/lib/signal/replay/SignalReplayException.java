@@ -5,7 +5,7 @@ import java.util.Locale;
 import lombok.Getter;
 
 @Getter
-public class SignalReplayException extends RuntimeException {
+class SignalReplayException extends RuntimeException {
 
 	private final Object[]            arguments;
 	private final SignalReplayFailure failure;

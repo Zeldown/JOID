@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public enum SignalReplayFailure {
+enum SignalReplayFailure {
 
 	CLASS_NOT_FOUND("the bytecode of %s cannot be read", "Use map(...) or a lambda."),
 	MEMBER_NOT_FOUND("%s does not exist at runtime", "Use map(...) or a lambda."),

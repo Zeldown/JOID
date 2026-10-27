@@ -76,7 +76,7 @@ public final class SignalReplay {
 		SignalReplay.SITES.clear();
 	}
 
-	public static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
+	static void warn(final SignalReplayCall call, final List<String> nameList, final int readCount, final SignalReplayException exception, final Object value) {
 		JOIDLog.devWarnOnce("SignalReplay." + call.getKey(), () -> call.describe(nameList, readCount) + " but cannot follow it: " + exception.getMessage() + ". The value stays \"" + value + "\". " + exception.getAdvice());
 	}
 

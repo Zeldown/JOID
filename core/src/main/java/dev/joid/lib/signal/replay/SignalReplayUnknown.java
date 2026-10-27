@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SignalReplayUnknown {
+final class SignalReplayUnknown {
 
 	private final Object key;
 	private final String description;

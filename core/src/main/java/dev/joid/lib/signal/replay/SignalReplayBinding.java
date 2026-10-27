@@ -16,7 +16,7 @@ public final class SignalReplayBinding<T> implements Supplier<T> {
 	private T       value;
 	private boolean started;
 
-	public SignalReplayBinding(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> readList, final T value) {
+	SignalReplayBinding(final SignalReplayCall call, final SignalReplayMatch match, final List<Signal<?>> readList, final T value) {
 		this.call     = call;
 		this.match    = match;
 		this.readList = readList;

@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SignalReplayMatch {
+final class SignalReplayMatch {
 
 	private final SignalReplaySlice      slice;
 	private final Object                 self;

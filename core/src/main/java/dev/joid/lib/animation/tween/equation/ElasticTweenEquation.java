@@ -20,10 +20,6 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 	public abstract @NonNull ElasticTweenEquation period(final float period);
 	public abstract @NonNull ElasticTweenEquation amplitude(final float amplitude);
 
-	private static String name(final String name, final ElasticTweenEquation easing, final ElasticTweenEquation standard) {
-		return easing.period == standard.period && easing.amplitude == standard.amplitude ? name : name + "(" + easing.period + ", " + easing.amplitude + ")";
-	}
-
 	private static ElasticTweenEquation in(final float period, final float amplitude) {
 		return new ElasticTweenEquation(period, amplitude) {
 
@@ -160,6 +156,10 @@ public abstract class ElasticTweenEquation extends TweenEquation {
 			}
 
 		};
+	}
+
+	private static String name(final String name, final ElasticTweenEquation easing, final ElasticTweenEquation standard) {
+		return easing.period == standard.period && easing.amplitude == standard.amplitude ? name : name + "(" + easing.period + ", " + easing.amplitude + ")";
 	}
 
 }

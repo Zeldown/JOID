@@ -18,10 +18,6 @@ public abstract class BackTweenEquation extends TweenEquation {
 
 	public abstract @NonNull BackTweenEquation overshoot(final float overshoot);
 
-	private static String name(final String name, final BackTweenEquation easing, final BackTweenEquation standard) {
-		return easing.overshoot == standard.overshoot ? name : name + "(" + easing.overshoot + ")";
-	}
-
 	private static BackTweenEquation in(final float overshoot) {
 		return new BackTweenEquation(overshoot) {
 
@@ -92,6 +88,10 @@ public abstract class BackTweenEquation extends TweenEquation {
 			}
 
 		};
+	}
+
+	private static String name(final String name, final BackTweenEquation easing, final BackTweenEquation standard) {
+		return easing.overshoot == standard.overshoot ? name : name + "(" + easing.overshoot + ")";
 	}
 
 }

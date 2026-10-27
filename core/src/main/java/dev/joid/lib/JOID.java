@@ -9,6 +9,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.google.common.collect.Lists;
+
 import dev.joid.demo.DemoFont;
 import dev.joid.internal.JOIDLog;
 import dev.joid.internal.font.DevFont;
@@ -114,9 +116,8 @@ public final class JOID {
 	}
 
 	public static <T extends UI> T getUi(final @NonNull Class<T> uiClass) {
-		final List<UIBridge> bridgeList = BridgeHandler.UI.getBridgeList();
-		for (int i = bridgeList.size() - 1; i >= 0; i--) {
-			for (final UI ui : bridgeList.get(i).getUiList()) {
+		for (final UIBridge bridge : Lists.reverse(BridgeHandler.UI.getBridgeList())) {
+			for (final UI ui : bridge.getUiList()) {
 				if (uiClass.isInstance(ui)) {
 					return (T) ui;
 				}

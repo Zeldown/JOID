@@ -13,7 +13,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-public final class SignalReplayRun {
+final class SignalReplayRun {
 
 	@Getter private final Object                 self;
 	@Getter private final boolean                definitions;

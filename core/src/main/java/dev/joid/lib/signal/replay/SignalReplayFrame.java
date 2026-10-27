@@ -29,7 +29,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import dev.joid.lib.signal.SignalContext;
 import lombok.Getter;
 
-public final class SignalReplayFrame {
+final class SignalReplayFrame {
 
 	private static final Map<Integer, String> OPCODE_MAP = new HashMap<>();
 

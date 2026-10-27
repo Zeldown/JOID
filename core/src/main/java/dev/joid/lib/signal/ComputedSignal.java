@@ -33,7 +33,7 @@ public class ComputedSignal<T> extends Signal<T> {
 	private transient long             invalidatedEpoch;
 	private transient volatile boolean stale = true;
 
-	protected ComputedSignal(final @NonNull Supplier<? extends T> supplier) {
+	ComputedSignal(final @NonNull Supplier<? extends T> supplier) {
 		this.constant = false;
 		this.supplier = supplier;
 		this.versions = new int[4];
