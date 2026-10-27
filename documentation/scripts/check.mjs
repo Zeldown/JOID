@@ -198,7 +198,7 @@ function images() {
 		lines.forEach((line, index) => {
 			if (line.trim() === '<figure>') {
 				const next = lines.slice(index + 1, index + 5).map((part) => part.trim());
-				if (next[0] !== '' || !/^(?:!\[|<img|<picture)/.test(next[1] ?? '') || next[2] !== '' || !(next[3] ?? '').startsWith('<figcaption>')) {
+				if (next[0] !== '' || !/^(?:!\[|<img\b|<picture\b)/.test(next[1] ?? '') || next[2] !== '' || !(next[3] ?? '').startsWith('<figcaption>')) {
 					problems.push(`${relative(DOCUMENTATION, entry.file)}:${index + 1}: write a figure as <figure>, a blank line, the image, a blank line, then <figcaption> (templates.md)`);
 				}
 			}
@@ -565,6 +565,19 @@ function bannedWords() {
 	return problems;
 }
 
+function controlCharacters() {
+	const problems = [];
+	for (const file of [...files(DOCS, ['.md', '.mdx']), ...files(DESCRIPTIONS, ['.md']), ...files(join(DOCUMENTATION, 'scripts'), ['.mjs'])]) {
+		readFileSync(file, 'utf-8').split('\n').forEach((line, index) => {
+			const match = line.replace(/\r$/, '').match(/[\u0000-\u0008\u000B-\u001F\u007F]/);
+			if (match) {
+				problems.push(`${relative(DOCUMENTATION, file)}:${index + 1}: raw control character U+${match[0].charCodeAt(0).toString(16).toUpperCase().padStart(4, '0')}`);
+			}
+		});
+	}
+	return problems;
+}
+
 function wikiLinks() {
 	const problems = [];
 	if (!existsSync(DIST)) {
@@ -623,6 +636,7 @@ run('images', images);
 run('snippets', snippets);
 run('line-width', lineWidth);
 run('banned-words', bannedWords);
+run('control-characters', controlCharacters);
 
 run('build', () => {
 	withLock(() => execSync('npx astro build', { cwd: DOCUMENTATION, stdio: 'inherit' }));

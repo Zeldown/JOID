@@ -40,7 +40,7 @@ JOID records which presses it consumed, so that the host receives each key and b
 |---|---|---|
 | Mouse release | The UI bridges that received the press of that button. | One of them consumed the press or the release. |
 | Key release | Every UI bridge, and every UI that received its press, even a node hidden since. | A UI bridge consumed the press of that key. |
-| Escape on the top closeable screen | That screen, which closes when no node handles the key and the UI accepts to close. | Always: the host never receives it. |
+| Escape on the top closeable UI that is not an overlay | That UI, which closes when no node handles the key and the UI accepts to close. | Always: the host never receives it. |
 | A press that an overlay lets through (its interaction does not cancel it) | The UIs below. | Never by that overlay, and its release neither. |
 
 ## Guarantees
@@ -52,7 +52,7 @@ JOID records which presses it consumed, so that the host receives each key and b
 | Send to `keyPressed` the physical position, then the key that the layout prints there; on a layout that your library cannot name, send the position twice. | Games read the position to keep their movement keys under the hand, shortcuts and text read the printed key ([Keyboard and shortcuts](/use/learn/interactivity/keyboard/)); [[KeyLayout]] computes the printed key from the name that your library gives each physical key. |
 | Send the position alone to `keyReleased`. | JOID keeps the printed key of every held position in a [[KeyState]], so the release reaches the UIs with the key of its press, even when the layout changed in between; that state also answers [[Key#isDown]] for the layout keys, and the [window bridge](/build/bridges/window/) answers it for the others. |
 | Never forward a key repeat of the system as a `keyPressed`: ask [[UIBridgeRegistry#isKeyConsumed]], and drop the repeat when it returns `true`. | The text fields of JOID repeat the keys they handle themselves, so a forwarded repeat types twice. |
-| Send a key press and, when the key types a character, a separate character event. | `charTyped` ignores control characters (``, ``, the codes of Ctrl combinations) and returns `false` for them: Enter, Backspace and shortcuts arrive as key presses. |
+| Send a key press and, when the key types a character, a separate character event. | `charTyped` ignores the control characters (Enter `U+000D`, Backspace `U+0008`, the codes of Ctrl combinations) and returns `false` for them: Enter, Backspace and shortcuts arrive as key presses. |
 | Forward every release, even when your host ignores them. | Without the release of a button, JOID keeps a drag running. |
 
 ## Checks
