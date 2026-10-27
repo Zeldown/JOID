@@ -696,6 +696,21 @@ public class UITest {
 	}
 
 	@Test
+	public void keepsItsZoomKeysForTheDevMode() {
+		JOIDEnv.devMode(false);
+		final TraceUI ui = new TraceUI(this.trace);
+		this.bridges.open(ui);
+		this.trace.clear();
+		this.bridges.getWindow().getKeys().add(Key.LEFT_CONTROL);
+		this.bridges.getUi().keyPressed(Key.MINUS, Key.MINUS);
+		this.bridges.getWindow().getKeys().clear();
+		this.bridges.getWindow().getKeys().add(Key.LEFT_ALT);
+		this.bridges.getUi().keyPressed(Key.NUMPAD_SUBTRACT, Key.NUMPAD_SUBTRACT);
+		Assert.assertEquals(1D, ui.getView().getZoom(), 0D);
+		Assert.assertEquals(Arrays.asList("key MINUS", "key NUMPAD_SUBTRACT"), this.trace);
+	}
+
+	@Test
 	public void keepsItsZoomWhenNotZoomable() {
 		final FixedUI ui = new FixedUI(this.trace);
 		this.bridges.open(ui);

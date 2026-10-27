@@ -107,7 +107,7 @@ public final class VideoAudioPlayer {
 		}
 
 		final Point location = this.owner.getLocation();
-		this.source.gain(this.owner.getVolume() * 0.3F * (location == null ? 1F : this.computeDistanceVolume(location)));
+		this.source.gain(this.owner.getVolume() * (location == null ? 1F : this.computeDistanceVolume(location)));
 		if (!this.buffersQueued) {
 			if (this.sampleQueue.remainingCapacity() > 0 && this.getQueuedSamples() < this.sampleRate * this.channels / 5) {
 				return;

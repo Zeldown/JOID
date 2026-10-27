@@ -358,7 +358,7 @@ public abstract class UI implements IIndexedElement {
 		this.fireShortcuts(key, true, event);
 		return this.fireInput(UI.HANDLE_KEY_PRESSED, "keyPressed", event, node -> node.fireKeyPressed(physicalKey, key, event), () -> {
 			this.fireShortcuts(key, false, event);
-			if (this.data.zoomable() && !event.isConsumed()) {
+			if (JOIDEnv.isDevMode() && this.data.zoomable() && !event.isConsumed()) {
 				final double zoom = this.getZoom();
 				if ((key == Key.NUMPAD_ADD || key == Key.EQUAL) && (UI.isCtrlKeyDown() || UI.isAltKeyDown()) && this.zoomValue.change(zoom + 0.1D) && this.getZoom() != zoom) {
 					event.consume();

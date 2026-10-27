@@ -120,7 +120,7 @@ public class VideoAudioPlayerTest {
 		player.update(0D);
 		Assert.assertEquals(1, source.written.size());
 		Assert.assertEquals(1600, source.written.get(0).length);
-		Assert.assertEquals(0.3F, source.lastGain(), 0F);
+		Assert.assertEquals(1F, source.lastGain(), 0F);
 		Assert.assertTrue(source.playing);
 		Assert.assertEquals(0, VideoAudioPlayerTest.queueSize(player));
 	}
@@ -209,7 +209,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = this.queued();
 		this.video.volume(0.5F);
 		player.update(0D);
-		Assert.assertEquals(0.15F, this.audio.source().lastGain(), 1E-6F);
+		Assert.assertEquals(0.5F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
@@ -236,7 +236,7 @@ public class VideoAudioPlayerTest {
 		player.resume();
 		player.update(0D);
 		Assert.assertEquals(Arrays.asList("pause", "play"), source.calls);
-		Assert.assertEquals(Collections.singletonList(0.3F), source.gains);
+		Assert.assertEquals(Collections.singletonList(1F), source.gains);
 	}
 
 	@Test
@@ -323,7 +323,7 @@ public class VideoAudioPlayerTest {
 		final VideoAudioPlayer player = this.queued();
 		this.video.location(0F, 0F, 27.5F);
 		player.update(0D);
-		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
+		Assert.assertEquals(0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
@@ -346,7 +346,7 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayerTest.push(player, 16, 4096);
 		player.update(0D);
 		Assert.assertEquals(Arrays.asList("play", "stop", "play"), source.calls);
-		Assert.assertFalse(source.gains.contains(0.3F));
+		Assert.assertFalse(source.gains.contains(1F));
 	}
 
 	@Test
@@ -355,7 +355,7 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayer.audioListenerPosition(() -> Point.of(3D, 4D, 0D));
 		this.video.location(0F, 0F, 0F);
 		player.update(0D);
-		Assert.assertEquals(0.3F, this.audio.source().lastGain(), 1E-6F);
+		Assert.assertEquals(1F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
@@ -364,7 +364,7 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayer.audioListenerPosition(() -> Point.of(0D, 0D, 27.5D));
 		this.video.location(0F, 0F, 0F);
 		player.update(0D);
-		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
+		Assert.assertEquals(0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
@@ -375,7 +375,7 @@ public class VideoAudioPlayerTest {
 		this.video.referenceDistance(2F);
 		this.video.maxDistance(10F);
 		player.update(0D);
-		Assert.assertEquals(0.3F * 0.25F, this.audio.source().lastGain(), 1E-6F);
+		Assert.assertEquals(0.25F, this.audio.source().lastGain(), 1E-6F);
 	}
 
 	@Test
@@ -395,7 +395,7 @@ public class VideoAudioPlayerTest {
 		VideoAudioPlayer.audioListenerPosition(() -> Point.of(0D, 0D, 0D));
 		player.update(0D);
 		Assert.assertTrue(source.calls.isEmpty());
-		Assert.assertEquals(0.3F, source.lastGain(), 1E-6F);
+		Assert.assertEquals(1F, source.lastGain(), 1E-6F);
 	}
 
 	@Test

@@ -896,7 +896,7 @@ public class VideoResourceDecoderTest {
 		decoder.volume(1F);
 		this.play(decoder, data, 1);
 		Assert.assertSame(player, TestUtils.field(decoder, "audioPlayer"));
-		Assert.assertEquals(0.3F, this.audio.gains.get(this.audio.gains.size() - 1), 1E-6F);
+		Assert.assertEquals(1F, this.audio.gains.get(this.audio.gains.size() - 1), 1E-6F);
 	}
 
 	@Test
