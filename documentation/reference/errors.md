@@ -111,7 +111,7 @@ See [Opening a UI throws No IUIBridge can open](/use/troubleshooting/#opening-a-
 
 Use the backend jar of the same release as the core jar: [Choosing a backend](/use/learn/running/backends/).
 
-## IllegalStateException The dev mode needs the dev classes of JOID, use its dev or demo jar
+## IllegalStateException The dev mode needs the dev classes of JOID, use its dev jar
 
 [[JOIDEnv#devMode]] was asked to turn the dev mode on with the prod jar, which holds no dev tools.
 
@@ -288,6 +288,12 @@ Give the control its options with `values(...)` first: [Choose one of a few opti
 
 Pass at least one option: [Choose one of a few options](/use/learn/interactivity/controls/#choose-one-of-a-few-options).
 
+## IllegalStateException The value … has no events to listen to, declare them with events(...) first
+
+`before(...)` or `on(...)` of an [[InteractiveValue]] received a listener, but the value has no events.
+
+Declare the two events of the value with `events(...)` before: [Hold a value that the user changes](/use/learn/going-further/custom-nodes/#hold-a-value-that-the-user-changes).
+
 ## IllegalArgumentException The value … is not an option of the … …, pass one of them or add it with values(...)
 
 `value(...)` or `change(...)` of a choice control received a value that is not among its options.
@@ -318,11 +324,29 @@ Pass a step above `0D`: [Pick a value on a track](/use/learn/interactivity/contr
 
 Pass a minimum lower than or equal to the maximum: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
 
+## IllegalArgumentException The slider range from … to … by … holds more than … values, pass a narrower range or a larger step
+
+`range(...)` of an [[IntegerSliderNode]] or a [[DoubleSliderNode]] received a range of more values than `Integer.MAX_VALUE`, such as `range(0, Integer.MAX_VALUE)`.
+
+Pass a narrower range or a larger step: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
+
+## IndexOutOfBoundsException The index … is out of the … values of the slider range
+
+`get(index)` of the `getValueList()` of an [[IntegerSliderNode]] or a [[DoubleSliderNode]] received an index below `0` or past the last option.
+
+Pass an index from `0` to `size()` minus one.
+
 ## IllegalArgumentException The step … of the slider range must be positive, pass a step of 1 or more
 
 `range(min, max, step)` of an [[IntegerSliderNode]] received a step of `0` or less.
 
 Pass a step of `1` or more: [Pick a value on a track](/use/learn/interactivity/controls/#pick-a-value-on-a-track).
+
+## warning [JOID] …(…) on … is brought back to 0: the scroll offsets are negative, from 0 down to minus the overflow, call …(…) instead
+
+In dev mode, `scrollX(...)`, `scrollY(...)`, `scrollTo(...)` or a bound signal gave a node a positive scroll offset; the node scrolls to `0` instead.
+
+Pass the negative offset that the message names: [Scroll from your code](/use/learn/describing-the-ui/layout/#scroll-from-your-code).
 
 ## IllegalArgumentException The node … is not a child of this …, attach it to the flex first
 
@@ -987,6 +1011,12 @@ With the dev jar, a shader uses a GLSL feature that OpenGL 2.1 contexts refuse; 
 
 Rewrite the shader without the feature that the message names: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
 
+## warning [JOID] The FrameThreadBridge was created on the thread … but its frames run on the thread …: create it on the render thread, or JOID takes the render thread for another thread
+
+The thread that runs the frames is not the thread that created the [[FrameThreadBridge]], which is the thread that registered the backend; JOID then takes another thread for the render thread.
+
+Register the backend on the thread that runs the frames, or return a thread bridge of your own: [Thread bridge](/build/bridges/thread/).
+
 ## warning [JOID] A task sent to the render thread from another thread failed (…), the next tasks still run: catch the exception inside the task to handle it
 
 A task that another thread sent to the render thread, through [[ThreadUtils#runOnRenderThread]] or `JOID.open`, threw at the start of a frame; JOID prints it once per kind of failure, and the next tasks still run.
@@ -1084,6 +1114,12 @@ Use `aPosition`, `aTexCoord`, `aColor` and `aNormal`: [Write JOID GLSL](/use/lea
 A fragment source declares an `out` variable; JOID declares the output of every fragment shader.
 
 Write the color to `fragColor`: [Write JOID GLSL](/use/learn/going-further/shaders/#write-joid-glsl).
+
+## IllegalArgumentException The shader declares no builtin uniform …: JOID declares its joid_ uniforms only where they are used, translate the shader with stencil(...) for the stencil ones (uniforms: …)
+
+`uniform(...)` received the name of a `joid_` uniform that the translated shader does not declare: JOID adds a builtin uniform only to the shaders that use it.
+
+Translate the shader with `stencil(...)` to get the stencil uniforms, or leave the builtin uniforms to JOID: [Shader translation](/build/shader-translation/#what-the-translator-adds).
 
 ## IllegalArgumentException The shader declares no uniform …, declare it in the shader source or fix its name (uniforms: …)
 
@@ -1187,6 +1223,24 @@ Journal every state that your bridge changes, and restore it at the end of the f
 
 Read the stack traces above the message: a class or a file is often missing from the jar.
 
+## IllegalStateException The demo UI … cannot be created: the class does not exist, check the name and the excludes of gradle/variants.gradle
+
+[[JarCheck]] did not find the UI that it opens in the packaged jar: the name is wrong, or the variant excludes the class.
+
+Check the name, and what the variant includes and excludes: [Three jars per module](/build/demos/#three-jars-per-module).
+
+## IllegalStateException The demo UI … cannot be created: its constructor failed (…), fix the constructor from this error
+
+[[JarCheck]] created the UI that it opens in the packaged jar, and its constructor threw.
+
+Fix the constructor from the error in the parentheses.
+
+## IllegalStateException The demo UI … cannot be created: give it a public constructor without argument
+
+The UI that [[JarCheck]] opens in the packaged jar has no public constructor without argument.
+
+Give it one.
+
 ## IllegalStateException The … jar runs with the dev mode … and the demo mode …: check the excludes of gradle/variants.gradle
 
 The packaged jar does not hold the classes that its variant needs, or holds the classes of another variant.
@@ -1243,7 +1297,7 @@ Fix the constructor from the error.
 
 ## IllegalArgumentException The snapshot UI … cannot be created: give it a constructor without arguments, of any visibility
 
-The class given to the `ui` or `open` command is not found, or has no constructor without argument.
+The class given to the `ui` or `open` command has no constructor without argument.
 
 Give the full class name, and a constructor without argument: [Render a screen](/use/learn/running/testing/#render-a-screen).
 
@@ -1276,6 +1330,30 @@ Pause or stop what keeps decoding before the shot.
 The [[SnapshotSuite]] runs on a GPU that has no references yet; the message lists the GPUs that have some.
 
 Record the references of this GPU with `updateSnapshots`: [References and the report](/build/testing-a-backend/#references-and-the-report).
+
+## IllegalArgumentException The snapshot UI … cannot be created: the class does not exist, check the name and the classpath
+
+The class given to the `ui` or `open` command is not on the classpath of the test.
+
+Give the full name of the class, and check that the test sees it: [Render a screen](/use/learn/running/testing/#render-a-screen).
+
+## IllegalArgumentException The snapshot backend … cannot be created: the class does not exist, check the name and the classpath
+
+The class that [[SnapshotBaseline]] received as its first argument is not on its classpath.
+
+Give the full name of a snapshot backend, such as [[Lwjgl3SnapshotBackend]]: [Compare with LWJGL 3](/build/testing-a-backend/#compare-with-lwjgl-3).
+
+## IllegalArgumentException The snapshot backend … cannot be created: its constructor threw …
+
+[[SnapshotBaseline]] created the snapshot backend, and its constructor threw.
+
+Fix the constructor from the error.
+
+## IllegalArgumentException The snapshot backend … cannot be created: give it a constructor without arguments, of any visibility
+
+The snapshot backend that [[SnapshotBaseline]] received has no constructor without argument.
+
+Give it one, of any visibility: [Give the testkit a surface](/build/testing-a-backend/#give-the-testkit-a-surface).
 
 ## IllegalStateException The snapshot cache cannot name the download of …: this JVM has no SHA-1 digest, run the snapshots on a standard JVM
 
